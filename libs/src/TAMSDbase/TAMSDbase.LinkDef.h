@@ -23,5 +23,9 @@
 #pragma link C++ class TAMSDntuPoint+;
 #pragma link C++ class TAMSDpoint+;
 #pragma link C++ class TAMSDactNtuPoint+;
+#pragma link C++ class TAMSDtrack+;
+#pragma link C++ class TAMSDntuTrack+;
+#pragma link C++ class TAMSDactNtuTrack+;
+#pragma link C++ class TAMSDactNtuTrackF+;
 
 #endif

@@ -1,15 +1,14 @@
 #ifndef _TAVTcluster_HXX
 #define _TAVTcluster_HXX
 
-// ROOT classes
-
-#include "TAVTbaseCluster.hxx"
-
-
-/** TAVTcluster class, simple container class for tracks with the associated clusters                    
- 
+/*!
+ \file TAVTcluster.hxx
+ \brief   Class, simple container class for tracks with the associated clusters
  \author Ch. Finck
  */
+/*------------------------------------------+---------------------------------*/
+
+#include "TAVTbaseCluster.hxx"
 
 class TAVTtrack;
 class TAVThit;
@@ -22,15 +21,14 @@ public:
    TAVTcluster(const TAVTcluster& cluster);
    ~TAVTcluster();
    
+   //! Set clones
    virtual void       SetupClones();
 
-      //! Compute distance from a track
-   Float_t            Distance(TAVTtrack *aTrack); 
 
    //! Add pixel to the list
    void               AddPixel(TAVThit* pixel);
    
-   ClassDef(TAVTcluster,2)                          // Describes TAVTcluster
+   ClassDef(TAVTcluster,2)                          ///< Describes TAVTcluster
 };
 
 

@@ -1,23 +1,33 @@
+/*!
+ \file TAEDglbTrackGL.cxx
+ \brief  Class to display global track line on event.
+ */
+
 #include "TGLSelectRecord.h"
 #include "TEveChunkManager.h"
 
 #include "TAEDglbTrackGL.hxx"
 
+/*!
+ \class TAEDglbTrackGL
+ \brief  Class to display global track line on event.
+ */
+
+
 ClassImp(TAEDglbTrackGL);
 
 //__________________________________________________________
+//! default constructor
 TAEDglbTrackGL::TAEDglbTrackGL()
   : TEveStraightLineSetGL()
 {
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDglbTrackGL::~TAEDglbTrackGL()
 {
-   // default destructor
 }
-
 
 //__________________________________________________________
 void TAEDglbTrackGL::ProcessSelection(TGLRnrCtx& /*rnrCtx*/, TGLSelectRecord& rec)

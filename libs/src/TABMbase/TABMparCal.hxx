@@ -66,13 +66,13 @@ class TABMparCal : public TAGparTools {
     virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
     TString         fkDefaultParName;  // default par file name
 
-    ClassDef(TABMparCal,1)
-
   private:
     vector<Float_t>  fT0Vec;                   //T0 in ns
     vector<pair<Float_t,Float_t>>  fAdcPedVec;  //Adc pedestals, adc devstd
     TF1             *fpResoFunc;               //space resolution function
     TF1             *fpSTrel;                  //Space time relation
+   
+   ClassDef(TABMparCal,1)
 };
 
 #endif

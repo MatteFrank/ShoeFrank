@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGactTreeWriter.cxx,v 1.17 2003/07/08 18:54:43 mueller Exp $
+  \file TAGactTreeWriter.cxx
   \brief   Implementation of TAGactTreeWriter.
 */
 
@@ -19,7 +18,7 @@
 #include "TAGactTreeWriter.hxx"
 
 /*!
-  \class TAGactTreeWriter TAGactTreeWriter.hxx "TAGactTreeWriter.hxx"
+  \class TAGactTreeWriter 
   \brief Write tree's. **
 */
 
@@ -28,7 +27,6 @@ ClassImp(TAGactTreeWriter);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGactTreeWriterBranch::TAGactTreeWriterBranch(TAGdataDsc* p_data, TString name, Int_t i_size,
                                                       Int_t i_compress, Bool_t b_object)
 : fpDataDsc(p_data),
@@ -42,7 +40,6 @@ TAGactTreeWriterBranch::TAGactTreeWriterBranch(TAGdataDsc* p_data, TString name,
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGactTreeWriter::TAGactTreeWriter(const char* name)
   : TAGactionFile(name, "TAGactTreeWriter - Tree writer", "NEW"),
     fpBranchList(0),
@@ -57,7 +54,6 @@ TAGactTreeWriter::TAGactTreeWriter(const char* name)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGactTreeWriter::~TAGactTreeWriter()
 {
   Close();
@@ -65,8 +61,7 @@ TAGactTreeWriter::~TAGactTreeWriter()
 }
 
 //------------------------------------------+-----------------------------------
-//! Add input data descriptor.
-
+// Add input data descriptor.
 void TAGactTreeWriter::SetupObjectBranch(TAGdataDsc* p_data, const char* branch,
 					 Int_t i_size, Int_t i_compress)
 {
@@ -78,8 +73,7 @@ void TAGactTreeWriter::SetupObjectBranch(TAGdataDsc* p_data, const char* branch,
 }
 
 //------------------------------------------+-----------------------------------
-//! Add input data descriptor.
-
+// Add input data descriptor.
 void TAGactTreeWriter::SetupElementBranch(TAGdataDsc* p_data,
 					  const char* branch,
 					  Int_t i_size, Int_t i_compress)
@@ -92,8 +86,7 @@ void TAGactTreeWriter::SetupElementBranch(TAGdataDsc* p_data,
 }
 
 //------------------------------------------+-----------------------------------
-//! Set compression level for file and all branches.
-
+// Set compression level for file and all branches.
 void TAGactTreeWriter::SetCompressionLevel(Int_t i_compress)
 {
   fiCompress = i_compress;
@@ -110,8 +103,7 @@ void TAGactTreeWriter::SetCompressionLevel(Int_t i_compress)
 }
 
 //------------------------------------------+-----------------------------------
-//! Open root file.
-
+// Open root file.
 Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option, const TString treeName, Bool_t dscBranch)
 {
   TDirectory* p_cwd = gDirectory;
@@ -169,8 +161,7 @@ Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option, const TStrin
 }
 
 //------------------------------------------+-----------------------------------
-//! Close file.
-
+// Close file.
 void TAGactTreeWriter::Close()
 {
   TDirectory* p_cwd = gDirectory;
@@ -193,16 +184,14 @@ void TAGactTreeWriter::Close()
 }
 
 //------------------------------------------+-----------------------------------
-//! Returns \a true if a file is currently open.
-
+// Returns \a true if a file is currently open.
 Bool_t TAGactTreeWriter::IsOpen() const
 {
   return fpFile != 0;
 }
 
 //------------------------------------------+-----------------------------------
-//! Process TreeWriter.
-
+// Process TreeWriter.
 Bool_t TAGactTreeWriter::Process()
 {
   if (Valid()) return kTRUE;
@@ -309,8 +298,7 @@ void TAGactTreeWriter::print_branch(ostream& os, Double_t d_bsize,
 }
 
 //------------------------------------------+-----------------------------------
-//! ostream insertion.
-
+// ostream insertion.
 void TAGactTreeWriter::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGactTreeWriter:   " << IsA()->GetName() << " '" << GetName() 

@@ -1,20 +1,24 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAVTcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file TAVTcluster.cxx
+ \brief  Class VTX cluster
+ */
 
 #include "TAVTcluster.hxx"
 #include "TAVTtrack.hxx"
 
+/*!
+ \class TAVTcluster
+ \brief Class for cluster in VTX
+ */
+
 ClassImp(TAVTcluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//!  constructor
 TAVTcluster::TAVTcluster()
 :  TAVTbaseCluster()
 {
-   // TAVTcluster constructor
+ 
    SetupClones();
 }
 
@@ -34,26 +38,9 @@ TAVTcluster::TAVTcluster(const TAVTcluster& cluster)
 }
 
 //______________________________________________________________________________
-//  
+//! default destructor
 TAVTcluster::~TAVTcluster()
 { 
-   // TAVTcluster default destructor
-}
-
-
-
-//______________________________________________________________________________
-//  
-Float_t TAVTcluster::Distance( TAVTtrack *aTrack) {
-   // Return the distance between this cluster and the pointed track impact in the plane
-   //
-   
-   TVector3 impactPosition( aTrack->Intersection( GetPositionG()[2]) );
-   impactPosition -= GetPositionG();
-   // Insure that z position is 0 for 2D length computation
-   impactPosition.SetXYZ(impactPosition(0), impactPosition(1), 0.);
-   
-   return impactPosition.Mag();
 }
 
 //______________________________________________________________________________
@@ -67,6 +54,8 @@ void TAVTcluster::AddPixel(TAVThit* pixel)
 
    TClonesArray &pixelArray = *fListOfPixels;
    new(pixelArray[pixelArray.GetEntriesFast()]) TAVThit(*pixel);
+   
+   fElementsN = fListOfPixels->GetEntries();
 }
 
 

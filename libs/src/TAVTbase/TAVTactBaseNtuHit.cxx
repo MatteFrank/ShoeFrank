@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactBaseNtuHit.
+ \file TAVTactBaseNtuHit.cxx
+ \brief Base class to decode raw data from single file
  */
 
 #include "DECardEvent.hh"
@@ -13,8 +13,8 @@
 #include "TAVTactBaseNtuHit.hxx"
 
 /*!
- \class TAVTactBaseNtuHit TAVTactBaseNtuHit.hxx "TAVTactBaseNtuHit.hxx"
- \brief Base to decode raw data from single file **
+ \class TAVTactBaseNtuHit
+ \brief Base class to decode raw data from single file
  */
 
 ClassImp(TAVTactBaseNtuHit);

@@ -12,6 +12,7 @@ ClassImp(TADIgeoField);
 const TString TADIgeoField::fgkDefParaName = "geoField";
 
 //______________________________________________________________________________
+//! Constructor
 TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
  : TAGpara(),
    fpDiGeoMap(diGeo),
@@ -38,6 +39,7 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
 }
 
 //______________________________________________________________________________
+//! Destructor
 TADIgeoField::~TADIgeoField()
 {
 }

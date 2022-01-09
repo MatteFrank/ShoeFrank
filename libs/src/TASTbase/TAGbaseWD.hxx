@@ -29,6 +29,7 @@ public:
   
   virtual double ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright);
   virtual double ComputeTimeSimpleCFD(TWaveformContainer *w, double frac);
+  virtual double ComputeTimeTangentCFD(TWaveformContainer *w, double frac);
   virtual double ComputePedestal( TWaveformContainer *w);
   virtual double ComputeBaseline( TWaveformContainer *w);
   virtual double ComputeCharge(TWaveformContainer *w);

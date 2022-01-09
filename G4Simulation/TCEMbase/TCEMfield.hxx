@@ -23,11 +23,12 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: TCEMfield.hh 75672 2013-11-05 08:47:41Z gcosmo $
 //
-/// \file field/field05/include/TCEMfield.hh
-/// \brief Definition of the TCEMfield class
-//
+
+/*!
+ \file TCEMfield.hxx
+ \brief Definition of the TCEMfield class
+*/
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -46,19 +47,19 @@ class TCEMfield : public G4MagneticField
 {
 
 private:
-   TADIgeoField* fMagField;
+   TADIgeoField* fMagField; ///< Dipole field pointer
    
 public:
 
   TCEMfield(TADIgeoField* fMagField);
   virtual ~TCEMfield();
 
-  /// DoesFieldChangeEnergy() returns true.
+  //! DoesFieldChangeEnergy() returns true.
   virtual G4bool DoesFieldChangeEnergy() const { return false; };
 
-  /// GetFieldValue() returns the field value at a given point[].
-  /// field is really field[6]: Bx,By,Bz.
-  /// point[] is in global coordinates: x,y,z,t.
+  //! GetFieldValue() returns the field value at a given point[].
+  // field is really field[6]: Bx,By,Bz.
+  // point[] is in global coordinates: x,y,z,t.
    virtual void GetFieldValue(const G4double* /*Point[4]*/, G4double* /*Bfield*/) const;
 };
 

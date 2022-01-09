@@ -1,17 +1,21 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAITcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file TAITcluster.cxx
+ \brief   Class for ITR cluster
+ */
 
 #include "TAITcluster.hxx"
 #include "TAITtrack.hxx"
 #include "TAIThit.hxx"
 
+/*!
+ \class TAITcluster
+ \brief  Class for ITR cluster
+ */
+
 ClassImp(TAITcluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAITcluster::TAITcluster()
 :  TAVTbaseCluster()
 {
@@ -28,33 +32,18 @@ void TAITcluster::SetupClones()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
 TAITcluster::TAITcluster(const TAITcluster& cluster)
 :  TAVTbaseCluster(cluster)
 {
 }
 
 //______________________________________________________________________________
-//  
+//! Default destructor
 TAITcluster::~TAITcluster()
 { 
-   // TAITcluster default destructor
-}
-
-//______________________________________________________________________________
-//
-Float_t TAITcluster::Distance(TAITtrack *aTrack) {
-   // Return the distance between this cluster and the pointed track impact in the plane
-   //
    
-   TVector3 impactPosition( aTrack->Intersection( GetPositionG()[2]) );
-   impactPosition -= GetPositionG();
-   // Insure that z position is 0 for 2D length computation
-   impactPosition.SetXYZ(impactPosition(0), impactPosition(1), 0.);
-   
-   return impactPosition.Mag();
 }
-
 
 //______________________________________________________________________________
 //  
@@ -67,6 +56,8 @@ void TAITcluster::AddPixel(TAIThit* pixel)
    
    TClonesArray &pixelArray = *fListOfPixels;
    new(pixelArray[pixelArray.GetEntriesFast()]) TAIThit(*pixel);
+   
+   fElementsN = fListOfPixels->GetEntries();
 }
 
 

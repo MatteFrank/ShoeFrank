@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactBaseNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactBaseNtuTrack.
+ \file TAVTactBaseNtuTrack.cxx
+ \brief   Base class to NTuplize VTX tracks
  */
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -32,7 +31,7 @@
 
 /*!
  \class TAVTactBaseNtuTrack 
- \brief NTuplizer for vertex raw hits. **
+ \brief Base class to NTuplize VTX tracks
  */
 
 ClassImp(TAVTactBaseNtuTrack);
@@ -57,13 +56,26 @@ TAVTactBaseNtuTrack::~TAVTactBaseNtuTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+// Setup all histograms.
 void TAVTactBaseNtuTrack::CreateHistogram()
 {   
    TAVTactBaseTrack::CreateHistogram();
    
-   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
-
+   TAVTbaseParGeo* pGeoMap  = GetParGeo();
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
+      AddHistogram(fpHisPixel[i]);
+   }
+   
+   fpHisPixelTot = new TH1F(Form("%sTrackedClusPixTot", fPrefix.Data()), Form("%s - Total # pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
+   AddHistogram(fpHisPixelTot);
+   
+   fpHisClusLeftPix = new TH2F(Form("%sClusLeftPix", fPrefix.Data()), Form("%s - Number of pixels for left clusters vs sensor", fTitleDev.Data()),
+                               10, 0, 9, 50, 1, 50);
+   fpHisClusLeftPix->SetStats(kFALSE);
+   AddHistogram(fpHisClusLeftPix);
+   
    // TG
    fpHiVtxTgResX = new TH1F(Form("%sTgResX", fPrefix.Data()), Form("%s - Resolution at target in X", fTitleDev.Data()), 500, -0.02, 0.02);
    AddHistogram(fpHiVtxTgResX);
@@ -87,6 +99,8 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    fpHisBmChi2 = new TH1F(Form("%sbmChi2", fPrefix.Data()), Form("%s - BM Chi2 of tracks", fTitleDev.Data()), 200, 0, 1000);
    AddHistogram(fpHisBmChi2);
    
+   fpHisClusLeft = new TH1F(Form("%sClusLeft", fPrefix.Data()), Form("%s - Clusters left per sensor", fTitleDev.Data()), 8, 1, 8);
+   AddHistogram(fpHisClusLeft);
    
    SetValidHistogram(kTRUE);
    return;
@@ -145,7 +159,7 @@ Bool_t TAVTactBaseNtuTrack::Action()
 void TAVTactBaseNtuTrack::CheckBM()
 {   
    // BM info
-   TAVTbaseParConf*  pConfig  = (TAVTbaseParConf*) fpConfig->Object();
+   TAVTbaseParConf* pConfig = GetParConf();
    
    Float_t zDiff = 0;
    
@@ -187,10 +201,8 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
    lineOrigin.SetXYZ(0.,0.,0.);
    lineSlope.SetXYZ(0.,0.,1.);
    
-   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
-   TAVTntuTrack*    pNtuTrack = (TAVTntuTrack*)    fpNtuTrack->Object();
-   TAVTbaseParGeo*  pGeoMap   = (TAVTbaseParGeo*)  fpGeoMap->Object();
-   TAVTbaseParConf* pConfig   = (TAVTbaseParConf*) fpConfig->Object();
+   TAVTbaseParGeo*  pGeoMap = GetParGeo();
+   TAVTbaseParConf* pConfig = GetParConf();
    
    TList array;
    array.SetOwner(false);
@@ -202,24 +214,23 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
    while (curPlane >= fRequiredClusters-1) {
 	  // Get the last reference plane
 	  curPlane = nPlane--;
-	  TClonesArray* list = pNtuClus->GetListOfClusters(curPlane);
-	  Int_t nClusters = pNtuClus->GetClustersN(curPlane);
+	  Int_t nClusters = GetClustersN(curPlane);
 	  if ( nClusters == 0) continue;
 	  
 	  // Loop on all clusters of the first plane
 	  // and try to make a track out of each one
 	  for( Int_t iLastClus = 0; iLastClus < nClusters; ++iLastClus) { // loop on cluster of last plane, 
 		 
-		 if( pNtuTrack->GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
+		 if( GetTracksN() >= pConfig->GetAnalysisPar().TracksMaximum ) break; // if max track number reach, stop
 		 
-		 TAVTcluster* cluster = (TAVTcluster*)list->At( iLastClus );
+		 TAGcluster* cluster = GetCluster(curPlane, iLastClus);
 		 if (cluster->Found()) continue;
-		 TAVTtrack*   track   = new TAVTtrack();
+		 TAGbaseTrack* track = NewTrack();
 		 array.Clear();
 		 track->AddCluster(cluster);
 		 array.Add(cluster);
 		 
-		 lineOrigin.SetXYZ(cluster->GetPositionU(), cluster->GetPositionV(), 0); // parallel lines
+		 lineOrigin.SetXYZ(cluster->GetPosition()[0], cluster->GetPosition()[1], 0); // parallel lines
 		 lineOrigin = pGeoMap->Sensor2Detector(curPlane, lineOrigin);
 		 lineSlope.SetXYZ(0, 0, 1);
 		 
@@ -227,16 +238,15 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 		 
 		 // Loop on all planes to find a matching cluster in them
 		 for( Int_t iPlane = curPlane-1; iPlane >= 0; --iPlane) { // loop on planes
-			TClonesArray* list1 = pNtuClus->GetListOfClusters(iPlane);
-			Int_t nClusters1 = pNtuClus->GetClustersN(iPlane);
+			Int_t nClusters1 = GetClustersN(iPlane);
 			if (nClusters1 == 0) continue; //empty planes
 			
 			// loop on all clusters of this plane and keep the nearest one
 			minDistance = fSearchClusDistance;
-			TAVTcluster* bestCluster = 0x0;
+			TAGcluster* bestCluster = 0x0;
 			
 			for( Int_t iClus = 0; iClus < nClusters1; ++iClus ) { // loop on plane clusters
-			   TAVTcluster* aCluster = (TAVTcluster*)list1->At( iClus );
+			   TAGcluster* aCluster = GetCluster(iPlane, iClus );
 			   
 			   if( aCluster->Found()) continue; // skip cluster already found
 			   
@@ -262,12 +272,12 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 		 
 		 // Apply cuts
 		 if (AppyCuts(track)) {
-			track->SetNumber(pNtuTrack->GetTracksN());
+			track->SetTrackIdx(GetTracksN());
 			track->MakeChiSquare();
 			track->SetType(0);
-         pNtuTrack->NewTrack(*track);
+         AddNewTrack(track);
 			TVector3 orig(0,0,0);
-			pNtuTrack->SetBeamPosition(orig);
+			SetBeamPosition(orig);
 			
 			if (ValidHistogram()) {
 			   FillHistogramm(track);
@@ -291,46 +301,106 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
    return true;
 }
 
+//_____________________________________________________________________________
+//
+void TAVTactBaseNtuTrack::SetChargeProba()
+{
+   if (fpCalib == 0x0) return;
+   TAVTbaseParCal* pCalib   = (TAVTbaseParCal*) fpCalib->Object();
+   
+   Int_t nTrack = GetTracksN();
+   if (nTrack == 0) return;
+   
+   for (Int_t iTrack = 0; iTrack < nTrack; ++iTrack) {
+      
+      Int_t nPixelsTot = 0;
+      Float_t nPixelsMean;
+      TAGbaseTrack* track = GetTrack(iTrack);
+      Int_t nClus = track->GetClustersN();
+      
+      for (Int_t i=0;i<nClus;i++) {
+         TAVTcluster* clus = (TAVTcluster*)track->GetCluster(i);
+         nPixelsTot += clus->GetPixelsN();
+      }
+      nPixelsMean = nPixelsTot/nClus;
+      const TArrayF* proba =  pCalib->GetChargeProba(nPixelsMean);
+      track->SetChargeProba(proba);
+      track->SetChargeMaxProba(pCalib->GetChargeMaxProba());
+      track->SetChargeWithMaxProba(pCalib->GetChargeWithMaxProba());
+      
+      proba =  pCalib->GetChargeProbaNorm(nPixelsMean);
+      track->SetChargeProbaNorm(proba);
+      track->SetChargeMaxProbaNorm(pCalib->GetChargeMaxProbaNorm());
+      track->SetChargeWithMaxProbaNorm(pCalib->GetChargeWithMaxProbaNorm());
+   }
+}
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseNtuTrack::FillHistogramm(TAGbaseTrack* track)
+{
+   TAVTactBaseTrack::FillHistogramm(track);
+
+   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*)fpGeoMap->Object();
+   
+   fpHisTrackClus->Fill(track->GetClustersN());
+   for (Int_t i = 0; i < track->GetClustersN(); ++i) {
+      TAVTcluster* cluster = (TAVTcluster*)track->GetCluster(i);
+      Int_t idx = cluster->GetSensorIdx();
+      fpHisPixelTot->Fill(cluster->GetPixelsN());
+      fpHisPixel[idx]->Fill(cluster->GetPixelsN());
+   }
+}
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseNtuTrack::FillHistogramm()
+{
+   TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
+   
+   fpHisTrackEvt->Fill(GetTracksN());
+   if (GetTracksN() == 0)
+      fpHisClusSensor->Fill(0);
+   
+   for (Int_t iPlane = 0; iPlane < pGeoMap->GetSensorsN(); ++iPlane) {
+      
+      Int_t nClusters = GetClustersN(iPlane);
+      if ( nClusters == 0) continue;
+      
+      Int_t left = 0;
+      for( Int_t iClus = 0; iClus < nClusters; ++iClus) {
+         
+         TAGcluster* cluster = GetCluster(iPlane, iClus);
+         if (!cluster->Found()) {
+            fpHisClusLeftPix->Fill(iPlane+1, cluster->GetElementsN());
+            left++;
+         }
+      }
+      static Float_t mean[36];
+      Int_t evtNumber = gTAGroot->CurrentEventNumber();
+      mean[iPlane] = evtNumber/(evtNumber+1.)*mean[iPlane] + 1./(evtNumber+1.)*(left/nClusters);
+      fpHisClusLeft->SetBinContent(iPlane+1, mean[iPlane]*100);
+   }
+}
 
 //_____________________________________________________________________________
 //  
 void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 {
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
    bmTrackPos  = fpFootGeo->FromBMLocalToGlobal(bmTrackPos);
    fpHisBmBeamProf->Fill(bmTrackPos.X(), bmTrackPos.Y());
    
    Float_t posZtg = fpFootGeo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
    posZtg = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtg)).Z();
 
-   for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
-	  TAVTtrack* track  = pNtuTrack->GetTrack(i);
-     TVector3   origin = track->Intersection(posZtg);
+   for (Int_t i = 0; i < GetTracksN(); ++i) {
+	  TAGbaseTrack* track  = GetTrack(i);
+     TVector3      origin = track->Intersection(posZtg);
 	  
 	  origin  = fpFootGeo->FromVTLocalToGlobal(origin);
 	  TVector3 res = origin - bmTrackPos;
 	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.Y());
 	  fpHisVtxResY->Fill(origin.Y(), bmTrackPos.Y());
    }   
-}
-
-
-//_____________________________________________________________________________
-//
-TAVTbaseTrack* TAVTactBaseNtuTrack::GetTrack(Int_t idx)
-{
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-   TAVTbaseTrack* track  = pNtuTrack->GetTrack(idx);
-
-   return track;
-}
-
-//_____________________________________________________________________________
-//
-Int_t TAVTactBaseNtuTrack::GetTracksN() const
-{
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-
-   return pNtuTrack->GetTracksN();
 }
 

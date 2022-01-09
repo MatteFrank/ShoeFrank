@@ -1,13 +1,12 @@
 /*!
-  \file
-  \version $Id: TATntuRaw.cxx,v 1.10 2003/06/22 11:48:38 mueller Exp $
-  \brief   Implementation of TATntuRaw.
+  \file TAMCntuHit.cxx
+  \brief   Implementation of TAMChit.
 */
 
 #include "TAMCntuHit.hxx"
 
 /*!
-  \class TAMChit TAMCntuHit.hxx "TAMCntuHit.hxx"
+  \class TAMChit 
   \brief Ntuplize ToF raw data - hit object. **
 */
 

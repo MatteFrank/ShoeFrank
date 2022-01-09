@@ -1,4 +1,7 @@
-//myEpiSensitiveDetector
+/*!
+ \file TCGbaseSensitiveDetector.cxx
+ \brief Implementation of TCGbaseSensitiveDetector.
+*/
 
 #include "TCGbaseSensitiveDetector.hxx"
 
@@ -11,7 +14,13 @@
 
 #include "TCGmcHit.hxx"
 
+/*!
+ \class TCGbaseSensitiveDetector
+ \brief Base sensitive detector class
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCGbaseSensitiveDetector::TCGbaseSensitiveDetector(G4String name)
 : G4VSensitiveDetector(name),
   fCopyLevel(1)
@@ -20,6 +29,7 @@ TCGbaseSensitiveDetector::TCGbaseSensitiveDetector(G4String name)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGbaseSensitiveDetector::~TCGbaseSensitiveDetector()
 {
 }

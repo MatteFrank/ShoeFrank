@@ -35,8 +35,12 @@ set( with_dictionnaries
    TAMSDactNtuHitMC
    TAMSDntuCluster
    TAMSDcluster
+   TAMSDntuTrack
+   TAMSDtrack
    TAMSDactNtuCluster
    TAMSDactNtuPoint
+   TAMSDactNtuTrack
+   TAMSDactNtuTrackF
 )
 
 set( without_dictionnaries

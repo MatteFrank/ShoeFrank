@@ -1,9 +1,20 @@
+/*!
+ \file TAEDglbTrackList.cxx
+ \brief   Class to display global tracks list on event.
+ */
+
 #include <Riostream.h>
 
 #include "TAEDglbTrack.hxx"
 #include "TAEDglbTrackList.hxx"
 
+/*!
+ \class TAEDglbTrackList
+ \brief   Class to display global tracks list on event.
+ */
+
 //__________________________________________________________
+//! Default constructor
 TAEDglbTrackList::TAEDglbTrackList(const Char_t* name)
  : TEveElementList(name),
    fNofTracks(0)
@@ -11,9 +22,9 @@ TAEDglbTrackList::TAEDglbTrackList(const Char_t* name)
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDglbTrackList::~TAEDglbTrackList()
 {
-  // default destructor
 }
 
 //__________________________________________________________

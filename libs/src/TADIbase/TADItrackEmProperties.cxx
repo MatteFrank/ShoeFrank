@@ -11,7 +11,7 @@
 //##############################################################################
 
 /*!
- \class TADItrackEmProperties TADItrackEmProperties.hxx "TADItrackEmProperties.hxx"
+ \class TADItrackEmProperties 
  \brief  Functions for EM track properties **
  */
 
@@ -19,9 +19,9 @@ ClassImp(TADItrackEmProperties);
 
 Float_t TADItrackEmProperties::fgkX0w    = 36.08;
 Float_t TADItrackEmProperties::fgkElossK = 0.307075;  // MeV cm2/g for A = 1 g/mol, in  [MeV].
+
 //_____________________________________________________________________________
-//
-// Default constructor
+//! Default constructor
 TADItrackEmProperties::TADItrackEmProperties()
 : TAGpara()
 {
@@ -32,7 +32,6 @@ TADItrackEmProperties::TADItrackEmProperties()
 }
 
 //_____________________________________________________________________________
-//
 // Destructor
 TADItrackEmProperties::~TADItrackEmProperties()
 {
@@ -40,7 +39,6 @@ TADItrackEmProperties::~TADItrackEmProperties()
 }
 
 //_____________________________________________________________________________
-//
 // Calculation of the WEPL of the material layer
 Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
 {
@@ -71,7 +69,6 @@ Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
 }
 
 //_____________________________________________________________________________
-//
 // Calculation of the energy loss in the material layer (WEPL in [cm])
 Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
 {
@@ -102,7 +99,6 @@ Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber,
 }
 
 //_____________________________________________________________________________
-//
 // Calculation of the energy loss in the material layer (thickness in [cm])
 Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber)
 {
@@ -114,7 +110,6 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 }
 
 //_____________________________________________________________________________
-//
 // Calculation of the energy loss in the material layer (thickness in [cm])
 Float_t TADItrackEmProperties::GetRange(const TString& mat, Float_t energy, Float_t Abeam, Int_t Zbeam)
 {
@@ -140,7 +135,6 @@ Float_t TADItrackEmProperties::GetRange(const TString& mat, Float_t energy, Floa
 }
 
 //_____________________________________________________________________________
-//
 // Calculation of the energy loss per range with Bethe-Bloch [MeV.cm^2/g]
 Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Double_t zBeam)
 {
@@ -171,7 +165,6 @@ Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Doubl
 }
 
 //_____________________________________________________________________________
-//
 // Calculation of the impact*c [MeV]
 Float_t TADItrackEmProperties::GetPCC(Float_t energy, Float_t massNumber)
 {

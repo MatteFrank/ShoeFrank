@@ -1,14 +1,17 @@
 #ifndef _TAEDpoint_HXX_
 #define _TAEDpoint_HXX_
 
+/*!
+ \file TAEDpoint.hxx
+ \brief Class to display point on event
+ 
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 #ifndef ROOT_TEvePointSet
 #include "TEvePointSet.h"
 #endif
-
-
-/** TAEDpoint a class to display point on event
- 
-*/
 
 class TAEDpoint : public TEvePointSet
 {

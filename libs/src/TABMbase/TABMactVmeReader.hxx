@@ -63,8 +63,6 @@ class TABMactVmeReader : public TAGaction {
     void MonitorQDC(vector<Int_t>& adc792_words);
     void PrintBMstruct();
 
-    ClassDef(TABMactVmeReader,0)
-
   private:
     TAGdataDsc*     fpDatRaw;		    // output data dsc
     // TAGdataDsc*     fpTimRaw;		    // output data dsc
@@ -103,6 +101,8 @@ class TABMactVmeReader : public TAGaction {
     vector<TH1I*> fpRawScaMeas;         //vector of scaler channel measurements
     vector<TH1I*> fpRawAdc;             //vector of adc  channel measurements
     vector<TH1F*> fpAdcLessPed;         //vector of adc  channel - pedestals
+   
+   ClassDef(TABMactVmeReader,0)
 };
 
 #endif

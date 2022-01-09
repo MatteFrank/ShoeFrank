@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGactNtuClusterMT.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TAGactNtuClusterMT.cxx
  \brief   Implementation of TAGactNtuClusterMT.
  */
 
@@ -18,7 +17,6 @@ Int_t TAGactNtuClusterMT::fgkLimThreadsN = 8;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGactNtuClusterMT::TAGactNtuClusterMT(const char* name, const char* title )
  : TAGaction(name, title),
    fDimX(-1),

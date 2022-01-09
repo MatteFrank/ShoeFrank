@@ -4,8 +4,11 @@
 
 #include "TAVTbaseHit.hxx"
 
-/** TAIThit class interface to base class
-*/
+/*!
+ \file TAIThit.hxx
+ \brief   Declaration of TAIThit
+ \author Ch. Finck
+ */
 /*------------------------------------------+---------------------------------*/
 
 class TAIThit : public TAVTbaseHit {

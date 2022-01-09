@@ -1,6 +1,12 @@
-
 #ifndef _LocalRecoMC_HXX_
 #define _LocalRecoMC_HXX_
+
+/*!
+ \file LocalRecoMC.hxx
+ \brief Reconstruction class from MC data
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "BaseReco.hxx"
 
@@ -46,7 +52,7 @@ public:
    //! Close File in
    virtual void CloseFileIn();
   
-   // ! Global Checks
+   ///< ! Global Checks
    virtual void GlobalChecks();
    
    //! Goto Event
@@ -55,20 +61,20 @@ public:
 protected:
    EVENT_STRUCT*         fEvtStruct;
   
-   TAMCactNtuPart*       fActNtuMcTrk;
-   TAMCactNtuRegion*     fActNtuMcReg;
-   TAMCactNtuEvent*      fActNtuMcEvt;
-   TASTactNtuHitMC*      fActNtuHitSt;  // action for ntu data
-   TABMactNtuHitMC*      fActNtuHitBm;  // action for ntu data
-   TAVTactNtuHitMC*      fActNtuHitVtx;  // action for ntu data
-   TAITactNtuHitMC*      fActNtuHitIt;  // action for ntu data
-   TAMSDactNtuHitMC*     fActNtuHitMsd;  // action for ntu data
-   TATWactNtuHitMC*      fActNtuHitTw;  // action for ntu data
-   TACAactNtuHitMC*      fActNtuHitCa;  // action for ntu data
+   TAMCactNtuPart*       fActNtuMcTrk;  ///< action for MC tracks
+   TAMCactNtuRegion*     fActNtuMcReg;  ///< action for MC region
+   TAMCactNtuEvent*      fActNtuMcEvt;  ///< action for MC events
+   TASTactNtuHitMC*      fActNtuHitSt;  ///< action for STC MC hits
+   TABMactNtuHitMC*      fActNtuHitBm;  ///< action for BM MC hits
+   TAVTactNtuHitMC*      fActNtuHitVtx; ///< action for VTX MC hits
+   TAITactNtuHitMC*      fActNtuHitIt;  ///< action for ITR MC hits
+   TAMSDactNtuHitMC*     fActNtuHitMsd; ///< action for MSD MC hits
+   TATWactNtuHitMC*      fActNtuHitTw;  ///< action for TW MC hits
+   TACAactNtuHitMC*      fActNtuHitCa;  ///< action for CAL MC hits
   
-   TAGactTreeReader*     fActEvtReader; // file for MC
+   TAGactTreeReader*     fActEvtReader; ///< file reader for MC
 
-   ClassDef(LocalRecoMC, 1); // Base class for event display
+   ClassDef(LocalRecoMC, 1); ///< Base class for event display
 };
 
 

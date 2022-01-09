@@ -13,6 +13,7 @@
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TAMSDactNtuCluster.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDactNtuCluster 
@@ -197,6 +198,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     if ( clusterN != -1 ) {
       cluster = pNtuClus->GetCluster(iSensor, clusterN);
       cluster->AddStrip(strip);
+      cluster->SetPlaneView(strip->GetView());
     }
   }
 
@@ -204,13 +206,15 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
   // Compute position and fill clusters info
   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
     cluster = pNtuClus->GetCluster(iSensor, i);
+
     cluster->SetSensorIdx(iSensor);
+    cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
+    ComputeCog(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
-    posG = pGeoMap->Sensor2Detector(iSensor, posG);
-    cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
+    posG = pGeoMap->Sensor2Detector(iSensor, posG);    
     cluster->SetPositionG(posG);
     
      if (ApplyCuts(cluster)) {
@@ -270,10 +274,34 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
-   
+  
+  
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
   cluster->SetEnergyLoss(tClusterPulseSum);
+}
+
+void TAMSDactNtuCluster::ComputeCog(TAMSDcluster* cluster)
+{
+  if (!fCurListOfStrips) return;
+    
+  Float_t num = 0;
+  Float_t den = 0;
+  Float_t cog = 0;
+   
+  Float_t tClusterPulseSum = 0.;
+  
+  for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
+    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
+    num += strip->GetStrip()*strip->GetEnergyLoss();
+    den += strip->GetEnergyLoss();
+  }
+  
+  cog = num / den;
+
+  fCurrentCog = cog;
+   
+  cluster->SetCog(fCurrentCog);
 }
 
 //______________________________________________________________________________

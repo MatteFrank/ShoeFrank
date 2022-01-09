@@ -1,17 +1,8 @@
-/////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                     //
-// Class Description of TAIRmillepede                                                     //
-//                                                                                     //
-// Detector independent alignment class                                                //
-//                                                                                     //
-// This modified C++ version is based on a C++ translation of Millepede used           //
-// for LHCb Vertex Detector alignment (lhcb-2005-101), available here                  //
-// http://isscvs.cern.ch/cgi-bin/cvsweb.cgi/Alignment/AlignmentTools/src/?cvsroot=lhcb //
-// The original millepede fortran package is available at:                             //
-// http://www.desy.de/~blobel/wwwmille.html                                            //
-//                                                                                     //
-// author Javier Castillo & Ch. Finck (transcription)                                  //
-////////////////////////////////////////////////////////////////////////////////////////
+
+/*!
+ \file  TAIRmillepede.cxx
+ \brief Class Description of TAIRmillepede
+ */
 
 //-----------------------------------------------------------------------------
 
@@ -24,6 +15,19 @@
 #include "TAGrecoManager.hxx"
 
 #include "TAIRmillepede.hxx"
+
+/*!
+ \class TAIRmillepede
+ \brief Detector independent alignment class
+ 
+  This modified C++ version is based on a C++ translation of Millepede used
+  for LHCb Vertex Detector alignment (lhcb-2005-101), available here
+  http://isscvs.cern.ch/cgi-bin/cvsweb.cgi/Alignment/AlignmentTools/src/?cvsroot=lhcb
+  The original millepede fortran package is available at:
+  http://www.desy.de/~blobel/wwwmille.html
+ 
+ \author Javier Castillo & Ch. Finck (transcription)
+ */
 
 //=============================================================================
 TAIRmillepede::TAIRmillepede()

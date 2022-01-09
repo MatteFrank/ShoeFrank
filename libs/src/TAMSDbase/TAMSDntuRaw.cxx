@@ -69,9 +69,9 @@ Int_t TAMSDrawHit::Compare(const TObject* obj) const
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparMap.hxx"
 
-ClassImp(TAMSDntuRaw) 
-
 TString TAMSDntuRaw::fgkBranchName   = "msdrd.";
+
+ClassImp(TAMSDntuRaw)
 
 //______________________________________________________________________________
 //

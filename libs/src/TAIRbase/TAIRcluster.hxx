@@ -1,15 +1,13 @@
 #ifndef _TAIRcluster_HXX
 #define _TAIRcluster_HXX
 
-// ROOT classes
-
-#include "TAVTbaseCluster.hxx"
-
-
-/** TAIRcluster class, simple container class for tracks with the associated clusters
- 
+/*!
+ \file TAIRcluster.hxx
+ \brief   Cluster for interaction region
  \author Ch. Finck
  */
+/*------------------------------------------+---------------------------------*/
+#include "TAVTbaseCluster.hxx"
 
 class TAIRtrack;
 class TAVTbaseCluster;
@@ -25,7 +23,7 @@ public:
    Float_t            Distance(TAIRtrack *aTrack);
 
    
-   ClassDef(TAIRcluster,2)                          // Describes TAIRcluster
+   ClassDef(TAIRcluster,2)                          ///< Describes TAIRcluster
 };
 
 

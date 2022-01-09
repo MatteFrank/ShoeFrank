@@ -5,29 +5,30 @@ NumberDevices: 9
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/GSI2021/FOOT.geo": -1
+"./geomaps/GSI2021/FOOT.geo": 4100; 4271; 4319;
 
 DetectorName: "DI"
 NumberFiles: 1
 "./geomaps/GSI2021/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 4
+NumberFiles: 5
 "./geomaps/GSI2021/TASTdetector.geo": -1
 "./config/GSI2021/TASTdetector.cfg": -1
 "./config/GSI2021/WDChannelMap.map": -1
-"./calib/GSI2021/WDTimeCalibration/tcalib.dat": 200; 400; 4115;
+"./calib/GSI2021/WDTimeCalibration/tcalib.dat": -1;
+"./calib/GSI2021/WDpar.cal": -1;
 
 DetectorName: "BM"
 NumberFiles: 4
 "./geomaps/GSI2021/TABMdetector.geo": -1
 "./config/GSI2021/TABMdetector.cfg": -1
 "./config/GSI2021/TABMdetector.map": -1
-"./calib/GSI2021/TABM_T0_Calibration.cal": 200; 400;
+"./calib/GSI2021/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI2021/TAGdetector.geo": 200; 400;
+"./geomaps/GSI2021/TAGdetector.geo": 4100; 4271; 4319;
 
 DetectorName: "VT"
 NumberFiles: 3
@@ -44,15 +45,15 @@ NumberFiles: 5
 "./calib/GSI2021/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/GSI2021/TATWdetector.geo": -1
 "./config/GSI2021/TATW_BBparameters.cfg": -1
 "./config/GSI2021/TATWChannelMapXML.map": -1
 "./calib/GSI2021/TATW_Energy_Calibration.cal": -1
-"./calib/GSI2021/TATW_Tof_Calibration.cal": 200; 400;
+"./calib/GSI2021/TATW_Tof_Calibration.cal": -1;
 
 DetectorName: "CA"
-NumberFiles: 4
+NumberFiles: 5
 "./geomaps/GSI2021/TACAdetector.geo": -1
 "./config/GSI2021/TACAdetector.map": -1
 "./calib/GSI2021/TACA_Energy_Calibration.cal": -1

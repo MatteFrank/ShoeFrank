@@ -1,3 +1,7 @@
+/*!
+ \file TAVTbaseHit.cxx
+  \brief   Base class of VTX hits
+ */
 
 #include "TString.h"
 #include "TVector3.h"
@@ -6,8 +10,12 @@
 #include "TAVTntuHit.hxx"
 #include "TAVTbaseHit.hxx"
 
-ClassImp(TAVTbaseHit) // Description of Single Detector TAVTbaseHit 
+/*!
+ \class TAVTbaseDigitizer
+ \brief  Base class of VTX hits
+ */
 
+ClassImp(TAVTbaseHit) // Description of Single Detector TAVTbaseHit 
 
 //______________________________________________________________________________
 //  build the hit from the index

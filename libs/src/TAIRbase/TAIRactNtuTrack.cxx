@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAIRactNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TAIRactNtuTrack.cxx
  \brief   Implementation of TAIRactNtuTrack.
  */
 #include "TClonesArray.h"
@@ -263,7 +262,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
       
       // Apply cuts
       if (AppyCuts(track)) {
-         track->SetNumber(pNtuTrack->GetTracksN());
+         track->SetTrackIdx(pNtuTrack->GetTracksN());
          track->MakeChiSquare();
          track->SetType(1);
          pNtuTrack->NewTrack(*track);
@@ -282,7 +281,7 @@ Bool_t TAIRactNtuTrack::FindTracks()
 
 //_____________________________________________________________________________
 //
-void TAIRactNtuTrack::FillHistogramm(TAVTbaseTrack* track)
+void TAIRactNtuTrack::FillHistogramm(TAGbaseTrack* track)
 {
    fpHisTheta->Fill(track->GetTheta());
    fpHisPhi->Fill(track->GetPhi());
@@ -292,7 +291,7 @@ void TAIRactNtuTrack::FillHistogramm(TAVTbaseTrack* track)
 
    fpHisTrackClus->Fill(track->GetClustersN());
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
-      TAVTbaseCluster * cluster = track->GetCluster(i);
+      TAIRcluster * cluster = (TAIRcluster*)track->GetCluster(i);
       cluster->SetFound();
       Int_t idx = cluster->GetSensorIdx();
       fpHisClusSensor->Fill(idx+1);

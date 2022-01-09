@@ -1,4 +1,7 @@
-//myEpiSensitiveDetector
+/*!
+ \file TCBMsensitiveDetector.cxx
+ \brief   Implementation of TCBMsensitiveDetector.
+ */
 
 #include "TCBMsensitiveDetector.hxx"
 #include "G4HCofThisEvent.hh"
@@ -8,13 +11,20 @@
 #include "G4ios.hh"
 #include "G4VTouchable.hh"
 
+/*!
+ \class TCBMsensitiveDetector
+ \brief  Sensitive detector of BM
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCBMsensitiveDetector::TCBMsensitiveDetector(G4String name)
 :TCGbaseSensitiveDetector(name)
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCBMsensitiveDetector::~TCBMsensitiveDetector()
 {
 }

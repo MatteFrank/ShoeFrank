@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TAITactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TAITactNtuHitMC.
+  \file TAITactNtuHitMC.cxx
+  \brief   NTuplizer for ITR MC hits
 */
 
 #include "TH2F.h"
@@ -29,8 +28,8 @@
 
 
 /*!
-  \class TAITactNtuHitMC"
-  \brief NTuplizer for vertex raw hits. **
+  \class TAITactNtuHitMC
+  \brief NTuplizer for ITR MC hits
 */
 
 using namespace std;
@@ -39,7 +38,7 @@ ClassImp(TAITactNtuHitMC);
 
 
 //------------------------------------------+-----------------------------------
-//
+//! Constructor
 TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 : TAVTactBaseNtuHitMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
@@ -58,7 +57,7 @@ TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 }
 
 //------------------------------------------+-----------------------------------
-//! Create histogram
+// Create histogram
 void TAITactNtuHitMC::CreateDigitizer()
 {
    TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMap->Object();
@@ -67,9 +66,8 @@ void TAITactNtuHitMC::CreateDigitizer()
       ComputeNoiseLevel();
 }
 
-
 //------------------------------------------+-----------------------------------
-//! Action.
+// Action.
 bool TAITactNtuHitMC::Action()
 {
 	

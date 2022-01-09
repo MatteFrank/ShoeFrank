@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TATntuRaw.cxx,v 1.10 2003/06/22 11:48:38 mueller Exp $
-  \brief   Implementation of TATntuRaw.
+  \file TAMCntuPart.cxx
+  \brief   Implementation of TAMCntuPart & TAMCpart.
 */
 
 #include <bitset>
@@ -12,8 +11,8 @@ using namespace std;
 #include "TAMCntuPart.hxx"
 
 /*!
-  \class TAMCpart TAMCntuPart.hxx "TAMCntuPart.hxx"
-  \brief Ntuplize ToF raw data - track object. **
+  \class TAMCpart
+  \brief MC Particle. **
 */
 
 ClassImp(TAMCpart);
@@ -80,8 +79,8 @@ TAMCpart::~TAMCpart()
 //##############################################################################
 
 /*!
-  \class TAMCntuPart TAMCntuPart.hxx "TAMCntuPart.hxx"
-  \brief Ntuplize ToF raw data - container. **
+  \class TAMCntuPart
+  \brief Particle  container. **
 */
 
 ClassImp(TAMCntuPart);

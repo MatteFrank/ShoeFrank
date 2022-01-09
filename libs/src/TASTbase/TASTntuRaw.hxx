@@ -21,7 +21,7 @@ class TASTrawHit : public TAGbaseWD {
 
 public:
   TASTrawHit();
-  TASTrawHit(TWaveformContainer *w);
+  TASTrawHit(TWaveformContainer *w, string algo, double frac, double del);
   virtual         ~TASTrawHit();
   
   virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
@@ -49,8 +49,8 @@ public:
 
   TASTrawHit*       GetSuperHit(){return fSuperHit;}
   
-  void              NewHit(TWaveformContainer *W);
-  void              NewSuperHit(vector<TWaveformContainer*>);
+  void              NewHit(TWaveformContainer *W, string algo, double frac, double del);
+  void              NewSuperHit(vector<TWaveformContainer*>, string algo, double frac, double del);
   void              SetupClones();
 
    
@@ -60,13 +60,13 @@ public:
   void              UpdateRunTime(int value){fRunTime+=value;}
    
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-  
+    
   ClassDef(TASTntuRaw,3);
   
 private:
    Int_t           fHistN;          //
    TClonesArray*   fListOfHits;         // hits
-   TASTrawHit*     fSuperHit;  //sum
+   TASTrawHit*     fSuperHit;  //!
    Int_t           fRunTime;
 
    static TString fgkBranchName;    // Branch name in TTree

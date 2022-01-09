@@ -13,19 +13,22 @@ int main (int argc, char *argv[])  {
    TString exp("");
    
    Bool_t mth = false;
-   Bool_t test = false;
+   Bool_t nomc = false;
    
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
-   
+   Int_t nSkipEv = 0;
+
    for (int i = 0; i < argc; i++){
-      if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  }   // Root file name for output
-      if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
-      if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
-      if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
-      if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
+      if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);   }   // Root file name for output
+      if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);   }   // Root file in input
+      if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]);  }   // extention for config/geomap files
+      if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]);  }   // Number of events to be analized
+      if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }   // Number of events to be skip
+      if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);   }   // Run Number
       
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
+      if(strcmp(argv[i],"-nomc") == 0)  { nomc = true;   } // disbale MC info saving in output tree
 
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
@@ -34,8 +37,10 @@ int main (int argc, char *argv[])  {
          cout<<"      -in path/file  : [def= 12C_C_200_1.root] ROOT input file"<<endl;
          cout<<"      -out path/file : [def= 12C_C_200_1_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
+         cout<<"      -nsk value     : [def=0] Skip number of events"<<endl;
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
+         cout<<"      -nomc          : no MC info saved in output tree "<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
@@ -51,6 +56,9 @@ int main (int argc, char *argv[])  {
       TAGrecoManager::GetPar()->DisableTree();
       TAGrecoManager::GetPar()->DisableHisto();
    }
+   
+   if (nomc)
+      BaseReco::DisableSaveMc();
    
    Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
    Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
@@ -88,7 +96,10 @@ int main (int argc, char *argv[])  {
    
    if (mth)
       locRec->EnableM28lusMT();
-
+   
+   if (nSkipEv > 0)
+      locRec->GoEvent(nSkipEv);
+   
    if(zmc)
      locRec->EnableZfromMCtrue();
    

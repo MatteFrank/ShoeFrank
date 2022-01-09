@@ -1,4 +1,9 @@
 
+/*!
+ \file TAVTbaseParGeo.hxx
+ \brief Base class of geometrical parameters for VTX
+ */
+
 #include <Riostream.h>
 
 #include "TGeoBBox.h"
@@ -23,8 +28,8 @@ using namespace std;
 //##############################################################################
 
 /*!
-  \class TAVTbaseParGeo TAVTbaseParGeo.hxx "TAVTbaseParGeo.hxx"
-  \brief Map and Geometry parameters for vertex. **
+  \class TAVTbaseParGeo
+  \brief Map and Geometry parameters for VTX
 */
 
 ClassImp(TAVTbaseParGeo);
@@ -32,6 +37,7 @@ ClassImp(TAVTbaseParGeo);
 const Int_t TAVTbaseParGeo::fgkDefSensorsN   = 32;
 
 //______________________________________________________________________________
+//! Standard constructor
 TAVTbaseParGeo::TAVTbaseParGeo()
  : TAGparTools(),
    fIonisation(new TAGionisMaterials()),
@@ -43,13 +49,12 @@ TAVTbaseParGeo::TAVTbaseParGeo()
    fSensPerLayer(0),
    fSensorArray(0x0)
 {
-   // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAVTbaseParGeo::~TAVTbaseParGeo()
 {
-   // Destructor
    delete fIonisation;
    delete [] fSensorArray;
 }
@@ -96,6 +101,8 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
    
+   Info("FromFile()", "Open file %s for geometry\n", name.Data());
+
    ReadItem(fSensorsN);
    if(FootDebugLevel(1))
       cout << endl << "Sensors number "<< fSensorsN << endl;

@@ -1,8 +1,19 @@
+/*!
+ \file TAGntuEvent.cxx
+ \brief Simple container event informations from DAQ
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <sys/time.h>
 #include <math.h>
 
 #include "TAGntuEvent.hxx"
 
+/*!
+ \class TAGntuEvent
+ \brief Simple container event informations from DAQ
+ */
+/*------------------------------------------+---------------------------------*/
 ClassImp(TAGntuEvent);
 
 TString  TAGntuEvent::fgkBranchName = "evt.";
@@ -20,8 +31,13 @@ TAGntuEvent::TAGntuEvent()
   fTriggerCounter(0),
   fBCOofTrigger(0),
   fSpillNrAndTrgFineDelay(0),
-  fPMTsAndBusy(0)
+  fPMTsAndBusy(0),
+  fTriggerID(-1)  
 {
+
+ // cout << "NMAXTRIG::" << NMAXTRIG << endl;
+  
+  for(int i=0;i<NMAXTRIG;i++)fTriggersStatus[i]=0;
 }
 
 //------------------------------------------+-----------------------------------
@@ -44,6 +60,8 @@ void TAGntuEvent::Clear(Option_t*)
   fBCOofTrigger           = 0;
   fSpillNrAndTrgFineDelay = 0;
   fPMTsAndBusy            = 0;
+  fTriggerID              =-1;
+  for(int i=0;i<NMAXTRIG;i++)fTriggersStatus[i]=0;
 }
 
 /*------------------------------------------+---------------------------------*/

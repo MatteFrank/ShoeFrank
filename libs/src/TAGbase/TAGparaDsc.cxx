@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGparaDsc.cxx,v 1.10 2003/06/19 17:43:58 mueller Exp $
+  \file TAGparaDsc.cxx
   \brief   Implementation of TAGparaDsc.
 */
 
@@ -12,7 +11,7 @@
 #include "TAGparaDsc.hxx"
 
 /*!
-  \class TAGparaDsc TAGparaDsc.hxx "TAGparaDsc.hxx"
+  \class TAGparaDsc 
   \brief Persistent descriptor for parameter object . **
 */
 
@@ -20,7 +19,6 @@ ClassImp(TAGparaDsc);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGparaDsc::TAGparaDsc(const char* name, TAGpara* p_para)
   : TAGnamed(name, 0),
     fpObject(0),
@@ -48,16 +46,14 @@ TAGparaDsc::TAGparaDsc(const char* name, TAGpara* p_para)
 }
 
 //------------------------------------------+-----------------------------------
-//! Destructor.
-
+//! Destructor
 TAGparaDsc::~TAGparaDsc()
 {
   delete fpObject;
 }
 
 //------------------------------------------+-----------------------------------
-//! Set para object.
-
+// Set para object.
 void TAGparaDsc::SetObject(TAGpara* p_para)
 {
   delete fpObject;
@@ -67,8 +63,7 @@ void TAGparaDsc::SetObject(TAGpara* p_para)
 }
 
 //------------------------------------------+-----------------------------------
-//! Set consumer action.
-
+// Set consumer action.
 void TAGparaDsc::SetConsumer(TAGaction* p_action)
 {
   if (!fpConsumerList) fpConsumerList = new TList();
@@ -77,8 +72,7 @@ void TAGparaDsc::SetConsumer(TAGaction* p_action)
 }
 
 //------------------------------------------+-----------------------------------
-//! Invalidate para object.
-
+// Invalidate para object.
 void TAGparaDsc::Clear(Option_t*)
 {
   if (fpObject) fpObject->Clear();
@@ -87,8 +81,7 @@ void TAGparaDsc::Clear(Option_t*)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGparaDsc::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGparaDsc:      " << "'" << GetName() << "'" << endl;
@@ -107,8 +100,7 @@ void TAGparaDsc::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Cleanup dangling object references to TObject \a p_obj .
-
+// Cleanup dangling object references to TObject \a p_obj .
 void TAGparaDsc::RecursiveRemove(TObject* p_obj)
 {
   if (fpConsumerList) while (fpConsumerList->Remove(p_obj));

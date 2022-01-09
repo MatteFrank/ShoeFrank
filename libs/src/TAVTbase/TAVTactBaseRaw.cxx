@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactBaseRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
- \brief   Implementation of TAVTactBaseRaw.
+ \file TAVTactBaseRaw.cxx
+ \brief    Base class to decode vertex raw data
  */
 
 #include "DECardEvent.hh"
@@ -18,8 +17,8 @@
 #include "TAVTmi26Type.hxx"
 
 /*!
- \class TAVTactBaseRaw TAVTactBaseRaw.hxx "TAVTactBaseRaw.hxx"
- \brief Base class to decode vertex raw data. **
+ \class TAVTactBaseRaw
+ \brief Base class to decode vertex raw data
  */
 
 ClassImp(TAVTactBaseRaw);
@@ -33,7 +32,6 @@ const UInt_t TAVTactBaseRaw::fgkKeyTail[]       = {0x8bb08bb0, 0x8bb18bb1, 0x8bb
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAGactionFile(name, "TAVTactBaseRaw - Base action for unpack vertex raw data"),
   fpNtuRaw(pNtuRaw),
@@ -74,7 +72,7 @@ TAVTactBaseRaw::~TAVTactBaseRaw()
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+// Setup all histograms.
 void TAVTactBaseRaw::CreateHistogram()
 {
    DeleteHistogram();
@@ -126,7 +124,7 @@ void TAVTactBaseRaw::CreateHistogram()
       AddHistogram(fpHisFrameErrors[i]);
    }
    
-   fpHisBCOofTrigger = new TH1F(Form("%sBCOofTrigger", fPrefix.Data()), Form("%s - BCOofTrigger difference", fTitleDev.Data()), 6, -1.5, 4.5);
+   fpHisBCOofTrigger = new TH1F(Form("%sBCOofTrigger", fPrefix.Data()), Form("%s - BCOofTrigger difference", fTitleDev.Data()), 200000, 0, 200000);
    AddHistogram(fpHisBCOofTrigger);
 
    SetValidHistogram(kTRUE);

@@ -4,6 +4,7 @@
 #include "TClonesArray.h"
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuPoint.hxx"
+#include "TAMSDtrack.hxx"
 
 
 ClassImp(TAMSDpoint) // Description of Single Detector TAMSDpoint
@@ -16,9 +17,28 @@ TAMSDpoint::TAMSDpoint()
    fStation(0),
    fColClus(0),
    fRowClus(0),
+   fDe1(0),
+   fDe2(0),
+   fTime(0),
    fChargeZ(0),
    fChargeZProba(0.)
 {
+}
+
+//______________________________________________________________________________
+//  build a point
+TAMSDpoint::TAMSDpoint(const TAMSDpoint& point)
+:  TAGcluster(point),
+   fStation(point.fStation),
+   fColClus(new TAMSDcluster(*point.fColClus)),
+   fRowClus(new TAMSDcluster(*point.fRowClus)),
+   fDe1(point.fDe1),
+   fDe2(point.fDe2),
+   fTime(point.fTime),
+   fChargeZ(point.fChargeZ),
+   fChargeZProba(point.fChargeZProba)
+{
+   fElementsN = fColClus->GetElementsN() + fRowClus->GetElementsN();
 }
 
 //______________________________________________________________________________
@@ -29,7 +49,7 @@ TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
    fChargeZ(0),
    fChargeZProba(0.)
 {
-   fPosition = position;
+   fPosition1 = position;
 }
 
 //______________________________________________________________________________
@@ -42,8 +62,8 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
    fChargeZ(0),
    fChargeZProba(0.)
 {
-   fPosition.SetXYZ(x,y,0);
-   fPosError.SetXYZ(dx,dy,0);
+   fPosition1.SetXYZ(x,y,0);
+   fPosError1.SetXYZ(dx,dy,0);
    
    fDe1 = clusX->GetEnergyLoss();
    fDe2 = clusY->GetEnergyLoss();
@@ -76,6 +96,8 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
       for (map<int,int>::iterator it=mapIdx.begin(); it!=mapIdx.end(); ++it)
          AddMcTrackIdx(it->first);
    }
+   
+   fElementsN = fColClus->GetElementsN() + fRowClus->GetElementsN();
 }
 
 //______________________________________________________________________________
@@ -142,6 +164,20 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAM
    }
 }
 
+//______________________________________________________________________________
+//  build a point
+TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
+{
+   if (iStation >= 0  || iStation < fGeometry->GetStationsN()) {
+      TClonesArray &pointArray = *GetListOfPoints(iStation);
+      TAMSDpoint* pt = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint(*point);
+      pt->SetClusterIdx(pointArray.GetEntriesFast()-1);
+      return pt;
+   } else {
+      cout << Form("Wrong sensor number %d\n", iStation);
+      return 0x0;
+   }
+}
 //------------------------------------------+-----------------------------------
 int TAMSDntuPoint::GetPointsN(int iStation) const
 {

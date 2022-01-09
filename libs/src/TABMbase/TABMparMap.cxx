@@ -139,7 +139,7 @@ Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
       cout<<"Tdc channel:"<<it->first<<"  cellid:"<< it->second<<endl;
 
     cout<<endl<<"TABMparMap::print fCell2TdcVec"<<endl;
-    for(auto it = fTdc2CellVec.cbegin(); it != fTdc2CellVec.cend(); ++it)
+    for(auto it = fCell2TdcVec.cbegin(); it != fCell2TdcVec.cend(); ++it)
       cout<<"cellid:"<<it->first<<"  tdc channel:"<< it->second<<endl;
     cout<<endl;
   }

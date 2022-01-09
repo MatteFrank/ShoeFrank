@@ -1,8 +1,7 @@
 #ifndef _TAVTactNtuTrackF_HXX
 #define _TAVTactNtuTrackF_HXX
 /*!
- \file
- \version $Id: TAVTactNtuTrackF.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAVTactNtuTrackF.hxx
  \brief   Declaration of TAVTactNtuTrackF.
  */
 /*------------------------------------------+---------------------------------*/
@@ -16,22 +15,24 @@ class TAVTactNtuTrackF : public TAVTactBaseNtuTrack {
    
 public:
    
-   explicit  TAVTactNtuTrackF(const char* name      = 0,
-							 TAGdataDsc* p_ntuclus  = 0, 
-							 TAGdataDsc* p_ntutrack = 0, 
-							 TAGparaDsc* p_config   = 0,
-							 TAGparaDsc* p_geomap   = 0,
-							 TAGparaDsc* p_calib    = 0,
-							 TAGdataDsc* p_bmtrack  = 0);
+   explicit  TAVTactNtuTrackF(const char* name       = 0,
+                              TAGdataDsc* p_ntuclus  = 0,
+                              TAGdataDsc* p_ntutrack = 0,
+                              TAGparaDsc* p_config   = 0,
+                              TAGparaDsc* p_geomap   = 0,
+                              TAGparaDsc* p_calib    = 0,
+                              TAGdataDsc* p_bmtrack  = 0);
    virtual ~TAVTactNtuTrackF();
    
-private:    
-   
+protected:
+   //! Find tilted tracks
    Bool_t FindTiltedTracks();
-   Bool_t IsGoodCandidate(TAVTtrack* track);
+   //! Check track candidate
+   virtual Bool_t IsGoodCandidate(TAGbaseTrack* track);
    
-private:
-   map<TAVTcluster*,  int> fMapClus;
+protected:
+   //! Cluster map
+   map<TAGcluster*,  int> fMapClus;
 
    ClassDef(TAVTactNtuTrackF,0)
 };

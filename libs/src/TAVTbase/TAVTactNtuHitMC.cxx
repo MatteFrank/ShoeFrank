@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TAVTactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TAVTactNtuHitMC.
+  \file TAVTactNtuHitMC.cxx
+  \brief   NTuplizer for VTX MC hits
 */
 
 #include "TH2F.h"
@@ -28,7 +27,7 @@
 
 /*!
   \class TAVTactNtuHitMC"
-  \brief NTuplizer for vertex raw hits. **
+  \brief NTuplizer for VTX MC hits
 */
 
 using namespace std;
@@ -36,7 +35,7 @@ using namespace std;
 ClassImp(TAVTactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
-//
+//! Constructor
 TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 : TAVTactBaseNtuHitMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
@@ -55,7 +54,7 @@ TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 }
 
 //------------------------------------------+-----------------------------------
-//! Create digitizer
+// Create digitizer
 void TAVTactNtuHitMC::CreateDigitizer()
 {
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
@@ -69,7 +68,7 @@ void TAVTactNtuHitMC::CreateDigitizer()
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
+// Action.
 bool TAVTactNtuHitMC::Action()
 {
 	TAVTntuHit* pNtuRaw = (TAVTntuHit*) fpNtuRaw->Object();

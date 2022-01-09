@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactBaseNtuCluster.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactBaseNtuCluster.
+ \file TAVTactBaseNtuCluster.cxx
+ \brief   Base class to NTuplize cluster
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
@@ -16,7 +15,7 @@
 
 /*!
  \class TAVTactBaseNtuCluster 
- \brief NTuplizer for vertex raw hits. **
+ \brief Base class to NTuplize cluster
  */
 
 ClassImp(TAVTactBaseNtuCluster);

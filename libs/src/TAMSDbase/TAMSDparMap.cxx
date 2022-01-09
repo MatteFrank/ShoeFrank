@@ -22,7 +22,8 @@ ClassImp(TAMSDparMap);
 //! Default constructor.
 
 TAMSDparMap::TAMSDparMap()
-: TAGparTools()
+ : TAGparTools(),
+   fSensorsN(0)
 {
    fkDefaultMapName = "./config/TAMSDdetector.map";
 }
@@ -49,16 +50,16 @@ Bool_t TAMSDparMap::FromFile(const TString& name)
   Double_t* para = new Double_t[3];
 
   // number of sensors
-  ReadItem(nSens);
+  ReadItem(fSensorsN);
 
   if (FootDebugLevel(1)) {
-    printf("SensorsN: %d\n", nSens);
+    printf("SensorsN: %d\n", fSensorsN);
     printf("SensorId BoardId View \n");
   }
 
   //To read header
   ReadItem(para, 3, ' ', false);  
-  for (Int_t i = 0; i < nSens; ++i) { // Loop over sensors
+  for (Int_t i = 0; i < fSensorsN; ++i) { // Loop over sensors
 
     // read parameters (sensId, boardId, view)
     ReadItem(para, 3, ' ', false);

@@ -1,13 +1,12 @@
 /*!
-  \file
-  \version $Id: TAGdaqEvent.cxx,v 1.6 2003/06/19 17:53:28 mueller Exp $
+  \file TAGdaqEvent.cxx
   \brief   Implementation of TAGdaqEvent.
 */
 
 #include "TAGdaqEvent.hxx"
 
 /*!
-  \class TAGdaqEvent TAGdaqEvent.hxx "TAGdaqEvent.hxx"
+  \class TAGdaqEvent 
   \brief Representation of raw data event. **
 */
 
@@ -26,13 +25,12 @@ TAGdaqEvent::TAGdaqEvent()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGdaqEvent::~TAGdaqEvent()
 {
 }
 
 //------------------------------------------+-----------------------------------
-//! Add fragment
+// Add fragment
 void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 {
    fListOfFragments.push_back(frag);
@@ -42,7 +40,7 @@ void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAGdaqEvent::Clear(Option_t*)
 {
    TAGdata::Clear();
@@ -51,7 +49,7 @@ void TAGdaqEvent::Clear(Option_t*)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAGdaqEvent::ToStream(ostream& /*os*/, Option_t* /*option*/) const
 {
 }

@@ -3,11 +3,14 @@
 #ifndef TCTWsensitiveDetector_h
 #define TCTWsensitiveDetector_h 1
 
-#include "TCGbaseSensitiveDetector.hxx"
-#include "TCGmcHit.hxx" //my hit class
+/*!
+ \file TCTWsensitiveDetector.hxx
+ \brief TW interface for base sensitive detector class
+ 
+ \author Ch. Finck
+ */
 
-class G4Step; //step class
-class G4HCofThisEvent;
+#include "TCGbaseSensitiveDetector.hxx"
 
 class TCTWsensitiveDetector : public TCGbaseSensitiveDetector
 {

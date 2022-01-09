@@ -2,6 +2,12 @@
 #ifndef _GlobalToeReco_HXX_
 #define _GlobalToeReco_HXX_
 
+/*!
+ \file GlobalToeReco.hxx
+ \brief Global reconstruction class using TOE from L0 tree
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TString.h"
 #include "TAGobject.hxx"
 #include "TAGactTreeReader.hxx"
@@ -12,7 +18,7 @@ class GlobalToeReco  : public BaseReco
 {
 public:
    //! default constructor
-   GlobalToeReco(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t isMc = true);
+   GlobalToeReco(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t isMc = true, TString fileNameMcIn = "", TString treeNameMc = "EventTree");
    
    virtual ~GlobalToeReco();
 

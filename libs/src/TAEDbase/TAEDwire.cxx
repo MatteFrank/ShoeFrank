@@ -1,4 +1,8 @@
-
+/*!
+ \file TAEDwire.cxx
+ \brief Class to display wire on event
+ */
+/*------------------------------------------+---------------------------------*/
 
 #ifndef _TAEDwire_HXX_
 #include "TAEDwire.hxx"
@@ -8,19 +12,24 @@
 #include "TEveChunkManager.h"
 #endif
 
-//
+/*!
+ \class TAEDwire
+ \brief Class to display wire on event
+ */
+/*------------------------------------------+---------------------------------*/
+
 
 //__________________________________________________________
+//! default constructor
 TAEDwire::TAEDwire(const Text_t* name) 
   : TEveStraightLineSet(name)
 { 
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDwire::~TAEDwire()
 {
-  // default destructor
 }
 
 //__________________________________________________________

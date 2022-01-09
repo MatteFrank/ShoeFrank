@@ -1,5 +1,5 @@
 /*!
- \file
+ \file TAGactNtuEvent.cxx
  \brief   Implementation of TAGactNtuEvent.
  */
 
@@ -13,8 +13,8 @@
 #include "TAGactNtuEvent.hxx"
 
 /*!
- \class TAGactNtuEvent TAGactNtuEvent.hxx "TAGactNtuEvent.hxx"
- \brief Get trigger from DAQ **
+ \class TAGactNtuEvent
+ \brief Get trigger event from DAQ **
  */
 
 ClassImp(TAGactNtuEvent);
@@ -23,7 +23,7 @@ ClassImp(TAGactNtuEvent);
 //! Default constructor.
 
 TAGactNtuEvent::TAGactNtuEvent(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq)
-: TAGaction(name, "TAGactNtuEvent - Unpack trigger raw data"),
+  : TAGaction(name, "TAGactNtuEvent - Unpack trigger raw data"),
   fpDatDaq(pDatDaq),
   fpNtuEvt(pNtuEvt)
 {
@@ -43,6 +43,7 @@ Bool_t TAGactNtuEvent::Action()
 {
   TAGdaqEvent* datDaq  = (TAGdaqEvent*) fpDatDaq->Object();
   TAGntuEvent* pNtuEvt = (TAGntuEvent*) fpNtuEvt->Object();
+  //  TAGWDtrigInfo* pWDtrigInfo = (TAGWDtrigInfo*) fpWDtrigInfo->Object();
   
   InfoEvent* infoEvent = datDaq->GetInfoEvent();
   TrgEvent*  trgEvent  = datDaq->GetTrgEvent();
@@ -61,6 +62,8 @@ Bool_t TAGactNtuEvent::Action()
      pNtuEvt->SetBCOofTrigger(trgEvent->BCOofTrigger);
      pNtuEvt->SetSpillNrAndTrgFineDelay(trgEvent->spillNrAndTrgFineDelay);
      pNtuEvt->SetPMTsAndBusy(trgEvent->PMTsAndBusy);
+     // pNtuEvt->SetTriggerID(pWDtrigInfo->GetTriggerID());
+     // cout << "TriggerID:" << pWDtrigInfo->GetTriggerID() << endl;
   }
   SetBit(kValid);
   fpNtuEvt->SetBit(kValid);

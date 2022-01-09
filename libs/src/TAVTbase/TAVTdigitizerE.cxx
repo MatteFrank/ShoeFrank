@@ -1,3 +1,8 @@
+/*!
+ \file TAVTdigitizerE.cxx
+ \brief VTX elipsoidal digitizer
+ */
+
 #include "TAVTdigitizerE.hxx"
 #include "TAVTparGeo.hxx"
 
@@ -7,6 +12,11 @@
 #include "TList.h"
 
 #include "TAGrecoManager.hxx"
+
+/*!
+ \class TAVTdigitizerE
+ \brief VTX elipsoidal digitizer
+ */
 
 using namespace std;
 
@@ -23,6 +33,7 @@ Int_t   TAVTdigitizerE::fgkShel50[20];// {2,   6,   8,   16,   26,   34,   44,  
 Int_t   TAVTdigitizerE::fgkShel55[20];// {1,   5,   9,   13,   21,   37,   45,   57,   69,   89,   101,  121,  137,  161,  185,  213};
 
 // --------------------------------------------------------------------------------------
+//! Default constructor
 TAVTdigitizerE::TAVTdigitizerE(TAVTbaseParGeo* parGeo)
 : TAVTbaseDigitizer(parGeo)
 {
@@ -30,11 +41,13 @@ TAVTdigitizerE::TAVTdigitizerE(TAVTbaseParGeo* parGeo)
 }
 
 // --------------------------------------------------------------------------------------
+//! Default destructor
 TAVTdigitizerE::~TAVTdigitizerE() 
 {   
 }
 
 // --------------------------------------------------------------------------------------
+// Make cluster
 Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/)
 {
    // std array
@@ -158,6 +171,7 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
 }
 
 //_____________________________________________________________________________
+// Set region from x0, y0 point
 Bool_t TAVTdigitizerE::SetRegion(Double_t x0, Double_t y0)
 {
    Int_t regX  = GetColRegion(x0);
@@ -231,6 +245,7 @@ Bool_t TAVTdigitizerE::SetRegion(Double_t x0, Double_t y0)
 }
 
 //_____________________________________________________________________________
+// Define all radiii
 void TAVTdigitizerE::DefineRadii()
 {
    DefineRadius00();
@@ -239,6 +254,7 @@ void TAVTdigitizerE::DefineRadii()
 }
 
 //_____________________________________________________________________________
+// Define radius 55
 void TAVTdigitizerE::DefineRadius55()
 {
    Float_t pitchX = GetPitchX();
@@ -265,6 +281,7 @@ void TAVTdigitizerE::DefineRadius55()
 }
 
 //_____________________________________________________________________________
+// Define radius 50
 void TAVTdigitizerE::DefineRadius50()
 {
    Float_t pitchX = GetPitchX();
@@ -291,6 +308,7 @@ void TAVTdigitizerE::DefineRadius50()
 }
 
 //_____________________________________________________________________________
+// Define radius 00
 void TAVTdigitizerE::DefineRadius00()
 {
    Float_t pitchX = GetPitchX();

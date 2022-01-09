@@ -9,6 +9,7 @@
 #include <TH1D.h>
 #include <TProfile.h>
 #include <TBrowser.h>
+#include <TGraphErrors.h>
 
 
 #include "TAGparGeo.hxx"
@@ -41,13 +42,21 @@
 
 //general par
 #define debug            0
+#define strelNbin        25
 
 static int  evnum;         //current event number
+static int maxentries;
 static TAGgeoTrafo* geoTrafo;
 static TABMntuHit*  bmNtuHit;
 static TABMntuTrack*  bmNtuTrack;
 static TAVTntuTrack* vtNtuTrack;
+static TABMparConf* bmparconf;
 
+
+TVector3 PointAtLocalZ(TVector3 fSlope, TVector3 fOrigin, double zloc) {
+   TVector3 projected(fSlope.X()/fSlope.Z()*(zloc-fOrigin.Z())+fOrigin.X() ,fSlope.Y()/fSlope.Z()*(zloc-fOrigin.Z())+fOrigin.Y(), zloc);
+   return projected;
+}
 
 //*********************************************  combined functions  *****************************************
 
@@ -62,18 +71,18 @@ void BookingBMVTX(TFile* f_out, Int_t doalign){
   char tmp_char[200];
 
   //vtx
+  h = new TH1D("vtx_tracknum","Number of VTX tracks per event;TrackNum;Events",11,-0.5,10.5);
   h = new TH1D("vtx_slopeX_vtxsys","VTX mx in vtx sys;mx;Events",1000,-0.5,0.5);
   h = new TH1D("vtx_slopeY_vtxsys","VTX my in vtx sys;my;Events",1000,-0.5,0.5);
   h = new TH1D("vtx_originX_vtxsys","VTX origin X in vtx sys;X[cm];Events",600,-3.,3.);
   h = new TH1D("vtx_originY_vtxsys","VTX origin Y in vtx sys;Y[cm];Events",600,-3.,3.);
   h2 = new TH2D("vtx_target_vtxsys","VTX tracks projection on target plane in VTX sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
 
-  h = new TH1D("vtx_slopeX_glbsys","VTX mx in glb sys;mx;Events",1000,-0.3,0.3);
-  h = new TH1D("vtx_slopeY_glbsys","VTX my in glb sys;my;Events",1000,-0.3,0.3);
+  h = new TH1D("vtx_slopeX_glbsys","VTX mx in glb sys;mx;Events",1000,-0.1,0.1);
+  h = new TH1D("vtx_slopeY_glbsys","VTX my in glb sys;my;Events",1000,-0.1,0.1);
   h = new TH1D("vtx_originX_glbsys","VTX origin X in glb sys;X[cm];Events",600,-3.,3.);
   h = new TH1D("vtx_originY_glbsys","VTX origin Y in glb sys;Y[cm];Events",600,-3.,3.);
   h2 = new TH2D("vtx_target_glbsys","VTX tracks projection on target plane in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
-  h2 = new TH2D("vtx_tw_glbsys","VTX tracks projection on target plane in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
 
   h = new TH1D("vtx_polar_angle","vtx polar angle distribution ;AngZ(deg);Events",400,0.,10.);
   h = new TH1D("vtx_azimuth_angle","vtx azimuth angle distribution ;Phi(deg);Events",180,0.,180.);
@@ -85,12 +94,11 @@ void BookingBMVTX(TFile* f_out, Int_t doalign){
   h = new TH1D("bm_originY_bmsys","BM origin Y in bm sys;Y[cm];Events",600,-3.,3.);
   h2 = new TH2D("bm_target_bmsys","BM tracks on target  projections in BM sys ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
 
-  h = new TH1D("bm_slopeX_glbsys","BM mx in glb sys ;mx;Events",1000,-0.3,0.3);
-  h = new TH1D("bm_slopeY_glbsys","BM my in glb sys ;my;Events",1000,-0.3,0.3);
-  h = new TH1D("bm_originX_glbsys","BM origin X in glb sys;X[cm];Events",600,-3.,3.);
-  h = new TH1D("bm_originY_glbsys","BM origin Y in glb sys;Y[cm];Events",600,-3.,3.);
+  h = new TH1D("bm_slopeX_glbsys","BM mx in glb sys ;mx;Events",1000,-0.1,0.1);
+  h = new TH1D("bm_slopeY_glbsys","BM my in glb sys ;my;Events",1000,-0.1,0.1);
+  h = new TH1D("bm_originX_glbsys","BM origin X in glb sys;X[cm];Events",600,-5.,5.);
+  h = new TH1D("bm_originY_glbsys","BM origin Y in glb sys;Y[cm];Events",600,-5.,5.);
   h2 = new TH2D("bm_target_glbsys","BM tracks on target projections in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
-  h2 = new TH2D("bm_tw_glbsys","BM tracks on tw position in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
 
   h = new TH1D("bm_polar_angle","BM polar angle distribution ;AngZ(deg);Events",400,0.,10.);
   h = new TH1D("bm_azimuth_angle","BM azimuth angle distribution ;Phi(deg);Events",180,0.,180.);
@@ -108,20 +116,37 @@ void BookingBMVTX(TFile* f_out, Int_t doalign){
   h = new TH1D("slopeY_glb_diff","angle difference bm_track - vtx_track in glb sys;[rad];Events",2000,-0.1,0.1);
   h = new TH1D("originX_glb_diff","Difference of bm tracks and vtx tracks X projection on tg in glb sys;x diff[cm];Events",400,-0.2,0.2);
   h = new TH1D("originY_glb_diff","Difference of bm tracks and vtx tracks Y projection on tg in glb sys;y diff[cm];Events",400,-0.2,0.2);
-  h = new TH1D("combinedStatus","Status of combined events;0=ok, 1=vttrknum>1, 2=vttrknum<1, 3=bmtrknum>1, 4=bmtrknum<1, 5=vttrkChi2, 6=bmtrkChi2;Events",7,-0.5,6.5);
-  h = new TH1D("residualXevent","BM - VTX track residual on target plane per events;Events",100000,0.,100000);
+  h = new TH1D("combinedStatus","Status of combined events;0=ok, 1=vttrknum<1, 2=bmtrknum>1, 3=bmtrknum<1, 4=vttrkChi2, 5=bmtrkChi2;Events",6,-0.5,5.5);
+  h = new TH1D("XresidualXevent","BM - VTX track X residual on target plane per events;Events",30000,0.,30000);
+  h = new TH1D("YresidualXevent","BM - VTX track Y residual on target plane per events;Events",30000,0.,30000);
+  h = new TH1D("ratio_originX_xevt","BM originX / VTX originX ;Event number; Ratio",30000,0.,30000);
+  h = new TH1D("ratio_originY_xevt","BM originY / VTX originY ;Event number; Ratio",30000,0.,30000);
+  h = new TH1D("bestresoX","fabs(BM originX -  VTX originX) ;Event number; residual",30000,0.,30000);
+  h = new TH1D("bmvtxresidual_clean","residual btw bm and vtx tracks in evt with 1 track for each detector ;residual; evts",1000,0.,1.);
+  h = new TH1D("bmvtxresidual_best","residual btw bm and vtx tracks in evt with 1 bm track and the closest vtx track ;residual; evts",1000,0.,1.);
+  h = new TH1D("bmvtxresidual_all","residual btw bm and vtx tracks in evt with 1 bm track and all the vtx tracks ;residual; evts",1000,0.,1.);
+  h = new TH1D("ratio_originXAll","BM originX / VTX originX; Ratio;Events",600,-5.,5.);
+  h = new TH1D("ratio_originYAll","BM originX / VTX originX; Ratio;Events",600,-5.,5.);
+
+  for(Int_t i=0;i<maxentries/1000+1;i++){
+    h2 = new TH2D(Form("origin_xx_bmvtx_%d",i),"BM originX vs VTX originX;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D(Form("origin_yy_bmvtx_%d",i),"BM originY vs VTX originY;BM originY;vtx originY",600,-3.,3.,600,-3.,3.);
+  }
 
   for(Int_t i=0;i<doalign;i++){
-    h = new TH1D(Form("slopeX_glb_diff_%d",i),"angle difference bm_track - vtx_track in glb sys;[rad];Events",2000,-0.1,0.1);
-    h = new TH1D(Form("slopeY_glb_diff_%d",i),"angle difference bm_track - vtx_track in glb sys;[rad];Events",2000,-0.1,0.1);
-    h = new TH1D(Form("originX_glb_diff_%d",i),"Difference of bm tracks and vtx tracks X projection on tg in glb sys;x diff[cm];Events",400,-0.2,0.2);
-    h = new TH1D(Form("originY_glb_diff_%d",i),"Difference of bm tracks and vtx tracks Y projection on tg in glb sys;y diff[cm];Events",400,-0.2,0.2);
+    h = new TH1D(Form("slopeX_glb_diff_%d",i),"angle difference bm_track - vtx_track in glb sys;[rad];Events",2000,-0.3,0.3);
+    h = new TH1D(Form("slopeY_glb_diff_%d",i),"angle difference bm_track - vtx_track in glb sys;[rad];Events",2000,-0.3,0.3);
+    h = new TH1D(Form("originX_glb_diff_%d",i),"Difference of bm tracks and vtx tracks X projection on tg in glb sys;x diff[cm];Events",1000,-5.,5.);
+    h = new TH1D(Form("originY_glb_diff_%d",i),"Difference of bm tracks and vtx tracks Y projection on tg in glb sys;y diff[cm];Events",1000,-5.,5.);
   }
 
   //strel plots
   h2 = new TH2D("NewStrel","BM tdrift vs VTX rdrift;BM tdrift [ns];VTX rdrift [cm]",200,0.,400.,200,0.,1.);
-  h2 = new TH2D("bmvt_rdrift_residual","BM rdrift - VT rdrift;Residual [cm];BM rdrift [cm]",400,-0.1,0.1,100,0.,1.);
+  h = new TH1D("MyNewStrel","BM tdrift vs VTX rdrift from my gaussian fit;BM tdrift [ns];VTX rdrift [cm]",strelNbin+1,0.,bmparconf->GetHitTimeCut()*(strelNbin+1)/strelNbin);
+  h2 = new TH2D("bmvt_rdrift_residual","BM rdrift - VT rdrift;Residual [cm];BM rdrift [cm]",400,-0.3,0.3,100,0.,1.);
   h = new TH1D("bm_notsel_rdrift","VT track rdrift for not selected bm hits;rdrift [cm];Number of hits",100,0.,1.);
+  for(Int_t i=0;i<strelNbin;i++)
+    h = new TH1D(Form("strel_bin_%d",i),"VTX rdrift for a given BM tdrift;VTX rdrift [cm], Hits",200,0.,1.);
 
   if(debug>0)
     cout<<"Booking finished"<<endl;
@@ -142,8 +167,12 @@ void FillSeparated(){
   TVector3 postgbm = geoTrafo->FromGlobalToBMLocal(postgglo);      //Target position in BM framework
 
   //vtx tracks loop
+  ((TH1D*)gDirectory->Get("vtx_tracknum"))->Fill(vtNtuTrack->GetTracksN());
   for(Int_t i=0;i<vtNtuTrack->GetTracksN();i++){
     TAVTtrack* vttrack = vtNtuTrack->GetTrack(i);
+    //provv fix to invert vtx track y parameters:
+    // vttrack->GetOrigin().SetY(-vttrack->GetOrigin().Y());
+    // vttrack->GetSlopeZ().SetY(-vttrack->GetSlopeZ().Y());
     ((TH1D*)gDirectory->Get("vtx_slopeX_vtxsys"))->Fill(vttrack->GetSlopeZ().X()/vttrack->GetSlopeZ().Z());
     ((TH1D*)gDirectory->Get("vtx_slopeY_vtxsys"))->Fill(vttrack->GetSlopeZ().Y()/vttrack->GetSlopeZ().Z());
     ((TH1D*)gDirectory->Get("vtx_originX_vtxsys"))->Fill(vttrack->GetOrigin().X());
@@ -161,10 +190,6 @@ void FillSeparated(){
     ((TH2D*)gDirectory->Get("vtx_target_vtxsys"))->Fill(tmp_tvector3.X(),tmp_tvector3.Y());
     tmp_tvector3 = geoTrafo->FromVTLocalToGlobal(tmp_tvector3);
     ((TH2D*)gDirectory->Get("vtx_target_glbsys"))->Fill(tmp_tvector3.X(),tmp_tvector3.Y());
-    TVector3 twposglo = geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
-    postgvt = geoTrafo->FromGlobalToVTLocal(twposglo);     //TW position in BM framework
-    TVector3 vtglbvec=geoTrafo->FromVTLocalToGlobal(bmtrack->Intersection(postgvt.Z()));
-    ((TH2D*)gDirectory->Get("vtx_tw_glbsys"))->Fill(vtglbvec.X(), vtglbvec.Y());
   }
 
   //bm tracks loop
@@ -188,64 +213,10 @@ void FillSeparated(){
     ((TH2D*)gDirectory->Get("bm_target_bmsys"))->Fill(tmp_tvector3.X(), tmp_tvector3.Y());
     tmp_tvector3 = geoTrafo->FromBMLocalToGlobal(tmp_tvector3);
     ((TH2D*)gDirectory->Get("bm_target_glbsys"))->Fill(tmp_tvector3.X(), tmp_tvector3.Y());
-
-    //tw position
-    TVector3 twposglo = geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
-    postgbm = geoTrafo->FromGlobalToBMLocal(twposglo);     //TW position in BM framework
-    TVector3 bmglbvec=geoTrafo->FromBMLocalToGlobal(bmtrack->Intersection(postgbm.Z()));
-    ((TH2D*)gDirectory->Get("bm_tw_glbsys"))->Fill(bmglbvec.X(), bmglbvec.Y());
   }
 
   if(debug)
     cout<<"PrintSeparated done"<<endl;
-
-  return;
-}
-
-void FillCombined(TABMtrack* bmtrack, TAVTtrack* vttrack, vector<TVector3> &vtxslopevec, vector<TVector3> &vtxoriginvec, vector<TVector3> &bmslopevec,vector<TVector3> &bmoriginvec){
-
-  if(debug)
-    cout<<"I'm in PrintCombined"<<endl;
-
-  ((TH2D*)gDirectory->Get("slope_mxx_bmvtx"))->Fill(bmtrack->GetSlope().X()/bmtrack->GetSlope().Z(), vttrack->GetSlopeZ().X()/vttrack->GetSlopeZ().Z());
-  ((TH2D*)gDirectory->Get("slope_myy_bmvtx"))->Fill(bmtrack->GetSlope().Y()/bmtrack->GetSlope().Z(), vttrack->GetSlopeZ().Y()/vttrack->GetSlopeZ().Z());
-  ((TH2D*)gDirectory->Get("slope_mxy_bmvtx"))->Fill(bmtrack->GetSlope().X()/bmtrack->GetSlope().Z(), vttrack->GetSlopeZ().Y()/vttrack->GetSlopeZ().Z());
-  ((TH2D*)gDirectory->Get("slope_myx_bmvtx"))->Fill(bmtrack->GetSlope().Y()/bmtrack->GetSlope().Z(), vttrack->GetSlopeZ().X()/vttrack->GetSlopeZ().Z());
-  ((TH2D*)gDirectory->Get("origin_xx_bmvtx"))->Fill(bmtrack->GetOrigin().X(), vttrack->GetOrigin().X());
-  ((TH2D*)gDirectory->Get("origin_yy_bmvtx"))->Fill(bmtrack->GetOrigin().Y(), vttrack->GetOrigin().Y());
-  ((TH2D*)gDirectory->Get("origin_xy_bmvtx"))->Fill(bmtrack->GetOrigin().X(), vttrack->GetOrigin().Y());
-  ((TH2D*)gDirectory->Get("origin_yx_bmvtx"))->Fill(bmtrack->GetOrigin().Y(), vttrack->GetOrigin().X());
-
-  TVector3 postgglo = geoTrafo->FromTGLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
-  TVector3 postgvt = geoTrafo->FromGlobalToVTLocal(postgglo);     //Target position in VT framework
-  TVector3 postgbm = geoTrafo->FromGlobalToBMLocal(postgglo);      //Target position in BM framework
-
-  TVector3 bmglbvec=geoTrafo->VecFromBMLocalToGlobal(bmtrack->GetSlope());
-  TVector3 vtglbvec=geoTrafo->VecFromVTLocalToGlobal(vttrack->GetSlopeZ());
-  ((TH1D*)gDirectory->Get("slopeX_glb_diff"))->Fill(bmglbvec.X()/bmglbvec.Z()-vtglbvec.X()/vtglbvec.Z());
-  ((TH1D*)gDirectory->Get("slopeY_glb_diff"))->Fill(bmglbvec.Y()/bmglbvec.Z()-vtglbvec.Y()/vtglbvec.Z());
-  bmslopevec.push_back(bmglbvec);
-  vtxslopevec.push_back(vtglbvec);
-
-  bmglbvec=geoTrafo->FromBMLocalToGlobal(bmtrack->Intersection(postgbm.Z()));
-  vtglbvec=geoTrafo->FromVTLocalToGlobal(vttrack->Intersection(postgvt.Z()));
-  ((TH1D*)gDirectory->Get("originX_glb_diff"))->Fill(bmglbvec.X()-vtglbvec.X());
-  ((TH1D*)gDirectory->Get("originY_glb_diff"))->Fill(bmglbvec.Y()-vtglbvec.Y());
-  if(evnum>0 && evnum<100000)
-    ((TH1D*)gDirectory->Get("residualXevent"))->SetBinContent(evnum,fabs((bmglbvec-vtglbvec).Mag()));
-
-  //TW position
-  TVector3 twposglo = geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
-  postgvt = geoTrafo->FromGlobalToVTLocal(twposglo);     //TW position in VT framework
-  postgbm = geoTrafo->FromGlobalToBMLocal(postgglo);     //TW position in BM framework
-  bmglbvec=geoTrafo->FromBMLocalToGlobal(bmtrack->Intersection(postgbm.Z()));
-  vtglbvec=geoTrafo->FromVTLocalToGlobal(vttrack->Intersection(postgvt.Z()));
-
-  vtxoriginvec.push_back(vtglbvec);
-  bmoriginvec.push_back(bmglbvec);
-
-  if(debug)
-    cout<<"PrintCombined done"<<endl;
 
   return;
 }
@@ -261,17 +232,119 @@ void FillStrel(TAVTtrack* vttrack, TABMparGeo* bmpargeo){
 
   for(int i=0;i<bmNtuHit->GetHitsN();i++){
     TABMhit* bmhit=bmNtuHit->GetHit(i);
-    int wireid = bmpargeo->GetSenseId(bmhit->GetCell());
-    double vtdrift=bmpargeo->FindRdrift(vtposbm, vtslpbm, bmpargeo->GetWirePos(bmhit->GetView(), bmhit->GetPlane(), wireid), bmpargeo->GetWireDir(bmhit->GetView()), true);
-    ((TH1D*)gDirectory->Get("NewStrel"))->Fill(bmhit->GetTdrift(), vtdrift);
-    if(bmhit->GetIsSelected())
-      ((TH2D*)gDirectory->Get("bmvt_rdrift_residual"))->Fill(bmhit->GetRdrift() - vtdrift, bmhit->GetRdrift());
-    else
-      ((TH1D*)gDirectory->Get("bm_notsel_rdrift"))->Fill(vtdrift);
+    if(bmhit->GetView()==1){
+      int wireid = bmpargeo->GetSenseId(bmhit->GetCell());
+      double vtdrift=bmpargeo->FindRdrift(vtposbm, vtslpbm, bmpargeo->GetWirePos(bmhit->GetView(), bmhit->GetPlane(), wireid), bmpargeo->GetWireDir(bmhit->GetView()), true);
+      if(vtdrift<0.95){
+        ((TH1D*)gDirectory->Get("NewStrel"))->Fill(bmhit->GetTdrift(), vtdrift);
+        Int_t timebin=bmhit->GetTdrift()/bmparconf->GetHitTimeCut()*strelNbin;
+        if(timebin<strelNbin)
+          ((TH1D*)gDirectory->Get(Form("strel_bin_%d",timebin)))->Fill(vtdrift);
+        if(bmhit->GetIsSelected())
+          ((TH2D*)gDirectory->Get("bmvt_rdrift_residual"))->Fill(bmhit->GetRdrift() - vtdrift, bmhit->GetRdrift());
+        else
+          ((TH1D*)gDirectory->Get("bm_notsel_rdrift"))->Fill(vtdrift);
+      }
+    }
   }
 
   return;
 }
+
+
+void FillCombined(vector<TVector3> &vtxslopevec, vector<TVector3> &vtxoriginvec, vector<TVector3> &bmslopevec,vector<TVector3> &bmoriginvec,  TABMparGeo* bmpargeo){
+
+  if(debug)
+    cout<<"I'm in FillCombined"<<endl;
+
+  //let's do some preliminary check
+  if(vtNtuTrack->GetTracksN()<1){
+    ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(1);
+    return;
+  }
+  if(bmNtuTrack->GetTracksN()!=1){
+    ((TH1D*)gDirectory->Get("combinedStatus"))->Fill((bmNtuTrack->GetTracksN()>1) ? 2:3);
+    return;
+  }
+
+  //define some geo parameters
+  TVector3 postgglo = geoTrafo->FromTGLocalToGlobal(TVector3(0,0,0));  //Target position in global  framework
+  TVector3 postgvt = geoTrafo->FromGlobalToVTLocal(postgglo);     //Target position in VT framework
+  TVector3 postgbm = geoTrafo->FromGlobalToBMLocal(postgglo);      //Target position in BM framework
+
+  //choose the best vtx track
+  Int_t bestvtxindex=0;
+  Double_t bestreso=1000;
+  TABMtrack* bmtrack = bmNtuTrack->GetTrack(0);
+  TVector3 bmglbvec=geoTrafo->FromBMLocalToGlobal(bmtrack->Intersection(postgbm.Z()));
+
+  TAVTtrack* vttrack;
+  for(int i=0;i<vtNtuTrack->GetTracksN();i++){
+    vttrack  = vtNtuTrack->GetTrack(i);
+    TVector3 vtglbvec=geoTrafo->FromVTLocalToGlobal(vttrack->Intersection(postgvt.Z()));
+    bmglbvec[2]=0.;
+    vtglbvec[2]=0.;
+    Double_t newres=(vtglbvec-bmglbvec).Mag();
+    ((TH1D*)gDirectory->Get("bmvtxresidual_all"))->Fill(newres);
+    if(newres<bestreso){
+      bestreso=newres;
+      bestvtxindex=i;
+    }
+  }
+  ((TH1D*)gDirectory->Get("bmvtxresidual_best"))->Fill(bestreso);
+  ((TH2D*)gDirectory->Get("bestresoX"))->SetBinContent(evnum,bestreso);
+  if(vtNtuTrack->GetTracksN() ==1)
+    ((TH1D*)gDirectory->Get("bmvtxresidual_clean"))->Fill(bestreso);
+  vttrack=vtNtuTrack->GetTrack(bestvtxindex);
+  if(bmtrack->GetChiSquare()<100 && vttrack->GetChi2()<100){
+    ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(0);
+    FillStrel(vttrack, bmpargeo);
+  }else{
+    if(vttrack->GetChi2()>=100)
+      ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(4);
+    if(bmtrack->GetChiSquare()>=100)
+      ((TH1D*)gDirectory->Get("combinedStatus"))->Fill(5);
+  }
+
+  ((TH2D*)gDirectory->Get("slope_mxx_bmvtx"))->Fill(bmtrack->GetSlope().X()/bmtrack->GetSlope().Z(), vttrack->GetSlopeZ().X()/vttrack->GetSlopeZ().Z());
+  ((TH2D*)gDirectory->Get("slope_myy_bmvtx"))->Fill(bmtrack->GetSlope().Y()/bmtrack->GetSlope().Z(), vttrack->GetSlopeZ().Y()/vttrack->GetSlopeZ().Z());
+  ((TH2D*)gDirectory->Get("slope_mxy_bmvtx"))->Fill(bmtrack->GetSlope().X()/bmtrack->GetSlope().Z(), vttrack->GetSlopeZ().Y()/vttrack->GetSlopeZ().Z());
+  ((TH2D*)gDirectory->Get("slope_myx_bmvtx"))->Fill(bmtrack->GetSlope().Y()/bmtrack->GetSlope().Z(), vttrack->GetSlopeZ().X()/vttrack->GetSlopeZ().Z());
+  ((TH2D*)gDirectory->Get("origin_xx_bmvtx"))->Fill(bmtrack->GetOrigin().X(), vttrack->GetOrigin().X());
+  ((TH2D*)gDirectory->Get("origin_yy_bmvtx"))->Fill(bmtrack->GetOrigin().Y(), vttrack->GetOrigin().Y());
+  ((TH2D*)gDirectory->Get(Form("origin_xx_bmvtx_%d",evnum/1000)))->Fill(bmtrack->GetOrigin().X(), vttrack->GetOrigin().X());
+  ((TH2D*)gDirectory->Get(Form("origin_yy_bmvtx_%d",evnum/1000)))->Fill(bmtrack->GetOrigin().Y(), vttrack->GetOrigin().Y());
+  ((TH2D*)gDirectory->Get("origin_xy_bmvtx"))->Fill(bmtrack->GetOrigin().X(), vttrack->GetOrigin().Y());
+  ((TH2D*)gDirectory->Get("origin_yx_bmvtx"))->Fill(bmtrack->GetOrigin().Y(), vttrack->GetOrigin().X());
+  ((TH1D*)gDirectory->Get("ratio_originXAll"))->Fill(bmtrack->GetOrigin().X()/vttrack->GetOrigin().X());
+  ((TH1D*)gDirectory->Get("ratio_originYAll"))->Fill(bmtrack->GetOrigin().Y()/vttrack->GetOrigin().Y());
+
+
+  bmglbvec=geoTrafo->VecFromBMLocalToGlobal(bmtrack->GetSlope());
+  TVector3 vtglbvec=geoTrafo->VecFromVTLocalToGlobal(vttrack->GetSlopeZ());
+  ((TH1D*)gDirectory->Get("slopeX_glb_diff"))->Fill(bmglbvec.X()/bmglbvec.Z()-vtglbvec.X()/vtglbvec.Z());
+  ((TH1D*)gDirectory->Get("slopeY_glb_diff"))->Fill(bmglbvec.Y()/bmglbvec.Z()-vtglbvec.Y()/vtglbvec.Z());
+  vtxslopevec.push_back(vttrack->GetSlopeZ());
+  bmslopevec.push_back(bmtrack->GetSlope());
+
+  vtxoriginvec.push_back(vttrack->GetOrigin());
+  bmoriginvec.push_back(bmtrack->GetOrigin());
+  vtglbvec=geoTrafo->FromVTLocalToGlobal(vttrack->Intersection(postgvt.Z()));
+  bmglbvec=geoTrafo->FromBMLocalToGlobal(bmtrack->Intersection(postgbm.Z()));
+  ((TH1D*)gDirectory->Get("originX_glb_diff"))->Fill(bmglbvec.X()-vtglbvec.X());
+  ((TH1D*)gDirectory->Get("originY_glb_diff"))->Fill(bmglbvec.Y()-vtglbvec.Y());
+  if(evnum>0 && evnum<30000){
+    ((TH1D*)gDirectory->Get("XresidualXevent"))->SetBinContent(evnum,fabs(bmglbvec.X()-vtglbvec.X()));
+    ((TH1D*)gDirectory->Get("YresidualXevent"))->SetBinContent(evnum,fabs(bmglbvec.Y()-vtglbvec.Y()));
+    ((TH1D*)gDirectory->Get("ratio_originX_xevt"))->SetBinContent(evnum,bmtrack->GetOrigin().Y()/vttrack->GetOrigin().Y());
+  }
+
+  if(debug)
+    cout<<"PrintCombined done"<<endl;
+
+  return;
+}
+
 
 
 void PostLoopAnalysis(){
@@ -293,20 +366,69 @@ void PostLoopAnalysis(){
   garfield_strel_tf1->Write();
 
   cout<<"BM VTX X origin correlation factor= "<<((TH2D*)gDirectory->Get("origin_xx_bmvtx"))->GetCorrelationFactor()<<endl;
-  cout<<"BM VTX Y slope correlation factor="<<((TH2D*)gDirectory->Get("slope_myy_bmvtx"))->GetCorrelationFactor()<<endl;
+  cout<<"BM VTX Y origin correlation factor= "<<((TH2D*)gDirectory->Get("origin_yy_bmvtx"))->GetCorrelationFactor()<<endl;
+  cout<<"BM VTX X slope correlation factor= "<<((TH2D*)gDirectory->Get("slope_mxx_bmvtx"))->GetCorrelationFactor()<<endl;
+  cout<<"BM VTX Y slope correlation factor= "<<((TH2D*)gDirectory->Get("slope_myy_bmvtx"))->GetCorrelationFactor()<<endl;
 
   TProfile *prof_newstrel=((TH2D*)gDirectory->Get("NewStrel"))->ProfileX();
   prof_newstrel->SetLineColor(3);
   prof_newstrel->Draw();
-  TF1 poly ("poly","pol5", 0, 400);
-  prof_newstrel->Fit("poly","QB+");
+  TF1 poly ("poly","pol4", 0, 200);
+  poly.FixParameter(0,0);
+  prof_newstrel->Fit("poly","QRB+");
   poly.SetName("fitted_Newstrel");
   poly.Write();
-  cout<<"New_STrel_function:  "<<poly.GetFormula()->GetExpFormula().Data()<<endl;
+  cout<<"New_STrel_function from profilex:  "<<poly.GetFormula()->GetExpFormula().Data()<<endl;
   cout<<"STrel_number_of_parameters:  "<<poly.GetNpar()<<endl;
   for(int i=0;i<poly.GetNpar();i++)
     cout<<poly.GetParameter(i)<<"  ";
   cout<<endl;
+
+  TF1 *gaus=new TF1("gaus","gaus", 0., 1.);
+  vector<vector<Double_t>> mynewstrel;
+  vector<Double_t> pointvalue(3,0);  //0=time, 1=rdrift, 2=rdrift error
+  Double_t xgraph[strelNbin], ygraph[strelNbin], xerrgraph[strelNbin], yerrgraph[strelNbin], lastadded=-1;
+  for(Int_t i=0;i<strelNbin;i++){
+    gaus->SetParameters(((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->GetStdDev());
+    ((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->Fit("gaus","QB+");
+    pointvalue.at(0)=((Double_t (i))/strelNbin*bmparconf->GetHitTimeCut() );
+    pointvalue.at(1)=(gaus->GetParameter(1));
+    pointvalue.at(2)=(gaus->GetParError(1));
+    mynewstrel.push_back(pointvalue);
+    xgraph[i]=pointvalue.at(0);
+    ygraph[i]=pointvalue.at(1);
+    xerrgraph[i]=(Double_t)bmparconf->GetHitTimeCut()/strelNbin;
+    yerrgraph[i]=pointvalue.at(2);
+    if(pointvalue.at(1)>lastadded){
+      ((TH1D*)gDirectory->Get("MyNewStrel"))->SetBinContent(i+1,gaus->GetParameter(1));
+      ((TH1D*)gDirectory->Get("MyNewStrel"))->SetBinError(i+1,gaus->GetParError(1));
+      lastadded=pointvalue.at(1);
+    }
+  }
+  ((TH1D*)gDirectory->Get("MyNewStrel"))->SetBinContent(strelNbin+1,0.8);
+  ((TH1D*)gDirectory->Get("MyNewStrel"))->SetBinError(strelNbin+1,0.01);
+  TF1 mypoly ("mypoly","pol4", 0, 200);
+  mypoly.FixParameter(0,0.);
+  ((TH1D*)gDirectory->Get("MyNewStrel"))->Fit("mypoly","QB+");
+  mypoly.SetName("Myfitted_Newstrel");
+  mypoly.Write();
+  cout<<"My New_STrel_function from my gaus fit:  "<<mypoly.GetFormula()->GetExpFormula().Data()<<endl;
+  cout<<"STrel_number_of_parameters:  "<<mypoly.GetNpar()<<endl;
+  for(int i=0;i<mypoly.GetNpar();i++)
+    cout << std::setprecision(10) <<mypoly.GetParameter(i)<<"  ";
+  cout<<endl;
+
+  TF1 mygraphpoly ("mygraphpoly","pol4", 0, 200);
+  mygraphpoly.FixParameter(0,0);
+  xgraph[strelNbin]=bmparconf->GetHitTimeCut();
+  ygraph[strelNbin]=0.8; //manually force the last strel point
+  xerrgraph[strelNbin]=(Double_t)bmparconf->GetHitTimeCut()/strelNbin;
+  yerrgraph[strelNbin]=0.01;
+  TGraphErrors *mygraph = new TGraphErrors (strelNbin+1, xgraph, ygraph, xerrgraph, yerrgraph);
+  mygraph->Fit("mygraphpoly","QRB+");
+  mygraph->Write();
+  mygraphpoly.Write();
+
 
   if(debug)
     cout<<"PostLoopAnalysis done"<<endl;
@@ -335,7 +457,7 @@ void Allign_estimate(vector<TVector3> &vtxslopevec, vector<TVector3> &vtxoriginv
   //N.B.: here slope X represents the track on the XZ plane, meaning a rotation around Y axis (in FOOT.geo AngY is the rotation around Y axis)
   gaus->SetParameters(((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetStdDev());
   ((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->Fit("gaus","QB+");
-  Double_t BMyrot=atan(gaus->GetParameter(1))*RAD2DEG;
+  Double_t BMyrot=-atan(gaus->GetParameter(1))*RAD2DEG;
 
   //N.B.: here is the same thing before, but for the rotations around X axis a minus sign is needed
   gaus->SetParameters(((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetStdDev());
@@ -357,29 +479,67 @@ void Allign_estimate(vector<TVector3> &vtxslopevec, vector<TVector3> &vtxoriginv
 
   //N.B.: here slope X represents the track on the XZ plane, meaning a rotation around Y axis (in FOOT.geo AngY is the rotation around Y axis)
   gaus->SetParameters(((TH1D*)gDirectory->Get("vtx_slopeX_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("vtx_slopeX_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("vtx_slopeX_glbsys"))->GetStdDev());
-  ((TH1D*)gDirectory->Get("vtx_slopeX_glbsys"))->Fit("gaus","QB+");
+  ((TH1D*)gDirectory->Get("vtx_slopeX_glbsys"))->Fit("gaus","QEB+");
   Double_t VTXyrot=atan(gaus->GetParameter(1))*RAD2DEG;
 
   //N.B.: here is the same thing before, but for the rotations around X axis a minus sign is needed
   gaus->SetParameters(((TH1D*)gDirectory->Get("vtx_slopeY_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("vtx_slopeY_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("vtx_slopeY_glbsys"))->GetStdDev());
-  ((TH1D*)gDirectory->Get("vtx_slopeY_glbsys"))->Fit("gaus","QB+");
+  ((TH1D*)gDirectory->Get("vtx_slopeY_glbsys"))->Fit("gaus","QEB+");
   Double_t VTXxrot=-atan(gaus->GetParameter(1))*RAD2DEG;
 
-  cout<<"Vertex allignment parameters:"<<endl;
-  cout<<"VTX traslation posX="<<VTXxtra<<"  posy="<<VTXytra<<endl;
-  cout<<"VTX rotation around X axys VTXxrot="<<VTXxrot<<"  rotation around Y axis VTXyrot="<<VTXyrot<<endl;
+  cout<<"Vertex parameters to have the beam spot size at the center:"<<endl;
+  cout<<"VTX traslation posX residual="<<-VTXxtra<<"  posY residual="<<-VTXytra<<endl;
+  cout<<"VTX rotation around X axys VTXxrot residual="<<-VTXxrot<<"  rotation around Y axis VTXyrot residual="<<-VTXyrot<<endl;
+  cout<<"VTX final position parameters:"<<endl;
+  cout<<"VertexPosX: "<<-VTXxtra+geoTrafo->GetDeviceCenter("VT").X()<<" VertexPosY: "<<-VTXytra+geoTrafo->GetDeviceCenter("VT").Y()<<" VertexPosZ: "<<geoTrafo->GetDeviceCenter("VT").Z()<<endl;
+  cout<<"VertexAngX: "<<-VTXxrot+geoTrafo->GetDeviceAngle("VT").X()<<" VertexAngY: "<<-VTXyrot+geoTrafo->GetDeviceAngle("VT").Y()<<" VertexAngZ: "<<geoTrafo->GetDeviceAngle("VT").Z()<<endl;
 
-  bmnewpos.SetXYZ(BMxtra+geoTrafo->GetDeviceCenter("BM").X(),BMytra+geoTrafo->GetDeviceCenter("BM").Y(),geoTrafo->GetDeviceCenter("BM").Z());
-  vtxnewpos.SetXYZ(VTXxtra+geoTrafo->GetDeviceCenter("VT").X(),VTXytra+geoTrafo->GetDeviceCenter("VT").Y(),geoTrafo->GetDeviceCenter("VT").Z()); bmnewangle.SetXYZ(BMxrot+geoTrafo->GetDeviceAngle("BM").X(),BMyrot+geoTrafo->GetDeviceAngle("BM").Y(),geoTrafo->GetDeviceAngle("BM").Z());
-  vtxnewangle.SetXYZ(VTXxrot+geoTrafo->GetDeviceAngle("VT").X(), VTXyrot+geoTrafo->GetDeviceAngle("VT").Y(),geoTrafo->GetDeviceAngle("VT").Z());
+  //initial residual btw bm and vtx tracks:
+  gaus->SetParameters(((TH1D*)gDirectory->Get("originX_glb_diff"))->GetEntries(),((TH1D*)gDirectory->Get("originX_glb_diff"))->GetMean(), ((TH1D*)gDirectory->Get("originX_glb_diff"))->GetStdDev());
+  ((TH1D*)gDirectory->Get("originX_glb_diff"))->Fit("gaus","QB+");
+  Double_t glbXorigindiff=gaus->GetParameter(1);
+  gaus->SetParameters(((TH1D*)gDirectory->Get("originY_glb_diff"))->GetEntries(),((TH1D*)gDirectory->Get("originY_glb_diff"))->GetMean(), ((TH1D*)gDirectory->Get("originY_glb_diff"))->GetStdDev());
+  ((TH1D*)gDirectory->Get("originY_glb_diff"))->Fit("gaus","QB+");
+  Double_t glbYorigindiff=gaus->GetParameter(1);
+  gaus->SetParameters(((TH1D*)gDirectory->Get("slopeX_glb_diff"))->GetEntries(),((TH1D*)gDirectory->Get("slopeX_glb_diff"))->GetMean(), ((TH1D*)gDirectory->Get("slopeX_glb_diff"))->GetStdDev());
+  ((TH1D*)gDirectory->Get("slopeX_glb_diff"))->Fit("gaus","QB+");
+  Double_t glbXslopediff=atan(gaus->GetParameter(1))*RAD2DEG;
+  gaus->SetParameters(((TH1D*)gDirectory->Get("slopeY_glb_diff"))->GetEntries(),((TH1D*)gDirectory->Get("slopeY_glb_diff"))->GetMean(), ((TH1D*)gDirectory->Get("slopeY_glb_diff"))->GetStdDev());
+  ((TH1D*)gDirectory->Get("slopeY_glb_diff"))->Fit("gaus","QB+");
+  Double_t glbYslopediff=-atan(gaus->GetParameter(1))*RAD2DEG;
+  cout<<"residuals between BM and VTX tracks with the current geo parameters:"<<endl;
+  cout<<"glbXorigindiff="<<glbXorigindiff<<"  glbYorigindiff="<<glbYorigindiff<<endl;
+  cout<<"glbXslopediff="<<glbXslopediff<<"  glbYslopediff="<<glbYslopediff<<endl;
+
+
+  bmnewpos.SetXYZ(-BMxtra+geoTrafo->GetDeviceCenter("BM").X(),-BMytra+geoTrafo->GetDeviceCenter("BM").Y(),geoTrafo->GetDeviceCenter("BM").Z());
+  bmnewangle.SetXYZ(-BMxrot+geoTrafo->GetDeviceAngle("BM").X(),-BMyrot+geoTrafo->GetDeviceAngle("BM").Y(),geoTrafo->GetDeviceAngle("BM").Z());
+
+  // vtxnewpos.SetXYZ(geoTrafo->GetDeviceCenter("VT").X(),geoTrafo->GetDeviceCenter("VT").Y(),geoTrafo->GetDeviceCenter("VT").Z());
+  // vtxnewangle.SetXYZ(geoTrafo->GetDeviceAngle("VT").X(),geoTrafo->GetDeviceAngle("VT").Y(),geoTrafo->GetDeviceAngle("VT").Z());
+  // vtxnewpos.SetXYZ(-VTXxtra+geoTrafo->GetDeviceCenter("VT").X(),-VTXytra+geoTrafo->GetDeviceCenter("VT").Y(),geoTrafo->GetDeviceCenter("VT").Z());
+  // vtxnewangle.SetXYZ(-VTXxrot+geoTrafo->GetDeviceAngle("VT").X(), -VTXyrot+geoTrafo->GetDeviceAngle("VT").Y(),geoTrafo->GetDeviceAngle("VT").Z());
+  vtxnewpos.SetXYZ(geoTrafo->GetDeviceCenter("VT").X(),geoTrafo->GetDeviceCenter("VT").Y(),geoTrafo->GetDeviceCenter("VT").Z());
+  vtxnewangle.SetXYZ(geoTrafo->GetDeviceAngle("VT").X(), geoTrafo->GetDeviceAngle("VT").Y(),geoTrafo->GetDeviceAngle("VT").Z());
 
   TGeoRotation vtxrot;
   vtxrot.RotateX(vtxnewangle.X());
   vtxrot.RotateY(vtxnewangle.Y());
-  TGeoTranslation vtxtrans(vtxnewpos.X(),vtxnewpos.Y(),vtxnewpos.Z());
+  Double_t loc[] = {vtxnewpos.X(),vtxnewpos.Y(),vtxnewpos.Z()};
+  Double_t glo[] = {0.,0.,0};
+  vtxrot.LocalToMaster(loc, glo);
+  TGeoTranslation vtxtrans(glo[0], glo[1], glo[2]);
   TGeoHMatrix  vtxtransfo;
   vtxtransfo=vtxtrans;
   vtxtransfo*=vtxrot;
+  glo[0] = 0.;
+  glo[1] = 0.;
+  glo[2] = 0.;
+  loc[0] = 0.;
+  loc[1] = 0.;
+  loc[2] = 0.;
+  vtxtransfo.MasterToLocal(glo,loc);
+  TVector3 tgposvtxsys (loc[0],loc[1],loc[2]);   //Target position in vtx local framework  with new align parameters
 
   //for the fine alignment we fix the vtx and modify the BM detector position parameters
   for(Int_t i=0;i<doalign;i++){
@@ -388,10 +548,25 @@ void Allign_estimate(vector<TVector3> &vtxslopevec, vector<TVector3> &vtxoriginv
     TGeoRotation bmrot;
     bmrot.RotateX(bmnewangle.X());
     bmrot.RotateY(bmnewangle.Y());
-    TGeoTranslation bmtrans(bmnewpos.X(),bmnewpos.Y(),bmnewpos.Z());
+    loc[0] = bmnewpos.X();
+    loc[1] = bmnewpos.Y();
+    loc[2] = bmnewpos.Z();
+    glo[0] = 0.;
+    glo[1] = 0.;
+    glo[2] = 0.;
+    bmrot.LocalToMaster(loc, glo);
+    TGeoTranslation bmtrans(glo[0], glo[1], glo[2]);
     TGeoHMatrix  bmtransfo;
     bmtransfo=bmtrans;
     bmtransfo*=bmrot;
+    glo[0] = 0.;
+    glo[1] = 0.;
+    glo[2] = 0.;
+    loc[0] = 0.;
+    loc[1] = 0.;
+    loc[2] = 0.;
+    bmtransfo.MasterToLocal(glo,loc);
+    TVector3 tgposbmsys (loc[0],loc[1],loc[2]);   //Target position in bmn local framework  with new align parameters
 
     //fill the bm-vtx residual plots
     for(Int_t k=0;k<bmslopevec.size();k++){
@@ -404,12 +579,15 @@ void Allign_estimate(vector<TVector3> &vtxslopevec, vector<TVector3> &vtxoriginv
       ((TH1D*)gDirectory->Get(Form("slopeX_glb_diff_%d",i)))->Fill(bmslopeglobal[0]/bmslopeglobal[2]-vtxslopeglobal[0]/vtxslopeglobal[2]);
       ((TH1D*)gDirectory->Get(Form("slopeY_glb_diff_%d",i)))->Fill(bmslopeglobal[1]/bmslopeglobal[2]-vtxslopeglobal[1]/vtxslopeglobal[2]);
 
-      Double_t bmoriginlocal[3] = {bmoriginvec.at(k).X(), bmoriginvec.at(k).Y(), bmoriginvec.at(k).Z()};
+      TVector3 bmtglocal = PointAtLocalZ(bmslopevec.at(k), bmoriginvec.at(k),tgposbmsys.Z());
+      Double_t bmoriginlocal[3] = {bmtglocal.X(), bmtglocal.Y(), bmtglocal.Z()};
       Double_t bmoriginglobal[3] = {0., 0., 0.};
       bmtransfo.LocalToMaster(bmoriginlocal,bmoriginglobal);
-      Double_t vtxoriginlocal[3] = {vtxoriginvec.at(k).X(), vtxoriginvec.at(k).Y(), vtxoriginvec.at(k).Z()};
+
+      TVector3 vtxtglocal = PointAtLocalZ(vtxslopevec.at(k), vtxoriginvec.at(k),tgposvtxsys.Z());
+      Double_t vtxoriginlocal[3] = {vtxtglocal.X(),vtxtglocal.Y(), vtxtglocal.Z()};
       Double_t vtxoriginglobal[3] = {0., 0., 0.};
-      vtxtransfo.LocalToMasterVect(vtxoriginlocal,vtxoriginglobal);
+      vtxtransfo.LocalToMaster(vtxoriginlocal,vtxoriginglobal);
       ((TH1D*)gDirectory->Get(Form("originX_glb_diff_%d",i)))->Fill(bmoriginglobal[0]-vtxoriginglobal[0]);
       ((TH1D*)gDirectory->Get(Form("originY_glb_diff_%d",i)))->Fill(bmoriginglobal[1]-vtxoriginglobal[1]);
     }
@@ -421,7 +599,7 @@ void Allign_estimate(vector<TVector3> &vtxslopevec, vector<TVector3> &vtxoriginv
     gaus->SetParameters(((TH1D*)gDirectory->Get(Form("originY_glb_diff_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("originY_glb_diff_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("originY_glb_diff_%d",i)))->GetStdDev());
     ((TH1D*)gDirectory->Get(Form("originY_glb_diff_%d",i)))->Fit("gaus","QB+");
     Double_t newbmytra=gaus->GetParameter(1);
-    bmnewpos.SetXYZ(newbmxtra-bmnewpos.X(),newbmytra-bmnewpos.Y(),geoTrafo->GetDeviceCenter("BM").Z());
+    bmnewpos.SetXYZ(-newbmxtra+bmnewpos.X(),-newbmytra+bmnewpos.Y(),geoTrafo->GetDeviceCenter("BM").Z());
 
     gaus->SetParameters(((TH1D*)gDirectory->Get(Form("slopeX_glb_diff_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("slopeX_glb_diff_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("slopeX_glb_diff_%d",i)))->GetStdDev());
     ((TH1D*)gDirectory->Get(Form("slopeX_glb_diff_%d",i)))->Fit("gaus","QB+");
@@ -429,15 +607,17 @@ void Allign_estimate(vector<TVector3> &vtxslopevec, vector<TVector3> &vtxoriginv
     gaus->SetParameters(((TH1D*)gDirectory->Get(Form("slopeY_glb_diff_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("slopeY_glb_diff_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("slopeY_glb_diff_%d",i)))->GetStdDev());
     ((TH1D*)gDirectory->Get(Form("slopeY_glb_diff_%d",i)))->Fit("gaus","QB+");
     Double_t newbmxrot=-atan(gaus->GetParameter(1))*RAD2DEG;
-    bmnewangle.SetXYZ(newbmxrot-bmnewangle.X(),newbmyrot-bmnewangle.Y(),geoTrafo->GetDeviceAngle("BM").Z());
+    bmnewangle.SetXYZ(-newbmxrot+bmnewangle.X(),-newbmyrot+bmnewangle.Y(),geoTrafo->GetDeviceAngle("BM").Z());
 
     if(i==0)
       cout<<"Total number of doalign iterations="<<doalign<<".  Do align parameters:"<<endl;
     cout<<"iteration="<<i<<endl;
     cout<<"bm-vtx residual on X traslation: newbmxtra="<<newbmxtra<<"; Y traslation: newbmytra="<<newbmytra<<endl;
-    cout<<"bm new position parameters: Xpos="<<bmnewpos.X()<<" Ypos="<<bmnewpos.Y()<<"  Zpos="<<bmnewpos.Z()<<endl;
+    cout<<"bm new position parameters:"<<endl;
+    cout<<"BmPosX: "<<bmnewpos.X()<<" BmPosY: "<<bmnewpos.Y()<<" BmPosZ: "<<bmnewpos.Z()<<endl;
     cout<<"bm-vtx residual on X rotation: newbmxrot="<<newbmxrot<<"; Y rotation: newbmyrot="<<newbmyrot<<endl;
-    cout<<"bm new rotation parameters: Xangle="<<bmnewangle.X()<<" Yrot="<<bmnewangle.Y()<<"  Zrot="<<bmnewangle.Z()<<endl<<endl;
+    cout<<"bm new rotation parameters:"<<endl;
+    cout<<"BmAngX: "<<bmnewangle.X()<<" BmAngY: "<<bmnewangle.Y()<<"  BmAngZ: "<<bmnewangle.Z()<<endl<<endl;
   }
 
 

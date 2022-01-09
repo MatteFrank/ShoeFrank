@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAITactNtuTrackF.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAITactNtuTrackF.
+ \file TAITactNtuTrackF.cxx
+ \brief   NTuplizer for ITR tracks using combinatory algorithm
  */
 #include "TClonesArray.h"
 #include "TF1.h"
@@ -28,7 +27,7 @@
 
 /*!
  \class TAITactNtuTrackF 
- \brief NTuplizer for vertex tracks. **
+ \brief NTuplizer for ITR tracks using combinatory algorithm
  */
 
 ClassImp(TAITactNtuTrackF);
@@ -38,11 +37,14 @@ ClassImp(TAITactNtuTrackF);
 TAITactNtuTrackF::TAITactNtuTrackF(const char* name, 
 								   TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
 								   TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGparaDsc* p_geo_g)
-: TAITactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
+: TAVTactNtuTrackF(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
   fpGeoMapG(p_geo_g)
 {
-   AddDataIn(pNtuClus,   "TAITntuCluster");
-   AddDataOut(pNtuTrack, "TAITntuTrack");
+   TString device(name);
+   if (device.Contains("it")) {
+      AddDataIn(pNtuClus,   "TAITntuCluster");
+      AddDataOut(pNtuTrack, "TAITntuTrack");
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -53,130 +55,19 @@ TAITactNtuTrackF::~TAITactNtuTrackF()
 }
 
 //_____________________________________________________________________________
-//  
-Bool_t TAITactNtuTrackF::FindTiltedTracks()
+//
+Bool_t TAITactNtuTrackF::IsGoodCandidate(TAGbaseTrack* trk)
 {
-   Double_t minDistance  = 1.e9;
-   Double_t aDistance = 0;
+   TAITtrack* track = static_cast<TAITtrack*>(trk);
    
-   TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClus->Object();
-   TAITntuTrack*   pNtuTrack = (TAITntuTrack*)   fpNtuTrack->Object();
-   TAITparGeo*     pGeoMap   = (TAITparGeo*)     fpGeoMap->Object();
+   for (Int_t i = 0; i < track->GetClustersN(); i++) {
+      TAITcluster* clus = (TAITcluster*)track->GetCluster(i);
+      fMapClus[clus] = 1;
+   }
    
-   TList array;
-   array.SetOwner(false);
-   array.Clear();
+   if (fpGeoMapG == 0x0)
+      return true;
    
-   TAITtrack* track = 0x0;
-   Int_t nPlane   = pGeoMap->GetSensorsN()-1;
-   Int_t curPlane = nPlane;
-   
-   while (curPlane >= fRequiredClusters-1) {
-	  
-	  // Get the last plane
-	  curPlane = nPlane--;
-	  
-	  TClonesArray* lastList = pNtuClus->GetListOfClusters(curPlane);
-	  Int_t nLastClusters    = pNtuClus->GetClustersN(curPlane);
-	  
-	  if ( nLastClusters == 0) continue;
-
-	  for( Int_t iLastClus = 0; iLastClus < nLastClusters; ++iLastClus) { // loop on cluster of last plane
-		 TAITcluster* lastCluster = (TAITcluster*)lastList->At(iLastClus);
-		 if (lastCluster->Found()) continue;
-		 if (lastCluster->GetPixelsN() <= 1) continue;
-		 lastCluster->SetFound();
-
-		 for( Int_t iPlane = curPlane-1; iPlane >= 0; --iPlane) { // loop on next planes
-			 
-			TClonesArray* nextList = pNtuClus->GetListOfClusters(iPlane);
-			Int_t nNextClusters    = pNtuClus->GetClustersN(iPlane);
-			
-			for( Int_t iNextClus = 0; iNextClus < nNextClusters; ++iNextClus) { // loop on cluster of next plane
-			   TAITcluster* nextCluster = (TAITcluster*)nextList->At(iNextClus);
-			   if (nextCluster->Found()) continue;
-			   if (nextCluster->GetPixelsN() <= 1) continue;
-			   
-			   track = new TAITtrack();
-			   track->AddCluster(lastCluster);
-			   nextCluster->SetFound();
-			   track->AddCluster(nextCluster);
-
-			   UpdateParam(track);
-
-			   if (!IsGoodCandidate(track)) {
-				  nextCluster->SetFound(false);
-				  delete track;
-				  continue;
-			   }
-
-			   array.Clear();
-			   for( Int_t iFirstPlane = iPlane-1; iFirstPlane >= 0; --iFirstPlane) { // loop on first planes
-				  
-//				  if (track->GetClustersN() + iFirstPlane < fRequiredClusters-1)
-//					  break;
-				   
-				  TClonesArray* firstList = pNtuClus->GetListOfClusters(iFirstPlane);
-				  Int_t nFirstClusters    = pNtuClus->GetClustersN(iFirstPlane);
-				  
-				  minDistance = fSearchClusDistance;
-				  TAITcluster* bestCluster = 0x0;
-				  for( Int_t iFirstClus = 0; iFirstClus < nFirstClusters; ++iFirstClus) { // loop on cluster of first planes
-					 TAITcluster* firstCluster = (TAITcluster*)firstList->At(iFirstClus);
-					 if (firstCluster->GetPixelsN() <= 1) continue;
-					 if( firstCluster->Found()) continue; // skip cluster already found
-					 
-					 aDistance = firstCluster->Distance(track);
-					 if( aDistance < minDistance ) {
-						minDistance = aDistance;
-						bestCluster = firstCluster;
-					 }
-				  } // end loop on cluster of first planes
-				  
-				  // if a cluster has been found, add the cluster
-				  if( bestCluster ) {
-					 bestCluster->SetFound();
-					 track->AddCluster(bestCluster);
-					 array.Add(bestCluster);
-					 UpdateParam(track);
-				  }
-				  
-			   } // end loop on first planes
-
-			   // apply cut
-			   if (AppyCuts(track)) {
-				  track->SetNumber(pNtuTrack->GetTracksN());
-				  track->MakeChiSquare();
-				  track->SetType(1);
-				  pNtuTrack->NewTrack(*track);
-				  
-				  if (ValidHistogram())
-					 FillHistogramm(track);
-   
-				  delete track;
-			   } else { // reset clusters
-				  nextCluster->SetFound(false);
-				  for (Int_t i = 0; i < array.GetEntries(); ++i) {
-					 TAITcluster*  cluster1 = (TAITcluster*)array.At(i);
-					 cluster1->SetFound(false);
-				  }
-				  delete track;
-				  array.Clear();
-			   }
-			   
-			} // end cluster of next plane
-		 } // end last-1 plane
-	  } // end loop on last clusters
-	  
-   } // while
-   
-   return true;
-}
-
-//_____________________________________________________________________________
-//  
-Bool_t TAITactNtuTrackF::IsGoodCandidate(TAITtrack* track)
-{
    TAGparGeo* pGeoMap = (TAGparGeo*)fpGeoMapG->Object();
 
    Float_t width  = pGeoMap->GetTargetPar().Size[0];
@@ -189,4 +80,70 @@ Bool_t TAITactNtuTrackF::IsGoodCandidate(TAITtrack* track)
    return true;
 }
 
+//_____________________________________________________________________________
+//
+Int_t TAITactNtuTrackF::GetClustersN(Int_t iPlane)
+{
+   TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
+   return pNtuClus->GetClustersN(iPlane);
+}
 
+//_____________________________________________________________________________
+//
+TAGcluster* TAITactNtuTrackF::GetCluster(Int_t iPlane, Int_t iClus)
+{
+   TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
+   TAITcluster* cluster = pNtuClus->GetCluster(iPlane, iClus);
+   
+   return cluster;
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAITactNtuTrackF::GetTracksN()
+{
+   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
+   return pNtuTrack->GetTracksN();
+}
+
+//_____________________________________________________________________________
+//
+void TAITactNtuTrackF::AddNewTrack(TAGbaseTrack* trk)
+{
+   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
+   TAITtrack* track = static_cast<TAITtrack*>(trk);
+   pNtuTrack->NewTrack(*track);
+}
+
+//_____________________________________________________________________________
+//
+TAGbaseTrack* TAITactNtuTrackF::NewTrack()
+{
+   return new TAITtrack();
+}
+
+//_____________________________________________________________________________
+//
+void TAITactNtuTrackF::SetBeamPosition(TVector3 pos)
+{
+   TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
+   pNtuTrack->SetBeamPosition(pos);
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParGeo* TAITactNtuTrackF::GetParGeo()
+{
+   TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
+   
+   return pGeoMap;
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParConf* TAITactNtuTrackF::GetParConf()
+{
+   TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
+   
+   return pConfig;
+}

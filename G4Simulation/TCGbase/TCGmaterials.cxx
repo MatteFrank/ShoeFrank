@@ -25,6 +25,11 @@
 //
 //
 
+/*!
+ \file TCGmaterials.cxx
+ \brief Implementation of TCGmaterials.
+*/
+
 #include "TAGrecoManager.hxx"
 #include "TCGmaterials.hxx"
 
@@ -38,7 +43,13 @@ using namespace CLHEP;
 
 TCGmaterials* TCGmaterials::fgInstance = 0;
 
+/*!
+ \class TCGmaterials
+ \brief  Interface for creating G4 material/mixture from root
+ */
+
 //______________________________________________________________________________
+//! Constructor
 TCGmaterials::TCGmaterials()
  : TAGbaseMaterials()
 {
@@ -46,6 +57,7 @@ TCGmaterials::TCGmaterials()
 }
 
 //______________________________________________________________________________
+//! Destructor
 TCGmaterials::~TCGmaterials()
 {
 }

@@ -1,4 +1,9 @@
 
+/*!
+ \file LocalReco.cxx
+ \brief Reconstruction class from raw data
+ */
+/*------------------------------------------+---------------------------------*/
 
 
 #include "LocalReco.hxx"
@@ -12,15 +17,20 @@
 #include "TATWntuRaw.hxx"
 #include "TATWntuHit.hxx"
 #include "TACAntuHit.hxx"
-
+#include "TAGWDtrigInfo.hxx"
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
 
-
-ClassImp(LocalReco)
+/*!
+ \class LocalReco
+ \brief Reconstruction class from raw data
+ */
+/*------------------------------------------+---------------------------------*/
 
 Bool_t  LocalReco::fgStdAloneFlag = false;
+
+ClassImp(LocalReco)
 
 //__________________________________________________________
 LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
@@ -28,6 +38,7 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fpDaqEvent(0x0),
    fpNtuEvt(0x0),
    fActWdRaw(0x0),
+   fpNtuWDtrigInfo(0x0),
    fActDatRawBm(0x0),
    fActNtuHitBm(0x0),
    fActNtuHitVtx(0x0),
@@ -62,8 +73,9 @@ void LocalReco::CreateRawAction()
       fpDatRawSt   = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw   = new TAGdataDsc("twdDat", new TATWntuRaw());
       fpDatRawCa   = new TAGdataDsc("caDat", new TACAntuRaw());
+      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
 
-      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpParMapWD, fpParTimeWD);
+      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD, fpParTimeWD);
       if (fFlagHisto)
          fActWdRaw->CreateHistogram();
    }
@@ -123,7 +135,7 @@ void LocalReco::CreateRawAction()
          fActDatRawMsd->CreateHistogram();
 
       fpNtuHitMsd   = new TAGdataDsc("msdRaw", new TAMSDntuHit());
-      fActNtuHitMsd = new TAMSDactNtuHit("msdActNtu", fpDatRawMsd, fpNtuHitMsd, fpParGeoMsd, fpParCalMsd);
+      fActNtuHitMsd = new TAMSDactNtuHit("msdActNtu", fpDatRawMsd, fpNtuHitMsd, fpParGeoMsd, fpParConfMsd, fpParCalMsd);
       if (fFlagHisto)
          fActNtuHitMsd->CreateHistogram();
    }
@@ -152,6 +164,14 @@ void LocalReco::CreateRawAction()
 }
 
 //__________________________________________________________
+Bool_t LocalReco::GoEvent(Int_t iEvent)
+{
+   fSkipEventsN = iEvent;
+   
+   return true;
+}
+
+//__________________________________________________________
 void LocalReco::OpenFileIn()
 {
    if (fgStdAloneFlag) {
@@ -161,8 +181,11 @@ void LocalReco::OpenFileIn()
       if (TAGrecoManager::GetPar()->IncludeBM())
          fActVmeReaderBm->Open(GetName());
 
-   } else
+   } else {
       fActEvtReader->Open(GetName());
+      if (fSkipEventsN > 0)
+         fActEvtReader->SkipEvents(fSkipEventsN);
+   }
 }
 
 //__________________________________________________________
@@ -226,7 +249,6 @@ void LocalReco::SetRawHistogramDir()
      // fActWdRaw->SetHistogramDir(subfolder);
       fActNtuHitCa ->SetHistogramDir(subfolder);
     }
-
 }
 
 //__________________________________________________________
@@ -299,14 +321,16 @@ void LocalReco::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeST()) {
      if (fFlagHits) {
        fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTntuRaw::GetBranchName());
+       fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
      }
-     fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuWDtrigInfo, TAGWDtrigInfo::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
-      if (fFlagHits)
+      if (fFlagHits) {
          fActEvtWriter->SetupElementBranch(fpDatRawBm, TABMntuRaw::GetBranchName());
-     fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
+      }
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
@@ -320,19 +344,23 @@ void LocalReco::SetTreeBranches()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-     if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
+     if (fFlagHits) {
+         fActEvtWriter->SetupElementBranch(fpDatRawMsd, TAMSDntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
+     }
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
      if (fFlagHits) {
          fActEvtWriter->SetupElementBranch(fpDatRawTw, TATWntuRaw::GetBranchName());
+         fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
      }
-     fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
-     if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+      if (fFlagHits) {
+        fActEvtWriter->SetupElementBranch(fpDatRawCa, TACAntuRaw::GetBranchName());
+        fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+      }
    }
 }

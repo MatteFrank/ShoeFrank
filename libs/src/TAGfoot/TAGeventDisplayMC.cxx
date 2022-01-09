@@ -1,4 +1,10 @@
 
+/*!
+ \file TAGeventDisplay.cxx
+ \brief FOOT class to work on MC event display
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TAGeventDisplayMC.hxx"
 #include "TEveGeoNode.h"
 #include "TEveManager.h"
@@ -10,9 +16,15 @@
 #include "LocalRecoMC.hxx"
 #include "GlobalToeReco.hxx"
 
-ClassImp(TAGeventDisplayMC)
+/*!
+ \class TAGeventDisplay
+ \brief FOOT class to work on MC event display
+ */
+/*------------------------------------------+---------------------------------*/
 
 TAGeventDisplayMC* TAGeventDisplayMC::fgInstance = 0x0;
+
+ClassImp(TAGeventDisplayMC)
 
 //__________________________________________________________
 TAGeventDisplayMC* TAGeventDisplayMC::Instance(const TString name, Int_t runNumber, Int_t type)

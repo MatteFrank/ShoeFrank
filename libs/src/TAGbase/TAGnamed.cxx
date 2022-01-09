@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGnamed.cxx,v 1.4 2003/06/09 18:39:32 mueller Exp $
+  \file TAGnamed.cxx
   \brief   Implementation of TAGnamed.
 */
 
@@ -9,7 +8,7 @@
 #include "TAGnamed.hxx"
 
 /*!
-  \class TAGnamed TAGnamed.hxx "TAGnamed.hxx"
+  \class TAGnamed 
   \brief Mother of all named TAG objects. **
 */
 
@@ -17,21 +16,18 @@ ClassImp(TAGnamed);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGnamed::TAGnamed()
 : TNamed()
 {}
 
 //------------------------------------------+-----------------------------------
 //! Construct with \a name and \a title.
-
 TAGnamed::TAGnamed(const char* name, const char* title)
 : TNamed(name, title)
 {}
 
 //------------------------------------------+-----------------------------------
 //! Construct with \a name and \a title.
-
 TAGnamed::TAGnamed(const TString& name, const TString& title)
 : TNamed(name, title)
 {}
@@ -49,13 +45,11 @@ ostream& operator<<(ostream& os, const TAGnamed& obj)
 }
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGnamed::~TAGnamed()
 {}
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGnamed::ToStream(ostream& os, Option_t* option) const
 {
   os <<"TAGnamed: " << IsA()->GetName() << "  " << GetName() 
@@ -64,8 +58,7 @@ void TAGnamed::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGnamed::Print(Option_t* option) const
 {
   ToStream(cout, option);

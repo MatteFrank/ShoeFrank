@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TAVTbaseParConf.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAVTbaseParConf.
+  \file TAVTbaseParConf.cxx
+   \brief Base class of configuration parameters for VTX
 */
 
 #include <Riostream.h>
@@ -22,24 +21,24 @@
 //##############################################################################
 
 /*!
-  \class TAVTbaseParConf TAVTbaseParConf.hxx "TAVTbaseParConf.hxx"
-  \brief Map and Geometry parameters for Tof wall. **
+  \class TAVTbaseParConf
+  \brief Base class of configuration parameters for VTX
 */
 
 ClassImp(TAVTbaseParConf);
 
 //______________________________________________________________________________
+//! Standard constructor
 TAVTbaseParConf::TAVTbaseParConf()
 : TAGparTools(),
   fSensorsN(0)
 {
-   // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAVTbaseParConf::~TAVTbaseParConf()
 {
-   // Destructor
 }
 
 //______________________________________________________________________________
@@ -119,7 +118,7 @@ Bool_t TAVTbaseParConf::FromFile(const TString& name)
 }
 
 //------------------------------------------+-----------------------------------
-//! Get major number status
+// Get major number status
 Int_t TAVTbaseParConf::GetStatus(Int_t idx) const
 {
    Int_t major = fSensorParameter[idx].Status/10;
@@ -131,7 +130,7 @@ Int_t TAVTbaseParConf::GetStatus(Int_t idx) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Get minor number status
+// Get minor number status
 Int_t TAVTbaseParConf::GetStatusMinor(Int_t idx) const
 {
    Int_t major = fSensorParameter[idx].Status/10;
@@ -143,7 +142,7 @@ Int_t TAVTbaseParConf::GetStatusMinor(Int_t idx) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear geometry info.
+// Clear geometry info.
 void TAVTbaseParConf::Clear(Option_t*)
 {
   return;

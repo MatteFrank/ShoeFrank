@@ -1,6 +1,13 @@
 #ifndef _TAITdigitizerE_HXX
 #define _TAITdigitizerE_HXX
 
+/*!
+ \file TAITdigitizerE.hxx
+ \brief   Declaration of TAITdigitizerE
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include <map>
 
 #include "Riostream.h"

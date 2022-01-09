@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactNtuVertexL. 
+ \file TAVTactNtuVertexPD.cxx
+ \brief    NTuplizer for VTX vertices with probality algorithm
  */
 #include "TClonesArray.h"
 
@@ -19,7 +19,7 @@
 
 /*!
  \class TAVTactNtuVertex
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for VTX vertices with probality algorithm
  */
 
 ClassImp(TAVTactNtuVertexPD);
@@ -43,8 +43,7 @@ TAVTactNtuVertexPD::~TAVTactNtuVertexPD()
 }
 
 //_________________________________________________
-//! Compute Vertex method
-
+// Compute Vertex method
 Bool_t TAVTactNtuVertexPD::ComputeVertex()
 {
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
@@ -120,10 +119,8 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
     return OK;
 }
 
-
 //___________________________________________
-//!Search max Value
-
+// Search max Value
 void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, Int_t i, Int_t j)
 {
    TVector3 vertexPointA(0.,0.,0.);
@@ -166,8 +163,7 @@ void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, In
 
 
 //----------------------------------------------
-//! Compute vertex point
-
+// Compute vertex point
 TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTtrack* line0, TAVTtrack* line1, Double_t zVal)
 {
     //Calculate the average of the two tracks
@@ -180,8 +176,7 @@ TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTtrack* line0, TAVTtrack* lin
 }
 
 //----------------------------------------------
-//! Compute probability
-
+// Compute probability
 Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTtrack* lin0, TVector3 v)
 {
     //take the positions of the given tracks
@@ -198,8 +193,7 @@ Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTtrack* lin0, T
 }
 
 //______________________________________________________
-//! Computes the minimum distance of the straight line from a given point
-
+// Computes the minimum distance of the straight line from a given point
 TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTtrack* l, TVector3 vt)
 {
     Double_t z = vt[2];
@@ -222,8 +216,7 @@ TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTtrack* l, TVector3 
 }
 
 //-------------------------------------------------------
-//!Compute V(r)
-
+// Compute V(r)
 Double_t TAVTactNtuVertexPD::ComputeV (TVector3 rpos)
 {
     Double_t firstMember =0;
@@ -249,8 +242,7 @@ Double_t TAVTactNtuVertexPD::ComputeV (TVector3 rpos)
 }
 
 //_________________________________________________
-//! Set Vertex information after vertexing
-
+// Set Vertex information after vertexing
 Bool_t TAVTactNtuVertexPD::SetVertex()
 {
     TAVTntuVertex* ntuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
@@ -296,8 +288,7 @@ Bool_t TAVTactNtuVertexPD::SetVertex()
 }
 
 //_________________________________________________
-//! SetImpact Parameter Adjustement
-
+// SetImpact Parameter Adjustement
 void TAVTactNtuVertexPD::ImpactParameterAdjustement()
 {
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
@@ -324,10 +315,8 @@ void TAVTactNtuVertexPD::ImpactParameterAdjustement()
      }
 }
 
-
 //---------------------------------------------------
-//!Compute max V
-
+//Compute max V
 TVector3 TAVTactNtuVertexPD::ComputeMaxVMaxIMaxJ()
 {
     TVector3 returnValue (-10e-10,-1,-1);

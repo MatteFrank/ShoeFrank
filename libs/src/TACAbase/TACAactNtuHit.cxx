@@ -32,18 +32,14 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
     fTcorr1Par0(0.167),
     fTcorr2Par1(4.94583e-03),
     fTcorr2Par0(9000.),
-    T1(270.),
-    T2(380.)
+    fT1(270.),
+    fT2(380.)
 {
   AddDataIn(p_datraw, "TACAntuRaw");
   AddDataOut(p_nturaw, "TACAntuHit");
 
-
   AddPara(p_parmap, "TACAparMap");
   AddPara(p_parcal, "TACAparCal");
-
-  f_parcal = (TACAparCal*) fpParCal->Object();
-  f_parmap = (TACAparMap*) fpParMap->Object();
 
   SetTemperatureFunctions();
   SetParFunction();
@@ -66,10 +62,10 @@ Bool_t TACAactNtuHit::Action() {
    TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
-  
+
   int nhit = p_datraw->GetHitsN();
 
-  
+
   int ch_num, bo_num;
 
   for(int ih = 0; ih < nhit; ++ih) {
@@ -81,14 +77,14 @@ Bool_t TACAactNtuHit::Action() {
     Double_t timeOth = aHi->GetTimeOth();
     Double_t charge  = aHi->GetCharge();
     Double_t amplitude  = aHi->GetAmplitude();
-  
+
     // here needed mapping file
     Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
     if (crysId == -1) // pb with mapping
       continue;
 
     Double_t type=0; // I define a fake type (I do not know what it really is...) (gtraini)
-    
+
     // here we need the calibration file
    // Double_t charge_tcorr = GetTemperatureCorrection(charge, crysId);
     //AS:: we wait for a proper integration of T inside the DAQ
@@ -96,18 +92,21 @@ Bool_t TACAactNtuHit::Action() {
     Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
     Double_t energy = GetEnergy(charge_equalis, crysId);
     Double_t tof    = GetTime(time, crysId);
-    p_nturaw->NewHit(crysId, energy, time,type);
+
+    TACAhit* createdhit=p_nturaw->NewHit(crysId, energy, time,type);
+    createdhit->SetValid(true);
+    //p_nturaw->NewHit(crysId, energy, time,type);
     //hCharge[crysId]->Fill(charge);
-    hCharge[crysId]->Fill(energy);
-    hChannelMap->Fill(crysId);
-    hAmplitude[crysId]->Fill(amplitude);
+    fhCharge[crysId]->Fill(energy);
+    fhChannelMap->Fill(crysId);
+    fhAmplitude[crysId]->Fill(amplitude);
     
   }
 
-   
+
   fpNtuRaw->SetBit(kValid);
 
-     
+
    return kTRUE;
 }
 
@@ -139,28 +138,34 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
 {
+ /*TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
 
- /* Double_t T0 = f_parcal->GetTemperatureCry(crysId);
+
+  Double_t T0 = parcal->GetTemperatureCry(crysId);
+
   Double_t m1 = fTcorr1->Eval(charge);
   Double_t m2 = fTcorr2->Eval(charge);
 
-  Double_t m0 = m1 + ((m2-m1)/(T2-T1))*(T0-T1);
+  Double_t m0 = m1 + ((m2-m1)/(fT2-fT1))*(T0-fT1);
 
-  Double_t delta = (T1 - T0) * m0;
+  Double_t delta = (fT1 - T0) * m0;
 
   Double_t charge_tcorr = charge + delta;*/
 
   return charge; //ricordarsi di cambiare quando avremo la calibrazione!!!!!!
   
+  //return charge_tcorr;
+
 }
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
+  TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
 
-  Double_t Equalis0 = f_parcal->getCalibrationMap()->GetEqualiseCry(crysId);
 
+  Double_t Equalis0 = parcal->getCalibrationMap()->GetEqualiseCry(crysId);
   Double_t charge_equalis = charge_tcorr*Equalis0;
-  
+
   return charge_equalis;
 
 }
@@ -172,7 +177,7 @@ Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
 
    Double_t p0 = p_parcal->GetElossParam(crysId,0);
    Double_t p1 = p_parcal->GetElossParam(crysId,1);
-   
+
    return p0 + p1 * rawenergy;
 
 
@@ -191,7 +196,7 @@ Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
   // Double_t p3 = p_parcal->GetTofParameter(crysId,3);
 
   // return p0 + p1 * RawTime;
-  
+
   //fake calibration (gtraini), return raw value meanwhile
   return RawTime;
 
@@ -209,38 +214,38 @@ void TACAactNtuHit::CreateHistogram(){
      cout<<"I have created the CA histo. "<<endl;
 
   // sprintf(histoname,"stEvtTime");
-  // hEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
-  // AddHistogram(hEventTime);
+  // fhEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
+  // AddHistogram(fhEventTime);
 
   // sprintf(histoname,"stTrigTime");
-  // hTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
-  // AddHistogram(hTrigTime);
+  // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
+  // AddHistogram(fhTrigTime);
 
   sprintf(histoname,"caTotCharge");
   
-  hTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
-  AddHistogram(hTotCharge);
+  fhTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
+  AddHistogram(fhTotCharge);
 
   sprintf(histoname,"caChMap");
 
-  hChannelMap = new TH1F(histoname, histoname, 9, 0, 9);
-  AddHistogram(hChannelMap);
+  fhChannelMap = new TH1F(histoname, histoname, 9, 0, 9);
+  AddHistogram(fhChannelMap);
 
-  
-   for(int iCh=0;iCh<9;iCh++){
-     sprintf(histoname,"caDeltaTime_ch%d", iCh);
-     hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
-     AddHistogram(hArrivalTime[iCh]);
 
-     sprintf(histoname,"caCharge_ch%d", iCh);
-     hCharge[iCh]= new TH1F(histoname, histoname, 500, 0, 500);
-     AddHistogram(hCharge[iCh]);
+  for(int iCh=0;iCh<8;iCh++){
+    sprintf(histoname,"stDeltaTime_ch%d", iCh);
+    fhArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
+    AddHistogram(fhArrivalTime[iCh]);
 
-     sprintf(histoname,"caMaxAmp_ch%d", iCh);
-     hAmplitude[iCh]= new TH1F(histoname, histoname, 500, 0, 1);
-     AddHistogram(hAmplitude[iCh]);
-   }
+    sprintf(histoname,"stCharge_ch%d", iCh);
+    fhCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 1.9);
+    AddHistogram(fhCharge[iCh]);
+
+    sprintf(histoname,"stMaxAmp_ch%d", iCh);
+    fhAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
+    AddHistogram(fhAmplitude[iCh]);
+  }
 
   SetValidHistogram(kTRUE);
-  
+
 }

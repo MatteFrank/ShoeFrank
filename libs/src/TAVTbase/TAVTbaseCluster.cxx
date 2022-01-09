@@ -1,17 +1,22 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAVTbaseCluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file TAVTbaseCluster.cxx
+ \brief Base class for VTX cluster containers
+ */
 
 #include "TAVTparGeo.hxx"
 #include "TAVTbaseCluster.hxx"
 #include "TAVTntuTrack.hxx"
 
+
+/*!
+ \class TAVTbaseCluster
+ \brief Base class for VTX cluster containers
+ */
+
 ClassImp(TAVTbaseCluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//! Default constructor
 TAVTbaseCluster::TAVTbaseCluster()
 :  TAGcluster(),
    fListOfPixels(0x0),
@@ -20,7 +25,7 @@ TAVTbaseCluster::TAVTbaseCluster()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 :  TAGcluster(cluster),
    fCharge(cluster.fCharge)
@@ -31,11 +36,9 @@ TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 }
 
 //______________________________________________________________________________
-//  
+//! Default destructor 
 TAVTbaseCluster::~TAVTbaseCluster()
-{ 
-   // TAVTbaseCluster default destructor 
-   
+{
    delete fListOfPixels;
 }
 
@@ -71,8 +74,8 @@ TVector2 TAVTbaseCluster::ComputeSize()
 //  
 void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 {
-   fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
-   fPosErrorG.SetXYZ(fPosError.X(), fPosError.Y(), 0.01);
+   fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   fPosError2.SetXYZ(fPosError1.X(), fPosError1.Y(), 0.01);
 }
 
 //______________________________________________________________________________
@@ -129,20 +132,20 @@ Float_t TAVTbaseCluster::GetSeedV() const
 
 //______________________________________________________________________________
 //  
-Float_t TAVTbaseCluster::Distance(TAVTbaseCluster *aClus) {
-   // Return the distance between this clusters and the pointed cluster
-   // regardless of the plane
-   
-   TVector3 clusPosition( aClus->GetPositionG() );
-   
-   // Now compute the distance beetween the two hits
-   clusPosition -= (GetPositionG());
-   
-   // Insure that z position is 0 for 2D length computation
-   clusPosition.SetXYZ( clusPosition[0], clusPosition[1], 0.);
-   
-   return clusPosition.Mag();
-}
+//Float_t TAVTbaseCluster::Distance(TAGcluster *aClus) {
+//   // Return the distance between this clusters and the pointed cluster
+//   // regardless of the plane
+//   
+//   TVector3 clusPosition( aClus->GetPositionG() );
+//   
+//   // Now compute the distance beetween the two hits
+//   clusPosition -= (GetPositionG());
+//   
+//   // Insure that z position is 0 for 2D length computation
+//   clusPosition.SetXYZ( clusPosition[0], clusPosition[1], 0.);
+//   
+//   return clusPosition.Mag();
+//}
 
 
 //______________________________________________________________________________

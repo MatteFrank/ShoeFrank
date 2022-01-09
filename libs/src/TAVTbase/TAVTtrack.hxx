@@ -1,40 +1,51 @@
 #ifndef _TAVTtrack_HXX
 #define _TAVTtrack_HXX
 
+/*!
+ \file TAVTtrack.hxx
+ \brief   class for tracks with the associated clusters
+  \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 // ROOT classes
 #include "TClonesArray.h"
 
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
 #include "TAVTcluster.hxx"
-#include "TAVTbaseTrack.hxx"
-
-
-//##############################################################################
-
-/** TAVTtrack class, simple container class for tracks with the associated clusters                    
- 
- \author Ch. Finck
- */
+#include "TAGbaseTrack.hxx"
 
 class TClonesArray;
-class TAVTtrack : public TAVTbaseTrack {
+class TAVTtrack : public TAGbaseTrack {
+ 
+private:
+   TVector3       fPosVertex;                    ///< vertex position
    
 public:
-   TAVTtrack();                                 
+   TAVTtrack();
+   TAVTtrack(const TAVTtrack& aTrack);
+
    ~TAVTtrack();
    
    //! Set up clones
-   void             SetupClones();
+   void                   SetupClones();
 
-    //! Get cluster
-   TAVTbaseCluster* GetCluster(Int_t index)  { return (TAVTcluster*)fListOfClusters->At(index); }
-   TAVTbaseCluster const * GetCluster(Int_t index) const { return (TAVTcluster*)fListOfClusters->At(index); }
-    
-   //! Add cluster
-   void             AddCluster(TAVTcluster* cluster);
+   //! Set pos vertex
+   void                   SetPosVertex(TVector3& pos)   { fPosVertex = pos;                               }
    
-   ClassDef(TAVTtrack,8)                      // Describes TAVTtrack
+    //! Get cluster
+   TAVTbaseCluster*       GetCluster(Int_t index)       { return (TAVTcluster*)fListOfClusters->At(index); }
+   //! Get cluster (const)
+   TAVTbaseCluster const* GetCluster(Int_t index) const { return (TAVTcluster*)fListOfClusters->At(index); }
+
+   //! Get pos vertex
+   const TVector3&        GetPosVertex()          const { return fPosVertex;                               }
+   
+   //! Add cluster
+   void                   AddCluster(TAGcluster* cluster);
+   
+   ClassDef(TAVTtrack,9)                      ///< Describes TAVTtrack
 };
 
 #endif

@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGactNtuGlbTrack.cxx
+ \file TAGactNtuGlbTrack.cxx
  \brief   Implementation of TAGactNtuGlbTrack.
  */
 
@@ -43,10 +42,13 @@
 #include "ukf.hpp"
 #include "flag_set.hpp"
 
+namespace details{
+struct ms2d_tag;
+}
 
 /*!
- \class TAGactNtuGlbTrack TAGactNtuGlbTrack.hxx "TAGactNtuGlbTrack.hxx"
- \brief  Read back detector clusters to reconstruct global tracks**
+ \class TAGactNtuGlbTrack
+ \brief  Read back detector clusters to reconstruct global tracks with TOE**
  */
 
 ClassImp(TAGactNtuGlbTrack)
@@ -135,8 +137,10 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     if( fpVtxClus && fpVtxVertex && fpVtxGeoMap ){ opcode |= flag_set<details::vertex_tag>{};  }
     if( fpItrClus && fpItrGeoMap ){ opcode |= flag_set<details::it_tag>{}; }
     if( fpMsdClus && fpMsdGeoMap ){ opcode |= flag_set<details::msd_tag>{}; }
-    if( fpMsdPoint && fpMsdGeoMap ){ opcode &= ~flag_set<details::msd_tag>{}; opcode |= flag_set<details::ms2d_tag>{}; }
+    if( fpMsdPoint && fpMsdGeoMap && !fpVtxClus ){ opcode &= ~flag_set<details::msd_tag>{}; opcode |= flag_set<details::ms2d_tag>{}; }
     
+#include<bitset>
+    std::cout << "opcode: " << std::bitset<8>(opcode) << '\n';
     switch( opcode ){
         case flag_set<details::vertex_tag, details::it_tag, details::tof_tag>{}: {
             auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
@@ -152,13 +156,25 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
 
-            return new_TATOEactGlb(
+            auto* action_h =  new_TATOEactGlb(
                         std::move(ukf),
                         std::move(list),
                         static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
                         static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
                         GetFootField(), true
                                        );
+            
+            auto& computation_checker_c = action_h->get_computation_checker();
+            using namespace checker;
+            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
+            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
+            computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+            
+            return action_h;
             
         }
         case flag_set<details::vertex_tag, details::msd_tag, details::tof_tag>{}: {
@@ -175,13 +191,25 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
 
-            return new_TATOEactGlb(
+            auto* action_h =  new_TATOEactGlb(
                         std::move(ukf),
                         std::move(list),
                         static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
                         static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
                         GetFootField(), true
                                        );
+            
+            auto& computation_checker_c = action_h->get_computation_checker();
+            using namespace checker;
+            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
+            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
+            computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+            
+            return action_h;
         }
         case flag_set<details::vertex_tag, details::it_tag, details::msd_tag, details::tof_tag>{}: {
             auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
@@ -200,14 +228,39 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                             .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h) )
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
-
-            return new_TATOEactGlb(
+            std::cout << "full_config\n";
+            auto* action_h =  new_TATOEactGlb(
                         std::move(ukf),
                         std::move(list),
                         static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
                         static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
                         GetFootField(), true
                                        );
+            
+            auto& computation_checker_c = action_h->get_computation_checker();
+            using namespace checker;
+            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
+            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
+            computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<1>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<1>>>{});
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<2>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<2>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<3>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<3>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<4>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<4>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<5>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<5>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<6>>>{} );
+//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<6>>>{} );
+            
+            return action_h;
+            
         }
         case flag_set<details::ms2d_tag, details::tof_tag>{}: {
             auto * pointMSD_hc = static_cast<TAMSDntuPoint*>( fpMsdPoint->Object() );
@@ -217,13 +270,25 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
 
-            return new_TATOEactGlb(
+            auto* action_h =  new_TATOEactGlb(
                         std::move(ukf),
                         std::move(list),
                         static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
                         static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                        GetFootField(), false
+                        GetFootField(), true
                                        );
+            
+            auto& computation_checker_c = action_h->get_computation_checker();
+            using namespace checker;
+            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
+            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
+            computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+            
+            return action_h;
         }
     }
     
@@ -237,13 +302,24 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                     .finish();
     
     
-    return new_TATOEactGlb(
+    auto* action_h = new_TATOEactGlb(
                 std::move(ukf),
                 std::move(list),
                 static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
                 static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
                 GetFootField(), true
                                );
+    
+    auto& computation_checker_c = action_h->get_computation_checker();
+    using namespace checker;
+    computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
+    computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
+    computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
+    computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
+    computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
+    computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
+    computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+    return action_h;
 }
 
 
@@ -273,8 +349,9 @@ void TAGactNtuGlbTrack::WriteHistogram()
 Bool_t TAGactNtuGlbTrack::Action()
 {
   fpGlbTrack->Clear();
-  
+
   fActTOE->Action();
+    
   
   fpGlbTrack->SetBit(kValid);
   

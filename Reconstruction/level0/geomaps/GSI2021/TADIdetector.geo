@@ -37,5 +37,3 @@ PositionsX:        0.0000  PositionsY:   0.000   PositionsZ:      8.0
 Tilt1:             0.0000  Tilt2:        0.000   Tilt3:           0.0
 
 
-
-

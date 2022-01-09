@@ -77,6 +77,26 @@ int main( int argc, char *argv[] ){
     const DEMSDEvent* evMSD2 =
       static_cast<const DEMSDEvent*>(daqFileReader.getFragmentID(dataMSD | 0x32));
 
+    //MSD 4th station
+    const DEMSDEvent* evMSD3 =
+      static_cast<const DEMSDEvent*>(daqFileReader.getFragmentID(dataMSD | 0x33));
+
+    //MSD 5th station
+    const DEMSDEvent* evMSD4 =
+      static_cast<const DEMSDEvent*>(daqFileReader.getFragmentID(dataMSD | 0x34));
+
+    //MSD 6th station
+    const DEMSDEvent* evMSD5 =
+      static_cast<const DEMSDEvent*>(daqFileReader.getFragmentID(dataMSD | 0x35));
+          
+    //MSD 7th station
+    const DEMSDEvent* evMSD6 =
+      static_cast<const DEMSDEvent*>(daqFileReader.getFragmentID(dataMSD | 0x36));
+
+    //MSD 8th station
+    const DEMSDEvent* evMSD7 =
+      static_cast<const DEMSDEvent*>(daqFileReader.getFragmentID(dataMSD | 0x37));
+
     if( evTDC0!=NULL ) evTDC0->printData();  // example how to use
     if( evTDC1!=NULL ) evTDC1->printData();
 
@@ -84,6 +104,11 @@ int main( int argc, char *argv[] ){
     if( evMSD0!=NULL) evMSD0->printData();
     if( evMSD1!=NULL) evMSD1->printData();
     if( evMSD2!=NULL) evMSD2->printData();
+    if( evMSD3!=NULL) evMSD3->printData();
+    if( evMSD4!=NULL) evMSD4->printData();
+    if( evMSD5!=NULL) evMSD5->printData();
+    if( evMSD6!=NULL) evMSD6->printData();
+    if( evMSD7!=NULL) evMSD7->printData();
 
     //HOW TO READ MSD DATA
     //    for(int i = 0; i<640; ++i ){

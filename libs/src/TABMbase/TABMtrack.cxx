@@ -11,7 +11,7 @@ ClassImp(TABMtrack);
 //! Default constructor.
 
 TABMtrack::TABMtrack():
-    fNHitX(0),fNHitY(0), fChiSquare(-999), fChiSquareX(-999),fChiSquareY(-999), fIsConv(0),fGhost(-1)
+    fNHitX(0),fNHitY(0), fChiSquare(-999), fChiSquareX(-999),fChiSquareY(-999), fIsConv(0),fGhost(-1), fTrackIdX(-1), fTrackIdY(-1)
 {
   fSlope.SetXYZ(1.,1.,1.);
   fOrigin.SetXYZ(0.,0.,0.);
@@ -26,7 +26,7 @@ TABMtrack::~TABMtrack(){}
 void TABMtrack::Dump() const
 {
   cout<<endl<<"------------ Dump Track Class ---------"<<endl;
-  cout<<"new tracking: fNHitX="<<fNHitX<<"  fNHitY="<<fNHitY<<"  fChiSquare="<<fChiSquare<<"  fChiSquareX="<<fChiSquareX<<"  fChiSquareY="<<fChiSquareY<<"  fIsConv="<<fIsConv<<endl;
+  cout<<"new tracking: fNHitX="<<fNHitX<<"  fNHitY="<<fNHitY<<"  fChiSquare="<<fChiSquare<<"  fChiSquareX="<<fChiSquareX<<"  fChiSquareY="<<fChiSquareY<<"  fIsConv="<<fIsConv<<"  fGhost="<<fGhost<<"  fTrackIdX="<<fTrackIdX<<"  fTrackIdY="<<fTrackIdY<<endl;
   cout<<"fSlope=("<<fSlope.X()<<", "<<fSlope.Y()<<", "<<fSlope.Z()<<")"<<endl;
   cout<<"fOrigin=("<<fOrigin.X()<<", "<<fOrigin.Y()<<", "<<fOrigin.Z()<<")"<<endl;
 }
@@ -44,6 +44,8 @@ void TABMtrack::Clean()
   fChiSquareY=-999;
   fIsConv=0;
   fGhost=-1;
+  fTrackIdX=-1;
+  fTrackIdY=-1;
   fOrigin.SetXYZ(0.,0.,0.);
   fSlope.SetXYZ(1.,1.,1.);
 
@@ -57,6 +59,8 @@ TABMtrack::TABMtrack(const TABMtrack &tr_in){
   fChiSquareY=tr_in.fChiSquareY;
   fIsConv=tr_in.fIsConv;
   fGhost=tr_in.fGhost;
+  fTrackIdX=tr_in.fTrackIdX;
+  fTrackIdY=tr_in.fTrackIdY;
   fOrigin=tr_in.fOrigin;
   fSlope=tr_in.fSlope;
 }
@@ -69,6 +73,9 @@ TABMtrack& TABMtrack::operator=(TABMtrack const& in){
     this->fChiSquareX=in.fChiSquareX;
     this->fChiSquareY=in.fChiSquareY;
     this->fIsConv=in.fIsConv;
+    this->fGhost=in.fGhost;
+    this->fTrackIdX=in.fTrackIdX;
+    this->fTrackIdY=in.fTrackIdY;
     this->fSlope=in.fSlope;
     this->fOrigin=in.fOrigin;
   }
@@ -111,12 +118,14 @@ Int_t TABMtrack::mergeTrack(const TABMtrack &otherview){
     fSlope.SetX(otherview.fSlope.X());
     fOrigin.SetX(otherview.fOrigin.X());
     fNHitX=otherview.fNHitX;
+    fTrackIdX=otherview.fTrackIdX;
   }else{
     fChiSquareY=otherview.fChiSquareY;
     fChiSquare=(fChiSquareX*(fNHitX-2.)+otherview.fChiSquareY*(otherview.fNHitY-2.))/(fNHitX+otherview.fNHitY-4.);
     fSlope.SetY(otherview.fSlope.Y());
     fOrigin.SetY(otherview.fOrigin.Y());
     fNHitY=otherview.fNHitY;
+    fTrackIdY=otherview.fTrackIdY;
   }
 
   return 0;

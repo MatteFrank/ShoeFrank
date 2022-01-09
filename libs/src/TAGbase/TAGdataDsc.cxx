@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGdataDsc.cxx,v 1.12 2003/06/19 17:44:21 mueller Exp $
+  \file TAGdataDsc.cxx
   \brief   Implementation of TAGdataDsc.
 */
 
@@ -12,7 +11,7 @@
 #include "TAGdataDsc.hxx"
 
 /*!
-  \class TAGdataDsc TAGdataDsc.hxx "TAGdataDsc.hxx"
+  \class TAGdataDsc 
   \brief Persistent descriptor for data object . **
 */
 
@@ -20,7 +19,6 @@ ClassImp(TAGdataDsc);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGdataDsc::TAGdataDsc(const char* name, TAGdata* p_data)
   : TAGnamed(name, 0),
     fpObject(0),
@@ -49,15 +47,13 @@ TAGdataDsc::TAGdataDsc(const char* name, TAGdata* p_data)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGdataDsc::~TAGdataDsc()
 {
   delete fpObject;
 }
 
 //------------------------------------------+-----------------------------------
-//! Set data object.
-
+// Set data object.
 void TAGdataDsc::SetObject(TAGdata* p_data)
 {
   delete fpObject;
@@ -67,8 +63,7 @@ void TAGdataDsc::SetObject(TAGdata* p_data)
 }
 
 //------------------------------------------+-----------------------------------
-//! Set producer action.
-
+// Set producer action.
 void TAGdataDsc::SetProducer(TAGaction* p_action)
 {
   fpProducer = p_action;
@@ -76,8 +71,7 @@ void TAGdataDsc::SetProducer(TAGaction* p_action)
 }
 
 //------------------------------------------+-----------------------------------
-//! Set consumer action.
-
+// Set consumer action.
 void TAGdataDsc::SetConsumer(TAGaction* p_action)
 {
   if (!fpConsumerList) fpConsumerList = new TList();
@@ -86,8 +80,7 @@ void TAGdataDsc::SetConsumer(TAGaction* p_action)
 }
 
 //------------------------------------------+-----------------------------------
-//! Generate data object and return a pointer to it.
-
+// Generate data object and return a pointer to it.
 TAGdata* TAGdataDsc::GenerateObject()
 {
   if (!Valid()) Generate();
@@ -96,8 +89,7 @@ TAGdata* TAGdataDsc::GenerateObject()
 
 
 //------------------------------------------+-----------------------------------
-//! Invalidate data object.
-
+// Invalidate data object.
 void TAGdataDsc::Clear(Option_t*)
 {
   if (fpObject) fpObject->Clear();
@@ -106,8 +98,7 @@ void TAGdataDsc::Clear(Option_t*)
 }
 
 //------------------------------------------+-----------------------------------
-//! Generate data object.
-
+// Generate data object.
 Bool_t TAGdataDsc::Generate()
 {
   if (Valid()) return kTRUE;
@@ -123,8 +114,7 @@ Bool_t TAGdataDsc::Generate()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGdataDsc::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGdataDsc:      " << "'" << GetName() << "'" << endl;
@@ -147,8 +137,7 @@ void TAGdataDsc::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Cleanup dangling object references to TObject \a p_obj .
-
+// Cleanup dangling object references to TObject \a p_obj .
 void TAGdataDsc::RecursiveRemove(TObject* p_obj)
 {
   if (fpProducer == p_obj) fpProducer = 0;

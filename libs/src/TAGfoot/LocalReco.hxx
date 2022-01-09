@@ -2,6 +2,13 @@
 #ifndef _LocalReco_HXX_
 #define _LocalReco_HXX_
 
+/*!
+ \file LocalReco.hxx
+ \brief Reconstruction class from raw data
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "BaseReco.hxx"
 
 #include "TAGdataDsc.hxx"
@@ -53,33 +60,37 @@ public:
    //! Close File in
    virtual void CloseFileIn();
    
+   //! Goto Event
+   virtual Bool_t GoEvent(Int_t iEvent);
+
 public:
-   //! Disable/Enable stand alone DAQ
+   //! Disable stand alone DAQ
    static void DisableStdAlone()   { fgStdAloneFlag = false;  }
+   //! Enable stand alone DAQ
    static void EnableStdAlone()    { fgStdAloneFlag = true;   }
    
 private:
-   TAGdataDsc*           fpDaqEvent;
-   TAGdataDsc*           fpNtuEvt;    // input data dsc
-   TAGdataDsc*           fpDatRawMsd;    // input data dsc
-   TAGactWDreader*       fActWdRaw;  // action for WD decoding
-  
-   TAGactNtuEvent*       fActNtuEvt; // action for trigger event
+   TAGdataDsc*           fpDaqEvent;      // DAQ event
+   TAGdataDsc*           fpNtuEvt;        // input data event dsc
+   TAGdataDsc*           fpDatRawMsd;     // input raw data dsc for MSD
+   TAGactWDreader*       fActWdRaw;       // action for WD decoding
+   TAGdataDsc*           fpNtuWDtrigInfo; // contains the WD trigger info
+   TAGactNtuEvent*       fActNtuEvt;      // action for trigger event
 
-   TASTactNtuHit*        fActNtuHitSt;  // action for ntu data
+   TASTactNtuHit*        fActNtuHitSt;    // action for STC hits
    TABMactVmeReader*     fActVmeReaderBm; // action for stand alone reader BM
-   TABMactNtuRaw*        fActDatRawBm;
-   TABMactNtuHit*        fActNtuHitBm;
-   TAMSDactNtuRaw*       fActDatRawMsd;  // action for raw data
+   TABMactNtuRaw*        fActDatRawBm;    // action for BM raw data
+   TABMactNtuHit*        fActNtuHitBm;    // action for BM hits
+   TAMSDactNtuRaw*       fActDatRawMsd;   // action for MSD raw data
 
    TAVTactVmeReader*     fActVmeReaderVtx; // action for stand alone reader VTX
-   TAVTactNtuHit*        fActNtuHitVtx;  // action for ntu data
-   TAITactNtuHit*        fActNtuHitIt;  // action for ntu data
-   TAMSDactNtuHit*       fActNtuHitMsd;  // action for ntu data
-   TATWactNtuHit*        fActNtuHitTw;
-   TACAactNtuHit*        fActNtuHitCa;
+   TAVTactNtuHit*        fActNtuHitVtx;    // action for VTX hits
+   TAITactNtuHit*        fActNtuHitIt;     // action for ITR hits
+   TAMSDactNtuHit*       fActNtuHitMsd;    // action for MSD hits
+   TATWactNtuHit*        fActNtuHitTw;     // action for TW hits
+   TACAactNtuHit*        fActNtuHitCa;     // action for CAL hits
 
-   TAGactDaqReader*      fActEvtReader; // reader for real data (DAQ)
+   TAGactDaqReader*      fActEvtReader;    // reader for real data (DAQ)
   
 private:
    static Bool_t         fgStdAloneFlag;   // flag for standalone DAQ

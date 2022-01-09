@@ -1,3 +1,10 @@
+/*!
+ \file LocalRecoMC.cxx
+ \brief Reconstruction class from MC data
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include "TTree.h"
 
 #include "LocalRecoMC.hxx"
@@ -17,6 +24,12 @@
 #include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
+
+/*!
+ \class LocalRecoMC
+ \brief Reconstruction class from MC data
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(LocalRecoMC)
 
@@ -44,6 +57,8 @@ LocalRecoMC::~LocalRecoMC()
 //__________________________________________________________
 void LocalRecoMC::CreateRawAction()
 {
+
+	if(!fFlagMC)	 return;
    fActEvtReader = new TAGactTreeReader("actEvtReader");
 
    if ( TAGrecoManager::GetPar()->IsRegionMc()) {
@@ -149,6 +164,7 @@ Bool_t LocalRecoMC::GoEvent(Int_t iEvent)
 {
    // only possible for MC data
    if (iEvent < fActEvtReader->NEvents()) {
+      fSkipEventsN = iEvent;
       fActEvtReader->Reset(iEvent);
       return true;
    }
@@ -283,6 +299,9 @@ void LocalRecoMC::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
   
+   if (!fSaveMcFlag)
+      return;
+   
    fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
    fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
   

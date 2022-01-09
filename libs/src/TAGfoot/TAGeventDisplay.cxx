@@ -1,3 +1,8 @@
+/*!
+ \file TAGeventDisplay.cxx
+ \brief FOOT class to work on event display
+ */
+/*------------------------------------------+---------------------------------*/
 
 
 #include "TAGeventDisplay.hxx"
@@ -34,9 +39,15 @@
 #include "LocalReco.hxx"
 #include "GlobalToeReco.hxx"
 
-ClassImp(TAGeventDisplay)
+/*!
+ \class TAGeventDisplay
+ \brief FOOT class to work on event display
+ */
+/*------------------------------------------+---------------------------------*/
 
 TAGeventDisplay* TAGeventDisplay::fgInstance = 0x0;
+
+ClassImp(TAGeventDisplay)
 
 //__________________________________________________________
 TAGeventDisplay* TAGeventDisplay::Instance(const TString name, Int_t runNumber, Int_t type)
@@ -78,4 +89,14 @@ void TAGeventDisplay::SetLocalReco()
 
    if (fgStdAloneFlag)
       LocalReco::EnableStdAlone();
+}
+
+//__________________________________________________________
+Bool_t TAGeventDisplay::SkipEvent()
+{
+   Int_t nEvts = fNumberEvent->GetIntNumber();
+   fCurrentEventId += nEvts;
+   gTAGroot->SetEventNumber(fCurrentEventId-1);
+   
+  return fReco->GoEvent(nEvts);
 }

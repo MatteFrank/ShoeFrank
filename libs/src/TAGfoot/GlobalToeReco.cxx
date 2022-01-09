@@ -5,21 +5,38 @@
  author: Ch. Finck
  */
 
+/*!
+ \file GlobalToeReco.cxx
+ \brief Global reconstruction class using TOE from L0 tree
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "BaseReco.hxx"
 #include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
 
 #include "GlobalToeReco.hxx"
 
+/*!
+ \class GlobalToeReco.
+ \brief Global reconstruction class using TOE from L0 tree
+ */
+/*------------------------------------------+---------------------------------*/
 
 ClassImp(GlobalToeReco)
 
 //__________________________________________________________
-GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
+GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, TString fileNameMcIn, TString treeNameMc)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
    TAGrecoManager::GetPar()->EnableLocalReco();
    fFlagMC = isMC;
+   
+   if (!fileNameMcIn.IsNull() && isMC) {
+      DisableSaveMc();
+      fFriendFileName = fileNameMcIn;
+      fFriendTreeName = treeNameMc;
+   }
 }
 
 //__________________________________________________________
@@ -72,7 +89,7 @@ void GlobalToeReco::SetTreeBranches()
   BaseReco::SetTreeBranches();
   
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
-    if (fFlagMC) {
+    if (fFlagMC && fSaveMcFlag) {
       fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
       

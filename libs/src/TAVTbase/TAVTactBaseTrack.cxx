@@ -1,8 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactBaseTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactBaseTrack.
-          Base class for VTX and IT
+ \file TAVTactBaseTrack.cxx
+ \brief    Base class to NTuplizer VTX-IT-MSD track
  */
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -35,7 +33,7 @@
 
 /*!
  \class TAVTactBaseTrack 
- \brief NTuplizer for vertex raw hits. **
+ \brief Base class to NTuplizer VTX-IT-MSD track
  */
 
 ClassImp(TAVTactBaseTrack);
@@ -74,11 +72,13 @@ TAVTactBaseTrack::TAVTactBaseTrack(const char* name,
       fTitleDev = "Inner Tracker";
    else if (fPrefix.Contains("ir"))
       fTitleDev = "Interaction Region";
+   else if (fPrefix.Contains("ms"))
+      fTitleDev = "Micro Strip Detector";
    else
       printf("Wrong prefix for histograms !");
 
    
-   TAVTbaseParConf* config = (TAVTbaseParConf*) fpConfig->Object();
+   TAVTbaseParConf* config = GetParConf();
    fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
    fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
    SetGeoTrafo(TAGgeoTrafo::GetDefaultActName().Data());
@@ -94,33 +94,31 @@ TAVTactBaseTrack::~TAVTactBaseTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+// Setup all histograms.
 void TAVTactBaseTrack::CreateHistogram()
 {
    DeleteHistogram();   
-   TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
-   
-   fpHisPixelTot = new TH1F(Form("%sTrackedClusPixTot", fPrefix.Data()), Form("%s - Total # pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
-   AddHistogram(fpHisPixelTot);
+   TAVTbaseParGeo* pGeoMap = GetParGeo();
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-     fpHisTrackMap[i] = new TH2F(Form("%sTrackMap%d", fPrefix.Data(), i+1), Form("%s - Tracks map for sensor %d", fTitleDev.Data(), i+1),
-                                 100, -pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy()/2.,
-                                 100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2.);
-     fpHisTrackMap[i]->SetMarkerStyle(24);
-     fpHisTrackMap[i]->SetMarkerSize(1.);
-     fpHisTrackMap[i]->SetMarkerColor(3);
-     fpHisTrackMap[i]->SetStats(kFALSE);
-     AddHistogram(fpHisTrackMap[i]);
 	  
-	  fpHisPixel[i] = new TH1F(Form("%sTrackedClusPix%d", fPrefix.Data(), i+1), Form("%s - # pixels per tracked clusters of sensor %d", fTitleDev.Data(), i+1), 100, -0.5, 99.5);
-	  AddHistogram(fpHisPixel[i]);
-	  
+      fpHisTrackMap[i] = new TH2F(Form("%sTrackMap%d", fPrefix.Data(), i+1), Form("%s - Tracks map for sensor %d", fTitleDev.Data(), i+1),
+                                  100, -pGeoMap->GetEpiSize()[0]/2., pGeoMap->GetEpiSize()[0]/2.,
+                                  100, -pGeoMap->GetEpiSize()[1]/2., pGeoMap->GetEpiSize()[1]/2.);
+      fpHisTrackMap[i]->SetMarkerStyle(24);
+      fpHisTrackMap[i]->SetMarkerSize(1.);
+      fpHisTrackMap[i]->SetMarkerColor(3);
+      fpHisTrackMap[i]->SetStats(kFALSE);
+      AddHistogram(fpHisTrackMap[i]);
+      
 	  fpHisResX[i] = new TH1F(Form("%sResX%d", fPrefix.Data(), i+1), Form("%s - ResidualX of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);
 	  AddHistogram(fpHisResX[i]);
 	  fpHisResY[i] = new TH1F(Form("%sResY%d", fPrefix.Data(), i+1), Form("%s - ResidualY of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);
 	  AddHistogram(fpHisResY[i]);
    }
+   
+   fpHisMeanPixel = new TH1F(Form("%sMeanClusPix", fPrefix.Data()), Form("%s - mean pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
+   AddHistogram(fpHisMeanPixel);
    
    fpHisResTotX = new TH1F(Form("%sResTotX", fPrefix.Data()), Form("%s - Total ResidualX", fTitleDev.Data()), 400, -0.01, 0.01);
    fpHisResTotY = new TH1F(Form("%sResTotY", fPrefix.Data()), Form("%s - Total ResidualY", fTitleDev.Data()), 400, -0.01, 0.01);
@@ -148,26 +146,15 @@ void TAVTactBaseTrack::CreateHistogram()
    AddHistogram(fpHisPhi);
    
    fpHisBeamProf = new TH2F(Form("%sBeamProf", fPrefix.Data()), Form("%s -  Beam Profile", fTitleDev.Data()),
-							100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., 
-							100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2.);
+                            100, -pGeoMap->GetEpiSize()[0]/2., pGeoMap->GetEpiSize()[0]/2.,
+                            100, -pGeoMap->GetEpiSize()[1]/2., pGeoMap->GetEpiSize()[1]/2.);
    fpHisBeamProf->SetStats(kFALSE);
    AddHistogram(fpHisBeamProf);
-   
-   fpHisMeanPixel = new TH1F(Form("%sMeanClusPix", fPrefix.Data()), Form("%s - mean pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
-   AddHistogram(fpHisMeanPixel);
    
    Int_t adc = TAVTbaseDigitizer::GetTotAdcDepth();
    Int_t bin = TMath::Power(2, adc);
    fpHisMeanCharge = new TH1F(Form("%sMeanClusChg", fPrefix.Data()), Form("%s - mean charge per tracked clusters", fTitleDev.Data()), bin/2., 0, bin);
    AddHistogram(fpHisMeanCharge);
-
-   fpHisClusLeft = new TH1F(Form("%sClusLeft", fPrefix.Data()), Form("%s - Clusters left per sensor", fTitleDev.Data()), 8, 1, 8);
-   AddHistogram(fpHisClusLeft);
-   
-   fpHisClusLeftPix = new TH2F(Form("%sClusLeftPix", fPrefix.Data()), Form("%s - Number of pixels for left clusters vs sensor", fTitleDev.Data()),
-                               10, 0, 9, 50, 1, 50);
-   fpHisClusLeftPix->SetStats(kFALSE);
-   AddHistogram(fpHisClusLeftPix);
    
    SetValidHistogram(kTRUE);
    
@@ -178,12 +165,12 @@ void TAVTactBaseTrack::CreateHistogram()
 
 //_____________________________________________________________________________
 //  
-Bool_t TAVTactBaseTrack::AppyCuts(TAVTbaseTrack* track)
+Bool_t TAVTactBaseTrack::AppyCuts(TAGbaseTrack* track)
 {
    Bool_t valid = false;  
    
-   TAVTbaseParConf* pConfig = (TAVTbaseParConf*) fpConfig->Object();
-   if (track->GetClustersN() >= pConfig->GetAnalysisPar().PlanesForTrackMinimum )
+   TAVTbaseParConf* pConfig = GetParConf();
+   if (track->GetClustersN() >= fRequiredClusters)
   	  valid = true;
    
    return valid;
@@ -191,33 +178,36 @@ Bool_t TAVTactBaseTrack::AppyCuts(TAVTbaseTrack* track)
 
 //_____________________________________________________________________________
 //  
-void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
+void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 {
-   TVector3           lineOrigin;  // origin in the tracker system
-   TVector3           lineSlope;   // slope along z-axis in tracker system
-   
+   TVector3  origin;  // origin in the tracker system
+   TVector3  slope;   // slope along z-axis in tracker system
+   TVector3  originErr;  // origin error in the tracker system
+   TVector3  slopeErr;   // slope error along z-axis in tracker system
+
    // init
-   lineOrigin.SetXYZ(0.,0.,0.);
-   lineSlope.SetXYZ(0.,0.,1.);
-   
-   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
+   origin.SetXYZ(0.,0.,0.);
+   slope.SetXYZ(0.,0.,1.);
+
+   originErr.SetXYZ(0.,0.,0.);
+   slopeErr.SetXYZ(0.,0.,0.);
    
    Int_t nClusters = track->GetClustersN();
    
    if( nClusters == 2) {
-	  TAVTbaseCluster* cluster0 = track->GetCluster(0);
-	  TAVTbaseCluster* cluster1 = track->GetCluster(1);
+	  TAGcluster* cluster0 = track->GetCluster(0);
+	  TAGcluster* cluster1 = track->GetCluster(1);
 	  
      if(FootDebugLevel(1))
 		 printf("TAVTactNtuTrack::Analyse track with %d cluster taking origin from it and slope 0\n", track->GetClustersN());
-	  Double_t x0 = cluster0->GetPositionG()[0];
-	  Double_t y0 = cluster0->GetPositionG()[1];
-	  
-	  Double_t x1 = cluster1->GetPositionG()[0];
-	  Double_t y1 = cluster1->GetPositionG()[1];
-	  
-	  Double_t z0 = pGeoMap->GetSensorPosition(cluster0->GetSensorIdx()).Z();
-	  Double_t z1 = pGeoMap->GetSensorPosition(cluster1->GetSensorIdx()).Z();
+      
+	   Double_t x0 = cluster0->GetPositionG()[0];
+      Double_t y0 = cluster0->GetPositionG()[1];
+      Double_t z0 = cluster0->GetPositionG()[2];
+
+  	   Double_t x1 = cluster1->GetPositionG()[0];
+      Double_t y1 = cluster1->GetPositionG()[1];
+      Double_t z1 = cluster1->GetPositionG()[2];
 	  
      if(FootDebugLevel(1))
 		 printf( "TAVTactNtuTrack::Analyze cluster[pl %d]=(%.2f, %.2f, %.2f) cluster[pl %d]=(%.2f, %.2f, %.2f)\n",
@@ -225,10 +215,10 @@ void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
 				cluster1->GetSensorIdx(), x1, y1, z1);
 	  
 	  if( z1-z0 != 0.) {
-		 lineOrigin(0) = (z1*x0-z0*x1)/(z1-z0);
-		 lineOrigin(1) = (z1*y0-z0*y1)/(z1-z0);
-		 lineSlope(0)  = (x1-x0)/(z1-z0);
-		 lineSlope(1)  = (y1-y0)/(z1-z0);
+		 origin[0] = (z1*x0-z0*x1)/(z1-z0);
+		 origin[1] = (z1*y0-z0*y1)/(z1-z0);
+		 slope[0]  = (x1-x0)/(z1-z0);
+		 slope[1]  = (y1-y0)/(z1-z0);
 	  }
    } else {
 	  Double_t x, dx;
@@ -239,7 +229,7 @@ void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
 	  fGraphV->Set(nClusters);
 	  
 	  for (Int_t i = 0; i < nClusters; ++i) {
-		 TAVTbaseCluster* cluster = track->GetCluster(i);
+		 TAGcluster* cluster = track->GetCluster(i);
 		 x  = cluster->GetPositionG()(0);
 		 y  = cluster->GetPositionG()(1);
 		 z  = cluster->GetPositionG()(2);
@@ -254,35 +244,41 @@ void TAVTactBaseTrack::UpdateParam(TAVTbaseTrack* track)
 	  }
 	  
 	  fGraphU->Fit("pol1", "Q");
-	  TF1* polyU = fGraphU->GetFunction("pol1");
-	  (lineOrigin)(0) = polyU->GetParameter(0);
-	  (lineSlope)(0)  = polyU->GetParameter(1);
+	  TF1* polyU   = fGraphU->GetFunction("pol1");
+	  origin[0]    = polyU->GetParameter(0);
+	  slope[0]     = polyU->GetParameter(1);
+     originErr[0] = polyU->GetParError(0);
+     slopeErr[0]  = polyU->GetParError(1);
+
 	  fGraphV->Fit("pol1", "Q");
-	  TF1* polyV = fGraphV->GetFunction("pol1");
-	  (lineOrigin)(1) = polyV->GetParameter(0);
-	  (lineSlope)(1)  = polyV->GetParameter(1);
+	  TF1* polyV   = fGraphV->GetFunction("pol1");
+	  origin[1]    = polyV->GetParameter(0);
+	  slope[1]     = polyV->GetParameter(1);
+     originErr[1] = polyV->GetParError(0);
+     slopeErr[1]  = polyV->GetParError(1);
    }
    
-   track->SetLineValue(lineOrigin, lineSlope);
+   track->SetLineValue(origin, slope);
+   track->SetLineErrorValue(originErr, slopeErr);
 }
 
 //_____________________________________________________________________________
 //  
-void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
-{   
+void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
+{
+   TAVTbaseParGeo* pGeoMap  = GetParGeo();
+   
    fpHisTheta->Fill(track->GetTheta());
    fpHisPhi->Fill(track->GetPhi());
    
-   TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*)fpGeoMap->Object();
+   if (GetTracksN() == 0)
+      fpHisClusSensor->Fill(0);
    
    fpHisTrackClus->Fill(track->GetClustersN());
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
-	  TAVTbaseCluster * cluster = track->GetCluster(i);
+	  TAGcluster * cluster = track->GetCluster(i);
 	  cluster->SetFound();
-	  Int_t idx = cluster->GetSensorIdx();
-	  fpHisPixelTot->Fill(cluster->GetPixelsN());
-	  fpHisPixel[idx]->Fill(cluster->GetPixelsN());
-	  
+	  Int_t idx          = cluster->GetSensorIdx();
 	  Float_t posZ       = cluster->GetPositionG()[2];
 	  TVector3 impact    = track->Intersection(posZ);
    
@@ -301,82 +297,13 @@ void TAVTactBaseTrack::FillHistogramm(TAVTbaseTrack* track)
    TVector3 origin = track->GetOrigin();
    fpHisBeamProf->Fill(origin.X(), origin.Y());
    
-   fpHisMeanPixel->Fill(track->GetMeanPixelsN());
+   fpHisMeanPixel->Fill(track->GetMeanEltsN());
    fpHisMeanCharge->Fill(track->GetMeanCharge());
 }
 
 //_____________________________________________________________________________
 //  
-void TAVTactBaseTrack::FillHistogramm()
-{
-   TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
-   TAVTntuCluster* pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
-   TAVTntuTrack*   pNtuTrack = (TAVTntuTrack*)   fpNtuTrack->Object();
-   
-   fpHisTrackEvt->Fill(pNtuTrack->GetTracksN());
-   if (pNtuTrack->GetTracksN() == 0)
-	  fpHisClusSensor->Fill(0);
-   
-   for (Int_t iPlane = 0; iPlane < pGeoMap->GetSensorsN(); ++iPlane) {
-	  
-	  TClonesArray* list = pNtuClus->GetListOfClusters(iPlane);
-	  Int_t nClusters = pNtuClus->GetClustersN(iPlane);
-	  if ( nClusters == 0) continue;
-	  
-	  Int_t left = 0;
-	  for( Int_t iClus = 0; iClus < nClusters; ++iClus) { 
-		 
-		 TAVTcluster* cluster = (TAVTcluster*)list->At(iClus);
-		 if (!cluster->Found()) {
-			fpHisClusLeftPix->Fill(iPlane+1, cluster->GetPixelsN());
-			left++;
-		 }
-	  }
-	  static Float_t mean[36];
-	  Int_t evtNumber = gTAGroot->CurrentEventNumber();
-	  mean[iPlane] = evtNumber/(evtNumber+1.)*mean[iPlane] + 1./(evtNumber+1.)*(left/nClusters);
-	  fpHisClusLeft->SetBinContent(iPlane+1, mean[iPlane]*100);
-   }   
-}
-
-//_____________________________________________________________________________
-//
-void TAVTactBaseTrack::SetChargeProba()
-{
-   if (fpCalib == 0x0) return;
-   TAVTbaseParCal* pCalib   = (TAVTbaseParCal*) fpCalib->Object();
-   
-   Int_t nTrack = GetTracksN();
-   if (nTrack == 0) return;
-   
-   for (Int_t iTrack = 0; iTrack < nTrack; ++iTrack) {
-      
-      Int_t nPixelsTot = 0;
-      Float_t nPixelsMean;
-      TAVTbaseTrack* track = GetTrack(iTrack);
-      Int_t nClus = track->GetClustersN();
-      
-      for (Int_t i=0;i<nClus;i++) {
-         TAVTbaseCluster* clus = track->GetCluster(i);
-         nPixelsTot += clus->GetPixelsN();
-      }
-      nPixelsMean = nPixelsTot/nClus;
-      const TArrayF* proba =  pCalib->GetChargeProba(nPixelsMean);
-      track->SetChargeProba(proba);
-      track->SetChargeMaxProba(pCalib->GetChargeMaxProba());
-      track->SetChargeWithMaxProba(pCalib->GetChargeWithMaxProba());
-      
-      proba =  pCalib->GetChargeProbaNorm(nPixelsMean);
-      track->SetChargeProbaNorm(proba);
-      track->SetChargeMaxProbaNorm(pCalib->GetChargeMaxProbaNorm());
-      track->SetChargeWithMaxProbaNorm(pCalib->GetChargeWithMaxProbaNorm());
-   }   
-}
-
-
-//_____________________________________________________________________________
-//  
-//TAVTbaseCluster* TAVTactBaseTrack::NearestCluster(TAVTbaseTrack *aTrack, Int_t iSensor)
+//TAVTbaseCluster* TAVTactBaseTrack::NearestCluster(TAGbaseTrack *aTrack, Int_t iSensor)
 //{   
 //   // For a given track, return the index of the nearest hit of a given plane
 //   TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
@@ -400,14 +327,14 @@ void TAVTactBaseTrack::SetChargeProba()
 
 //_____________________________________________________________________________
 //  
-//TAVTbaseTrack* TAVTactBaseTrack::NearestTrack(TAVTbaseCluster *aCluster) {
+//TAGbaseTrack* TAVTactBaseTrack::NearestTrack(TAVTbaseCluster *aCluster) {
 //   
 //   // For a given track, return the index of the nearest hit of a given plane
 //   Double_t minDist = 1.e9;
 //   Double_t distance;
 //   TAVTtrack *tTrack;
 //   
-//   TAVTbaseTrack *tNearest = 0x0;
+//   TAGbaseTrack *tNearest = 0x0;
 //   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
 //
 //   for( Int_t it = 0; it < pNtuTrack->GetTracksN(); ++it) { // loop on tracks
@@ -429,4 +356,91 @@ void TAVTactBaseTrack::SetGeoTrafo(TString name)
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(name.Data());
    if (!fpFootGeo)
 	  Error("SetGeoTrafo()", "No GeoTrafo action %s available yet\n", name.Data());
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAVTactBaseTrack::GetClustersN(Int_t iPlane)
+{
+   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
+   return pNtuClus->GetClustersN(iPlane);
+}
+
+//_____________________________________________________________________________
+//
+TAGcluster* TAVTactBaseTrack::GetCluster(Int_t iPlane, Int_t iClus)
+{
+   TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
+   TAVTcluster* cluster = pNtuClus->GetCluster(iPlane, iClus);
+   
+   return cluster;
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAVTactBaseTrack::GetTracksN()
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   return pNtuTrack->GetTracksN();
+}
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseTrack::AddNewTrack(TAGbaseTrack* trk)
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   TAVTtrack* track = static_cast<TAVTtrack*>(trk);
+   pNtuTrack->NewTrack(*track);
+}
+
+//_____________________________________________________________________________
+//
+TAGbaseTrack* TAVTactBaseTrack::NewTrack()
+{
+   return new TAVTtrack();
+}
+
+//_____________________________________________________________________________
+//
+TAGbaseTrack* TAVTactBaseTrack::GetTrack(Int_t idx)
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   TAGbaseTrack* track  = pNtuTrack->GetTrack(idx);
+   
+   return track;
+}
+
+//_____________________________________________________________________________
+//
+Int_t TAVTactBaseTrack::GetTracksN() const
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   
+   return pNtuTrack->GetTracksN();
+}
+
+//_____________________________________________________________________________
+//
+void TAVTactBaseTrack::SetBeamPosition(TVector3 pos)
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   pNtuTrack->SetBeamPosition(pos);
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParGeo* TAVTactBaseTrack::GetParGeo()
+{
+   TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
+   
+   return pGeoMap;
+}
+
+//_____________________________________________________________________________
+//
+TAVTbaseParConf* TAVTactBaseTrack::GetParConf()
+{
+   TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
+   
+   return pConfig;
 }

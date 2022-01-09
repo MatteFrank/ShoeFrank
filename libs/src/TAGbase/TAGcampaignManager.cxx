@@ -1,3 +1,8 @@
+/*!
+ \file TAGcampaignManager.cxx
+ \brief Implemented of TAGcampaignManager
+ */
+
 #include "TAGcampaignManager.hxx"
 #include <fstream>
 #include <unistd.h>
@@ -5,7 +10,10 @@
 
 #include "TAGrecoManager.hxx"
 
-//Class that manage the campaigns
+/*!
+ \class TAGcampaignManager
+ \brief Class that manage the campaigns. **
+ */
 
 ClassImp(TAGcampaignManager);
 
@@ -16,6 +24,7 @@ const TString TAGcampaignManager::fgkDefaultCamName = "FOOT.cam";
 
 
 //_____________________________________________________________________________
+//! Constructor
 TAGcampaignManager::TAGcampaignManager(const TString exp)
  : TAGaction(fgkDefaultActName.Data(), "TAGcampaignManager - Campaign Manager"),
    fFileStream(new TAGparTools()),
@@ -30,6 +39,7 @@ TAGcampaignManager::TAGcampaignManager(const TString exp)
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAGcampaignManager::~TAGcampaignManager()
 {
    delete fFileStream;
@@ -152,6 +162,11 @@ void TAGcampaignManager::Print(Option_t* opt) const
 
 //##############################################################################
 
+/*!
+ \class TAGcampaign
+ \brief Class for campaign. **
+ */
+
 ClassImp(TAGcampaign);
 
 map<Int_t, TString> TAGcampaign::fgTWcalFileType = {{0, "TATW_Energy"},{1, "TATW_Tof"}, {2, "TATWEnergy"} };
@@ -159,6 +174,7 @@ map<Int_t, TString> TAGcampaign::fgCAcalFileType = {{0, "TACA_Energy"},{1, "TACA
 map<Int_t, TString> TAGcampaign::fgTWmapFileType = {{0, "TATWChannel"},{1, "TATWbars"} };
 
 //_____________________________________________________________________________
+//! Constructor
 TAGcampaign::TAGcampaign()
  : TAGparTools(),
    fName(""),
@@ -168,6 +184,7 @@ TAGcampaign::TAGcampaign()
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAGcampaign::~TAGcampaign()
 {
 }

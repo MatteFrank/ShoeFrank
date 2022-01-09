@@ -22,15 +22,26 @@ ClassImp(TATWrawHit);
 
 TString TATWntuRaw::fgkBranchName   = "twdat.";
 
-TATWrawHit::TATWrawHit(TWaveformContainer *W)
+TATWrawHit::TATWrawHit(TWaveformContainer *W, string algo, double frac, double del)
   : TAGbaseWD(W){
+
+
 
   fBaseline = ComputeBaseline(W);
   fPedestal = ComputePedestal(W);
   fChg = ComputeCharge(W);
   fAmplitude = ComputeAmplitude(W);
-  fTime = ComputeTime(W,0.3,10.0,-30,20);
-  fTimeOth = ComputeTimeSimpleCFD(W,0.3);
+  if(algo=="hwCFD"){
+    fTime = ComputeTime(W,frac,del,-30,20);
+  }else if(algo=="simpleCFD"){
+    fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
+  }else if(algo=="zarrCFD"){
+    fTime = TAGbaseWD::ComputeTimeTangentCFD(W,frac);
+  }else{
+    fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
+  }
+  
+ 
 
 }
 
@@ -126,13 +137,13 @@ void TATWntuRaw::Clear(Option_t*)
 }
 
 
-void TATWntuRaw::NewHit(TWaveformContainer *W)
+void TATWntuRaw::NewHit(TWaveformContainer *W,  string algo, double frac, double del)
 {
 
   //  W->SanitizeWaveform();
 
   TClonesArray &pixelArray = *fListOfHits;
-  TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(W);
+  TATWrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWrawHit(W,algo, frac, del);
   fHitsN++;
 
   return;

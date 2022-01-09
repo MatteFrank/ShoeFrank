@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGpara.cxx,v 1.2 2003/06/09 18:37:39 mueller Exp $
+  \file TAGpara.cxx
   \brief   Implementation of TAGpara.
 */
 
@@ -9,7 +8,7 @@
 #include "TAGpara.hxx"
 
 /*!
-  \class TAGpara TAGpara.hxx "TAGpara.hxx"
+  \class TAGpara 
   \brief Mother of all parameter objects. **
 */
 
@@ -17,7 +16,6 @@ ClassImp(TAGpara);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGpara::TAGpara()
 : TObject()
 {}
@@ -25,13 +23,11 @@ TAGpara::TAGpara()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGpara::~TAGpara()
 {}
 
 //------------------------------------------+-----------------------------------
-//! Invalidate parameter object.
-
+// Invalidate parameter object.
 void TAGpara::Clear(Option_t*)
 {
   ResetBit(kFail);
@@ -39,8 +35,7 @@ void TAGpara::Clear(Option_t*)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGpara::ToStream(ostream& os, Option_t* option) const
 {
   os <<"TAGpara: " << IsA()->GetName();
@@ -50,8 +45,7 @@ void TAGpara::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGpara::Print(Option_t* option) const
 {
   ToStream(cout, option);

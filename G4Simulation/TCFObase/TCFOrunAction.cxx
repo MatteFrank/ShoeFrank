@@ -1,4 +1,7 @@
-//Run Action
+/*!
+ \file TCFOrunAction.cxx
+ \brief Implementation of TCFOrunAction.
+*/
 
 #include "TFile.h"
 
@@ -22,7 +25,14 @@
 
 TString TCFOrunAction::fgRootFileName = "ionCa1000.root";
 
+/*!
+ \class TCFOrunAction
+ \brief  Run action for FOOT
+ */
+
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCFOrunAction::TCFOrunAction()
 : G4UserRunAction(),
   fpEventMC(0x0),
@@ -34,6 +44,7 @@ TCFOrunAction::TCFOrunAction()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCFOrunAction::~TCFOrunAction()
 {
    G4cout<<"Distructor of my class run Action "<<G4endl;

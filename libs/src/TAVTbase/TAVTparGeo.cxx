@@ -1,4 +1,10 @@
 
+/*!
+ \file TAVTparGeo.cxx
+ \brief  Geometry parameters for VTX.
+ */
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                   MI28
 //
@@ -39,8 +45,8 @@
 //##############################################################################
 
 /*!
-  \class TAVTparGeo TAVTparGeo.hxx "TAVTparGeo.hxx"
-  \brief Map and Geometry parameters for vertex. **
+  \class TAVTparGeo
+  \brief Geometry parameters for VTX. **
 */
 
 ClassImp(TAVTparGeo);
@@ -50,17 +56,17 @@ const TString TAVTparGeo::fgkDefParaName   = "vtGeo";
 
 
 //______________________________________________________________________________
+//! Standard constructor
 TAVTparGeo::TAVTparGeo()
   : TAVTbaseParGeo()
 {
-  // Standard constructor
   fkDefaultGeoName = "./geomaps/TAVTdetector.geo";
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAVTparGeo::~TAVTparGeo()
 {
-  // Destructor
 }
 
 
@@ -447,7 +453,6 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
 //_____________________________________________________________________________
 string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
 {
-
   stringstream ss;
   
   if(TAGrecoManager::GetPar()->IncludeVT()){

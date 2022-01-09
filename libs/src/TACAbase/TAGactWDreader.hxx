@@ -13,6 +13,7 @@
 #include "TASTntuRaw.hxx"
 #include "TATWntuRaw.hxx"
 #include "TACAntuRaw.hxx"
+#include "TAGWDtrigInfo.hxx"
 #include "TAGbaseWDparTime.hxx"
 #include "TAGbaseWDparMap.hxx"
 #include <TH2F.h>
@@ -35,44 +36,32 @@ class WDEvent;
 class TAGactWDreader : public TAGaction {
 
 public:
-
   explicit        TAGactWDreader(const char* name,
 				 TAGdataDsc* p_datdaq,
 				 TAGdataDsc* p_stwd, 
 				 TAGdataDsc* p_twwd,
 				 TAGdataDsc* p_cawd,
+				 TAGdataDsc* p_WDtrigInfo,
 				 TAGparaDsc* p_WDmap,
                                  TAGparaDsc* p_WDtim);
 
   virtual         ~TAGactWDreader();
   void CreateHistogram();
   virtual Bool_t  Action();
-  
-  ClassDef(TAGactWDreader,0)
-    
-  private:
-    
+   
+private:
   TAGdataDsc*     fpDatDaq;		    // input data dsc
   TAGdataDsc*     fpStWd;		    // output data dsc
   TAGdataDsc*     fpTwWd;		    // output data dsc
   TAGdataDsc*     fpCaWd;		    // output data dsc
   TAGparaDsc*     fpWDTim;		    // parameter dsc
   TAGparaDsc*     fpWDMap;		    // parameter dsc
+  TAGdataDsc*     fpWDtrigInfo;		    // output data dsc
 
-  //vector<TH1F *> wv0;
-  
-  TH1F *hST[20][8];
-  TH1F *hTW[20][4];
-  TH1F *hCalo[20][9];
-  TH1F *hClk[20];
-  TH1F *hTrig;
-  TH2F *hTrigClk;
+  int             fEventsN;
 
-  int m_nev;
-  
- private:
-
-  Int_t DecodeWaveforms(const WDEvent* evt,  TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
+private:
+  Int_t DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
   Bool_t WaveformsTimeCalibration();
   Bool_t CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
   void Clear();
@@ -81,14 +70,13 @@ public:
   vector<double> ADC2Volt_CLK(vector<int>);
   double ComputeJitter(TWaveformContainer*);
   void  SavePlot(TWaveformContainer *w, string type);
-  void FillHistogram(TH1F *h, TWaveformContainer *w);
   
   vector<TWaveformContainer*> st_waves;
   vector<TWaveformContainer*> tw_waves;
   vector<TWaveformContainer*> ca_waves;
   map<pair<int,int>, TWaveformContainer*> clk_waves;
 
-  
+   ClassDef(TAGactWDreader,0)
 };
 
 #endif

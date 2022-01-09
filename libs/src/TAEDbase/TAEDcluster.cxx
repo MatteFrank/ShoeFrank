@@ -1,9 +1,19 @@
+/*!
+ \file TAEDcluster.cxx
+ \brief  Event display for cluster
+ */
 
 #ifndef _TAEDcluster_included_HXX
 #include "TAEDcluster.hxx"
 #endif
 
+/*!
+ \class TAEDcluster
+ \brief Event display for cluster. **
+ */
+
 //__________________________________________________________
+//! default constructor
 TAEDcluster::TAEDcluster(const Text_t* name) 
   : TEveQuadSet(name),
     fPalette(new TEveRGBAPalette()),
@@ -13,13 +23,12 @@ TAEDcluster::TAEDcluster(const Text_t* name)
     fSelectedIdx(-1),
     fSelectedValue(-1)
 { 
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDcluster::~TAEDcluster()
 {
-  // default destructor
   delete fPalette;
 }
 

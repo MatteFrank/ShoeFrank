@@ -1,4 +1,9 @@
 
+/*!
+ \file TCITgeometryConstructor.cxx
+ \brief Implementation of TCITgeometryConstructor.
+*/
+
 #include "TCITgeometryConstructor.hxx"
 #include "TCITsensitiveDetector.hxx"
 
@@ -20,7 +25,13 @@ TString TCITgeometryConstructor::fgkItEpiSDname = "ItSD";
 
 using namespace CLHEP;
 
+/*!
+ \class TCITgeometryConstructor
+ \brief Building ITR detector geometry
+*/
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCITgeometryConstructor::TCITgeometryConstructor(TAVTbaseParGeo* pParGeo)
 : TCVTgeometryConstructor(pParGeo)
 {
@@ -29,6 +40,7 @@ TCITgeometryConstructor::TCITgeometryConstructor(TAVTbaseParGeo* pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCITgeometryConstructor::~TCITgeometryConstructor()
 {
    

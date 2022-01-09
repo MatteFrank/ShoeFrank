@@ -29,17 +29,15 @@ private:
       TArrayC   DeadStripMap;           // dead strip map
    };
    
-   struct AnalysisParameter_t : public  TObject {
-   };
-   
-   SensorParameter_t   fSensorParameter[6];
-   AnalysisParameter_t fAnalysisParameter;
+   SensorParameter_t   fSensorParameter[16];
 
 public:
    Bool_t               FromFile(const TString& name = "");
    
+   Int_t GetType(Int_t idx)     const { return fSensorParameter[idx].Type;}
+   Int_t GetStatus(Int_t idx)   const { return fSensorParameter[idx].Status;}
+
    SensorParameter_t&   GetSensorPar(Int_t idx) { return fSensorParameter[idx];    }
-   AnalysisParameter_t& GetAnalysisPar()        { return fAnalysisParameter;       }
 
    ClassDef(TAMSDparConf,1)
 };

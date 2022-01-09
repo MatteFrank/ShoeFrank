@@ -1,5 +1,5 @@
 /*!
-  \file
+  \file TAVTactVmeReader.cxx
  \brief Get vertex raw data from stanbd alone files (ascii format)
   Keep VME name, though new card is no more VME standard
 */
@@ -87,7 +87,7 @@ void TAVTactVmeReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump)
 }
 
 //------------------------------------------+-----------------------------------
-//! Open ascii data sources.
+// Open ascii data sources.
 Int_t TAVTactVmeReader::Open(const TString& name, Option_t* opt, const TString)
 {
    TString inputFileName;
@@ -129,7 +129,7 @@ Int_t TAVTactVmeReader::Open(const TString& name, Option_t* opt, const TString)
 }
 
 //------------------------------------------+-----------------------------------
-//! Close input file.
+// Close input file.
 void TAVTactVmeReader::Close()
 {
    TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
@@ -138,7 +138,7 @@ void TAVTactVmeReader::Close()
 }
 
 //------------------------------------------+-----------------------------------
-//! Process
+// Process
 Bool_t TAVTactVmeReader::Process()
 {
    Int_t size = (sizeof(MI26_FrameRaw)/4)*3 + 3;

@@ -1,9 +1,17 @@
+/*!
+ \file TAITntuTrack.cxx
+ \brief   Container class for ITR tracks
+ */
+
 #include "TMath.h"
 #include "TAGgeoTrafo.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITntuTrack.hxx"
 
-
+/*!
+ \class TAITntuTrack
+ \brief  Container class for ITR tracks
+ */
 ClassImp(TAITntuTrack);
 
 TString TAITntuTrack::fgkBranchName   = "ittrack.";
@@ -27,14 +35,14 @@ TAITntuTrack::~TAITntuTrack()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of tracks
+// return number of tracks
 Int_t TAITntuTrack::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! return a Track for a given sensor
+// return a Track for a given sensor
 TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -44,7 +52,7 @@ TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor
 const TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -53,9 +61,8 @@ const TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack) const
 	  return 0x0;
 }
 
-
 //------------------------------------------+-----------------------------------
-//! Setup clones.
+// Setup clones.
 void TAITntuTrack::SetupClones()
 {
    if (!fListOfTracks) {
@@ -65,7 +72,7 @@ void TAITntuTrack::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear event.
+// Clear event.
 void TAITntuTrack::Clear(Option_t*)
 {
    fListOfTracks->Delete();
@@ -90,7 +97,7 @@ TAITtrack* TAITntuTrack::NewTrack(TAITtrack& trk)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
+// ostream insertion.
 void TAITntuTrack::ToStream(ostream& os, Option_t* option) const
 {
 	  
@@ -103,7 +110,7 @@ void TAITntuTrack::ToStream(ostream& os, Option_t* option) const
    for (Int_t j = 0; j < GetTracksN(); j++) {
 	  const TAITtrack*  track = GetTrack(j);
 	  if (track)
-		 os << Form("%4d", track->GetNumber());
+		 os << Form("%4d", track->GetTrackIdx());
 	  os << endl;
    }
 }

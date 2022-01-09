@@ -164,4 +164,5 @@ add_subdirectory(Simulation)
 if (Geant4_DIR)
   add_subdirectory(G4Simulation)
 endif(Geant4_DIR)
+add_subdirectory(Analysis)
 

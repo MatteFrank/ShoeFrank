@@ -1,3 +1,8 @@
+/*!
+ \file TAEDeveGlbTrackList.cxx
+ \brief  Class to display global tracks on event.
+ */
+
 #include <Riostream.h>
 
 #include "TEveTrackPropagator.h"
@@ -8,7 +13,13 @@
 #include "TAEDeveGlbTrack.hxx"
 #include "TAEDeveGlbTrackList.hxx"
 
+/*!
+ \class TAEDeveGlbTrackList
+ \brief  Class to display global tracks on event.
+ */
+
 //__________________________________________________________
+//! Default constructor
 TAEDeveGlbTrackList::TAEDeveGlbTrackList(const Char_t* name, TADIeveTrackPropagator* prop)
  : TEveTrackList(name, prop),
    fPalette(new TEveRGBAPalette()),
@@ -20,9 +31,9 @@ TAEDeveGlbTrackList::TAEDeveGlbTrackList(const Char_t* name, TADIeveTrackPropaga
 }
 
 //__________________________________________________________
+//! Default destructor
 TAEDeveGlbTrackList::~TAEDeveGlbTrackList()
 {
-  // default destructor
    delete fPalette;
 }
 

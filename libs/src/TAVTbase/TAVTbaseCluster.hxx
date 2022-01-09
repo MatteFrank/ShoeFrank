@@ -16,7 +16,9 @@
 
 class TAVTparGeo;
 
-/** TAVTbaseCluster class, simple container class for tracks with the associated clusters                    
+/*!
+ \file TAVTbaseCluster.hxx
+ \brief  TAVTbaseCluster class, simple container class for tracks with the associated clusters
  
  \author Ch. Finck
  */
@@ -24,9 +26,9 @@ class TAVTparGeo;
 class TAVTbaseCluster : public TAGcluster {
    
 protected:
-   TClonesArray*      fListOfPixels;             // list of pixel attached to this cluster
+   TClonesArray*      fListOfPixels;             ///< list of pixel attached to this cluster
    
-   Float_t            fCharge;                   // sum of pulseheight
+   Float_t            fCharge;                   ///< sum of pulseheight
    
 public:
    TAVTbaseCluster(); 
@@ -43,9 +45,9 @@ public:
    TVector2           ComputeSize();
    
    //! Get U position in local frame
-   Float_t            GetPositionU()                   const { return fPosition[0];    }
+   Float_t            GetPositionU()                   const { return fPosition1[0];   }
    //! Get V position in local frame
-   Float_t            GetPositionV()                   const { return fPosition[1];    }
+   Float_t            GetPositionV()                   const { return fPosition1[1];   }
    //! Get Pixel list
    TClonesArray*      GetListOfPixels()                const { return fListOfPixels;   }
    
@@ -68,7 +70,8 @@ public:
    Float_t            GetPixelDistanceV(Int_t index)   const;
    
    //! Compute distance from another cluster
-   Float_t            Distance(TAVTbaseCluster *aClus);
+//   Float_t            Distance(TAGcluster *aClus);
+   
    //! reset pixels
    void               ResetPixels();
    

@@ -1,4 +1,7 @@
-
+/*!
+ \file TAEDtrack.cxx
+ \brief Class to display tracks on event
+ */
 
 #ifndef _TAEDtrack_HXX_
 #include "TAEDtrack.hxx"
@@ -16,7 +19,13 @@
 
 using namespace std;
 
+/*!
+ \class TAEDtrack
+ \brief Class to display tracks on event
+ */
+
 //__________________________________________________________
+//! default constructor
 TAEDtrack::TAEDtrack(const Text_t* name) 
   : TEveBoxSet(name),
     fPalette(new TEveRGBAPalette()),
@@ -30,14 +39,13 @@ TAEDtrack::TAEDtrack(const Text_t* name)
     fHitIdPerTrack(0),
 	 fStyle("Rectangle")
 { 
-  // default constructor
   fBoxVert.Set(32);
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDtrack::~TAEDtrack()
 {
-  // default destructor
 }
 
 //__________________________________________________________

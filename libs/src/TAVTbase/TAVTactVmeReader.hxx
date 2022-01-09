@@ -1,7 +1,7 @@
 #ifndef _TAVTactVmeReader_HXX
 #define _TAVTactVmeReader_HXX
 /*!
-  \file
+  \file TAVTactVmeReader.hxx
   \brief   Declaration of TAVTactVmeReader.
 */
 /*------------------------------------------+---------------------------------*/
@@ -35,27 +35,29 @@ public:
 
  public:
    enum {kSize = 10};
+   //! Set default folder name
    static void     SetDefaultFolderName(const Char_t* name) { fgDefaultFolderName = name; }
+   //! Get default folder name
    static TString  GetDefaultFolderName()                   { return fgDefaultFolderName; }
-   
+   //! Set trigger jump map
    static void     SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump);
    
 protected:
-   ifstream        fRawFileAscii[kSize]; // file streamm
-   Int_t           fRunNumber;           // run number
+   ifstream        fRawFileAscii[kSize]; ///< file streamm
+   Int_t           fRunNumber;           ///< run number
 
-   TString         fPrefixName;          // prefix folder name
-   TString         fBaseName;            // base file name
+   TString         fPrefixName;          ///< prefix folder name
+   TString         fBaseName;            ///< base file name
    
-   Int_t            fTrigJumpStart;
-   Int_t            fTrigReset;
-   map<pair<int,int>,  int>  fTrigJumpFirst;
+   Int_t            fTrigJumpStart;      ///< trigger jump
+   Int_t            fTrigReset;          ///< trigger reset
+   map<pair<int,int>,  int>  fTrigJumpFirst; ///< map of trigger jump
    
 protected:
-   static           TString fgDefaultFolderName;
-   static           TString fgDefaultExtName;
-   static           map< pair<int, int>, int> fgTrigJumpMap;
-   static           Bool_t fgTrigJumpAuto;
+   static           TString fgDefaultFolderName;             ///< default folder name
+   static           TString fgDefaultExtName;                ///< default extension name
+   static           map< pair<int, int>, int> fgTrigJumpMap; ///< map of trigger jump
+   static           Bool_t fgTrigJumpAuto;                   ///< flag for jump detection
    
 protected:
    //! Get the event

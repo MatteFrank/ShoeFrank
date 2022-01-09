@@ -32,19 +32,19 @@ const TString TADIparGeo::fgkDevBaseName   = "DI";
 const Int_t   TADIparGeo::fgkDefMagnetsN   = 2;
 
 //______________________________________________________________________________
+//! Standard constructor
 TADIparGeo::TADIparGeo()
 : TAGparTools(),
   fMagnetsN(0),
   fType(-1),
   fMapName("")
 {
-   // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TADIparGeo::~TADIparGeo()
 {
-   // Destructor
 }
 
 //______________________________________________________________________________
@@ -59,7 +59,8 @@ Bool_t TADIparGeo::FromFile(const TString& name)
 	  nameExp = name;
 
    if (!Open(nameExp)) return false;
-   
+   Info("FromFile()", "Open file %s for geometry", name.Data());
+
    ReadItem(fMagnetsN);  
    if(FootDebugLevel(1))
 	  cout << endl << "Magnets number "<< fMagnetsN << endl;
@@ -87,6 +88,8 @@ Bool_t TADIparGeo::FromFile(const TString& name)
       if(FootDebugLevel(1))
          cout << "   Field map upper bound: "
          << Form("%f %f %f", fMapLimUp[0], fMapLimUp[1], fMapLimUp[2]) << endl;
+      
+      Info("FromFile()", "with field map file %s\n", fMapName.Data());
    }
   
    if (fType == 0) {
@@ -94,8 +97,11 @@ Bool_t TADIparGeo::FromFile(const TString& name)
      if(FootDebugLevel(1))
        cout << "   Field constant value "
        << Form("%f %f %f", fMagCstValue[0], fMagCstValue[1], fMagCstValue[2]) << endl;
+      Info("FromFile()", "with constant field (%f %f %f)\n", fMagCstValue[0], fMagCstValue[1], fMagCstValue[2]);
+
    }
   
+
    // Read cover thickness
    ReadItem(fShieldThick);
    if(FootDebugLevel(1))

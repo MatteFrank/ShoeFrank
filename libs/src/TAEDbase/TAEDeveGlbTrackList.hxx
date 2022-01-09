@@ -1,13 +1,17 @@
 #ifndef _TAEDeveGlbTrackList_HXX_
 #define _TAEDeveGlbTrackList_HXX_
 
+/*!
+ \file TAEDeveGlbTrackList.hxx
+ \brief  TAEDeveGlbTrackList a class to display global tracks on event
+ 
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "TEveTrack.h"
 #include "TVector3.h"
 
-/** TAEDeveGlbTrackList a class to display global tracks on event
- 
-*/
 class TEveRGBAPalette;
 class TADIeveTrackPropagator;
 class TAEDglbTrack;
@@ -34,9 +38,9 @@ public:
    void ResetTracks();
       
 private:
-   TEveRGBAPalette* fPalette;     // color palette
-   Int_t            fNofTracks;   // number of tracks
-   Int_t            fMaxMomentum; // max momentum
+   TEveRGBAPalette* fPalette;     ///< color palette
+   Int_t            fNofTracks;   ///< number of tracks
+   Int_t            fMaxMomentum; ///< max momentum
 
 };
 

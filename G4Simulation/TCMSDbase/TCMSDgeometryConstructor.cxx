@@ -1,3 +1,7 @@
+/*!
+ \file TCMSDgeometryConstructor.cxx
+ \brief Implementation of TCMSDgeometryConstructor.
+*/
 
 #include "TCMSDgeometryConstructor.hxx"
 #include "TCMSDsensitiveDetector.hxx"
@@ -14,7 +18,13 @@ TString TCMSDgeometryConstructor::fgkMsdEpiSDname = "MsdSD";
 
 using namespace CLHEP;
 
+/*!
+ \class TCMSDgeometryConstructor
+ \brief Building MSD detector geometry
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCMSDgeometryConstructor::TCMSDgeometryConstructor(TAVTbaseParGeo* pParGeo)
 : TCVTgeometryConstructor(pParGeo)
 {
@@ -22,6 +32,7 @@ TCMSDgeometryConstructor::TCMSDgeometryConstructor(TAVTbaseParGeo* pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCMSDgeometryConstructor::~TCMSDgeometryConstructor()
 {
    

@@ -16,6 +16,7 @@
 #include "TAMSDntuPoint.hxx"
 
 #include "TAMSDactNtuPoint.hxx"
+#include "TAGrecoManager.hxx"
 
 /*!
  \class TAMSDactNtuPoint
@@ -92,9 +93,13 @@ Bool_t TAMSDactNtuPoint::FindPoints()
   TAMSDntuCluster* pNtuCluster  = (TAMSDntuCluster*) fpNtuCluster->Object();
   TAMSDntuPoint* pNtuPoint      = (TAMSDntuPoint*) fpNtuPoint->Object();
   TAMSDparGeo* pGeoMap          = (TAMSDparGeo*) fpGeoMap->Object();
+  if(FootDebugLevel(1)) {  
+    cout<<"****************************"<<endl;
+    cout<<"  NtuPoint hits "<<endl;
+    cout<<"****************************"<<endl;
+  }
   
-  bool xyOrder = true;
-  
+  int plane(0);
   for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
 
     // fill points
@@ -112,17 +117,31 @@ Bool_t TAMSDactNtuPoint::FindPoints()
                                                  colHit->GetPosition().Y(), colHit->GetPosError().Y(), colHit,
                                                  rowHit->GetPosition().X(), rowHit->GetPosError().X(), rowHit);
        
+         auto posx = 0.;
+         auto posy = 0.;
          auto posz = (colHit->GetPositionG().Z() + rowHit->GetPositionG().Z())/2.;
-         TVector3 pos(rowHit->GetPositionG().X(), colHit->GetPositionG().Y(), posz);
+
+         if (pGeoMap->GetSensorPar(iLayer).TypeIdx == 1) {
+            posx = rowHit->GetPositionG().X();
+            posy = colHit->GetPositionG().Y();
+         } else {
+            posx = colHit->GetPositionG().X();
+            posy = rowHit->GetPositionG().Y();
+         }
+         TVector3 pos(posx, posy, posz);
+         
+         
          point->SetPositionG(pos);
          point->SetValid();
+         point->SetSensorIdx(iLayer);
          if (ValidHistogram()) {
             fpHisPointMap[iLayer/2]->Fill(pos[0], pos[1]);
             fpHisPointCharge[iLayer/2]->Fill(point->GetEnergyLoss());
             fpHisPointChargeTot->Fill(point->GetEnergyLoss());
          }
       }
-    }
+    } 
+    plane++;
   }
   return true;
 }

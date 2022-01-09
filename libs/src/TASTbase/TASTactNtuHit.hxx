@@ -31,29 +31,23 @@ public:
   virtual Bool_t  Action();
 
   virtual void CreateHistogram();
-
-  ClassDef(TASTactNtuHit,0)
-    
-  private:
-    
+   
+private:
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
   TAGparaDsc*     fpParMap;		    // output data dsc
-  
+  Int_t           fEventsN;
+
   TH1F *hArrivalTime[8];
   TH1F *hCharge[8];
   TH1F *hAmplitude[8];
   TH1F *hTime;
   TH1F *hTotCharge;
-
-
-  int m_nev;
-  
-
+   
 private:
- 
   void   SavePlot(TGraph g,TF1 f1, TF1 f2, TASTrawHit *hit);
 
+   ClassDef(TASTactNtuHit,0)
 };
 
 #endif

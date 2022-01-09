@@ -1,6 +1,6 @@
 /*!
  \file
- \version $Id: TAITactNtuClusterMT.cxx $
+ \version $Id: TAITactNtuClusterMT.cxx
  \brief   Implementation of TAITactNtuClusterMT.
  */
 #include "TClonesArray.h"
@@ -19,7 +19,7 @@
 
 /*!
  \class TAITactNtuClusterMT
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for ITR cluster with multi-threading
  */
 
 ClassImp(TAITactNtuClusterMT);

@@ -1,4 +1,8 @@
 
+/*! \file TCBMgeometryConstructor.cxx
+ \brief   Implementation of TCBMgeometryConstructor.
+ */
+
 #include "TCBMgeometryConstructor.hxx"
 
 #include "G4NistManager.hh"
@@ -29,7 +33,12 @@ using namespace CLHEP;
 
 TString TCBMgeometryConstructor::fgkBmSDname  = "bmSD";
 
+/*! \class TCBMgeometryConstructor
+ \brief Beam monitor geometry construction
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Default constructor
 TCBMgeometryConstructor::TCBMgeometryConstructor(TABMparGeo* pParGeo)
 : TCGbaseConstructor("TCBMgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -41,6 +50,7 @@ TCBMgeometryConstructor::TCBMgeometryConstructor(TABMparGeo* pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Default destructor
 TCBMgeometryConstructor::~TCBMgeometryConstructor()
 {
 }

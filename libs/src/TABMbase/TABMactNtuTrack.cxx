@@ -71,8 +71,16 @@ void TABMactNtuTrack::CreateHistogram()
   AddHistogram(fpResTot);
   fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of the tracks at the target center", 250, -3., 3.,250 , -3, 3);
   AddHistogram(fpHisMap);
+  fpHisMapTW = new TH2F("bmTrackTWMap","BM - Position of the tracks at the TW center", 500, -10., 10.,500 , -10, 10);
+  AddHistogram(fpHisMapTW);
   fpHisMylar12d = new TH2F("bmTrackCenter","BM - Position of the tracks on the BM center plane", 500, -3., 3.,500 , -3., 3.);
   AddHistogram(fpHisMylar12d);
+  // fpHis0MSD = new TH2F("bmMsd0","BM - Position of the tracks on the MSD 0 plane in global ref", 500, -5., 5.,500 , -5., 5.);
+  // AddHistogram(fpHis0MSD);
+  // fpHis1MSD = new TH2F("bmMsd1","BM - Position of the tracks on the MSD 1 plane in global ref", 500, -5., 5.,500 , -5., 5.);
+  // AddHistogram(fpHis1MSD);
+  // fpHis2MSD = new TH2F("bmMsd2","BM - Position of the tracks on the MSD 2 plane in global ref", 500, -5., 5.,500 , -5., 5.);
+  // AddHistogram(fpHis2MSD);//new plots for gsi2021
   fpHisAngleX = new TH1F("bmTrackAngleX","BM track XZ Angular spread; XZ Angle [rad]; Events", 200, -0.3, 0.3);
   AddHistogram(fpHisAngleX);
   fpHisAngleY = new TH1F("bmTrackAngleY","BM track YZ Angular spread; YZ Angle [rad]; Events", 200, -0.3, 0.3);
@@ -302,13 +310,28 @@ Bool_t TABMactNtuTrack::Action()
       return kTRUE;
     }
     //add the reconstructed track
-    if(fNowView==0)
+    if(fNowView==0){
+      fpTmpTrack->SetTrackIdY(fTrackNum+1);
       ytracktr.push_back(TABMtrack(*fpTmpTrack));
-    else
+    }else{
+      fpTmpTrack->SetTrackIdX(fTrackNum+1);
       xtracktr.push_back(TABMtrack(*fpTmpTrack));
+    }
     ++fTrackNum;
   }while(fTrackNum<20);
 
+  if(p_bmcon->GetInvertTrack())
+    InvertTracks(ytracktr, p_bmcon->GetInvertTrack());
+
+  //if there are two tracks on the same view and only one on the other view, delete the second track since it is probably due to noises
+  if(ytracktr.size()==2 && xtracktr.size()==1){
+    p_ntutrk->NewPrunedTrack(ytracktr.at(1),0);
+    ytracktr.pop_back();
+  }else if(xtracktr.size()==2 && ytracktr.size()==1){
+    p_ntutrk->NewPrunedTrack(xtracktr.at(1),1);
+    xtracktr.pop_back();
+  }
+  
   CombineTrack(ytracktr, xtracktr, p_ntutrk);
 
   if (ValidHistogram()){
@@ -327,7 +350,15 @@ Bool_t TABMactNtuTrack::Action()
       Float_t posZ = geoTrafo->FromGlobalToBMLocal(TVector3(0,0,0)).Z();
       TVector3 pos = savedtracktr->PointAtLocalZ(posZ);
       fpHisMap->Fill(pos[0], pos[1]);
+      pos = savedtracktr->PointAtLocalZ(geoTrafo->FromGlobalToBMLocal(geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0))).Z());
+      fpHisMapTW->Fill(pos.X(), pos.Y());
       fpHisMylar12d->Fill(savedtracktr->GetOrigin().X(), savedtracktr->GetOrigin().Y());
+      // posZ = geoTrafo->FromGlobalToBMLocal(geoTrafo->FromMSDLocalToGlobal(0.,0.,0.)).Z(); //msd first plane z position in global position
+      // pos = savedtracktr->PointAtLocalZ(posZ);
+      // fpHis0MSD->Fill(pos[0], pos[1]);
+
+
+
       fpHisAngleX->Fill(savedtracktr->GetSlope().X()/savedtracktr->GetSlope().Z());
       fpHisAngleY->Fill(savedtracktr->GetSlope().Y()/savedtracktr->GetSlope().Z());
       fpHisChi2Red->Fill(savedtracktr->GetChiSquare());
@@ -476,35 +507,33 @@ Int_t TABMactNtuTrack::CheckAssHits(const Float_t asshiterror, const Float_t min
 
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i) {
     TABMhit* p_hit = p_nturaw->GetHit(i);
-    if(p_hit->GetIsSelected()<=0){
+    if(p_hit->GetIsSelected()<=0 && p_hit->GetView()==fNowView){
       Double_t maxerror= (p_hit->GetSigma()*asshiterror > minRerr) ? p_hit->GetSigma()*asshiterror : minRerr;
       maxdist=p_hit->GetRdrift()+maxerror;
       mindist=p_hit->GetRdrift()-maxerror;
-      if(mindist<0)
-        mindist=0;
-      if(p_hit->GetView()==fNowView){
-        a0pos=(fNowView==0) ? p_hit->GetWirePos().Y() : p_hit->GetWirePos().X();
-        xvalue=fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin);
-        yvaluemax=a0pos -xvalue*p_hit->GetWirePos().Z()+maxdist*sqrt(xvalue*xvalue+1.);
-        yvaluemin=a0pos -xvalue*p_hit->GetWirePos().Z()+mindist*sqrt(xvalue*xvalue+1.);
-        yvalue=a0pos -xvalue*p_hit->GetWirePos().Z()+p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
-        res=max(p_hit->GetSigma(),fLegPolSum->GetYaxis()->GetBinWidth(fBestRBin));
-        legvalue=fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin);
+      //~ if(mindist<0)
+        //~ mindist=0;
+      a0pos=(fNowView==0) ? p_hit->GetWirePos().Y() : p_hit->GetWirePos().X();
+      xvalue=fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin);
+      yvaluemax=a0pos -xvalue*p_hit->GetWirePos().Z()+maxdist*sqrt(xvalue*xvalue+1.);
+      yvaluemin=a0pos -xvalue*p_hit->GetWirePos().Z()+mindist*sqrt(xvalue*xvalue+1.);
+      yvalue=a0pos -xvalue*p_hit->GetWirePos().Z()+p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
+      res=max(p_hit->GetSigma(),fLegPolSum->GetYaxis()->GetBinWidth(fBestRBin));
+      legvalue=fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin);
+      diff=fabs(yvalue - legvalue);
+      if(yvaluemax>=legvalue && yvaluemin<=legvalue){
+        CheckPossibleHits(wireplane,yvalue,diff,res,selview,i, p_hit);
+      }else{
+        yvaluemin=a0pos-xvalue*p_hit->GetWirePos().Z()-maxdist*sqrt(xvalue*xvalue+1.);
+        yvaluemax=a0pos-xvalue*p_hit->GetWirePos().Z()-mindist*sqrt(xvalue*xvalue+1.);
+        yvalue=a0pos-xvalue*p_hit->GetWirePos().Z()-p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
         diff=fabs(yvalue - legvalue);
         if(yvaluemax>=legvalue && yvaluemin<=legvalue){
           CheckPossibleHits(wireplane,yvalue,diff,res,selview,i, p_hit);
         }else{
-          yvaluemin=a0pos-xvalue*p_hit->GetWirePos().Z()-maxdist*sqrt(xvalue*xvalue+1.);
-          yvaluemax=a0pos-xvalue*p_hit->GetWirePos().Z()-mindist*sqrt(xvalue*xvalue+1.);
-          yvalue=a0pos-xvalue*p_hit->GetWirePos().Z()-p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
-          diff=fabs(yvalue - legvalue);
-          if(yvaluemax>=legvalue && yvaluemin<=legvalue){
-            CheckPossibleHits(wireplane,yvalue,diff,res,selview,i, p_hit);
-          }else{
-            if(FootDebugLevel(4))
-              cout<<"TABMactNtuTrack::CheckAssHits: HIT DISCHARGED: hitnum="<<i<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<0<<"  yvalue="<<yvalue<<"  legvalue="<<legvalue<<"  diff="<<diff<<"   res="<<res<<endl;
-            p_hit->SetIsSelected(-1);
-          }
+          if(FootDebugLevel(4))
+            cout<<"TABMactNtuTrack::CheckAssHits: HIT DISCHARGED: hitnum="<<i<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<0<<"  yvalue="<<yvalue<<"  legvalue="<<legvalue<<"  diff="<<diff<<"   res="<<res<<endl;
+          p_hit->SetIsSelected(-1);
         }
       }
     }
@@ -656,6 +685,31 @@ Bool_t TABMactNtuTrack::ComputeDataAll(){
       cout<<"TABMactNtuTrack::ComputeDataAll finished: track has been reconstructed,  chi2red="<<chi2red/(nselhit-2.)<<"  fNowView="<<fNowView<<endl;
 
   return kFALSE;
+}
+
+//invert the direction and the position of the ytracktr track parameters
+void TABMactNtuTrack::InvertTracks(vector<TABMtrack> &tracktrvec, Int_t InvertView){
+
+  if (FootDebugLevel(2))
+    cout<<"TABMactNtuTrack::InvertTracks: start; Number of tracks="<<tracktrvec.size()<<"  InvertView="<<InvertView<<endl;
+
+  if(InvertView==2 || InvertView==3){
+    for(Int_t i=0;i<tracktrvec.size();i++){
+      tracktrvec.at(i).SetOriginY(-tracktrvec.at(i).GetOrigin().Y());
+      tracktrvec.at(i).SetSlopeY(-tracktrvec.at(i).GetSlope().Y());
+    }
+  }
+  if(InvertView==1 || InvertView==3){
+    for(Int_t i=0;i<tracktrvec.size();i++){
+      tracktrvec.at(i).SetOriginX(-tracktrvec.at(i).GetOrigin().X());
+      tracktrvec.at(i).SetSlopeX(-tracktrvec.at(i).GetSlope().X());
+    }
+  }
+
+  if (FootDebugLevel(2))
+    cout<<"TABMactNtuTrack::InvertTracks:done"<<endl;
+
+  return;
 }
 
 //combine the tracks reconstructed for each view

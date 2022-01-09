@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGaction.cxx,v 1.16 2003/06/22 10:48:07 mueller Exp $
+  \file TAGaction.cxx
   \brief   Implementation of TAGaction.
 */
 
@@ -11,7 +10,7 @@
 #include "TAGaction.hxx"
 
 /*!
-  \class TAGaction TAGaction.hxx "TAGaction.hxx"
+  \class TAGaction 
   \brief Base class for actions. **
 */
 
@@ -109,6 +108,8 @@ void TAGaction::SetHistogramDir(TDirectory* dir)
      fbIsOpenFile = true;
    }
    
+   fDirectory = dir;
+
    if (!dir->IsWritable()) fbIsOpenFile = false;
 }
 
@@ -265,12 +266,13 @@ void TAGaction::AddDataOut(TAGdataDsc* p_data, const char* baseclass)
 void TAGaction::AddDataIn(TAGdataDsc* p_data, const char* baseclass)
 {
   if (!p_data) {
+    p_data->Print();
     Error("AddDataIn()", "descriptor object pointer is nil");
     MakeZombie();
     return;
   }
   if (!p_data->Object()) {
-    Error("AddDataIn()", "data object pointer is nil");
+    Error("AddDataIn()", "data object pointer is nil; Base class %s", baseclass);
     MakeZombie();
     return;
   }

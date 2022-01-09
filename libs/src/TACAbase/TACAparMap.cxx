@@ -56,8 +56,9 @@ Bool_t TACAparMap::FromFile(const TString& name)
     printf("CrystalsN: %d\n", nCrys);
     printf("CrystalId ModuleId ChannelId BoardId ActiveCrystal \n");
   }
-  
-  // nCrystals = nCrys;
+
+  //To read header
+  ReadItem(para, 5, ' ', false);  
   // cout << "n crys: " << nCrys << endl;
 
   for (Int_t i = 0; i < nCrys; ++i) { // Loop over crystal

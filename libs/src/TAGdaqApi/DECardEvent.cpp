@@ -7,6 +7,43 @@ const u_int DECardEvent::m_vtxHeader = 0xfafafafa;
 const u_int DECardEvent::m_vtxTail   = 0xabcdabcd;
 
 
+DECardEvent::DECardEvent()
+: RemoteEvent(),
+  detectorHeader(0),
+  boardHeader(0),
+  hardwareEventNumber(0),
+  triggerCounter(0),
+  BCOofTrigger(0),
+  clockCounter(0)
+{
+}
+
+
+DECardEvent::DECardEvent(const DECardEvent& right)
+: RemoteEvent(right),
+ detectorHeader(right.detectorHeader),
+ boardHeader(right.boardHeader),
+ hardwareEventNumber(right.hardwareEventNumber),
+ triggerCounter(right.triggerCounter),
+ BCOofTrigger(right.BCOofTrigger),
+ clockCounter(right.clockCounter)
+{
+}
+
+
+const DECardEvent& DECardEvent::operator=(const DECardEvent& right)
+{
+   RemoteEvent::operator=(right);
+   detectorHeader       = right.detectorHeader;
+   boardHeader          = right.boardHeader;
+   hardwareEventNumber  = right.hardwareEventNumber;
+   triggerCounter       = right.triggerCounter;
+   BCOofTrigger         = right.BCOofTrigger;
+   clockCounter         = right.clockCounter;
+   
+   return *this;
+}
+
 DECardEvent::~DECardEvent()
 {
 }
@@ -69,6 +106,8 @@ void DECardEvent::readData(unsigned int **p1)
       } while (*p != m_vtxTail && p != p_max);
    }
    *p1 = (++p);
+   //   printf ("Evento : %d, p1 = %x \n",  eventNumber,*p1);
+
 }
 
 void DECardEvent::printData () const

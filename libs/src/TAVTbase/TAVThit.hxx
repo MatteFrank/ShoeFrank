@@ -2,12 +2,13 @@
 #ifndef _TAVThit_HXX
 #define _TAVThit_HXX
 
-#include "TAVTbaseHit.hxx"
-
-/** TAVThit class interface to base class
-
-*/
+/*!
+ \file TAVThit.hxx
+ \brief   class interface to base class
+ */
 /*------------------------------------------+---------------------------------*/
+
+#include "TAVTbaseHit.hxx"
 
 class TAVThit : public TAVTbaseHit {
    

@@ -1,19 +1,8 @@
-///////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TATOEchecker                      //
-//                                                        //
-////////////////////////////////////////////////////////////
-
 //
-//File      : TATOEchecker.cpp
+//File      : TATOEchecker.cxx
 //Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
-//Date      : 10/02/2020
-//Framework : PhD thesis, CNRS/IPHC/DRHIM/Hadrontherapy, Strasbourg, France
+//Date      : 29/07/2021
+//Framework : PhD thesis, CNRS/IPHC/DRS/DeSis, Strasbourg, France
 //
-
 
 #include "TATOEchecker.hxx"
-
-
-
-

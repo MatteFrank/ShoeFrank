@@ -26,7 +26,7 @@ public:
   
   Double_t       GetTime()                  const   { return fTime;                 }
   Double_t       GetCharge()                const   { return fCharge;               }
-  Double_t       GetDe()                const   { return fCharge;               }
+  Double_t       GetDe()                    const   { return fCharge;               }
   
   inline void SetTime(double value){ fTime = value;}
   inline void SetCharge(double value){ fCharge = value;}
@@ -40,19 +40,16 @@ public:
   void           Clear(Option_t* option = "C");
   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
-   
-  ClassDef(TASThit,1)
-   
-  private:
+private:
  
   Double32_t      fCharge;
   Double32_t      fDe;
   Double32_t      fTime;
   
-   
   TArrayI         fMCindex;                  // Id of the hit created in the simulation
   TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
    
+   ClassDef(TASThit,1)
 };
 
 //##############################################################################
@@ -65,37 +62,37 @@ public:
    
    Int_t             GetHitsN() const;
    
-   TASThit*       GetHit(Int_t i_ind);
-   const TASThit* GetHit(Int_t i_ind) const;
-   TASThit*       NewHit(double charge, double de, double time);
+   TASThit*          GetHit(Int_t i_ind);
+   const TASThit*    GetHit(Int_t i_ind) const;
+   TASThit*          NewHit(double charge, double de, double time);
    virtual void      Clear(Option_t* opt="");
    void              SetupClones();
    
-   void SetCharge(double value){m_Charge = value;}
-   void SetTriggerTime(double value){m_TrigTime = value;}
-   void SetTriggerTimeOth(double value){m_TrigTime_oth = value;}
-   void SetTrigType(int value){m_TrigType=value;}
+   void SetCharge(double value)         { fCharge = value;      }
+   void SetTriggerTime(double value)    { fTrigTime = value;    }
+   void SetTriggerTimeOth(double value) { fTrigTimeOth = value; }
+   void SetTrigType(int value)          { fTrigType=value;      }
   
-   double GetCharge()         const { return m_Charge;}
-   double GetTriggerTime()    const { return m_TrigTime;}
-   double GetTriggerTimeOth() const { return m_TrigTime_oth;}
-   int    GetTrigType()       const { return m_TrigType;}
+   double GetCharge()         const { return fCharge;      }
+   double GetTriggerTime()    const { return fTrigTime;    }
+   double GetTriggerTimeOth() const { return fTrigTimeOth; }
+   int    GetTrigType()       const { return fTrigType;    }
 
   
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
 private:
-  TClonesArray* m_ListOfHits;			    // hits
-  Double32_t    m_TrigTime;
-  Double32_t    m_TrigTime_oth;
-  Double32_t    m_Charge;
-  int           m_TrigType;
+  TClonesArray* fListOfHits;			    // hits
+  Double32_t    fTrigTime;
+  Double32_t    fTrigTimeOth;
+  Double32_t    fCharge;
+  int           fTrigType;
 
 private:
    static TString fgkBranchName;    // Branch name in TTree
    
-   ClassDef(TASTntuHit,1)
+   ClassDef(TASTntuHit,2)
 };
 
 

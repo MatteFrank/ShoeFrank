@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGactNtuGlbTrackS.cxx
+ \file TAGactNtuGlbTrackS.cxx
  \brief   Implementation of TAGactNtuGlbTrackS.
  */
 #include "TClonesArray.h"
@@ -54,8 +53,9 @@
 
 /*!
  \class TAGactNtuGlbTrackS
- \brief NTuplizer for Inner tracker tracks. **
- Combining VTX tracks with IT-MSD & TW clusters
+ \brief Global straight line tracking
+ Combining VTX tracks with IT-MSD & TW clusters (& CAL)
+ Computing energy loss and scattering angle
  */
 
 Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
@@ -110,16 +110,19 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    
    TAGparGeo* pGeoMapG    = (TAGparGeo*)   fpGeoMapG->Object();
    TAVTparGeo* pGeoMapVt  = (TAVTparGeo*)  fpGeoMapVtx->Object();
-   TATWparGeo* pGeoMapTw  = (TATWparGeo*)  fpGeoMapTof->Object();
 
    fSensorThickVtx = pGeoMapVt->GetTotalSize()[2];
    fLastPlaneVtx   = pGeoMapVt->GetLayerPosZ(pGeoMapVt->GetSensorsN()-1);
    fLastPlaneVtx   = fpFootGeo->FromVTLocalToGlobal(TVector3(0,0,fLastPlaneVtx))[2];
-   fWallThickTw    = pGeoMapTw->GetBarThick()*2;
    
    // in case no ITR and  MSD
    fLastPlaneItr = fLastPlaneVtx;
    fLastPlaneMsd = fLastPlaneVtx;
+   
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
+      TATWparGeo* pGeoMapTw  = (TATWparGeo*)  fpGeoMapTof->Object();
+      fWallThickTw = pGeoMapTw->GetBarThick()*2;
+   }
    
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       TAITparGeo* pGeoMapIt  = (TAITparGeo*)  fpGeoMapItr->Object();
@@ -190,10 +193,16 @@ void TAGactNtuGlbTrackS::CreateHistogram()
       AddHistogram(fpHisResY[i]);
    }
    
-   fpHisResTotX = new TH1F(Form("%sResTotX", prefix.Data()), Form("%s - Total ResidualX", titleDev.Data()), 400, -0.01, 0.01);
-   fpHisResTotY = new TH1F(Form("%sResTotY", prefix.Data()), Form("%s - Total ResidualY", titleDev.Data()), 400, -0.01, 0.01);
+   fpHisResTotX = new TH1F(Form("%sResTotX", prefix.Data()), Form("%s - Total ResidualX", titleDev.Data()), 400, -0.2, 0.2);
+   fpHisResTotY = new TH1F(Form("%sResTotY", prefix.Data()), Form("%s - Total ResidualY", titleDev.Data()), 400, -0.2, 0.2);
    AddHistogram(fpHisResTotX);
    AddHistogram(fpHisResTotY);
+
+   fpHisResTrkTotX = new TH1F(Form("%sResTrkTotX", prefix.Data()), Form("%s - Total ResidualX for tracker", titleDev.Data()), 400, -0.2, 0.2);
+   fpHisResTrkTotY = new TH1F(Form("%sResTrkTotY", prefix.Data()), Form("%s - Total ResidualY for tracker", titleDev.Data()), 400, -0.2, 0.2);
+   AddHistogram(fpHisResTrkTotX);
+   AddHistogram(fpHisResTrkTotY);
+
    
    fpHisTrackEvt = new TH1F(Form("%sTrackEvt", prefix.Data()), Form("%s - Number of tracks per event", titleDev.Data()), 20, -0.5, 19.5);
    AddHistogram(fpHisTrackEvt);
@@ -316,6 +325,17 @@ Bool_t TAGactNtuGlbTrackS::FindTracks()
    return true;
 }
 
+
+//_____________________________________________________________________________
+//
+void TAGactNtuGlbTrackS::FillMcTrackId(TAGcluster* cluster, TAGpoint* point)
+{
+   for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
+      Int_t idx = cluster->GetMcTrackIdx(k);
+      point->AddMcTrackIdx(idx);
+   }
+}
+
 //_____________________________________________________________________________
 //
 TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
@@ -331,9 +351,11 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
       // from VT local to FOOT global
       posG = fpFootGeo->FromVTLocalToGlobal(posG);
       
-      TAGpoint* point = track->AddMeasPoint(TAVTparGeo::GetBaseName(), posG, errG);
+      TAGpoint* point = track->AddPoint(TAVTparGeo::GetBaseName(), posG, errG);
       point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName()));
       point->SetSensorIdx(cluster->GetSensorIdx());
+      point->SetClusterIdx(cluster->GetClusterIdx());
+      FillMcTrackId(cluster, point);
    }
    
    UpdateParam(track);
@@ -342,8 +364,12 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
    TAVTparGeo* pGeoMapVt = (TAVTparGeo*) fpGeoMapVtx->Object();
    TAGparGeo* pGeoMapG   = (TAGparGeo*)  fpGeoMapG->Object();
 
-   FindTwCluster(track, false);
-   fPartZ = track->GetCharge();
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
+      FindTwCluster(track, false);
+      fPartZ = track->GetTwChargeZ();
+   } else {
+      fPartZ = 0;
+   }
    
    if (fPartZ == 0) {
       if(FootDebugLevel(1))
@@ -468,9 +494,11 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
 
          posG = fpFootGeo->FromITLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddMeasPoint(TAITparGeo::GetBaseName(), posG, errG);
+         TAGpoint* point = track->AddPoint(TAITparGeo::GetBaseName(), posG, errG);
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAITparGeo::GetBaseName()));
          point->SetSensorIdx(iSensor);
+         point->SetClusterIdx(bestCluster->GetClusterIdx());
+         FillMcTrackId(bestCluster, point);
 
          UpdateParam(track);
          
@@ -551,10 +579,12 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          
          posG = fpFootGeo->FromMSDLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddMeasPoint(TAMSDparGeo::GetBaseName(), posG, errG);
+         TAGpoint* point = track->AddPoint(TAMSDparGeo::GetBaseName(), posG, errG);
          point->SetSensorIdx(iStation);
+         point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
-         
+         FillMcTrackId(bestCluster, point);
+
          UpdateParam(track);
          
          // Compute particle after each plane
@@ -649,7 +679,7 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
    if( bestCluster ) {
       
       Float_t Z = bestCluster->GetChargeZ();
-      track->SetCharge(Z);
+      track->SetTwChargeZ(Z);
       
       if (update) {
          // from IT local to FOOT global
@@ -658,13 +688,15 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
       
          posG = fpFootGeo->FromTWLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddMeasPoint(TATWparGeo::GetBaseName(), posG, errG);
+         TAGpoint* point = track->AddPoint(TATWparGeo::GetBaseName(), posG, errG);
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
          point->SetSensorIdx(0);
+         point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
+         FillMcTrackId(bestCluster, point);
 
          Float_t tof = bestCluster->GetMeanTof();
-         track->SetTof(tof);
+         track->SetTwTof(tof);
    
          bestCluster->SetFound();
          UpdateParam(track);
@@ -730,13 +762,15 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
          
       posG = fpFootGeo->FromCALocalToGlobal(posG);
          
-      TAGpoint* point = track->AddMeasPoint(TACAparGeo::GetBaseName(), posG, errG);
+      TAGpoint* point = track->AddPoint(TACAparGeo::GetBaseName(), posG, errG);
       point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TACAparGeo::GetBaseName()));
       point->SetSensorIdx(0);
+      point->SetClusterIdx(bestCluster->GetClusterIdx());
       point->SetEnergyLoss(bestCluster->GetEnergy());
+      FillMcTrackId(bestCluster, point);
 
       Float_t Ek = bestCluster->GetEnergy();
-      track->SetEnergy(Ek*TAGgeoTrafo::MevToGev());
+      track->SetFitEnergy(Ek*TAGgeoTrafo::MevToGev());
       
       bestCluster->SetFound();
       UpdateParam(track);
@@ -750,11 +784,11 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
 //! Setup all histograms.
 void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
 {
-   Float_t Z = track->GetCharge();
+   Float_t Z = track->GetTwChargeZ();
    if (Z < 1) return;
 
    // compute beta
-   Double_t tof    = track->GetTof();
+   Double_t tof    = track->GetTwTof();
    TVector3 posTw  = fpFootGeo->GetTWCenter();
    TVector3 pos    = track->Intersection(posTw[2]);
    
@@ -764,7 +798,7 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
    beta /= TAGgeoTrafo::GetLightVelocity(); //cm/ns
    
    // compute mass
-   Double_t Ekin = track->GetEnergy(); // should come from Calo
+   Double_t Ekin = track->GetFitEnergy(); // should come from Calo
   // Ekin += fPartEnergy; // add energy loss (neglecting loss in air)
    Double_t gamma = 1./TMath::Sqrt(1-beta*beta);
    Double_t mass  = Ekin/(gamma-1);
@@ -786,11 +820,11 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
    fpHisTheta->Fill(track->GetTgtTheta());
    fpHisPhi->Fill(track->GetTgtPhi());
    
-   fpHisTrackClus->Fill(track->GetMeasPointsN());
-   for (Int_t i = 0; i < track->GetMeasPointsN(); ++i) {
+   fpHisTrackClus->Fill(track->GetPointsN());
+   for (Int_t i = 0; i < track->GetPointsN(); ++i) {
       
       Int_t offset = 0;
-      TAGpoint* cluster = track->GetMeasPoint(i);
+      TAGpoint* cluster = track->GetPoint(i);
       Int_t idx = cluster->GetSensorIdx();
       TString devName = cluster->GetDevName();
       
@@ -820,6 +854,10 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
          caEnergyRes = cluster->GetEnergyLoss();
       }
       
+      if (track->GetPointsN() == 7) {
+         fpHisResTrkTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
+         fpHisResTrkTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
+      }
       fpHisResTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
       fpHisResTotY->Fill(impact[1]-cluster->GetPositionG()[1]);
       fpHisResX[idx+offset]->Fill(impact[0]-cluster->GetPositionG()[0]);
@@ -854,7 +892,7 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
    TVector3 lineOrigin = track->GetTgtPosition();  // origin in the tracker system
    TVector3 lineSlope  = track->GetTgtDirection();   // slope along z-axis in tracker system
    
-   Int_t nClusters = track->GetMeasPointsN();
+   Int_t nClusters = track->GetPointsN();
    
    Double_t x, dx;
    Double_t y, dy;
@@ -866,12 +904,12 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
    vector<double> res;
 
    for (Int_t i = 0; i < nClusters; ++i) {
-      TAGpoint* cluster = track->GetMeasPoint(i);
-      x  = cluster->GetPositionG()(0);
-      y  = cluster->GetPositionG()(1);
-      z  = cluster->GetPositionG()(2);
-      dx = cluster->GetPosErrorG()(0);
-      dy = cluster->GetPosErrorG()(1);
+      TAGpoint* cluster = track->GetPoint(i);
+      x  = cluster->GetMeasPosition()(0);
+      y  = cluster->GetMeasPosition()(1);
+      z  = cluster->GetMeasPosition()(2);
+      dx = cluster->GetMeasPosError()(0);
+      dy = cluster->GetMeasPosError()(1);
   
      
       zxData.push_back(z);

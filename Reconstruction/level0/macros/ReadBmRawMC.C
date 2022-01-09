@@ -68,7 +68,7 @@ void FillMCMsd(EVENT_STRUCT *myStr) {
    outFile->SetupElementBranch(bmTrack, TABMntuTrack::GetBranchName());
 }
 
-void ReadBmRawMC(TString name = "./data/flukasim/footC200_C2H4.root")
+void ReadBmRawMC(TString name = "./dataRaw/flukasim/footC200_C2H4.root")
 //void ReadMsdRawMC(TString name = "p_80_vtx.root")
 //void ReadMsdRawMC(TString name = "12C_80_vtx.root")
 //void ReadMsdRawMC(TString name = "12C_400_vtx.root")

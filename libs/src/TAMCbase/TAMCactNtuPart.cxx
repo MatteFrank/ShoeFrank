@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAMCactNtuPart.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \file TAMCactNtuPart.cxx
   \brief   Implementation of TAMCactNtuPart.
 */
 
@@ -13,7 +12,7 @@
 #include "math.h"
 
 /*!
-  \class TAMCactNtuPart TAMCactNtuPart.hxx "TAMCactNtuPart.hxx"
+  \class TAMCactNtuPart 
   \brief NTuplizer for MC events. **
 */
 

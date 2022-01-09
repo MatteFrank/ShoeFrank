@@ -1,15 +1,15 @@
 #ifndef _TAITactNtuHit_HXX
 #define _TAITactNtuHit_HXX
 
-#include "TAITactBaseRaw.hxx"
-
 /*!
- \file
- \version $Id: TAITactNtuHit.hxx $
+ \file TAITactNtuHit.hxx
  \brief   Declaration of TAITactNtuHit.
  */
 
 /*------------------------------------------+---------------------------------*/
+
+#include "TAITactBaseRaw.hxx"
+
 class TAGdataDsc;
 class DECardEvent;
 
@@ -23,7 +23,7 @@ public:
    virtual Bool_t  Action();
    
 private:
-   TAGdataDsc*     fpDatDaq;		    // input data dsc
+   TAGdataDsc*     fpDatDaq;		    /// input data dsc
    
 private:   
    //! Find vertex data

@@ -44,6 +44,7 @@ TABMparConf::TABMparConf()
   fLegRBin(75),
   fLegRRange(2.),
   fAssHitErr(5.),
+  fInvertTrack(0),
   fSmearHits(0),
   fSmearRDrift(4),
   fRDriftErr(0.015),
@@ -85,9 +86,9 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   ReadItem(fMaxHitCut);
   if(FootDebugLevel(1))
      cout<<"fMaxHitCut="<<fMaxHitCut<<endl;
-  ReadItem(fRejMaxCut);
+  ReadItem(fPlaneHitCut);
   if(FootDebugLevel(1))
-     cout<<"fRejMaxCut="<<fRejMaxCut<<endl;
+     cout<<"fPlaneHitCut="<<fPlaneHitCut<<endl;
   ReadItem(fChi2Cut);
   if(FootDebugLevel(1))
      cout<<"fChi2Cut="<<fChi2Cut<<endl;
@@ -114,6 +115,9 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   ReadItem(fAssHitErr);
   if(FootDebugLevel(1))
      cout<<"fAssHitErr="<<fAssHitErr<<endl;
+  ReadItem(fInvertTrack);
+  if(FootDebugLevel(1))
+     cout<<"fInvertTrack="<<fInvertTrack<<endl;
 
   //other parameters
   ReadItem(fHitTimeCut);

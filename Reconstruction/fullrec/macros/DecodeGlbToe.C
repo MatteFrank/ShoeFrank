@@ -15,7 +15,7 @@
 #endif
 
 
-void DecodeGlbToe(TString in = "data/data_built.2211.physics_foot.daq.VTX.1.dat", TString exp = "GSI", Int_t runNb = 2211, Bool_t mc = false)
+void DecodeGlbToe(TString in = "dataRaw/data_built.2211.physics_foot.daq.VTX.1.dat", TString exp = "GSI", Int_t runNb = 2211, Bool_t mc = false)
 {
   Int_t pos = in.Last('.');
   TString out = in(0, pos);

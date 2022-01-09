@@ -1,8 +1,7 @@
 #ifndef _TAVTbaseParMap_HXX
 #define _TAVTbaseParMap_HXX
 /*!
- \file
- \version $Id: TAVTbaseParMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+ \file TAVTbaseParMap.hxx
  \brief   Declaration of TAVTbaseParMap.
  */
 /*------------------------------------------+---------------------------------*/
@@ -27,10 +26,10 @@ public:
    Bool_t       FromFile(const TString& name = "");
 
 protected:
-   Int_t                    fSensorsN;
-   Int_t                    fDataLinksN;
-   map<pair<int, int>, int> fPlaneId;
-   TString                  fkDefaultMapName; // default detector mapping file
+   Int_t                    fSensorsN;        ///< number of sensors
+   Int_t                    fDataLinksN;      ///< numver of data links
+   map<pair<int, int>, int> fPlaneId;         ///< map of plane identification
+   TString                  fkDefaultMapName; ///< default detector mapping file
    
    ClassDef(TAVTbaseParMap,1)
   

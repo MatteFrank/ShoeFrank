@@ -6,12 +6,16 @@
 
 #include "TCGbaseConstructor.hxx"
 
-/** Building detector geometry
+/*!
+ \file TCCAgeometryConstructor.hxx
+ \brief  Building detector geometry
  
- \author Ch, Finck
+ Class to define a logical volume (properties, material) of CALorimter
+ 
+ \author Ch. Finck
  */
 
-class G4LogicalVolume; //General class to define a logical volume (properties, material)
+class G4LogicalVolume;
 
 class TACAparGeo;
 
@@ -21,10 +25,14 @@ public:
    TCCAgeometryConstructor(TACAparGeo* pParGeo);
    virtual ~TCCAgeometryConstructor();
    
-   virtual G4LogicalVolume* Construct(); //method in which the physical volume is constructed
+   //! Method in which the physical volume is constructed
+   virtual G4LogicalVolume* Construct();
    
+   //! Get Box size of CAL
    TVector3 GetBoxSize()     const  { return fSizeBoxCal;         }
+   //! Get min size of CAL
    TVector3 GetMinPoistion() const  { return fMinPosition;        }
+   //! Get max size of CAL
    TVector3 GetMaxPoistion() const  { return fMaxPosition;        }
    
 public:
@@ -32,23 +40,25 @@ public:
 
    
 private:
-   G4LogicalVolume* fBoxLog;
-   G4LogicalVolume* fSupLog;
-   G4LogicalVolume* fCrysLog;
-   TACAparGeo*      fpParGeo;
-   TVector3         fSizeBoxCal;
-   TVector3         fMinPosition;
-   TVector3         fMaxPosition;
+   G4LogicalVolume* fBoxLog;      ///< Logical volume of box
+   G4LogicalVolume* fSupLog;      ///< Logical volume of support
+   G4LogicalVolume* fCrysLog;     ///< Logical volume of crystal
+   TACAparGeo*      fpParGeo;     ///< Geometrical parameters
+   TVector3         fSizeBoxCal;  ///< Box size
+   TVector3         fMinPosition; ///< Minimun size of envelop
+   TVector3         fMaxPosition; ///< Maximum size of envelop
    
 private:
-   static TString fgkCalSDname;
+   static TString fgkCalSDname;  ///< BM sensitive detector name
 
    
 private:
+   //! Define envelop size
    void DefineMaxMinDimension();
+   //! Define sensitive detector
    void DefineSensitive();
+   //! Define material
    void DefineMaterial();
-
 };
 
 #endif

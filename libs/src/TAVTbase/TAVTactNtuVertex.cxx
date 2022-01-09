@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactNtuVertex. 
+ \file TAVTactNtuVertex.cxx
+ \brief   NTuplizer for VTX vertices
  */
 
 #include "TClonesArray.h"
@@ -19,7 +19,7 @@
 
 /*!
  \class TAVTactNtuVertex
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for VTX vertices
  */
 
 ClassImp(TAVTactNtuVertex);

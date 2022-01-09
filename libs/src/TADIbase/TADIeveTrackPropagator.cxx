@@ -11,6 +11,7 @@
 */
 
 //______________________________________________________________________________
+//! Constructor
 TADIeveTrackPropagator::TADIeveTrackPropagator()
 : TEveTrackPropagator()
 {

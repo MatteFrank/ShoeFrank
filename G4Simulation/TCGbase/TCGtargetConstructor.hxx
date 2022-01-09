@@ -30,6 +30,13 @@
 #ifndef TCGtargetConstructor_h
 #define TCGtargetConstructor_h 1
 
+/*!
+ \file TCGtargetConstructor.hxx
+ \brief  Target construction
+ 
+ \author Ch. Finck
+ */
+
 #include "TCGbaseConstructor.hxx"
 #include "globals.hh"
 #include "G4ThreeVector.hh"
@@ -53,42 +60,51 @@ public:
    ~TCGtargetConstructor();
    
 public:
+   //! Construct
    G4LogicalVolume* Construct();
-
+   //! Get target material
    G4Material*  GetMaterial()       { return fTargetMat; }
 
-   void SetInsertMaterialName(Int_t insert, const char* material) ;
+   //! Get insert material name
+   void SetInsertMaterialName(Int_t insert, const char* material);
+   //! Get insert shape
    void SetInsertShape(Int_t insert, const char* shape);
-   void SetInsertAttributes(G4int insert,G4String material) ;
-   void SetInsertSize(Int_t insert, G4double v1,  G4double v2, G4double v3) ;
-   void SetInsertPosition(Int_t insert, G4double v1,  G4double v2, G4double v3) ;
+   //! Get insert drawing attributes
+   void SetInsertAttributes(G4int insert,G4String material);
+   //! Get insert size
+   void SetInsertSize(Int_t insert, G4double v1,  G4double v2, G4double v3);
+   //! Get insert positions
+   void SetInsertPosition(Int_t insert, G4double v1,  G4double v2, G4double v3);
+   //! Get insert number
    void SetInsertNumber(G4int value);
    
 public:
+   //! Get target name
    static const Char_t* GetTargetName()    { return fgkTargetName.Data();  }
 
 private:
+   //! Build target
    void BuildTarget();
-   void BuildCubicTarget(); //in the file config 1
-   void BuildCylindricTarget(); // in the file config 2
+   //! Build cubic target
+   void BuildCubicTarget();
+   //! Build cylindric target
+   void BuildCylindricTarget();
+   //! Build insert
    void BuildInsert();
-
+   //! Define materials
    void DefineMaterial();
    
 private:
-   TAGparGeo*          fpParGeo;
-   G4VPhysicalVolume*  fTargetPhy;
-   G4LogicalVolume*    fTargetLog;
-   
-//   TAGtargetMessenger* fTargetMessenger;
-   G4Material*         fTargetMat;
+   TAGparGeo*          fpParGeo;       ///< Geometry parameters for target
+   G4VPhysicalVolume*  fTargetPhy;     ///< Physical target volume
+   G4LogicalVolume*    fTargetLog;     ///< Logical target volume
+   G4Material*         fTargetMat;     ///< Target material
       
    //Insert parameter
-   G4LogicalVolume*     fInsertLog[20];
+   G4LogicalVolume*    fInsertLog[20]; ///< Logical insert volumes
    
 private:
-   //Insert parameter
-   static TString  fgkTargetName;
+   static TString  fgkTargetName;      ///< Target name
 
 };
 

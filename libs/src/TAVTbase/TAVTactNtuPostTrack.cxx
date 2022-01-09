@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactNtuPostTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactNtuPostTrack.
+ \file TAVTactNtuPostTrack.cxx
+ \brief   Class for post tracking refiting including vertex
  */
 #include "TClonesArray.h"
 #include "TF1.h"
@@ -30,7 +29,7 @@
 
 /*!
  \class TAVTactNtuPostTrack 
- \brief NTuplizer for vertex tracks. **
+ \brief Class for post tracking refiting including vertex
  */
 
 ClassImp(TAVTactNtuPostTrack);

@@ -16,6 +16,13 @@ void DEMSDEvent::readData(unsigned int **p1){
       hardwareEventNumber = values[2];
       triggerCounter = values[2];
       BCOofTrigger = values[3];
+   }else
+   {
+      detectorHeader = 0x00000bad;
+      boardHeader =    0x0000dead;
+      hardwareEventNumber = -1;
+      triggerCounter = -1;
+      BCOofTrigger = -1;
    }
    fillStrip();
 } 

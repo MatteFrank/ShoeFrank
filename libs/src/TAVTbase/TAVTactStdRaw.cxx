@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactStdRaw.
+ \file TAVTactStdRaw.cxx
+ \brief    Read raw data from single VTX file ()ascii format) from new firmware
  */
 
 #include "DECardEvent.hh"
@@ -15,7 +15,7 @@
 
 /*!
  \class TAVTactStdRaw TAVTactStdRaw.hxx "TAVTactStdRaw.hxx"
- \brief Read raw data from single VTX file ()ascii format) from new firmware **
+ \brief Read raw data from single VTX file ()ascii format) from new firmware
  */
 
 ClassImp(TAVTactStdRaw);
@@ -44,7 +44,7 @@ TAVTactStdRaw::~TAVTactStdRaw()
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
+// Action.
 Bool_t TAVTactStdRaw::Action()
 {
    if (GetEvent())
@@ -57,7 +57,7 @@ Bool_t TAVTactStdRaw::Action()
 }
 
 //------------------------------------------+-----------------------------------
-//! Get next event.
+// Get next event.
 Bool_t TAVTactStdRaw::GetEvent()
 {
    fData.clear();
@@ -124,7 +124,7 @@ Bool_t TAVTactStdRaw::GetEvent()
 }
 
 //------------------------------------------+-----------------------------------
-//! Open ascii data sources.
+// Open ascii data sources.
 Int_t TAVTactStdRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/, Bool_t /*dscBranch*/)
 {
    TString inputFileName;
@@ -160,7 +160,7 @@ Int_t TAVTactStdRaw::Open(const TString& name, Option_t* opt, const TString /*tr
 }
 
 //------------------------------------------+-----------------------------------
-//! Close input file.
+// Close input file.
 void TAVTactStdRaw::Close()
 {
       fRawFileAscii.close();

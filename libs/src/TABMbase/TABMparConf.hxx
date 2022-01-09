@@ -43,6 +43,7 @@ class TABMparConf : public TAGparTools {
     Float_t GetLegMRange()              const{return fLegMRange;};
     Float_t GetLegRRange()              const{return fLegRRange;};
     Float_t GetAssHitErr()              const{return fAssHitErr;};
+    Int_t   GetInvertTrack()            const{return fInvertTrack;};
     Float_t GetEnThresh()               const{return fEnThresh;};
 
 
@@ -56,8 +57,6 @@ class TABMparConf : public TAGparTools {
     virtual void    Clear(Option_t* opt="");
     virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
     TString         fkDefaultParName;  // default par file name
-
-    ClassDef(TABMparConf,1)
 
   private:
 
@@ -77,6 +76,7 @@ class TABMparConf : public TAGparTools {
     Int_t     fLegRBin;           //number of bin in the r th2d legendre tracking
     Float_t   fLegRRange;         //half range for the r th2d in the legendre tracking
     Float_t   fAssHitErr;         //to select a hit for the reco in checkasshits (high value=more selected hits)
+    Int_t     fInvertTrack;       //0= do not invert the reconstructed tracks, 1=invert only X views, 2=invert only Y views, 3=invert both views
 
     //MC parameters
     Int_t     fSmearHits;         //0=no fSmearHits on MC, 1=add BM efficiency effect, 2=use createfakehits
@@ -86,6 +86,8 @@ class TABMparConf : public TAGparTools {
     //other parameters
     Float_t   fRDriftErr;         //rdrift default error (used if from parcon file the error isn't loaded)
     TArrayI   fDeadCha;           //BM dead channels
+   
+   ClassDef(TABMparConf,1)
 };
 
 #endif

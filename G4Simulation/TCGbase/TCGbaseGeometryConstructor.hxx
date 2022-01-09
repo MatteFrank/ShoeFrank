@@ -30,6 +30,13 @@
 #ifndef TCGbaseGeometryConstructor_h
 #define TCGbaseGeometryConstructor_h 1
 
+/*!
+ \file TCGbaseGeometryConstructor.hxx
+ \brief  Geometry construction class for target/beam
+ 
+ \author Ch. Finck
+ */
+
 #include "TAGcampaignManager.hxx"
 
 #include "TCGbaseConstructor.hxx"
@@ -56,33 +63,40 @@ public:
    virtual ~TCGbaseGeometryConstructor();
    
 public:
+   //! Set size in Z for world
    void SetWorldSizeZ(G4double sizeZ);
+   //! Set size in X-Y for world
    void SetWorldSizeXY(G4double sizeXY);
-   
+   //! Set world material
 	void SetWordMaterial(G4String mat);
    
+   //! Construct
    virtual G4VPhysicalVolume* Construct();
    
+   //! Get size in Z for world
    G4double     GetWorldSizeZ()     const  { return fWorldSizeZ;      }
+   //! Get size in X-Y for world
    G4double     GetWorldSizeXY()    const  { return fWorldSizeXY;     }
-   
+   //! Get world material
    G4Material*  GetWorldMaterial()         { return fWorldMaterial;   }
+   
+   //! Get geometry parameter for beam/target
    TAGparGeo*   GetParGeoG()               { return fpParGeoG;        }
+   //! Get geometry transformations
    TAGgeoTrafo* GetGeoTrafo()              { return fpFootGeo;        }
 
 protected:
-   TAGcampaignManager*    fCampManager;
-   TString                fExpName;
-   G4int                  fRunNumber;
-   TAGgeoTrafo*           fpFootGeo;           // trafo prointer
-   G4double               fWorldSizeZ;
-   G4double               fWorldSizeXY;
-   G4Material*            fWorldMaterial;
-   G4LogicalVolume*       fLogWorld;
-   TCGtargetConstructor*  fTarget;
-   TAGparGeo*             fpParGeoG;
-   TCGmaterials*          fpMaterials;
-
+   TAGcampaignManager*    fCampManager;   ///< Campaign manager
+   TString                fExpName;       ///< Experiment name
+   G4int                  fRunNumber;     ///< Run number
+   TAGgeoTrafo*           fpFootGeo;      ///<  trafo prointer
+   G4double               fWorldSizeZ;    ///< World size in Z
+   G4double               fWorldSizeXY;   ///< World size in X-Y
+   G4Material*            fWorldMaterial; ///< World material
+   G4LogicalVolume*       fLogWorld;      ///< Logical world
+   TCGtargetConstructor*  fTarget;        ///< Target constructor
+   TAGparGeo*             fpParGeoG;      ///< Target/beam geometry parameters
+   TCGmaterials*          fpMaterials;    ///< Materials
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

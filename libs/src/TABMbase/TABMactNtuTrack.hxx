@@ -74,16 +74,15 @@ public:
   Int_t NumericalMinimizationDouble();              //use minuit2 to refine the track parameters
   Double_t EvaluateChi2(const double *params);      //adopted in minuit2 to calculate the track chi2 with the selected hits
   Bool_t ComputeDataAll();                          //after the reconstruction, calculate the residuals, chi2 for all the hits
+  void InvertTracks(vector<TABMtrack> &tracktrvec, Int_t InvertView);  //Invert the BM tracks Y axis parameters (to be consistent with the VTX in GSI2021 campaign)
   void CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr, TABMntuTrack* p_ntutrk); //combine the track of both views
-  void EvaluateDistRes();                           //Evaluate the resolution distribution 
-  
+  void EvaluateDistRes();                           //Evaluate the resolution distribution
+
   //for calibration only
-  void FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &meanTimeReso, Double_t &meanDistReso);          //Fit the calibration plots and writhe the output 
+  void FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &meanTimeReso, Double_t &meanDistReso);          //Fit the calibration plots and writhe the output
 
   //not used methods
   void SaveLegpol();                                // extra method adopted to save fLegPolSum in a different file,
-
-  ClassDef(TABMactNtuTrack,0)
 
   private:
 
@@ -109,7 +108,13 @@ public:
   //histos
   TH2F*            fpResTot;
   TH2F*            fpHisMap;
+  TH2F*            fpHisMapTW;
   TH2F*            fpHisMylar12d;
+
+  // TH2F*            fpHis0MSD;
+  // TH2F*            fpHis1MSD;
+  // TH2F*            fpHis2MSD;
+
   TH1F*            fpHisAngleX;
   TH1F*            fpHisAngleY;
   TH1F*            fpHisChi2Red;
@@ -128,7 +133,7 @@ public:
   TH1F*            fpTrackSep;
   TH1F*            fpParRes;
   TH1F*            fpParSTrel;
-  
+
   //for bm calibration
   TH2F*            fpResTimeTot;
   TH1F*            fpParNewSTrel;
@@ -139,6 +144,7 @@ public:
   std::vector<TH1F*> fpResTimeBin; //for the STREL calibration
   std::vector<TH1F*> fpResDistBin; //for the STREL calibration
 
+   ClassDef(TABMactNtuTrack,0)
 };
 
 

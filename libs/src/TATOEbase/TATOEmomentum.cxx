@@ -19,6 +19,7 @@
 #include "stepper.hpp"
 #include "grkn_data.hpp"
 
+#include "TAGroot.hxx"
 #include "TADIgeoField.hxx"
 
 
@@ -60,9 +61,9 @@ TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z ) {
                                              
                             auto p = sqrt( p_x * p_x + p_y * p_y + p_z * p_z);
                                              
-                            auto const dpx_dz = 0.3e-3 * R * track_ph->GetCharge()/p * (p_y*field.Z() - p_z * field.Y());
-                            auto const dpy_dz = 0.3e-3 * R * track_ph->GetCharge()/p * (p_z*field.X() - p_x * field.Z());
-                            auto const dpz_dz = 0.3e-3 * R * track_ph->GetCharge()/p * (p_x*field.Y() - p_y * field.X());
+                            auto const dpx_dz = 0.3e-3 * R * track_ph->GetTwChargeZ()/p * (p_y*field.Z() - p_z * field.Y());
+                            auto const dpy_dz = 0.3e-3 * R * track_ph->GetTwChargeZ()/p * (p_z*field.X() - p_x * field.Z());
+                            auto const dpz_dz = 0.3e-3 * R * track_ph->GetTwChargeZ()/p * (p_x*field.Y() - p_y * field.X());
                                              
                             return matrix<3, 1>{ dpx_dz, dpy_dz, dpz_dz };
                                                                                                                 }
@@ -71,7 +72,7 @@ TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z ) {
     auto stepper = make_stepper<data_rkf45>( std::move(ode) );
 //    stepper.specify_tolerance(1e-8);
 
-    auto * starting_point_h = track_ph->GetCorrPoint( 0 );
+    auto * starting_point_h = track_ph->GetPoint( 0 );
     
     auto os = operating_state<matrix<3,1>, 1>{
             starting_point_h->GetPositionG().Z(),

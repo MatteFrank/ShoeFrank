@@ -6,8 +6,7 @@
 #include "TAVTactBaseNtuHit.hxx"
 
 /*!
- \file
- \version $Id: TAVTactStdDaqRaw.hxx $
+ \file TAVTactStdDaqRaw.hxx
  \brief   Declaration of TAVTactStdDaqRaw.
  */
 
@@ -22,6 +21,7 @@ public:
    explicit TAVTactStdDaqRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);
    virtual  ~TAVTactStdDaqRaw();
    
+   //! Action
    virtual Bool_t  Action();
    
    //! Open file with a given prefix and suffix for the files
@@ -31,8 +31,8 @@ public:
    virtual void    Close();
       
 private:
-   ifstream          fDaqFile;    // file streamm
-   Int_t             fRunNumber;       // run number
+   ifstream          fDaqFile;    ///< file streamm
+   Int_t             fRunNumber;  ///< run number
    
 private:
 

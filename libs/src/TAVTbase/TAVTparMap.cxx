@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTparMap.cxx,v 1.5 2003/06/09 18:41:04 mueller Exp $
- \brief   Implementation of TAVTparMap.
+ \file TAVTparMap.cxx
+  \brief   Map parameters for VTX
  */
 
 #include "TAVTparMap.hxx"
@@ -9,15 +8,14 @@
 //##############################################################################
 
 /*!
- \class TAVTparMap TAVTparMap.hxx "TAVTparMap.hxx"
- \brief Map and Geometry parameters for Tof wall. **
+ \class TAVTparMap
+ \brief Map parameters for VTX
  */
 
 ClassImp(TAVTparMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAVTparMap::TAVTparMap() 
  : TAVTbaseParMap()
 {
@@ -26,7 +24,6 @@ TAVTparMap::TAVTparMap()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAVTparMap::~TAVTparMap()
 {
 }

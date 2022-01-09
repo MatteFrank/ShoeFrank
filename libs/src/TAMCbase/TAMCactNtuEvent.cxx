@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAMCactNtuEvent.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \file TAMCactNtuEvent.cxx
   \brief   Implementation of TAMCactNtuEvent.
 */
 

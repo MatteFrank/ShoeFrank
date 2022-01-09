@@ -1,22 +1,31 @@
+/*!
+ \file TAEDglbTrack.cxx
+ \brief  Class to display global track line on event.
+ */
 
 #include "TEveChunkManager.h"
 
 #include "TAEDglbTrack.hxx"
 
+/*!
+ \class TAEDglbTrack
+ \brief  Class to display global track line on event.
+ */
+
 ClassImp(TAEDglbTrack);
 
 //__________________________________________________________
+//! default constructor
 TAEDglbTrack::TAEDglbTrack(const Text_t* name)
   : TEveStraightLineSet(name),
     fTrackId(0x0)
 { 
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDglbTrack::~TAEDglbTrack()
 {
-   // default destructor
 }
 
 //__________________________________________________________

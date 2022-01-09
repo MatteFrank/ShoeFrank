@@ -98,8 +98,6 @@ Bool_t TASTparMap::FromFile(const TString& name) {
   ifstream incF;
   incF.open(name_exp.Data());
 
-
-  
   if (!incF) {
     Error("FromFile()", "failed to open file '%s'", name_exp.Data());
     return kTRUE;

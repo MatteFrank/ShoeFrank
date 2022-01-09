@@ -1,0 +1,16 @@
+// Campaign file
+CamName: "MSDCNAO"
+RunNumber: 7083-7148;
+NumberDevices: 2
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/MSDCNAO/FOOT.geo": -1;
+
+DetectorName: "MSD"
+NumberFiles: 5
+"./geomaps/MSDCNAO/TAMSDdetector.geo": -1;
+"./config/MSDCNAO/TAMSDdetector.cfg": -1;
+"./config/MSDCNAO/TAMSDdetector.map": -1;
+"./calib/MSDCNAO/TAMSD_Pedestal.cal": -1;
+"./calib/MSDCNAO/TAMSD_Energy_Calibration.cal": -1

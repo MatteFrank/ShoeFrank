@@ -1,19 +1,29 @@
 
-#include "TClass.h"
+/*!
+ \file TAEDpoint.cxx
+ \brief  Class to display point on event.
+ */
 
+#include "TClass.h"
 #include "TAEDpoint.hxx"
 
+/*!
+ \class TAEDpoint
+ \brief  Class to display point on event.
+ */
+
+
 //__________________________________________________________
+//! default constructor
 TAEDpoint::TAEDpoint(const Text_t* name) 
   : TEvePointSet(name)
 {
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDpoint::~TAEDpoint()
 {
-  // default destructor
 }
 
 //__________________________________________________________

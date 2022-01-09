@@ -1,3 +1,8 @@
+/*!
+ \file TAGgeoTrafo.cxx
+ \brief   Implementation of TAGgeoTrafo.
+ */
+
 #include "TAGgeoTrafo.hxx"
 #include <fstream>
 
@@ -5,7 +10,11 @@
 
 #include "TAGrecoManager.hxx"
 
-//Class that handles the Geometrical transformations in FOOT
+
+/*!
+ \class TAGgeoTrafo 
+ \brief/Class that handles the Geometrical transformations in FOOT. **
+ */
 
 ClassImp(TAGgeoTrafo);
 
@@ -32,6 +41,7 @@ const Float_t TAGgeoTrafo::fgkGevToMev      = 1e3;
 const Float_t TAGgeoTrafo::fgkGevToKev      = 1e6;
 const Float_t TAGgeoTrafo::fgkMevToGev      = 1e-3;
 const Float_t TAGgeoTrafo::fgkGausToTesla   = 1e-4;
+const Float_t TAGgeoTrafo::fgkGausToKGaus   = 1e-3;
 const Float_t TAGgeoTrafo::fgkMassFactor    = 0.9383; // GeV
 const Float_t TAGgeoTrafo::fgkElectronMass  = 0.5109; // MeV
 const Float_t TAGgeoTrafo::fgkLightVelocity = 29.98; // cm/ns
@@ -51,6 +61,7 @@ const Char_t* TAGgeoTrafo::GetDeviceName(Int_t devType)
 }
 
 //_____________________________________________________________________________
+//! Constructor
 TAGgeoTrafo::TAGgeoTrafo(const TString expName)
 : TAGaction(fgDefaultActName.Data(), "TAGgeoTrafo - Geometry Transformations"),
   fFileStream(new TAGparTools()),
@@ -63,6 +74,7 @@ TAGgeoTrafo::TAGgeoTrafo(const TString expName)
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAGgeoTrafo::~TAGgeoTrafo() 
 {
    delete fMatrixList;
@@ -217,6 +229,8 @@ bool TAGgeoTrafo::FromFile(TString ifile)
       return kTRUE;
    }
   
+   Info("FromFile()", "Open file %s for geometry", ifile.Data());
+   
    while(!fFileStream->Eof()) {
       TString name;
       TString baseName = "";

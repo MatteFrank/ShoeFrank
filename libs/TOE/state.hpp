@@ -187,7 +187,9 @@ struct underlying< candidate_impl<Vector, Covariance, Matrix, Data> >
 // ----------------- enriched_candidate_impl ---------------------------
 
 struct chisquared{
-    double chisquared;
+    double prediction;
+    double correction;
+    double distance;
 };
 
 
@@ -232,6 +234,11 @@ struct underlying< corrected_state_impl<Vector, Covariance> >
 struct step_register
 {
     double step_length;
+};
+
+struct block_weight_register
+{
+    double block_weight;
 };
 
 // ----------------- makers ---------------------------

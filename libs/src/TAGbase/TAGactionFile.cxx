@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGactionFile.cxx,v 1.1 2003/07/08 18:51:50 mueller Exp $
+  \file TAGactionFile.cxx
   \brief   Implementation of TAGactionFile.
 */
 
@@ -75,6 +74,13 @@ void TAGactionFile::SetupChannel(TAGdataDsc* p_data, TAGnamed* p_filt)
 //------------------------------------------+-----------------------------------
 //! SetupBranch for tree reader only
 void TAGactionFile::SetupBranch(TAGdataDsc* p_data, const char* branch)
+{
+   return;
+}
+
+//------------------------------------------+-----------------------------------
+//! Add friend tree
+void TAGactionFile::AddFriendTree(TString /*fileName*/, TString /*treeName*/)
 {
    return;
 }

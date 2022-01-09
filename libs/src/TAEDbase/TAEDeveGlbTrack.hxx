@@ -1,13 +1,17 @@
 #ifndef _TAEDeveGlbTrack_HXX_
 #define _TAEDeveGlbTrack_HXX_
 
+/*!
+ \file TAEDeveGlbTrack.hxx
+ \brief   TAEDeveGlbTrack a class to display global tracks on event
+ 
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "TEveTrack.h"
 #include "TVector3.h"
 
-/** TAEDeveGlbTrack a class to display global tracks on event
- 
-*/
 class TEveTrackPropagator;
 
 class TAEDeveGlbTrack : public TEveTrack {
@@ -29,7 +33,7 @@ public:
    TObject* GetTrackId() const { return fTrackId; }
    
 private:
-   TObject* fTrackId;
+   TObject* fTrackId; ///< Track objet reference
    
 };
 

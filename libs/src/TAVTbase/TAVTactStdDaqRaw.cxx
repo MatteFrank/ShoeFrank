@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactStdDaqRaw.
+ \file  TAVTactStdDaqRaw.cxx
+ \brief   Get vertex raw data from re-synchronized sensors in single file (binary format)
  */
 
 #include "DECardEvent.hh"
@@ -14,8 +14,8 @@
 #include "TAVTactStdDaqRaw.hxx"
 
 /*!
- \class TAVTactStdDaqRaw TAVTactStdDaqRaw.hxx "TAVTactStdDaqRaw.hxx"
- \brief Get vertex raw data from re-synchronized sensors in single file (binary format)**
+ \class TAVTactStdDaqRaw
+ \brief Get vertex raw data from re-synchronized sensors in single file (binary format)
  */
 
 ClassImp(TAVTactStdDaqRaw);
@@ -38,7 +38,7 @@ TAVTactStdDaqRaw::~TAVTactStdDaqRaw()
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
+// Action.
 Bool_t TAVTactStdDaqRaw::Action()
 {
    if (GetEvent())
@@ -51,7 +51,7 @@ Bool_t TAVTactStdDaqRaw::Action()
 }
 
 //------------------------------------------+-----------------------------------
-//! Get next event.
+// Get next event.
 Bool_t TAVTactStdDaqRaw::GetEvent()
 {
    fData.clear();
@@ -82,7 +82,7 @@ Bool_t TAVTactStdDaqRaw::GetEvent()
 }
 
 //------------------------------------------+-----------------------------------
-//! Open ascii data sources.
+// Open ascii data sources.
 Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/,  Bool_t /*dscBranch*/)
 {
    TString inputFileName;
@@ -115,7 +115,7 @@ Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /
 }
 
 //------------------------------------------+-----------------------------------
-//! Close input file.
+// Close input file.
 void TAVTactStdDaqRaw::Close()
 {
       fDaqFile.close();

@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGroot.cxx,v 1.13 2003/07/08 18:55:38 mueller Exp $
+  \file TAGroot.cxx
   \brief   Implementation of TAGroot.
 */
 
@@ -21,13 +20,14 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
+
 /*!
-  \class TAGroot TAGroot.hxx "TAGroot.hxx"
-  \brief TAG top level object description. **
-*/
+ \class TAGrootInterruptHandler
+ \brief TAG interrupt handler. **
+ */
+
 
 //------------------------------------------+-----------------------------------
-
 class TAGrootInterruptHandler : public TSignalHandler {
   public:
                     TAGrootInterruptHandler();
@@ -48,11 +48,16 @@ Bool_t TAGrootInterruptHandler::Notify()
 
 //##############################################################################
 
+/*!
+ \class TAGroot
+ \brief TAG top level object description. **
+ */
+
+
 ClassImp(TAGroot);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGroot::TAGroot()
 {
   if (gTAGroot) {
@@ -89,7 +94,6 @@ TAGroot::TAGroot()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGroot::~TAGroot()
 {
   gROOT->GetListOfCleanups()->Remove(fpRequiredActionList);
@@ -111,8 +115,7 @@ TAGroot::~TAGroot()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Add a \c TAGaction or \c TAGdataDsc to the list of required items
-
+// Add a \c TAGaction or \c TAGdataDsc to the list of required items
 void TAGroot::AddRequiredItem(TAGnamed* p_item)
 {
   if (p_item->InheritsFrom("TAGaction")) {
@@ -132,8 +135,7 @@ void TAGroot::AddRequiredItem(TAGnamed* p_item)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Add a \c TAGaction or \c TAGdataDsc named \a name to list of required items
-
+// Add a \c TAGaction or \c TAGdataDsc named \a name to list of required items
 void TAGroot::AddRequiredItem(const char* name)
 {
   TAGaction*  p_act = FindAction(name);
@@ -153,8 +155,7 @@ void TAGroot::AddRequiredItem(const char* name)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Clear list of required items
-
+// Clear list of required items
 void TAGroot::ClearRequiredList()
 {
   fpRequiredActionList->Clear();
@@ -163,10 +164,9 @@ void TAGroot::ClearRequiredList()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Setup event loop.
-
-void TAGroot::BeginEventLoop() {
-
+// Setup event loop.
+void TAGroot::BeginEventLoop()
+{
   if (gApplication->GetSignalHandler() && !fbDefaultHandlerRemoved) {
     gApplication->GetSignalHandler()->Remove();
     fbDefaultHandlerRemoved = kTRUE;
@@ -181,8 +181,7 @@ void TAGroot::BeginEventLoop() {
 }
 
 /*------------------------------------------+---------------------------------*/
-//! end event loop.
-
+// end event loop.
 void TAGroot::EndEventLoop()
 {
   if (fbTAGrootHandlerAdded) {
@@ -204,8 +203,7 @@ void TAGroot::EndEventLoop()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! abort event loop.
-
+// abort event loop.
 void TAGroot::AbortEventLoop()
 {
   fbAbortEventLoop = kTRUE;
@@ -213,9 +211,8 @@ void TAGroot::AbortEventLoop()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Process required items of next event
-
-Bool_t TAGroot::NextEvent()
+// Process required items of next event
+Bool_t TAGroot::NextEvent(long nEv)
 {
   Bool_t b_ok = kFALSE;
   if (fbAbortEventLoop) {
@@ -228,7 +225,10 @@ Bool_t TAGroot::NextEvent()
   ClearAllAction();
   ClearAllData();
 
-  fEventId.SetEventNumber(1+fEventId.EventNumber()); // increment event number
+  if(nEv == -999)
+    fEventId.SetEventNumber(1+fEventId.EventNumber()); // increment event number
+  else
+    fEventId.SetEventNumber( nEv );
   
   //break segmentation all'ultimo giro del for
   for (TObjLink* lnk = fpRequiredActionList->FirstLink(); 
@@ -251,8 +251,7 @@ Bool_t TAGroot::NextEvent()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Clear all action objects
-
+// Clear all action objects
 void TAGroot::ClearAllAction()
 {
   for (TObjLink* lnk = fpActionList->FirstLink(); lnk; lnk=lnk->Next()) {
@@ -262,8 +261,7 @@ void TAGroot::ClearAllAction()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Wait for \a i_msec msec.
-
+// Wait for \a i_msec msec.
 void TAGroot::Wait(Int_t i_msec)
 {
   TMonitor monitor;
@@ -272,8 +270,7 @@ void TAGroot::Wait(Int_t i_msec)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Clear all data objects
-
+// Clear all data objects
 void TAGroot::ClearAllData()
 {
   for (TObjLink* lnk = fpDataDscList->FirstLink(); lnk; lnk=lnk->Next()) {
@@ -283,8 +280,7 @@ void TAGroot::ClearAllData()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Clear all parameter objects
-
+// Clear all parameter objects
 void TAGroot::ClearAllPara()
 {
   for (TObjLink* lnk = fpParaDscList->FirstLink(); lnk; lnk=lnk->Next()) {
@@ -294,24 +290,21 @@ void TAGroot::ClearAllPara()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Returns next default action name.
-
+// Returns next default action name.
 const char* TAGroot::DefaultActionName()
 {
   return Form("A%03d", fiDefActionSeqNum++);
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Returns next default data descriptor name.
-
+// Returns next default data descriptor name.
 const char* TAGroot::DefaultDataDscName()
 {
   return Form("D%03d", fiDefDataDscSeqNum++);
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Returns next default data descriptor name.
-
+// Returns next default data descriptor name.
 const char* TAGroot::DefaultParaDscName()
 {
   return Form("P%03d", fiDefParaDscSeqNum++);
@@ -369,24 +362,21 @@ TAGparaDsc* TAGroot::FindParaDsc(const char* name, const char* type) const
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Set campaign and run number from TAGrunInfo \a info .
-
+// Set campaign and run number from TAGrunInfo \a info .
 void TAGroot::SetRunInfo(const TAGrunInfo& info)
 {
   fRunInfo = info;
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Set campaign, run , and event number from TAGeventId \a info .
-
+// Set campaign, run , and event number from TAGeventId \a info .
 void TAGroot::SetEventId(const TAGeventId& info)
 {
   fEventId= info;
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+// ostream insertion.
 void TAGroot::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGroot: " << endl;
@@ -436,5 +426,4 @@ void TAGroot::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-
 TAGroot* gTAGroot=0;

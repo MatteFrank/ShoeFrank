@@ -48,6 +48,7 @@ TASTactNtuHit::~TASTactNtuHit()
 
 Bool_t TASTactNtuHit::Action() {
 
+  
    TASTntuRaw*   p_datraw = (TASTntuRaw*) fpDatRaw->Object();
    TASTntuHit*   p_nturaw = (TASTntuHit*)  fpNtuRaw->Object();
    TASTparMap*   p_parmap = (TASTparMap*)  fpParMap->Object();
@@ -63,9 +64,10 @@ Bool_t TASTactNtuHit::Action() {
      de_dep = -1000.; //calibration missing
 
      p_nturaw->NewHit(charge_dep, de_dep, timestamp);
-
+     
      p_nturaw->SetTriggerTime(timestamp);
      p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
+
      p_nturaw->SetCharge(charge_dep);
      p_nturaw->SetTrigType(p_datraw->GetSuperHit()->GetTriggerType());
      int nHit =  p_datraw->GetHitsN(); 
@@ -119,7 +121,7 @@ void TASTactNtuHit::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *m
   fun1.Draw("same");
   fun2.Draw("same");
 
-  c.Print(Form("waveform_ch%d_nev%d.png", myHit->GetChID(), m_nev));
+  c.Print(Form("waveform_ch%d_nev%d.png", myHit->GetChID(), fEventsN));
   
 }
 

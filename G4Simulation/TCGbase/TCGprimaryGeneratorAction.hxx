@@ -2,6 +2,13 @@
 #ifndef TCGprimaryGeneratorAction_hxx
 #define TCGprimaryGeneratorAction_hxx
 
+/*!
+ \file TCGprimaryGeneratorAction.hxx
+ \brief  Primary generation action for FOOT
+ 
+ \author Ch. Finck
+ */
+
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "TAGparGeo.hxx"
 #include "globals.hh"
@@ -16,12 +23,13 @@ public:
    ~TCGprimaryGeneratorAction();
    
 public:
+   //! Generate primaries
    void GeneratePrimaries(G4Event* anEvent);
    
 private:
-   G4ParticleGun* fParticleGun;      
-   TAGparGeo*     fpParGeo;
-   Bool_t         fHasPartDefined;
+   G4ParticleGun* fParticleGun;       ///< Particle gun
+   TAGparGeo*     fpParGeo;           ///< Geometry parameters for beam
+   Bool_t         fHasPartDefined;    ///< Flag for defined particle
 };
 
 
