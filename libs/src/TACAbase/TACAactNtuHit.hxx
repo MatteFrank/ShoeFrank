@@ -54,9 +54,9 @@ private:
   Double_t        fT2;
 
 
-  TH1F*           fhArrivalTime[8];
-  TH1F*           fhCharge[8];
-  TH1F*           fhAmplitude[8];
+  TH1F*           fhArrivalTime[9];
+  TH1F*           fhCharge[9];
+  TH1F*           fhAmplitude[9];
   TH1F*           fhTrigTime;
   TH1F*           fhTotCharge;
   TH1F*           fhEventTime;

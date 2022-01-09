@@ -424,7 +424,7 @@ protected:
    TATWactCalibTW*       fActCalibTw;    ///< action for TW calibration
 
    TACAactNtuCluster*    fActClusCa;    // action for clusters
-   //TACAactNtuHit*        fActNtuHitCa;    // action for hit
+   TACAactNtuHit*        fActNtuHitCa;    // action for hit
 
    TAGactNtuGlbTrack*    fActGlbTrack;   ///< Global tracking action
     

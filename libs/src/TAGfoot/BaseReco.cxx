@@ -867,9 +867,9 @@ void BaseReco::CreateRecActionCa()
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
 
-   /*fActNtuHitCa = new TACAactNtuHit("caActNtu", fpDatRawCa, fpNtuHitCa, fpParMapCa, fpParCalCa);
-   if (fFlagHisto)
-      fActNtuHitCa->CreateHistogram(); */
+   // fActNtuHitCa = new TACAactNtuHit("caActNtu", fpDatRawCa, fpNtuHitCa, fpParMapCa, fpParCalCa);
+   // if (fFlagHisto)
+   //    fActNtuHitCa->CreateHistogram(); 
 }
 
 //__________________________________________________________
