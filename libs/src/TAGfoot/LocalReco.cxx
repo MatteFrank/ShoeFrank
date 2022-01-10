@@ -246,7 +246,8 @@ void LocalReco::SetRawHistogramDir()
    // CA
     if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
-      fActWdRaw->SetHistogramDir(subfolder);
+     // fActWdRaw->SetHistogramDir(subfolder);
+      fActNtuHitCa ->SetHistogramDir(subfolder);
     }
 }
 

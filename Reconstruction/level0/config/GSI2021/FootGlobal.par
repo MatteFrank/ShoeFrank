@@ -51,12 +51,12 @@ EnableRegionMc:      n
 
 ############   END - Options for reconstruction   ################
 
-IncludeDI:			   y
+IncludeDI:			   n
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:	     		   n
+IncludeIT:			   n
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y

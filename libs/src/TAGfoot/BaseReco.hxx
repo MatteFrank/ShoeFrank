@@ -63,6 +63,7 @@
 #include "TAMSDntuTrack.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
+#include "TACAactNtuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
@@ -322,6 +323,7 @@ public:
    static Bool_t IsSaveMc()    { return fSaveMcFlag;  }
    
 protected:
+
    TString               fExpName;        ///< Experiment name
    TAGcampaignManager*   fCampManager;    ///< Campaign manager
    Int_t                 fRunNumber;      ///< Run number
@@ -421,7 +423,8 @@ protected:
    TATWactNtuPoint*      fActPointTw;    ///< action for TW points
    TATWactCalibTW*       fActCalibTw;    ///< action for TW calibration
 
-   TACAactNtuCluster*    fActClusCa;     ///< action for CAL clusters
+   TACAactNtuCluster*    fActClusCa;    // action for clusters
+   TACAactNtuHit*        fActNtuHitCa;    // action for hit
 
    TAGactNtuGlbTrack*    fActGlbTrack;   ///< Global tracking action
     

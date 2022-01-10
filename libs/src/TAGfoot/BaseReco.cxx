@@ -390,6 +390,7 @@ void BaseReco::SetRecHistogramDir()
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TACAparGeo::GetBaseName());
       fActClusCa->SetHistogramDir(subfolder);
+      //fActNtuHitCa->SetHistogramDir(subfolder);
    }
 
    // Global straight track
@@ -672,10 +673,11 @@ void BaseReco::ReadParFiles()
         parMap->FromFile(parFileName.Data());
         
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
 
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
+        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
+        parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
+  
      }
 
    }
@@ -813,6 +815,7 @@ void BaseReco::CreateRecActionMsd()
 {
    fpNtuClusMsd = new TAGdataDsc("msdClus", new TAMSDntuCluster());
     fpNtuRecMsd = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    fActClusMsd = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
