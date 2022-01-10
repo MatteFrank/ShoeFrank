@@ -150,13 +150,11 @@ void TACAactNtuCluster::SearchCluster()
       TACAhit* hit = pNtuHit->GetHit(i);
 
       if (hit->Found()) continue;
-
       if (!hit->IsValid()) continue;
 
       Int_t id   = hit->GetCrystalId();
       Int_t line = pGeoMap->GetCrystalLine(id);
       Int_t col  = pGeoMap->GetCrystalCol(id);
-
       if (!CheckLine(line)) continue;
       if (!CheckCol(col)) continue;
 
