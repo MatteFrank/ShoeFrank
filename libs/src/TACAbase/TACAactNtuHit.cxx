@@ -59,8 +59,6 @@ TACAactNtuHit::~TACAactNtuHit()
 
 Bool_t TACAactNtuHit::Action() {
 
-   
-
    TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
@@ -73,7 +71,7 @@ Bool_t TACAactNtuHit::Action() {
   for(int ih = 0; ih < nhit; ++ih) {
     TACArawHit *aHi = p_datraw->GetHit(ih);
 
-    Int_t ch_num     = aHi->GetChID(); 
+    Int_t ch_num     = aHi->GetChID();
     Int_t bo_num     = aHi->GetBoardId();
     Double_t time    = aHi->GetTime();
     Double_t timeOth = aHi->GetTimeOth();
@@ -100,8 +98,6 @@ Bool_t TACAactNtuHit::Action() {
     TACAhit* createdhit=p_nturaw->NewHit(crysId, energy, time,type);
     createdhit->SetValid(true);
   
-    //p_nturaw->NewHit(crysId, energy, time,type);
-    //hCharge[crysId]->Fill(charge);
     fhCharge[crysId]->Fill(energy);
     fhChannelMap->Fill(crysId);
     fhAmplitude[crysId]->Fill(amplitude);
