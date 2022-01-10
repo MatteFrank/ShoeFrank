@@ -408,17 +408,6 @@ const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, 
 const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib)
 {
    vector<TString> vecFile = fFileCalMap[detName];
- /*  for ( map<TString, vector<TString> >::const_iterator it = fFileCalMap.begin(); it != fFileCalMap.end(); ++it){
-      vector<TString> vec = it->second;
-      vector<TString>::const_iterator iter;
-      for (iter = vec.begin(); iter != vec.end(); ++iter)
-         cout << "  Device name: " << it->first << " with file: " << iter->Data() << endl;
-   }
- 
-   for(int i=0; i<3; i++){
-      cout<<"**********TAGCampaignManager Filename: "<<fFileCalMap[detName][i]<<endl;
-   }*/
-
    if (vecFile.size() == 0)
       return Form("");
 
