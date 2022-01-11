@@ -38,7 +38,8 @@ TABMntuTrack::~TABMntuTrack()
 {
   if(fListOfTracks)
     fListOfTracks->Delete();
-  fPrunedTrack->Delete();
+  if(fPrunedTrack)
+    fPrunedTrack->Delete();
 }
 
 //------------------------------------------+-----------------------------------
