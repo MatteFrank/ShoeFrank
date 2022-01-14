@@ -38,7 +38,7 @@ public:
     virtual  Bool_t  Action();
     // Create histogram
     virtual  void    CreateHistogram();
-    // virtual method to compute vertex
+    //! virtual method to compute vertex
     virtual  Bool_t  ComputeVertex() = 0;
     //! Set BM track container
     void     SetBMntuTrack(TAGdataDsc* bmTrack) { fpBMntuTrack = bmTrack; }

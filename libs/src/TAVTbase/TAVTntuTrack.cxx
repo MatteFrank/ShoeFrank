@@ -105,7 +105,7 @@ TAVTtrack* TAVTntuTrack::NewTrack(TAVTtrack& trk)
    return track;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
 //!
 //! \param[in] os output stream

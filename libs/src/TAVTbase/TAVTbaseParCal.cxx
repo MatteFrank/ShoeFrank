@@ -152,7 +152,7 @@ void TAVTbaseParCal::Clear(Option_t*)
   return;
 }
 
-/*------------------------------------------+---------------------------------*/
+//!------------------------------------------+-----------------------------------
 //! ostream insertion.
 //!
 //! \param[out] os stream output
@@ -196,7 +196,7 @@ void TAVTbaseParCal::SetFunction()
 //------------------------------------------+-----------------------------------
 //! Quenched Landau
 //!
-//! \param[in] x[0] charge
+//! \param[in] x charge
 //! \param[in] par parameters vector
 Double_t TAVTbaseParCal::QLandau(Double_t* x, Double_t* par)
 {
@@ -208,7 +208,7 @@ Double_t TAVTbaseParCal::QLandau(Double_t* x, Double_t* par)
 //------------------------------------------+-----------------------------------
 //! Quenched normalized Landau
 //!
-//! \param[in] x[0] charge
+//! \param[in] x charge
 //! \param[in] par parameters vector
 Double_t TAVTbaseParCal::QLandauNorm(Double_t* x, Double_t* par)
 {
@@ -220,7 +220,7 @@ Double_t TAVTbaseParCal::QLandauNorm(Double_t* x, Double_t* par)
 //------------------------------------------+-----------------------------------
 //! Total quenched Landau
 //!
-//! \param[in] x[0] charge
+//! \param[in] x charge
 //! \param[in] par parameters vector
 Double_t TAVTbaseParCal::QLandauTot(Double_t* x, Double_t* /*par*/)
 {

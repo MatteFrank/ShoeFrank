@@ -17,7 +17,7 @@
 
 ClassImp(TAVTbaseHit) // Description of Single Detector TAVTbaseHit 
 
-//______________________________________________________________________________
+//!______________________________________________________________________________
 //!  build the hit from the index and value for a given sensor
 //!
 //! \param[in] sensorId sensor index

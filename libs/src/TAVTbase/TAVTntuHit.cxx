@@ -56,7 +56,7 @@ TAVTntuHit::~TAVTntuHit()
 //------------------------------------------+-----------------------------------
 //! return number of pixels for a given sensor.
 //!
-//! \param[in] sensorId sensor index
+//! \param[in] iSensor sensor index
 Int_t TAVTntuHit::GetPixelsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -71,7 +71,7 @@ Int_t TAVTntuHit::GetPixelsN(Int_t iSensor) const
 //------------------------------------------+-----------------------------------
 //! return list of pixels for a given sensor.
 //!
-//! \param[in] sensorId sensor index
+//! \param[in] iSensor sensor index
 TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -86,7 +86,7 @@ TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor)
 //------------------------------------------+-----------------------------------
 //! return list of pixels for a given sensor (const)
 //!
-//! \param[in] sensorId sensor index
+//! \param[in] iSensor sensor index
 TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -101,7 +101,7 @@ TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor) const
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor and pixel index
 //!
-//! \param[in] sensorId sensor index
+//! \param[in] iSensor sensor index
 //! \param[in] iPixel pixel index
 TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel)
 {
@@ -117,7 +117,7 @@ TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel)
 //------------------------------------------+-----------------------------------
 //! return a pixel for a given sensor and pixel index (const)
 //!
-//! \param[in] sensorId sensor index
+//! \param[in] iSensor sensor index
 //! \param[in] iPixel pixel index
 const TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel) const
 {
@@ -160,7 +160,7 @@ void TAVTntuHit::Clear(Option_t*)
 //______________________________________________________________________________
 //! Create new pixel from a given sensor, line and column
 //!
-//! \param[in] sensorId sensor index
+//! \param[in] iSensor sensor index
 //! \param[in] aValue pixel value
 //! \param[in] aLine line number
 //! \param[in] aColumn column number
@@ -188,7 +188,7 @@ TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
    }
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
 //!
 //! \param[in] os output stream

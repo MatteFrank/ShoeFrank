@@ -59,8 +59,9 @@ protected:
    static void* Thread6(void* arg);
    // Thread function 7
    static void* Thread7(void* arg);
-   // Flag for offline sensor
-   static Int_t fgSensorOff;
+   
+protected:
+   static Int_t fgSensorOff;  ///< Flag for offline sensor
 
    ClassDef(TAVTactBaseNtuClusterMT,0)
 };

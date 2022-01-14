@@ -40,7 +40,7 @@ public:
    //! Base action 
    virtual bool  Action()      { return true; }
 
-   // Fill noise over sensors
+   //! Fill noise over sensors
    virtual void  FillNoise()   { return;      }
    
    // Base creation of histogram
@@ -79,7 +79,7 @@ protected:
    TAGparaDsc*     fpGeoMap;		      ///< geometry para dsc
 
    TAVTbaseDigitizer*  fDigitizer;     ///< cluster size digitizer
-   Int_t           fNoisyPixelsN;
+   Int_t           fNoisyPixelsN;      ///< number of noisy pixels
    
    TString         fPrefix;            ///< prefix of histogram
    TString         fTitleDev;          ///< device name for histogram title
