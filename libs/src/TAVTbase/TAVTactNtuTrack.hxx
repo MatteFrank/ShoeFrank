@@ -23,7 +23,7 @@ public:
    virtual ~TAVTactNtuTrack();
    
 protected:
-   //! Find tilted tracks
+   // Find tilted tracks
    virtual Bool_t FindTiltedTracks();
  
    ClassDef(TAVTactNtuTrack,0)

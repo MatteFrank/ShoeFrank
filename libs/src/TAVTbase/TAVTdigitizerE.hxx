@@ -28,9 +28,9 @@ public:
    TAVTdigitizerE(TAVTbaseParGeo* parGeo);
    virtual ~TAVTdigitizerE();
    
-   //! Define radii of shell
+   // Define radii of shell
    void           DefineRadii();
-   //! Make cluster
+   // Make cluster
    Bool_t         MakeCluster(Double_t x0, Double_t y0, Double_t zin, Double_t zout);
    
 private:
@@ -40,13 +40,13 @@ private:
    std::map<Int_t, Float_t>* fMapRadius;    ///< current map radius
 
 private:
-   //! Set region of impact
+   // Set region of impact
    Bool_t          SetRegion(Double_t x0, Double_t y0);
-   //! define radius for edge-edge pixel impact
+   // define radius for edge-edge pixel impact
    void            DefineRadius00();
-   //! define radius for half-edge pixel impact
+   // define radius for half-edge pixel impact
    void            DefineRadius50();
-   //! define radius for edge-edge pixel impact
+   // define radius for edge-edge pixel impact
    void            DefineRadius55();
    
 private:

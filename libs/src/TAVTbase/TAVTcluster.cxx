@@ -23,15 +23,9 @@ TAVTcluster::TAVTcluster()
 }
 
 //______________________________________________________________________________
-//
-void TAVTcluster::SetupClones()
-{
-   fListOfPixels = new TClonesArray("TAVThit");
-   fListOfPixels->SetOwner(true);
-}
-
-//______________________________________________________________________________
-//  
+//! Copy constructor
+//!
+//! \param[in] cluster cluster to copy
 TAVTcluster::TAVTcluster(const TAVTcluster& cluster)
 :  TAVTbaseCluster(cluster)
 {
@@ -44,7 +38,17 @@ TAVTcluster::~TAVTcluster()
 }
 
 //______________________________________________________________________________
-//  
+//! Set up clones
+void TAVTcluster::SetupClones()
+{
+   fListOfPixels = new TClonesArray("TAVThit");
+   fListOfPixels->SetOwner(true);
+}
+
+//______________________________________________________________________________
+//! Add pixel to list
+//!
+//! \param[in] pixel pixel to add
 void TAVTcluster::AddPixel(TAVThit* pixel)
 {
    for (Int_t k = 0; k < pixel->GetMcTracksN(); ++k) {

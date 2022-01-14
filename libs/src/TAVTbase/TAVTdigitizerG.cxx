@@ -19,6 +19,7 @@ Float_t TAVTdigitizerG::fgkThres    = 0.1;
 Float_t TAVTdigitizerG::fgkFWTH     = 2*TMath::Sqrt(2*TMath::Log(1./fgkThres));
 
 // --------------------------------------------------------------------------------------
+//! Default constructor
 TAVTdigitizerG::TAVTdigitizerG(TAVTbaseParGeo* parGeo)
 : TAVTbaseDigitizer(parGeo)
 {
@@ -26,6 +27,7 @@ TAVTdigitizerG::TAVTdigitizerG(TAVTbaseParGeo* parGeo)
 }
 
 // --------------------------------------------------------------------------------------
+//! Default destructor
 TAVTdigitizerG::~TAVTdigitizerG()
 {
    delete fFuncClusterDisX;
@@ -33,6 +35,10 @@ TAVTdigitizerG::~TAVTdigitizerG()
 }
 
 // --------------------------------------------------------------------------------------
+//! Make cluster from x0, y0 point
+//!
+//! \param[in] x0 impact in X direction
+//! \param[in] y0 impact in Y direction
 Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/)
 {
    // std array
@@ -99,6 +105,7 @@ Bool_t TAVTdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
 }
 
 // --------------------------------------------------------------------------------------
+//! Set functions
 void TAVTdigitizerG::SetFunctions()
 {
    fFuncClusterDisX = new TF1("ClusterDisX", "gaus");
@@ -106,6 +113,9 @@ void TAVTdigitizerG::SetFunctions()
 }
 
 // --------------------------------------------------------------------------------------
+//! Convert chare into ADC number
+//!
+//! \param[in] charge charge value
 Int_t TAVTdigitizerG::GetAdcValue(Float_t charge)
 {
    return int(fFuncTotDigital->Eval(charge)+0.5);

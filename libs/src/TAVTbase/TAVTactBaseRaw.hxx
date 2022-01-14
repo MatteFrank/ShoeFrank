@@ -30,7 +30,7 @@ public:
    //! Get number of sensors
    Int_t GetSensorsN() const { return fNSensors; }
    
-   //! Base creation of histogram
+   // Base creation of histogram
    virtual void CreateHistogram();
    
 public:
@@ -100,38 +100,38 @@ protected:
 
 protected:
    //! Header key
-   static const UInt_t  fgkKeyHeader[];
+   static const UInt_t  fgkKeyHeader[];     ///< key header array per sensor
    //! Frame size
-   static const Int_t   fgkFrameHeaderSize;
+   static const Int_t   fgkFrameHeaderSize; ///< Frame header size
    //! Key tail
-   static const UInt_t  fgkKeyTail[];
+   static const UInt_t  fgkKeyTail[];       ///< key tailer array per sensor
    //! Line width
-   static const Int_t   fgkLineWidth;
+   static const Int_t   fgkLineWidth;       ///< Size of a line
    //! Frame header
-   static const UInt_t  fgkFrameHeader;
+   static const UInt_t  fgkFrameHeader;     ///< Frame header word
    //! Frame tail
-   static const UInt_t  fgkFrameTail;
+   static const UInt_t  fgkFrameTail;       ///< Frame tailer word
    
 protected:
-   //! Reset frame counters
+   // Reset frame counters
    virtual void  ResetFrames();
    
-   //! Add pixel to list
+   // Add pixel to list
    virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
    
-   //! Get Sensor number
+   // Get Sensor number
    virtual  Int_t  GetSensor(UInt_t key);
 
-   //! decode frame
+   // decode frame
    virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame);
 
-   //! Fill histogram frame
+   // Fill histogram frame
    virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data);
    
-   //! Fill histogram frame
+   // Fill histogram frame
    virtual void FillHistoEvt(Int_t iSensor);
    
-   //! Fill histogram pixel
+   // Fill histogram pixel
    virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn);
    
    //! Fill DAQ event

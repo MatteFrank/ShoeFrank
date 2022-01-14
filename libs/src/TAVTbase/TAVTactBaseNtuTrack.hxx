@@ -38,32 +38,32 @@ public:
    
    virtual ~TAVTactBaseNtuTrack();
    
-   //! Base action
+   // Base action
    virtual         Bool_t  Action();
    
-   //! Check BM info
+   // Check BM info
    void            CheckBM();
    
-   //! Base creation of histogram
+   // Base creation of histogram
    virtual  void   CreateHistogram();
    
    //! Set BM track pointer
    void             SetBMntuTrack(TAGdataDsc* pBMtrack) { fpBMntuTrack = pBMtrack;     }
    
 protected:
-   //! Fill BM histogram from BM track
+   // Fill BM histogram from BM track
    void   FillBmHistogramm(TVector3 bmTrackPos);
-   //! Fill VTX histogram from VTX track
+   // Fill VTX histogram from VTX track
    void   FillHistogramm(TAGbaseTrack* track);
-   //! Fill VTX histogram
+   // Fill VTX histogram
    void   FillHistogramm();
-   //! Compute straight tracks
+   // Compute straight tracks
    virtual Bool_t FindStraightTracks();
    //! Compute tilted tracks (virtual)
    virtual Bool_t FindTiltedTracks() { return true; }
    //! Compute vertices (virtual)
    virtual Bool_t FindVertices()     { return false; }
-   //! Set charge probability
+   // Set charge probability
    void           SetChargeProba();
    
 protected:

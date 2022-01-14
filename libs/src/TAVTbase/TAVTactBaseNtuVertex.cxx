@@ -34,6 +34,14 @@ Bool_t  TAVTactBaseNtuVertex::fgCheckBmMatching = true;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuTrack  track container descriptor
+//! \param[out] pNtuVertex  vertex container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pGeoMapG target geometry parameter descriptor
+//! \param[in] pBmTrack input BM track container descriptor
 TAVTactBaseNtuVertex::TAVTactBaseNtuVertex(const char* name,
                                            TAGdataDsc* pNtuTrack,TAGdataDsc* pNtuVertex,
                                            TAGparaDsc* pConfig,  TAGparaDsc* pGeoMap, TAGparaDsc* pGeoMapG, TAGdataDsc* pBmTrack)
@@ -84,7 +92,7 @@ TAVTactBaseNtuVertex::~TAVTactBaseNtuVertex()
 }
 
 //------------------------------------------+-----------------------------------
-// Setup all histograms.
+//! Setup all histograms.
 void TAVTactBaseNtuVertex::CreateHistogram()
 {
    DeleteHistogram();
@@ -115,12 +123,11 @@ void TAVTactBaseNtuVertex::CreateHistogram()
    fpHisPosXY->SetStats(kFALSE);
    AddHistogram(fpHisPosXY);
 
-
    SetValidHistogram(kTRUE);
 }
 
 //_______________________________________________________________________________
-//Action
+//! Action
 Bool_t TAVTactBaseNtuVertex::Action()
 {
    Bool_t ok = true;
@@ -158,7 +165,7 @@ Bool_t TAVTactBaseNtuVertex::Action()
 }
 
 //-------------------------------------------------------------------------------------
-//Check BM matching
+//! Check BM matching
 Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 {
    if (!fpBMntuTrack || !fpNtuVertex) return false;
@@ -208,7 +215,10 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 
 
 //--------------------------------------------------------------
-// Compute the point interaction of diffusion (not used anymore)
+//! Compute the point interaction of diffusion (not used anymore)
+//!
+//! \param[in] lbm a given BM track
+//! \param[in] lvtx a given VTX track
 void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMtrack* lbm, TAVTtrack lvtx)
 {
    //taking point A of the straight line of bm
@@ -247,7 +257,9 @@ void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMtrack* lbm, TAVTtrack lv
 }
 
 //------------------------------------------------------------------------------------
-// Set vertex not valid
+//! Set vertex not valid
+//!
+//! \param[in] idTk track index
 Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
 {
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
@@ -279,7 +291,7 @@ Bool_t TAVTactBaseNtuVertex::SetNotValidVertex(Int_t idTk)
 }
 
 //-----------------------------------------------------------------
-// SetValid Vertex
+//! SetValid Vertex
 void TAVTactBaseNtuVertex::SetValidVertex()
 {
    TAVTntuVertex* ntuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
@@ -303,7 +315,7 @@ void TAVTactBaseNtuVertex::SetValidVertex()
 }
 
 //--------------------------------------------
-// compute scattering angle after target
+//! compute scattering angle after target
 Double_t TAVTactBaseNtuVertex::ComputeScatterAngle()
 {
    TAGparGeo* geoMapG = (TAGparGeo*) fpGeoMapG->Object();
@@ -318,7 +330,9 @@ Double_t TAVTactBaseNtuVertex::ComputeScatterAngle()
 }
 
 //--------------------------------------------
-// Check scattering of track
+//! Check scattering of a track
+//!
+//! \param[in] track0 a give track
 Int_t TAVTactBaseNtuVertex::SearchNucReac(TAVTtrack* track0)
 {
    // returns -1 no BM, 2 nuclear reaction, 0, diffusion

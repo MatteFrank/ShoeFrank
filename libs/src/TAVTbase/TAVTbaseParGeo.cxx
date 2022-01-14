@@ -60,6 +60,7 @@ TAVTbaseParGeo::~TAVTbaseParGeo()
 }
 
 //_____________________________________________________________________________
+//! Define material
 void TAVTbaseParGeo::DefineMaterial()
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
@@ -86,7 +87,10 @@ void TAVTbaseParGeo::DefineMaterial()
   
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Read from file
+//!
+//! \param[in] name file name
 Bool_t TAVTbaseParGeo::FromFile(const TString& name)
 {
    cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
@@ -288,6 +292,9 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
 }
 
 //_____________________________________________________________________________
+//! Get sensor position
+//!
+//! \param[in] iSensor a given sensor
 TVector3 TAVTbaseParGeo::GetSensorPosition(Int_t iSensor)
 {
    TGeoHMatrix* hm = GetTransfo(iSensor);
@@ -300,12 +307,19 @@ TVector3 TAVTbaseParGeo::GetSensorPosition(Int_t iSensor)
 
 // Mapping
 //_____________________________________________________________________________
+//! Get index number from line and column numbers
+//!
+//! \param[in] line line number
+//! \param[in] column column number
 Int_t TAVTbaseParGeo::GetIndex(Int_t line, Int_t column) const
 {
    return line*fPixelsNx + column;
 }
 
 //_____________________________________________________________________________
+//! Get position in X from column number
+//!
+//! \param[in] column a given column
 Float_t TAVTbaseParGeo::GetPositionU(Int_t column) const
 {
    Float_t x = (Float_t(2*column - fPixelsNx + 1) * fPitchX)/2.;// + fEpiOffset[0];
@@ -313,6 +327,9 @@ Float_t TAVTbaseParGeo::GetPositionU(Int_t column) const
 }
 
 //_____________________________________________________________________________
+//! Get position in Y from line number
+//!
+//! \param[in] line a given line
 Float_t TAVTbaseParGeo::GetPositionV(Int_t line) const
 {
    Float_t y = -(Float_t(2*line - fPixelsNy + 1) * fPitchY)/2.;// + fEpiOffset[1];
@@ -320,6 +337,9 @@ Float_t TAVTbaseParGeo::GetPositionV(Int_t line) const
 }
 
 //_____________________________________________________________________________
+//! Get column number from x position
+//!
+//! \param[in] x position in X
 Int_t TAVTbaseParGeo::GetColumn(Float_t x) const
 {
    Float_t xmin = -fPixelsNx*fPitchX/2.;// - fEpiOffset[0];
@@ -335,6 +355,9 @@ Int_t TAVTbaseParGeo::GetColumn(Float_t x) const
 }
 
 //_____________________________________________________________________________
+//! Get line number from y position
+//!
+//! \param[in] Y position in Y
 Int_t TAVTbaseParGeo::GetLine(Float_t y) const
 {
    // equivalent to  floor((-y-ymin)/ffPitchY)-1
@@ -352,6 +375,15 @@ Int_t TAVTbaseParGeo::GetLine(Float_t y) const
 
 // transformation
 //_____________________________________________________________________________
+//! Transformation from detector to sensor framework
+//!
+//! \param[in] detID sensor id
+//! \param[in] xg X position in detector framework
+//! \param[in] yg Y position in detector framework
+//! \param[in] zg Z position in detector framework
+//! \param[out] xl X position in sensor framework
+//! \param[out] yl Y position in sensor framework
+//! \param[out] zl Z position in sensor framework
 void TAVTbaseParGeo::Detector2Sensor(Int_t detID,
 									Double_t xg, Double_t yg, Double_t zg, 
 									Double_t& xl, Double_t& yl, Double_t& zl) const
@@ -365,6 +397,11 @@ void TAVTbaseParGeo::Detector2Sensor(Int_t detID,
 }   
 
 //_____________________________________________________________________________
+//! Transformation from detector to sensor framework
+//!
+//! \param[in] detID sensor id
+//! \param[in] glob position in detector framework
+//! \return position in sensor framework
 TVector3 TAVTbaseParGeo::Detector2Sensor(Int_t detID, TVector3& glob) const
 {
    if (detID < 0 || detID > GetSensorsN()) {
@@ -376,6 +413,11 @@ TVector3 TAVTbaseParGeo::Detector2Sensor(Int_t detID, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
+//! Transformation from detector to sensor framework for vector (no translation)
+//!
+//! \param[in] detID sensor id
+//! \param[in] glob position in detector framework
+//! \return position in sensor framework
 TVector3 TAVTbaseParGeo::Detector2SensorVect(Int_t detID, TVector3& glob) const
 {
    if (detID < 0 || detID > GetSensorsN()) {
@@ -387,6 +429,15 @@ TVector3 TAVTbaseParGeo::Detector2SensorVect(Int_t detID, TVector3& glob) const
 }   
 
 //_____________________________________________________________________________
+//! Transformation from sensor to detector framework
+//!
+//! \param[in] detID sensor id
+//! \param[in] xl X position in sensor framework
+//! \param[in] yl Y position in sensor framework
+//! \param[in] zl Z position in sensor framework
+//! \param[out] xg X position in detector framework
+//! \param[out] yg Y position in detector framework
+//! \param[out] zg Z position in detector framework
 void TAVTbaseParGeo::Sensor2Detector(Int_t detID,
 									Double_t xl, Double_t yl, Double_t zl, 
 									Double_t& xg, Double_t& yg, Double_t& zg) const
@@ -400,6 +451,11 @@ void TAVTbaseParGeo::Sensor2Detector(Int_t detID,
 }   
 
 //_____________________________________________________________________________
+//! Transformation from sensor to detector framework
+//!
+//! \param[in] detID sensor id
+//! \param[in] loc position in sensor framework
+//! \return position in detector framework
 TVector3 TAVTbaseParGeo::Sensor2Detector(Int_t detID, TVector3& loc) const
 {
    if (detID < 0 || detID > GetSensorsN()) {
@@ -412,6 +468,11 @@ TVector3 TAVTbaseParGeo::Sensor2Detector(Int_t detID, TVector3& loc) const
 
 
 //_____________________________________________________________________________
+//! Transformation from sensor to detector framework for vector (no translation)
+//!
+//! \param[in] detID sensor id
+//! \param[in] loc position in sensor framework
+//! \return position in detector framework
 TVector3 TAVTbaseParGeo::Sensor2DetectorVect(Int_t detID, TVector3& loc) const
 {
    if (detID < 0 || detID > GetSensorsN()) {
@@ -423,6 +484,7 @@ TVector3 TAVTbaseParGeo::Sensor2DetectorVect(Int_t detID, TVector3& loc) const
 }
 
 //_____________________________________________________________________________
+//! Fill array of sensor number per layer and position layer
 void TAVTbaseParGeo::FillSensorMap()
 {
    map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
@@ -440,12 +502,18 @@ void TAVTbaseParGeo::FillSensorMap()
 }
 
 //_____________________________________________________________________________
+//! Get number of sensors for a given layer
+//!
+//! \param[in] iLayer a given layer
 UChar_t* TAVTbaseParGeo::GetSensorsPerLayer(Int_t iLayer)
 {
    return &fSensorArray[iLayer*fSensPerLayer];
 }
 
 //_____________________________________________________________________________
+//! Get position in Z direction for a given layer
+//!
+//! \param[in] layer a given layer
 Float_t TAVTbaseParGeo::GetLayerPosZ(Int_t layer)
 {
    map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
@@ -464,6 +532,7 @@ Float_t TAVTbaseParGeo::GetLayerPosZ(Int_t layer)
 }
 
 //_____________________________________________________________________________
+//! Define envelop of the detector
 void TAVTbaseParGeo::DefineMaxMinDimension()
 {
    TVector3 posAct(0, 0, 0);

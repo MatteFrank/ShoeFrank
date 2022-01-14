@@ -38,14 +38,16 @@ TAVTntuTrack::~TAVTntuTrack()
 }
 
 //------------------------------------------+-----------------------------------
-// return number of tracks
+//! return number of tracks
 Int_t TAVTntuTrack::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-// return a Track for a given sensor
+//! return a Track for a given sensor
+//!
+//! \param[in] iTrack track index
 TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -55,7 +57,9 @@ TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-// return a pixel for a given sensor
+// return a pixel for a given sensor (const)
+//!
+//! \param[in] iTrack track index
 const TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -64,9 +68,8 @@ const TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack) const
 	  return 0x0;
 }
 
-
 //------------------------------------------+-----------------------------------
-// Setup clones.
+//! Setup clones.
 void TAVTntuTrack::SetupClones()
 {
    if (!fListOfTracks) {
@@ -76,14 +79,14 @@ void TAVTntuTrack::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-// Clear event.
+//! Clear event.
 void TAVTntuTrack::Clear(Option_t*)
 {
    fListOfTracks->Delete();
 }
 
 //______________________________________________________________________________
-//  
+//! Create new track
 TAVTtrack* TAVTntuTrack::NewTrack()
 {
    TClonesArray &trackArray = *fListOfTracks;
@@ -92,7 +95,9 @@ TAVTtrack* TAVTntuTrack::NewTrack()
 }
 
 //______________________________________________________________________________
-//  
+//! Create new track from copy constructor
+//!
+//! \param[in] trk a given track
 TAVTtrack* TAVTntuTrack::NewTrack(TAVTtrack& trk)
 {
    TClonesArray &trackArray = *fListOfTracks;
@@ -101,7 +106,9 @@ TAVTtrack* TAVTntuTrack::NewTrack(TAVTtrack& trk)
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
 void TAVTntuTrack::ToStream(ostream& os, Option_t* option) const
 {
 	  

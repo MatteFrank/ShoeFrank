@@ -34,15 +34,16 @@ protected:
 
 public:
    explicit TAVTactBaseNtuHitMC(const char* name=0, TAGparaDsc* p_geomap = 0);
+   //! Destructor 
    virtual ~TAVTactBaseNtuHitMC() {};
    
    //! Base action 
    virtual bool  Action()      { return true; }
 
    // Fill noise over sensors
-   virtual void    FillNoise() { return; }
+   virtual void  FillNoise()   { return;      }
    
-   //! Base creation of histogram
+   // Base creation of histogram
    void          CreateHistogram();
 
 public:
@@ -91,12 +92,12 @@ protected:
    TH1F*           fpHisDeSensor[32];  ///< Energy loss per sensor
    TH1F*           fpHisPoisson;       ///< Poisson distribution for pileup
 
-   std::vector<std::vector<RawMcHit_t>> fStoredEvents;
+   std::vector<std::vector<RawMcHit_t>> fStoredEvents; ///< list of hits used for pilepup
 
 protected:
-   //! Generated pileup events
+   // Generated pileup events
    void            GeneratePileup();
-   //! Compute noise level
+   // Compute noise level
    void            ComputeNoiseLevel();
    
    //! Fill noisy pixels

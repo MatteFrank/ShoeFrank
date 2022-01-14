@@ -38,23 +38,23 @@ public:
     Double_t GetMaximumZ()       const { return fMaxZ;  }
     
 private:
-    //! Compute vertex
+    // Compute vertex
     Bool_t   ComputeVertex();
-    //! seach for maximun proba btw two tracks
+    // seach for maximun proba btw two tracks
     void     SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej,Int_t i, Int_t j);
-    //! Compute vertex for two tracks
+    // Compute vertex for two tracks
     TVector3 ComputeVertexPoint(TAVTtrack* line0, TAVTtrack* line1, Double_t zVal);
-    //! Compute prob for a given track
+    // Compute prob for a given track
     Double_t ComputeProbabilityForSingleTrack(TAVTtrack* lin0, TVector3 v);
-    //! Compute minimum distance to track for a given vertex
+    // Compute minimum distance to track for a given vertex
     TVector3 ComputeMinimumPointDistance(TAVTtrack* l, TVector3 vt);
-    //! Compute vertex
+    // Compute vertex
     Double_t ComputeV (TVector3 rpos);
-    //! Set vertex
+    // Set vertex
     Bool_t   SetVertex();
-    //! Adjust parameter impact
+    // Adjust parameter impact
     void     ImpactParameterAdjustement();
-    //! Compute max values
+    // Compute max values
     TVector3 ComputeMaxVMaxIMaxJ(); 
 
 private:

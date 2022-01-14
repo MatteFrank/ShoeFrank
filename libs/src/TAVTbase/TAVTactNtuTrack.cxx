@@ -31,6 +31,14 @@ ClassImp(TAVTactNtuTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuClus cluster container descriptor
+//! \param[out] pNtuTrack track container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pCalib calibration parameter descriptor
+//! \param[in] pBMntuTrack input BM track container descriptor
 TAVTactNtuTrack::TAVTactNtuTrack(const char* name, 
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
 								 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
@@ -51,7 +59,7 @@ TAVTactNtuTrack::~TAVTactNtuTrack()
 }
 
 //_____________________________________________________________________________
-//  
+//! Find tilted tracks
 Bool_t TAVTactNtuTrack::FindTiltedTracks()
 {
    Double_t minDistance  = 1.e9;

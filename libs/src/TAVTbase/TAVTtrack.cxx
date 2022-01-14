@@ -55,7 +55,7 @@ TAVTtrack::~TAVTtrack()
 }
 
 //______________________________________________________________________________
-//
+//! Set up clones
 void TAVTtrack::SetupClones()
 {
    fListOfClusters = new TClonesArray("TAVTcluster");
@@ -63,7 +63,9 @@ void TAVTtrack::SetupClones()
 }
 
 // __________________________________________________________________________
-//
+//! Add cluster to track
+//!
+//! \param[in] clus cluster to add
 void TAVTtrack::AddCluster(TAGcluster* clus)
 {
   TAVTcluster* cluster = static_cast<TAVTcluster*>(clus);

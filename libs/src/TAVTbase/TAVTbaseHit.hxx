@@ -48,6 +48,7 @@ protected:
 
 public:
 
+    //! Default constructor
     TAVTbaseHit() {};
     TAVTbaseHit( Int_t iSensor, const Int_t aIndex, Double_t aValue);
     TAVTbaseHit( Int_t iSensor, Double_t aValue, Int_t aLine, Int_t aColumn);
@@ -89,19 +90,18 @@ public:
     //! Get position
     TVector3&          GetPosition()                   { return fPosition;        }
    
-    //! Compute distance from a given pixel
+    // Compute distance from a given pixel
     Double_t           Distance( TAVTbaseHit&         aPixel);
-    //! Compute distance from a given position
+    // Compute distance from a given position
     Double_t           Distance( const TVector3&     aPosition);
-    //! Compute distance in U direction from a given pixel
+    // Compute distance in U direction from a given pixel
     Double_t           DistanceU( TAVTbaseHit&        aPixel);
-    //! Compute distance in U direction from a given position
+    // Compute distance in U direction from a given position
     Double_t           DistanceU( const TVector3&     aPosition);
-    //! Compute distance in V direction from a given pixel
+    // Compute distance in V direction from a given pixel
     Double_t           DistanceV( TAVTbaseHit&         aPixel);
-    //! Compute distance in V direction from a given position
+    // Compute distance in V direction from a given position
     Double_t           DistanceV( const TVector3&     aPosition);
-
 
    //! Get MC index
    Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
@@ -110,7 +110,7 @@ public:
    //! Get MC track number
    Int_t      GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
-   //! Add MC track Id
+   // Add MC track Id
    void       AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
 
     ClassDef(TAVTbaseHit,4)                            // Pixel or Pixel of a Detector Plane

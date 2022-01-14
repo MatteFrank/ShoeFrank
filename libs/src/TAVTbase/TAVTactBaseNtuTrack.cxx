@@ -38,7 +38,15 @@ ClassImp(TAVTactBaseNtuTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTactBaseNtuTrack::TAVTactBaseNtuTrack(const char* name, 
+//!
+//! \param[in] name action name
+//! \param[in] pNtuClus  cluster container descriptor
+//! \param[out] pNtuTrack  track container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pCalib calibration parameter descriptor
+//! \param[in] pBMntuTrack input BM track container descriptor
+TAVTactBaseNtuTrack::TAVTactBaseNtuTrack(const char* name,
 										 TAGdataDsc* pNtuClus,TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig,  
 										 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
 : TAVTactBaseTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap, pCalib),
@@ -56,7 +64,7 @@ TAVTactBaseNtuTrack::~TAVTactBaseNtuTrack()
 }
 
 //------------------------------------------+-----------------------------------
-// Setup all histograms.
+//! Setup all histograms.
 void TAVTactBaseNtuTrack::CreateHistogram()
 {   
    TAVTactBaseTrack::CreateHistogram();
@@ -107,10 +115,9 @@ void TAVTactBaseNtuTrack::CreateHistogram()
 }
 
 //_____________________________________________________________________________
-//  
+//! Action
 Bool_t TAVTactBaseNtuTrack::Action()
 {
-   
    // BM tracks
    if (fpBMntuTrack) 
 	  CheckBM();
@@ -155,7 +162,7 @@ Bool_t TAVTactBaseNtuTrack::Action()
 
 
 //_____________________________________________________________________________
-//  
+//! Check BM tracks
 void TAVTactBaseNtuTrack::CheckBM()
 {   
    // BM info
@@ -187,7 +194,7 @@ void TAVTactBaseNtuTrack::CheckBM()
 }
 
 //_____________________________________________________________________________
-//  
+//! Find straight tracks
 Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 {
    Double_t minDistance  = 1.e9;
@@ -302,7 +309,7 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 }
 
 //_____________________________________________________________________________
-//
+//! Set charge probability through calibration parameters
 void TAVTactBaseNtuTrack::SetChargeProba()
 {
    if (fpCalib == 0x0) return;
@@ -336,7 +343,8 @@ void TAVTactBaseNtuTrack::SetChargeProba()
 }
 
 //_____________________________________________________________________________
-//
+//! Fill histograms per track
+//! \param[in] track a given track
 void TAVTactBaseNtuTrack::FillHistogramm(TAGbaseTrack* track)
 {
    TAVTactBaseTrack::FillHistogramm(track);
@@ -353,7 +361,7 @@ void TAVTactBaseNtuTrack::FillHistogramm(TAGbaseTrack* track)
 }
 
 //_____________________________________________________________________________
-//
+//! Fill histograms
 void TAVTactBaseNtuTrack::FillHistogramm()
 {
    TAVTbaseParGeo* pGeoMap   = (TAVTbaseParGeo*) fpGeoMap->Object();
@@ -384,7 +392,8 @@ void TAVTactBaseNtuTrack::FillHistogramm()
 }
 
 //_____________________________________________________________________________
-//  
+//! Fill BM histograms per track
+//! \param[in] bmTrackPos vector for BM track position in VTX frame
 void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 {
    bmTrackPos  = fpFootGeo->FromBMLocalToGlobal(bmTrackPos);

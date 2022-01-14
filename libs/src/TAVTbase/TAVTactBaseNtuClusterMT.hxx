@@ -29,13 +29,13 @@ public:
    //! Get list of pixels
    virtual TClonesArray* GetListOfPixels(Int_t /*sensorId*/) { return 0x0; }
    
-   //! Thread start
+   // Thread start
    Bool_t   ThreadStart();
    
-   //! Thread join
+   // Thread join
    Bool_t   ThreadJoin();
    
-   //! Thread stop
+   // Thread stop
    Bool_t   ThreadStop();
    
 protected:
@@ -43,23 +43,23 @@ protected:
    pthread_t*      fThread[8];   ///< thread array
 
 protected:
-   //! Thread function 0
+   // Thread function 0
    static void* Thread0(void* arg);
-   //! Thread function 1
+   // Thread function 1
    static void* Thread1(void* arg);
-   //! Thread function 2
+   // Thread function 2
    static void* Thread2(void* arg);
-   //! Thread function 3
+   // Thread function 3
    static void* Thread3(void* arg);
-   //! Thread function 4
+   // Thread function 4
    static void* Thread4(void* arg);
-   //! Thread function 5
+   // Thread function 5
    static void* Thread5(void* arg);
-   //! Thread function 6
+   // Thread function 6
    static void* Thread6(void* arg);
-   //! Thread function 7
+   // Thread function 7
    static void* Thread7(void* arg);
-   //! Flag for offline sensor
+   // Flag for offline sensor
    static Int_t fgSensorOff;
 
    ClassDef(TAVTactBaseNtuClusterMT,0)

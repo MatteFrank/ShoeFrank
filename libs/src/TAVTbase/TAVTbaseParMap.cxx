@@ -17,7 +17,6 @@ ClassImp(TAVTbaseParMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAVTbaseParMap::TAVTbaseParMap() 
  : TAGparTools(),
    fSensorsN(0),
@@ -27,12 +26,14 @@ TAVTbaseParMap::TAVTbaseParMap()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAVTbaseParMap::~TAVTbaseParMap()
 {
 }
 
 //------------------------------------------+-----------------------------------
+//! Read from file
+//!
+//! \param[in] name file name
 Bool_t TAVTbaseParMap::FromFile(const TString& name)
 {
    // Reading mapping file
@@ -75,6 +76,10 @@ Bool_t TAVTbaseParMap::FromFile(const TString& name)
 }
 
 //------------------------------------------+-----------------------------------
+//! Get plane id from sensor and datalink
+//!
+//! \param[in] sensorId a given sensor
+//! \param[in] dataLink a given datalink
 Int_t TAVTbaseParMap::GetPlaneId(Int_t sensorId, Int_t dataLink)
 {
    pair<int, int> idx(dataLink, sensorId);

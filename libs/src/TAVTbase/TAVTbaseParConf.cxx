@@ -41,7 +41,10 @@ TAVTbaseParConf::~TAVTbaseParConf()
 {
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Read from file
+//!
+//! \param[in] name file name
 Bool_t TAVTbaseParConf::FromFile(const TString& name) 
 {   
    // simple file reading, waiting for real config file
@@ -118,7 +121,9 @@ Bool_t TAVTbaseParConf::FromFile(const TString& name)
 }
 
 //------------------------------------------+-----------------------------------
-// Get major number status
+//! Get major number status
+//!
+//! \param[in] idx status number
 Int_t TAVTbaseParConf::GetStatus(Int_t idx) const
 {
    Int_t major = fSensorParameter[idx].Status/10;
@@ -130,7 +135,9 @@ Int_t TAVTbaseParConf::GetStatus(Int_t idx) const
 }
 
 //------------------------------------------+-----------------------------------
-// Get minor number status
+//! Get minor number status
+//!
+//! \param[in] idx status number
 Int_t TAVTbaseParConf::GetStatusMinor(Int_t idx) const
 {
    Int_t major = fSensorParameter[idx].Status/10;
@@ -142,7 +149,7 @@ Int_t TAVTbaseParConf::GetStatusMinor(Int_t idx) const
 }
 
 //------------------------------------------+-----------------------------------
-// Clear geometry info.
+//! Clear geometry info.
 void TAVTbaseParConf::Clear(Option_t*)
 {
   return;
@@ -150,6 +157,8 @@ void TAVTbaseParConf::Clear(Option_t*)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
+//!
+//! \param[out] os stream output
 void TAVTbaseParConf::ToStream(ostream& os, Option_t*) const
 {
 //  os << "TAVTbaseParConf " << GetName() << endl;

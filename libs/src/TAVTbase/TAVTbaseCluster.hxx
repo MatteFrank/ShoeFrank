@@ -35,7 +35,7 @@ public:
    TAVTbaseCluster(const TAVTbaseCluster& cluster);
    ~TAVTbaseCluster();
    
-   //! Set position in global tracker frame
+   // Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
    
    //! Set sum of pulse height
@@ -59,20 +59,20 @@ public:
    Int_t              GetPixelsN()                     const { return  fListOfPixels->GetEntries(); }
    //! Get sum of pulse height
    Float_t            GetCharge()                      const { return fCharge;  }
-   //! Get pixel
+   // Get pixel
    TAVThit*           GetPixel(Int_t idx);
-   //! Get position of seed pixel
+   // Get position of seed pixel
    Float_t            GetSeedU()                       const;
    Float_t            GetSeedV()                       const;
    
-   //! Get distance from cluster position to a given pixel
+   // Get distance from cluster position to a given pixel
    Float_t            GetPixelDistanceU(Int_t index)   const;
    Float_t            GetPixelDistanceV(Int_t index)   const;
    
    //! Compute distance from another cluster
-//   Float_t            Distance(TAGcluster *aClus);
+   Float_t            Distance(TAGcluster *aClus);
    
-   //! reset pixels
+   // reset pixels
    void               ResetPixels();
    
    ClassDef(TAVTbaseCluster,8)                          // Describes TAVTbaseCluster

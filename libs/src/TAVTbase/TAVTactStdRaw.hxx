@@ -21,13 +21,13 @@ public:
    explicit TAVTactStdRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_pargeo=0, TAGparaDsc* p_parconf=0, TAGparaDsc* pParMap=0);
    virtual  ~TAVTactStdRaw();
    
-   //! Action
+   // Action
    virtual Bool_t  Action();
    
-   //! Open file with a given prefix and suffix for the files
+   // Open file with a given prefix and suffix for the files
    virtual Int_t   Open(const TString& prefix, Option_t* opt = 0, const TString treeName="tree", Bool_t dscBranch = true);
    
-   //! close files
+   // close files
    virtual void    Close();
    
 public:
@@ -48,10 +48,10 @@ private:
    static       TString fgDefaultExtName;    ///< default extension name
 
 private:
-   //! Get Event
+   // Get Event
    Bool_t GetEvent();
    
-   //! Set run number
+   // Set run number
    void   SetRunNumber(const TString& name);
 
    ClassDef(TAVTactStdRaw,0)

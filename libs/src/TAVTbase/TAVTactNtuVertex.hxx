@@ -39,13 +39,13 @@ public:
     Double_t GetMaximumZ()      const { return fMaxZ; }
 
 private:
-    //! Compute vertex
+    // Compute vertex
     Bool_t   ComputeVertex();
-    //! Comoute distance to tracks for a given Z
+    // Comoute distance to tracks for a given Z
     Double_t ComputeDistance(Double_t zVal);
-    //! Compute final position of vertex
+    // Compute final position of vertex
     Double_t ComputeFinalCoordinate(Int_t a, Double_t zVal);
-    //! Set vertex position
+    // Set vertex position
     void     SetVertex(TVector3& xyz, Double_t mind);
    
     ClassDef(TAVTactNtuVertex,0)

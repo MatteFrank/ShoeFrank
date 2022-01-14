@@ -36,7 +36,14 @@ ClassImp(TAVTactNtuPostTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTactNtuPostTrack::TAVTactNtuPostTrack(const char* name, 
+//!
+//! \param[in] name action name
+//! \param[in] pNtuClus cluster container descriptor
+//! \param[out] pNtuTrack track container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pNtuVertex input vertex container descriptor
+TAVTactNtuPostTrack::TAVTactNtuPostTrack(const char* name,
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, 
 								 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGdataDsc* pNtuVertex)
 : TAVTactBaseNtuTrack(name, pNtuClus, pNtuTrack, pConfig, pGeoMap),
@@ -53,7 +60,7 @@ TAVTactNtuPostTrack::~TAVTactNtuPostTrack()
 }
 
 //_____________________________________________________________________________
-//  
+//! Action
 Bool_t TAVTactNtuPostTrack::Action()
 {
    // VTX
@@ -69,7 +76,7 @@ Bool_t TAVTactNtuPostTrack::Action()
 }
 
 //_____________________________________________________________________________
-//  
+//! Find tilted tracks
 Bool_t TAVTactNtuPostTrack::FindTiltedTracks()
 {
    Double_t minDistance  = 1.e9;
@@ -207,7 +214,9 @@ Bool_t TAVTactNtuPostTrack::FindTiltedTracks()
 }
 
 //_____________________________________________________________________________
-//  
+//! Apply cut on a given track
+//!
+//! \param[in] track a given track
 Bool_t TAVTactNtuPostTrack::AppyCuts(TAVTtrack* track)
 {
    if (!TAVTactBaseNtuTrack::AppyCuts(track))

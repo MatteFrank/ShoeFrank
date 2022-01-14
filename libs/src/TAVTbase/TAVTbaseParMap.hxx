@@ -19,10 +19,10 @@ public:
    TAVTbaseParMap();
    virtual ~TAVTbaseParMap();
 
-   //! return plane id
+   // return plane id
    Int_t        GetPlaneId(Int_t sensorId, Int_t dataLink = 0);
    
-   //! Read from file
+   // Read from file
    Bool_t       FromFile(const TString& name = "");
 
 protected:
@@ -32,7 +32,7 @@ protected:
    TString                  fkDefaultMapName; ///< default detector mapping file
    
    ClassDef(TAVTbaseParMap,1)
-  
+
 };
 
 #endif

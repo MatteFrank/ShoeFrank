@@ -36,7 +36,7 @@ public:
    //! Action
    virtual  Bool_t Action() { return false; }
    
-   //! Apply basic cuts
+   // Apply basic cuts
    virtual Bool_t  ApplyCuts(TAVTbaseCluster* cluster);
 
    // Base creation of histogram
@@ -56,10 +56,10 @@ public:
    //! Set position of current cluster
    void SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition.SetXYZ(u,v,z);  }
    
-   //! Compute position
+   // Compute position
    virtual void ComputePosition();
    
-   //! Get object in list
+   // Get object in list
    TAGobject*  GetHitObject(Int_t idx, TClonesArray* listOfPixels) const;
    
 protected:
@@ -82,19 +82,19 @@ protected:
    TString        fTitleDev;          ///< device name for histogram title
 
 protected:
-   //! Search cluster per thread
+   // Search cluster per thread
    void   SearchCluster(TClonesArray* listOfPixels, Int_t thr);
-   //! Fill map per thread
+   // Fill map per thread
    void   FillMaps(TClonesArray* listOfPixels, Int_t thr);
-   //! Compute Seed position
+   // Compute Seed position
    void   ComputeSeedPosition();
-   //! Compute CoG position
+   // Compute CoG position
    void   ComputeCoGPosition();
-   //! Fill cluster info
+   // Fill cluster info
    void   FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster);
    
 protected:
-   static   pthread_mutex_t fLock;
+   static   pthread_mutex_t fLock;   ///< mutex lock
 
    ClassDef(TAVTactBaseClusterMT,0)
 };

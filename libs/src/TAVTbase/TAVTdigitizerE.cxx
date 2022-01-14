@@ -47,7 +47,10 @@ TAVTdigitizerE::~TAVTdigitizerE()
 }
 
 // --------------------------------------------------------------------------------------
-// Make cluster
+//! Make cluster from x0, y0 point
+//!
+//! \param[in] x0 impact in X direction
+//! \param[in] y0 impact in Y direction
 Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/)
 {
    // std array
@@ -171,7 +174,10 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
 }
 
 //_____________________________________________________________________________
-// Set region from x0, y0 point
+//! Set region from x0, y0 point
+//!
+//! \param[in] x0 impact in X direction
+//! \param[in] y0 impact in Y direction
 Bool_t TAVTdigitizerE::SetRegion(Double_t x0, Double_t y0)
 {
    Int_t regX  = GetColRegion(x0);
@@ -245,7 +251,7 @@ Bool_t TAVTdigitizerE::SetRegion(Double_t x0, Double_t y0)
 }
 
 //_____________________________________________________________________________
-// Define all radiii
+//! Define all radiii
 void TAVTdigitizerE::DefineRadii()
 {
    DefineRadius00();
@@ -254,7 +260,7 @@ void TAVTdigitizerE::DefineRadii()
 }
 
 //_____________________________________________________________________________
-// Define radius 55
+//! Define radius 55
 void TAVTdigitizerE::DefineRadius55()
 {
    Float_t pitchX = GetPitchX();
@@ -281,7 +287,7 @@ void TAVTdigitizerE::DefineRadius55()
 }
 
 //_____________________________________________________________________________
-// Define radius 50
+//! Define radius 50
 void TAVTdigitizerE::DefineRadius50()
 {
    Float_t pitchX = GetPitchX();
@@ -308,7 +314,7 @@ void TAVTdigitizerE::DefineRadius50()
 }
 
 //_____________________________________________________________________________
-// Define radius 00
+//! Define radius 00
 void TAVTdigitizerE::DefineRadius00()
 {
    Float_t pitchX = GetPitchX();

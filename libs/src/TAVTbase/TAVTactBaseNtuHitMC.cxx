@@ -40,7 +40,10 @@ Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
-//! Default constructor
+//! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pGeoMap geometry parameter descriptor
 TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
  : TAGaction(name, "TAVTactBaseNtuHitMC - NTuplize hit MC data"),
    fpGeoMap(pGeoMap),
@@ -77,7 +80,7 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
 }
 
 //------------------------------------------+-----------------------------------
-// Setup all histograms.
+//! Setup all histograms.
 void TAVTactBaseNtuHitMC::CreateHistogram()
 {
 
@@ -124,6 +127,7 @@ void TAVTactBaseNtuHitMC::CreateHistogram()
 
 
 // --------------------------------------------------------------------------------------
+//! Compute noise level
 void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 {
 	// computing number of noise pixels (sigma level) from gaussian
@@ -142,6 +146,7 @@ void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 }
 
 //------------------------------------------+-----------------------------------
+//! Generated pileup events
 void  TAVTactBaseNtuHitMC::GeneratePileup()
 {
 	Int_t pileupEvents = TMath::Nint(fpHisPoisson->GetRandom())-1;

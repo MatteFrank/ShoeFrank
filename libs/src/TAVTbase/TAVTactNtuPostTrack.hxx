@@ -23,17 +23,17 @@ public:
    
    virtual ~TAVTactNtuPostTrack();
    
-   //! Action
+   // Action
    Bool_t  Action();
    
-   //! Apply cuts
+   // Apply cuts
    Bool_t  AppyCuts(TAVTtrack* track);
 
 private:
    TAGdataDsc* fpNtuVertex;		 ///< vertex input data dsc
 
 private:    
-   //! Find tilted tracks
+   // Find tilted tracks
    Bool_t FindTiltedTracks();
    
    ClassDef(TAVTactNtuPostTrack,0)
