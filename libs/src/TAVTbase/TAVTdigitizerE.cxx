@@ -34,6 +34,8 @@ Int_t   TAVTdigitizerE::fgkShel55[20];// {1,   5,   9,   13,   21,   37,   45,  
 
 // --------------------------------------------------------------------------------------
 //! Default constructor
+//!
+//! \param[in] parGeo geometry parameters
 TAVTdigitizerE::TAVTdigitizerE(TAVTbaseParGeo* parGeo)
 : TAVTbaseDigitizer(parGeo)
 {

@@ -42,6 +42,8 @@ TAVTtrack::TAVTtrack()
 
 //______________________________________________________________________________
 //! Copy constructor
+//!
+//! \param[in] aTrack ytack to copy
 TAVTtrack::TAVTtrack(const TAVTtrack& aTrack)
 :  TAGbaseTrack(aTrack),
    fPosVertex(aTrack.fPosVertex)

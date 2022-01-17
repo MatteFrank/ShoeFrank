@@ -212,7 +212,7 @@ void TAVTactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, T
 //!
 //! \param[in] sensorId sensor index
 //! \param[in] idx MC hit index
-//! \param[in] trackIdx MC event index411/9
+//! \param[in] trackIdx MC event index
 void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
 {
 	TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();

@@ -48,7 +48,7 @@ Int_t TAVTntuCluster::GetClustersN(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+//! return list of clusters
 //!
 //! \param[in] iSensor sensor id
 TClonesArray* TAVTntuCluster::GetListOfClusters(Int_t iSensor)
@@ -61,7 +61,7 @@ TClonesArray* TAVTntuCluster::GetListOfClusters(Int_t iSensor)
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+//! return list of clusters (const)
 //!
 //! \param[in] iSensor sensor id
 TClonesArray* TAVTntuCluster::GetListOfClusters(Int_t iSensor) const
@@ -89,7 +89,7 @@ TAVTcluster* TAVTntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a pixel for a given sensor (const)
 //!
 //! \param[in] iSensor sensor id
 //! \param[in] iCluster cluster index
