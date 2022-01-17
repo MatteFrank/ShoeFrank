@@ -10,12 +10,25 @@
 #include "TAVTntuHit.hxx"
 #include "TAVTbaseHit.hxx"
 
-ClassImp(TAVTbaseHit)
-
 /*!
- \class TAVTbaseDigitizer
+ \class TAVTbaseHit
  \brief  Base class of VTX hits
  */
+
+ClassImp(TAVTbaseHit)
+
+//______________________________________________________________________________
+//! Standard constructor
+TAVTbaseHit::TAVTbaseHit()
+ : TAGobject(),
+   fSensorId(-1),
+   fPixelIndex(-1),
+   fPixelLine(0),
+   fPixelColumn(0),
+   fRawValue(0),
+   fPulseHeight(0)
+{
+}
 
 //______________________________________________________________________________
 //!  build the hit from the index and value for a given sensor

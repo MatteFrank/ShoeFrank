@@ -18,7 +18,7 @@
 
 
 /*!
- \class TAVTactNtuVertex
+ \class TAVTactNtuVertexPD
  \brief NTuplizer for VTX vertices with probality algorithm
  */
 

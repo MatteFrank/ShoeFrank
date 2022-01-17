@@ -47,9 +47,7 @@ protected:
    TArrayI            fMcTrackIdx;               ///< Index of the track created in the simulation
 
 public:
-
-    //! Default constructor
-    TAVTbaseHit() {};
+    TAVTbaseHit();
     TAVTbaseHit( Int_t iSensor, const Int_t aIndex, Double_t aValue);
     TAVTbaseHit( Int_t iSensor, Double_t aValue, Int_t aLine, Int_t aColumn);
     virtual ~TAVTbaseHit();
