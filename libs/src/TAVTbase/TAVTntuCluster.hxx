@@ -30,6 +30,7 @@ class TAVTbaseParGeo;
 class TAVTntuCluster : public TAGdata {
    
 protected:
+   //! Geometry parameter
    TAVTbaseParGeo*    fGeometry;        //! do NOT stored this pointer !
    TObjArray*         fListOfClusters;  ///< list of clusters
 

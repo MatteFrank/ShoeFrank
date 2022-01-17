@@ -25,6 +25,7 @@ class TAGionisMaterials;
 class TAVTbaseParGeo : public TAGparTools {
       
 protected:
+   //! pointer for ionisation property
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
    Int_t      fSensorsN;         ///< Number of sensors
    TString    fkDefaultGeoName;  ///< default par geo file name

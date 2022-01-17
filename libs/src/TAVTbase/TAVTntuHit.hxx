@@ -16,6 +16,7 @@ class TAVTntuHit : public TAGdata {
 protected:
    //using TObjArray here
    TObjArray*        fListOfPixels;    ///< list of pixels
+   //! geometry parameter
    TAVTparGeo*       fpGeoMap;         //! do not store
    
     std::map<pair<int, int>, int > fMap; //! pixel map

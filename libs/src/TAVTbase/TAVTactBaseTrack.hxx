@@ -97,7 +97,9 @@ protected:
    TAGgeoTrafo*    fpFootGeo;	          ///< First geometry transformer
 	
    Int_t           fTracksMaximum;      ///< maximum number of tracks allowed
+   //! number of clusters required to make a track
    Int_t           fRequiredClusters;   //! number of clusters required to make a track
+   //! Max distance to associate a track and a cluster
    Double_t        fSearchClusDistance; //! Max distance to associate a track and a cluster
    Float_t         fPlaneResolution;    ///< plane resolution
       

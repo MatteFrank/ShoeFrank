@@ -48,7 +48,7 @@ public:
    //! Set pileup
    void             SetPileUp(Bool_t pileup = true) { fPileup = pileup;     }
 
-   // Get list of tracks
+   //! Get list of tracks
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }
 
    // Create new track

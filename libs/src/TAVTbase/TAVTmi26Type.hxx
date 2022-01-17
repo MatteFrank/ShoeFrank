@@ -13,7 +13,7 @@
  */
 // structure for PXI format
 
-#define MI26__FFRAME_RAW_MAX_W16  1140
+#define MI26__FFRAME_RAW_MAX_W16  1140 ///< maximum word in frame structure
 
 /*!
  \struct MI26_FrameRaw
@@ -42,6 +42,7 @@ typedef union {
    
    UShort_t W16;             ///< Word
    
+   //! Frame state line structure
    struct {
 	  
 	  UShort_t StateNb  :  4; ///< Number of states
@@ -60,7 +61,7 @@ typedef union {
 typedef union {
    
    UShort_t W16;             ///< Word
-   
+   //! Frame state structure
    struct {
 	  
 	  UShort_t HitNb   :  2;  ///< Number of hits

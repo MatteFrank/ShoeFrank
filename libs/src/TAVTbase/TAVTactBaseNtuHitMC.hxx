@@ -21,6 +21,7 @@ class TH1F;
 class TAVTactBaseNtuHitMC : public TAGaction {
 
 protected:
+   //! Hit structure
    struct RawMcHit_t : public  TObject {
       RawMcHit_t() {id = 0; de = x = y = 0.;}
       Int_t  id;   ///< sensor id
