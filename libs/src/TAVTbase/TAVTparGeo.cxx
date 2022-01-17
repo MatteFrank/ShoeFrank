@@ -89,6 +89,7 @@ void TAVTparGeo::DefineMaterial()
 //!
 //! \param[in] vertexName  vertex volume name
 //! \param[in] basemoduleName module volume base name
+//! \param[in] board flag for implemented passive mother board
 TGeoVolume* TAVTparGeo::BuildVertex(const char* vertexName, const char* basemoduleName, Bool_t board)
 {
   if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed

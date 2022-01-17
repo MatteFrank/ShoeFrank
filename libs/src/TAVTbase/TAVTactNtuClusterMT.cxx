@@ -71,6 +71,7 @@ Bool_t TAVTactNtuClusterMT::Action()
 //! Find clusters for a given sensor and thread
 //!
 //! \param[in] iSensor index of sensor
+//! \param[in] listOfPixels list of pixels
 //! \param[in] thr index of thread
 Bool_t TAVTactNtuClusterMT::FindClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr)
 {

@@ -91,6 +91,8 @@ Bool_t TAVTactStdDaqRaw::GetEvent()
 //!
 //! \param[in] name action name
 //! \param[in] opt open file options
+//! \param[in] treeName name of tree in file
+//! \param[in] dscBranch flag for object descriptor 
 Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/,  Bool_t /*dscBranch*/)
 {
    TString inputFileName;
