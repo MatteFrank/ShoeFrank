@@ -32,6 +32,7 @@
 
 using namespace std;
 
+//! Class Imp
 ClassImp(TAVTactNtuHitMC);
 
 //------------------------------------------+-----------------------------------

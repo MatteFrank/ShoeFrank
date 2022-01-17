@@ -20,6 +20,7 @@
  \brief NTuplizer for VTX clusters
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuCluster);
 
 //------------------------------------------+-----------------------------------

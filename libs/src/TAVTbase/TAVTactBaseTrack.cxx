@@ -36,6 +36,7 @@
  \brief Base class to NTuplizer VTX-IT-MSD track
  */
 
+//! Class Imp
 ClassImp(TAVTactBaseTrack);
 
 Bool_t TAVTactBaseTrack::fgRefit = true;

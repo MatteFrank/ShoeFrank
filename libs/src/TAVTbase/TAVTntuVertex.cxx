@@ -17,6 +17,7 @@
  \brief Class for VTX vertices
  */
 
+//! Class Imp
 ClassImp(TAVTvertex) // Description of a vertex
 
 //______________________________________________________________________________
@@ -80,7 +81,7 @@ void TAVTvertex::Reset()
  \brief Class for VTX vertices containers
  */
 
-
+//! Class Imp
 ClassImp(TAVTntuVertex);
 
 TString TAVTntuVertex::fgkBranchName   = "vtvtx.";

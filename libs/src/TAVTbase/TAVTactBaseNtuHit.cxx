@@ -17,6 +17,7 @@
  \brief Base class to decode raw data from single file
  */
 
+//! Class imp
 ClassImp(TAVTactBaseNtuHit);
 
 //------------------------------------------+-----------------------------------

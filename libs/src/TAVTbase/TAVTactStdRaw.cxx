@@ -18,6 +18,7 @@
  \brief Read raw data from single VTX file ()ascii format) from new firmware
  */
 
+//! Class Imp
 ClassImp(TAVTactStdRaw);
 
 TString TAVTactStdRaw::fgDefaultFolderName = "run_";
@@ -133,6 +134,8 @@ Bool_t TAVTactStdRaw::GetEvent()
 //!
 //! \param[in] name action name
 //! \param[in] opt open file options
+//! \param[in] treeName name of tree in file
+//! \param[in] dscBranch flag for object descriptor
 Int_t TAVTactStdRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/, Bool_t /*dscBranch*/)
 {
    TString inputFileName;

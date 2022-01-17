@@ -10,8 +10,8 @@
  \brief  Class for VTX hit
  */
 
+//! Class Imp
 ClassImp(TAVThit) // Description of Single Detector TAVThit 
-
 
 //______________________________________________________________________________
 //!  build the hit from the index

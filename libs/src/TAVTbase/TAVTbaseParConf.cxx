@@ -25,6 +25,7 @@
   \brief Base class of configuration parameters for VTX
 */
 
+//! Class Imp
 ClassImp(TAVTbaseParConf);
 
 //______________________________________________________________________________
@@ -159,6 +160,7 @@ void TAVTbaseParConf::Clear(Option_t*)
 //! ostream insertion.
 //!
 //! \param[out] os stream output
+//! \param[in] option option for printout
 void TAVTbaseParConf::ToStream(ostream& os, Option_t*) const
 {
 //  os << "TAVTbaseParConf " << GetName() << endl;

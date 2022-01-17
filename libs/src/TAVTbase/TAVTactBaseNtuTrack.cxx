@@ -34,6 +34,7 @@
  \brief Base class to NTuplize VTX tracks
  */
 
+//! Class Imp
 ClassImp(TAVTactBaseNtuTrack);
 
 //------------------------------------------+-----------------------------------

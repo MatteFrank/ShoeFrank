@@ -19,6 +19,7 @@
   \brief Reader action for ascii files **
 */
 
+//! Class Imp
 ClassImp(TAVTactVmeReader);
 
 TString TAVTactVmeReader::fgDefaultFolderName = "run_";

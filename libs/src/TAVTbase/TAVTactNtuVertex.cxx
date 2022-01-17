@@ -22,6 +22,7 @@
  \brief NTuplizer for VTX vertices
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuVertex);
 
 //------------------------------------------+-----------------------------------

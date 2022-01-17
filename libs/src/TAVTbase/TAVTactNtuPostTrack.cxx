@@ -32,6 +32,7 @@
  \brief Class for post tracking refiting including vertex
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuPostTrack);
 
 //------------------------------------------+-----------------------------------

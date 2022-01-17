@@ -28,6 +28,7 @@
  \brief Class for VTX tracks
  */
 
+//! Class Imp
 ClassImp(TAVTtrack) // Description of a Track
 
 //______________________________________________________________________________

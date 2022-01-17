@@ -31,6 +31,7 @@
  \brief  NTuplizer for VTX tracks using combinatory algorithm
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuTrackF);
 
 //------------------------------------------+-----------------------------------

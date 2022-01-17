@@ -18,6 +18,7 @@
  \brief Base class to NTuplize cluster
  */
 
+//! Class imp
 ClassImp(TAVTactBaseNtuCluster);
 
 //------------------------------------------+-----------------------------------

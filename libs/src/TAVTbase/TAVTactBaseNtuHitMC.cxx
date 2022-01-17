@@ -30,8 +30,8 @@
 
 using namespace std;
 
+//! Class imp
 ClassImp(TAVTactBaseNtuHitMC);
-
 
 Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
 Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 0.736; // ajust for FIRST

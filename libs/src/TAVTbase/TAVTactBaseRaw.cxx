@@ -21,6 +21,7 @@
  \brief Base class to decode vertex raw data
  */
 
+//! Class Imp
 ClassImp(TAVTactBaseRaw);
 
 const UInt_t TAVTactBaseRaw::fgkKeyHeader[]     = {0x80008000, 0x80018001, 0x80028002, 0x80038003};

@@ -24,8 +24,8 @@
   \brief Configuration parameters for VTX
 */
 
+//! Class Imp
 ClassImp(TAVTparConf);
-
 
 //______________________________________________________________________________
 //! Standard constructor

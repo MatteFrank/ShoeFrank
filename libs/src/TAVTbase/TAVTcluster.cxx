@@ -11,6 +11,7 @@
  \brief Class for cluster in VTX
  */
 
+//! Class Imp
 ClassImp(TAVTcluster) // Description of a cluster
 
 //______________________________________________________________________________

@@ -29,7 +29,9 @@
  \brief Base class to NTuplize VTX vertex
  */
 
+//! Class Imp
 ClassImp(TAVTactBaseNtuVertex);
+
 Bool_t  TAVTactBaseNtuVertex::fgCheckBmMatching = true;
 
 //------------------------------------------+-----------------------------------

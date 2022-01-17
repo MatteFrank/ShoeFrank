@@ -25,7 +25,7 @@
 
 
 //##############################################################################
-
+//! Class Imp
 ClassImp(TAVTntuHit);
 
 TString TAVTntuHit::fgkBranchName   = "vtrh.";

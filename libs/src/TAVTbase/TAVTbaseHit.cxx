@@ -15,6 +15,7 @@
  \brief  Base class of VTX hits
  */
 
+//! Class Imp
 ClassImp(TAVTbaseHit)
 
 //______________________________________________________________________________

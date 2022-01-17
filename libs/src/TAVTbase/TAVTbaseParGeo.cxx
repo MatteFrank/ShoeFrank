@@ -32,6 +32,7 @@ using namespace std;
   \brief Map and Geometry parameters for VTX
 */
 
+//! Class Imp
 ClassImp(TAVTbaseParGeo);
 
 const Int_t TAVTbaseParGeo::fgkDefSensorsN   = 32;

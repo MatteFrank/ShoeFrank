@@ -12,6 +12,7 @@
  \brief Class for VTX cluster container
  */
 
+//! Class Imp
 ClassImp(TAVTntuCluster);
 
 TString TAVTntuCluster::fgkBranchName   = "vtclus.";
@@ -166,6 +167,7 @@ TAVTcluster* TAVTntuCluster::NewCluster(TAVTcluster* clus, Int_t iSensor)
 //! ostream insertion.
 //!
 //! \param[in] os output stream
+//! \param[in] option option for printout
 void TAVTntuCluster::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {

@@ -20,6 +20,7 @@
  \brief NTuplizer for cluster with multi-thread.
  */
 
+//! Class imp
 ClassImp(TAVTactBaseClusterMT);
 
 pthread_mutex_t TAVTactBaseClusterMT::fLock;

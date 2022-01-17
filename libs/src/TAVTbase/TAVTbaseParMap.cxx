@@ -13,6 +13,7 @@
  \brief Base class of map parameters for VTX
  */
 
+//! Class Imp
 ClassImp(TAVTbaseParMap);
 
 //------------------------------------------+-----------------------------------

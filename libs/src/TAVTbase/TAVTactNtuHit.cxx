@@ -21,10 +21,10 @@
  \brief Get vertex raw data from DAQ (binary format)
  */
 
+//! Class Imp
+ClassImp(TAVTactNtuHit);
 
 UInt_t TAVTactNtuHit::fgTStolerance = 40;
-
-ClassImp(TAVTactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

@@ -13,6 +13,7 @@
  \brief Base class for VTX cluster containers
  */
 
+//! Class Imp
 ClassImp(TAVTbaseCluster) // Description of a cluster
 
 //______________________________________________________________________________

@@ -24,6 +24,7 @@
  \brief Base action for MT clustering
  */
 
+//! Class imp
 ClassImp(TAVTactBaseNtuClusterMT);
 
 Int_t TAVTactBaseNtuClusterMT::fgSensorOff = 0;

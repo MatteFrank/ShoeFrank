@@ -24,6 +24,7 @@
  \brief NTuplizer for VTX cluster in Multi-thread mode
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuClusterMT);
 
 //------------------------------------------+-----------------------------------

@@ -20,8 +20,8 @@
   \brief Charge (raw) calibration for vertex
 */
 
+//! Class Imp
 ClassImp(TAVTparCal);
-
 
 //------------------------------------------+-----------------------------------
 //! Standard constructor

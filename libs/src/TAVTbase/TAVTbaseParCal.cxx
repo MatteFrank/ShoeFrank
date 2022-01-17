@@ -21,6 +21,7 @@
   \brief Charge (raw) calibration for vertex
 */
 
+//! Class Imp
 ClassImp(TAVTbaseParCal);
 
 Int_t TAVTbaseParCal::fgkChargesN = 6;
@@ -156,6 +157,7 @@ void TAVTbaseParCal::Clear(Option_t*)
 //! ostream insertion.
 //!
 //! \param[out] os stream output
+//! \param[in] option option for printout
 void TAVTbaseParCal::ToStream(ostream& os, Option_t*) const
 {
 //  os << "TAVTbaseParCal " << GetName() << endl;

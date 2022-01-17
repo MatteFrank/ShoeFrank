@@ -22,6 +22,7 @@
  \brief NTuplizer for VTX vertices with probality algorithm
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuVertexPD);
 
 //------------------------------------------+-----------------------------------

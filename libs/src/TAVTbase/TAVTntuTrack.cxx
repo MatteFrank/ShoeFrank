@@ -15,6 +15,7 @@
  \brief  Container class for VTX tracks
  */
 
+//! Class Imp
 ClassImp(TAVTntuTrack);
 
 TString TAVTntuTrack::fgkBranchName   = "vttrack.";

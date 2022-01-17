@@ -27,6 +27,7 @@
  \brief NTuplizer for VTX tracks using road algorithm
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuTrack);
 
 //------------------------------------------+-----------------------------------
