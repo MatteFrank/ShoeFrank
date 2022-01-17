@@ -31,7 +31,7 @@ public:
    // Define radii of shell
    void           DefineRadii();
    // Make cluster
-   Bool_t         MakeCluster(Double_t x0, Double_t y0, Double_t zin, Double_t zout);
+   Bool_t         MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/);
    
 private:
    std::map<Int_t, Float_t>  fMapRadius55;  ///< map radius for half-half pixel impact

@@ -347,7 +347,7 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw* frame)
 // --------------------------------------------------------------------------------------
 //! Add pixel to container
 //!
-//! \param[in] planeId sensor index
+//! \param[in] iSensor sensor index
 //! \param[in] value pixel value
 //! \param[in] aLine line id
 //! \param[in] aColumn column id

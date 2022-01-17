@@ -332,7 +332,7 @@ Int_t TAVTbaseDigitizer::GetColumn(Float_t x) const
 //_____________________________________________________________________________
 //! Get line number from y position
 //!
-//! \param[in] Y position in Y
+//! \param[in] y position in Y
 Int_t TAVTbaseDigitizer::GetLine(Float_t y) const
 {
    // equivalent to  floor((-y-ymin)/fPitchV)-1

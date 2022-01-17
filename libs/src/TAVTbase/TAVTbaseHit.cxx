@@ -10,14 +10,14 @@
 #include "TAVTntuHit.hxx"
 #include "TAVTbaseHit.hxx"
 
+ClassImp(TAVTbaseHit)
+
 /*!
  \class TAVTbaseDigitizer
  \brief  Base class of VTX hits
  */
 
-ClassImp(TAVTbaseHit) // Description of Single Detector TAVTbaseHit 
-
-//!______________________________________________________________________________
+//______________________________________________________________________________
 //!  build the hit from the index and value for a given sensor
 //!
 //! \param[in] sensorId sensor index

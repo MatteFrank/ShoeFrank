@@ -145,7 +145,7 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
 //______________________________________________________________________________
 //! Get list of pixels for a given sensor
 //!
-//! \param[in] iSensor index of sensor
+//! \param[in] sensorId index of sensor
 TClonesArray* TAVTactNtuClusterMT::GetListOfPixels(Int_t sensorId)
 {
    TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();

@@ -90,16 +90,10 @@ public:
     //! Get position
     TVector3&          GetPosition()                   { return fPosition;        }
    
-    // Compute distance from a given pixel
-    Double_t           Distance( TAVTbaseHit&         aPixel);
     // Compute distance from a given position
     Double_t           Distance( const TVector3&     aPosition);
-    // Compute distance in U direction from a given pixel
-    Double_t           DistanceU( TAVTbaseHit&        aPixel);
     // Compute distance in U direction from a given position
     Double_t           DistanceU( const TVector3&     aPosition);
-    // Compute distance in V direction from a given pixel
-    Double_t           DistanceV( TAVTbaseHit&         aPixel);
     // Compute distance in V direction from a given position
     Double_t           DistanceV( const TVector3&     aPosition);
 

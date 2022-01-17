@@ -357,7 +357,7 @@ Int_t TAVTbaseParGeo::GetColumn(Float_t x) const
 //_____________________________________________________________________________
 //! Get line number from y position
 //!
-//! \param[in] Y position in Y
+//! \param[in] y position in Y
 Int_t TAVTbaseParGeo::GetLine(Float_t y) const
 {
    // equivalent to  floor((-y-ymin)/ffPitchY)-1

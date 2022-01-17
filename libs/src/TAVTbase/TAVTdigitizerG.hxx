@@ -28,7 +28,7 @@ public:
    virtual ~TAVTdigitizerG();
    
    // Make cluster
-   Bool_t   MakeCluster(Double_t x0, Double_t y0, Double_t zin, Double_t zout);
+   Bool_t   MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/);
    
 private:
    TF1*     fFuncClusterDisX;   ///< cluster distribution function in X
