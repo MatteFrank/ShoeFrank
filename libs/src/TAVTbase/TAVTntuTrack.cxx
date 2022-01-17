@@ -109,6 +109,7 @@ TAVTtrack* TAVTntuTrack::NewTrack(TAVTtrack& trk)
 //! ostream insertion.
 //!
 //! \param[in] os output stream
+//! \param[in] option option for printout
 void TAVTntuTrack::ToStream(ostream& os, Option_t* option) const
 {
 	  

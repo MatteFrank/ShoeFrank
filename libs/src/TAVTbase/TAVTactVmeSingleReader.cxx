@@ -80,6 +80,8 @@ void TAVTactVmeSingleReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t 
 //!
 //! \param[in] name action name
 //! \param[in] opt open file options
+//! \param[in] treeName name of tree in file
+//! \param[in] dscBranch flag for object descriptor
 Int_t TAVTactVmeSingleReader::Open(const TString& name, Option_t* opt, const TString, Bool_t )
 {
    TString inputFileName;

@@ -102,6 +102,7 @@ void TAVTactVmeReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump)
 //!
 //! \param[in] name action name
 //! \param[in] opt open file options
+//! \param[in] treeName name of tree in file
 Int_t TAVTactVmeReader::Open(const TString& name, Option_t* opt, const TString)
 {
    TString inputFileName;

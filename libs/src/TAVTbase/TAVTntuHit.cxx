@@ -147,7 +147,9 @@ void TAVTntuHit::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-// Clear event.
+//! Clear event.
+//!
+//! \param[in] opt option for clearing (not used)
 void TAVTntuHit::Clear(Option_t*)
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
@@ -161,7 +163,7 @@ void TAVTntuHit::Clear(Option_t*)
 //! Create new pixel from a given sensor, line and column
 //!
 //! \param[in] iSensor sensor index
-//! \param[in] aValue pixel value
+//! \param[in] value pixel value
 //! \param[in] aLine line number
 //! \param[in] aColumn column number
 TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn)
@@ -192,6 +194,7 @@ TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
 //! ostream insertion.
 //!
 //! \param[in] os output stream
+//! \param[in] option option for printout
 void TAVTntuHit::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
