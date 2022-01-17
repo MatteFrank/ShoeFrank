@@ -20,7 +20,6 @@
 
 #include "TAVTdigitizerE.hxx"
 
-// --------------------------------------------------------------------------------------
 class TAVTbaseParGeo;
 class TAITdigitizerE : public TAVTdigitizerE {
    

@@ -12,6 +12,7 @@
  \brief Map parameters for ITR
  */
 
+//! Class Imp
 ClassImp(TAITparMap);
 
 //------------------------------------------+-----------------------------------

@@ -11,6 +11,7 @@
  \brief Class for ITR cluster container
  */
 
+//! Class Imp
 ClassImp(TAITntuCluster);
 
 TString TAITntuCluster::fgkBranchName   = "itclus.";
@@ -33,7 +34,9 @@ TAITntuCluster::~TAITntuCluster()
 }
 
 //------------------------------------------+-----------------------------------
-// return number of clusters
+//! return number of clusters
+//!
+//! \param[in] iSensor sensor id
 Int_t TAITntuCluster::GetClustersN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -44,7 +47,9 @@ Int_t TAITntuCluster::GetClustersN(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-// return number of clusters
+//! return list of clusters
+//!
+//! \param[in] iSensor sensor id
 TClonesArray* TAITntuCluster::GetListOfClusters(Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -55,7 +60,9 @@ TClonesArray* TAITntuCluster::GetListOfClusters(Int_t iSensor)
 }
 
 //------------------------------------------+-----------------------------------
-// return number of clusters
+//! return list of clusters (const)
+//!
+//! \param[in] iSensor sensor id
 TClonesArray* TAITntuCluster::GetListOfClusters(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -67,7 +74,10 @@ TClonesArray* TAITntuCluster::GetListOfClusters(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-// return a cluster
+//! return a cluster
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] iCluster cluster index
 TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 {
    if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
@@ -78,7 +88,10 @@ TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 }
 
 //------------------------------------------+-----------------------------------
-// return a pixel for a given sensor
+//! return a pixel for a given sensor (const)
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] iCluster cluster index
 const TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) const
 {
    if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
@@ -89,7 +102,7 @@ const TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) con
 }
 
 //------------------------------------------+-----------------------------------
-// Setup clones.
+//! Setup clones.
 void TAITntuCluster::SetupClones()
 {
    fGeometry = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
@@ -105,7 +118,7 @@ void TAITntuCluster::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-// Clear event.
+//! Clear event.
 void TAITntuCluster::Clear(Option_t*)
 {
    for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {
@@ -115,7 +128,9 @@ void TAITntuCluster::Clear(Option_t*)
 }
 
 //______________________________________________________________________________
-//  
+//! Create new cluster for a given sensor
+//!
+//! \param[in] iSensor sensor id
 TAITcluster* TAITntuCluster::NewCluster(Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -130,7 +145,10 @@ TAITcluster* TAITntuCluster::NewCluster(Int_t iSensor)
 }
 
 //______________________________________________________________________________
-//  
+//! Create a new cluster for a given sensor from an existing one
+//!
+//! \param[in] clus a given cluster
+//! \param[in] iSensor sensor id
 TAITcluster* TAITntuCluster::NewCluster(TAITcluster* clus, Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -145,7 +163,10 @@ TAITcluster* TAITntuCluster::NewCluster(TAITcluster* clus, Int_t iSensor)
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAITntuCluster::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {

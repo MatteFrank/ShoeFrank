@@ -24,6 +24,7 @@
   \brief Configuration parameters for ITR
 */
 
+//! Class Imp
 ClassImp(TAITparConf);
 
 //______________________________________________________________________________

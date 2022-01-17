@@ -40,13 +40,21 @@ private:
    Float_t    fAlMatDensity;      ///< Density of aluminum material
 
 private:
+   //! Fluka foam body
    vector<string> fvFoamBody;     //! Fluka foam body
+   //! Fluka kapton body
    vector<string> fvKaptonBody;   //! Fluka kapton body
+   //! Fluka epoxy body
    vector<string> fvEpoxyBody;    //! Fluka epoxy body
+    //! Fluka aluminum body
    vector<string> fvAlBody;       //! Fluka aluminum body
+    //! Fluka foam region
    vector<string> fvFoamRegion;   //! Fluka foam region
+   //! Fluka kapton region
    vector<string> fvKaptonRegion; //! Fluka kapton region
+    //! Fluka epoxy body
    vector<string> fvEpoxyRegion;  //! Fluka epoxy body
+   //! Fluka aluminum body
    vector<string> fvAlRegion;     //! Fluka aluminum body
 
 protected:
@@ -106,55 +114,55 @@ public:
    Float_t GetAlMatDensity()            const { return fAlMatDensity;     }
    
    // return local Z positon of the layers
-   //! Get Foam layer thickness
+   // Get Foam layer thickness
    Float_t GetFoamLayer();
-   //! Get 1st Kapton layer thickness
+   // Get 1st Kapton layer thickness
    Float_t Get1stKaptonLayer();
-   //! Get 1st Aluminum layer thickness
+   // Get 1st Aluminum layer thickness
    Float_t Get1stAlLayer();
-   //! Get 2nd Kapton layer thickness
+   // Get 2nd Kapton layer thickness
    Float_t Get2ndKaptonLayer();
-   //! Get 2nd Aluminum layer thickness
+   // Get 2nd Aluminum layer thickness
    Float_t Get2ndAlLayer();
-   //! Get 3rd Kapton layer thickness
+   // Get 3rd Kapton layer thickness
    Float_t Get3rdKaptonLayer();
-   //! Get Epxoy layer thickness
+   // Get Epxoy layer thickness
    Float_t GetEpoxyLayer();
    
-   //! Define materials
+   // Define materials
    void    DefineMaterial();
 
-   //! Read support
+   // Read support
    void    ReadSupportInfo();
 
-   //! Build Innert Tracker
+   // Build Innert Tracker
    TGeoVolume* BuildInnerTracker(const char *name = GetBaseName(), const char* basemoduleName = "Module", Bool_t board = false,  Bool_t support = false);
    
-   //! Build plume support
+   // Build plume support
    TGeoVolume* BuildPlumeSupport(const char* basemoduleName = "Plume", const char *name = "ITSP");
 
    //!crossing regions
    Int_t          GetRegEpitaxial(Int_t n);
-   Int_t          GetRegModule(Int_t n);                            ///<n=number of sensor (0<=n<=31)
-   Int_t          GetRegPixel(Int_t n);                             ///<n=number of sensor (0<=n<=31)
+   Int_t          GetRegModule(Int_t n);                            //n=number of sensor (0<=n<=31)
+   Int_t          GetRegPixel(Int_t n);                             //n=number of sensor (0<=n<=31)
                                                                     
-   Int_t          GetRegFoam(Int_t n);                              ///<n=ladders (0<=n<=3)
-   Int_t          GetRegKapton(Int_t n, Int_t lay, Bool_t side);    ///<n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1,2)
-   Int_t          GetRegAluminum(Int_t n, Int_t lay, Bool_t side);  ///<n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1)
-   Int_t          GetRegEpoxy(Int_t n, Bool_t side);                ///<n=ladders (0<=n<=3); side: true=positive, false=negative;
+   Int_t          GetRegFoam(Int_t n);                              //n=ladders (0<=n<=3)
+   Int_t          GetRegKapton(Int_t n, Int_t lay, Bool_t side);    //n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1,2)
+   Int_t          GetRegAluminum(Int_t n, Int_t lay, Bool_t side);  //n=ladders (0<=n<=3); side: true=positive, false=negative; lay=number of layer (lay=0,1)
+   Int_t          GetRegEpoxy(Int_t n, Bool_t side);                //n=ladders (0<=n<=3); side: true=positive, false=negative;
 
    // to print fluka files
-   //! Fluka Parameters
+   // Fluka Parameters
    virtual string PrintParameters();
-   //! Fluka rotations
+   // Fluka rotations
    virtual string PrintRotations();
-   //! Fluka bodies
+   // Fluka bodies
    virtual string PrintBodies();
-   //! Fluka regions
+   // Fluka regions
    virtual string PrintRegions();
-   //! Fluka assignment material
+   // Fluka assignment material
    virtual string PrintAssignMaterial(TAGmaterials *Material);
-   //! Fluka bodies subtraction
+   // Fluka bodies subtraction
    virtual string PrintSubtractBodiesFromAir();
    
 public:

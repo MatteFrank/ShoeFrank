@@ -24,7 +24,7 @@ public:
 
    virtual ~TAITactNtuHitMC() {};
    
-   //! Base action 
+   // Base action
    bool           Action();
    
    // Fill noise over sensors
@@ -35,21 +35,22 @@ private:
    TAGdataDsc*    fpNtuMC;          ///< input data dsc
    TAGdataDsc*    fpNtuEve;         ///< input eve track dsc
    TAGdataDsc*    fpNtuRaw;		   ///< output data dsc
-   EVENT_STRUCT*  fEventStruct;
-   map<pair<int,int>, TAIThit*> fMap;      //! map for pilepup
+   EVENT_STRUCT*  fEventStruct;     ///< Fluka structure
+   //! map for pilepup
+   map<pair<int,int>, TAIThit*> fMap;  //! map for pilepup
 
 private:
-   //! Fill noise per sensor
+   // Fill noise per sensor
    void           FillNoise(Int_t sensorId);
-   //! Set MC info for pixel
+   // Set MC info for pixel
    void           SetMCinfo(TAIThit* pixel, Int_t hitId);
-   //! Create digitizer
+   // Create digitizer
    void           CreateDigitizer();
-   //! Fill pixels
+   // Fill pixels
    void           FillPixels( Int_t sensorId, Int_t mcId, Int_t trackId);
-   //! Digitize hits
+   // Digitize hits
    void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);
-   //! Dogitize
+   // Dogitize
    void           Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
    
    ClassDef(TAITactNtuHitMC,0)
