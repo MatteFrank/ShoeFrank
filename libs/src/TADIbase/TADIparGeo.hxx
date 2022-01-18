@@ -89,31 +89,31 @@ public:
    //! Get magnet shield material
   TString        GetShieldMat() const  { return fShieldMat; }
   
-  //! Transform point from the global reference frame
-  //! to the local reference frame of the detection id
+  // Transform point from the global reference frame
+  // to the local reference frame of the detection id
   void            Global2Local(Int_t detID,  Double_t xg, Double_t yg, Double_t zg, 
 			       Double_t& xl, Double_t& yl, Double_t& zl) const;
-  //! Global to local
+  // Global to local
   TVector3        Global2Local(Int_t detID, TVector3& glob) const;
-   //! Global to local vector
+  // Global to local vector
   TVector3        Global2LocalVect(Int_t detID, TVector3& glob) const;
   
-  //! Transform point from the local reference frame
-  //! of the detection id to the global reference frame 
+  // Transform point from the local reference frame
+  // of the detection id to the global reference frame
   void            Local2Global(Int_t detID,  Double_t xl, Double_t yl, Double_t zl, 
 			       Double_t& xg, Double_t& yg, Double_t& zg) const;
-  //! Local to global
+  // Local to global
   TVector3        Local2Global(Int_t detID, TVector3& loc) const;
-   //! Local to global vector
+  // Local to global vector
   TVector3        Local2GlobalVect(Int_t detID, TVector3& loc) const;
   
-  //! Read parameters from file
+  // Read parameters from file
   Bool_t          FromFile(const TString& name = "");
   
-  //! Define materials
+  // Define materials
   void            DefineMaterial();
   
-  //! Get position Magnet
+  // Get position Magnet
   TVector3        GetPosition(Int_t iMagnet);
   
   //! Get number of Magnets
@@ -137,7 +137,7 @@ public:
   //! Get field const value
   TVector3        GetMagCstValue()     const { return fMagCstValue; }
    
-  //! Build Magnet
+  // Build Magnet
   TGeoVolume* BuildMagnet(const char* basemoduleName = "Module", const char *name = GetBaseName());
   
   //! Get Magnet parameter
@@ -152,27 +152,27 @@ public:
   TVector3    GetMaxPoistion() const { return fMaxPosition; }
 
   //crossing regions
-   //! Get magnet region
+  // Get magnet region
   Int_t       GetRegMagnet(Int_t n); //n=0,1
-  //! Get shield region
+  // Get shield region
   Int_t       GetRegShield(Int_t n); //n=0,1
   
   // to print fluka files
-  //! Print Fluka rotations
+  // Print Fluka rotations
   string PrintRotations();
-  //! Print Fluka rotations
+  // Print Fluka rotations
   string PrintBodies();
-  //! Print Fluka bodies
+  // Print Fluka bodies
   string PrintRegions();
-  //! Print Fluka assignment materials
+  // Print Fluka assignment materials
   string PrintAssignMaterial(TAGmaterials *Material);
-   //! Print Fluka subtract bodies
+  // Print Fluka subtract bodies
   string PrintSubtractBodiesFromAir();
-  //! Print Fluka parameters
+  // Print Fluka parameters
   string PrintParameters();
   
 private:
-   //! compute min/max position
+  // compute min/max position
   void DefineMaxMinDimension();
   
   ClassDef(TADIparGeo,1)

@@ -20,7 +20,7 @@
 class TADIeveField : public TEveMagField {
    
 private:
-   TADIgeoField* fField;
+   TADIgeoField* fField;    ///< Mag field from geometry
    
 public:
    TADIeveField(TADIgeoField* field);
