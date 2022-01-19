@@ -2,7 +2,7 @@
 #define _TAMntuRegion_HXX
 
 /*!
- \file TAMCntuPart.hxx
+ \file TAMCntuRegion.hxx
  \brief   Declaration of TAMCregion and TAMCntuRegion.
  */
 /*------------------------------------------+---------------------------------*/

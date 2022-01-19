@@ -1,6 +1,11 @@
 #ifndef _EVENT_STRUCT_HH
 #define _EVENT_STRUCT_HH
 
+/*!
+ \file TAMCflukaStruct.hxx
+ \brief   Declaration of TEVENT_STRUCT
+ */
+
 #include "Rtypes.h"
 
 const int MAXTR    = 6000;  
