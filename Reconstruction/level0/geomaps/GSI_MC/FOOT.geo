@@ -28,7 +28,7 @@ MultiStripPosX: 0. MultiStripPosY: 0. MultiStripPosZ: 29.
 MultiStripAngX: 0. MultiStripAngY: 0. MultiStripAngZ: 0.
 
 TofWallBaseName: "TW"
-TofWallPosX: 0. TofWallPosY:  0. TofWallPosZ: 180.25
+TofWallPosX: -1. TofWallPosY:  -1. TofWallPosZ: 180.25
 TofWallAngX: 0. TofWallAngY:  0. TofWallAngZ: 0.
 
 CaloBaseName: "CA"
