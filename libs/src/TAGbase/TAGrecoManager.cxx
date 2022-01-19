@@ -24,22 +24,26 @@ map<TString, TString> TAGrecoManager::fgkDectFullName = {{"ST", "Start Counter"}
 const TString TAGrecoManager::fgkDefParName = "FootGlobal.par";
 
 //_____________________________________________________________________________
-// Global static pointer used to ensure a single instance of the class.
+//! Global static pointer used to ensure a single instance of the class.
 TAGrecoManager* TAGrecoManager::fgInstance = NULL;
 
 
 //_____________________________________________________________________________
-TAGrecoManager* TAGrecoManager::Instance( const TString expName )  {
-
-    if (!fgInstance)   // Only allow one instance of class to be generated, only true for multi-thread.
-        fgInstance = new TAGrecoManager( expName );
+//! Instance
+//!
+//! \param[in] expName experiment name
+TAGrecoManager* TAGrecoManager::Instance( const TString expName )
+{
+   if (!fgInstance)   // Only allow one instance of class to be generated, only true for multi-thread.
+      fgInstance = new TAGrecoManager( expName );
 
    return fgInstance;
 }
 
 //_____________________________________________________________________________
-TAGrecoManager* TAGrecoManager::GetPar()  {
-
+//! Retrieve instance
+TAGrecoManager* TAGrecoManager::GetPar()
+{
     if (!fgInstance)
        cout << "ERROR::TAGrecoManager::GetPar()  -->  called a get before TAGrecoManager object instance." << endl, exit(0);
 
@@ -59,6 +63,8 @@ TAGrecoManager::~TAGrecoManager()
 
 //_____________________________________________________________________________
 //! Private constructor
+//!
+//! \param[in] expName experiment name
 TAGrecoManager::TAGrecoManager( const TString expName )
 : fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),			    fIsMC(true),
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
@@ -75,6 +81,7 @@ TAGrecoManager::TAGrecoManager( const TString expName )
 }
 
 //_____________________________________________________________________________
+//! Get Global information
 const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 {
    TAGrunInfo runInfo;
@@ -146,7 +153,8 @@ const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 }
 
 //_____________________________________________________________________________
-void TAGrecoManager::FromFile ()
+//! Read from file
+void TAGrecoManager::FromFile()
 {
   TAGparTools* parTools = new TAGparTools();
   if (!parTools->Open(fParFileName.data())) {
@@ -517,6 +525,7 @@ void TAGrecoManager::FromFile ()
 }
 
 //_____________________________________________________________________________
+//! Set debug level
 void TAGrecoManager::SetDebugLevels()
 {
    for ( map< string, int >::iterator it = fMapDebug.begin(); it != fMapDebug.end(); ++it) {
@@ -527,6 +536,10 @@ void TAGrecoManager::SetDebugLevels()
 }
 
 //_____________________________________________________________________________
+//! Set debug level for a given class
+//!
+//! \param[in] className class name
+//! \param[in] level debug level
 void TAGrecoManager::SetClassDebugLevel(const char* className, Int_t level)
 {
    // set the debug level for the given class
@@ -543,6 +556,9 @@ void TAGrecoManager::SetClassDebugLevel(const char* className, Int_t level)
 }
 
 //_____________________________________________________________________________
+//! Clear debug level for a given class
+//!
+//! \param[in] className class name
 void TAGrecoManager::ClearClassDebugLevel(const char* className)
 {
    // remove the setting of the debug level for the given class
@@ -553,6 +569,10 @@ void TAGrecoManager::ClearClassDebugLevel(const char* className)
 }
 
 //_____________________________________________________________________________
+//! Set debug level for a given MC class
+//!
+//! \param[in] level debug level
+//! \param[in] className class name
 Bool_t TAGrecoManager::GetMcDebugLevel(Int_t level, const char* className)
 {
    // get the logging level for the given MC class
@@ -568,6 +588,10 @@ Bool_t TAGrecoManager::GetMcDebugLevel(Int_t level, const char* className)
 }
 
 //_____________________________________________________________________________
+//! Check debug level for a given level and class name
+//!
+//! \param[in] level debug level
+//! \param[in] className class name
 Bool_t TAGrecoManager::GetDebugLevel(Int_t level, const char* className)
 {
    // get the logging level for the given module and class
@@ -588,8 +612,10 @@ Bool_t TAGrecoManager::GetDebugLevel(Int_t level, const char* className)
    return false;
 }
 
-
 //_____________________________________________________________________________
+//! Get debug level for a given class name
+//!
+//! \param[in] className class name
 Int_t TAGrecoManager::GetDebugLevel(const char* className)
 {
    // get the logging level for the given module and class
@@ -604,6 +630,14 @@ Int_t TAGrecoManager::GetDebugLevel(const char* className)
 }
 
 //_____________________________________________________________________________
+//! Debug line message
+//!
+//! \param[in] level debug level
+//! \param[in] className class name
+//! \param[in] funcName method name
+//! \param[in] format output format
+//! \param[in] file file name
+//! \param[in] line line number
 void TAGrecoManager::DebugLine(Int_t level, const char* className, const char* funcName, const char* format, const char* file, Int_t line)
 {
    // print the message
@@ -618,6 +652,12 @@ void TAGrecoManager::DebugLine(Int_t level, const char* className, const char* f
 }
 
 //_____________________________________________________________________________
+//! Debug message
+//!
+//! \param[in] level debug level
+//! \param[in] className class name
+//! \param[in] funcName method name
+//! \param[in] format output format
 void TAGrecoManager::Debug(Int_t level, const char* className, const char* funcName, const char* format,...)
 {
   // print the message
@@ -635,6 +675,11 @@ void TAGrecoManager::Debug(Int_t level, const char* className, const char* funcN
 }
 
 //_____________________________________________________________________________
+//! Debug MC message
+//!
+//! \param[in] className class name
+//! \param[in] funcName method name
+//! \param[in] format output format
 void TAGrecoManager::GetMcInfoMsg(const char* className, const char* funcName, const char* format)
 {
   Int_t status;
@@ -651,6 +696,11 @@ void TAGrecoManager::GetMcInfoMsg(const char* className, const char* funcName, c
 }
 
 //_____________________________________________________________________________
+//! Debug MC message
+//!
+//! \param[in] className class name
+//! \param[in] funcName method name
+//! \param[in] format output format
 void TAGrecoManager::GetMcInfo(const char* className, const char* funcName, const char* format,...)
 {
   Int_t status;
@@ -671,6 +721,9 @@ void TAGrecoManager::GetMcInfo(const char* className, const char* funcName, cons
 }
 
 //________________________________________________________________________________________
+//! Print
+//!
+//! \param[in] opt print out option
 void TAGrecoManager::Print(Option_t* opt) {
    
    TString option(opt);
@@ -711,6 +764,9 @@ void TAGrecoManager::Print(Option_t* opt) {
 }
 
 //____________________________________________________________________________
+//! Check MC particle
+//!
+//! \param[in] villain MC particle
 bool TAGrecoManager::Find_MCParticle( string villain )
 {
    return ( find( fMcParticles.begin(), fMcParticles.end(), villain ) == fMcParticles.end() ? false : true);

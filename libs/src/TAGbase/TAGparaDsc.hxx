@@ -14,15 +14,16 @@ class TAGaction;
 
 class TAGparaDsc : public TAGnamed {
   public:
+    //! fail bit
     enum { kValid = BIT(15)
     };
 
     explicit        TAGparaDsc(const char* name, TAGpara* p_para=0);
     virtual         ~TAGparaDsc();
 
-    //! Set Object
+    // Set Object
     void            SetObject(TAGpara* p_para);
-    //! Set consumer
+    // Set consumer
     void            SetConsumer(TAGaction* p_action);
 
     //! Get object
@@ -34,11 +35,11 @@ class TAGparaDsc : public TAGnamed {
     //! Valid
     Bool_t          Valid()       const { return TestBit(kValid); }
 
-    //! Clear
+    // Clear
     virtual void    Clear(Option_t* opt="");
-    //! To stream
+    // To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-    //! Recursive removing
+    // Recursive removing
     virtual void    RecursiveRemove(TObject* p_obj);
 
   private:

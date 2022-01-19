@@ -32,20 +32,20 @@ using namespace std;
 class TAGrecoManager {
 
 public:
-   //! singleton class of global foot parameters
+   // singleton class of global foot parameters
 	static TAGrecoManager* Instance( const TString expName = "" );
 	static TAGrecoManager* GetPar();
    
 public:
 	~TAGrecoManager();
 
-   //! From file
+   // From file
 	void  FromFile();
-   //! Print info
+   // Print info
 	void  Print(Option_t* opt = "");
-   //! Get run info
+   // Get run info
    const TAGrunInfo GetGlobalInfo();
-   //! Find MC particle
+   // Find MC particle
    Bool_t Find_MCParticle( string villain );
 
    //! Debug level
@@ -82,7 +82,7 @@ public:
     //! Local reconstruction flag
     bool IsMC()								{ return fIsMC; }
 
-    // Reconstruction parameters Getter
+    //! Reconstruction parameters Getter
     Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
     //! Saving tree flag
     Bool_t IsSaveTree()          const { return fEnableTree;          }
@@ -193,7 +193,7 @@ public:
     //! Set calibration process for BM
     void CalibBM(bool t)               {  fDoCalibBM = t;             }
   
-    //! Debug levels
+    // Debug levels
     void SetDebugLevels();
   
 private:
@@ -260,24 +260,24 @@ private:
    Bool_t               fIncludeStraight;       ///< Global reconstruction from straight line extrapolation
 
 public:
-   //! Debug with line number
+   // Debug with line number
    static void   DebugLine(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", const char* file = "", Int_t line = -1);
-   //! Debug with variable output
+   // Debug with variable output
    static void   Debug(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", ...);
-   //! Get debug level per classname
+   // Get debug level per classname
    static Int_t  GetDebugLevel(const char* className);
-   //! Get debug level per level and classname
+   // Get debug level per level and classname
    static Bool_t GetDebugLevel(Int_t level, const char* className);
-   //! Get MC debug level per level and classname
+   // Get MC debug level per level and classname
    static Bool_t GetMcDebugLevel(Int_t level, const char* className);
-   //! Get MC dedug level per classname
+   // Get MC dedug level per classname
    static void   GetMcInfo(const char* className = "", const char* funcName = "", const char* format = "", ...);
-   //! Get MC dedug level per classname
+   // Get MC dedug level per classname
    static void   GetMcInfoMsg(const char* className = "", const char* funcName = "", const char* format = "");
 
-   //! Set debug level per classname
+   // Set debug level per classname
    static void   SetClassDebugLevel(const char* className, Int_t level);
-   //! Clear debug level per classname
+   // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
 };
 

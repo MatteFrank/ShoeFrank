@@ -22,11 +22,24 @@
   \brief Write tree's. **
 */
 
+/*!
+ \class TAGactTreeWriterBranch
+ \brief Interface for branch writting
+ */
+
+//! Class Imp
 ClassImp(TAGactTreeWriterBranch);
+//! Class Imp
 ClassImp(TAGactTreeWriter);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] p_data data descriptor
+//! \param[in] name name of branch
+//! \param[in] i_size branch size
+//! \param[in] i_compress branch compress level
+//! \param[in] b_object object saving flag
 TAGactTreeWriterBranch::TAGactTreeWriterBranch(TAGdataDsc* p_data, TString name, Int_t i_size,
                                                       Int_t i_compress, Bool_t b_object)
 : fpDataDsc(p_data),
@@ -40,6 +53,8 @@ TAGactTreeWriterBranch::TAGactTreeWriterBranch(TAGdataDsc* p_data, TString name,
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
 TAGactTreeWriter::TAGactTreeWriter(const char* name)
   : TAGactionFile(name, "TAGactTreeWriter - Tree writer", "NEW"),
     fpBranchList(0),
@@ -62,6 +77,11 @@ TAGactTreeWriter::~TAGactTreeWriter()
 
 //------------------------------------------+-----------------------------------
 // Add input data descriptor.
+//!
+//! \param[in] p_data data descriptor
+//! \param[in] branch name of branch
+//! \param[in] i_size branch size
+//! \param[in] i_compress branch compress level
 void TAGactTreeWriter::SetupObjectBranch(TAGdataDsc* p_data, const char* branch,
 					 Int_t i_size, Int_t i_compress)
 {
@@ -74,8 +94,12 @@ void TAGactTreeWriter::SetupObjectBranch(TAGdataDsc* p_data, const char* branch,
 
 //------------------------------------------+-----------------------------------
 // Add input data descriptor.
-void TAGactTreeWriter::SetupElementBranch(TAGdataDsc* p_data,
-					  const char* branch,
+//!
+//! \param[in] p_data data descriptor
+//! \param[in] branch name of branch
+//! \param[in] i_size branch size
+//! \param[in] i_compress branch compress level
+void TAGactTreeWriter::SetupElementBranch(TAGdataDsc* p_data, const char* branch,
 					  Int_t i_size, Int_t i_compress)
 {
   TAGactTreeWriterBranch* p_chan = new TAGactTreeWriterBranch(p_data, branch,
@@ -86,7 +110,9 @@ void TAGactTreeWriter::SetupElementBranch(TAGdataDsc* p_data,
 }
 
 //------------------------------------------+-----------------------------------
-// Set compression level for file and all branches.
+//! Set compression level for file and all branches.
+//!
+//! \param[in] i_compress branch compress level
 void TAGactTreeWriter::SetCompressionLevel(Int_t i_compress)
 {
   fiCompress = i_compress;
@@ -103,7 +129,12 @@ void TAGactTreeWriter::SetCompressionLevel(Int_t i_compress)
 }
 
 //------------------------------------------+-----------------------------------
-// Open root file.
+//! Open Root file.
+//!
+//! \param[in] name action name
+//! \param[in] option open file options
+//! \param[in] treeName name of tree in file
+//! \param[in] dscBranch flag for object descriptor
 Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option, const TString treeName, Bool_t dscBranch)
 {
   TDirectory* p_cwd = gDirectory;
@@ -161,7 +192,7 @@ Int_t TAGactTreeWriter::Open(const TString& name, Option_t* option, const TStrin
 }
 
 //------------------------------------------+-----------------------------------
-// Close file.
+//! Close file.
 void TAGactTreeWriter::Close()
 {
   TDirectory* p_cwd = gDirectory;
@@ -184,14 +215,14 @@ void TAGactTreeWriter::Close()
 }
 
 //------------------------------------------+-----------------------------------
-// Returns \a true if a file is currently open.
+//! Returns true if a file is currently open.
 Bool_t TAGactTreeWriter::IsOpen() const
 {
   return fpFile != 0;
 }
 
 //------------------------------------------+-----------------------------------
-// Process TreeWriter.
+//! Process TreeWriter.
 Bool_t TAGactTreeWriter::Process()
 {
   if (Valid()) return kTRUE;
@@ -208,6 +239,9 @@ Bool_t TAGactTreeWriter::Process()
 }
 
 //------------------------------------------+-----------------------------------
+//! Get branch type
+//!
+//! \param[in] p_branch a given branch
 Int_t TAGactTreeWriter::get_be_type(TBranch* p_branch)
 {
   Int_t i_btyp = -1;
@@ -218,6 +252,9 @@ Int_t TAGactTreeWriter::get_be_type(TBranch* p_branch)
 }
 
 //------------------------------------------+-----------------------------------
+//! Get branch id
+//!
+//! \param[in] p_branch a given branch
 Int_t TAGactTreeWriter::get_be_id(TBranch* p_branch)
 {
   Int_t i_bid = 0;
@@ -228,6 +265,12 @@ Int_t TAGactTreeWriter::get_be_id(TBranch* p_branch)
 }
 
 //------------------------------------------+-----------------------------------
+//! Compute sum of branches
+//!
+//! \param[out] i_nsub number of branches
+//! \param[out] d_usize size of  branch
+//! \param[out] d_csize relative size of  branch
+//! \param[in] p_branch a given branch
 void TAGactTreeWriter::sum_branch(Int_t& i_nsub, Double_t& d_usize, Double_t& d_csize,
 		       TBranch* p_branch)
 {
@@ -253,7 +296,13 @@ void TAGactTreeWriter::sum_branch(Int_t& i_nsub, Double_t& d_usize, Double_t& d_
 }
 
 //------------------------------------------+-----------------------------------
-void TAGactTreeWriter::print_branch(ostream& os, Double_t d_bsize, 
+//! Compute sum of branches
+//!
+//! \param[in] os output stream
+//! \param[in] d_bsize size of  branch
+//! \param[in] p_branch a given branch
+//! \param[in] b_ptop flag to print top branch
+void TAGactTreeWriter::print_branch(ostream& os, Double_t d_bsize,
 			 TBranch* p_branch, Bool_t b_ptop)
 {
   Int_t i_btyp = get_be_type(p_branch);
@@ -297,8 +346,11 @@ void TAGactTreeWriter::print_branch(ostream& os, Double_t d_bsize,
   }
 }
 
-//------------------------------------------+-----------------------------------
-// ostream insertion.
+//______________________________________________________________________________
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGactTreeWriter::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGactTreeWriter:   " << IsA()->GetName() << " '" << GetName() 

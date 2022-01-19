@@ -22,7 +22,7 @@ public:
    
    virtual ~TAGactNtuClusterMT();
    
-   //! Get Cluster number
+   // Get Cluster number
    Int_t               GetClusterNumber(Int_t line, Int_t col, Int_t thr);
    
    //! Get object in list
@@ -45,24 +45,24 @@ protected:
    Int_t             fThreadsN;    ///< number of thread
    
 protected:
-   //! Fill maps per thread
+   // Fill maps per thread
    void   FillMaps(Int_t IndX, Int_t IndY, Int_t idx, Int_t thr);
-   //! Shape cluster per thread
+   // Shape cluster per thread
    Bool_t ShapeCluster(Int_t noClus, Int_t IndX, Int_t IndY, TClonesArray* listOfPixels, Int_t thr);
-   //! Check line
+   // Check line
    Bool_t CheckLine(Int_t idx);
-   //! Check column
+   // Check column
    Bool_t CheckCol(Int_t idx);
-   //! Clear maps per thread
+   // Clear maps per thread
    void   ClearMaps(Int_t thr);
-   //! Set up size map per thread
+   // Set up size map per thread
    void   SetupMaps(Int_t size, Int_t thr);
 
-   //! Get pixels map per thread
+   // Get pixels map per thread
    map<Int_t, Int_t>& GetPixelMap(Int_t thr);
-   //! Get index map per thread
+   // Get index map per thread
    map<Int_t, Int_t>& GetIndexMap(Int_t thr);
-   //! Get flag map per thread
+   // Get flag map per thread
    Int_t*             GetFlagMap(Int_t thr);
    
 protected:

@@ -72,20 +72,20 @@ public:
    //! Get run number
    Short_t         RunNumber()                 const { return fiRun;        }
 
-   //! Clear
+   // Clear
    virtual void    Clear(Option_t* opt="");
-   //! To stream
+   // To stream
    virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
-   //! operator==
+   // operator==
    friend bool     operator==(const TAGrunInfo& lhs, const TAGrunInfo& rhs);
-   //! operator=
+   // operator=
    const TAGrunInfo& operator=(const TAGrunInfo &right);
 
    //! Get global parameter
    GlobalParameter_t& GetGlobalPar() { return fGlobalParameter; }
 
-   //! crossing region:
+   // crossing region:
    //! Add region
    void            AddRegion(TString &regName, Int_t regNum ){fCrossMap[regName] = regNum;}
    //! Get region

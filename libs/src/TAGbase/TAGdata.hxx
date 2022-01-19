@@ -23,15 +23,15 @@ class TAGdata : public TObject {
 
     //! Fail
     Bool_t          Fail()           const { return TestBit(kFail); }
-    //! Need auto delete for array
+    // Need auto delete for array
     virtual Bool_t  NeedAutoDelete() const;
-    //! virtual Set up clones
+    // virtual Set up clones
     virtual void    SetupClones();
-    //! virtual Clear
+    // virtual Clear
     virtual void    Clear(Option_t* opt="");
-    //! virtual To stream
+    // virtual To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-    //! virtual Print
+    // virtual Print
     virtual void    Print(Option_t* option="") const;
 
     ClassDef(TAGdata,2)

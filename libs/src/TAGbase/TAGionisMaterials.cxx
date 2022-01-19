@@ -20,10 +20,13 @@ const TString TAGionisMaterials::fgkBirks                  = "kBirks";
  \brief Class handling material ionization properties **
  */
 
+//! Class Imp
 ClassImp(TAGionisMaterials);
 
 //______________________________________________________________________________
 //! Constructor
+//!
+//! \param[in] mat material
 TAGionisMaterials::TAGionisMaterials(TGeoMaterial* mat)
  : TAGobject(),
    fMaterial(mat),
@@ -52,10 +55,11 @@ TAGionisMaterials::~TAGionisMaterials()
 }
 
 //______________________________________________________________________________
+//! Add mean excitation energy
+//!
+//! \param[in] value mean excitation energy
 void TAGionisMaterials::AddMeanExcitationEnergy(Double_t value)
 {
-   
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
    // Feature available only for root version >= 6.17
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
       new TGeoManager(TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
@@ -73,19 +77,14 @@ void TAGionisMaterials::AddMeanExcitationEnergy(Double_t value)
       gGeoManager->AddProperty(ref.Data(), value);
       fMaterial->AddConstProperty(GetMeanExcitationEnergyName(), ref.Data());
    }
-   
-#else
-   Warning("AddMeanExcitationEnergy()", "Method not compatible with present root version, need version >= 6.17");
-   
-#endif
-   
 }
 
 //______________________________________________________________________________
+//! Add birks factor
+//!
+//! \param[in] value Birks factor
 void TAGionisMaterials::AddBirksFactor(Double_t value)
 {
-   
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
    // Feature available only for root version >= 6.17
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
       new TGeoManager(TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
@@ -100,12 +99,7 @@ void TAGionisMaterials::AddBirksFactor(Double_t value)
    gGeoManager->AddProperty(ref.Data(), value);
    
    fMaterial->AddConstProperty(GetBirksName(), ref.Data());
-   
-#else
-   Warning("AddMeanExcitationEnergy()", "Method not compatible with present root version, need version >= 6.17");
-   
-#endif
-   
+
 }
 
 

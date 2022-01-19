@@ -15,6 +15,7 @@
   \brief Base class for all views . **
 */
 
+//! Class Imp
 ClassImp(TAGview);
 
 //------------------------------------------+-----------------------------------
@@ -34,7 +35,10 @@ TAGview::~TAGview()
 }
 
 //------------------------------------------+-----------------------------------
-//Add \a p_obj to the list of observered objects.
+//! Add p_obj to the list of observered objects.
+//!
+//! \param[in] p_obj object to add
+//! \param[in] baseclass base class name
 void TAGview::AddObservable(TObject* p_obj, const char* baseclass)
 {
   if (!p_obj) {
@@ -84,7 +88,9 @@ void TAGview::AddObservable(TObject* p_obj, const char* baseclass)
 }
 
 //------------------------------------------+-----------------------------------
-// Remove \a p_obj from the list of observered objects.
+//! Remove \a p_obj from the list of observered objects.
+//!
+//! \param[in] p_obj object to remove
 void TAGview::RemoveObservable(TObject* p_obj)
 {
   if (fpObservableList) while (fpObservableList->Remove(p_obj));  
@@ -92,7 +98,11 @@ void TAGview::RemoveObservable(TObject* p_obj)
 }
 
 //------------------------------------------+-----------------------------------
-// Replace \a p_old with \a p_new in the list of observered objects.
+//! Replace a p_old with a p_new in the list of observered objects.
+//!
+//! \param[in] p_old object to be replaced
+//! \param[in] p_new object to add
+//! \param[in] baseclass base class name
 void TAGview::ReplaceObservable(TObject* p_old, TObject* p_new,
 				const char* baseclass)
 {
@@ -102,7 +112,10 @@ void TAGview::ReplaceObservable(TObject* p_old, TObject* p_new,
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option printout option
 void TAGview::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGview:      " << "'" << GetName() << "'" << endl;
@@ -110,7 +123,9 @@ void TAGview::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-// Draw view
+//! Draw view
+//!
+//! \param[in] option draw option
 void TAGview::Draw(Option_t* option)
 {
   if (fpPad) {				    // already drawn on a pad
@@ -131,7 +146,9 @@ void TAGview::Draw(Option_t* option)
 }
 
 //------------------------------------------+-----------------------------------
-// Cleanup dangling object references to TObject \a p_obj .
+// Cleanup dangling object references to TObject p_obj.
+//!
+//! \param[in] p_obj object to be removed
 void TAGview::RecursiveRemove(TObject* p_obj)
 {
   if (fpObservableList) while (fpObservableList->Remove(p_obj)) MakeZombie();

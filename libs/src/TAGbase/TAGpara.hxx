@@ -15,6 +15,7 @@ using namespace std;
 
 class TAGpara : public TObject {
   public:
+    //! fail bit
     enum { kFail = BIT(14)
     };
 
@@ -24,12 +25,12 @@ class TAGpara : public TObject {
     //! Fail
     Bool_t          Fail() const { return TestBit(kFail); }
 
-    //! Clear
+    // Clear
     virtual void    Clear(Option_t* opt="");
 
-    //! To stream
+    // To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-    //! Print
+    // Print
     virtual void    Print(Option_t* option="") const;
    
    ClassDef(TAGpara,3)

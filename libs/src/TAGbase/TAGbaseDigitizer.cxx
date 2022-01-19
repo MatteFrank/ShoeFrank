@@ -10,6 +10,7 @@
  \brief Base class for digitizer inerface
  */
 
+//! Class Imp
 ClassImp(TAGbaseDigitizer);
 
 //------------------------------------------+-----------------------------------

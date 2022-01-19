@@ -17,20 +17,20 @@ class TAGview : public TAGnamed {
     explicit        TAGview(TObject* p_obj=0);
     virtual         ~TAGview();
 
-    //! Add observable
+    // Add observable
     void            AddObservable(TObject* p_obj, const char* baseclass=0);
-    //! Remove observable
+    // Remove observable
     void            RemoveObservable(TObject* p_obj);
-    //! Replace observable
+    // Replace observable
     void            ReplaceObservable(TObject* p_old, TObject* p_new, 
 				      const char* baseclass=0);
 
-    //! To stream
+    // To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
 
-    //! Draw
+    // Draw
     virtual void    Draw(Option_t* option="");
-    //! Recursive remove
+    // Recursive remove
     virtual void    RecursiveRemove(TObject* p_obj);
 
   private:

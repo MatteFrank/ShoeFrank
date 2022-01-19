@@ -1,8 +1,7 @@
 #ifndef _TAGactNtuCluster2D_HXX
 #define _TAGactNtuCluster2D_HXX
 /*!
- \file
- \version $Id: TAGactNtuCluster2D.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAGactNtuCluster2D.hxx
  \brief   Declaration of TAGactNtuCluster2D.
  \author Ch. Finck
  */
@@ -25,7 +24,7 @@ public:
    //! Get Cluster number
    Int_t               GetClusterNumber(Int_t line, Int_t col) const { return fFlagMap[line*fDimX+col]; }
    
-   ///< Get object in list
+   //! Get object in list
    virtual TAGobject*  GetHitObject(Int_t /*idx*/)             const { return 0x0;                      }
    
 protected:
@@ -39,17 +38,17 @@ protected:
    Int_t             fDimY;     ///<  dimension Y of map
    
 protected:
-   //! Fill maps
+   // Fill maps
    void   FillMaps(Int_t IndX, Int_t IndY, Int_t idx);
-   //! Shape cluster
+   // Shape cluster
    Bool_t ShapeCluster(Int_t noClus, Int_t IndX, Int_t IndY);
-   //! Check line
+   // Check line
    Bool_t CheckLine(Int_t idx);
-   //! Check column
+   // Check column
    Bool_t CheckCol(Int_t idx);
-   //! Clear maps
+   // Clear maps
    void   ClearMaps();
-   //! Set up size map
+   // Set up size map
    void   SetupMaps(Int_t size);
 
    ClassDef(TAGactNtuCluster2D,0)

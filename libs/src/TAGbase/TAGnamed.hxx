@@ -15,8 +15,9 @@ using namespace std;
 
 class TAGnamed : public TNamed {
   public:
-    enum { kFail = BIT(14)
-    };
+   
+    //! fail bit
+    enum { kFail = BIT(14) };
 
                     TAGnamed();
                     TAGnamed(const char* name, const char* title);
@@ -26,9 +27,9 @@ class TAGnamed : public TNamed {
     //! Fail
     Bool_t          Fail() const { return TestBit(kFail); }
 
-    //! To Stream
+    // To Stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-    //! Print
+    // Print
     virtual void    Print(Option_t* option="") const;
 
    ClassDef(TAGnamed,3)

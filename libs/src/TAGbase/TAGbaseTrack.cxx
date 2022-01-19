@@ -33,6 +33,7 @@
   with the relation beta^2 = beta'^2 * (1-x^2/l^2-y^2/l^2) / (1-dx^2/dl^2-dy^2/dl^2)
  */
 
+//! Class Imp
 ClassImp(TAGbaseTrack) // Description of a Track
 
 //______________________________________________________________________________
@@ -66,6 +67,8 @@ TAGbaseTrack::TAGbaseTrack()
 
 //______________________________________________________________________________
 //! Copy constructor
+//!
+//! \param[in] aTrack track to copy
 TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack& aTrack)
 :  TAGobject(aTrack),
    fOrigin(new TVector3(*aTrack.fOrigin)),
@@ -108,7 +111,7 @@ TAGbaseTrack::~TAGbaseTrack()
 }
 
 //______________________________________________________________________________
-//
+//! Get theta angle in deg
 Float_t TAGbaseTrack::GetTheta() const
 {
    TVector3 direction = fSlope->Unit();
@@ -118,7 +121,7 @@ Float_t TAGbaseTrack::GetTheta() const
 }
 
 //______________________________________________________________________________
-//
+//! Get phi angle in deg
 Float_t TAGbaseTrack::GetPhi() const
 {
    TVector3 origin = fOrigin->Unit();
@@ -128,15 +131,23 @@ Float_t TAGbaseTrack::GetPhi() const
 }
 
 //______________________________________________________________________________
-//
+//! Set track value
+//!
+//! \param[in] aOrigin origin of track
+//! \param[in] aSlope slope of track
+//! \param[in] aLength length of track
 void TAGbaseTrack::SetValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength)
 {
    *fOrigin = aOrigin;
    *fSlope  = aSlope;
    fLength  = aLength;
 }
+
 //______________________________________________________________________________
-//
+//! Set track value error
+//!
+//! \param[in] aOriginErr error at origin of track
+//! \param[in] aSlopeErr error at slope of track
 void TAGbaseTrack::SetErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
 {
    *fOriginErr = aOriginErr;
@@ -144,7 +155,7 @@ void TAGbaseTrack::SetErrorValue(const TVector3& aOriginErr, const TVector3& aSl
 }
 
 //______________________________________________________________________________
-//
+//! Reset value
 void TAGbaseTrack::Zero(){
    fOrigin->SetXYZ(0., 0., 0.);
    fSlope->SetXYZ(0., 0., 0.);
@@ -152,7 +163,9 @@ void TAGbaseTrack::Zero(){
 }
 
 //______________________________________________________________________________
-//
+//! Get point extrapolation from Z position
+//!
+//! \param[in] beta Z position
 TVector3 TAGbaseTrack::GetPoint(Float_t beta)
 {
    TVector3 result;
@@ -164,15 +177,15 @@ TVector3 TAGbaseTrack::GetPoint(Float_t beta)
 
 
 //______________________________________________________________________________
-//
+//! Compute distance between a point M(x,y,z) and a
+//!
+//! line defined by (origin, slope)
+//! x = slopeX*z + originX
+//! y = slopeY*z + originY
+//! The distance is defined in a plane normal to the line
+//! \param[in] p vector point
 Float_t TAGbaseTrack::Distance(TVector3& p)
 {
-   // compute distance between a point M(x,y,z) and a
-   // line defined by (origin, slope)
-   // x = slopeX*z + originX
-   // y = slopeY*z + originY
-   // The distance is defined in a plane normal to the line
-   //
    Float_t dX2 =  p.X()-fSlope->X()*p.Z()-fOrigin->X();
    dX2 *= dX2;
    Float_t dY2 =  p.Y()-fSlope->Y()*p.Z()-fOrigin->Y();
@@ -187,7 +200,7 @@ Float_t TAGbaseTrack::Distance(TVector3& p)
 }
 
 //____________________________________________________________________________
-//  
+//! Reset
 void TAGbaseTrack::Reset()
 {
   Zero();
@@ -195,25 +208,32 @@ void TAGbaseTrack::Reset()
 }
 
 //______________________________________________________________________________
-//  
+//! Set line value (deprecated method)
+//!
+//! \param[in] aOrigin origin of track
+//! \param[in] aSlope slope of track
+//! \param[in] aLength length of track
 void TAGbaseTrack::SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength)
 {
    SetValue(aOrigin, aSlope, aLength);
 }
 
 //______________________________________________________________________________
-//
+//! Set line value error  (deprecated method)
+//!
+//! \param[in] aOriginErr error at origin of track
+//! \param[in] aSlopeErr error at slope of track
 void TAGbaseTrack::SetLineErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
 {
    SetErrorValue(aOriginErr, aSlopeErr);
 }
+
 //______________________________________________________________________________
-//  
+//! Calculates the Intersection of the Track with a plane
+//!
+//! \param[in] posZ Z position
 TVector3 TAGbaseTrack::Intersection(Float_t posZ) const
 {
-  // calculates the Intersection of the Track with the plane in
-  // the coordinate system of the tracker.
-
   TVector3 result(GetOrigin());  // track origin in xyz tracker coordinates
   result(2) = 0.;
   result += GetSlopeZ() * posZ; // intersection in xyz frame at z_plane
@@ -221,7 +241,10 @@ TVector3 TAGbaseTrack::Intersection(Float_t posZ) const
 }
 
 //______________________________________________________________________________
-//  
+//! Calculates the distance of a Track at a given Z position
+//!
+//! \param[in] track a given track
+//! \param[in] z Z position
 Float_t TAGbaseTrack::Distance(TAGbaseTrack* track, Float_t z) const
 {
    // calculates the distance with a track
@@ -234,7 +257,10 @@ Float_t TAGbaseTrack::Distance(TAGbaseTrack* track, Float_t z) const
 }
 
 //______________________________________________________________________________
-//  
+//! Calculates the distance of a Track at a given Z position in the normal plane
+//!
+//! \param[in] track a given track
+//! \param[in] z Z position
 TVector2 TAGbaseTrack::DistanceXY(TAGbaseTrack* track, Float_t z) const
 {
    // calculates the distance in X-Y with a track
@@ -246,10 +272,14 @@ TVector2 TAGbaseTrack::DistanceXY(TAGbaseTrack* track, Float_t z) const
 }
 
 //______________________________________________________________________________
-//  
+//! Calculates the minimum distance with a track in a given range of Z
+//!
+//! \param[in] track a given track
+//! \param[in] zMin  lower limit of Z position
+//! \param[in] zMax  upper limit of Z position
+//! \param[in] eps  tolerance
 TVector2 TAGbaseTrack::DistanceMin(TAGbaseTrack* track, Float_t zMin, Float_t zMax, Float_t eps) const
 {
-   // calculates the minimum distance with a track
    Float_t z = 0.;
    Float_t rhoMin = Distance(track, zMin);
    Float_t rhoMax = Distance(track, zMax);
@@ -273,7 +303,9 @@ TVector2 TAGbaseTrack::DistanceMin(TAGbaseTrack* track, Float_t zMin, Float_t zM
 }
 
 // __________________________________________________________________________
-//
+//! Compute Chi2 for a given error (deprecated method)
+//!
+//! \param[in] dhs constant error for each cluster
 void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 {
    // Computes the chi2 of the fit track using dhs as the error
@@ -315,7 +347,9 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 }
 
 // __________________________________________________________________________
-//
+//! Set charge probability
+//!
+//! \param[in] proba charge probability array
 void TAGbaseTrack::SetChargeProba(const TArrayF* proba)
 {
    const Float_t* array = proba->GetArray();
@@ -323,7 +357,9 @@ void TAGbaseTrack::SetChargeProba(const TArrayF* proba)
 }
 
 // __________________________________________________________________________
-//
+//! Set normalised charge probability
+//!
+//! \param[in] proba charge probability array
 void TAGbaseTrack::SetChargeProbaNorm(const TArrayF* proba)
 {
    const Float_t* array = proba->GetArray();
@@ -331,7 +367,9 @@ void TAGbaseTrack::SetChargeProbaNorm(const TArrayF* proba)
 }
 
 //______________________________________________________________________________
-//
+//! Add MC track to list
+//!
+//! \param[in] trackIdx MC track index
 void TAGbaseTrack::AddMcTrackIdx(Int_t trackIdx)
 {
    if (fMcTrackMap[trackIdx] == 0) {

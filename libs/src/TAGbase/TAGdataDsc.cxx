@@ -15,10 +15,14 @@
   \brief Persistent descriptor for data object . **
 */
 
+//! Class Imp
 ClassImp(TAGdataDsc);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] p_data data to descript
 TAGdataDsc::TAGdataDsc(const char* name, TAGdata* p_data)
   : TAGnamed(name, 0),
     fpObject(0),
@@ -53,7 +57,9 @@ TAGdataDsc::~TAGdataDsc()
 }
 
 //------------------------------------------+-----------------------------------
-// Set data object.
+//! Set data object.
+//!
+//! \param[in] p_data data to descript
 void TAGdataDsc::SetObject(TAGdata* p_data)
 {
   delete fpObject;
@@ -63,7 +69,9 @@ void TAGdataDsc::SetObject(TAGdata* p_data)
 }
 
 //------------------------------------------+-----------------------------------
-// Set producer action.
+//! Set producer action.
+//!
+//! \param[in] p_action action
 void TAGdataDsc::SetProducer(TAGaction* p_action)
 {
   fpProducer = p_action;
@@ -71,7 +79,9 @@ void TAGdataDsc::SetProducer(TAGaction* p_action)
 }
 
 //------------------------------------------+-----------------------------------
-// Set consumer action.
+//! Set consumer action.
+//!
+//! \param[in] p_action action
 void TAGdataDsc::SetConsumer(TAGaction* p_action)
 {
   if (!fpConsumerList) fpConsumerList = new TList();
@@ -80,16 +90,17 @@ void TAGdataDsc::SetConsumer(TAGaction* p_action)
 }
 
 //------------------------------------------+-----------------------------------
-// Generate data object and return a pointer to it.
+//! Generate data object and return a pointer to it.
 TAGdata* TAGdataDsc::GenerateObject()
 {
   if (!Valid()) Generate();
   return Object();
 }
 
-
 //------------------------------------------+-----------------------------------
-// Invalidate data object.
+//! Clear action object.
+//!
+//! \param[in] opt clear options
 void TAGdataDsc::Clear(Option_t*)
 {
   if (fpObject) fpObject->Clear();
@@ -98,7 +109,7 @@ void TAGdataDsc::Clear(Option_t*)
 }
 
 //------------------------------------------+-----------------------------------
-// Generate data object.
+//! Generate data object.
 Bool_t TAGdataDsc::Generate()
 {
   if (Valid()) return kTRUE;
@@ -114,7 +125,10 @@ Bool_t TAGdataDsc::Generate()
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option printout option
 void TAGdataDsc::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGdataDsc:      " << "'" << GetName() << "'" << endl;
@@ -137,7 +151,9 @@ void TAGdataDsc::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-// Cleanup dangling object references to TObject \a p_obj .
+// Cleanup dangling object references to TObject p_obj .
+//!
+//! \param[in] p_obj object to be removed
 void TAGdataDsc::RecursiveRemove(TObject* p_obj)
 {
   if (fpProducer == p_obj) fpProducer = 0;

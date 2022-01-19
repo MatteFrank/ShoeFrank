@@ -75,17 +75,8 @@ void TAVTbaseParGeo::DefineMaterial()
       mat->Print();
    }
    
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
    fIonisation->SetMaterial(mat);
    fIonisation->AddMeanExcitationEnergy(fEpiMatExc);
-   
-#else
-   fIonisation->SetMeanExcitationEnergy(fEpiMatExc);
-   // put it under Cerenkov since only this EM property is available
-   mat->SetCerenkovProperties(fIonisation);
-   
-#endif
-  
 }
 
 //------------------------------------------+-----------------------------------

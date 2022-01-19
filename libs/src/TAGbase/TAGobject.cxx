@@ -12,7 +12,9 @@
   \brief Mother of most unnamed TAG objects. **
 */
 
+//! Class Imp
 ClassImp(TAGobject);
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAGobject::TAGobject()
@@ -25,7 +27,10 @@ TAGobject::~TAGobject()
 {}
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGobject::ToStream(ostream& os, Option_t* option) const
 {
   os <<"TAGobject: " << IsA()->GetName() << "  " << GetName() 
@@ -34,7 +39,9 @@ void TAGobject::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! Print
+//!
+//! \param[in] option option for printout
 void TAGobject::Print(Option_t* option) const
 {
   ToStream(cout, option);
@@ -42,11 +49,10 @@ void TAGobject::Print(Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-/*!
- \relates TAGobject
- \brief ostream insertion operator.
- */
-
+//! operator<<
+//!
+//! \param[in] os output stream
+//! \param[in] obj object to printout
 inline ostream& operator<<(ostream& os, const TAGobject& obj)
 {
   obj.ToStream(os);

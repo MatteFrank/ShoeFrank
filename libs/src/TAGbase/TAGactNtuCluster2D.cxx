@@ -10,16 +10,19 @@
  \brief General class for 2D clustering **
  */
 
+//! Class Imp
 ClassImp(TAGactNtuCluster2D);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name  name
+//! \param[in] title  title name
 TAGactNtuCluster2D::TAGactNtuCluster2D(const char* name, 
 											 const char* title )
 : TAGaction(name, title),
   fFlagSize(-1)
 {
-   
 }
 
 //------------------------------------------+-----------------------------------
@@ -30,7 +33,11 @@ TAGactNtuCluster2D::~TAGactNtuCluster2D()
 }
 
 //______________________________________________________________________________
-//
+//! Fill maps
+//!
+//! \param[in] line line number
+//! \param[in] col column number
+//! \param[in] idx cluster index
 void TAGactNtuCluster2D::FillMaps(Int_t line, Int_t col, Int_t idx)
 {
    fPixelMap[line*fDimX+col] = 1;
@@ -38,7 +45,11 @@ void TAGactNtuCluster2D::FillMaps(Int_t line, Int_t col, Int_t idx)
 }
 
 //______________________________________________________________________________
-//
+//! Shape cluster
+//!
+//! \param[in] noClus cluster number
+//! \param[in] IndX index in X
+//! \param[in] IndY index in Y
 Bool_t TAGactNtuCluster2D::ShapeCluster(Int_t noClus, Int_t IndX, Int_t IndY)
 {
    Int_t idx = IndX*fDimX+IndY;
@@ -61,7 +72,9 @@ Bool_t TAGactNtuCluster2D::ShapeCluster(Int_t noClus, Int_t IndX, Int_t IndY)
 }
 
 //______________________________________________________________________________
-//
+//! Check line number
+//!
+//! \param[in] idx line number
 Bool_t TAGactNtuCluster2D::CheckLine(Int_t idx)
 {
    Int_t nLine = fDimY;
@@ -72,7 +85,9 @@ Bool_t TAGactNtuCluster2D::CheckLine(Int_t idx)
 }
 
 //______________________________________________________________________________
-//
+//! Check column number
+//!
+//! \param[in] idx column number
 Bool_t TAGactNtuCluster2D::CheckCol(Int_t idx)
 {
    Int_t nCol = fDimX;
@@ -83,7 +98,9 @@ Bool_t TAGactNtuCluster2D::CheckCol(Int_t idx)
 }
 
 //______________________________________________________________________________
-//
+//! Set up map size
+//!
+//! \param[in] size map size
 void TAGactNtuCluster2D::SetupMaps(Int_t size)
 {
    fFlagSize = size;
@@ -91,7 +108,7 @@ void TAGactNtuCluster2D::SetupMaps(Int_t size)
 }
 
 //______________________________________________________________________________
-//
+//! Clear maps
 void TAGactNtuCluster2D::ClearMaps()
 {
    fPixelMap.clear();

@@ -11,6 +11,7 @@
   \brief Mother of all cluster/point objects. **
 */
 
+//! Class Imp
 ClassImp(TAGcluster);
 
 //------------------------------------------+-----------------------------------
@@ -31,8 +32,10 @@ TAGcluster::TAGcluster()
    fMcTrackMap.clear();
 }
 
-//------------------------------------------+-----------------------------------
+//______________________________________________________________________________
 //! Copy constructor
+//!
+//! \param[in] cluster cluster to copy
 TAGcluster::TAGcluster(const TAGcluster& cluster)
  : TAGobject(),
    fPosition1(cluster.fPosition1),
@@ -49,21 +52,27 @@ TAGcluster::TAGcluster(const TAGcluster& cluster)
 }
 
 //______________________________________________________________________________
-//
+//! Set local position
+//!
+//! \param[in] pos position  in sensor framework
 void TAGcluster::SetPosition(TVector3& pos)
 {
    fPosition1.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
-//
+//! Set local position error
+//!
+//! \param[in] pos position error in sensor framework
 void TAGcluster::SetPosError(TVector3& pos)
 {
    fPosError1.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
-//
+//! Set Global position
+//!
+//! \param[in] posGlo position in detector framework
 void TAGcluster::SetPositionG(TVector3& posGlo)
 {
    fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
@@ -71,18 +80,20 @@ void TAGcluster::SetPositionG(TVector3& posGlo)
 }
 
 //______________________________________________________________________________
-//
+//! Set Global position error
+//!
+//! \param[in] posGlo position error in detector framework
 void TAGcluster::SetPosErrorG(TVector3& posGlo)
 {
    fPosError2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
 }
 
 //______________________________________________________________________________
-//
-Float_t TAGcluster::Distance(TAGbaseTrack *aTrack) {
-   // Return the distance between this cluster and the pointed track impact in the plane
-   //
-   
+//! Return the distance between this cluster and the pointed track impact in the plane
+//!
+//! \param[in] aTrack a given track
+Float_t TAGcluster::Distance(TAGbaseTrack* aTrack)
+{
    TVector3 impactPosition(aTrack->Intersection( GetPositionG()[2]));
    impactPosition -= GetPositionG();
    // Insure that z position is 0 for 2D length computation
@@ -92,7 +103,9 @@ Float_t TAGcluster::Distance(TAGbaseTrack *aTrack) {
 }
 
 //______________________________________________________________________________
-//
+//! Add MC track to list
+//!
+//! \param[in] trackIdx MC track index
 void TAGcluster::AddMcTrackIdx(Int_t trackIdx)
 {
    if (fMcTrackMap[trackIdx] == 0) {

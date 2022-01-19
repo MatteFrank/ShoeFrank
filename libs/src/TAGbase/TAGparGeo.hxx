@@ -85,22 +85,22 @@ private:
    static const TString fgkDefParaName; ///< Default parameter name
 
 private:
-   //! Add cubic target
+   // Add cubic target
    TGeoVolume*  AddCubicTarget(const char *targetName);
-   //! Add Cylindric target
+   // Add Cylindric target
    TGeoVolume*  AddCylindricTarget(const char *targetName);
 
 public:
    TAGparGeo();
     virtual ~TAGparGeo();
 
-   //! Define material
+   // Define material
    void    DefineMaterial();
 
-   //! Read parameters from file
+   // Read parameters from file
    Bool_t                    FromFile(const TString& name = "");
 
-   //! Print out
+   // Print out
    void                      Print(Option_t* opt = "") const;
 
    //! Get target parameter
@@ -119,46 +119,46 @@ public:
    //! Get beam parameter (const)
    BeamParameter_t const &   GetBeamPar()      const { return fBeamParameter;        }
 
-   //! Add Target
+   // Add Target
    TGeoVolume*               AddTarget(const char *targetName = "Target");
 
-  //! build Target
-  TGeoVolume*                BuildTarget(const char *targetName = GetBaseName());
+   // build Target
+   TGeoVolume*                BuildTarget(const char *targetName = GetBaseName());
 
-  //! crossing regions:
-  Int_t          GetRegTarget(){TString regname("TARGET");return GetCrossReg(regname);}
-  //! N.B.: the are different air region around the calo, check the flair file if you are interested in
-  //! air region from the ST to the MSD (included)
-  Int_t          GetRegAirPreTW(){TString regname("AIR1");return GetCrossReg(regname);}
-  //! air region around the TW
-  Int_t          GetRegAirTW(){TString regname("AIR2");return GetCrossReg(regname);}
-
-  //! blackbody and air
-   //! Print Fluka standard bodies
-  string PrintStandardBodies();
-   //! Print standard region 1
-  string PrintStandardRegions1();
-   //! Print standard region 2
-  string PrintStandardRegions2();
-   //! Print standard Assigned material
-  string PrintStandardAssignMaterial();
-
-  //! target
-  //! Print target rotations
-  string PrintTargRotations();
-  //! Print target body
-  string PrintTargBody();
-  //! Print target region
-  string PrintTargRegion();
-  //! Print target assigned material
-  string PrintTargAssignMaterial(TAGmaterials *Material);
-  //! print substract target body from air
-  string PrintSubtractTargBodyFromAir();
-
-  //! beam cards
-  string PrintBeam();
-  //! physics cards
-  string PrintPhysics();
+   //! crossing regions:
+   Int_t          GetRegTarget(){TString regname("TARGET");return GetCrossReg(regname);}
+   // N.B.: the are different air region around the calo, check the flair file if you are interested in
+   //! air region from the ST to the MSD (included)
+   Int_t          GetRegAirPreTW(){TString regname("AIR1");return GetCrossReg(regname);}
+   //! air region around the TW
+   Int_t          GetRegAirTW(){TString regname("AIR2");return GetCrossReg(regname);}
+   
+   // blackbody and air
+   // Print Fluka standard bodies
+   string PrintStandardBodies();
+   // Print standard region 1
+   string PrintStandardRegions1();
+   // Print standard region 2
+   string PrintStandardRegions2();
+   // Print standard Assigned material
+   string PrintStandardAssignMaterial();
+   
+   // target
+   // Print target rotations
+   string PrintTargRotations();
+   // Print target body
+   string PrintTargBody();
+   // Print target region
+   string PrintTargRegion();
+   // Print target assigned material
+   string PrintTargAssignMaterial(TAGmaterials *Material);
+   // print substract target body from air
+   string PrintSubtractTargBodyFromAir();
+   
+   // beam cards
+   string PrintBeam();
+   // physics cards
+   string PrintPhysics();
 
 public:
    //! Get base name

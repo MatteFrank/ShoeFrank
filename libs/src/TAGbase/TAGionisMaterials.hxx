@@ -24,8 +24,8 @@ public:
    //! Set materials
    void SetMaterial(TGeoMaterial* mat)                 { fMaterial = mat;                }
 
-   //! parameters for mean energy loss calculation:
-   //! Add mean excitation energy
+   // parameters for mean energy loss calculation:
+   // Add mean excitation energy
    void      AddMeanExcitationEnergy(Double_t value);
    //! Setmean excitation energy
    void      SetMeanExcitationEnergy(Double_t value)   { fMeanExcitationEnergy = value;  }
@@ -41,8 +41,8 @@ public:
    Double_t  GetTaul()                           const { return fTaul;                   }
    
    
-   //! parameters for Birks attenuation:
-   //! Add Birk factor
+   // parameters for Birks attenuation:
+   // Add Birk factor
    void      AddBirksFactor(Double_t value);
    //! Set Birk factor
    void      SetBirksConstant(Double_t value)          { fBirks = value;                 }
@@ -69,6 +69,7 @@ public:
    static const Char_t* GetBirksName(TString matName)                 { return (fgkBirks+matName).Data();                 }
    
 private:
+   //! pointer to material
    TGeoMaterial* fMaterial;                        //! pointer to material
    
    // parameters for mean energy loss calculation
