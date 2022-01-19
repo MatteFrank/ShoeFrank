@@ -78,8 +78,8 @@ private:
 
   TH1F*           fpHisAmpA[nLayers];     // Total time of flight
   TH1F*           fpHisAmpB[nLayers];     // Total time of flight
-  TH1F*           fpHisAmpA_vs_Eloss[nLayers];     // Total time of flight
-  TH1F*           fpHisAmpB_vs_Eloss[nLayers];     // Total time of flight
+  TH2F*           fpHisAmpA_vs_Eloss[nLayers];     // Total time of flight
+  TH2F*           fpHisAmpB_vs_Eloss[nLayers];     // Total time of flight
    
   TH2D*           fpHisElossTof_layer[nLayers];
   vector<TH2D*>   fpHisElossTof_Z;
