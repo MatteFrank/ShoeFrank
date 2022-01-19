@@ -20,7 +20,7 @@ class TAMCactNtuPart : public TAGaction {
                                   EVENT_STRUCT* evStr=0);
     virtual         ~TAMCactNtuPart();
 
-   //! Action
+    // Action
     virtual Bool_t  Action();
 
   private:

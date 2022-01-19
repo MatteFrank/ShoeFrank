@@ -31,9 +31,9 @@ public:
   //! Set time stamp
   void              SetTimeStamp(ULong64_t nb)  { fTimeStamp = nb;       }
   
-  //! Clear
+  // Clear
   virtual void      Clear(Option_t* opt="");
-  //! To stream
+  // To stream
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
   
 public:

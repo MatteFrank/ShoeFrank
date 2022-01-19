@@ -16,11 +16,14 @@
   \brief NTuplizer for MC events. **
 */
 
+//! Class Imp
 ClassImp(TAMCactNtuEvent);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//! \param[in] name action name
+//! \param[in] p_nturaw MC hit container descriptor
+//! \param[in] evStr Fluka structure
 TAMCactNtuEvent::TAMCactNtuEvent(const char* name,
 			       TAGdataDsc* p_nturaw, 
 			       EVENT_STRUCT* evStr)
@@ -36,14 +39,12 @@ TAMCactNtuEvent::TAMCactNtuEvent(const char* name,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAMCactNtuEvent::~TAMCactNtuEvent()
 {
 }
 
 //------------------------------------------+-----------------------------------
 //! Action.
-
 Bool_t TAMCactNtuEvent::Action()
 {
   if(FootDebugLevel(2))

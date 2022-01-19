@@ -103,25 +103,32 @@ public:
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:
+   //! Get STC branch name
    static const Char_t* GetStcBranchName()   { return fgkStcBranchName.Data();  }
+   //! Get BM branch name
    static const Char_t* GetBmBranchName()    { return fgkBmBranchName.Data();   }
+   //! Get VTX branch name
    static const Char_t* GetVtxBranchName()   { return fgkVtxBranchName.Data();  }
+   //! Get ITR branch name
    static const Char_t* GetItrBranchName()   { return fgkItrBranchName.Data();  }
+   //! Get MSD branch name
    static const Char_t* GetMsdBranchName()   { return fgkMsdBranchName.Data();  }
+   //! Get TW branch name
    static const Char_t* GetTofBranchName()   { return fgkTofBranchName.Data();  }
+   //! Get CAL branch name
    static const Char_t* GetCalBranchName()   { return fgkCalBranchName.Data();  }
 
 private:
-   TClonesArray*   fListOfHits; // hits
+   TClonesArray*   fListOfHits;        ///<  list of MC hits
   
 private:
-   static TString    fgkStcBranchName;
-   static TString    fgkBmBranchName;
-   static TString    fgkVtxBranchName;
-   static TString    fgkItrBranchName;
-   static TString    fgkMsdBranchName;
-   static TString    fgkTofBranchName;
-   static TString    fgkCalBranchName;
+   static TString    fgkStcBranchName; ///< STC branch name
+   static TString    fgkBmBranchName;  ///< BM branch name
+   static TString    fgkVtxBranchName; ///< VTX branch name
+   static TString    fgkItrBranchName; ///< ITR branch name
+   static TString    fgkMsdBranchName; ///< MSD branch name
+   static TString    fgkTofBranchName; ///< TW branch name
+   static TString    fgkCalBranchName; ///< CAL branch name
 
    ClassDef(TAMCntuHit,1)
    

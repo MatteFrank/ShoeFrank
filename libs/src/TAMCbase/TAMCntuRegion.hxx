@@ -78,21 +78,21 @@ public:
    TAMCntuRegion();
    virtual          ~TAMCntuRegion();
    
-   //! Get number of regions
+   // Get number of regions
    Int_t             GetRegionsN() const;
-   //! Get region
+   // Get region
    TAMCregion*       GetRegion(Int_t i);
-   //! Get region (const)
+   // Get region (const)
    const TAMCregion* GetRegion(Int_t i) const;
    
-   //! New region
+   // New region
    TAMCregion*       NewRegion(Int_t id, Int_t nreg, Int_t nregold,TVector3 pos,TVector3 mom, Double_t mass,
                                Double_t charge, Double_t time);
-   //! Set up clones
+   // Set up clones
    virtual void      SetupClones();
-   //! Clear
+   // Clear
    virtual void      Clear(Option_t* opt="");
-   //! To stream
+   // To stream
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:

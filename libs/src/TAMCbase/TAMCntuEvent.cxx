@@ -12,7 +12,7 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-
+//! Class Imp
 ClassImp(TAMCntuEvent);
 
 TString  TAMCntuEvent::fgkBranchName = "mcevt.";
@@ -34,7 +34,9 @@ TAMCntuEvent::~TAMCntuEvent()
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear.
+//! Clear event.
+//!
+//! \param[in] opt option for clearing (not used)
 void TAMCntuEvent::Clear(Option_t*)
 {
   fEventNumber = -1;
@@ -42,8 +44,11 @@ void TAMCntuEvent::Clear(Option_t*)
   fTimeStamp = 0;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAMCntuEvent::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAMCntuEvent"

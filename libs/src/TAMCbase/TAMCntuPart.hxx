@@ -117,15 +117,15 @@ class TAMCntuPart : public TAGdata {
                     TAMCntuPart();
 	virtual         ~TAMCntuPart();
 
-   //! Get particle
+   // Get particle
 	TAMCpart*       GetTrack(Int_t i);
-   //! Get particle (const)
+   // Get particle (const)
 	const TAMCpart* GetTrack(Int_t i) const;
    
-   //! Get nuimber of tracks
+   // Get nuimber of tracks
    Int_t           GetTracksN() const;
    
-   //! New track
+   // New track
    TAMCpart*       NewTrack(Int_t i_id, Int_t i_fCharge, Int_t i_type,
                                 Int_t i_reg, Int_t i_bar, Int_t i_dead,
                                 Double_t i_mass, Int_t i_moth,
@@ -133,11 +133,11 @@ class TAMCntuPart : public TAGdata {
                                 Double_t i_tof, Double_t i_trlen,
                                 TVector3 i_ipos, TVector3 i_fpos,
                                 TVector3 i_ip,TVector3 i_fp);
-   //! Setup clones
+   // Setup clones
 	virtual void        SetupClones();
-   //! Clear
+   // Clear
 	virtual void        Clear(Option_t* opt="");
-   //! To stream
+   // To stream
 	virtual void        ToStream(ostream& os=cout, Option_t* option="") const;
 
 public:
