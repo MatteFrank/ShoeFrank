@@ -39,6 +39,8 @@ TString TCSTgeometryConstructor::fgkIrSDname  = "IrSD";
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Constructor
+//!
+//! \param[in] pParGeo geometry parameter
 TCSTgeometryConstructor::TCSTgeometryConstructor(TASTparGeo* pParGeo)
 : TCGbaseConstructor("TCSTgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -55,6 +57,7 @@ TCSTgeometryConstructor::~TCSTgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct detector
 G4LogicalVolume* TCSTgeometryConstructor::Construct()
 {
    InfoMcMsg("Construct()", "Construct Start Counter");
@@ -89,6 +92,7 @@ G4LogicalVolume* TCSTgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume
 void  TCSTgeometryConstructor::DefineSensitive()
 {
    // sensitive volume
@@ -104,6 +108,7 @@ void  TCSTgeometryConstructor::DefineSensitive()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define the dimension of the detecteor envelop
 void TCSTgeometryConstructor::DefineMaxMinDimension()
 {
    TVector3 size = fpParGeo->GetSize();
@@ -121,6 +126,7 @@ void TCSTgeometryConstructor::DefineMaxMinDimension()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCSTgeometryConstructor::DefineMaterial()
 {
     fpMaterials->CreateG4Material(fpParGeo->GetMaterial());   

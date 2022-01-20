@@ -23,7 +23,7 @@ public:
    TCSTgeometryConstructor(TASTparGeo* pParGeo);
    virtual ~TCSTgeometryConstructor();
    
-   //! Method in which the physical volume is constructed
+   // Method in which the physical volume is constructed
    virtual G4LogicalVolume* Construct();
    
    //! Get Box size
@@ -50,11 +50,11 @@ private:
    static TString fgkIrSDname;     ///< SD name
 
 private:
-   //! Define envelop
+   // Define envelop
    void DefineMaxMinDimension();
-   //! Define sensitive detector
+   // Define sensitive detector
    void DefineSensitive();
-   //! Define material
+   // Define material
    void DefineMaterial();
 };
 
