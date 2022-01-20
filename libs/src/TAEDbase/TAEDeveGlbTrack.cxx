@@ -18,6 +18,9 @@
 
 //__________________________________________________________
 //! Default constructor
+//!
+//! \param[in] track eve track
+//! \param[in] prop eve track propagator
 TAEDeveGlbTrack::TAEDeveGlbTrack(TEveRecTrackD* track,  TEveTrackPropagator* prop)
  : TEveTrack(track, prop)
 {
@@ -30,6 +33,10 @@ TAEDeveGlbTrack::~TAEDeveGlbTrack()
 }
 
 //__________________________________________________________
+//! Add track point
+//!
+//! \param[in] point a given point
+//! \param[in] mom a given momentum
 void TAEDeveGlbTrack::AddTrackPoint(TVector3& point, TVector3& mom)
 {
    AddPathMark(TEvePathMarkD(TEvePathMarkD::kReference,
@@ -38,12 +45,16 @@ void TAEDeveGlbTrack::AddTrackPoint(TVector3& point, TVector3& mom)
 }
                               
 //__________________________________________________________
+//! Reset tracks
 void TAEDeveGlbTrack::ResetTrack()
 {
    Reset();
 }
 
 //__________________________________________________________
+//! Associate object to track
+//!
+//! \param[in] obj object to associate
 void TAEDeveGlbTrack::TrackId(TObject* obj)
 {
    fTrackId = obj;

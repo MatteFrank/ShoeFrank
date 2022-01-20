@@ -15,6 +15,8 @@
 
 //__________________________________________________________
 //! Default constructor
+//!
+//! \param[in] name global track list name
 TAEDglbTrackList::TAEDglbTrackList(const Char_t* name)
  : TEveElementList(name),
    fNofTracks(0)
@@ -28,6 +30,9 @@ TAEDglbTrackList::~TAEDglbTrackList()
 }
 
 //__________________________________________________________
+//! New global track
+//!
+//! \param[in] label label of the track
 TAEDglbTrack* TAEDglbTrackList::NewTrack(const Char_t* label)
 {
    TAEDglbTrack* track = new TAEDglbTrack(label);
@@ -39,6 +44,7 @@ TAEDglbTrack* TAEDglbTrackList::NewTrack(const Char_t* label)
 }
 
 //__________________________________________________________
+//! Reset tracks
 void TAEDglbTrackList::ResetTracks()
 {
    RemoveElements();

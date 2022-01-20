@@ -3,7 +3,7 @@
 
 /*!
  \file TAEDglbTrackGL.hxx
- \brief  TAEDglbTrackGL a class to display global track line on event
+ \brief  TAEDglbTrackGL a class to handle GL selection
  
  \author Ch. Finck
  */
@@ -24,11 +24,10 @@ public:
    Bool_t SupportsSecondarySelect() const { return kTRUE; }
    //! Secondary selection active
    Bool_t AlwaysSecondarySelect()   const { return ((TAEDglbTrack*)fExternalObj)->GetAlwaysSecSelect(); }
-   //! Process secondary selection
+   // Process secondary selection
    void   ProcessSelection(TGLRnrCtx& rnrCtx, TGLSelectRecord& rec);
 
-    ClassDef(TAEDglbTrackGL, 0);
+    ClassDef(TAEDglbTrackGL, 0); ///< Global track GL renderer
 };
-
 
 #endif

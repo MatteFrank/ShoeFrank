@@ -13,7 +13,7 @@
  \brief  Class to display global track line on event.
  */
 
-
+//! Class Imp
 ClassImp(TAEDglbTrackGL);
 
 //__________________________________________________________
@@ -29,7 +29,11 @@ TAEDglbTrackGL::~TAEDglbTrackGL()
 {
 }
 
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Process selection interface with GL
+//!
+//! \param[in] rnrCtx GL renderer (not used)
+//! \param[in] rec selected track
 void TAEDglbTrackGL::ProcessSelection(TGLRnrCtx& /*rnrCtx*/, TGLSelectRecord& rec)
 {
    TAEDglbTrack &LS = * (TAEDglbTrack*)fExternalObj;

@@ -40,6 +40,7 @@ class TAGgeoTrafo;
 class TAEDbaseInterface : public TEveEventManager
 {
 public:
+   //! enum detectors
    enum Detectors {
       kSTC, kBMN, kTGT, kVTX, kDIP, kITR, kMSD, kTOF, kCAL, kWorld
    };
@@ -78,13 +79,13 @@ public:
    //! Loop over event
    virtual void LoopEvent(Int_t nEvts = 0);
    
-   //! Create canvases
+   // Create canvases
    virtual void CreateCanvases();
    
-   //! Update normal Canvases
+   // Update normal Canvases
    virtual void UpdateDefCanvases();
    
-   //! reset list of histograms
+   // reset list of histograms
    virtual void ResetAllHisto();
    
    //! MC virtual methods
@@ -102,61 +103,61 @@ public:
    //! Add MC elements
    virtual void AddMcElements()             { return ;     }
 
-   //! Set transparency for volumes
+   // Set transparency for volumes
    virtual void SetTransparency(Char_t transparency = 50); //*MENU*
    
-   //! Display
+   // Display
    virtual void ShowDisplay(const TString fileName);
    
-   //! Load geometry
+   // Load geometry
    virtual void LoadGeometry(const Char_t* fileName);
    
-   //! Add geometry
+   // Add geometry
    virtual void AddGeometry(TGeoVolume* volume, TGeoCombiTrans* matrix = 0x0);
    
-   //! Build default geometry
+   // Build default geometry
    virtual void BuildDefaultGeometry();
    
-   //! Next event
+   // Next event
    virtual void NextEvent(); //*MENU*
 
-   //! Previous event
+   // Previous event
    virtual void PrevEvent(); //*MENU*
 
-   //! Go to event
+   // Go to event
    virtual void SetEvent(); //*MENU*
 
-   //! Toggel display detector
+   // Toggel display detector
    virtual void ToggleDisplay(Int_t id);
    
-   //! Toggle quad display
+   // Toggle quad display
    void         ToggleQuadDisplay();
-   //! Toggle line display
+   // Toggle line display
    void         ToggleLineDisplay();
-   //! Toggle global track display
+   // Toggle global track display
    void         ToggleGlbDisplay();
-   //! Toggle MC quad display
+   // Toggle MC quad display
    void         ToggleMcDisplay();
-   //! Toggle detector display
+   // Toggle detector display
    void         ToggleDetector(Int_t id);
-   //! Toggle camera
+   // Toggle camera
    void         ToggleCamera(Int_t id);
 
-   //! Clear info view
+   // Clear info view
    void         ClearInfoView();
-   //! Selected histogram
+   // Selected histogram
    void         HistoSelected(Int_t id);
-   //! Reset histogram
+   // Reset histogram
    void         ResetHisto();
 
-   //! Make gui
+   // Make gui
    void         MakeGUI();
    
-   //! Set world size in Z
+   // Set world size in Z
    void         SetWorldSizeZ(Float_t sizeZ);
-   //! Set world size in XY
+   // Set world size in XY
    void         SetWorldSizeXY(Float_t sizeXY);
-   //! Set world medium
+   // Set world medium
 	void         SetWordMedium(TString mat);
    
    //! Get world size in Z
@@ -201,11 +202,11 @@ public:
    Float_t      GetQuadDefHeight()  const   { return fQuadDefHeight;  }
    
 protected:
-   //! Define material
+   // Define material
    void         DefineMaterial();
-   //! Update event bar
+   // Update event bar
    void         UpdateEventBar();
-   //! Fill detector name
+   // Fill detector name
    void         FillDetectorNames();
 
 public:
