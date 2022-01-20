@@ -25,7 +25,7 @@ public:
    TCVTgeometryConstructor(TAVTbaseParGeo* pParGeo);
    virtual ~TCVTgeometryConstructor();
    
-   //! Method in which the physical volume is constructed
+   // Method in which the physical volume is constructed
    virtual G4LogicalVolume* Construct();
    
    //! Get Box size
@@ -73,23 +73,23 @@ protected:
 protected:
    static TString fgkCmosName;      ///< Cmos name
    static TString fgkPixName;       ///< Pixel name
-   static TString fgkVtxEpiSDname;  /// Epitaxial SD name
+   static TString fgkVtxEpiSDname;  ///< Epitaxial SD name
 
-   static Float_t fgDefSmearAng;    /// Angular smearing flag
-   static Float_t fgDefSmearPos;    /// Position smearing flag
-   static Bool_t  fgSmearFlag;      /// Smearing flag
+   static Float_t fgDefSmearAng;    ///< Angular smearing flag
+   static Float_t fgDefSmearPos;    ///< Position smearing flag
+   static Bool_t  fgSmearFlag;      ///< Smearing flag
    
 protected:
-   //! Define envelop
+   // Define envelop
    void DefineMaxMinDimension();
-   //! Define sensitive detector
+   // Define sensitive detector
    void DefineSensitive();
-   //! Define material
+   // Define material
    void DefineMaterial();
    
-   //! Build sensor
+   // Build sensor
    virtual void BuildSensor();
-   //! Place sensor
+   // Place sensor
    void PlaceSensor();
 };
 
