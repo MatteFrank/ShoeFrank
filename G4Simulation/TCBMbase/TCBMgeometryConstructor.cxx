@@ -39,6 +39,8 @@ TString TCBMgeometryConstructor::fgkBmSDname  = "bmSD";
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Default constructor
+//!
+//! \param[in] pParGeo geometry parameter
 TCBMgeometryConstructor::TCBMgeometryConstructor(TABMparGeo* pParGeo)
 : TCGbaseConstructor("TCBMgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -56,12 +58,14 @@ TCBMgeometryConstructor::~TCBMgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Get number of layers
 void TCBMgeometryConstructor::GetLayersN()
 {
     fpParGeo->GetLayersN();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct detector
 G4LogicalVolume* TCBMgeometryConstructor::Construct()
 {
    InfoMcMsg("Construct()", "Construct Beam Monitor");
@@ -178,6 +182,7 @@ G4LogicalVolume* TCBMgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume
 void  TCBMgeometryConstructor::DefineSensitive()
 {
    // sensitive volume
@@ -194,6 +199,7 @@ void  TCBMgeometryConstructor::DefineSensitive()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define the dimension of the detecteor envelop
 void TCBMgeometryConstructor::DefineMaxMinDimension()
 {
 
@@ -212,6 +218,7 @@ void TCBMgeometryConstructor::DefineMaxMinDimension()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCBMgeometryConstructor::DefineMaterial()
 {
     TString gasMat    = fpParGeo->GetGasMixture();
