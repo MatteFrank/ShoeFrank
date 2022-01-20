@@ -25,6 +25,8 @@ using namespace CLHEP;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Constructor
+//!
+//! \param[in] pParGeo geometry parameter
 TCMSDgeometryConstructor::TCMSDgeometryConstructor(TAVTbaseParGeo* pParGeo)
 : TCVTgeometryConstructor(pParGeo)
 {
@@ -39,6 +41,7 @@ TCMSDgeometryConstructor::~TCMSDgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCMSDgeometryConstructor::DefineMaterial()
 {
     TString pixMat = fpParGeo->GetPixMaterial();
@@ -47,6 +50,7 @@ void TCMSDgeometryConstructor::DefineMaterial()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume
 void TCMSDgeometryConstructor::DefineSensitive()
 {
    // Putting here message
@@ -65,6 +69,7 @@ void TCMSDgeometryConstructor::DefineSensitive()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define the dimension of the detecteor envelop
 void TCMSDgeometryConstructor::DefineMaxMinDimension()
 {
    TVector3 size = fpParGeo->GetTotalSize();

@@ -28,11 +28,11 @@ private:
    static TString fgkMsdEpiSDname; ///< SD name
 
 private:
-   //! Define sensitive detector
+   // Define sensitive detector
    void DefineSensitive();
-   //! Define envelop
+   // Define envelop
    void DefineMaxMinDimension();
-   //! Define material
+   // Define material
    void DefineMaterial();
 
 };

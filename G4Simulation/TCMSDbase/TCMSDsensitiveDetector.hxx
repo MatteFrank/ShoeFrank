@@ -1,5 +1,3 @@
-//my Sensitive detector
-
 #ifndef TCMSDSsensitiveDetector_h
 #define TCSDSsensitiveDetector_h 1
 
