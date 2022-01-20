@@ -23,7 +23,7 @@ public:
    TCTWgeometryConstructor(TATWparGeo* pParGeo);
    virtual ~TCTWgeometryConstructor();
    
-    //! Method in which the physical volume is constructed
+    // Method in which the physical volume is constructed
    virtual G4LogicalVolume* Construct();
    
    //! Get box size
@@ -49,11 +49,11 @@ private:
    static TString fgkTwSDname;    ///< SD name
 
 private:
-   //! Define envelop
+   // Define envelop
    void DefineMaxMinDimension();
-   //! Define sensitive detector
+   // Define sensitive detector
    void DefineSensitive();
-   //! Define material
+   // Define material
    void DefineMaterial();
 
 };
