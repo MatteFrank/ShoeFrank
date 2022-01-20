@@ -58,6 +58,10 @@ TCEMfield::~TCEMfield()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Get field value
+//!
+//! \param[in] point 3d-position and time vector
+//! \param[out] fieldB field vector
 void TCEMfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
 {
    // point[4] := time

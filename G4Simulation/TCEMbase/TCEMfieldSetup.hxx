@@ -35,11 +35,11 @@ public:
    //! Set minimum step
   void SetMinStep(Double_t s)  { fMinStep = s;     }
   
-   //! Set stepper
+   // Set stepper
   void SetStepper();
-   //! Initialise
+   // Initialise
   void Initialize();    //  Set parameters and call method below
-   //! Create stepper
+   // Create stepper
   void CreateStepperAndChordFinder();
    //! Return Field manager
    G4FieldManager*  GetFieldManager() { return fFieldManager; }

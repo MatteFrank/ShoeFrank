@@ -23,7 +23,7 @@ public:
    TCEMgeometryConstructor(TADIparGeo* pParGeo);
    virtual ~TCEMgeometryConstructor();
    
-   //! Method in which the physical volume is constructed
+   // Method in which the physical volume is constructed
    virtual G4LogicalVolume* Construct();
    
    //! Get Box size of dipole
@@ -41,11 +41,11 @@ private:
    TVector3         fMaxPosition;  ///< Maximum size of envelop
 
 private:
-   //! Define envelop size
+   // Define envelop size
    void DefineMaxMinDimension();
-   //! Define sensitive detector
+   // Define sensitive detector
    void DefineSensitive();
-   //! Define material
+   // Define material
    void DefineMaterial();
 };
 

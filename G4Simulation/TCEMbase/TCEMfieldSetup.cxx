@@ -83,6 +83,14 @@ TCEMfieldSetup::TCEMfieldSetup(TCEMfield* field)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Destructor
+TCEMfieldSetup::~TCEMfieldSetup()
+{
+   delete fChordFinder;
+   delete fStepper;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Initialize
 void TCEMfieldSetup::Initialize()
 {
   fEquation       = new G4Mag_UsualEqRhs(fMagneticField);
@@ -94,17 +102,10 @@ void TCEMfieldSetup::Initialize()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-TCEMfieldSetup::~TCEMfieldSetup()
-{
-  delete fChordFinder;
-  delete fStepper;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Create stepper for propagation and chord finder
 void TCEMfieldSetup::CreateStepperAndChordFinder()
 {
   // Update field
-
   SetStepper();
   InfoMc("CreateStepperAndChordFinder()", "The minimal step is equal to %f mm\n ", fMinStep/mm);
 
@@ -114,10 +115,9 @@ void TCEMfieldSetup::CreateStepperAndChordFinder()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Set stepper according to the stepper type
 void TCEMfieldSetup::SetStepper()
 {
-    // Set stepper according to the stepper type
-
     if (fStepper) delete fStepper;
 
     switch (fStepperType)
