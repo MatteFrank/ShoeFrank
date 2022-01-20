@@ -1,3 +1,7 @@
+/*!
+ \file TAMCregion.cxx
+ \brief   Implementation of TAMCregion.
+ */
 
 #include "TAMCntuRegion.hxx"
 
