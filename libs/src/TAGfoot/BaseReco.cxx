@@ -1019,10 +1019,6 @@ void BaseReco::SetL0TreeBranches()
 //__________________________________________________________
 void BaseReco::SetTreeBranches()
 {
-  if (TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
-    if (fFlagTrack && !fFlagRecCutter)
-      fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-  }
   
    if (TAGrecoManager::GetPar()->IncludeBM())
       if (fFlagTrack)
@@ -1059,6 +1055,12 @@ void BaseReco::SetTreeBranches()
       if (fFlagTrack)
          fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
    }
+   
+  if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
+    if (fFlagTrack && !fFlagRecCutter)
+      fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+  }
+     
 }
 
 //__________________________________________________________
