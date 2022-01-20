@@ -28,11 +28,11 @@ public:
     TCFOrunAction();
     ~TCFOrunAction();
 
-    //! Begin run action
+    // Begin run action
     void BeginOfRunAction(const G4Run* aRun);
-    //! End run action
+    // End run action
     void EndOfRunAction(const G4Run* aRun);
-    //! Fill tree and clear containers
+    // Fill tree and clear containers
     void FillAndClear(Bool_t fill = true);
 
     //! Get output file
@@ -44,12 +44,12 @@ public:
   
 public:
     //! Set output root file name
-    static void SetRootFileName(const char* name) { fgRootFileName = name; }
+    static void SetRootFileName(const char* name) { fgRootFileName = name;       }
     //! Get output root file name
-    static const char* GetRootFileName()          { return fgRootFileName; }
+    static const char* GetRootFileName()          { return fgRootFileName;       }
 
 private:
-    static TString fgRootFileName; ///< Output root file name
+    static TString fgRootFileName;        ///< Output root file name
 
 private:
     TAMCevent*     fpEventMC;             ///< For data form Simulation
@@ -59,13 +59,12 @@ private:
     TStopwatch     fWatch;                ///< Timer
 
 private:
-    //! Set containers
+    // Set containers
     void           SetContainers();
-    //! Clear containers
+    // Clear containers
     void           ClearContainers();
-    //! Print branches
+    // Print branches
     void           PrintBranches();
- 
 };
 
 #endif

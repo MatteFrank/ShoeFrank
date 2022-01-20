@@ -29,17 +29,17 @@ public:
     ~TCFOeventAction();
 
 public:
-    //! Begin event action
+    // Begin event action
     void   EndOfEventAction(const G4Event*);
-    //! Collect hits
+    // Collect hits
     void   Collect(const G4Event* evt);
 
 private:
-    //! Fill track (particle) containers
+    // Fill track (particle) containers
     void   FillTrack();
-    //! Get hits per plane
+    // Get hits per plane
     void   GetHitPerPlane(const G4Event* evt, G4int idColl);
-    //! Fill shoe hits from G4 hits
+    // Fill shoe hits from G4 hits
     void   FillHits(TAMCevent* mcHit, TCGmcHit* hit);
    
 private:

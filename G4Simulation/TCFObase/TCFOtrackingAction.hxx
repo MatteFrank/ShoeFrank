@@ -58,9 +58,9 @@ public :
    TCFOtrackingAction(TCFObaseEventAction* aEventAction);
    ~TCFOtrackingAction();
 
-   //! Pre-tracking action
+   // Pre-tracking action
    void PreUserTrackingAction(const G4Track*);
-   //! Post-tracking action
+   // Post-tracking action
    void PostUserTrackingAction(const G4Track*);   
 };
 

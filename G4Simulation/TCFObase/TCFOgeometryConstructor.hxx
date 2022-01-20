@@ -77,7 +77,7 @@ public:
    ~TCFOgeometryConstructor();
    
 public:
-   //! Construct geometry
+   // Construct geometry
    G4VPhysicalVolume* Construct();
    
    //! Get world material
@@ -99,7 +99,7 @@ public:
    //! Get geometry parameter for TW
    TATWparGeo*  GetParGeoTw()              { return fpParGeoTw;       }
    
-   //! Construct field
+   // Construct field
    void ConstructSDandField();
 
 private:

@@ -52,6 +52,9 @@ TCFOrunAction::~TCFOrunAction()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Begin of run action
+//!
+//! \param[in] aRun a given run
 void TCFOrunAction::BeginOfRunAction(const G4Run* aRun)
 {
     fEventsNToBeProcessed = aRun->GetNumberOfEventToBeProcessed();
@@ -69,6 +72,9 @@ void TCFOrunAction::BeginOfRunAction(const G4Run* aRun)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! End of run action
+//!
+//! \param[in] aRun a given run
 void TCFOrunAction::EndOfRunAction(const G4Run* aRun)
 {
     G4cout<<"The total number of events number of events is "<<aRun->GetNumberOfEvent()<<G4endl;
@@ -82,6 +88,9 @@ void TCFOrunAction::EndOfRunAction(const G4Run* aRun)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Fill tree and clear container
+//!
+//! \param[in] fill filling tree flag
 void TCFOrunAction::FillAndClear(Bool_t fill)
 {
     if (fill)
@@ -90,6 +99,7 @@ void TCFOrunAction::FillAndClear(Bool_t fill)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Set containers
 void TCFOrunAction::SetContainers()
 {
    //File for
@@ -113,6 +123,7 @@ void TCFOrunAction::SetContainers()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Clear containers
 void TCFOrunAction::ClearContainers()
 {
    if(fpEventMC)  fpEventMC->Clean();
@@ -120,6 +131,7 @@ void TCFOrunAction::ClearContainers()
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Print tree branches
 void TCFOrunAction::PrintBranches()
 {
   if (!fpTree) return;
