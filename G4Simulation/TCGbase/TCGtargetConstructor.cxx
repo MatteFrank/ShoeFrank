@@ -77,6 +77,7 @@ TCGtargetConstructor::~TCGtargetConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct target
 G4LogicalVolume* TCGtargetConstructor::Construct()
 {
    // Target logical volume
@@ -119,6 +120,7 @@ G4LogicalVolume* TCGtargetConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Build cubic target
 void TCGtargetConstructor::BuildCubicTarget()
 {
    InfoMcMsg("BuildCubicTarget()", "Build cubic target ");
@@ -142,6 +144,7 @@ void TCGtargetConstructor::BuildCubicTarget()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Build cylindrical target
 void TCGtargetConstructor::BuildCylindricTarget()
 {
    Info("BuildCylindricTarget()", "Build cylindric target ");
@@ -229,6 +232,7 @@ void TCGtargetConstructor::BuildInsert()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCGtargetConstructor::DefineMaterial()
 {
    G4NistManager* man = G4NistManager::Instance();
@@ -286,6 +290,10 @@ void TCGtargetConstructor::DefineMaterial()
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Set insert attributes
+//!
+//! \param[in] insert insert index
+//! \param[in] material insert material 
 void TCGtargetConstructor::SetInsertAttributes(G4int insert, G4String material)
 {
    if (material == "Air") {

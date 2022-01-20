@@ -29,17 +29,17 @@ public:
    TCGmaterials();
    virtual ~TCGmaterials();
    
-   //! Create G4 material from root
-    G4Material* CreateG4Material(TString name, G4double density=1.0, G4State state=kStateUndefined, G4double temperature=273.15, G4double pressure=1.013e5);
-   //! Create G4 mixture from root
-    G4Material* CreateG4Mixture(TString formula, const TString densities, const TString prop, G4double density);
-   //! Convert root material to G4 material
-    G4Material* ConvertGeoMaterial(const TGeoMaterial *mat);
-   //! Create G4 default materials
-    void CreateG4DefaultMaterials();
+   // Create G4 material from root
+   G4Material* CreateG4Material(TString name, G4double density=1.0, G4State state=kStateUndefined, G4double temperature=273.15, G4double pressure=1.013e5);
+   // Create G4 mixture from root
+   G4Material* CreateG4Mixture(TString formula, const TString densities, const TString prop, G4double density);
+   // Convert root material to G4 material
+   G4Material* ConvertGeoMaterial(const TGeoMaterial *mat);
+   // Create G4 default materials
+   void CreateG4DefaultMaterials();
 
 public:
-   //! Get instance
+   // Get instance
    static TCGmaterials* Instance();
    
 private:

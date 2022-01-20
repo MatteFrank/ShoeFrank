@@ -19,11 +19,11 @@ public:
     TCGphysicsQMD();
     virtual ~TCGphysicsQMD();
 
-    //! Set cuts
+    // Set cuts
     virtual void SetCuts();
-    //! Construct particles
+    // Construct particles
     virtual void ConstructParticle();
-    //! Construct process
+    // Construct process
     virtual void ConstructProcess();
 
 private:

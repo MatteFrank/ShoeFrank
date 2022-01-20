@@ -90,6 +90,7 @@ TCGphysicsQMD::~TCGphysicsQMD()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct process
 void TCGphysicsQMD::ConstructProcess()
 {
     // Transportation first (mandatory)
@@ -105,6 +106,7 @@ void TCGphysicsQMD::ConstructProcess()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct particle
 void TCGphysicsQMD::ConstructParticle()
 {
     G4BosonConstructor  pBosonConstructor;
@@ -127,6 +129,7 @@ void TCGphysicsQMD::ConstructParticle()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Set cuts
 void TCGphysicsQMD::SetCuts()
 {
     G4double cutGammas = 1.0*m;

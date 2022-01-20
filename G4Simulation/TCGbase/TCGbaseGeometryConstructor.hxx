@@ -63,14 +63,14 @@ public:
    virtual ~TCGbaseGeometryConstructor();
    
 public:
-   //! Set size in Z for world
+   // Set size in Z for world
    void SetWorldSizeZ(G4double sizeZ);
-   //! Set size in X-Y for world
+   // Set size in X-Y for world
    void SetWorldSizeXY(G4double sizeXY);
-   //! Set world material
+   // Set world material
 	void SetWordMaterial(G4String mat);
    
-   //! Construct
+   // Construct
    virtual G4VPhysicalVolume* Construct();
    
    //! Get size in Z for world

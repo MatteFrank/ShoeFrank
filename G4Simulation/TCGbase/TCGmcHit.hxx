@@ -55,8 +55,9 @@ public:
    void AddEdep(G4double de)               { fEdep  += de;               }
    //! Set energy loss
    void SetEdep(G4double de)               { fEdep = de;                 } //keV
-   G4double GetEdep()                      { return fEdep;               }
    //! Get energy loss
+   G4double GetEdep()                      { return fEdep;               }
+   //! Set input loss
    void SetEinput(G4double de)             { fEnergyInput = de;          } //keV
    //! Get input energy
    G4double GetEinput()                    { return fEnergyInput;        }
@@ -151,11 +152,11 @@ public:
 };
 
 
-typedef G4THitsCollection<TCGmcHit> TCGmcCollections;
+typedef G4THitsCollection<TCGmcHit> TCGmcCollections; ///< typedef Collection
 
-extern G4Allocator<TCGmcHit> TCGmcHitAllocator;
+extern G4Allocator<TCGmcHit> TCGmcHitAllocator;       ///< external hit allocator
 
-
+//! operator new
 inline void* TCGmcHit::operator new(size_t)
 {
    void *aHit;
@@ -163,6 +164,7 @@ inline void* TCGmcHit::operator new(size_t)
    return aHit;
 }
 
+//! operator delete
 inline void TCGmcHit::operator delete(void *aHit)
 {
    TCGmcHitAllocator.FreeSingle((TCGmcHit*) aHit);
