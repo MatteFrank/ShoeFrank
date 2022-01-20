@@ -16,7 +16,6 @@
  */
 
 class G4LogicalVolume;
-
 class TACAparGeo;
 
 class TCCAgeometryConstructor : public TCGbaseConstructor
@@ -25,7 +24,7 @@ public:
    TCCAgeometryConstructor(TACAparGeo* pParGeo);
    virtual ~TCCAgeometryConstructor();
    
-   //! Method in which the physical volume is constructed
+   // Method in which the physical volume is constructed
    virtual G4LogicalVolume* Construct();
    
    //! Get Box size of CAL
@@ -36,9 +35,9 @@ public:
    TVector3 GetMaxPoistion() const  { return fMaxPosition;        }
    
 public:
+   //! Get SD name
    static const Char_t* GetSDname() { return fgkCalSDname.Data(); }
 
-   
 private:
    G4LogicalVolume* fBoxLog;      ///< Logical volume of box
    G4LogicalVolume* fSupLog;      ///< Logical volume of support
@@ -50,14 +49,13 @@ private:
    
 private:
    static TString fgkCalSDname;  ///< BM sensitive detector name
-
    
 private:
-   //! Define envelop size
+   // Define envelop size
    void DefineMaxMinDimension();
-   //! Define sensitive detector
+   // Define sensitive detector
    void DefineSensitive();
-   //! Define material
+   // Define material
    void DefineMaterial();
 };
 

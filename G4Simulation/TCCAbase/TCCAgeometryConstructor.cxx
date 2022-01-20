@@ -43,6 +43,8 @@ TString TCCAgeometryConstructor::fgkCalSDname  = "caSD";
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Constructor
+//!
+//! \param[in] pParGeo geometry parameter
 TCCAgeometryConstructor::TCCAgeometryConstructor(TACAparGeo* pParGeo)
 : TCGbaseConstructor("TCCAgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -59,6 +61,7 @@ TCCAgeometryConstructor::~TCCAgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct detector
 G4LogicalVolume* TCCAgeometryConstructor::Construct()
 {
    InfoMcMsg("Construct()", "Construct Calorimeter");
@@ -158,6 +161,7 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume
 void  TCCAgeometryConstructor::DefineSensitive()
 {
    // sensitive volume
@@ -174,6 +178,7 @@ void  TCCAgeometryConstructor::DefineSensitive()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define the dimension of the detecteor envelop
 void TCCAgeometryConstructor::DefineMaxMinDimension()
 {
 
@@ -193,6 +198,7 @@ void TCCAgeometryConstructor::DefineMaxMinDimension()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCCAgeometryConstructor::DefineMaterial()
 {
     fpMaterials->CreateG4Material(fpParGeo->GetCrystalMat());
