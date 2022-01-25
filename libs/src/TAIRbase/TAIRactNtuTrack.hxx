@@ -24,10 +24,10 @@ public:
                              TAGparaDsc* p_calib    = 0);
    virtual ~TAIRactNtuTrack();
    
-   //! Create histograms
+   // Create histograms
    virtual  void    CreateHistogram();
    
-   //! Action
+   // Action
    virtual  Bool_t  Action();
 
 public:
@@ -37,15 +37,15 @@ public:
    static void    SetBmMatched(Bool_t flag) { fgBmMatched = flag; }
 
 private:
-   //! Find track
+   // Find track
     Bool_t    FindTracks();
-   //! Check VTX
+   // Check VTX
     Bool_t    CheckVtx();
-   //! Fill interaction region track
+   // Fill interaction region track
    TAIRtrack* FillTracks(TAVTtrack* vtTrack);
-   //! Fill histogram from track
+   // Fill histogram from track
    void       FillHistogramm(TAGbaseTrack* track);
-   //! Fill histogram
+   // Fill histogram
    void       FillHistogramm();
 
 private:

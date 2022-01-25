@@ -28,7 +28,7 @@ public:
    ~TAIRtrack();
    TAIRtrack(const TAIRtrack& aTrack);
 
-   //! Set up clones
+   // Set up clones
    void           SetupClones();
 
     //! Get cluster
@@ -36,7 +36,7 @@ public:
    //! Get last cluster
    TAIRcluster* GetLastCluster()         { return (TAIRcluster*)fListOfClusters->Last(); }
  
-   //! Add cluster
+   // Add cluster
    void           AddCluster(TAGcluster* cluster);
    
    ClassDef(TAIRtrack,1)                      ///< Describes TAIRtrack

@@ -17,11 +17,15 @@
  \brief Alignment class. **
  */
 
+//! Class Imp
 ClassImp(TAIRntuAlignC);
 
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] arraySensor sensor index array
+//! \param[in] pDevStatus sensor status array
 TAIRntuAlignC::TAIRntuAlignC(TArrayI* arraySensor, Int_t* pDevStatus)
 : TAGdata(),
   fSumZiWiQ(0),
@@ -83,8 +87,10 @@ TAIRntuAlignC::~TAIRntuAlignC()
    
 }
 //______________________________________________________________________________
-//
-// Accumulation of the coordinates of the cluster for each plane with the constans defined before
+//! Accumulation of the coordinates of the cluster for each plane with the constans defined before
+//!
+//! \param[in] Ucluster cluster position in U-direction
+//! \param[in] Vcluster cluster position in V-direction
 Bool_t TAIRntuAlignC::Accumulate(Double_t* Ucluster, Double_t* Vcluster)
 {
    fCx = fCxInit;
@@ -105,12 +111,10 @@ Bool_t TAIRntuAlignC::Accumulate(Double_t* Ucluster, Double_t* Vcluster)
    }
    
    return true;
-   
 }
 
 //______________________________________________________________________________
-//
-// Addition of the new matrice and vector with the previous one
+//! Addition of the new matrice and vector with the previous one
 void TAIRntuAlignC::Sum()
 {
    fCxtCx = TMatrixD(fCx,TMatrixD::kTransposeMult,fCx);
@@ -129,8 +133,7 @@ void TAIRntuAlignC::Sum()
    return;
 }
 //______________________________________________________________________________
-//
-// The final vector containing the alignment parameters are calculated
+//! The final vector containing the alignment parameters are calculated
 void TAIRntuAlignC::Minimize()
 {
    TMatrixD CMatrixFinal = fCmf;
@@ -168,9 +171,11 @@ void TAIRntuAlignC::Minimize()
    return;
 }
 //______________________________________________________________________________
-//
-// Delete the lines and columns of the final matrice and vector corresponding to the alignment parameters.
-// In this step we constraint the tracker in a global frame
+//! Delete the lines and columns of the final matrice and vector corresponding to the alignment parameters.
+//! In this step we constraint the tracker in a global frame
+//!
+//! \param[in] planeRef1 plane index for reference 1
+//! \param[in] planeRef2 plane index for reference 2
 void TAIRntuAlignC::Constraint(Int_t planeRef1, Int_t planeRef2)
 {
    TMatrixD CMatrix = fCm;
@@ -201,8 +206,10 @@ void TAIRntuAlignC::Constraint(Int_t planeRef1, Int_t planeRef2)
    return;
 }
 //______________________________________________________________________________
-//
-// All the constants used later are initialized in this function
+//! All the constants used later are initialized in this function
+//!
+//! \param[in] weightQ weight position
+//! \param[in] position position
 void TAIRntuAlignC::DefineConstant(Double_t* weightQ, Double_t* position)
 {
    TMatrixD    A;
@@ -253,8 +260,7 @@ void TAIRntuAlignC::DefineConstant(Double_t* weightQ, Double_t* position)
    return;
 }
 //______________________________________________________________________________
-//
-// Reset function
+//! Reset function
 void TAIRntuAlignC::Reset()
 {
    fCm.Zero();
