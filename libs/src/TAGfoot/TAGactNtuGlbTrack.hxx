@@ -44,10 +44,10 @@ public:
    
    virtual  ~TAGactNtuGlbTrack();
    
-   //! Action
+   // Action
    Bool_t    Action();
    
-   //! Base creation of histogram
+   // Base creation of histogram
    void      CreateHistogram();
   
    //! return Global track container
@@ -56,40 +56,40 @@ public:
    //! output from TOE action
    void Output(){ fActTOE->Output(); }
    
-   //! Write histogram
+   // Write histogram
    void WriteHistogram();
     
 private:
-   //! Set up action
+   // Set up action
    TATOEbaseAct* SetupAction() const;
    //! Get field
    TADIgeoField*        GetFootField()      const { return fField;  }
     
 private:
-   TAGgeoTrafo*      fpFootGeo;        // geo trafo
-   TAGdataDsc*       fpVtxVertex;		// VTX Vertex
-   TAGdataDsc*       fpVtxTrack;       // VTX tracks
-   TAGdataDsc*       fpVtxClus;        // VTX clusters
-   TAGdataDsc*       fpItrClus;		   // ITR clusters
-   TAGdataDsc*       fpMsdClus;		   // MSD clusters
-   TAGdataDsc*       fpMsdPoint;       // MSD clusters
-   TAGdataDsc*       fpTwPoint;		   // TOF points, should be cluster
-   TAGdataDsc*       fpGlbTrack;		   // global tracks
-   TAGparaDsc*       fpGGeoMap;        // par geo for beam/target
-   TAGparaDsc*       fpDiGeoMap;       // par geo for dipole
-   TAGparaDsc*       fpVtxGeoMap;      // par geo for vertex
-   TAGparaDsc*       fpItrGeoMap;      // par geo for inner tracker
-   TAGparaDsc*       fpMsdGeoMap;      // par geo for MSD
-   TAGparaDsc*       fpTofGeoMap;      // par geo for ToF
-   TADIgeoField*     fField;           // Masgnetic field
+   TAGgeoTrafo*      fpFootGeo;        ///< geo trafo
+   TAGdataDsc*       fpVtxVertex;		///< VTX Vertex
+   TAGdataDsc*       fpVtxTrack;       ///< VTX tracks
+   TAGdataDsc*       fpVtxClus;        ///< VTX clusters
+   TAGdataDsc*       fpItrClus;		   ///< ITR clusters
+   TAGdataDsc*       fpMsdClus;		   ///< MSD clusters
+   TAGdataDsc*       fpMsdPoint;       ///< MSD clusters
+   TAGdataDsc*       fpTwPoint;		   ///< TOF points, should be cluster
+   TAGdataDsc*       fpGlbTrack;		   ///< global tracks
+   TAGparaDsc*       fpGGeoMap;        ///< par geo for beam/target
+   TAGparaDsc*       fpDiGeoMap;       ///< par geo for dipole
+   TAGparaDsc*       fpVtxGeoMap;      ///< par geo for vertex
+   TAGparaDsc*       fpItrGeoMap;      ///< par geo for inner tracker
+   TAGparaDsc*       fpMsdGeoMap;      ///< par geo for MSD
+   TAGparaDsc*       fpTofGeoMap;      ///< par geo for ToF
+   TADIgeoField*     fField;           ///< Masgnetic field
    
-   TAGactTreeReader* fActEvtReader;    // tree reader, atand alone mode only
+   TAGactTreeReader* fActEvtReader;    ///< tree reader, stand alone mode only
    
-   TATOEbaseAct*     fActTOE;          // TOE action
+   TATOEbaseAct*     fActTOE;          ///< TOE action
     
-   TH1F*             fpHisMass;        // mass histogram
+   TH1F*             fpHisMass;        ///< mass histogram
    
-   ClassDef(TAGactNtuGlbTrack,0)
+   ClassDef(TAGactNtuGlbTrack,0)  ///< TAGactNtuGlbTrack
 };
 
 #endif

@@ -33,8 +33,6 @@
 
 
 #include "TAGactNtuGlbTrack.hxx"
-
-
 #include "TATOEutilities.hxx"
 
 #include "grkn_data.hpp"
@@ -42,8 +40,11 @@
 #include "ukf.hpp"
 #include "flag_set.hpp"
 
+//! Class Imp
+ClassImp(TAGactNtuGlbTrack)
+
 namespace details{
-struct ms2d_tag;
+struct ms2d_tag; ///< MSD 2D flag
 }
 
 /*!
@@ -51,10 +52,25 @@ struct ms2d_tag;
  \brief  Read back detector clusters to reconstruct global tracks with TOE**
  */
 
-ClassImp(TAGactNtuGlbTrack)
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] p_vtxclus  VTX cluster container descriptor
+//! \param[in] p_vtxtrack  VTX track container descriptor
+//! \param[in] p_vtxvertex  vertex container descriptor
+//! \param[in] p_itrclus ITR cluster container descriptor
+//! \param[in] p_msdclus MSD cluster container descriptor
+//! \param[in] p_msdpoint MSD point container descriptor
+//! \param[in] p_twpoint TW point container descriptor
+//! \param[out] p_glbtrack global track container descriptor
+//! \param[in] p_geoG target geometry parameter descriptor
+//! \param[in] p_geodi dipole geometry parameter descriptor
+//! \param[in] p_geoVtx VTX geometry parameter descriptor
+//! \param[in] p_geoItr ITR geometry parameter descriptor
+//! \param[in] p_geoMsd MSD geometry parameter descriptor
+//! \param[in] p_geoTof TW geometry parameter descriptor
+//! \param[in] field field map
 TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
                                       TAGdataDsc* p_vtxclus,
                                       TAGdataDsc* p_vtxtrack,
@@ -337,6 +353,7 @@ void TAGactNtuGlbTrack::CreateHistogram()
 
 
 //------------------------------------------+-----------------------------------
+//! Write histograms
 void TAGactNtuGlbTrack::WriteHistogram()
 {
     Output();

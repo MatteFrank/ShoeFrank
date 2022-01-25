@@ -37,30 +37,30 @@
 class LocalReco : public BaseReco
 {
 public:
-   //! default constructor
+   // default constructor
    LocalReco(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalReco();
    
-   //! Add required items
+   // Add required items
    virtual void AddRawRequiredItem();
 
-   //! Create raw data action
+   // Create raw data action
    virtual void CreateRawAction();
    
-   //! Set raw histogram directory
+   // Set raw histogram directory
    virtual void SetRawHistogramDir();
    
-   //! Create branch in tree
+   // Create branch in tree
    virtual void SetTreeBranches();
 
-   //! Open File
+   // Open File
    virtual void OpenFileIn();
    
-   //! Close File in
+   // Close File in
    virtual void CloseFileIn();
    
-   //! Goto Event
+   // Goto Event
    virtual Bool_t GoEvent(Int_t iEvent);
 
 public:
@@ -70,32 +70,32 @@ public:
    static void EnableStdAlone()    { fgStdAloneFlag = true;   }
    
 private:
-   TAGdataDsc*           fpDaqEvent;      // DAQ event
-   TAGdataDsc*           fpNtuEvt;        // input data event dsc
-   TAGdataDsc*           fpDatRawMsd;     // input raw data dsc for MSD
-   TAGactWDreader*       fActWdRaw;       // action for WD decoding
-   TAGdataDsc*           fpNtuWDtrigInfo; // contains the WD trigger info
-   TAGactNtuEvent*       fActNtuEvt;      // action for trigger event
+   TAGdataDsc*           fpDaqEvent;      ///< DAQ event
+   TAGdataDsc*           fpNtuEvt;        ///< input data event dsc
+   TAGdataDsc*           fpDatRawMsd;     ///< input raw data dsc for MSD
+   TAGactWDreader*       fActWdRaw;       ///< action for WD decoding
+   TAGdataDsc*           fpNtuWDtrigInfo; ///< contains the WD trigger info
+   TAGactNtuEvent*       fActNtuEvt;      ///< action for trigger event
 
-   TASTactNtuHit*        fActNtuHitSt;    // action for STC hits
-   TABMactVmeReader*     fActVmeReaderBm; // action for stand alone reader BM
-   TABMactNtuRaw*        fActDatRawBm;    // action for BM raw data
-   TABMactNtuHit*        fActNtuHitBm;    // action for BM hits
-   TAMSDactNtuRaw*       fActDatRawMsd;   // action for MSD raw data
+   TASTactNtuHit*        fActNtuHitSt;    ///< action for STC hits
+   TABMactVmeReader*     fActVmeReaderBm; ///< action for stand alone reader BM
+   TABMactNtuRaw*        fActDatRawBm;    ///< action for BM raw data
+   TABMactNtuHit*        fActNtuHitBm;    ///< action for BM hits
+   TAMSDactNtuRaw*       fActDatRawMsd;   ///< action for MSD raw data
 
-   TAVTactVmeReader*     fActVmeReaderVtx; // action for stand alone reader VTX
-   TAVTactNtuHit*        fActNtuHitVtx;    // action for VTX hits
-   TAITactNtuHit*        fActNtuHitIt;     // action for ITR hits
-   TAMSDactNtuHit*       fActNtuHitMsd;    // action for MSD hits
-   TATWactNtuHit*        fActNtuHitTw;     // action for TW hits
-   TACAactNtuHit*        fActNtuHitCa;     // action for CAL hits
+   TAVTactVmeReader*     fActVmeReaderVtx; ///< action for stand alone reader VTX
+   TAVTactNtuHit*        fActNtuHitVtx;    ///< action for VTX hits
+   TAITactNtuHit*        fActNtuHitIt;     ///< action for ITR hits
+   TAMSDactNtuHit*       fActNtuHitMsd;    ///< action for MSD hits
+   TATWactNtuHit*        fActNtuHitTw;     ///< action for TW hits
+   TACAactNtuHit*        fActNtuHitCa;     ///< action for CAL hits
 
-   TAGactDaqReader*      fActEvtReader;    // reader for real data (DAQ)
+   TAGactDaqReader*      fActEvtReader;    ///< reader for real data (DAQ)
   
 private:
-   static Bool_t         fgStdAloneFlag;   // flag for standalone DAQ
+   static Bool_t         fgStdAloneFlag;   ///< flag for standalone DAQ
 
-   ClassDef(LocalReco, 1); // Base class for event display
+   ClassDef(LocalReco, 1); ///< Base class for event display
 };
 
 

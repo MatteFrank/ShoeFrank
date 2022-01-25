@@ -51,7 +51,7 @@ Bool_t TAEDbaseInterface::fgDisplayFlag   = true;
 Int_t  TAEDbaseInterface::fgMaxHistosN   =  4;
 
 //__________________________________________________________
-//! Destructor
+//! Constructor
 //!
 //! \param[in] type data type 0 data, 1 MC
 //! \param[in] expName experiment name

@@ -1,7 +1,7 @@
 
 /*!
  \file LocalReco.cxx
- \brief Reconstruction class from raw data
+ \brief Implementation of LocalReco
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -22,6 +22,9 @@
 #include "TABMntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
 
+//! Class Imp
+ClassImp(LocalReco)
+
 /*!
  \class LocalReco
  \brief Reconstruction class from raw data
@@ -30,9 +33,13 @@
 
 Bool_t  LocalReco::fgStdAloneFlag = false;
 
-ClassImp(LocalReco)
-
 //__________________________________________________________
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] fileNameIn data input file name
+//! \param[in] fileNameout data output root file name
 LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fpDaqEvent(0x0),
@@ -51,12 +58,13 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
 }
 
 //__________________________________________________________
+//! default destructor
 LocalReco::~LocalReco()
 {
-   // default destructor
 }
 
 //__________________________________________________________
+//! Create raw data actions
 void LocalReco::CreateRawAction()
 {
    if (!fgStdAloneFlag) {
@@ -164,6 +172,9 @@ void LocalReco::CreateRawAction()
 }
 
 //__________________________________________________________
+//! Skip a given number of events
+//!
+//! \param[in] iEvent event number to skip
 Bool_t LocalReco::GoEvent(Int_t iEvent)
 {
    fSkipEventsN = iEvent;
@@ -172,6 +183,7 @@ Bool_t LocalReco::GoEvent(Int_t iEvent)
 }
 
 //__________________________________________________________
+//! Open input file
 void LocalReco::OpenFileIn()
 {
    if (fgStdAloneFlag) {
@@ -189,6 +201,7 @@ void LocalReco::OpenFileIn()
 }
 
 //__________________________________________________________
+//! Set raw data histogram directory
 void LocalReco::SetRawHistogramDir()
 {
    // ST
@@ -252,6 +265,7 @@ void LocalReco::SetRawHistogramDir()
 }
 
 //__________________________________________________________
+//! Close input file
 void LocalReco::CloseFileIn()
 {
   if (fgStdAloneFlag && TAGrecoManager::GetPar()->IncludeBM())
@@ -261,6 +275,7 @@ void LocalReco::CloseFileIn()
 }
 
 //__________________________________________________________
+//! Add required raw data actions in list
 void LocalReco::AddRawRequiredItem()
 {
    if (!fgStdAloneFlag) {
@@ -310,6 +325,7 @@ void LocalReco::AddRawRequiredItem()
 }
 
 //__________________________________________________________
+//! Set tree branches for writing in output file
 void LocalReco::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();

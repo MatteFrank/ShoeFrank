@@ -34,13 +34,20 @@
  */
 /*------------------------------------------+---------------------------------*/
 
+//! Class Imp
+ClassImp(BaseReco)
+
 Bool_t  BaseReco::fgItrTrackFlag  = false;
 Bool_t  BaseReco::fgMsdTrackFlag  = true;
 Bool_t  BaseReco::fSaveMcFlag     = true;
 
-ClassImp(BaseReco)
-
 //__________________________________________________________
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] fileNameIn data input file name
+//! \param[in] fileNameout data output root file name
 BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
@@ -156,6 +163,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
 }
 
 //__________________________________________________________
+//! default destructor
 BaseReco::~BaseReco()
 {
    // default destructor
@@ -163,6 +171,7 @@ BaseReco::~BaseReco()
 }
 
 //_____________________________________________________________________________
+//! Campaign information checks
 void BaseReco::CampaignChecks()
 {
    // check detector include in FootGlobal.par vs current campaign
@@ -209,6 +218,7 @@ void BaseReco::CampaignChecks()
 }
 
 //__________________________________________________________
+//! Global reconstruction information checks
 void BaseReco::GlobalChecks()
 {
   if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
@@ -246,6 +256,10 @@ void BaseReco::GlobalChecks()
 }
 
 //__________________________________________________________
+//! Add friend tree in root file
+//!
+//! \param[in] fileName root file name
+//! \param[in] treeName tree name
 void BaseReco::AddFriendTree(TString fileName, TString treeName)
 {
    fFriendFileName = fileName;
@@ -253,6 +267,7 @@ void BaseReco::AddFriendTree(TString fileName, TString treeName)
 }
 
 //__________________________________________________________
+//! Actions before loop event
 void BaseReco::BeforeEventLoop()
 {
    ReadParFiles();
@@ -277,6 +292,9 @@ void BaseReco::BeforeEventLoop()
 }
 
 //__________________________________________________________
+//! Loop over events
+//!
+//! \param[in] nEvents number of events to process
 void BaseReco::LoopEvent(Int_t nEvents)
 {
   Int_t frequency = 1;
@@ -302,6 +320,7 @@ void BaseReco::LoopEvent(Int_t nEvents)
 }
 
 //__________________________________________________________
+//! Actions after loop event
 void BaseReco::AfterEventLoop()
 {
    if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
@@ -314,6 +333,7 @@ void BaseReco::AfterEventLoop()
 }
 
 //__________________________________________________________
+//!  Open output file
 void BaseReco::OpenFileOut()
 {
   if (fFlagTree)  SetTreeBranches();
@@ -326,6 +346,7 @@ void BaseReco::OpenFileOut()
 }
 
 //__________________________________________________________
+//! Set reconstructed histogram directory
 void BaseReco::SetRecHistogramDir()
 {
    //Global track
@@ -401,6 +422,7 @@ void BaseReco::SetRecHistogramDir()
 }
 
 //__________________________________________________________
+//! Close output file
 void BaseReco::CloseFileOut()
 {
    // saving current run info
@@ -421,6 +443,7 @@ void BaseReco::CloseFileOut()
 }
 
 //__________________________________________________________
+//! Read parameters files
 void BaseReco::ReadParFiles()
 {
    Int_t Z_beam = 0;
@@ -684,6 +707,7 @@ void BaseReco::ReadParFiles()
 }
 
 //__________________________________________________________
+//! Create reconstruction actions
 void BaseReco::CreateRecAction()
 {
    if (TAGrecoManager::GetPar()->IncludeBM())
@@ -715,6 +739,7 @@ void BaseReco::CreateRecAction()
 }
 
 //__________________________________________________________
+//! Create BM reconstruction actions
 void BaseReco::CreateRecActionBm()
 {
    if(fFlagTrack) {
@@ -728,6 +753,7 @@ void BaseReco::CreateRecActionBm()
 }
 
 //__________________________________________________________
+//! Create VTX reconstruction actions
 void BaseReco::CreateRecActionVtx()
 {
    if(fFlagTrack) {
@@ -779,6 +805,7 @@ void BaseReco::CreateRecActionVtx()
 }
 
 //__________________________________________________________
+//! Create ITR reconstruction actions
 void BaseReco::CreateRecActionIt()
 {
    fpNtuClusIt = new TAGdataDsc("itClus", new TAITntuCluster());
@@ -811,6 +838,7 @@ void BaseReco::CreateRecActionIt()
 }
 
 //__________________________________________________________
+//! Create MSD reconstruction actions
 void BaseReco::CreateRecActionMsd()
 {
    fpNtuClusMsd = new TAGdataDsc("msdClus", new TAMSDntuCluster());
@@ -842,6 +870,7 @@ void BaseReco::CreateRecActionMsd()
 }
 
 //__________________________________________________________
+//! Create TW reconstruction actions
 void BaseReco::CreateRecActionTw()
 {
    fpNtuRecTw = new TAGdataDsc("twPoint", new TATWntuPoint());
@@ -853,6 +882,7 @@ void BaseReco::CreateRecActionTw()
 }
 
 //__________________________________________________________
+//! Create CAL reconstruction actions
 void BaseReco::CreateRecActionCa()
 {
    fpNtuClusCa = new TAGdataDsc("caClus", new TACAntuCluster());
@@ -864,6 +894,7 @@ void BaseReco::CreateRecActionCa()
 }
 
 //__________________________________________________________
+//! Create global track reconstruction TOE action
 void BaseReco::CreateRecActionGlb()
 {
   if(fFlagRecCutter) {
@@ -896,6 +927,7 @@ void BaseReco::CreateRecActionGlb()
 }
 
 //__________________________________________________________
+//! Create global track reconstruction GenFit action
 void BaseReco::CreateRecActionGlbGF()
 {
 	if(fFlagTrack) {
@@ -922,6 +954,7 @@ void BaseReco::CreateRecActionGlbGF()
 }
 
 //__________________________________________________________
+//! Create global straight track reconstruction action
 void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
@@ -934,6 +967,7 @@ void BaseReco::CreateRecActionGlbS()
 }
 
 //__________________________________________________________
+//! Set L0 tree branches for reading back
 void BaseReco::SetL0TreeBranches()
 {
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
@@ -1017,12 +1051,12 @@ void BaseReco::SetL0TreeBranches()
 }
 
 //__________________________________________________________
+//! Set tree branches for writing in output file
 void BaseReco::SetTreeBranches()
 {
-  
-   if (TAGrecoManager::GetPar()->IncludeBM())
-      if (fFlagTrack)
-         fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+  if (TAGrecoManager::GetPar()->IncludeBM())
+     if (fFlagTrack)
+        fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
    
    
   if (TAGrecoManager::GetPar()->IncludeVT()) {
@@ -1060,10 +1094,10 @@ void BaseReco::SetTreeBranches()
     if (fFlagTrack && !fFlagRecCutter)
       fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
   }
-     
 }
 
 //__________________________________________________________
+//! Add required reconstruction actions in list
 void BaseReco::AddRecRequiredItem()
 {
    if (fFlagOut)
@@ -1142,6 +1176,9 @@ void BaseReco::AddRecRequiredItem()
 }
 
 //__________________________________________________________
+//! Set VTX tracking algorithm
+//!
+//! \param[in] c toggle btw standard and combinaison algorithm
 void BaseReco::SetVtxTrackingAlgo(char c)
 {
    switch (c) {
@@ -1157,6 +1194,9 @@ void BaseReco::SetVtxTrackingAlgo(char c)
 }
 
 //__________________________________________________________
+//! Set ITR tracking algorithm
+//!
+//! \param[in] c toggle btw standard and combinaison algorithm
 void BaseReco::SetItrTrackingAlgo(char c)
 {
    switch (c) {
@@ -1172,6 +1212,9 @@ void BaseReco::SetItrTrackingAlgo(char c)
 }
 
 //__________________________________________________________
+//! Set MSD tracking algorithm
+//!
+//! \param[in] c toggle btw standard and combinaison algorithm
 void BaseReco::SetMsdTrackingAlgo(char c)
 {
    switch (c) {
