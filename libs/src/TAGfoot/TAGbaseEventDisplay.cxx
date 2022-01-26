@@ -186,9 +186,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
       fGlbTrackDisplay = new TAEDglbTrackList("Global Tracks");
    }
 
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
 
       fIrTrackDisplay = new TAEDtrack("Global Straight Tracks");
       fIrTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
@@ -456,9 +454,7 @@ void TAGbaseEventDisplay::AddElements()
       gEve->AddElement(fGlbTrackDisplay);
    }
 
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->ResetTracks();
       gEve->AddElement(fIrTrackDisplay);
    }
@@ -521,9 +517,7 @@ void TAGbaseEventDisplay::ConnectElements()
       fCaClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
    
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW() &&
-       !TAGrecoManager::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->SetEmitSignals(true);
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
@@ -795,9 +789,7 @@ void TAGbaseEventDisplay::UpdateElements()
    if (TAGrecoManager::GetPar()->IncludeCA())
       UpdateElements("ca");
 
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW() &&
-       !TAGrecoManager::GetPar()->IncludeDI())
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI())
       UpdateElements("ir");
 
    if (TAGrecoManager::GetPar()->IncludeTOE() && fFlagTrack)
