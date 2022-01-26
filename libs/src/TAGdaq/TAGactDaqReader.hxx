@@ -30,15 +30,15 @@ public:
    explicit        TAGactDaqReader(const char* name=0, TAGdataDsc* p_datdaq=0);
    virtual         ~TAGactDaqReader();
    
-   //! Open DAQ file
+   // Open DAQ file
    virtual Int_t   Open(const TString& name, Option_t* option="chain", const TString treeName="", Bool_t dscBranch = true);
-   //! Close file
+   // Close file
    virtual void    Close();
-   //! Check open file
+   // Check open file
    virtual Bool_t  IsOpen() const;
-   //! Process action
+   // Process action
    virtual Bool_t  Process();
-   //! Skip event
+   // Skip event
    virtual void    SkipEvents(Int_t nEvents);
    //! return DAQ header file
    DAQFileHeader*  GetFileHeader()  const { return fDaqFileHeader;  }

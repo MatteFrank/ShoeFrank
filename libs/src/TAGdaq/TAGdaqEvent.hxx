@@ -39,11 +39,11 @@ public:
    const BaseFragment*    GetFragment(Int_t idx)         { return fListOfFragments[idx];         }
    //! return class type
    const Char_t*          GetClassType(Int_t idx) const  { return fListOfClassTypes[idx].data(); }
-   //! Add fragment
+   // Add fragment
    void                   AddFragment(const BaseFragment* frag);
-   //! Clear
+   // Clear
    virtual void           Clear(Option_t* opt="");
-   //! To stream
+   // To stream
    virtual void           ToStream(ostream& os = cout, Option_t* option = "") const;
    
 private:
