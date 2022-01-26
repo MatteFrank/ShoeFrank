@@ -255,7 +255,7 @@ void TAGrecoManager::FromFile()
         if ( item.Contains("y")) fIncludeStraight = true;
         else                     fIncludeStraight = false;
         if (fDebugLevel > 0)
-           printf("IncludeTOE: %d\n", fIncludeStraight);
+           printf("IncludeStraight: %d\n", fIncludeStraight);
      }
     
     if (key.Contains("EnableLocalReco:")  ) {
