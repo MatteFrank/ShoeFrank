@@ -1080,7 +1080,7 @@ void BaseReco::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
       fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
 
-   if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) return;
+   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    if (TAGrecoManager::GetPar()->IncludeCA())
      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
@@ -1102,10 +1102,13 @@ void BaseReco::AddRecRequiredItem()
 {
    if (fFlagOut)
       gTAGroot->AddRequiredItem("locRecFile");
+   
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsLocalReco()) {
      if (fFlagTrack) {
-       if(!fFlagRecCutter){gTAGroot->AddRequiredItem("glbActTrack");}
-       else{ gTAGroot->AddRequiredItem("evtReader"); }
+       if(!fFlagRecCutter)
+          gTAGroot->AddRequiredItem("glbActTrack");
+       else
+          gTAGroot->AddRequiredItem("evtReader");
      }
      return;
    }

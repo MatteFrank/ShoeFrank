@@ -182,7 +182,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
       fCaClusDisplay->SetPickable(true);
    }
 
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
       fGlbTrackDisplay = new TAEDglbTrackList("Global Tracks");
    }
 
@@ -295,7 +295,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
    }
 
    // Magnet
-   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
       TGeoVolume* mgVol = parGeo->BuildMagnet();
       fVolumeNames[mgVol->GetName()] = kDIP;
@@ -449,7 +449,7 @@ void TAGbaseEventDisplay::AddElements()
       gEve->AddElement(fCaClusDisplay);
    }
 
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
       fGlbTrackDisplay->ResetTracks();
       gEve->AddElement(fGlbTrackDisplay);
    }
@@ -522,7 +522,7 @@ void TAGbaseEventDisplay::ConnectElements()
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
       TQObject::Connect("TAEDglbTrack", "LineSecSelected(TEveStraightLineSet*, Int_t)", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveStraightLineSet*, Int_t)");
    }
 }
@@ -792,7 +792,7 @@ void TAGbaseEventDisplay::UpdateElements()
    if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI())
       UpdateElements("ir");
 
-   if (TAGrecoManager::GetPar()->IncludeTOE() && fFlagTrack)
+   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && fFlagTrack)
       UpdateGlbTrackElements();
 
 }
