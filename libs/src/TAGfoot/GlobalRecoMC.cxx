@@ -1,10 +1,27 @@
-
+/*!
+ \file GlobalRecoMC.cxx
+ \brief Implementation of GlobalRecoMC
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "GlobalRecoMC.hxx"
 
+/*!
+ \class GlobalReco
+ \brief Global reconstruction class using GenFit for MC data (depecrated)
+ */
+/*------------------------------------------+---------------------------------*/
+
+//! Class Imp
 ClassImp(GlobalRecoMC)
 
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] fileNameIn data input file name
+//! \param[in] fileNameout data output root file name
 GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : LocalRecoMC(expName, runNumber, fileNameIn, fileNameout), fTree(0x0)
 {
@@ -15,11 +32,13 @@ GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn,
 }
 
 //__________________________________________________________
+//! Destructor
 GlobalRecoMC::~GlobalRecoMC()
 {
 }
 
 //__________________________________________________________
+//! Before loop
 void GlobalRecoMC::BeforeEventLoop()
 {
 	BaseReco::BeforeEventLoop();
@@ -46,7 +65,11 @@ void GlobalRecoMC::BeforeEventLoop()
 
 }
 
-//____________________________________________________________
+//__________________________________________________________
+//! Loop event (do not work anymore)
+//!
+//! \param[in] nEvents events to process
+//! \param[in] skipEvent events to skip
 void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)
 {
 	if(skipEvent >= fTree->GetEntries())
@@ -83,11 +106,14 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)
 }
 
 //______________________________________________________________
+//! After loop
 void GlobalRecoMC::AfterEventLoop()
 {
   LocalRecoMC::AfterEventLoop();
 }
 
+//______________________________________________________________
+//! Open input file
 void GlobalRecoMC::OpenFileIn()
 {
 	LocalRecoMC::OpenFileIn();

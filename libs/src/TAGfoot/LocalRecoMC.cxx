@@ -25,15 +25,14 @@
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
 
-//! Class Imp
-ClassImp(LocalRecoMC)
-
-
 /*!
  \class LocalRecoMC
  \brief Reconstruction class from MC data
  */
 /*------------------------------------------+---------------------------------*/
+
+//! Class Imp
+ClassImp(LocalRecoMC)
 
 //__________________________________________________________
 //! Constructor

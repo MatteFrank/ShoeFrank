@@ -3,7 +3,6 @@
  \file GlobalToeReco.cxx
  \brief Global reconstruction class using TOE from L0 tree
  */
-/*------------------------------------------+---------------------------------*/
 
 #include "BaseReco.hxx"
 #include "TAMCntuEvent.hxx"
@@ -11,14 +10,13 @@
 
 #include "GlobalToeReco.hxx"
 
-//! Class Imp
-ClassImp(GlobalToeReco)
-
 /*!
  \class GlobalToeReco
  \brief Global reconstruction class using TOE from L0 tree
  */
-/*------------------------------------------+---------------------------------*/
+
+//! Class Imp
+ClassImp(GlobalToeReco)
 
 //__________________________________________________________
 //! Constructor

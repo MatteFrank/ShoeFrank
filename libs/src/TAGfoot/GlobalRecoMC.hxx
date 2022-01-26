@@ -2,6 +2,12 @@
 #ifndef _GlobalRecoMC_HXX_
 #define _GlobalRecoMC_HXX_
 
+/*!
+ \file GlobalRecoMC.hxx
+ \brief   Declaration of GlobalRecoMC.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TString.h"
 #include "TTree.h"
 
@@ -16,7 +22,6 @@
 class GlobalRecoMC : public LocalRecoMC
 {
 public:
-  //! default constructor
   GlobalRecoMC(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
   
   virtual ~GlobalRecoMC();
@@ -27,13 +32,12 @@ public:
 
   void AfterEventLoop();
 
-  ClassDef(GlobalRecoMC, 0);
-
   void OpenFileIn();
 
 private:
-  TTree* fTree;
+  TTree* fTree; ///< tree
 
+   ClassDef(GlobalRecoMC, 0); ///< Class def
 };
 
 
