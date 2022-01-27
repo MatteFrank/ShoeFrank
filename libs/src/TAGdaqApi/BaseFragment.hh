@@ -1,7 +1,10 @@
 #ifndef BASEFRAGMENT_HH
 #define BASEFRAGMENT_HH
-/*
-  Base class for all fragments..
+/*!
+ \file BaseFragment.hh
+
+  \brief Base class for all fragments..
+ 
   Provides a common interface
   It is a Factory method for all derived classes...
   */
@@ -11,23 +14,28 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
-typedef unsigned int u_int;
+typedef unsigned int u_int; ///< type def
   
 class BaseFragment {
 
 public:
-  u_int channelID;
+  u_int channelID; ///< channel ID
 
+  //! Default constructor
   BaseFragment() : channelID(0){};
-   BaseFragment(const BaseFragment &right) : channelID(right.channelID) {};
-   const BaseFragment& operator=(const BaseFragment &right) {channelID = right.channelID; return *this;};
+  //! Copy constructor
+  BaseFragment(const BaseFragment &right) : channelID(right.channelID) {};
+  //! operator=
+  const BaseFragment& operator=(const BaseFragment &right) {channelID = right.channelID; return *this;};
 
   virtual ~BaseFragment();
   
   virtual void readData(unsigned int **p);
   virtual void printData() const;
+  //! Check (dummy)
   virtual bool check() const { return true;};
 
+  //! Get class type
   virtual std::string classType() const {return "BaseFragment";};
   
   // create a concrete class based on channelID pointed ; it reads it; returns 0 if error 
@@ -37,7 +45,7 @@ public:
   
 protected:
 
-  static std::map<unsigned int, std::string> fragnames;
+  static std::map<unsigned int, std::string> fragnames; ///< fragment names
 };
 
 #endif

@@ -1,11 +1,26 @@
+/*!
+ \file fADCEvent.cpp
+ \brief  Implementation of fADCEvent
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
 #include "fADCEvent.hh"
 
+/*!
+ \class fADCEvent
+ \brief Flash ADC event
+ */
+
+//------------------------------------------+-----------------------------------
+//! Destructor.
 fADCEvent::~fADCEvent(){}
 
-// v1742 when only 1 GROUP ON
+//------------------------------------------+-----------------------------------
+//! read data  v1742 when only 1 GROUP ON
+//!
+//! \param[in] p1 daq file pointer
 void  fADCEvent::readData(unsigned int **p1){
 
   unsigned int * p = *p1;
@@ -72,9 +87,8 @@ void  fADCEvent::readData(unsigned int **p1){
   *p1 = p;
 }
 
-
-
-
+//------------------------------------------+-----------------------------------
+//! print V
 void fADCEvent::printV (){
 
   for ( u_int sample = 0; sample < channel[0].size(); sample++ ){
@@ -86,14 +100,19 @@ void fADCEvent::printV (){
   }
 }
 
-
+//------------------------------------------+-----------------------------------
+//! get number of words for a  channel
+//!
+//! \param[in] nCHans channel number
 int fADCEvent::getWordsChannel( int nCHans ) {
   int WordsChannel=(eventSize - 4)/nCHans;
   return WordsChannel;
 }
 
-
-// v1742 when only 1 GROUP ON
+//------------------------------------------+-----------------------------------
+//! get number of channels per data
+//!
+//! \param[in] aData data word
 int fADCEvent::getnchans ( int aData ){
 
   int mask = 1;
@@ -111,9 +130,8 @@ int fADCEvent::getnchans ( int aData ){
   return numChans;
 }
 
-
-
-
+//------------------------------------------+-----------------------------------
+//! Print data
 void fADCEvent::printData () const {
 
   printf ("FLASH ADC DATA: \n");

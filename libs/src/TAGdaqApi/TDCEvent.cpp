@@ -1,10 +1,26 @@
+/*!
+ \file TDCEvent.cpp
+ \brief  Implementation of TDCEvent
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "TDCEvent.hh"
 
+/*!
+ \class TDCEvent
+ \brief TDC event
+ */
+
+//------------------------------------------+-----------------------------------
+//! Destructor.
 TDCEvent::~TDCEvent(){
 }
 
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void TDCEvent::readData( unsigned int **p1 ){
 
   unsigned int * p = *p1;
@@ -50,7 +66,8 @@ void TDCEvent::readData( unsigned int **p1 ){
   *p1 = p;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Print data
 void TDCEvent::printData() const {
 
   printf ("TDC DATA: \n");

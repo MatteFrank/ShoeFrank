@@ -1,12 +1,23 @@
+/*!
+ \file DECardEvent.cpp
+ \brief  Implementation of DECardEvent
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "DECardEvent.hh"
 #include <iostream>
 
+/*!
+ \class DECardEvent
+ \brief DE VTX card event
+ */
+
 const u_int DECardEvent::m_vtxHeader = 0xfafafafa;
 const u_int DECardEvent::m_vtxTail   = 0xabcdabcd;
 
-
+//------------------------------------------+-----------------------------------
+//! Constructor.
 DECardEvent::DECardEvent()
 : RemoteEvent(),
   detectorHeader(0),
@@ -18,7 +29,10 @@ DECardEvent::DECardEvent()
 {
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Copy contructor.
+//!
+//! \param[in] right event to copy
 DECardEvent::DECardEvent(const DECardEvent& right)
 : RemoteEvent(right),
  detectorHeader(right.detectorHeader),
@@ -30,7 +44,10 @@ DECardEvent::DECardEvent(const DECardEvent& right)
 {
 }
 
-
+//------------------------------------------+-----------------------------------
+//! operator=
+//!
+//! \param[in] right event to equal
 const DECardEvent& DECardEvent::operator=(const DECardEvent& right)
 {
    RemoteEvent::operator=(right);
@@ -44,10 +61,16 @@ const DECardEvent& DECardEvent::operator=(const DECardEvent& right)
    return *this;
 }
 
+//------------------------------------------+-----------------------------------
+//! Destructor.
 DECardEvent::~DECardEvent()
 {
 }
 
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void DECardEvent::readData(unsigned int **p1)
 {
    evtSize   = 0;
@@ -110,6 +133,8 @@ void DECardEvent::readData(unsigned int **p1)
 
 }
 
+//------------------------------------------+-----------------------------------
+//! Print data
 void DECardEvent::printData () const
 {
    printf ("DECardEvent DATA: \n");
@@ -124,7 +149,8 @@ void DECardEvent::printData () const
    printf("\n");
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Check event/trigger number
 bool DECardEvent::check() const
 {
    if( evtSize!=0 ){

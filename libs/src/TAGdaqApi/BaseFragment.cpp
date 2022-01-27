@@ -1,4 +1,9 @@
 
+/*!
+ \file BaseFragment.cpp
+ \brief  Implementation of BaseFragment
+ */
+
 #include "DAQMarkers.hh"
 #include "BaseFragment.hh"
 #include "InfoEvent.hh"
@@ -11,6 +16,10 @@
 #include "WDEvent.hh"
 #include <stdio.h>
 
+/*!
+ \class BaseFragment
+ \brief Base class for all fragments..
+ */
 
 std::string FRAGnames[] =
   {"Event Header data",
@@ -20,18 +29,23 @@ std::string FRAGnames[] =
    "Empty   fragment ",
    "VTX     fragment ",
    "WD      fragment ",
-   "MSD     fragment "};
+   "MSD     fragment "};  ///< fragment name
 
 unsigned int FRAGkeys[] =
   {EventHeaderID, dataV2495, dataV1720, dataV1190,
-   dataEmpty, dataVTX, dataWD, dataMSD};
+   dataEmpty, dataVTX, dataWD, dataMSD}; ///< fragment keys
 
 
 std::map<unsigned int, std::string> BaseFragment::fragnames;
 
-// virtual destructor for the base class
+//------------------------------------------+-----------------------------------
+//! Destructor.
 BaseFragment::~BaseFragment(){}
 
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void BaseFragment::readData(unsigned int **p1){
   unsigned int *p = *p1;
   channelID= *p;
@@ -39,12 +53,17 @@ void BaseFragment::readData(unsigned int **p1){
   *p1 = p;
 }
 
+//------------------------------------------+-----------------------------------
+//! Print data
 void BaseFragment::printData() const {
   printf ("Generic Base Fragment: \n");
   printf ("Channel ID (hex): %x\n",  channelID);
 }
 
-// create a concrete class based on channelID pointed ; it reads it; returns NULL if error
+//------------------------------------------+-----------------------------------
+//! create a concrete class based on channelID pointed ; it reads it; returns NULL if error
+//!
+//! \param[in] p daq file pointer
 BaseFragment* BaseFragment::create(unsigned int **p){
 
   BaseFragment* p_bf = NULL;
@@ -75,6 +94,10 @@ BaseFragment* BaseFragment::create(unsigned int **p){
   return p_bf;
 }
 
+//------------------------------------------+-----------------------------------
+//! Get fragment name from key
+//!
+//! \param[in] key a given key
 std::string BaseFragment::fragmentName(unsigned int key){
   if( fragnames.size()==0 ){
     for(unsigned int i=0; i<FRAGTYPES; i++){
