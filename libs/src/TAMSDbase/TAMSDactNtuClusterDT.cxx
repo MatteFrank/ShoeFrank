@@ -1,5 +1,5 @@
 /*!
- \file
+ \file TAMSDactNtuClusterDT.cxx
  \brief   Implementation of TAMSDactNtuClusterDT.
  */
 #include "TClonesArray.h"
@@ -19,10 +19,17 @@
  \brief NTuplizer for MSD cluster. **
  */
 
+//! Class Imp
 ClassImp(TAMSDactNtuClusterDT);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit container descriptor
+//! \param[out] pNtuClus cluster container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
 TAMSDactNtuClusterDT::TAMSDactNtuClusterDT(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
   : TAGaction(name, "TAMSDactNtuClusterDT - NTuplize cluster"),
     fpNtuRaw(pNtuRaw),
@@ -85,7 +92,7 @@ TAMSDactNtuClusterDT::~TAMSDactNtuClusterDT()
 }
 
 //______________________________________________________________________________
-//
+//! Action
 Bool_t TAMSDactNtuClusterDT::Action()
 {
   TAMSDntuHit* pNtuHit  = (TAMSDntuHit*) fpNtuRaw->Object();
@@ -104,15 +111,19 @@ Bool_t TAMSDactNtuClusterDT::Action()
   return ok;
 }
 
-//______________________________________________________________________________
-//  
+//------------------------------------------+-----------------------------------
+//! Find clusters
+//!
+//! \param[in] iSensor sensor index
 Bool_t TAMSDactNtuClusterDT::FindClusters(Int_t iSensor)
 {
   return true;
 }
 
-//______________________________________________________________________________
-//
+//------------------------------------------+-----------------------------------
+//! Compute position for a clusters
+//!
+//! \param[in] cluster a given cluster
 void TAMSDactNtuClusterDT::ComputePosition(TAMSDcluster* cluster)
 {
   if (!fCurListOfStrips) return;
@@ -154,31 +165,10 @@ void TAMSDactNtuClusterDT::ComputePosition(TAMSDcluster* cluster)
   cluster->SetEnergyLoss(tClusterPulseSum);
 }
 
-void TAMSDactNtuClusterDT::ComputeCog(TAMSDcluster* cluster)
-{
-  if (!fCurListOfStrips) return;
-    
-  Float_t num = 0;
-  Float_t den = 0;
-  Float_t cog = 0;
-   
-  Float_t tClusterPulseSum = 0.;
-  
-  for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
-    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
-    num += strip->GetStrip()*strip->GetEnergyLoss();
-    den += strip->GetEnergyLoss();
-  }
-  
-  cog = num / den;
-
-  fCurrentCog = cog;
-   
-  cluster->SetCog(fCurrentCog);
-}
-
-//______________________________________________________________________________
-//
+//------------------------------------------+-----------------------------------
+//! Applay cuts for a clusters
+//!
+//! \param[in] cluster a given cluster
 Bool_t TAMSDactNtuClusterDT::ApplyCuts(TAMSDcluster* cluster)
 {
    TAMSDparConf* pConfig = (TAMSDparConf*) fpConfig->Object();
