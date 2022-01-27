@@ -30,7 +30,7 @@ public:
 
   static UpdatePDG* Instance();
   static UpdatePDG* GetPDG();
-  ~UpdatePDG() {};
+  ~UpdatePDG();
 
   void MakePdgDatabase();
 

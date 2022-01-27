@@ -77,7 +77,7 @@ public:
 	TAGFselector(map< int, vector<AbsMeasurement*> >* allHitMeas, vector<int>* chVect, 
 						TAGFdetectorMap* SensorIDmap, map<TString, Track*>* trackCategoryMap, 
 						map< int, vector<int> >* measParticleMC_collection);
-	virtual ~TAGFselector() { }
+	virtual ~TAGFselector();
 
 	int					Categorize();
 
