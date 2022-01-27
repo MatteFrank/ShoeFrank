@@ -1,5 +1,12 @@
 #ifndef TRGEVENT_HH
 #define TRGEVENT_HH
+
+/*!
+ \file TrgEvent.hh
+ 
+ \brief Declaration of TrgEvent
+ */
+
 #include "BaseFragment.hh"
 
 class TrgEvent : public BaseFragment {
