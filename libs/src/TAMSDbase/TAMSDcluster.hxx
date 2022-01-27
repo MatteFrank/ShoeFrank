@@ -63,22 +63,29 @@ public:
    //! Get energy loss
    Float_t            GetEnergyLoss()                  const { return fEnergyLoss;     }
    //! Get energy loss with eta correction
-   Float_t            GetEnergyLossCorr()                    { return ComputeEtaCorrection(fCog) * fEnergyLoss;}
+   Float_t            GetEnergyLossCorr()                    { return fEnergyLoss/GetEtaCorrection();}
+   //! Get fast 'Eta' value for the cluster 
+   Float_t            GetEtaFast()                           { return ComputeEtaFast(fCog); }
    //! Get 'Eta' value for the cluster 
-   Float_t            GetEta()                               { return ComputeEta(fCog); }
-
+   Float_t            GetEta()                               { return ComputeEta(fListOfStrips); }
+   //! Get ADC correction factor wrt 'Eta' value of the cluster
+   Float_t            GetEtaCorrection()                     { return ComputeEtaCorrection( GetEta() ); }
+   //! Get position of first strip of the cluster
+   Float_t            GetAddress()                           { return ComputeAddress(fListOfStrips); }
    //! Get number of pixels in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
    //! Get pixel
    TAMSDhit*          GetStrip(Int_t idx);
-      
    //! Compute distance from another cluster
    Float_t            Distance(TAMSDcluster *aClus);
-   
+   //! Compute fast 'Eta' value for the cluster
+   Float_t            ComputeEtaFast(Float_t cog);
    //! Compute 'Eta' value for the cluster
-   Float_t            ComputeEta(Float_t cog);
+   Float_t            ComputeEta(TClonesArray* fListOfStrips);
+   //!Calculate position of first strip in the cluster
+   Float_t            ComputeAddress(TClonesArray* fListOfStrips);
    //! Compute corection factor for the energy loss wrt position
-   Float_t            ComputeEtaCorrection(Float_t cog);
+   Float_t            ComputeEtaCorrection(Float_t eta);
    
    //! reset pixels
    void               ResetStrips();
