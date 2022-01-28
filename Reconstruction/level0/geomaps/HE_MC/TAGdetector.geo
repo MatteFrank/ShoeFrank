@@ -24,13 +24,13 @@ BeamDiv:             0.0000
 TargetShape:       "cubic"
 TargetSizeX:        2.0   TargetSizeY:    2.0    TargetSizeZ:  0.5
 TargetMaterial:     "C"
-TargetAtomicMass:   12
+TargetAtomicMass:   12.0107
 TargetDensity:      1.83
 TargetExc:         78.0e-6
 
 
 //TargetMaterial:   "Polyethy"
-//TargetAtomicMass:   28
+//TargetAtomicMass:   28.0534
 //TargetDensity:      0.94
 //TargetExc:         61.0e-6
 
