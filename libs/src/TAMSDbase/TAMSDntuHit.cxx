@@ -178,7 +178,7 @@ void TAMSDntuHit::ToStream(ostream& os, Option_t* option) const
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       
       os << "TAMSDntuHit " << GetName()
-      << Form("  nPixels=%3d", GetStripsN(i))
+      << Form("  nStrips=%3d", GetStripsN(i))
       << endl;
       
       //TODO properly

@@ -54,7 +54,7 @@ TAMSDdigitizerG::~TAMSDdigitizerG()
 }
 
 //------------------------------------------+-----------------------------------
-//! fill pixel signal
+//! fill strip signal
 Bool_t TAMSDdigitizerG::Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin, Double_t zout, Double_t /*time*/, Int_t sensorId, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
    x0 *= TAGgeoTrafo::CmToMu();

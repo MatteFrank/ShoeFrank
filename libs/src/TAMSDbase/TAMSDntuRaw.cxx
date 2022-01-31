@@ -96,7 +96,7 @@ TAMSDntuRaw::~TAMSDntuRaw()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of pixels for a given sensor.
+//! return number of strips for a given sensor.
 Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
@@ -121,7 +121,7 @@ TClonesArray* TAMSDntuRaw::GetStrips(Int_t iSensor) const
 }
    
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a strip for a given sensor
 const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
 {
    if (iStrip >=0 || iStrip < GetStripsN(iSensor))
@@ -133,7 +133,7 @@ const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
 }
  
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a strip for a given sensor
 TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
 {
    if (iStrip >=0 || iStrip < GetStripsN(iSensor))
@@ -149,8 +149,8 @@ TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
 void TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, UInt_t value)
 {
    if (sensor >= 0  || sensor < fpGeoMap->GetSensorsN()) {
-	  TClonesArray &pixelArray = *GetStrips(sensor);
-	  new(pixelArray[pixelArray.GetEntriesFast()]) TAMSDrawHit(sensor, strip, view, value);
+	  TClonesArray &stripArray = *GetStrips(sensor);
+	  new(stripArray[stripArray.GetEntriesFast()]) TAMSDrawHit(sensor, strip, view, value);
    } else {
 	  Error("AddStrip()","Wrong sensor number %d\n", sensor);
    }

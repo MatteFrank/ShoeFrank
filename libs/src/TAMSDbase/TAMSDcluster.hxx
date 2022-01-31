@@ -55,7 +55,7 @@ public:
    //! Get vector position error in local frame
    const TVector3&    GetPosError()                    const { return fPosError2;      }
    
-   //! Get Pixel list
+   //! Get strips list
    TClonesArray*      GetListOfStrips()                const { return fListOfStrips;   }
    
    //! Get view
@@ -72,9 +72,9 @@ public:
    Float_t            GetEtaCorrection()                     { return ComputeEtaCorrection( GetEta() ); }
    //! Get position of first strip of the cluster
    Float_t            GetAddress()                           { return ComputeAddress(fListOfStrips); }
-   //! Get number of pixels in this clusters
+   //! Get number of strips in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
-   //! Get pixel
+   //! Get strip
    TAMSDhit*          GetStrip(Int_t idx);
    //! Compute distance from another cluster
    Float_t            Distance(TAMSDcluster *aClus);
@@ -87,13 +87,13 @@ public:
    //! Compute corection factor for the energy loss wrt position
    Float_t            ComputeEtaCorrection(Float_t eta);
    
-   //! reset pixels
+   //! reset strips
    void               ResetStrips();
 
    //! Set clones
    virtual void       SetupClones();
 
-   //! Add pixel to the list
+   //! Add strip to the list
    void               AddStrip(TAMSDhit* strip);
 
 
