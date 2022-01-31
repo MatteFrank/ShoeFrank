@@ -18,6 +18,12 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+/*!
+ \file TPGspectrumCalib.cxx
+ \brief   Implementation of TPGspectrumCalib.
+ */
+
+
 #include "TPGspectrumCalib.hxx"
 
 #include "TMath.h"
@@ -29,25 +35,37 @@
 
 using namespace std;
 
-// ROOT dictionnary
+/** \class TPGspectrumCalib
+ \brief  TPGspectrumCalib is a tool class. It provides basic method to perform a calibration of a spectrum.
+ Basically, TPGspectrumCalib class is composed by 2 TArrayD (one for raw positions of peaks and one for tabulated positions).
+ TPGspectrumCalib have to find the calibration function, that's why the user have to give a TF1 to calibrate
+ 
+ \author Bertrand Rossé
+ */
+
+//! Class Imp
 ClassImp(TPGspectrumCalib);
 
-//__________________________________________________________________________________________________
+//__________________________________________________________
+//! default constructor
 TPGspectrumCalib::TPGspectrumCalib()
 : fTabulated(0),
 fRaw(0),
 fCalibrator()
 {
-   //Defaut Constructor
 }
 
-//__________________________________________________________________________________________________
+//__________________________________________________________
+//! default Destructor
 TPGspectrumCalib::~TPGspectrumCalib()
-{  //Destructor
-   
+{
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Add point to calibration fit
+//!
+//! \param[in] channel channel to add
+//! \param[in] energy energy to add
 void TPGspectrumCalib::AddPoint(const Double_t channel, const Double_t energy)
 {
    fRaw.Set(fRaw.GetSize()+1);
@@ -56,7 +74,10 @@ void TPGspectrumCalib::AddPoint(const Double_t channel, const Double_t energy)
    fTabulated.AddAt(energy,fTabulated.GetSize()-1);
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibrated with a function
+//!
+//! \param[in] function function to use for fit
 void TPGspectrumCalib::Calibrate(TF1 *function) const
 {
    if (function == 0) {
@@ -73,7 +94,11 @@ void TPGspectrumCalib::Calibrate(TF1 *function) const
    DrawResults(function);
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibrated with a function from a data file
+//!
+//! \param[in] filename data file name
+//! \param[in] function function to use for fit
 void TPGspectrumCalib::Calibrate(const char* filename, TF1 *function)
 {
    if (function == 0) {
@@ -92,7 +117,13 @@ void TPGspectrumCalib::Calibrate(const char* filename, TF1 *function)
    DrawResults(function);
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibrated with a function from a list of channels and tabulated energies
+//!
+//! \param[in] function function to use for fit
+//! \param[in] nbpoints number of points
+//! \param[in] raw raw channel list
+//! \param[in] tabulated tabulated energies list
 void TPGspectrumCalib::Calibrate(TF1 *function, const Int_t nbpoints, const Double_t *raw, const Double_t *tabulated)
 {
    if (function == 0) {
@@ -111,7 +142,10 @@ void TPGspectrumCalib::Calibrate(TF1 *function, const Int_t nbpoints, const Doub
    DrawResults(function);
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibrated with a polynom with a given order
+//!
+//! \param[in] dimension order of the polynom
 void TPGspectrumCalib::Calibrate(Int_t dimension)
 {
    TMath::Abs(dimension);
@@ -132,98 +166,19 @@ void TPGspectrumCalib::Calibrate(Int_t dimension)
    if (ftemp) delete ftemp;
 }
 
-//__________________________________________________________________________________________________
-void TPGspectrumCalib::AlignMax(TH1 *histo,TF1 *function, const Double_t AlignValue,
-                                const Bool_t invert, const Double_t xmin, const Double_t xmax)
-{
-   //Perform the alignment of the maximum of a TH1 on AlignValue
-   //The search for maximum if performed in the range [xmin,xmax] of the histogram
-   //If xmin=0, xmax=0 (by default), the search for maximum if performed in the total range of the histogram
-   
-   //if invert=true, all the histogram is inverted (can be usefull for TAC spectrum)
-   
-   //A polynomial function must be used
-   // par 0 -> shift
-   // par 1 -> proportional coef
-   
-   if (function == 0) {
-      printf("Info in <TPGspectrumCalib::AlignMax> function NOT defined !!\n");
-      return;
-   }
-   if (histo == 0) {
-      printf("Info in <TPGspectrumCalib::AlignMax> histo NOT defined !!\n");
-      return;
-   }
-   
-   if (histo->GetDimension() > 1) {
-      printf("Info in <TPGspectrumCalib::AlignMax> Method not yet defined for Histogram Dimension >= 2 !!\n");
-      return;
-   }
-   
-   Double_t maxvalue=0.0, shift=0.0;
-   histo->GetXaxis()->SetRangeUser(xmin,xmax);
-   maxvalue = histo->GetBinCenter(histo->GetMaximumBin());
-   if (invert == false) {
-      shift = AlignValue - maxvalue;
-      function->SetParameter(0,shift);
-      function->SetParameter(1,1.0);
-   } else {
-      shift = AlignValue + maxvalue;
-      function->SetParameter(0,shift);
-      function->SetParameter(1,-1.0);
-   }
-   DrawResults(function);
-}
-
-//__________________________________________________________________________________________________
-void TPGspectrumCalib::AlignMax(TH1 *histo,TF1 *function, const Double_t AlignValue,
-                                const Double_t ProportionalCoef, const Bool_t invert, const Double_t xmin, const Double_t xmax)
-{
-   //Perform the alignment of the maximum of a TH1 on AlignValue with a proportional coefficient
-   //The search for maximum if performed in the range [xmin,xmax] of the histogram
-   //If xmin=0, xmax=0 (by default), the search for maximum if performed in the total range of the histogram
-   
-   //if invert=true, all the histogram is inverted (can be usefull for TAC spectrum)
-   
-   //A polynomial function must be used
-   // par 0 -> shift
-   // par 1 -> proportional coef
-   
-   if (function == 0) {
-      printf("Info in <TPGspectrumCalib::AlignMax> function NOT defined !!\n");
-      return;
-   }
-   if (histo == 0) {
-      printf("Info in <TPGspectrumCalib::AlignMax> histo NOT defined !!\n");
-      return;
-   }
-   
-   if (histo->GetDimension() > 1) {
-      printf("Info in <TPGspectrumCalib::AlignMax> Method not yet defined for Histogram Dimension >= 2 !!\n");
-      return;
-   }
-   
-   Double_t maxvalue=0.0, shift=0.0;
-   histo->GetXaxis()->SetRangeUser(xmin,xmax);
-   maxvalue = histo->GetBinCenter(histo->GetMaximumBin());
-   if (invert == false) {
-      shift = AlignValue - ProportionalCoef*maxvalue;
-      function->SetParameter(0,shift);
-      function->SetParameter(1,ProportionalCoef);
-   } else {
-      shift = AlignValue + ProportionalCoef*maxvalue;
-      function->SetParameter(0,shift);
-      function->SetParameter(1,-ProportionalCoef);
-   }
-   DrawResults(function);
-}
-
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Check calibration
+//!
+//! Display a histogram between the user range defined by xmin and xmax
+//! A vertical TLine is drawn at value
+//!
+//! \param[in] histo a given histogram
+//! \param[in] value position of line
+//! \param[in] xmin lower range limit
+//! \param[in] xmax upper range limit
+//! \param[in] color color of line
 void TPGspectrumCalib::CheckCalibration(TH1 *histo, const Double_t value, Double_t xmin, Double_t xmax, const Int_t color)
 {
-   // Display a histogram between the user range defined by xmin and xmax
-   // A vertical TLine is drawn at value
-   
    if (histo == 0)  {
       printf("Info in <TPGspectrumCalib::CheckCalibration> histo NOT defined !!\n");
       return;
@@ -244,13 +199,21 @@ void TPGspectrumCalib::CheckCalibration(TH1 *histo, const Double_t value, Double
    line->DrawLine(value,0.0,value,histo->GetMaximum());
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Check calibration
+//!
+//! Display a histogram between the user range defined by xmin and xmax
+//! nbvalue vertical TLines are drawn at values
+//!
+//! \param[in] histo a given histogram
+//! \param[in] nbvalue number of lines
+//! \param[in] values positions of line
+//! \param[in] xmin lower range limit
+//! \param[in] xmax upper range limit
+//! \param[in] color color of line
 void TPGspectrumCalib::CheckCalibration(TH1 *histo, const Int_t nbvalue, const Double_t *values,
                                         Double_t xmin, Double_t xmax, const Int_t color)
 {
-   //Display a histogram between the user range defined by xmin and xmax
-   // nbvalue vertical TLines are drawn at values
-   
    if (histo == 0) {
       printf("Info in <TPGspectrumCalib::CheckCalibration> histo NOT defined !!\n");
       return;
@@ -274,13 +237,21 @@ void TPGspectrumCalib::CheckCalibration(TH1 *histo, const Int_t nbvalue, const D
    }
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Check calibration
+//!
+//! Display a histogram between the user range defined by xmin and xmax
+//! vertical TLines are drawn corresponding to SourceName (most intense peaks)
+//! For the moment the sources are : Co60, Eu152, Ba133, Na22, K40
+//!
+//! \param[in] histo a given histogram
+//! \param[in] SourceName source name
+//! \param[in] xmin lower range limit
+//! \param[in] xmax upper range limit
+//! \param[in] color color of line
 void TPGspectrumCalib::CheckCalibration(TH1 *histo, const char *SourceName, Double_t xmin, Double_t xmax, const Int_t color)
 {
-   // Display a histogram between the user range defined by xmin and xmax
-   // vertical TLines are drawn corresponding to SourceName (most intense peaks)
-   // For the moment the sources are : Co60, Eu152, Ba133, Na22, K40
-   
+  
    TString opt = SourceName;
    opt.ToLower();
    
@@ -329,10 +300,12 @@ void TPGspectrumCalib::CheckCalibration(TH1 *histo, const char *SourceName, Doub
    }
    
    if (energies != 0) delete [] energies;
-   
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Draw results
+//!
+//! \param[in] function fitting function
 void TPGspectrumCalib::DrawResults(const TF1 *function) const
 {
    if (function == 0) {

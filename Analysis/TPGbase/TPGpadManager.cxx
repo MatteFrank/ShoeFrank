@@ -17,6 +17,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+/*!
+ \file TPGpadManager.cxx
+ \brief Implementation of TPGpadManager
+ */
 
 
 #include "TPGpadManager.hxx"
@@ -30,21 +34,31 @@
 //
 TPGpadManager::EActionMode TPGpadManager::gActionMode = kGPad;
 
+/*!
+ \class TPGpadManager
+ \brief Pad manager
+ */
+
+//! Class Imp
 ClassImp(TPGpadManager)
 
-//__________________________________________________________
-TPGpadManager::TPGpadManager() 
+//______________________________________________________________________________
+//! Standard constructor
+TPGpadManager::TPGpadManager()
 {
-   
 }
 
-//__________________________________________________________
+//______________________________________________________________________________
+//! Standard Destructor
 TPGpadManager::~TPGpadManager()
 {
-   
 }
 
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Retrieve histogram from pad
+//!
+//! \param[in] pad a given pad
+//! \param[in] opt not used
 TH1* TPGpadManager::GetHisto(TVirtualPad *pad, Option_t * /*opt*/ )
 {
    // histograms to be returned
@@ -71,7 +85,13 @@ TH1* TPGpadManager::GetHisto(TVirtualPad *pad, Option_t * /*opt*/ )
    return h;  
 }
 
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Compute difference from histogram and fit fiunction (residuals) in a given range
+//!
+//! \param[in] h a given histogram
+//! \param[in] f a given fit function
+//! \param[in] xmin lower limit of range
+//! \param[in] xmax upper limit of range
 TPolyLine *TPGpadManager::ShowDiff(const TH1 *h, const TF1 *f, Double_t xmin, Double_t xmax)
 {
    TPolyLine *result = new TPolyLine();

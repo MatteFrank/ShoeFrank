@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** \file TPGspectrumCalib.h header file for the calibration facility */
+/** \file TPGspectrumCalib.hxx header file for the calibration facility */
 
 #ifndef TPGSPECTRUMCALIB_H
 #define TPGSPECTRUMCALIB_H
@@ -34,38 +34,25 @@ using namespace std;
 
 #include "TPGspectrumCalibrator.hxx"
 
-/**
- 
- TPGspectrumCalib is a tool class. It provides basic method to perform a calibration of a spectrum.
- Basically, TPGspectrumCalib class is composed by 2 TArrayD (one for raw positions of peaks and one for tabulated positions).
- TPGspectrumCalib have to find the calibration function, that's why the user have to give a TF1 to calibrate
- 
- @author Bertrand Rossé
- */
-
 class TPGspectrumCalib {
    
 public:
    TPGspectrumCalib();
    virtual ~TPGspectrumCalib();
    
-   //!Perform alignment of the maximum of a TH1 on a value
-   void AlignMax(TH1 *histo, TF1 *function, const Double_t AlignValue,
-                 const Bool_t invert=false, const Double_t xmin=0, const Double_t xmax=0); 
-   
-   //!Perform alignment of the maximum of a TH1 on a AlignValue with a coefficient of proportionality
-   void AlignMax(TH1 *histo, TF1 *function, const Double_t AlignValue, 
-                 const Double_t ProportionalCoef, const Bool_t invert=false, const Double_t xmin=0, const Double_t xmax=0); 
-   
+   //! Set a point
    void SetPoint(const Int_t index, const Double_t channel, const Double_t energy) { fTabulated[index] = energy; fRaw[index] = channel; }
    void AddPoint(const Double_t channel, const Double_t energy);
    
-   //! Get/Set energy/channel
+   //! Set energy
    void SetEnergy(const Int_t index, const Double_t energy)   { fTabulated[index] = energy; }
-   void SetChannel(const Int_t index, const Double_t channel) { fRaw[index] = channel; }
+   //! Set channel
+   void SetChannel(const Int_t index, const Double_t channel) { fRaw[index] = channel;      }
    
-   Double_t GetEnergy(const Int_t index) const  { return fTabulated[index]; }
-   Double_t GetChannel(const Int_t index) const { return fRaw[index]; }
+   //! Get energy
+   Double_t GetEnergy(const Int_t index)               const  { return fTabulated[index];   }
+   //! Get channel
+   Double_t GetChannel(const Int_t index)               const { return fRaw[index];         }
    
    void Calibrate(TF1 *function) const;
    void Calibrate(const char* filename, TF1 *function);
@@ -79,13 +66,13 @@ public:
    static void CheckCalibration(TH1 *histo, const char *SourceName, Double_t xmin=-1111, Double_t xmax=-1111, const Int_t color=2);
 protected:
    
-   TArrayD      fTabulated;
-   TArrayD      fRaw;
+   TArrayD      fTabulated;           ///< Tabulated energie vector
+   TArrayD      fRaw;                 ///< Raw channel vector
    
-   TPGspectrumCalibrator fCalibrator;
+   TPGspectrumCalibrator fCalibrator; ///< Calibrator
    
-   //! rootcint dictionary
-   ClassDef(TPGspectrumCalib,0); // a TPGspectrumCalib
+   // rootcint dictionary
+   ClassDef(TPGspectrumCalib,0); ///< a TPGspectrumCalib
    
 };
 

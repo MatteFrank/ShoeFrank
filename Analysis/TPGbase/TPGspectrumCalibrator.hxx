@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** \file TPGspectrumCalibrator.h header file for the calibration facility */
+/** \file TPGspectrumCalibrator.hxx header file for the calibration facility */
 
 #ifndef TPGSPECTRUMCALIBRATOR_H
 #define TPGSPECTRUMCALIBRATOR_H
@@ -31,13 +31,7 @@
 #include <TF1.h>
 
 /**
- TPGspectrumCalibrator is a service class in order to calibrate a TH1
- The raw histogram must never be changed
- The calibrated histogram is just a copy of the raw histogram (same binning).
- In case of fixed size of bins : the limits of the axis (xmin and xmax) are changed according to the
- calibration function or parameters.
  
- \author Bertrand Rossé
  */
 class TPGspectrumCalibrator
 {

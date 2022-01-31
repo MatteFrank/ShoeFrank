@@ -34,40 +34,31 @@
 class TF1;
 class TPolyLine;
 
-
-/*! TPGpadManager
- 
- */
 class TPGpadManager
 {  
 public:
-   //!
    /*!
+    \enum EActionMode
+    \brief  Action mode
     - kGap : Action applied to current pad
     - kAllPad : to all pads of the current canvas
     - kNotGpa : to all pads except the current one
     - kCanvas : to the canvas
     */
    enum EActionMode {kGPad, kAllPad, kNotGPad, kCanvas};
-   //! Global to be applied on Canvas that are not Gw::Canvas or dont't have an individual mode
-   static EActionMode gActionMode;
+   
+   static EActionMode gActionMode; ///< Global to be applied on Canvas that are not Gw::Canvas or dont't have an individual mode
+   
 public:
    TPGpadManager() ;
    virtual ~TPGpadManager() ;
    
-   //! look for an histogram into the pad
-   static TH1 * GetHisto(TVirtualPad *pad = 0x0 , Option_t *op = "");
-   
-   //! check if the action is 
-   // static Bool_t IsActionOn(TVirtualPad *pad, EActionMode);
-   //!
-   // static EActionMode WhatActionOn(TVirtualPad *pad);
-   //!
-   // static EActionMode SetActionOn(TVirtualPad *pad, EActionMode amode);
-   
+   // look for an histogram into the pad
+   static TH1 * GetHisto(TVirtualPad *pad = 0x0 , Option_t *opt = "");
+
+   //! to get the pad on which the creator is added
    template <typename Data_T> static void Collect(TList &list, TVirtualPad *pad = 0x0)
    {
-      // to get the pad on which the creator is added
       TVirtualPad *locpad = 0x0;
       if ( pad == 0x0 ) 
          if ( TVirtualPad::Pad() == 0x0 )
@@ -83,9 +74,10 @@ public:
             list.Add(obj);
       }		
    }
+   
+   //! to get the pad on which the creator is added
    template <typename Data_T> static void Collect(std::vector<Data_T *> &array, TVirtualPad *pad = 0x0)
    {
-      // to get the pad on which the creator is added
       TVirtualPad *locpad = 0x0;
       if ( pad == 0x0 ) 
          if ( TVirtualPad::Pad() == 0x0 )
@@ -102,10 +94,10 @@ public:
       }		
    }
    
-   //! show a polyline calculated as the difference between an histogram and a function (used for instance for fits)
+   // show a polyline calculated as the difference between an histogram and a function (used for instance for fits)
    static TPolyLine *ShowDiff(const TH1 *h, const TF1 *f, Double_t xmin, Double_t xmax);
    
-   ClassDef(TPGpadManager, 0); // to manage ROOT pads and canvases   
+   ClassDef(TPGpadManager, 0); ///< to manage ROOT pads and canvases
 };
 
 
