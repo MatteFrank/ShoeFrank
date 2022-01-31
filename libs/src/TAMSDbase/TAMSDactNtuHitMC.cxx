@@ -255,7 +255,7 @@ void TAMSDactNtuHitMC::FillNoise(Int_t sensorId)
 // --------------------------------------------------------------------------------------
 void TAMSDactNtuHitMC::ComputeNoiseLevel()
 {
-  // computing number of noise pixels (sigma level) from gaussian
+  // computing number of noise strips (sigma level) from gaussian
   TF1* f = new TF1("f", "gaus", -10, 10);
   f->SetParameters(1,0,1);
   Float_t fraction = 0;
@@ -266,7 +266,7 @@ void TAMSDactNtuHitMC::ComputeNoiseLevel()
   }
   
    if(FootDebugLevel(1))
-      printf("Number of noise pixels %d\n", fNoisyStripsN);
+      printf("Number of noise strips %d\n", fNoisyStripsN);
   
   delete f;
 }

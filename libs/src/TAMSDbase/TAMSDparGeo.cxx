@@ -42,10 +42,10 @@ void TAMSDparGeo::DefineMaterial()
 {
     TAVTbaseParGeo::DefineMaterial();
 
-    // Pixel material
+    // Strip material
     TGeoMaterial* pixMat = TAGmaterials::Instance()->CreateMaterial(fPixMat, fPixMatDensity);
     if(FootDebugLevel(1)) {
-        printf("pixels material:\n");
+        printf("strips material:\n");
         pixMat->Print();
     }
     // Metal material
@@ -118,15 +118,15 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
 
     ReadItem(fPixThickness);
     if(FootDebugLevel(1))
-       cout  << endl << "  Pixel thickness: "<< fPixThickness << endl;
+       cout  << endl << "  Strip thickness: "<< fPixThickness << endl;
 
    ReadStrings(fPixMat);
    if(FootDebugLevel(1))
-      cout   << "  Pixel material: "<< fPixMat.Data() << endl;
+      cout   << "  Strip material: "<< fPixMat.Data() << endl;
 
    ReadItem(fPixMatDensity);
    if(FootDebugLevel(1))
-     cout  << "  Pixel material density:  "<< fPixMatDensity << endl;
+     cout  << "  Strip material density:  "<< fPixMatDensity << endl;
 
    ReadItem(fMetalThickness);
    if(FootDebugLevel(1))

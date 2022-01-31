@@ -189,7 +189,7 @@ int TAMSDntuPoint::GetPointsN(int iStation) const
 
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a strip for a given sensor
 TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const
 {
 	if ( iPoint >= 0  && iPoint < GetPointsN( iStation ) ) {
@@ -210,7 +210,7 @@ TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup clones. Crate and initialise the list of pixels
+//! Setup clones. Create and initialise the list of points
 void TAMSDntuPoint::SetupClones()
 {
   fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
