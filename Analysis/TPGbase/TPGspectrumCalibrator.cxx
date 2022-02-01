@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004-2006 by Olivier Stezowski & Christophe Theisen     *
- *   stezow(AT)ipnl.in2p3.fr, christophe.theisen(AT)cea.fr                       *
+ *   stezow(AT)ipnl.in2p3.fr, christophe.theisen(AT)cea.fr                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *

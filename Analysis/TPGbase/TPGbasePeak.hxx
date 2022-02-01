@@ -1,5 +1,3 @@
-
-
 #ifndef TPGbasePeak_h
 #define TPGbasePeak_h
 
@@ -7,7 +5,6 @@
  \file TPGbasePeak.hxx
  \brief   Declaration of TPGbasePeak.
  */
-/*------------------------------------------+---------------------------------*/
 
 #include "TNamed.h"
 
