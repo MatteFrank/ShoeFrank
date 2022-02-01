@@ -24,6 +24,7 @@ public:
   u_int spillNrAndTrgFineDelay; ///< spill number and trigger fine delay
   u_int PMTsAndBusy;            ///< PMT and busy
 
+  //! Destructor
   TrgEvent(){};
   virtual ~TrgEvent();
   

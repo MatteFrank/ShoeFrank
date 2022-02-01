@@ -18,14 +18,28 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+/*!
+ \file TPGbasePeak.cxx
+ \brief   Implementation of TPGbasePeak.
+ */
+
 #include "TPGbasePeak.hxx"
+
+/*!
+ \class TPGbasePeak
+ \brief A TPGbasePeak is defined by a height, intensity and a dimension of the peak
+ */
+
+//! Class Imp
+ClassImp(TPGbasePeak)
 
 TPGbasePeak::GateColor_t TPGbasePeak::fgGateColor = { kRed-9, kBlue-7, kGreen-8, kYellow-6 };
 
-
-ClassImp(TPGbasePeak)
-
 //__________________________________________________________
+//! Default Constructor
+//!
+//! \param[in] name name of peak
+//! \param[in] title title of peak
 TPGbasePeak::TPGbasePeak(const char* name, const char* title)
  : TNamed(name, title),
 	fHeight(0.0),
@@ -33,19 +47,19 @@ TPGbasePeak::TPGbasePeak(const char* name, const char* title)
 	fDimension(0),
 	fIsFitOn(false),
 	fIsCombined(false)
-{ 
-  //Default Constructor
-
+{
 }
 
 //__________________________________________________________
+/// default destructor
 TPGbasePeak::~TPGbasePeak()
 {
-// default destructor
 }
 
-
 //__________________________________________________________
+//! Copy Constructor
+//!
+//! \param[in] p peak to copy
 TPGbasePeak::TPGbasePeak(const TPGbasePeak& p)
  : TNamed(p),
 	fHeight(p.fHeight),
@@ -57,8 +71,10 @@ TPGbasePeak::TPGbasePeak(const TPGbasePeak& p)
   // copy constructor
 }
 
-
 //__________________________________________________________
+//! operator=
+//!
+//! \param[in] p peak to equal
 TPGbasePeak& TPGbasePeak::operator=(const TPGbasePeak& p)
 {
 	if (this == &p) 
@@ -74,6 +90,9 @@ TPGbasePeak& TPGbasePeak::operator=(const TPGbasePeak& p)
 }
 
 //__________________________________________________________
+//! Return valid gate color
+//!
+//! \param[in] co a given color
 Bool_t TPGbasePeak::IsvalideGateColor(Color_t co)
 {
 	if (co == fgGateColor.k0) return true;
@@ -85,6 +104,9 @@ Bool_t TPGbasePeak::IsvalideGateColor(Color_t co)
 }
 
 //__________________________________________________________
+//! Get color for a given gate
+//!
+//! \param[in] idx gate index
 Color_t TPGbasePeak::GetGateColor(Int_t idx)
 {
 	switch (idx) {
@@ -103,6 +125,9 @@ Color_t TPGbasePeak::GetGateColor(Int_t idx)
 }
 
 //__________________________________________________________
+//! Return color for a given axis
+//!
+//! \param[in] co a given color
 Int_t TPGbasePeak::GetGateAxis(Color_t co)
 {
 	if (co == fgGateColor.k0) 
@@ -118,12 +143,18 @@ Int_t TPGbasePeak::GetGateAxis(Color_t co)
 }
 
 //__________________________________________________________
+//! Set fit flag
+//!
+//! \param[in] fit_on fit flag
 void TPGbasePeak::FitOn(Bool_t fit_on)
 {
 	fIsFitOn = fit_on;
 }
 
 //__________________________________________________________
+//! Print
+//!
+//! \param[in] opt not used
 void TPGbasePeak::Print(Option_t* /*opt*/) const
 {
   printf("Height: %6.1f\n", fHeight);

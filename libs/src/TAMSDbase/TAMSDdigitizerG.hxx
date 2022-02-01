@@ -17,7 +17,7 @@
 class TAMSDparGeo;
 class TAMSDdigitizerG : public TAGbaseDigitizer {
    
-   // Class to digitize the energy into pixel based on given patterns
+   // Class to digitize the energy into strips based on given patterns
 public:
    TAMSDdigitizerG(TAMSDparGeo* parGeo);
    virtual ~TAMSDdigitizerG();
@@ -71,7 +71,7 @@ private:
    TF1*         fFuncClusterWidth;  // cluster charge width function
    TF1*         fFuncToDigital;     // time over threshold digital function
    
-   std::map<int, double> fMap;   // map of found pixels
+   std::map<int, double> fMap;   // map of found strips
    
    Double_t     fDe0Par;          // parameter shift in edep for the cluster size function
    Double_t     fDe0ParErr;       // parameter shift in edep for the cluster size function

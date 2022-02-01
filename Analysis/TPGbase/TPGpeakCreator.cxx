@@ -18,6 +18,12 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+/*!
+ \file TPGpeakCreator.hxx
+ \brief   Declaration of TPGpeakCreator.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <Riostream.h>
 
 #include "KeySymbols.h"
@@ -35,19 +41,25 @@
 TList TPGpeakCreator::fgPeakCreatorList;
 TF1*  TPGpeakCreator::fgDefaultFWHM = 0x0;
 
-//
+/*!
+ \class TPGpeakCreator
+ \brief peak creator class
+ */
+
+// Class Imp
 ClassImp(TPGpeakCreator)
 
 //__________________________________________________________
+//! Constructor
 TPGpeakCreator::TPGpeakCreator()
 : TObject(),
-fDefaultPeak1D(0x0),
-fIsCollecting(false),
-fIsGate(false),
-fDefaultPeakFWHM(0x0),
-fCanvas(0x0),
-fLastX(0),
-fLastY(0)
+  fDefaultPeak1D(0x0),
+  fIsCollecting(false),
+  fIsGate(false),
+  fDefaultPeakFWHM(0x0),
+  fCanvas(0x0),
+  fLastX(0),
+  fLastY(0)
 {
    // default constructor
    fDefaultPeak1D   = new TPGpeak1D();
@@ -56,15 +68,19 @@ fLastY(0)
    SetDefaultPeakFWHM("PK_FWHM"); // TPGpeakCreator Global _ FWHM
 }
 
-//__________________________________________________________
-TPGpeakCreator::TPGpeakCreator(TCanvas *c) : TObject(),
-fDefaultPeak1D(0x0),
-fIsCollecting(true),
-fIsGate(false),
-fDefaultPeakFWHM(0x0),
-fCanvas(c),
-fLastX(0),
-fLastY(0)
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+//!
+//! \param[in] c canvas to connect
+TPGpeakCreator::TPGpeakCreator(TCanvas *c)
+: TObject(),
+  fDefaultPeak1D(0x0),
+  fIsCollecting(true),
+  fIsGate(false),
+  fDefaultPeakFWHM(0x0),
+  fCanvas(c),
+  fLastX(0),
+  fLastY(0)
 {
    // default constructor
    fDefaultPeak1D   = new TPGpeak1D();
@@ -89,6 +105,7 @@ fLastY(0)
 }
 
 //__________________________________________________________
+//! Destructor
 TPGpeakCreator::~TPGpeakCreator()
 {
    //   if ( fLog.IsDebug(5) )
@@ -113,6 +130,9 @@ TPGpeakCreator::~TPGpeakCreator()
 }
 
 //__________________________________________________________
+//! Return pad
+//!
+//! \param[in] pad a given pad
 TVirtualPad *TPGpeakCreator::PadforAction(TVirtualPad *pad)
 { 
    if ( pad )
@@ -121,6 +141,9 @@ TVirtualPad *TPGpeakCreator::PadforAction(TVirtualPad *pad)
 }
 
 //__________________________________________________________
+//! Add peak to pad
+//!
+//! \param[in] pad a given pad
 TPGpeakCreator *TPGpeakCreator::AddTPGpeakCreator(TVirtualPad *pad)
 {
    TPGpeakCreator *pcreator = 0x0;
@@ -142,6 +165,9 @@ TPGpeakCreator *TPGpeakCreator::AddTPGpeakCreator(TVirtualPad *pad)
 }
 
 //__________________________________________________________
+//! Check whether or not a TPGpeakCreator is in this canvas
+//!
+//! \param[in] pad a given pad
 TPGpeakCreator *TPGpeakCreator::IsTPGpeakCreator(TVirtualPad *pad)
 {
    TPGpeakCreator *pcreator = 0x0;
@@ -161,6 +187,9 @@ TPGpeakCreator *TPGpeakCreator::IsTPGpeakCreator(TVirtualPad *pad)
 }
 
 //__________________________________________________________
+//! Cear pads
+//!
+//! \param[in] opt options
 void TPGpeakCreator::Clear(Option_t * opt)
 {
    TString o = opt;
@@ -174,12 +203,18 @@ void TPGpeakCreator::Clear(Option_t * opt)
 }
 
 //__________________________________________________________
+//! Peak are collected on key board actions (type h for help)
+//!
+//! do_collect collect flag
 void TPGpeakCreator::Collect(Bool_t do_collect)
 {
    fIsCollecting = do_collect;
 }
 
 //__________________________________________________________
+//! Set gate mode
+//!
+//! \param[in] ngate gate flag
 void TPGpeakCreator::SetGateMode(Bool_t ngate)
 {
    if ( ngate )
@@ -189,6 +224,12 @@ void TPGpeakCreator::SetGateMode(Bool_t ngate)
 }
 
 //__________________________________________________________
+//! Handle movement on pad
+//!
+//! \param[in] eventType event type
+//! \param[in] eventX position X on pad
+//! \param[in] eventY position Y on pad or key board action
+//! \param[in] select selected object
 void TPGpeakCreator::HandleMovement(Int_t eventType, Int_t eventX, Int_t eventY, TObject* /*select*/)
 { 	
    // handle cursor mouvement
@@ -283,6 +324,7 @@ void TPGpeakCreator::HandleMovement(Int_t eventType, Int_t eventX, Int_t eventY,
 }
 
 //__________________________________________________________
+//! Handle refresh in Pad
 void TPGpeakCreator::HandleRefresh()
 {
    TObject *obj; TFrame *frame; TPGbasePeak *apeak;
@@ -309,6 +351,7 @@ void TPGpeakCreator::HandleRefresh()
 }
 
 //__________________________________________________________
+//! Get global peak width function
 const TF1 *TPGpeakCreator::GetGlobalPeakFWHM()
 {
    Bool_t is_new = false;
@@ -329,6 +372,9 @@ const TF1 *TPGpeakCreator::GetGlobalPeakFWHM()
 }
 
 //__________________________________________________________
+//! Set global peak width function
+//!
+//! \param[in] fname function name
 void TPGpeakCreator::SetDefaultPeakFWHM( const char *fname )
 {
    TObject *o = gROOT->GetListOfFunctions()->FindObject(fname); TF1 *f;
@@ -344,7 +390,12 @@ void TPGpeakCreator::SetDefaultPeakFWHM( const char *fname )
    gROOT->GetListOfFunctions()->Remove(fDefaultPeakFWHM);
 }
 
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Create peak in a pad
+//!
+//! \param[in] x position of the peak
+//! \param[in] opt option of peak (gate/peak)
+//! \param[in] pad a given pad
 TPGbasePeak *TPGpeakCreator::CreatePeak(Double_t x, Option_t *opt, TVirtualPad *pad)
 {
    // create peak from current position in pad
@@ -392,7 +443,14 @@ TPGbasePeak *TPGpeakCreator::CreatePeak(Double_t x, Option_t *opt, TVirtualPad *
    return peak;
 }
 
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Create peak in a histogram
+//!
+//! \param[in] histo a given histogram
+//! \param[in] x position of the peak
+//! \param[in] opt option of peak:
+//! bg : creates a peak and its associated backgroud
+//! apt : (at peak position) it takes exactly the position x given by in the arguments
 TPGbasePeak* TPGpeakCreator::CreatePeak(const TH1 *histo, Double_t x, Option_t *opt)
 {
    // to check options
@@ -485,8 +543,12 @@ TPGbasePeak* TPGpeakCreator::CreatePeak(const TH1 *histo, Double_t x, Option_t *
    return peak;
 }
 
-
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Add a point to polyline
+//!
+//! \param[in] x position of the point
+//! \param[in] y position of the point
+//! \param[in] pad a given pad
 void TPGpeakCreator::AddPointToPolyline(Double_t x, Double_t y, TVirtualPad *pad)
 {	
    // to get the pad on which the creator is added

@@ -1,22 +1,24 @@
-
-
 #ifndef TPGbasePeak_h
 #define TPGbasePeak_h
 
-#include "TNamed.h"
+/*!
+ \file TPGbasePeak.hxx
+ \brief   Declaration of TPGbasePeak.
+ */
 
+#include "TNamed.h"
 
 class TF1;
 class TH1;
 class TList;
 
-
-/** A TPGbasePeak is defined by a height, intensity and a dimension of the peak
-
-*/
-class TPGbasePeak : public TNamed 
+class TPGbasePeak : public TNamed
 {
 private:
+   /*!
+    \struct GateColor_t
+    \brief  gate colors
+    */
 	struct GateColor_t {
 		Color_t k0;
 		Color_t k1;
@@ -25,7 +27,7 @@ private:
 	};	
 	
 public:
-	static GateColor_t fgGateColor; 
+	static GateColor_t fgGateColor; ///< Gate color structure
 	
 	static Bool_t  IsvalideGateColor(Color_t co);
 	static Int_t   GetGateAxis(Color_t co);
@@ -62,7 +64,7 @@ public:
 	//! Get flag for combined fit
 	virtual Bool_t   CombinedFlag() const  { return fIsCombined; }
 
-	//! print current peak
+	// print current peak
 	virtual void Print(Option_t* opt = "") const;
 
 	/* pure virtual functions */
@@ -116,7 +118,7 @@ protected:
 	Bool_t   fIsFitOn;     ///< flag for fitted peak
 	Bool_t   fIsCombined;  ///< flag to stated peak is part of a combined fit
   
-	ClassDef(TPGbasePeak,1); // Class definition for TPGbasePeak
+	ClassDef(TPGbasePeak,1); ///< Class definition for TPGbasePeak
 };
 
 #endif

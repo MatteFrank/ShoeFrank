@@ -64,10 +64,10 @@ private:
 
    map<pair<int, int>, TAMSDhit*> fMap; //! map for pilepup
 
-   TH1F*           fpHisStripMap[32];  // pixel map per sensor
-   TH1F*           fpHisPosMap[32];    // pixel map per sensor
-   TH1F*           fpHisStrip[32];     // number pixels per cluster MC
-   TH1F*           fpHisStripTot;     // total number pixels per cluster MC
+   TH1F*           fpHisStripMap[32];  // strip map per sensor
+   TH1F*           fpHisPosMap[32];    // strip map per sensor
+   TH1F*           fpHisStrip[32];     // number strips per cluster MC
+   TH1F*           fpHisStripTot;     // total number strips per cluster MC
    TH1F*           fpHisDeTot;        // Total energy loss
    TH1F*           fpHisDeSensor[32];  // Energy loss per sensor
    TH1F*           fpHisAdc[32];     // charge per strip
@@ -78,7 +78,7 @@ private:
 
 private:
    void            FillNoise(Int_t sensorId) ;
-   void            SetMCinfo(TAMSDhit* pixel, Int_t hitId);
+   void            SetMCinfo(TAMSDhit* strip, Int_t hitId);
    void            CreateDigitizer();
    void            FillStrips( Int_t sensorId, Int_t mcId, Int_t trackIdx);
    void            ComputeNoiseLevel();

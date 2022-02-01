@@ -8,15 +8,15 @@
 
 #include "Rtypes.h"
 
-const int MAXTR    = 6000;  
-const int MAXSTC   = 200;   
-const int MAXBMN   = 1000;   
-const int MAXVTX   = 300;   
-const int MAXITR   = 300;   
-const int MAXMSD   = 1000;   
-const int MAXSCN   = 5000;  
-const int MAXCAL   = 6000;  
-const int MAXCROSS = 10000;
+const int MAXTR    = 6000;   ///< Maximum track
+const int MAXSTC   = 200;    ///< Maximum hits in STC
+const int MAXBMN   = 1000;   ///< Maximum hits in BM
+const int MAXVTX   = 300;    ///< Maximum hits in VTX
+const int MAXITR   = 300;    ///< Maximum hits in ITR
+const int MAXMSD   = 1000;   ///< Maximum hits in MSD
+const int MAXSCN   = 5000;   ///< Maximum hits in TW
+const int MAXCAL   = 6000;   ///< Maximum hits in CAL
+const int MAXCROSS = 10000;  ///< Maximum hits in crossing region
 
 /*!
  \struct EVENT_STRUCT

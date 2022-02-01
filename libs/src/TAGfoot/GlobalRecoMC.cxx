@@ -7,13 +7,13 @@
 #include "GlobalRecoMC.hxx"
 
 /*!
- \class GlobalReco
+ \class GlobalRecoMC
  \brief Global reconstruction class using GenFit for MC data (depecrated)
  */
 /*------------------------------------------+---------------------------------*/
 
 //! Class Imp
-ClassImp(GlobalRecoMC)
+//ClassImp(GlobalRecoMC)
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

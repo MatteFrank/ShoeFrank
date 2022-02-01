@@ -18,6 +18,12 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+/*!
+ \file TPGpeak1D.hxx
+ \brief   Declaration of TPGpeak1D.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TF1.h"
 #include "TH1.h"
 #include "TList.h"
@@ -37,20 +43,56 @@
 
 using namespace std;
 
+/*!
+ \class TPGpeak1D
+ 
+ A graphical interface for placing schematic peak onto a 1D histogram with a given position, height and FWHM.
+ Background limits left and right respect to the peak centroid could be placed.
+ 
+ A function (TF1) is associated to the peak, gaussian and landau are pre-defined but the user could defined
+ a customized function based on a TFormula expression (don't use C defined function)
+ 
+ The user could choose between a linear or a quadratic fit in the given windows for the background.
+ 
+ A example for gaussian fit with linear background for gamma ray spectrum (radware spectrum):
+ 
+ \code
+ // open spectrum with HistoDB class (see this class for details)
+ TH1F* h = new TH1F();
+ h->SetAxisRange(600, 800);
+ h->Draw();
+ 
+ // set peak
+ TPGpeak1D* p = new TPGpeak1D("PeakName", "PeakTitle");
+ p->SetPeak(689, 79631, 4.0); // position height and FWHM, first guess
+ p->SetBackground(640, 650, 712, 728); // set background left and right for lower and upper limits
+ p->Draw(""); // option "f" fill the peak with the given attribute
+ 
+ // fit the spectrum with the given function and initialize with the parameters of the peak
+ p->SetFunction("gaus");
+ p->Fit("lin"); // fit histogram with gaus and linear background functions in the current pad (histogram has to exist)
+ p->Draw(); // draw peak with new parameters from fit.
+ 
+ \endcode
+ 
+ \author Christian Finck
+ */
+
+
 ClassImp(TPGpeak1D);
 
-const Int_t   TPGpeak1D::fgkPointsPeak   = 7;
-const Int_t   TPGpeak1D::fgkPointsBkg    = 4;
-const Int_t   TPGpeak1D::fgkPeakIdx      = 3;
-
-Style_t TPGpeak1D::fgFillStylePeak = 3005;
-Color_t TPGpeak1D::fgLineColorBkg  = 39;
-Style_t TPGpeak1D::fgFillStyleBkg  = 3001;
-Color_t TPGpeak1D::fgMarkerColor   = 36;
-Color_t TPGpeak1D::fgFuncColor     = 26;
+const Int_t TPGpeak1D::fgkPointsPeak   = 7;
+const Int_t TPGpeak1D::fgkPointsBkg    = 4;
+const Int_t TPGpeak1D::fgkPeakIdx      = 3;
+Style_t     TPGpeak1D::fgFillStylePeak = 3005;
+Color_t     TPGpeak1D::fgLineColorBkg  = 39;
+Style_t     TPGpeak1D::fgFillStyleBkg  = 3001;
+Color_t     TPGpeak1D::fgMarkerColor   = 36;
+Color_t     TPGpeak1D::fgFuncColor     = 26;
 
 
 //__________________________________________________________
+//! Constructor
 TPGpeak1D::TPGpeak1D() :
 	TPGbasePeak("Peak","TPGpeak1D"),
 	fPosition(0.0), 
@@ -111,9 +153,13 @@ TPGpeak1D::TPGpeak1D() :
 	InitPeakMarkers();
 }
 
-//__________________________________________________________
-TPGpeak1D::TPGpeak1D(const char* name, const char* title) :
-	TPGbasePeak(name, title),
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+//!
+//! \param[in] name peak name
+//! \param[in] title peak title
+TPGpeak1D::TPGpeak1D(const char* name, const char* title)
+ :	TPGbasePeak(name, title),
 	fPosition(0.0), 
 	fFWHM(0.0),
 	fBkgLeft1(0.0),
@@ -169,9 +215,12 @@ TPGpeak1D::TPGpeak1D(const char* name, const char* title) :
   InitPeakMarkers();
 }
 
-//__________________________________________________________
-TPGpeak1D::TPGpeak1D(TPolyLine* polyline) :
-	TPGbasePeak("Peak","TPGpeak1D"),
+//------------------------------------------+-----------------------------------
+//! Constructor from polyline
+//!
+//! \param[in] polyline polyline
+TPGpeak1D::TPGpeak1D(TPolyLine* polyline)
+ :	TPGbasePeak("Peak","TPGpeak1D"),
 	fPosition(0.0), 
 	fFWHM(0.0),
 	fBkgLeft1(0.0),
@@ -225,9 +274,12 @@ TPGpeak1D::TPGpeak1D(TPolyLine* polyline) :
 	InitPeakMarkers();
 }
 
-/*
-//__________________________________________________________
-TPGpeak1D::TPGpeak1D(const TPGpeak1D& p) : TPGbasePeak(p),
+ //------------------------------------------+-----------------------------------
+ //! Copy constructor
+ //!
+ //! \param[in] p peak to copy
+ TPGpeak1D::TPGpeak1D(const TPGpeak1D& p)
+ : TPGbasePeak(p),
 	fPosition(p.fPosition),
 	fFWHM(p.fFWHM),
 	fBkgLeft1(p.fBkgLeft1),
@@ -239,8 +291,7 @@ TPGpeak1D::TPGpeak1D(const TPGpeak1D& p) : TPGbasePeak(p),
 	fBkgLevelRight1(p.fBkgLevelRight1),
 	fBkgLevelRight2(p.fBkgLevelRight2),
 	fBkgFlag(p.fBkgFlag),
-	fDrawAs(p.fDrawAs),
-	fLog("TPGpeak1D")
+	fDrawAs(p.fDrawAs)
 {
 	// copy constructor
 	fPolyLinePeak   = new TPolyLine(p.fgkPointsPeak);
@@ -258,8 +309,11 @@ TPGpeak1D::TPGpeak1D(const TPGpeak1D& p) : TPGbasePeak(p),
 	fMarkerList = new TList(p.fMarkerList);
 }
 
-//__________________________________________________________
-TPGpeak1D& TPGpeak1D::operator=(const TPGpeak1D& p)
+ //------------------------------------------+-----------------------------------
+ //!operator=
+ //!
+ //! \param[in] p peak to equal
+ TPGpeak1D& TPGpeak1D::operator=(const TPGpeak1D& p)
 {
 	// assignment operator
 	if (this == &p) 
@@ -288,9 +342,9 @@ TPGpeak1D& TPGpeak1D::operator=(const TPGpeak1D& p)
 	
 	return *this;
 }
- */
-
+ 
 //__________________________________________________________
+//! Destructor
 TPGpeak1D::~TPGpeak1D()
 {
 	// default destructor
@@ -308,6 +362,10 @@ TPGpeak1D::~TPGpeak1D()
 
 
 //__________________________________________________________
+//! Background function
+//!
+//! \param[in] x position
+//! \param[in] par parameters vector
 Double_t TPGpeak1D::Bkg(Double_t* x, Double_t* par)
 {
 	// reject point outside the backgorund limits
@@ -325,6 +383,10 @@ Double_t TPGpeak1D::Bkg(Double_t* x, Double_t* par)
 }
 
 //__________________________________________________________
+//! Signal + Background function
+//!
+//! \param[in] x position
+//! \param[in] par parameters vector
 Double_t TPGpeak1D::SignalAndBkg(Double_t* x, Double_t* par)
 {
 	// Total function  
@@ -337,6 +399,7 @@ Double_t TPGpeak1D::SignalAndBkg(Double_t* x, Double_t* par)
 }
 
 //__________________________________________________________
+//! Get Signal + Background function
 TF1 *TPGpeak1D::SignalAndBkgFunction()
 {
 	// if already set 
@@ -362,12 +425,21 @@ TF1 *TPGpeak1D::SignalAndBkgFunction()
 }
 
 //__________________________________________________________
+//! Set background flag
+//!
+//! \param[in] with_bg bkg flag
 void TPGpeak1D::WithBkg(Bool_t with_bg)
 {
 	fBkgFlag = with_bg;
 }
 
 //__________________________________________________________
+//! Set peak parameters
+//!
+//! \param[in] position position
+//! \param[in] height height
+//! \param[in] FWHM width
+//! \param[in] intensity intensity
 void TPGpeak1D::SetPeak(Double_t position, Double_t height, Double_t FWHM, Double_t intensity)
 {
 	// constructor for members
@@ -380,6 +452,7 @@ void TPGpeak1D::SetPeak(Double_t position, Double_t height, Double_t FWHM, Doubl
 }
 
 //__________________________________________________________
+//! Set peak parameters from fit
 void TPGpeak1D::SetPeakFromFit()
 {
 	fHeight    = fSigFunc->GetParameter(0);
@@ -392,6 +465,10 @@ void TPGpeak1D::SetPeakFromFit()
 }
 
 //__________________________________________________________
+//! Set peak position
+//!
+//! \param[in] position position
+//! \param[in] axis axis options
 void TPGpeak1D::SetPosition(Double_t position, Option_t* /*axis*/)
 { 
 	// set position
@@ -401,6 +478,10 @@ void TPGpeak1D::SetPosition(Double_t position, Option_t* /*axis*/)
 } 
 
 //__________________________________________________________
+//! Set peak width
+//!
+//! \param[in] FWHM width
+//! \param[in] axis axis options
 void TPGpeak1D::SetFWHM(Double_t FWHM, Option_t* /*axis*/)
 { 
 	if ( FWHM <= 0.0 )
@@ -413,6 +494,9 @@ void TPGpeak1D::SetFWHM(Double_t FWHM, Option_t* /*axis*/)
 } 
 
 //__________________________________________________________
+//! Set peak height
+//!
+//! \param[in] height height
 void TPGpeak1D::SetHeight(Double_t height)
 { 
 	if ( height <= 0.0 )
@@ -425,6 +509,9 @@ void TPGpeak1D::SetHeight(Double_t height)
 } 
 
 //__________________________________________________________
+//! Set peak intensity
+//!
+//! \param[in] intensity intensity
 void TPGpeak1D::SetIntensity(Double_t intensity)
 { 
 	if ( intensity <= 0.0 )
@@ -437,8 +524,18 @@ void TPGpeak1D::SetIntensity(Double_t intensity)
 } 
 
 //__________________________________________________________
+//! Set background parameters
+//!
+//! \param[in] bgLeft1 left bkg first position
+//! \param[in] bgLeft2 left bkg second position
+//! \param[in] bgRight1 right bkg first position
+//! \param[in] bgRight2 right bkg second position
+//! \param[in] bgLevelLeft1 left bkg first height
+//! \param[in] bgLevelLeft2 left bkg second height
+//! \param[in] bgLevelRight1 right bkg first height
+//! \param[in] bgLevelRight2 right bkg second height
 void TPGpeak1D::SetBackground( Double_t bgLeft1,  Double_t bgLeft2,  Double_t bgRight1,  Double_t bgRight2,
-									 Double_t bgLevelLeft1, Double_t bgLevelLeft2, Double_t bgLevelRight1,Double_t bgLevelRight2)
+									 Double_t bgLevelLeft1, Double_t bgLevelLeft2, Double_t bgLevelRight1, Double_t bgLevelRight2)
 {
 	// set bkg limits left & right from the peak
 	fBkgLeft1  = bgLeft1;
@@ -456,6 +553,13 @@ void TPGpeak1D::SetBackground( Double_t bgLeft1,  Double_t bgLeft2,  Double_t bg
 }
 
 //__________________________________________________________
+//! Set background parameters
+//!
+//! \param[in] bgLeft1 left bkg first position
+//! \param[in] bgLeft2 left bkg second position
+//! \param[in] bgRight1 right bkg first position
+//! \param[in] bgRight2 right bkg second position
+//! \param[in] h a given histogram
 void TPGpeak1D::SetBackground( Double_t bgLeft1, Double_t bgLeft2, Double_t bgRight1, Double_t bgRight2, const TH1 *h )
 {
 	SetBackground(bgLeft1, 
@@ -469,6 +573,11 @@ void TPGpeak1D::SetBackground( Double_t bgLeft1, Double_t bgLeft2, Double_t bgRi
 }
 
 //__________________________________________________________
+//! Shift polyline
+//!
+//! \param[in] poly a given polyline
+//! \param[in] x x shift
+//! \param[in] y y shift
 void TPGpeak1D::ShiftPolyline(TPolyLine &poly, Double_t x, Double_t y)
 {
 	for (Int_t i = 0; i < poly.GetN(); i++) {
@@ -478,6 +587,11 @@ void TPGpeak1D::ShiftPolyline(TPolyLine &poly, Double_t x, Double_t y)
 }
 
 //__________________________________________________________
+//! Set all point of a polyline
+//!
+//! \param[in] poly a given polyline
+//! \param[in] x x shift
+//! \param[in] y y shift
 void TPGpeak1D::SetAllPointsinPolyline(TPolyLine &poly, Double_t x, Double_t y)
 {
 	for (Int_t i = 0; i < poly.GetN(); i++) {
@@ -487,6 +601,9 @@ void TPGpeak1D::SetAllPointsinPolyline(TPolyLine &poly, Double_t x, Double_t y)
 }
 
 //__________________________________________________________
+//! Set marker color
+//!
+//! \param[in] color color
 void TPGpeak1D::SetMarkerColor(Int_t color)
 {
 	// set marker color
@@ -498,6 +615,9 @@ void TPGpeak1D::SetMarkerColor(Int_t color)
 }
 
 //__________________________________________________________
+//! Set signal function
+//!
+//! \param[in] func a given function
 TF1 *TPGpeak1D::SetSignalFunction(const TF1* func)
 {
   // set user signal function
@@ -555,7 +675,11 @@ TF1 *TPGpeak1D::SetSignalFunction(const TF1* func)
 
 	return fSigFunc;
 }
+
 //__________________________________________________________
+//! Set signal function
+//!
+//! \param[in] nameFunc a given name function
 TF1 *TPGpeak1D::SetSignalFunction(const char* nameFunc)
 {
 	// set pre-defined signal function
@@ -616,6 +740,9 @@ TF1 *TPGpeak1D::SetSignalFunction(const char* nameFunc)
 }
 	
 //__________________________________________________________
+//! Set background function
+//!
+//! \param[in] func a given function
 TF1 *TPGpeak1D::SetBkgFunction(const TF1* func)
 {
 	// set user background function
@@ -649,6 +776,9 @@ TF1 *TPGpeak1D::SetBkgFunction(const TF1* func)
 }
 
 //__________________________________________________________
+//! Set background function
+//!
+//! \param[in] nameFunc a given function name
 TF1 *TPGpeak1D::SetBkgFunction(const char* nameFunc)
 {		
 	TString namef = Form("%s_Bkg_%p",nameFunc,this);
@@ -701,6 +831,9 @@ TF1 *TPGpeak1D::SetBkgFunction(const char* nameFunc)
 }		
 
 //__________________________________________________________
+//! Get peak position
+//!
+//! \param[in] axis axis option
 Double_t TPGpeak1D::GetPosition(Option_t* /*axis*/) const
 { 
   // return position for given axis
@@ -708,6 +841,9 @@ Double_t TPGpeak1D::GetPosition(Option_t* /*axis*/) const
 }
 
 //__________________________________________________________
+//! Get peak width
+//!
+//! \param[in] axis axis option
 Double_t TPGpeak1D::GetFWHM(Option_t* /*axis*/) const
 { 
   // return FWHM for given axis
@@ -715,6 +851,9 @@ Double_t TPGpeak1D::GetFWHM(Option_t* /*axis*/) const
 }
 
 //__________________________________________________________
+//! Get marker
+//!
+//! \param[in] markerId marker index
 TMarker* TPGpeak1D::GetMarker(Int_t markerId)
 {
   // get marker
@@ -726,6 +865,11 @@ TMarker* TPGpeak1D::GetMarker(Int_t markerId)
 }
 
 //__________________________________________________________
+//! Fit menu
+//!
+//! \param[in] nameFunc name function
+//! \param[in] optFit fit options
+//! \param[in] optBkg background options
 void TPGpeak1D::FitMenu(const char* nameFunc, Option_t* optFit, Option_t* optBkg)
 {
 	
@@ -772,6 +916,13 @@ void TPGpeak1D::FitMenu(const char* nameFunc, Option_t* optFit, Option_t* optBkg
 }
 
 //__________________________________________________________
+//! Get peak area
+//!
+//! \param[in] opt options
+//! opt =  \n
+//! - h : use background limits and h to compute the results
+//! - f : use function (Signal and Bkg) to compute the results
+//! - any other option [default] : compute using the polyline
 void TPGpeak1D::Area(Option_t * opt)
 {
 	TString Opt(opt); TH1 *h; Short_t choice = 0;
@@ -882,6 +1033,12 @@ void TPGpeak1D::Area(Option_t * opt)
 
 
 //__________________________________________________________
+//! Fit a list of peaks in a given histogram
+//!
+//! \param[in] h a given histogram
+//! \param[in] peakList list of peaks
+//! \param[in] optFit fit options
+//! \param[in] optBkg background options
 void TPGpeak1D::FitCombined(TH1 *h, TList* peakList, Option_t* optFit, Option_t* optBkg)
 {	
 	// just in case
@@ -1065,9 +1222,13 @@ void TPGpeak1D::FitCombined(TH1 *h, TList* peakList, Option_t* optFit, Option_t*
 }
 
 //__________________________________________________________
+//! Fit a peak in a given histogram
+//!
+//! \param[in] h a given histogram
+//! \param[in] optFit fit options
+//! \param[in] optBkg background options
 void TPGpeak1D::Fit(TH1 *h, Option_t*  optFit, Option_t* optBkg)
 {
-	
 	// be sure the signal function is defined
 	if ( fSigFunc == 0x0 ) {
 		Error("Fit()", "Fitting function not defined, use SetSignalFunction() to set it");
@@ -1150,7 +1311,11 @@ void TPGpeak1D::Fit(TH1 *h, Option_t*  optFit, Option_t* optBkg)
 
 }
 
-//___________________________________________________________
+//__________________________________________________________
+//! Fit a peak with background in a given histogram
+//!
+//! \param[in] h a given histogram
+//! \param[in] optFit fit options
 void TPGpeak1D::FitIsWithBkg(TH1* h, Option_t* optFit)
 {
 	// fit with signal function removing bkg
@@ -1180,6 +1345,9 @@ void TPGpeak1D::FitIsWithBkg(TH1* h, Option_t* optFit)
 }
 	
 //__________________________________________________________
+//! Print peaks informations
+//!
+//! \param[in] opt options
 void TPGpeak1D::Print(Option_t* opt) const
 {
 	//
@@ -1206,40 +1374,52 @@ void TPGpeak1D::Print(Option_t* opt) const
 
 
 //__________________________________________________________
+//! Set  line color for peak
+//!
+//! \param[in] color a given color
 void TPGpeak1D::SetLineColorPeak(Color_t color)
 {
-  // set line color for peak
-  fPolyLinePeak->SetLineColor(color); 
+  fPolyLinePeak->SetLineColor(color);
 }
 
 //__________________________________________________________
+//! Get line color for peak
 Color_t TPGpeak1D::GetLineColorPeak()
 {
   return fPolyLinePeak->GetLineColor();
 }
 
 //__________________________________________________________
+//! Set line width for peak
+//!
+//! \param[in] width a given width
 void TPGpeak1D::SetLineWidthPeak(Width_t width)
 {
-  // set line width for peak
   fPolyLinePeak->SetLineWidth(width);
 }
 
 //__________________________________________________________
+//! Set fill color for peak
+//!
+//! \param[in] color a given color
 void TPGpeak1D::SetFillColorPeak(Color_t color)
 {
-  // set fill color for peak
   fPolyLinePeak->SetFillColor(color);
 }
 
 //__________________________________________________________
+//! Set fill style for peak
+//!
+//! \param[in] style a given style
 void TPGpeak1D::SetFillStylePeak(Style_t style)
 {
-  // set fill sryle for peak
   fPolyLinePeak->SetFillStyle(style);
 }
 
 //__________________________________________________________
+//! Set fill color for background
+//!
+//! \param[in] color a given color
 void TPGpeak1D::SetLineColorBkg(Color_t color)
 {
   // set line color for peak
@@ -1248,6 +1428,9 @@ void TPGpeak1D::SetLineColorBkg(Color_t color)
 }
 
 //__________________________________________________________
+//! Set line width for background
+//!
+//! \param[in] width a given width
 void TPGpeak1D::SetLineWidthBkg(Width_t width)
 {
   // set line width for peak
@@ -1256,6 +1439,9 @@ void TPGpeak1D::SetLineWidthBkg(Width_t width)
 }
 
 //__________________________________________________________
+//! Set fill color for background
+//!
+//! \param[in] color a given color
 void TPGpeak1D::SetFillColorBkg(Color_t color)
 {
   // set fill color for peak
@@ -1264,6 +1450,9 @@ void TPGpeak1D::SetFillColorBkg(Color_t color)
 }
 
 //__________________________________________________________
+//! Set fill style for background
+//!
+//! \param[in] style a given style
 void TPGpeak1D::SetFillStyleBkg(Style_t style)
 {
   // set fill sryle for peak
@@ -1272,6 +1461,9 @@ void TPGpeak1D::SetFillStyleBkg(Style_t style)
 }
 
 //__________________________________________________________
+//! Set draw option for peak/gate
+//!
+//! \param[in] d draw style
 void TPGpeak1D::SetDrawAs(EDrawAs d)
 { 
 	if ( fDrawAs == d )
@@ -1283,6 +1475,9 @@ void TPGpeak1D::SetDrawAs(EDrawAs d)
 }
 
 //__________________________________________________________
+//! Pain
+//!
+//! \param[in] opt paint option (not used)
 void TPGpeak1D::Paint(Option_t* /*opt*/)
 {
 	// first background
@@ -1322,6 +1517,9 @@ void TPGpeak1D::Paint(Option_t* /*opt*/)
 }
 
 //__________________________________________________________
+//! Draw
+//!
+//! \param[in] opt draw option
 void TPGpeak1D::Draw(Option_t* opt)
 {
 	// draw
@@ -1338,6 +1536,10 @@ void TPGpeak1D::Draw(Option_t* opt)
 	AppendPad("");  
 }
 
+//__________________________________________________________
+//! Set draw options
+//!
+//! \param[in] opt draw option
 void TPGpeak1D::SetDrawOption(Option_t* opt)
 {
 	TString tmp(opt);
@@ -1347,8 +1549,11 @@ void TPGpeak1D::SetDrawOption(Option_t* opt)
 	} else { SetDrawAs(kPeak); }	
 }
 
-
 //__________________________________________________________
+//! Compute distance to object
+//!
+//! \param[in] px pixel position in X-direction
+//! \param[in] py pixel position in Y-direction
 Int_t TPGpeak1D::DistancetoPrimitive(Int_t px, Int_t py)
 {
 	Int_t dP = fPolyLinePeak->DistancetoPrimitive(px, py);
@@ -1360,7 +1565,12 @@ Int_t TPGpeak1D::DistancetoPrimitive(Int_t px, Int_t py)
 	return d2;
 }
 
-//___________________________________________________________
+//__________________________________________________________
+//! Execute event
+//!
+//! \param[in] event event type
+//! \param[in] px pixel position in X-direction
+//! \param[in] py pixel position in Y-direction
 void TPGpeak1D::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {	
 	if (!gPad->IsEditable()) 
@@ -1521,7 +1731,13 @@ void TPGpeak1D::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 	}
 }
 
-//___________________________________________
+//__________________________________________________________
+//! Paint for peak/gate
+//!
+//! \param[in] xmin not used
+//! \param[in] xmax not used
+//! \param[in] ymin y miminal value for gate/bkg
+//! \param[in] ymax not used
 void TPGpeak1D::PaintFor(Double_t /*xmin*/, Double_t /*xmax*/, Double_t ymin, Double_t /*ymax*/)
 {
 	if ( fDrawAs == kGate ) {
@@ -1531,8 +1747,10 @@ void TPGpeak1D::PaintFor(Double_t /*xmin*/, Double_t /*xmax*/, Double_t ymin, Do
 	fPolyLineBkgR->GetY()[0] = fPolyLineBkgR->GetY()[fgkPointsBkg-1] = ymin;
 }
 
-
-//___________________________________________
+//__________________________________________________________
+//! Compare
+//!
+//! \param[in] obj object to compare
 Int_t TPGpeak1D::Compare(const TObject *obj) const
 {
   // sort peak by position 
@@ -1540,10 +1758,12 @@ Int_t TPGpeak1D::Compare(const TObject *obj) const
   return (fPosition > event->GetPosition()) ? 1 : -1;
 }
 
-//___________________________________________________________
+//__________________________________________________________
+//! Set peaks point from a poylyline
+//!
+//! \param[in] polyline a given polyline
 void  TPGpeak1D::SetPeakPoints(TPolyLine* polyline)
 {
-  
   Double_t x[fgkPointsPeak] = {0,0,0,0,0,0,0};
   Double_t y[fgkPointsPeak] = {0,0,0,0,0,0,0};
   
@@ -1575,20 +1795,27 @@ void  TPGpeak1D::SetPeakPoints(TPolyLine* polyline)
   fPolyLinePeak->SetLineWidth(2);
 }
 
-//___________________________________________________________
-
+//__________________________________________________________
+//! Set modified flag for the poylyline
+//!
+//! \param[in] p a given polyline
+//! \param[in] modif modified flag
 void TPGpeak1D::SetModified(TPolyLine &p, Bool_t modif)
 {
 	p.SetBit(0x1000,modif); // in principle this bit is not used by Polyline	
 }
 
-//___________________________________________________________
+//__________________________________________________________
+//! Return modified flag for the poylyline
+//!
+//! \param[in] p a given polyline
 Bool_t TPGpeak1D::IsModified(TPolyLine &p)
 {
 	return p.TestBit(0x1000);
 }
 
 //___________________________________________________________
+//! Set peak points
 void  TPGpeak1D::SetPeakPoints()
 {
    // set points of polyline from peak members
@@ -1663,6 +1890,7 @@ void  TPGpeak1D::SetPeakPoints()
 }
 
 //___________________________________________________________
+//! Set background points
 void  TPGpeak1D::SetBkgPoints()
 {
 	// set points of polyline from peak members
@@ -1703,6 +1931,7 @@ void  TPGpeak1D::SetBkgPoints()
 	  
 	  
 //___________________________________________________________
+//! Update peak
 void  TPGpeak1D::UpdatePeak()
 {
   // update peak members from polyline
@@ -1729,6 +1958,7 @@ void  TPGpeak1D::UpdatePeak()
 }
 
 //___________________________________________________________
+//! Update background
 void  TPGpeak1D::UpdateBkg()
 {
   // update peak members from polyline
@@ -1751,6 +1981,7 @@ void  TPGpeak1D::UpdateBkg()
 // private functions
 
 //___________________________________________________________
+//! Initialize peak markers
 void TPGpeak1D::InitPeakMarkers()
 {
 	

@@ -7,7 +7,7 @@
 #include "TString.h"
 
 // --------------------------------------------------------------------------------------
-/** TAMSDrawHit simple class containers for raw hit (pixel)
+/** TAMSDrawHit simple class containers for raw hit (strip)
  
  \author Ch. Finck
  */
@@ -74,23 +74,23 @@ public:
    TAMSDntuRaw();
    ~TAMSDntuRaw();
    
-   //! Get list of pixels
+   //! Get list of strips
    TClonesArray*      GetStrips(Int_t iSensor)  const;
  
-   //! Get number of pixels
+   //! Get number of strips
    Int_t              GetStripsN(Int_t iSensor)  const;
    
-   //! Get pixel
+   //! Get strip
    TAMSDrawHit*       GetStrip(Int_t iSensor, Int_t iStrip);
    const TAMSDrawHit* GetStrip(Int_t iSensor, Int_t iStrip)   const;
    
-   //! Add pixel to list
+   //! Add strip to list
    void               AddStrip(Int_t sensor, Int_t view, Int_t aStrip, UInt_t value);
   
    //! Set up clones
    void               SetupClones();
 
-   //! Clear pixel list
+   //! Clear strip list
    virtual void       Clear(Option_t* opt="");
    
    //! To stream

@@ -43,7 +43,9 @@ public:
          double lower_limit;
          double mesh_size;
          std::size_t size;
-      } x, y, z; ///< properties per direction
+      } x,///< properties per x-direction
+      y,///< properties per y-direction
+      z; ///< properties per z-direction
    };
     
 public:

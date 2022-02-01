@@ -1,5 +1,5 @@
 /*!
- \file TAMCregion.cxx
+ \file TAMCntuRegion.cxx
  \brief   Implementation of TAMCregion.
  */
 

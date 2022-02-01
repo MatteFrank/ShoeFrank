@@ -147,7 +147,7 @@ Float_t TAMSDcluster::Distance(TAMSDcluster *aClus) {
 
 //______________________________________________________________________________
 //
-Float_t TAMSDcluster::ComputeEta(Float_t cog) {
+Float_t TAMSDcluster::ComputeEtaFast(Float_t cog) {
 
    Double_t fractpart, intpart;
    fractpart = modf (cog , &intpart);
@@ -155,15 +155,93 @@ Float_t TAMSDcluster::ComputeEta(Float_t cog) {
    return fractpart;
 }
 
+Float_t TAMSDcluster::ComputeEta(TClonesArray* fListOfStrips) {
+
+   Int_t nstrips = fListOfStrips->GetEntries();
+
+   if (nstrips == 1)
+      return 1.0;
+
+   Float_t eta;
+   TAMSDhit* strip;
+   Float_t max_adc = -1;
+   Int_t max_pos = 0;
+
+   //cout << "Cluster has " << fListOfStrips->GetEntries() << " strips" << endl;
+   for (int i = 0; i < nstrips; i++)
+   {  
+      strip = (TAMSDhit*)fListOfStrips->At(i);
+      // cout << "\tStrip " << i << " has value " << strip->GetEnergyLoss() << endl;
+
+      if(strip->GetEnergyLoss() > max_adc)
+      {
+         max_adc = strip->GetEnergyLoss();
+         max_pos = i;
+      }
+   }
+
+   if (max_pos == 0)
+   {
+      eta = ((TAMSDhit*)fListOfStrips->At(0))->GetEnergyLoss() / ( ((TAMSDhit*)fListOfStrips->At(0))->GetEnergyLoss() + ((TAMSDhit*)fListOfStrips->At(1))->GetEnergyLoss() );
+   } 
+   else if(max_pos == nstrips - 1)
+   {
+      eta = ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fListOfStrips->At(max_pos))->GetEnergyLoss() );
+   } 
+   else
+   {
+      if( ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() >  ((TAMSDhit*)fListOfStrips->At(max_pos + 1))->GetEnergyLoss() )
+      {
+         eta = ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fListOfStrips->At(max_pos))->GetEnergyLoss() );
+      }
+      else
+      {
+         eta = ((TAMSDhit*)fListOfStrips->At(max_pos))->GetEnergyLoss() / ( ((TAMSDhit*)fListOfStrips->At(max_pos))->GetEnergyLoss() + ((TAMSDhit*)fListOfStrips->At(max_pos + 1))->GetEnergyLoss() );
+      }
+   }
+
+   return eta;
+}
+
 //______________________________________________________________________________
 //
-Float_t TAMSDcluster::ComputeEtaCorrection(Float_t cog) {
+Float_t TAMSDcluster::ComputeEtaCorrection(Float_t eta) {
 
-   TF1 *etafunc = new TF1("test","0.9*TMath::Gaus(x,0,0.1)+TMath::Gaus(x,1./3,0.13)+TMath::Gaus(x,2./3,0.13)+0.9*TMath::Gaus(x,1,0.1)",0,1); //FAKE ETA FUNCTION
-   Double_t fractpart, intpart;
-   fractpart = modf (cog , &intpart);
+   Float_t correction = 1.0;
 
-   return etafunc->Eval(fractpart);
+   if(eta == 0 || eta == 1)
+      return correction;
+
+
+   TF1 *fa = new TF1("fa","[0]+[1]*x+[2]*x*x+[3]*x*x*x",0.2,0.5);
+   fa->SetParameter(0,1961.03);
+   fa->SetParameter(1,-7429.58);
+   fa->SetParameter(2,27733.4);
+   fa->SetParameter(3,-19994.8);
+
+   if (eta >= 0.5)
+   {  
+      if(eta>0.66)
+         correction = fa->Eval(eta-0.5)/fa->Eval(0.5)/0.9;
+      
+      correction  = 1410.04/fa->Eval(0.5)/0.9;
+   }
+   else
+   {
+      if(eta >0.33)
+         correction = fa->Eval(-eta+0.5)/fa->Eval(0.5)/0.9;
+
+      correction  = 1410.04/fa->Eval(0.5)/0.9;  
+   }
+
+   return correction;
+}
+
+
+Float_t TAMSDcluster::ComputeAddress(TClonesArray* fListOfStrips) {
+
+   TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(0);
+   return strip->GetPosition();
 }
 
 
