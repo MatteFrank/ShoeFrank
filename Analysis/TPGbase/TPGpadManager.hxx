@@ -18,7 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** \file TPGpadManager.hxx header file for TPGpadManager.cpp */
+/*!
+ \file TPGpadManager.hxx
+ \brief   Declaration of TPGpadManager.
+ */
 
 #ifndef TPGpadManager_h
 #define TPGpadManager_h

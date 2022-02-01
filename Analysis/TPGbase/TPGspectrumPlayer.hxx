@@ -18,7 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** \file TPGspectrumPlayer.hxx header file for TPGspectrumPlayer.cxx */
+/*!
+ \file TPGspectrumPlayer.hxx
+ \brief   Declaration of TPGspectrumPlayer.
+ */
 
 #ifndef TPGspectrumPlayer_h
 #define TPGspectrumPlayer_h
@@ -159,7 +162,7 @@ public:
    // Handle Movement
    void HandleMovement(Int_t eventType, Int_t eventX, Int_t eventY, TObject* select);
    
-   ClassDef(TPGspectrumPlayer, 0); ///< Base class for facilities to play with spectra   
+   ClassDef(TPGspectrumPlayer, 0); ///< Base class for facilities to play with spectra
 };
 
 

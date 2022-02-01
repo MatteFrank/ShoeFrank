@@ -1,11 +1,10 @@
-
-
-
 #ifndef TPGSPlayer_h
 #define TPGSPlayer_h
 
-/** \file TPGSPlayer.hxx header file for TPGSPlayer.cxx */
-
+/*!
+ \file TPGSPlayer.hxx
+ \brief   Declaration of TPGSPlayer.
+ */
 
 #include "TPGspectrumPlayer.hxx"
 

@@ -18,7 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** \file TPGpeak1D.hxx header file for a general 1D peak */
+/*!
+ \file TPGpeak1D.hxx
+ \brief   Declaration of TPGpeak1D.
+ */
 
 #ifndef TPGpeak1D_h
 #define TPGpeak1D_h

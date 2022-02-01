@@ -18,7 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** \file TPGspectrumCalib.hxx header file for the calibration facility */
+/*!
+ \file TPGspectrumCalib.hxx
+ \brief   Declaration of TPGspectrumCalib.
+ */
 
 #ifndef TPGSPECTRUMCALIB_H
 #define TPGSPECTRUMCALIB_H

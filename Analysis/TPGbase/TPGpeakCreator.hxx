@@ -18,7 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** \file TPGpeakCreator.hxx header file for TPGpeakCreator.cxx */
+/*!
+ \file TPGpeakCreator.hxx
+ \brief   Declaration of TPGpeakCreator.
+ */
 
 #ifndef TPGpeakCreator_h
 #define TPGpeakCreator_h
