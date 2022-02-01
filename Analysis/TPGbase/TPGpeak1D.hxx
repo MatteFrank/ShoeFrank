@@ -1,30 +1,10 @@
-/***************************************************************************
- *   Copyright (C) 2004 by Olivier Stezowski, B. Rosse & Christian Finck   *
- *   stezow(AT)ipnl.in2p3.fr                                               *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+#ifndef TPGpeak1D_h
+#define TPGpeak1D_h
 
 /*!
  \file TPGpeak1D.hxx
  \brief   Declaration of TPGpeak1D.
  */
-
-#ifndef TPGpeak1D_h
-#define TPGpeak1D_h
 
 #include "TPGbasePeak.hxx"
 
@@ -46,11 +26,11 @@ public:
 	//! Get default marker color
 	static Color_t GetDefaultMarkerColor()       	{ return fgMarkerColor; }
 	//! Get default function color
-	static Color_t GetDefaultFuncColor()            { return fgFuncColor; }
+	static Color_t GetDefaultFuncColor()            { return fgFuncColor;   }
 	//! Set default marker color
-	static void    SetDefaultMarkerColor(Color_t c)	{ fgMarkerColor = c; }
+	static void    SetDefaultMarkerColor(Color_t c)	{ fgMarkerColor = c;    }
 	//! Set default function color
-	static void    SetDefaultFuncColor(Color_t c)   { fgFuncColor = c; }
+	static void    SetDefaultFuncColor(Color_t c)   { fgFuncColor = c;      }
   
 public:
 	TPGpeak1D();
@@ -58,10 +38,10 @@ public:
 	TPGpeak1D(TPolyLine* polyline);
 	virtual ~TPGpeak1D();
 
-	//! Copy ctr
-	//TPGpeak1D(const TPGpeak1D& p);
-	//! Assignment operator
-	//TPGpeak1D& operator=(const TPGpeak1D& p);
+	// Copy ctr
+	TPGpeak1D(const TPGpeak1D& p);
+	// Assignment operator
+	TPGpeak1D& operator=(const TPGpeak1D& p);
 
    // Actions : Area, Fit
 	// Fit peak with background
@@ -96,8 +76,7 @@ public:
 	void SetBackground(Double_t bgLeft1, Double_t bgLeft2, Double_t bgRight1,Double_t bgRight2,
 							 Double_t bgLevelLeft1, Double_t bgLevelLeft2, Double_t bgLevelRight1,Double_t bgLevelRight2); 
 	// Set background limits
-	// void SetBackground( Double_t bgLeft1, Double_t bgLeft2, Double_t bgRight1, Double_t bgRight2, const TVirtualPad *pad = 0x0); 
-	void SetBackground( Double_t bgLeft1, Double_t bgLeft2, Double_t bgRight1, Double_t bgRight2, const TH1* ); 
+	void SetBackground( Double_t bgLeft1, Double_t bgLeft2, Double_t bgRight1, Double_t bgRight2, const TH1* );
 	//! Set marker color of the peak polyline
 	void SetMarkerColor(Int_t color);
 
@@ -108,23 +87,16 @@ public:
 	// Set pre-defined function to fit the signal
 	virtual TF1 *SetSignalFunction(const char* nameFunc = "gaus"); 
 	// Set function to fit the signal
-	virtual TF1 *SetSignalFunction(const TF1* func); 
-	//! Access to signal function ... don't delete it !
-	virtual TF1 *SignalFunction()	{ return fSigFunc; }
+	virtual TF1 *SetSignalFunction(const TF1* func);
 	// Set pre-defined function for background during fit
 	virtual TF1 *SetBkgFunction(const char* nameFunc = "-"); 
 	// Set user defined function for background during fit
-	virtual TF1 *SetBkgFunction(const TF1* func); 
-	//! Access to signal function ... don't delete it !
-	virtual TF1 *BkgFunction()	{ return fBkgFunc; }
-	//! Access to signal+Bkg function. Signa + Bkg must be set first, parameter are copied !
+	virtual TF1 *SetBkgFunction(const TF1* func);
+	// Access to signal+Bkg function. Signa + Bkg must be set first, parameter are copied !
 	virtual TF1 *SignalAndBkgFunction();
-	
+   
 	// toggle background (fit and display)
 	void WithBkg(Bool_t with_bg = true); //*TOGGLE* *GETTER=IsWithBkg
-	
-	//! Test if peak defined with background
-	Bool_t IsWithBkg() const  { return fBkgFlag; }
 	
 	// Set line attribute for peak
 	virtual void	SetFillColorPeak(Color_t color);
@@ -144,30 +116,43 @@ public:
 	// Get marker for a given Id
 	virtual TMarker* GetMarker(Int_t markerId);
 	
-	//! Get signal function
-	virtual TF1* GetSigFunction() { return fSigFunc; }
-	
 	// Set drawing flag
 	virtual void SetDrawAs(EDrawAs d);
 	//! to know the current display mode
-	virtual EDrawAs GetDrawAs() const { return fDrawAs; }
 	virtual void SetDrawOption(Option_t* option = ""); //*MENU*
-	
+   
+   //! Get peak draw option gate/peak
+   virtual EDrawAs GetDrawAs()   const  { return fDrawAs;          }
+
 	//! Sort
-	virtual Bool_t  IsSortable() const  {return kTRUE;}
+	virtual Bool_t  IsSortable()  const  { return kTRUE;            }
 	virtual Int_t Compare(const TObject *obj) const;
 
+   //! Access to signal function ... don't delete it !
+   virtual TF1 *BkgFunction()           { return fBkgFunc;         }
+   //! Test if peak defined with background
+   Bool_t IsWithBkg()            const  { return fBkgFlag;         }
+   //! Access to signal function ... don't delete it !
+   virtual TF1 *SignalFunction()        { return fSigFunc;         }
+   //! Get signal function
+   virtual TF1* GetSigFunction()        { return fSigFunc;         }
+   
+   //! Get integral of background after calling area method
+   Double_t GetBkgIntegral()     const  { return fBkgIntegral;     }
+   //! Get integral of peak after calling area method
+   Double_t GetPeakIntegral()    const  { return fPeakIntegral;    }
+   //! Get integral of background under peak after calling area method
+   Double_t GetSubPeakIntegral() const  { return fSubPeakIntegral; }
+   
 	//! Get base of peak
-	Double_t GetBase() const { return fPolyLinePeak->GetY()[0]; }
-
+	Double_t GetBase()            const { return fPolyLinePeak->GetY()[0];         }
 	//! Get background left limits
-	const TVector2 GetBkgLeft()  const { return TVector2(fBkgLeft1,  fBkgLeft2); }
+	const TVector2 GetBkgLeft()   const { return TVector2(fBkgLeft1,  fBkgLeft2);  }
    //! Get background right limits
-	const TVector2 GetBkgRight() const { return TVector2(fBkgRight1, fBkgRight2); }
+	const TVector2 GetBkgRight()  const { return TVector2(fBkgRight1, fBkgRight2); }
 	
 	//! to determine if a point is in bg. 0 likely in peak, 1 in bg, 2 outside bg
-	Short_t IsPointInBkg(Double_t x, Double_t /*y*/ = 0)
-	{
+	Short_t IsPointInBkg(Double_t x, Double_t /*y*/ = 0) {
 		if ( x < fBkgLeft1 || x > fBkgRight2 )
 			return 2;
 		if ( x <= fBkgLeft2 || x >= fBkgRight1 )
@@ -175,13 +160,6 @@ public:
 		return 0;
 	}
 	 
-   //! Get integral of background after calling area method 
-   Double_t GetBkgIntegral()     const { return fBkgIntegral;}
-   //! Get integral of peak after calling area method 
-   Double_t GetPeakIntegral()    const { return fPeakIntegral;}
-   //! Get integral of background under peak after calling area method 
-   Double_t GetSubPeakIntegral() const { return fSubPeakIntegral;}
-   
    // Draw/Paint methods
 	virtual void Paint(Option_t* opt ="peak");
 	virtual void Draw(Option_t* opt ="peak");

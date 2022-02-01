@@ -1,30 +1,10 @@
-/***************************************************************************
- *   Copyright (C) 2004-2006 by Olivier Stezowski & Christian Finck        *
- *   stezow(AT)ipnl.in2p3.fr, cfinck(AT)ires.in2p3.fr                      *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+#ifndef TPGpeakCreator_h
+#define TPGpeakCreator_h
 
 /*!
  \file TPGpeakCreator.hxx
  \brief   Declaration of TPGpeakCreator.
  */
-
-#ifndef TPGpeakCreator_h
-#define TPGpeakCreator_h
 
 #include "TPGpeak1D.hxx"
 
@@ -37,12 +17,15 @@ class TH1;
 class TFormula;
 class TVirtualPad;
 
-
 class TPGpeakCreator : public TObject
 {  	
 private:
    static TList  fgPeakCreatorList; ///< list of ceator linked to a canvas
    static TF1   *fgDefaultFWHM;     ///<  default function
+   
+public:
+   // to get the global formula
+   static const TF1 *GetGlobalPeakFWHM();
    
 private:
    TPGpeak1D* fDefaultPeak1D;   ///< Default parameters (graphics) for 1D peaks
@@ -67,17 +50,9 @@ protected:
    
    static TVirtualPad *PadforAction(TVirtualPad *pad = 0x0);
    
-private:
-   TPGpeakCreator(TCanvas *);
-   
-public:
-   // change the global formula 
-   // static void SetGlobalPeakFWHM(const TF1 *);
-   // to get the global formula 
-   static const TF1 *GetGlobalPeakFWHM();
-   
 public:
    TPGpeakCreator();
+   TPGpeakCreator(TCanvas *);
    virtual ~TPGpeakCreator();
    
    // Set gate mode
@@ -92,9 +67,6 @@ public:
    
    //! access to the peak used to create other peaks (through the Clone method)
    TPGbasePeak *DefaultPeak() {return fDefaultPeak1D;}
-   
-   // to get the current global FWHM definition
-   //const TF1 *GetPeakFWHM();
    
    //! to get the definition of the peak with as a function of the energy
    const TF1 *GetDefaultPeakFWHM() { return fDefaultPeakFWHM; }

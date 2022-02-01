@@ -11,8 +11,6 @@
 class TPolyMarker;
 class TSpline3;
 
-
- 
 class TPGSPlayer : public TPGspectrumPlayer
 {
 public:
@@ -22,11 +20,11 @@ public:
    // Find peak in current histo graphically
    virtual Int_t FindPeaks(TH1 *histo, Option_t* opt = "");
    
-   //! Find peak in current histo graphically 
-   virtual Int_t FindPeaks(Option_t* opt = "") { return TPGspectrumPlayer::FindPeaks(opt); }
-   
    // Compute the background for that histogram
    virtual TH1 *Background(const TH1 *histo, Option_t* opt = "");
+   
+   //! Find peak in current histo graphically 
+   virtual Int_t FindPeaks(Option_t* opt = "") { return TPGspectrumPlayer::FindPeaks(opt); }
    
    //! Compute the background for the histogram in the current pad
    virtual TH1 *Background(Option_t* opt = "")  { return TPGspectrumPlayer::Background(opt); }

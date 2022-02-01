@@ -81,15 +81,14 @@ using namespace std;
 
 ClassImp(TPGpeak1D);
 
-const Int_t   TPGpeak1D::fgkPointsPeak   = 7;
-const Int_t   TPGpeak1D::fgkPointsBkg    = 4;
-const Int_t   TPGpeak1D::fgkPeakIdx      = 3;
-
-Style_t TPGpeak1D::fgFillStylePeak = 3005;
-Color_t TPGpeak1D::fgLineColorBkg  = 39;
-Style_t TPGpeak1D::fgFillStyleBkg  = 3001;
-Color_t TPGpeak1D::fgMarkerColor   = 36;
-Color_t TPGpeak1D::fgFuncColor     = 26;
+const Int_t TPGpeak1D::fgkPointsPeak   = 7;
+const Int_t TPGpeak1D::fgkPointsBkg    = 4;
+const Int_t TPGpeak1D::fgkPeakIdx      = 3;
+Style_t     TPGpeak1D::fgFillStylePeak = 3005;
+Color_t     TPGpeak1D::fgLineColorBkg  = 39;
+Style_t     TPGpeak1D::fgFillStyleBkg  = 3001;
+Color_t     TPGpeak1D::fgMarkerColor   = 36;
+Color_t     TPGpeak1D::fgFuncColor     = 26;
 
 
 //__________________________________________________________
@@ -275,9 +274,12 @@ TPGpeak1D::TPGpeak1D(TPolyLine* polyline)
 	InitPeakMarkers();
 }
 
-/*
-//__________________________________________________________
-TPGpeak1D::TPGpeak1D(const TPGpeak1D& p) : TPGbasePeak(p),
+ //------------------------------------------+-----------------------------------
+ //! Copy constructor
+ //!
+ //! \param[in] p peak to copy
+ TPGpeak1D::TPGpeak1D(const TPGpeak1D& p)
+ : TPGbasePeak(p),
 	fPosition(p.fPosition),
 	fFWHM(p.fFWHM),
 	fBkgLeft1(p.fBkgLeft1),
@@ -289,8 +291,7 @@ TPGpeak1D::TPGpeak1D(const TPGpeak1D& p) : TPGbasePeak(p),
 	fBkgLevelRight1(p.fBkgLevelRight1),
 	fBkgLevelRight2(p.fBkgLevelRight2),
 	fBkgFlag(p.fBkgFlag),
-	fDrawAs(p.fDrawAs),
-	fLog("TPGpeak1D")
+	fDrawAs(p.fDrawAs)
 {
 	// copy constructor
 	fPolyLinePeak   = new TPolyLine(p.fgkPointsPeak);
@@ -308,8 +309,11 @@ TPGpeak1D::TPGpeak1D(const TPGpeak1D& p) : TPGbasePeak(p),
 	fMarkerList = new TList(p.fMarkerList);
 }
 
-//__________________________________________________________
-TPGpeak1D& TPGpeak1D::operator=(const TPGpeak1D& p)
+ //------------------------------------------+-----------------------------------
+ //!operator=
+ //!
+ //! \param[in] p peak to equal
+ TPGpeak1D& TPGpeak1D::operator=(const TPGpeak1D& p)
 {
 	// assignment operator
 	if (this == &p) 
@@ -338,8 +342,7 @@ TPGpeak1D& TPGpeak1D::operator=(const TPGpeak1D& p)
 	
 	return *this;
 }
- */
-
+ 
 //__________________________________________________________
 //! Destructor
 TPGpeak1D::~TPGpeak1D()
