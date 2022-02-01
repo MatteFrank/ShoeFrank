@@ -76,6 +76,7 @@ TPGspectrumCalibrator::~TPGspectrumCalibrator()
 //! \param[in] histo a given histogram
 //! \param[in] function function to use for fit
 //! \param[in] option options
+//! option = "x","y","z", for TH1 (1, 2 or 3 dimensions)
 void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const TF1 *function, const Option_t *option)
 {
    if (!histo) {
@@ -119,6 +120,7 @@ void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const TF1 *function, con
 //! \param[in] b 2nd parameter
 //! \param[in] c 3rd parameter
 //! \param[in] option options
+//! option = "x","y","z", for TH1 (1, 2 or 3 dimensions)
 void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const Double_t a, const Double_t b,
                                       const Double_t c, const Option_t *option) 
 {
@@ -161,6 +163,7 @@ void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const Double_t a, const 
 //! \param[in] a 1st parameter
 //! \param[in] b 2nd parameter
 //! \param[in] option options
+//! option = "x","y","z", for TH1 (1, 2 or 3 dimensions)
 void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const Double_t a, const Double_t b, const Option_t *option)
 {
    Calibrate(histo,a,b,0.0,option);
@@ -223,7 +226,14 @@ void TPGspectrumCalibrator::Calibrate(const TH2 *histo, const Double_t ax, const
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//!   Calibration with an order 2 polynome (a + bX) for 2D histogram
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] ax 1st parameter for X-direction
+//! \param[in] bx 2nd parameter for X-direction
+//! \param[in] ay 1st parameter for Y-direction
+//! \param[in] by 2nd parameter for Y-direction
 void TPGspectrumCalibrator::Calibrate(const TH2 *histo, const Double_t ax, const Double_t bx, const Double_t ay, const Double_t by)
 {
    Calibrate(histo,ax,bx,0.0,ay,by,0.0);
@@ -272,6 +282,7 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const TF1 *functionX, co
 //! \param[in] function1 calibration function for X/Y/Z-direction
 //! \param[in] function2 calibration function for X/Y/Z-direction
 //! \param[in] option axis options
+//! option = "xy","xz","yz" or "xyz" for a TH3 (the axis are calibrated with the same function)
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const TF1 *function1, const TF1 *function2, const Option_t *option)
 {
    if (!histo) {
@@ -361,7 +372,7 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const Double_t ax, const
 //------------------------------------------+-----------------------------------
 //! Calibration a 3D histogram with 2 functions with 2 order polynom
 //!
-//! \param[in] histo a given 2D histogram
+//! \param[in] histo a given 3D histogram
 //! \param[in] a1 1st parameter for X/Y/Z-direction
 //! \param[in] b1 2nd parameter for X/Y/Z-direction
 //! \param[in] c1 3rd parameter for X/Y/Z-direction
@@ -369,6 +380,7 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const Double_t ax, const
 //! \param[in] b2 2nd parameter for X/Y/Z-direction
 //! \param[in] c2 3rd parameter for X/Y/Z-direction
 //! \param[in] option axis options
+//! option = "xy","xz","yz" or "xyz" for a TH3 (the axis are calibrated with the same function)
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo,  const Double_t a1, const Double_t b1, const Double_t c1,
                                       const Double_t a2, const Double_t b2, const Double_t c2, const Option_t *option)
 {
@@ -409,6 +421,7 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo,  const Double_t a1, cons
 //! \param[in] a2 1st parameter for X/Y/Z-direction
 //! \param[in] b2 2nd parameter for X/Y/Z-direction
 //! \param[in] option axis options
+//! option = "xy","xz","yz" or "xyz" for a TH3 (the axis are calibrated with the same function)
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo,  const Double_t a1, const Double_t b1,
                                       const Double_t a2, const Double_t b2, const Option_t *option)
 {
