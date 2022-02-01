@@ -51,7 +51,7 @@ EnableRegionMc:      n
 
 ############   END - Options for reconstruction   ################
 
-IncludeDI:			   y
+IncludeDI:			   n
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
