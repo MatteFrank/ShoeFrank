@@ -41,7 +41,7 @@ EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
 
-EnableSaveHits:      n
+EnableSaveHits:      y
 EnableRootObject:    y
 EnableTWZmc:         n
 EnableTWnoPU:        n
@@ -51,7 +51,7 @@ EnableRegionMc:      n
 
 ############   END - Options for reconstruction   ################
 
-IncludeDI:			   y
+IncludeDI:			   n
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
