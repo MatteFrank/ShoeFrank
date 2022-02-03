@@ -93,7 +93,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
       char line[200];
       
       fin_Q.getline(line, 200, '\n');
-      if(strchr(line,'/')) // skip first line if comment
+      if(strchr(line,'#')) // skip first line if comment
          fin_Q.getline(line, 200, '\n');
       sscanf(line, "%d", &nCrystals);
       fCalibElossMapCry.reserve(nCrystals);
