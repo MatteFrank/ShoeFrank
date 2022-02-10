@@ -64,6 +64,10 @@ void TAMSDactNtuRaw::CreateHistogram()
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 
+      fpHisSeedMap[i] = new TH1F(Form("msSeedMap%d", i+1), Form("MSD - seed map for sensor %d", i+1),
+                                  pGeoMap->GetStripsN(), 0, pGeoMap->GetStripsN());
+      AddHistogram(fpHisSeedMap[i]);
+
       fpHisStripMap[i] = new TH1F(Form("msStripMap%d", i+1), Form("MSD - strip map for sensor %d", i+1),
                                   pGeoMap->GetStripsN(), 0, pGeoMap->GetStripsN());
       AddHistogram(fpHisStripMap[i]);
@@ -225,8 +229,8 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Int_t sensorId = -1;
       Bool_t status  = true;
       
-      Double_t valueX = 99;
-      Double_t valueY = 99;
+      Double_t valueX = -99;
+      Double_t valueY = -99;
 
       Double_t meanX  = 0;
       Double_t meanY  = 0;
@@ -239,9 +243,9 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 
       if( pedestal.status ) {
          if (fgPedestalSub) {
-             valueX = p_parcal->GetPedestalValue(sensorId, pedestal);
-             meanX = pedestal.mean;
-             valueX = adcX - valueX;
+            valueX = p_parcal->GetPedestalValue(sensorId, pedestal, true);
+            meanX = pedestal.mean;
+            valueX = adcX - valueX;
 
             if (fgCommonModeSub)
             {
@@ -253,23 +257,36 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                   }
                   cnX = ComputeCN(i, VaContent, 0);
                   if (ValidHistogram())
-                  fpHisCommonMode[sensorId]->Fill(cnX);
+                     fpHisCommonMode[sensorId]->Fill(cnX);
                }
             }
-         }
+
+         valueX -= cnX;
+         
          if (valueX > 0) {
-            p_datraw->AddStrip(sensorId, i, 0, adcX-meanX-cnX);
+            p_datraw->AddSeed(sensorId, view, i, adcX-meanX-cnX);
+            if (ValidHistogram())
+               fpHisSeedMap[sensorId]->Fill(i, adcX-meanX-cnX);
+         }
+
+         valueX = p_parcal->GetPedestalValue(sensorId, pedestal, false);
+         valueX = adcX - valueX - cnX;
+         if (valueX > 0) {
+            p_datraw->AddStrip(sensorId, view, i, adcX-meanX-cnX);
             if (ValidHistogram())
                fpHisStripMap[sensorId]->Fill(i, adcX-meanX-cnX);
          }
+         
+         }
       }
+
       view = 1;
       sensorId = p_parmap->GetSensorId(boardId, view);
       pedestal = p_parcal->GetPedestal( sensorId, i );
 
       if( pedestal.status ) {
          if (fgPedestalSub) {
-            valueY = p_parcal->GetPedestalValue(sensorId, pedestal);
+            valueY = p_parcal->GetPedestalValue(sensorId, pedestal, true);
             meanY = pedestal.mean;
             valueY = adcY - valueY;
 
@@ -282,22 +299,33 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                      VaContent[VaChan] = evt->Yplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
                   }
                   cnY = ComputeCN(i, VaContent, 0);
+                  if (ValidHistogram())
+                     fpHisCommonMode[sensorId]->Fill(cnY);
                }
             }
-         }
-         if (valueY > 0)
-         {
-            p_datraw->AddStrip(sensorId, i, 1, adcY-meanY-cnY);
+
+         valueY -= cnY;
+         
+         if (valueY > 0) {
+            p_datraw->AddSeed(sensorId, view, i, adcY-meanY-cnY);
             if (ValidHistogram())
-            {
                fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
-               fpHisCommonMode[sensorId]->Fill(cnY);
-            }
          }
-      }
-      if(FootDebugLevel(2)) {
-	if(valueX>0 || valueY>0)
-	  cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
+
+         valueY = p_parcal->GetPedestalValue(sensorId, pedestal, false);
+         valueY = adcY - valueY - cnY;
+         if (valueY > 0) {
+            p_datraw->AddStrip(sensorId, view, i, adcY-meanY-cnY);
+            if (ValidHistogram())
+               fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
+         }
+      
+         if(FootDebugLevel(2)) {
+	         if(valueX>0 || valueY>0)
+	            cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
+         }
+
+         }
       }
    }
    

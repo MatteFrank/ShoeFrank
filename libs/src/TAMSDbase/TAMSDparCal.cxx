@@ -32,9 +32,9 @@ Bool_t TAMSDparCal::LoadEnergyCalibrationMap(TString name)
 }
 
 //_____________________________________________________________________
-TAMSDcalibrationMap::ElossParameter_t TAMSDparCal::GetElossParameters(Int_t sensorId, Int_t stripId)
+TAMSDcalibrationMap::ElossParameter_t TAMSDparCal::GetElossParameters()
 {
-    return fMapCal->GetElossParameters(sensorId, stripId);
+    return fMapCal->GetElossParameters();
 }
 
 //_________________________________________
@@ -55,9 +55,16 @@ TAMSDcalibrationMap::PedParameter_t TAMSDparCal::GetPedestal(Int_t sensorId, Int
 }
 
 //_____________________________________________________________________
-Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p )
+Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed)
 {
-   Double_t sigLevel = fMapCal->GetPedestalNoiseLevel(sensorId);
+   Double_t sigLevel = 0;
+   
+   if(seed){
+      sigLevel = fMapCal->GetPedestalSeedLevel(sensorId);
+   }else {
+      sigLevel = fMapCal->GetPedestalHitLevel(sensorId);
+   }
+
    Double_t mean     = pedestal_p.mean;
    Double_t sigma    = pedestal_p.sigma;
 

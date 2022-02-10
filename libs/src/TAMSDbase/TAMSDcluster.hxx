@@ -63,15 +63,17 @@ public:
    //! Get energy loss
    Float_t            GetEnergyLoss()                  const { return fEnergyLoss;     }
    //! Get energy loss with eta correction
-   Float_t            GetEnergyLossCorr()                    { return fEnergyLoss/GetEtaCorrection();}
+   Float_t            GetEnergyLossCorr()                    { return fEnergyLoss/GetEtaChargeCorrection();}
    //! Get fast 'Eta' value for the cluster 
    Float_t            GetEtaFast()                           { return ComputeEtaFast(fCog); }
    //! Get 'Eta' value for the cluster 
    Float_t            GetEta()                               { return ComputeEta(fListOfStrips); }
    //! Get ADC correction factor wrt 'Eta' value of the cluster
-   Float_t            GetEtaCorrection()                     { return ComputeEtaCorrection( GetEta() ); }
+   Float_t            GetEtaChargeCorrection()               { return ComputeEtaChargeCorrection( GetEta() ); }
    //! Get position of first strip of the cluster
    Float_t            GetAddress()                           { return ComputeAddress(fListOfStrips); }
+   //! Get positioncorrection factor wrt 'Eta' value of the cluster
+   Float_t            GetEtaPosCorrection()                  { return ComputeEtaPosCorrection( GetEta() ); }
    //! Get number of strips in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
    //! Get strip
@@ -84,9 +86,12 @@ public:
    Float_t            ComputeEta(TClonesArray* fListOfStrips);
    //!Calculate position of first strip in the cluster
    Float_t            ComputeAddress(TClonesArray* fListOfStrips);
-   //! Compute corection factor for the energy loss wrt position
-   Float_t            ComputeEtaCorrection(Float_t eta);
-   
+   //! Compute correction factor for the energy loss wrt position
+   Float_t            ComputeEtaChargeCorrection(Float_t eta);
+   //! Compute correction factor for the cluster position wrt eta
+   Float_t            ComputeEtaPosCorrection(Float_t eta);
+      //! Get center of gravity corrected wrt eta 
+   Float_t            GetCogCorr()                           { return GetAddress() + ComputeEtaPosCorrection(GetEta()); }
    //! reset strips
    void               ResetStrips();
 

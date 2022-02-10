@@ -67,48 +67,51 @@ Bool_t TAMSDactNtuHit::Action()
    for (Int_t i = 0; i < p_geoMap->GetSensorsN(); ++i) {
       
       int nstrip = p_datraw->GetStripsN(i);
-
+      int nseed = p_datraw->GetSeedsN(i);
+      
       for(int ih = 0; ih < nstrip; ++ih) {
          TAMSDrawHit *strip = p_datraw->GetStrip(i, ih);
          
          Int_t sensorId   = strip->GetSensorId();
          Int_t stripId    = strip->GetStrip();
          Int_t view       = strip->GetView();
-         UInt_t charge    = strip->GetCharge();
+         Double_t charge  = strip->GetCharge();
          Float_t posStrip = p_geoMap->GetPosition(stripId);
          if(FootDebugLevel(2))
             cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
 	 
          if (FootDebugLevel(1))
-            printf("sensor: %d strip: %d view: %d charge: %d\n", sensorId, stripId, view, charge);
+            printf("sensor: %d strip: %d view: %d charge: %f\n", sensorId, stripId, view, charge);
          
          if (p_config->GetSensorPar(sensorId).DeadStripMap[stripId] == 1) continue;
 
-         // here we need the calibration file
-         Double_t energy = GetEnergy(charge, sensorId, stripId);
-         TAMSDhit* hit = p_nturaw->NewStrip(sensorId, energy, view, stripId);
+         TAMSDhit* hit = p_nturaw->NewStrip(sensorId, charge, view, stripId);
          hit->SetPosition(posStrip);
+      }
+
+      for(int ih = 0; ih < nseed; ++ih) {
+         TAMSDrawHit *seed = p_datraw->GetSeed(i, ih);
+         
+         Int_t sensorId   = seed->GetSensorId();
+         Int_t seedId    = seed->GetStrip();
+         Int_t view       = seed->GetView();
+         Double_t charge    = seed->GetCharge();
+         Float_t posSeed = p_geoMap->GetPosition(seedId);
+         if(FootDebugLevel(2))
+            cout<<"\tSens "<<sensorId<<" seed "<<seedId<<" View "<<view<<" position (cm) "<<posSeed<<" "<<endl;
 	 
+         if (FootDebugLevel(1))
+            printf("sensor: %d seed: %d view: %d charge: %f\n", sensorId, seedId, view, charge);
+         
+         if (p_config->GetSensorPar(sensorId).DeadStripMap[seedId] == 1) continue;
+
+         TAMSDhit* hitSeed = p_nturaw->NewSeed(sensorId, charge, view, seedId);
+         hitSeed->SetPosition(posSeed);	 
       }
    }
    fpNtuRaw->SetBit(kValid);
    
    return kTRUE;
-}
-
-//------------------------------------------+-----------------------------------
-Double_t TAMSDactNtuHit::GetEnergy(Double_t rawenergy, Int_t sensorId, Int_t stripId)
-{
-   TAMSDparCal* p_parcal = (TAMSDparCal*) fpParCal->Object();
-   
-    //switching from this to only one call would speed up thing, buit using flat vector of struct would be faster
-    //only thing needed is to compute index, but it is easy, it's a matrix
-//   Double_t p0 = p_parcal->GetElossParam(sensorId, stripId, 0);
-//   Do,/uble_t p1 = p_parcal->GetElossParam(sensorId, stripId, 1);
-    auto eloss_parameters = p_parcal->GetElossParameters(sensorId, stripId);
-   
-   //return p0 + p1 * rawenergy;
-    return eloss_parameters.offset + eloss_parameters.slope * rawenergy;
 }
 
 

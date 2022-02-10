@@ -16,14 +16,14 @@ class TAMSDrawHit : public TObject {
    
 protected:
    Int_t      fSensorId;
-   UInt_t     fCharge;
+   Double_t   fCharge;
    Int_t      fIndex;
    Int_t      fView;
    Int_t      fStrip;
          
 public:
    TAMSDrawHit();
-   TAMSDrawHit( Int_t id, Int_t view, Int_t strip, UInt_t charge);
+   TAMSDrawHit( Int_t id, Int_t view, Int_t strip, Double_t charge);
    virtual ~TAMSDrawHit() {;}
 
    //! Comapre method
@@ -31,7 +31,7 @@ public:
    //! Get input type
    Int_t      GetSensorId()     const    { return fSensorId; }
    //! Get value (pulse height)
-   UInt_t      GetCharge()      const    { return fCharge;   }
+   Double_t   GetCharge()       const    { return fCharge;   }
    //! Get line number
    Int_t      GetView()         const    { return fView;     }
    //! Get column number
@@ -44,7 +44,7 @@ public:
    //! Set input type
    void     SetSensorId(Int_t id)        { fSensorId = id;   }
    //! Set value
-   void     SetCharge(UInt_t value)      { fCharge = value;  }
+   void     SetCharge(Double_t value)    { fCharge = value;  }
    //! Set line number
    void     SetView(Int_t view)          { fView = view;     }
    //! Set column number
@@ -65,6 +65,7 @@ class TAMSDntuRaw : public TAGdata {
    
 protected:
    TObjArray*   fListOfStrips;
+   TObjArray*   fListOfSeeds;
    TAMSDparGeo* fpGeoMap;
    
 private:
@@ -76,16 +77,25 @@ public:
    
    //! Get list of strips
    TClonesArray*      GetStrips(Int_t iSensor)  const;
+   //! Get list of strips
+   TClonesArray*      GetSeeds(Int_t iSensor)  const;
  
    //! Get number of strips
    Int_t              GetStripsN(Int_t iSensor)  const;
+   //! Get number of strips
+   Int_t              GetSeedsN(Int_t iSensor)  const;
    
    //! Get strip
    TAMSDrawHit*       GetStrip(Int_t iSensor, Int_t iStrip);
    const TAMSDrawHit* GetStrip(Int_t iSensor, Int_t iStrip)   const;
+   //! Get strip
+   TAMSDrawHit*       GetSeed(Int_t iSensor, Int_t iStrip);
+   const TAMSDrawHit* GetSeed(Int_t iSensor, Int_t iStrip)   const;
    
    //! Add strip to list
-   void               AddStrip(Int_t sensor, Int_t view, Int_t aStrip, UInt_t value);
+   void               AddStrip(Int_t sensor, Int_t view, Int_t aStrip, Double_t value);
+   //! Add strip to list
+   void               AddSeed(Int_t sensor, Int_t view, Int_t aStrip, Double_t value);
   
    //! Set up clones
    void               SetupClones();

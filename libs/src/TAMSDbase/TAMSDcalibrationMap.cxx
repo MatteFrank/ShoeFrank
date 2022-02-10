@@ -10,7 +10,6 @@ TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
 : TAGobject(),
   fStripsN{strip_number_p}
 {
-    fEloss.reserve( fStripsN * 16 );
     fPedestal.reserve( fStripsN * 16 );
 }
 
@@ -29,8 +28,7 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
    if(fin.is_open()){
       char line[200];
       
-      int sensorId, stripId;
-      double Q_corrp0, Q_corrp1;
+      double eta, eta_corr;
       
       // loop over all the strips
       while (fin.getline(line, 200, '\n')) {
@@ -41,11 +39,11 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
             continue;
          }
          
-         sscanf(line, "%d %d %lf %lf",&sensorId, &stripId, &Q_corrp0, &Q_corrp1);
+         sscanf(line, "%lf %lf",&eta, &eta_corr);
          if(FootDebugLevel(1))
-            Info("LoadEnergyCalibrationMap()","%d %d %.5f %.7f\n",sensorId, stripId, Q_corrp0, Q_corrp1);
-         fEloss.push_back( ElossParameter_t{Q_corrp0, Q_corrp1} );
-          
+            Info("LoadEnergyCalibrationMap()","%lf %lf\n",eta, eta_corr);
+         fEloss.eta.push_back(eta);
+         fEloss.correction.push_back(eta_corr);          
       }
    } else
       Info("LoadEnergyCalibrationMap()","File Calibration Energy %s not open!!",FileName.Data());
@@ -71,7 +69,7 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
       int sensorId, stripId;
       int asicId, asicCh;
       double Q_corrp0, Q_corrp1, Q_corrp2;
-      double sigmaLevel;
+      double sigmaLevelSeed, sigmaLevelHit;
       int k = 0;
       
       // loop over sigma level per sensor
@@ -87,10 +85,14 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
             continue;
          }
         
-         sscanf(line, "%lf", &sigmaLevel);
-         fSigmaNoiseLevel.push_back(sigmaLevel);
+         sscanf(line, "%lf", &sigmaLevelSeed);
+         fSigmaNoiseLevelSeed.push_back(sigmaLevelSeed);
+         fin.getline(line, 200, '\n');
+         sscanf(line, "%lf", &sigmaLevelHit);
+         fSigmaNoiseLevelHit.push_back(sigmaLevelHit);
          if(FootDebugLevel(1)) {
-            Info("LoadPedestalMap()","sensorId: %d Sigma Level %.1f\n", k, fSigmaNoiseLevel[k]);
+            Info("LoadPedestalMap()","sensorId: %d Sigma Level Seed %.1f - Sigma Level Hit %.1f\n", k, fSigmaNoiseLevelSeed[k], fSigmaNoiseLevelHit[k]);
+            sleep(1);
             k++;
          }
       }

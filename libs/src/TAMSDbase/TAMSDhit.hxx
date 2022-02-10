@@ -76,7 +76,7 @@ public:
   //! Set column number
   void     SetStrip(Int_t strip)        { fStrip = strip;    }
   //! Set index
-   void     SetIndex(Int_t index)       { fIndex = index;    }
+  void     SetIndex(Int_t index)        { fIndex = index;    }
   // Set position
   void     SetPosition(Float_t pos)     { fPosition = pos;   }
   // Add MC track Id

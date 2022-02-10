@@ -51,6 +51,7 @@ private:
     TAGparaDsc*     fpParCal;            // parameter dsc
     TAGparaDsc*     fpParGeo;		        // parameter dsc
 
+    TH1F*           fpHisSeedMap[16];
     TH1F*           fpHisStripMap[16];
     TH1F*           fpHisCommonMode[16];
    
