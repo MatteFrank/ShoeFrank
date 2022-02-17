@@ -934,9 +934,23 @@ void BaseReco::CreateRecActionGlbGF()
 		SetL0TreeBranches();
 
 		if (TAGrecoManager::GetPar()->IncludeDI()) {
-			genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
-			genfit::FieldManager::getInstance()->getFieldVal( TVector3(0,0,14) ).Print();
+         genfit::FieldManager::getInstance()->init( new TADIgenField(fField) );
+         if( FootDebugLevel(1) )
+         {
+            cout << "Check of magnetic field value in random position (0,0,14)" << endl;
+            genfit::FieldManager::getInstance()->getFieldVal( TVector3(0,0,14) ).Print();
+         }
 		}
+      //Write function for zero field inizialization
+      else
+      {
+         genfit::FieldManager::getInstance()->init( new TADIgenField() );
+         if( FootDebugLevel(1) )
+         {
+            cout << "Check of magnetic field value in random position (0,0,14)" << endl;
+            genfit::FieldManager::getInstance()->getFieldVal( TVector3(0,0,14) ).Print();
+         }
+      }
 
 		// set material and geometry into genfit
 		MaterialEffects* materialEffects = MaterialEffects::getInstance();
@@ -1113,12 +1127,12 @@ void BaseReco::AddRecRequiredItem()
      return;
    }
 
-   if (TAGrecoManager::GetPar()->IncludeKalman() && TAGrecoManager::GetPar()->IsLocalReco()) {
-     if (fFlagTrack) {
-       gTAGroot->AddRequiredItem("glbActkFitter");
-     }
-     return;
-   }
+   // if (TAGrecoManager::GetPar()->IncludeKalman() && TAGrecoManager::GetPar()->IsLocalReco()) {
+   //   if (fFlagTrack) {
+   //     gTAGroot->AddRequiredItem("glbActKFitter");
+   //   }
+   //   return;
+   // }
 
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM())
       gTAGroot->AddRequiredItem("stActNtu");

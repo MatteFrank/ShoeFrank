@@ -23,6 +23,7 @@ private:
    TADIgeoField* fField; ///< Mag field from geometry
    
 public:
+   TADIgenField();
    TADIgenField(TADIgeoField* field);
    virtual ~TADIgenField();
    
