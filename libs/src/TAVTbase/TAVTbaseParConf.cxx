@@ -156,6 +156,21 @@ void TAVTbaseParConf::Clear(Option_t*)
   return;
 }
 
+//------------------------------------------+-----------------------------------
+//! Dead pixel map check for given sensor, line and column
+//!
+//! \param[in] sensorId a given sensor
+//! \param[in] aLine a given line
+//! \param[in] aColumn a given column
+Bool_t TAVTbaseParConf::IsDeadPixel(Int_t sensorId, Int_t aLine, Int_t aColumn)
+{
+   std::pair<int, int> pair(aLine, aColumn);
+   if (fSensorParameter[sensorId].DeadPixelMap.find(pair) != fSensorParameter[sensorId].DeadPixelMap.end())
+      return true;
+   
+   return false;
+}
+
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
 //!

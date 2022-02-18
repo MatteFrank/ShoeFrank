@@ -67,6 +67,9 @@ public:
    // To stream
    virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
    
+   // Dead pixel map check
+   Bool_t IsDeadPixel(Int_t sensorId, Int_t aLine, Int_t aColumn);
+   
    // Get status for a sensor
    virtual Int_t   GetStatus(Int_t idx)      const;
    // Get minor status for a sensor
