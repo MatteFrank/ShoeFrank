@@ -58,20 +58,29 @@ int main (int argc, char *argv[])  {
       TAGrecoManager::GetPar()->DisableHisto();
    }
 
-   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
-   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
-   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
-   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
-   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
-   Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
-   Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
-   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
-   Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
-   
-   TAGrecoManager::GetPar()->IncludeTOE(false);
-   TAGrecoManager::GetPar()->IncludeKalman(true);
-   
-   BaseReco* glbRec = 0x0;
+
+
+	Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+	Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+	Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+	Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
+	Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+	Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
+	Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
+	Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
+	Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
+
+	TAGrecoManager::GetPar()->IncludeTOE(false);
+	TAGrecoManager::GetPar()->IncludeKalman(true);
+
+	BaseReco* glbRec = 0x0;
+
+	// check input file exists 
+   	if ( gSystem->AccessPathName(in,kFileExists) ) {
+   		cout << "ERROR -- input file not exists " << in << ". Cheers!"<< endl;
+   		exit(0);
+   	}
+
    
    if (lrc)
       glbRec = new GlobalReco(exp, runNb, in, out, mc);
