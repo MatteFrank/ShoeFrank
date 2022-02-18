@@ -40,17 +40,17 @@ class TAGbaseWDparTime : public TAGpara {
 
   const double sec2Nano = 1E9;
 
-  inline string GetCFDalgo(string det){return cfdalgo.find(det)->second;}
-  inline double GetCFDfrac(string det){return cfdfrac.find(det)->second;}
-  inline double GetCFDdel(string det){return cfddel.find(det)->second;}
+  inline string GetCFDalgo(string det){return fCfdAlgo.find(det)->second;}
+  inline double GetCFDfrac(string det){return fCfdFrac.find(det)->second;}
+  inline double GetCFDdel(string det){return fCfdDel.find(det)->second;}
 
   
 private:
 
-  map<pair<int,int>, vector<double>> time_parcal;
-  map<string,string> cfdalgo;
-  map<string,double> cfdfrac;
-  map<string,double> cfddel;
+  map<pair<int,int>, vector<double>> fTimeParCal;
+  map<string,string> fCfdAlgo;
+  map<string,double> fCfdFrac;
+  map<string,double> fCfdDel;
 
   
 
