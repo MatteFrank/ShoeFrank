@@ -94,3 +94,10 @@ CamName:    "MSDCNAO"
 CamDataMC:    0
 CamDate: "Dec 2021"
 CamSum: "MSD beam test at CNAO"
+
+CamNumber:    16
+CamName:    "40Ca_300_MC"
+CamDataMC:    1
+CamDate: "February 2022"
+CamSum: "Simulation data for data taking with ST+BM+VTX+MSD+TW+CAL 40Ca 300 MeV/u"
+
