@@ -1,0 +1,52 @@
+// Campaign file
+CamName: "Alpha_TW2_MC"
+RunNumber: 211-212-213-221-222-223-311-312-313-321-322-323-411-412-413-421-422-423
+NumberDevices: 9
+
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/Alpha_TW2_MC/TADIdetector.geo": -1
+
+DetectorName: "FOOT"
+NumberFiles: 2
+"./geomaps/Alpha_TW2_MC/FOOT.geo": 211;212;213;221;222;223;311;312;313;321;322;323;411;412;413;421;422;423
+"./geomaps/Alpha_TW2_MC/FOOT.reg": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/Alpha_TW2_MC/TASTdetector.geo": -1
+
+DetectorName: "BM"
+NumberFiles: 3
+"./geomaps/Alpha_TW2_MC/TABMdetector.geo": -1
+"./config/Alpha_TW2_MC/TABMdetector.cfg": -1
+"./calib/Alpha_TW2_MC/TABM_T0_Calibration.cal": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/Alpha_TW2_MC/TAGdetector.geo": 211;212;213;221;222;223;311;312;313;321;322;323;411;412;413;421;422;423
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/Alpha_TW2_MC/TAVTdetector.geo": -1
+"./config/Alpha_TW2_MC/TAVTdetector.cfg": -1
+
+DetectorName: "MSD"
+NumberFiles: 2
+"./geomaps/Alpha_TW2_MC/TAMSDdetector.geo": -1
+"./config/Alpha_TW2_MC/TAMSDdetector.cfg": -1
+
+DetectorName: "TW"
+NumberFiles: 5
+"./geomaps/Alpha_TW2_MC/TATWdetector.geo": -1
+"./config/Alpha_TW2_MC/TATW_BBparameters.cfg": -1
+"./config/Alpha_TW2_MC/TATWbarsMapStatus.map": -1
+"./calib/Alpha_TW2_MC/TATW_Energy_Calibration.cal": -1
+"./calib/Alpha_TW2_MC/TATW_Tof_Calibration.cal": -1
+
+DetectorName: "CA"
+NumberFiles: 3
+"./geomaps/Alpha_TW2_MC/TACAdetector.geo": -1
+"./calib/Alpha_TW2_MC/TACA_Energy_Calibration.cal": -1
+"./config/Alpha_TW2_MC/TACAcrystalMapStatus.map": -1
+
