@@ -32,8 +32,6 @@ public:
    
    void     CreateHistogram();
    
-   Double_t GetEnergy(Double_t rawEnergy, Int_t sensor, Int_t strip);
-   
 private:
    TAGdataDsc*     fpDatRaw;		    // input data dsc
    TAGdataDsc*     fpNtuRaw;		    // output data dsc

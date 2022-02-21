@@ -33,6 +33,7 @@ TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TA
     fCurrentPosition(0.),
     fCurrentPosError(0.),
     fListOfStrips(0x0),
+    fListOfSeeds(0x0),
     fClustersN(0)
 {
   AddPara(pGeoMap, "TAMSDparGeo");
@@ -99,7 +100,9 @@ Bool_t TAMSDactNtuCluster::Action()
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fListOfStrips = pNtuHit->GetListOfStrips(i);
-    if (fListOfStrips->GetEntries() == 0) continue;
+    fListOfSeeds = pNtuHit->GetListOfSeeds(i);
+
+    if (fListOfSeeds->GetEntries() == 0) continue;
     ok += FindClusters(i);
   }
   
@@ -128,9 +131,8 @@ void TAMSDactNtuCluster::SearchCluster()
 {
   fClustersN = 0;
   // Search for cluster
-  
-  for (Int_t iPix = 0; iPix < fListOfStrips->GetEntries(); ++iPix) { // loop over hit strips
-    TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iPix);
+  for (Int_t iStrip = 0; iStrip < fListOfSeeds->GetEntries(); ++iStrip) { // loop over seed strips
+    TAMSDhit* strip = (TAMSDhit*)fListOfSeeds->At(iStrip);
     if (strip->Found()) continue;
     
     Int_t stripId  = strip->GetStrip();
@@ -182,7 +184,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
 {
    TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
    TAMSDparGeo* pGeoMap  = (TAMSDparGeo*)     fpGeoMap->Object();
-
+   
   TAMSDcluster* cluster = 0x0;
   
   // create clusters
@@ -216,7 +218,6 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);    
     cluster->SetPositionG(posG);
-    
      if (ApplyCuts(cluster)) {
         // histogramms
         cluster->SetValid();

@@ -20,7 +20,6 @@
 #pragma link C++ class TAMSDntuCluster+;
 #pragma link C++ class TAMSDcluster+;
 #pragma link C++ class TAMSDactNtuCluster+;
-#pragma link C++ class TAMSDactNtuClusterDT+;
 #pragma link C++ class TAMSDntuPoint+;
 #pragma link C++ class TAMSDpoint+;
 #pragma link C++ class TAMSDactNtuPoint+;

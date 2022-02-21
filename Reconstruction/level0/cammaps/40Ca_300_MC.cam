@@ -1,0 +1,52 @@
+// Campaign file
+CamName: "40Ca_300_MC"
+RunNumber: 300-410
+NumberDevices: 9
+
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/40Ca_300_MC/TADIdetector.geo": -1
+
+DetectorName: "FOOT"
+NumberFiles: 2
+"./geomaps/40Ca_300_MC/FOOT.geo": 300-310;400-410
+"./geomaps/40Ca_300_MC/FOOT.reg": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/40Ca_300_MC/TASTdetector.geo": -1
+
+DetectorName: "BM"
+NumberFiles: 3
+"./geomaps/40Ca_300_MC/TABMdetector.geo": -1
+"./config/40Ca_300_MC/TABMdetector.cfg": -1
+"./calib/40Ca_300_MC/TABM_T0_Calibration.cal": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/40Ca_300_MC/TAGdetector.geo": 300-310;400-410
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/40Ca_300_MC/TAVTdetector.geo": -1
+"./config/40Ca_300_MC/TAVTdetector.cfg": -1
+
+DetectorName: "MSD"
+NumberFiles: 2
+"./geomaps/40Ca_300_MC/TAMSDdetector.geo": -1
+"./config/40Ca_300_MC/TAMSDdetector.cfg": -1
+
+DetectorName: "TW"
+NumberFiles: 5
+"./geomaps/40Ca_300_MC/TATWdetector.geo": -1
+"./config/40Ca_300_MC/TATW_BBparameters.cfg": -1
+"./config/40Ca_300_MC/TATWbarsMapStatus.map": -1
+"./calib/40Ca_300_MC/TATW_Energy_Calibration.cal": -1
+"./calib/40Ca_300_MC/TATW_Tof_Calibration.cal": -1
+
+DetectorName: "CA"
+NumberFiles: 3
+"./geomaps/40Ca_300_MC/TACAdetector.geo": -1
+"./calib/40Ca_300_MC/TACA_Energy_Calibration.cal": -1
+"./config/40Ca_300_MC/TACAcrystalMapStatus.map": -1
+

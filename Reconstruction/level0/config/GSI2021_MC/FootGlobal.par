@@ -41,7 +41,7 @@ EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
 
-EnableSaveHits:      n
+EnableSaveHits:      y
 EnableRootObject:    y
 EnableTWZmc:         n
 EnableTWnoPU:        n
@@ -56,7 +56,7 @@ IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:	           n
+IncludeIT:	         n
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y
