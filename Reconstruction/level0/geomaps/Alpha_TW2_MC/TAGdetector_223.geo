@@ -22,7 +22,7 @@ BeamDiv:             0.0000
 // Target info (cm)
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 TargetShape:       "cubic"
-TargetSizeX:        5.0   TargetSizeY:    5.0    TargetSizeZ:  0.5
+TargetSizeX:        5.0   TargetSizeY:    5.0    TargetSizeZ:  1.0
 //TargetMaterial:     "C"
 //TargetAtomicMass:   12.0107
 //TargetDensity:      1.83
