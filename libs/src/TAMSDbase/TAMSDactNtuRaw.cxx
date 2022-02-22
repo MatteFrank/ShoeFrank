@@ -288,7 +288,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             if (valueY > 0) {
                seedY = true;
                if (ValidHistogram())
-                  fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
+                  fpHisSeedMap[sensorId]->Fill(i, adcY-meanY-cnY);
             }
             
             valueY = p_parcal->GetPedestalValue(sensorId, pedestal, false);
