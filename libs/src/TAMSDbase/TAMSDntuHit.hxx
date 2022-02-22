@@ -17,11 +17,9 @@ class TAMSDntuHit : public TAGdata {
 protected:
    //using TObjArray here
    TObjArray*        fListOfStrips;
-   TObjArray*        fListOfSeeds;
    TAMSDparGeo*      fpGeoMap;         //! do not store
    
    std::map<pair<int, int>, int > fMap; //!
-   std::map<pair<int, int>, int > fMapSeed; //!
 
 private:
    static TString    fgkBranchName;    // Branch name in TTree
@@ -33,20 +31,14 @@ public:
    TAMSDhit*          GetStrip(Int_t iSensor, Int_t iStrip);
    const TAMSDhit*    GetStrip(Int_t iSensor, Int_t iStrip) const;
 
-   TAMSDhit*          GetSeed(Int_t iSensor, Int_t iStrip);
-   const TAMSDhit*    GetSeed(Int_t iSensor, Int_t iStrip) const;
 
    TClonesArray*      GetListOfStrips(Int_t iSensor);
    TClonesArray*      GetListOfStrips(Int_t iSensor) const;
    
-   TClonesArray*      GetListOfSeeds(Int_t iSensor);
-   TClonesArray*      GetListOfSeeds(Int_t iSensor) const;
 
    Int_t              GetStripsN(Int_t iSensor) const;
-   Int_t              GetSeedsN(Int_t iSensor) const;
    
    TAMSDhit*          NewStrip(Int_t sensor, Double_t value, Int_t aView, Int_t aStrip);
-   TAMSDhit*          NewSeed(Int_t sensor, Double_t value, Int_t aView, Int_t aStrip);
    
    virtual void       SetupClones();
    

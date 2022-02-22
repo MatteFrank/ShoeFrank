@@ -42,8 +42,6 @@ public:
 
    //! Get list of strips for a given plane
    TClonesArray*   GetListOfStrips()   const { return fListOfStrips;    }
-   //! Get list of "seed" strips for a given plane
-   TClonesArray*   GetListOfSeeds()   const { return fListOfSeeds;    }
    
    //! Get position of current cluster
    Float_t       GetCurrentPosition()  const { return fCurrentPosition; }
@@ -56,8 +54,6 @@ public:
    
    //! Set list of strips
    void SetListOfStrips(TClonesArray* list)  { fListOfStrips = list;    }
-   //! Set list of seed strips
-   void SetListOfSeeds(TClonesArray* list)  { fListOfSeeds = list;    }
    //! Set position of current cluster
    void SetCurrentPosition(Float_t u)        { fCurrentPosition = u;    }
    //! Set center of gravity of current cluster 
@@ -76,7 +72,6 @@ private:
    Float_t         fCurrentPosError ;  // pointer to current position error
    Float_t         fCurrentCog;        // pointer to current center of gravity
    TClonesArray*   fListOfStrips;      // list of strips
-   TClonesArray*   fListOfSeeds;       // list of seed strips
    TClonesArray*   fCurListOfStrips;   // list of strips in current cluster
    
    Int_t          fClustersN;     // number of cluster

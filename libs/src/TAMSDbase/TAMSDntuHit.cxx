@@ -37,7 +37,6 @@ TString TAMSDntuHit::fgkBranchName   = "msdrh.";
 TAMSDntuHit::TAMSDntuHit()
 : TAGdata(),
   fListOfStrips(0x0),
-  fListOfSeeds(0x0),
   fpGeoMap(0x0)
 {
    fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
@@ -54,7 +53,6 @@ TAMSDntuHit::TAMSDntuHit()
 TAMSDntuHit::~TAMSDntuHit()
 {
    delete fListOfStrips;
-   delete fListOfSeeds;
 }
 
 //------------------------------------------+-----------------------------------
@@ -66,19 +64,6 @@ Int_t TAMSDntuHit::GetStripsN(Int_t iSensor) const
       return list->GetEntries();
    } else  {
       Error("GetStripsN()", "Wrong sensor number %d\n", iSensor);
-      return -1;
-   }
-}
-
-//------------------------------------------+-----------------------------------
-//! return number of seeds for a given sensor.
-Int_t TAMSDntuHit::GetSeedsN(Int_t iSensor) const
-{
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
-      TClonesArray* list = GetListOfSeeds(iSensor);
-      return list->GetEntries();
-   } else  {
-      Error("GetSeedsN()", "Wrong sensor number %d\n", iSensor);
       return -1;
    }
 }
@@ -109,30 +94,6 @@ TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor) const
 
 
 //------------------------------------------+-----------------------------------
-TClonesArray* TAMSDntuHit::GetListOfSeeds(Int_t iSensor)
-{
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
-      TClonesArray* listSeeds = (TClonesArray*)fListOfSeeds->At(iSensor);
-      return listSeeds;
-   } else {
-      Error("GetListOfSeeds()", "Wrong sensor number %d\n", iSensor);
-      return 0x0;
-   }
-}
-
-//------------------------------------------+-----------------------------------
-TClonesArray* TAMSDntuHit::GetListOfSeeds(Int_t iSensor) const
-{
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
-      TClonesArray* listSeeds = (TClonesArray*)fListOfSeeds->At(iSensor);
-      return listSeeds;
-   } else {
-      Error("GetListOfSeeds()", "Wrong sensor number %d\n", iSensor);
-      return 0x0;
-   }
-}
-
-//------------------------------------------+-----------------------------------
 //! return a strip for a given sensor
 TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip)
 {
@@ -160,32 +121,6 @@ const TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip) const
 
 
 //------------------------------------------+-----------------------------------
-//! return a seed for a given sensor
-TAMSDhit* TAMSDntuHit::GetSeed(Int_t iSensor, Int_t iStrip)
-{
-   if (iStrip >=0 || iStrip < GetSeedsN(iSensor)) {
-      TClonesArray* list = GetListOfSeeds(iSensor);
-      return (TAMSDhit*)list->At(iStrip);
-   } else {
-      Error("GetSeed()", "Wrong sensor number %d\n", iSensor);
-      return 0x0;
-   }
-}
-
-//------------------------------------------+-----------------------------------
-//! return a seed for a given sensor
-const TAMSDhit* TAMSDntuHit::GetSeed(Int_t iSensor, Int_t iStrip) const
-{
-   if (iStrip >=0 || iStrip < GetSeedsN(iSensor)) {
-      TClonesArray* list = GetListOfSeeds(iSensor);
-      return (TAMSDhit*)list->At(iStrip);
-   } else {
-      Error("GetSeed()", "Wrong sensor number %d\n", iSensor);
-      return 0x0;
-   }
-}
-
-//------------------------------------------+-----------------------------------
 //! Setup clones.
 void TAMSDntuHit::SetupClones()
 {
@@ -199,16 +134,6 @@ void TAMSDntuHit::SetupClones()
    }
    fListOfStrips->SetOwner(true);
 
-   if (fListOfSeeds) return;
-   fListOfSeeds = new TObjArray();
-   
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
-      TClonesArray* arrSeed = new TClonesArray("TAMSDhit", 500);
-      arrSeed->SetOwner(true);
-      fListOfSeeds->AddAt(arrSeed, i);
-   }
-   fListOfSeeds->SetOwner(true);
-
    fMap.clear();
 }
 
@@ -219,11 +144,8 @@ void TAMSDntuHit::Clear(Option_t*)
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       TClonesArray* list = GetListOfStrips(i);
       list->Clear("C");
-      TClonesArray* listS = GetListOfSeeds(i);
-      listS->Clear("C");
    }
    fMap.clear();
-   fMapSeed.clear();
 }
 
 //______________________________________________________________________________
@@ -248,32 +170,6 @@ TAMSDhit* TAMSDntuHit::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_
       }
    } else {
       Error("NewStrip()", "Wrong sensor number %d\n", iSensor);
-      return 0x0;
-   }
-}
-
-//______________________________________________________________________________
-//
-TAMSDhit* TAMSDntuHit::NewSeed(Int_t iSensor, Double_t value, Int_t aView, Int_t aStrip)
-{
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
-      TClonesArray &seedArray = *GetListOfSeeds(iSensor);
-      std::pair<int, int> idx(aView, aStrip);
-      
-      // check if strip already exists
-      if ( fMapSeed[idx] == iSensor+1) {
-         TAMSDhit* seed = new TAMSDhit(iSensor, value, aView, aStrip);
-         TAMSDhit* curSeed = (TAMSDhit*)seedArray.FindObject(seed);
-         delete seed;
-         return curSeed;
-         
-      } else {
-         fMapSeed[idx] = iSensor+1;
-         TAMSDhit* seed = new(seedArray[seedArray.GetEntriesFast()]) TAMSDhit(iSensor, value, aView, aStrip);
-         return seed;
-      }
-   } else {
-      Error("NewSeed()", "Wrong sensor number %d\n", iSensor);
       return 0x0;
    }
 }

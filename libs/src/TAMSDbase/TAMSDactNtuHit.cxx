@@ -67,7 +67,6 @@ Bool_t TAMSDactNtuHit::Action()
    for (Int_t i = 0; i < p_geoMap->GetSensorsN(); ++i) {
       
       int nstrip = p_datraw->GetStripsN(i);
-      int nseed = p_datraw->GetSeedsN(i);
       
       for(int ih = 0; ih < nstrip; ++ih) {
          TAMSDrawHit *strip = p_datraw->GetStrip(i, ih);
@@ -76,6 +75,7 @@ Bool_t TAMSDactNtuHit::Action()
          Int_t stripId    = strip->GetStrip();
          Int_t view       = strip->GetView();
          Double_t charge  = strip->GetCharge();
+         Bool_t isSeed    = strip->IsSeed();
          Float_t posStrip = p_geoMap->GetPosition(stripId);
          if(FootDebugLevel(2))
             cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
@@ -87,26 +87,7 @@ Bool_t TAMSDactNtuHit::Action()
 
          TAMSDhit* hit = p_nturaw->NewStrip(sensorId, charge, view, stripId);
          hit->SetPosition(posStrip);
-      }
-
-      for(int ih = 0; ih < nseed; ++ih) {
-         TAMSDrawHit *seed = p_datraw->GetSeed(i, ih);
-         
-         Int_t sensorId   = seed->GetSensorId();
-         Int_t seedId    = seed->GetStrip();
-         Int_t view       = seed->GetView();
-         Double_t charge    = seed->GetCharge();
-         Float_t posSeed = p_geoMap->GetPosition(seedId);
-         if(FootDebugLevel(2))
-            cout<<"\tSens "<<sensorId<<" seed "<<seedId<<" View "<<view<<" position (cm) "<<posSeed<<" "<<endl;
-	 
-         if (FootDebugLevel(1))
-            printf("sensor: %d seed: %d view: %d charge: %f\n", sensorId, seedId, view, charge);
-         
-         if (p_config->GetSensorPar(sensorId).DeadStripMap[seedId] == 1) continue;
-
-         TAMSDhit* hitSeed = p_nturaw->NewSeed(sensorId, charge, view, seedId);
-         hitSeed->SetPosition(posSeed);	 
+         hit->SetSeed(isSeed);
       }
    }
    fpNtuRaw->SetBit(kValid);

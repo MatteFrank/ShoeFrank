@@ -80,6 +80,7 @@ void TAMSDactNtuRaw::CreateHistogram()
   SetValidHistogram(kTRUE);
 }
 
+//------------------------------------------+-----------------------------------
 Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t *VaContent, Int_t type)
 {
    Float_t cn = 0;
@@ -87,81 +88,60 @@ Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t *VaContent, Int_t type)
    Float_t mean = TMath::Mean(64, VaContent);
    Float_t rms = TMath::RMS(64, VaContent);
 
-   if (type == 0) //simple common noise wrt VA mean ADC value
-   {
-      for (size_t i = 0; i < 64; i++)
-      {
-         if (VaContent[i] > mean - 2 * rms && VaContent[i] < mean + 2 * rms)
-         {
+   if (type == 0) { //simple common noise wrt VA mean ADC value
+   
+      for (size_t i = 0; i < 64; i++) {
+         if (VaContent[i] > mean - 2 * rms && VaContent[i] < mean + 2 * rms) {
+            cn += VaContent[i];
+            cnt++;
+         }
+      }
+      
+      if (cnt != 0)
+         return cn / cnt;
+      else
+         return -999;
+      
+   } else if (type == 1) { //Common noise with fixed threshold to exclude potential real signal strips
+   
+      for (size_t i = 0; i < 64; i++) {
+         if (VaContent[i] < MIP_ADC / 2) { //very conservative cut: half the value expected for a Minimum Ionizing Particle
             cn += VaContent[i];
             cnt++;
          }
       }
       if (cnt != 0)
-      {
          return cn / cnt;
-      }
       else
-      {
          return -999;
-      }
-   }
-   else if (type == 1) //Common noise with fixed threshold to exclude potential real signal strips
-   {
-      for (size_t i = 0; i < 64; i++)
-      {
-         if (VaContent[i] < MIP_ADC / 2) //very conservative cut: half the value expected for a Minimum Ionizing Particle
-         {
-            cn += VaContent[i];
-            cnt++;
-         }
-      }
-      if (cnt != 0)
-      {
-         return cn / cnt;
-      }
-      else
-      {
-         return -999;
-      }
-   }
-   else //Common Noise with 'self tuning' threshold: we use the some of the channels to calculate a baseline level, then we use all the strips in a band around that value to compute the CN
-   {
+      
+   } else {//Common Noise with 'self tuning' threshold: we use the some of the channels to calculate a baseline level, then we use all the strips in a band around that value to compute the CN
+
       Float_t hard_cm = 0;
       Int_t cnt2 = 0;
-      for (size_t i = 8; i < 23; i++)
-      {
-         if (VaContent[i] < 1.5 * MIP_ADC) //looser constraint than algo 2
-         {
+      for (size_t i = 8; i < 23; i++) {
+         if (VaContent[i] < 1.5 * MIP_ADC) {//looser constraint than algo 2
             hard_cm += VaContent[i];
             cnt2++;
          }
       }
+      
       if (cnt2 != 0)
-      {
          hard_cm = hard_cm / cnt2;
-      }
       else
-      {
          return -999;
-      }
 
-      for (size_t i = 23; i < 55; i++)
-      {
-         if (VaContent[i] > hard_cm - 2 * rms && VaContent[i] < hard_cm + 2 * rms) //we use only channels with a value around the baseline calculated at the previous step
-         {
+      for (size_t i = 23; i < 55; i++) {
+         if (VaContent[i] > hard_cm - 2 * rms && VaContent[i] < hard_cm + 2 * rms) { //we use only channels with a value around the baseline calculated at the previous step
             cn += VaContent[i];
             cnt++;
          }
       }
+      
       if (cnt != 0)
-      {
          return cn / cnt;
-      }
       else
-      {
          return -999;
-      }
    }
 }
 
@@ -170,27 +150,29 @@ Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t *VaContent, Int_t type)
 Bool_t TAMSDactNtuRaw::Action()
 {
    TAGdaqEvent*   p_datdaq = (TAGdaqEvent*)  fpDatDaq->Object();
-
+   
    Int_t nFragments = p_datdaq->GetFragmentsN();
-
+   
    if(FootDebugLevel(1))
-    cout<<"TAMSDactNtuRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
-
+      cout<<"TAMSDactNtuRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
+   
    for (Int_t i = 0; i < nFragments; ++i) {
-       TString type = p_datdaq->GetClassType(i);
-       if (type.Contains("DEMSDEvent")) {
+      TString type = p_datdaq->GetClassType(i);
+      if (type.Contains("DEMSDEvent")) {
          const DEMSDEvent* evt = static_cast<const DEMSDEvent*> (p_datdaq->GetFragment(i));
-	 if (FootDebugLevel(1))
+         
+         if (FootDebugLevel(1))
             evt->printData();
+         
          DecodeHits(evt);
-       }
+      }
    }
-
+   
    fpDatRaw->SetBit(kValid);
-
-  if(FootDebugLevel(2))
-    cout<<"TAMSDactNtuRaw::Action():: done"<<endl;
-
+   
+   if(FootDebugLevel(2))
+      cout<<"TAMSDactNtuRaw::Action():: done"<<endl;
+   
    return kTRUE;
 }
 
@@ -208,9 +190,9 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
      cout<<"  NtuRaw hits "<<endl;
      cout<<"****************************"<<endl;
    }
+   
    // decode here
-   if (evt->detectorHeader == 0x00000bad)
-   {
+   if (evt->detectorHeader == 0x00000bad) {
       if (FootDebugLevel(1))
          cout << "Data is empty, skipping DecodeHits" << endl;
          sleep(1);
@@ -220,7 +202,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    Int_t boardId = (evt->boardHeader & 0xF)-1;
    Double_t cnX = 0;
    Double_t cnY = 0;
-
+   
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
       
       UInt_t adcX = evt->Xplane[i];
@@ -231,100 +213,98 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       
       Double_t valueX = -99;
       Double_t valueY = -99;
-
+      
       Double_t meanX  = 0;
       Double_t meanY  = 0;
-
+      
       Double_t VaContent[64] = {0};
-       
+      
       view = 0;
       sensorId = p_parmap->GetSensorId(boardId, view);
       auto pedestal = p_parcal->GetPedestal( sensorId, i );
-
+      
       if( pedestal.status ) {
          if (fgPedestalSub) {
+            Bool_t seedX = false;
             valueX = p_parcal->GetPedestalValue(sensorId, pedestal, true);
             meanX = pedestal.mean;
             valueX = adcX - valueX;
-
-            if (fgCommonModeSub)
-            {
-               if (i % 64 == 0)
-               {
+            
+            if (fgCommonModeSub) {
+               if (i % 64 == 0) {
                   for (int VaChan = 0; VaChan < 64; VaChan++)
-                  {
                      VaContent[VaChan] = evt->Xplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
-                  }
+                  
                   cnX = ComputeCN(i, VaContent, 0);
                   if (ValidHistogram())
                      fpHisCommonMode[sensorId]->Fill(cnX);
                }
             }
-
-         valueX -= cnX;
-         
-         if (valueX > 0) {
-            p_datraw->AddSeed(sensorId, view, i, adcX-meanX-cnX);
-            if (ValidHistogram())
-               fpHisSeedMap[sensorId]->Fill(i, adcX-meanX-cnX);
-         }
-
-         valueX = p_parcal->GetPedestalValue(sensorId, pedestal, false);
-         valueX = adcX - valueX - cnX;
-         if (valueX > 0) {
-            p_datraw->AddStrip(sensorId, view, i, adcX-meanX-cnX);
-            if (ValidHistogram())
-               fpHisStripMap[sensorId]->Fill(i, adcX-meanX-cnX);
-         }
-         
+      
+            valueX -= cnX;
+            if (valueX > 0) {
+               seedX = true;
+               if (ValidHistogram())
+                  fpHisSeedMap[sensorId]->Fill(i, adcX-meanX-cnX);
+            }
+            
+            valueX = p_parcal->GetPedestalValue(sensorId, pedestal, false);
+            valueX = adcX - valueX - cnX;
+            if (valueX > 0) {
+               TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcX-meanX-cnX);
+               hit->SetSeed(seedX);
+             
+               if (ValidHistogram())
+                  fpHisStripMap[sensorId]->Fill(i, adcX-meanX-cnX);
+            }
+            
          }
       }
+      
 
       view = 1;
       sensorId = p_parmap->GetSensorId(boardId, view);
       pedestal = p_parcal->GetPedestal( sensorId, i );
-
+      
       if( pedestal.status ) {
          if (fgPedestalSub) {
+            Bool_t seedY = false;
             valueY = p_parcal->GetPedestalValue(sensorId, pedestal, true);
             meanY = pedestal.mean;
             valueY = adcY - valueY;
-
-            if (fgCommonModeSub)
-            {
-               if (i % 64 == 0)
-               {
+            
+            if (fgCommonModeSub) {
+               if (i % 64 == 0) {
                   for (int VaChan = 0; VaChan < 64; VaChan++)
-                  {
                      VaContent[VaChan] = evt->Yplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
-                  }
+                  
                   cnY = ComputeCN(i, VaContent, 0);
                   if (ValidHistogram())
                      fpHisCommonMode[sensorId]->Fill(cnY);
                }
             }
+            
+            valueY -= cnY;
+            if (valueY > 0) {
+               seedY = true;
+               if (ValidHistogram())
+                  fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
+            }
+            
+            valueY = p_parcal->GetPedestalValue(sensorId, pedestal, false);
+            valueY = adcY - valueY - cnY;
+            if (valueY > 0) {
+              TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcY-meanY-cnY);
+               hit->SetSeed(seedY);
 
-         valueY -= cnY;
-         
-         if (valueY > 0) {
-            p_datraw->AddSeed(sensorId, view, i, adcY-meanY-cnY);
-            if (ValidHistogram())
-               fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
-         }
-
-         valueY = p_parcal->GetPedestalValue(sensorId, pedestal, false);
-         valueY = adcY - valueY - cnY;
-         if (valueY > 0) {
-            p_datraw->AddStrip(sensorId, view, i, adcY-meanY-cnY);
-            if (ValidHistogram())
-               fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
-         }
-      
-         if(FootDebugLevel(2)) {
-	         if(valueX>0 || valueY>0)
-	            cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
-         }
-
+               if (ValidHistogram())
+                  fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
+            }
+            
+            if(FootDebugLevel(2)) {
+               if(valueX>0 || valueY>0)
+                  cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
+            }
          }
       }
    }

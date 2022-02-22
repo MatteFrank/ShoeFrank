@@ -17,7 +17,8 @@ TAMSDrawHit::TAMSDrawHit()
    fCharge(0),
    fIndex(0),
    fView(0),
-   fStrip(0)
+   fStrip(0),
+   fIsSeed(false)
 {
    
 }
@@ -30,7 +31,8 @@ TAMSDrawHit::TAMSDrawHit(Int_t id, Int_t view, Int_t strip, Double_t charge)
    fCharge(charge),
    fIndex(0),
    fView(view),
-   fStrip(strip)
+   fStrip(strip),
+   fIsSeed(false)
 {
 
 }
@@ -77,8 +79,7 @@ ClassImp(TAMSDntuRaw)
 //
 TAMSDntuRaw::TAMSDntuRaw() 
 : TAGdata(),
-  fListOfStrips(0x0),
-  fListOfSeeds(0x0)
+  fListOfStrips(0x0)
 {
    fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
    if (!fpGeoMap) {
@@ -94,7 +95,6 @@ TAMSDntuRaw::~TAMSDntuRaw()
 {
   // TAMSDntuRaw default destructor
    delete fListOfStrips;
-   delete fListOfSeeds;
 }
 
 //------------------------------------------+-----------------------------------
@@ -105,18 +105,6 @@ Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 	  return GetStrips(iSensor)->GetEntries();
    else {
 	  Error("GetStripsN()","Wrong sensor number %d\n", iSensor);
-	  return -1;
-   }
-}
-
-//------------------------------------------+-----------------------------------
-//! return number of seeds for a given sensor.
-Int_t TAMSDntuRaw::GetSeedsN(Int_t iSensor) const
-{
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
-	  return GetSeeds(iSensor)->GetEntries();
-   else {
-	  Error("GetSeedsN()","Wrong sensor number %d\n", iSensor);
 	  return -1;
    }
 }
@@ -134,19 +122,6 @@ TClonesArray* TAMSDntuRaw::GetStrips(Int_t iSensor) const
    
 }
 
-//______________________________________________________________________________
-//
-TClonesArray* TAMSDntuRaw::GetSeeds(Int_t iSensor) const
-{ 
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
-	  return (TClonesArray*)fListOfSeeds->At(iSensor);
-   else {
-	  Error("GetSeeds()","Wrong sensor number %d\n", iSensor);
-	  return 0x0;
-   }   
-   
-}
-   
 //------------------------------------------+-----------------------------------
 //! return a strip for a given sensor
 const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
@@ -171,51 +146,17 @@ TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
    }
 }
 
-//------------------------------------------+-----------------------------------
-//! return a seed for a given sensor
-const TAMSDrawHit* TAMSDntuRaw::GetSeed(Int_t iSensor, Int_t iStrip) const
-{
-   if (iStrip >=0 || iStrip < GetSeedsN(iSensor))
-	  return (TAMSDrawHit*)GetSeeds(iSensor)->At(iStrip);
-   else {
-	  Error("GetSeed()","Wrong sensor number %d\n", iSensor);
-	  return 0x0;
-   }
-}
- 
-//------------------------------------------+-----------------------------------
-//! return a seed for a given sensor
-TAMSDrawHit* TAMSDntuRaw::GetSeed(Int_t iSensor, Int_t iStrip)
-{
-   if (iStrip >=0 || iStrip < GetSeedsN(iSensor))
-	  return (TAMSDrawHit*)GetSeeds(iSensor)->At(iStrip);
-   else {
-	  Error("GetSeed()","Wrong sensor number %d\n", iSensor);
-	  return 0x0;
-   }
-}
-   
-//______________________________________________________________________________
-//  
-void TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double_t value)
-{
-   if (sensor >= 0  || sensor < fpGeoMap->GetSensorsN()) {
-	  TClonesArray &stripArray = *GetStrips(sensor);
-	  new(stripArray[stripArray.GetEntriesFast()]) TAMSDrawHit(sensor, view, strip, value);
-   } else {
-	  Error("AddStrip()","Wrong sensor number %d\n", sensor);
-   }
-}
 
 //______________________________________________________________________________
 //  
-void TAMSDntuRaw::AddSeed(Int_t sensor, Int_t view, Int_t strip, Double_t value)
+TAMSDrawHit* TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double_t value)
 {
    if (sensor >= 0  || sensor < fpGeoMap->GetSensorsN()) {
-	  TClonesArray &seedArray = *GetSeeds(sensor);
-	  new(seedArray[seedArray.GetEntriesFast()]) TAMSDrawHit(sensor, view, strip, value);
+	  TClonesArray &stripArray = *GetStrips(sensor);
+	  return new(stripArray[stripArray.GetEntriesFast()]) TAMSDrawHit(sensor, view, strip, value);
    } else {
-	  Error("AddSeed()","Wrong sensor number %d\n", sensor);
+	  Error("AddStrip()","Wrong sensor number %d\n", sensor);
+      return 0x0;
    }
 }
 
@@ -232,14 +173,6 @@ void TAMSDntuRaw::SetupClones()
    }
    fListOfStrips->SetOwner(true);
 
-   if (fListOfSeeds) return;
-   fListOfSeeds = new TObjArray();
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
-	  TClonesArray* arrSeed = new TClonesArray("TAMSDrawHit");
-	  arrSeed->SetOwner(true); 
-	  fListOfSeeds->AddAt(arrSeed,i);
-   }
-   fListOfSeeds->SetOwner(true);
 }
 
 //______________________________________________________________________________
@@ -247,9 +180,10 @@ void TAMSDntuRaw::SetupClones()
 void TAMSDntuRaw::Clear(Option_t* /*opt*/)
 {
    TAGdata::Clear();
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i){
-	  GetStrips(i)->Delete();
-     GetSeeds(i)->Delete();
+   
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i){      
+      TClonesArray* list = GetStrips(i);
+      list->Clear("C");
    }
 }
 

@@ -20,6 +20,7 @@ protected:
    Int_t      fIndex;
    Int_t      fView;
    Int_t      fStrip;
+   Bool_t     fIsSeed;
          
 public:
    TAMSDrawHit();
@@ -38,6 +39,8 @@ public:
    Int_t      GetStrip()        const    { return fStrip;    }
    //! Get index
    Int_t      GetIndex()        const    { return fIndex;    }
+   //! Get seed flag
+   Bool_t    IsSeed()           const    { return fIsSeed;   }
    //! Is Sortable
    Bool_t     IsSortable()      const    { return kTRUE;     }
 
@@ -51,8 +54,10 @@ public:
    void     SetStrip(Int_t strip)        { fStrip = strip;   }
    //! Set index
    void     SetIndex(Int_t index)        { fIndex = index;   }
-   
-   ClassDef(TAMSDrawHit,1)
+   //! Set seed flag
+   void     SetSeed(Bool_t s=true)       { fIsSeed = s;      }
+
+   ClassDef(TAMSDrawHit,2)
 };
 
 //######################################################################################
@@ -65,8 +70,7 @@ class TAMSDntuRaw : public TAGdata {
    
 protected:
    TObjArray*   fListOfStrips;
-   TObjArray*   fListOfSeeds;
-   TAMSDparGeo* fpGeoMap;
+   TAMSDparGeo* fpGeoMap; //!
    
 private:
    static TString fgkBranchName;    // Branch name in TTree
@@ -77,26 +81,16 @@ public:
    
    //! Get list of strips
    TClonesArray*      GetStrips(Int_t iSensor)  const;
-   //! Get list of strips
-   TClonesArray*      GetSeeds(Int_t iSensor)  const;
  
    //! Get number of strips
    Int_t              GetStripsN(Int_t iSensor)  const;
-   //! Get number of strips
-   Int_t              GetSeedsN(Int_t iSensor)  const;
    
    //! Get strip
    TAMSDrawHit*       GetStrip(Int_t iSensor, Int_t iStrip);
    const TAMSDrawHit* GetStrip(Int_t iSensor, Int_t iStrip)   const;
-   //! Get strip
-   TAMSDrawHit*       GetSeed(Int_t iSensor, Int_t iStrip);
-   const TAMSDrawHit* GetSeed(Int_t iSensor, Int_t iStrip)   const;
    
    //! Add strip to list
-   void               AddStrip(Int_t sensor, Int_t view, Int_t aStrip, Double_t value);
-   //! Add strip to list
-   void               AddSeed(Int_t sensor, Int_t view, Int_t aStrip, Double_t value);
-  
+   TAMSDrawHit*       AddStrip(Int_t sensor, Int_t view, Int_t aStrip, Double_t value);
    //! Set up clones
    void               SetupClones();
 
