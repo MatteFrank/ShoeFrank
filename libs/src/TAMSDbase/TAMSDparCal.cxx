@@ -7,6 +7,7 @@ ClassImp(TAMSDparCal)
 //_____________________________________________________________________
 TAMSDparCal::TAMSDparCal(int strip_number_p)
 : TAGparTools()
+
 {
   // Standard constructor
   fMapCal = new TAMSDcalibrationMap(strip_number_p);
@@ -20,10 +21,17 @@ TAMSDparCal::~TAMSDparCal()
   if (fMapCal)
     delete fMapCal;
    
-   delete fFuncEta;
-   delete fFunc1;
+   if (fFuncEta)
+      delete fFuncEta;
+   
+   if (fFunc1)
+      delete fFunc1;
+   
+   if (fFunc2)
    delete fFunc2;
-   delete fFunc3;
+   
+   if (fFunc3)
+      delete fFunc3;
 }
 
 //_________________________________________
@@ -57,7 +65,7 @@ void TAMSDparCal::SetFunctions()
    fFunc2->SetParameter(4,-8.23574);
    fFunc2->SetParameter(5,3.31505);
    
-   TF1 *fFunc3 = new TF1("fFunc3","pol5",0.66,1);
+   fFunc3 = new TF1("fFunc3","pol5",0.66,1);
    fFunc3->SetParameter(0,2.60998);
    fFunc3->SetParameter(1,-17.2915);
    fFunc3->SetParameter(2,45.2007);
