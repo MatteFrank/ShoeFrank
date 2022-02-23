@@ -20,12 +20,16 @@ class TAMSDcluster : public TAGcluster {
 private:
    Float_t            fPositionF;                // position of the cluster in plane frame
    Float_t            fPosErrorF;                // position's errors of the cluster in plane frame
+   Float_t            fPosErrorCorr;             // position Eta corrected of the cluster in plane frame
    Float_t            fCog;                      // center of gravity of the cluster in term of strip number
    TVector3           fCurPosition;              // current position of the cluster in plane frame
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
    Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
    Float_t            fEnergyLoss;               // loss of energy
-   
+   Float_t            fEnergyLossCorr;           // loss of energy Eta corrected
+   Float_t            fEtaValue;                 // Eta value
+   Float_t            fEtaFastValue;             // Eta Fast value
+
 public:
    TAMSDcluster(); 
    TAMSDcluster(const TAMSDcluster& cluster);
@@ -43,7 +47,11 @@ public:
    void               SetPlaneView(Int_t v);
    //! Set energy loss
    void               SetEnergyLoss(Float_t chg)             { fEnergyLoss = chg;      }
-   
+   //! Set energy loss corrected
+   void               SetEnergyLossCorr(Float_t chg)         { fEnergyLossCorr = chg;  }
+   //! Set cluster center of gravity
+   void               SetCogCorr(Float_t pos)                { fPosErrorCorr = pos;    }
+
    //! Get position in local frame
    Float_t            GetPositionF()                   const { return fPositionF;      }
    //! Get position error in local frame
@@ -63,19 +71,18 @@ public:
    //! Get energy loss
    Float_t            GetEnergyLoss()                  const { return fEnergyLoss;     }
    //! Get energy loss with eta correction
-   Float_t            GetEnergyLossCorr()                    { return fEnergyLoss/GetEtaChargeCorrection();}
+   Float_t            GetEnergyLossCorr()              const { return fEnergyLossCorr;}
    //! Get fast 'Eta' value for the cluster 
-   Float_t            GetEtaFast()                           { return ComputeEtaFast(fCog); }
+   Float_t            GetEtaFast()                     const { return fEtaFastValue; }
    //! Get 'Eta' value for the cluster 
-   Float_t            GetEta()                               { return ComputeEta(fListOfStrips); }
-   //! Get ADC correction factor wrt 'Eta' value of the cluster
-   Float_t            GetEtaChargeCorrection()               { return ComputeEtaChargeCorrection( GetEta() ); }
+   Float_t            GetEta()                         const { return fEtaValue; }
    //! Get position of first strip of the cluster
-   Float_t            GetAddress()                           { return ComputeAddress(fListOfStrips); }
-   //! Get positioncorrection factor wrt 'Eta' value of the cluster
-   Float_t            GetEtaPosCorrection()                  { return ComputeEtaPosCorrection( GetEta() ); }
+   Float_t            GetAddress()                     const;
+   //! Get center of gravity corrected wrt eta
+   Float_t            GetCogCorr()                     const { return fPosErrorCorr; }
    //! Get number of strips in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
+   
    //! Get strip
    TAMSDhit*          GetStrip(Int_t idx);
    //! Compute distance from another cluster
@@ -83,15 +90,7 @@ public:
    //! Compute fast 'Eta' value for the cluster
    Float_t            ComputeEtaFast(Float_t cog);
    //! Compute 'Eta' value for the cluster
-   Float_t            ComputeEta(TClonesArray* fListOfStrips);
-   //!Calculate position of first strip in the cluster
-   Float_t            ComputeAddress(TClonesArray* fListOfStrips);
-   //! Compute correction factor for the energy loss wrt position
-   Float_t            ComputeEtaChargeCorrection(Float_t eta);
-   //! Compute correction factor for the cluster position wrt eta
-   Float_t            ComputeEtaPosCorrection(Float_t eta);
-      //! Get center of gravity corrected wrt eta 
-   Float_t            GetCogCorr()                           { return GetAddress() + ComputeEtaPosCorrection(GetEta()); }
+   Float_t            ComputeEta();
    //! reset strips
    void               ResetStrips();
 
