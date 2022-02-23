@@ -83,8 +83,6 @@ Bool_t TAMSDactNtuHit::Action()
          if (FootDebugLevel(1))
             printf("sensor: %d strip: %d view: %d charge: %f\n", sensorId, stripId, view, charge);
          
-         if (p_config->GetSensorPar(sensorId).DeadStripMap[stripId] == 1) continue;
-
          TAMSDhit* hit = p_nturaw->NewStrip(sensorId, charge, view, stripId);
          hit->SetPosition(posStrip);
          hit->SetSeed(isSeed);

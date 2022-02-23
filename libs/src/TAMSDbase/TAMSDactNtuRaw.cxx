@@ -29,13 +29,15 @@ TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
                              TAGdataDsc* dscdatdaq,
                              TAGparaDsc* dscparmap,
                              TAGparaDsc* dscparcal,
-                             TAGparaDsc* dscpargeo)
+                             TAGparaDsc* dscpargeo,
+                             TAGparaDsc* dscparconf)
   : TAGaction(name, "TAMSDactNtuRaw - Unpack MSD raw data"),
     fpDatRaw(dscdatraw),
     fpDatDaq(dscdatdaq),
     fpParMap(dscparmap),
     fpParCal(dscparcal),
-    fpParGeo(dscpargeo)
+    fpParGeo(dscpargeo),
+    fpParConf(dscparconf)
 {
   if (FootDebugLevel(1))
     cout<<"TAMSDactNtuRaw::default constructor::Creating the MSD hit Ntuplizer"<<endl;
@@ -44,6 +46,7 @@ TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
   AddPara(dscparmap, "TAMSDparMap");
   AddPara(dscparcal, "TAMSDparCal");
   AddPara(dscpargeo, "TAMSDparGeo");
+  AddPara(dscparconf, "TAMSDparConf");
   AddDataIn(dscdatdaq, "TAGdaqEvent");
 }
 
@@ -182,6 +185,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 {
    TAMSDntuRaw*    p_datraw = (TAMSDntuRaw*)    fpDatRaw->Object();
    TAMSDparGeo*    p_pargeo = (TAMSDparGeo*)    fpParGeo->Object();
+   TAMSDparConf*   p_parconf= (TAMSDparConf*)   fpParConf->Object();
    TAMSDparCal*    p_parcal = (TAMSDparCal*)    fpParCal->Object();
    TAMSDparMap*    p_parmap = (TAMSDparMap*)    fpParMap->Object();
 
@@ -221,6 +225,8 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       
       view = 0;
       sensorId = p_parmap->GetSensorId(boardId, view);
+      if (p_parconf->GetSensorPar(sensorId).DeadStripMap[i] == 1) continue;
+
       auto pedestal = p_parcal->GetPedestal( sensorId, i );
       
       if( pedestal.status ) {
