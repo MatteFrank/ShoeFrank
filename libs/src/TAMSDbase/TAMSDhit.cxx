@@ -38,6 +38,19 @@ TAMSDhit::TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip)
 }
 
 //______________________________________________________________________________
+TAMSDhit::TAMSDhit(const TAMSDhit& hit)
+ : TAGobject(hit),
+   fSensorId(hit.fSensorId),
+   fPosition(hit.fPosition),
+   fEnergyLoss(hit.fEnergyLoss),
+   fIndex(hit.fIndex),
+   fView(hit.fView),
+   fStrip(hit.fStrip),
+   fIsSeed(hit.fIsSeed)
+{
+}
+
+//______________________________________________________________________________
 //
 void TAMSDhit::Clear(Option_t* /*option*/)
 {

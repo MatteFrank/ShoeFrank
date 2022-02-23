@@ -34,6 +34,7 @@ protected:
   
 public:
    TAMSDhit();
+   TAMSDhit(const TAMSDhit& hit);
    TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip);
 
   virtual ~TAMSDhit() {};
