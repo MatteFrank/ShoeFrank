@@ -9,6 +9,7 @@
 #include "TMath.h"
 
 #include "TAMSDparGeo.hxx"
+#include "TAMSDparCal.hxx"
 #include "TAMSDparConf.hxx"
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
@@ -24,12 +25,13 @@ ClassImp(TAMSDactNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
+TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
   : TAGactNtuCluster1D(name, "TAMSDactNtuCluster - NTuplize cluster"),
     fpNtuRaw(pNtuRaw),
     fpNtuClus(pNtuClus),
     fpConfig(pConfig),
     fpGeoMap(pGeoMap),
+    fpCalib(pCalib),
     fCurrentPosition(0.),
     fCurrentPosError(0.),
     fListOfStrips(0x0),
@@ -37,6 +39,7 @@ TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TA
 {
   AddPara(pGeoMap, "TAMSDparGeo");
   AddPara(pConfig, "TAMSDparConf");
+  AddPara(pCalib, "TAMSDparCal");
   AddDataIn(pNtuRaw,   "TAMSDntuHit");
   AddDataOut(pNtuClus, "TAMSDntuCluster");
   
@@ -183,7 +186,8 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
 {
    TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
    TAMSDparGeo* pGeoMap  = (TAMSDparGeo*)     fpGeoMap->Object();
-   
+   TAMSDparCal* pCalib   = (TAMSDparCal*)     fpCalib->Object();
+
   TAMSDcluster* cluster = 0x0;
   
   // create clusters
@@ -281,6 +285,8 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   cluster->SetEnergyLoss(tClusterPulseSum);
 }
 
+//______________________________________________________________________________
+//
 void TAMSDactNtuCluster::ComputeCog(TAMSDcluster* cluster)
 {
   if (!fCurListOfStrips) return;
