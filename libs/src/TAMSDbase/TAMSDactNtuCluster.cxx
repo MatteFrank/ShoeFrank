@@ -39,7 +39,8 @@ TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TA
 {
   AddPara(pGeoMap, "TAMSDparGeo");
   AddPara(pConfig, "TAMSDparConf");
-  AddPara(pCalib, "TAMSDparCal");
+   if (pCalib)
+      AddPara(pCalib, "TAMSDparCal");
   AddDataIn(pNtuRaw,   "TAMSDntuHit");
   AddDataOut(pNtuClus, "TAMSDntuCluster");
   
@@ -186,7 +187,10 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
 {
    TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
    TAMSDparGeo* pGeoMap  = (TAMSDparGeo*)     fpGeoMap->Object();
-   TAMSDparCal* pCalib   = (TAMSDparCal*)     fpCalib->Object();
+   TAMSDparCal* pCalib   = 0x0;
+   
+   if (fpCalib)
+      pCalib = (TAMSDparCal*) fpCalib->Object();
 
   TAMSDcluster* cluster = 0x0;
   

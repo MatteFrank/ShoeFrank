@@ -72,6 +72,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParGeoTw(0x0),
    fField(0x0),
    fpParCalBm(0x0),
+   fpParCalMsd(0x0),
    fpParCalTw(0x0),
    fpParCalCa(0x0),
    fpParGeoCa(0x0),
