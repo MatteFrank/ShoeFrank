@@ -103,7 +103,7 @@ Bool_t TAVTactNtuHit::Action()
    }
    
    Int_t diff = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
-   if( ValidHistogram() )
+   if(ValidHistogram())
       fpHisBCOofTrigger->Fill(evtNumber, diff);
    
    if (TMath::Abs(float(diff)) > fgTStolerance) {
