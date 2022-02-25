@@ -1124,13 +1124,16 @@ void BaseReco::AddRecRequiredItem()
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM())
+      gTAGroot->AddRequiredItem("stActNtu");
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
+      gTAGroot->AddRequiredItem("bmActNtu");
       if (fFlagTrack)
          gTAGroot->AddRequiredItem("bmActTrack");
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
+      gTAGroot->AddRequiredItem("vtActNtu");
       gTAGroot->AddRequiredItem("vtActClus");
       if (fFlagTrack) {
          gTAGroot->AddRequiredItem("vtActTrack");
@@ -1146,6 +1149,7 @@ void BaseReco::AddRecRequiredItem()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      gTAGroot->AddRequiredItem("msdActNtu");
       gTAGroot->AddRequiredItem("msdActClus");
       gTAGroot->AddRequiredItem("msdActPoint");
       if (fgMsdTrackFlag && fFlagTrack)
@@ -1153,10 +1157,12 @@ void BaseReco::AddRecRequiredItem()
    }
 
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
+     gTAGroot->AddRequiredItem("twActNtu");
      gTAGroot->AddRequiredItem("twActPoint");
    }
 
    if (TAGrecoManager::GetPar()->IncludeCA()) {
+      gTAGroot->AddRequiredItem("caActNtu");
       gTAGroot->AddRequiredItem("caActClus");
    }
 
