@@ -210,6 +210,7 @@ void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
        
       Int_t genPartID = trackIdx;
       strip->AddMcTrackIdx(genPartID, hitId);
+      strip->SetSeed();
       
        if(FootDebugLevel(1))
          printf("strip %d\n", stripId);
