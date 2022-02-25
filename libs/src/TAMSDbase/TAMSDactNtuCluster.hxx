@@ -39,6 +39,8 @@ public:
    void    ComputePosition(TAMSDcluster* cluster);
    //! Compute center of gravity of cluster
    void    ComputeCog(TAMSDcluster* cluster);
+   //! Compute eta of cluster
+   void    ComputeEta(TAMSDcluster* cluster);
 
    //! Get list of strips for a given plane
    TClonesArray*   GetListOfStrips()   const { return fListOfStrips;    }
@@ -50,7 +52,8 @@ public:
    Float_t       GetCurrentPosError()  const { return fCurrentPosError; }
    //! Get center of gravity of current cluster 
    Float_t       GetCurrentCog()  const { return fCurrentCog; }
-
+   //! Get eta value of current cluster 
+   Float_t       GetCurrentEta()  const { return fCurrentEta; }
    
    //! Set list of strips
    void SetListOfStrips(TClonesArray* list)  { fListOfStrips = list;    }
@@ -58,6 +61,8 @@ public:
    void SetCurrentPosition(Float_t u)        { fCurrentPosition = u;    }
    //! Set center of gravity of current cluster 
    void SetCurrentCog(Float_t u)             { fCurrentCog = u;         }
+   //! Set eta value current cluster 
+   void SetCurrentEta(Float_t u)             { fCurrentEta = u;         }
 
    // Get object in list
    TAGobject*  GetHitObject(Int_t idx) const;
@@ -72,6 +77,7 @@ private:
    Float_t         fCurrentPosition;   // pointer to current position
    Float_t         fCurrentPosError ;  // pointer to current position error
    Float_t         fCurrentCog;        // pointer to current center of gravity
+   Float_t         fCurrentEta;        // pointer to current center of gravity
    TClonesArray*   fListOfStrips;      // list of strips
    TClonesArray*   fCurListOfStrips;   // list of strips in current cluster
    

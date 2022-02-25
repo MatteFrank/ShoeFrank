@@ -20,7 +20,7 @@ class TAMSDcluster : public TAGcluster {
 private:
    Float_t            fPositionF;                // position of the cluster in plane frame
    Float_t            fPosErrorF;                // position's errors of the cluster in plane frame
-   Float_t            fPosErrorCorr;             // position Eta corrected of the cluster in plane frame
+   Float_t            fPositionCorr;             // position Eta corrected of the cluster in plane frame
    Float_t            fCog;                      // center of gravity of the cluster in term of strip number
    TVector3           fCurPosition;              // current position of the cluster in plane frame
    TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
@@ -41,6 +41,8 @@ public:
    void               SetPosErrorF(Float_t pos);
    //! Set cluster center of gravity
    void               SetCog(Float_t pos);
+   //! Set cluster eta value
+   void               SetEta(Float_t eta);
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
    //! Set view
@@ -50,7 +52,7 @@ public:
    //! Set energy loss corrected
    void               SetEnergyLossCorr(Float_t chg)         { fEnergyLossCorr = chg;  }
    //! Set cluster center of gravity
-   void               SetCogCorr(Float_t pos)                { fPosErrorCorr = pos;    }
+   void               SetCogCorr(Float_t pos)                { fPositionCorr = pos;    }
 
    //! Get position in local frame
    Float_t            GetPositionF()                   const { return fPositionF;      }
@@ -79,7 +81,7 @@ public:
    //! Get position of first strip of the cluster
    Float_t            GetAddress()                     const;
    //! Get center of gravity corrected wrt eta
-   Float_t            GetCogCorr()                     const { return fPosErrorCorr; }
+   Float_t            GetCogCorr()                     const { return fPositionCorr; }
    //! Get number of strips in this clusters
    Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
    
@@ -87,10 +89,6 @@ public:
    TAMSDhit*          GetStrip(Int_t idx);
    //! Compute distance from another cluster
    Float_t            Distance(TAMSDcluster *aClus);
-   //! Compute fast 'Eta' value for the cluster
-   Float_t            ComputeEtaFast(Float_t cog);
-   //! Compute 'Eta' value for the cluster
-   Float_t            ComputeEta();
    //! reset strips
    void               ResetStrips();
 
