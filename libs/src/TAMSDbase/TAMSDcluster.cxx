@@ -132,6 +132,13 @@ void TAMSDcluster::SetCog(Float_t pos)
 
 //______________________________________________________________________________
 //
+void TAMSDcluster::SetEta(Float_t eta)
+{
+   fEtaValue = eta;
+}
+
+//______________________________________________________________________________
+//
 void TAMSDcluster::SetPlaneView(Int_t v)
 {
    fPlaneView = v;
@@ -153,69 +160,6 @@ Float_t TAMSDcluster::Distance(TAMSDcluster *aClus) {
    clusPosition.SetXYZ( clusPosition[0], clusPosition[1], 0.);
    
    return clusPosition.Mag();
-}
-
-//______________________________________________________________________________
-//
-Float_t TAMSDcluster::ComputeEtaFast(Float_t cog)
-{
-   Double_t fractpart, intpart;
-   fractpart = modf (cog , &intpart);
-
-   fEtaFastValue = fractpart;
-   return fractpart;
-}
-
-//______________________________________________________________________________
-//
-Float_t TAMSDcluster::ComputeEta()
-{
-   Int_t nstrips = fListOfStrips->GetEntries();
-
-   if (nstrips == 1)
-      return 1.0;
-
-   Float_t eta;
-   TAMSDhit* strip;
-   Float_t max_adc = -1;
-   Int_t max_pos = 0;
-
-   //cout << "Cluster has " << fListOfStrips->GetEntries() << " strips" << endl;
-   for (int i = 0; i < nstrips; i++)
-   {  
-      strip = (TAMSDhit*)fListOfStrips->At(i);
-      // cout << "\tStrip " << i << " has value " << strip->GetEnergyLoss() << endl;
-
-      if(strip->GetEnergyLoss() > max_adc)
-      {
-         max_adc = strip->GetEnergyLoss();
-         max_pos = i;
-      }
-   }
-
-   if (max_pos == 0)
-   {
-      eta = ((TAMSDhit*)fListOfStrips->At(0))->GetEnergyLoss() / ( ((TAMSDhit*)fListOfStrips->At(0))->GetEnergyLoss() + ((TAMSDhit*)fListOfStrips->At(1))->GetEnergyLoss() );
-   } 
-   else if(max_pos == nstrips - 1)
-   {
-      eta = ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fListOfStrips->At(max_pos))->GetEnergyLoss() );
-   } 
-   else
-   {
-      if( ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() >  ((TAMSDhit*)fListOfStrips->At(max_pos + 1))->GetEnergyLoss() )
-      {
-         eta = ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fListOfStrips->At(max_pos))->GetEnergyLoss() );
-      }
-      else
-      {
-         eta = ((TAMSDhit*)fListOfStrips->At(max_pos))->GetEnergyLoss() / ( ((TAMSDhit*)fListOfStrips->At(max_pos))->GetEnergyLoss() + ((TAMSDhit*)fListOfStrips->At(max_pos + 1))->GetEnergyLoss() );
-      }
-   }
-
-   fEtaValue = eta;
-   
-   return eta;
 }
 
 //______________________________________________________________________________

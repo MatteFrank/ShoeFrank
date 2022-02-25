@@ -221,6 +221,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
     ComputeCog(cluster);
+    ComputeEta(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);    
@@ -312,6 +313,59 @@ void TAMSDactNtuCluster::ComputeCog(TAMSDcluster* cluster)
   fCurrentCog = cog;
    
   cluster->SetCog(fCurrentCog);
+}
+
+//______________________________________________________________________________
+//
+void TAMSDactNtuCluster::ComputeEta(TAMSDcluster* cluster)
+{
+  if (!fCurListOfStrips) return;
+  Int_t nstrips = fCurListOfStrips->GetEntries();
+
+  Float_t eta;
+  TAMSDhit* strip;
+  Float_t max_adc = -1;
+  Int_t max_pos = 0;
+
+  if (nstrips == 1)
+  {
+    eta = 1.0;
+  } 
+  else 
+  {
+    for (int i = 0; i < nstrips; i++)
+    {  
+      strip = (TAMSDhit*)fCurListOfStrips->At(i);
+      if(strip->GetEnergyLoss() > max_adc)
+      {
+         max_adc = strip->GetEnergyLoss();
+         max_pos = i;
+      }
+    }
+
+    if (max_pos == 0)
+    {
+      eta = ((TAMSDhit*)fCurListOfStrips->At(0))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(0))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(1))->GetEnergyLoss() );
+    } 
+    else if(max_pos == nstrips - 1)
+    {
+      eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() );
+    } 
+    else
+    {
+      if( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() >  ((TAMSDhit*)fCurListOfStrips->At(max_pos + 1))->GetEnergyLoss() )
+      {
+         eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() );
+      }
+      else
+      {
+         eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos + 1))->GetEnergyLoss() );
+      }
+   }
+  }
+
+   fCurrentEta = eta;
+   cluster->SetEta(fCurrentEta);
 }
 
 //______________________________________________________________________________

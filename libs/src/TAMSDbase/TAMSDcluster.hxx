@@ -41,6 +41,8 @@ public:
    void               SetPosErrorF(Float_t pos);
    //! Set cluster center of gravity
    void               SetCog(Float_t pos);
+   //! Set cluster eta value
+   void               SetEta(Float_t eta);
    //! Set position in global tracker frame
    void               SetPositionG(TVector3& pos);
    //! Set view
@@ -87,10 +89,6 @@ public:
    TAMSDhit*          GetStrip(Int_t idx);
    //! Compute distance from another cluster
    Float_t            Distance(TAMSDcluster *aClus);
-   //! Compute fast 'Eta' value for the cluster
-   Float_t            ComputeEtaFast(Float_t cog);
-   //! Compute 'Eta' value for the cluster
-   Float_t            ComputeEta();
    //! reset strips
    void               ResetStrips();
 
