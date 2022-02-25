@@ -72,6 +72,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParGeoTw(0x0),
    fField(0x0),
    fpParCalBm(0x0),
+   fpParCalMsd(0x0),
    fpParCalTw(0x0),
    fpParCalCa(0x0),
    fpParGeoCa(0x0),
@@ -399,6 +400,8 @@ void BaseReco::SetRecHistogramDir()
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
       fActClusMsd->SetHistogramDir(subfolder);
       fActPointMsd->SetHistogramDir(subfolder);
+      if (fgMsdTrackFlag && fFlagTrack)
+         fActTrackMsd->SetHistogramDir(subfolder);
    }
 
    // TW
@@ -700,9 +703,7 @@ void BaseReco::ReadParFiles()
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
         parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
-  
      }
-
    }
 }
 
@@ -819,7 +820,7 @@ void BaseReco::CreateRecActionIt()
    if (fFlagHisto)
      fActClusIt->CreateHistogram();
 
-   if (fgItrTrackFlag) {
+   if (fgItrTrackFlag && fFlagTrack) {
       fpNtuTrackIt = new TAGdataDsc("itTrack", new TAITntuTrack());
 
       if (fgItrTrackingAlgo.Contains("Std") ) {
@@ -846,7 +847,7 @@ void BaseReco::CreateRecActionMsd()
 
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
-   fActClusMsd = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd);
+   fActClusMsd = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd, fpParCalMsd);
    if (fFlagHisto)
       fActClusMsd->CreateHistogram();
 
@@ -854,7 +855,7 @@ void BaseReco::CreateRecActionMsd()
    if (fFlagHisto)
       fActPointMsd->CreateHistogram();
 
-   if (fgMsdTrackFlag) {
+   if (fgMsdTrackFlag && fFlagTrack) {
       fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
 
       if (fgMsdTrackingAlgo.Contains("Std") ) {
@@ -1089,7 +1090,9 @@ void BaseReco::SetTreeBranches()
   
   if (TAGrecoManager::GetPar()->IncludeMSD()) {
     fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-    fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
+     fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
+     if (fgMsdTrackFlag && fFlagTrack)
+        fActEvtWriter->SetupElementBranch(fpNtuTrackMsd, TAMSDntuTrack::GetBranchName());
   }
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
       fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
@@ -1154,9 +1157,8 @@ void BaseReco::AddRecRequiredItem()
    }
 
    if (TAGrecoManager::GetPar()->IncludeIT()) {
-      gTAGroot->AddRequiredItem("itActNtu");
       gTAGroot->AddRequiredItem("itActClus");
-      if (fgItrTrackFlag)
+      if (fgItrTrackFlag && fFlagTrack)
          gTAGroot->AddRequiredItem("itActTrack");
    }
 
@@ -1164,7 +1166,7 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("msdActNtu");
       gTAGroot->AddRequiredItem("msdActClus");
       gTAGroot->AddRequiredItem("msdActPoint");
-      if (fgMsdTrackFlag)
+      if (fgMsdTrackFlag && fFlagTrack)
          gTAGroot->AddRequiredItem("msdActTrack");
    }
 

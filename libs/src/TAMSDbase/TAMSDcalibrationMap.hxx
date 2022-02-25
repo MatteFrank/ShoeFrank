@@ -17,25 +17,27 @@ public:
     };
     
     struct ElossParameter_t {
-        double offset;
-        double slope;
+        vector<double> eta;
+        vector<double> correction;
     };
-    
+
 private:
-   vector<Double_t>         fSigmaNoiseLevel;
-   vector<PedParameter_t>   fPedestal;
-   vector<ElossParameter_t> fEloss;
-   Int_t                    fStripsN;
+   vector<Double_t>           fSigmaNoiseLevelSeed;
+   vector<Double_t>           fSigmaNoiseLevelHit;
+   vector<PedParameter_t>     fPedestal;
+   ElossParameter_t           fEloss;
+   Int_t                      fStripsN;
 
 public:
   TAMSDcalibrationMap(int strip_number_p);
     
-  void             LoadEnergyCalibrationMap(TString Filename);
-  ElossParameter_t GetElossParameters(Int_t sensorId, Int_t stripId) { return fEloss[sensorId*fStripsN + stripId];      }
+  void                      LoadEnergyCalibrationMap(TString Filename);
+  ElossParameter_t          GetElossParameters()                              { return fEloss;                                   }
 
-  void             LoadPedestalMap(TString Filename);
-  PedParameter_t   GetPedestal(Int_t sensorId, Int_t stripId)        { return fPedestal[ sensorId*fStripsN + stripId];  }
-  Double_t         GetPedestalNoiseLevel(Int_t sensorId)             { return fSigmaNoiseLevel[sensorId];               }
+  void                      LoadPedestalMap(TString Filename);
+  PedParameter_t            GetPedestal(Int_t sensorId, Int_t stripId)       { return fPedestal[ sensorId*fStripsN + stripId];  }
+  Double_t                  GetPedestalSeedLevel(Int_t sensorId)             { return fSigmaNoiseLevelSeed[sensorId];               }
+  Double_t                  GetPedestalHitLevel(Int_t sensorId)              { return fSigmaNoiseLevelHit[sensorId];               }
 
   ClassDef(TAMSDcalibrationMap, 0)
 };

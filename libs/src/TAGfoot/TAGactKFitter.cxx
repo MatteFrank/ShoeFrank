@@ -512,7 +512,7 @@ void TAGactKFitter::CreateGeometry()  {
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TATWparGeo::GetBaseName());
 		m_TopVolume->AddNode(twVol, 8, transfo);
 
-		TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)).z() );
+		TVector3 origin_( m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)));
 		genfit::SharedPlanePtr detectorplane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
 		detectorplane->setU(1.,0.,0.);
 		detectorplane->setV(0.,1.,0.);

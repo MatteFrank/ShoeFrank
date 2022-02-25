@@ -37,12 +37,12 @@ class TAGactWDreader : public TAGaction {
 
 public:
   explicit        TAGactWDreader(const char* name,
-				 TAGdataDsc* p_datdaq,
-				 TAGdataDsc* p_stwd, 
-				 TAGdataDsc* p_twwd,
-				 TAGdataDsc* p_cawd,
-				 TAGdataDsc* p_WDtrigInfo,
-				 TAGparaDsc* p_WDmap,
+                                 TAGdataDsc* p_datdaq,
+                                 TAGdataDsc* p_stwd,
+                                 TAGdataDsc* p_twwd,
+                                 TAGdataDsc* p_cawd,
+                                 TAGdataDsc* p_WDtrigInfo,
+                                 TAGparaDsc* p_WDmap,
                                  TAGparaDsc* p_WDtim);
 
   virtual         ~TAGactWDreader();
@@ -57,7 +57,6 @@ private:
   TAGparaDsc*     fpWDTim;		    // parameter dsc
   TAGparaDsc*     fpWDMap;		    // parameter dsc
   TAGdataDsc*     fpWDtrigInfo;		    // output data dsc
-
   int             fEventsN;
 
 private:
@@ -70,11 +69,12 @@ private:
   vector<double> ADC2Volt_CLK(vector<int>);
   double ComputeJitter(TWaveformContainer*);
   void  SavePlot(TWaveformContainer *w, string type);
-  
-  vector<TWaveformContainer*> st_waves;
-  vector<TWaveformContainer*> tw_waves;
-  vector<TWaveformContainer*> ca_waves;
-  map<pair<int,int>, TWaveformContainer*> clk_waves;
+ 
+private:
+  vector<TWaveformContainer*> fSTwaves;
+  vector<TWaveformContainer*> fTWwaves;
+  vector<TWaveformContainer*> fCAwaves;
+  map<pair<int,int>, TWaveformContainer*> fCLKwaves;
 
    ClassDef(TAGactWDreader,0)
 };

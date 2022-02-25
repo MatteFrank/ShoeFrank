@@ -16,14 +16,15 @@ class TAMSDrawHit : public TObject {
    
 protected:
    Int_t      fSensorId;
-   UInt_t     fCharge;
+   Double_t   fCharge;
    Int_t      fIndex;
    Int_t      fView;
    Int_t      fStrip;
+   Bool_t     fIsSeed;
          
 public:
    TAMSDrawHit();
-   TAMSDrawHit( Int_t id, Int_t view, Int_t strip, UInt_t charge);
+   TAMSDrawHit( Int_t id, Int_t view, Int_t strip, Double_t charge);
    virtual ~TAMSDrawHit() {;}
 
    //! Comapre method
@@ -31,28 +32,32 @@ public:
    //! Get input type
    Int_t      GetSensorId()     const    { return fSensorId; }
    //! Get value (pulse height)
-   UInt_t      GetCharge()      const    { return fCharge;   }
+   Double_t   GetCharge()       const    { return fCharge;   }
    //! Get line number
    Int_t      GetView()         const    { return fView;     }
    //! Get column number
    Int_t      GetStrip()        const    { return fStrip;    }
    //! Get index
    Int_t      GetIndex()        const    { return fIndex;    }
+   //! Get seed flag
+   Bool_t    IsSeed()           const    { return fIsSeed;   }
    //! Is Sortable
    Bool_t     IsSortable()      const    { return kTRUE;     }
 
    //! Set input type
    void     SetSensorId(Int_t id)        { fSensorId = id;   }
    //! Set value
-   void     SetCharge(UInt_t value)      { fCharge = value;  }
+   void     SetCharge(Double_t value)    { fCharge = value;  }
    //! Set line number
    void     SetView(Int_t view)          { fView = view;     }
    //! Set column number
    void     SetStrip(Int_t strip)        { fStrip = strip;   }
    //! Set index
    void     SetIndex(Int_t index)        { fIndex = index;   }
-   
-   ClassDef(TAMSDrawHit,1)
+   //! Set seed flag
+   void     SetSeed(Bool_t s=true)       { fIsSeed = s;      }
+
+   ClassDef(TAMSDrawHit,2)
 };
 
 //######################################################################################
@@ -65,7 +70,7 @@ class TAMSDntuRaw : public TAGdata {
    
 protected:
    TObjArray*   fListOfStrips;
-   TAMSDparGeo* fpGeoMap;
+   TAMSDparGeo* fpGeoMap; //!
    
 private:
    static TString fgkBranchName;    // Branch name in TTree
@@ -85,8 +90,7 @@ public:
    const TAMSDrawHit* GetStrip(Int_t iSensor, Int_t iStrip)   const;
    
    //! Add strip to list
-   void               AddStrip(Int_t sensor, Int_t view, Int_t aStrip, UInt_t value);
-  
+   TAMSDrawHit*       AddStrip(Int_t sensor, Int_t view, Int_t aStrip, Double_t value);
    //! Set up clones
    void               SetupClones();
 

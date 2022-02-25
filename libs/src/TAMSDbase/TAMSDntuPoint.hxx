@@ -33,8 +33,6 @@ class TAMSDpoint : public TAGcluster {
 
 private:
    int              fStation;    // number of MSD tracking station
-   TAMSDcluster*    fColClus;    // cluster column
-   TAMSDcluster*    fRowClus;    // cluster col
 
    //generic methods
    Double32_t  fDe1;           // energy loss in 1st strip
@@ -53,15 +51,9 @@ public:
    virtual ~TAMSDpoint() {};
 
    //    All the Get methods
-   int       GetColClusId()      const  { return fColClus->GetClusterIdx(); }
-   int       GetRowClusId()      const  { return fRowClus->GetClusterIdx(); }
-
    int       GetLayer()          const  { return fStation;      }
    int       GetStation()        const  { return fStation;      }
    
-   TAMSDcluster*  GetColClus()   const  { return fColClus;      }
-   TAMSDcluster*  GetRowClus()   const  { return fRowClus;      }
-
    double    GetEnergyLoss1()    const  { return fDe1;          }
    double    GetEnergyLoss2()    const  { return fDe2;          }
    double    GetEnergyLoss()     const  { return fDe1+fDe2;     }
