@@ -1,3 +1,8 @@
+/*!
+ \file TAVTtrack.cxx
+ \brief   Class for VTX tracks
+ */
+
 #include "TMath.h"
 #include "TClonesArray.h"
 
@@ -18,11 +23,16 @@
   //                                                              //
   //////////////////////////////////////////////////////////////////
 
+/*!
+ \class TAVTtrack
+ \brief Class for VTX tracks
+ */
 
+//! Class Imp
 ClassImp(TAVTtrack) // Description of a Track
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAVTtrack::TAVTtrack()
 :  TAGbaseTrack(),
    fPosVertex(0.,0.,0.)
@@ -31,7 +41,9 @@ TAVTtrack::TAVTtrack()
 }
 
 //______________________________________________________________________________
-//
+//! Copy constructor
+//!
+//! \param[in] aTrack ytack to copy
 TAVTtrack::TAVTtrack(const TAVTtrack& aTrack)
 :  TAGbaseTrack(aTrack),
    fPosVertex(aTrack.fPosVertex)
@@ -40,13 +52,13 @@ TAVTtrack::TAVTtrack(const TAVTtrack& aTrack)
 }
 
 //______________________________________________________________________________
-//  
+//! Destructor
 TAVTtrack::~TAVTtrack()
 {
 }
 
 //______________________________________________________________________________
-//
+//! Set up clones
 void TAVTtrack::SetupClones()
 {
    fListOfClusters = new TClonesArray("TAVTcluster");
@@ -54,7 +66,9 @@ void TAVTtrack::SetupClones()
 }
 
 // __________________________________________________________________________
-//
+//! Add cluster to track
+//!
+//! \param[in] clus cluster to add
 void TAVTtrack::AddCluster(TAGcluster* clus)
 {
   TAVTcluster* cluster = static_cast<TAVTcluster*>(clus);

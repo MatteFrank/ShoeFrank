@@ -1,4 +1,9 @@
 
+/*!
+ \file TCITgeometryConstructor.cxx
+ \brief Implementation of TCITgeometryConstructor.
+*/
+
 #include "TCITgeometryConstructor.hxx"
 #include "TCITsensitiveDetector.hxx"
 
@@ -20,7 +25,15 @@ TString TCITgeometryConstructor::fgkItEpiSDname = "ItSD";
 
 using namespace CLHEP;
 
+/*!
+ \class TCITgeometryConstructor
+ \brief Building ITR detector geometry
+*/
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
+//!
+//! \param[in] pParGeo geometry parameter
 TCITgeometryConstructor::TCITgeometryConstructor(TAVTbaseParGeo* pParGeo)
 : TCVTgeometryConstructor(pParGeo)
 {
@@ -29,12 +42,14 @@ TCITgeometryConstructor::TCITgeometryConstructor(TAVTbaseParGeo* pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCITgeometryConstructor::~TCITgeometryConstructor()
 {
    
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume
 void TCITgeometryConstructor::DefineSensitive()
 {
    // Putting here message
@@ -53,6 +68,7 @@ void TCITgeometryConstructor::DefineSensitive()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct detector
 G4LogicalVolume* TCITgeometryConstructor::Construct()
 {
    fBoxVtxLog = TCVTgeometryConstructor::Construct();
@@ -67,6 +83,7 @@ G4LogicalVolume* TCITgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCITgeometryConstructor::DefineMaterial()
 {
    TAITparGeo* parGeo = dynamic_cast<TAITparGeo*>(fpParGeo);
@@ -77,6 +94,7 @@ void TCITgeometryConstructor::DefineMaterial()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Place plume support
 void TCITgeometryConstructor::PlacePlumeSupport()
 {
    Int_t halfSensors  = fpParGeo->GetSensorsN()/2;
@@ -96,6 +114,7 @@ void TCITgeometryConstructor::PlacePlumeSupport()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Buid plume support
 G4LogicalVolume* TCITgeometryConstructor::BuildPlumeSupport()
 {
    TAITparGeo* parGeo = dynamic_cast<TAITparGeo*>(fpParGeo);

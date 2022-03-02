@@ -1,6 +1,13 @@
 #ifndef GLOBALPAR_H
 #define GLOBALPAR_H
 
+/*!
+ \file TAGrecoManager.hxx
+ \brief   Declaration of TAGrecoManager.
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include <iomanip>
 #include <iostream>
 #include <stdlib.h>
@@ -22,103 +29,171 @@
 
 using namespace std;
 
-// singleton class of global foot parameters
 class TAGrecoManager {
 
 public:
+   // singleton class of global foot parameters
 	static TAGrecoManager* Instance( const TString expName = "" );
 	static TAGrecoManager* GetPar();
    
 public:
 	~TAGrecoManager();
 
-	void             FromFile();
-	void             Print(Option_t* opt = "");
+   // From file
+	void  FromFile();
+   // Print info
+	void  Print(Option_t* opt = "");
+   // Get run info
    const TAGrunInfo GetGlobalInfo();
-   Bool_t           Find_MCParticle( string villain );
+   // Find MC particle
+   Bool_t Find_MCParticle( string villain );
 
+   //! Debug level
 	Int_t  Debug()                const { return fDebugLevel;          }
-	float  Chi2Cut()             	const { return fChi2;               }
-	int  MeasureN()               	const { return fMeasureN;           }
-	int  SkipN()              		const { return fSkipN;           }
+   //! Get chi2 cut
+	Float_t  Chi2Cut()            const { return fChi2;                }
+   //! Get number of measurements
+	Int_t  MeasureN()             const { return fMeasureN;            }
+   //! Get skip events
+	Int_t  SkipN()              	const { return fSkipN;               }
 
-    // Kalman Getter
+   //! Kalman Getter
+   //! Kalman mode
    string KalMode()              const { return fKalmanMode;          }
+   //! Preselect strategy
    string PreselectStrategy()    const { return fKPreselectStrategy;  }
+   //! Kalman inverse flag
 	Bool_t IsKalReverse()         const { return fKalReverse;          }
+   //! Fluka version
 	Bool_t verFLUKA()             const { return fVerFLUKA;            }
+   //! Enable Kalman display
    Bool_t EnableEventDisplay()   const { return fEnableEventDisplay;  }
 
+   //! Kalman system vectors
 	vector<string>  KalSystems()        { return fTrackingSystems;     }
+   //! Kalman particle vectors
 	vector<string>  KalParticles()      { return fKalParticles;        }
+   //! Kalman MC particle vectors
    vector<string>  MCParticles()       { return fMcParticles;         }
+   //! Detector included
    vector<TString> DectIncluded()      { return fDectInclude;         }
 
-	 Double_t VTReso() 	         const { return fVTreso;              }
-    Double_t ITReso() 	         const { return fITreso;              }
-    Double_t MSDReso()           const { return fMSDreso;             }
-    Double_t TWReso()            const { return fTWreso;              }
-
+    //! Reconstruction parameters Getter
+    //! Local reconstruction flag
     bool IsMC()								{ return fIsMC; }
 
-    // Reconstruction parameters Getter
+    //! Reconstruction parameters Getter
     Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
+    //! Saving tree flag
     Bool_t IsSaveTree()          const { return fEnableTree;          }
+    //! Save histogram flag
     Bool_t IsSaveHisto()         const { return fEnableHisto;         }
+    //! Save hits flag
     Bool_t IsSaveHits()          const { return fEnableSaveHits;      }
+    //! Tracking flag
     Bool_t IsTracking()          const { return fEnableTracking;      }
+    //! Root object flag
     Bool_t IsReadRootObj()       const { return fEnableRootObject;    }
+    //! TW MC atomic charge flag
     Bool_t IsTWZmc()             const { return fEnableTWZmc;         }
+    //! TW no pileup flag
     Bool_t IsTWnoPU()            const { return fEnableTWnoPU;        }
+    //! TW atomic charge Z matching flag
     Bool_t IsTWZmatch()          const { return fEnableTWZmatch;      }
+    //! TW calibration per bar flag
     Bool_t IsTWCalBar()          const { return fEnableTWCalBar;      }
+    //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
+    //! TW Calibration flag
     Bool_t CalibTW()             const { return fDoCalibTW;           }
+    //! BM Calibration flag
     Bool_t CalibBM()             const { return fDoCalibBM;           }
 
+    //! Include dipole flag
     Bool_t IncludeDI()           const { return fIncludeDI;           }
+    //! Include STC flag
     Bool_t IncludeST()           const { return fIncludeST;           }
+    //! Include BM flag
     Bool_t IncludeBM()           const { return fIncludeBM;           }
+    //! Include TW flag
     Bool_t IncludeTW()           const { return fIncludeTW;           }
+    //! Include MSD flag
     Bool_t IncludeMSD()          const { return fIncludeMSD;          }
+    //! Include CA flag
     Bool_t IncludeCA()           const { return fIncludeCA;           }
+    //! Include target flag
     Bool_t IncludeTG()           const { return fIncludeTG;           }
+    //! Include VTX flag
     Bool_t IncludeVT()           const { return fIncludeVT;           }
+    //! Include ITR flag
     Bool_t IncludeIT()           const { return fIncludeIT;           }
    
+    //! Global reconstruction with TOE flag
     Bool_t IncludeTOE()          const { return fIncludeTOE;          }
+    //! Global reconstruction with GenFit flag
     Bool_t IncludeKalman()       const { return fIncludeKalman;       }
+    //! Global reconstruction with straight line flag
+    Bool_t IncludeStraight()     const { return fIncludeStraight;     }
   
-    // Reconstruction parameters Setter
+    //! Reconstruction parameters Setter
+    //! Set global reconstruction with TOE flag
     void IncludeTOE(Bool_t t)          {  fIncludeTOE = t;            }
+    //! Set global reconstruction with GenFit flag
     void IncludeKalman(Bool_t t)       {  fIncludeKalman = t;         }
+    //! Set global reconstruction with straight line flag
+    void IncludeStraight(Bool_t t)     { fIncludeStraight = t;        }
+   
+    //! Enable global reconstruction from local reconstruction tree
     void EnableLocalReco()             {  fEnableLocalReco = true;    }
+    //! Disable global reconstruction from local reconstruction tree
     void DisableLocalReco()            {  fEnableLocalReco = false;   }
 
+    //! Enable root object tree
     void EnableRootObject()            {  fEnableRootObject = true;   }
+    //! Disable root object tree
     void DisableRootObject()           {  fEnableRootObject = false;  }
 
+    //! Enable MC region reading
     void EnableRegionMc()              {  fEnableRegionMc = true;     }
+    //! Disable MC region reading
     void DisableRegionMc()             {  fEnableRegionMc = false;    }
    
+    //! Enable filling in tree
     void EnableTree()                  {  fEnableTree = true;         }
+    //! Disable filling in tree
     void DisableTree()                 {  fEnableTree = false;        }
    
+    //! Enable filling histograms
     void EnableHisto()                 {  fEnableHisto = true;        }
+    //! Disable filling histograms
     void DisableHisto()                {  fEnableHisto = false;       }
 
+    //! Set include dipole flag
     void IncludeDI(Bool_t t)           {  fIncludeDI = t;             }
+    //! Set include STC flag
     void IncludeST(Bool_t t)           {  fIncludeST = t;             }
+    //! Set include BM flag
     void IncludeBM(Bool_t t)           {  fIncludeBM = t;             }
+    //! Set include TW flag
     void IncludeTW(Bool_t t)           {  fIncludeTW = t;             }
+    //! Set include MSD flag
     void IncludeMSD(Bool_t t)          {  fIncludeMSD = t;            }
+    //! Set include CA flag
     void IncludeCA(Bool_t t)           {  fIncludeCA = t;             }
+    //! Set include target flag
     void IncludeTG(Bool_t t)           {  fIncludeTG = t;             }
+    //! Set include VT flag
     void IncludeVT(Bool_t t)           {  fIncludeVT = t;             }
+    //! Set include ITR flag
     void IncludeIT(Bool_t t)           {  fIncludeIT = t;             }
+   
+   
+    //! Set calibration process for TW
     void CalibTW(Bool_t t)             {  fDoCalibTW = t;             }
+    //! Set calibration process for BM
     void CalibBM(bool t)               {  fDoCalibBM = t;             }
   
+    // Debug levels
     void SetDebugLevels();
   
 private:
@@ -126,80 +201,83 @@ private:
 	TAGrecoManager( const TString expName );
    
 private:
-	static TAGrecoManager*       fgInstance;
-   static map<TString, TString> fgkDectFullName; // full name
-   static const TString         fgkDefParName;
+	static TAGrecoManager*       fgInstance;      ///< Instance
+   static map<TString, TString> fgkDectFullName; ///< full name detector map
+   static const TString         fgkDefParName;   ///< Default parameter name
 
 private:
-   // file parameters
-	vector<string>       fCopyInputFile;
-   map< string, Int_t > fMapDebug;
-	string               fParFileName;
-	Int_t                fDebugLevel;
-
-	float fChi2;
-	int fMeasureN;
-	int fSkipN;
-
-   bool fIsMC;
-   // debug levels for classes
-   TObjArray fClassDebugLevels;
+   //! file parameters
+	vector<string>       fCopyInputFile;         ///< Copy input file vector
+   map< string, Int_t > fMapDebug;              ///< Debug map
+	string               fParFileName;           ///< Reconstruction parameter file name
+	Int_t                fDebugLevel;            ///< Global debug level
+ 
+   //! debug levels for classes
+   TObjArray            fClassDebugLevels;      ///< List of debug level per class
    
-   // Kalman parameters
-	vector<string>  fMcParticles;
-   string          fKalmanMode;
-   string          fKPreselectStrategy;
-   Bool_t          fEnableEventDisplay;
-	Bool_t          fKalReverse;
-	Bool_t          fVerFLUKA;
-	vector<string>  fTrackingSystems;
-   vector<string>  fKalParticles;
-   vector<TString> fDectInclude;
+   //! Kalman parameters
+   Float_t              fChi2;                  ///< Chi2 cut
+   Int_t                fMeasureN;              ///< Number of measurements
+   Int_t                fSkipN;                 ///< Number of events to skip
+   Bool_t               fIsMC;                  ///< MC flag
+	vector<string>       fMcParticles;           ///< Kalman MC particles
+   string               fKalmanMode;            ///< Kalman mode
+   string               fKPreselectStrategy;    ///< Kalman preselection strategy
+   Bool_t               fEnableEventDisplay;    ///< Enable event display
+	Bool_t               fKalReverse;            ///< Kalman reverse flag
+	Bool_t               fVerFLUKA;              ///< Fluka version
+	vector<string>       fTrackingSystems;       ///< List of tracking systems
+   vector<string>       fKalParticles;          ///< List of Kalmaan particles
+   vector<TString>      fDectInclude;           ///< List of included detectors
+   
+   //! reconstruction parameter
+   Bool_t               fEnableLocalReco;       ///< Enable global reconstruction from l0 reconstruction
+   Bool_t               fEnableTree;            ///< Enbale tree filling
+   Bool_t               fEnableHisto;           ///< Enable histogram filling
+   Bool_t               fEnableSaveHits;        ///< Enable saving hits
+   Bool_t               fEnableTracking;        ///< Enable tracking
+   Bool_t               fEnableRootObject;      ///< Enable root object in tree
+   Bool_t               fEnableTWZmc;           ///< Enable TW MC atomic charge Z
+   Bool_t               fEnableTWnoPU;          ///< Enable TW no pileup
+   Bool_t               fEnableTWZmatch;        ///< Enable TW MC atomic charge Z matching
+   Bool_t               fEnableTWCalBar;        ///< Enable TW calibration per bar
+   Bool_t               fDoCalibTW;             ///< Enable TW cliabration process
+   Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
+   Bool_t               fEnableRegionMc;        ///< Enable MC region reading
 
-	Double_t        fVTreso;
-   Double_t        fITreso;
-   Double_t        fMSDreso;
-   Double_t        fTWreso;
-  
-   // reconstruction parameter
-   Bool_t fEnableLocalReco;
-   Bool_t fEnableTree;
-   Bool_t fEnableHisto;
-   Bool_t fEnableSaveHits;
-   Bool_t fEnableTracking;
-   Bool_t fEnableRootObject;
-   Bool_t fEnableTWZmc;
-   Bool_t fEnableTWnoPU;
-   Bool_t fEnableTWZmatch;
-   Bool_t fEnableTWCalBar;
-   Bool_t fDoCalibTW;
-   Bool_t fDoCalibBM;
-   Bool_t fEnableRegionMc;
-
-   Bool_t fIncludeST;
-   Bool_t fIncludeBM;
-   Bool_t fIncludeTG;
-   Bool_t fIncludeDI;
-
-   Bool_t fIncludeTW;
-   Bool_t fIncludeMSD;
-   Bool_t fIncludeCA;
-   Bool_t fIncludeIT;
-   Bool_t fIncludeVT;
+   Bool_t               fIncludeST;             ///< Include STC
+   Bool_t               fIncludeBM;             ///< Include BM
+   Bool_t               fIncludeTG;             ///< Include target
+   Bool_t               fIncludeDI;             ///< Include dipole
+   Bool_t               fIncludeTW;             ///< Include TW
+   Bool_t               fIncludeMSD;            ///< Include MSD
+   Bool_t               fIncludeCA;             ///< Include CAL
+   Bool_t               fIncludeIT;             ///< Include ITR
+   Bool_t               fIncludeVT;             ///< Include VTX
     
-   Bool_t fIncludeKalman;
-   Bool_t fIncludeTOE;
+   Bool_t               fIncludeKalman;         ///< Global reconstruction from GenFit
+   Bool_t               fIncludeTOE;            ///< Global reconstruction from TOE
+   Bool_t               fIncludeStraight;       ///< Global reconstruction from straight line extrapolation
 
 public:
+   // Debug with line number
    static void   DebugLine(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", const char* file = "", Int_t line = -1);
+   // Debug with variable output
    static void   Debug(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", ...);
+   // Get debug level per classname
    static Int_t  GetDebugLevel(const char* className);
+   // Get debug level per level and classname
    static Bool_t GetDebugLevel(Int_t level, const char* className);
+   // Get MC debug level per level and classname
    static Bool_t GetMcDebugLevel(Int_t level, const char* className);
+   // Get MC dedug level per classname
    static void   GetMcInfo(const char* className = "", const char* funcName = "", const char* format = "", ...);
+   // Get MC dedug level per classname
    static void   GetMcInfoMsg(const char* className = "", const char* funcName = "", const char* format = "");
 
+   // Set debug level per classname
    static void   SetClassDebugLevel(const char* className, Int_t level);
+   // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
 };
 

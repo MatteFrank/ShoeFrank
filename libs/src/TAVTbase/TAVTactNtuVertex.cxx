@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactNtuVertex. 
+ \file TAVTactNtuVertex.cxx
+ \brief   NTuplizer for VTX vertices
  */
 
 #include "TClonesArray.h"
@@ -19,13 +19,22 @@
 
 /*!
  \class TAVTactNtuVertex
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for VTX vertices
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuVertex);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuTrack track container descriptor
+//! \param[out] pNtuVertex vertex container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pGeoMapG target geometry parameter descriptor
+//! \param[in] pBmTrack input BM track container descriptor
 TAVTactNtuVertex::TAVTactNtuVertex(const char* name, 
                                        TAGdataDsc* pNtuTrack, TAGdataDsc* pNtuVertex,
                                        TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pGeoMapG, TAGdataDsc* pBmTrack)
@@ -41,7 +50,7 @@ TAVTactNtuVertex::~TAVTactNtuVertex()
 }
 
 //______________________________________________________________________
-//
+//! Compute vertex
 Bool_t TAVTactNtuVertex::ComputeVertex()
 {
     
@@ -95,7 +104,9 @@ Bool_t TAVTactNtuVertex::ComputeVertex()
 }
 
 //______________________________________________________________________
-//
+//! Comute mean distance between the tracks for a given z position
+//!
+//! \param[in] zVal Z position in target
 Double_t TAVTactNtuVertex::ComputeDistance(Double_t zVal)
 {
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
@@ -123,8 +134,11 @@ Double_t TAVTactNtuVertex::ComputeDistance(Double_t zVal)
     return distance;
 }
 
-//____________________
-//
+//______________________________________________________________________
+//! Comute final distance between the tracks for a given z position
+//!
+//! \param[in] zVal Z position in target
+//! \param[in] a toggle between X and Y position (0, 1)
 Double_t TAVTactNtuVertex::ComputeFinalCoordinate(Int_t a, Double_t zVal)
 {
     Double_t returnValue   = 0;
@@ -143,8 +157,11 @@ Double_t TAVTactNtuVertex::ComputeFinalCoordinate(Int_t a, Double_t zVal)
     return returnValue;
 }
 
-//_____________________
-//
+//______________________________________________________________________
+//! Set vertex position and minimal distance between tracks
+//!
+//! \param[in] xyz  position of vertex
+//! \param[in] mind minimal distance between tracks
 void TAVTactNtuVertex::SetVertex(TVector3& xyz, Double_t mind)
 {
     TAVTntuVertex* ntuVertex = (TAVTntuVertex*)fpNtuVertex->Object();

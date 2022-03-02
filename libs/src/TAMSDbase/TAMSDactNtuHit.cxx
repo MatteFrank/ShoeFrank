@@ -6,6 +6,7 @@
 
 #include "TAMSDparMap.hxx"
 #include "TAMSDparCal.hxx"
+#include "TAMSDparConf.hxx"
 #include "TAMSDactNtuHit.hxx"
 #include "TAGrecoManager.hxx"
 
@@ -23,17 +24,20 @@ TAMSDactNtuHit::TAMSDactNtuHit(const char* name,
                                TAGdataDsc* p_datraw,
                                TAGdataDsc* p_nturaw,
                                TAGparaDsc* p_pargeo,
+                               TAGparaDsc* p_parconf,
                                TAGparaDsc* p_parcal)
  : TAGaction(name, "TAMSDactNtuHit - Unpack MSD calibrated data"),
    fpDatRaw(p_datraw),
    fpNtuRaw(p_nturaw),
    fpGeoMap(p_pargeo),
+   fpParConf(p_parconf),
    fpParCal(p_parcal)
 {
    AddDataIn(p_datraw, "TAMSDntuRaw");
    AddDataOut(p_nturaw, "TAMSDntuHit");
    
    AddPara(p_pargeo, "TAMSDparGeo");
+   AddPara(p_parconf, "TAMSDparConf");
    AddPara(p_parcal, "TAMSDparCal");
 }
 
@@ -48,9 +52,10 @@ TAMSDactNtuHit::~TAMSDactNtuHit()
 
 Bool_t TAMSDactNtuHit::Action()
 {
-   TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*) fpDatRaw->Object();
-   TAMSDntuHit*   p_nturaw = (TAMSDntuHit*) fpNtuRaw->Object();
-   TAMSDparGeo*   p_geoMap = (TAMSDparGeo*) fpGeoMap->Object();
+   TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*)  fpDatRaw->Object();
+   TAMSDntuHit*   p_nturaw = (TAMSDntuHit*)  fpNtuRaw->Object();
+   TAMSDparGeo*   p_geoMap = (TAMSDparGeo*)  fpGeoMap->Object();
+   TAMSDparConf*  p_config = (TAMSDparConf*) fpParConf->Object();
 
    if(FootDebugLevel(2)) {
      cout<<"****************************"<<endl;
@@ -62,46 +67,30 @@ Bool_t TAMSDactNtuHit::Action()
    for (Int_t i = 0; i < p_geoMap->GetSensorsN(); ++i) {
       
       int nstrip = p_datraw->GetStripsN(i);
-
+      
       for(int ih = 0; ih < nstrip; ++ih) {
          TAMSDrawHit *strip = p_datraw->GetStrip(i, ih);
          
          Int_t sensorId   = strip->GetSensorId();
          Int_t stripId    = strip->GetStrip();
          Int_t view       = strip->GetView();
-         UInt_t charge    = strip->GetCharge();
+         Double_t charge  = strip->GetCharge();
+         Bool_t isSeed    = strip->IsSeed();
          Float_t posStrip = p_geoMap->GetPosition(stripId);
-	 if(FootDebugLevel(2))
-	   cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
+         if(FootDebugLevel(2))
+            cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
 	 
-	 if (FootDebugLevel(1))
-            printf("sensor: %d strip: %d view: %d charge: %d\n", sensorId, stripId, view, charge);
+         if (FootDebugLevel(1))
+            printf("sensor: %d strip: %d view: %d charge: %f\n", sensorId, stripId, view, charge);
          
-         // here we need the calibration file
-         Double_t energy = GetEnergy(charge, sensorId, stripId);
-         TAMSDhit* hit = p_nturaw->NewStrip(sensorId, energy, view, stripId);
+         TAMSDhit* hit = p_nturaw->NewStrip(sensorId, charge, view, stripId);
          hit->SetPosition(posStrip);
-	 
+         hit->SetSeed(isSeed);
       }
    }
    fpNtuRaw->SetBit(kValid);
    
    return kTRUE;
-}
-
-//------------------------------------------+-----------------------------------
-Double_t TAMSDactNtuHit::GetEnergy(Double_t rawenergy, Int_t sensorId, Int_t stripId)
-{
-   TAMSDparCal* p_parcal = (TAMSDparCal*) fpParCal->Object();
-   
-    //switching from this to only one call would speed up thing, buit using flat vector of struct would be faster
-    //only thing needed is to compute index, but it is easy, it's a matrix
-//   Double_t p0 = p_parcal->GetElossParam(sensorId, stripId, 0);
-//   Do,/uble_t p1 = p_parcal->GetElossParam(sensorId, stripId, 1);
-    auto eloss_parameters = p_parcal->GetElossParameters(sensorId, stripId);
-   
-   //return p0 + p1 * rawenergy;
-    return eloss_parameters.offset + eloss_parameters.slope * rawenergy;
 }
 
 

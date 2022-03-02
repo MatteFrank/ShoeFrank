@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactNtuTrackF.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactNtuTrackF.
+ \file TAVTactNtuTrackF.cxx
+  \brief  NTuplizer for VTX tracks using combinatory algorithm
  */
 
 #include "TClonesArray.h"
@@ -29,13 +28,22 @@
 
 /*!
  \class TAVTactNtuTrackF 
- \brief NTuplizer for vertex tracks. **
+ \brief  NTuplizer for VTX tracks using combinatory algorithm
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuTrackF);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuClus cluster container descriptor
+//! \param[out] pNtuTrack track container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pCalib calibration parameter descriptor
+//! \param[in] pBMntuTrack input BM track container descriptor
 TAVTactNtuTrackF::TAVTactNtuTrackF(const char* name, 
 								   TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
 								   TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGdataDsc* pBMntuTrack)
@@ -56,7 +64,7 @@ TAVTactNtuTrackF::~TAVTactNtuTrackF()
 }
 
 //_____________________________________________________________________________
-//  
+//! Find tilted tracks
 Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 {
    Double_t minDistance  = 1.e9;
@@ -183,7 +191,9 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 }
 
 //_____________________________________________________________________________
-//  
+//! Check if projected track is out of target area
+//!
+//! \param[in] trk a given track
 Bool_t TAVTactNtuTrackF::IsGoodCandidate(TAGbaseTrack* trk)
 {
    TAVTtrack* track = static_cast<TAVTtrack*>(trk);

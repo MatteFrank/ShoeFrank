@@ -1,3 +1,7 @@
+/*!
+ \file TCGphysicsQMD.cxx
+ \brief Implementation of TCGphysicsQMD.
+*/
 
 #include "TCGphysicsQMD.hxx"
 
@@ -5,9 +9,7 @@
 #include "G4IonQMDPhysics.hh"
 #include "G4IonINCLXXPhysics.hh"
 #include "G4IonBinaryCascadePhysics.hh"
-#if G4VERSION_NUMBER > 1003
-  #include "G4IonPhysicsPHP.hh"
-#endif
+#include "G4IonPhysicsPHP.hh"
 
 #include "G4IonPhysics.hh"
 
@@ -27,7 +29,6 @@
 #include "G4ProcessManager.hh"
 
 // particles
-
 #include "G4BosonConstructor.hh"
 #include "G4LeptonConstructor.hh"
 #include "G4MesonConstructor.hh"
@@ -38,22 +39,29 @@
 
 using namespace CLHEP	;
 
-TCGphysicsQMD::TCGphysicsQMD():  G4VModularPhysicsList(),
-hadronElastic(nullptr), hadronInelastic(nullptr),ionElastic(nullptr),
-ionInelastic(nullptr), electromagnetic(nullptr), decay(nullptr),
-radioactiveDecay(nullptr)
-{
+/*!
+ \class TCGphysicsQMD
+ \brief Physics list from QMD
+ */
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
+TCGphysicsQMD::TCGphysicsQMD()
+:  G4VModularPhysicsList(),
+   hadronElastic(nullptr),
+   hadronInelastic(nullptr),
+   ionElastic(nullptr),
+   ionInelastic(nullptr),
+   electromagnetic(nullptr),
+   decay(nullptr),
+   radioactiveDecay(nullptr)
+{
     // Ion Elastic scattering
     ionElastic = new G4IonElasticPhysics();
     RegisterPhysics(ionElastic);
 
     // Ion Inelastic physics
-//    ionInelastic = new G4IonPhysics();
-//    ionInelastic = new G4IonPhysicsPHP();
     ionInelastic = new G4IonBinaryCascadePhysics();
-//    ionInelastic = new G4IonINCLXXPhysics();
-//    ionInelastic = new G4IonQMDPhysics();
     RegisterPhysics(ionInelastic);
 
     // Particle decays
@@ -68,53 +76,37 @@ radioactiveDecay(nullptr)
     RegisterPhysics(electromagnetic);
 
     hadronElastic = new G4HadronElasticPhysicsHP();
-//    hadronElastic = new G4HadronElasticPhysics();
     RegisterPhysics( hadronElastic);
 
     // Hadron Inelastic physics
-    //    hadronInelastic = new G4HadronPhysicsQGSP_BIC_AllHP();
-    //    RegisterPhysics( new G4HadronPhysicsQGSP_BIC());
-    //    hadronInelastic = new G4HadronInelasticQBBC();
-    //    hadronInelastic = new G4HadronPhysicsINCLXX();
     hadronInelastic = new G4HadronPhysicsQGSP_BIC_HP();
     RegisterPhysics( hadronInelastic);
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGphysicsQMD::~TCGphysicsQMD()
-{;}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//! Construct process
 void TCGphysicsQMD::ConstructProcess()
 {
     // Transportation first (mandatory)
-    //
     AddTransportation();
 
     // Physics constructors
-    //
     hadronElastic->ConstructProcess();
     hadronInelastic->ConstructProcess();
     ionInelastic->ConstructProcess();
     electromagnetic->ConstructProcess();
     decay->ConstructProcess();
     radioactiveDecay->ConstructProcess();
-
-    ///// NB : this lines must be uncommented if you want to use G4HadronPhysicsQGSP_BIC_AllHP + G4IonPhysicsPHP
-    //    // Get Models
-    //    //
-    //    G4ProcessManager* pManager = G4Neutron::Neutron()->GetProcessManager();
-    //    G4HadronicProcess* process = dynamic_cast<G4HadronicProcess*>(pManager->GetProcess("nCapture"));
-    //    std::vector<G4HadronicInteraction*>& list
-    //    = process->GetHadronicInteractionList();
-    //    for (size_t li=0; li<list.size(); li++) {
-    //        if (list[li]->GetModelName() == "nRadCapture")
-    //            list[li]->SetMinEnergy(19.9*MeV);
-    //    }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//! Construct particle
 void TCGphysicsQMD::ConstructParticle()
 {
     G4BosonConstructor  pBosonConstructor;
@@ -136,6 +128,8 @@ void TCGphysicsQMD::ConstructParticle()
     pShortLivedConstructor.ConstructParticle();
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Set cuts
 void TCGphysicsQMD::SetCuts()
 {
     G4double cutGammas = 1.0*m;

@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
- \brief   Implementation of TAVTntuHit.
+ \file TAVTntuHit.cxx
+ \brief   Container class for VTX ntu hit
  */
 
 #include "TString.h"
@@ -10,8 +9,8 @@
 #include "TAVTntuHit.hxx"
 
 /*!
- \class TAVTntuHit TAVTntuHit.hxx "TAVTntuHit.hxx"
- \brief Container class for VTX ntu hit **
+ \class TAVTntuHit 
+ \brief Container class for VTX ntu hit
  */
 
 ////////////////////////////////////////////////////////////
@@ -26,7 +25,7 @@
 
 
 //##############################################################################
-
+//! Class Imp
 ClassImp(TAVTntuHit);
 
 TString TAVTntuHit::fgkBranchName   = "vtrh.";
@@ -56,6 +55,8 @@ TAVTntuHit::~TAVTntuHit()
 
 //------------------------------------------+-----------------------------------
 //! return number of pixels for a given sensor.
+//!
+//! \param[in] iSensor sensor index
 Int_t TAVTntuHit::GetPixelsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -68,6 +69,9 @@ Int_t TAVTntuHit::GetPixelsN(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
+//! return list of pixels for a given sensor.
+//!
+//! \param[in] iSensor sensor index
 TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -80,6 +84,9 @@ TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor)
 }
 
 //------------------------------------------+-----------------------------------
+//! return list of pixels for a given sensor (const)
+//!
+//! \param[in] iSensor sensor index
 TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -92,7 +99,10 @@ TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a pixel for a given sensor and pixel index
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] iPixel pixel index
 TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel)
 {
    if (iPixel >=0 || iPixel < GetPixelsN(iSensor)) {
@@ -105,7 +115,10 @@ TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a pixel for a given sensor and pixel index (const)
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] iPixel pixel index
 const TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel) const
 {
    if (iPixel >=0 || iPixel < GetPixelsN(iSensor)) {
@@ -135,6 +148,8 @@ void TAVTntuHit::SetupClones()
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
+//!
+//! \param[in] opt option for clearing (not used)
 void TAVTntuHit::Clear(Option_t*)
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
@@ -145,7 +160,12 @@ void TAVTntuHit::Clear(Option_t*)
 }
 
 //______________________________________________________________________________
-//
+//! Create new pixel from a given sensor, line and column
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] value pixel value
+//! \param[in] aLine line number
+//! \param[in] aColumn column number
 TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn)
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -170,10 +190,11 @@ TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
    }
 }
 
-
-
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAVTntuHit::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {

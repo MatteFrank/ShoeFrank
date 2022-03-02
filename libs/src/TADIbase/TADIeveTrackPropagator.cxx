@@ -1,26 +1,33 @@
-
+/*!
+ \file TADIeveTrackPropagator.cxx
+ \brief Implementation of TADIeveTrackPropagator
+ */
 
 #include "TADIeveTrackPropagator.hxx"
 
-//##############################################################################
-
 /*!
-  \class TADIeveTrackPropagator TADIeveTrackPropagator.hxx "TADIeveTrackPropagator.hxx"
+  \class TADIeveTrackPropagator
   \brief TEve Propagator in Mag field **
+ 
    units: B (Testla), pos (cm), momentum (GeV/c)
 */
 
 //______________________________________________________________________________
+//! Constructor
 TADIeveTrackPropagator::TADIeveTrackPropagator()
 : TEveTrackPropagator()
 {
 }
 
-//______________________________________________________________________________
+// __________________________________________________________________________
+//! Propagate in Z charged particle with momentum p to vertex v.
+//!
+//! \param[in] v initial position
+//! \param[in] p initial momentum
+//! \param[out] vOut final position
+//! \param[out] pOut final momentum
 Bool_t TADIeveTrackPropagator::Extrapole(TEveVectorD& v, TEveVectorD& p, TEveVectorD& vOut, TEveVectorD& pOut)
 {
-   // Propagate in Z charged particle with momentum p to vertex v.
-   
    TEveVector4D currV(fV);
    TEveVector4D forwV(fV);
    TEveVectorD  currP(p);
@@ -48,12 +55,16 @@ Bool_t TADIeveTrackPropagator::Extrapole(TEveVectorD& v, TEveVectorD& p, TEveVec
 }
 
 
-//______________________________________________________________________________
+// __________________________________________________________________________
+//!  Intersect helix with a plane. Current position and argument p define
+//!
+//! \param[in] p initial momentum
+//! \param[in] point initial position
+//! \param[out] pOut final momentum
+//! \param[out] itsect intersection position
 Bool_t TADIeveTrackPropagator::IntersectPlaneZ(const TEveVectorD& p,  const TEveVectorD& point, TEveVectorD& pOut, TEveVectorD& itsect)
 {
-   // Intersect helix with a plane. Current position and argument p define
    // the helix.
-   
    TEveVectorD pos(fV);
    TEveVectorD mom(p);
    if (fMagFieldObj->IsConst())

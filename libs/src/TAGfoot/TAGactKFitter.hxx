@@ -62,8 +62,6 @@
 #include "TAMSDntuRaw.hxx"
 #include "TAMCntuPart.hxx"
 
-#include "MagicSkills.hxx"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <limits>
@@ -82,9 +80,6 @@
 #include "TAGF_KalmanStudies.hxx"
 #include "UpdatePDG.hxx"
 #include "TAGactNtuGlbTrack.hxx"
-
-
-//#include "GlobalTrackFoot.hxx"
 
 using namespace std;
 using namespace genfit;

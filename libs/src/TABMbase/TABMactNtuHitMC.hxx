@@ -41,8 +41,6 @@ class TABMactNtuHitMC : public TAGaction {
     void            CreateDigitizer();
     void            CreateFakeHits();
 
-    ClassDef(TABMactNtuHitMC,0)
-
   private:
     TAGdataDsc*     fpNtuMC;        // input mc hit
     TAGdataDsc*     fpNtuEve;       // input eve track dsc
@@ -63,6 +61,8 @@ class TABMactNtuHitMC : public TAGaction {
     TH1I*            fpDisReason;     //discharged hits reason
     TH1I*            fpHisHitNum;     //raw hit map
     TH1I*            fpHisFakeIndex;  //hits fake index
+   
+   ClassDef(TABMactNtuHitMC,0)
 };
 
 #endif

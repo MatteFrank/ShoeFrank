@@ -1,9 +1,8 @@
 #ifndef _TAITntuHit_HXX
 #define _TAITntuHit_HXX
 /*!
- \file
- \version $Id: TAITntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
- \brief   Declaration of TAITntuHit.
+ \file TAITntuHit.hxx
+  \brief   Declaration of TAITntuHit.
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -15,36 +14,44 @@ class TAITparGeo;
 class TAITntuHit : public TAGdata {
    
 protected:
-   //using TObjArray here
-   TObjArray*        fListOfPixels;
-   TAITparGeo*       fpGeoMap;         //! do not store
-   
-    std::map<pair<int, int>, int > fMap; //!
+   TObjArray*        fListOfPixels;      ///< List of pixels
+   //! geometry parameter
+   TAITparGeo*       fpGeoMap;           //! do not store
+   //! pixel map
+    std::map<pair<int, int>, int > fMap; //! do not store
     
 private:
-   static TString    fgkBranchName;    // Branch name in TTree
+   static TString    fgkBranchName;      ///< Branch name in TTree
    
 public:
    TAITntuHit();
    virtual          ~TAITntuHit();
    
+   // Get hit for a given sensor
    TAIThit*          GetPixel(Int_t iSensor, Int_t iPixel);
+   // Get hit for a given sensor (const)
    const TAIThit*    GetPixel(Int_t iSensor, Int_t iPixel) const;
    
+   // Get list of pixels for a given sensor
    TClonesArray*     GetListOfPixels(Int_t iSensor);
+   // Get list of pixels for a given sensor (const)
    TClonesArray*     GetListOfPixels(Int_t iSensor) const;
    
+   // Get number of pixels for given sensor
    Int_t             GetPixelsN(Int_t iSensor) const;
    
+   // New pixel
    TAIThit*          NewPixel(Int_t sensor, Double_t value, Int_t aLine, Int_t aColumn);
    
+   // Set up clone
    virtual void      SetupClones();
-   
+   // Clear
    virtual void      Clear(Option_t* opt="");
-   
+   // To stream
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:
+   //! Get branch
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
    ClassDef(TAITntuHit,1)

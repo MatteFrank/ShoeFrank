@@ -1,8 +1,7 @@
 #ifndef _TAMCactNtuEvent_HXX
 #define _TAMCactNtuEvent_HXX
 /*!
-  \file
-  \version $Id: TAMCactNtuEvent.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+  \file TAMCactNtuEvent.hxx
   \brief   Declaration of TAMCactNtuEvent.
 */
 /*------------------------------------------+---------------------------------*/
@@ -21,13 +20,14 @@ class TAMCactNtuEvent : public TAGaction {
                                   EVENT_STRUCT* evStr=0);
     virtual         ~TAMCactNtuEvent();
 
+    // Action
     virtual Bool_t  Action();
 
-    ClassDef(TAMCactNtuEvent,0)
-
   private:
-    TAGdataDsc*     fpNtuMC;		    // output data dsc
-    EVENT_STRUCT*   fpEvtStr;
+    TAGdataDsc*     fpNtuMC;   ///< output data dsc
+    EVENT_STRUCT*   fpEvtStr;  ///< Fluka structure
+   
+   ClassDef(TAMCactNtuEvent,0)
 };
 
 #endif

@@ -75,7 +75,7 @@ TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a strip for a given sensor
 const TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) const
 {
   if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {

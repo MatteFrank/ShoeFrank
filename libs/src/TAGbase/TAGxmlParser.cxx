@@ -2,10 +2,21 @@
 #include "TError.h"
 
 #include "TAGxmlParser.hxx"
+/*!
+ \file TAGxmlParser.cxx
+ \brief   Implementation of TAGxmlParser.
+ */
 
 #include <TSystem.h>
 #include "TAGobject.hxx"
 
+/*!
+ \class TAGxmlParser
+ \brief XML parser class. **
+ */
+
+//------------------------------------------+-----------------------------------
+//! Constructor
 TAGxmlParser::TAGxmlParser()
 {
   fXMLDoc=nullptr;
@@ -13,6 +24,8 @@ TAGxmlParser::TAGxmlParser()
   fXMLEngine= new TXMLEngine;
 }
 
+//------------------------------------------+-----------------------------------
+//! Destructor
 TAGxmlParser::~TAGxmlParser()
 {
   // take care of the document
@@ -22,9 +35,11 @@ TAGxmlParser::~TAGxmlParser()
   }
   delete fXMLEngine;
 }
-/**
-* open the xml file
-*/
+
+//------------------------------------------+-----------------------------------
+//! open the xml file
+//!
+//! \param[in] FileName file name
 void TAGxmlParser::ReadFile(std::string FileName)
 {
    // Only file with restricted xml syntax are supported
@@ -35,12 +50,13 @@ void TAGxmlParser::ReadFile(std::string FileName)
      return;
    }
 }
-/**
-* Get the all the child node of StartingNode named NodeName
-*/
-std::vector<XMLNodePointer_t> TAGxmlParser::GetChildNodesByName(
-                                                XMLNodePointer_t StartingNode,
-                                                std::string NodeName)
+
+//------------------------------------------+-----------------------------------
+//!  Get the all the child node of StartingNode named NodeName
+//!
+//! \param[in] StartingNode starting node
+//! \param[in] NodeName node name
+std::vector<XMLNodePointer_t> TAGxmlParser::GetChildNodesByName(XMLNodePointer_t StartingNode, std::string NodeName)
 {
   // get first child
   XMLNodePointer_t child = fXMLEngine->GetChild(StartingNode);
@@ -59,12 +75,13 @@ std::vector<XMLNodePointer_t> TAGxmlParser::GetChildNodesByName(
   return NodeVec;
 }
 
-/*
-* Get content of a node as Int_t. In case a node has no content an exception is thrown
-* If there are none or multiple nodes named Name and exception is thrown
-*/
-Int_t TAGxmlParser::GetContentAsInt(std::string Name,
-                                 XMLNodePointer_t Node)
+//------------------------------------------+-----------------------------------
+//! Get content of a node as Int_t. In case a node has no content an exception is thrown
+//! If there are none or multiple nodes named Name and exception is thrown
+//!
+//! \param[in] Name node name
+//! \param[in] Node node
+Int_t TAGxmlParser::GetContentAsInt(std::string Name,  XMLNodePointer_t Node)
 {
       std::vector<XMLNodePointer_t> tmp= this->GetChildNodesByName(Node,Name);
       if (tmp.size()!=1)
@@ -78,10 +95,12 @@ Int_t TAGxmlParser::GetContentAsInt(std::string Name,
       }
       throw -1;
 }
-/*
-* Get content of a node as string. In case a node has no content an exception is thrown
-* If there are none or multiple nodes named Name and exception is thrown
-*/
+//------------------------------------------+-----------------------------------
+//! Get content of a node as string. In case a node has no content an exception is thrown
+//! If there are none or multiple nodes named Name and exception is thrown
+//!
+//! \param[in] Name node name
+//! \param[in] Node node
 std::string TAGxmlParser::GetContentAsString(std::string Name,XMLNodePointer_t Node)
 {
       std::vector<XMLNodePointer_t> tmp= this->GetChildNodesByName(Node,Name);
@@ -96,10 +115,12 @@ std::string TAGxmlParser::GetContentAsString(std::string Name,XMLNodePointer_t N
       }
       throw -1;
 }
-/*
-* Get content of a nodeas Double_t. In case a node has no content an exception is thrown
-* If there are none or multiple nodes named Name and exception is thrown
-*/
+//------------------------------------------+-----------------------------------
+//! Get content of a nodeas Double_t. In case a node has no content an exception is thrown
+//! If there are none or multiple nodes named Name and exception is thrown
+//!
+//! \param[in] Name node name
+//! \param[in] Node node
 Double_t TAGxmlParser::GetContentAsDouble(std::string Name,XMLNodePointer_t Node)
 {
   std::vector<XMLNodePointer_t> tmp= this->GetChildNodesByName(Node,Name);
@@ -115,6 +136,11 @@ Double_t TAGxmlParser::GetContentAsDouble(std::string Name,XMLNodePointer_t Node
   throw -1;
 }
 
+//------------------------------------------+-----------------------------------
+//! Export to file
+//!
+//! \param[in] Filename file name
+//! \param[in] mainnode nain node
 void TAGxmlParser::ExportToFile(std::string Filename,XMLDocPointer_t mainnode)
 {
 	XMLDocPointer_t xmldoc = fXMLEngine->NewDoc();

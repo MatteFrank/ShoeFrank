@@ -17,6 +17,7 @@ MC Particle Types:	C11	C12	C13 C14	Li6	Li7	B7	B9	B10	Be10	Be11	N14	N15	O16 O15
 
 IncludeKalman:   n
 IncludeTOE:      n
+IncludeStraight: n
 EnableLocalReco: n
 
 Kalman Mode:       ref
@@ -24,11 +25,6 @@ Tracking Systems Considered:      VT IT MSD TW
 Reverse Tracking:   false
 
 Kalman preselection strategy: Sept2020
-
-VT  Reso: 0.0006
-IT  Reso: 0.0006
-MSD Reso: 0.003
-TW  Reso: 0.57
 
 Kalman Particle Types:	C
 

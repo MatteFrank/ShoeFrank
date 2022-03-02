@@ -14,6 +14,7 @@
 #include "DEMSDEvent.hh"
 
 #include "TAMSDparGeo.hxx"
+#include "TAMSDparConf.hxx"
 #include "TAMSDparMap.hxx"
 #include "TAMSDparCal.hxx"
 #include "TAGdaqEvent.hxx"
@@ -30,7 +31,8 @@ public:
                                    TAGdataDsc* dscdatdaq=0,
                                    TAGparaDsc* dscparmap=0,
                                    TAGparaDsc* dscparcal=0,
-                                   TAGparaDsc* dscpargeo=0);
+                                   TAGparaDsc* dscpargeo=0,
+                                   TAGparaDsc* dscparcon=0);
     virtual         ~TAMSDactNtuRaw();
 
     virtual  void   CreateHistogram();
@@ -49,10 +51,12 @@ private:
     TAGdataDsc*     fpDatDaq;		        // input data dsc
     TAGparaDsc*     fpParMap;            // parameter dsc
     TAGparaDsc*     fpParCal;            // parameter dsc
-    TAGparaDsc*     fpParGeo;		        // parameter dsc
+    TAGparaDsc*     fpParGeo;            // parameter dsc
+    TAGparaDsc*     fpParConf;           // parameter dsc
 
-    TH1F*           fpHisStripMap[6];
-    TH1F*           fpHisCommonMode[6];
+    TH1F*           fpHisSeedMap[16];
+    TH1F*           fpHisStripMap[16];
+    TH1F*           fpHisCommonMode[16];
    
 private:
     Bool_t DecodeHits(const DEMSDEvent* evt);

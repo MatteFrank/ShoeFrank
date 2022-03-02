@@ -30,6 +30,13 @@
 #ifndef TCGbaseConstructor_h
 #define TCGbaseConstructor_h 1
 
+/*!
+ \file TCGbaseConstructor.hxx
+ \brief Base construction class
+ 
+ \author Ch. Finck
+ */
+
 #include "TString.h"
 #include "G4String.hh"
 #include "TCGmaterials.hxx"
@@ -46,24 +53,31 @@ public:
    TCGbaseConstructor(const Char_t* name = "TCGbaseConstructor", const Char_t* version = "1.0");
    virtual ~TCGbaseConstructor();
 	
-	G4LogicalVolume*   GetLogMother()                      { return fLogMother;           }
-	void               SetLogMother(G4LogicalVolume* w)    { fLogMother = w;              }
+   //! Get logical mother volume
+	G4LogicalVolume*   GetLogMother()                      { return fLogMother;   }
+   //! Set logical mother volume
+	void               SetLogMother(G4LogicalVolume* w)    { fLogMother = w;      }
    
-   G4VPhysicalVolume* GetPhysMother()                     { return fPhysMother;          }
-   void               SetPhysMother(G4VPhysicalVolume* w) { fPhysMother = w;             }
+   //! Get physical mother volume
+   G4VPhysicalVolume* GetPhysMother()                     { return fPhysMother;  }
+   //! Set physical mother volume
+   void               SetPhysMother(G4VPhysicalVolume* w) { fPhysMother = w;     }
    
+   //! virtual construct
+   virtual G4LogicalVolume* Construct()                   { return 0x0;          }
+   //! Get logical volume
+   virtual G4LogicalVolume* GetLogicVolume() const        { return fLogMother;   }// default wise
+   
+   //! Define material
+   virtual void             DefineMaterial()              { return;              }
 
-   virtual G4LogicalVolume* Construct()                   { return 0x0;                  }
-   virtual G4LogicalVolume* GetLogicVolume() const        { return fLogMother;           }// default wise
-   
-   virtual void             DefineMaterial()               { return;                     }
-
-   TCGmaterials* GetParMaterials() { return fpMaterials;      }
+   //! Get G4 materials
+   TCGmaterials* GetParMaterials()                        { return fpMaterials;  }
    
 protected:
-   G4LogicalVolume*    fLogMother;
-   G4VPhysicalVolume*  fPhysMother;
-    TCGmaterials*      fpMaterials;
+   G4LogicalVolume*    fLogMother;  ///< Logical volume
+   G4VPhysicalVolume*  fPhysMother; ///< Physical volume
+   TCGmaterials*       fpMaterials; ///< Materials
 
 };
 

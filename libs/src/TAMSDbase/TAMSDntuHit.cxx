@@ -92,6 +92,7 @@ TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor) const
    }
 }
 
+
 //------------------------------------------+-----------------------------------
 //! return a strip for a given sensor
 TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip)
@@ -118,6 +119,7 @@ const TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip) const
    }
 }
 
+
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 void TAMSDntuHit::SetupClones()
@@ -131,6 +133,7 @@ void TAMSDntuHit::SetupClones()
       fListOfStrips->AddAt(arr, i);
    }
    fListOfStrips->SetOwner(true);
+
    fMap.clear();
 }
 
@@ -178,7 +181,7 @@ void TAMSDntuHit::ToStream(ostream& os, Option_t* option) const
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
       
       os << "TAMSDntuHit " << GetName()
-      << Form("  nPixels=%3d", GetStripsN(i))
+      << Form("  nStrips=%3d", GetStripsN(i))
       << endl;
       
       //TODO properly

@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TAVTparConf.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAVTparConf.
+  \file TAVTparConf.cxx
+  \brief   Configuration parameters for VTX
 */
 
 #include <Riostream.h>
@@ -21,23 +20,23 @@
 //##############################################################################
 
 /*!
-  \class TAVTparConf TAVTparConf.hxx "TAVTparConf.hxx"
-  \brief Map and Geometry parameters for vertex **
+  \class TAVTparConf 
+  \brief Configuration parameters for VTX
 */
 
+//! Class Imp
 ClassImp(TAVTparConf);
 
-
 //______________________________________________________________________________
+//! Standard constructor
 TAVTparConf::TAVTparConf()
 : TAVTbaseParConf()
 {
-   // Standard constructor
    fkDefaultConfName = "./config/TAVTdetector.cfg";
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAVTparConf::~TAVTparConf()
 {
-   // Destructor
 }

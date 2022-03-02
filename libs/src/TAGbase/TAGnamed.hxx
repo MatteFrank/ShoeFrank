@@ -1,8 +1,7 @@
 #ifndef _TAGnamed_HXX
 #define _TAGnamed_HXX
 /*!
-  \file
-  \version $Id: TAGnamed.hxx,v 1.4 2003/06/09 18:39:32 mueller Exp $
+  \file TAGnamed.hxx
   \brief   Declaration of TAGnamed.
 */
 /*------------------------------------------+---------------------------------*/
@@ -16,17 +15,21 @@ using namespace std;
 
 class TAGnamed : public TNamed {
   public:
-    enum { kFail = BIT(14)
-    };
+   
+    //! fail bit
+    enum { kFail = BIT(14) };
 
                     TAGnamed();
                     TAGnamed(const char* name, const char* title);
                     TAGnamed(const TString& name, const TString& title);
     virtual         ~TAGnamed();
 
+    //! Fail
     Bool_t          Fail() const { return TestBit(kFail); }
 
+    // To Stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
+    // Print
     virtual void    Print(Option_t* option="") const;
 
    ClassDef(TAGnamed,3)

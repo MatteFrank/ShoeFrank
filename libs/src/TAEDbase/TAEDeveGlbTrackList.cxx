@@ -1,3 +1,8 @@
+/*!
+ \file TAEDeveGlbTrackList.cxx
+ \brief  Class to display global tracks on event.
+ */
+
 #include <Riostream.h>
 
 #include "TEveTrackPropagator.h"
@@ -8,7 +13,16 @@
 #include "TAEDeveGlbTrack.hxx"
 #include "TAEDeveGlbTrackList.hxx"
 
+/*!
+ \class TAEDeveGlbTrackList
+ \brief  Class to display global tracks on event.
+ */
+
 //__________________________________________________________
+//! Default constructor
+//!
+//! \param[in] name track list name
+//! \param[in] prop eve track propagator
 TAEDeveGlbTrackList::TAEDeveGlbTrackList(const Char_t* name, TADIeveTrackPropagator* prop)
  : TEveTrackList(name, prop),
    fPalette(new TEveRGBAPalette()),
@@ -20,13 +34,18 @@ TAEDeveGlbTrackList::TAEDeveGlbTrackList(const Char_t* name, TADIeveTrackPropaga
 }
 
 //__________________________________________________________
+//! Default destructor
 TAEDeveGlbTrackList::~TAEDeveGlbTrackList()
 {
-  // default destructor
    delete fPalette;
 }
 
 //__________________________________________________________
+//! Add track
+//!
+//! \param[in] vertex a given vertex
+//! \param[in] moment a given momentum
+//! \param[in] charge a given charge
 TAEDeveGlbTrack* TAEDeveGlbTrackList::AddTrack(TVector3& vertex, TVector3& moment, Int_t charge)
 {
    TEveRecTrackD *recTrack = new TEveRecTrackD();
@@ -52,6 +71,7 @@ TAEDeveGlbTrack* TAEDeveGlbTrackList::AddTrack(TVector3& vertex, TVector3& momen
 }
 
 //__________________________________________________________
+//! Reset tracks
 void TAEDeveGlbTrackList::ResetTracks()
 {
    RemoveElements();
@@ -59,6 +79,9 @@ void TAEDeveGlbTrackList::ResetTracks()
 }
 
 //__________________________________________________________
+//! Set maximum momentum
+//!
+//! \param[in] m momentum maximal 
 void TAEDeveGlbTrackList::SetMaxMomentum(Float_t m)
 {
    fPalette->SetMax(Int_t(m+0.5));

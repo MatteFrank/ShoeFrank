@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTactNtuClusterMT.cxx $
+ \file TAVTactNtuClusterMT.cxx
  \brief   Implementation of TAVTactNtuClusterMT.
  */
 
@@ -22,13 +21,20 @@
 
 /*!
  \class TAVTactNtuClusterMT
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for VTX cluster in Multi-thread mode
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuClusterMT);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit input container descriptor
+//! \param[out] pNtuClus cluster output container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
 TAVTactNtuClusterMT::TAVTactNtuClusterMT(const char* name,
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
@@ -48,7 +54,7 @@ TAVTactNtuClusterMT::~TAVTactNtuClusterMT()
 
 
 //______________________________________________________________________________
-//
+//! Action
 Bool_t TAVTactNtuClusterMT::Action()
 {
    fgSensorOff = 0;
@@ -63,7 +69,11 @@ Bool_t TAVTactNtuClusterMT::Action()
 }
 
 //______________________________________________________________________________
-//  
+//! Find clusters for a given sensor and thread
+//!
+//! \param[in] iSensor index of sensor
+//! \param[in] listOfPixels list of pixels
+//! \param[in] thr index of thread
 Bool_t TAVTactNtuClusterMT::FindClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr)
 {
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
@@ -79,7 +89,11 @@ Bool_t TAVTactNtuClusterMT::FindClusters(Int_t iSensor, TClonesArray* listOfPixe
 }
 
 //______________________________________________________________________________
-//
+//! Create clusters for a given sensor, pixel list and thread
+//!
+//! \param[in] iSensor index of sensor
+//! \param[in] listOfPixels list of pixels
+//! \param[in] thr index of thread
 Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr)
 {
    TAVTntuCluster* pNtuClus = (TAVTntuCluster*) fpNtuClus->Object();
@@ -131,7 +145,9 @@ Bool_t TAVTactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
 }
 
 //______________________________________________________________________________
-//
+//! Get list of pixels for a given sensor
+//!
+//! \param[in] sensorId index of sensor
 TClonesArray* TAVTactNtuClusterMT::GetListOfPixels(Int_t sensorId)
 {
    TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();

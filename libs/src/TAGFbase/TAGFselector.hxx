@@ -95,12 +95,22 @@ private:
 
 	int			Categorize_dataLike( );
 	int			Categorize_Linear( );
+	int			Categorize_Backtracking( );
+
+	//Forward tracking
 	void		CategorizeVT();
 	void		CategorizeIT();
 	void		CategorizeMSD();
 	void		CategorizeTW();
+	
 	void		CategorizeMSD_Linear();
 	void		CategorizeTW_Linear();
+
+	//Backtracking
+	void		BackTracklets();
+	void		CategorizeIT_back();
+	void		CategorizeVT_back();
+
 	void		FillTrackCategoryMap();
 	TVector3	ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId =-1);
 

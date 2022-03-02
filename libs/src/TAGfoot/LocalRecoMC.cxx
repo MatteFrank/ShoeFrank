@@ -1,3 +1,10 @@
+/*!
+ \file LocalRecoMC.cxx
+ \brief Reconstruction class from MC data
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include "TTree.h"
 
 #include "LocalRecoMC.hxx"
@@ -18,10 +25,22 @@
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
 
+/*!
+ \class LocalRecoMC
+ \brief Reconstruction class from MC data
+ */
+/*------------------------------------------+---------------------------------*/
 
+//! Class Imp
 ClassImp(LocalRecoMC)
 
 //__________________________________________________________
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] fileNameIn data input file name
+//! \param[in] fileNameout data output root file name
 LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fEvtStruct(0x0),
@@ -43,6 +62,7 @@ LocalRecoMC::~LocalRecoMC()
 }
 
 //__________________________________________________________
+//! Create MC data actions
 void LocalRecoMC::CreateRawAction()
 {
 
@@ -147,7 +167,11 @@ void LocalRecoMC::CreateRawAction()
    }
 }
 
+
 //__________________________________________________________
+//! Go to a given event
+//!
+//! \param[in] iEvent event number to go
 Bool_t LocalRecoMC::GoEvent(Int_t iEvent)
 {
    // only possible for MC data
@@ -161,6 +185,7 @@ Bool_t LocalRecoMC::GoEvent(Int_t iEvent)
 }
 
 //__________________________________________________________
+//! Open input file
 void LocalRecoMC::OpenFileIn()
 {
   if (TAGrecoManager::GetPar()->IsReadRootObj())
@@ -173,6 +198,7 @@ void LocalRecoMC::OpenFileIn()
 }
 
 //_____________________________________________________________________________
+//! Global MC data information checks
 void LocalRecoMC::GlobalChecks()
 {
   // base checks
@@ -219,6 +245,7 @@ void LocalRecoMC::GlobalChecks()
 
 
 //__________________________________________________________
+//! Set MC data histogram directory
 void LocalRecoMC::SetRawHistogramDir()
 {
    // ST
@@ -265,12 +292,14 @@ void LocalRecoMC::SetRawHistogramDir()
 }
 
 //__________________________________________________________
+//! Close input file
 void LocalRecoMC::CloseFileIn()
 {
    fActEvtReader->Close();
 }
 
 //__________________________________________________________
+//! Add required MC data actions in list
 void LocalRecoMC::AddRawRequiredItem()
 {
    fTAGroot->AddRequiredItem("actEvtReader");
@@ -283,10 +312,14 @@ void LocalRecoMC::AddRawRequiredItem()
 }
 
 //__________________________________________________________
+//! Set tree branches for writing in output file
 void LocalRecoMC::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
   
+   if (!fSaveMcFlag)
+      return;
+   
    fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
    fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
   

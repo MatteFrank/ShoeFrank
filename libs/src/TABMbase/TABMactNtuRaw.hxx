@@ -41,9 +41,7 @@ class TABMactNtuRaw : public TAGaction {
     virtual  void   CreateHistogram();
     virtual Bool_t  Action();
     void EvaluateT0time();
-
-    ClassDef(TABMactNtuRaw,0)
-
+   
   private:
     TAGdataDsc*     fpDatRaw;		        // output data dsc
     TAGdataDsc*     fpDatDaq;		        // input data dsc
@@ -68,8 +66,6 @@ class TABMactNtuRaw : public TAGaction {
     TH1F*            fpRawbmTdcLessSTFITTrigger;   //Tdc trigger Time
     TH1F*            fpRawbmTdcPlusSTFITTrigger;   //Tdc trigger Time
 
-
-
     TH1I*            fpRawMagorDouble;   //Number of Margherita or signals in the +- 10 ns window
     std::vector<TH1F*> fpRawTdcMeas;    //vector of tdc channel raw measurements
     std::vector<TH1F*> fpRawTdcLessSync;//vector of tdc channel meas - used_trigger
@@ -82,6 +78,8 @@ class TABMactNtuRaw : public TAGaction {
     TH1F*            fpRawCh1LessMagorTr; //BM channel 1 - TDC trigger - Daq trigger
     TH1F*            fpRawCh1LessSTFitLessMagor; //BM channel 1 - Tdc trigger - STfit - Daq trigger
     TH1F*            fpRawCh1PlusSTFitLessMagor; //BM channel 1 - Tdc trigger + STfit - Daq trigger
+   
+   ClassDef(TABMactNtuRaw,0)
 };
 
 #endif

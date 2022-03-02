@@ -1,6 +1,13 @@
 #ifndef _TAVTtrack_HXX
 #define _TAVTtrack_HXX
 
+/*!
+ \file TAVTtrack.hxx
+ \brief   class for tracks with the associated clusters
+  \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 // ROOT classes
 #include "TClonesArray.h"
 
@@ -9,19 +16,11 @@
 #include "TAVTcluster.hxx"
 #include "TAGbaseTrack.hxx"
 
-
-//##############################################################################
-
-/** TAVTtrack class, simple container class for tracks with the associated clusters                    
- 
- \author Ch. Finck
- */
-
 class TClonesArray;
 class TAVTtrack : public TAGbaseTrack {
  
 private:
-   TVector3       fPosVertex;                    // vertex position
+   TVector3       fPosVertex;                    ///< vertex position
    
 public:
    TAVTtrack();
@@ -29,7 +28,7 @@ public:
 
    ~TAVTtrack();
    
-   //! Set up clones
+   // Set up clones
    void                   SetupClones();
 
    //! Set pos vertex
@@ -37,16 +36,16 @@ public:
    
     //! Get cluster
    TAVTbaseCluster*       GetCluster(Int_t index)       { return (TAVTcluster*)fListOfClusters->At(index); }
+   //! Get cluster (const)
    TAVTbaseCluster const* GetCluster(Int_t index) const { return (TAVTcluster*)fListOfClusters->At(index); }
 
    //! Get pos vertex
    const TVector3&        GetPosVertex()          const { return fPosVertex;                               }
    
-   //! Add cluster
+   // Add cluster
    void                   AddCluster(TAGcluster* cluster);
    
-   
-   ClassDef(TAVTtrack,9)                      // Describes TAVTtrack
+   ClassDef(TAVTtrack,9)                      ///< Describes TAVTtrack
 };
 
 #endif

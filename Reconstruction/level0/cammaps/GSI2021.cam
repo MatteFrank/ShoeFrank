@@ -16,7 +16,7 @@ NumberFiles: 5
 "./geomaps/GSI2021/TASTdetector.geo": -1
 "./config/GSI2021/TASTdetector.cfg": -1
 "./config/GSI2021/WDChannelMap.map": -1
-"./calib/GSI2021/WDTimeCalibration/tcalib.dat": 200; 400; 4115;
+"./calib/GSI2021/WDTimeCalibration/tcalib.dat": -1;
 "./calib/GSI2021/WDpar.cal": -1;
 
 DetectorName: "BM"
@@ -24,7 +24,7 @@ NumberFiles: 4
 "./geomaps/GSI2021/TABMdetector.geo": -1
 "./config/GSI2021/TABMdetector.cfg": -1
 "./config/GSI2021/TABMdetector.map": -1
-"./calib/GSI2021/TABM_T0_Calibration.cal": 4100; 4271; 4319;
+"./calib/GSI2021/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1

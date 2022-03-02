@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAVTactBaseNtuClusterMT.cxx $
- \brief   Implementation of TAVTactBaseNtuClusterMT.
+ \file TAVTactBaseNtuClusterMT.cxx
+ \brief  Base action for MT clustering
  */
 
 #include <pthread.h>
@@ -22,15 +21,20 @@
 
 /*!
  \class TAVTactBaseNtuClusterMT
- \brief NTuplizer for vertex raw hits. **
+ \brief Base action for MT clustering
  */
 
+//! Class imp
 ClassImp(TAVTactBaseNtuClusterMT);
 
 Int_t TAVTactBaseNtuClusterMT::fgSensorOff = 0;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
 TAVTactBaseNtuClusterMT::TAVTactBaseNtuClusterMT(const char* name,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
 : TAVTactBaseClusterMT(name, pConfig, pGeoMap),
@@ -48,7 +52,9 @@ TAVTactBaseNtuClusterMT::~TAVTactBaseNtuClusterMT()
 }
 
 //______________________________________________________________________________
-//
+//! Thread function 0
+//!
+//! \param[in] arg action pointer
 void* TAVTactBaseNtuClusterMT::Thread0(void* arg)
 {
    Int_t thr = 0;
@@ -65,7 +71,9 @@ void* TAVTactBaseNtuClusterMT::Thread0(void* arg)
 }
 
 //______________________________________________________________________________
-//
+//! Thread function 1
+//!
+//! \param[in] arg action pointer
 void* TAVTactBaseNtuClusterMT::Thread1(void* arg)
 {
    Int_t thr = 1;
@@ -82,7 +90,9 @@ void* TAVTactBaseNtuClusterMT::Thread1(void* arg)
 }
 
 //______________________________________________________________________________
-//
+//! Thread function 2
+//!
+//! \param[in] arg action pointer
 void* TAVTactBaseNtuClusterMT::Thread2(void* arg)
 {
    Int_t thr = 2;
@@ -99,7 +109,9 @@ void* TAVTactBaseNtuClusterMT::Thread2(void* arg)
 }
 
 //______________________________________________________________________________
-//
+//! Thread function 3
+//!
+//! \param[in] arg action pointer
 void* TAVTactBaseNtuClusterMT::Thread3(void* arg)
 {
    Int_t thr = 3;
@@ -116,7 +128,9 @@ void* TAVTactBaseNtuClusterMT::Thread3(void* arg)
 }
 
 //______________________________________________________________________________
-//
+//! Thread function 4
+//!
+//! \param[in] arg action pointer
 void* TAVTactBaseNtuClusterMT::Thread4(void* arg)
 {
    Int_t thr = 4;
@@ -133,7 +147,9 @@ void* TAVTactBaseNtuClusterMT::Thread4(void* arg)
 }
 
 //______________________________________________________________________________
-//
+//! Thread function 5
+//!
+//! \param[in] arg action pointer
 void* TAVTactBaseNtuClusterMT::Thread5(void* arg)
 {
    Int_t thr = 5;
@@ -150,7 +166,9 @@ void* TAVTactBaseNtuClusterMT::Thread5(void* arg)
 }
 
 //______________________________________________________________________________
-//
+//! Thread function 6
+//!
+//! \param[in] arg action pointer
 void* TAVTactBaseNtuClusterMT::Thread6(void* arg)
 {
    Int_t thr = 6;
@@ -167,7 +185,9 @@ void* TAVTactBaseNtuClusterMT::Thread6(void* arg)
 }
 
 //______________________________________________________________________________
-//
+//! Thread function 7
+//!
+//! \param[in] arg action pointer
 void* TAVTactBaseNtuClusterMT::Thread7(void* arg)
 {
    Int_t thr = 7;
@@ -184,7 +204,7 @@ void* TAVTactBaseNtuClusterMT::Thread7(void* arg)
 }
 
 //______________________________________________________________________________
-//
+//! Start threads
 Bool_t TAVTactBaseNtuClusterMT::ThreadStart()
 {
    for (Int_t i = 0; i < fThreadsN; ++i) {
@@ -216,7 +236,7 @@ Bool_t TAVTactBaseNtuClusterMT::ThreadStart()
 }
 
 //______________________________________________________________________________
-//
+//! Stop threads
 Bool_t TAVTactBaseNtuClusterMT::ThreadStop()
 {
    for (Int_t i = 0; i < fThreadsN; ++i) {
@@ -231,7 +251,7 @@ Bool_t TAVTactBaseNtuClusterMT::ThreadStop()
 }
 
 //______________________________________________________________________________
-//
+//! Join threads
 Bool_t TAVTactBaseNtuClusterMT::ThreadJoin()
 {
    for (Int_t i = 0; i < fThreadsN; ++i) {

@@ -1,12 +1,24 @@
-
+/*!
+ \file TAGactDaqReader.cxx
+ \brief  Interface for DAQ file reader
+ */
 
 #include "TAGactDaqReader.hxx"
 #include "TAGrecoManager.hxx"
 
+/*!
+ \class TAGactDaqReader
+ \brief  Interface for DAQ file reader
+ */
+
+//! Class Imp
 ClassImp(TAGactDaqReader);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] p_datdaq daq event descriptor
 TAGactDaqReader::TAGactDaqReader(const char* name, TAGdataDsc* p_datdaq)
   : TAGactionFile(name, "TAGactDaqReader - DAQ file reader", "READ"),
    fDaqFileReader(new EventReader()),
@@ -26,6 +38,11 @@ TAGactDaqReader::~TAGactDaqReader()
 
 //------------------------------------------+-----------------------------------
 //! Open data source.
+//!
+//! \param[in] name action name
+//! \param[in] option open file options
+//! \param[in] treeName name of tree in file
+//! \param[in] dscBranch flag for object descriptor
 Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString, Bool_t )
 {
    fCurFileName = name;
@@ -40,17 +57,17 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
 
    // all hard coded for the moment
    if (fDaqFileChain) {
-      if (name.EndsWith(".data")){
+      if (name.EndsWith(".data")) {
         Int_t pos = name.Last('.');
         pos -= 4;
         TString tmp = name(0, pos);
         fCurFileName = tmp + Form("%04d", fDaqFileIndex) + ".data";
-      }else if(name.EndsWith(".data.moved")){
+      } else if(name.EndsWith(".data.moved")) {
         Int_t pos = name.Last('.');
         pos -= 9;
         TString tmp = name(0, pos);
         fCurFileName = tmp + Form("%04d", fDaqFileIndex) + ".data.moved";
-      }else
+      } else
         Error("Open()", "wrong file extension file, must be .data or .data.moved");
    }
 
@@ -82,7 +99,7 @@ void TAGactDaqReader::Close()
 }
 
 //------------------------------------------+-----------------------------------
-//! Returns \a true if an input file or connection is open.
+//! Returns true if an input file or connection is open.
 Bool_t TAGactDaqReader::IsOpen() const
 {
    return fDaqFileReader->getIsOpened();
@@ -90,6 +107,8 @@ Bool_t TAGactDaqReader::IsOpen() const
 
 //------------------------------------------+-----------------------------------
 //! Reset
+//!
+//! \param[in] nEvents events to skip
 void TAGactDaqReader::SkipEvents(Int_t nEvents)
 {
    for (Int_t i = 0; i < nEvents; ++i)
@@ -105,7 +124,7 @@ Bool_t TAGactDaqReader::Process()
 
    if (!fDaqFileReader->getIsOpened())
       return false;
-   
+
    TAGdaqEvent* datDaq = (TAGdaqEvent*)  fDaqEvent->Object();
 
    datDaq->Clear();
@@ -118,8 +137,7 @@ Bool_t TAGactDaqReader::Process()
 
    // Trigger data
    TrgEvent*  evTrg  = fDaqFileReader->getTriggerEvent();
-   datDaq->SetTrgEvent(evTrg);
-
+   datDaq->SetTrgEvent(evTrg); 
    if(FootDebugLevel(1))
       printf("DAQ trigger %u\n", evTrg->triggerCounter);
 
@@ -151,6 +169,31 @@ Bool_t TAGactDaqReader::Process()
    const DEMSDEvent* evMSD2 = static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x32));
    if (evMSD2)
       datDaq->AddFragment(evMSD2);
+
+   //MSD 4th station
+   const DEMSDEvent* evMSD3 = static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x33));
+   if (evMSD3)
+      datDaq->AddFragment(evMSD3);
+
+   //MSD 5th station
+   const DEMSDEvent* evMSD4 =static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x34));
+   if (evMSD4)
+      datDaq->AddFragment(evMSD4);
+
+   //MSD 6th station
+   const DEMSDEvent* evMSD5 = static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x35));
+   if (evMSD5)
+      datDaq->AddFragment(evMSD5);
+
+   //MSD 7th station
+   const DEMSDEvent* evMSD6 = static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x36));
+   if (evMSD6)
+      datDaq->AddFragment(evMSD6);
+
+   //MSD 8th station
+   const DEMSDEvent* evMSD7 = static_cast<const DEMSDEvent*>(fDaqFileReader->getFragmentID(dataMSD | 0x37));
+   if (evMSD7)
+      datDaq->AddFragment(evMSD7);
 
    // WD for ST, TW and CA
    const WDEvent* evWD = static_cast<const WDEvent*>(fDaqFileReader->getFragmentID(dataWD | 0x30));

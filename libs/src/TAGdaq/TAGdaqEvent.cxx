@@ -1,16 +1,16 @@
 /*!
-  \file
-  \version $Id: TAGdaqEvent.cxx,v 1.6 2003/06/19 17:53:28 mueller Exp $
+  \file TAGdaqEvent.cxx
   \brief   Implementation of TAGdaqEvent.
 */
 
 #include "TAGdaqEvent.hxx"
 
 /*!
-  \class TAGdaqEvent TAGdaqEvent.hxx "TAGdaqEvent.hxx"
+  \class TAGdaqEvent 
   \brief Representation of raw data event. **
 */
 
+//! Class Imp
 ClassImp(TAGdaqEvent);
 
 //------------------------------------------+-----------------------------------
@@ -26,13 +26,14 @@ TAGdaqEvent::TAGdaqEvent()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGdaqEvent::~TAGdaqEvent()
 {
 }
 
 //------------------------------------------+-----------------------------------
 //! Add fragment
+//!
+//! \param[in] frag add fragment to list
 void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 {
    fListOfFragments.push_back(frag);
@@ -50,8 +51,11 @@ void TAGdaqEvent::Clear(Option_t*)
    fListOfClassTypes.clear();
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGdaqEvent::ToStream(ostream& /*os*/, Option_t* /*option*/) const
 {
 }

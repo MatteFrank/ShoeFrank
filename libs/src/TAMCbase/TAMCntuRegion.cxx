@@ -1,11 +1,16 @@
+/*!
+ \file TAMCntuRegion.cxx
+ \brief   Implementation of TAMCregion.
+ */
 
 #include "TAMCntuRegion.hxx"
 
 /*!
-  \class TAMCregion TAMCntuRegion.hxx "TAMCntuRegion.hxx"
-  \brief Ntuplize crossing region - region object. **
+  \class TAMCregion
+  \brief Crossing region - region object. **
 */
 
+//! Draw Imp
 ClassImp(TAMCregion);
 
       TString TAMCntuRegion::fgkBranchName  = "mcreg.";
@@ -13,7 +18,6 @@ const TString TAMCntuRegion::fgkDefParaName = "regMc";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAMCregion::TAMCregion()
  : TObject(),
    fID(-99),
@@ -29,6 +33,15 @@ TAMCregion::TAMCregion()
 
 //------------------------------------------+-----------------------------------
 //! Construct with data
+//!
+//! \param[in] id sensor id
+//! \param[in] nreg region number
+//! \param[in] nregold old region number
+//! \param[in] pos position
+//! \param[in] mom momentum
+//! \param[in] mass mass of particle
+//! \param[in] charge atomic number
+//! \param[in] time time of particle
 TAMCregion::TAMCregion(Int_t id, Int_t nreg, Int_t nregold, TVector3 pos, TVector3 mom, Double_t mass,
                  Double_t charge, Double_t time)
  : TObject(),
@@ -53,15 +66,15 @@ TAMCregion::~TAMCregion()
 //##############################################################################
 
 /*!
-  \class TAMCntuRegion TAMCntuRegion.hxx "TAMCntuRegion.hxx"
-  \brief Ntuplize crossing region - container. **
+  \class TAMCntuRegion
+  \brief Crossing region - container. **
 */
 
+//! Class Imp
 ClassImp(TAMCntuRegion);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAMCntuRegion::TAMCntuRegion()
  : TAGdata(),
    fListOfRegions(0x0)
@@ -71,7 +84,6 @@ TAMCntuRegion::TAMCntuRegion()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAMCntuRegion::~TAMCntuRegion()
 {
    delete fListOfRegions;
@@ -79,7 +91,6 @@ TAMCntuRegion::~TAMCntuRegion()
 
 //------------------------------------------+-----------------------------------
 //! Setup clones.
-
 void TAMCntuRegion::SetupClones()
 {
   if (!fListOfRegions)
@@ -87,13 +98,16 @@ void TAMCntuRegion::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
+//! Get number of regions
 Int_t TAMCntuRegion::GetRegionsN() const
 {
    return fListOfRegions->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a region for a given index
+//!
+//! \param[in] id index region
 TAMCregion* TAMCntuRegion::GetRegion(Int_t id)
 {
    if (id >=0 || id < fListOfRegions->GetEntriesFast()) {
@@ -105,7 +119,9 @@ TAMCregion* TAMCntuRegion::GetRegion(Int_t id)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a region for a given index (const)
+//!
+//! \param[in] id index region
 const TAMCregion* TAMCntuRegion::GetRegion(Int_t id) const
 {
    if (id >=0 || id < fListOfRegions->GetEntriesFast()) {
@@ -117,7 +133,16 @@ const TAMCregion* TAMCntuRegion::GetRegion(Int_t id) const
 }
 
 //______________________________________________________________________________
-//
+//! New region
+//!
+//! \param[in] id sensor id
+//! \param[in] nreg region number
+//! \param[in] nregold old region number
+//! \param[in] pos position
+//! \param[in] mom momentum
+//! \param[in] mass mass of particle
+//! \param[in] charge atomic number
+//! \param[in] time time of particle
 TAMCregion* TAMCntuRegion::NewRegion(Int_t id, Int_t nreg, Int_t nregold,TVector3 pos,TVector3 mom, Double_t mass,
                             Double_t charge, Double_t time)
 {
@@ -128,8 +153,9 @@ TAMCregion* TAMCntuRegion::NewRegion(Int_t id, Int_t nreg, Int_t nregold,TVector
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear.
-
+//! Clear event.
+//!
+//! \param[in] opt option for clearing (not used)
 void TAMCntuRegion::Clear(Option_t*)
 {
   fListOfRegions->Clear("C");
@@ -137,9 +163,11 @@ void TAMCntuRegion::Clear(Option_t*)
   return;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
-
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAMCntuRegion::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAMCntuRegion"

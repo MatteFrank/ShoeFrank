@@ -1,4 +1,8 @@
 
+/*! \file TCEMgeometryConstructor.cxx
+ \brief Implementation of TCEMgeometryConstructor.
+ */
+
 #include "TCEMgeometryConstructor.hxx"
 
 #include "G4NistManager.hh"
@@ -25,7 +29,16 @@
 
 using namespace CLHEP;
 
+
+/*! \class TCEMgeometryConstructor
+ \brief Dipole geometry construction
+ */
+
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Default constructor
+//!
+//! \param[in] pParGeo geometry parameter
 TCEMgeometryConstructor::TCEMgeometryConstructor(TADIparGeo* pParGeo)
 : TCGbaseConstructor("TCEMgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -36,17 +49,20 @@ TCEMgeometryConstructor::TCEMgeometryConstructor(TADIparGeo* pParGeo)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Default destructor
 TCEMgeometryConstructor::~TCEMgeometryConstructor()
 {
 }
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume (empty)
 void  TCEMgeometryConstructor::DefineSensitive()
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct detector
 G4LogicalVolume* TCEMgeometryConstructor::Construct()
 {
    InfoMcMsg("Construct()", "Construct Magnets");
@@ -84,6 +100,7 @@ G4LogicalVolume* TCEMgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define the dimension of the detecteor envelop
 void TCEMgeometryConstructor::DefineMaxMinDimension()
 {
    TVector3 size(0, 0, 0);
@@ -113,6 +130,7 @@ void TCEMgeometryConstructor::DefineMaxMinDimension()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCEMgeometryConstructor::DefineMaterial()
 {
     fpMaterials->CreateG4Material(fpParGeo->GetMagMat());

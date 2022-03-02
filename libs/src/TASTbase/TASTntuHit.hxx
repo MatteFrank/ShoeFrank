@@ -26,7 +26,7 @@ public:
   
   Double_t       GetTime()                  const   { return fTime;                 }
   Double_t       GetCharge()                const   { return fCharge;               }
-  Double_t       GetDe()                const   { return fCharge;               }
+  Double_t       GetDe()                    const   { return fCharge;               }
   
   inline void SetTime(double value){ fTime = value;}
   inline void SetCharge(double value){ fCharge = value;}
@@ -40,19 +40,16 @@ public:
   void           Clear(Option_t* option = "C");
   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
-   
-  ClassDef(TASThit,1)
-   
-  private:
+private:
  
   Double32_t      fCharge;
   Double32_t      fDe;
   Double32_t      fTime;
   
-   
   TArrayI         fMCindex;                  // Id of the hit created in the simulation
   TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
    
+   ClassDef(TASThit,1)
 };
 
 //##############################################################################

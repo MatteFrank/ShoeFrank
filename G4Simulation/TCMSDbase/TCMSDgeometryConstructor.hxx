@@ -5,9 +5,11 @@
 #include "TString.h"
 #include "TCVTgeometryConstructor.hxx"
 
-/** Building IT detector geometry
+/*!
+ \file TCMSDgeometryConstructor.hxx
+ \brief Building MSD detector geometry
  
- \author Ch, Finck
+ \author Ch. Finck
  */
 
 class TAVTbaseParGeo;
@@ -19,14 +21,18 @@ public:
    virtual ~TCMSDgeometryConstructor();
   
 public:
+   //! Get SD name
    static const Char_t* GetSDname()  { return fgkMsdEpiSDname.Data();}
 
 private:
-   static TString fgkMsdEpiSDname;
+   static TString fgkMsdEpiSDname; ///< SD name
 
 private:
+   // Define sensitive detector
    void DefineSensitive();
+   // Define envelop
    void DefineMaxMinDimension();
+   // Define material
    void DefineMaterial();
 
 };

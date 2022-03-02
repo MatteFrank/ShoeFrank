@@ -56,6 +56,8 @@ TAGbaseWD::~TAGbaseWD(){
 
 double TAGbaseWD::ComputeBaseline(TWaveformContainer *w){
 
+
+  
   return TMath::Mean(w->GetVectA().begin()+2, w->GetVectA().begin()+27);
 
 }
@@ -216,3 +218,64 @@ double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac){
 
 
 
+double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac){
+
+
+  // evaluate the absolute threshold
+  Double_t AbsoluteThreshold=-frac*fAmplitude+fBaseline;
+
+
+  
+  int i_ampmin = TMath::LocMin(w->GetVectA().size(),&(w->GetVectA())[0]);
+  Int_t i_thr = i_ampmin;
+  bool foundthreshold = false;
+
+
+  //found the threshold bin
+  while(!foundthreshold && i_thr>=0 && i_thr< w->GetVectA().size()){
+    double a1 = w->GetVectA().at(i_thr);
+    double a2 = w->GetVectA().at(i_thr+1);
+    if(AbsoluteThreshold>a2 && AbsoluteThreshold<=a1){
+      foundthreshold =true;
+    }else{
+      i_thr--;
+    }
+  }
+
+  //get 4 points around the threshold
+  vector<double> times,amplitudes;
+  int size = (int)w->GetVectA().size();
+  for(int i=i_thr-1;i<=i_thr+2;i++){
+    if(i>=0 && i<size){
+      amplitudes.push_back(w->GetVectA().at(i));
+      times.push_back(w->GetVectT().at(i));
+      //cout << "t" <<i << "   ::" << w->GetVectT().at(i) << endl;
+    }
+  }
+
+  
+
+
+  
+  //compute the ang. coefficient (least squares)
+  double m,q;
+  double xy=0,x=0,y=0, xsq=0;
+  double N=(double)times.size();
+  for(int i=0;i<times.size();i++){
+    x+=times.at(i)/N;
+    y+=amplitudes.at(i)/N;
+    xy+=times.at(i)*amplitudes.at(i)/N;
+    xsq+=times.at(i)*times.at(i)/N;
+  }
+
+  m = (xy-x*y)/(xsq-x*x);
+  q = (xsq*y-x*xy)/(xsq-x*x);
+
+  double t_arr = -q/m;
+
+  return t_arr;
+
+
+
+
+}

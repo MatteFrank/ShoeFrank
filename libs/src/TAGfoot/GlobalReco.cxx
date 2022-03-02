@@ -1,12 +1,32 @@
 
+/*!
+ \file GlobalReco.cxx
+ \brief Implementation of GlobalReco
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "BaseReco.hxx"
 #include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
 #include "GlobalReco.hxx"
 
+//! Class Imp
 ClassImp(GlobalReco)
 
+/*!
+ \class GlobalReco.
+ \brief Global reconstruction class using GenFit from L0 tree
+ */
+/*------------------------------------------+---------------------------------*/
+
 //__________________________________________________________
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] fileNameIn data input file name
+//! \param[in] fileNameout data output root file name
+//! \param[in] isMC MC flag
 GlobalReco::GlobalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
 : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
@@ -15,28 +35,27 @@ GlobalReco::GlobalReco(TString expName, Int_t runNumber, TString fileNameIn, TSt
 }
 
 //__________________________________________________________
+//! default destructor
 GlobalReco::~GlobalReco()
 {
 }
 
 //__________________________________________________________
+//! Open inout file
 void GlobalReco::OpenFileIn()
 {
   fActEvtReader->Open(GetName());
 }
 
 //__________________________________________________________
+//! Close inout file
 void GlobalReco::CloseFileIn()
 {
   fActEvtReader->Close();
 }
 
 //__________________________________________________________
-void GlobalReco::CreateRawAction()
-{
-}
-
-//__________________________________________________________
+//! Set L0 reco tree branches
 void GlobalReco::SetL0TreeBranches()
 {
   BaseReco::SetL0TreeBranches();
@@ -95,6 +114,7 @@ void GlobalReco::SetL0TreeBranches()
 }
 
 //__________________________________________________________
+//! Set output tree branches
 void GlobalReco::SetTreeBranches()
 {
   BaseReco::SetTreeBranches();

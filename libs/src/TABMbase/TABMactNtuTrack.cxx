@@ -310,16 +310,28 @@ Bool_t TABMactNtuTrack::Action()
       return kTRUE;
     }
     //add the reconstructed track
-    if(fNowView==0)
+    if(fNowView==0){
+      fpTmpTrack->SetTrackIdY(fTrackNum+1);
       ytracktr.push_back(TABMtrack(*fpTmpTrack));
-    else
+    }else{
+      fpTmpTrack->SetTrackIdX(fTrackNum+1);
       xtracktr.push_back(TABMtrack(*fpTmpTrack));
+    }
     ++fTrackNum;
   }while(fTrackNum<20);
 
   if(p_bmcon->GetInvertTrack())
     InvertTracks(ytracktr, p_bmcon->GetInvertTrack());
 
+  //if there are two tracks on the same view and only one on the other view, delete the second track since it is probably due to noises
+  if(ytracktr.size()==2 && xtracktr.size()==1){
+    p_ntutrk->NewPrunedTrack(ytracktr.at(1),0);
+    ytracktr.pop_back();
+  }else if(xtracktr.size()==2 && ytracktr.size()==1){
+    p_ntutrk->NewPrunedTrack(xtracktr.at(1),1);
+    xtracktr.pop_back();
+  }
+  
   CombineTrack(ytracktr, xtracktr, p_ntutrk);
 
   if (ValidHistogram()){
@@ -495,35 +507,33 @@ Int_t TABMactNtuTrack::CheckAssHits(const Float_t asshiterror, const Float_t min
 
   for(Int_t i=0;i<p_nturaw->GetHitsN();++i) {
     TABMhit* p_hit = p_nturaw->GetHit(i);
-    if(p_hit->GetIsSelected()<=0){
+    if(p_hit->GetIsSelected()<=0 && p_hit->GetView()==fNowView){
       Double_t maxerror= (p_hit->GetSigma()*asshiterror > minRerr) ? p_hit->GetSigma()*asshiterror : minRerr;
       maxdist=p_hit->GetRdrift()+maxerror;
       mindist=p_hit->GetRdrift()-maxerror;
-      if(mindist<0)
-        mindist=0;
-      if(p_hit->GetView()==fNowView){
-        a0pos=(fNowView==0) ? p_hit->GetWirePos().Y() : p_hit->GetWirePos().X();
-        xvalue=fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin);
-        yvaluemax=a0pos -xvalue*p_hit->GetWirePos().Z()+maxdist*sqrt(xvalue*xvalue+1.);
-        yvaluemin=a0pos -xvalue*p_hit->GetWirePos().Z()+mindist*sqrt(xvalue*xvalue+1.);
-        yvalue=a0pos -xvalue*p_hit->GetWirePos().Z()+p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
-        res=max(p_hit->GetSigma(),fLegPolSum->GetYaxis()->GetBinWidth(fBestRBin));
-        legvalue=fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin);
+      //~ if(mindist<0)
+        //~ mindist=0;
+      a0pos=(fNowView==0) ? p_hit->GetWirePos().Y() : p_hit->GetWirePos().X();
+      xvalue=fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin);
+      yvaluemax=a0pos -xvalue*p_hit->GetWirePos().Z()+maxdist*sqrt(xvalue*xvalue+1.);
+      yvaluemin=a0pos -xvalue*p_hit->GetWirePos().Z()+mindist*sqrt(xvalue*xvalue+1.);
+      yvalue=a0pos -xvalue*p_hit->GetWirePos().Z()+p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
+      res=max(p_hit->GetSigma(),fLegPolSum->GetYaxis()->GetBinWidth(fBestRBin));
+      legvalue=fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin);
+      diff=fabs(yvalue - legvalue);
+      if(yvaluemax>=legvalue && yvaluemin<=legvalue){
+        CheckPossibleHits(wireplane,yvalue,diff,res,selview,i, p_hit);
+      }else{
+        yvaluemin=a0pos-xvalue*p_hit->GetWirePos().Z()-maxdist*sqrt(xvalue*xvalue+1.);
+        yvaluemax=a0pos-xvalue*p_hit->GetWirePos().Z()-mindist*sqrt(xvalue*xvalue+1.);
+        yvalue=a0pos-xvalue*p_hit->GetWirePos().Z()-p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
         diff=fabs(yvalue - legvalue);
         if(yvaluemax>=legvalue && yvaluemin<=legvalue){
           CheckPossibleHits(wireplane,yvalue,diff,res,selview,i, p_hit);
         }else{
-          yvaluemin=a0pos-xvalue*p_hit->GetWirePos().Z()-maxdist*sqrt(xvalue*xvalue+1.);
-          yvaluemax=a0pos-xvalue*p_hit->GetWirePos().Z()-mindist*sqrt(xvalue*xvalue+1.);
-          yvalue=a0pos-xvalue*p_hit->GetWirePos().Z()-p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
-          diff=fabs(yvalue - legvalue);
-          if(yvaluemax>=legvalue && yvaluemin<=legvalue){
-            CheckPossibleHits(wireplane,yvalue,diff,res,selview,i, p_hit);
-          }else{
-            if(FootDebugLevel(4))
-              cout<<"TABMactNtuTrack::CheckAssHits: HIT DISCHARGED: hitnum="<<i<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<0<<"  yvalue="<<yvalue<<"  legvalue="<<legvalue<<"  diff="<<diff<<"   res="<<res<<endl;
-            p_hit->SetIsSelected(-1);
-          }
+          if(FootDebugLevel(4))
+            cout<<"TABMactNtuTrack::CheckAssHits: HIT DISCHARGED: hitnum="<<i<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<0<<"  yvalue="<<yvalue<<"  legvalue="<<legvalue<<"  diff="<<diff<<"   res="<<res<<endl;
+          p_hit->SetIsSelected(-1);
         }
       }
     }

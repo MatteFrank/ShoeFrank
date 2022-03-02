@@ -1,4 +1,9 @@
 
+/*!
+ \file TAMCparTools.cxx
+ \brief Helper for different conversion. **
+ */
+
 #include "TDatabasePDG.h"
 
 #include "TAMCparTools.hxx"
@@ -9,10 +14,11 @@
 //##############################################################################
 
 /*!
- \class TAMCparTools TAMCparTools.hxx "TAMCparTools.hxx"
+ \class TAMCparTools 
  \brief Helper for different conversion. **
  */
 
+//! Class Imp
 ClassImp(TAMCparTools);
 
 map<TString, Int_t> TAMCparTools::fgkG4PartNameToFlukaId =
@@ -90,19 +96,22 @@ map<TString, double> TAMCparTools::fgkUpdatePdgCharge =
 };
 
 //______________________________________________________________________________
+//! Standard constructor
 TAMCparTools::TAMCparTools()
 : TAGpara()
 {
-  // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAMCparTools::~TAMCparTools()
 {
-  // Destructor
 }
 
 //______________________________________________________________________________
+//! Get isotope name from Fluka id
+//!
+//! \param[in] id Fluka id
 const Char_t* TAMCparTools::GetFlukaPartName(Int_t id)
 {
    if( id < -40 || id >   63 ) { return Form("Invalid Particle ID %d", id); }
@@ -111,8 +120,8 @@ const Char_t* TAMCparTools::GetFlukaPartName(Int_t id)
    return fgFlukaIdToPartName[id].Data();   
 }
 
-
 //----------------------------------------------------------------------------------------------------
+//! Update PDG
 void TAMCparTools::UpdatePDG()
 {
   // clean the particle datatbase. Important!
@@ -134,9 +143,11 @@ void TAMCparTools::UpdatePDG()
 }
 
 //----------------------------------------------------------------------------------------------------
-bool TAMCparTools::IsParticleDefined( string partName ){
-  
-  // check if the category is defined in fPdgCodeMap
+//!   Check if the category is defined in fPdgCodeMap
+//!
+//! \param[in] partName particle name
+bool TAMCparTools::IsParticleDefined(string partName)
+{
   if ( fgkUpdatePdgMap.find( partName ) == fgkUpdatePdgMap.end() ) {
     cout << "ERROR :: TAMCparTools::IsParticleDefined  -->   in fPdgCodeMap not found the category " << partName << endl;
     return false;
@@ -148,9 +159,12 @@ bool TAMCparTools::IsParticleDefined( string partName ){
 
 
 //----------------------------------------------------------------------------------------------------
-int TAMCparTools::GetPdgCode( string partName ) {
+//! Get PDG code from a given name
+//!
+//! \param[in] partName particle name
+int TAMCparTools::GetPdgCode(string partName)
+{
+  IsParticleDefined(partName);
   
-  IsParticleDefined( partName );
-  
-  return fgkUpdatePdgMap[ partName ];
+  return fgkUpdatePdgMap[partName];
 }

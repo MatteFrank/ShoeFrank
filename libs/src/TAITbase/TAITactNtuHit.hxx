@@ -1,15 +1,15 @@
 #ifndef _TAITactNtuHit_HXX
 #define _TAITactNtuHit_HXX
 
-#include "TAITactBaseRaw.hxx"
-
 /*!
- \file
- \version $Id: TAITactNtuHit.hxx $
+ \file TAITactNtuHit.hxx
  \brief   Declaration of TAITactNtuHit.
  */
 
 /*------------------------------------------+---------------------------------*/
+
+#include "TAITactBaseRaw.hxx"
+
 class TAGdataDsc;
 class DECardEvent;
 
@@ -23,19 +23,19 @@ public:
    virtual Bool_t  Action();
    
 private:
-   TAGdataDsc*     fpDatDaq;		    // input data dsc
+   TAGdataDsc*     fpDatDaq;		    /// input data dsc
    
 private:   
-   //! Find vertex data
+   // Find vertex data
    Bool_t DecodeEvent();
       
-   //! Get the starting point of each event
+   // Get the starting point of each event
    Bool_t GetVtxHeader();
    
-   //! Get the starting point of each frame
+   // Get the starting point of each frame
    Bool_t GetSensorHeader(Int_t iSensor);
    
-   //! Get frame and returns frameRaw
+   // Get frame and returns frameRaw
    Bool_t GetFrame(Int_t iSensor, MI26_FrameRaw* data);
    
    ClassDef(TAITactNtuHit,0)

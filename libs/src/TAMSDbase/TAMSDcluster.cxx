@@ -20,9 +20,14 @@ TAMSDcluster::TAMSDcluster()
 :  TAGcluster(),
    fPositionF(0.),
    fPosErrorF(0),
+   fPositionCorr(0),
    fCurPosition(0,0,0),
+   fCog(0),
    fPlaneView(-1),
-   fEnergyLoss(0)
+   fEnergyLoss(0),
+   fEnergyLossCorr(0),
+   fEtaValue(0),
+   fEtaFastValue(0)
 {
    // TAMSDcluster constructor
    SetupClones();
@@ -42,9 +47,14 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
 :  TAGcluster(cluster),
    fPositionF(cluster.fPositionF),
    fPosErrorF(cluster.fPosErrorF),
+   fPositionCorr(cluster.fPositionCorr),
+   fCog(cluster.fCog),
    fCurPosition(cluster.fCurPosition),
    fPlaneView(cluster.fPlaneView),
-   fEnergyLoss(cluster.fEnergyLoss)
+   fEnergyLoss(cluster.fEnergyLoss),
+   fEnergyLossCorr(cluster.fEnergyLossCorr),
+   fEtaValue(cluster.fEtaValue),
+   fEtaFastValue(cluster.fEtaFastValue)
 {
    fListOfStrips = (TClonesArray*)cluster.fListOfStrips->Clone();
 }
@@ -77,12 +87,12 @@ void TAMSDcluster::AddStrip(TAMSDhit* strip)
 //
 void TAMSDcluster::SetPositionG(TVector3& posGlo)
 {
-   fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
+   fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
    
    if (GetPlaneView() == 0)
-      fPosErrorG.SetXYZ(fPosErrorF, 0, 0.01);
+      fPosError2.SetXYZ(fPosErrorF, 0, 0.01);
    else
-      fPosErrorG.SetXYZ(0, fPosErrorF, 0.01);
+      fPosError2.SetXYZ(0, fPosErrorF, 0.01);
 }
 
 //______________________________________________________________________________
@@ -122,6 +132,13 @@ void TAMSDcluster::SetCog(Float_t pos)
 
 //______________________________________________________________________________
 //
+void TAMSDcluster::SetEta(Float_t eta)
+{
+   fEtaValue = eta;
+}
+
+//______________________________________________________________________________
+//
 void TAMSDcluster::SetPlaneView(Int_t v)
 {
    fPlaneView = v;
@@ -147,23 +164,10 @@ Float_t TAMSDcluster::Distance(TAMSDcluster *aClus) {
 
 //______________________________________________________________________________
 //
-Float_t TAMSDcluster::ComputeEta(Float_t cog) {
-
-   Double_t fractpart, intpart;
-   fractpart = modf (cog , &intpart);
-
-   return fractpart;
-}
-
-//______________________________________________________________________________
-//
-Float_t TAMSDcluster::ComputeEtaCorrection(Float_t cog) {
-
-   TF1 *etafunc = new TF1("test","0.9*TMath::Gaus(x,0,0.1)+TMath::Gaus(x,1./3,0.13)+TMath::Gaus(x,2./3,0.13)+0.9*TMath::Gaus(x,1,0.1)",0,1); //FAKE ETA FUNCTION
-   Double_t fractpart, intpart;
-   fractpart = modf (cog , &intpart);
-
-   return etafunc->Eval(fractpart);
+Float_t TAMSDcluster::GetAddress() const
+{
+   const TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(0);
+   return strip->GetPosition();
 }
 
 

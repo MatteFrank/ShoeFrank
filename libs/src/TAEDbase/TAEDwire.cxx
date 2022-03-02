@@ -1,4 +1,8 @@
-
+/*!
+ \file TAEDwire.cxx
+ \brief Class to display wire on event
+ */
+/*------------------------------------------+---------------------------------*/
 
 #ifndef _TAEDwire_HXX_
 #include "TAEDwire.hxx"
@@ -8,22 +12,36 @@
 #include "TEveChunkManager.h"
 #endif
 
-//
+/*!
+ \class TAEDwire
+ \brief Class to display wire on event
+ */
+
 
 //__________________________________________________________
-TAEDwire::TAEDwire(const Text_t* name) 
+//! default constructor
+//!
+//! \param[in] name wire list name
+TAEDwire::TAEDwire(const Text_t* name)
   : TEveStraightLineSet(name)
 { 
-  // default constructor
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDwire::~TAEDwire()
 {
-  // default destructor
 }
 
 //__________________________________________________________
+//! Add wire
+//!
+//! \param[in] x1 initial position in X-direction
+//! \param[in] y1 initial position in Y-direction
+//! \param[in] z1 initial position in Z-direction
+//! \param[in] x2 final position in X-direction
+//! \param[in] y2 final position in Y-direction
+//! \param[in] z2 final position in Z-direction
 void TAEDwire::AddWire(Float_t x1, Float_t y1, Float_t z1, 
                                     Float_t x2, Float_t y2, Float_t z2)
 {
@@ -31,6 +49,7 @@ void TAEDwire::AddWire(Float_t x1, Float_t y1, Float_t z1,
 }
 
 //__________________________________________________________
+//! Reset wires
 void TAEDwire::ResetWires()
 {
    TEveChunkManager& p = GetLinePlex();
@@ -38,6 +57,7 @@ void TAEDwire::ResetWires()
 }
 
 //__________________________________________________________
+//! Refit chunk
 void TAEDwire::RefitPlex()
 {
    TEveChunkManager& p = GetLinePlex();

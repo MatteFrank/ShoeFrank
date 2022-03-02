@@ -1,29 +1,8 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-//
+/*!
+ \file TAGmaterials.cxx
+ \brief   Implementation of TAGmaterials.
+ */
+
 #include <fstream>
 #include <sstream>
 
@@ -37,9 +16,16 @@
 
 TAGmaterials* TAGmaterials::fgInstance = 0;
 
+/*!
+ \class TAGmaterials
+ \brief Class generating material and mixture. **
+ */
+
+//! Class Imp
 ClassImp(TAGmaterials);
 
 //______________________________________________________________________________
+//! Constructor
 TAGmaterials::TAGmaterials()
  : TAGbaseMaterials()
 {
@@ -47,11 +33,13 @@ TAGmaterials::TAGmaterials()
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAGmaterials::~TAGmaterials()
 {
 }
 
 //______________________________________________________________________________
+//! Instance
 TAGmaterials* TAGmaterials::Instance()
 {
     if (fgInstance == 0)
@@ -60,7 +48,13 @@ TAGmaterials* TAGmaterials::Instance()
     return fgInstance;
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Create material
+//!
+//! \param[in] name  name of material
+//! \param[in] density density of material
+//! \param[in] temperature temperature of material
+//! \param[in] pressure pressure of material
 TGeoMaterial* TAGmaterials::CreateMaterial(TString name, Float_t density,
                                             Float_t temperature, Float_t pressure)
 {
@@ -120,12 +114,17 @@ TGeoMaterial* TAGmaterials::CreateMaterial(TString name, Float_t density,
 }
 
 //______________________________________________________________________________
+//! create mixture with differents materials
+//! the material, densities and proportion are seperated by a /
+//!
+//! \param[in] formula  formula of mixture
+//! \param[in] densities densities of mixture
+//! \param[in] prop proportion of each material
+//! \param[in] density density of each material
 TGeoMixture* TAGmaterials::CreateMixture(TString formula, const TString densities, const TString prop, Float_t density)
 {
-   // create mixture with differents materials
-   // the material, densities and proportion are seperated by a /
    TGeoMedium*  med = 0x0;
-   
+
    vector<TString> listMat = GetStrings(formula);
    Float_t compDensity[listMat.size()];
    Float_t compProp[listMat.size()];
@@ -171,153 +170,134 @@ TGeoMixture* TAGmaterials::CreateMixture(TString formula, const TString densitie
 
 
 //______________________________________________________________________________
-// Prints the MATERIAL, COMPOUND and LOW-MAT
-// Aligned variables on the dedicated column
+//! Prints the MATERIAL, COMPOUND and LOW-MAT
+//! Aligned variables on the dedicated column
 string TAGmaterials::PrintMaterialFluka()
 {
    
-  TList* list = gGeoManager->GetListOfMaterials();
+   TList* list = gGeoManager->GetListOfMaterials();
    
-  stringstream ss;
-
-  ReadFlukaDefMat();
-  
-  for (Int_t i = 0; i < list->GetEntries(); ++i) {
+   stringstream ss;
+   
+   ReadFlukaDefMat();
+   
+   for (Int_t i = 0; i < list->GetEntries(); ++i) {
       
-    TGeoMixture *mix = (TGeoMixture *)gGeoManager->GetListOfMaterials()->At(i);
+      TGeoMixture *mix = (TGeoMixture *)gGeoManager->GetListOfMaterials()->At(i);
       
-    Int_t nElements = mix->GetNelements();
-        
-    // Single material
-    if (nElements == 1) {
+      Int_t nElements = mix->GetNelements();
+      
+      // Single material
+      if (nElements == 1) {
          
-      TGeoElement *element = mix->GetElement(0);
-      
-      if (fPrintedElt[element->GetName()] == 1)
-	continue;
-
-      TString cmd;
-
-      int elId = GetFlukaMatId(element->Z());
-      CheckFlukaMat(mix->GetDensity(), element->A(), element->Z());
-
-      NameMap[mix->GetName()] = fFlukaMat[elId].Name;
-
-      if (fgkLowMat[mix->GetName()] == 0) {
-    
-	cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%4d.", element->Z())) + PrependFluka(Form("%-g", element->A())) + PrependFluka(Form("%g",mix->GetDensity())) +
-	  PrependFlukaName(fFlukaMat[elId].Name, 3);
-
-	
-	ss << cmd.Data() << endl;
+         TGeoElement *element = mix->GetElement(0);
+         
+         if (fPrintedElt[element->GetName()] == 1)
+            continue;
+         
+         TString cmd;
+         
+         int elId = GetFlukaMatId(element->Z());
+         CheckFlukaMat(mix->GetDensity(), element->A(), element->Z());
+         
+         fNameMap[mix->GetName()] = fFlukaMat[elId].Name;
+         
+         if (fgkLowMat[mix->GetName()] == 0) {
             
-      } else { // LOW-MAT
-		
-	cout << "LOW-MAT material? Check it!! "<< mix->GetName() << endl;
+            cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%4d.", element->Z())) + PrependFluka(Form("%-g", element->A())) + PrependFluka(Form("%g",mix->GetDensity())) +
+            PrependFlukaName(fFlukaMat[elId].Name, 3);
             
-	//code to be checked!!!!!
-	
-	// cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%4d.", element->Z())) + PrependFluka(Form("%-g", element->A())) + PrependFlukaName(element->GetName(), 4);
-	// ss << cmd.Data() << endl;
-
-	// cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%4d.", element->Z())) + PrependFluka(Form("%-g",mix->GetDensity()), 2) +  PrependFlukaName(mix->GetName(), 3);
-	// ss << cmd.Data() << endl;
-	
+            
+            ss << cmd.Data() << endl;
+            
+         } else { // LOW-MAT
+            cout << "LOW-MAT material? Check it!! "<< mix->GetName() << endl;
+         }
+         
+         fPrintedElt[element->GetName()] = 1;
       }
       
-      fPrintedElt[element->GetName()] = 1;
-      
-    }
-      
-    // COMPOUND
-    if (nElements != 1) {
-      
-      NameMap[mix->GetName()] = mix->GetName();
-            
-      for (Int_t e = 0; e < nElements; ++e) {
-            
-	TGeoElement *element = mix->GetElement(e);
-            
-	if (fPrintedElt[element->GetName()] == 1)
-	  continue;
-
-	int elId = GetFlukaMatId(element->Z());
-	
-	TString cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%4d.", element->Z())) + PrependFluka(Form("%-g", element->A()))
-	  + PrependFluka(Form("%g", ( fFlukaMat[elId].Density ))) + PrependFlukaName(fFlukaMat[elId].Name, 3);
-	ss << cmd.Data() << endl;
-	
-	fPrintedElt[element->GetName()] = 1;
-      }
-
-      TString cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%g",mix->GetDensity()), 3) +  PrependFlukaName(mix->GetName(), 3);
-      ss << cmd.Data() << endl;
-
-      cmd = AppendFluka("COMPOUND");
+      // COMPOUND
+      if (nElements != 1) {
          
-      for (Int_t e = 0; e < nElements; ++e) {
-	
-	if(e == 3) {
-	  cmd += PrependFlukaName(mix->GetName(), 0);
-	  ss << cmd.Data() << endl;
-	  cmd = AppendFluka("COMPOUND");
-	}
-	
-	TGeoElement *element = mix->GetElement(e);
-	
-	int elId = GetFlukaMatId(element->Z());
-	    
-	if (mix->GetNmixt() != 0x0) {
-	  
-	  if (fgkLowMat[mix->GetName()] != 0)
-	    cmd += PrependFluka(Form("%d.", mix->GetNmixt()[e])) + PrependFluka(Form("%-g", mix->GetTemperature())) +  PrependFlukaName(fFlukaMat[elId].Name, 2);
-	  else
-	    cmd += PrependFluka(Form("%d.", mix->GetNmixt()[e])) + PrependFlukaName(fFlukaMat[elId].Name, 1, -1);
+         fNameMap[mix->GetName()] = mix->GetName();
+         
+         for (Int_t e = 0; e < nElements; ++e) {
+            
+            TGeoElement *element = mix->GetElement(e);
+            
+            if (fPrintedElt[element->GetName()] == 1)
+               continue;
+            
+            int elId = GetFlukaMatId(element->Z());
+            
+            TString cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%4d.", element->Z())) + PrependFluka(Form("%-g", element->A()))
+            + PrependFluka(Form("%g", ( fFlukaMat[elId].Density ))) + PrependFlukaName(fFlukaMat[elId].Name, 3);
+            ss << cmd.Data() << endl;
+            
+            fPrintedElt[element->GetName()] = 1;
+         }
+         
+         TString cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%g",mix->GetDensity()), 3) +  PrependFlukaName(mix->GetName(), 3);
+         ss << cmd.Data() << endl;
+         
+         cmd = AppendFluka("COMPOUND");
+         
+         for (Int_t e = 0; e < nElements; ++e) {
+            
+            if(e == 3) {
+               cmd += PrependFlukaName(mix->GetName(), 0);
+               ss << cmd.Data() << endl;
+               cmd = AppendFluka("COMPOUND");
+            }
+            
+            TGeoElement *element = mix->GetElement(e);
+            
+            int elId = GetFlukaMatId(element->Z());
+            
+            if (mix->GetNmixt() != 0x0) {
                
-	}
-	else
-	  cmd += PrependFluka(Form("%-.3e", -mix->GetWmixt()[e])) + PrependFlukaName(fFlukaMat[elId].Name, 1, -1);
-
+               if (fgkLowMat[mix->GetName()] != 0)
+                  cmd += PrependFluka(Form("%d.", mix->GetNmixt()[e])) + PrependFluka(Form("%-g", mix->GetTemperature())) +  PrependFlukaName(fFlukaMat[elId].Name, 2);
+               else
+                  cmd += PrependFluka(Form("%d.", mix->GetNmixt()[e])) + PrependFlukaName(fFlukaMat[elId].Name, 1, -1);
+               
+            }
+            else
+               cmd += PrependFluka(Form("%-.3e", -mix->GetWmixt()[e])) + PrependFlukaName(fFlukaMat[elId].Name, 1, -1);
+            
+         }
+         
+         if (nElements == 2)
+            cmd += PrependFlukaName(mix->GetName(), 2);
+         else if (nElements == 3)
+            cmd += PrependFlukaName(mix->GetName(), 0);
+         else if (nElements == 4)
+            cmd += PrependFlukaName(mix->GetName(), 4);
+         else
+            Warning("SaveFileFluka()", "Number of element in the compund material is %d (max: 3)", nElements);
+         
+         ss << cmd.Data() << endl;
       }
       
-      if (nElements == 2)
-	cmd += PrependFlukaName(mix->GetName(), 2);
-      else if (nElements == 3)
-	cmd += PrependFlukaName(mix->GetName(), 0);
-      else if (nElements == 4)
-	cmd += PrependFlukaName(mix->GetName(), 4);
-      else
-	Warning("SaveFileFluka()", "Number of element in the compund material is %d (max: 3)", nElements);
-
-      ss << cmd.Data() << endl;
-    }
       
-      
-    // LOW-MAT
-    if (fgkLowMat[mix->GetName()] != 0 && nElements == 1) {
-
-      cout << "LOW-MAT material? Check it!! "<< mix->GetName() << endl;
-
-      //code to be checked!!!!!
-      
-      // TGeoElement *element = mix->GetElement(0);
+      // LOW-MAT
+      if (fgkLowMat[mix->GetName()] != 0 && nElements == 1) {
          
-      // if (mix->GetNmixt() != 0x0) {
-      // 	if (fgkLowMat[mix->GetName()] != 0) {               
-      // 	  TString cmd = AppendFluka("LOW-MAT") +  PrependFlukaName(mix->GetName(), 1, -1) + PrependFluka(Form("%4d.", element->Z())) + PrependFluka(Form("%4d.", -mix->GetNmixt()[0]));
-      // 	  cmd += PrependFluka(Form("%-g", mix->GetTemperature())) +  PrependFlukaName(element->GetName(), 2);
-      // 	  ss << cmd.Data() << endl;
-      // 	}
-      // }
-    }
+         cout << "LOW-MAT material? Check it!! "<< mix->GetName() << endl;
+         
+      }
       
-  }
-
-  return ss.str();
-      
+   }
+   
+   return ss.str();
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Append Fluka file (depecreated method)
+//!
+//! \param[in] string string to add
+//! \param[in] what separator to add
 TString TAGmaterials::AppendFluka(const Char_t* string, Int_t what)
 {
    TString name = string;
@@ -335,7 +315,11 @@ TString TAGmaterials::AppendFluka(const Char_t* string, Int_t what)
    return name;
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Prepend Fluka file (depecreated method)
+//!
+//! \param[in] string string to add
+//! \param[in] what separator to add
 TString TAGmaterials::PrependFluka(const Char_t* string, Int_t what)
 {
    TString name = string;
@@ -356,7 +340,12 @@ TString TAGmaterials::PrependFluka(const Char_t* string, Int_t what)
    return name;
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Append Fluka file name (depecreated method)
+//!
+//! \param[in] string string to add
+//! \param[in] what separator to add
+//! \param[in] align align parameter
 TString TAGmaterials::PrependFlukaName(const Char_t* string, Int_t what, Int_t align)
 {
    TString name = string;
@@ -373,17 +362,17 @@ TString TAGmaterials::PrependFlukaName(const Char_t* string, Int_t what, Int_t a
    return name;
 }
 
-
-
-//______________________________________________________________________________
+///------------------------------------------+-----------------------------------
+//! Get Fluka name for material
+//!
+//! \param[in] matname material name
 TString TAGmaterials::GetFlukaMatName(TString matname)
 {
-
   TString flkname;
   
-  map<TString,TString>::iterator it = NameMap.find(matname);
+  map<TString,TString>::iterator it = fNameMap.find(matname);
 
-  if(it == NameMap.end()) 
+  if(it == fNameMap.end())
     cout << "Key-value pair not present in map for material " << matname <<endl; 
   else{
     // cout << "Key-value pair present : "  << it->first << "->" << it->second << endl;;

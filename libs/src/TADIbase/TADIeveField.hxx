@@ -1,7 +1,7 @@
 #ifndef _TADIeveField_HXX
 #define _TADIeveField_HXX
 /*!
-  \file
+  \file TADIeveField.hxx
   \brief   Declaration of TADIeveField.
  
   \author Ch. Finck
@@ -20,7 +20,7 @@
 class TADIeveField : public TEveMagField {
    
 private:
-   TADIgeoField* fField;
+   TADIgeoField* fField;    ///< Mag field from geometry
    
 public:
    TADIeveField(TADIgeoField* field);

@@ -27,12 +27,14 @@ protected:
   Int_t     fIndex;
   Int_t     fView;
   Int_t     fStrip;
+  Bool_t    fIsSeed;
   
   TArrayI   fMCindex;                  // Index of the hit created in the simulation
   TArrayI   fMcTrackIdx;               // Index of the track created in the simulation
   
 public:
    TAMSDhit();
+   TAMSDhit(const TAMSDhit& hit);
    TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip);
 
   virtual ~TAMSDhit() {};
@@ -57,7 +59,9 @@ public:
   Int_t      GetIndex()         const    { return fIndex;      }
   // Get position
   Float_t    GetPosition()      const    { return fPosition;   }
-  
+  //! Get seed flag
+  Bool_t    IsSeed()            const    { return fIsSeed;     }
+
   //! Is Sortable
   Bool_t     IsSortable()       const    { return kTRUE;     }
   
@@ -76,9 +80,11 @@ public:
   //! Set column number
   void     SetStrip(Int_t strip)        { fStrip = strip;    }
   //! Set index
-   void     SetIndex(Int_t index)       { fIndex = index;    }
+  void     SetIndex(Int_t index)        { fIndex = index;    }
   // Set position
   void     SetPosition(Float_t pos)     { fPosition = pos;   }
+   //! Set seed flag
+   void     SetSeed(Bool_t s=true)      { fIsSeed = s;       }
   // Add MC track Id
   void     AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
   

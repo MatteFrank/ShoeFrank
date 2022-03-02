@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGroot.cxx,v 1.13 2003/07/08 18:55:38 mueller Exp $
+  \file TAGroot.cxx
   \brief   Implementation of TAGroot.
 */
 
@@ -21,13 +20,13 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
+
 /*!
-  \class TAGroot TAGroot.hxx "TAGroot.hxx"
-  \brief TAG top level object description. **
-*/
+ \class TAGrootInterruptHandler
+ \brief TAG interrupt handler. **
+ */
 
 //------------------------------------------+-----------------------------------
-
 class TAGrootInterruptHandler : public TSignalHandler {
   public:
                     TAGrootInterruptHandler();
@@ -35,11 +34,13 @@ class TAGrootInterruptHandler : public TSignalHandler {
 };
 
 //------------------------------------------+-----------------------------------
+//! Constructor
 TAGrootInterruptHandler::TAGrootInterruptHandler() 
   : TSignalHandler(kSigInterrupt, kFALSE)
 {}
 
 //------------------------------------------+-----------------------------------
+//! Notify
 Bool_t TAGrootInterruptHandler::Notify()
 {
   gTAGroot->AbortEventLoop();
@@ -48,11 +49,16 @@ Bool_t TAGrootInterruptHandler::Notify()
 
 //##############################################################################
 
+/*!
+ \class TAGroot
+ \brief TAG top level object description. **
+ */
+
+//! Class Imp
 ClassImp(TAGroot);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGroot::TAGroot()
 {
   if (gTAGroot) {
@@ -89,7 +95,6 @@ TAGroot::TAGroot()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGroot::~TAGroot()
 {
   gROOT->GetListOfCleanups()->Remove(fpRequiredActionList);
@@ -111,8 +116,9 @@ TAGroot::~TAGroot()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Add a \c TAGaction or \c TAGdataDsc to the list of required items
-
+//! Add a TAGaction or TAGdataDsc to the list of required items
+//!
+//! \param[in] p_item item name
 void TAGroot::AddRequiredItem(TAGnamed* p_item)
 {
   if (p_item->InheritsFrom("TAGaction")) {
@@ -132,8 +138,9 @@ void TAGroot::AddRequiredItem(TAGnamed* p_item)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Add a \c TAGaction or \c TAGdataDsc named \a name to list of required items
-
+//! Add a TAGaction or TAGdataDsc named name to list of required items
+//!
+//! \param[in] name item name
 void TAGroot::AddRequiredItem(const char* name)
 {
   TAGaction*  p_act = FindAction(name);
@@ -154,7 +161,6 @@ void TAGroot::AddRequiredItem(const char* name)
 
 /*------------------------------------------+---------------------------------*/
 //! Clear list of required items
-
 void TAGroot::ClearRequiredList()
 {
   fpRequiredActionList->Clear();
@@ -164,9 +170,8 @@ void TAGroot::ClearRequiredList()
 
 /*------------------------------------------+---------------------------------*/
 //! Setup event loop.
-
-void TAGroot::BeginEventLoop() {
-
+void TAGroot::BeginEventLoop()
+{
   if (gApplication->GetSignalHandler() && !fbDefaultHandlerRemoved) {
     gApplication->GetSignalHandler()->Remove();
     fbDefaultHandlerRemoved = kTRUE;
@@ -182,7 +187,6 @@ void TAGroot::BeginEventLoop() {
 
 /*------------------------------------------+---------------------------------*/
 //! end event loop.
-
 void TAGroot::EndEventLoop()
 {
   if (fbTAGrootHandlerAdded) {
@@ -205,7 +209,6 @@ void TAGroot::EndEventLoop()
 
 /*------------------------------------------+---------------------------------*/
 //! abort event loop.
-
 void TAGroot::AbortEventLoop()
 {
   fbAbortEventLoop = kTRUE;
@@ -214,7 +217,8 @@ void TAGroot::AbortEventLoop()
 
 /*------------------------------------------+---------------------------------*/
 //! Process required items of next event
-
+//!
+//! \param[in] nEv nember of event
 Bool_t TAGroot::NextEvent(long nEv)
 {
   Bool_t b_ok = kFALSE;
@@ -255,7 +259,6 @@ Bool_t TAGroot::NextEvent(long nEv)
 
 /*------------------------------------------+---------------------------------*/
 //! Clear all action objects
-
 void TAGroot::ClearAllAction()
 {
   for (TObjLink* lnk = fpActionList->FirstLink(); lnk; lnk=lnk->Next()) {
@@ -265,8 +268,9 @@ void TAGroot::ClearAllAction()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Wait for \a i_msec msec.
-
+//! Wait for i_msec msec.
+//!
+//! \param[in] i_msec milisecond to wait
 void TAGroot::Wait(Int_t i_msec)
 {
   TMonitor monitor;
@@ -276,7 +280,6 @@ void TAGroot::Wait(Int_t i_msec)
 
 /*------------------------------------------+---------------------------------*/
 //! Clear all data objects
-
 void TAGroot::ClearAllData()
 {
   for (TObjLink* lnk = fpDataDscList->FirstLink(); lnk; lnk=lnk->Next()) {
@@ -287,7 +290,6 @@ void TAGroot::ClearAllData()
 
 /*------------------------------------------+---------------------------------*/
 //! Clear all parameter objects
-
 void TAGroot::ClearAllPara()
 {
   for (TObjLink* lnk = fpParaDscList->FirstLink(); lnk; lnk=lnk->Next()) {
@@ -298,7 +300,6 @@ void TAGroot::ClearAllPara()
 
 /*------------------------------------------+---------------------------------*/
 //! Returns next default action name.
-
 const char* TAGroot::DefaultActionName()
 {
   return Form("A%03d", fiDefActionSeqNum++);
@@ -306,7 +307,6 @@ const char* TAGroot::DefaultActionName()
 
 /*------------------------------------------+---------------------------------*/
 //! Returns next default data descriptor name.
-
 const char* TAGroot::DefaultDataDscName()
 {
   return Form("D%03d", fiDefDataDscSeqNum++);
@@ -314,20 +314,21 @@ const char* TAGroot::DefaultDataDscName()
 
 /*------------------------------------------+---------------------------------*/
 //! Returns next default data descriptor name.
-
 const char* TAGroot::DefaultParaDscName()
 {
   return Form("P%03d", fiDefParaDscSeqNum++);
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Return pointer to action with name \a name and type \a type (or 0).
+//! Return pointer to action with name and type (or 0).
 /*!
-  Scans the list of actions for an action with the name \a name. 
-  If \a type is non-nil and non-empty, the type of the action object is 
+  Scans the list of actions for an action with the name.
+  If type is non-nil and non-empty, the type of the action object is
   checked against \a type. If no match is found a 0 is returned.
  */
-
+//!
+//! \param[in] name action name
+//! \param[in] type action type
 TAGaction* TAGroot::FindAction(const char* name, const char* type) const
 {
   TAGaction* p = (TAGaction*) fpActionList->FindObject(name);
@@ -341,10 +342,12 @@ TAGaction* TAGroot::FindAction(const char* name, const char* type) const
 //! Return pointer to data descriptor with name \a name (or 0).
 /*!
   Scans the list of data descriptors for a discriptor with the name
-  \a name. If \a type is non-nil and non-empty, the type of the data
-  object is checked against \a type. If no match is found a 0 is returned.
+   name. If type is non-nil and non-empty, the type of the data
+  object is checked against type. If no match is found a 0 is returned.
  */
-
+//!
+//! \param[in] name data name
+//! \param[in] type data type
 TAGdataDsc* TAGroot::FindDataDsc(const char* name, const char* type) const
 {
   TAGdataDsc* p = (TAGdataDsc*) fpDataDscList->FindObject(name);
@@ -358,10 +361,12 @@ TAGdataDsc* TAGroot::FindDataDsc(const char* name, const char* type) const
 //! Return pointer to data descriptor with name \a name (or 0).
 /*!
   Scans the list of parameter descriptors for a discriptor with the name
-  \a name. If \a type is non-nil and non-empty, the type of the parameter
+   name. If type is non-nil and non-empty, the type of the parameter
   object is checked against \a type. If no match is found a 0 is returned.
  */
-
+//!
+//! \param[in] name parameter name
+//! \param[in] type parameter type
 TAGparaDsc* TAGroot::FindParaDsc(const char* name, const char* type) const
 {
   TAGparaDsc* p = (TAGparaDsc*) fpParaDscList->FindObject(name);
@@ -372,24 +377,28 @@ TAGparaDsc* TAGroot::FindParaDsc(const char* name, const char* type) const
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Set campaign and run number from TAGrunInfo \a info .
-
+//! Set campaign and run number from TAGrunInfo  info.
+//!
+//! \param[in] info run information
 void TAGroot::SetRunInfo(const TAGrunInfo& info)
 {
   fRunInfo = info;
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Set campaign, run , and event number from TAGeventId \a info .
-
+// Set campaign, run , and event number from TAGeventId info.
+//!
+//! \param[in] info event information
 void TAGroot::SetEventId(const TAGeventId& info)
 {
   fEventId= info;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
-
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGroot::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGroot: " << endl;
@@ -439,5 +448,4 @@ void TAGroot::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-
 TAGroot* gTAGroot=0;

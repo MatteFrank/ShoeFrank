@@ -1,8 +1,7 @@
 
 /*!
- \class GlobalToeReco
- \brief Global reconstruction from local reconstruction Tree **
- author: Ch. Finck
+ \file GlobalToeReco.cxx
+ \brief Global reconstruction class using TOE from L0 tree
  */
 
 #include "BaseReco.hxx"
@@ -11,41 +10,59 @@
 
 #include "GlobalToeReco.hxx"
 
+/*!
+ \class GlobalToeReco
+ \brief Global reconstruction class using TOE from L0 tree
+ */
 
+//! Class Imp
 ClassImp(GlobalToeReco)
 
 //__________________________________________________________
-GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] fileNameIn data input file name
+//! \param[in] fileNameout data output root file name
+//! \param[in] isMC MC flag
+//! \param[in] fileNameMcIn data MC input file name
+//! \param[in] treeNameMc MC tree name
+GlobalToeReco::GlobalToeReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, TString fileNameMcIn, TString treeNameMc)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
    TAGrecoManager::GetPar()->EnableLocalReco();
    fFlagMC = isMC;
+   
+   if (!fileNameMcIn.IsNull() && isMC) {
+      DisableSaveMc();
+      fFriendFileName = fileNameMcIn;
+      fFriendTreeName = treeNameMc;
+   }
 }
 
 //__________________________________________________________
+//! default destructor
 GlobalToeReco::~GlobalToeReco()
 {
-   // default destructor
 }
 
 //__________________________________________________________
+//! Open inout file
 void GlobalToeReco::OpenFileIn()
 {
   fActEvtReader->Open(GetName());
 }
 
 //__________________________________________________________
+//! Close inout file
 void GlobalToeReco::CloseFileIn()
 {
   fActEvtReader->Close();
 }
 
 //__________________________________________________________
-void GlobalToeReco::CreateRawAction()
-{
-}
-
-//__________________________________________________________
+//! Set L0 reco tree branches
 void GlobalToeReco::SetL0TreeBranches()
 {
   BaseReco::SetL0TreeBranches();
@@ -67,12 +84,13 @@ void GlobalToeReco::SetL0TreeBranches()
 }
 
 //__________________________________________________________
+//! Set output tree branches
 void GlobalToeReco::SetTreeBranches()
 {
   BaseReco::SetTreeBranches();
   
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
-    if (fFlagMC) {
+    if (fFlagMC && fSaveMcFlag) {
       fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
       

@@ -1,3 +1,8 @@
+/*!
+ \file TAITtrack.cxx
+ \brief   Class for ITR tracks
+ */
+
 #include "TMath.h"
 #include "TClonesArray.h"
 
@@ -20,10 +25,16 @@
   //////////////////////////////////////////////////////////////////
 
 
+/*!
+ \class TAITtrack
+ \brief Class for ITR tracks
+ */
+
+//! Class Imp
 ClassImp(TAITtrack) // Description of a Track
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAITtrack::TAITtrack()
 :  TAGbaseTrack()
 {
@@ -31,13 +42,15 @@ TAITtrack::TAITtrack()
 }
 
 //______________________________________________________________________________
-//  
+//! Destructor
 TAITtrack::~TAITtrack()
 {
 }
 
 //______________________________________________________________________________
-//
+//! Copy constructor
+//!
+//! \param[in] aTrack ytack to copy
 TAITtrack::TAITtrack(const TAGbaseTrack& aTrack)
 : TAGbaseTrack::TAGbaseTrack(aTrack)
 {
@@ -45,16 +58,17 @@ TAITtrack::TAITtrack(const TAGbaseTrack& aTrack)
 }
 
 //______________________________________________________________________________
-//
+//! Set up clones
 void TAITtrack::SetupClones()
 {
    fListOfClusters = new TClonesArray("TAITcluster");
    fListOfClusters->SetOwner(true);
 }
 
-
 // __________________________________________________________________________
-//
+//! Add cluster to track
+//!
+//! \param[in] clus cluster to add
 void TAITtrack::AddCluster(TAGcluster* clus)
 {
    TAITcluster* cluster = static_cast<TAITcluster*>(clus);

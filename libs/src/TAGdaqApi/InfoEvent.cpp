@@ -1,12 +1,27 @@
+/*!
+ \file InfoEvent.cpp
+ \brief  Implementation of InfoEvent
+ */
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "InfoEvent.hh"
 
+/*!
+ \class InfoEvent
+ \brief info event
+ */
 
+//------------------------------------------+-----------------------------------
+//! Destructor.
 InfoEvent::~InfoEvent(){
 }
 
-
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void InfoEvent::readData(unsigned int ** p1){
 
   unsigned int * p = *p1;
@@ -39,7 +54,8 @@ void InfoEvent::readData(unsigned int ** p1){
   *p1 = p;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Print data
 void InfoEvent::printData() const {
 
   printf ("Event building time in seconds: %d\n",  time_sec);

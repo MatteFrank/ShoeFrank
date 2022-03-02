@@ -1,12 +1,20 @@
-#include "TAGgeoTrafo.hxx"
-#include <fstream>
+/*!
+ \file TAGgeoTrafo.cxx
+ \brief   Implementation of TAGgeoTrafo.
+ */
 
+#include <fstream>
 #include "TObjArray.h"
 
+#include "TAGgeoTrafo.hxx"
 #include "TAGrecoManager.hxx"
 
-//Class that handles the Geometrical transformations in FOOT
+/*!
+ \class TAGgeoTrafo 
+ \brief/Class that handles the Geometrical transformations in FOOT. **
+ */
 
+//! Class Imp
 ClassImp(TAGgeoTrafo);
 
       TString TAGgeoTrafo::fgDefaultActName = "actGeoTrafo";
@@ -40,7 +48,10 @@ const Float_t TAGgeoTrafo::fgkLightVelocity = 29.98; // cm/ns
 map<TString, Int_t> TAGgeoTrafo::fgkDeviceType = {{"ST", 0}, {"BM", 10},  {"DI", 20}, {"TG", 30},  {"VT", 40},
                                                   {"IT", 50}, {"MSD", 60}, {"TW", 70}, {"CA", 80}};
 
-//_____________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Return name of device from type number
+//!
+//! \param[in] devType device type number
 const Char_t* TAGgeoTrafo::GetDeviceName(Int_t devType)
 {
    for (const auto &item : fgkDeviceType) {
@@ -52,6 +63,9 @@ const Char_t* TAGgeoTrafo::GetDeviceName(Int_t devType)
 }
 
 //_____________________________________________________________________________
+//! Constructor
+//!
+//! \param[in] expName experiment name
 TAGgeoTrafo::TAGgeoTrafo(const TString expName)
 : TAGaction(fgDefaultActName.Data(), "TAGgeoTrafo - Geometry Transformations"),
   fFileStream(new TAGparTools()),
@@ -64,6 +78,7 @@ TAGgeoTrafo::TAGgeoTrafo(const TString expName)
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAGgeoTrafo::~TAGgeoTrafo() 
 {
    delete fMatrixList;
@@ -75,6 +90,9 @@ TAGgeoTrafo::~TAGgeoTrafo()
   Transformations of points in space
 */
 //_____________________________________________________________________________
+//! Return H-matrix from device name
+//!
+//! \param[in] nameSuf device name
 const TGeoHMatrix* TAGgeoTrafo::GetTrafo(const char* nameSuf) const
 {
    TString name = Form("%s%s", fgkTrafoBaseName, nameSuf);
@@ -88,6 +106,9 @@ const TGeoHMatrix* TAGgeoTrafo::GetTrafo(const char* nameSuf) const
 }
 
 //_____________________________________________________________________________
+//! Return combi-matrix from device name
+//!
+//! \param[in] nameSuf device name
 TGeoCombiTrans* TAGgeoTrafo::GetCombiTrafo(const char* nameSuf) const
 {
    TString name = Form("%s%s", fgkTrafoBaseName, nameSuf);
@@ -112,6 +133,9 @@ TGeoCombiTrans* TAGgeoTrafo::GetCombiTrafo(const char* nameSuf) const
 }
 
 //_____________________________________________________________________________
+//! Get device center position from device name
+//!
+//! \param[in] nameSuf device name
 TVector3 TAGgeoTrafo::GetDeviceCenter(const char* nameSuf) const
 {
    TString name = Form("%s%s", fgkTrafoBaseName, nameSuf);
@@ -125,6 +149,9 @@ TVector3 TAGgeoTrafo::GetDeviceCenter(const char* nameSuf) const
 }
 
 //_____________________________________________________________________________
+//! Get device center angle from device name
+//!
+//! \param[in] nameSuf device name
 TVector3 TAGgeoTrafo::GetDeviceAngle(const char* nameSuf) const
 {
    TString name = Form("%s%s", fgkTrafoBaseName, nameSuf);
@@ -138,18 +165,29 @@ TVector3 TAGgeoTrafo::GetDeviceAngle(const char* nameSuf) const
 }
 
 //_____________________________________________________________________________
+//! Add H-matrix
+//!
+//! \param[in] mat a given matrix
 void TAGgeoTrafo::AddTrafo(TGeoHMatrix* mat)
 {
 	  fMatrixList->Add(mat);  
 }
 
 //_____________________________________________________________________________
+//! Add device parameters
+//!
+//! \param[in] device device parameters
 void TAGgeoTrafo::AddDevice(DeviceParameter_t* device)
 {
 	  fDeviceList->Add(device);
 }
 
 //_____________________________________________________________________________
+//! Transformation from global FOOT to local detector framework
+//!
+//! \param[in] name name of device
+//! \param[in] glob position in detector framework
+//! \return position in detector framework
 TVector3 TAGgeoTrafo::Global2Local(const char* name, TVector3& glob) const
 {
    const TGeoHMatrix* mat = GetTrafo(name);
@@ -164,6 +202,11 @@ TVector3 TAGgeoTrafo::Global2Local(const char* name, TVector3& glob) const
 }   
 
 //_____________________________________________________________________________
+//! Transformation from global FOOT to local detector framework for vector (no translation)
+//!
+//! \param[in] name name of device
+//! \param[in] glob position in FOOT framework
+//! \return position in detector framework
 TVector3 TAGgeoTrafo::Global2LocalVect(const char* name, TVector3& glob) const
 {
    const TGeoHMatrix* mat = GetTrafo(name);
@@ -178,6 +221,11 @@ TVector3 TAGgeoTrafo::Global2LocalVect(const char* name, TVector3& glob) const
 }   
 
 //_____________________________________________________________________________
+//! Transformation from local detector to global FOOT framework
+//!
+//! \param[in] name name of device
+//! \param[in] loc position in detector framework
+//! \return position in FOOT framework
 TVector3 TAGgeoTrafo::Local2Global(const char* name, TVector3& loc) const
 {
    const TGeoHMatrix* mat = GetTrafo(name);
@@ -192,6 +240,11 @@ TVector3 TAGgeoTrafo::Local2Global(const char* name, TVector3& loc) const
 }   
 
 //_____________________________________________________________________________
+//! Transformation from local detector to global FOOT framework for vector (no translation)
+//!
+//! \param[in] name name of device
+//! \param[in] loc position in detector framework
+//! \return position in FOOT framework
 TVector3 TAGgeoTrafo::Local2GlobalVect(const char* name, TVector3& loc) const
 {
    const TGeoHMatrix* mat = GetTrafo(name);
@@ -207,6 +260,9 @@ TVector3 TAGgeoTrafo::Local2GlobalVect(const char* name, TVector3& loc) const
 
 
 //_____________________________________________________________________________
+//! Read FOOT geometry file
+//!
+//! \param[in] ifile file name
 bool TAGgeoTrafo::FromFile(TString ifile)
 {
   //Initialization of Geom Parameters
@@ -261,6 +317,9 @@ bool TAGgeoTrafo::FromFile(TString ifile)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local target to BM local framework
+//!
+//! \param[in] apoi position in target framework
 TVector3 TAGgeoTrafo::FromTGLocalToBMLocal(TVector3 apoi)
 {
   TVector3 posTg = FromTGLocalToGlobal(apoi);
@@ -268,6 +327,9 @@ TVector3 TAGgeoTrafo::FromTGLocalToBMLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local target to VTX local framework
+//!
+//! \param[in] apoi position in target framework
 TVector3 TAGgeoTrafo::FromTGLocalToVTLocal(TVector3 apoi)
 {
   TVector3 posTg = FromTGLocalToGlobal(apoi);
@@ -275,6 +337,9 @@ TVector3 TAGgeoTrafo::FromTGLocalToVTLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local target to ITR local framework
+//!
+//! \param[in] apoi position in target framework
 TVector3 TAGgeoTrafo::FromTGLocalToITLocal(TVector3 apoi)
 {
   TVector3 posTg = FromTGLocalToGlobal(apoi);
@@ -282,6 +347,9 @@ TVector3 TAGgeoTrafo::FromTGLocalToITLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local ITR to VTX local framework
+//!
+//! \param[in] apoi position in ITR framework
 TVector3 TAGgeoTrafo::FromITLocalToVTLocal(TVector3 apoi)
 {
   TVector3 posIt = FromITLocalToGlobal(apoi);
@@ -289,6 +357,9 @@ TVector3 TAGgeoTrafo::FromITLocalToVTLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local TW to VTX local framework
+//!
+//! \param[in] apoi position in TW framework
 TVector3 TAGgeoTrafo::FromTWLocalToVTLocal(TVector3 apoi)
 {
   TVector3 posTw = FromTWLocalToGlobal(apoi);
@@ -296,6 +367,9 @@ TVector3 TAGgeoTrafo::FromTWLocalToVTLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local STC to FOOT global framework
+//!
+//! \param[in] apoi position in STC framework
 TVector3 TAGgeoTrafo::FromSTLocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("ST", apoi);
@@ -303,6 +377,9 @@ TVector3 TAGgeoTrafo::FromSTLocalToGlobal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local BM to FOOT global framework
+//!
+//! \param[in] apoi position in BM framework
 TVector3 TAGgeoTrafo::FromBMLocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("BM", apoi);
@@ -310,6 +387,9 @@ TVector3 TAGgeoTrafo::FromBMLocalToGlobal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local target to FOOT global framework
+//!
+//! \param[in] apoi position in target framework
 TVector3 TAGgeoTrafo::FromTGLocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("TG", apoi);
@@ -317,6 +397,9 @@ TVector3 TAGgeoTrafo::FromTGLocalToGlobal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local dipole to FOOT global framework
+//!
+//! \param[in] apoi position in dipole framework
 TVector3 TAGgeoTrafo::FromDILocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("DI", apoi);
@@ -324,6 +407,9 @@ TVector3 TAGgeoTrafo::FromDILocalToGlobal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local VTX to FOOT global framework
+//!
+//! \param[in] apoi position in VTX framework
 TVector3 TAGgeoTrafo::FromVTLocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("VT", apoi);
@@ -331,6 +417,9 @@ TVector3 TAGgeoTrafo::FromVTLocalToGlobal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local ITR to FOOT global framework
+//!
+//! \param[in] apoi position in ITR framework
 TVector3 TAGgeoTrafo::FromITLocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("IT", apoi);
@@ -338,6 +427,9 @@ TVector3 TAGgeoTrafo::FromITLocalToGlobal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local MSD to FOOT global framework
+//!
+//! \param[in] apoi position in MSD framework
 TVector3 TAGgeoTrafo::FromMSDLocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("MSD", apoi);
@@ -345,6 +437,9 @@ TVector3 TAGgeoTrafo::FromMSDLocalToGlobal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local TW to FOOT global framework
+//!
+//! \param[in] apoi position in TW framework
 TVector3 TAGgeoTrafo::FromTWLocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("TW", apoi);
@@ -352,6 +447,9 @@ TVector3 TAGgeoTrafo::FromTWLocalToGlobal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local CAL to FOOT global framework
+//!
+//! \param[in] apoi position in CAL framework
 TVector3 TAGgeoTrafo::FromCALocalToGlobal(TVector3 apoi)
 {
    TVector3 glb_poi = Local2Global("CA", apoi);
@@ -361,6 +459,9 @@ TVector3 TAGgeoTrafo::FromCALocalToGlobal(TVector3 apoi)
  Transformations of vectors in space:: local --> global
  */
 //_____________________________________________________________________________
+//! Transformation from local STC to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in STC framework
 TVector3 TAGgeoTrafo::VecFromSTLocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("ST", avec);
@@ -368,6 +469,9 @@ TVector3 TAGgeoTrafo::VecFromSTLocalToGlobal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local BM to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in BM framework
 TVector3 TAGgeoTrafo::VecFromBMLocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("BM", avec);
@@ -375,6 +479,9 @@ TVector3 TAGgeoTrafo::VecFromBMLocalToGlobal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local target to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in target framework
 TVector3 TAGgeoTrafo::VecFromTGLocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("TG", avec);
@@ -382,6 +489,9 @@ TVector3 TAGgeoTrafo::VecFromTGLocalToGlobal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local dipole to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in dipole framework
 TVector3 TAGgeoTrafo::VecFromDILocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("DI", avec);
@@ -389,6 +499,9 @@ TVector3 TAGgeoTrafo::VecFromDILocalToGlobal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local VTX to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in VTX framework
 TVector3 TAGgeoTrafo::VecFromVTLocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("VT", avec);
@@ -396,6 +509,9 @@ TVector3 TAGgeoTrafo::VecFromVTLocalToGlobal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local ITR to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in ITR framework
 TVector3 TAGgeoTrafo::VecFromITLocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("IT", avec);
@@ -403,6 +519,9 @@ TVector3 TAGgeoTrafo::VecFromITLocalToGlobal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local MSD to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in MSD framework
 TVector3 TAGgeoTrafo::VecFromMSDLocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("MSD", avec);
@@ -410,6 +529,9 @@ TVector3 TAGgeoTrafo::VecFromMSDLocalToGlobal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local TW to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in TW framework
 TVector3 TAGgeoTrafo::VecFromTWLocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("TW", avec);
@@ -417,6 +539,9 @@ TVector3 TAGgeoTrafo::VecFromTWLocalToGlobal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from local CAL to FOOT global framework for vector (no translation)
+//!
+//! \param[in] avec position in CAL framework
 TVector3 TAGgeoTrafo::VecFromCALocalToGlobal(TVector3 avec)
 {
    TVector3 glb_vec = Local2GlobalVect("CA", avec);
@@ -427,6 +552,9 @@ TVector3 TAGgeoTrafo::VecFromCALocalToGlobal(TVector3 avec)
  Transformations of point in space:: global --> Local
  */
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local STC framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToSTLocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("ST", apoi);
@@ -434,6 +562,9 @@ TVector3 TAGgeoTrafo::FromGlobalToSTLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local BM framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToBMLocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("BM", apoi);
@@ -441,6 +572,9 @@ TVector3 TAGgeoTrafo::FromGlobalToBMLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local target framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToTGLocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("TG", apoi);
@@ -448,6 +582,9 @@ TVector3 TAGgeoTrafo::FromGlobalToTGLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local dipole framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToDILocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("DI", apoi);
@@ -455,6 +592,9 @@ TVector3 TAGgeoTrafo::FromGlobalToDILocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local VTX framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToVTLocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("VT", apoi);
@@ -462,6 +602,9 @@ TVector3 TAGgeoTrafo::FromGlobalToVTLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local ITR framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToITLocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("IT", apoi);
@@ -469,6 +612,9 @@ TVector3 TAGgeoTrafo::FromGlobalToITLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local MSD framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToMSDLocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("MSD", apoi);
@@ -476,6 +622,9 @@ TVector3 TAGgeoTrafo::FromGlobalToMSDLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local TW framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToTWLocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("TW", apoi);
@@ -483,6 +632,9 @@ TVector3 TAGgeoTrafo::FromGlobalToTWLocal(TVector3 apoi)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local CAL framework
+//!
+//! \param[in] apoi position in FOOT global framework
 TVector3 TAGgeoTrafo::FromGlobalToCALocal(TVector3 apoi)
 {
    TVector3 lcl_poi = Global2Local("CA", apoi);
@@ -493,6 +645,9 @@ TVector3 TAGgeoTrafo::FromGlobalToCALocal(TVector3 apoi)
  Transformations of vectors in space:: global --> Local
  */
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local STC framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToSTLocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("ST", avec);
@@ -500,6 +655,9 @@ TVector3 TAGgeoTrafo::VecFromGlobalToSTLocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local BM framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToBMLocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("BM", avec);
@@ -507,6 +665,9 @@ TVector3 TAGgeoTrafo::VecFromGlobalToBMLocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local target framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToTGLocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("TG", avec);
@@ -514,6 +675,9 @@ TVector3 TAGgeoTrafo::VecFromGlobalToTGLocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local dipole framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToDILocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("DI", avec);
@@ -521,6 +685,9 @@ TVector3 TAGgeoTrafo::VecFromGlobalToDILocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local VTX framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToVTLocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("VT", avec);
@@ -528,6 +695,9 @@ TVector3 TAGgeoTrafo::VecFromGlobalToVTLocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local ITR framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToITLocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("IT", avec);
@@ -535,6 +705,9 @@ TVector3 TAGgeoTrafo::VecFromGlobalToITLocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local MSD framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToMSDLocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("MSD", avec);
@@ -542,6 +715,9 @@ TVector3 TAGgeoTrafo::VecFromGlobalToMSDLocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local TW framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToTWLocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("TW", avec);
@@ -549,6 +725,9 @@ TVector3 TAGgeoTrafo::VecFromGlobalToTWLocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Transformation from FOOT global to local CAL framework for vector (no translation)
+//!
+//! \param[in] avec position in FOOT global framework
 TVector3 TAGgeoTrafo::VecFromGlobalToCALocal(TVector3 avec)
 {
    TVector3 lcl_vec = Global2LocalVect("CA", avec);
@@ -556,107 +735,125 @@ TVector3 TAGgeoTrafo::VecFromGlobalToCALocal(TVector3 avec)
 }
 
 //_____________________________________________________________________________
+//! Get STC center position
 TVector3 TAGgeoTrafo::GetSTCenter()
 {
    return GetDeviceCenter("ST");
 }
 
 //_____________________________________________________________________________
+//! Get STC angles
 TVector3 TAGgeoTrafo::GetSTAngles()
 {
    return GetDeviceAngle("ST");
 }
 
 //_____________________________________________________________________________
+//! Get BM center position
 TVector3 TAGgeoTrafo::GetBMCenter()
 {
    return GetDeviceCenter("BM");
 }
 
 //_____________________________________________________________________________
+//! Get BM angles
 TVector3 TAGgeoTrafo::GetBMAngles()
 {
    return GetDeviceAngle("BM");
 }
 
 //_____________________________________________________________________________
+//! Get target center position
 TVector3 TAGgeoTrafo::GetTGCenter()
 {
    return GetDeviceCenter("TG");
 }
 //_____________________________________________________________________________
+//! Get target angles
 TVector3 TAGgeoTrafo::GetTGAngles()
 {
    return GetDeviceAngle("TG");
 }
 
 //_____________________________________________________________________________
+//! Get dipole center position
 TVector3 TAGgeoTrafo::GetDICenter()
 {
    return GetDeviceCenter("DI");
 }
 
 //_____________________________________________________________________________
+//! Get dipole angles
 TVector3 TAGgeoTrafo::GetDIAngles()
 {
    return GetDeviceAngle("DI");
 }
 
 //_____________________________________________________________________________
+//! Get VTX center position
 TVector3 TAGgeoTrafo::GetVTCenter()
 {
    return GetDeviceCenter("VT");
 }
 
 //_____________________________________________________________________________
+//! Get VTX angles
 TVector3 TAGgeoTrafo::GetVTAngles()
 {
    return GetDeviceAngle("VT");
 }
 
 //_____________________________________________________________________________
+//! Get ITR center position
 TVector3 TAGgeoTrafo::GetITCenter()
 {
    return GetDeviceCenter("IT");
 }
 
 //_____________________________________________________________________________
+//! Get ITR angles
 TVector3 TAGgeoTrafo::GetITAngles()
 {
    return GetDeviceAngle("IT");
 }
 
 //_____________________________________________________________________________
+//! Get MSD center position
 TVector3 TAGgeoTrafo::GetMSDCenter()
 {
    return GetDeviceCenter("MSD");
 }
 
 //_____________________________________________________________________________
+//! Get MSD angles
 TVector3 TAGgeoTrafo::GetMSDAngles()
 {
    return GetDeviceAngle("MSD");
 }
 
 //_____________________________________________________________________________
+//! Get TW center position
 TVector3 TAGgeoTrafo::GetTWCenter()
 {
    return GetDeviceCenter("TW");
 }
 
 //_____________________________________________________________________________
+//! Get TW angles
 TVector3 TAGgeoTrafo::GetTWAngles()
 {
    return GetDeviceAngle("TW");
 }
 
 //_____________________________________________________________________________
+//! Get CAL center position
 TVector3 TAGgeoTrafo::GetCACenter()
 {
    return GetDeviceCenter("CA");
 }
 
 //_____________________________________________________________________________
+//! Get CAL angles
 TVector3 TAGgeoTrafo::GetCAAngles()
 {
    return GetDeviceAngle("CA");

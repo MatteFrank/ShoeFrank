@@ -44,7 +44,7 @@ TAMSDtrack* TAMSDntuTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a strip for a given sensor
 const TAMSDtrack* TAMSDntuTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -95,7 +95,7 @@ void TAMSDntuTrack::ToStream(ostream& os, Option_t* option) const
 {
 	  
    os << "TAMSDntuTrack " << GetName()
-   << Form("  nPixels=%3d", GetTracksN())
+   << Form("  nStripss=%3d", GetTracksN())
    << endl;
    
    //TODO properly

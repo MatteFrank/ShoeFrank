@@ -1,8 +1,8 @@
 /*!
- \file
- \version $Id: TAVTactBaseClusterMT.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
- \brief   Implementation of TAVTactBaseClusterMT.
+ \file TAVTactBaseClusterMT.cxx
+ \brief NTuplizer for cluster with multi-thread.
  */
+
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -17,16 +17,20 @@
 
 /*!
  \class TAVTactBaseClusterMT
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for cluster with multi-thread.
  */
 
+//! Class imp
 ClassImp(TAVTactBaseClusterMT);
 
 pthread_mutex_t TAVTactBaseClusterMT::fLock;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
 TAVTactBaseClusterMT::TAVTactBaseClusterMT(const char* name,
 											 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
  : TAGactNtuClusterMT(name, "TAVTactNtuCluster - NTuplize cluster"),
@@ -108,7 +112,10 @@ void TAVTactBaseClusterMT::CreateHistogram()
 }
 
 //______________________________________________________________________________
-//
+//! Filling cluster maps.
+//!
+//! \param[in] listOfPixels list of pixels
+//! \param[in] thr thread number
 void TAVTactBaseClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
 {
    // Clear maps
@@ -131,7 +138,10 @@ void TAVTactBaseClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
 }
 
 //______________________________________________________________________________
-//
+//! Search for cluster.
+//!
+//! \param[in] listOfPixels list of pixels
+//! \param[in] thr thread number
 void TAVTactBaseClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t thr)
 {
    fClustersN[thr] = 0;
@@ -159,7 +169,10 @@ void TAVTactBaseClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t thr)
 }
 
 //______________________________________________________________________________
-// Get object in list
+//! Get object in list
+//!
+//! \param[in] idx list index
+//! \param[in] listOfPixels list of pixels
 TAGobject*  TAVTactBaseClusterMT::GetHitObject(Int_t idx, TClonesArray* listOfPixels) const
 {
    if (idx >= 0 && idx < listOfPixels->GetEntries() )
@@ -173,7 +186,9 @@ TAGobject*  TAVTactBaseClusterMT::GetHitObject(Int_t idx, TClonesArray* listOfPi
 
 
 //______________________________________________________________________________
-//
+//! Apply cuts for a given cluster
+//!
+//! \param[in] cluster a given cluster
 Bool_t TAVTactBaseClusterMT::ApplyCuts(TAVTbaseCluster* cluster)
 {
    TAVTbaseParConf* pConfig = (TAVTbaseParConf*) fpConfig->Object();
@@ -190,21 +205,23 @@ Bool_t TAVTactBaseClusterMT::ApplyCuts(TAVTbaseCluster* cluster)
 }
 
 //______________________________________________________________________________
-//
+//! Compute position
 void TAVTactBaseClusterMT::ComputePosition()
 {
    ComputeCoGPosition();
 }
 
 //______________________________________________________________________________
-//
+//! Compute seed position
+//!
+//! taken position of first pixel
 void TAVTactBaseClusterMT::ComputeSeedPosition()
 {
    fCurrentPosition.SetXYZ((fPSeed->GetPosition())(0), (fPSeed->GetPosition())(1), 0);   
 }
 
 //______________________________________________________________________________
-//
+//! Compute center of gravity position
 void TAVTactBaseClusterMT::ComputeCoGPosition()
 {
    if (!fCurListOfPixels) return;
@@ -246,7 +263,10 @@ void TAVTactBaseClusterMT::ComputeCoGPosition()
 }
 
 //______________________________________________________________________________
-//
+//! Fill data members of a given cluster
+//!
+//! \param[in] iSensor index of sensor
+//! \param[in] cluster a given cluster
 void TAVTactBaseClusterMT::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster)
 {
    TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();

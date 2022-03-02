@@ -1,7 +1,7 @@
 #ifndef _TADIeveTrackPropagator_HXX
 #define _TADIeveTrackPropagator_HXX
 /*!
-  \file
+  \file TADIeveTrackPropagator.hxx
   \brief   Declaration of TADIeveTrackPropagator.
  
   \author Ch. Finck
@@ -21,10 +21,11 @@ class TADIeveTrackPropagator : public TEveTrackPropagator {
 public:
    TADIeveTrackPropagator();
    
+   //! Set new vertex
    void     SetNewVertex(TEveVectorD& vertex) { fV = vertex; }
-   
+   // Extrapolate to new vertex
    Bool_t	Extrapole(TEveVectorD& v, TEveVectorD& p, TEveVectorD& vOut, TEveVectorD& pOut);
-   
+   // Compute momentum and position at a given Z
    Bool_t   IntersectPlaneZ(const TEveVectorD& p,  const TEveVectorD& point, TEveVectorD& pOut, TEveVectorD& itsect);
    
 };

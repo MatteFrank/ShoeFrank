@@ -1,9 +1,19 @@
+/*!
+ \file TAITntuTrack.cxx
+ \brief   Container class for ITR tracks
+ */
+
 #include "TMath.h"
 #include "TAGgeoTrafo.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITntuTrack.hxx"
 
+/*!
+ \class TAITntuTrack
+ \brief  Container class for ITR tracks
+ */
 
+//! Class Imp
 ClassImp(TAITntuTrack);
 
 TString TAITntuTrack::fgkBranchName   = "ittrack.";
@@ -34,7 +44,9 @@ Int_t TAITntuTrack::GetTracksN() const
 }
 
 //------------------------------------------+-----------------------------------
-//! return a Track for a given sensor
+// return a pixel for a given sensor
+//!
+//! \param[in] iTrack track index
 TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -44,7 +56,9 @@ TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+// return a pixel for a given sensor (const)
+//!
+//! \param[in] iTrack track index
 const TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -52,7 +66,6 @@ const TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack) const
    else
 	  return 0x0;
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Setup clones.
@@ -72,7 +85,7 @@ void TAITntuTrack::Clear(Option_t*)
 }
 
 //______________________________________________________________________________
-//  
+//! Create new track
 TAITtrack* TAITntuTrack::NewTrack()
 {
    TClonesArray &trackArray = *fListOfTracks;
@@ -81,7 +94,9 @@ TAITtrack* TAITntuTrack::NewTrack()
 }
 
 //______________________________________________________________________________
-//  
+//! Create new track from copy constructor
+//!
+//! \param[in] trk a given track
 TAITtrack* TAITntuTrack::NewTrack(TAITtrack& trk)
 {
    TClonesArray &trackArray = *fListOfTracks;
@@ -89,8 +104,11 @@ TAITtrack* TAITntuTrack::NewTrack(TAITtrack& trk)
    return track;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAITntuTrack::ToStream(ostream& os, Option_t* option) const
 {
 	  

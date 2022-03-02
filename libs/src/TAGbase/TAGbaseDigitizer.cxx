@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAGbaseDigitizer.cxx
+ \file TAGbaseDigitizer.cxx
  \brief   Implementation of TAGbaseDigitizer.
  */
 
@@ -8,9 +7,10 @@
 
 /*!
  \class TAGbaseDigitizer 
- \brief digitizer for pixel **
+ \brief Base class for digitizer inerface
  */
 
+//! Class Imp
 ClassImp(TAGbaseDigitizer);
 
 //------------------------------------------+-----------------------------------

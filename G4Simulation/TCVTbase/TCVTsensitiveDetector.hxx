@@ -3,8 +3,14 @@
 #ifndef TCVTsensitiveDetector_h
 #define TCVTsensitiveDetector_h 1
 
-#include "TCGbaseSensitiveDetector.hxx"
+/*!
+ \file TCVTsensitiveDetector.hxx
+ \brief VTX interface for base sensitive detector class
+ 
+ \author Ch. Finck
+ */
 
+#include "TCGbaseSensitiveDetector.hxx"
 
 class TCVTsensitiveDetector : public TCGbaseSensitiveDetector
 {

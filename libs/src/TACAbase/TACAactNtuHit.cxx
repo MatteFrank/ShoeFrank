@@ -76,6 +76,9 @@ Bool_t TACAactNtuHit::Action() {
     Double_t time    = aHi->GetTime();
     Double_t timeOth = aHi->GetTimeOth();
     Double_t charge  = aHi->GetCharge();
+    Double_t amplitude  = aHi->GetAmplitude();
+
+  
 
     // here needed mapping file
     Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
@@ -85,14 +88,21 @@ Bool_t TACAactNtuHit::Action() {
     Double_t type=0; // I define a fake type (I do not know what it really is...) (gtraini)
 
     // here we need the calibration file
-    //    Double_t charge_tcorr = GetTemperatureCorrection(charge, crysId);
+   // Double_t charge_tcorr = GetTemperatureCorrection(charge, crysId);
     //AS:: we wait for a proper integration of T inside the DAQ
     Double_t charge_tcorr = charge;
     Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
     Double_t energy = GetEnergy(charge_equalis, crysId);
     Double_t tof    = GetTime(time, crysId);
+
     TACAhit* createdhit=p_nturaw->NewHit(crysId, energy, time,type);
     createdhit->SetValid(true);
+  
+     if (ValidHistogram()) {
+        fhCharge[crysId]->Fill(energy);
+        fhChannelMap->Fill(crysId);
+        fhAmplitude[crysId]->Fill(amplitude);
+     }
   }
 
 
@@ -130,25 +140,30 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Int_t  crysId)
 {
-  TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
+ // TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
 
-  Double_t T0 = parcal->GetTemperatureCry(crysId);
-  Double_t m1 = fTcorr1->Eval(charge);
-  Double_t m2 = fTcorr2->Eval(charge);
 
-  Double_t m0 = m1 + ((m2-m1)/(fT2-fT1))*(T0-fT1);
+ //  Double_t T0 = parcal->GetTemperatureCry(crysId);
 
-  Double_t delta = (fT1 - T0) * m0;
+ //  Double_t m1 = fTcorr1->Eval(charge);
+ //  Double_t m2 = fTcorr2->Eval(charge);
 
-  Double_t charge_tcorr = charge + delta;
+ //  Double_t m0 = m1 + ((m2-m1)/(fT2-fT1))*(T0-fT1);
 
-  return charge_tcorr;
+ //  Double_t delta = (fT1 - T0) * m0;
+
+ //  Double_t charge_tcorr = charge + delta;
+
+  return charge; //ricordarsi di cambiare quando avremo la calibrazione!!!!!!
+  
+  //return charge_tcorr;
 
 }
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
   TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
+
 
   Double_t Equalis0 = parcal->getCalibrationMap()->GetEqualiseCry(crysId);
   Double_t charge_equalis = charge_tcorr*Equalis0;
@@ -209,22 +224,29 @@ void TACAactNtuHit::CreateHistogram(){
   // AddHistogram(fhTrigTime);
 
   sprintf(histoname,"caTotCharge");
+  
   fhTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
   AddHistogram(fhTotCharge);
 
-  // for(int iCh=0;iCh<8;iCh++){
-  //   sprintf(histoname,"stDeltaTime_ch%d", iCh);
-  //   fhArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
-  //   AddHistogram(fhArrivalTime[iCh]);
+  sprintf(histoname,"caChMap");
 
-  //   sprintf(histoname,"stCharge_ch%d", iCh);
-  //   fhCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 1.9);
-  //   AddHistogram(fhCharge[iCh]);
+  fhChannelMap = new TH1F(histoname, histoname, 9, 0, 9);
+  AddHistogram(fhChannelMap);
 
-  //   sprintf(histoname,"stMaxAmp_ch%d", iCh);
-  //   fhAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
-  //   AddHistogram(fhAmplitude[iCh]);
-  // }
+
+  for(int iCh=0;iCh<9;iCh++){
+    sprintf(histoname,"caDeltaTime_ch%d", iCh);
+    fhArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
+    AddHistogram(fhArrivalTime[iCh]);
+
+    sprintf(histoname,"caCharge_ch%d", iCh);
+    fhCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 100);
+    AddHistogram(fhCharge[iCh]);
+
+    sprintf(histoname,"caMaxAmp_ch%d", iCh);
+    fhAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
+    AddHistogram(fhAmplitude[iCh]);
+  }
 
   SetValidHistogram(kTRUE);
 

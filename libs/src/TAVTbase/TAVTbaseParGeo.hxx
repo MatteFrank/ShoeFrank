@@ -1,7 +1,7 @@
 #ifndef _TAVTbaseParGeo_HXX
 #define _TAVTbaseParGeo_HXX
 /*!
-  \file
+  \file TAVTbaseParGeo.hxx
   \brief   Declaration of TAVTbaseParGeo.
  
   \author Ch. Finck
@@ -25,87 +25,90 @@ class TAGionisMaterials;
 class TAVTbaseParGeo : public TAGparTools {
       
 protected:
+   //! pointer for ionisation property
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
-   Int_t      fSensorsN;         // Number of sensors
-   TString    fkDefaultGeoName;  // default par geo file name
-   Int_t      fLayersN;          // Number of layer (planes)
+   Int_t      fSensorsN;         ///< Number of sensors
+   TString    fkDefaultGeoName;  ///< default par geo file name
+   Int_t      fLayersN;          ///< Number of layer (planes)
 
-   TString    fTypeName;         // Type name
-   Int_t      fTypeNumber;       // Type number
-   Int_t      fPixelsNx;         // Number of pixels in U direction
-   Int_t      fPixelsNy;         // Number of pixels in V direction
-   Float_t    fPitchX;           // Pitch value in U direction
-   Float_t    fPitchY;           // Pitch value in U direction
-   TVector3   fTotalSize;        // Total size of sensor
+   TString    fTypeName;         ///< Type name
+   Int_t      fTypeNumber;       ///< Type number
+   Int_t      fPixelsNx;         ///< Number of pixels in U direction
+   Int_t      fPixelsNy;         ///< Number of pixels in V direction
+   Float_t    fPitchX;           ///< Pitch value in U direction
+   Float_t    fPitchY;           ///< Pitch value in U direction
+   TVector3   fTotalSize;        ///< Total size of sensor
    
-   TVector3   fEpiSize;          // Sensitive size of sensor
-   TVector3   fEpiOffset;        // Position offset of sensitive size
-   TString    fEpiMat;           // Material of epitaxial
-   Float_t    fEpiMatDensity;    // density of epitaxial material
-   Float_t    fEpiMatExc;        // mean excitation energy of epitaxial material
+   TVector3   fEpiSize;          ///< Sensitive size of sensor
+   TVector3   fEpiOffset;        ///< Position offset of sensitive size
+   TString    fEpiMat;           ///< Material of epitaxial
+   Float_t    fEpiMatDensity;    ///< density of epitaxial material
+   Float_t    fEpiMatExc;        ///< mean excitation energy of epitaxial material
 
-   Float_t    fPixThickness;     // Pixel Thickness
-   TString    fPixMat;           // Material of pixel
-   TString    fPixMatDensities;  // density of pixel material for each component
-   TString    fPixMatProp;       // Material of pixels component proportion
-   Float_t    fPixMatDensity;    // density of pixel material
+   Float_t    fPixThickness;     ///< Pixel Thickness
+   TString    fPixMat;           ///< Material of pixel
+   TString    fPixMatDensities;  ///< density of pixel material for each component
+   TString    fPixMatProp;       ///< Material of pixels component proportion
+   Float_t    fPixMatDensity;    ///< density of pixel material
 
-   Int_t      fSupportInfo;      // Boolean for support info (only for IT)
-   Bool_t     fFlagMC;           // MC flag
-   Bool_t     fFlagIt;           // IT flag
+   Int_t      fSupportInfo;      ///< Boolean for support info (only for IT)
+   Bool_t     fFlagMC;           ///< MC flag
+   Bool_t     fFlagIt;           ///< IT flag
    
+   /*!
+    \struct SensorParameter_t
+    \brief  Sensors parameters
+   */
    struct SensorParameter_t : public  TObject {
-	  Int_t     SensorIdx;   // sensor index
-	  Int_t     TypeIdx;     // type index
-	  TVector3  Position;    // current position
-	  TVector3  Tilt;        // current tilt angles 
-	  Float_t   AlignmentU;  // U alignment
-	  Float_t   AlignmentV;  // V alignment
-	  Float_t   TiltW;       // Tilted angle around beam axis
-     Bool_t    IsReverseX;  // Rotation of 180 around X axis
-     Bool_t    IsReverseY;  // Rotation of 180 around Y axis
+	  Int_t     SensorIdx;   ///< sensor index
+	  Int_t     TypeIdx;     ///< type index
+	  TVector3  Position;    ///< current position
+	  TVector3  Tilt;        ///< current tilt angles
+	  Float_t   AlignmentU;  ///< U alignment
+	  Float_t   AlignmentV;  ///< V alignment
+	  Float_t   TiltW;       ///< Tilted angle around beam axis
+     Bool_t    IsReverseX;  ///< Rotation of 180 around X axis
+     Bool_t    IsReverseY;  ///< Rotation of 180 around Y axis
    };
-   SensorParameter_t  fSensorParameter[128];
+   SensorParameter_t  fSensorParameter[128]; ///< sensor parameters
 
-   TVector3   fMinPosition;
-   TVector3   fMaxPosition;
-   TVector3   fSizeBox;
-   Int_t      fSensPerLayer;
-   UChar_t*   fSensorArray;
-   std::map<float, std::vector<UChar_t>> fSensorMap;
+   TVector3   fMinPosition;  ///< minimum position
+   TVector3   fMaxPosition;  ///< maximum position
+   TVector3   fSizeBox;      ///< box size
+   Int_t      fSensPerLayer; ///< number of sensor per layer
+   UChar_t*   fSensorArray;  ///< Array of sensor
+   std::map<float, std::vector<UChar_t>> fSensorMap; ///< map sensor
 
 protected:
-   static const Int_t   fgkDefSensorsN;   // default number of sensors
+   static const Int_t   fgkDefSensorsN;   ///< default number of sensors
    
 protected:
+   //! Fill sensor map
    virtual void    FillSensorMap();
 
 public:
    TAVTbaseParGeo();
     virtual ~TAVTbaseParGeo();
 
-   //! Transform point from the global detector reference frame
-   //! to the local sensor reference frame of the detection id
+   // Transform point from the global detector reference frame
+   // to the local sensor reference frame of the detection id
    void            Detector2Sensor(Int_t detID,  Double_t xg, Double_t yg, Double_t zg, 
                                    Double_t& xl, Double_t& yl, Double_t& zl) const;
    
    TVector3        Detector2Sensor(Int_t detID, TVector3& glob) const;
    TVector3        Detector2SensorVect(Int_t detID, TVector3& glob) const;
    
-   //! Transform point from the local reference frame
-   //! of the detection id to the global reference frame 
+   // Transform point from the local reference frame
+   // of the detection id to the global reference frame
    void            Sensor2Detector(Int_t detID,  Double_t xl, Double_t yl, Double_t zl, 
                                 Double_t& xg, Double_t& yg, Double_t& zg) const;
    
    TVector3        Sensor2Detector(Int_t detID, TVector3& loc) const;
    TVector3        Sensor2DetectorVect(Int_t detID, TVector3& loc) const;
    
-   //! Get position sensor
+   // Get position sensor
    TVector3        GetSensorPosition(Int_t iSensor);
    
-   //! Get Sensor idx for a given type and sensor in type
-   Int_t GetSensorIdx(Int_t iSensor, Int_t type);
-
    //! Get number of Sensors
    Int_t GetSensorsN()                 const { return fSensorsN;       }
    //! Get number of Sensors per link
@@ -157,25 +160,25 @@ public:
    //! Set MC flag
    void   SetMcFlag(Bool_t flag = true)      { fFlagMC = flag;         }
    
-   //! Get position from pixel line/column
+   // Get position from pixel line/column
    virtual Float_t GetPositionU(Int_t column)         const;
    virtual Float_t GetPositionV(Int_t line)           const;
    virtual Int_t   GetIndex(Int_t line, Int_t column) const;
    
-   //! Get column/line from x/y position
+   // Get column/line from x/y position
    virtual Int_t   GetColumn(Float_t x) const;
    virtual Int_t   GetLine(Float_t y)   const;
 
-   //! return aary of sensor id's for a given layer
+   // return aary of sensor id's for a given layer
    virtual UChar_t* GetSensorsPerLayer(Int_t iLayer);
 
-   //! Get layer position in Z
+   // Get layer position in Z
    virtual Float_t GetLayerPosZ(Int_t layer);
 
-   //! Read parameters from file
+   // Read parameters from file
    virtual Bool_t   FromFile(const TString& name = "");
 
-   // Read support info if any
+   //! Read support info if any
    virtual void     ReadSupportInfo() { return; }
    
    // Define material
@@ -184,15 +187,18 @@ public:
    // Define box of detector
    void            DefineMaxMinDimension();
 
-   // Getter
-   TVector3        GetBoxSize()     const { return fSizeBox;  }
+   //! Getter Box size
+   TVector3        GetBoxSize()     const { return fSizeBox;     }
+   //! Getter minimum position
    TVector3        GetMinPoistion() const { return fMinPosition; }
+   //! Getter maximum position
    TVector3        GetMaxPoistion() const { return fMaxPosition; }
    
    //! Get Sensor parameter
    SensorParameter_t& GetSensorPar(Int_t idx) { return fSensorParameter[idx]; }
    
 public:
+   //! Get default number of sensors
    static Int_t         GetDefSensorsN()      { return fgkDefSensorsN;        }
    
    ClassDef(TAVTbaseParGeo,1)

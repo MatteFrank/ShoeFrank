@@ -36,8 +36,6 @@ class TATWparMap : public TAGpara {
     Bool_t IsTWChannel(int iCha);
     Bool_t IsTWBoard(int iBo);
     pair<int,int> GetClockChannel(int ch_num, int bo_num);
-   
-    ClassDef(TATWparMap,1)
 
   private:
     Bool_t  CheckAddr(Int_t i_c) const;
@@ -48,6 +46,8 @@ class TATWparMap : public TAGpara {
     vector<int>  fTDchaID;
     vector<int>  fTDboaID;
     vector<int>  fDetID;
+   
+   ClassDef(TATWparMap,1)
 };
 
 #endif

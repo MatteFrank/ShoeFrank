@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAMCflukaParser.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TAMCflukaParser.cxx
  \brief   Implementation of TAMCflukaParser.
  */
 
@@ -12,13 +11,12 @@
 #include "TAGgeoTrafo.hxx"
 
 /*!
- \class TAMCflukaParser TAMCflukaParser.hxx "TAMCflukaParser.hxx"
+ \class TAMCflukaParser 
  \brief Parser for Fluka MC events. **
  */
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAMCflukaParser::TAMCflukaParser()
 : TAGobject()
 {
@@ -26,13 +24,15 @@ TAMCflukaParser::TAMCflukaParser()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAMCflukaParser::~TAMCflukaParser()
 {
 }
 
 //------------------------------------------+-----------------------------------
 //! ST hits
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntuhit MC hit container descriptor
 TAMCntuHit* TAMCflukaParser::GetStcHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
@@ -57,9 +57,11 @@ TAMCntuHit* TAMCflukaParser::GetStcHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
 
 //------------------------------------------+-----------------------------------
 //! BM hits
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntuhit MC hit container descriptor
 TAMCntuHit* TAMCflukaParser::GetBmHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
-  
   TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
@@ -84,6 +86,9 @@ TAMCntuHit* TAMCflukaParser::GetBmHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit
 
 //------------------------------------------+-----------------------------------
 //! VTX hits
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntuhit MC hit container descriptor
 TAMCntuHit* TAMCflukaParser::GetVtxHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
@@ -109,6 +114,9 @@ TAMCntuHit* TAMCflukaParser::GetVtxHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
 
 //------------------------------------------+-----------------------------------
 //! ITR hits
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntuhit MC hit container descriptor
 TAMCntuHit* TAMCflukaParser::GetItrHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
@@ -134,6 +142,9 @@ TAMCntuHit* TAMCflukaParser::GetItrHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
 
 //------------------------------------------+-----------------------------------
 //! MSD hits
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntuhit MC hit container descriptor
 TAMCntuHit* TAMCflukaParser::GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   
@@ -159,9 +170,11 @@ TAMCntuHit* TAMCflukaParser::GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
 
 //------------------------------------------+-----------------------------------
 //! TOF hits
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntuhit MC hit container descriptor
 TAMCntuHit* TAMCflukaParser::GetTwHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
-  
   TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
   
   p_nturaw->Clear();
@@ -187,6 +200,9 @@ TAMCntuHit* TAMCflukaParser::GetTwHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit
 
 //------------------------------------------+-----------------------------------
 //! CAL hits
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntuhit MC hit container descriptor
 TAMCntuHit* TAMCflukaParser::GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit)
 {
   TAMCntuHit* p_nturaw = (TAMCntuHit*) p_ntuhit->Object();
@@ -212,6 +228,9 @@ TAMCntuHit* TAMCflukaParser::GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhi
 
 //------------------------------------------+-----------------------------------
 //! events
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntuevt MC event container descriptor
 TAMCntuEvent* TAMCflukaParser::GetEvents(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuevt)
 {
   TAMCntuEvent* p_nturaw = (TAMCntuEvent*) p_ntuevt->Object();  
@@ -224,6 +243,9 @@ TAMCntuEvent* TAMCflukaParser::GetEvents(EVENT_STRUCT* evStr, TAGdataDsc* p_ntue
 
 //------------------------------------------+-----------------------------------
 //! Crossing regions
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntureg MC region container descriptor
 TAMCntuRegion* TAMCflukaParser::GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_ntureg)
 {
   TAMCntuRegion* p_nturaw = (TAMCntuRegion*) p_ntureg->Object();
@@ -250,6 +272,9 @@ TAMCntuRegion* TAMCflukaParser::GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_nt
 
 //------------------------------------------+-----------------------------------
 //! Tracks
+//!
+//! \param[in] evStr Fluka structure
+//! \param[in] p_ntutrack MC particle container descriptor
 TAMCntuPart* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrack)
 {
   TAMCntuPart* p_nturaw = (TAMCntuPart*) p_ntutrack->Object();
@@ -283,6 +308,9 @@ TAMCntuPart* TAMCflukaParser::GetTracks(EVENT_STRUCT* evStr, TAGdataDsc* p_ntutr
 
 //------------------------------------------+-----------------------------------
 //! Find branches
+//!
+//! \param[in] rootTree root tree
+//! \param[in] eve Fluka structure
 void TAMCflukaParser::FindBranches(TTree* rootTree, EVENT_STRUCT* eve)
 {
   rootTree->SetBranchAddress("EventNumber",&(eve->EventNumber));
@@ -463,6 +491,10 @@ void TAMCflukaParser::FindBranches(TTree* rootTree, EVENT_STRUCT* eve)
 
 //------------------------------------------+-----------------------------------
 //! Create branches
+//!
+//! \param[in] rootTree root tree
+//! \param[in] eve Fluka structure
+//! \param[in] reg region saving flag
 void TAMCflukaParser::CreateBranches(TTree* rootTree, EVENT_STRUCT* eve, Bool_t reg)
 {
    rootTree->Branch("EventNumber",&eve->EventNumber,"EventNumber/I");
@@ -645,6 +677,8 @@ void TAMCflukaParser::CreateBranches(TTree* rootTree, EVENT_STRUCT* eve, Bool_t 
 
 //------------------------------------------+-----------------------------------
 //! Reset Event
+//!
+//! \param[in] eve Fluka structure
 Bool_t TAMCflukaParser::ResetEvent(EVENT_STRUCT* eve)
 {
    for(int kk=0;kk<eve->TRn;kk++){

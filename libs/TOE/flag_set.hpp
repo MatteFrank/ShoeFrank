@@ -8,6 +8,7 @@
 #ifndef flag_set_h
 #define flag_set_h
 
+#include <cstdint>
 
 template< class ... Ts >
 struct flag_set{

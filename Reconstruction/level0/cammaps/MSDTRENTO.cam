@@ -1,0 +1,16 @@
+// Campaign file
+CamName: "MSDTRENTO"
+RunNumber: 3846-3895;
+NumberDevices: 2
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/MSDTRENTO/FOOT.geo": -1;
+
+DetectorName: "MSD"
+NumberFiles: 5
+"./geomaps/MSDTRENTO/TAMSDdetector.geo": -1
+"./config/MSDTRENTO/TAMSDdetector.cfg": -1
+"./config/MSDTRENTO/TAMSDdetector.map": -1;
+"./calib/MSDTRENTO/TAMSD_Pedestal.cal": 3860; 3876;
+"./calib/MSDTRENTO/TAMSD_Energy_Calibration.cal": -1

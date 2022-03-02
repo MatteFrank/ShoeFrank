@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactNtuVertexL. 
+ \file TAVTactNtuVertexPD.cxx
+ \brief    NTuplizer for VTX vertices with probality algorithm
  */
 #include "TClonesArray.h"
 
@@ -18,14 +18,23 @@
 
 
 /*!
- \class TAVTactNtuVertex
- \brief NTuplizer for vertex raw hits. **
+ \class TAVTactNtuVertexPD
+ \brief NTuplizer for VTX vertices with probality algorithm
  */
 
+//! Class Imp
 ClassImp(TAVTactNtuVertexPD);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuTrack track container descriptor
+//! \param[out] pNtuVertex vertex container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pGeoMapG target geometry parameter descriptor
+//! \param[in] pBmTrack input BM track container descriptor
 TAVTactNtuVertexPD::TAVTactNtuVertexPD(const char* name, 
                                        TAGdataDsc* pNtuTrack, TAGdataDsc* pNtuVertex,
                                        TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pGeoMapG, TAGdataDsc* pBmTrack)
@@ -44,7 +53,6 @@ TAVTactNtuVertexPD::~TAVTactNtuVertexPD()
 
 //_________________________________________________
 //! Compute Vertex method
-
 Bool_t TAVTactNtuVertexPD::ComputeVertex()
 {
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
@@ -120,10 +128,13 @@ Bool_t TAVTactNtuVertexPD::ComputeVertex()
     return OK;
 }
 
-
 //___________________________________________
-//!Search max Value
-
+//! Search max Value for given couple of tracks
+//!
+//! \param[in] linei first track
+//! \param[in] linej second track
+//! \param[in] i index of first track
+//! \param[in] j index of second track
 void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, Int_t i, Int_t j)
 {
    TVector3 vertexPointA(0.,0.,0.);
@@ -166,8 +177,11 @@ void TAVTactNtuVertexPD::SearchMaxProduct(TAVTtrack* linei, TAVTtrack* linej, In
 
 
 //----------------------------------------------
-//! Compute vertex point
-
+// Compute vertex point for a couple of tracks at a given target position
+//!
+//! \param[in] line0 first track
+//! \param[in] line1 second track
+//! \param[in] zVal Z target position
 TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTtrack* line0, TAVTtrack* line1, Double_t zVal)
 {
     //Calculate the average of the two tracks
@@ -180,12 +194,13 @@ TVector3 TAVTactNtuVertexPD::ComputeVertexPoint(TAVTtrack* line0, TAVTtrack* lin
 }
 
 //----------------------------------------------
-//! Compute probability
-
+// Compute probability for a track at a given position
+//!
+//! \param[in] line0 first track
+//! \param[in] v  point position
 Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTtrack* lin0, TVector3 v)
 {
     //take the positions of the given tracks
-   
     TVector3 r = ComputeMinimumPointDistance(lin0, v);
     Double_t result = 0;
     for(Int_t q = 0; q<3; ++q)
@@ -198,8 +213,10 @@ Double_t TAVTactNtuVertexPD::ComputeProbabilityForSingleTrack(TAVTtrack* lin0, T
 }
 
 //______________________________________________________
-//! Computes the minimum distance of the straight line from a given point
-
+// Computes the minimum distance of the straight line from a given point
+//!
+//! \param[in] l first track
+//! \param[in] v  point position
 TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTtrack* l, TVector3 vt)
 {
     Double_t z = vt[2];
@@ -222,9 +239,10 @@ TVector3 TAVTactNtuVertexPD::ComputeMinimumPointDistance(TAVTtrack* l, TVector3 
 }
 
 //-------------------------------------------------------
-//!Compute V(r)
-
-Double_t TAVTactNtuVertexPD::ComputeV (TVector3 rpos)
+// Compute probability for a given position
+//!
+//! \param[in] rpos  point position
+Double_t TAVTactNtuVertexPD::ComputeV(TVector3 rpos)
 {
     Double_t firstMember =0;
     Double_t secondMember = 0;
@@ -250,7 +268,6 @@ Double_t TAVTactNtuVertexPD::ComputeV (TVector3 rpos)
 
 //_________________________________________________
 //! Set Vertex information after vertexing
-
 Bool_t TAVTactNtuVertexPD::SetVertex()
 {
     TAVTntuVertex* ntuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
@@ -297,7 +314,6 @@ Bool_t TAVTactNtuVertexPD::SetVertex()
 
 //_________________________________________________
 //! SetImpact Parameter Adjustement
-
 void TAVTactNtuVertexPD::ImpactParameterAdjustement()
 {
     TAVTntuTrack* ntuTrack = (TAVTntuTrack*)fpNtuTrack->Object();
@@ -324,10 +340,8 @@ void TAVTactNtuVertexPD::ImpactParameterAdjustement()
      }
 }
 
-
 //---------------------------------------------------
-//!Compute max V
-
+//! Compute max probability
 TVector3 TAVTactNtuVertexPD::ComputeMaxVMaxIMaxJ()
 {
     TVector3 returnValue (-10e-10,-1,-1);

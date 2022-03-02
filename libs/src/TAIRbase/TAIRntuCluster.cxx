@@ -1,13 +1,17 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAIRcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file  TAIRntuCluster.cxx
+ \brief Simple container class for clusters
+ */
 
 #include "TAITparGeo.hxx"
 #include "TAIRntuCluster.hxx"
 
+/*!
+ \class TAIRntuCluster
+ \brief  Simple container class for clusters
+ */
 
+//! Class Imp
 ClassImp(TAIRntuCluster);
 
 TString TAIRntuCluster::fgkBranchName   = "irclus.";
@@ -30,7 +34,9 @@ TAIRntuCluster::~TAIRntuCluster()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+//! return number of clusters for a given sensor
+//!
+//! \param[in] iSensor a given sensor
 Int_t TAIRntuCluster::GetClustersN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -41,7 +47,9 @@ Int_t TAIRntuCluster::GetClustersN(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+//! return list of cluster
+//!
+//! \param[in] iSensor a given sensor
 TClonesArray* TAIRntuCluster::GetListOfClusters(Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -52,7 +60,9 @@ TClonesArray* TAIRntuCluster::GetListOfClusters(Int_t iSensor)
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+//! return list of clusters (const)
+//!
+//! \param[in] iSensor a given sensor
 TClonesArray* TAIRntuCluster::GetListOfClusters(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -65,6 +75,9 @@ TClonesArray* TAIRntuCluster::GetListOfClusters(Int_t iSensor) const
 
 //------------------------------------------+-----------------------------------
 //! return a cluster
+//!
+//! \param[in] iSensor a given sensor
+//! \param[in] iCluster cluster index
 TAIRcluster* TAIRntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 {
    if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
@@ -75,7 +88,10 @@ TAIRcluster* TAIRntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a cluster (const)
+//!
+//! \param[in] iSensor a given sensor
+//! \param[in] iCluster cluster index
 const TAIRcluster* TAIRntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) const
 {
    if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
@@ -111,8 +127,10 @@ void TAIRntuCluster::Clear(Option_t*)
    }   
 }
 
-//______________________________________________________________________________
-//  
+//------------------------------------------+-----------------------------------
+//! Create a new cluster
+//!
+//! \param[in] iSensor a given sensor
 TAIRcluster* TAIRntuCluster::NewCluster(Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -125,8 +143,11 @@ TAIRcluster* TAIRntuCluster::NewCluster(Int_t iSensor)
    }   
 }
 
-//______________________________________________________________________________
-//  
+//------------------------------------------+-----------------------------------
+//! Create a new cluster from a given cluster
+//!
+//! \param[in] iSensor a given sensor
+//! \param[in] clus cluster to copy
 TAIRcluster* TAIRntuCluster::NewCluster(TAIRcluster* clus, Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -139,8 +160,11 @@ TAIRcluster* TAIRntuCluster::NewCluster(TAIRcluster* clus, Int_t iSensor)
    }   
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAIRntuCluster::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {

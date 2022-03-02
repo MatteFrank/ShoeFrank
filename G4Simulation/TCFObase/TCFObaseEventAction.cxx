@@ -1,13 +1,9 @@
 
 #include "TCFObaseEventAction.hxx"
 
-//include hit class
-//Endo of event:
-//collection hits: all hits of this collections contains the information about what happened in the sensitive volume (epitaxial layer)
-//each hit represents a step and in the epi layer there may have been many
-//than the position to send to CmosDigitizer is the PosIn of the first hits and the pos out of the last hits
-//the energy deposited is the sum of the energy deposited in each step
-//All positon in microns and all energy in eV
+/*! \file TCFObaseEventAction.cxx
+ \brief Implementation of TCFObaseEventAction.
+*/
 
 
 #include "G4Event.hh"
@@ -43,26 +39,42 @@
 #include "TGeoMatrix.h"
 #include "TFile.h"
 
-//
-//---------------------------------------------------------------------------
-//
+/*! \class TCFObaseEventAction
+ \brief Base event action class for FOOT
+ 
+ include hit class
+ Endo of event:
+ collection hits: all hits of this collections contains the information about what happened in the sensitive volume (epitaxial layer)
+ each hit represents a step and in the epi layer there may have been many
+ than the position to send to CmosDigitizer is the PosIn of the first hits and the pos out of the last hits
+ the energy deposited is the sum of the energy deposited in each step
+ All positon in microns and all energy in eV
+ */
+
+/*! \class TAGeventInterruptHandler
+ \brief Class to handle event interruption
+
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TAGeventInterruptHandler::TAGeventInterruptHandler()
 : TSignalHandler(kSigInterrupt, kFALSE)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 Bool_t TAGeventInterruptHandler::Notify()
 {
     G4RunManager::GetRunManager()->AbortRun(false);
     return kTRUE;
 }
 
-//
-//---------------------------------------------------------------------------
-//
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
+//!
+//! \param[in] runAction run action
+//! \param[in] footGeomConstructor FOOT geometry constructor
 TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeometryConstructor* footGeomConstructor)
 : G4UserEventAction(),
   fEventNumber(-1),
@@ -91,6 +103,7 @@ TCFObaseEventAction::TCFObaseEventAction(TCFOrunAction* runAction, TCGbaseGeomet
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCFObaseEventAction::~TCFObaseEventAction()
 {
     if (FootMcDebugLevel(1))
@@ -104,6 +117,9 @@ TCFObaseEventAction::~TCFObaseEventAction()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Begin event action
+//!
+//! \param[in] evt a given event
 void TCFObaseEventAction::BeginOfEventAction(const G4Event* evt)
 {
    if (fInelasticOnly)
@@ -136,11 +152,15 @@ void TCFObaseEventAction::BeginOfEventAction(const G4Event* evt)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! End event action
+//!
+//! \param[in] evt a given event (not used)
 void TCFObaseEventAction::EndOfEventAction(const G4Event* /*evt*/)
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct hit collection
 void TCFObaseEventAction::ConstructCollection()
 {
    G4SDManager * SDman = G4SDManager::GetSDMpointer();
@@ -175,12 +195,14 @@ void TCFObaseEventAction::ConstructCollection()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Get event to be processed
 Int_t TCFObaseEventAction::GetEventsNToBeProcessed()
 {
    return fRunAction->GetEventsNToBeProcessed();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Fill tree and clear containers
 void TCFObaseEventAction::FillAndClear()
 {
    fMcEvent->Clear();

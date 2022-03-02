@@ -1,8 +1,7 @@
 /*!
- // C.A. Reidel & Ch. Finck
- 
- \file
+ \file TAIRalignC.cxx
  \brief   Implementation of TAIRalignC.
+ \author C.A. Reidel & Ch. Finck
  */
 #include "TMath.h"
 #include "TVector3.h"
@@ -42,11 +41,21 @@
  \brief Alignment class for vertex tracks. **
  */
 
+//! Class Imp
 ClassImp(TAIRalignC);
 
 TAIRalignC* TAIRalignC::fgInstance = 0x0;
       Int_t TAIRalignC::fgkPreciseIt = 5;
 //__________________________________________________________
+//! Instance
+//!
+//! \param[in] name action name
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] flagVtx VTX flag alignment
+//! \param[in] flagIt ITR flag alignment
+//! \param[in] flagMsd MSD flag alignment
+//! \param[in] weight weight flag alignment
 TAIRalignC* TAIRalignC::Instance(const TString name, const TString expName, Int_t runNumber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
 {
    if (fgInstance == 0x0)
@@ -57,6 +66,14 @@ TAIRalignC* TAIRalignC::Instance(const TString name, const TString expName, Int_
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] flagVtx VTX flag alignment
+//! \param[in] flagIt ITR flag alignment
+//! \param[in] flagMsd MSD flag alignment
+//! \param[in] weight weight flag alignment
 TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight)
  : TObject(),
    fFileName(name),
@@ -188,8 +205,7 @@ TAIRalignC::~TAIRalignC()
 }
 
 //______________________________________________________________________________
-//
-// Fill array of clusters
+//! Fill array of clusters
 void TAIRalignC::FillClusterArray()
 {
    fClusterArray->Clear();
@@ -215,12 +231,10 @@ void TAIRalignC::FillClusterArray()
          fClusterArray->AddLast(list);
       }
    }
-
 }
 
 //______________________________________________________________________________
-//
-// Create all the residuals histograms
+//! Create all the residuals histograms
 void TAIRalignC::InitParameters()
 {
    fWeightQ         = new Double_t[fSecArray.GetSize()];
@@ -255,8 +269,7 @@ void TAIRalignC::InitParameters()
 }
 
 //______________________________________________________________________________
-//
-// Create all the residuals histograms
+//! Create all the residuals histograms
 void TAIRalignC::FillStatus()
 {
    TAVTbaseParConf* parConf = 0x0;
@@ -276,8 +289,10 @@ void TAIRalignC::FillStatus()
 }
 
 //______________________________________________________________________________
-//
-// Fill Status
+//! Fill Status
+//!
+//! \param[in] parConf base configuration parameters
+//! \param[in] offset offset btw the different configuration for devices
 void TAIRalignC::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
 {
    if (offset == 0) {
@@ -324,8 +339,7 @@ void TAIRalignC::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
 }
 
 //______________________________________________________________________________
-//
-// Fill Position
+//! Fill Position
 void TAIRalignC::FillPosition()
 {
    TAVTbaseParGeo*  parGeo = 0x0;
@@ -342,8 +356,10 @@ void TAIRalignC::FillPosition()
 }
 
 //______________________________________________________________________________
-//
-// Fill Position
+//! Fill position of devices
+//!
+//! \param[in] parGeo base geometry parameters
+//! \param[in] offset offset btw the different geometries for devices
 void TAIRalignC::FillPosition(TAVTbaseParGeo* parGeo, Int_t offset)
 {
    TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
@@ -373,8 +389,7 @@ void TAIRalignC::FillPosition(TAVTbaseParGeo* parGeo, Int_t offset)
 }
 
 //______________________________________________________________________________
-//
-// Create all the residuals histograms
+//! Create all the residuals histograms
 void TAIRalignC::CreateHistogram()
 {   
    Int_t iPlane = 0;
@@ -392,7 +407,9 @@ void TAIRalignC::CreateHistogram()
 }
 
 //_____________________________________________________________________________
-//
+//! Loop event
+//!
+//! \param[in] nEvts number of events de process
 void TAIRalignC::LoopEvent(Int_t nEvts)
 {
    if ((fFixPlaneRef1 == false)||(fFixPlaneRef2 == false)) {
@@ -535,8 +552,9 @@ void TAIRalignC::LoopEvent(Int_t nEvts)
 }
 
 //______________________________________________________________________________
-//
-// Alignment with all the events which fired all the planes
+//!  Alignment with all the events which fired all the planes
+//!
+//! \param[in] rough flag for rough or fine cuts
 Bool_t TAIRalignC::Align(Bool_t rough)
 {
    fSlopeU = 0;
@@ -585,8 +603,10 @@ Bool_t TAIRalignC::Align(Bool_t rough)
 }
 
 //______________________________________________________________________________
-//
-// Fill rough position of cluster
+//! Fill rough position of cluster
+//!
+//! \param[in] i position index
+//! \param[in] cluster a given cluster
 Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAGcluster* cluster)
 {
    fPosUClusters[i] = cluster->GetPositionG()[0]*TAGgeoTrafo::CmToMm();
@@ -596,9 +616,11 @@ Bool_t TAIRalignC::FillClusPosRough(Int_t i, TAGcluster* cluster)
 }
 
 //______________________________________________________________________________
-//
-// Fill precise position of cluster, rejecting the ones which are too much scattered for
-// a precise alignment
+//! Fill precise position of cluster, rejecting the ones which are too much scattered for
+//! a precise alignment
+//!
+//! \param[in] i position index
+//! \param[in] cluster a given cluster
 Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAGcluster* cluster)
 {
    TAVTbaseParGeo* pGeoMap   =  0x0;
@@ -635,10 +657,8 @@ Bool_t TAIRalignC::FillClusPosPrecise(Int_t i, TAGcluster* cluster)
    return true;
 }
 
-
 //______________________________________________________________________________
-//
-// Filling the histograms with all the events when all the planes are fired
+//! Filling the histograms with all the events when all the planes are fired
 Bool_t TAIRalignC::FillHistograms()
 {
    Int_t iPlane = 0;
@@ -720,8 +740,7 @@ Bool_t TAIRalignC::FillHistograms()
 }
 
 //______________________________________________________________________________
-//
-// The final vector containing the alignment parameters are calculated
+//! The final vector containing the alignment parameters are calculated
 void TAIRalignC::UpdateAlignmentParams()
 {
    for (Int_t i = 0; i < fSecArray.GetSize(); i++){
@@ -740,12 +759,11 @@ void TAIRalignC::UpdateAlignmentParams()
 }
 
 //______________________________________________________________________________
-//
-// Definition of the weights of the measurements function of the scattering
-// due to the silicon and the air. By default, all the weights are equals.
-//In both cases the weight = 1/sigma and are normalized
-// such Sum(weightsQ) = 1.
-// These calculation are made thanks to the formulas implemented in Scattman
+//! Definition of the weights of the measurements function of the scattering
+//! due to the silicon and the air. By default, all the weights are equals.
+//! In both cases the weight = 1/sigma and are normalized
+//! such Sum(weightsQ) = 1.
+//! These calculation are made thanks to the formulas implemented in Scattman
 Bool_t TAIRalignC::DefineWeights()
 {
    TAGparGeo* pGeoMapG = (TAGparGeo*) fpGeoMapG->Object();
@@ -873,8 +891,9 @@ Bool_t TAIRalignC::DefineWeights()
    return true;
 }
 //______________________________________________________________________________
-//
-// Update transfo for every loop when it changes the alignment parameters
+//! Update transfo for every loop when it changes the alignment parameters
+//!
+//! \param[in] idx sensor index
 void TAIRalignC::UpdateTransfo(Int_t idx)
 {
    if (idx < 4 && fFlagVtx) {
@@ -899,8 +918,7 @@ void TAIRalignC::UpdateTransfo(Int_t idx)
 }
 
 //______________________________________________________________________________
-//
-// Modification of the geomap file with the final results of alignment
+//! Modification of the geomap file with the final results of alignment
 void TAIRalignC::UpdateGeoMaps()
 {
    fstream  configFileOld;
@@ -944,8 +962,11 @@ void TAIRalignC::UpdateGeoMaps()
 }
 
 //______________________________________________________________________________
-//
-// Modification of the geomap file with the final results of alignment for each plane
+//! Modification of the geomap file with the final results of alignment for each plane
+//!
+//! \param[in] fileIn old alignment file
+//! \param[in] fileOut new alignment file
+//! \param[in] idx index sensor
 void TAIRalignC::UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx)
 {
    Char_t tmp[255];

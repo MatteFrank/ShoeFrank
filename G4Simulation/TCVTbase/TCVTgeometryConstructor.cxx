@@ -1,3 +1,7 @@
+/*!
+ \file TCVTgeometryConstructor.cxx
+ \brief Implementation of TCVTgeometryConstructor.
+*/
 
 #include "TCVTgeometryConstructor.hxx"
 #include "G4NistManager.hh"
@@ -31,30 +35,38 @@ Float_t TCVTgeometryConstructor::fgDefSmearPos  = 5.0e-4;   // in micron
 Bool_t  TCVTgeometryConstructor::fgSmearFlag    = false;
 
 TString TCVTgeometryConstructor::fgkVtxEpiSDname = "VtxSD";
-TString TCVTgeometryConstructor::fgkBmEpiSDname  = "BmSD";
 
 using namespace CLHEP;
 
+/*!
+ \class TCVTgeometryConstructor
+ \brief Building VTX detector geometry
+*/
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-TCVTgeometryConstructor::TCVTgeometryConstructor(TAVTbaseParGeo* pParGeo, Bool_t bmFlag)
+//! Constructor
+//!
+//! \param[in] pParGeo geometry parameter
+TCVTgeometryConstructor::TCVTgeometryConstructor(TAVTbaseParGeo* pParGeo)
 : TCGbaseConstructor("TCVTgeometryConstructor", "1.0"),
   fCmosLog(0x0),
   fEpiLog(0x0),
   fPixLog(0x0),
   fEpiName("vtxEpiPhy"),
   fPixPhy(0x0),
-  fpParGeo(pParGeo),
-  fBmFlag(bmFlag)
+  fpParGeo(pParGeo)
 {
    DefineMaterial();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCVTgeometryConstructor::~TCVTgeometryConstructor()
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Build sensor
 void TCVTgeometryConstructor::BuildSensor()
 {
    
@@ -112,6 +124,7 @@ void TCVTgeometryConstructor::BuildSensor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume
 void  TCVTgeometryConstructor::DefineSensitive()
 {
    // Putting here message
@@ -121,13 +134,8 @@ void  TCVTgeometryConstructor::DefineSensitive()
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    
    G4String epiSDname;
-   if (fBmFlag) {
-      epiSDname = fgkBmEpiSDname;
-      InfoMcMsg("DefineSensitive()", "Define sensitive for BM (Vertex)");
-   } else {
-      epiSDname = fgkVtxEpiSDname;
-      InfoMcMsg("DefineSensitive()", "Define sensitive for Vertex");
-   }
+   epiSDname = fgkVtxEpiSDname;
+   InfoMcMsg("DefineSensitive()", "Define sensitive for Vertex");
    
    TCVTsensitiveDetector* epiSensitive = new TCVTsensitiveDetector(epiSDname);
    SDman->AddNewDetector(epiSensitive);
@@ -135,6 +143,7 @@ void  TCVTgeometryConstructor::DefineSensitive()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct detector
 G4LogicalVolume* TCVTgeometryConstructor::Construct()
 {
    //Definition of dimension boxes
@@ -160,6 +169,7 @@ G4LogicalVolume* TCVTgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Place sensor
 void TCVTgeometryConstructor::PlaceSensor()
 {
     Int_t nSensor = fpParGeo->GetSensorsN();
@@ -208,6 +218,7 @@ void TCVTgeometryConstructor::PlaceSensor()
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCVTgeometryConstructor::DefineMaterial()
 {
     TString pixMat = fpParGeo->GetPixMaterial();
@@ -219,6 +230,7 @@ void TCVTgeometryConstructor::DefineMaterial()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define the dimension of the detecteor envelop
 void TCVTgeometryConstructor::DefineMaxMinDimension()
 {
    TVector3 delta(0, fpParGeo->GetTotalSize()[1] - fpParGeo->GetEpiSize()[1], 0);

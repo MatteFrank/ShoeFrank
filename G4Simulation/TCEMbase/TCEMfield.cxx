@@ -23,11 +23,11 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: TCEMfield.cc 75672 2013-11-05 08:47:41Z gcosmo $
-//
-/// \file field/field05/src/TCEMfield.cc
-/// \brief Implementation of the TCEMfield class
-//
+/*!
+ \file TCEMfield.cxx
+ \brief Implementation of TCEMfield.
+ */
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -37,8 +37,14 @@
 #include "TCEMfield.hxx"
 #include "G4SystemOfUnits.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+/*!
+ \class TCEMfield
+ \brief Definition of the TCEMfield class
+ */
 
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCEMfield::TCEMfield(TADIgeoField* magField)
  : G4MagneticField(),
    fMagField(magField)
@@ -46,13 +52,16 @@ TCEMfield::TCEMfield(TADIgeoField* magField)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//! Destructor
 TCEMfield::~TCEMfield()
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//! Get field value
+//!
+//! \param[in] point 3d-position and time vector
+//! \param[out] fieldB field vector
 void TCEMfield::GetFieldValue(const G4double point[4], G4double* fieldB) const
 {
    // point[4] := time

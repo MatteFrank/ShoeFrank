@@ -1,7 +1,7 @@
 #ifndef _TADIgenField_HXX
 #define _TADIgenField_HXX
 /*!
-  \file
+  \file TADIgenField.hxx
   \brief   Declaration of TADIgenField.
  
   \author Ch. Finck
@@ -20,9 +20,10 @@ using namespace genfit;
 class TADIgenField : public AbsBField {
    
 private:
-   TADIgeoField* fField;
+   TADIgeoField* fField; ///< Mag field from geometry
    
 public:
+   TADIgenField();
    TADIgenField(TADIgeoField* field);
    virtual ~TADIgenField();
    

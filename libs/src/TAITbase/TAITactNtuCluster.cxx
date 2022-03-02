@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactNtuCluster.cxx $
- \brief   Implementation of TAITactNtuCluster.
+ \version $Id: TAITactNtuCluster.cxx 
+ \brief   NTuplizer for ITR raw hits
  */
 #include "TClonesArray.h"
 #include "TH1F.h"
@@ -18,13 +18,20 @@
 
 /*!
  \class TAITactNtuCluster 
- \brief NTuplizer for vertex raw hits. **
+ \brief NTuplizer for ITR raw hits
  */
 
+//! Class imp
 ClassImp(TAITactNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit input container descriptor
+//! \param[out] pNtuClus cluster output container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
 TAITactNtuCluster::TAITactNtuCluster(const char* name, 
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
@@ -44,7 +51,7 @@ TAITactNtuCluster::~TAITactNtuCluster()
 }
 
 //______________________________________________________________________________
-//
+//! Action
 Bool_t TAITactNtuCluster::Action()
 {
    TAITntuHit* pNtuHit  = (TAITntuHit*) fpNtuRaw->Object();
@@ -64,7 +71,9 @@ Bool_t TAITactNtuCluster::Action()
 }
 
 //______________________________________________________________________________
-//  
+//! Find clusters for a given sensor
+//!
+//! \param[in] iSensor index of sensor
 Bool_t TAITactNtuCluster::FindClusters(Int_t iSensor)
 {
    // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
@@ -77,7 +86,9 @@ Bool_t TAITactNtuCluster::FindClusters(Int_t iSensor)
 }
 
 //______________________________________________________________________________
-//
+//! Create clusters for a given sensor
+//!
+//! \param[in] iSensor index of sensor
 Bool_t TAITactNtuCluster::CreateClusters(Int_t iSensor)
 {
    TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();

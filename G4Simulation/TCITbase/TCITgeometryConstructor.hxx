@@ -5,9 +5,11 @@
 #include "TString.h"
 #include "TCVTgeometryConstructor.hxx"
 
-/** Building IT detector geometry
+/*!
+ \file TCITgeometryConstructor.hxx
+ \brief Building ITR detector geometry
  
- \author Ch, Finck
+ \author Ch. Finck
  */
 
 class TAVTbaseParGeo;
@@ -18,21 +20,27 @@ public:
    TCITgeometryConstructor(TAVTbaseParGeo* pParGeo);
    virtual ~TCITgeometryConstructor();
    
-   G4LogicalVolume* Construct(); //method in which the physical volume is constructed
+   // Method in which the physical volume is constructed
+   G4LogicalVolume* Construct();
+   // Build support
    G4LogicalVolume* BuildPlumeSupport();
+   // Place support
    void             PlacePlumeSupport();
 
 public:
+   //! Get SD name
    static const Char_t* GetSDname()  { return fgkItEpiSDname.Data();}
 
 private:
-   G4LogicalVolume* fSupportLog;
+   G4LogicalVolume* fSupportLog; ///< Logical support volume
 
 private:
-   static TString fgkItEpiSDname;
+   static TString fgkItEpiSDname; ///< SD name
 
 private:
+   // Define sensitive detector
    void DefineSensitive();
+   // Define material
    void DefineMaterial();
 };
 

@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TAVTparCal.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TAVTparCal.
+  \file TAVTparCal.cxx
+   \brief    Charge (raw) calibration for vertex
 */
 
 #include <Riostream.h>
@@ -18,22 +17,23 @@
 
 /*!
   \class TAVTparCal TAVTparCal.hxx "TAVTparCal.hxx"
-  \brief Charge (raw) calibration for vertex. **
+  \brief Charge (raw) calibration for vertex
 */
 
+//! Class Imp
 ClassImp(TAVTparCal);
 
-
 //------------------------------------------+-----------------------------------
+//! Standard constructor
 TAVTparCal::TAVTparCal()
 : TAVTbaseParCal()
 {
-  // Standard constructor
    fkDefaultCalName = "./calib/TAVTdetector.cal";
 
 }
 
 //------------------------------------------+-----------------------------------
+//! Destructor
 TAVTparCal::~TAVTparCal()
 {
 }

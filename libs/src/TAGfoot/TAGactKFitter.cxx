@@ -3,7 +3,7 @@
  \brief  Main class of the GenFit Global Reconstruction -> Action
  \author M. Franchini, R. Zarrella and R. Ridolfi
 */
-
+#include "TAGparTools.hxx"
 #include "TAGactKFitter.hxx"
 
 /*!
@@ -229,56 +229,59 @@ void TAGactKFitter::Finalize() {
 	PrintEfficiency();
 	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintSelectionEfficiency();
 	
-	// map<string, map<float, TH1F*> > h_dPOverP_x_bin
-	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ )
-		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+	if( ValidHistogram() )
+	{
+		// map<string, map<float, TH1F*> > h_dPOverP_x_bin
+		for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ )
+			for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+				AddHistogram( (*it).second );
+				cout << "TAGactKFitter::Finalize() -- " << (*it).second->GetTitle()<< endl;
+			}
+
+		// map<string, TH1F*>* h_resoP_over_Pkf
+		for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); it++ ) 
 			AddHistogram( (*it).second );
-			cout << "TAGactKFitter::Finalize() -- " << (*it).second->GetTitle()<< endl;
+
+		// map<string, TH1F*>* h_biasP_over_Pkf
+		for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); it++ ) 
+			AddHistogram( (*it).second );
+
+		TH1F* h_deltaP_tot = new TH1F();
+		TH1F* h_sigmaP_tot = new TH1F();
+
+		// map<string, TH1F*>* h_deltaP
+		int count = 0;
+		for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); it++ ) {
+			if ( count == 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
+			else 				h_deltaP_tot->Add( (*it).second, 1 );
+			AddHistogram( (*it).second );
+			count++;
 		}
+		h_deltaP_tot->SetTitle( "dP" );
+		AddHistogram( h_deltaP_tot );
 
-	// map<string, TH1F*>* h_resoP_over_Pkf
-	for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); it++ ) 
-		AddHistogram( (*it).second );
+		// map<string, TH1F*>* h_sigmaP
+		count=0;
+		for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); it++ ) {
+			if ( count == 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
+			else 				h_sigmaP_tot->Add( (*it).second, 1 );
+			AddHistogram( (*it).second );
+			count++;
+		}
+		h_sigmaP_tot->SetNameTitle( "errdP", "errdP" );
+		AddHistogram( h_sigmaP_tot );
 
-	// map<string, TH1F*>* h_biasP_over_Pkf
-	for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); it++ ) 
-		AddHistogram( (*it).second );
 
-	TH1F* h_deltaP_tot = new TH1F();
-	TH1F* h_sigmaP_tot = new TH1F();
+		TH1F* h_numGenParticle_noFrag = new TH1F( "h_numGenParticle_noFrag", "h_numGenParticle_noFrag", 100, 0, 10000 );
+		AddHistogram( h_numGenParticle_noFrag );
+		h_numGenParticle_noFrag->Fill( m_numGenParticle_noFrag );
+		cout << "m_numGenParticle_noFrag = " << m_numGenParticle_noFrag << endl;
 
-	// map<string, TH1F*>* h_deltaP
-	int count = 0;
-	for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); it++ ) {
-		if ( count == 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
-		else 				h_deltaP_tot->Add( (*it).second, 1 );
-		AddHistogram( (*it).second );
-		count++;
+
+		cout << "TAGactKFitter::Finalize() -- END"<< endl;
+		SetValidHistogram(kTRUE);
+		SetHistogramDir(fDirectory);
 	}
-	h_deltaP_tot->SetTitle( "dP" );
-	AddHistogram( h_deltaP_tot );
-
-	// map<string, TH1F*>* h_sigmaP
-	count=0;
-	for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); it++ ) {
-		if ( count == 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
-		else 				h_sigmaP_tot->Add( (*it).second, 1 );
-		AddHistogram( (*it).second );
-		count++;
-	}
-	h_sigmaP_tot->SetNameTitle( "errdP", "errdP" );
-	AddHistogram( h_sigmaP_tot );
-
-
-	TH1F* h_numGenParticle_noFrag = new TH1F( "h_numGenParticle_noFrag", "h_numGenParticle_noFrag", 100, 0, 10000 );
-	AddHistogram( h_numGenParticle_noFrag );
-	h_numGenParticle_noFrag->Fill( m_numGenParticle_noFrag );
-	cout << "m_numGenParticle_noFrag = " << m_numGenParticle_noFrag << endl;
-
-
-	cout << "TAGactKFitter::Finalize() -- END"<< endl;
-	SetValidHistogram(kTRUE);
-	SetHistogramDir(m_dir);
 
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();
@@ -509,7 +512,7 @@ void TAGactKFitter::CreateGeometry()  {
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TATWparGeo::GetBaseName());
 		m_TopVolume->AddNode(twVol, 8, transfo);
 
-		TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)).z() );
+		TVector3 origin_( m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)));
 		genfit::SharedPlanePtr detectorplane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
 		detectorplane->setU(1.,0.,0.);
 		detectorplane->setV(0.,1.,0.);
@@ -561,7 +564,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 		
 		
-		vector<string> tok = Tokenize( trackIt->first.Data() , "_" );
+		vector<string> tok = TAGparTools::Tokenize( trackIt->first.Data() , "_" );
 		string PartName = tok.at(0);
 
 		if(m_debug > 0) cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << "\n";
@@ -770,7 +773,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	vector<TAGpoint*> shoeTrackPointRepo;
 	Int_t TwChargeZ = -1;
 	Float_t TwTof = -1;
-	vector<string> tok = Tokenize( fitTrackName , "_" );
+	vector<string> tok = TAGparTools::Tokenize( fitTrackName , "_" );
 	string PartName = tok.at(0);
 
 	// Fill Points and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
@@ -973,11 +976,14 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		mcPos = particle->GetInitPos();
 		int mcCharge = particle->GetCharge();
 
-		h_trackMC_true_id->Fill( trackMC_id );
-		h_mcMom->Fill( mcMom.Mag() );
-		h_mcPosX->Fill( mcPos.X() );
-		h_mcPosY->Fill( mcPos.Y() );
-		h_mcPosZ->Fill( mcPos.Z() );
+		if( ValidHistogram() )
+		{
+			h_trackMC_true_id->Fill( trackMC_id );
+			h_mcMom->Fill( mcMom.Mag() );
+			h_mcPosX->Fill( mcPos.X() );
+			h_mcPosY->Fill( mcPos.Y() );
+			h_mcPosZ->Fill( mcPos.Z() );
+		}
 		
 
 		if(m_debug > 0)	
@@ -1006,40 +1012,46 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
 		}
 
-		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
-
-		h_chargeMC->Fill( mcCharge );
-		h_trackQuality->Fill( trackQuality );
-		h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
-		h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
-		h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
+	//	shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
+		if( ValidHistogram() )
+		{
+			h_chargeMC->Fill( mcCharge );
+			h_trackQuality->Fill( trackQuality );
+			shoeOutTrack->SetQuality( trackQuality );
+			h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
+			h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
+			h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
+		}
 	
 		if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
 	}
 
 	//Histogram filling
 
-	// 	ANGULAR VARIBLE   
-	h_dR->Fill ( recoMom_target.DeltaR( TVector3(0,0,0) ) );
-	h_phi->Fill ( recoMom_target.Phi() );
-	h_theta->Fill ( recoMom_target.Theta() );
-	h_eta->Fill ( recoMom_target.Eta() );
-	h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
-	h_dy_dz->Fill ( recoMom_target.y() / recoMom_target.z() );
+	// 	ANGULAR VARIBLE
+	if( ValidHistogram() )
+	{
+		h_dR->Fill ( recoMom_target.DeltaR( TVector3(0,0,0) ) );
+		h_phi->Fill ( recoMom_target.Phi() );
+		h_theta->Fill ( recoMom_target.Theta() );
+		h_eta->Fill ( recoMom_target.Eta() );
+		h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
+		h_dy_dz->Fill ( recoMom_target.y() / recoMom_target.z() );
 
-	h_nMeas->Fill ( nMeas );
-	h_mass->Fill( fitMass );
-	h_chi2->Fill( chi2 );
-	
-	h_chargeMeas->Fill( fitCh );
-	h_chargeFlip->Fill( pdgCh - fitCh );
+		h_nMeas->Fill ( nMeas );
+		h_mass->Fill( fitMass );
+		h_chi2->Fill( chi2 );
+		
+		h_chargeMeas->Fill( fitCh );
+		h_chargeFlip->Fill( pdgCh - fitCh );
 
-	h_length->Fill( length );
-	h_tof->Fill( tof );
-	h_pVal->Fill( pVal );
+		h_length->Fill( length );
+		h_tof->Fill( tof );
+		h_pVal->Fill( pVal );
 
-	h_momentum->Fill( recoMom_target.Mag() );
-	h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
+		h_momentum->Fill( recoMom_target.Mag() );
+		h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
+	}
 
 	if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: DONE HISTOGRAM FILL "  << endl;
 

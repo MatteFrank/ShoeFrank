@@ -26,6 +26,11 @@
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+/*!
+ \file TCGbaseGeometryConstructor.cxx
+ \brief Implementation of TCGbaseGeometryConstructor.
+*/
+
 #include "TMath.h"
 #include "TCGbaseGeometryConstructor.hxx"
 
@@ -61,7 +66,16 @@
 
 using namespace CLHEP;
 
+/*!
+ \class TCGbaseGeometryConstructor
+ \brief  Geometry construction class for target/beam
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
 TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, Int_t runNumber)
 : G4VUserDetectorConstruction(),
   fExpName(expName),
@@ -109,6 +123,7 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, In
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGbaseGeometryConstructor::~TCGbaseGeometryConstructor()
 {
 	 delete fTarget;
@@ -118,6 +133,7 @@ TCGbaseGeometryConstructor::~TCGbaseGeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Target constructor
 G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
 {
    G4GeometryManager::GetInstance()->OpenGeometry();
@@ -162,6 +178,9 @@ G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Set world material
+//!
+//! \param[in] materialChoice world material
 void TCGbaseGeometryConstructor::SetWordMaterial(G4String materialChoice)
 {
    // search the material by its name
@@ -176,6 +195,9 @@ void TCGbaseGeometryConstructor::SetWordMaterial(G4String materialChoice)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Set world size in Z
+//!
+//! \param[in] sizeZ size in Z
 void TCGbaseGeometryConstructor::SetWorldSizeZ(G4double sizeZ)
 {
    fWorldSizeZ  = sizeZ;
@@ -183,6 +205,9 @@ void TCGbaseGeometryConstructor::SetWorldSizeZ(G4double sizeZ)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Set world size in XY
+//!
+//! \param[in] sizeXY size in XY
 void TCGbaseGeometryConstructor::SetWorldSizeXY(G4double sizeXY)
 {
    fWorldSizeXY = sizeXY;

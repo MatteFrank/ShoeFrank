@@ -7,78 +7,89 @@
 
 #include "TCGbaseConstructor.hxx"
 
-/** Building detector geometry
+/*!
+ \file TCVTgeometryConstructor.hxx
+ \brief Building VTX detector geometry
  
- \author Ch, Finck
+ \author Ch. Finck
  */
 
-class G4LogicalVolume; //General class to define a logical volume (properties, material)
-class G4VPhysicalVolume; //General class to define the position of the volume
+class G4LogicalVolume;
+class G4VPhysicalVolume;
 class TAVTparGeo;
 class TAVTbaseParGeo;
 
 class TCVTgeometryConstructor : public TCGbaseConstructor
 {
 public:
-   TCVTgeometryConstructor(TAVTbaseParGeo* pParGeo, Bool_t bmFlag = false);
+   TCVTgeometryConstructor(TAVTbaseParGeo* pParGeo);
    virtual ~TCVTgeometryConstructor();
-   virtual G4LogicalVolume* Construct(); //method in which the physical volume is constructed
    
+   // Method in which the physical volume is constructed
+   virtual G4LogicalVolume* Construct();
+   
+   //! Get Box size
    TVector3 GetBoxSize()     const { return fSizeBoxVtx;  }
+   //! Get min position
    TVector3 GetMinPosition() const { return fMinPosition; }
+   //! Get max position
    TVector3 GetMaxPosition() const { return fMaxPosition; }
 
+   //! Get epitaxial name
    const Char_t* GetEpiName() { return fEpiName.Data();}
-
-    void SetEpiName(TString aEpiName) {fEpiName = aEpiName ; }
+   //! Set epitaxial name
+   void SetEpiName(TString aEpiName) {fEpiName = aEpiName ; }
 
 public:
+   //! Get Cmos name
    static const Char_t* GetCmosName()      { return fgkCmosName.Data();    }
+   //! Get pixel name
    static const Char_t* GetPixName()       { return fgkPixName.Data();     }
+   //! Get SD name
    static const Char_t* GetSDname()        { return fgkVtxEpiSDname.Data();}
-   static const Char_t* GetBmSDname()      { return fgkBmEpiSDname.Data(); }
-
-   
+  
+   //! Set smearing flag
    static Bool_t GetSmearFlag()            { return fgSmearFlag;           }
+   //! Get smearing flag
    static void   SetSmearFlag(Bool_t flag) { fgSmearFlag = flag;           }
    
 protected:
-   //logical volume
-   G4LogicalVolume* fCmosLog;
-   G4LogicalVolume* fEpiLog;
-   G4LogicalVolume* fPixLog;
-   G4LogicalVolume* fBoxVtxLog;
+   G4LogicalVolume*   fCmosLog;     ///< Logical CMOS volume
+   G4LogicalVolume*   fEpiLog;      ///< Logical expitaxial volume
+   G4LogicalVolume*   fPixLog;      ///< Logical pixel volume
+   G4LogicalVolume*   fBoxVtxLog;   ///< Logical box volume
 
-   TString fEpiName;
+   TString            fEpiName;     ///< Epitaxial name
 
-   //phys volume
-   G4VPhysicalVolume* fEpiPhy;
-   G4VPhysicalVolume* fPixPhy;
+   G4VPhysicalVolume* fEpiPhy;      ///< Physical epitaxial volume
+   G4VPhysicalVolume* fPixPhy;      ///< Physical pixel volume
    
-   TAVTbaseParGeo* fpParGeo;
+   TAVTbaseParGeo*    fpParGeo;     ///< Geometry parameters
    
-   TVector3 fMinPosition;
-   TVector3 fMaxPosition;
-   TVector3 fSizeBoxVtx;
-   
-   Bool_t   fBmFlag;
+   TVector3           fMinPosition; ///< Box size
+   TVector3           fMaxPosition; ///< Min position
+   TVector3           fSizeBoxVtx;  ///< Max position
    
 protected:
-   static TString fgkCmosName;
-   static TString fgkPixName;
-   static TString fgkVtxEpiSDname;
-   static TString fgkBmEpiSDname;
+   static TString fgkCmosName;      ///< Cmos name
+   static TString fgkPixName;       ///< Pixel name
+   static TString fgkVtxEpiSDname;  ///< Epitaxial SD name
 
-   static Float_t fgDefSmearAng;
-   static Float_t fgDefSmearPos;
-   static Bool_t  fgSmearFlag;
+   static Float_t fgDefSmearAng;    ///< Angular smearing flag
+   static Float_t fgDefSmearPos;    ///< Position smearing flag
+   static Bool_t  fgSmearFlag;      ///< Smearing flag
    
 protected:
-   virtual void DefineMaterial();
+   // Define envelop
    virtual void DefineMaxMinDimension();
+   // Define sensitive detector
    virtual void DefineSensitive();
+   // Define material
+   virtual void DefineMaterial();
    
+   // Build sensor
    virtual void BuildSensor();
+   // Place sensor
    void PlaceSensor();
 };
 

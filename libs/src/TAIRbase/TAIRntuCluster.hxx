@@ -14,25 +14,27 @@
 #include "TAIRcluster.hxx"
 
 
-class TAVTtrack;
-class TAVTbaseParGeo;
-
-/** TAIRcluster class, simple container class for tracks with the associated clusters
- 
+/*!
+ \file TAIRntuCluster.hxx
+ \brief Simple container class for clusters
  \author Ch. Finck
  */
+/*------------------------------------------+---------------------------------*/
 
+class TAVTtrack;
+class TAVTbaseParGeo;
 
 //##############################################################################
 
 class TAIRntuCluster : public TAGdata {
    
 protected:
-   TAVTbaseParGeo*    fGeometry;                 //! do NOT stored this pointer !
-   TObjArray*         fListOfClusters;
+   //! Geometry parameter
+   TAVTbaseParGeo*    fGeometry;       //! do NOT stored this pointer !
+   TObjArray*         fListOfClusters; ///< list of cluster
 
 private:   
-   static TString    fgkBranchName;    // Branch name in TTree
+   static TString    fgkBranchName;    ///< Branch name in TTree
 
 public:
    TAIRntuCluster();
@@ -55,6 +57,7 @@ public:
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:
+   //! Get branch name
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
 
    ClassDef(TAIRntuCluster,1)

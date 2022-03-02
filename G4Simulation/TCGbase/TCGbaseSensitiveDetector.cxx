@@ -1,4 +1,7 @@
-//myEpiSensitiveDetector
+/*!
+ \file TCGbaseSensitiveDetector.cxx
+ \brief Implementation of TCGbaseSensitiveDetector.
+*/
 
 #include "TCGbaseSensitiveDetector.hxx"
 
@@ -11,7 +14,15 @@
 
 #include "TCGmcHit.hxx"
 
+/*!
+ \class TCGbaseSensitiveDetector
+ \brief Base sensitive detector class
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
+//!
+//! \param[in] name sensitive detector name
 TCGbaseSensitiveDetector::TCGbaseSensitiveDetector(G4String name)
 : G4VSensitiveDetector(name),
   fCopyLevel(1)
@@ -20,17 +31,23 @@ TCGbaseSensitiveDetector::TCGbaseSensitiveDetector(G4String name)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGbaseSensitiveDetector::~TCGbaseSensitiveDetector()
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Invoked at the end of event but before the routine TAGeventAction::EndoOfAction
+//!
+//! \param[in] HCE collection of SD
 void TCGbaseSensitiveDetector::EndOfEvent(G4HCofThisEvent*)
 {
-   //invoked at the end of event but before the routine TAGeventAction::EndoOfAction
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Invoked at the end of event but before the routine TAGeventAction::EndoOfAction
+//!
+//! \param[in] HCE collection of SD
 void TCGbaseSensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 {
    fCollections = new TCGmcCollections(GetName(),collectionName[0]);
@@ -39,6 +56,10 @@ void TCGbaseSensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Process hits
+//!
+//! \param[in] aStep step
+//! \param[in] ROhist touchable history (not used)
 G4bool TCGbaseSensitiveDetector::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 {
    if(aStep->GetTotalEnergyDeposit() <= 0.) return false; //no energy deposited
@@ -54,6 +75,10 @@ G4bool TCGbaseSensitiveDetector::ProcessHits(G4Step* aStep,G4TouchableHistory*)
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Fill hits
+//!
+//! \param[in] aStep step
+//! \param[in] newHit MC hits
 void TCGbaseSensitiveDetector::FillHits(G4Step* aStep, TCGmcHit* newHit)
 {
    G4double edep = aStep->GetTotalEnergyDeposit();// in MeV
@@ -89,5 +114,4 @@ void TCGbaseSensitiveDetector::FillHits(G4Step* aStep, TCGmcHit* newHit)
    
    newHit->SetMomIn(aStep->GetPreStepPoint()->GetMomentum());
    newHit->SetMomOut(aStep->GetPostStepPoint()->GetMomentum());
-
 }

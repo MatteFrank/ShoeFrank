@@ -1,17 +1,22 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TAITcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file TAITcluster.cxx
+ \brief   Class for ITR cluster
+ */
 
 #include "TAITcluster.hxx"
 #include "TAITtrack.hxx"
 #include "TAIThit.hxx"
 
+/*!
+ \class TAITcluster
+ \brief  Class for ITR cluster
+ */
+
+//! Class Imp
 ClassImp(TAITcluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAITcluster::TAITcluster()
 :  TAVTbaseCluster()
 {
@@ -20,7 +25,23 @@ TAITcluster::TAITcluster()
 }
 
 //______________________________________________________________________________
-//
+//! Copy constructor
+//!
+//! \param[in] cluster cluster to copy
+TAITcluster::TAITcluster(const TAITcluster& cluster)
+:  TAVTbaseCluster(cluster)
+{
+}
+
+//______________________________________________________________________________
+//! Default destructor
+TAITcluster::~TAITcluster()
+{ 
+   
+}
+
+//______________________________________________________________________________
+//! Set up clones
 void TAITcluster::SetupClones()
 {
    fListOfPixels = new TClonesArray("TAIThit");
@@ -28,21 +49,9 @@ void TAITcluster::SetupClones()
 }
 
 //______________________________________________________________________________
-//  
-TAITcluster::TAITcluster(const TAITcluster& cluster)
-:  TAVTbaseCluster(cluster)
-{
-}
-
-//______________________________________________________________________________
-//  
-TAITcluster::~TAITcluster()
-{ 
-   // TAITcluster default destructor
-}
-
-//______________________________________________________________________________
-//  
+//! Add pixel to list
+//!
+//! \param[in] pixel pixel to add
 void TAITcluster::AddPixel(TAIThit* pixel)
 {
    for (Int_t k = 0; k < pixel->GetMcTracksN(); ++k) {

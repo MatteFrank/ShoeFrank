@@ -1,8 +1,7 @@
 #ifndef _TAVTactNtuPostTrack_HXX
 #define _TAVTactNtuPostTrack_HXX
 /*!
- \file
- \version $Id: TAVTactNtuPostTrack.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAVTactNtuPostTrack.hxx
  \brief   Declaration of TAVTactNtuPostTrack.
  */
 /*------------------------------------------+---------------------------------*/
@@ -24,17 +23,17 @@ public:
    
    virtual ~TAVTactNtuPostTrack();
    
-   //! Action
+   // Action
    Bool_t  Action();
    
-   //! Apply cuts
+   // Apply cuts
    Bool_t  AppyCuts(TAVTtrack* track);
 
 private:
-   TAGdataDsc* fpNtuVertex;		 // input data dsc
+   TAGdataDsc* fpNtuVertex;		 ///< vertex input data dsc
 
 private:    
-   
+   // Find tilted tracks
    Bool_t FindTiltedTracks();
    
    ClassDef(TAVTactNtuPostTrack,0)

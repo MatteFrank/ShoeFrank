@@ -1,7 +1,7 @@
 /*!
  \file
- \version $Id: TAITactBaseRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
- \brief   Implementation of TAITactBaseRaw.
+ \version $Id: TAITactBaseRaw.cxx
+ \brief    Base class to get Ntuplize ITR raw data
  */
 
 #include "DECardEvent.hh"
@@ -18,15 +18,21 @@
 #include "TAVTmi26Type.hxx"
 
 /*!
- \class TAITactBaseRaw TAITactBaseRaw.hxx "TAITactBaseRaw.hxx"
- \brief Base class to get ITR/VTX raw data. **
+ \class TAITactBaseRaw
+ \brief Base class to get Ntuplize ITR raw data
  */
 
+//! Class Imp
 ClassImp(TAITactBaseRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw input hit container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
 TAITactBaseRaw::TAITactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
@@ -42,6 +48,12 @@ TAITactBaseRaw::~TAITactBaseRaw()
 
 
 // --------------------------------------------------------------------------------------
+//! Add pixel to container
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] value pixel value
+//! \param[in] aLine line id
+//! \param[in] aColumn column id
 void TAITactBaseRaw::AddPixel(Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
 {
    // Add a pixel to the vector of pixels

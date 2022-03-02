@@ -1,5 +1,5 @@
 /*!
-  \file
+  \file TAVTactVmeReader.cxx
  \brief Get vertex raw data from stanbd alone files (ascii format)
   Keep VME name, though new card is no more VME standard
 */
@@ -19,6 +19,7 @@
   \brief Reader action for ascii files **
 */
 
+//! Class Imp
 ClassImp(TAVTactVmeReader);
 
 TString TAVTactVmeReader::fgDefaultFolderName = "run_";
@@ -54,8 +55,14 @@ map<pair<int, int>, int > TAVTactVmeReader::fgTrigJumpMap = { {{0, 0}, 0}};
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTactVmeReader::TAVTactVmeReader(const char* name, TAGdataDsc* pDatRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
- : TAVTactBaseRaw(name, pDatRaw, pGeoMap, pConfig, pParMap),
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
+TAVTactVmeReader::TAVTactVmeReader(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+ : TAVTactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap),
    fRunNumber(-1),
    fTrigJumpStart(-1),
    fTrigReset(0)
@@ -80,6 +87,11 @@ TAVTactVmeReader::~TAVTactVmeReader()
 }
 
 // --------------------------------------------------------------------------------------
+//! Fill trigger jump maps for a given sensor, trigger number and jump in trigger
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] trigger trigger value
+//! \param[in] jump value of the jump in trigger
 void TAVTactVmeReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump)
 {
    pair<int, int> id{iSensor, trigger};
@@ -88,6 +100,10 @@ void TAVTactVmeReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump)
 
 //------------------------------------------+-----------------------------------
 //! Open ascii data sources.
+//!
+//! \param[in] name action name
+//! \param[in] opt open file options
+//! \param[in] treeName name of tree in file
 Int_t TAVTactVmeReader::Open(const TString& name, Option_t* opt, const TString)
 {
    TString inputFileName;
@@ -189,6 +205,9 @@ Bool_t TAVTactVmeReader::Process()
 // private method
 
 // --------------------------------------------------------------------------------------
+//! Get event for a given sensor
+//!
+//! \param[in] iSensor sensor index
 Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
 {
    Char_t tmp[255];
@@ -318,6 +337,10 @@ Bool_t TAVTactVmeReader::GetSensorEvent(Int_t iSensor)
 
 
 // --------------------------------------------------------------------------------------
+//! Fill Mimosa frame structure for a given sensor
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] data Mimosa frame structure
 Bool_t TAVTactVmeReader::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
    Char_t tmp[255];
@@ -366,6 +389,9 @@ Bool_t TAVTactVmeReader::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 }
 
 // --------------------------------------------------------------------------------------
+//! Set run number from file
+//!
+//! \param[in] filename input daq file name
 void TAVTactVmeReader::SetRunNumber(const TString& filename)
 {
    TString name(filename);

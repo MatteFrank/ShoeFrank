@@ -1,4 +1,7 @@
-
+/*!
+ \file TAEDtrack.cxx
+ \brief Class to display tracks on event
+ */
 
 #ifndef _TAEDtrack_HXX_
 #include "TAEDtrack.hxx"
@@ -16,7 +19,15 @@
 
 using namespace std;
 
+/*!
+ \class TAEDtrack
+ \brief Class to display tracks on event
+ */
+
 //__________________________________________________________
+//! default constructor
+//!
+//! \param[in] name track list name
 TAEDtrack::TAEDtrack(const Text_t* name) 
   : TEveBoxSet(name),
     fPalette(new TEveRGBAPalette()),
@@ -30,20 +41,21 @@ TAEDtrack::TAEDtrack(const Text_t* name)
     fHitIdPerTrack(0),
 	 fStyle("Rectangle")
 { 
-  // default constructor
   fBoxVert.Set(32);
 }
 
 //__________________________________________________________
+//! default destructor
 TAEDtrack::~TAEDtrack()
 {
-  // default destructor
 }
 
 //__________________________________________________________
-void TAEDtrack::DigitSelected(Int_t idx) 
-{ 
-  
+//! Selected digit
+//!
+//! \param[in] idx digit id
+void TAEDtrack::DigitSelected(Int_t idx)
+{
   TEveDigitSet::DigitBase_t* selectedDigit = GetDigit(idx);
   
   if (selectedDigit)
@@ -55,6 +67,9 @@ void TAEDtrack::DigitSelected(Int_t idx)
 }
 
 //__________________________________________________________
+//! Set style
+//!
+//! \param[in] s style
 void TAEDtrack::SetStyle(TString s)
 {  
   s.ToLower();
@@ -72,7 +87,10 @@ void TAEDtrack::SetStyle(TString s)
 }
 
 //__________________________________________________________
-void TAEDtrack::SetMaxEnergy(Float_t e) 
+//! Set maximum energy
+//!
+//! \param[in] e energy max
+void TAEDtrack::SetMaxEnergy(Float_t e)
 { 
   fPalette->SetMax(Int_t(e+0.5));
   fMaxEnergy = Int_t(e+0.5); 
@@ -80,26 +98,45 @@ void TAEDtrack::SetMaxEnergy(Float_t e)
 } 
 
 //__________________________________________________________
+//! Associate object to track
+//!
+//! \param[in] obj object to associate
 void TAEDtrack::TrackId(TObject* obj)
 {
    DigitId(obj);  
 }
 
 //__________________________________________________________
+//! Add new track
 void TAEDtrack::AddNewTrack()
 {
   fNofTracks++;
   fHitIdPerTrack = 0;
 }
 
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Add tracklet
+//!
+//! \param[in] Z atomic charge
+//! \param[in] pos1 initial position
+//! \param[in] pos2 final position
 void TAEDtrack::AddTracklet(Float_t Z, TVector3 pos1, TVector3 pos2)
 {
    AddTracklet(Z, pos1[0], pos1[1], pos1[2], pos2[0], pos2[1], pos2[2]);
 }
 
-//__________________________________________________________
-void TAEDtrack::AddTracklet(Float_t e, Float_t x1, Float_t y1, Float_t z1, 
+//------------------------------------------+-----------------------------------
+//! Add tracklet
+//!
+//! \param[in] e energy
+//! \param[in] x1 initial position in X-direction
+//! \param[in] y1 initial position in Y-direction
+//! \param[in] z1 initial position in Z-direction
+//! \param[in] x2 final position in X-direction
+//! \param[in] y2 final position in Y-direction
+//! \param[in] z2 final position in Z-direction
+//! \param[in] eTot energy total flag
+void TAEDtrack::AddTracklet(Float_t e, Float_t x1, Float_t y1, Float_t z1,
                                     Float_t x2, Float_t y2, Float_t z2, Bool_t eTot)
 {
   Float_t* vert;
@@ -129,6 +166,7 @@ void TAEDtrack::AddTracklet(Float_t e, Float_t x1, Float_t y1, Float_t z1,
 }
 
 //__________________________________________________________
+//! Reset tracks
 void TAEDtrack::ResetTracks()
 {
 
@@ -144,6 +182,9 @@ void TAEDtrack::ResetTracks()
 }
 
 //__________________________________________________________
+//! Make track size
+//!
+//! \param[in] e energy
 void TAEDtrack::MakeSize(Float_t e)
 {
   if (e != 0.)
@@ -152,7 +193,15 @@ void TAEDtrack::MakeSize(Float_t e)
     fBoxWidth = fBoxHeight = GetDefWidth()*0.2;
 }
 
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Make vertex
+//!
+//! \param[in] x1 initial position in X-direction
+//! \param[in] y1 initial position in Y-direction
+//! \param[in] z1 initial position in Z-direction
+//! \param[in] x2 final position in X-direction
+//! \param[in] y2 final position in Y-direction
+//! \param[in] z2 final position in Z-direction
 Float_t* TAEDtrack::MakeRecTVert(Float_t x1, Float_t y1, Float_t z1, Float_t x2, Float_t y2, Float_t z2)
 {
   fBoxVert.Reset();
@@ -168,6 +217,7 @@ Float_t* TAEDtrack::MakeRecTVert(Float_t x1, Float_t y1, Float_t z1, Float_t x2,
 }
 
 //__________________________________________________________
+//! Next energy
 Int_t TAEDtrack::NextEnergy()
 {
   Int_t energy = -1;

@@ -1,4 +1,7 @@
-
+/*!
+ \file TAGparTools.cxx
+ \brief   Implementation of TAGparTools.
+ */
 
 #include "TMath.h"
 #include "TObjArray.h"
@@ -18,11 +21,13 @@
   \brief tools parameters for vertex. **
 */
 
+//! Class Imp
 ClassImp(TAGparTools);
 
 Int_t TAGparTools::fgPrecisionLevel = 6;
 
 //______________________________________________________________________________
+//! Standard constructor
 TAGparTools::TAGparTools()
 : TAGpara(),
   fFileStream(),
@@ -30,25 +35,30 @@ TAGparTools::TAGparTools()
   fMatrixList(0x0),
   fCurrentPosition(0,0,0)
 {
-   // Standard constructor
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAGparTools::~TAGparTools()
 {
-   // Destructor
    if (fMatrixList)
       delete fMatrixList;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read one char
+//!
+//! \param[out] item read char
 void TAGparTools::ReadItem(Char_t& item)
 {
    if (fFileStream.eof()) return;
    fFileStream.get(item);
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read a string
+//!
+//! \param[out] item read string
 void TAGparTools::ReadItem(TString& item)
 {
    Int_t pos = -1;
@@ -66,7 +76,11 @@ void TAGparTools::ReadItem(TString& item)
    if(FootDebugLevel(3)) cout << item.Data() << endl;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read a string for a given key
+//!
+//! \param[in] key key in string
+//! \param[out] item read string
 void TAGparTools::ReadItem(TString& key, TString& item)
 {
   Int_t pos = -1;
@@ -89,7 +103,11 @@ void TAGparTools::ReadItem(TString& key, TString& item)
   item = Normalize(item.Data());
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read a integer for a given key as integer
+//!
+//! \param[in] key key in string
+//! \param[out] item read integer
 void TAGparTools::ReadItem(Int_t& key, Int_t& item)
 {
    TString sKey;
@@ -102,7 +120,10 @@ void TAGparTools::ReadItem(Int_t& key, Int_t& item)
    item = sItem.Atoi();
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read a integer from a string
+//!
+//! \param[out] arg read integer
 void TAGparTools::ReadItem(Int_t &arg)
 {
    TString item;
@@ -113,7 +134,10 @@ void TAGparTools::ReadItem(Int_t &arg)
 	  cout << arg << endl;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read a float from a string
+//!
+//! \param[out] arg read float
 void TAGparTools::ReadItem(Float_t &arg)
 {
    TString item;
@@ -123,12 +147,15 @@ void TAGparTools::ReadItem(Float_t &arg)
 	  cout << arg << endl;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read a char array from a string
+//!
+//! From a string of the form "i-j;k;l;m-n" returns an char array
+//! containing all the integers from i to j, then k, l and then from m to n.
+//! \param[out] array char array
+//! \param[in] delimiter delimeter
 void TAGparTools::ReadItem(TArrayC& array, const Char_t delimiter)
 {
-   // From a string of the form "i-j;k;l;m-n" returns an integer array
-   // containing all the integers from i to j, then k, l and then from m to n.
-   
    array.Reset(0);
    
    TString key;
@@ -151,7 +178,11 @@ void TAGparTools::ReadItem(TArrayC& array, const Char_t delimiter)
    delete ranges;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Fill a char array from a string
+//!
+//! \param[in] s string
+//! \param[out] array char array
 void TAGparTools::FillArray(TString& s, TArrayC& array)
 {
    Int_t m1;
@@ -167,12 +198,15 @@ void TAGparTools::FillArray(TString& s, TArrayC& array)
    }
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read a integer array from a string
+//!
+//! From a string of the form "i-j;k;l;m-n" returns an integer array
+//! containing all the integers from i to j, then k, l and then from m to n.
+//! \param[out] array integer array
+//! \param[in] delimiter delimeter
 void TAGparTools::ReadItem(TArrayI& array, const Char_t delimiter)
 {
-   // From a string of the form "i-j;k;l;m-n" returns an integer array
-   // containing all the integers from i to j, then k, l and then from m to n.
-   
    TString key;
    ReadItem(key);
    key = Normalize(key.Data());
@@ -193,7 +227,11 @@ void TAGparTools::ReadItem(TArrayI& array, const Char_t delimiter)
    delete ranges;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Fill a integer array from a string
+//!
+//! \param[in] s string
+//! \param[out] array integer array
 void TAGparTools::FillArray(TString& s, TArrayI& array)
 {
    Int_t m1;
@@ -213,11 +251,15 @@ void TAGparTools::FillArray(TString& s, TArrayI& array)
 }
 
 //_____________________________________________________________________________
+//! Read a map from string with two delimeters
+//!
+//! From a string of the form "i,j; k,l; m,n" returns an integer array
+//! containing the pixel line i / col j, line k / col l, line m / col n
+//! \param[out] map map pair/int
+//! \param[in] delimiter1 delimeter1
+//! \param[in] delimiter2 delimeter2
 void TAGparTools::ReadItem(map<pair<int, int>, int>& map, const Char_t delimiter1, const Char_t delimiter2)
 {
-   // From a string of the form "i,j; k,l; m,n" returns an integer array
-   // containing the pixel line i / col j, line k / col l, line m / col n
-   
    TArrayC arrayLine;
    arrayLine.Set(968);
    arrayLine.Reset(0);
@@ -267,6 +309,12 @@ void TAGparTools::ReadItem(map<pair<int, int>, int>& map, const Char_t delimiter
 }
 
 //_____________________________________________________________________________
+//! Read a double vector from a string for a given size with delimiter
+//!
+//! \param[out] coeff double vector
+//! \param[in] size size of vector
+//! \param[in] delimiter delimeter
+//! \param[in] keyFlag flag for key in string
 void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter, Bool_t keyFlag)
 {
    TString key;
@@ -307,7 +355,10 @@ void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter,
    delete list;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Read a vector from a string
+//!
+//! \param[out] arg read vector
 void TAGparTools::ReadVector3(TVector3 &arg)
 {
    Double_t* co = new Double_t[3];
@@ -316,13 +367,13 @@ void TAGparTools::ReadVector3(TVector3 &arg)
    delete[] co;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! reads a string of a given max length from configuration file
+//! The strings is expected to be contained by double quotes : "
+//!
+//! \param[out] aString read string
 void TAGparTools::ReadStrings(TString& aString)
 {
-   
-   // reads a string of a given max length from configuration file
-   // The strings is expected to be contained by double quotes : "
-   
    TString key;
    TAGparTools::ReadItem(key);
 
@@ -342,12 +393,15 @@ void TAGparTools::ReadStrings(TString& aString)
 	  cout << aString << endl;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! reads a string between "" followed by integers separated by delimiter1 Integers are separated by delimiter2
+//!
+//! \param[out] aString read string
+//! \param[out] array read array
+//! \param[in] delimiter1 delimeter1
+//! \param[in] delimiter2 delimeter2
 void TAGparTools::ReadStringsInts(TString& aString, TArrayI& array, const Char_t delimiter1, const Char_t delimiter2)
 {
-   // reads a string between "" followed by integers separated by delimiter1
-   // Integers are separated by delimiter2
-   
    Char_t buf[512];
    TString key;
    do {
@@ -387,12 +441,17 @@ void TAGparTools::ReadStringsInts(TString& aString, TArrayI& array, const Char_t
       cout << aString << endl;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! From a string of the form "m-n" returns a range (begin,end),
+//! its ordering (incr=+-1) and its size (abs(begin-end)+1)
+//!
+//! \param[in] cstr string
+//! \param[out] begin begin of range
+//! \param[out] end end of range
+//! \param[out] incr increment in range
+//! \param[out] n number of items in range
 void TAGparTools::GetRange(const char* cstr, Int_t& begin, Int_t& end, Int_t& incr, Int_t& n)
 {
-   // From a string of the form "m-n" returns a range (begin,end),
-   // its ordering (incr=+-1) and its size (abs(begin-end)+1)
-   
    TString str(cstr);
    
    incr = 1;
@@ -415,10 +474,11 @@ void TAGparTools::GetRange(const char* cstr, Int_t& begin, Int_t& end, Int_t& in
 }
 
 //_____________________________________________________________________________
+//! Remove multiple blanks, and blanks in the begining/end.
+//!
+//! \param[in] line string to normalize
 TString TAGparTools::Normalize(const char* line)
 {
-   // Remove multiple blanks, and blanks in the begining/end.
-   
    TString rv(line);
    
    if ( rv.Length() <= 0 ) return TString();
@@ -447,6 +507,9 @@ TString TAGparTools::Normalize(const char* line)
 }
 
 //______________________________________________________________________________
+//! Open file
+//!
+//! \param[in] name file name
 Bool_t TAGparTools::Open(const TString& name) 
 {
    // openning file
@@ -464,6 +527,7 @@ Bool_t TAGparTools::Open(const TString& name)
 }
 
 //______________________________________________________________________________
+//! Eof check
 Bool_t TAGparTools::Eof()
 {
    // closing file
@@ -471,6 +535,7 @@ Bool_t TAGparTools::Eof()
 }
 
 //______________________________________________________________________________
+//! Close file
 Bool_t TAGparTools::Close()
 {
    // closing file
@@ -481,6 +546,15 @@ Bool_t TAGparTools::Close()
 
 // transformation
 //_____________________________________________________________________________
+//! Transformation from master to local framework
+//!
+//! \param[in] detID detector id
+//! \param[in] xg X position in master framework
+//! \param[in] yg Y position in master framework
+//! \param[in] zg Z position in master framework
+//! \param[out] xl X position in local framework
+//! \param[out] yl Y position in local framework
+//! \param[out] zl Z position in local framework
 void TAGparTools::MasterToLocal(Int_t detID,
                                      Double_t xg, Double_t yg, Double_t zg,
                                      Double_t& xl, Double_t& yl, Double_t& zl) const
@@ -496,6 +570,11 @@ void TAGparTools::MasterToLocal(Int_t detID,
 }
 
 //_____________________________________________________________________________
+//! Transformation from master to local framework
+//!
+//! \param[in] detID detector id
+//! \param[in] glob position in master framework
+//! \return local position in local framework
 TVector3 TAGparTools::MasterToLocal(Int_t detID, TVector3& glob) const
 {
 
@@ -510,6 +589,11 @@ TVector3 TAGparTools::MasterToLocal(Int_t detID, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
+//! Transformation from master to local framework for vector (no translation)
+//!
+//! \param[in] detID detector id
+//! \param[in] glob position in master framework
+//! \return local position in local framework
 TVector3 TAGparTools::MasterToLocalVect(Int_t detID, TVector3& glob) const
 {
    TGeoHMatrix* mat = static_cast<TGeoHMatrix*> ( fMatrixList->At(detID) );
@@ -523,6 +607,15 @@ TVector3 TAGparTools::MasterToLocalVect(Int_t detID, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
+//! Transformation from local to master framework
+//!
+//! \param[in] detID sensor id
+//! \param[in] xl X position in local framework
+//! \param[in] yl Y position in local framework
+//! \param[in] zl Z position in local framework
+//! \param[out] xg X position in master framework
+//! \param[out] yg Y position in master framework
+//! \param[out] zg Z position in master framework
 void TAGparTools::LocalToMaster(Int_t detID,
                                      Double_t xl, Double_t yl, Double_t zl,
                                      Double_t& xg, Double_t& yg, Double_t& zg) const
@@ -538,6 +631,11 @@ void TAGparTools::LocalToMaster(Int_t detID,
 }
 
 //_____________________________________________________________________________
+//! Transformation from local to master framework
+//!
+//! \param[in] detID sensor id
+//! \param[in] loc position in local framework
+//! \return position in master framework
 TVector3 TAGparTools::LocalToMaster(Int_t detID, TVector3& loc) const
 {
    TGeoHMatrix* mat = static_cast<TGeoHMatrix*> ( fMatrixList->At(detID) );
@@ -550,11 +648,14 @@ TVector3 TAGparTools::LocalToMaster(Int_t detID, TVector3& loc) const
    return pos;
 }
 
-
 //_____________________________________________________________________________
+//! Transformation from local to master framework for vector (no translation)
+//!
+//! \param[in] detID sensor id
+//! \param[in] loc position in local framework
+//! \return position in master framework
 TVector3 TAGparTools::LocalToMasterVect(Int_t detID, TVector3& loc) const
 {
-   
    TGeoHMatrix* mat = static_cast<TGeoHMatrix*> ( fMatrixList->At(detID) );
    Double_t local[3]  = {loc.X(), loc.Y(), loc.Z()};
    Double_t global[3] = {0., 0., 0.};
@@ -566,6 +667,10 @@ TVector3 TAGparTools::LocalToMasterVect(Int_t detID, TVector3& loc) const
 }
 
 //_____________________________________________________________________________
+//! Add H matrix at a given index
+//!
+//! \param[in] mat matrix to add
+//! \param[in] idx index in the list
 void TAGparTools::AddTransMatrix(TGeoHMatrix* mat, Int_t idx)
 {
    if (idx == -1)
@@ -579,6 +684,9 @@ void TAGparTools::AddTransMatrix(TGeoHMatrix* mat, Int_t idx)
 }
 
 //_____________________________________________________________________________
+//! Remove H matrix in list
+//!
+//! \param[in] mat matrix to remove
 void TAGparTools::RemoveTransMatrix(TGeoHMatrix* mat)
 {
    if (!fMatrixList->Remove(mat))
@@ -586,6 +694,9 @@ void TAGparTools::RemoveTransMatrix(TGeoHMatrix* mat)
 }
 
 //_____________________________________________________________________________
+//! Get transformation at a given index
+//!
+//! \param[in] idx index in the list
 TGeoHMatrix* TAGparTools::GetTransfo(Int_t idx)
 {
    if (idx < 0 || idx >= fMatrixList->Capacity()) {
@@ -597,6 +708,9 @@ TGeoHMatrix* TAGparTools::GetTransfo(Int_t idx)
 }
 
 //_____________________________________________________________________________
+//! Get combinaison transformation at a given index
+//!
+//! \param[in] idx index in the list
 TGeoCombiTrans* TAGparTools::GetCombiTransfo(Int_t idx)
 {
    if (idx < 0 || idx >= fMatrixList->Capacity()) {
@@ -621,6 +735,9 @@ TGeoCombiTrans* TAGparTools::GetCombiTransfo(Int_t idx)
 }
 
 //_____________________________________________________________________________
+//! Set up matrices
+//!
+//! \param[in] size size of matrices
 void TAGparTools::SetupMatrices(Int_t size)
 {
    fMatrixList = new TObjArray(size);
@@ -628,9 +745,17 @@ void TAGparTools::SetupMatrices(Int_t size)
    fMatrixList->Clear();
 }
 
-
-
 //_____________________________________________________________________________
+//! Print Fluka Card
+//!
+//! \param[in] fTitle file name
+//! \param[in] fWHAT1 what1 string
+//! \param[in] fWHAT2 what2 string
+//! \param[in] fWHAT3 what3 string
+//! \param[in] fWHAT4 what4 string
+//! \param[in] fWHAT5 what5 string
+//! \param[in] fWHAT6 what6 string
+//! \param[in] fSDUM fSDUM string
 string  TAGparTools::PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
 		 TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM) {
   
@@ -654,6 +779,36 @@ string  TAGparTools::PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, T
 }
 
 //_____________________________________________________________________________
-Int_t  TAGparTools::GetCrossReg(TString &regname) {
+//! Get cross region
+//!
+//! \param[in] regname region name
+Int_t  TAGparTools::GetCrossReg(TString &regname)
+{
   return gTAGroot->CurrentRunInfo().GetRegion(regname);
+}
+
+//____________________________________________________________________________
+//! Tokenize
+//!
+//! \param[in] str string
+//! \param[in] delimiters delimiter
+//! \return a string vector
+vector<string>  TAGparTools::Tokenize(const string str, const string delimiters)
+{
+   vector<string> tokens;
+   // Skip delimiters at beginning.
+   string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+   // Find first "non-delimiter".
+   string::size_type pos     = str.find(delimiters, lastPos);
+   
+   while (string::npos != pos || string::npos != lastPos) {
+      // Found a token, add it to the vector.
+      tokens.push_back(str.substr(lastPos, pos - lastPos));
+      // Skip delimiters.  Note the "not_of"
+      lastPos = str.find_first_not_of(delimiters, pos);
+      // Find next "non-delimiter"
+      pos = str.find(delimiters, lastPos);
+   }
+   
+   return tokens;
 }

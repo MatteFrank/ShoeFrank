@@ -19,7 +19,8 @@ TAMSDhit::TAMSDhit()
    fEnergyLoss(0.),
    fIndex(0),
    fView(0),
-   fStrip(0)
+   fStrip(0),
+   fIsSeed(false)
 {
 }
 
@@ -31,7 +32,21 @@ TAMSDhit::TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip)
    fEnergyLoss(value),
    fIndex(0),
    fView(view),
-   fStrip(strip)
+   fStrip(strip),
+   fIsSeed(false)
+{
+}
+
+//______________________________________________________________________________
+TAMSDhit::TAMSDhit(const TAMSDhit& hit)
+ : TAGobject(hit),
+   fSensorId(hit.fSensorId),
+   fPosition(hit.fPosition),
+   fEnergyLoss(hit.fEnergyLoss),
+   fIndex(hit.fIndex),
+   fView(hit.fView),
+   fStrip(hit.fStrip),
+   fIsSeed(hit.fIsSeed)
 {
 }
 

@@ -14,8 +14,7 @@ class TH2F;
 class TH1F;
 
 /*!
- \file
- \version $Id: TAITactBaseRaw.hxx $
+ \file TAITactBaseRaw.hxx
  \brief   Declaration of TAITactBaseRaw.
  */
 /*------------------------------------------+---------------------------------*/
@@ -31,7 +30,7 @@ public:
    
 protected:
 
-   //! Add pixel to list
+   // Add pixel to list
    void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
    
    ClassDef(TAITactBaseRaw,0)

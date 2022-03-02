@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAVTbaseDigitizer.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TAVTbaseDigitizer.cxx
  \brief   Implementation of TAVTbaseDigitizer.
  */
 #include "TMath.h"
@@ -23,7 +22,7 @@
  */
 
 Bool_t   TAVTbaseDigitizer::fgSmearFlag     = true;
-Float_t  TAVTbaseDigitizer::fgDefSmearPos   = 10.35;    // in micron
+Float_t  TAVTbaseDigitizer::fgDefSmearPos   = 10.35;  // in micron
 Float_t  TAVTbaseDigitizer::fgkPairCreation = 3.6e-3; // keV
 Float_t  TAVTbaseDigitizer::fgkFanoFactor   = 0.115;
 Float_t  TAVTbaseDigitizer::fgkNormFactor   = TMath::Sqrt(2*TMath::Pi());
@@ -32,6 +31,8 @@ Int_t    TAVTbaseDigitizer::fgTotAdcDepth   = 7;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] parGeo geometry parameters
 TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
  : TAGbaseDigitizer(),
    fpParGeo(parGeo),
@@ -81,7 +82,19 @@ TAVTbaseDigitizer::~TAVTbaseDigitizer()
 }
 
 //------------------------------------------+-----------------------------------
-//! fill pixel signal
+//! Fill pixel signal
+//!
+//! \param[in] edep energy loss
+//! \param[in] x0  impact position in X direction
+//! \param[in] y0  impact position in Y direction
+//! \param[in] zin impact position in z direction
+//! \param[in] zout outgoing position in z direction
+//! \param[in] time impact time
+//! \param[in] sensorId sensor id
+//! \param[in] Z atomic charge of the particle
+//! \param[in] px0 momentum in X direction
+//! \param[in] py0 momentum in Y direction
+//! \param[in] pz0 momentum in z direction
 Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin, Double_t zout, Double_t /*time*/, Int_t /*sensorId*/, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
    x0 *= TAGgeoTrafo::CmToMu();
@@ -187,6 +200,7 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
 
 
 // --------------------------------------------------------------------------------------
+//! Set functions
 void  TAVTbaseDigitizer::SetFunctions()
 {
    // compute cluster size for a given Edep, x and y
@@ -200,6 +214,10 @@ void  TAVTbaseDigitizer::SetFunctions()
 }
 
 // --------------------------------------------------------------------------------------
+//! Cluster size function
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
 Double_t TAVTbaseDigitizer::FuncClusterSize(Double_t* x, Double_t* par)
 {
    Float_t xx = x[0]-par[2];
@@ -210,6 +228,10 @@ Double_t TAVTbaseDigitizer::FuncClusterSize(Double_t* x, Double_t* par)
 }
 
 // --------------------------------------------------------------------------------------
+//! Cluster height function
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
 Double_t TAVTbaseDigitizer::FuncClusterHeight(Double_t* x, Double_t* par)
 {
    Float_t de = x[0];
@@ -221,6 +243,10 @@ Double_t TAVTbaseDigitizer::FuncClusterHeight(Double_t* x, Double_t* par)
 }
 
 // --------------------------------------------------------------------------------------
+//! Cluster width function
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
 Double_t TAVTbaseDigitizer::FuncClusterWidth(Double_t* x, Double_t* par)
 {
    Float_t de = x[0];
@@ -231,48 +257,58 @@ Double_t TAVTbaseDigitizer::FuncClusterWidth(Double_t* x, Double_t* par)
    return f;
 }
 
-//-----------------------------------------------------
+// --------------------------------------------------------------------------------------
+//! Time over threshold analog function
+//!
+//! Models the estimate of a the input charge qin (in ke-)
+//!  with the time-over-threshold (ToT) technique:
+//!  ToT = conversion-factor * (qin-threshold)^exponent
+//!
+//! \param[in] qin number of electrons
+//! \param[in] par parameters vector
+//!
+//!  par[0] = conversion factor e- -> arbitrary unit
+//!  par[1] = threshold in ke-
+//!  par[2] = exponent for the ToT model
 Double_t TAVTbaseDigitizer::FuncTotAnalog(Double_t *qin, Double_t *par) {
-   // Models the estimate of a the input charge qin (in ke-)
-   //  with the time-over-threshold (ToT) technique:
-   //  ToT = conversion-factor * (qin-threshold)^exponent
-   // Returns ToT
-   //
-   // Parameters:
-   //  par[0] = conversion factor e- -> arbitrary unit
-   //  par[1] = threshold in ke-
-   //  par[2] = exponent for the ToT model
+   
    double width = par[0]*pow(qin[0]-par[1],par[2]);
    
    return width;
 }
 
-
-//-----------------------------------------------------
+// --------------------------------------------------------------------------------------
+//! Time over threshold digital function
+//!
+//! Models the estimate of a the input charge qin (in ke-)
+//!  with the time-over-threshold (ToT) technique:
+//!  ToT = conversion-factor * (qin-threshold)^exponent
+//!
+//! \param[in] qin number of electrons
+//! \param[in] par parameters vector
+//!
+//!  par[0] = conversion factor e- -> arbitrary unit
+//!  par[1] = threshold in ke-
+//!  par[2] = exponent for the ToT model
+//!  par[3] = number of bits for digitization
+//!  par[4] = maximal value for digitization
 Double_t TAVTbaseDigitizer::FuncTotDigital(Double_t *qin, Double_t *par) {
-   // Models the estimate of a the input charge qin (in ke-)
-   //  with the time-over-threshold (ToT) technique:
-   //  ToT = conversion-factor * (qin-threshold)^exponent
-   // Returns a digital value of ToT
-   //
-   // Parameters:
-   //  par[0] = conversion factor e- -> arbitrary unit
-   //  par[1] = threshold in ke-
-   //  par[2] = exponent for the ToT model
-   //  par[3] = number of bits for digitization
-   //  par[4] = maximal value for digitization
-   
+  
    Double_t width = FuncTotAnalog(qin, par);
    
    return DigitizeAdc( width, (Int_t)par[3], par[4]);
 }
 
 //-----------------------------------------------------
+//! Digitize a  value over nbits bits, whith maxValue as the maximum value
+//!
+//!  note that any value>maxValue returns 0 (no clipping)
+//!
+//! \param[in] value value
+//! \param[in] nbits number of bits in ADC
+//! \param[in] maxValue maximum value available
 Int_t TAVTbaseDigitizer::DigitizeAdc( Double_t value, Int_t nbits, Double_t maxValue)
 {
-   // digitize value over nbits bits, whith maxValue as the maximum value
-   // note that any value>maxValue returns 0 (no clipping)
-   
    Int_t nbDigitalValues = pow(2, nbits);
    Double_t binWidth = maxValue / nbDigitalValues;
    
@@ -280,7 +316,11 @@ Int_t TAVTbaseDigitizer::DigitizeAdc( Double_t value, Int_t nbits, Double_t maxV
    else { return 0;}
    
 }
+
 //_____________________________________________________________________________
+//! Get column number from x position
+//!
+//! \param[in] x position in X
 Int_t TAVTbaseDigitizer::GetColumn(Float_t x) const
 {
    Float_t xmin = -fPixelsNx*fPitchX/2.;
@@ -296,6 +336,9 @@ Int_t TAVTbaseDigitizer::GetColumn(Float_t x) const
 }
 
 //_____________________________________________________________________________
+//! Get line number from y position
+//!
+//! \param[in] y position in Y
 Int_t TAVTbaseDigitizer::GetLine(Float_t y) const
 {
    // equivalent to  floor((-y-ymin)/fPitchV)-1
@@ -313,12 +356,19 @@ Int_t TAVTbaseDigitizer::GetLine(Float_t y) const
 
 
 //-----------------------------------------+---------------------------------
+//! Get index from line and column number
+//!
+//! \param[in] line a given line
+//! \param[in] column a given column
 Int_t TAVTbaseDigitizer::GetIndex(Int_t line, Int_t column) const
 {
    return line*fPixelsNx + column;
 }
 
 //_____________________________________________________________________________
+//! Get position in X from column number
+//!
+//! \param[in] column a given column
 Float_t TAVTbaseDigitizer::GetPositionU(Int_t column) const
 {
    Float_t x = (float(2*column - fPixelsNx + 1) * fPitchX)/2.;
@@ -326,14 +376,19 @@ Float_t TAVTbaseDigitizer::GetPositionU(Int_t column) const
 }
 
 //_____________________________________________________________________________
+//! Get position in Y from line number
+//!
+//! \param[in] line a given line
 Float_t TAVTbaseDigitizer::GetPositionV(Int_t line) const
 {
    Float_t y = -(float(2*line - fPixelsNy + 1) * fPitchY)/2.;
    return  y;
 }
 
-
 //_____________________________________________________________________________
+//! Get colummn modulo number from x position
+//!
+//! \param[in] x position in X
 Float_t TAVTbaseDigitizer::GetColRemainder(Float_t x) const
 {
    Float_t xmin = -fPixelsNx*fPitchX/2.;
@@ -349,6 +404,9 @@ Float_t TAVTbaseDigitizer::GetColRemainder(Float_t x) const
 }
 
 //_____________________________________________________________________________
+//! Get line modulo number from y position
+//!
+//! \param[in] y position in Y
 Float_t TAVTbaseDigitizer::GetLineRemainder(Float_t y) const
 {
    // equivalent to  floor((-y-ymin)/fPitchV)-1
@@ -364,8 +422,14 @@ Float_t TAVTbaseDigitizer::GetLineRemainder(Float_t y) const
    return line;
 }
 
-
 //_____________________________________________________________________________
+//! Get colummn region number from x position
+//!
+//! \param[in] x position in X
+//!
+//! \return 0 for hit lower corner of pixel
+//! \return 5 for hit middle of pixel
+//! \return 1 for hit upper corner of pixel
 Int_t TAVTbaseDigitizer::GetColRegion(Float_t x) const
 {
    Float_t rem = GetColRemainder(x);
@@ -381,6 +445,13 @@ Int_t TAVTbaseDigitizer::GetColRegion(Float_t x) const
 }
 
 //_____________________________________________________________________________
+//! Get line region number from Y position
+//!
+//! \param[in] y position in Y
+//!
+//! \return 0 for hit lower corner of pixel
+//! \return 5 for hit middle of pixel
+//! \return 1 for hit upper corner of pixel
 Int_t TAVTbaseDigitizer::GetLineRegion(Float_t y) const
 {
    Float_t rem = GetLineRemainder(y);
@@ -396,6 +467,10 @@ Int_t TAVTbaseDigitizer::GetLineRegion(Float_t y) const
 }
 
 //_____________________________________________________________________________
+//! Get last shell
+//!
+//! \param[in] shell shell vector
+//! \param[in] maxTurn maximium number of shells
 Int_t TAVTbaseDigitizer::GetLastShell(Int_t* shell, Int_t maxTurn) const
 {
    Int_t lastTurn = 0;

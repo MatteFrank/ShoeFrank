@@ -1,4 +1,7 @@
-//myEpiSensitiveDetector
+/*!
+ \file TCVTsensitiveDetector.cxx
+ \brief Implementation of TCVTsensitiveDetector.
+*/
 
 #include "TCVTsensitiveDetector.hxx"
 #include "G4HCofThisEvent.hh"
@@ -8,13 +11,22 @@
 #include "G4ios.hh"
 #include "G4VTouchable.hh"
 
+/*!
+ \class TCVTsensitiveDetector
+ \brief VTX interface for base sensitive detector class
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
+//!
+//! \param[in] name sensitive detector name
 TCVTsensitiveDetector::TCVTsensitiveDetector(G4String name)
 :TCGbaseSensitiveDetector(name)
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCVTsensitiveDetector::~TCVTsensitiveDetector()
 {
 }

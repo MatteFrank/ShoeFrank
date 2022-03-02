@@ -1,8 +1,21 @@
+/*!
+ \file TAGntuEvent.cxx
+ \brief Simple container event informations from DAQ
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <sys/time.h>
 #include <math.h>
 
 #include "TAGntuEvent.hxx"
 
+/*!
+ \class TAGntuEvent
+ \brief Simple container event informations from DAQ
+ */
+/*------------------------------------------+---------------------------------*/
+
+//! Class Imp
 ClassImp(TAGntuEvent);
 
 TString  TAGntuEvent::fgkBranchName = "evt.";
@@ -23,9 +36,6 @@ TAGntuEvent::TAGntuEvent()
   fPMTsAndBusy(0),
   fTriggerID(-1)  
 {
-
- // cout << "NMAXTRIG::" << NMAXTRIG << endl;
-  
   for(int i=0;i<NMAXTRIG;i++)fTriggersStatus[i]=0;
 }
 
@@ -55,6 +65,9 @@ void TAGntuEvent::Clear(Option_t*)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGntuEvent::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGntuEvent"
@@ -66,6 +79,8 @@ void TAGntuEvent::ToStream(ostream& os, Option_t* option) const
 
 //------------------------------------------+-----------------------------------
 //! Convert a double to a timestamp.
+//!
+//! \param[in] time time to convert
 void TAGntuEvent::TimeFromDouble(Double_t time)
 {
   Double_t sec  = floor(time);
@@ -94,6 +109,8 @@ void TAGntuEvent::SetCurrentTime()
 
 //------------------------------------------+-----------------------------------
 //! Add deltatime seconds to the timestamp.
+//!
+//! \param[in] deltatime time to add
 TAGntuEvent& TAGntuEvent::operator+(Double_t deltatime)
 {
   TimeFromDouble(TimeToDouble() + deltatime);
@@ -102,6 +119,8 @@ TAGntuEvent& TAGntuEvent::operator+(Double_t deltatime)
 
 //------------------------------------------+-----------------------------------
 //! Subtract deltatime seconds from the timestamp.
+//!
+//! \param[in] deltatime time to substract
 TAGntuEvent& TAGntuEvent::operator-(Double_t deltatime)
 {
   TimeFromDouble(TimeToDouble() - deltatime);
@@ -109,10 +128,10 @@ TAGntuEvent& TAGntuEvent::operator-(Double_t deltatime)
 }
 
 //------------------------------------------+-----------------------------------
-/*!
- \relates TAGntuEvent
- Returns the time elapsed from timestamp rhs to timestamp lhs in seconds.
- */
+//! Returns the time elapsed from timestamp rhs to timestamp lhs in seconds.
+//!
+//! \param[in] lhs time left
+//! \param[in] rhs time right
 Double_t operator-(const TAGntuEvent& lhs, const TAGntuEvent& rhs)
 {
   return lhs.TimeToDouble() - rhs.TimeToDouble();

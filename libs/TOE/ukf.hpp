@@ -243,11 +243,9 @@ namespace details{
 //            std::cout << "propagate_once::error : " << std::setprecision(16) << step_result.second << '\n';
             
             //optimize next step
-            if( step_result.second != 0 ){
-                auto new_step_length = derived().call_stepper().optimize_step_length(step, step_result.second);
-                derived().step_length() = ( new_step_length > derived().max_step_length() ) ? derived().max_step_length() : new_step_length ;
+            auto new_step_length = derived().call_stepper().optimize_step_length(step, step_result.second);
+            derived().step_length() = ( new_step_length > derived().max_step_length() ) ? derived().max_step_length() : new_step_length ;
                // std::cout << "propagate_once::next_step_length : " << derived().step_length() << '\n';
-            }
             
             return std::move(os_pc);
         }
@@ -279,7 +277,7 @@ namespace details{
                                                                           >::value
                                                   >
                 >
-        chisquared compute_chisquared( const state& s_p,
+        double compute_chisquared( const state& s_p,
                                        const Candidate& candidate_p ) const
         {
             auto residual_vector = expr::compute(candidate_p.vector - candidate_p.measurement_matrix * s_p.vector);
@@ -287,12 +285,26 @@ namespace details{
             auto residual_covariance = expr::compute(candidate_p.covariance + candidate_p.measurement_matrix * s_p.covariance * transpose(candidate_p.measurement_matrix));
             //std::cout << "---- state_covariance ----\n" << s_p.covariance;
             //std::cout << "---- candidate_covariance ----\n" << candidate_p.covariance;
-           // std::cout << "---- residual_covariance ----\n" << residual_covariance;
+//            std::cout << "---- residual_vector ----\n" << residual_vector;
+//            std::cout << "---- residual_covariance ----\n" << residual_covariance;
             
 //            std::cout << "---- final_chisquared: "<< (make_transpose(residual_vector) * residual_covariance * residual_vector)(0,0) <<" ----\n";
             return {expr::compute( transpose( residual_vector ) * form_inverse(std::move(residual_covariance)) * residual_vector)}; //not pretty
         }
         
+        double compute_distance( state const& ps_p,
+                                 state const& cs_p ) const
+        {
+            auto residual_vector = expr::compute(cs_p.vector - ps_p.vector);
+            
+            auto residual_covariance = expr::compute(cs_p.covariance + ps_p.covariance);
+            //std::cout << "---- state_covariance ----\n" << s_p.covariance;
+            //std::cout << "---- candidate_covariance ----\n" << candidate_p.covariance;
+           // std::cout << "---- residual_covariance ----\n" << residual_covariance;
+            
+//            std::cout << "---- final_chisquared: "<< (make_transpose(residual_vector) * residual_covariance * residual_vector)(0,0) <<" ----\n";
+            return {expr::compute( transpose( residual_vector ) * form_inverse(std::move(residual_covariance)) * residual_vector)}; //not pretty
+        }
         
         
         

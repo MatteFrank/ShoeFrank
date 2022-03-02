@@ -651,8 +651,8 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	TVectorD planarCoords(2);
 
 	// get point coord
-	TVector3 hitPos = m_GeoTrafo->FromTWLocalToGlobal( point->GetPositionG() );
-	// TVector3 hitPos = point->GetPosition();
+	// TVector3 hitPos = m_GeoTrafo->FromTWLocalToGlobal( point->GetPositionG() );
+	TVector3 hitPos = point->GetPosition();
 
 	if ( m_debug > 1 )
 	{

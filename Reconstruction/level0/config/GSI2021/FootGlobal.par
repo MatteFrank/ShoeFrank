@@ -18,6 +18,7 @@ Genfit Event Display ON: n
 
 IncludeKalman:   n
 IncludeTOE:      n
+IncludeStraight: n
 EnableLocalReco: n
 
 Kalman Mode:       ref
@@ -26,11 +27,6 @@ Reverse Tracking:       false
 
 Kalman preselection strategy: Sept2020
 #Kalman preselection strategy: TrueParticle
-
-VT  Reso: 0.0006
-IT  Reso: 0.0006
-MSD Reso: 0.003
-TW  Reso: 0.57
 
 Chi2 cut: -1
 N measure in global tracking: 11
@@ -55,12 +51,12 @@ EnableRegionMc:      n
 
 ############   END - Options for reconstruction   ################
 
-IncludeDI:			   y
+IncludeDI:			   n
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:	     		   n
+IncludeIT:			   n
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y

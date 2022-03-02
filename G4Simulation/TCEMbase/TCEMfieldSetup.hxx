@@ -5,6 +5,13 @@
 #ifndef TCEMfieldSetup_h
 #define TCEMfieldSetup_h 1
 
+/*!
+ \file TCEMfieldSetup.hxx
+ \brief  Field map setup
+ 
+ \author Ch. Finck
+ */
+
 #include "G4MagneticField.hh"
 #include "TCEMfield.hxx"
 
@@ -23,25 +30,30 @@ public:
    TCEMfieldSetup(TCEMfield* field);
   virtual ~TCEMfieldSetup();
 
+   //! Set setpper type
   void SetStepperType(Int_t i) { fStepperType = i; }
+   //! Set minimum step
   void SetMinStep(Double_t s)  { fMinStep = s;     }
   
+   // Set stepper
   void SetStepper();
+   // Initialise
   void Initialize();    //  Set parameters and call method below
+   // Create stepper
   void CreateStepperAndChordFinder();
-   
+   //! Return Field manager
    G4FieldManager*  GetFieldManager() { return fFieldManager; }
 
 protected:
-  G4FieldManager*         fFieldManager;
-  G4ChordFinder*          fChordFinder;
-  G4Mag_UsualEqRhs*       fEquation;
-  TCEMfield*              fMagneticField;
+  G4FieldManager*         fFieldManager;   ///< Field manager
+  G4ChordFinder*          fChordFinder;    ///< Chord finder
+  G4Mag_UsualEqRhs*       fEquation;       ///< Mouvement equation
+  TCEMfield*              fMagneticField;  ///< Magnetic field map
 
-  G4MagIntegratorStepper* fStepper;
-  Int_t                   fStepperType;
+  G4MagIntegratorStepper* fStepper;        ///< Stepper
+  Int_t                   fStepperType;    ///< Flag to chose stepper type
 
-  Double_t                fMinStep;
+  Double_t                fMinStep;        ///< Minimum step
  
 };
 

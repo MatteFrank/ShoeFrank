@@ -26,10 +26,20 @@
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+/*!
+ \file TCGbaseConstructor.cxx
+ \brief Implementation of TCGbaseConstructor.
+ */
+
 #include "TCGbaseConstructor.hxx"
 
+/*!
+ \class TCGbaseConstructor
+ \brief Base construction class
+ */
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCGbaseConstructor::TCGbaseConstructor(const Char_t* name, const Char_t* version)
  : TNamed(name, version),
    fLogMother(0x0),
@@ -38,6 +48,7 @@ TCGbaseConstructor::TCGbaseConstructor(const Char_t* name, const Char_t* version
 {
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCGbaseConstructor::~TCGbaseConstructor()
 {
     delete fpMaterials;

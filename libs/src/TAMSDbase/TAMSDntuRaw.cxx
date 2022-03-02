@@ -17,20 +17,22 @@ TAMSDrawHit::TAMSDrawHit()
    fCharge(0),
    fIndex(0),
    fView(0),
-   fStrip(0)
+   fStrip(0),
+   fIsSeed(false)
 {
    
 }
 
 //______________________________________________________________________________
 //
-TAMSDrawHit::TAMSDrawHit(Int_t id, Int_t view, Int_t strip, UInt_t charge)
+TAMSDrawHit::TAMSDrawHit(Int_t id, Int_t view, Int_t strip, Double_t charge)
 : TObject(),
    fSensorId(id),
    fCharge(charge),
    fIndex(0),
    fView(view),
-   fStrip(strip)
+   fStrip(strip),
+   fIsSeed(false)
 {
 
 }
@@ -69,9 +71,9 @@ Int_t TAMSDrawHit::Compare(const TObject* obj) const
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparMap.hxx"
 
-ClassImp(TAMSDntuRaw) 
-
 TString TAMSDntuRaw::fgkBranchName   = "msdrd.";
+
+ClassImp(TAMSDntuRaw)
 
 //______________________________________________________________________________
 //
@@ -96,7 +98,7 @@ TAMSDntuRaw::~TAMSDntuRaw()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of pixels for a given sensor.
+//! return number of strips for a given sensor.
 Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
@@ -119,9 +121,9 @@ TClonesArray* TAMSDntuRaw::GetStrips(Int_t iSensor) const
    }   
    
 }
-   
+
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a strip for a given sensor
 const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
 {
    if (iStrip >=0 || iStrip < GetStripsN(iSensor))
@@ -133,7 +135,7 @@ const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
 }
  
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a strip for a given sensor
 TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
 {
    if (iStrip >=0 || iStrip < GetStripsN(iSensor))
@@ -143,16 +145,18 @@ TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
 	  return 0x0;
    }
 }
-   
+
+
 //______________________________________________________________________________
 //  
-void TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, UInt_t value)
+TAMSDrawHit* TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double_t value)
 {
    if (sensor >= 0  || sensor < fpGeoMap->GetSensorsN()) {
-	  TClonesArray &pixelArray = *GetStrips(sensor);
-	  new(pixelArray[pixelArray.GetEntriesFast()]) TAMSDrawHit(sensor, strip, view, value);
+	  TClonesArray &stripArray = *GetStrips(sensor);
+	  return new(stripArray[stripArray.GetEntriesFast()]) TAMSDrawHit(sensor, view, strip, value);
    } else {
 	  Error("AddStrip()","Wrong sensor number %d\n", sensor);
+      return 0x0;
    }
 }
 
@@ -167,7 +171,8 @@ void TAMSDntuRaw::SetupClones()
 	  arr->SetOwner(true); 
 	  fListOfStrips->AddAt(arr,i);
    }
-   fListOfStrips->SetOwner(true);    
+   fListOfStrips->SetOwner(true);
+
 }
 
 //______________________________________________________________________________
@@ -175,8 +180,11 @@ void TAMSDntuRaw::SetupClones()
 void TAMSDntuRaw::Clear(Option_t* /*opt*/)
 {
    TAGdata::Clear();
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i)
-	  GetStrips(i)->Delete();
+   
+   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i){      
+      TClonesArray* list = GetStrips(i);
+      list->Clear("C");
+   }
 }
 
 //______________________________________________________________________________
@@ -191,7 +199,7 @@ void TAMSDntuRaw::ToStream(ostream& os, Option_t* option) const
 	  for (Int_t k = 0; k < GetStripsN(i); k++) {
 		 const TAMSDrawHit* hit = GetStrip(i,k);
 		 os << Form("%4d\n", hit->GetSensorId());
-		 os << Form("%4d\n", hit->GetCharge());
+		 os << Form("%4f\n", hit->GetCharge());
 		 os << Form("%4d\n", hit->GetView());
 		 os << Form("%4d\n", hit->GetStrip());
 		 os << Form("%4d\n", hit->GetIndex());

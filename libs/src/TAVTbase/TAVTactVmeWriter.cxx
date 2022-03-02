@@ -1,6 +1,6 @@
 /*!
-  \file
-  \brief   Implementation of TAVTactVmeWriter.
+ \file TAVTactVmeWriter.cxx
+ \brief Read stand alone files (ascii format) and write them in a single DAQ file (binary format)
 */
 
 #include <limits.h>
@@ -15,15 +15,22 @@
 
 /*!
   \class TAVTactVmeWriter 
-  \brief Read stand alone files (ascii format) and write them in a single DAQ file (binary format) **
+  \brief Read stand alone files (ascii format) and write them in a single DAQ file (binary format)
 */
 
+//! Class Imp
 ClassImp(TAVTactVmeWriter);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTactVmeWriter::TAVTactVmeWriter(const char* name, TAGdataDsc* pDatRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
- : TAVTactVmeReader(name, pDatRaw, pGeoMap, pConfig, pParMap),
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
+TAVTactVmeWriter::TAVTactVmeWriter(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+ : TAVTactVmeReader(name, pNtuRaw, pGeoMap, pConfig, pParMap),
    fDaqSize(0)
 {
    SetTitle("TAVTactVmeWriter - writer for VME reader");
@@ -39,7 +46,10 @@ TAVTactVmeWriter::~TAVTactVmeWriter()
 }
 
 //------------------------------------------+-----------------------------------
-//! Open ascii data sources.
+//! Open output file (binary)
+//!
+//! \param[in] name action name
+//! \param[in] opt open file options
 Int_t TAVTactVmeWriter::Open(const TString& name, Option_t* opt)
 {
    // open reading
@@ -110,6 +120,7 @@ Bool_t TAVTactVmeWriter::Process()
 // private method
 
 // --------------------------------------------------------------------------------------
+//! Write DAQ event
 void TAVTactVmeWriter::WriteDaqEvent()
 {
    vector<UInt_t> data;
@@ -140,6 +151,7 @@ void TAVTactVmeWriter::WriteDaqEvent()
 }
 
 // --------------------------------------------------------------------------------------
+//! Fill DAQ event
 void TAVTactVmeWriter::FillDaqEvent()
 {
    // Fill DAQ

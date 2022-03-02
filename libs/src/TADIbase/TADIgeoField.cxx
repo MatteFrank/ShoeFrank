@@ -1,17 +1,24 @@
-
-
+/*!
+ \file TADIgeoField.cxx
+ \brief Implementation of TADIgeoField.cxx
+ */
 
 #include "TAGroot.hxx"
 #include "TADIgeoField.hxx"
-
 #include "TAGrecoManager.hxx"
 
+/*!
+ \class TADIgeoField
+ \brief  Class to handle the Mag field **
+ */
 
+//! Class Imp
 ClassImp(TADIgeoField);
 
 const TString TADIgeoField::fgkDefParaName = "geoField";
 
 //______________________________________________________________________________
+//! Constructor
 TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
  : TAGpara(),
    fpDiGeoMap(diGeo),
@@ -38,11 +45,15 @@ TADIgeoField::TADIgeoField (TADIparGeo* diGeo)
 }
 
 //______________________________________________________________________________
+//! Destructor
 TADIgeoField::~TADIgeoField()
 {
 }
 
 //______________________________________________________________________________
+//! Retrieve information from dipole geometry
+//!
+//! \param[in] geo_ph dipole geometry
 TADIgeoField::DimensionsProperties TADIgeoField::RetrieveProperties(TADIparGeo const* geo_ph) const
 {
     auto * transformation_h = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
@@ -59,7 +70,9 @@ TADIgeoField::DimensionsProperties TADIgeoField::RetrieveProperties(TADIparGeo c
 }
 
 //______________________________________________________________________________
-// read from file
+//! Read from file
+//!
+//! \param[in] fullFileName dipole geometry file name
 void TADIgeoField::FromFile(TString& fullFileName)
 {
   if (fpDiGeoMap->GetType() != 2) return;
@@ -110,13 +123,19 @@ void TADIgeoField::FromFile(TString& fullFileName)
 }
 
 //______________________________________________________________________________
-// return B as a vector, given vector position
+//! return B as a vector, given vector position
+//!
+//! \param[in] position a given position
 TVector3 TADIgeoField::GetField(const TVector3& position) const
 {
    return Interpolate(position);
 }
 
 //______________________________________________________________________________
+//! Get field as a vector, given vector position
+//!
+//! \param[in] pos a given position
+//! \param[in] fieldB field vector
 void TADIgeoField::Field(const Double_t* pos, Double_t* fieldB)
 {
   if (fpDiGeoMap->GetType() == 2) {
@@ -137,7 +156,9 @@ void TADIgeoField::Field(const Double_t* pos, Double_t* fieldB)
 }
 
 //______________________________________________________________________________
-// same for real and const field
+//! Get interpolated field as a vector, given vector position
+//!
+//! \param[in] position a given position
 TVector3 TADIgeoField::Interpolate(const TVector3& position) const
 {
    //   https://en.wikipedia.org/wiki/Trilinear_interpolation
@@ -152,11 +173,7 @@ TVector3 TADIgeoField::Interpolate(const TVector3& position) const
     auto xp = (evaluation_point.x - lower.x)/(upper.x - lower.x);
     auto yp = (evaluation_point.y - lower.y)/(upper.y - lower.y);
     auto zp = (evaluation_point.z - lower.z)/(upper.z - lower.z);
-
-//    std::cout << "new_xp: " << xp << '\n';
-//    std::cout << "new_yp: " << yp << '\n';
-//    std::cout << "new_zp: " << zp << '\n';
-    
+   
     auto const* r_h = RetrieveField( TADIgeoField::point{upper.x, lower.y, lower.z} );
     auto const& f_xu_yl_zl = r_h ? *r_h : TADIgeoField::point{} ;
     r_h = RetrieveField( TADIgeoField::point{lower.x, lower.y, lower.z} );
@@ -165,12 +182,6 @@ TVector3 TADIgeoField::Interpolate(const TVector3& position) const
     auto const& f_xu_yu_zl = r_h ? *r_h : TADIgeoField::point{} ;
     r_h = RetrieveField(TADIgeoField::point{lower.x, upper.y, lower.z});
     auto const& f_xl_yu_zl = r_h ? *r_h : TADIgeoField::point{} ;
-  
-//    std::cout << "new_field_lll: (" << f_xl_yl_zl.x << ", " << f_xl_yl_zl.y << ", " <<  f_xl_yl_zl.z << ")\n";
-//    std::cout << "new_field_ull: (" << f_xu_yl_zl.x << ", " << f_xu_yl_zl.y << ", " <<  f_xu_yl_zl.z << ")\n";
-//    std::cout << "new_field_lul: (" << f_xl_yu_zl.x << ", " << f_xl_yu_zl.y << ", " <<  f_xl_yu_zl.z << ")\n";
-//    std::cout << "new_field_uul: (" << f_xu_yu_zl.x << ", " << f_xu_yu_zl.y << ", " <<  f_xu_yu_zl.z << ")\n";
-//
   
     r_h = RetrieveField(TADIgeoField::point{upper.x, lower.y, upper.z});
     auto const& f_xu_yl_zu = r_h ? *r_h : TADIgeoField::point{} ;
@@ -181,11 +192,6 @@ TVector3 TADIgeoField::Interpolate(const TVector3& position) const
     r_h = RetrieveField(TADIgeoField::point{lower.x, upper.y, upper.z});
     auto const& f_xl_yu_zu = r_h ? *r_h : TADIgeoField::point{} ;
   
-//    std::cout << "new_field_uuu: (" << f_xu_yu_zu.x << ", " << f_xu_yu_zu.y << ", " <<  f_xu_yu_zu.z << ")\n";
-//    std::cout << "new_field_luu: (" << f_xl_yu_zu.x << ", " << f_xl_yu_zu.y << ", " <<  f_xl_yu_zu.z << ")\n";
-//    std::cout << "new_field_ulu: (" << f_xu_yl_zu.x << ", " << f_xu_yl_zu.y << ", " <<  f_xu_yl_zu.z << ")\n";
-//    std::cout << "new_field_llu: (" << f_xl_yl_zu.x << ", " << f_xl_yl_zu.y << ", " <<  f_xl_yl_zu.z << ")\n";
-    
     auto f_x_yl_zl = xp * f_xu_yl_zl + (1-xp) * f_xl_yl_zl ;
     auto f_x_yu_zl = xp * f_xu_yu_zl + (1-xp) * f_xl_yu_zl;
     auto f_x_yl_zu = xp * f_xu_yl_zu + (1-xp) * f_xl_yl_zu;
@@ -195,78 +201,79 @@ TVector3 TADIgeoField::Interpolate(const TVector3& position) const
     auto f_x_y_zu = yp * f_x_yu_zu + (1-yp) * f_x_yl_zu;
 
     auto f_x_y_z = zp * f_x_y_zu + (1-zp) * f_x_y_zl ;
-    
-//    std::cout << "field_new_x : " << f_x_y_z.x << '\n';
-//    std::cout << "field_new_y : " << f_x_y_z.y << '\n';
-//    std::cout << "field_new_z : " << f_x_y_z.z << '\n';
-    
+   
     return TVector3{ f_x_y_z.x, f_x_y_z.y, f_x_y_z.z };
 }
 
 //______________________________________________________________________________
-// retrieve field
-TADIgeoField::point const * TADIgeoField::RetrieveField( TADIgeoField::point const& input_p ) const
+//! return field point for a given point
+//!
+//! \param[in] inputPos a given point
+TADIgeoField::point const* TADIgeoField::RetrieveField(TADIgeoField::point const& inputPos) const
 {
-    if( IsOutside(input_p) ){ return nullptr; }
+    if( IsOutside(inputPos) ){ return nullptr; }
     
-    auto compute_index = []( auto const& input_p, auto const& properties_p ) -> std::size_t {
-        return (input_p - properties_p.lower_limit)/(properties_p.upper_limit- properties_p.lower_limit) * (properties_p.size-1);
-                         };
+    auto compute_index = []( auto const& inputPos, auto const& properties ) -> std::size_t {
+        return (inputPos - properties.lower_limit)/(properties.upper_limit- properties.lower_limit) * (properties.size-1);
+    };
     
-    auto index_z = compute_index( input_p.z, fProperties.z );
-    auto index_y = compute_index( input_p.y, fProperties.y );
-    auto index_x = compute_index( input_p.x, fProperties.x );
+    auto index_z = compute_index( inputPos.z, fProperties.z );
+    auto index_y = compute_index( inputPos.y, fProperties.y );
+    auto index_x = compute_index( inputPos.x, fProperties.x );
     auto index = index_x * fProperties.y.size * fProperties.z.size +
                  index_y * fProperties.z.size +
                  index_z;
-   // std::cout << "index->(x,y,z): " << index << "->(" << index_x << ", " << index_y << ", " << index_z << ")\n";
-    return std::addressof( fField[index] );
+
+   return std::addressof( fField[index] );
 }
 
 //______________________________________________________________________________
-// IsOutside
-bool TADIgeoField::IsOutside( TADIgeoField::point const& input_p ) const
+//! Check if point is outside the mag field box
+//!
+//! \param[in] inputPos a given point
+bool TADIgeoField::IsOutside( TADIgeoField::point const& inputPos ) const
 {
-    return ( input_p.y > fProperties.y.upper_limit ||
-             input_p.y < fProperties.y.lower_limit ||
-             input_p.x > fProperties.x.upper_limit ||
-             input_p.x < fProperties.x.lower_limit ||
-             input_p.z > fProperties.z.upper_limit ||
-             input_p.z < fProperties.z.lower_limit     ) ? true : false;
+    return ( inputPos.y > fProperties.y.upper_limit ||
+             inputPos.y < fProperties.y.lower_limit ||
+             inputPos.x > fProperties.x.upper_limit ||
+             inputPos.x < fProperties.x.lower_limit ||
+             inputPos.z > fProperties.z.upper_limit ||
+             inputPos.z < fProperties.z.lower_limit     ) ? true : false;
 }
 
 //______________________________________________________________________________
-// ComputeUpperPoint
-TADIgeoField::point TADIgeoField::ComputeUpperPoint( TADIgeoField::point const& input_p ) const
+//! Compute Upper Point
+//!
+//! \param[in] inputPos a given point
+TADIgeoField::point TADIgeoField::ComputeUpperPoint(TADIgeoField::point const& inputPos) const
 {
-    auto compute_value = []( auto const& input_p, auto const& properties_p ){
-        return static_cast<std::size_t>( (input_p - properties_p.lower_limit)/
-                                         (properties_p.upper_limit - properties_p.lower_limit) *
-                                         (properties_p.size-1)  +1)   * 1./
-               (properties_p.size-1) * (properties_p.upper_limit - properties_p.lower_limit) + properties_p.lower_limit ;
+    auto compute_value = []( auto const& inputPos, auto const& properties ){
+        return static_cast<std::size_t>( (inputPos - properties.lower_limit)/
+                                         (properties.upper_limit - properties.lower_limit) *
+                                         (properties.size-1)  +1)   * 1./
+               (properties.size-1) * (properties.upper_limit - properties.lower_limit) + properties.lower_limit ;
                             };
-    
-   // std::cout << "upper_x: " <<  compute_value( input_p.x, fProperties.x ) << '\n';
-    
-    auto upper = TADIgeoField::point{ compute_value( input_p.x, fProperties.x ),
-                                      compute_value( input_p.y, fProperties.y ),
-                                      compute_value( input_p.z, fProperties.z ) };
+    auto upper = TADIgeoField::point{ compute_value( inputPos.x, fProperties.x ),
+                                      compute_value( inputPos.y, fProperties.y ),
+                                      compute_value( inputPos.z, fProperties.z ) };
     return upper;
 }
 
 //______________________________________________________________________________
-// ComputeLowerPoint
-TADIgeoField::point TADIgeoField::ComputeLowerPoint( TADIgeoField::point const& input_p ) const
+//! Compute Lower Point
+//!
+//! \param[in] inputPos a given point
+TADIgeoField::point TADIgeoField::ComputeLowerPoint( TADIgeoField::point const& inputPos ) const
 {
-    auto compute_value = []( auto const& input_p, auto const& properties_p ){
-        return static_cast<std::size_t>( (input_p - properties_p.lower_limit)/
-                                        (properties_p.upper_limit - properties_p.lower_limit) *
-                                        (properties_p.size-1)  )   * 1./
-        (properties_p.size-1) * (properties_p.upper_limit - properties_p.lower_limit) + properties_p.lower_limit ;
+    auto compute_value = []( auto const& inputPos, auto const& properties ) {
+        return static_cast<std::size_t>( (inputPos - properties.lower_limit)/
+                                        (properties.upper_limit - properties.lower_limit) *
+                                        (properties.size-1)  )   * 1./
+        (properties.size-1) * (properties.upper_limit - properties.lower_limit) + properties.lower_limit ;
     };
     
-    auto lower = TADIgeoField::point{ compute_value( input_p.x, fProperties.x ),
-                                      compute_value( input_p.y, fProperties.y ),
-                                      compute_value( input_p.z, fProperties.z ) };
+    auto lower = TADIgeoField::point{ compute_value( inputPos.x, fProperties.x ),
+                                      compute_value( inputPos.y, fProperties.y ),
+                                      compute_value( inputPos.z, fProperties.z ) };
     return lower;
 }

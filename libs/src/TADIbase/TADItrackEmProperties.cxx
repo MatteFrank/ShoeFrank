@@ -1,4 +1,9 @@
 
+/*!
+ \file TADItrackEmProperties.cxx
+ \brief  Implemention of TADItrackEmProperties.cxx
+ */
+
 #include "Riostream.h"
 #include "TMath.h"
 #include "TGeoManager.h"
@@ -11,17 +16,18 @@
 //##############################################################################
 
 /*!
- \class TADItrackEmProperties TADItrackEmProperties.hxx "TADItrackEmProperties.hxx"
+ \class TADItrackEmProperties 
  \brief  Functions for EM track properties **
  */
 
+//! Class Imp
 ClassImp(TADItrackEmProperties);
 
 Float_t TADItrackEmProperties::fgkX0w    = 36.08;
 Float_t TADItrackEmProperties::fgkElossK = 0.307075;  // MeV cm2/g for A = 1 g/mol, in  [MeV].
+
 //_____________________________________________________________________________
-//
-// Default constructor
+//! Default constructor
 TADItrackEmProperties::TADItrackEmProperties()
 : TAGpara()
 {
@@ -32,16 +38,16 @@ TADItrackEmProperties::TADItrackEmProperties()
 }
 
 //_____________________________________________________________________________
-//
-// Destructor
+//! Destructor
 TADItrackEmProperties::~TADItrackEmProperties()
 {
    delete fFuncSigTheta;
 }
 
 //_____________________________________________________________________________
-//
-// Calculation of the WEPL of the material layer
+//! Calculation of the WEPL of the material layer
+//!
+//! \param[in] mat material name
 Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
 {
    Float_t factor = 0;
@@ -71,8 +77,12 @@ Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
 }
 
 //_____________________________________________________________________________
-//
-// Calculation of the energy loss in the material layer (WEPL in [cm])
+//! Calculation of the energy loss in the material layer (WEPL in [cm])
+//!
+//! \param[in] energy beam energy (MeV)
+//! \param[in] massNumber mass number of beam
+//! \param[in] atomicNumber atomic number of beam
+//! \param[in] WEPL Water equivalent path length of target
 Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL)
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
@@ -102,8 +112,13 @@ Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t massNumber,
 }
 
 //_____________________________________________________________________________
-//
-// Calculation of the energy loss in the material layer (thickness in [cm])
+//! Calculation of the energy loss in the material layer (thickness in [cm])
+//!
+//! \param[in] mat material name of target
+//! \param[in] thickness thickness of target
+//! \param[in] energy beam energy
+//! \param[in] massNumber mass number of beam
+//! \param[in] atomicNumber atomic number of beam
 Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber)
 {
    // rage formula Bortfeld et al, PMB 41 (1996)
@@ -114,8 +129,12 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 }
 
 //_____________________________________________________________________________
-//
-// Calculation of the energy loss in the material layer (thickness in [cm])
+//! Calculation of the energy loss in the material layer (thickness in [cm])
+//!
+//! \param[in] mat material name of target
+//! \param[in] energy beam energy (MeV)
+//! \param[in] Abeam mass number of beam
+//! \param[in] Zbeam atomic number of beam
 Float_t TADItrackEmProperties::GetRange(const TString& mat, Float_t energy, Float_t Abeam, Int_t Zbeam)
 {
   // rage formula Bortfeld et al, PMB 41 (1996)
@@ -140,8 +159,11 @@ Float_t TADItrackEmProperties::GetRange(const TString& mat, Float_t energy, Floa
 }
 
 //_____________________________________________________________________________
-//
-// Calculation of the energy loss per range with Bethe-Bloch [MeV.cm^2/g]
+//! Calculation of the energy loss per range with Bethe-Bloch [MeV.cm^2/g]
+//!
+//! \param[in] mat material name of target
+//! \param[in] beta beta of beam
+//! \param[in] zBeam atomic number of beam
 Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Double_t zBeam)
 {
    // Inspired from Alessio's ChargeBetheBloch formula
@@ -171,8 +193,10 @@ Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Doubl
 }
 
 //_____________________________________________________________________________
-//
-// Calculation of the impact*c [MeV]
+//! Calculation of the impact*c [MeV]
+//!
+//! \param[in] energy energy of beam (MeV)
+//! \param[in] massNumber mass number of beam
 Float_t TADItrackEmProperties::GetPCC(Float_t energy, Float_t massNumber)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
@@ -182,8 +206,9 @@ Float_t TADItrackEmProperties::GetPCC(Float_t energy, Float_t massNumber)
 }
 
 //_____________________________________________________________________________
-//
-// Calculation of beta
+//! Calculation of beta
+//!
+//! \param[in] energy energy of beam (MeV)
 Float_t TADItrackEmProperties::GetBeta(Float_t energy)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
@@ -194,17 +219,20 @@ Float_t TADItrackEmProperties::GetBeta(Float_t energy)
 }
 
 // --------------------------------------------------------------------------------------
+//! Function to modelize the scattering angle of incident ions at a depth x (Highland)
+//! (14.1MeV/p*beta)*Z*sqrt(x/Lr)*[1 +1/9log(x/Lr)]
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
+//! \return angle in rad
+//!
+//! par[0]=beta of particule (beta)
+//! par[1]=momentum MeV/c (pc)
+//! par[2]=z of the beam (Z)
+//! par[3]=radiation length of the target material (Lr)
+//! x[0] in cm
 Double_t TADItrackEmProperties::SigmaTheta(Double_t *x, Double_t *par)
 {
-   /// Function to modelize the scattering angle of incident ions at a depth x (Highland)
-   /// (14.1MeV/p*beta)*Z*sqrt(x/Lr)*[1 +1/9log(x/Lr)]
-   /// par[0]=beta of particule (beta)
-   /// par[1]=momentum MeV/c (pc)
-   /// par[2]=z of the beam (Z)
-   /// par[3]=radiation length of the target material (Lr)
-   /// x[0] in cm
-   /// return in rad
-   
    Double_t radL = x[0]/par[3];
    Double_t A    = 14.1*par[2]/(par[0]*par[1]);
    Double_t B    = TMath::Sqrt(radL)*(1+TMath::Log10(radL)/9.);
@@ -212,7 +240,14 @@ Double_t TADItrackEmProperties::SigmaTheta(Double_t *x, Double_t *par)
    return A*B;
 }
 
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get the scattering angle of incident ions at a depth x (Highland)
+//!
+//! \param[in] matTarget material name of target
+//! \param[in] x thickness of target
+//! \param[in] energy energy of beam
+//! \param[in] bA mass number of beam
+//! \param[in] bZ atomic number of beam
 Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t x, Float_t energy, Float_t bA, Float_t bZ)
 {
    energy       *= TAGgeoTrafo::GevToMev();
@@ -228,7 +263,13 @@ Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t x
    return  fFuncSigTheta->Eval(x);
 }
 
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get the scattering angle of incident ions at a depth x (Highland)
+//!
+//! \param[in] matTarget material name of target
+//! \param[in] x thickness of target
+//! \param[in] energy energy of beam
+//! \param[in] beam beam materrial name
 Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t x, Float_t energy, const TString& beam)
 {
    Double_t bA   = GetA(beam);
@@ -237,7 +278,10 @@ Float_t TADItrackEmProperties::GetSigmaTheta(const TString& matTarget, Float_t x
   return GetSigmaTheta(matTarget, bA, bZ, x, energy);
 }
 
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get radiation length for a given material
+//!
+//! \param[in] name material name
 Float_t TADItrackEmProperties::GetRadLength(TString name)
 {
    TString tmp(name);
@@ -253,7 +297,10 @@ Float_t TADItrackEmProperties::GetRadLength(TString name)
       return mat->GetRadLen();
 }
 
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get density for a given material
+//!
+//! \param[in] name material name
 Float_t TADItrackEmProperties::GetDensity(TString name)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
@@ -264,7 +311,11 @@ Float_t TADItrackEmProperties::GetDensity(TString name)
       return mat->GetDensity();
 }
                   
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get mass number for a given material
+//!
+//! \param[in] name material name
+//! \param[in] eff flag for effective mass number (average of A isotopes)
 Float_t TADItrackEmProperties::GetA(TString name, Bool_t eff)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
@@ -279,7 +330,11 @@ Float_t TADItrackEmProperties::GetA(TString name, Bool_t eff)
    }
 }
 
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get atomic number for a given material
+//!
+//! \param[in] name material name
+//! \param[in] eff flag for effective atomic number (average of Z isotopes)
 Float_t TADItrackEmProperties::GetZ(TString name, Bool_t eff)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
@@ -294,7 +349,10 @@ Float_t TADItrackEmProperties::GetZ(TString name, Bool_t eff)
    }
 }
 
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get mass number for a given mixture
+//!
+//! \param[in] mix a given mixture
 Float_t TADItrackEmProperties::GetA(TGeoMixture* mix)
 {
    if (mix == 0x0) {
@@ -308,7 +366,10 @@ Float_t TADItrackEmProperties::GetA(TGeoMixture* mix)
    }
 }
 
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get atomic number for a given mixture
+//!
+//! \param[in] mix a given mixture
 Float_t TADItrackEmProperties::GetZ(TGeoMixture* mix)
 {
    if (mix == 0x0) {
@@ -322,25 +383,16 @@ Float_t TADItrackEmProperties::GetZ(TGeoMixture* mix)
    }
 }
 
-// --------------------------------------------------------------------------------------
+//_____________________________________________________________________________
+//! Get mean excitation energy for a given material
+//!
+//! \param[in] name material name
 Float_t TADItrackEmProperties::GetMeanExcitationEnergy(TString name)
 {
    TGeoMaterial* mat = (TGeoMaterial *)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    if (mat == 0x0) {
       Warning("GetDensity()", "Unknown material %s", name.Data());
       return -1;
-   } else {
-      
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+   } else
       return  mat->GetConstProperty(TAGionisMaterials::GetMeanExcitationEnergyName());
-
-#else
-      TAGionisMaterials* ionis = (TAGionisMaterials*)mat->GetCerenkovProperties();
-      if (ionis == 0x0)
-         return -1;
-      else
-         return ionis->GetMeanExcitationEnergy();
-      
-#endif
-   }
 }

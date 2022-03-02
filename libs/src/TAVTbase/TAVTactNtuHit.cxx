@@ -1,6 +1,6 @@
 /*!
- \file
- \brief   Implementation of TAVTactNtuHit.
+ \file TAVTactNtuHit.cxx
+ \brief   Get vertex raw data from DAQ (binary format)
  */
 
 #include "TH1F.h"
@@ -17,18 +17,24 @@
 #include "TAVTactNtuHit.hxx"
 
 /*!
- \class TAVTactNtuHit TAVTactNtuHit.hxx "TAVTactNtuHit.hxx"
- \brief Get vertex raw data from DAQ (binary format) **
+ \class TAVTactNtuHit
+ \brief Get vertex raw data from DAQ (binary format)
  */
 
+//! Class Imp
+ClassImp(TAVTactNtuHit);
 
 UInt_t TAVTactNtuHit::fgTStolerance = 40;
 
-ClassImp(TAVTactNtuHit);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[out] pNtuRaw hit container descriptor
+//! \param[in] pDatDaq daq event container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
 TAVTactNtuHit::TAVTactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq),
@@ -52,6 +58,7 @@ Bool_t TAVTactNtuHit::Action()
    
    Int_t nFragments = datDaq->GetFragmentsN();
    UInt_t bcoTrig = 0;
+   UInt_t evtNumber = 0;
    static Bool_t first = false;
    
    const DECardEvent* evt  = 0x0;
@@ -68,7 +75,6 @@ Bool_t TAVTactNtuHit::Action()
              evt = evt0;
           else
              evt = fQueueEvt.front();
-
           bcoTrig    = evt->BCOofTrigger;
           fData      = evt->values;
           fEventSize = evt->evtSize;
@@ -86,13 +92,19 @@ Bool_t TAVTactNtuHit::Action()
    TrgEvent* trig = datDaq->GetTrgEvent();
    if (!trig) return true;
 
+   InfoEvent* evtInfo = datDaq->GetInfoEvent();
+   if (!evtInfo) return true;
+
+   evtNumber = evtInfo->eventNumber;
+   
    if (!first) {
       fFirstBcoTrig = bcoTrig-trig->BCOofTrigger;
       first = true;
    }
    
-   Int_t diff    = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
-   fpHisBCOofTrigger->Fill(diff);
+   Int_t diff = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
+   if (ValidHistogram())
+      fpHisBCOofTrigger->Fill(evtNumber, diff);
    
    if (TMath::Abs(float(diff)) > fgTStolerance) {
       Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);

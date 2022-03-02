@@ -1,6 +1,13 @@
 #ifndef _TAITtrack_HXX
 #define _TAITtrack_HXX
 
+/*!
+ \file TAITtrack.hxx
+ \brief   Declaration of TAITtrack.
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 // ROOT classes
 #include "TClonesArray.h"
 
@@ -26,17 +33,16 @@ public:
    ~TAITtrack();
    TAITtrack(const TAGbaseTrack& aTrack);
 
-   
-   //! Set up clones
+   // Set up clones
    void           SetupClones();
 
-    //! Get cluster
+   //! Get cluster
    TAVTbaseCluster* GetCluster(Int_t index)  { return (TAITcluster*)fListOfClusters->At(index); }
  
-   //! Add cluster
+   // Add cluster
    void           AddCluster(TAGcluster* cluster);
    
-   ClassDef(TAITtrack,8)                      // Describes TAITtrack
+   ClassDef(TAITtrack,8)                      ///< Describes TAITtrack
 };
 
 #endif

@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TAVTactBaseNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TAVTactBaseNtuHitMC.
+  \file TAVTactBaseNtuHitMC.cxx
+  \brief   Base class to NTuplize MC hits
 */
 
 #include "TH2F.h"
@@ -25,14 +24,14 @@
 #include "TAGrecoManager.hxx"
 
 /*!
-  \class TAVTactBaseNtuHitMC"
-  \brief NTuplizer for vertex raw hits. **
+  \class TAVTactBaseNtuHitMC
+  \brief Base class to NTuplize VTX MC hits
 */
 
 using namespace std;
 
+//! Class imp
 ClassImp(TAVTactBaseNtuHitMC);
-
 
 Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
 Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 0.736; // ajust for FIRST
@@ -41,9 +40,12 @@ Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
-//
+//! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pGeoMap geometry parameter descriptor
 TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
- : TAGaction(name, "TAVTactBaseNtuHitMC - NTuplize Vertex MC data"),
+ : TAGaction(name, "TAVTactBaseNtuHitMC - NTuplize hit MC data"),
    fpGeoMap(pGeoMap),
 	fNoisyPixelsN(0)
 {   
@@ -125,6 +127,7 @@ void TAVTactBaseNtuHitMC::CreateHistogram()
 
 
 // --------------------------------------------------------------------------------------
+//! Compute noise level
 void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 {
 	// computing number of noise pixels (sigma level) from gaussian
@@ -143,6 +146,7 @@ void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 }
 
 //------------------------------------------+-----------------------------------
+//! Generated pileup events
 void  TAVTactBaseNtuHitMC::GeneratePileup()
 {
 	Int_t pileupEvents = TMath::Nint(fpHisPoisson->GetRandom())-1;

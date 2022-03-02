@@ -1,8 +1,7 @@
 #ifndef _TAITactNtuClusterMT_HXX
 #define _TAITactNtuClusterMT_HXX
 /*!
- \file
- \version $Id: TAITactNtuClusterMT.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAITactNtuClusterMT.hxx
  \brief   Declaration of TAITactNtuClusterMT.
  */
 /*------------------------------------------+---------------------------------*/
@@ -21,23 +20,24 @@ public:
    
    virtual ~TAITactNtuClusterMT();
    
-   //! Action
+   // Action
    virtual  Bool_t Action();
 
-   //! Find cluster charge, noise & position
+   // Find cluster charge, noise & position
    virtual Bool_t  FindClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr);
    
-   //! Get list of pixels
+   // Get list of pixels
    virtual TClonesArray* GetListOfPixels(Int_t sensorId);
 
 private:
-   TAGdataDsc*     fpNtuRaw;		  // input data dsc
-   TAGdataDsc*     fpNtuClus;		  // output data dsc
-   Bool_t          fOk;
+   TAGdataDsc*     fpNtuRaw;		  ///< input data dsc
+   TAGdataDsc*     fpNtuClus;		  ///< output data dsc
+   Bool_t          fOk;            ///< ok flag
 
-   pthread_t*      fThread[4];
+   pthread_t*      fThread[4];     ///< thread pointer
 
 private:
+   // Create cluster
    Bool_t  CreateClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr);
 
    ClassDef(TAITactNtuClusterMT,0)

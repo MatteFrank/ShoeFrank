@@ -1,8 +1,7 @@
 #ifndef _TAVTactNtuTrack_HXX
 #define _TAVTactNtuTrack_HXX
 /*!
- \file
- \version $Id: TAVTactNtuTrack.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAVTactNtuTrack.hxx
  \brief   Declaration of TAVTactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/
@@ -24,6 +23,7 @@ public:
    virtual ~TAVTactNtuTrack();
    
 protected:
+   // Find tilted tracks
    virtual Bool_t FindTiltedTracks();
  
    ClassDef(TAVTactNtuTrack,0)

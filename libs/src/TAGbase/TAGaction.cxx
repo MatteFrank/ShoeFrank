@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGaction.cxx,v 1.16 2003/06/22 10:48:07 mueller Exp $
+  \file TAGaction.cxx
   \brief   Implementation of TAGaction.
 */
 
@@ -11,15 +10,18 @@
 #include "TAGaction.hxx"
 
 /*!
-  \class TAGaction TAGaction.hxx "TAGaction.hxx"
+  \class TAGaction 
   \brief Base class for actions. **
 */
 
+//! Class Imp
 ClassImp(TAGaction);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] title action title name
 TAGaction::TAGaction(const char* name, const char* title)
   : TAGnamed(name, title),
     fpDataOutList(0),
@@ -44,7 +46,6 @@ TAGaction::TAGaction(const char* name, const char* title)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGaction::~TAGaction()
 {
   delete fpDataOutList;
@@ -54,8 +55,9 @@ TAGaction::~TAGaction()
 }
 
 //------------------------------------------+-----------------------------------
-//! Invalidate action object.
-
+//! Clear action object.
+//!
+//! \param[in] opt clear options
 void TAGaction::Clear(Option_t*)
 {
   ResetBit(kValid|kEof|kFail);
@@ -64,7 +66,6 @@ void TAGaction::Clear(Option_t*)
 
 //------------------------------------------+-----------------------------------
 //! Process action.
-
 Bool_t TAGaction::Process()
 {
   if (Valid()) return kTRUE;
@@ -83,7 +84,6 @@ Bool_t TAGaction::Process()
 
 //------------------------------------------+-----------------------------------
 //! Execute action.
-
 Bool_t TAGaction::Action()
 {
   return kTRUE;
@@ -91,7 +91,6 @@ Bool_t TAGaction::Action()
 
 //------------------------------------------+-----------------------------------
 //! Create histograms.
-
 void TAGaction::CreateHistogram()
 {
   return;
@@ -99,6 +98,8 @@ void TAGaction::CreateHistogram()
 
 //------------------------------------------+-----------------------------------
 //! Setup directory's histograms.
+//!
+//! \param[in] dir directory where histograms are saved
 void TAGaction::SetHistogramDir(TDirectory* dir)
 {
    if (fpHistList) {
@@ -109,14 +110,13 @@ void TAGaction::SetHistogramDir(TDirectory* dir)
      fbIsOpenFile = true;
    }
    
-   m_dir = dir;
+   fDirectory = dir;
 
    if (!dir->IsWritable()) fbIsOpenFile = false;
 }
 
 //------------------------------------------+-----------------------------------
 //! Delete all histograms.
-
 void TAGaction::DeleteHistogram()
 {
   if (fpHistList) {
@@ -132,7 +132,6 @@ void TAGaction::DeleteHistogram()
 
 //------------------------------------------+-----------------------------------
 //! Clear histograms.
-
 void TAGaction::ClearHistogram()
 {
   if (fpHistList) {
@@ -164,7 +163,9 @@ void TAGaction::WriteHistogram()
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-
+//!
+//! \param[in] os output stream
+//! \param[in] option printout option
 void TAGaction::ToStream(ostream& os, Option_t* option) const
 {
   /*
@@ -201,8 +202,9 @@ void TAGaction::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Check dangling object references to TObject \a p_obj . -> Zombie
-
+//! Check dangling object references to TObject p_obj . -> Zombie
+//!
+//! \param[in] p_obj object to be removed
 void TAGaction::RecursiveRemove(TObject* p_obj)
 {
   Bool_t b_zombie = kFALSE;
@@ -227,7 +229,9 @@ void TAGaction::RecursiveRemove(TObject* p_obj)
 
 //------------------------------------------+-----------------------------------
 //! Add output data descriptor.
-
+//!
+//! \param[in] p_data data descriptor
+//! \param[in] baseclass class name
 void TAGaction::AddDataOut(TAGdataDsc* p_data, const char* baseclass)
 {
   if (!p_data) {
@@ -263,7 +267,9 @@ void TAGaction::AddDataOut(TAGdataDsc* p_data, const char* baseclass)
 
 //------------------------------------------+-----------------------------------
 //! Add input data descriptor.
-
+//!
+//! \param[in] p_data data descriptor
+//! \param[in] baseclass class name
 void TAGaction::AddDataIn(TAGdataDsc* p_data, const char* baseclass)
 {
   if (!p_data) {
@@ -292,7 +298,9 @@ void TAGaction::AddDataIn(TAGdataDsc* p_data, const char* baseclass)
 
 //------------------------------------------+-----------------------------------
 //! Add parameter descriptor.
-
+//!
+//! \param[in] p_para parameter descriptor
+//! \param[in] baseclass class name
 void TAGaction::AddPara(TAGparaDsc* p_para, const char* baseclass)
 {
   if (!p_para) {
@@ -320,7 +328,8 @@ void TAGaction::AddPara(TAGparaDsc* p_para, const char* baseclass)
 
 //------------------------------------------+-----------------------------------
 //! Add histogram.
-
+//!
+//! \param[in] p_hist histogram to add
 void TAGaction::AddHistogram(TH1* p_hist)
 {
   if (!p_hist) {
@@ -341,7 +350,6 @@ void TAGaction::AddHistogram(TH1* p_hist)
 
 //------------------------------------------+-----------------------------------
 //! Check all dependdencies.
-
 Bool_t TAGaction::CheckDependencies()
 {
   Bool_t b_allvalid = kTRUE;
@@ -371,7 +379,8 @@ Bool_t TAGaction::CheckDependencies()
 
 //------------------------------------------+-----------------------------------
 //! Set a status bit in all output data descriptors.
-
+//!
+//! \param[in] i_bits bit to be set
 void TAGaction::SetBitAllDataOut(UInt_t i_bits)
 {
   if (fpDataOutList) {

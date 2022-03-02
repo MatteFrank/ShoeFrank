@@ -1,9 +1,20 @@
+/*!
+ \file RemoteEvent.cpp
+ \brief  Implementation of RemoteEvent
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
 #include "RemoteEvent.hh"
 
+/*!
+ \class RemoteEvent
+ \brief Remote event
+ */
 
+//------------------------------------------+-----------------------------------
+//! Constructor.
 RemoteEvent::RemoteEvent()
 : BaseFragment(),
   time_sec(0),
@@ -13,7 +24,10 @@ RemoteEvent::RemoteEvent()
 {
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Copy contructor.
+//!
+//! \param[in] right event to copy
 RemoteEvent::RemoteEvent(const RemoteEvent& right)
 : BaseFragment(right),
   time_sec(right.time_sec),
@@ -25,7 +39,10 @@ RemoteEvent::RemoteEvent(const RemoteEvent& right)
    values = right.values;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! operator=
+//!
+//! \param[in] right event to equal
 const RemoteEvent& RemoteEvent::operator=(const RemoteEvent& right)
 {
    BaseFragment::operator=(right);
@@ -38,9 +55,15 @@ const RemoteEvent& RemoteEvent::operator=(const RemoteEvent& right)
    return *this;
 }
 
+//------------------------------------------+-----------------------------------
+//! Destructor.
 RemoteEvent::~RemoteEvent(){
 }
 
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void RemoteEvent::readData(unsigned int **p1){
 
   unsigned int * p = *p1;
@@ -70,7 +93,8 @@ void RemoteEvent::readData(unsigned int **p1){
   *p1 = p;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Print data
 void RemoteEvent::printData () const {
   printf ("Remote DATA: \n");
   printf ("Channel ID (hex): %x\n",  channelID);

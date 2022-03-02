@@ -1,3 +1,7 @@
+/*!
+ \file TADItrackPropagator.cxx
+ \brief Implementation of TADItrackPropagator.cxx
+ */
 
 #include "TMath.h"
 
@@ -6,10 +10,8 @@
 
 #include "TADItrackPropagator.hxx"
 
-//##############################################################################
-
 /*!
-  \class TADItrackPropagator TADItrackPropagator.hxx "TADItrackPropagator.hxx"
+  \class TADItrackPropagator 
   \brief Track Propagator in Mag field base on RK4 **
    units: B (Gaus), pos (cm), momentum (MeV/c)
 */
@@ -17,6 +19,7 @@
 const  Double_t TADItrackPropagator::fgkConvFactor = 0.299792458;
 
 //______________________________________________________________________________
+//! Constructor
 TADItrackPropagator::TADItrackPropagator(TADIgeoField* field)
  : TAGobject(),
    fField(field),
@@ -30,7 +33,14 @@ TADItrackPropagator::TADItrackPropagator(TADIgeoField* field)
 {
 }
 
-//______________________________________________________________________________
+// __________________________________________________________________________
+//! Propagate in Z-direction charged particle with momentum p to vertex v.
+//!
+//! \param[in] v initial position
+//! \param[in] p initial momentum
+//! \param[in] posZ Z position
+//! \param[out] vOut final position
+//! \param[out] pOut final momentum
 Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, TVector3& vOut, TVector3& pOut)
 {
    // Propagate particle with momentum p to pos Z with an initial position v.
@@ -58,6 +68,7 @@ Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, 
 }
 
 //______________________________________________________________________________
+//! Runge Kutta propagation
 void TADItrackPropagator::RungeKutta4()
 {
    TVector3 K1 = SolveLorentz(fDerivative,               GetFieldB(fPosition) );
@@ -73,6 +84,11 @@ void TADItrackPropagator::RungeKutta4()
 }
 
 //______________________________________________________________________________
+//! Solver for Lorentz equation
+//!
+//! \param[in] v  position vector
+//! \param[in] field field vector
+//! \return new position
 TVector3 TADItrackPropagator::SolveLorentz(TVector3 u, TVector3 field)
 {
    TVector3 temp = (fZ/fNormP)*u.Cross(field)*fgkConvFactor;

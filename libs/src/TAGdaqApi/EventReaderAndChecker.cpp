@@ -1,6 +1,7 @@
-//
-//
-//
+/*!
+ \file EventReaderAndChecker.cpp
+ \brief  Implementation of EventReaderAndChecker
+ */
 #include "EventReaderAndChecker.hh"
 #include "fADCEvent.hh"
 #include "DECardEvent.hh"
@@ -11,21 +12,28 @@
 #include <iomanip>
 #include <stdlib.h>
 
-// default constructor
+/*!
+ \class EventReaderAndChecker
+ \brief this class is an EventReader that is able to perform all the possible checks on the data
+ */
+
+//------------------------------------------+-----------------------------------
+//! default constructor
+//!
+//! \param[in] debugLevel debug level
 EventReaderAndChecker::EventReaderAndChecker(int debugLevel) : 
   EventReader(debugLevel),
   m_eventOffset(0) {
 }
 
-
-// default destructor
+//------------------------------------------+-----------------------------------
+//! default destructor
 EventReaderAndChecker::~EventReaderAndChecker(){
   // empty
 }
 
-
-// print statistics
-
+//------------------------------------------+-----------------------------------
+//! print statistics
 void EventReaderAndChecker::printStatistics(){
 
   int errors = m_fileErrors;
@@ -54,9 +62,8 @@ void EventReaderAndChecker::printStatistics(){
 }
 
 
-
-// perform all possible checks on data
-
+//------------------------------------------+-----------------------------------
+//! perform all possible checks on data
 bool EventReaderAndChecker::check(){
   bool checkPassed = true;
   if( m_eventsRead==0 ){
@@ -200,8 +207,8 @@ bool EventReaderAndChecker::check(){
   return checkPassed;
 }
 
-
-// return the BCO difference wrt the previous event
+//------------------------------------------+-----------------------------------
+//! return the BCO difference wrt the previous event
 u_int  EventReaderAndChecker::getBCOdiff() const{
 
   static u_int lastBCO=0;

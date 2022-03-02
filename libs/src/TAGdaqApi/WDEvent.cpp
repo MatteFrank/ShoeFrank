@@ -1,11 +1,26 @@
+/*!
+ \file WDEvent.cpp
+ \brief  Implementation of WDEvent
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "WDEvent.hh"
 #include <iostream>
 
+/*!
+ \class WDEvent
+ \brief Wave Dream event
+ */
+
+//------------------------------------------+-----------------------------------
+//! Destructor.
 WDEvent::~WDEvent(){}
 
-
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void WDEvent::readData(unsigned int **p1){
 
   RemoteEvent::readData(p1);
@@ -75,7 +90,8 @@ void WDEvent::readData(unsigned int **p1){
   }
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Print data
 void WDEvent::printData () const{
 
   printf ("WDEvent DATA: \n");

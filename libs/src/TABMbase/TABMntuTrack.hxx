@@ -25,6 +25,8 @@ class TABMntuTrack : public TAGdata {
     Int_t            GetTracksN()  const{return fListOfTracks->GetEntries();};
     TABMtrack*       GetTrack(Int_t i) {return (GetTracksN()) ? (TABMtrack*) ((*fListOfTracks)[i]) : 0x0;};
     const TABMtrack* GetTrack(Int_t i) const{return (GetTracksN()) ? (const TABMtrack*) ((*fListOfTracks)[i]) : 0x0;};
+    TABMtrack*       GetPrunedTrack() {return (fPrunedTrack->GetEntries()) ? (TABMtrack*) ((*fPrunedTrack)[0]) : 0x0;};
+    Int_t            GetPrunedStatus() {return fPrunedStatus;};
     Int_t            GetTrackStatus(){return fStatus;};
 
     virtual void    SetupClones();
@@ -33,6 +35,7 @@ class TABMntuTrack : public TAGdata {
 
     TClonesArray*   GetListOfTracks() { return fListOfTracks; }
     TABMtrack*      NewTrack(TABMtrack trk);
+    TABMtrack*      NewPrunedTrack(TABMtrack trk, Int_t view);
     void            SetTrackStatus(Int_t instatus){fStatus=instatus;return;};
 
     static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
@@ -40,7 +43,9 @@ class TABMntuTrack : public TAGdata {
   private:
     Int_t           fStatus;                //-1000=notset, 0=ok, 1=firedUplane<plane_mincut, 2=firedVplane<plane_mincut, 3=hit rejected > rejmax_cut, 4=fit is not converged, 5=chi2red>chi2redcut, >6=error
 
-    TClonesArray*   fListOfTracks;			    // list of tracks
+    TClonesArray*   fPrunedTrack;          //list of pruned tracks
+    Int_t           fPrunedStatus;          //-1=no pruned track, 0=pruned track on the yz view (view=0), 1= pruned track on the xz view (view=1)
+    TClonesArray*   fListOfTracks;			    // list of saved tracks
 
    static TString fgkBranchName;            // Branch name in TTree
 

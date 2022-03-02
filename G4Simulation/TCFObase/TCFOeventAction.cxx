@@ -1,14 +1,8 @@
+/*! \file TCFObaseEventAction.cxx
+ \brief Implementation of TCFObaseEventAction.
+ */
 
 #include "TCFOeventAction.hxx"
-
-//include event class
-//Endo of event:
-//collection hits: all hits of this collections contains the information about what happened in the sensitive volume (epitaxial layer)
-//each hit represents a step and in the epi layer there may have been many
-//than the position to send to CmosDigitizer is the PosIn of the first hits and the pos out of the last hits
-//the energy deposited is the sum of the energy deposited in each step
-//All positon in microns and all energy in eV
-
 
 #include "G4Event.hh"
 #include "G4EventManager.hh"
@@ -53,21 +47,31 @@
 #include "TGeoMatrix.h"
 #include "TFile.h"
 
-//---------------------------------------------------------------------------
-//
+/*! \class TCFOeventAction
+ \brief Event action class for FOOT
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
+//!
+//! \param[in] runAction run action
+//! \param[in] footGeomConstructor FOOT geometry constructor
 TCFOeventAction::TCFOeventAction(TCFOrunAction* runAction, TCGbaseGeometryConstructor* footGeomConstructor)
 : TCFObaseEventAction(runAction,footGeomConstructor)
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCFOeventAction::~TCFOeventAction()
 {
 }
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! End of event action
+//!
+//! \param[in] evt a given event
 void TCFOeventAction::EndOfEventAction(const G4Event* evt)
 {
     // fill track
@@ -82,6 +86,9 @@ void TCFOeventAction::EndOfEventAction(const G4Event* evt)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Collect hits per event
+//!
+//! \param[in] evt a given event
 void TCFOeventAction::Collect(const G4Event* evt)
 {
    
@@ -110,6 +117,10 @@ void TCFOeventAction::Collect(const G4Event* evt)
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Get hits per plane
+//!
+//! \param[in] evt a given event
+//! \param[in] idColl hit collection id
 void TCFOeventAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
 {
    G4HCofThisEvent*  hitCollEv = evt->GetHCofThisEvent();
@@ -185,7 +196,8 @@ void TCFOeventAction::GetHitPerPlane(const G4Event* evt, G4int idColl)
 
 }
 
-////....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Fill track info
 void TCFOeventAction::FillTrack()
 {
     TAMCevent* event = fRunAction->GetEventMC();
@@ -234,6 +246,10 @@ void TCFOeventAction::FillTrack()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Fill hits
+//!
+//! \param[in] event MC event
+//! \param[in] mcHit G4 MC hit
 void TCFOeventAction::FillHits(TAMCevent* event, TCGmcHit* mcHit)
 {
     G4ThreeVector vin = mcHit->GetPosIn()*TAGgeoTrafo::MmToCm();

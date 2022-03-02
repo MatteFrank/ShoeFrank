@@ -1,7 +1,5 @@
 /*!
- // C.A. Reidel & Ch. Finck
- 
- \file
+ \file TAIRalignM.cxx
  \brief   Implementation of TAIRalignM.
  */
 #include "TMath.h"
@@ -34,15 +32,23 @@
 
 /*!
  \class TAIRalignM
- \brief Alignment class for vertex tracks. **
+ \brief Alignment class for ITR tracks. **
   Input of TAIRtracks, vertex Sensor already aligned, all vertex Sensors nust be set as reference (status = 1)
   All inner tracker set to status 2.
  */
 
+//! Class Imp
 ClassImp(TAIRalignM);
 
 TAIRalignM* TAIRalignM::fgInstance = 0x0;
+
+
 //__________________________________________________________
+//! Instance
+//!
+//! \param[in] name action name
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
 TAIRalignM* TAIRalignM::Instance(const TString name, const TString expName, Int_t runNumber)
 {
    if (fgInstance == 0x0)
@@ -53,6 +59,10 @@ TAIRalignM* TAIRalignM::Instance(const TString name, const TString expName, Int_
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
 TAIRalignM::TAIRalignM(const TString name, const TString expName, Int_t runNumber)
  : TObject(),
    fFileName(name),
@@ -117,8 +127,7 @@ TAIRalignM::~TAIRalignM()
 }
 
 //______________________________________________________________________________
-//
-// Create all the residuals histograms
+//! Create all the residuals histograms
 void TAIRalignM::InitParameters()
 {   
    /// Default constructor, setting define alignment parameters
@@ -131,8 +140,7 @@ void TAIRalignM::InitParameters()
 }
 
 //______________________________________________________________________________
-//
-// Create all the residuals histograms
+//! Create all the residuals histograms
 void TAIRalignM::FillStatus()
 {
    TAVTbaseParConf* parConf = 0x0;
@@ -147,8 +155,10 @@ void TAIRalignM::FillStatus()
 }
 
 //______________________________________________________________________________
-//
-// Fill Status
+//! Fill Status
+//!
+//! \param[in] parConf base configuration parameters
+//! \param[in] offset offset btw the different configuration for devices
 void TAIRalignM::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
 {
    for (Int_t i = 0; i < parConf->GetSensorsN(); i++) {
@@ -162,8 +172,7 @@ void TAIRalignM::FillStatus(TAVTbaseParConf* parConf, Int_t offset)
 }
 
 //______________________________________________________________________________
-//
-// Create all the residuals histograms
+//! Create all the residuals histograms
 void TAIRalignM::CreateHistogram()
 {   
    Int_t iSensor = 0;
@@ -181,7 +190,9 @@ void TAIRalignM::CreateHistogram()
 }
 
 //_____________________________________________________________________________
-//
+//! Loop event
+//!
+//! \param[in] nEvts number of events de process
 void TAIRalignM::LoopEvent(Int_t nEvts)
 {
    //init Millipede
@@ -301,6 +312,12 @@ void TAIRalignM::LoopEvent(Int_t nEvts)
 }
 
 //_________________________________________________________________
+//! Initiatlize parameters
+//!
+//! \param[in] nGlobal   number of global paramers
+//! \param[in] nLocal    number of local parameters
+//! \param[in] nStdDev   std dev cut
+//! \param[in] nSensors  number of Sensors
 void TAIRalignM::Init(Int_t nGlobal,  /* number of global paramers */
                       Int_t nLocal,   /* number of local parameters */
                       Int_t nStdDev,  /* std dev cut */
@@ -325,7 +342,11 @@ void TAIRalignM::Init(Int_t nGlobal,  /* number of global paramers */
 }
 
 //_________________________________________________________________
-void TAIRalignM::SetNonLinear(Bool_t *lChOnOff,Bool_t *lVarXYT)
+//! Set non linear parameters
+//!
+//! \param[in] lChOnOff index vector for non linear parameters
+//! \param[in] lVarXYT index vector for non linear constraints
+void TAIRalignM::SetNonLinear(Bool_t* lChOnOff, Bool_t* lVarXYT)
 {
    /// Set non linear parameter flag selected sensors and degrees of freedom
    for (Int_t i = 0; i < fNSensors; i++){
@@ -344,19 +365,30 @@ void TAIRalignM::SetNonLinear(Bool_t *lChOnOff,Bool_t *lVarXYT)
 }
 
 //_________________________________________________________________
+//! Set number of iterations
+//!
+//! \param[in] iter number of iterations
 void TAIRalignM::SetIterations(Int_t iter)
 {
    fMillepede->SetIterations(iter);
 }
 
 //_________________________________________________________________
-void TAIRalignM::AddConstraint(Double_t *par, Double_t value) {
+//! Add constraints
+//!
+//! \param[in] par vector constraints
+//! \param[in] value value vector for constraints
+void TAIRalignM::AddConstraint(Double_t *par, Double_t value)
+{
    /// Constrain equation defined by par to value
    fMillepede->SetGlobalConstraint(par, value);
    printf("Adding constraint\n");
 }
 
 //_________________________________________________________________
+//! Init global parameter
+//!
+//! \param[in] par vector parameters
 void TAIRalignM::InitGlobalParameters(Double_t *par)
 {
    /// Initialize global parameters with par array
@@ -365,6 +397,9 @@ void TAIRalignM::InitGlobalParameters(Double_t *par)
 }
 
 //_________________________________________________________________
+//! Fix sensor
+//!
+//! \param[in] iSensor sensor id
 void TAIRalignM::FixSensor(Int_t iSensor)
 {
    /// Fix all detection elements of sensor
@@ -374,16 +409,20 @@ void TAIRalignM::FixSensor(Int_t iSensor)
 }
 
 //_________________________________________________________________
+//! Parameter iPar is encourage to vary in [-value;value].
+//! If value == 0, parameter is fixed
+//!
+//! \param[in] iPar parameter index
+//! \param[in] value value vector
 void TAIRalignM::FixParameter(Int_t iPar, Double_t value)
 {
-   /// Parameter iPar is encourage to vary in [-value;value].
-   /// If value == 0, parameter is fixed
    fMillepede->SetParSigma(iPar, value);
    if(FootDebugLevel(2))
       if (value==0) printf("Parameter %i Fixed\n", iPar);
 }
 
 //_________________________________________________________________
+//! Reset local equation
 void TAIRalignM::ResetLocalEquation()
 {
    /// Reset the derivative vectors
@@ -396,9 +435,11 @@ void TAIRalignM::ResetLocalEquation()
 }
 
 //_________________________________________________________________
-void TAIRalignM::AllowVariations(Bool_t *bSensorOnOff)
+//! Set allowed variation for selected sensors based on fDoF and fAllowVar
+//!
+//! \param[in] bSensorOnOff sensor index vector for variations
+void TAIRalignM::AllowVariations(Bool_t* bSensorOnOff)
 {
-   /// Set allowed variation for selected sensors based on fDoF and fAllowVar
    for (Int_t iSensor = 0; iSensor < fNSensors; iSensor++) {
       if (bSensorOnOff[iSensor]) {
          for (int i=0; i<fNParSensor; i++) {
@@ -412,18 +453,25 @@ void TAIRalignM::AllowVariations(Bool_t *bSensorOnOff)
       }
    }
 }
+
 //_________________________________________________________________
-void TAIRalignM::SetNonLinear(Int_t iPar  /* set non linear flag */ )
+//! Set nonlinear flag for parameter iPar
+//!
+//! \param[in] iPar  set non linear flag
+void TAIRalignM::SetNonLinear(Int_t iPar)
 {
-   /// Set nonlinear flag for parameter iPar
+   
    fMillepede->SetNonLinear(iPar);
    printf("Parameter %i set to non linear\n", iPar);
 }
 
 //_________________________________________________________________
+//! Process track; Loop over clusters and set local equations
+//!
+//! \param[in] track a given track
+//! \param[in] param global/local parameter vector
 void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
 {
-   /// Process track; Loop over clusters and set local equations
    // get size of arrays
    Int_t nClusters = track->GetClustersN();
    
@@ -465,10 +513,14 @@ void TAIRalignM::ProcessTrack(TAIRtrack* track, Double_t* param)
 }
 
 //_________________________________________________________________
+//! Define local equation for current track and cluster in x coor. measurement
+//!
+//! \param[in] cluster a given cluster
+//! \param[in] param global/local parameter vector
+//! \param[in] track a given track
 void TAIRalignM::LocalEquationX(TAIRcluster* cluster, Double_t* param, TAIRtrack* track)
 {
-   /// Define local equation for current track and cluster in x coor. measurement
-   // set local derivatives   
+   // set local derivatives
    Int_t planeNumber = cluster->GetSensorIdx();
    TVector3 pos      = cluster->GetPositionG();
 
@@ -486,9 +538,13 @@ void TAIRalignM::LocalEquationX(TAIRcluster* cluster, Double_t* param, TAIRtrack
 }
 
 //_________________________________________________________________
+//! Define local equation for current track and cluster in y coor. measurement
+//!
+//! \param[in] cluster a given cluster
+//! \param[in] param global/local parameter vector
+//! \param[in] track a given track
 void TAIRalignM::LocalEquationY(TAIRcluster* cluster, Double_t* param, TAIRtrack* track)
 {
-   /// Define local equation for current track and cluster in y coor. measurement
    // set local derivatives
    Int_t planeNumber = cluster->GetSensorIdx();
    TVector3 pos      = cluster->GetPositionG();
@@ -507,6 +563,11 @@ void TAIRalignM::LocalEquationY(TAIRcluster* cluster, Double_t* param, TAIRtrack
 }
 
 //_________________________________________________________________
+//! Local fit
+//!
+//! \param[in] iTrack track index
+//! \param[in] lTrackParam local parameter vector
+//! \param[in] lSingleFit single fit flag
 void TAIRalignM::LocalFit(Int_t iTrack, Double_t *lTrackParam, Int_t lSingleFit)
 {
    /// Call local fit for this tracks
@@ -517,9 +578,13 @@ void TAIRalignM::LocalFit(Int_t iTrack, Double_t *lTrackParam, Int_t lSingleFit)
 }
 
 //_________________________________________________________________
-void TAIRalignM::GlobalFit(Double_t *parameters,Double_t *errors,Double_t *pulls)
+//! Global fit fit; Global parameters are stored in parameters
+//!
+//! \param[in] parameters global parameter vector
+//! \param[in] errors associated errors
+//! \param[in] pulls associated pulls
+void TAIRalignM::GlobalFit(Double_t* parameters, Double_t* errors, Double_t* pulls)
 {
-   /// Call global fit; Global parameters are stored in parameters
    fMillepede->GlobalFit(parameters,errors,pulls);
    
    printf("Done fitting global parameters!\n");
@@ -532,6 +597,9 @@ void TAIRalignM::GlobalFit(Double_t *parameters,Double_t *errors,Double_t *pulls
 }
 
 //_________________________________________________________________
+//! Get parameter error
+//!
+//! \param[in] iPar parameter index
 Double_t TAIRalignM::GetParError(Int_t iPar)
 {
    /// Get error of parameter iPar
@@ -540,6 +608,7 @@ Double_t TAIRalignM::GetParError(Int_t iPar)
 }
 
 //_________________________________________________________________
+//! Print global parameters
 void TAIRalignM::PrintGlobalParameters()
 {
    /// Print global parameters
@@ -547,8 +616,9 @@ void TAIRalignM::PrintGlobalParameters()
 }
 
 //______________________________________________________________________________
-//
-// The final vector containing the alignment parameters are calculated
+//! The final vector containing the alignment parameters are calculated
+//!
+//! \param[in] parameters parameter vector
 void TAIRalignM::UpdateAlignmentParams(Double_t* parameters)
 {
    TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMapItr->Object();
@@ -564,8 +634,7 @@ void TAIRalignM::UpdateAlignmentParams(Double_t* parameters)
 }
 
 //______________________________________________________________________________
-//
-// Modification of the geomap file with the final results of alignment
+//! Modification of the geomap file with the final results of alignment
 void TAIRalignM::UpdateGeoMaps()
 {
    fstream  configFileOld;
@@ -608,8 +677,11 @@ void TAIRalignM::UpdateGeoMaps()
 }
 
 //______________________________________________________________________________
-//
-// Modification of the geomap file with the final results of alignment for each Sensor
+//! Modification of the geomap file with the final results of alignment for each Sensor
+//!
+//! \param[in] fileIn old alignment file
+//! \param[in] fileOut new alignment file
+//! \param[in] idx index sensor
 void TAIRalignM::UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx)
 {
    Char_t tmp[255];

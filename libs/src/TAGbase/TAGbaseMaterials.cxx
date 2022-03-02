@@ -1,7 +1,9 @@
-// ********************************************************************
-//
-// Base class to define materials
-// author: M. Vanstalle
+/*!
+ \file TAGbaseMaterials.cxx
+ \brief   Implementation of TAGbaseMaterials
+ \author: M. Vanstalle
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "TAGbaseMaterials.hxx"
 #include "TAGionisMaterials.hxx"
@@ -12,6 +14,11 @@
 #include "TAGrecoManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
+/*!
+ \class TAGbaseMaterials
+ \brief  Base class to define materials
+ */
+
 TString TAGbaseMaterials::fgkWhat = "                                                                                            ";
 Int_t TAGbaseMaterials::fgkWhatWidth = 10;
 
@@ -21,10 +28,11 @@ map<TString, TString> TAGbaseMaterials::fgkCommonName = {{"SmCo", "Sm2Co17"}, {"
 
 map<TString, Int_t>   TAGbaseMaterials::fgkLowMat = {{"Graphite", 1}};
 
-
+//! Class Imp
 ClassImp(TAGbaseMaterials);
 
 //______________________________________________________________________________
+//! Default constructor
 TAGbaseMaterials::TAGbaseMaterials()
  : TAGobject(),
    fIonisation(new TAGionisMaterials()),
@@ -37,12 +45,16 @@ TAGbaseMaterials::TAGbaseMaterials()
 }
 
 //______________________________________________________________________________
+//! Default destructor
 TAGbaseMaterials::~TAGbaseMaterials()
 {
    delete fIonisation;
 }
 
 //______________________________________________________________________________
+//! Find common name isotope by formula
+//!
+//! \param[in] value formula
 TString TAGbaseMaterials::FindByValue(TString value)
 {
    for (auto& pair : fgkCommonName)
@@ -52,7 +64,11 @@ TString TAGbaseMaterials::FindByValue(TString value)
    return TString("");
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Extract coefficient vector from string
+//!
+//! \param[in] key key value
+//! \param[in] delimiter delimiter
 vector<TString> TAGbaseMaterials::GetStrings(TString key, const Char_t delimiter)
 {
    vector<TString> coeff;
@@ -77,7 +93,13 @@ vector<TString> TAGbaseMaterials::GetStrings(TString key, const Char_t delimiter
    return coeff;
 }
 
-//_____________________________________________________________________________
+//______________________________________________________________________________
+//! Extract coefficient from string
+//!
+//! \param[in] key key value
+//! \param[in] coeff coefficient vector
+//! \param[in] size coefficient vector size
+//! \param[in] delimiter delimiter
 void TAGbaseMaterials::GetCoeff(TString key, Float_t* coeff, Int_t size,  const Char_t delimiter)
 {
    TObjArray* list = key.Tokenize(delimiter);
@@ -102,9 +124,11 @@ void TAGbaseMaterials::GetCoeff(TString key, Float_t* coeff, Int_t size,  const 
 }
 
 //______________________________________________________________________________
+//! Get Isotopes from formula
+//!
+//! \param[in] formula chemical formula
 void TAGbaseMaterials::GetIsotopes(const TString formula)
 {
-   
    TString key = formula;
    Int_t length = formula.Length();
    
@@ -122,9 +146,11 @@ void TAGbaseMaterials::GetIsotopes(const TString formula)
 }
 
 //______________________________________________________________________________
+//! Get sub formula from formula
+//!
+//! \param[in] formula chemical formula
 TString TAGbaseMaterials::GetSubFormula(const TString formula)
 {
-   
    TString key = formula;
    Int_t length = key.Length();
    
@@ -141,9 +167,11 @@ TString TAGbaseMaterials::GetSubFormula(const TString formula)
 }
 
 //______________________________________________________________________________
+//! Get istotopes and weihgt from formula
+//!
+//! \param[in] formula chemical formula
 void TAGbaseMaterials::GetIsotopeAndWeight(const TString formula)
 {
-   
    TString key = formula;
    Int_t length = key.Length();
    
@@ -172,6 +200,7 @@ void TAGbaseMaterials::GetIsotopeAndWeight(const TString formula)
 
 
 //______________________________________________________________________________
+//! Create default materials
 void TAGbaseMaterials::CreateDefaultMaterials()
 {
     // create vacuum material
@@ -216,9 +245,9 @@ void TAGbaseMaterials::CreateDefaultMaterials()
 }
 
 //______________________________________________________________________________
+//! Read Fluka materials
 Bool_t TAGbaseMaterials::ReadFlukaDefMat()
 {
-
   ifstream file;
  
   string buff;
@@ -240,16 +269,14 @@ Bool_t TAGbaseMaterials::ReadFlukaDefMat()
   }
    
   return true;
-
-
 }
 
-
-
 //______________________________________________________________________________
+//! Get Fluka material id
+//!
+//! \param[in] Z atomic number
 Int_t TAGbaseMaterials::GetFlukaMatId(Double_t Z)
 {
-
   int m;
   
   for(int i=0; i<(sizeof(fFlukaMat)/sizeof(*fFlukaMat)); i++)
@@ -259,13 +286,16 @@ Int_t TAGbaseMaterials::GetFlukaMatId(Double_t Z)
     }
   
   return m;
-  
 }
 
 //______________________________________________________________________________
+//! Check Fluka material
+//!
+//! \param[in] density material density
+//! \param[in] A mass number
+//! \param[in] Z atomic number
 void TAGbaseMaterials::CheckFlukaMat(Double_t density, Double_t A, Double_t Z)
 {
-
   int id = GetFlukaMatId(Z);
   
   if(fabs(fFlukaMat[id].Amean - A) > 0.00001*fFlukaMat[id].Amean)

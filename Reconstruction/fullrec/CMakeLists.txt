@@ -83,6 +83,7 @@ install(TARGETS DecodeGlb DESTINATION bin)
 add_executable(DecodeGlbToe DecodeGlbToe.cc)
 #
 #target_compile_options( DecodeGlbToe PUBLIC -g -I/usr/local/Cellar/gperftools/2.8/include/ )
+target_compile_options( DecodeGlbToe PUBLIC -march=native )
 target_link_libraries(DecodeGlbToe ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 #target_link_options(DecodeGlbToe PUBLIC  -L/usr/local/Cellar/gperftools/2.8/lib/ -lprofiler)
 
@@ -95,11 +96,17 @@ install(TARGETS DecodeGlbToe DESTINATION bin)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
-add_executable(OptimizeToeCuts OptimizeToeCuts.cc)
-#
-target_link_libraries(OptimizeToeCuts ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+if(DEFINED OTC )
+    if( "${OTC}" STREQUAL ON )
+    add_executable(OptimizeToeCuts OptimizeToeCuts.cc)
+    target_compile_options( OptimizeToeCuts PUBLIC -march=native -ffast-math  )
+    target_link_libraries(OptimizeToeCuts ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS OptimizeToeCuts DESTINATION bin)
+
+    endif()
+endif()

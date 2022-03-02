@@ -25,6 +25,11 @@
 //
 //
 
+/*!
+ \file TCGmaterials.cxx
+ \brief Implementation of TCGmaterials.
+*/
+
 #include "TAGrecoManager.hxx"
 #include "TCGmaterials.hxx"
 
@@ -38,7 +43,13 @@ using namespace CLHEP;
 
 TCGmaterials* TCGmaterials::fgInstance = 0;
 
+/*!
+ \class TCGmaterials
+ \brief  Interface for creating G4 material/mixture from root
+ */
+
 //______________________________________________________________________________
+//! Constructor
 TCGmaterials::TCGmaterials()
  : TAGbaseMaterials()
 {
@@ -46,11 +57,13 @@ TCGmaterials::TCGmaterials()
 }
 
 //______________________________________________________________________________
+//! Destructor
 TCGmaterials::~TCGmaterials()
 {
 }
 
 //______________________________________________________________________________
+//! Instance
 TCGmaterials* TCGmaterials::Instance()
 {
    if (fgInstance == 0)
@@ -59,8 +72,15 @@ TCGmaterials* TCGmaterials::Instance()
    return fgInstance;
 }
 
-//______________________________________________________________________________
-G4Material* TCGmaterials::CreateG4Material(TString name, G4double density, G4State state,G4double temperature, G4double pressure)
+//------------------------------------------+-----------------------------------
+//! Create G4 material
+//!
+//! \param[in] name  name of material
+//! \param[in] density density of material
+//! \param[in] state state of material
+//! \param[in] temperature temperature of material
+//! \param[in] pressure pressure of material
+G4Material* TCGmaterials::CreateG4Material(TString name, G4double density, G4State state, G4double temperature, G4double pressure)
 {
    TGeoMaterial* mat = (TGeoMaterial*)gGeoManager->GetListOfMaterials()->FindObject(name.Data());
    /// If the material is already registered in TGeoManager, then convert it in G4material
@@ -93,6 +113,13 @@ G4Material* TCGmaterials::CreateG4Material(TString name, G4double density, G4Sta
 }
 
 //______________________________________________________________________________
+//! create mixture with differents materials
+//! the material, densities and proportion are seperated by a /
+//!
+//! \param[in] formula  formula of mixture
+//! \param[in] densities densities of mixture
+//! \param[in] prop proportion of each material
+//! \param[in] density density of each material
 G4Material* TCGmaterials::CreateG4Mixture(TString formula, const TString densities, const TString prop, G4double density)
 {
     TGeoMixture* mix = (TGeoMixture*)gGeoManager->GetListOfMaterials()->FindObject(formula.Data());
@@ -132,7 +159,10 @@ G4Material* TCGmaterials::CreateG4Mixture(TString formula, const TString densiti
 }
 
 //______________________________________________________________________________
-G4Material* TCGmaterials::ConvertGeoMaterial(const TGeoMaterial *mat)
+//! Convert Geo material to G4 material
+//!
+//! \param[in] mat Geo material
+G4Material* TCGmaterials::ConvertGeoMaterial(const TGeoMaterial* mat)
 {
     G4String name(mat->GetName());
     G4double density = mat->GetDensity();
@@ -180,6 +210,7 @@ G4Material* TCGmaterials::ConvertGeoMaterial(const TGeoMaterial *mat)
 
 
 //______________________________________________________________________________
+//! Create default G4 materials
 void TCGmaterials::CreateG4DefaultMaterials()
 {
     G4Element* N = new G4Element("Nitrogen", "N", 7, 14.01*g/mole);

@@ -35,7 +35,7 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
     char line[200];
     
      fin.getline(line, 200, '\n');
-     if(strchr(line,'#')) // skip first line if comment
+     if(strchr(line,'/') || strchr(line,'#')) // skip first line if comment
         fin.getline(line, 200, '\n');
      sscanf(line, "%d", &nCrystals);
   
@@ -46,7 +46,7 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
     // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
     while (fin.getline(line, 200, '\n')) {
 
-      if(strchr(line,'#')) {
+       if(strchr(line,'/') || strchr(line,'#')){ // skip first line if comment
         if(FootDebugLevel(1))
           Info("LoadCryTemperatureCalibrationMap()","Skip comment line:: %s\n",line);
         continue;
@@ -60,6 +60,8 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
        
        if(FootDebugLevel(1))
         Info("LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId, temp, equalis);
+
+      //Info("********************LoadCryTemperatureCalibrationMap()","%d %f %f\n",cryId, temp, equalis);
     }
   }
   else
@@ -91,7 +93,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
       char line[200];
       
       fin_Q.getline(line, 200, '\n');
-      if(strchr(line,'#')) // skip first line if comment
+      if(strchr(line,'/') || strchr(line,'#'))  // skip first line if comment
          fin_Q.getline(line, 200, '\n');
       sscanf(line, "%d", &nCrystals);
       fCalibElossMapCry.reserve(nCrystals);
@@ -102,7 +104,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
       // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
       while (fin_Q.getline(line, 200, '\n')) {
          
-         if(strchr(line,'#')) {
+         if(strchr(line,'/') || strchr(line,'#'))  {
             if(FootDebugLevel(1))
                Info("LoadEnergyCalibrationMap()","Skip comment line:: %s\n",line);
             continue;

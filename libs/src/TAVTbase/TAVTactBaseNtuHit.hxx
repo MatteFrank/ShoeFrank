@@ -4,8 +4,7 @@
 #include "TAVTactBaseRaw.hxx"
 
 /*!
- \file
- \version $Id: TAVTactBaseNtuHit.hxx $
+ \file TAVTactBaseNtuHit.hxx
  \brief   Declaration of TAVTactBaseNtuHit.
  */
 
@@ -21,16 +20,16 @@ public:
    virtual  ~TAVTactBaseNtuHit();
       
 protected:
-   //! Find vertex data
+   // Find vertex data
    Bool_t DecodeEvent();
       
-   //! Get the starting point of each event
+   // Get the starting point of each event
    Bool_t GetVtxHeader();
    
-   //! Get the starting point of each frame
+   // Get the starting point of each frame
    Bool_t GetSensorHeader(Int_t iSensor);
    
-   //! Get frame and returns frameRaw
+   // Get frame and returns frameRaw
    Bool_t GetFrame(Int_t iSensor, MI26_FrameRaw* data);
    
    ClassDef(TAVTactBaseNtuHit,0)

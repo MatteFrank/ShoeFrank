@@ -1,8 +1,7 @@
 #ifndef _TAVTactNtuTrackF_HXX
 #define _TAVTactNtuTrackF_HXX
 /*!
- \file
- \version $Id: TAVTactNtuTrackF.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAVTactNtuTrackF.hxx
  \brief   Declaration of TAVTactNtuTrackF.
  */
 /*------------------------------------------+---------------------------------*/
@@ -26,11 +25,13 @@ public:
    virtual ~TAVTactNtuTrackF();
    
 protected:
+   // Find tilted tracks
    Bool_t FindTiltedTracks();
+   // Check track candidate
    virtual Bool_t IsGoodCandidate(TAGbaseTrack* track);
    
 protected:
-   map<TAGcluster*,  int> fMapClus;
+   map<TAGcluster*,  int> fMapClus;    ///< Cluster map
 
    ClassDef(TAVTactNtuTrackF,0)
 };

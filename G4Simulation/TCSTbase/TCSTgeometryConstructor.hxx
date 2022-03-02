@@ -6,12 +6,14 @@
 
 #include "TCGbaseConstructor.hxx"
 
-/** Building detector geometry
+/*!
+ \file TCSTgeometryConstructor.hxx
+ \brief Building STC detector geometry
  
- \author Ch, Finck
+ \author Ch. Finck
  */
 
-class G4LogicalVolume; //General class to define a logical volume (properties, material)
+class G4LogicalVolume; 
 
 class TASTparGeo;
 
@@ -21,33 +23,39 @@ public:
    TCSTgeometryConstructor(TASTparGeo* pParGeo);
    virtual ~TCSTgeometryConstructor();
    
-   virtual G4LogicalVolume* Construct(); //method in which the physical volume is constructed
+   // Method in which the physical volume is constructed
+   virtual G4LogicalVolume* Construct();
    
-   TVector3 GetBoxSize()     const  { return fSizeBoxIr;         }
+   //! Get Box size
+   TVector3 GetBoxSize()     const  { return fSizeBoxSt;         }
+   //! Get min position
    TVector3 GetMinPoistion() const  { return fMinPosition;       }
+   //! Get max position
    TVector3 GetMaxPoistion() const  { return fMaxPosition;       }
    
 public:
+   //! Get SD name
    static const Char_t* GetSDname() { return fgkIrSDname.Data(); }
 
    
 private:
-   G4LogicalVolume* fBoxLog;
-   G4LogicalVolume* fIrLog;
-   TASTparGeo*      fpParGeo;
-   TVector3         fSizeBoxIr;
-   TVector3         fMinPosition;
-   TVector3         fMaxPosition;
+   G4LogicalVolume* fBoxLog;      ///< Logical box volume
+   G4LogicalVolume* fStcLog;      ///< STC logical volume
+   TASTparGeo*      fpParGeo;     ///< Geometry parameters
+   TVector3         fSizeBoxSt;   ///< Box size
+   TVector3         fMinPosition; ///< Min position
+   TVector3         fMaxPosition; ///< Max position
    
 private:
-   static TString fgkIrSDname;
+   static TString fgkIrSDname;     ///< SD name
 
-   
 private:
+   // Define envelop
    void DefineMaxMinDimension();
+   // Define sensitive detector
    void DefineSensitive();
+   // Define material
    void DefineMaterial();
-
 };
 
 #endif

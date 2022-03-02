@@ -1,17 +1,8 @@
-/////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                     //
-// Class Description of TAIRmillepede                                                     //
-//                                                                                     //
-// Detector independent alignment class                                                //
-//                                                                                     //
-// This modified C++ version is based on a C++ translation of Millepede used           //
-// for LHCb Vertex Detector alignment (lhcb-2005-101), available here                  //
-// http://isscvs.cern.ch/cgi-bin/cvsweb.cgi/Alignment/AlignmentTools/src/?cvsroot=lhcb //
-// The original millepede fortran package is available at:                             //
-// http://www.desy.de/~blobel/wwwmille.html                                            //
-//                                                                                     //
-// author Javier Castillo & Ch. Finck (transcription)                                  //
-////////////////////////////////////////////////////////////////////////////////////////
+
+/*!
+ \file  TAIRmillepede.cxx
+ \brief Class Description of TAIRmillepede
+ */
 
 //-----------------------------------------------------------------------------
 
@@ -25,7 +16,21 @@
 
 #include "TAIRmillepede.hxx"
 
+/*!
+ \class TAIRmillepede
+ \brief Detector independent alignment class
+ 
+  This modified C++ version is based on a C++ translation of Millepede used
+  for LHCb Vertex Detector alignment (lhcb-2005-101), available here
+  http://isscvs.cern.ch/cgi-bin/cvsweb.cgi/Alignment/AlignmentTools/src/?cvsroot=lhcb
+  The original millepede fortran package is available at:
+  http://www.desy.de/~blobel/wwwmille.html
+ 
+ \author Javier Castillo & Ch. Finck (transcription)
+ */
+
 //=============================================================================
+//! Constructor
 TAIRmillepede::TAIRmillepede()
  : TObject(),
    fIndexLocEq(fgkMaxGlobalPar+fgkMaxLocalPar),
@@ -53,16 +58,22 @@ TAIRmillepede::TAIRmillepede()
    fNLocalPar(0)
 {
    /// Standard constructor
-      
 }
 
 //=============================================================================
-TAIRmillepede::~TAIRmillepede() {
-   /// Destructor
-   
+//!  Destructor
+TAIRmillepede::~TAIRmillepede()
+{
 }
 
 //=============================================================================
+//! Init parameters
+//!
+//! \param[in] nGlo     number of global derivatives
+//! \param[in] nLoc     number of local derivatives
+//! \param[in] lNStdDev number of StDev for local fit chisquare cut
+//! \param[in] lResCut residuals cuts
+//! \param[in] lResCutInit initial residuals cuts
 Int_t TAIRmillepede::InitMille(int nGlo, int nLoc, int lNStdDev,
 							double lResCut, double lResCutInit)
 {
@@ -168,12 +179,9 @@ Int_t TAIRmillepede::InitMille(int nGlo, int nLoc, int lNStdDev,
 
 /*
  -----------------------------------------------------------
- PARGLO: initialization of global parameters
+ \brief initialization of global parameters
  -----------------------------------------------------------
- 
- param    = array of starting values
- 
- -----------------------------------------------------------
+\param[[in] param array of starting values
  */
 Int_t TAIRmillepede::SetGlobalParameters(double *param)
 {
@@ -187,15 +195,11 @@ Int_t TAIRmillepede::SetGlobalParameters(double *param)
 
 /*
  -----------------------------------------------------------
- PARGLO: initialization of global parameters
+ \brief initialization of global parameters
  -----------------------------------------------------------
- 
- iPar    = the index of the global parameter in the 
- result array (equivalent to fDeltaPar[]).
- 
- param    = the starting value
- 
- -----------------------------------------------------------
+
+\param[[in]  iPar the index of the global parameter in the result array (equivalent to fDeltaPar[]).
+\param[[in]  param the starting value
  */
 Int_t TAIRmillepede::SetGlobalParameter(int iPar, double param)
 {
@@ -212,19 +216,14 @@ Int_t TAIRmillepede::SetGlobalParameter(int iPar, double param)
 
 /*
  -----------------------------------------------------------
- PARSIG: define a constraint for a single global param
+ \brief define a constraint for a single global param
  param is 'encouraged' to vary within [-sigma;sigma] 
  range
  -----------------------------------------------------------
- 
- iPar    = the index of the global parameter in the 
- result array (equivalent to fDeltaPar[]).
- 
- sigma	   = value of the constraint (sigma <= 0. will 
- mean that parameter is FIXED !!!) 
- 
- -----------------------------------------------------------
- */ 
+
+   \param[in]  iPar the index of the global parameter in the result array (equivalent to fDeltaPar[]).
+   \param[in]  sigma value of the constraint (sigma <= 0. will  mean that parameter is FIXED !!!)
+ */
 Int_t TAIRmillepede::SetParSigma(int iPar, double sigma)
 {
    /// Define a range [-sigma;sigma] where iPar is encourage to vary 
@@ -241,15 +240,13 @@ Int_t TAIRmillepede::SetParSigma(int iPar, double sigma)
 
 /*
  -----------------------------------------------------------
- NONLIN: set nonlinear flag for a single global param
+ \brief: set nonlinear flag for a single global param
  update of param durin iterations will not
  consider initial starting value
  -----------------------------------------------------------
  
- iPar    = the index of the global parameter in the 
- result array (equivalent to fDeltaPar[]).
- 
- -----------------------------------------------------------
+\param[[in]  iPar the index of the global parameter in the result array (equivalent to fDeltaPar[]).
+
  */
 Int_t TAIRmillepede::SetNonLinear(int iPar)
 {
@@ -267,10 +264,9 @@ Int_t TAIRmillepede::SetNonLinear(int iPar)
 
 /*
  -----------------------------------------------------------
- INITUN: unit for iteration
+ \brief unit for iteration
  -----------------------------------------------------------
  
- lChi2CutFac is used by Fitloc to define the Chi^2/ndof cut value
  
  A large cutfac value enables to take a wider range of tracks 
  for first iterations, which might be useful if misalignments
@@ -282,8 +278,10 @@ Int_t TAIRmillepede::SetNonLinear(int iPar)
  
  At least one more iteration is often needed in order to remove
  tracks containing outliers.
- 
  -----------------------------------------------------------
+
+\param[[in]   lChi2CutFac is used by Fitloc to define the Chi^2/ndof cut value
+
  */
 Int_t TAIRmillepede::SetIterations(double lChi2CutFac)
 {
@@ -297,15 +295,12 @@ Int_t TAIRmillepede::SetIterations(double lChi2CutFac)
 
 /*
  -----------------------------------------------------------
- CONSTF: define a constraint equation in TAIRmillepede
+ \brief define a constraint equation in TAIRmillepede
  -----------------------------------------------------------
  
- dercs    = the row containing constraint equation 
- derivatives (put into the final matrix)
- 
- lLagMult      = the lagrange multiplier value (sum of equation)	     
- 
- -----------------------------------------------------------
+\param[[in] dercs the row containing constraint equation derivatives (put into the final matrix)
+\param[[in] lLagMult the lagrange multiplier value (sum of equation)
+
  */
 Int_t TAIRmillepede::SetGlobalConstraint(double dercs[], double lLagMult)
 { 
@@ -325,18 +320,16 @@ Int_t TAIRmillepede::SetGlobalConstraint(double dercs[], double lLagMult)
    return 1;
 }
 
-
 /*
  -----------------------------------------------------------
- EQULOC: write ONE equation in the matrices
+ \brief write ONE equation in the matrices
  -----------------------------------------------------------
  
- dergb[1..fNGlobalPar]	= global parameters derivatives
- derlc[1..fNLocalPar] 	= local parameters derivatives
- rmeas  		= measured value
- sigma 		= error on measured value (nothing to do with SetParSigma!!!)
- 
- -----------------------------------------------------------
+\param[[in]  dergb[1..fNGlobalPar]  global parameters derivatives
+\param[[in]  derlc[1..fNLocalPar]  local parameters derivatives
+\param[[in]  rmeas  measured value
+\param[[in]  sigma  error on measured value (nothing to do with SetParSigma!!!)
+
  */
 Int_t TAIRmillepede::SetLocalEquation(double dergb[], double derlc[], double lMeas, double lSigma)
 {	
@@ -415,23 +408,14 @@ Int_t TAIRmillepede::SetLocalEquation(double dergb[], double derlc[], double lMe
 
 /*
  -----------------------------------------------------------
- FITLOC:  perform local params fit, once all the equations
+ \brief  perform local params fit, once all the equations
  have been written by EquLoc
  -----------------------------------------------------------
  
- iFit        = number of the fit, it is used to store 
- fit parameters and then retrieve them 
- for iterations (via FINDEXALLEQS and FDERIVALLEQS)
+\param[[in] iFit number of the fit, it is used to store fit parameters and then retrieve them for iterations (via FINDEXALLEQS and FDERIVALLEQS)
+\param[[in] localParams contains the fitted track parameters and related errors
+\param[[in] bSingleFit is an option, if it is set to 1, we don't perform the last loop. It is used to update the track parameters without modifying global matrices
  
- localParams = contains the fitted track parameters and
- related errors
- 
- bSingleFit  = is an option, if it is set to 1, we don't 
- perform the last loop. It is used to update 
- the track parameters without modifying global
- matrices
- 
- -----------------------------------------------------------
  */
 Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 {
@@ -830,19 +814,14 @@ Int_t TAIRmillepede::LocalFit(int iFit, double localParams[], Bool_t bSingleFit)
 
 /*
  -----------------------------------------------------------
- MAKEGLOBALFIT:  perform global params fit, once all the 'tracks'
+ \bfrief  perform global params fit, once all the 'tracks'
  have been fitted by FitLoc
  -----------------------------------------------------------
  
- par[]        = array containing the computed global 
- parameters (the misalignment constants)
- 
- error[]      = array containing the error on global 
- parameters (estimated by TAIRmillepede)
- 
- pull[]        = array containing the corresponding pulls 
- 
- -----------------------------------------------------------
+\param[[in]  par[]    array containing the computed global parameters (the misalignment constants)
+\param[[in]  error[]  array containing the error on global parameters (estimated by TAIRmillepede)
+\param[[in]  pull[]   array containing the corresponding pulls
+
  */
 Int_t TAIRmillepede::GlobalFit(double par[], double error[], double pull[])
 {
@@ -1051,14 +1030,12 @@ Int_t TAIRmillepede::GlobalFit(double par[], double error[], double pull[])
 
 /*
  -----------------------------------------------------------
- ERRPAR: return error for parameter iPar
+ \brief return error for parameter iPar
  -----------------------------------------------------------
  
- iPar     = the index of the global parameter in the 
- result array (equivalent to fDeltaPar[]).
+\param[[in] iPar the index of the global parameter in the result array (equivalent to fDeltaPar[]).
  
- -----------------------------------------------------------
- */ 
+ */
 Double_t TAIRmillepede::GetParError(int iPar) const
 {
    /// return error for parameter iPar
@@ -1072,14 +1049,19 @@ Double_t TAIRmillepede::GetParError(int iPar) const
 
 /*
  -----------------------------------------------------------
- SPMINV:  obtain solution of a system of linear equations with symmetric matrix 
+ \brief  obtain solution of a system of linear equations with symmetric matrix
  and the inverse (using 'singular-value friendly' GAUSS pivot)
  -----------------------------------------------------------
  
  Solve the equation :  V * X = B
  
  V is replaced by inverse matrix and B by X, the solution vector
- -----------------------------------------------------------
+  -----------------------------------------------------------
+ 
+ \param[in] matV  matrix V
+ \param[in] vecB  vector B
+ \param[in] nGlo  number of global equations
+ 
  */
 int TAIRmillepede::SpmInv(double matV[][fgkMaxGloPC], double vecB[], int nGlo)
 {
@@ -1207,9 +1189,24 @@ int TAIRmillepede::SpmInv(double matV[][fgkMaxGloPC], double vecB[], int nGlo)
    return nRank;
 }
 
-//
-// Same method but for local fit, so heavily simplified
-//
+/*
+ -----------------------------------------------------------
+ \brief  obtain solution of a system of linear equations with symmetric matrix
+ and the inverse (using 'singular-value friendly' GAUSS pivot)
+ Same method but for local fit, so heavily simplified
+ -----------------------------------------------------------
+ 
+ Solve the equation :  V * X = B
+ 
+ V is replaced by inverse matrix and B by X, the solution vector
+ -----------------------------------------------------------
+ 
+ \param[in] matV  matrix V
+ \param[in] vecB  vector B
+ \param[in] nLoc  number of local equations
+ 
+ */
+
 int TAIRmillepede::SpmInv(double matV[][fgkMaxLocalPar], double vecB[], int nLoc)
 {
    ///  Obtain solution of a system of linear equations with symmetric matrix 
@@ -1305,7 +1302,7 @@ int TAIRmillepede::SpmInv(double matV[][fgkMaxLocalPar], double vecB[], int nLoc
 
 /*
  -----------------------------------------------------------
- SPAVAT
+ \brief SPAVAT
  -----------------------------------------------------------
  
  multiply symmetric N-by-N matrix from the left with general M-by-N
@@ -1316,10 +1313,14 @@ int TAIRmillepede::SpmInv(double matV[][fgkMaxLocalPar], double vecB[], int nLoc
  CALL SPAVAT(V,A,W,N,M)      W   =   A   *   V   *   A
  M*M     M*N     N*N     N*M
  
- where V = symmetric N-by-N matrix
- A = general N-by-M matrix
- W = symmetric M-by-M matrix
  -----------------------------------------------------------
+ 
+ \param[in] matV  symmetric N-by-N matrix
+ \param[in] matA  general N-by-M matrix
+ \param[in] matW  symmetric M-by-M matrix
+ \param[in] nLoc number of local equations
+ \param[in] nGlo number of global equations
+
  */
 Int_t TAIRmillepede::SpAVAt(double matV[][fgkMaxLocalPar], double matA[][fgkMaxLocalPar], double matW[][fgkMaxGlobalPar], int nLoc, int nGlo)
 {
@@ -1349,7 +1350,7 @@ Int_t TAIRmillepede::SpAVAt(double matV[][fgkMaxLocalPar], double matA[][fgkMaxL
 
 /*
  -----------------------------------------------------------
- SPAX
+ \brief SPAX
  -----------------------------------------------------------
  
  multiply general M-by-N matrix A and N-vector X
@@ -1361,6 +1362,12 @@ Int_t TAIRmillepede::SpAVAt(double matV[][fgkMaxLocalPar], double matA[][fgkMaxL
  X = N vector
  Y = M vector
  -----------------------------------------------------------
+ 
+ \param[in] matA a matrix
+ \param[in] vecX a vector in X
+ \param[in] vecY a vector in Y
+ \param[in] nCol number of coloumns
+ \param[in] nRow number of rows
  */
 Int_t TAIRmillepede::SpAX(double matA[][fgkMaxLocalPar], double vecX[], double vecY[], int nCol, int nRow)
 {
@@ -1378,10 +1385,7 @@ Int_t TAIRmillepede::SpAX(double matA[][fgkMaxLocalPar], double vecX[], double v
 
 /*
  -----------------------------------------------------------
- PRTGLO
- -----------------------------------------------------------
- 
- Print the final results into the logfile
+\brief Print the final results into the logfile
  
  -----------------------------------------------------------
  */
@@ -1417,10 +1421,14 @@ Int_t TAIRmillepede::PrintGlobalParameters() const
 
 /*
  ----------------------------------------------------------------
- CHI2DOFLIM:  return the limit in chi^2/nd for n sigmas stdev authorized
+ \brief  return the limit in chi^2/nd for n sigmas stdev authorized
  ----------------------------------------------------------------
  
  Only n=1, 2, and 3 are expected in input
+ 
+\param[[in] nSig sigma valiue
+\param[[in] nDoF degree of freedom
+ 
  ----------------------------------------------------------------
  */
 double TAIRmillepede::Chi2DoFLim(int nSig, int nDoF)

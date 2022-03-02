@@ -1,6 +1,12 @@
-
 #ifndef _LocalRecoMC_HXX_
 #define _LocalRecoMC_HXX_
+
+/*!
+ \file LocalRecoMC.hxx
+ \brief Reconstruction class from MC data
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
 
 #include "BaseReco.hxx"
 
@@ -23,52 +29,52 @@
 class LocalRecoMC : public BaseReco
 {
 public:
-   //! default constructor
+   // default constructor
    LocalRecoMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalRecoMC();
    
-   //! Add required items
+   // Add required items
    virtual void AddRawRequiredItem();
 
-   //! Create raw data action
+   // Create raw data action
    virtual void CreateRawAction();
    
-   //! Set raw histogram directory
+   // Set raw histogram directory
    virtual void SetRawHistogramDir();
    
-   //! Create branch in tree
+   // Create branch in tree
    virtual void SetTreeBranches();
    
-   //! Open File
+   // Open File
    virtual void OpenFileIn();
    
-   //! Close File in
+   // Close File in
    virtual void CloseFileIn();
   
-   // ! Global Checks
+   // Global Checks
    virtual void GlobalChecks();
    
-   //! Goto Event
+   // Goto Event
    virtual Bool_t GoEvent(Int_t iEvent);
 
 protected:
-   EVENT_STRUCT*         fEvtStruct;
+   EVENT_STRUCT*         fEvtStruct;   ///< Fluka structure
   
-   TAMCactNtuPart*       fActNtuMcTrk;
-   TAMCactNtuRegion*     fActNtuMcReg;
-   TAMCactNtuEvent*      fActNtuMcEvt;
-   TASTactNtuHitMC*      fActNtuHitSt;  // action for ntu data
-   TABMactNtuHitMC*      fActNtuHitBm;  // action for ntu data
-   TAVTactNtuHitMC*      fActNtuHitVtx;  // action for ntu data
-   TAITactNtuHitMC*      fActNtuHitIt;  // action for ntu data
-   TAMSDactNtuHitMC*     fActNtuHitMsd;  // action for ntu data
-   TATWactNtuHitMC*      fActNtuHitTw;  // action for ntu data
-   TACAactNtuHitMC*      fActNtuHitCa;  // action for ntu data
+   TAMCactNtuPart*       fActNtuMcTrk;  ///< action for MC tracks
+   TAMCactNtuRegion*     fActNtuMcReg;  ///< action for MC region
+   TAMCactNtuEvent*      fActNtuMcEvt;  ///< action for MC events
+   TASTactNtuHitMC*      fActNtuHitSt;  ///< action for STC MC hits
+   TABMactNtuHitMC*      fActNtuHitBm;  ///< action for BM MC hits
+   TAVTactNtuHitMC*      fActNtuHitVtx; ///< action for VTX MC hits
+   TAITactNtuHitMC*      fActNtuHitIt;  ///< action for ITR MC hits
+   TAMSDactNtuHitMC*     fActNtuHitMsd; ///< action for MSD MC hits
+   TATWactNtuHitMC*      fActNtuHitTw;  ///< action for TW MC hits
+   TACAactNtuHitMC*      fActNtuHitCa;  ///< action for CAL MC hits
   
-   TAGactTreeReader*     fActEvtReader; // file for MC
+   TAGactTreeReader*     fActEvtReader; ///< file reader for MC
 
-   ClassDef(LocalRecoMC, 1); // Base class for event display
+   ClassDef(LocalRecoMC, 1); ///< Base class for event display
 };
 
 

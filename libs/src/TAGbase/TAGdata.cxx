@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGdata.cxx,v 1.5 2003/06/09 18:37:01 mueller Exp $
+  \file TAGdata.cxx
   \brief   Implementation of TAGdata.
 */
 
@@ -9,55 +8,53 @@
 #include "TAGdata.hxx"
 
 /*!
-  \class TAGdata TAGdata.hxx "TAGdata.hxx"
+  \class TAGdata 
   \brief Mother of all data objects. **
 */
 
-//------------------------------------------+-----------------------------------
-/*!
- \relates TAGdata
- \brief ostream insertion operator.
- */
 
+//------------------------------------------+-----------------------------------
+//! operator<<
+//!
+//! \param[in] os output stream
+//! \param[in] obj object to stream
 ostream& operator<<(ostream& os, const TAGdata& obj)
 {
   obj.ToStream(os);
   return os;
 }
 
+//! Class Imp
 ClassImp(TAGdata);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAGdata::TAGdata()
 {}
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGdata::~TAGdata()
 {}
 
 //------------------------------------------+-----------------------------------
 //! Setup internal TClonesArray's (used by TreeWriter only)
-
 void TAGdata::SetupClones()
 {
   return;
 }
 
 //------------------------------------------+-----------------------------------
-//! Returns \c true if object needs automatic delete when read from tree.
-
+//! Returns true if object needs automatic delete when read from tree.
 Bool_t TAGdata::NeedAutoDelete() const
 {
   return kTRUE;
 }
 
 //------------------------------------------+-----------------------------------
-//! Invalidate data object.
-
+//! Clear
+//!
+//! \param[in] opt clear options
 void TAGdata::Clear(Option_t*)
 {
   ResetBit(kFail);
@@ -66,7 +63,9 @@ void TAGdata::Clear(Option_t*)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-
+//!
+//! \param[in] os output stream
+//! \param[in] option printout option
 void TAGdata::ToStream(ostream& os, Option_t* option) const
 {
   os <<"TAGdata: " << IsA()->GetName();
@@ -76,8 +75,9 @@ void TAGdata::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+//! Print
+//!
+//! \param[in] option printout option
 void TAGdata::Print(Option_t* option) const
 {
   ToStream(cout, option);

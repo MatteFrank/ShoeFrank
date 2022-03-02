@@ -1,7 +1,6 @@
 /*!
- \file
- \version $Id: TAITactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
- \brief   Implementation of TAITactNtuHit.
+ \file TAITactNtuHit.cxx
+ \brief   Ntuplizer for ITR raw data
  */
 
 #include "TH2F.h"
@@ -18,15 +17,22 @@
 #include "TAITactNtuHit.hxx"
 
 /*!
- \class TAITactNtuHit TAITactNtuHit.hxx "TAITactNtuHit.hxx"
- \brief Get vertex raw data from MBS. **
+ \class TAITactNtuHit
+ \brief Ntuplizer for ITR raw data
  */
 
+//! Class Imp
 ClassImp(TAITactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[out] pNtuRaw hit container descriptor
+//! \param[in] pDatDaq daq event container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
 TAITactNtuHit::TAITactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAITactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq)
@@ -84,6 +90,7 @@ Bool_t TAITactNtuHit::Action()
 }
 
 // --------------------------------------------------------------------------------------
+//! Find vertex data
 Bool_t TAITactNtuHit::DecodeEvent()
 {
    MI26_FrameRaw* data = new MI26_FrameRaw;
@@ -132,6 +139,7 @@ Bool_t TAITactNtuHit::DecodeEvent()
 
 // private method
 // --------------------------------------------------------------------------------------
+//! Find vertex header
 Bool_t TAITactNtuHit::GetVtxHeader()
 {
    do {
@@ -144,6 +152,9 @@ Bool_t TAITactNtuHit::GetVtxHeader()
 }
 
 // --------------------------------------------------------------------------------------
+//! Find sensor header
+//!
+//! \param[in] iSensor sensor index
 Bool_t TAITactNtuHit::GetSensorHeader(Int_t iSensor)
 {
    do {
@@ -166,6 +177,10 @@ Bool_t TAITactNtuHit::GetSensorHeader(Int_t iSensor)
 }
 
 // --------------------------------------------------------------------------------------
+//! Get Frame structure
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] data Mimosa sensor data structure
 Bool_t TAITactNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
    // check frame header

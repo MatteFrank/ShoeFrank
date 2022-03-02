@@ -1,17 +1,24 @@
 
-//##############################################################################
-
 /*!
- \class TADIeveField TADIeveField.hxx "TADIeveField.hxx"
- \brief  Wrapper for TEve Mag field **
+ \file TADIeveField.cxx
+ \brief Implementation of TADIeveField.cxx
  */
 
 #include "TADIeveField.hxx"
 #include "TAGgeoTrafo.hxx"
 
+/*!
+ \class TADIeveField
+ \brief  Wrapper for TEve Mag field **
+ */
+
+//! Class Imp
 ClassImp(TADIeveField);
 
 //______________________________________________________________________________
+//! Default constructor
+//!
+//! \param[in] field geomtry field
 TADIeveField::TADIeveField(TADIgeoField* field)
 : TEveMagField(),
   fField(field)
@@ -19,12 +26,17 @@ TADIeveField::TADIeveField(TADIgeoField* field)
 }
 
 //______________________________________________________________________________
+//! Destructor
 TADIeveField::~TADIeveField()
 {
-   // Destructor
 }
 
 //______________________________________________________________________________
+//! Return Eve vector for a given position
+//!
+//! \param[in] x position in X-direction
+//! \param[in] y position in Y-direction
+//! \param[in] z position in Z-direction
 TEveVectorD TADIeveField::GetFieldD(Double_t x, Double_t y, Double_t z) const
 {
    TVector3 pos(x, y, z);

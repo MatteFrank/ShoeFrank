@@ -1,9 +1,7 @@
-
-//
-// Documentation : See doc.html (readme, main.cc, ...)
-// Convention    : Root coding convention: TMyClass for classes, fMyVariable for class data members, kMyVariable for constants, gMyVariable for global variables
-// Help          : http://www.lcsim.org/software/geant4/doxygen/html/classes.html
-//
+/*!
+ \file TCFOtrackingAction.cxx
+ \brief Implementation of TCFOtrackingAction.
+*/
 
 #include "TAGrecoManager.hxx"
 
@@ -21,38 +19,37 @@ using namespace CLHEP;
 
 map<TString, Int_t> TCFOtrackingAction::fgkVolumeToRegion = {{"World",0}, {"StartCounter",10}, {"BM",20}, {"BeamMonitor",20}, {"Gaz",21}, {"Foil", 22},{"targetPhy",30},{"Vertex",40},{"vtxEpiPhy",40},{"Magnets",50}, {"itEpiPhy",60}, {"msdEpiPhy",70}, {"Tof",80}, {"Calo",90}};
 
-//
-//---------------------------------------------------------------------------
-//
+/*!
+ \class TCFOtrackingAction
+ \brief  Tracking action for FOOT
+ */
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
 TCFOtrackingAction::TCFOtrackingAction(TCFObaseEventAction* aEventAction)
  : G4UserTrackingAction()
 {
     fEventAction = aEventAction ;
 }
 
-//
-//---------------------------------------------------------------------------
-//
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Destructor
 TCFOtrackingAction::~TCFOtrackingAction()
 {
 }
 
-//
-//---------------------------------------------------------------------------
-//
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Pre user tracking action
 void TCFOtrackingAction::PreUserTrackingAction(const G4Track*)
 {
 }
 
-//
-//---------------------------------------------------------------------------
-//
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
-
+//! Post user tracking action
+//!
+//! \param[in] aTrack a given track
+void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack)
+{
     TString partName = aTrack->GetDefinition()->GetParticleName() ;
     TString detName  = aTrack->GetVolume()->GetName() ;
     TString regName  = aTrack->GetOriginTouchable()->GetVolume()->GetName() ;
