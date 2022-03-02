@@ -25,7 +25,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
-      if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
+      if(strcmp(argv[i],"-skipEv") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
       
       if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
@@ -68,8 +68,8 @@ int main (int argc, char *argv[])  {
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
    Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
    
-   TAGrecoManager::GetPar()->IncludeTOE(false);
-   TAGrecoManager::GetPar()->IncludeKalman(true);
+   // TAGrecoManager::GetPar()->IncludeTOE(false);
+   // TAGrecoManager::GetPar()->IncludeKalman(true);
    
    BaseReco* glbRec = 0x0;
    
