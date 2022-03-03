@@ -81,11 +81,11 @@ protected:
    
 protected:
    // Define envelop
-   void DefineMaxMinDimension();
+   virtual void DefineMaxMinDimension();
    // Define sensitive detector
-   void DefineSensitive();
+   virtual void DefineSensitive();
    // Define material
-   void DefineMaterial();
+   virtual void DefineMaterial();
    
    // Build sensor
    virtual void BuildSensor();

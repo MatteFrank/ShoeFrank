@@ -1,28 +1,41 @@
-# SigmaNoiseLevel
+# SigmaSeedLevel
+# SigmaHitLevel
 #sensorId: 0
-5
+40
+10
 #sensorId: 1
-5
+40
+10
 #sensorId: 2
-5
+40
+10
 #sensorId: 3
-5
+40
+10
 #sensorId: 4
-5
+40
+10
 #sensorId: 5
-5
+40
+10
 #sensorId: 6
-5
+40
+10
 #sensorId: 7
-5
+40
+10
 #sensorId: 8
-5
+40
+10
 #sensorId: 9
-5
+40
+10
 #sensorId: 10
-5
+40
+10
 #sensorId: 11
-5
+40
+10
 ############
 #sensorId stripId AsicId AsicCh Mean Sigma status
 #sensorId: 0

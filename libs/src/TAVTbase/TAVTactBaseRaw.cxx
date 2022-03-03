@@ -366,10 +366,8 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
    Int_t planeId = pParMap->GetPlaneId(iSensor);
-   
-   std::pair<int, int> pair(aLine, aColumn);
-   if (pConfig->GetSensorPar(planeId).DeadPixelMap[pair] == 1) return;
-   
+   if (pConfig->IsDeadPixel(planeId, aLine, aColumn)) return;
+     
    TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);

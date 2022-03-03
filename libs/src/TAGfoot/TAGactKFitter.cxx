@@ -512,7 +512,7 @@ void TAGactKFitter::CreateGeometry()  {
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TATWparGeo::GetBaseName());
 		m_TopVolume->AddNode(twVol, 8, transfo);
 
-		TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)).z() );
+		TVector3 origin_( m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)));
 		genfit::SharedPlanePtr detectorplane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
 		detectorplane->setU(1.,0.,0.);
 		detectorplane->setV(0.,1.,0.);
@@ -836,9 +836,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	int nMeas 	= track->getCardinalRep()->getDim();
 	int pdgID 	= track->getCardinalRep()->getPDG();
 	int pdgCh 	= track->getCardinalRep()->getPDGCharge();
-	float startMass	= std::atoi( tok.at(1).c_str() )*m_AMU; //Initial mass of the fit
+	float startMass	= std::atoi( tok.at(1).c_str() )*m_AMU;                                  //Initial mass of the fit in GeV
 	int fitCh 	= track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
-	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );              // dipendono dallo stato considerato
+	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );           // dipendono dallo stato considerato in GeV
 	int nucleonsN = round(fitMass/m_AMU);
 	// track->getCardinalRep()->getRadiationLenght();   // to be done! Check update versions...
 
@@ -935,13 +935,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	// track->getFitStatus( track->getCardinalRep() )->getNFailedPoints();
 	// track->getFitStatus( track->getCardinalRep() )->isFitConvergedFully();
 
+	// update at target position
 	recoPos_target = state_target_point.getPos();
-	//Rescale GeV to MeV/nucleon
 	recoMom_target = state_target_point.getMom();
-	recoMom_target *= 1000./nucleonsN;
-	recoMom_target_cov *= 1000./(Double_t)nucleonsN;
-	recoMom_TW *= 1000./(Double_t)nucleonsN;
-	recoMom_TW_cov *= 1000./(Double_t)nucleonsN;
+	// recoMom_target_cov;  maybe still at VTX...
 
 	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, (long)gTAGroot->CurrentEventId().EventNumber(),
 										pdgID, startMass, fitCh, fitMass, length, tof, chi2, ndof, pVal, 
@@ -951,9 +948,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//Set additional variables
 	shoeOutTrack->SetTwChargeZ(TwChargeZ);
 	shoeOutTrack->SetTwTof(TwTof);
-	//Convert energy to MeV/n
-	shoeOutTrack->SetFitEnergy( 1E3*energyAtTgt/nucleonsN);
-	shoeOutTrack->SetFitEnergyLoss( 1E3*(energyAtTgt - energyOutTw) );
+	//Energy in GeV
+	shoeOutTrack->SetFitEnergy( energyAtTgt);
+	shoeOutTrack->SetFitEnergyLoss( energyAtTgt - energyOutTw );
 
 	/*RZ: Quantities to
 	1) CHECK:
@@ -991,9 +988,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
 			cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
 		}
-
-		recoMom_target *= (Double_t)nucleonsN/1000.;
-		recoMom_target_cov *= (Double_t)nucleonsN/1000.;
 
 		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
 

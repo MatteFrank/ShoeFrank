@@ -1,0 +1,47 @@
+calculated_from: data/GSI_electronic/DataGSI_match/data_built.2242.physics_foot.daq.VTX.1.dat    number_of_events= 110000
+cellid= 0  T0_time= 41.5
+cellid= 1  T0_time= 55.5
+cellid= 2  T0_time= 49.5
+cellid= 3  T0_time= 48.5
+cellid= 4  T0_time= 51.5
+cellid= 5  T0_time= 45.5
+cellid= 6  T0_time= 43.5
+cellid= 7  T0_time= 42.5
+cellid= 8  T0_time= 45.5
+cellid= 9  T0_time= 41.5
+cellid= 10  T0_time= 50.5
+cellid= 11  T0_time= 44.5
+cellid= 12  T0_time= 40.5
+cellid= 13  T0_time= 42.5
+cellid= 14  T0_time= 44.5
+cellid= 15  T0_time= 41.5
+cellid= 16  T0_time= 48.5
+cellid= 17  T0_time= 47.5
+cellid= 18  T0_time= 43.5
+cellid= 19  T0_time= 58.5
+cellid= 20  T0_time= 44.5
+cellid= 21  T0_time= 47.5
+cellid= 22  T0_time= 51.5
+cellid= 23  T0_time= 43.5
+cellid= 24  T0_time= 44.5
+cellid= 25  T0_time= 37.5
+cellid= 26  T0_time= 36.5
+cellid= 27  T0_time= 60.5
+cellid= 28  T0_time= 48.5
+cellid= 29  T0_time= 43.5
+cellid= 30  T0_time= 41.5
+cellid= 31  T0_time= 59.5
+cellid= 32  T0_time= 48.5
+cellid= 33  T0_time= 48.5
+cellid= 34  T0_time= 51.5
+cellid= 35  T0_time= 48.5
+
+Resolution_function: pol10   
+Resolution_number_of_parameters: 11
+0.0832013   -0.948335    4.26974     -5.73697    -5.38772    9.62726   14.5773   -6.79903    -28.4751    -0.517399    23.4058
+
+STrel_function: pol4
+STrel_number_of_parameters: 5
+0.032891770  0.0075746330  -5.1692440e-05  1.8928600e-07  -2.4652420e-10
+
+

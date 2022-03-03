@@ -86,6 +86,8 @@ int TAGFselector::Categorize( ) {
 		Categorize_dataLike();
 	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Linear" )
 		Categorize_Linear();
+	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Backtracking")
+		Categorize_Backtracking();
 	else
 		cout <<"ERROR :: TAGFselector::MakeFit  -->	 TAGrecoManager::GetPar()->PreselectStrategy() not defined" << endl, exit(0);
 
@@ -345,7 +347,8 @@ int TAGFselector::Categorize_TruthMC( )
 
 
 //----------------------------------------------------------------------------------------------------
-
+/********************************** FORWARD TRACKING ************************************************/
+//----------------------------------------------------------------------------------------------------
 //! \brief Categorize tracks and representations using a Data-Like approach
 //!
 //! This algorithm selects the track points avoiding MC truth info; Currently depending on VT presence
@@ -473,7 +476,8 @@ int TAGFselector::Categorize_Linear()
 }
 
 
-//! \brief Track selection in the VT 
+
+//! \brief Track selection in the VT for forward tracking
 //!
 //! The algorithm currently starts from VT tracklets and checks the number of points in them
 void TAGFselector::CategorizeVT()
@@ -1143,6 +1147,141 @@ void TAGFselector::CategorizeTW_Linear()
 }
 
 
+
+//--------------------------------------------------------------------------------------------
+/**********************************BACKWARD TRACKING*****************************************/
+//--------------------------------------------------------------------------------------------
+
+int TAGFselector::Categorize_Backtracking()
+{
+	if( !TAGrecoManager::GetPar()->IncludeTW() || !TAGrecoManager::GetPar()->IncludeMSD() )
+	{
+		Error("Categorize_Backtracking()", "TW and MSD are needed for backtracking!");
+		exit(0);
+	}
+
+	if( m_debug > 1)	Info("Categorize_Backtracking()", "Backtracking START!!");
+
+	BackTracklets();
+
+	if( m_debug > 1)	Info("Categorize_Backtracking()", "BackTracklets created!");
+
+	if( TAGrecoManager::GetPar()->IncludeIT() )
+	{
+		if( m_debug > 1)	Info("Categorize_Backtracking()", "Start of IT cycle!");
+		CategorizeIT_back();
+		if( m_debug > 1)	Info("Categorize_Backtracking()", "End of IT cycle!");
+	}
+
+	if( TAGrecoManager::GetPar()->IncludeVT() )
+	{
+		if( m_debug > 1)	Info("Categorize_Backtracking()", "Start of VT cycle!");
+		CategorizeVT_back();
+		if( m_debug > 1)	Info("Categorize_Backtracking()", "End of VT cycle!");
+	}
+
+	FillTrackCategoryMap();
+
+	return 0;
+}
+
+
+void TAGFselector::BackTracklets()
+{
+	int planeTW = m_SensorIDMap->GetFitPlaneTW();
+	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
+		if(m_debug > 0) cout << "TAGFselector::BackTracklets() -- no measurement found in TW layer\n";
+		return;
+	}
+
+	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
+	m_fitter_extrapolation->setMaxIterations(1);
+	// Cycle on TW points
+	for (vector<AbsMeasurement*>::iterator itTW = m_allHitMeas->at( planeTW ).begin(); itTW != m_allHitMeas->at( planeTW ).end(); ++itTW) 
+	{
+		int MSDPlane1 = m_SensorIDMap->GetMinFitPlane("MSD");
+		int MSDPlane2 = MSDPlane1+1;
+		bool isMSD1y, isMSD2y;
+		float xMSD = -100., yMSD = -100.;
+
+		//Cycle on the first 2 planes of MSD
+		for(vector<AbsMeasurement*>::iterator itMSD1 = m_allHitMeas->at(MSDPlane1).begin(); itMSD1 != m_allHitMeas->at(MSDPlane1).end(); ++itMSD1)
+		{
+			isMSD1y = ! static_cast<PlanarMeasurement*>(*itMSD1)->getStripV();
+			if( isMSD1y )
+				yMSD = (*itMSD1)->getRawHitCoords()(0);
+			else
+				xMSD = (*itMSD1)->getRawHitCoords()(0);
+
+			for(vector<AbsMeasurement*>::iterator itMSD2 = m_allHitMeas->at(MSDPlane2).begin(); itMSD2 != m_allHitMeas->at(MSDPlane2).end(); ++itMSD2)
+			{
+				isMSD2y = ! static_cast<PlanarMeasurement*>(*itMSD2)->getStripV();
+
+				if( (isMSD1y && isMSD2y) || (!isMSD1y && !isMSD2y))
+					Warning("BackTracklets()", "MSD clusters have the same strip direction!!");
+
+				if( isMSD2y )
+					yMSD = (*itMSD1)->getRawHitCoords()(0);
+				else
+					xMSD = (*itMSD1)->getRawHitCoords()(0);
+				
+				Track* testTrack = new Track();
+				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itMSD1)->clone() );
+				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itMSD2)->clone() );
+				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itTW)->clone() );
+
+				try
+				{
+					int Z_Hypo = GetChargeFromTW(testTrack);
+					double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(Z_Hypo) );
+					int A_Hypo = round(mass_Hypo/m_AMU);
+					testTrack->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
+					
+					// TVector3 pos = pos - m_trackSlopeMap[itTrack->first]*pos.Z();
+
+					// TVector3 mom = m_trackSlopeMap[itTrack->first];
+
+					// mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
+
+					// testTrack->setStateSeed(pos, mom);
+
+					// m_fitter_extrapolation->processTrackWithRep(itTrack->second, itTrack->second->getCardinalRep() );
+				}
+				catch(genfit::Exception& e)
+				{
+					std::cerr << e.what() << '\n';
+					std::cerr << "Exception for backward tracklet fitting! Skipping..." << std::endl;
+					continue;
+				}
+				
+			}
+		}
+
+	}
+	
+
+	return;
+}
+
+void TAGFselector::CategorizeIT_back()
+{
+	cout << "IT back" << endl;
+	return;
+}
+
+void TAGFselector::CategorizeVT_back()
+{
+	cout << "VT back" << endl;
+	return;
+}
+
+
+
+
+
+
+
+//--------------------------------------------------------------------------------------------
 
 
 

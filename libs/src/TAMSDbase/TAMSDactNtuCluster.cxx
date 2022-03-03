@@ -9,6 +9,7 @@
 #include "TMath.h"
 
 #include "TAMSDparGeo.hxx"
+#include "TAMSDparCal.hxx"
 #include "TAMSDparConf.hxx"
 #include "TAMSDntuHit.hxx"
 #include "TAMSDntuCluster.hxx"
@@ -24,12 +25,13 @@ ClassImp(TAMSDactNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
+TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
   : TAGactNtuCluster1D(name, "TAMSDactNtuCluster - NTuplize cluster"),
     fpNtuRaw(pNtuRaw),
     fpNtuClus(pNtuClus),
     fpConfig(pConfig),
     fpGeoMap(pGeoMap),
+    fpCalib(pCalib),
     fCurrentPosition(0.),
     fCurrentPosError(0.),
     fListOfStrips(0x0),
@@ -37,6 +39,8 @@ TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TA
 {
   AddPara(pGeoMap, "TAMSDparGeo");
   AddPara(pConfig, "TAMSDparConf");
+   if (pCalib)
+      AddPara(pCalib, "TAMSDparCal");
   AddDataIn(pNtuRaw,   "TAMSDntuHit");
   AddDataOut(pNtuClus, "TAMSDntuCluster");
   
@@ -99,6 +103,7 @@ Bool_t TAMSDactNtuCluster::Action()
   
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fListOfStrips = pNtuHit->GetListOfStrips(i);
+
     if (fListOfStrips->GetEntries() == 0) continue;
     ok += FindClusters(i);
   }
@@ -128,9 +133,9 @@ void TAMSDactNtuCluster::SearchCluster()
 {
   fClustersN = 0;
   // Search for cluster
-  
-  for (Int_t iPix = 0; iPix < fListOfStrips->GetEntries(); ++iPix) { // loop over hit strips
-    TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iPix);
+  for (Int_t iStrip = 0; iStrip < fListOfStrips->GetEntries(); ++iStrip) { // loop over seed strips
+    TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iStrip);
+    if (!strip->IsSeed()) continue;
     if (strip->Found()) continue;
     
     Int_t stripId  = strip->GetStrip();
@@ -182,6 +187,10 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
 {
    TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
    TAMSDparGeo* pGeoMap  = (TAMSDparGeo*)     fpGeoMap->Object();
+   TAMSDparCal* pCalib   = 0x0;
+   
+   if (fpCalib)
+      pCalib = (TAMSDparCal*) fpCalib->Object();
 
   TAMSDcluster* cluster = 0x0;
   
@@ -212,11 +221,11 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
     ComputeCog(cluster);
+    ComputeEta(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);    
     cluster->SetPositionG(posG);
-    
      if (ApplyCuts(cluster)) {
         // histogramms
         cluster->SetValid();
@@ -281,6 +290,8 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   cluster->SetEnergyLoss(tClusterPulseSum);
 }
 
+//______________________________________________________________________________
+//
 void TAMSDactNtuCluster::ComputeCog(TAMSDcluster* cluster)
 {
   if (!fCurListOfStrips) return;
@@ -302,6 +313,59 @@ void TAMSDactNtuCluster::ComputeCog(TAMSDcluster* cluster)
   fCurrentCog = cog;
    
   cluster->SetCog(fCurrentCog);
+}
+
+//______________________________________________________________________________
+//
+void TAMSDactNtuCluster::ComputeEta(TAMSDcluster* cluster)
+{
+  if (!fCurListOfStrips) return;
+  Int_t nstrips = fCurListOfStrips->GetEntries();
+
+  Float_t eta;
+  TAMSDhit* strip;
+  Float_t max_adc = -1;
+  Int_t max_pos = 0;
+
+  if (nstrips == 1)
+  {
+    eta = 1.0;
+  } 
+  else 
+  {
+    for (int i = 0; i < nstrips; i++)
+    {  
+      strip = (TAMSDhit*)fCurListOfStrips->At(i);
+      if(strip->GetEnergyLoss() > max_adc)
+      {
+         max_adc = strip->GetEnergyLoss();
+         max_pos = i;
+      }
+    }
+
+    if (max_pos == 0)
+    {
+      eta = ((TAMSDhit*)fCurListOfStrips->At(0))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(0))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(1))->GetEnergyLoss() );
+    } 
+    else if(max_pos == nstrips - 1)
+    {
+      eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() );
+    } 
+    else
+    {
+      if( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() >  ((TAMSDhit*)fCurListOfStrips->At(max_pos + 1))->GetEnergyLoss() )
+      {
+         eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() );
+      }
+      else
+      {
+         eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos + 1))->GetEnergyLoss() );
+      }
+   }
+  }
+
+   fCurrentEta = eta;
+   cluster->SetEta(fCurrentEta);
 }
 
 //______________________________________________________________________________

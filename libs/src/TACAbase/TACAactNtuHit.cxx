@@ -98,10 +98,11 @@ Bool_t TACAactNtuHit::Action() {
     TACAhit* createdhit=p_nturaw->NewHit(crysId, energy, time,type);
     createdhit->SetValid(true);
   
-    fhCharge[crysId]->Fill(energy);
-    fhChannelMap->Fill(crysId);
-    fhAmplitude[crysId]->Fill(amplitude);
-    
+     if (ValidHistogram()) {
+        fhCharge[crysId]->Fill(energy);
+        fhChannelMap->Fill(crysId);
+        fhAmplitude[crysId]->Fill(amplitude);
+     }
   }
 
 

@@ -92,6 +92,7 @@ TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor) const
    }
 }
 
+
 //------------------------------------------+-----------------------------------
 //! return a strip for a given sensor
 TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip)
@@ -118,6 +119,7 @@ const TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip) const
    }
 }
 
+
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 void TAMSDntuHit::SetupClones()
@@ -131,6 +133,7 @@ void TAMSDntuHit::SetupClones()
       fListOfStrips->AddAt(arr, i);
    }
    fListOfStrips->SetOwner(true);
+
    fMap.clear();
 }
 

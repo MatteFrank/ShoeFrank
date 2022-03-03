@@ -354,10 +354,10 @@ void TAVTactBaseNtuTrack::FillHistogramm(TAGbaseTrack* track)
    
    fpHisTrackClus->Fill(track->GetClustersN());
    for (Int_t i = 0; i < track->GetClustersN(); ++i) {
-      TAVTcluster* cluster = (TAVTcluster*)track->GetCluster(i);
+      TAGcluster* cluster = (TAGcluster*)track->GetCluster(i);
       Int_t idx = cluster->GetSensorIdx();
-      fpHisPixelTot->Fill(cluster->GetPixelsN());
-      fpHisPixel[idx]->Fill(cluster->GetPixelsN());
+      fpHisPixelTot->Fill(cluster->GetElementsN());
+      fpHisPixel[idx]->Fill(cluster->GetElementsN());
    }
 }
 
