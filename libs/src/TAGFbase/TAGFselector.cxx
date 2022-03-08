@@ -45,6 +45,7 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
+	  m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
 	if ( TAGrecoManager::GetPar()->IsMC() )
 		m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
@@ -1196,56 +1197,159 @@ void TAGFselector::BackTracklets()
 
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 	m_fitter_extrapolation->setMaxIterations(1);
+	int TrackCounter=0;
 	// Cycle on TW points
 	for (vector<AbsMeasurement*>::iterator itTW = m_allHitMeas->at( planeTW ).begin(); itTW != m_allHitMeas->at( planeTW ).end(); ++itTW) 
 	{
+		//LOCAL COORDS!!!!
+		float xTW = (*itTW)->getRawHitCoords()(0);
+		float yTW = (*itTW)->getRawHitCoords()(1);
+		float zTW = 0;// m_SensorIDMap->GetFitPlane(m_SensorIDMap->GetFitPlaneTW())->getO().Z();
+		TVector3 globPosTW = m_GeoTrafo->FromTWLocalToGlobal(TVector3(xTW, yTW, zTW));
 		int MSDPlane1 = m_SensorIDMap->GetMinFitPlane("MSD");
 		int MSDPlane2 = MSDPlane1+1;
 		bool isMSD1y, isMSD2y;
 		float xMSD = -100., yMSD = -100.;
+		float zMSD = m_SensorIDMap->GetFitPlane(MSDPlane1)->getO().Z();
 
 		//Cycle on the first 2 planes of MSD
 		for(vector<AbsMeasurement*>::iterator itMSD1 = m_allHitMeas->at(MSDPlane1).begin(); itMSD1 != m_allHitMeas->at(MSDPlane1).end(); ++itMSD1)
 		{
-			isMSD1y = ! static_cast<PlanarMeasurement*>(*itMSD1)->getStripV();
+			isMSD1y = static_cast<PlanarMeasurement*>(*itMSD1)->getStripV();
+
 			if( isMSD1y )
 				yMSD = (*itMSD1)->getRawHitCoords()(0);
+				// yMSD = m_GeoTrafo->FromMSDLocalToGlobal(TVector3(0, (*itMSD1)->getRawHitCoords()(0), 0)).Y(); //RZ: Check for local coordinates!!!!
 			else
 				xMSD = (*itMSD1)->getRawHitCoords()(0);
+				// xMSD = m_GeoTrafo->FromMSDLocalToGlobal(TVector3((*itMSD1)->getRawHitCoords()(0), 0, 0)).X();
 
 			for(vector<AbsMeasurement*>::iterator itMSD2 = m_allHitMeas->at(MSDPlane2).begin(); itMSD2 != m_allHitMeas->at(MSDPlane2).end(); ++itMSD2)
 			{
-				isMSD2y = ! static_cast<PlanarMeasurement*>(*itMSD2)->getStripV();
+				isMSD2y = static_cast<PlanarMeasurement*>(*itMSD2)->getStripV();
 
 				if( (isMSD1y && isMSD2y) || (!isMSD1y && !isMSD2y))
 					Warning("BackTracklets()", "MSD clusters have the same strip direction!!");
 
+
 				if( isMSD2y )
-					yMSD = (*itMSD1)->getRawHitCoords()(0);
+					yMSD = (*itMSD2)->getRawHitCoords()(0);
 				else
-					xMSD = (*itMSD1)->getRawHitCoords()(0);
+					xMSD = (*itMSD2)->getRawHitCoords()(0);
 				
 				Track* testTrack = new Track();
 				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itMSD1)->clone() );
 				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itMSD2)->clone() );
 				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itTW)->clone() );
 
+				int Z_Hypo = GetChargeFromTW(testTrack);
+				double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(Z_Hypo) );
+				int A_Hypo = round(mass_Hypo/m_AMU);
+				testTrack->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
+				
+				TVector3 pos(xMSD, yMSD, zMSD*0.98);
+				TVector3 mom((globPosTW.x() - xMSD)/(globPosTW.z() - zMSD), (globPosTW.y() - yMSD)/(globPosTW.z() -zMSD) ,1);
+				// if(m_debug > 1)
+				// {
+					cout << "BACKTRACKLET CANDIDATE::" << (*itTW)->getHitId() << "\t" << (*itMSD1)->getHitId() << "\t" << (*itMSD2)->getHitId() << endl;
+					cout << Z_Hypo << "\t" << A_Hypo << endl;
+					cout << "Pos::"; pos.Print();
+					cout << "Mom::"; mom.Print();
+				// }
+
+				// if(mom.Theta() > angularCoverage)
+				// if(mom.Phi() !compatible w/ x,y coordinates quadrant)
+
+
+				for ( int MSDnPlane = MSDPlane2+1; MSDnPlane <= m_SensorIDMap->GetMaxFitPlane("MSD"); MSDnPlane++ )
+				{
+					TVector3 guessOnMSD = m_GeoTrafo->FromGlobalToMSDLocal( pos + mom*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z()));
+					
+					if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
+						continue;
+
+					int indexOfMinY = -1;
+					int count = 0;
+					double distanceInY = 1.;
+					int sensorMatch = MSDnPlane;
+					//RZ: TO BE CHECKED!! ADDED TO AVOID ERRORS
+					Bool_t areLightFragments = false;
+					if (areLightFragments) distanceInY = 2;
+					// loop all absMeas in the found IT plane
+
+					if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
+						if(m_debug > 0) cout << "TAGFselector::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
+						continue;
+					}
+
+					for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
+
+						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselector::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
+
+						//RZ: CHECK -> AVOID ERRORS
+						double distanceFromHit;
+						string strip;
+
+						if ( ! static_cast<PlanarMeasurement*>(*it)->getStripV() )
+							distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
+						else
+							distanceFromHit = fabs(guessOnMSD.Y() - (*it)->getRawHitCoords()(0));
+
+						// find hit at minimum distance
+						if ( distanceFromHit < distanceInY ){
+							distanceInY = distanceFromHit;
+							indexOfMinY = count;
+						}
+						count++;
+					}
+
+					// insert measurementi in GF Track
+					if (indexOfMinY != -1){
+
+						AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(sensorMatch).at(indexOfMinY)))->clone();
+						testTrack->insertMeasurement( hitToAdd, testTrack->getNumPointsWithMeasurement()-1 );
+					}
+
+				} // end loop MSD planes
+
+				cout << "Found testTrack with " << testTrack->getNumPointsWithMeasurement() << " points" << endl;
+
+				if( testTrack->getNumPointsWithMeasurement() < 6 )
+				{
+					delete testTrack;
+					continue;
+				}
+
 				try
 				{
-					int Z_Hypo = GetChargeFromTW(testTrack);
-					double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(Z_Hypo) );
-					int A_Hypo = round(mass_Hypo/m_AMU);
-					testTrack->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
+					mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo )*0.95);
+					testTrack->setStateSeed(pos, mom);
+
+					m_fitter_extrapolation->processTrackWithRep(testTrack, testTrack->getCardinalRep() );
+
+					StateOnPlane tempState = testTrack->getFittedState(-1);
+
+					cout << "TW::"; tempState.getPos().Print();
+
+					TVector2 TWcoords(xTW, yTW);
+
+					cout << "dist::" << (tempState.getPos().XYvector() - TWcoords).Mod() << endl;
+
+					if( (tempState.getPos().XYvector() - TWcoords).Mod() > 3 )
+					{
+						Info("""BackTracklets()", "Found wrong MSD-TW point association! Removing track...");
+						delete testTrack;
+						continue;
+					}
+
+					// tempState = testTrack->getFittedState(0);
+
+					// testTrack->getCardinalRep()->extrapolateToPoint( tempState, TVector3(0,0,0));
 					
-					// TVector3 pos = pos - m_trackSlopeMap[itTrack->first]*pos.Z();
-
-					// TVector3 mom = m_trackSlopeMap[itTrack->first];
-
-					// mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
-
-					// testTrack->setStateSeed(pos, mom);
-
-					// m_fitter_extrapolation->processTrackWithRep(itTrack->second, itTrack->second->getCardinalRep() );
+					// //Check if 
+					// cout << "TGT::"; tempState.getPos().Print();
+					m_trackTempMap[TrackCounter] = testTrack;
+					TrackCounter++;
 				}
 				catch(genfit::Exception& e)
 				{
