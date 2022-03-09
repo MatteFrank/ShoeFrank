@@ -32,7 +32,9 @@ class TAGbaseWDparTime : public TAGpara {
   
   vector<double> GetRawTimeArray(int iBo, int iCha, int TrigCell);
   void InitMap();
-  bool FromFile(TString fileName = "", TString file2Name = "");
+  bool FromFileCFD(TString fileName = "");
+  bool FromFileTcal(TString fileName = "");
+  void GetTimeInfo(FILE*);
   void SetTimeCal(int iBo, int iCha, vector<float> tvec);
 
   const double sec2Nano = 1E9;

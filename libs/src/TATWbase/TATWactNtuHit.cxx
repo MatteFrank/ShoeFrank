@@ -105,6 +105,19 @@ void TATWactNtuHit::CreateHistogram()
   fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, -50., 50);
   AddHistogram(fpHisTimeTot);
 
+  fpHisChargeFront = new TH1F("twChargeFront", "TW - Charge Front", 10000, 0., 50.);
+  AddHistogram(fpHisChargeFront);
+
+  fpHisChargeRear = new TH1F("twChargeRear", "TW - Charge Rear", 10000, 0., 50.);
+  AddHistogram(fpHisChargeRear);
+
+  fpHisChargeBar9Front = new TH1F("twChargeBar9Front", "TW - ChargeBar9 Front", 10000, 0., 50.);
+  AddHistogram(fpHisChargeBar9Front);
+
+  fpHisChargeBar9Rear = new TH1F("twChargeBar9Rear", "TW - ChargeBar9 Rear", 10000, 0., 50.);
+  AddHistogram(fpHisChargeBar9Rear);
+
+  
   fpHisDeltaTimeRawCenterFront = new TH1F("twDeltaTimeCenterFront", "raw time of flight", 5000, -50., 50);
   AddHistogram(fpHisDeltaTimeRawCenterFront);
 
@@ -317,10 +330,15 @@ Bool_t TATWactNtuHit::Action() {
 	      fpHisDeTot->Fill(Energy);
 	      fpHisTimeTot->Fill(Time);
 	      fpHisElossTof_layer[Layer]->Fill(Time,Energy);
-	      
+
+	      if(Layer==1)fpHisChargeFront->Fill(rawEnergy);
+	      if(Layer==0)fpHisChargeRear->Fill(rawEnergy);
 	      
 	      if(ShoeBarId==9) {  // only for central bars for trigger purposes
-
+		
+		if(Layer==1)fpHisChargeBar9Front->Fill(rawEnergy);
+		if(Layer==0)fpHisChargeBar9Rear->Fill(rawEnergy);
+		
 		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 0)fpHisDeltaTimeRawCenterFront->Fill(rawTime);
 		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 1)fpHisDeltaTimeRawCenterRear->Fill(rawTime);
 		fpHisAmpA[Layer]->Fill(AmplitudeA);

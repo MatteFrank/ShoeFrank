@@ -1,0 +1,34 @@
+// Campaign file
+CamName: "CNAO2021"
+RunNumber: 400-12000;
+NumberDevices: 5
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/CNAO2021/FOOT.geo": 400; 2000; 7000;
+
+DetectorName: "ST"
+NumberFiles: 4
+"./geomaps/CNAO2021/TASTdetector.geo": -1
+"./config/CNAO2021/TASTdetector.cfg": -1
+"./config/CNAO2021/WDChannelMap.map": -1
+"./calib/CNAO2021/WDpar.cal": -1;
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/CNAO2021/TAGdetector.geo": 400; 4300; 9000; 9600; 10000; 10100;
+
+DetectorName: "TW"
+NumberFiles: 5
+"./geomaps/CNAO2021/TATWdetector.geo": -1
+"./config/CNAO2021/TATW_BBparameters.cfg": -1
+"./config/CNAO2021/TATWChannelMapXML.map": -1
+"./calib/CNAO2021/TATW_Energy_Calibration.cal": -1
+"./calib/CNAO2021/TATW_Tof_Calibration.cal": -1;
+
+DetectorName: "CA"
+NumberFiles: 4
+"./geomaps/CNAO2021/TACAdetector.geo": -1
+"./config/CNAO2021/TACAdetector.map": -1
+"./calib/CNAO2021/TACA_Energy_Calibration.cal": -1
+"./calib/CNAO2021/TACA_Temperature_Calibration_perCry.cal": -1
