@@ -45,6 +45,7 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double d
   fBaseline = ComputeBaseline(W);
   fPedestal = ComputePedestal(W);
   fChg = ComputeCharge(W);
+  //  cout << "cha::" << W->GetChannelId() << "  fCGH::" << fChg << endl;
   fAmplitude = ComputeAmplitude(W);
   if(algo=="hwCFD"){
     fTime = ComputeTime(W,frac,del,-10,10);
@@ -174,36 +175,20 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double
   int TrigType = vW.at(0)->GetTrigType();
   int TriggerCellId = vW.at(0)->GetTriggerCellId();
 
-  
-
-  //I define the time window
-  // int i_ampmin = TMath::LocMin(vW.at(0)->GetVectA().size(),&(vW.at(0)->GetVectA())[0]);
-  // double t_ampmin = vW.at(0)->GetVectT().at(i_ampmin);
-  // double tmin = (t_ampmin-20 > vW.at(0)->GetVectT().at(0)) ? t_ampmin-20 : vW.at(0)->GetVectT().at(0);
-  // double tmax = (t_ampmin+5 < vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1)) ? t_ampmin+5 : vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
-  // vector<double> time,amp;
-  // double tmpt=tmin;
-  double tmin = vW.at(0)->GetVectT().at(0);
-  double tmax = vW.at(0)->GetVectT().at(vW.at(0)->GetVectT().size()-1);
-  vector<double> time,amp;
-  double tmpt=tmin;
-  
-  while(tmpt<tmax){
-    time.push_back(tmpt);
-    tmpt+=0.2;
-  }
-  amp.assign(time.size(),0);
-
+ 
+  vector<double> time(vW.at(0)->GetVectT());
+  vector<double> amp(vW.at(0)->GetVectA());
+ 
   //I sum the signals
-    for(int i=0;i<vW.size();i++){
+    for(int i=1;i<vW.size();i++){
     vector<double> tmpamp = vW.at(i)->GetVectA();
     vector<double> tmptime = vW.at(i)->GetVectT();
     TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
     for(int isa=0;isa<time.size();isa++){
-      if(amp.at(isa)<0.05)amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
+      amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
     }
   }
-
+   
   wsum->SetChannelId(ChannelId);
   wsum->SetBoardId(BoardId);
   wsum->SetTrigType(TrigType);
