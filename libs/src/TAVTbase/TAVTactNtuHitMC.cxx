@@ -127,7 +127,7 @@ bool TAVTactNtuHitMC::Action()
 //!
 //! \param[in] storedEvtInfo list of MC events stored
 //! \param[in] storedEvents number fo MC events stored
-void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
+void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEvents)
 {
    TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
   

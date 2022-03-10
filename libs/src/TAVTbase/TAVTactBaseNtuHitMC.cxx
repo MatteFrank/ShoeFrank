@@ -149,6 +149,8 @@ void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 //! Generated pileup events
 void  TAVTactBaseNtuHitMC::GeneratePileup()
 {
+   TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
+
 	Int_t pileupEvents = TMath::Nint(fpHisPoisson->GetRandom())-1;
 
 	// form pileup events number pull out randomly the stored events
@@ -174,7 +176,13 @@ void  TAVTactBaseNtuHitMC::GeneratePileup()
 	   for (Int_t j = 0; j < mcInfo.size(); ++j) {
 		  RawMcHit_t hit = mcInfo[j];
 		  
-		  if (!fDigitizer->Process(hit.de, hit.x, hit.y, hit.zi, hit.zo)) continue;
+         TVector3 posIn(hit.x, hit.y, hit.zi);
+         TVector3 posOut(hit.x, hit.y, hit.zo);
+
+         posIn  = pGeoMap->Detector2Sensor(hit.id, posIn);
+         posOut = pGeoMap->Detector2Sensor(hit.id, posOut);
+
+		  if (!fDigitizer->Process(hit.de, posIn.X(), posIn.Y(), posIn.Z(), posOut.Z())) continue;
 		  FillPixels( hit.id, -1, -1);
 	   }
 	}
