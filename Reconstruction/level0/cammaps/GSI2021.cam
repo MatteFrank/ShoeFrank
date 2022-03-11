@@ -16,8 +16,9 @@ NumberFiles: 5
 "./geomaps/GSI2021/TASTdetector.geo": -1
 "./config/GSI2021/TASTdetector.cfg": -1
 "./config/GSI2021/WDChannelMap.map": -1
-"./calib/GSI2021/WDTimeCalibration/tcalib.dat": -1;
 "./calib/GSI2021/WDpar.cal": -1;
+"./calib/GSI2021/WDTimeCalibration/tcalib.dat": -1;
+
 
 DetectorName: "BM"
 NumberFiles: 4

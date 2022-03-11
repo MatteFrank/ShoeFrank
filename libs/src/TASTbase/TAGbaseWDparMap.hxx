@@ -29,10 +29,12 @@ public:
   ClassDef(TAGbaseWDparMap,1)
 
   string GetChannelType(int,int);
+  vector<int> GetBoards(string);
   
   private:
 
   map <pair<int,int>, string> chmap;
+  map <string, vector<int>> bolist;
   
 };
 

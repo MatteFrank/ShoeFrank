@@ -18,6 +18,8 @@
   \class TAGbaseWD TAGbaseWD.hxx "TAGbaseWD.hxx"
 */
 
+
+
 using namespace std;
 
 ClassImp(TAGbaseWD);
@@ -56,16 +58,46 @@ TAGbaseWD::~TAGbaseWD(){
 
 double TAGbaseWD::ComputeBaseline(TWaveformContainer *w){
 
-
   
   return TMath::Mean(w->GetVectA().begin()+2, w->GetVectA().begin()+27);
 
 }
 
 
-double TAGbaseWD::ComputePedestal(TWaveformContainer *w){
+double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr){
 
-  return fBaseline*(w->GetVectT().at(w->GetVectT().size()-1)- w->GetVectT().at(0));
+
+  vector<double> tmp_amp = w->GetVectA();
+  vector<double> tmp_time = w->GetVectT();
+  
+  double chargePed = 0.;
+  double prod=1;
+  
+  double deltat=0.; //trapezi
+  double b1=0, b2=0;
+  double a1, a2;
+  double m,q,t1,t2,thalf;
+
+  const int Nsideband=30;
+  
+  for (int j = 5; j<Nsideband; j++){
+    a1 = tmp_amp.at(j);
+    a2 = tmp_amp.at(j+1);
+    t1 = tmp_time.at(j);
+    t2 = tmp_time.at(j+1);
+    if(a1>fBaseline+thr)continue;
+    prod=a1*a2;
+    if(prod<0){
+      m = (a2-a1)/(t2-t1);
+      q = a2-m*t2;
+      thalf = -q/m;
+      chargePed+=0.5*a1*(thalf-t1);
+      chargePed+=0.5*a2*(t2-thalf);
+    }else{
+      chargePed += 0.5*(a1+a2)*(t2-t1);
+    }
+  }
+  return -chargePed*(tmp_time.size()/(Double_t)Nsideband);
 
 }
 
@@ -78,7 +110,8 @@ double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){
 
 
 
-double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
+
+double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr){
 
   vector<double> tmp_amp = w->GetVectA();
   vector<double> tmp_time = w->GetVectT();
@@ -96,6 +129,7 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
     t1 = tmp_time.at(j);
     t2 = tmp_time.at(j+1);
     prod=a1*a2;
+    if(a1>fBaseline+thr)continue;
     if(prod<0){
       m = (a2-a1)/(t2-t1);
       q = a2-m*t2;
@@ -106,7 +140,6 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
       charge += 0.5*(a1+a2)*(t2-t1);
     }
   }
-
   return -(charge - fPedestal);
 
 }
