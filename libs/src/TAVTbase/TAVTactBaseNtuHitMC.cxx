@@ -33,9 +33,9 @@ using namespace std;
 //! Class imp
 ClassImp(TAVTactBaseNtuHitMC);
 
-Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
+Bool_t  TAVTactBaseNtuHitMC::fgPileup          = true;
 Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 0.736; // ajust for FIRST
-Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 10;
+Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
 Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 

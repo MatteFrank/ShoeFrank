@@ -53,8 +53,9 @@ void TAVTcluster::SetupClones()
 void TAVTcluster::AddPixel(TAVThit* pixel)
 {
    for (Int_t k = 0; k < pixel->GetMcTracksN(); ++k) {
-      Int_t idx = pixel->GetMcTrackIdx(k);
-      AddMcTrackIdx(idx);
+      Int_t trackIdx = pixel->GetMcTrackIdx(k);
+      Int_t hitIdx = pixel->GetMcIndex(k);
+      AddMcTrackIdx(trackIdx, hitIdx);
    }
 
    TClonesArray &pixelArray = *fListOfPixels;
