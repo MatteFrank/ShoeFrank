@@ -162,8 +162,6 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEv
          mcHit.y   = posIn.Y();
          mcHit.zi  = posIn.Z();
          mcHit.zo  = posOut.Z();
-         mcHit.tkid = trackIdx;
-         mcHit.htid = i;
          storedEvtInfo.push_back(mcHit);
       }
       

@@ -179,14 +179,11 @@ void  TAVTactBaseNtuHitMC::GeneratePileup()
          TVector3 posIn(hit.x, hit.y, hit.zi);
          TVector3 posOut(hit.x, hit.y, hit.zo);
 
-         Int_t hitIdx   = hit.htid;
-         Int_t trackIdx = hit.tkid;
-
          posIn  = pGeoMap->Detector2Sensor(hit.id, posIn);
          posOut = pGeoMap->Detector2Sensor(hit.id, posOut);
 
 		  if (!fDigitizer->Process(hit.de, posIn.X(), posIn.Y(), posIn.Z(), posOut.Z())) continue;
-		  FillPixels( hit.id, hitIdx, trackIdx);
+		  FillPixels( hit.id, -1, -1);
 	   }
 	}
 }

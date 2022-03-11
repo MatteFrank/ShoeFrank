@@ -117,9 +117,7 @@ void TAGcluster::AddMcTrackIdx(Int_t trackIdx, Int_t hitIdx)
       fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
       fMcTrackMap[trackIdx] = 1;
    }
-   
-   if (hitIdx == -1) return;
-   
+      
    if (fMcHitMap[hitIdx] == 0) {
       fMcHitIdx.Set(fMcTrackIdx.GetSize()+1);
       fMcHitIdx[fMcTrackIdx.GetSize()-1] = hitIdx;
