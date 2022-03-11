@@ -18,7 +18,7 @@
   \class TAGbaseWD TAGbaseWD.hxx "TAGbaseWD.hxx"
 */
 
-#define THR 0.005
+
 
 using namespace std;
 
@@ -64,7 +64,7 @@ double TAGbaseWD::ComputeBaseline(TWaveformContainer *w){
 }
 
 
-double TAGbaseWD::ComputePedestal(TWaveformContainer *w){
+double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr){
 
 
   vector<double> tmp_amp = w->GetVectA();
@@ -85,7 +85,7 @@ double TAGbaseWD::ComputePedestal(TWaveformContainer *w){
     a2 = tmp_amp.at(j+1);
     t1 = tmp_time.at(j);
     t2 = tmp_time.at(j+1);
-    if(a1>fBaseline+THR)continue;
+    if(a1>fBaseline+thr)continue;
     prod=a1*a2;
     if(prod<0){
       m = (a2-a1)/(t2-t1);
@@ -111,7 +111,7 @@ double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){
 
 
 
-double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
+double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr){
 
   vector<double> tmp_amp = w->GetVectA();
   vector<double> tmp_time = w->GetVectT();
@@ -129,7 +129,7 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w){
     t1 = tmp_time.at(j);
     t2 = tmp_time.at(j+1);
     prod=a1*a2;
-    if(a1>fBaseline+THR)continue;
+    if(a1>fBaseline+thr)continue;
     if(prod<0){
       m = (a2-a1)/(t2-t1);
       q = a2-m*t2;

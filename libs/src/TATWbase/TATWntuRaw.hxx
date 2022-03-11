@@ -24,9 +24,9 @@ public:
   virtual         ~TATWrawHit();
 
   virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
-  virtual double ComputeCharge( TWaveformContainer *w);
+  virtual double ComputeCharge( TWaveformContainer *w, double thr);
   virtual double ComputeAmplitude( TWaveformContainer *w);
-  virtual double ComputePedestal( TWaveformContainer *w);
+  virtual double ComputePedestal( TWaveformContainer *w, double thr);
   virtual double ComputeBaseline( TWaveformContainer *w);
   
   TATWrawHit( TWaveformContainer *w,  string algo, double frac, double del);

@@ -42,8 +42,8 @@ TACArawHit::TACArawHit(TWaveformContainer *W)
   : TAGbaseWD(W){
 
   fBaseline = ComputeBaseline(W);
-  fPedestal = ComputePedestal(W);
-  fChg = ComputeCharge(W);
+  fPedestal = ComputePedestal(W,0.0);
+  fChg = ComputeCharge(W,0.0);
   fAmplitude = ComputeAmplitude(W);
   fTime = ComputeTime(W,0.3,2.0,-5,2);
   fTimeOth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
@@ -62,8 +62,8 @@ double TACArawHit::ComputeTime(TWaveformContainer *w, double frac, double del, d
 }
 
 
-double TACArawHit::ComputeCharge(TWaveformContainer *w){
-  return TAGbaseWD::ComputeCharge(w);
+double TACArawHit::ComputeCharge(TWaveformContainer *w, double thr){
+  return TAGbaseWD::ComputeCharge(w,thr);
 }
 
 
@@ -77,8 +77,8 @@ double TACArawHit::ComputeBaseline(TWaveformContainer *w){
 }
 
 
-double TACArawHit::ComputePedestal(TWaveformContainer *w){
-  return  TAGbaseWD::ComputePedestal(w);
+double TACArawHit::ComputePedestal(TWaveformContainer *w, double thr){
+  return  TAGbaseWD::ComputePedestal(w,thr);
 }
 
 

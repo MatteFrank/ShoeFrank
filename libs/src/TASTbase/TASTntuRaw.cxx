@@ -19,6 +19,9 @@ using namespace std;
   \brief Mapping and Geometry parameters for IR detectors. **
 */
 
+
+#define ST_AMP_THR 0.008
+
 ClassImp(TASTrawHit);
 
 TString TASTntuRaw::fgkBranchName   = "stdat.";
@@ -43,8 +46,8 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double d
   : TAGbaseWD(W){
 
   fBaseline = ComputeBaseline(W);
-  fPedestal = ComputePedestal(W);
-  fChg = ComputeCharge(W);
+  fPedestal = ComputePedestal(W,ST_AMP_THR);
+  fChg = ComputeCharge(W,ST_AMP_THR);
   //  cout << "cha::" << W->GetChannelId() << "  fCGH::" << fChg << endl;
   fAmplitude = ComputeAmplitude(W);
   if(algo=="hwCFD"){
@@ -72,8 +75,8 @@ double TASTrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, d
 }
 
 
-double TASTrawHit::ComputeCharge(TWaveformContainer *w){
-  return TAGbaseWD::ComputeCharge(w);
+double TASTrawHit::ComputeCharge(TWaveformContainer *w, double thr){
+  return TAGbaseWD::ComputeCharge(w,thr);
 }
 
 
@@ -87,8 +90,8 @@ double TASTrawHit::ComputeBaseline(TWaveformContainer *w){
 }
 
 
-double TASTrawHit::ComputePedestal(TWaveformContainer *w){
-  return  TAGbaseWD::ComputePedestal(w);
+double TASTrawHit::ComputePedestal(TWaveformContainer *w, double thr){
+  return  TAGbaseWD::ComputePedestal(w,thr);
 }
 
 
