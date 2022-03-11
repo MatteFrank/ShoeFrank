@@ -33,7 +33,7 @@ using namespace std;
 //! Class imp
 ClassImp(TAVTactBaseNtuHitMC);
 
-Bool_t  TAVTactBaseNtuHitMC::fgPileup          = true;
+Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
 Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 0.736; // ajust for FIRST
 Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
 Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
@@ -55,13 +55,13 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
 		Double_t tot = 0.;
 		Double_t par = fgPoissonPar;
 
-		for (Int_t i = 1; i < 10; ++i) {
+		for (Int_t i = 1; i < 40; ++i) {
 			tot += TMath::PoissonI(i, par);
 		}
 
-		fpHisPoisson = new TH1F("vtPoisson", "Poisson", 12, -0.5, 11.5);
+		fpHisPoisson = new TH1F("vtPoisson", "Poisson", 42, -0.5, 41.5);
 
-		for (Int_t i = 1; i < 10; ++i) {
+		for (Int_t i = 1; i < 40; ++i) {
 			Float_t val = TMath::PoissonI(i, par)/tot*100.;
 			fpHisPoisson->Fill(i, val);
 		}
