@@ -33,9 +33,9 @@ using namespace std;
 //! Class imp
 ClassImp(TAVTactBaseNtuHitMC);
 
-Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
+Bool_t  TAVTactBaseNtuHitMC::fgPileup          = true;
 Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 0.736; // ajust for FIRST
-Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 10;
+Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
 Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 
@@ -179,11 +179,14 @@ void  TAVTactBaseNtuHitMC::GeneratePileup()
          TVector3 posIn(hit.x, hit.y, hit.zi);
          TVector3 posOut(hit.x, hit.y, hit.zo);
 
+         Int_t hitIdx   = hit.htid;
+         Int_t trackIdx = hit.tkid;
+
          posIn  = pGeoMap->Detector2Sensor(hit.id, posIn);
          posOut = pGeoMap->Detector2Sensor(hit.id, posOut);
 
 		  if (!fDigitizer->Process(hit.de, posIn.X(), posIn.Y(), posIn.Z(), posOut.Z())) continue;
-		  FillPixels( hit.id, -1, -1);
+		  FillPixels( hit.id, hitIdx, trackIdx);
 	   }
 	}
 }

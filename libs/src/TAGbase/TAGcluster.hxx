@@ -23,8 +23,11 @@ protected:
    TVector3           fPosition2;                ///< position of the clus in tracker frame / / fitted position in FOOT frame
    TVector3           fPosError2;                ///< position's errors of the clus in tracker frame /  fitted position's error in FOOT frame
    TArrayI            fMcTrackIdx;               ///< Idx of the track created in the simulation
+   TArrayI            fMcHitIdx;                 ///< Idx of the hit created in the simulation
    //! Map of MC track Id
    map<int, int>      fMcTrackMap;               //! Map of MC track Id
+   //! Map of MC hit Id
+   map<int, int>      fMcHitMap;                 //! Map of MC track Id
    Int_t              fClusterIdx;               ///< cluster index
    Int_t              fElementsN;                ///< number of cluster elements (pixels, strips, points...)
    Int_t              fSensorIdx;                ///< sensor index
@@ -69,6 +72,8 @@ public:
    //! Get fitted position in FOOT frame
    virtual const TVector3&  GetFitPosError()   const { return fPosError2;     }
    
+   //! Get MC hit index
+   Int_t                    GetMcIndex(Int_t index)    const   { return fMcHitIdx[index];      }
    //! Get MC track index
    Int_t                    GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
    //! Get MC track size
@@ -122,9 +127,9 @@ public:
    virtual void             SetFitPosError(Float_t u, Float_t v, Float_t z)   { fPosError2.SetXYZ(u,v,z); }
    
    // Add MC track Idx
-   void                     AddMcTrackIdx(Int_t trackIdx);
+   void                     AddMcTrackIdx(Int_t trackIdx, Int_t hitIdx = -1);
    
-    ClassDef(TAGcluster,4)
+    ClassDef(TAGcluster,5)
 };
 
 #endif
