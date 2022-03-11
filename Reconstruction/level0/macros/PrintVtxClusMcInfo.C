@@ -59,11 +59,9 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
    
    TAMCntuPart *eve = new TAMCntuPart();
    tree->SetBranchAddress(TAMCntuPart::GetBranchName(), &eve);
-   tree->SetBranchAddress("mceve.", &eve);
    
    TAMCntuHit *vtMc = new TAMCntuHit();
    tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
-   tree->SetBranchAddress("mcvt.", &vtMc);
    
    if (nentries == 0)
       nentries = tree->GetEntries();
@@ -99,6 +97,7 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
                TAMCpart* track = eve->GetTrack(idx);
                printf("charge %d mass %g ", track->GetCharge(), track->GetMass());
                /*
+                Int_t idx = hit->GetMcIndex(k);
                 TAMChit* mcHit = vtMc->GetHit(idx);
                 TVector3 pos = mcHit->GetPosition();
                 printf("MC pos (%.4f %.4f %.4f)\n", pos[0], pos[1], pos[2]);
