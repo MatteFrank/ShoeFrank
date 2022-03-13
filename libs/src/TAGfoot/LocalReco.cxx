@@ -282,7 +282,7 @@ void LocalReco::CloseFileIn()
 {
   if (fgStdAloneFlag && TAGrecoManager::GetPar()->IncludeBM())
     fActVmeReaderBm->Close();
-  else if (fgStdAloneFlag && TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeTW())
+  else if (fgStdAloneFlag && (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA()))
     fActWdRaw->Close();
   else
     fActEvtReader->Close();
