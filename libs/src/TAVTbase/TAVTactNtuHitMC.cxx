@@ -138,7 +138,6 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEv
    else
      pNtuMC = TAMCflukaParser::GetVtxHits(fEventStruct, fpNtuMC);
 
-   RawMcHit_t mcHit;
    fMap.clear();
    
    if(FootDebugLevel(1))
@@ -155,17 +154,8 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEv
       Int_t trackIdx = hit->GetTrackIdx()-1;
       
       // used for pileup ...
-      if (fgPileup && storedEvents <= fgPileupEventsN) {
-         mcHit.id  = sensorId;
-         mcHit.de  = de;
-         mcHit.x   = posIn.X();
-         mcHit.y   = posIn.Y();
-         mcHit.zi  = posIn.Z();
-         mcHit.zo  = posOut.Z();
-         mcHit.tkid = trackIdx;
-         mcHit.htid = i;
-         storedEvtInfo.push_back(mcHit);
-      }
+      if (fgPileup && storedEvents <= fgPileupEventsN)
+         FillPileup(storedEvtInfo, hit, i);
       
       // Digitizing
       posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);

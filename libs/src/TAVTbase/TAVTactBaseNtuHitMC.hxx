@@ -18,6 +18,7 @@
 
 class TH2F;
 class TH1F;
+class TAMChit;
 class TAVTactBaseNtuHitMC : public TAGaction {
 
 protected:
@@ -100,6 +101,8 @@ protected:
 protected:
    // Generated pileup events
    void            GeneratePileup();
+   // Fill pileup informations
+   void            FillPileup(vector<RawMcHit_t>& /*storedEvtInfo*/, TAMChit* /*hit*/, Int_t /*hitIdx*/);
    // Compute noise level
    void            ComputeNoiseLevel();
    
@@ -109,7 +112,6 @@ protected:
    virtual void    CreateDigitizer()                                { return; }
    //! Fill pixels
    virtual void    FillPixels( Int_t /*sensorId*/, Int_t /*mcId*/, Int_t /*trackId*/, Bool_t /*pileup*/ ) { return; }
-   
 
 protected:
    static Bool_t   fgPileup;           ///< flag to generated pileup events
