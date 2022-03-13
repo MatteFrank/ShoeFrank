@@ -27,7 +27,9 @@ TAVTbaseHit::TAVTbaseHit()
    fPixelLine(0),
    fPixelColumn(0),
    fRawValue(0),
-   fPulseHeight(0)
+   fPulseHeight(0),
+   fValidFrames(false),
+   fPileUp(false)
 {
 }
 
@@ -43,7 +45,9 @@ TAVTbaseHit::TAVTbaseHit( Int_t sensorId, const Int_t aPixelIndex, Double_t aVal
   fPixelIndex(aPixelIndex),
   fPixelLine(0),
   fPixelColumn(0),
-  fRawValue(aValue)
+  fRawValue(aValue),
+  fValidFrames(true),
+  fPileUp(false)
 {
     fPulseHeight = fRawValue;
 }

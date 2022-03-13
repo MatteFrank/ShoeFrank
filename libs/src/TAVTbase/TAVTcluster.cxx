@@ -61,6 +61,9 @@ void TAVTcluster::AddPixel(TAVThit* pixel)
    TClonesArray &pixelArray = *fListOfPixels;
    new(pixelArray[pixelArray.GetEntriesFast()]) TAVThit(*pixel);
    
+   if (pixel->IsPileUp())
+      fPileUp = true;
+      
    fElementsN = fListOfPixels->GetEntries();
 }
 
