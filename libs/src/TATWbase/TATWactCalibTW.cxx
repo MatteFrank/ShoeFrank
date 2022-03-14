@@ -142,7 +142,7 @@ Bool_t TATWactCalibTW::Action() {
   TATWchannelMap *chmap=f_parmap->GetChannelMap();
   int nhit = p_datraw->GetHitsN();
 
-	Int_t NumberOfValidHits = 0;
+  Int_t NumberOfValidHits = 0;
 
   int ch_num, bo_num;
   map<int, vector<TATWrawHit*> > PMap;

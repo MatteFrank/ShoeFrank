@@ -47,11 +47,11 @@ private:
    // Create digitizer
    void           CreateDigitizer();
    // Fill pixels
-   void           FillPixels( Int_t sensorId, Int_t mcId, Int_t trackId);
+   void           FillPixels( Int_t sensorId, Int_t mcId, Int_t trackId, Bool_t pileup = false);
    // Digitize hits
    void           DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackId);
    // Dogitize
-   void           Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents);
+   void           Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEvents);
    
    ClassDef(TAITactNtuHitMC,0)
 };

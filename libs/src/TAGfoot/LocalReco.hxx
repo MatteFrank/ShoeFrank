@@ -68,7 +68,8 @@ public:
    static void DisableStdAlone()   { fgStdAloneFlag = false;  }
    //! Enable stand alone DAQ
    static void EnableStdAlone()    { fgStdAloneFlag = true;   }
-   
+   //! Set max number of file to be processed for stand alone DAQ
+   static void SetStdAloneFiles(Int_t value)    {fNumFileStdAlone = value;   }
 private:
    TAGdataDsc*           fpDaqEvent;      ///< DAQ event
    TAGdataDsc*           fpNtuEvt;        ///< input data event dsc
@@ -94,6 +95,7 @@ private:
   
 private:
    static Bool_t         fgStdAloneFlag;   ///< flag for standalone DAQ
+   static Int_t          fNumFileStdAlone;
 
    ClassDef(LocalReco, 1); ///< Base class for event display
 };

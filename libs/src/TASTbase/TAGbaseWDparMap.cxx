@@ -69,6 +69,12 @@ Bool_t TAGbaseWDparMap::FromFile(const TString& name) {
 	//printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
 	key = make_pair(board, iCh);
 	chmap[key] = detector;
+	if(bolist.count(detector)){
+	  vector<int> tmplist = bolist.find(detector)->second;
+	  if(find(tmplist.begin(), tmplist.end(),board)==tmplist.end())	bolist[detector].push_back(board);
+	}else{
+	  bolist[detector].push_back(board);
+	}
       }
     }
   }
@@ -98,6 +104,17 @@ string TAGbaseWDparMap::GetChannelType(int board, int channel)
     return chmap.find(make_pair(board, channel))->second;
   }  else {
     return res;
+  }
+  
+}
+
+
+vector<int> TAGbaseWDparMap::GetBoards(string det){
+
+  if(bolist.count(det)){
+    return bolist.find(det)->second;
+  }else{
+    return vector<int>();
   }
   
 }

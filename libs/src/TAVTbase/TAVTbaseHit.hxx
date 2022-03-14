@@ -32,7 +32,6 @@ class TAVTbaseHit : public TAGobject {
 protected:
 	Int_t              fSensorId;                 ///< number of the sensor
 	TVector3           fPosition;                 ///< pixel position in the detector frame
-	// TVector3           fSize;                  ///< size in uvw directions
 
    Int_t              fPixelIndex;               ///< index of the pixel
 	Int_t              fPixelLine;                ///< line in the matrix
@@ -42,6 +41,7 @@ protected:
 	Double32_t         fRawValue;                 ///< the rawvalue
 	Double32_t         fPulseHeight;              ///< pulseheight on pixel
    Bool_t             fValidFrames;              ///< ok when 3 consecutive frame numbers
+   Bool_t             fPileUp;                   ///< PileUp flag
 
    TArrayI            fMCindex;                  ///< Index of the hit created in the simulation
    TArrayI            fMcTrackIdx;               ///< Index of the track created in the simulation
@@ -66,6 +66,8 @@ public:
     void               SetPosition(TVector3 aPosition) { fPosition = aPosition;   }
     //! Set valid frame
     void               SetValidFrames(Bool_t ok)       { fValidFrames = ok;       }
+   //! Set pile up
+   void               SetPileUp(Bool_t ok=true)        { fPileUp = ok;            }
 
     // Getter methods
     //! Get pixel index
@@ -85,6 +87,8 @@ public:
     Double_t           GetPulseHeight()  const         { return  fPulseHeight;    }
     //! Check valid frames
     Bool_t             IsValidFrames()   const         { return fValidFrames;     }
+    //! Check pile up
+    Bool_t             IsPileUp()        const         { return fPileUp;          }
     //! Get position
     TVector3&          GetPosition()                   { return fPosition;        }
    
@@ -105,7 +109,7 @@ public:
    // Add MC track Id
    void       AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
 
-    ClassDef(TAVTbaseHit,4)                            // Pixel or Pixel of a Detector Plane
+    ClassDef(TAVTbaseHit,5)                            // Pixel or Pixel of a Detector Plane
 };
 
 //##############################################################################
