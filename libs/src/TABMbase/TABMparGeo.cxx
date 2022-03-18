@@ -80,7 +80,7 @@ TABMparGeo::~TABMparGeo()
 //_____________________________________________________________________________
 //! Read the geometry input file
 //!
-//! \param[in] input file name
+//! \param[in] name input file name
 Bool_t TABMparGeo::FromFile(const TString& name)
 {
    cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
@@ -371,7 +371,7 @@ void TABMparGeo::DefineMaterial()
 //_____________________________________________________________________________
 //! Transformation from detector to sensor framework
 //!
-//! \param[in] cell id index [0-35]
+//! \param[in] cellid cell id index [0-35]
 //! \param[in] glob position in detector framework
 //! \return position in sensor framework
 TVector3 TABMparGeo::Detector2Wire(Int_t cellid, TVector3& glob) const
@@ -390,7 +390,7 @@ TVector3 TABMparGeo::Detector2Wire(Int_t cellid, TVector3& glob) const
 //_____________________________________________________________________________
 //! Transformation from detector to sensor framework for vectors (no translation)
 //!
-//! \param[in] cell id index [0-35]
+//! \param[in] cellid cellid  index [0-35]
 //! \param[in] glob position in detector framework
 //! \return position in sensor framework
 TVector3 TABMparGeo::Detector2WireVect(Int_t cellid, TVector3& glob) const
@@ -504,7 +504,7 @@ TVector3 TABMparGeo::ProjectFromPversR0(TVector3 Pvers, TVector3 R0, Double_t z)
 //! \param[in] R0X X coordinate of the track intercept (qx)
 //! \param[in] R0Y Y coordinate of the track intercept (qy)
 //! \param[in] z coordinate along the track where to calculate the point position
-//! \return TVecotor3 of the point position along the track
+//! \return TVector3 of the point position along the track
 TVector3 TABMparGeo::ProjectFromPversR0(Double_t PversXZ, Double_t PversYZ, Double_t R0X, Double_t R0Y, Double_t z) const
 {
    TVector3 projected(PversXZ*z+R0X ,PversYZ*z+R0Y, z);
