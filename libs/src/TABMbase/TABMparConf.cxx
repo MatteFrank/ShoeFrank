@@ -21,8 +21,8 @@ using namespace std;
 //##############################################################################
 
 /*!
-  \class TABMparConf TABMparConf.hxx "TABMparConf.hxx"
-  \brief conf parameters for the beam monitor. **
+  \file TABMparConf.hxx
+  \brief Configuration file for the Beam Monitor
 */
 
 ClassImp(TABMparConf);
@@ -55,15 +55,14 @@ TABMparConf::TABMparConf()
 }
 
 //------------------------------------------+-----------------------------------
-//! Destructor.
-
+//! Default Destructor.
 TABMparConf::~TABMparConf(){}
 
 
 //------------------------------------------+-----------------------------------
-//! Read mapping data from file \a name .
-
-
+//! Read config input file
+//!
+//! \param[in] name input file name
 Bool_t TABMparConf::FromFile(const TString& name) {
   Clear();
   TString nameExp;
@@ -148,7 +147,9 @@ Bool_t TABMparConf::FromFile(const TString& name) {
 return false;
 }
 
-
+//! Read old config input file for the old Beam Monitor stand alone data acquisitions
+//!
+//! \param[in] name input file name
 Bool_t TABMparConf::FromFileOld(const TString& name) {
 
   Clear();
@@ -224,8 +225,7 @@ Bool_t TABMparConf::FromFileOld(const TString& name) {
 
 
 //------------------------------------------+-----------------------------------
-//! Clear geometry info.
-
+//! Clear config info
 void TABMparConf::Clear(Option_t*)
 {
   fChi2Cut = 5.;
@@ -250,6 +250,10 @@ void TABMparConf::Clear(Option_t*)
   return;
 }
 
+//! Check if a channel is set as dead or not (at the moment used only for GSI2019 campaign)
+//!
+//! \param[in] cha numnber of channel index [0-35]
+//! \return true if the channel is set as dead, false otherwise
 Bool_t TABMparConf::CheckIsDeadCha(Int_t cha){
   for(Int_t i=0;i<fDeadCha.GetSize();i++)
     if(fDeadCha.At(i)==cha)
@@ -259,8 +263,7 @@ Bool_t TABMparConf::CheckIsDeadCha(Int_t cha){
 
 
 /*------------------------------------------+---------------------------------*/
-//! ostream insertion.
-
+//! ostream output
 void TABMparConf::ToStream(ostream& os, Option_t*) const
 {
   os << "TABMparConf " << GetName() << endl;
