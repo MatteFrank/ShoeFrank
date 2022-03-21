@@ -14,6 +14,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
+#include "TAGgeoTrafo.hxx"
 
 #include "TAMSDdigitizer.hxx"
 
@@ -58,6 +59,7 @@ private:
    TAGdataDsc*    fpNtuRaw;		    // output data dsc
    TAGparaDsc*    fpGeoMap;		    // geometry para dsc
    
+   TAGgeoTrafo*    fpGeoTrafo;         ///< Gobal transformation
    TAMSDdigitizer* fDigitizer;       // cluster size digitizer
    Int_t           fNoisyStripsN;
    EVENT_STRUCT*   fEventStruct;
