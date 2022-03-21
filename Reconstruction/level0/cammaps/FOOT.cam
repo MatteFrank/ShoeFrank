@@ -107,3 +107,9 @@ CamDataMC:    1
 CamDate: "February 2022"
 CamSum: "Simulation data for data taking with ST+BM+VTX+MSD+TW+CAL for alpha clustering studies, TW new. Different projectiles/energies"
 
+CamNumber:    18
+CamName:    "CNAO2021"
+CamDataMC:    0
+CamDate: "December 2021"
+CamSum: "Test experiment at CNAO with ST+TW+CAL @ 150,200,400 MeV/u"
+

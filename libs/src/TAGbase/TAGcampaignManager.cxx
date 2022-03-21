@@ -66,7 +66,7 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
       Error("FromFile()", "failed to open file '%s'", ifile.Data());
       return false;
    }
-  
+
    Int_t     number;
    while(!fFileStream->Eof()) {
       TString   name;

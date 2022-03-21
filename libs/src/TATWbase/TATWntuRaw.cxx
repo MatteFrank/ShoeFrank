@@ -28,8 +28,8 @@ TATWrawHit::TATWrawHit(TWaveformContainer *W, string algo, double frac, double d
 
 
   fBaseline = ComputeBaseline(W);
-  fPedestal = ComputePedestal(W);
-  fChg = ComputeCharge(W);
+  fPedestal = ComputePedestal(W,0.0);
+  fChg = ComputeCharge(W, 0.0);
   fAmplitude = ComputeAmplitude(W);
   if(algo=="hwCFD"){
     fTime = ComputeTime(W,frac,del,-30,20);
@@ -66,8 +66,8 @@ double TATWrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, d
 }
 
 
-double TATWrawHit::ComputeCharge(TWaveformContainer *w){
-  return  TAGbaseWD::ComputeCharge(w);
+double TATWrawHit::ComputeCharge(TWaveformContainer *w, double thr){
+  return  TAGbaseWD::ComputeCharge(w,thr);
 }
 
 
@@ -81,8 +81,8 @@ double TATWrawHit::ComputeBaseline(TWaveformContainer *w){
 }
 
 
-double TATWrawHit::ComputePedestal(TWaveformContainer *w){
-  return  TAGbaseWD::ComputePedestal(w);
+double TATWrawHit::ComputePedestal(TWaveformContainer *w, double thr){
+  return  TAGbaseWD::ComputePedestal(w, thr);
 }
 
 

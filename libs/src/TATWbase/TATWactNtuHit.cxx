@@ -105,6 +105,19 @@ void TATWactNtuHit::CreateHistogram()
   fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, -50., 50);
   AddHistogram(fpHisTimeTot);
 
+  fpHisChargeFront = new TH1F("twChargeFront", "TW - Charge Front", 10000, 0., 50.);
+  AddHistogram(fpHisChargeFront);
+
+  fpHisChargeRear = new TH1F("twChargeRear", "TW - Charge Rear", 10000, 0., 50.);
+  AddHistogram(fpHisChargeRear);
+
+  fpHisChargeBar9Front = new TH1F("twChargeBar9Front", "TW - ChargeBar9 Front", 10000, 0., 50.);
+  AddHistogram(fpHisChargeBar9Front);
+
+  fpHisChargeBar9Rear = new TH1F("twChargeBar9Rear", "TW - ChargeBar9 Rear", 10000, 0., 50.);
+  AddHistogram(fpHisChargeBar9Rear);
+
+  
   fpHisDeltaTimeRawCenterFront = new TH1F("twDeltaTimeCenterFront", "raw time of flight", 5000, -50., 50);
   AddHistogram(fpHisDeltaTimeRawCenterFront);
 
@@ -156,74 +169,73 @@ void TATWactNtuHit::CreateHistogram()
 //------------------------------------------+-----------------------------------
 //! Action.
 
-Bool_t TATWactNtuHit::Action() {
-
-  TATWntuRaw*   p_datraw = (TATWntuRaw*) fpDatRaw->Object();
-  TASTntuHit*   p_STnturaw;
-  if(fpSTNtuRaw) 
-    p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
-  TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
-
-
-  
-  //////////// Time Trigger info from ST ///////////////
-  
-  if(FootDebugLevel(1)) {
-    cout<<""<<endl;
-    Info("Action()","Evt N::%d",fEvtCnt);
-    fEvtCnt++;
-  }
-
-  double STtrigTime(0);
-  double STtrigTimeOth(0);
-  Int_t SThitN(0.);
-  TASThit *stHit;
-  Double_t time_st(0.);
-
-  if(fpSTNtuRaw) {
-
-    STtrigTime = p_STnturaw->GetTriggerTime();
-    STtrigTimeOth = p_STnturaw->GetTriggerTimeOth();
-
-    SThitN = p_STnturaw->GetHitsN();  // same of STtrigTime
-
-    stHit = (TASThit*)p_STnturaw->GetHit(0);
-    time_st = stHit->GetTime();
-  }
-
-  if(FootDebugLevel(1))
-    cout<<"ST hitN::"<<SThitN<<" trigTime::"<<STtrigTime<<"  trigTimeOth::"<<STtrigTimeOth<<" time_ST::"<<time_st<<endl;
-  /////////////////////////////////////////////////////
-  
-  p_nturaw->SetupClones();
-  TATWchannelMap *chmap=f_parmap->GetChannelMap();
-  int nhit = p_datraw->GetHitsN();
-
-  int ch_num, bo_num;
-  map<int, vector<TATWrawHit*> > PMap;
-  // loop over the hits to populate a map with key boardid and value std::vector of TATWrawHit  pointer
-  for(int ih = 0; ih< nhit; ih++){
-    TATWrawHit *aHi = p_datraw->GetHit(ih);
-    ch_num = aHi->GetChID();
-    bo_num = aHi->GetBoardId();
-    aHi->SetTime(aHi->GetTime());
-    aHi->SetTimeOth(aHi->GetTimeOth());
-    if (PMap.find(aHi->GetBoardId())==PMap.end()){
-      PMap[aHi->GetBoardId()].resize(NUMBEROFCHANNELS);
-      for (int ch=0;ch<NUMBEROFCHANNELS;++ch){
-	PMap[aHi->GetBoardId()][ch]=nullptr;
+Bool_t TATWactNtuHit::Action()
+{
+   TATWntuRaw*   p_datraw = (TATWntuRaw*) fpDatRaw->Object();
+   TASTntuHit*   p_STnturaw;
+   if(fpSTNtuRaw)
+      p_STnturaw = (TASTntuHit*)  fpSTNtuRaw->Object();
+   TATWntuHit*   p_nturaw = (TATWntuHit*)  fpNtuRaw->Object();
+   
+   
+   
+   //////////// Time Trigger info from ST ///////////////
+   
+   if(FootDebugLevel(1)) {
+      cout<<""<<endl;
+      Info("Action()","Evt N::%d",fEvtCnt);
+      fEvtCnt++;
+   }
+   
+   double STtrigTime(0);
+   double STtrigTimeOth(0);
+   Int_t SThitN(0.);
+   TASThit *stHit;
+   Double_t time_st(0.);
+   
+   if(fpSTNtuRaw) {
+      
+      STtrigTime = p_STnturaw->GetTriggerTime();
+      STtrigTimeOth = p_STnturaw->GetTriggerTimeOth();
+      
+      SThitN = p_STnturaw->GetHitsN();  // same of STtrigTime
+      
+      stHit = (TASThit*)p_STnturaw->GetHit(0);
+      time_st = stHit->GetTime();
+   }
+   
+   if(FootDebugLevel(1))
+      cout<<"ST hitN::"<<SThitN<<" trigTime::"<<STtrigTime<<"  trigTimeOth::"<<STtrigTimeOth<<" time_ST::"<<time_st<<endl;
+   /////////////////////////////////////////////////////
+   
+   p_nturaw->SetupClones();
+   TATWchannelMap *chmap=f_parmap->GetChannelMap();
+   int nhit = p_datraw->GetHitsN();
+   
+   int ch_num, bo_num;
+   map<int, vector<TATWrawHit*> > PMap;
+   // loop over the hits to populate a map with key boardid and value std::vector of TATWrawHit  pointer
+   for(int ih = 0; ih< nhit; ih++){
+      TATWrawHit *aHi = p_datraw->GetHit(ih);
+      ch_num = aHi->GetChID();
+      bo_num = aHi->GetBoardId();
+      aHi->SetTime(aHi->GetTime());
+      aHi->SetTimeOth(aHi->GetTimeOth());
+      if (PMap.find(aHi->GetBoardId())==PMap.end()){
+         PMap[aHi->GetBoardId()].resize(NUMBEROFCHANNELS);
+         for (int ch=0;ch<NUMBEROFCHANNELS;++ch){
+            PMap[aHi->GetBoardId()][ch]=nullptr;
+         }
       }
-    }
-    PMap[aHi->GetBoardId()][aHi->GetChID()]=aHi;
-  }
-
-  // create map to store hits for calibration purpose
-  map< Int_t,vector<TATWhit*> > hitMap;
-  hitMap.clear();
-
-  // loop over all the bars
-  for (auto it=chmap->begin();it!=chmap->end();++it)
-    {
+      PMap[aHi->GetBoardId()][aHi->GetChID()]=aHi;
+   }
+   
+   // create map to store hits for calibration purpose
+   map< Int_t,vector<TATWhit*> > hitMap;
+   hitMap.clear();
+   
+   // loop over all the bars
+   for (auto it=chmap->begin();it!=chmap->end();++it) {
       //
       Int_t BarId = it->first;
       
@@ -232,8 +244,8 @@ Bool_t TATWactNtuHit::Action() {
       Int_t channelB = get<2>(it->second);
       
       Int_t Layer = (Int_t)chmap->GetBarLayer(BarId);
-
-      //      
+      
+      //
       if (PMap.find(boardid)!=PMap.end()) {
 
 	if(FootDebugLevel(1))
@@ -317,10 +329,15 @@ Bool_t TATWactNtuHit::Action() {
 	      fpHisDeTot->Fill(Energy);
 	      fpHisTimeTot->Fill(Time);
 	      fpHisElossTof_layer[Layer]->Fill(Time,Energy);
-	      
+
+	      if(Layer==1)fpHisChargeFront->Fill(rawEnergy);
+	      if(Layer==0)fpHisChargeRear->Fill(rawEnergy);
 	      
 	      if(ShoeBarId==9) {  // only for central bars for trigger purposes
-
+		
+		if(Layer==1)fpHisChargeBar9Front->Fill(rawEnergy);
+		if(Layer==0)fpHisChargeBar9Rear->Fill(rawEnergy);
+		
 		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 0)fpHisDeltaTimeRawCenterFront->Fill(rawTime);
 		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 1)fpHisDeltaTimeRawCenterRear->Fill(rawTime);
 		fpHisAmpA[Layer]->Fill(AmplitudeA);
@@ -347,6 +364,7 @@ Bool_t TATWactNtuHit::Action() {
 
   return kTRUE;
   
+
 }
 
 //________________________________________________________________
@@ -536,8 +554,7 @@ Int_t TATWactNtuHit::GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos)
     barX = perp_BarId;
     barY = barId;
 
-  }
-  else {
+  } else {
     Error("GetBarCrossId()","Layer %d doesn't exist",layer);
     return -1;
   }
@@ -581,8 +598,7 @@ Int_t TATWactNtuHit::GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos)
       cout<<""<<endl;
     }
     
-  }
-  else if(layer==LayerY) {
+  } else if(layer==LayerY) {
     xloc = f_pargeo->GetBarPosition(layer,barId)[0];	      
     yloc = rawPos;
     perp_BarId = f_pargeo->GetBarId(LayerX,xloc,yloc);
@@ -598,8 +614,7 @@ Int_t TATWactNtuHit::GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos)
       cout<<""<<endl;
     }
 
-  }
-  else {
+  } else {
     Error("GetPerBarId()","Layer %d doesn't exist",layer);
     return -1;
   }

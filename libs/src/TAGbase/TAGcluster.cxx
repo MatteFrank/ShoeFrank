@@ -30,6 +30,9 @@ TAGcluster::TAGcluster()
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
+
+   fMcHitIdx.Reset();
+   fMcHitMap.clear();
 }
 
 //______________________________________________________________________________
@@ -43,6 +46,7 @@ TAGcluster::TAGcluster(const TAGcluster& cluster)
    fPosition2(cluster.fPosition2),
    fPosError2(cluster.fPosError2),
    fMcTrackIdx(cluster.fMcTrackIdx),
+   fMcHitIdx(cluster.fMcHitIdx),
    fClusterIdx(cluster.fClusterIdx),
    fSensorIdx(cluster.fSensorIdx),
    fElementsN(cluster.fElementsN),
@@ -106,11 +110,18 @@ Float_t TAGcluster::Distance(TAGbaseTrack* aTrack)
 //! Add MC track to list
 //!
 //! \param[in] trackIdx MC track index
-void TAGcluster::AddMcTrackIdx(Int_t trackIdx)
+void TAGcluster::AddMcTrackIdx(Int_t trackIdx, Int_t hitIdx)
 {
    if (fMcTrackMap[trackIdx] == 0) {
       fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
       fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
       fMcTrackMap[trackIdx] = 1;
    }
+      
+   if (fMcHitMap[hitIdx] == 0) {
+      fMcHitIdx.Set(fMcTrackIdx.GetSize()+1);
+      fMcHitIdx[fMcTrackIdx.GetSize()-1] = hitIdx;
+      fMcHitMap[hitIdx] = 1;
+   }
+   
 }

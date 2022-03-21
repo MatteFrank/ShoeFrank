@@ -21,7 +21,8 @@ ClassImp(TAVTbaseCluster) // Description of a cluster
 TAVTbaseCluster::TAVTbaseCluster()
 :  TAGcluster(),
    fListOfPixels(0x0),
-   fCharge(0.)
+   fCharge(0.),
+   fPileUp(false)
 {
 }
 
@@ -29,7 +30,8 @@ TAVTbaseCluster::TAVTbaseCluster()
 //! Copy constructor
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 :  TAGcluster(cluster),
-   fCharge(cluster.fCharge)
+   fCharge(cluster.fCharge),
+   fPileUp(cluster.fPileUp)
 {
    // TAVTbaseCluster constructor
    if (cluster.fListOfPixels)

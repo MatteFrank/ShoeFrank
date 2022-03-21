@@ -32,18 +32,19 @@ using namespace std;
 //##############################################################################
 
 /*!
-  \class TABMparGeo TABMparGeo.hxx "TABMparGeo.hxx"
-  \brief Map and Geometry parameters for the beam monitor. **
+  \file TABMpargeo.cxx
+  \brief Geometry parameters of the beam monitor
 */
+
+ClassImp(TABMparGeo);
 
 const TString TABMparGeo::fgkDefParaName = "bmGeo";
 const TString TABMparGeo::fgkBaseName = "BM";
 Int_t TABMparGeo::fgkLayerOffset      = 6;
 
-ClassImp(TABMparGeo);
 
 ///------------------------------------------+-----------------------------------
-//! Default constructor.
+//! Default constructor
 TABMparGeo::TABMparGeo()
 :  TAGparTools(),
    fWireLayersN(0),
@@ -65,22 +66,21 @@ TABMparGeo::TABMparGeo()
    fGasMixture(""),
    fGasProp(""),
    fGasDensities(""),
-   fGasDensity(0.),
-   fBmDeltaZ(0),
-   fBmDeltaY(0),
-   fBmDeltaX(0),
-   fDrawWire(false)
+   fGasDensity(0.)
 {
    fkDefaultGeoName = "./geomaps/TABMdetector.geo";
 }
 
 //------------------------------------------+-----------------------------------
-//! Destructor.
+//! Default destructor
 TABMparGeo::~TABMparGeo()
 {
 }
 
 //_____________________________________________________________________________
+//! Read the geometry input file
+//!
+//! \param[in] name input file name
 Bool_t TABMparGeo::FromFile(const TString& name)
 {
    cout << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
@@ -193,28 +193,29 @@ Bool_t TABMparGeo::FromFile(const TString& name)
 
 
    SetupMatrices(36);
+   TVector3 wiredisp, wiretilt;
    for(Int_t i=0;i<36;i++){
      // read wire align position
-     ReadVector3(fWireAlign);
+     ReadVector3(wiredisp);
      if(FootDebugLevel(2))
         cout << "  Alignment: "
-        << fWireAlign[0] << " " << fWireAlign[1] << " " << fWireAlign[2] << endl;
+        << wiredisp[0] << " " << wiredisp[1] << " " << wiredisp[2] << endl;
 
      // read wire tilt angles
-     ReadVector3(fWireTilt);
+     ReadVector3(wiretilt);
      if(FootDebugLevel(2))
         cout  << "  Tilt: "
-        << fWireTilt[0] << " " << fWireTilt[1] << " " << fWireTilt[2] << endl;
+        << wiretilt[0] << " " << wiretilt[1] << " " << wiretilt[2] << endl;
 
      // Build wire matrix transformation
 
-     TGeoTranslation trans(fWireAlign[0], fWireAlign[1], fWireAlign[2]);
+     TGeoTranslation trans(wiredisp[0], wiredisp[1], wiredisp[2]);
 
      //use the Euler convention adopted in TGeoRotation (SetAngles(phi,theta,psi)):
      //Phi is the rotation angle about Z axis and is done first, theta is the rotation about new X and is done second, psi is the rotation angle about new Z and is done third. All angles are in degrees.
      //Please Note: Fluka apply a different convention! The small aligment and tilts will not be included in Simulation
      TGeoRotation rot;
-     rot.SetAngles(fWireTilt[0],fWireTilt[1],fWireTilt[2]);
+     rot.SetAngles(wiretilt[0],wiretilt[1],wiretilt[2]);
      // rot.RotateX(fWireTilt[0]);
      // rot.RotateY(fWireTilt[1]);
      // rot.RotateZ(fWireTilt[2]);
@@ -231,6 +232,7 @@ Bool_t TABMparGeo::FromFile(const TString& name)
 }
 
 //______________________________________________________________________________
+//! initialize the BM geometry
 void TABMparGeo::InitGeo()
 {
    fBmIdSense[0]= 8;
@@ -329,6 +331,8 @@ void TABMparGeo::InitGeo()
 
 
 //_____________________________________________________________________________
+
+//! Define the BM material
 void TABMparGeo::DefineMaterial()
 {
 
@@ -365,52 +369,143 @@ void TABMparGeo::DefineMaterial()
 }
 
 //_____________________________________________________________________________
-TVector3 TABMparGeo::Detector2Wire(TVector3& glob) const
+//! Transformation from detector to sensor framework
+//!
+//! \param[in] cellid cell id index [0-35]
+//! \param[in] glob position in detector framework
+//! \return position in sensor framework
+TVector3 TABMparGeo::Detector2Wire(Int_t cellid, TVector3& glob) const
 {
-   return MasterToLocal(0, glob);
+  if (cellid < 0 || cellid > 36) {
+   Warning("Detector2Wire()","Wrong cellid number: %d ", cellid);
+   return TVector3(0,0,0);
+  }
+
+  Int_t cell, view, layer;
+  GetBMNlvc(cellid, layer, view, cell);
+  TVector3 wirepos(glob.X()-fPosX[GetSenseId(cell)][layer][view],glob.Y()- fPosY[GetSenseId(cell)][layer][view],glob.Z()- fPosZ[GetSenseId(cell)][layer][view]);
+ return MasterToLocal(cellid, wirepos);
 }
 
 //_____________________________________________________________________________
-TVector3 TABMparGeo::Detector2WireVect(TVector3& glob) const
+//! Transformation from detector to sensor framework for vectors (no translation)
+//!
+//! \param[in] cellid cellid  index [0-35]
+//! \param[in] glob position in detector framework
+//! \return position in sensor framework
+TVector3 TABMparGeo::Detector2WireVect(Int_t cellid, TVector3& glob) const
 {
-   return MasterToLocalVect(0, glob);
+   return MasterToLocalVect(cellid, glob);
 }
 
 //_____________________________________________________________________________
-void TABMparGeo::Detector2Wire(Double_t xg, Double_t yg, Double_t zg,
+//! Transformation from detector to wire framework
+//!
+//! \param[in] cellid cell index [0-35]
+//! \param[in] xg X position in detector framework
+//! \param[in] yg Y position in detector framework
+//! \param[in] zg Z position in detector framework
+//! \param[out] xl X position in wire framework
+//! \param[out] yl Y position in wire framework
+//! \param[out] zl Z position in wire framework
+void TABMparGeo::Detector2Wire(Int_t cellid, Double_t xg, Double_t yg, Double_t zg,
                                      Double_t& xl, Double_t& yl, Double_t& zl) const
 {
-   MasterToLocal(0, xg, yg, zg, xl, yl, zl);
+  if (cellid < 0 || cellid > 36) {
+   Warning("Detector2Wire()","Wrong cellid number: %d ", cellid);
+   return;
+  }
+  Int_t cell, view, layer;
+  GetBMNlvc(cellid, layer, view, cell);
+  TVector3 prov(xg-fPosX[GetSenseId(cell)][layer][view], yg-fPosY[GetSenseId(cell)][layer][view], zg-fPosZ[GetSenseId(cell)][layer][view]);
+  TVector3 loc=MasterToLocal(cellid, prov);
+  xl=loc.X();
+  yl=loc.Y();
+  zl=loc.Z();
 }
 
 //_____________________________________________________________________________
-TVector3 TABMparGeo::Wire2Detector(TVector3& loc) const
+//! Transformation from sensor to detector framework
+//!
+//! \param[in] cellid cell index [0-35]
+//! \param[in] loc position in sensor framework
+//! \return position in detector framework
+TVector3 TABMparGeo::Wire2Detector(Int_t cellid, TVector3& loc) const
 {
-   return LocalToMaster(0, loc);
+  if (cellid < 0 || cellid > 36) {
+   Warning("Wire2Detector()","Wrong cellid number: %d ", cellid);
+   return TVector3(0,0,0);
+  }
+  Int_t cell, view, layer;
+  GetBMNlvc(cellid, layer, view, cell);
+  TVector3 wirepos(fPosX[GetSenseId(cell)][layer][view], fPosY[GetSenseId(cell)][layer][view], fPosZ[GetSenseId(cell)][layer][view]);
+  return LocalToMaster(cellid, loc)+wirepos;
 }
 
 
 //_____________________________________________________________________________
-TVector3 TABMparGeo::Wire2DetectorVect(TVector3& loc) const
+//! Transformation from sensor to detector framework for vectors (no translation)
+//!
+//! \param[in] cellid cell [0-35]
+//! \param[in] loc position in sensor framework
+//! \return position in detector framework
+TVector3 TABMparGeo::Wire2DetectorVect(Int_t cellid, TVector3& loc) const
 {
-   return LocalToMasterVect(0, loc);
+  if (cellid < 0 || cellid > 36) {
+   Warning("Wire2Detector()","Wrong cellid number: %d ", cellid);
+   return TVector3(0,0,0);
+  }
+   return LocalToMasterVect(cellid, loc);
 }
 
 //_____________________________________________________________________________
-void TABMparGeo::Wire2Detector(Double_t xl, Double_t yl, Double_t zl,
+//! Transformation from wire to detector framework
+//!
+//! \param[in] cellid cell index [0-35]
+//! \param[in] xl X position in sensor framework
+//! \param[in] yl Y position in sensor framework
+//! \param[in] zl Z position in sensor framework
+//! \param[out] xg X position in detector framework
+//! \param[out] yg Y position in detector framework
+//! \param[out] zg Z position in detector framework
+void TABMparGeo::Wire2Detector(Int_t cellid, Double_t xl, Double_t yl, Double_t zl,
                                  Double_t& xg, Double_t& yg, Double_t& zg) const
 {
-   LocalToMaster(0, xl, yl, zl, xg, yg, zg);
+  if (cellid < 0 || cellid > 36) {
+   Warning("Wire2Detector()","Wrong cellid number: %d ", cellid);
+   return;
+  }
+  Int_t cell, view, layer;
+  GetBMNlvc(cellid, layer, view, cell);
+  TVector3 loc(xl,yl,zl);
+  TVector3 prov=LocalToMaster(cellid, loc);
+  xg=prov.X()+fPosX[GetSenseId(cell)][layer][view];
+  yg=prov.Y()+fPosY[GetSenseId(cell)][layer][view];
+  zg=prov.Z()+fPosZ[GetSenseId(cell)][layer][view];
 }
 
 //_____________________________________________________________________________
-TVector3 TABMparGeo::ProjectFromPversR0(TVector3 Pvers, TVector3 R0, Double_t z)
+//! Give the position of a point along a track for a given z position
+//!
+//! \param[in] Pvers direction of the track (m)
+//! \param[in] R0 intercept of the track (q)
+//! \param[in] z coordinate along the track where to calculate the point position
+//! \return TVecotor3 of the point position along the track
+TVector3 TABMparGeo::ProjectFromPversR0(TVector3 Pvers, TVector3 R0, Double_t z) const
 {
   return TVector3(Pvers.X()/Pvers.Z()*z+R0.X() ,Pvers.Y()/Pvers.Z()*z+R0.Y(), z);
 }
 
 //_____________________________________________________________________________
-TVector3 TABMparGeo::ProjectFromPversR0(Double_t PversXZ, Double_t PversYZ, Double_t R0X, Double_t R0Y, Double_t z)
+//! Give the position of a point along a track for a given z position
+//!
+//! \param[in] PversXZ XZ direction of the track (mx)
+//! \param[in] PversYZ YZ direction of the track (my)
+//! \param[in] R0X X coordinate of the track intercept (qx)
+//! \param[in] R0Y Y coordinate of the track intercept (qy)
+//! \param[in] z coordinate along the track where to calculate the point position
+//! \return TVector3 of the point position along the track
+TVector3 TABMparGeo::ProjectFromPversR0(Double_t PversXZ, Double_t PversYZ, Double_t R0X, Double_t R0Y, Double_t z) const
 {
    TVector3 projected(PversXZ*z+R0X ,PversYZ*z+R0Y, z);
 
@@ -447,6 +542,14 @@ TVector3 TABMparGeo::ProjectFromPversR0(Double_t PversXZ, Double_t PversYZ, Doub
 //~ }
 
 //______________________________________________________________________________
+//! Given a position vector, it will retrieve and set the view, layer, wire and cell index parameters, returning the position of the closest sense wire without the wire displament or tilt
+//!
+//! \param[in] pos position in the space where to calculate the detector parameters
+//! \param[out] view view of the cell containing pos vector [0-1]
+//! \param[out] layer layer or plane of the cell containing pos vector [0-5]
+//! \param[out] wire wire index of the cell containing pos vector [0-20]
+//! \param[out] senseId cell of the cell containing pos vector [0-2]
+//! \return position of the sense wire of the cell containing pos vector
 TVector3 TABMparGeo::GetPlaneInfo(TVector3 pos, Int_t& view, Int_t& layer, Int_t& wire, Int_t& senseId)
 {
    // view = 0 -> wire along X -> fPosY
@@ -479,7 +582,13 @@ TVector3 TABMparGeo::GetPlaneInfo(TVector3 pos, Int_t& view, Int_t& layer, Int_t
 }
 
 //______________________________________________________________________________
-Bool_t TABMparGeo::GetBMNlvc(const Int_t cellid, Int_t& ilay, Int_t& iview, Int_t& icell)
+//! Given a cellid index [0-35], it will retrieve and set the layer, view and cell index parameters
+//!
+//! \param[in] cellid cellid index where the view, layer and cell indices will be set
+//! \param[out] ilay layer the cellid cell [0-5]
+//! \param[out] iview view of the cellid cell [0-1]
+//! \param[out] icell cell of the cellid cell [0-2]
+Bool_t TABMparGeo::GetBMNlvc(Int_t cellid, Int_t& ilay, Int_t& iview, Int_t& icell) const
 {
    if(cellid>35 || cellid<0){
       cout<<"ERROR in TABMparGeo::GetBMNcell, cellid is wrong: cellid="<<cellid<<endl;
@@ -492,26 +601,39 @@ Bool_t TABMparGeo::GetBMNlvc(const Int_t cellid, Int_t& ilay, Int_t& iview, Int_
 
    return kTRUE;
 }
-
 //______________________________________________________________________________
-void TABMparGeo::GetCellInfo(Int_t view, Int_t plane, Int_t cellID, Double_t& h_x, Double_t& h_y, Double_t& h_z, Double_t& h_cx, Double_t& h_cy, Double_t& h_cz) {
+//! Given a layer, view and cell indices of a BM cell, it will set the sense wire position and directions
+//!
+//! \param[in] view view index of the cell
+//! \param[in] layer layer index of the cell
+//! \param[in] cellID cell index of the cell
+//! \param[out] h_x X coordinate of the sense wire position
+//! \param[out] h_y Y coordinate of the sense wire position
+//! \param[out] h_z Z coordinate of the sense wire position
+//! \param[out] h_cx X coordinate of the sense wire direction
+//! \param[out] h_cy Y coordinate of the sense wire direction
+//! \param[out] h_cz Z coordinate of the sense wire direction
+void TABMparGeo::GetCellInfo(Int_t view, Int_t layer, Int_t cellID, Double_t& h_x, Double_t& h_y, Double_t& h_z, Double_t& h_cx, Double_t& h_cy, Double_t& h_cz) const {
 
-   /* Set Chamber center positioning */
    int my_ID = GetSenseId(cellID);
 
-   h_x = fPosX[my_ID][plane][view];
-   h_y = fPosY[my_ID][plane][view];
-   h_z = fPosZ[my_ID][plane][view];
+   h_x = fPosX[my_ID][layer][view];
+   h_y = fPosY[my_ID][layer][view];
+   h_z = fPosZ[my_ID][layer][view];
 
-   h_cx =  fPosCX[my_ID][plane][view];
-   h_cy =  fPosCY[my_ID][plane][view];
-   h_cz =  fPosCZ[my_ID][plane][view];
+   h_cx =  fPosCX[my_ID][layer][view];
+   h_cy =  fPosCY[my_ID][layer][view];
+   h_cz =  fPosCZ[my_ID][layer][view];
 
    return;
 }
 
 
 //______________________________________________________________________________
+//! Get the sense wire displacements read from the geometry file
+//!
+//! \param[in] i cellid index of the cell [0-35]
+//! \return wire displacement vector
    TVector3 TABMparGeo::GetWireAlign(Int_t i)
 {
   if(i<0 || i>35){
@@ -522,6 +644,10 @@ void TABMparGeo::GetCellInfo(Int_t view, Int_t plane, Int_t cellID, Double_t& h_
 }
 
 //______________________________________________________________________________
+//! Get the sense wire tilt read from the geometry file
+//!
+//! \param[in] i cellid index of the cell [0-35]
+//! \return wire tilt vector
 TVector3 TABMparGeo::GetWireTilt(Int_t i)
 {
   if(i<0 || i>35){
@@ -535,12 +661,22 @@ TVector3 TABMparGeo::GetWireTilt(Int_t i)
 }
 
 //______________________________________________________________________________
+//! Get the sense wire position without the tilt or the displacement
+//!
+//! \param[in] view view index of the cell [0-1]
+//! \param[in] layer layer index of the cell [0-5]
+//! \param[in] wire wire number of the cell [0-20]
+//! \return wire position vector without the tilt or the displacement
 TVector3 TABMparGeo::GetWirePos(Int_t view, Int_t layer, Int_t wire) const
 {
    return TVector3(fPosX[wire][layer][view], fPosY[wire][layer][view], fPosZ[wire][layer][view]);
 }
 
 //______________________________________________________________________________
+//! For a given view, get the direction of the sense wire (along X or Y)
+//!
+//! \param[in] view view index of the cell
+//! \return direction of the sense wire
 TVector3 TABMparGeo::GetWireDir(Int_t view) const
 {
    return (view == 0) ? TVector3(1, 0, 0) : TVector3(0, 1, 0);
@@ -555,6 +691,7 @@ void TABMparGeo::Clear(Option_t*)
 }
 
 //______________________________________________________________________________
+//!Print to stream
 void TABMparGeo::ToStream(ostream& os, Option_t*) const
 {
    os << "TABMparGeo " << GetName() << endl;
@@ -563,6 +700,10 @@ void TABMparGeo::ToStream(ostream& os, Option_t*) const
 }
 
 //_____________________________________________________________________________
+//! build the BM
+//!
+//! \param[in] bmName name of the detector
+//! /return the root representaion of the BM
 TGeoVolume* TABMparGeo::BuildBeamMonitor(const char *bmName )
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
@@ -594,51 +735,15 @@ TGeoVolume* TABMparGeo::BuildBeamMonitor(const char *bmName )
         }
     }
 
-   if ( fDrawWire ) {
-
-      matName = fFieldMat.Data();
-      TGeoMedium *c_wire_med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
-
-      matName = fSenseMat.Data();
-      TGeoMedium *a_wire_med = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matName);
-
-      TGeoVolume *c_x_wire = gGeoManager->MakeTubs("c_x_wire", c_wire_med, 0, fFieldRadius, fBmSideDch[0]/2.,0.,0.); //filo catodo lungo z
-      c_x_wire->SetLineColor(kBlue);
-      c_x_wire->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-
-      TGeoVolume *c_y_wire = gGeoManager->MakeTubs("c_y_wire", c_wire_med, 0, fFieldRadius, fBmSideDch[0]/2.,0.,0.);
-      c_y_wire->SetLineColor(kRed);
-      c_y_wire->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-
-      TGeoVolume *a_x_wire = gGeoManager->MakeTubs("a_x_wire", a_wire_med, 0, fSenseRadius, fBmSideDch[0]/2.,0.,0.); //BISOGNERÀ POI SETTARE MEGLIO IL TUTTO
-      a_x_wire->SetLineColor(kYellow);
-      a_x_wire->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-
-      TGeoVolume *a_y_wire = gGeoManager->MakeTubs("a_y_wire", a_wire_med, 0, fSenseRadius, fBmSideDch[0]/2.,0.,0.);
-      a_y_wire->SetLineColor(kGreen);
-      a_y_wire->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
-
-      Int_t c=0;
-
-      for(Int_t il=0; il<fLayersN;il++){
-         for (Int_t kk =0; kk<fWireLayersN;kk++){
-
-            if(kk==fBmIdSense[0] || kk==fBmIdSense[1] || kk==fBmIdSense[2]){//se è filo di sense
-               box->AddNode(a_x_wire, c++ , new TGeoCombiTrans(0.,fPosY[kk][il][0],fPosZ[kk][il][0], new TGeoRotation("a_x_wire,",90.,90.,0.)));
-               box->AddNode(a_y_wire, c++ , new TGeoCombiTrans(fPosX[kk][il][1],0.,fPosZ[kk][il][1], new TGeoRotation("a_y_wire,",0.,90.,0.)));
-            } else { // filo di catodo
-               box->AddNode(c_x_wire, c++ , new TGeoCombiTrans(0.,fPosY[kk][il][0],fPosZ[kk][il][0], new TGeoRotation("c_x_wire,",90.,90.,0.)));
-               box->AddNode(c_y_wire, c++ , new TGeoCombiTrans(fPosX[kk][il][1],0.,fPosZ[kk][il][1], new TGeoRotation("c_y_wire,",0.,90.,0.)));
-            }
-         }
-      }
-   }
-
    return box;
 }
 
 
 //_____________________________________________________________________________
+//! Build a layer of the BM
+//!
+//! \param[in] idx layer index of the bm
+//! \return the root representation of the layer
 TGeoVolume* TABMparGeo::BuildLayer(Int_t idx )
 {
     const char* layerName = Form("%s_%d", GetBaseName(), idx) ;
@@ -657,7 +762,9 @@ TGeoVolume* TABMparGeo::BuildLayer(Int_t idx )
 }
 
 //_____________________________________________________________________________
-//! set color on for fired bars
+//! set color for fired layers, useful for the event display
+//!
+//! \param[in] idx index of the fired layer
 void TABMparGeo::SetLayerColorOn(Int_t idx)
 {
     if (!gGeoManager) {
@@ -673,7 +780,9 @@ void TABMparGeo::SetLayerColorOn(Int_t idx)
 }
 
 //_____________________________________________________________________________
-//! reset color for unfired bars
+//! reset color for unfired layers, useful for the event display
+//!
+//! \param[in] idx index of the layer
 void TABMparGeo::SetLayerColorOff(Int_t idx)
 {
     if (!gGeoManager) {
@@ -689,6 +798,7 @@ void TABMparGeo::SetLayerColorOff(Int_t idx)
 }
 
 //_____________________________________________________________________________
+//! Print the BM bodies for the FLUKA geometry file
 string TABMparGeo::PrintBodies(){
 
   stringstream ss;
@@ -806,6 +916,7 @@ string TABMparGeo::PrintBodies(){
 
 
 //_____________________________________________________________________________
+//! Print the BM rotations for the FLUKA geometry file
 string TABMparGeo::PrintRotations()
 {
   stringstream ss;
@@ -841,6 +952,7 @@ string TABMparGeo::PrintRotations()
 
 
 //_____________________________________________________________________________
+//! Print the BM regions for the FLUKA geometry file
 string TABMparGeo::PrintRegions(){
 
   stringstream outstr;
@@ -922,7 +1034,11 @@ string TABMparGeo::PrintRegions(){
 }
 
 //_____________________________________________________________________________
-Int_t TABMparGeo::GetRegCell(Int_t cellid){
+//! Get the FLUKA region index of the bm cell
+//!
+//! \param[in] cellid cellid index [0-35]
+//! \return region index
+Int_t TABMparGeo::GetRegCell(Int_t cellid) {
   TString regname("BMN_C");
   regname.Append((((Int_t)(cellid/3)) % 2 == 0) ? "0":"1");
   regname.Append(((Int_t)(cellid/6))*3 + cellid % 3);
@@ -930,7 +1046,13 @@ Int_t TABMparGeo::GetRegCell(Int_t cellid){
 }
 
 //_____________________________________________________________________________
-Int_t TABMparGeo::GetRegCell(Int_t ilay, Int_t iview, Int_t icell){
+//! Get the region index of the bm cell
+//!
+//! \param[in] ilay layer index of the cell [0-5]
+//! \param[in] iview view index of the cell [0-1]
+//! \param[in] icell cell index of the cell [0-2]
+//! \return region index
+Int_t TABMparGeo::GetRegCell(Int_t ilay, Int_t iview, Int_t icell) {
   TString regname("BMN_C");
   regname.Append(iview);
   regname.Append(ilay*3 + icell);
@@ -938,6 +1060,7 @@ Int_t TABMparGeo::GetRegCell(Int_t ilay, Int_t iview, Int_t icell){
 }
 
 //_____________________________________________________________________________
+//! Print the BM regions that need to be subtracted from the air for the FLUKA geometry file
 string TABMparGeo::PrintSubtractBodiesFromAir() {
 
   stringstream ss;
@@ -955,6 +1078,7 @@ string TABMparGeo::PrintSubtractBodiesFromAir() {
 
 
 //_____________________________________________________________________________
+//! Print the BM material for the FLUKA geometry file
 string TABMparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 
     // loop in order of the material alfabeth
@@ -996,6 +1120,7 @@ string TABMparGeo::PrintAssignMaterial(TAGmaterials *Material) {
 }
 
 //_____________________________________________________________________________
+//! Print the BM parameters
 string TABMparGeo::PrintParameters() {
 
   stringstream outstr;
@@ -1022,7 +1147,12 @@ string TABMparGeo::PrintParameters() {
 }
 
 //______________________________________________________________________________
-/// Get cell id from position of the hit, layer and view
+//! given a layer, view and a point position, it returns the cell index of the cell that contains the point or that is the closest one
+//!
+//! \param[in] pos position of the point
+//! \param[in] layer layer index
+//! \param[in] view view index
+//! \return cell index
 Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
 {
     Int_t cell = -1 ;
@@ -1050,8 +1180,15 @@ Int_t TABMparGeo::GetCell(TVector3 pos, int layer, int view)
 }
 
 //______________________________________________________________________________
-
-Double_t TABMparGeo::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVector3 Wvers, Bool_t isTrack) {
+//! Caluculate the minimum distance between two tracks, useful to evaluate the drift distances of fitted tracks or of the BM MC hits
+//!
+//! \param[in] pos a point position of the first track (e.g.: the fitted track intercept)
+//! \param[in] dir direction of the first track (e.g.: the fitted track direction)
+//! \param[in] A0 point position of the second track (e.g.: the sense wire position)
+//! \param[in] A0 direction of the second track (e.g.: the sense wire direction)
+//! \param[in] isTrack if it is true, it will disable the warning messages in case the output drift distance is greater than the maximum drift distance allowed by the FOOT BM, otherwise it will print a warning message useful if the MC file and the BM geometry do not match
+//! \return drift distance in cm
+Double_t TABMparGeo::FindRdrift(TVector3 pos, TVector3 dir, TVector3 A0, TVector3 Wvers, Bool_t isTrack) const {
 
   Double_t tp = 0., tf= 0., rdrift;
   Wvers.SetMag(1.);

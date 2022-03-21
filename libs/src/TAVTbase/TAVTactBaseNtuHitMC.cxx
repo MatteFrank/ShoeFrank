@@ -15,6 +15,7 @@
 #include "TAVTparConf.hxx"
 
 #include "TAVTntuHit.hxx"
+#include "TAMCntuHit.hxx"
 
 
 #include "TAVTactBaseNtuHitMC.hxx"
@@ -35,7 +36,7 @@ ClassImp(TAVTactBaseNtuHitMC);
 
 Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
 Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 0.736; // ajust for FIRST
-Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 10;
+Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
 Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 
@@ -55,13 +56,13 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
 		Double_t tot = 0.;
 		Double_t par = fgPoissonPar;
 
-		for (Int_t i = 1; i < 10; ++i) {
+		for (Int_t i = 1; i < 60; ++i) {
 			tot += TMath::PoissonI(i, par);
 		}
 
-		fpHisPoisson = new TH1F("vtPoisson", "Poisson", 12, -0.5, 11.5);
+		fpHisPoisson = new TH1F("vtPoisson", "Poisson", 62, -0.5, 61.5);
 
-		for (Int_t i = 1; i < 10; ++i) {
+		for (Int_t i = 1; i < 60; ++i) {
 			Float_t val = TMath::PoissonI(i, par)/tot*100.;
 			fpHisPoisson->Fill(i, val);
 		}
@@ -77,6 +78,8 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
      fTitleDev = "Inner Tracker";
    else
       printf("Wrong prefix for histograms !");
+   
+   fpGeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 }
 
 //------------------------------------------+-----------------------------------
@@ -149,6 +152,8 @@ void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 //! Generated pileup events
 void  TAVTactBaseNtuHitMC::GeneratePileup()
 {
+   TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
+
 	Int_t pileupEvents = TMath::Nint(fpHisPoisson->GetRandom())-1;
 
 	// form pileup events number pull out randomly the stored events
@@ -174,8 +179,44 @@ void  TAVTactBaseNtuHitMC::GeneratePileup()
 	   for (Int_t j = 0; j < mcInfo.size(); ++j) {
 		  RawMcHit_t hit = mcInfo[j];
 		  
-		  if (!fDigitizer->Process(hit.de, hit.x, hit.y, hit.zi, hit.zo)) continue;
-		  FillPixels( hit.id, -1, -1);
+         TVector3 posIn(hit.x, hit.y, hit.zi);
+         TVector3 posOut(hit.x, hit.y, hit.zo);
+
+         Int_t hitIdx   = hit.htid;
+         Int_t trackIdx = hit.tkid;
+
+         posIn  = pGeoMap->Detector2Sensor(hit.id, posIn);
+         posOut = pGeoMap->Detector2Sensor(hit.id, posOut);
+
+		  if (!fDigitizer->Process(hit.de, posIn.X(), posIn.Y(), posIn.Z(), posOut.Z())) continue;
+		  FillPixels( hit.id, hitIdx, trackIdx, true);
 	   }
 	}
+}
+
+//______________________________________________________________________________
+//! Fill pile up information in the structre when pileup active
+//!
+//! \param[in] storedEvtInfo list of MC events stored
+//! \param[in] hit MC hit
+//! \param[in] hit MC hit index
+void TAVTactBaseNtuHitMC::FillPileup(vector<RawMcHit_t>& storedEvtInfo, TAMChit* hit, Int_t hitIdx)
+{
+   TVector3 posIn(hit->GetInPosition());
+   TVector3 posOut(hit->GetOutPosition());
+   Int_t sensorId = hit->GetSensorId(); // sensorId
+   Float_t de     = hit->GetDeltaE();
+   Int_t trackIdx = hit->GetTrackIdx()-1;
+   
+   // used for pileup ...
+   RawMcHit_t mcHit;
+   mcHit.id  = sensorId;
+   mcHit.de  = de;
+   mcHit.x   = posIn.X();
+   mcHit.y   = posIn.Y();
+   mcHit.zi  = posIn.Z();
+   mcHit.zo  = posOut.Z();
+   mcHit.tkid = trackIdx;
+   mcHit.htid = hitIdx;
+   storedEvtInfo.push_back(mcHit);
 }

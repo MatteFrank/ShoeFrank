@@ -127,7 +127,7 @@ bool TAVTactNtuHitMC::Action()
 //!
 //! \param[in] storedEvtInfo list of MC events stored
 //! \param[in] storedEvents number fo MC events stored
-void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
+void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEvents)
 {
    TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
   
@@ -138,7 +138,6 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
    else
      pNtuMC = TAMCflukaParser::GetVtxHits(fEventStruct, fpNtuMC);
 
-   RawMcHit_t mcHit;
    fMap.clear();
    
    if(FootDebugLevel(1))
@@ -155,20 +154,16 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
       Int_t trackIdx = hit->GetTrackIdx()-1;
       
       // used for pileup ...
-      if (fgPileup && storedEvents <= fgPileupEventsN) {
-         mcHit.id  = sensorId;
-         mcHit.de  = de;
-         mcHit.x   = posIn.X();
-         mcHit.y   = posIn.Y();
-         mcHit.zi  = posIn.Z();
-         mcHit.zo  = posOut.Z();
-         storedEvtInfo.push_back(mcHit);
-      }
+      if (fgPileup && storedEvents <= fgPileupEventsN)
+         FillPileup(storedEvtInfo, hit, i);
       
-      // Digitizing
+      // Transformations
+      posIn  = fpGeoTrafo->FromGlobalToVTLocal(posIn);
+      posOut = fpGeoTrafo->FromGlobalToVTLocal(posOut);
       posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
       
+      // Digitizing
       DigitizeHit(sensorId, de, posIn, posOut, i, trackIdx);
    }
 }
@@ -213,7 +208,7 @@ void TAVTactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, T
 //! \param[in] sensorId sensor index
 //! \param[in] idx MC hit index
 //! \param[in] trackIdx MC event index
-void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
+void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx, Bool_t pileup)
 {
 	TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
 	TAVTntuHit* pNtuRaw = (TAVTntuHit*) fpNtuRaw->Object();
@@ -241,6 +236,8 @@ void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
             pixel = fMap[p];
 
          pixel->AddMcTrackIdx(trackIdx, hitId);
+         if (pileup)
+            pixel->SetPileUp();
 
          if(FootDebugLevel(1))
 				printf("line %d col %d\n", line, col);

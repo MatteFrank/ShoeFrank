@@ -55,6 +55,8 @@ TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdata
    AddDataOut(pNtuRaw, "TAMSDntuHit");
 	AddPara(pGeoMap, "TAMSDparGeo");
 
+   fpGeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+
    CreateDigitizer();
 }
 
@@ -157,6 +159,10 @@ bool TAMSDactNtuHitMC::Action()
       // Go to sensor frame
       TVector3 posIn(hit->GetInPosition());
       TVector3 posOut(hit->GetOutPosition());
+      
+      posIn  = fpGeoTrafo->FromGlobalToMSDLocal(posIn);
+      posOut = fpGeoTrafo->FromGlobalToMSDLocal(posOut);
+
       posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
       

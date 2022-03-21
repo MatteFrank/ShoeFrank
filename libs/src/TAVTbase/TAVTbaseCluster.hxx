@@ -29,7 +29,8 @@ protected:
    TClonesArray*      fListOfPixels;             ///< list of pixel attached to this cluster
    
    Float_t            fCharge;                   ///< sum of pulseheight
-   
+   Bool_t             fPileUp;                   ///< PileUp flag
+
 public:
    TAVTbaseCluster(); 
    TAVTbaseCluster(const TAVTbaseCluster& cluster);
@@ -41,6 +42,9 @@ public:
    //! Set sum of pulse height
    void               SetCharge(Float_t chg)                 { fCharge = chg;          }
   
+   //! Set pile up
+   void               SetPileUp(Bool_t ok)                   { fPileUp = ok;           }
+
    // Compute size
    TVector2           ComputeSize();
    
@@ -58,7 +62,10 @@ public:
    //! Get number of pixels in this clusters
    Int_t              GetPixelsN()                     const { return  fListOfPixels->GetEntries(); }
    //! Get sum of pulse height
-   Float_t            GetCharge()                      const { return fCharge;  }
+   Float_t            GetCharge()                      const { return fCharge;         }
+   //! Check pile up
+   Bool_t             IsPileUp()                       const { return fPileUp;         }
+
    // Get pixel
    TAVThit*           GetPixel(Int_t idx);
    // Get position of seed pixel
@@ -75,7 +82,7 @@ public:
    // reset pixels
    void               ResetPixels();
    
-   ClassDef(TAVTbaseCluster,8)                          // Describes TAVTbaseCluster
+   ClassDef(TAVTbaseCluster,9)                          // Describes TAVTbaseCluster
 };
 
 

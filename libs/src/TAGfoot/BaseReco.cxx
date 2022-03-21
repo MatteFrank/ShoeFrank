@@ -300,11 +300,11 @@ void BaseReco::LoopEvent(Int_t nEvents)
 {
   Int_t frequency = 1;
 
-  if (nEvents > 100000)      frequency = 100000;
-  else if (nEvents > 10000)  frequency = 10000;
-  else if (nEvents > 1000)   frequency = 1000;
-  else if (nEvents > 100)    frequency = 100;
-  else if (nEvents > 10)     frequency = 10;
+  if (nEvents > 100000)      frequency = 10000;
+  else if (nEvents > 10000)  frequency = 1000;
+  else if (nEvents > 1000)   frequency = 100;
+  else if (nEvents > 100)    frequency = 10;
+  else if (nEvents > 10)     frequency = 1;
 
 
   if (fSkipEventsN > 0)
@@ -497,11 +497,10 @@ void BaseReco::ReadParFiles()
          parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
          parMapWD->FromFile(parFileName.Data());
 
-         fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
-         TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
-         TString parFileName1 = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
-         TString parFileName2 = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber,true);
-         parTimeWD->FromFile(parFileName1.Data(),parFileName2.Data());
+	 fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+	 TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+	 TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+	 parTimeWD->FromFileCFD(parFileName.Data());
       }
    }
 

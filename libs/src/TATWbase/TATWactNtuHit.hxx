@@ -75,7 +75,11 @@ private:
 
   TH1F*           fpHisDeTot;       // Total energy loss
   TH1F*           fpHisTimeTot;     // Total time of flight
-
+  
+  TH1F*           fpHisChargeFront;
+  TH1F*           fpHisChargeRear;
+  TH1F*           fpHisChargeBar9Front;
+  TH1F*           fpHisChargeBar9Rear;
   TH1F*           fpHisAmpA[nLayers];     // Total time of flight
   TH1F*           fpHisAmpB[nLayers];     // Total time of flight
   TH2F*           fpHisAmpA_vs_Eloss[nLayers];     // Total time of flight

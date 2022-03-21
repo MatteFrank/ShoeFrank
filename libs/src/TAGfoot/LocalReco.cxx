@@ -32,6 +32,7 @@ ClassImp(LocalReco)
 /*------------------------------------------+---------------------------------*/
 
 Bool_t  LocalReco::fgStdAloneFlag = false;
+Int_t   LocalReco::fNumFileStdAlone=1;
 
 //__________________________________________________________
 //! Constructor
@@ -78,14 +79,22 @@ void LocalReco::CreateRawAction()
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || (TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag) || TAGrecoManager::GetPar()->IncludeCA()) {
+
       fpDatRawSt   = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw   = new TAGdataDsc("twdDat", new TATWntuRaw());
       fpDatRawCa   = new TAGdataDsc("caDat", new TACAntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
-
-      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD, fpParTimeWD);
+      if (!fgStdAloneFlag){
+	TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+	TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber,true);
+	parTimeWD->FromFileTcal(parFileName.Data());
+      }
+      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD, fpParTimeWD,fgStdAloneFlag);
+      if (fgStdAloneFlag)
+	fActWdRaw->SetMaxFiles(fNumFileStdAlone);
+      
       if (fFlagHisto)
-         fActWdRaw->CreateHistogram();
+	fActWdRaw->CreateHistogram();
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() ||(TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
@@ -188,10 +197,13 @@ void LocalReco::OpenFileIn()
 {
    if (fgStdAloneFlag) {
       if (TAGrecoManager::GetPar()->IncludeVT())
-         fActVmeReaderVtx->Open(GetName());
-
+	fActVmeReaderVtx->Open(GetName());
+      
       if (TAGrecoManager::GetPar()->IncludeBM())
-         fActVmeReaderBm->Open(GetName());
+	fActVmeReaderBm->Open(GetName());
+      
+      if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA())
+	 fActWdRaw->Open(GetName());
 
    } else {
       fActEvtReader->Open(GetName());
@@ -270,6 +282,8 @@ void LocalReco::CloseFileIn()
 {
   if (fgStdAloneFlag && TAGrecoManager::GetPar()->IncludeBM())
     fActVmeReaderBm->Close();
+  else if (fgStdAloneFlag && (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA()))
+    fActWdRaw->Close();
   else
     fActEvtReader->Close();
 }
