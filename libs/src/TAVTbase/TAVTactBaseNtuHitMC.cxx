@@ -78,6 +78,8 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
      fTitleDev = "Inner Tracker";
    else
       printf("Wrong prefix for histograms !");
+   
+   fpGeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 }
 
 //------------------------------------------+-----------------------------------

@@ -157,10 +157,13 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEv
       if (fgPileup && storedEvents <= fgPileupEventsN)
          FillPileup(storedEvtInfo, hit, i);
       
-      // Digitizing
+      // Transformations
+      posIn  = fpGeoTrafo->FromGlobalToVTLocal(posIn);
+      posOut = fpGeoTrafo->FromGlobalToVTLocal(posOut);
       posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
       
+      // Digitizing
       DigitizeHit(sensorId, de, posIn, posOut, i, trackIdx);
    }
 }

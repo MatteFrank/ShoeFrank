@@ -13,6 +13,7 @@
 
 #include "TAVTbaseDigitizer.hxx"
 #include "TAVTdigitizerE.hxx"
+#include "TAGgeoTrafo.hxx"
 
 #include "TAVThit.hxx"
 
@@ -81,7 +82,7 @@ public:
       
 protected:
    TAGparaDsc*     fpGeoMap;		      ///< geometry para dsc
-
+   TAGgeoTrafo*    fpGeoTrafo;         ///< Gobal transformation
    TAVTbaseDigitizer*  fDigitizer;     ///< cluster size digitizer
    Int_t           fNoisyPixelsN;      ///< number of noisy pixels
    
