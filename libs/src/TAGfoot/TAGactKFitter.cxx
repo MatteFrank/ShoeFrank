@@ -580,10 +580,10 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	if(m_debug > 0)			
 		cout << "\n  ----------------------\nEvento numero " << m_evNum << " track " << m_mapTrack.size() << endl;
 	
-	TAMCntuHit* vtNtuHitMc = (TAMCntuHit*)   gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
+	// TAMCntuHit* vtNtuHitMc = (TAMCntuHit*)   gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
 
-	for(int ii=0; ii<vtNtuHitMc->GetHitsN(); ++ii)
-		vtNtuHitMc->GetHit(ii)->GetInPosition().Print();
+	// for(int ii=0; ii<vtNtuHitMc->GetHitsN(); ++ii)
+	// 	vtNtuHitMc->GetHit(ii)->GetInPosition().Print();
 
 	// loop over all hit category
 	for ( map<TString,Track*>::iterator trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt) {
@@ -875,6 +875,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	if( m_debug > 1)	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
 
 	//Extrapolate to VTX 
+	//RZ: Issue!!!!! When trueparticle is active this extrapolation breaks
 	TAVTvertex* vtx = ((TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object() )->GetVertex( std::atoi(tok.at(2).c_str())/1000 ); //Find the vertex associated to the track using the fitTrackName (1000*iVtx + iTracklet)
 	TVector3 targetMeas( m_GeoTrafo->FromVTLocalToGlobal(vtx->GetPosition()) );
 
