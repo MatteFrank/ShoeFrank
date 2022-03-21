@@ -1314,7 +1314,7 @@ void TAGFselector::BackTracklets()
 
 				cout << "Found testTrack with " << testTrack->getNumPointsWithMeasurement() << " points" << endl;
 
-				if( testTrack->getNumPointsWithMeasurement() < 6 )
+				if( testTrack->getNumPointsWithMeasurement() < 5 )
 				{
 					delete testTrack;
 					continue;

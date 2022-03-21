@@ -423,6 +423,22 @@ void TAGactKFitter::CreateGeometry()  {
 		tgVol->SetLineColor(kBlack);
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAGparGeo::GetBaseName());
 		m_TopVolume->AddNode(tgVol, 3, transfo);
+
+		DetPlane* targetPlane;
+		TVector3 TGsize = m_TG_geo->GetTargetPar().Size;
+		TVector3 origin_( m_GeoTrafo->FromTGLocalToGlobal(m_TG_geo->GetTargetPar().Position) );
+		if(m_TG_geo->GetTargetPar().Shape == "cubic")
+		{
+			genfit::AbsFinitePlane* targetArea = new RectangularFinitePlane(-TGsize.x()/2, TGsize.x()/2, -TGsize.y()/2, TGsize.y()/2);
+			//Target area is now defined in LOCAL coordinates
+			targetPlane = new genfit::DetPlane(origin_, TVector3(0,0,1), targetArea);
+		}
+		else
+			targetPlane = new genfit::DetPlane(origin_, TVector3(0,0,1));
+		
+		genfit::SharedPlanePtr detectorplane(targetPlane);
+		m_sensorIDmap->AddFitPlane(-42, detectorplane);
+		m_sensorIDmap->AddFitPlaneIDToDet(-42, "TG");
 	}
 
 	// Vertex
@@ -433,9 +449,14 @@ void TAGactKFitter::CreateGeometry()  {
 		m_TopVolume->AddNode(vtVol, 4, transfo);
 
 		for ( int i = 0; i < m_VT_geo->GetSensorsN(); ++i ) {
-			TVector3 origin_( 0, 0, m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i)).z() );
-
-			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1)));
+			TVector3 origin_(m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i)) );
+			float xMin, xMax, yMin, yMax;
+			xMin = m_VT_geo->GetEpiOffset().X() - m_VT_geo->GetEpiSize().X()/2;
+			xMax = m_VT_geo->GetEpiOffset().X() + m_VT_geo->GetEpiSize().X()/2;
+			yMin = m_VT_geo->GetEpiOffset().Y() - m_VT_geo->GetEpiSize().Y()/2;
+			yMax = m_VT_geo->GetEpiOffset().Y() + m_VT_geo->GetEpiSize().Y()/2;
+			genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane(xMin, xMax, yMin, yMax);
+			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, TVector3(0,0,1), activeArea));
 			detectorplane->setU(1.,0.,0.);
 			detectorplane->setV(0.,1.,0.);
 			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
@@ -488,12 +509,12 @@ void TAGactKFitter::CreateGeometry()  {
 		m_TopVolume->AddNode(msdVol, 7, transfo);
 
 		for ( int i = 0; i < m_MSD_geo->GetSensorsN(); i++ ) {
-			TVector3 origin_( 0, 0, m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).z() );
+			TVector3 origin_( m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)) );
 
-			float xMin = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).x() - m_MSD_geo->GetEpiSize().x()/2;
-			float xMax = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).x() + m_MSD_geo->GetEpiSize().x()/2;
-			float yMin = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).y() - m_MSD_geo->GetEpiSize().y()/2;
-			float yMax = m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)).y() + m_MSD_geo->GetEpiSize().y()/2;
+			float xMin = m_MSD_geo->GetEpiOffset().x() - m_MSD_geo->GetEpiSize().x()/2;
+			float xMax = m_MSD_geo->GetEpiOffset().x() + m_MSD_geo->GetEpiSize().x()/2;
+			float yMin = m_MSD_geo->GetEpiOffset().y() - m_MSD_geo->GetEpiSize().y()/2;
+			float yMax = m_MSD_geo->GetEpiOffset().y() + m_MSD_geo->GetEpiSize().y()/2;
 
 			genfit::AbsFinitePlane* recta = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
 			genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, TVector3(0,0,1), recta) );
@@ -559,6 +580,11 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	if(m_debug > 0)			
 		cout << "\n  ----------------------\nEvento numero " << m_evNum << " track " << m_mapTrack.size() << endl;
 	
+	TAMCntuHit* vtNtuHitMc = (TAMCntuHit*)   gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
+
+	for(int ii=0; ii<vtNtuHitMc->GetHitsN(); ++ii)
+		vtNtuHitMc->GetHit(ii)->GetInPosition().Print();
+
 	// loop over all hit category
 	for ( map<TString,Track*>::iterator trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt) {
 
@@ -698,10 +724,10 @@ int TAGactKFitter::MakeFit( long evNum ) {
 
 				RecordTrackInfo( fitTrack, newTrackName );
 				if(m_debug > 0) cout << "DONE\n";
-				m_vectorConvergedTrack.push_back( fitTrack );
 
 			}
 		}
+		m_vectorConvergedTrack.push_back( fitTrack );
 		
 		// // fill a vector with the categories fitted at least onece
 		// if ( find( m_categoryFitted.begin(), m_categoryFitted.end(), (*hitSample).first ) == m_categoryFitted.end() )

@@ -420,14 +420,24 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
 
 	// get pixel coord
-	TVector3 hitPos = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
-	// TVector3 hitPos = clus->GetPosition();
+	// TVector3 hitPos = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
+	TVector3 hitPos = clus->GetPosition();
+
+	TAVTparGeo* m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
 
 	if ( m_debug > 1 )
 	{
+		cout << "Sensor pos::";
+		m_VT_geo->GetSensorPosition(m_sensorIDmap->GetSensorIDFromMeasID(iMeas)).Print();
 		cout << "VT hit loc coords::";
 		hitPos.Print();
+		cout << "VT hit det coords::";
+		m_VT_geo->Sensor2Detector(m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
+		cout << "VT hit glb coords::";
+		m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector( m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos) ).Print();
 	}
+
+	hitPos = m_VT_geo->Sensor2Detector(m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos);
 
 	// set hit position vector
 	// hitCoords(0)=hitPos.x();	hitCoords(1)=hitPos.y();	hitCoords(2)=hitPos.z();
@@ -570,19 +580,29 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 
 	// get pixel coord
-	TVector3 hitPos = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() );
-	// TVector3 hitPos = clus->GetPosition();
+	// TVector3 hitPos = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() );
+	TVector3 hitPos = clus->GetPosition();
+	TAMSDparGeo* m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
 
 	if ( m_debug > 1 )
 	{
+		cout << "Sensor pos::";
+		m_MSD_geo->GetSensorPosition(m_sensorIDmap->GetSensorIDFromMeasID(iMeas)).Print();
 		cout << "MSD hit loc coords::";
-		clus->GetPositionG().Print();
-		cout << "MSD hit glob coords::";
 		hitPos.Print();
+		cout << "MSD hit det coords::";
+		m_MSD_geo->Sensor2Detector(m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
+		cout << "MSD hit glb coords::";
+		m_GeoTrafo->FromMSDLocalToGlobal( m_MSD_geo->Sensor2Detector( m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos) ).Print();
 	}
+
 	//check the view, 0 ->X, 1->Y
 	double pixReso = 0;
 	bool isYView = false;
+	// hitPos = m_MSD_geo->Sensor2Detector(m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos);
+
+	//RZ: WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//MSD detector coordinates are all in the X value of the position vector!!!! So, an X strip will give the local pos in the X value. A Y strip will rotate the Y measurement in local coords and return it in the X when looking at detector coordinates.
 
 	if ( clus->GetPlaneView() == 0 ){
 		planarCoords(0) = hitPos.x();
@@ -692,7 +712,6 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
 	hit->setPlane(m_sensorIDmap->GetFitPlane(sensorID), sensorID);      
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
-	// m_allHitMeas[ sensorID ].push_back(hit);
 
 	if ( m_debug > 0 )	  cout << "\nPrepare4TofWall::Exiting\n";
 
