@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TABMparGeo.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TABMparGeo.
+  \file    TABMparGeo.cxx
+  \brief   Geometry parameters of the beam monitor
 */
 
 #include <string.h>
