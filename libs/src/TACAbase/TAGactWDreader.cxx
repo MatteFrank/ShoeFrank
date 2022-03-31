@@ -49,6 +49,8 @@ TAGactWDreader::TAGactWDreader(const char* name,
     fpWDTim(p_WDtim)
 {
 
+  fgStdAloneFlag = stdAlone;
+  
   if(!fgStdAloneFlag){
     AddDataIn(p_datdaq, "TAGdaqEvent");
   }
@@ -60,7 +62,7 @@ TAGactWDreader::TAGactWDreader(const char* name,
   AddPara(p_WDtim, "TAGbaseWDparTime");
 
   
-  fgStdAloneFlag = stdAlone;
+
   fProcFiles=0;  
   fEventsN=0;
   fMaxFiles=1;
@@ -78,9 +80,7 @@ TAGactWDreader::~TAGactWDreader()
 
 Int_t TAGactWDreader::Open(const TString &fname){
 
-  
-  fInitName = fname;
-  
+    
   fWDstream = fopen(fname.Data(),"r");
   if(fWDstream==NULL){
     cout<<"ERROR in TAGactWDreader::cannot open the file="<<fname.Data()<<endl;
@@ -106,10 +106,9 @@ Int_t TAGactWDreader::UpdateFile(){
   TString slocRunNum = fInitName(pos1+1, pos2-pos1-1);
   Int_t locRunNum = atoi(slocRunNum.Data());
   TString currFileName = baseName+to_string(locRunNum+fProcFiles)+ext;
-
+  
   Open(currFileName);
 
-  fProcFiles++;
   return kTRUE;
   
 }
