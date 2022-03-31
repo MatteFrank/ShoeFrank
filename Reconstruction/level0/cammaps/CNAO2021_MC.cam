@@ -1,11 +1,7 @@
 // Campaign file
 CamName: "CNAO2021_MC"
 RunNumber: 150;200;300;400
-NumberDevices: 9
-
-DetectorName: "DI"
-NumberFiles: 1
-"./geomaps/CNAO2021_MC/TADIdetector.geo": -1
+NumberDevices: 5
 
 DetectorName: "FOOT"
 NumberFiles: 2
@@ -16,25 +12,9 @@ DetectorName: "ST"
 NumberFiles: 2
 "./geomaps/CNAO2021_MC/TASTdetector.geo": -1
 
-DetectorName: "BM"
-NumberFiles: 3
-"./geomaps/CNAO2021_MC/TABMdetector.geo": -1
-"./config/CNAO2021_MC/TABMdetector.cfg": -1
-"./calib/CNAO2021_MC/TABM_T0_Calibration.cal": -1
-
 DetectorName: "TG"
 NumberFiles: 1
 "./geomaps/CNAO2021_MC/TAGdetector.geo": 150;200;300;400
-
-DetectorName: "VT"
-NumberFiles: 2
-"./geomaps/CNAO2021_MC/TAVTdetector.geo": -1
-"./config/CNAO2021_MC/TAVTdetector.cfg": -1
-
-DetectorName: "MSD"
-NumberFiles: 2
-"./geomaps/CNAO2021_MC/TAMSDdetector.geo": -1
-"./config/CNAO2021_MC/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
 NumberFiles: 5
