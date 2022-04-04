@@ -853,6 +853,7 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrig
 	  }else if(ch_type == "CLK"){
 	    fCLKwaves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
 	  } else {
+	    delete w;
 	    if(FootDebugLevel(1)) {
 	      cout<<"******************************************* "<<endl;
 	      cout<<"*******    CORRUPTED EVENT      *********** "<<endl;
