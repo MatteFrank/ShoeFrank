@@ -1,18 +1,16 @@
 /*!
-  \file
-  \version $Id: TABMntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
-  \brief   Implementation of TABMntuRaw.
+\file   TABMntuRaw.cxx
+\brief   Declaration of TABMntuRaw, the container of the BM raw hits (TABMntuRaw)
 */
 
 //using namespace std;
 #include "TClonesArray.h"
-
 #include "TABMntuRaw.hxx"
 
 
 /*!
-  \class TABMntuRaw TABMntuRaw.hxx "TABMntuRaw.hxx"
-  \brief Mapping and Geometry parameters for Tof wall. **
+  \file   TABMntuRaw.cxx
+  \brief   Declaration of TABMntuRaw, the container of the BM raw hits (TABMntuRaw)
 */
 
 
@@ -41,8 +39,13 @@ TABMntuRaw::~TABMntuRaw()
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup mapping data for a single slat.
-
+//! Create the BM raw hit
+//!
+//! \param[in] id hit idcell [0-35]
+//! \param[in] lay layer of the hit [0-5]
+//! \param[in] view view of the hit [0-1]
+//! \param[in] cell cell of the hit [0-2]
+//! \param[in] time time  of the hit [ns]
 TABMrawHit* TABMntuRaw::NewHit(Int_t id, Int_t lay, Int_t view, Int_t cell, Double_t time)
 {
    TClonesArray &pixelArray = *fListOfHits;
@@ -81,7 +84,7 @@ void TABMntuRaw::SetupClones()
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Set statistics counters.
+//! increase the number of discharged raw hits
 
 void TABMntuRaw::AddDischarged()
 {
