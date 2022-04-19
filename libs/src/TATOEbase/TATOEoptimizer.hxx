@@ -27,10 +27,7 @@ class TADIgeoField;
 
 namespace details{
 
-//template< class ... Ts> struct any_of : std::false_type {};
-//template< class T> struct any_of<T> : T {};
-//template< class T, class ... Ts>
-//struct any_of<T, Ts...> : std::conditional< bool(T::value), T, any_of<Ts...>>::type {};
+
 
 template<class ... Ts> struct cut_counter_impl{};
 template<class ... Ts>
@@ -233,11 +230,9 @@ struct action_factory<configuration< vertex_tag, tof_tag>> {
         
         using namespace checker;
         auto& computation_checker_c = action_h->get_computation_checker();
-        computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
-        computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
-        computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
-        computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-        computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< efficiency<checker::computation>,
+                                                       purity<checker::computation>,
+                                                       momentum_resolution<computation>   >{} );
         
         return action_h;
     }
@@ -286,11 +281,10 @@ struct action_factory<configuration< vertex_tag, it_tag, tof_tag>> {
     
         using namespace checker;
         auto& computation_checker_c = action_h->get_computation_checker();
-        computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
-        computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
-        computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
-        computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-        computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< efficiency<checker::computation>,
+                                                       purity<checker::computation>,
+                                                       momentum_resolution<computation>   >{} );
+
         
         return action_h;
     }
@@ -338,11 +332,9 @@ struct action_factory<configuration<vertex_tag,msd_tag, tof_tag>> {
         
         using namespace checker;
         auto& computation_checker_c = action_h->get_computation_checker();
-        computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
-        computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
-        computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
-        computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-        computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< efficiency<checker::computation>,
+                                                       purity<checker::computation>,
+                                                       momentum_resolution<computation>   >{} );
         
         return action_h;
     }
@@ -394,11 +386,9 @@ struct action_factory<configuration<vertex_tag, it_tag, msd_tag, tof_tag>> {
         
         using namespace checker;
         auto& computation_checker_c = action_h->get_computation_checker();
-        computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<checker::computation>>{} );
-        computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<checker::computation>>{} );
-        computation_checker_c.push_back( TATOEchecker< purity<checker::computation> >{} );
-        computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-        computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+        computation_checker_c.push_back( TATOEchecker< efficiency<checker::computation>,
+                                                       purity<checker::computation>,
+                                                       momentum_resolution<computation>   >{} );
         
         return action_h;
     }
@@ -435,10 +425,8 @@ struct TATOEbaseOptimizer : TAGaction {
     
     virtual std::vector<reconstruction_module> const& retrieve_results()  =0;
     
-    virtual checker::value_and_error retrieve_reconstructible() const  =0;
-    virtual checker::value_and_error retrieve_reconstructed() const  =0;
+    virtual checker::value_and_error retrieve_efficiency() const  =0;
     virtual checker::value_and_error retrieve_purity() const =0;
-    virtual checker::value_and_error retrieve_mass_yield() const =0;
     virtual checker::value_and_error retrieve_momentum_residuals() const =0;
 };
 
@@ -516,11 +504,9 @@ struct TATOEoptimizer : TATOEbaseOptimizer{
     
     std::vector<reconstruction_module> const& retrieve_results() override  { return action_mh->retrieve_matched_results(); }
     
-    checker::value_and_error retrieve_reconstructible() const override { return action_mh->get_computation_checker()[0].output(); }
-    checker::value_and_error retrieve_reconstructed() const override { return action_mh->get_computation_checker()[1].output(); }
-    checker::value_and_error retrieve_purity() const override { return action_mh->get_computation_checker()[2].output(); }
-    checker::value_and_error retrieve_mass_yield() const override { return action_mh->get_computation_checker()[3].output(); }
-    checker::value_and_error retrieve_momentum_residuals() const override { return action_mh->get_computation_checker()[4].output(); }
+    checker::value_and_error retrieve_efficiency() const override { return action_mh->get_computation_checker()[0].output()[0]; }
+    checker::value_and_error retrieve_purity() const override { return action_mh->get_computation_checker()[0].output()[1]; }
+    checker::value_and_error retrieve_momentum_residuals() const override { return action_mh->get_computation_checker()[0].output()[2]; }
     
 private:
     template<std::size_t ... Indices>
