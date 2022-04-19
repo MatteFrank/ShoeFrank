@@ -773,10 +773,11 @@ private:
         logger_m << "candidates: " << candidate_c.size() << '\n';
         for( const auto& candidate : candidate_c ) {
             auto charge = candidate.data->GetChargeZ();
-            if(charge == 0) {continue;}
-            
             logger_m.add_header<1, details::immutable_tag>("candidate");
             logger_m << "charge: " << charge << '\n';
+            if(charge == 0) {continue;}
+            
+            
             
 //            auto* data_h =  static_cast<TAMCntuPart*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
 //            std::cout << "TAMCntuPart: " << data_h->GetBranchName() << "\n";
@@ -807,7 +808,7 @@ private:
                               [&charge, &candidate, &add_current_end_point]( particle_hypothesis & h_p ){
                                   if( h_p.properties.charge == charge ){ add_current_end_point( h_p ); }
                               } );
-                break;
+                continue;
             }
         
             
@@ -838,8 +839,8 @@ private:
             switch(charge){
                 case 1:
                 {
-                    auto light_ion_boost = 2.5;
-//                    auto light_ion_boost = 2;
+//                    auto light_ion_boost = 2.5;
+                    auto light_ion_boost = 2;
                     add_hypothesis(1, light_ion_boost);
                     add_hypothesis(1, light_ion_boost, 0.5);
 //                     light_ion_boost = 1.3;

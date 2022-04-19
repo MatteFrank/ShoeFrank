@@ -244,6 +244,7 @@ public:
         for(auto index: track_index_c){ action_m.logger_m << index << " ";}
         action_m.logger_m << '\n';
 
+        //TODO: what if several indices are available, and one was already selected by another ? -> potential fake degradation of resolution
         //need to clarify whats is going on here
         if( !track_index_c.empty() ){
             auto result_o = aftereffect::first_of( track_index_c.begin(),
@@ -251,7 +252,7 @@ public:
                                                    primary_aftereffect,
                                                    origin_aftereffect,
                                                    scattered_aftereffect );
-        
+            
             
             if( result_o.has_value() &&
                 check_reconstructibility( result_o.value() ) ) { //&&
