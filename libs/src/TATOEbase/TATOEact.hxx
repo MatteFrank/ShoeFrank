@@ -158,7 +158,7 @@ public:
             matcher_m = TATOEmatcher<TATOEactGlb, empty_writer>{global_parameters_ph, *this};
         }
         ukf_m.call_stepper().specify_tolerance(1e-14);
-        fill_histogram_checker<>();
+//        fill_histogram_checker<>();
 //        fill_histogram_checker<checker::correct_tof_predicate>();
 //        fill_histogram_checker<checker::charge_well_matched>();
 //        fill_histogram_checker<checker::well_matched>();
@@ -212,7 +212,7 @@ public:
         track_c = compute_arc_length( std::move(track_c) );
         track_c = compute_time_of_flight( std::move(track_c));
         track_c = compute_momentum( std::move(track_c ));
-//        track_c = refine_hypotheses( std::move(track_c) );
+        track_c = refine_hypotheses( std::move(track_c) );
         
         register_tracks_upward( std::move( track_c ) );
         
@@ -300,96 +300,96 @@ public:
             logger_m << "beta_resolution_error: " << beta.error * 100<< '\n';
 //
             
-            auto result_charge1_c = computation_checker_mc[1].output();
-            auto efficiency1 = result_charge1_c[0];
-            auto purity1 = result_charge1_c[1];
-            auto beta1 = result_charge1_c[2];
-            logger_m.template add_header<1, details::immutable_tag>("charge1");
-            logger_m << "[efficiency, purity, beta]: [";
-            logger_m << efficiency1.value * 100 << " +/- " << efficiency1.error * 100 << ", ";
-            logger_m << purity1.value * 100 << " +/- " << purity1.error * 100 << ", ";
-            logger_m << beta1.value * 100 << " +/- " << beta1.error * 100 << ", ";
-            logger_m << "]\n";
-
-            auto result_charge2_c = computation_checker_mc[2].output();
-            auto efficiency2 = result_charge2_c[0];
-            auto purity2 = result_charge2_c[1];
-            auto beta2 = result_charge2_c[2];
-            logger_m.template add_header<1, details::immutable_tag>("charge2");
-            logger_m << "[efficiency, purity, beta]: [";
-            logger_m << efficiency2.value * 100 << " +/- " << efficiency2.error * 100 << ", ";
-            logger_m << purity2.value * 100 << " +/- " << purity2.error * 100 << ", ";
-            logger_m << beta2.value * 100 << " +/- " << beta2.error * 100 << ", ";
-            logger_m << "]\n";
-            
-            
-            auto result_charge3_c = computation_checker_mc[3].output();
-            auto efficiency3 = result_charge3_c[0];
-            auto purity3 = result_charge3_c[1];
-            auto beta3 = result_charge3_c[2];
-            logger_m.template add_header<1, details::immutable_tag>("charge3");
-            logger_m << "[efficiency, purity, beta]: [";
-            logger_m << efficiency3.value * 100 << " +/- " << efficiency3.error * 100 << ", ";
-            logger_m << purity3.value * 100 << " +/- " << purity3.error * 100 << ", ";
-            logger_m << beta3.value * 100 << " +/- " << beta3.error * 100 << ", ";
-            logger_m << "]\n";
-            
-            auto result_charge4_c = computation_checker_mc[4].output();
-            auto efficiency4 = result_charge4_c[0];
-            auto purity4 = result_charge4_c[1];
-            auto beta4 = result_charge4_c[2];
-            logger_m.template add_header<1, details::immutable_tag>("charge4");
-            logger_m << "[efficiency, purity, beta]: [";
-            logger_m << efficiency4.value * 100 << " +/- " << efficiency4.error * 100 << ", ";
-            logger_m << purity4.value * 100 << " +/- " << purity4.error * 100 << ", ";
-            logger_m << beta4.value * 100 << " +/- " << beta4.error * 100 << ", ";
-            logger_m << "]\n";
-            
-            auto result_charge5_c = computation_checker_mc[5].output();
-            auto efficiency5 = result_charge5_c[0];
-            auto purity5 = result_charge5_c[1];
-            auto beta5 = result_charge5_c[2];
-            logger_m.template add_header<1, details::immutable_tag>("charge5");
-            logger_m << "[efficiency, purity, beta]: [";
-            logger_m << efficiency5.value * 100 << " +/- " << efficiency5.error * 100 << ", ";
-            logger_m << purity5.value * 100 << " +/- " << purity5.error * 100 << ", ";
-            logger_m << beta5.value * 100 << " +/- " << beta5.error * 100 << ", ";
-            logger_m << "]\n";
-            
-            auto result_charge6_c = computation_checker_mc[6].output();
-            auto efficiency6 = result_charge6_c[0];
-            auto purity6 = result_charge6_c[1];
-            auto beta6 = result_charge6_c[2];
-            logger_m.template add_header<1, details::immutable_tag>("charge6");
-            logger_m << "[efficiency, purity, beta]: [";
-            logger_m << efficiency6.value * 100 << " +/- " << efficiency6.error * 100 << ", ";
-            logger_m << purity6.value * 100 << " +/- " << purity6.error * 100 << ", ";
-            logger_m << beta6.value * 100 << " +/- " << beta6.error * 100 << ", ";
-            logger_m << "]\n";
-            
-            
-            auto result_charge7_c = computation_checker_mc[7].output();
-            auto efficiency7 = result_charge7_c[0];
-            auto purity7 = result_charge7_c[1];
-            auto beta7 = result_charge7_c[2];
-            logger_m.template add_header<1, details::immutable_tag>("charge7");
-            logger_m << "[efficiency, purity, beta]: [";
-            logger_m << efficiency7.value * 100 << " +/- " << efficiency7.error * 100 << ", ";
-            logger_m << purity7.value * 100 << " +/- " << purity7.error * 100 << ", ";
-            logger_m << beta7.value * 100 << " +/- " << beta7.error * 100 << ", ";
-            logger_m << "]\n";
-            
-            
-            auto result_charge8_c = computation_checker_mc[8].output();
-            auto efficiency8 = result_charge8_c[0];
-            auto purity8 = result_charge8_c[1];
-            auto beta8 = result_charge8_c[2];
-            logger_m.template add_header<1, details::immutable_tag>("charge8");
-            logger_m << "[efficiency, purity, beta]: [";
-            logger_m << efficiency8.value * 100 << " +/- " << efficiency8.error * 100 << ", ";
-            logger_m << purity8.value * 100 << " +/- " << purity8.error * 100 << ", ";
-            logger_m << beta8.value * 100 << " +/- " << beta8.error * 100 << ", ";
-            logger_m << "]\n";
+//            auto result_charge1_c = computation_checker_mc[1].output();
+//            auto efficiency1 = result_charge1_c[0];
+//            auto purity1 = result_charge1_c[1];
+//            auto beta1 = result_charge1_c[2];
+//            logger_m.template add_header<1, details::immutable_tag>("charge1");
+//            logger_m << "[efficiency, purity, beta]: [";
+//            logger_m << efficiency1.value * 100 << " +/- " << efficiency1.error * 100 << ", ";
+//            logger_m << purity1.value * 100 << " +/- " << purity1.error * 100 << ", ";
+//            logger_m << beta1.value * 100 << " +/- " << beta1.error * 100 << ", ";
+//            logger_m << "]\n";
+//
+//            auto result_charge2_c = computation_checker_mc[2].output();
+//            auto efficiency2 = result_charge2_c[0];
+//            auto purity2 = result_charge2_c[1];
+//            auto beta2 = result_charge2_c[2];
+//            logger_m.template add_header<1, details::immutable_tag>("charge2");
+//            logger_m << "[efficiency, purity, beta]: [";
+//            logger_m << efficiency2.value * 100 << " +/- " << efficiency2.error * 100 << ", ";
+//            logger_m << purity2.value * 100 << " +/- " << purity2.error * 100 << ", ";
+//            logger_m << beta2.value * 100 << " +/- " << beta2.error * 100 << ", ";
+//            logger_m << "]\n";
+//
+//
+//            auto result_charge3_c = computation_checker_mc[3].output();
+//            auto efficiency3 = result_charge3_c[0];
+//            auto purity3 = result_charge3_c[1];
+//            auto beta3 = result_charge3_c[2];
+//            logger_m.template add_header<1, details::immutable_tag>("charge3");
+//            logger_m << "[efficiency, purity, beta]: [";
+//            logger_m << efficiency3.value * 100 << " +/- " << efficiency3.error * 100 << ", ";
+//            logger_m << purity3.value * 100 << " +/- " << purity3.error * 100 << ", ";
+//            logger_m << beta3.value * 100 << " +/- " << beta3.error * 100 << ", ";
+//            logger_m << "]\n";
+//
+//            auto result_charge4_c = computation_checker_mc[4].output();
+//            auto efficiency4 = result_charge4_c[0];
+//            auto purity4 = result_charge4_c[1];
+//            auto beta4 = result_charge4_c[2];
+//            logger_m.template add_header<1, details::immutable_tag>("charge4");
+//            logger_m << "[efficiency, purity, beta]: [";
+//            logger_m << efficiency4.value * 100 << " +/- " << efficiency4.error * 100 << ", ";
+//            logger_m << purity4.value * 100 << " +/- " << purity4.error * 100 << ", ";
+//            logger_m << beta4.value * 100 << " +/- " << beta4.error * 100 << ", ";
+//            logger_m << "]\n";
+//
+//            auto result_charge5_c = computation_checker_mc[5].output();
+//            auto efficiency5 = result_charge5_c[0];
+//            auto purity5 = result_charge5_c[1];
+//            auto beta5 = result_charge5_c[2];
+//            logger_m.template add_header<1, details::immutable_tag>("charge5");
+//            logger_m << "[efficiency, purity, beta]: [";
+//            logger_m << efficiency5.value * 100 << " +/- " << efficiency5.error * 100 << ", ";
+//            logger_m << purity5.value * 100 << " +/- " << purity5.error * 100 << ", ";
+//            logger_m << beta5.value * 100 << " +/- " << beta5.error * 100 << ", ";
+//            logger_m << "]\n";
+//
+//            auto result_charge6_c = computation_checker_mc[6].output();
+//            auto efficiency6 = result_charge6_c[0];
+//            auto purity6 = result_charge6_c[1];
+//            auto beta6 = result_charge6_c[2];
+//            logger_m.template add_header<1, details::immutable_tag>("charge6");
+//            logger_m << "[efficiency, purity, beta]: [";
+//            logger_m << efficiency6.value * 100 << " +/- " << efficiency6.error * 100 << ", ";
+//            logger_m << purity6.value * 100 << " +/- " << purity6.error * 100 << ", ";
+//            logger_m << beta6.value * 100 << " +/- " << beta6.error * 100 << ", ";
+//            logger_m << "]\n";
+//
+//
+//            auto result_charge7_c = computation_checker_mc[7].output();
+//            auto efficiency7 = result_charge7_c[0];
+//            auto purity7 = result_charge7_c[1];
+//            auto beta7 = result_charge7_c[2];
+//            logger_m.template add_header<1, details::immutable_tag>("charge7");
+//            logger_m << "[efficiency, purity, beta]: [";
+//            logger_m << efficiency7.value * 100 << " +/- " << efficiency7.error * 100 << ", ";
+//            logger_m << purity7.value * 100 << " +/- " << purity7.error * 100 << ", ";
+//            logger_m << beta7.value * 100 << " +/- " << beta7.error * 100 << ", ";
+//            logger_m << "]\n";
+//
+//
+//            auto result_charge8_c = computation_checker_mc[8].output();
+//            auto efficiency8 = result_charge8_c[0];
+//            auto purity8 = result_charge8_c[1];
+//            auto beta8 = result_charge8_c[2];
+//            logger_m.template add_header<1, details::immutable_tag>("charge8");
+//            logger_m << "[efficiency, purity, beta]: [";
+//            logger_m << efficiency8.value * 100 << " +/- " << efficiency8.error * 100 << ", ";
+//            logger_m << purity8.value * 100 << " +/- " << purity8.error * 100 << ", ";
+//            logger_m << beta8.value * 100 << " +/- " << beta8.error * 100 << ", ";
+//            logger_m << "]\n";
         }
         
         logger_m.output();
