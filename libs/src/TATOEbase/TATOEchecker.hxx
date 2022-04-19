@@ -951,18 +951,19 @@ struct momentum_resolution_data<computation, CO>{
     void clear() { residuals = 0.; counter = 0 ;  }
 };
 
+
+template<class T> struct bin_size_value{};
+template<> struct bin_size_value< momentum_based >{ static constexpr double value = 0.2; };
+template<> struct bin_size_value< theta_based >{ static constexpr double value = 0.5; };
+template<> struct bin_size_value< phi_based >{ static constexpr double value = 5; };
+
 template<class B, class CO>
 struct momentum_resolution_data<histogram< B>, CO> {
     struct link {
        TTree* tree_h;
         double center;
     };
-    
-    template<class T> struct bin_size_value{};
-    template<> struct bin_size_value< momentum_based >{ static constexpr double value = 0.2; };
-    template<> struct bin_size_value< theta_based >{ static constexpr double value = 0.5; };
-    template<> struct bin_size_value< phi_based >{ static constexpr double value = 5; };
-    
+
     static constexpr double bin_size = bin_size_value<typename B::base_type>::value;
     
     struct holder{
