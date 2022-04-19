@@ -166,13 +166,14 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             
             auto& computation_checker_c = action_h->get_computation_checker();
             using namespace checker;
-            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
-            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
-            computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
+                                                           purity<computation>,
+                                                           reconstructed_distribution<computation>,
+                                                           fake_distribution<computation>,
+                                                           clone_distribution<computation>,
+                                                           mass_identification<computation> ,
+                                                           momentum_resolution<computation>,
+                                                           beta_ratio<computation> >{} );
             
             return action_h;
             
@@ -201,13 +202,14 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             
             auto& computation_checker_c = action_h->get_computation_checker();
             using namespace checker;
-            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
-            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
-            computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
+                                                           purity<computation>,
+                                                           reconstructed_distribution<computation>,
+                                                           fake_distribution<computation>,
+                                                           clone_distribution<computation>,
+                                                           mass_identification<computation> ,
+                                                           momentum_resolution<computation>,
+                                                           beta_ratio<computation> >{} );
             
             return action_h;
         }
@@ -239,26 +241,39 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             
             auto& computation_checker_c = action_h->get_computation_checker();
             using namespace checker;
-            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
-            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
-            computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<1>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<1>>>{});
-//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<2>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<2>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<3>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<3>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<4>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<4>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<5>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<5>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation, isolate_charge<6>>>{} );
-//            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation, isolate_charge<6>>>{} );
-            
+            computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
+                                                           purity<computation>,
+                                                           reconstructed_distribution<computation>,
+                                                           fake_distribution<computation>,
+                                                           clone_distribution<computation>,
+                                                           mass_identification<computation> ,
+                                                           momentum_resolution<computation>,
+                                                           beta_ratio<computation> >{} );
+//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<1>>,
+//                                                           purity<computation, isolate_charge<1>>,
+//                                                           beta_ratio<computation, isolate_charge<1>>  >{} );
+//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<2>>,
+//                                                           purity<computation, isolate_charge<2>>,
+//                                                           beta_ratio<computation, isolate_charge<2>>  >{} );
+//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<3>>,
+//                                                           purity<computation, isolate_charge<3>>,
+//                                                           beta_ratio<computation, isolate_charge<3>>  >{} );
+//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<4>>,
+//                                                           purity<computation, isolate_charge<4>>,
+//                                                           beta_ratio<computation, isolate_charge<4>>  >{} );
+//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<5>>,
+//                                                           purity<computation, isolate_charge<5>>,
+//                                                           beta_ratio<computation, isolate_charge<5>>  >{} );
+//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<6>>,
+//                                                           purity<computation, isolate_charge<6>>,
+//                                                           beta_ratio<computation, isolate_charge<6>>  >{} );
+//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<7>>,
+//                                                           purity<computation, isolate_charge<7>>,
+//                                                           beta_ratio<computation, isolate_charge<7>>  >{} );
+//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<8>>,
+//                                                           purity<computation, isolate_charge<8>>,
+//                                                           beta_ratio<computation, isolate_charge<8>>  >{} );
+            //purity + efficiency for several charge + clone histo
             return action_h;
             
         }
@@ -280,13 +295,14 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             
             auto& computation_checker_c = action_h->get_computation_checker();
             using namespace checker;
-            computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
-            computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
-            computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-            computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+            computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
+                                                           purity<computation>,
+                                                           reconstructed_distribution<computation>,
+                                                           fake_distribution<computation>,
+                                                           clone_distribution<computation>,
+                                                           mass_identification<computation> ,
+                                                           momentum_resolution<computation>,
+                                                           beta_ratio<computation> >{} );
             
             return action_h;
         }
@@ -312,13 +328,14 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     
     auto& computation_checker_c = action_h->get_computation_checker();
     using namespace checker;
-    computation_checker_c.push_back( TATOEchecker< reconstructible_distribution<computation>>{} );
-    computation_checker_c.push_back( TATOEchecker< reconstructed_distribution<computation>>{} );
-    computation_checker_c.push_back( TATOEchecker< purity<computation> >{} );
-    computation_checker_c.push_back( TATOEchecker< fake_distribution<computation> >{} );
-    computation_checker_c.push_back( TATOEchecker< clone_distribution<computation> >{} );
-    computation_checker_c.push_back( TATOEchecker< mass_identification<computation> >{} );
-    computation_checker_c.push_back( TATOEchecker< momentum_difference<computation> >{} );
+    computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
+                                                   purity<computation>,
+                                                   reconstructed_distribution<computation>,
+                                                   fake_distribution<computation>,
+                                                   clone_distribution<computation>,
+                                                   mass_identification<computation> ,
+                                                   momentum_resolution<computation>,
+                                                   beta_ratio<computation> >{} );
     return action_h;
 }
 
