@@ -102,9 +102,11 @@ struct TATOEactGlb< UKF, detector_list< details::finished_tag,
         double mass{0};
         double tof{0};
         double length{0};
+        double beta{0};
         std::size_t nucleon_number;
         
         polynomial_fit_parameters parameters;
+        double determination_coefficient_scan{0};
         
         std::size_t clone{0};
     };
@@ -129,20 +131,10 @@ private:
     std::size_t event{0};
     
     std::vector<track> track_mc;
+
+    std::random_device random_device_m;
+    std::mt19937 random_generator_m{ random_device_m() };
     
-    mutable std::size_t final_counter{0};
-    mutable std::size_t minimal_counter{0};
-    mutable std::size_t over_counter{0};
-    mutable std::size_t below_counter{0};
-    mutable std::size_t over_counter_x{0};
-    mutable std::size_t below_counter_x{0};
-    mutable std::size_t over_counter_y{0};
-    mutable std::size_t below_counter_y{0};
-    mutable std::size_t skip_counter{0};
-    
-    mutable std::size_t same_sign_counter{0};
-    mutable std::size_t not_same_sign_counter{0};
-    mutable double mean_weight{0.};
 public:
     
     TATOEactGlb( UKF&& ukf_p,
@@ -165,12 +157,19 @@ public:
             using namespace checker;
             matcher_m = TATOEmatcher<TATOEactGlb, empty_writer>{global_parameters_ph, *this};
         }
-//        fill_histogram_checker<>();
+        ukf_m.call_stepper().specify_tolerance(1e-14);
+        fill_histogram_checker<>();
+//        fill_histogram_checker<checker::correct_tof_predicate>();
 //        fill_histogram_checker<checker::charge_well_matched>();
 //        fill_histogram_checker<checker::well_matched>();
 //        fill_histogram_checker<checker::badly_matched>();
 //        fill_histogram_checker<checker::purity_predicate>();
 //        fill_histogram_checker<checker::shearing_predicate>();
+//        fill_histogram_checker<checker::beta_predicate>();
+//        fill_histogram_checker<checker::out_of_resolution_predicate>();
+//        fill_histogram_checker<checker::negative_track_slope_predicate>();
+//        fill_histogram_checker<checker::positive_track_slope_predicate>();
+//        fill_histogram_checker<checker::aberrant_arc_length_predicate>();
         
         ukf_m.call_stepper().ode.model().particle_h = &current_hypothesis_m;
     }
@@ -208,12 +207,12 @@ public:
 //            }
 //        }
 
-        track_c = compute_track_parameters( std::move(track_c) );
-//        track_c = compute_track_parameters_splitted( std::move(track_c) );
+//        track_c = compute_track_parameters( std::move(track_c) );
+        track_c = compute_track_parameters_splitted( std::move(track_c) );
         track_c = compute_arc_length( std::move(track_c) );
         track_c = compute_time_of_flight( std::move(track_c));
         track_c = compute_momentum( std::move(track_c ));
-        track_c = refine_hypotheses( std::move(track_c) );
+//        track_c = refine_hypotheses( std::move(track_c) );
         
         register_tracks_upward( std::move( track_c ) );
         
@@ -256,111 +255,152 @@ public:
     };
     
     void Output() override {
-        std::cout << ">95x? " << over_counter_x << " / " << below_counter_x << '\n';
-        std::cout << ">95y? " << over_counter_y << " / " << below_counter_y << '\n';
-        std::cout << "reprocessed: " <<final_counter << " / " << minimal_counter << '\n';
-        std::cout << ">95? " << over_counter << " / " << below_counter << '\n';
-        std::cout << "skipped: " << skip_counter << '\n';
-        std::cout << "mean_weight: " << mean_weight/final_counter << '\n';
-        std::cout << "is_same_sign: " << same_sign_counter << " / " << not_same_sign_counter << '\n';
         
         if( !computation_checker_mc.empty() ){
             logger_m.add_root_header("RESULTS");
-            auto reconstructible = computation_checker_mc[0].output();
-            auto reconstructed = computation_checker_mc[1].output();
+            auto result_c = computation_checker_mc[0].output();
+            auto efficiency = result_c[0];
             logger_m.template add_header<1, details::immutable_tag>("efficiency");
-            auto efficiency = reconstructed.value / reconstructible.value;
-            auto efficiency_error = sqrt( efficiency * (1+efficiency)/reconstructible.value);
-            logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-            logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-            
-            auto purity = computation_checker_mc[2].output();
+            logger_m << "global_efficiency: " << efficiency.value * 100 << '\n';
+            logger_m << "global_efficiency_error: " << efficiency.error * 100<< '\n';
+//
+            auto purity = result_c[1];
             logger_m.template add_header<1, details::immutable_tag>("purity");
             logger_m << "global_purity: " << purity.value * 100 << '\n';
             logger_m << "global_purity_error: " << purity.error * 100<< '\n';
-            
-            auto fake = computation_checker_mc[3].output();
+//
+            auto reconstructed = result_c[2];
+            auto fake = result_c[3];
             logger_m.template add_header<1, details::immutable_tag>("fake_yield");
             auto fake_yield = fake.value /(reconstructed.value+fake.value);
             logger_m << "global_fake_yield: " << fake_yield * 100 << '\n';
             auto fake_yield_error = sqrt( fake_yield * (1+ fake_yield)/reconstructed.value);
             logger_m << "fake_yield_error: " << fake_yield_error * 100<< '\n';
-            
-            auto clone = computation_checker_mc[4].output();
+//
+            auto clone = result_c[4];
             logger_m.template add_header<1, details::immutable_tag>("clone_yield");
             auto clone_multiplicity = clone.value /reconstructed.value;
             logger_m << "global_multiplicity: " << clone_multiplicity << '\n';
             auto clone_multiplicity_error = sqrt( clone_multiplicity * (1+ clone_multiplicity)/reconstructed.value);
             logger_m << "clone_multiplicty_error: " << clone_multiplicity_error << '\n';
-            
-            auto mass_yield = computation_checker_mc[5].output();
+//
+            auto mass_yield = result_c[5];
             logger_m.template add_header<1, details::immutable_tag>("mass_yield");
             logger_m << "mass_yield: " << mass_yield.value << '\n';
             logger_m << "mass_yield_error: " << mass_yield.error << '\n';
-            
-            auto momentum_residuals = computation_checker_mc[6].output();
+
+            auto momentum_residuals = result_c[6];
             logger_m.template add_header<1, details::immutable_tag>("momentum_residuals");
             logger_m << "momentum_residuals: " << momentum_residuals.value << '\n';
             logger_m << "momentum_residuals_error: " << momentum_residuals.error << '\n';
             
-//            auto reconstructible1 = computation_checker_mc[5].output();
-//            auto reconstructed1 = computation_checker_mc[6].output();
-//            logger_m.template add_header<1, details::immutable_tag>("efficiency_charge1");
-//            efficiency = reconstructed1.value / reconstructible1.value;
-//            efficiency_error = sqrt( efficiency * (1+efficiency)/reconstructible1.value);
-//            logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-//            logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-//            auto reconstructible2 = computation_checker_mc[7].output();
-//            auto reconstructed2 = computation_checker_mc[8].output();
-//            logger_m.template add_header<1, details::immutable_tag>("efficiency_charge2");
-//            efficiency = reconstructed2.value / reconstructible2.value;
-//            efficiency_error = sqrt( efficiency * (1+efficiency)/reconstructible2.value);
-//            logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-//            logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-//            auto reconstructible3 = computation_checker_mc[9].output();
-//            auto reconstructed3 = computation_checker_mc[10].output();
-//            logger_m.template add_header<1, details::immutable_tag>("efficiency_charge3");
-//            efficiency = reconstructed3.value / reconstructible3.value;
-//            efficiency_error = sqrt( efficiency * (1+efficiency)/reconstructible3.value);
-//            logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-//            logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-//            auto reconstructible4 = computation_checker_mc[11].output();
-//            auto reconstructed4 = computation_checker_mc[12].output();
-//            logger_m.template add_header<1, details::immutable_tag>("efficiency_charge4");
-//            efficiency = reconstructed4.value / reconstructible4.value;
-//            efficiency_error = sqrt( efficiency * (1+efficiency)/reconstructible4.value);
-//            logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-//            logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-//            auto reconstructible5 = computation_checker_mc[13].output();
-//            auto reconstructed5 = computation_checker_mc[14].output();
-//            logger_m.template add_header<1, details::immutable_tag>("efficiency_charge5");
-//            efficiency = reconstructed5.value / reconstructible5.value;
-//            efficiency_error = sqrt( efficiency * (1+efficiency)/reconstructible5.value);
-//            logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-//            logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
-//            auto reconstructible6 = computation_checker_mc[15].output();
-//            auto reconstructed6 = computation_checker_mc[16].output();
-//            logger_m.template add_header<1, details::immutable_tag>("efficiency_charge6");
-//            efficiency = reconstructed6.value / reconstructible6.value;
-//            efficiency_error = sqrt( efficiency * (1+efficiency)/reconstructible6.value);
-//            logger_m << "global_efficiency: " << efficiency * 100 << '\n';
-//            logger_m << "global_efficiency_error: " << efficiency_error * 100<< '\n';
+            auto beta = result_c[7];
+            logger_m.template add_header<1, details::immutable_tag>("beta");
+            logger_m << "beta_resolution: " << beta.value * 100 << '\n';
+            logger_m << "beta_resolution_error: " << beta.error * 100<< '\n';
+//
+            
+            auto result_charge1_c = computation_checker_mc[1].output();
+            auto efficiency1 = result_charge1_c[0];
+            auto purity1 = result_charge1_c[1];
+            auto beta1 = result_charge1_c[2];
+            logger_m.template add_header<1, details::immutable_tag>("charge1");
+            logger_m << "[efficiency, purity, beta]: [";
+            logger_m << efficiency1.value * 100 << " +/- " << efficiency1.error * 100 << ", ";
+            logger_m << purity1.value * 100 << " +/- " << purity1.error * 100 << ", ";
+            logger_m << beta1.value * 100 << " +/- " << beta1.error * 100 << ", ";
+            logger_m << "]\n";
+
+            auto result_charge2_c = computation_checker_mc[2].output();
+            auto efficiency2 = result_charge2_c[0];
+            auto purity2 = result_charge2_c[1];
+            auto beta2 = result_charge2_c[2];
+            logger_m.template add_header<1, details::immutable_tag>("charge2");
+            logger_m << "[efficiency, purity, beta]: [";
+            logger_m << efficiency2.value * 100 << " +/- " << efficiency2.error * 100 << ", ";
+            logger_m << purity2.value * 100 << " +/- " << purity2.error * 100 << ", ";
+            logger_m << beta2.value * 100 << " +/- " << beta2.error * 100 << ", ";
+            logger_m << "]\n";
+            
+            
+            auto result_charge3_c = computation_checker_mc[3].output();
+            auto efficiency3 = result_charge3_c[0];
+            auto purity3 = result_charge3_c[1];
+            auto beta3 = result_charge3_c[2];
+            logger_m.template add_header<1, details::immutable_tag>("charge3");
+            logger_m << "[efficiency, purity, beta]: [";
+            logger_m << efficiency3.value * 100 << " +/- " << efficiency3.error * 100 << ", ";
+            logger_m << purity3.value * 100 << " +/- " << purity3.error * 100 << ", ";
+            logger_m << beta3.value * 100 << " +/- " << beta3.error * 100 << ", ";
+            logger_m << "]\n";
+            
+            auto result_charge4_c = computation_checker_mc[4].output();
+            auto efficiency4 = result_charge4_c[0];
+            auto purity4 = result_charge4_c[1];
+            auto beta4 = result_charge4_c[2];
+            logger_m.template add_header<1, details::immutable_tag>("charge4");
+            logger_m << "[efficiency, purity, beta]: [";
+            logger_m << efficiency4.value * 100 << " +/- " << efficiency4.error * 100 << ", ";
+            logger_m << purity4.value * 100 << " +/- " << purity4.error * 100 << ", ";
+            logger_m << beta4.value * 100 << " +/- " << beta4.error * 100 << ", ";
+            logger_m << "]\n";
+            
+            auto result_charge5_c = computation_checker_mc[5].output();
+            auto efficiency5 = result_charge5_c[0];
+            auto purity5 = result_charge5_c[1];
+            auto beta5 = result_charge5_c[2];
+            logger_m.template add_header<1, details::immutable_tag>("charge5");
+            logger_m << "[efficiency, purity, beta]: [";
+            logger_m << efficiency5.value * 100 << " +/- " << efficiency5.error * 100 << ", ";
+            logger_m << purity5.value * 100 << " +/- " << purity5.error * 100 << ", ";
+            logger_m << beta5.value * 100 << " +/- " << beta5.error * 100 << ", ";
+            logger_m << "]\n";
+            
+            auto result_charge6_c = computation_checker_mc[6].output();
+            auto efficiency6 = result_charge6_c[0];
+            auto purity6 = result_charge6_c[1];
+            auto beta6 = result_charge6_c[2];
+            logger_m.template add_header<1, details::immutable_tag>("charge6");
+            logger_m << "[efficiency, purity, beta]: [";
+            logger_m << efficiency6.value * 100 << " +/- " << efficiency6.error * 100 << ", ";
+            logger_m << purity6.value * 100 << " +/- " << purity6.error * 100 << ", ";
+            logger_m << beta6.value * 100 << " +/- " << beta6.error * 100 << ", ";
+            logger_m << "]\n";
+            
+            
+            auto result_charge7_c = computation_checker_mc[7].output();
+            auto efficiency7 = result_charge7_c[0];
+            auto purity7 = result_charge7_c[1];
+            auto beta7 = result_charge7_c[2];
+            logger_m.template add_header<1, details::immutable_tag>("charge7");
+            logger_m << "[efficiency, purity, beta]: [";
+            logger_m << efficiency7.value * 100 << " +/- " << efficiency7.error * 100 << ", ";
+            logger_m << purity7.value * 100 << " +/- " << purity7.error * 100 << ", ";
+            logger_m << beta7.value * 100 << " +/- " << beta7.error * 100 << ", ";
+            logger_m << "]\n";
+            
+            
+            auto result_charge8_c = computation_checker_mc[8].output();
+            auto efficiency8 = result_charge8_c[0];
+            auto purity8 = result_charge8_c[1];
+            auto beta8 = result_charge8_c[2];
+            logger_m.template add_header<1, details::immutable_tag>("charge8");
+            logger_m << "[efficiency, purity, beta]: [";
+            logger_m << efficiency8.value * 100 << " +/- " << efficiency8.error * 100 << ", ";
+            logger_m << purity8.value * 100 << " +/- " << purity8.error * 100 << ", ";
+            logger_m << beta8.value * 100 << " +/- " << beta8.error * 100 << ", ";
+            logger_m << "]\n";
         }
         
         logger_m.output();
         
         //scan change limits + number of points -> count how many actually go through the recomputation
         if(!histogram_checker_mc.empty()){
-//            TFile file{"tol_16O200C2H4_5e4_refinepht100m11pwr2-5_effc.root", "RECREATE"};
-//            TFile file{"tol_16O200C2H4_5e4_refinephol5p_effc.root", "RECREATE"};
-//            TFile file{"tol_12C200C_3e4_refinep_outw_effc.root", "RECREATE"};
-            TFile file{"tol_16O200C2H4_5e4_refinephcol_effc.root", "RECREATE"};
-//            TFile file{"tol_16O400C_25e3_refinep_effc.root", "RECREATE"};
-//            TFile file{"tol_16O200C2H4_25e3_refinemn_effGc.root", "RECREATE"};
-//            TFile file{"tol_16O200C2H4_25e3_refinenm_rdfc_effc.root", "RECREATE"};
-//            TFile file{"tol_16O200C2H4_25e3_refinem_massc.root", "RECREATE"};
-//            TFile file{"tol_12C200C_3e4_refinem_massc.root", "RECREATE"};
-//            TFile file{"tol_GSI2021_16O400C.root", "RECREATE"};
+            TFile file{"tol_16O400C_1e5_refineh_tris_basec.root", "RECREATE"};
+//            TFile file{"tol_16O200C_1e5_refineh_basec.root", "RECREATE"};
+//            TFile file{"tol_16O200C2H4_1e5_refineh_basec.root", "RECREATE"};
+//            TFile file{"tol_12C200C_3e4_refineh_tris_basec.root", "RECREATE"};
+//            TFile file{"tol_test.root", "RECREATE"};
             for( auto & checker : histogram_checker_mc ){ checker.output(); }
             file.Close();
         }
@@ -375,20 +415,85 @@ private:
         using namespace checker;
         histogram_checker_mc.push_back(
                 TATOEchecker<
-                    purity< histogram<per_nucleon>, no_requirement, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<1>, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<2>, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<3>, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<4>, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<5>, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<6>, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<7>, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<8>, MO >,
-                    purity< histogram<per_nucleon>, isolate_charge<9>, MO >
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based> >, no_requirement, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<8>, MO >,
+                    purity< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<9>, MO >
                             >{} );
         histogram_checker_mc.push_back(
                 TATOEchecker<
-                    reconstructed_distribution< histogram<per_nucleon, reconstructed_based>, no_requirement, MO >
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based> >, no_requirement, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<8>, MO >,
+                    purity< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<9>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based> >, no_requirement, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<8>, MO >,
+                    purity< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<9>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based> >, no_requirement, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<8>, MO >,
+                    efficiency< histogram< reconstruction_base< momentum_based, reconstructible_based>>, isolate_charge<9>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based> >, no_requirement, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<8>, MO >,
+                    efficiency< histogram< reconstruction_base< theta_based, reconstructible_based>>, isolate_charge<9>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based> >, no_requirement, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<8>, MO >,
+                    efficiency< histogram< reconstruction_base< phi_based, reconstructible_based>>, isolate_charge<9>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    reconstructed_distribution< histogram< reconstruction_base<momentum_based, reconstructed_based>>, no_requirement, MO >
 //                    reconstructed_distribution< histogram<per_nucleon, reconstructed_based>, isolate_charge<1>, MO >,
 //                    reconstructed_distribution< histogram<per_nucleon, reconstructed_based>, isolate_charge<2>, MO >,
 //                    reconstructed_distribution< histogram<per_nucleon, reconstructed_based>, isolate_charge<3>, MO >,
@@ -401,105 +506,56 @@ private:
                             >{} );
         histogram_checker_mc.push_back(
                 TATOEchecker<
-                    reconstructed_distribution< histogram<absolute, reconstructed_based>, no_requirement, MO >
-//                    reconstructed_distribution< histogram<absolute, reconstructed_based>, isolate_charge<1>, MO >,
-//                    reconstructed_distribution< histogram<absolute, reconstructed_based>, isolate_charge<2>, MO >,
-//                    reconstructed_distribution< histogram<absolute, reconstructed_based>, isolate_charge<3>, MO >,
-//                    reconstructed_distribution< histogram<absolute, reconstructed_based>, isolate_charge<4>, MO >,
-//                    reconstructed_distribution< histogram<absolute, reconstructed_based>, isolate_charge<5>, MO >,
-//                    reconstructed_distribution< histogram<absolute, reconstructed_based>, isolate_charge<6>, MO >,
-//                    reconstructed_distribution< histogram<absolute, reconstructed_based>, isolate_charge<7>, MO >
+                    reconstructible_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, no_requirement, MO >
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<1>, MO >,
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<2>, MO >,
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<3>, MO >,
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<4>, MO >,
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<5>, MO >,
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<6>, MO >,
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<7>, MO >,
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<8>, MO >,
+//                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<9>, MO >
+                            >{} );
+
+//        histogram_checker_mc.push_back(
+//                TATOEchecker<
+//                    missed_distribution< histogram<absolute>, no_requirement, MO >
+////                    missed_distribution< histogram<absolute>, isolate_charge<1>, MO >,
+////                    missed_distribution< histogram<absolute>, isolate_charge<2>, MO >,
+////                    missed_distribution< histogram<absolute>, isolate_charge<3>, MO >,
+////                    missed_distribution< histogram<absolute>, isolate_charge<4>, MO >,
+////                    missed_distribution< histogram<absolute>, isolate_charge<5>, MO >,
+////                    missed_distribution< histogram<absolute>, isolate_charge<6>, MO >,
+////                    missed_distribution< histogram<absolute>, isolate_charge<7>, MO >,
+////                    missed_distribution< histogram<absolute>, isolate_charge<8>, MO >,
+////                    missed_distribution< histogram<absolute>, isolate_charge<9>, MO >
+//                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, no_requirement, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<8>, MO >
+//                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<9>, MO >
                             >{} );
         histogram_checker_mc.push_back(
                 TATOEchecker<
-                    reconstructed_distribution< histogram<per_nucleon>, no_requirement, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<1>, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<2>, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<3>, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<4>, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<5>, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<6>, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<7>, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<8>, MO >,
-                    reconstructed_distribution< histogram<per_nucleon>, isolate_charge<9>, MO >
-                            >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    reconstructed_distribution< histogram<absolute>, no_requirement, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<1>, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<2>, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<3>, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<4>, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<5>, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<6>, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<7>, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<8>, MO >,
-                    reconstructed_distribution< histogram<absolute>, isolate_charge<9>, MO >
-                            >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    reconstructible_distribution< histogram<per_nucleon>, no_requirement, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<1>, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<2>, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<3>, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<4>, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<5>, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<6>, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<7>, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<8>, MO >,
-                    reconstructible_distribution< histogram<per_nucleon>, isolate_charge<9>, MO >
-                            >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    reconstructible_distribution< histogram<absolute>, no_requirement, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<1>, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<2>, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<3>, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<4>, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<5>, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<6>, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<7>, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<8>, MO >,
-                    reconstructible_distribution< histogram<absolute>, isolate_charge<9>, MO >
-                            >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    missed_distribution< histogram<absolute>, no_requirement, MO >
-//                    missed_distribution< histogram<absolute>, isolate_charge<1>, MO >,
-//                    missed_distribution< histogram<absolute>, isolate_charge<2>, MO >,
-//                    missed_distribution< histogram<absolute>, isolate_charge<3>, MO >,
-//                    missed_distribution< histogram<absolute>, isolate_charge<4>, MO >,
-//                    missed_distribution< histogram<absolute>, isolate_charge<5>, MO >,
-//                    missed_distribution< histogram<absolute>, isolate_charge<6>, MO >,
-//                    missed_distribution< histogram<absolute>, isolate_charge<7>, MO >,
-//                    missed_distribution< histogram<absolute>, isolate_charge<8>, MO >,
-//                    missed_distribution< histogram<absolute>, isolate_charge<9>, MO >
-                            >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    mass_distribution< histogram<absolute>, no_requirement, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<1>, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<2>, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<3>, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<4>, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<5>, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<6>, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<7>, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<8>, MO >,
-                    mass_distribution< histogram<absolute>, isolate_charge<9>, MO >
-                            >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    mass_distribution< histogram<absolute, reconstructed_based>, no_requirement, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<1>, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<2>, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<3>, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<4>, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<5>, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<6>, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<7>, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<8>, MO >,
-                    mass_distribution< histogram<absolute, reconstructed_based>, isolate_charge<9>, MO >
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, no_requirement, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<1>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<2>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<3>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<4>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<5>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<6>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<7>, MO >,
+                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<8>, MO >
+//                    mass_distribution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, isolate_charge<9>, MO >
                             >{} );
         histogram_checker_mc.push_back(
                 TATOEchecker<
@@ -514,71 +570,169 @@ private:
                     mass_identification< histogram<>, isolate_charge<8>, MO >,
                     mass_identification< histogram<>, isolate_charge<9>, MO >
                             >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    momentum_difference< histogram<absolute>, no_requirement, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<1>, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<2>, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<3>, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<4>, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<5>, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<6>, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<7>, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<8>, MO >,
-                    momentum_difference< histogram<absolute>, isolate_charge<9>, MO >
-                            >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    momentum_study< histogram<absolute>, no_requirement, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<1>, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<2>, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<3>, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<4>, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<5>, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<6>, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<7>, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<8>, MO >,
-                    momentum_study< histogram<absolute>, isolate_charge<9>, MO >
-                            >{} );
-        histogram_checker_mc.push_back(
-                TATOEchecker<
-                    residuals< histogram<>, no_requirement, MO >,
-                    residuals< histogram<>, isolate_charge<1>, MO >
-//                    residuals< histogram<>, isolate_charge<2>, MO >,
-//                    residuals< histogram<>, isolate_charge<3>, MO >,
-//                    residuals< histogram<>, isolate_charge<4>, MO >,
-//                    residuals< histogram<>, isolate_charge<5>, MO >,
-//                    residuals< histogram<>, isolate_charge<6>, MO >,
-//                    residuals< histogram<>, isolate_charge<7>, MO >,
-//                    residuals< histogram<>, isolate_charge<8>, MO >,
-//                    residuals< histogram<>, isolate_charge<9>, MO >
-                            >{} );
+        
 //        histogram_checker_mc.push_back(
 //                TATOEchecker<
-//                    track_chisquared_distribution< histogram<>, no_requirement, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<1>, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<2>, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<3>, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<4>, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<5>, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<6>, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<7>, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<8>, MO >,
-//                    track_chisquared_distribution< histogram<>, isolate_charge<9>, MO >
+//                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, no_requirement, MO >
 //                            >{} );
         histogram_checker_mc.push_back(
                 TATOEchecker<
-                    shearing_factor_distribution< histogram<>, no_requirement, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<1>, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<2>, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<3>, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<4>, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<5>, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<6>, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<7>, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<8>, MO >,
-                    shearing_factor_distribution< histogram<>, isolate_charge<9>, MO >
-                                       >{} );
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, no_requirement, MO >,
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, isolate_charge<8>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, no_requirement, MO >,
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<phi_based, reconstructible_based>>, isolate_charge<8>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, no_requirement, MO >,
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructible_based>>, isolate_charge<8>, MO >
+                            >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, no_requirement, MO >,
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, isolate_charge<1>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, isolate_charge<2>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, isolate_charge<3>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, isolate_charge<4>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, isolate_charge<5>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, isolate_charge<6>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, isolate_charge<7>, MO >,
+                    momentum_resolution< histogram<reconstruction_base<angle_based, reconstructible_based>>, isolate_charge<8>, MO >
+                            >{} );
+//        histogram_checker_mc.push_back(
+//                TATOEchecker<
+//                    residuals< histogram<>, no_requirement, MO >,
+//                    residuals< histogram<>, isolate_charge<1>, MO >
+////                    residuals< histogram<>, isolate_charge<2>, MO >,
+////                    residuals< histogram<>, isolate_charge<3>, MO >,
+////                    residuals< histogram<>, isolate_charge<4>, MO >,
+////                    residuals< histogram<>, isolate_charge<5>, MO >,
+////                    residuals< histogram<>, isolate_charge<6>, MO >,
+////                    residuals< histogram<>, isolate_charge<7>, MO >,
+////                    residuals< histogram<>, isolate_charge<8>, MO >,
+////                    residuals< histogram<>, isolate_charge<9>, MO >
+//                            >{} );
+//        histogram_checker_mc.push_back(
+//                TATOEchecker<
+//                    shearing_factor_distribution< histogram<>, no_requirement, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<1>, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<2>, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<3>, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<4>, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<5>, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<6>, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<7>, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<8>, MO >,
+//                    shearing_factor_distribution< histogram<>, isolate_charge<9>, MO >
+//                                       >{} );
+//        histogram_checker_mc.push_back(
+//                TATOEchecker<
+//                    cluster_size_distribution< histogram<>, no_requirement, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<1>, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<2>, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<3>, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<4>, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<5>, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<6>, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<7>, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<8>, MO >,
+//                    cluster_size_distribution< histogram<>, isolate_charge<9>, MO >
+//                                       >{} );
+//        histogram_checker_mc.push_back(
+//                TATOEchecker<
+//                    splitted_mc_distribution< histogram<>, no_requirement, MO >
+//                                       >{} );
+//        histogram_checker_mc.push_back(
+//                TATOEchecker<
+//                    angle_distribution< histogram<>, no_requirement, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<1>, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<2>, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<3>, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<4>, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<5>, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<6>, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<7>, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<8>, MO >,
+//                    angle_distribution< histogram<>, isolate_charge<9>, MO >
+//                                       >{} );
+//        histogram_checker_mc.push_back(
+//                TATOEchecker<
+//                    arc_length_ratio< histogram<>, no_requirement, MO >
+//                    arc_length_ratio< histogram<>, isolate_charge<1>, MO >,
+//                    arc_length_ratio< histogram<>, isolate_charge<2>, MO >,
+//                    arc_length_ratio< histogram<>, isolate_charge<3>, MO >,
+//                    arc_length_ratio< histogram<>, isolate_charge<4>, MO >,
+//                    arc_length_ratio< histogram<>, isolate_charge<5>, MO >,
+//                    arc_length_ratio< histogram<>, isolate_charge<6>, MO >,
+//                    arc_length_ratio< histogram<>, isolate_charge<7>, MO >,
+//                    arc_length_ratio< histogram<>, isolate_charge<8>, MO >,
+//                    arc_length_ratio< histogram<>, isolate_charge<9>, MO >
+//                                       >{} );
+//        histogram_checker_mc.push_back(
+//                TATOEchecker<
+//                    tof_ratio< histogram<>, no_requirement, MO >
+//                    tof_ratio< histogram<>, isolate_charge<1>, MO >,
+//                    tof_ratio< histogram<>, isolate_charge<2>, MO >,
+//                    tof_ratio< histogram<>, isolate_charge<3>, MO >,
+//                    tof_ratio< histogram<>, isolate_charge<4>, MO >,
+//                    tof_ratio< histogram<>, isolate_charge<5>, MO >,
+//                    tof_ratio< histogram<>, isolate_charge<6>, MO >,
+//                    tof_ratio< histogram<>, isolate_charge<7>, MO >,
+//                    tof_ratio< histogram<>, isolate_charge<8>, MO >,
+//                    tof_ratio< histogram<>, isolate_charge<9>, MO >
+//                                       >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    beta_ratio< histogram<>, no_requirement, MO >,
+                    beta_ratio< histogram<>, isolate_charge<1>, MO >,
+                    beta_ratio< histogram<>, isolate_charge<2>, MO >,
+                    beta_ratio< histogram<>, isolate_charge<3>, MO >,
+                    beta_ratio< histogram<>, isolate_charge<4>, MO >,
+                    beta_ratio< histogram<>, isolate_charge<5>, MO >,
+                    beta_ratio< histogram<>, isolate_charge<6>, MO >,
+                    beta_ratio< histogram<>, isolate_charge<7>, MO >,
+                    beta_ratio< histogram<>, isolate_charge<8>, MO >
+                             >{} );
+        histogram_checker_mc.push_back(
+                       TATOEchecker<
+                           clone_distribution< histogram<>, no_requirement, MO >,
+                           clone_distribution< histogram<>, isolate_charge<1>, MO >
+//                           clone_distribution< histogram<>, isolate_charge<2>, MO >,
+//                           clone_distribution< histogram<>, isolate_charge<3>, MO >,
+//                           clone_distribution< histogram<>, isolate_charge<4>, MO >,
+//                           clone_distribution< histogram<>, isolate_charge<5>, MO >,
+//                           clone_distribution< histogram<>, isolate_charge<6>, MO >,
+//                           clone_distribution< histogram<>, isolate_charge<7>, MO >,
+//                           clone_distribution< histogram<>, isolate_charge<8>, MO >
+                                   >{} );
+        histogram_checker_mc.push_back(
+                TATOEchecker<
+                    determination_coefficient_distribution< histogram<>, no_requirement, MO >
+                            >{} );
     }
     
 private:
@@ -621,7 +775,7 @@ private:
             auto charge = candidate.data->GetChargeZ();
             if(charge == 0) {continue;}
             
-            logger_m.add_header<1>("candidate");
+            logger_m.add_header<1, details::immutable_tag>("candidate");
             logger_m << "charge: " << charge << '\n';
             
 //            auto* data_h =  static_cast<TAMCntuPart*>( gTAGroot->FindDataDsc( "eveMc" )->Object() );
@@ -684,7 +838,8 @@ private:
             switch(charge){
                 case 1:
                 {
-                    auto light_ion_boost = 3;
+                    auto light_ion_boost = 2.5;
+//                    auto light_ion_boost = 2;
                     add_hypothesis(1, light_ion_boost);
                     add_hypothesis(1, light_ion_boost, 0.5);
 //                     light_ion_boost = 1.3;
@@ -702,7 +857,6 @@ private:
                 {
                     add_hypothesis(6);
                     add_hypothesis(7);
-                    add_hypothesis(8);
                     break;
                 }
                 case 4 :
@@ -750,6 +904,8 @@ private:
                 
         }
         
+        logger_m.freeze();
+//        logger_m.output();
         return hypothesis_c;
     }
     
@@ -795,6 +951,78 @@ private:
                                0,     pow(length_error_y, 2),      0,    0,
                                0,    0,   pow(track_slope_error_x, 2),   0,
                                0,    0,    0,   pow( track_slope_error_y, 2)  }}
+            },
+            chisquared{0}
+        };
+    }
+    
+    corrected_state generate_corrected_state( TAVTvertex const * vertex_ph,
+                                              TAVTtrack const * track_ph )
+    {
+        auto * transformation_h = static_cast<TAGgeoTrafo*>(
+                                     gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
+                                                            );
+        
+        auto start = transformation_h->FromVTLocalToGlobal( vertex_ph->GetPosition() );
+        auto error = vertex_ph->GetPosError();
+        auto error_x = error.X() != 0 ? error.X() : 1e-4;
+        auto error_y = error.Y() != 0 ? error.Y() : 1e-4;
+        
+        auto track_slope_x = track_ph->GetSlopeZ().X();
+        auto track_slope_y = track_ph->GetSlopeZ().Y();
+        
+        auto track_slope_error_x = track_ph->GetSlopeErrZ().X();
+        auto track_slope_error_y = track_ph->GetSlopeErrZ().Y();
+        
+//        std::cout << "errors: [" << error_x<< ", " << error_y << ", " << track_slope_error_x << ", " << track_slope_error_y <<"] \n" ;
+        
+        
+        using vector = typename underlying<state>::vector;
+        using covariance = typename underlying<state>::covariance;
+        
+        return corrected_state{
+            state{
+                evaluation_point{ start.Z() },
+                vector{{ start.X(), start.Y(), track_slope_x, track_slope_y }},
+                covariance{{ pow(error_x, 2  ),                 0,                           0,                              0,
+                                               0, pow(error_y, 2),                           0,                              0,
+                                               0,                 0, pow(track_slope_error_x, 2),                              0,
+                                               0,                 0,                           0,   pow( track_slope_error_y, 2) }}
+            },
+            chisquared{0}
+        };
+    }
+    
+    corrected_state generate_corrected_state( TAVTbaseCluster const * cluster_ph,
+                                              TAVTtrack const * track_ph )
+    {
+        auto * transformation_h = static_cast<TAGgeoTrafo*>(
+                                     gTAGroot->FindAction( TAGgeoTrafo::GetDefaultActName().Data() )
+                                                            );
+        
+        auto start = transformation_h->FromVTLocalToGlobal( cluster_ph->GetPositionG() );
+        auto error = cluster_ph->GetPosErrorG();
+
+        auto track_slope_x = track_ph->GetSlopeZ().X();
+        auto track_slope_y = track_ph->GetSlopeZ().Y();
+        
+        auto track_slope_error_x = track_ph->GetSlopeErrZ().X();
+        auto track_slope_error_y = track_ph->GetSlopeErrZ().Y();
+        
+//        std::cout << "errors: [" << error_x<< ", " << error_y << ", " << track_slope_error_x << ", " << track_slope_error_y <<"] \n" ;
+        
+        
+        using vector = typename underlying<state>::vector;
+        using covariance = typename underlying<state>::covariance;
+        
+        return corrected_state{
+            state{
+                evaluation_point{ start.Z() },
+                vector{{ start.X(), start.Y(), track_slope_x, track_slope_y }},
+                covariance{{ pow(error.X(), 2  ),                 0,                           0,                              0,
+                                               0, pow(error.Y(), 2),                           0,                              0,
+                                               0,                 0, pow(track_slope_error_x, 2),                              0,
+                                               0,                 0,                           0,   pow( track_slope_error_y, 2) }}
             },
             chisquared{0}
         };
@@ -1001,7 +1229,7 @@ private:
                 output_current_hypothesis();
                 // -----------------------------
             
-                ukf_m.step_length() = 1e-3;
+                ukf_m.step_length() = 5e-1;
             
                 auto s = make_state( leaf.get_value() );
                 auto fs_c = advance_reconstruction_impl( s, layer );
@@ -1045,7 +1273,7 @@ private:
             output_current_hypothesis();
             // -----------------------------
             
-            ukf_m.step_length() = 1e-3;
+            ukf_m.step_length() = 5e-1;
             
             auto s = make_state(leaf.get_value());
             
@@ -1080,10 +1308,12 @@ private:
         
         auto track_c = vertex_p.get_track_list( );
         for( auto& track : track_c ){
-            auto vertex_h = track.vertex();
-            auto first_h = track.first_cluster();
+            auto * vertex_h = track.vertex();
+//            auto first_h = track.first_cluster();
+            auto * track_h = track.get_underlying_track();
             
-            auto cs = generate_corrected_state( vertex_h, first_h );
+//            auto cs = generate_corrected_state( vertex_h, first_h );
+            auto cs = generate_corrected_state( vertex_h, track_h );
             auto fs = full_state{
                 std::move(cs),
                 data_handle<data_type>{nullptr},
@@ -1097,10 +1327,25 @@ private:
             // -----------------------------
             logger_m.add_header<1>( "vertex_track_reconstruction" );
             
+            if(vertex_h->GetValidity() < 0){
+                auto first_h = track.first_cluster();
+                auto cs = generate_corrected_state( first_h, track_h );
+                
+                auto fs = full_state{
+                    std::move(cs),
+                    data_handle<data_type>{first_h},
+                    step_register{},
+                    block_weight_register{ details::vertex_tag::block_weight }
+                };
+                
+                leaf_h = leaf_h->add_child( std::move(fs) );
+                
+                track.skip_first_layer();
+            }
             
             for( auto layer : track ){
                 
-                ukf_m.step_length() = 1e-3;
+                ukf_m.step_length() = 5e-1;
                 
                 auto s = make_state( leaf_h->get_value() );
                 auto fs_c = advance_reconstruction_impl( s, layer );
@@ -1189,7 +1434,7 @@ private:
                  output_current_hypothesis();
                  // -----------------------------
              
-                 ukf_m.step_length() = 1e-3;
+                 ukf_m.step_length() = 5e-1;
              
                  auto s = make_state( leaf.get_value() );
                  auto fs_c = advance_reconstruction_impl( s, layer );
@@ -1241,10 +1486,30 @@ private:
         std::for_each( candidate_c.begin(), candidate_c.end(),
                       [this, &ps_p, &enriched_c, &layer_p]( auto candidate_p )
                       {
-                            candidate_p.covariance(0,0) *= layer_p.cut_value( orientation::x{} );
-                            candidate_p.covariance(1,1) *= layer_p.cut_value( orientation::y{} );
-                            candidate_p.covariance = candidate_p.covariance* current_hypothesis_m.light_ion_boost;
-                          auto chi2_predicted = ukf_m.compute_chisquared(ps_p, candidate_p);
+//                            auto modified_covariance = candidate_p.covariance;
+//                            modified_covariance(0,0) *= layer_p.cut_value( orientation::x{} );
+//                            modified_covariance(1,1) *= layer_p.cut_value( orientation::y{} );
+//                            modified_covariance = modified_covariance* current_hypothesis_m.light_ion_boost;
+//                            auto modified_candidate = candidate_p;
+//                            modified_candidate.covariance = modified_covariance;
+//                            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, modified_candidate);
+            
+            auto modified_covariance = candidate_p.covariance;
+            modified_covariance(0,0) *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+            modified_covariance(1,1) *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+            auto modified_candidate = candidate_p;
+            modified_candidate.covariance = modified_covariance;
+            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, modified_candidate);
+            
+//            candidate_p.covariance(0,0) *= layer_p.cut_value( orientation::x{} );
+//            candidate_p.covariance(1,1) *= layer_p.cut_value( orientation::y{} );
+//            candidate_p.covariance = candidate_p.covariance* current_hypothesis_m.light_ion_boost;
+//            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, candidate_p);
+            
+//            candidate_p.covariance(0,0) *= pow( double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+//            candidate_p.covariance(1,1) *= pow( double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+//            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, candidate_p);
+            
                           enriched_c.push_back( make_enriched_candidate( std::move( candidate_p ) ,
                                                                          chisquared{chi2_predicted} )   );
                       }
@@ -1256,8 +1521,23 @@ private:
         
         for(auto iterator = enriched_c.begin() ; iterator != end ; ++iterator ){
             auto state = ukf_m.correct_state( ps_p, *iterator ); //should be sliced properly
-           
-            auto chisquared_corrected = ukf_m.compute_chisquared(state, *iterator ); //add parameter -> cut value ? // go back to prediction ?
+            
+//            auto modified_covariance = iterator->covariance;
+//            modified_covariance(0,0) *= layer_p.cut_value( orientation::x{} );
+//            modified_covariance(1,1) *= layer_p.cut_value( orientation::y{} );
+//            modified_covariance = modified_covariance* current_hypothesis_m.light_ion_boost;
+//            auto modified_candidate = *iterator;
+//            modified_candidate.covariance = modified_covariance;
+//            auto chisquared_corrected = ukf_m.compute_chisquared(state, modified_candidate);
+            
+            auto modified_covariance = iterator->covariance;
+            modified_covariance(0,0) *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+            modified_covariance(1,1) *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+            auto modified_candidate = *iterator;
+            modified_candidate.covariance = modified_covariance;
+            auto chisquared_corrected = ukf_m.compute_chisquared(state, modified_candidate);
+            
+//            auto chisquared_corrected = ukf_m.compute_chisquared(state, *iterator ); //add parameter -> cut value ? // go back to prediction ?
             auto distance = ukf_m.compute_distance( ps_p, state );
             
             auto cs = make_corrected_state( std::move(state),
@@ -1300,10 +1580,30 @@ private:
         std::for_each( candidate_c.begin(), candidate_end,
                       [this, &ps_p, &enriched_c, &layer_p]( candidate c_p )
                       {
-                            c_p.covariance(0,0) *= layer_p.cut_value( orientation::x{} );
-                            c_p.covariance(1,1) *= layer_p.cut_value( orientation::y{} );
-                            c_p.covariance = c_p.covariance * current_hypothesis_m.light_ion_boost;
-                            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, c_p);
+//            auto modified_covariance = c_p.covariance;
+//            modified_covariance(0,0) *= layer_p.cut_value( orientation::x{} );
+//            modified_covariance(1,1) *= layer_p.cut_value( orientation::y{} );
+//            modified_covariance = modified_covariance* current_hypothesis_m.light_ion_boost;
+//            auto modified_candidate = c_p;
+//            modified_candidate.covariance = modified_covariance;
+//            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, modified_candidate);
+            
+            auto modified_covariance = c_p.covariance;
+            modified_covariance(0,0) *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+            modified_covariance(1,1) *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+            auto modified_candidate = c_p;
+            modified_candidate.covariance = modified_covariance;
+            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, modified_candidate);
+            
+//            c_p.covariance(0,0) *= layer_p.cut_value( orientation::x{} );
+//            c_p.covariance(1,1) *= layer_p.cut_value( orientation::y{} );
+//            c_p.covariance = c_p.covariance* current_hypothesis_m.light_ion_boost;
+//            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, c_p);
+            
+//            c_p.covariance(0,0) *= pow( double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+//            c_p.covariance(1,1) *= pow( double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+//            auto chi2_predicted = ukf_m.compute_chisquared(ps_p, c_p);
+            
                             enriched_c.push_back( make_enriched_candidate( std::move( c_p ) ,
                                                                             chisquared{chi2_predicted} )   );
                       }
@@ -1322,7 +1622,23 @@ private:
         for(auto iterator = enriched_c.begin() ; iterator != enriched_end ; ++iterator ){
             auto state = ukf_m.correct_state( ps_p, *iterator ); //should be sliced properly
             
-            auto chisquared_corrected = ukf_m.compute_chisquared(state, *iterator );
+//            auto modified_covariance = iterator->covariance;
+//            modified_covariance(0,0) *= layer_p.cut_value( orientation::x{} );
+//            modified_covariance(1,1) *= layer_p.cut_value( orientation::y{} );
+//            modified_covariance = modified_covariance* current_hypothesis_m.light_ion_boost;
+//            auto modified_candidate = *iterator;
+//            modified_candidate.covariance = modified_covariance;
+//            auto chisquared_corrected = ukf_m.compute_chisquared(state, modified_candidate);
+            
+            auto modified_covariance = iterator->covariance;
+            modified_covariance(0,0) *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+            modified_covariance(1,1) *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+            auto modified_candidate = *iterator;
+            modified_candidate.covariance = modified_covariance;
+            auto chisquared_corrected = ukf_m.compute_chisquared(state, modified_candidate);
+//
+//            auto chisquared_corrected = ukf_m.compute_chisquared(state, *iterator );
+            
             auto distance = ukf_m.compute_distance( ps_p, state );
             
             auto cs = make_corrected_state( std::move(state),
@@ -1352,11 +1668,30 @@ private:
         logger_m.add_sub_header(  "confront" );
         
         auto c = layer_p.get_candidate();
-        c.covariance(0,0) *= layer_p.cut_value( orientation::x{} );
-        c.covariance(1,1) *= layer_p.cut_value( orientation::y{} );
-        c.covariance = c.covariance*current_hypothesis_m.light_ion_boost;
-//        c.covariance = c.covariance * layer_p.cut;
-        auto chi2_predicted = ukf_m.compute_chisquared(ps_p, c);
+//        auto modified_covariance = c.covariance;
+//        modified_covariance(0,0) *= layer_p.cut_value( orientation::x{} );
+//        modified_covariance(1,1) *= layer_p.cut_value( orientation::y{} );
+//        modified_covariance = modified_covariance* current_hypothesis_m.light_ion_boost;
+//        auto modified_candidate = c;
+//        modified_candidate.covariance = modified_covariance;
+//        auto chi2_predicted = ukf_m.compute_chisquared(ps_p, modified_candidate);
+        
+        auto modified_covariance = c.covariance;
+        modified_covariance(0,0) *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+        modified_covariance(1,1) *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+        auto modified_candidate = c;
+        modified_candidate.covariance = modified_covariance;
+        auto chi2_predicted = ukf_m.compute_chisquared(ps_p, modified_candidate);
+        
+//        c.covariance(0,0) *= layer_p.cut_value( orientation::x{} );
+//        c.covariance(1,1) *= layer_p.cut_value( orientation::y{} );
+//        c.covariance = c.covariance* current_hypothesis_m.light_ion_boost;
+//        auto chi2_predicted = ukf_m.compute_chisquared(ps_p, c);
+        
+//        c.covariance(0,0) *= pow( double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+//        c.covariance(1,1) *= pow( double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+//        auto chi2_predicted = ukf_m.compute_chisquared(ps_p, c);
+        
         enriched_candidate ec = make_enriched_candidate( std::move( c) ,
                                                          chisquared{chi2_predicted}   );
         
@@ -1366,7 +1701,9 @@ private:
         if( pass_selection(ec, ps_p, layer_p) ){
             auto state = ukf_m.correct_state( ps_p, ec ); //should be sliced properly
             
-            auto chisquared_corrected = ukf_m.compute_chisquared(state, ec );
+            auto chisquared_corrected = ukf_m.compute_chisquared(state, modified_candidate);
+//            auto chisquared_corrected = ukf_m.compute_chisquared(state, ec );
+            
             auto distance = ukf_m.compute_distance( ps_p, state );
             
             auto cs = make_corrected_state( std::move(state),
@@ -1396,7 +1733,7 @@ private:
         auto error = ec_p.data->GetPosErrorG();
         logger_m << "error: (" << error.X() << ", " << error.Y() << ")\n";
 
-        auto theta = atan2(ec_p.vector(0,0) - ps_p.vector(0,0), ec_p.vector(1,0) - ps_p.vector(1,0));
+        auto theta = atan2(ec_p.vector(1,0) - ps_p.vector(1,0), ec_p.vector(0,0) - ps_p.vector(0,0) );
         logger_m << "theta: " << theta << '\n';
         auto semi_major_axis = layer_p.cut_value(orientation::x{}) * current_hypothesis_m.light_ion_boost * error.X();
         auto semi_minor_axis = layer_p.cut_value(orientation::y{}) * current_hypothesis_m.light_ion_boost * error.Y();
@@ -1408,13 +1745,9 @@ private:
                                semi_major_axis * semi_major_axis * sin(theta) * sin(theta));
         
         auto mps = split_half( ps_p.vector , details::row_tag{});
-//        std::uniform_real_distribution<float> distribution(0, 1.);
-//        mps.first(0,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.X() * distribution( generator_m );
-//        mps.first(1,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.Y() * distribution( generator_m );
-//        mps.first(0,0) += layer_p.cut_value(orientation::x{}) * current_hypothesis_m.light_ion_boost * error.X();
-//        mps.first(1,0) += layer_p.cut_value(orientation::y{}) * current_hypothesis_m.light_ion_boost * error.Y();
         mps.first(0,0) += ellipse_x;
         mps.first(1,0) += ellipse_y;
+        
         
         using candidate = typename underlying<Enriched>::candidate;
         using vector = typename underlying<candidate>::vector;
@@ -1422,11 +1755,17 @@ private:
         using measurement_matrix = typename underlying<candidate>::measurement_matrix;
         using data = typename underlying<candidate>::data_type;
         
+        auto modified_covariance = ec_p.covariance;
+//        modified_covariance(0,0) *= layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost;
+//        modified_covariance(1,1) *= layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost;
         
+        modified_covariance(0,0) *= pow(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost, 2);
+        modified_covariance(1,1) *= pow(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost, 2);
         
         auto cutter_candidate = candidate{
             vector{ std::move(mps.first) },
-            covariance{ ec_p.covariance },
+//            covariance{ ec_p.covariance },
+            covariance{modified_covariance},
             measurement_matrix{ ec_p.measurement_matrix },
             data_handle<data>{ ec_p.data }
         };
@@ -1447,6 +1786,7 @@ private:
         return ec_p.prediction < cutter_chisquared;
     }
     
+    
     template<class Enriched>
     bool pass_selection( Enriched const& ec_p,
                          state const& ps_p,
@@ -1456,30 +1796,34 @@ private:
         
         auto error = ec_p.data->GetPosErrorG();
         matrix<1,1> v = ec_p.measurement_matrix * ps_p.vector;
-        std::uniform_real_distribution<float> distribution(0, 1.);
-        if( ec_p.measurement_matrix(0,0) > 0 ) {
-            logger_m << " -- x orientation -- \n";
-            logger_m << "error: (" << error.X() << ", " << error.Y() << ")\n";
-//            v(0,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.X() * distribution(generator_m);
-            v(0,0) += layer_p.cut_value(orientation::x{}) * current_hypothesis_m.light_ion_boost * error.X();
-//            v(0,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.Y();
-        }
-        else {
-            logger_m << " -- y orientation -- \n";
-            logger_m << "error: (" << error.X() << ", " << error.Y() << ")\n";
-//            v(0,0) += layer_p.cut * current_hypothesis_m.light_ion_boost * error.Y() * distribution(generator_m);
-            v(0,0) += layer_p.cut_value(orientation::y{}) * current_hypothesis_m.light_ion_boost * error.Y();
-        }
-        
+
         using candidate = typename underlying<Enriched>::candidate;
         using vector = typename underlying<candidate>::vector;
         using covariance = typename underlying<candidate>::covariance;
         using measurement_matrix = typename underlying<candidate>::measurement_matrix;
         using data = typename underlying<candidate>::data_type;
         
+        auto modified_covariance = ec_p.covariance;
+        
+        if( ec_p.measurement_matrix(0,0) > 0 ) {
+            logger_m << " -- x orientation -- \n";
+            logger_m << "error: (" << error.X() << ", " << error.Y() << ")\n";
+            v(0,0) += layer_p.cut_value(orientation::x{}) * current_hypothesis_m.light_ion_boost * error.X();
+//            modified_covariance(0,0) *= layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost;
+            modified_covariance(0,0) *= pow(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost, 2);
+        }
+        else {
+            logger_m << " -- y orientation -- \n";
+            logger_m << "error: (" << error.X() << ", " << error.Y() << ")\n";
+            v(0,0) += layer_p.cut_value(orientation::y{}) * current_hypothesis_m.light_ion_boost * error.Y();
+//            modified_covariance(0,0) *= layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost;
+            modified_covariance(0,0) *= pow(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost, 2);
+        }
+        
         auto cutter_candidate = candidate{
             vector{ std::move(v) },
-            covariance{ ec_p.covariance },
+//                        covariance{ ec_p.covariance },
+            covariance{modified_covariance},
             measurement_matrix{ ec_p.measurement_matrix },
             data_handle<data>{ ec_p.data }
         } ;
@@ -1518,7 +1862,8 @@ private:
         for( auto value_i = value_c.begin() +1 ; value_i != value_c.end(); ++value_i){
             auto const& value = *value_i;
 //            std::cout << value.prediction << " ";
-            total_chisquared += value.prediction;
+//            total_chisquared += value.prediction;
+            total_chisquared += value.correction;
 //            total_chisquared += value.distance;
 //            total_chisquared += value.prediction/value.correction;
         }
@@ -1535,7 +1880,6 @@ private:
     
     std::vector< track > shear_suboptimal_tracks( std::vector<track>&& track_pc )
     {
-        
         std::vector< track > final_track_c;
         final_track_c.reserve( track_pc.size() );
         
@@ -1551,70 +1895,36 @@ private:
                 end_point_ch.push_back( end_point_h );
             }
         }
+//        std::cout << "track_size: " << track_pc.size() << std::endl;
+        
+//        std::cout << "looping on endpoints" << std::endl;
 
-//        std::cout<< "tracks: " << track_pc.size() << "\n";
+//        std::cout<< "total: " << end_point_ch.size() << "\n";
         for( auto const * end_point_h : end_point_ch ){
-            
+//            std::cout << "partionning: " << std::endl;
             auto end_iterator = std::partition( track_pc.begin(), track_pc.end(),
                                                 [&end_point_h](track const & track_p)
                                                 { return track_p.get_clusters().back().data == end_point_h; } );
+//            std::cout << "selected: " << std::distance( track_pc.begin(), end_iterator ) << std::endl;
+//            std::for_each(track_pc.begin(), end_iterator,
+//                      [](track const & track_p)
+//                          { std::cout << track_p.hypothesis.properties.charge << "/" << track_p.hypothesis.properties.nucleon_number << " -> " << track_p.total_chisquared << "\n";});
             
-//            std::cout << std::distance( track_pc.begin(), end_iterator ) << " selected" << std::endl;
+            
+//            std::cout << "sorting: " <<std::endl;
             std::sort( track_pc.begin(), end_iterator,
                        [](track const & track1_p, track const & track2_p)
-                      { return track1_p.total_chisquared < track2_p.total_chisquared ; } );  //change this to pred/corr ? and see impact
-            // r-r / (R + R)
+                      {  return track1_p.total_chisquared < track2_p.total_chisquared ; } );  //change this to pred/corr ? and see impact
 
+//            std::cout << "selecting" << std::endl;
             final_track_c.push_back( track_pc.front() );
             final_track_c.back().clone = std::distance(track_pc.begin(), end_iterator);
-//            auto const& reconstructible = matcher_m.get_reconstructible_track(end_point_h);
-//            if( reconstructible.properties.nucleon_number !=0 &&
-//               final_track_c.back().clone > 1 &&
-//                reconstructible.properties.nucleon_number != track_pc.begin()->hypothesis.properties.nucleon_number){
-//                logger_m.freeze_everything();
-//                logger_m.output();
-//                std::cout << "event " << event << " cloning_region: \n";
-//
-//            std::cout << "z/a : " << reconstructible.properties.charge << "/"  << reconstructible.properties.nucleon_number;
-//            std::cout << " -> mc_index: [";
-//            for(auto const& index : reconstructible.get_indices()){ std::cout << index << " "; }
-//            std::cout << "]\n";
-//
-//            std::cout << "clones: " << final_track_c.back().clone << '\n';
-//            std::cout << "sheared_candidates: \n";
-//            for( auto track_i = track_pc.begin(); track_i < end_iterator; ++track_i){
-//                std::cout << track_i->hypothesis.properties.charge << "/" << track_i->hypothesis.properties.nucleon_number << " -> " << track_i->total_chisquared << "\n";
-//                for( auto const& cluster : track_i->get_clusters()){
-//                    if( cluster.data ){
-//                    for( auto i{0}; i < cluster.data->GetMcTracksN(); ++i){
-//                        std::cout << "       " << cluster.data->GetMcTrackIdx(i);
-//                    }
-//                    std::cout << ", ";
-//                    }
-//                }
-//                std::cout << "\n";
-//                for( auto const& cluster : track_i->get_clusters()){
-//                    if( cluster.data ){
-//                        std::cout << cluster.prediction << ", ";
-//                    }
-//                }
-//                std::cout << "\n";
-//                for( auto const& cluster : track_i->get_clusters()){
-//                    if( cluster.data ){
-//                        std::cout << cluster.correction << ", ";
-//                    }
-//                }
-//                std::cout << "\n";
-//                for( auto const& cluster : track_i->get_clusters()){
-//                    if( cluster.data ){
-//                        std::cout << cluster.distance << ", ";
-//                    }
-//                }
-//                std::cout << "\n";
-//            }
-//            }
+            
+//            std::cout << "erasing" << std::endl;
             track_pc.erase(track_pc.begin(), end_iterator);
         }
+        
+//        std::cout << "all done" << std::endl;
         
         return final_track_c;
     }
@@ -1643,6 +1953,7 @@ private:
         for( auto&& track : track_pc ){
             auto size = track.get_clusters().size();
             if( size < 4 || size > 16 ){
+                std::cout << "old method is used\n";
                 auto arc_length{0};
                 auto cluster_c = track.get_clusters();
                 for( auto && cluster : cluster_c ){
@@ -1702,9 +2013,10 @@ private:
             auto stepper = make_stepper<data_rkf45>( std::move(ode) );
             auto end_point = track.get_clusters().back().evaluation_point;
             auto os = operating_state<double, 1>{ track.get_clusters().front().evaluation_point, 0 };
-            stepper.specify_tolerance(1e-5);
+//            stepper.specify_tolerance(1e-5);
+            stepper.specify_tolerance(1e-13);
         
-            auto step = 1e-3;
+            auto step = 5e-1;
             
             while( os.evaluation_point + step < end_point ){
                 auto step_result = stepper.step( std::move(os), step );
@@ -1720,7 +2032,7 @@ private:
     }
     
     template<std::size_t N, std::size_t Order>
-    std::array<double, Order> compute_polynomial_parameters_x( std::vector<full_state> const& cluster_pc ) const {
+    void compute_polynomial_parameters_x( std::vector<full_state> const& cluster_pc, polynomial_fit_parameters& result_p ) const {
         //fit in x/y
         //retrieve fit parameters
         
@@ -1729,22 +2041,15 @@ private:
         std::array<double, N * N> weight_x_c{};
         
         std::size_t index{0};
-        for( auto cluster_i{cluster_pc.begin()+1}; cluster_i != cluster_pc.end()-1 ; ++cluster_i ){
+        
+        for( auto cluster_i{cluster_pc.begin()+1}; cluster_i != cluster_pc.end() ; ++cluster_i ){
+//        for( auto cluster_i{cluster_pc.begin()}; cluster_i != cluster_pc.end() ; ++cluster_i ){
             auto * msd_h =dynamic_cast<TAMSDcluster const*>( cluster_i->data );
-            if( msd_h ){
-                if( !msd_h->GetPlaneView() ){
-                    z_c[index] = cluster_i->evaluation_point;
-                    x_c[index] = cluster_i->data->GetPositionG().X();
-                    weight_x_c[index + N * index] = pow( cluster_i->data->GetPosErrorG().X(), 2 );
-                    ++index;
-                }
-            } else {
-                z_c[index] = cluster_i->evaluation_point;
-                x_c[index]  = cluster_i->data->GetPositionG().X();
-                weight_x_c[index + index * N] = cluster_i->data->GetPosErrorG().X();
-                
-                ++index;
-            }
+            if( msd_h && msd_h->GetPlaneView() ){ continue; } //check if msd is in correct orientation
+            z_c[index] = cluster_i->evaluation_point;
+            x_c[index] = cluster_i->vector(0,0);
+            weight_x_c[index + index * N] = cluster_i->covariance(0,0);
+            ++index;
         }
         
         
@@ -1766,12 +2071,20 @@ private:
         auto const part1_x = form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) );
         auto const part2_x = expr::compute( transpose( regressor_x ) * weight_x * observation_x );
         auto const parameter_x = expr::compute( part1_x * part2_x );
+        
+//        auto const centering = expr::compute( make_identity_matrix<N>() - 1./N * make_custom_matrix<N,N>([](std::size_t){return 1.;}) );
+//        auto const projection_x = expr::compute( regressor_x * form_inverse( expr::compute( transpose(regressor_x) * regressor_x ) ) * transpose(regressor_x) );
+//        double const dcx_p1 = expr::compute( transpose( observation_x) * transpose(projection_x) * expr::compute(centering * projection_x * observation_x ));
+//        double const dcx_p2 = 1./ expr::compute( transpose(observation_x) * centering * observation_x );
+//        double determination_coefficient_x = dcx_p1 * dcx_p2 ;
 
-        return std::move(parameter_x.data());
+        result_p.x = parameter_x.data();
+//        result_p.determination_coefficient_x = determination_coefficient_x;
+
     }
     
     template<std::size_t N, std::size_t Order>
-    std::array<double, Order> compute_polynomial_parameters_y( std::vector<full_state> const& cluster_pc ) const {
+    void compute_polynomial_parameters_y( std::vector<full_state> const& cluster_pc, polynomial_fit_parameters& result_p ) const {
         
         //fit in x/y
         //retrieve fit parameters
@@ -1780,22 +2093,14 @@ private:
         std::array<double, N * N> weight_y_c{};
         
         std::size_t index{0};
-        for( auto cluster_i{cluster_pc.begin()+1}; cluster_i != cluster_pc.end()-1 ; ++cluster_i ){
+        for( auto cluster_i{cluster_pc.begin()+1}; cluster_i != cluster_pc.end() ; ++cluster_i ){
+//        for( auto cluster_i{cluster_pc.begin()}; cluster_i != cluster_pc.end() ; ++cluster_i ){
             auto * msd_h =dynamic_cast<TAMSDcluster const*>( cluster_i->data );
-            if( msd_h ){
-                if( msd_h->GetPlaneView() ){
-                    z_c[index] = cluster_i->evaluation_point;
-                    y_c[index] = cluster_i->data->GetPositionG().Y();
-                    weight_y_c[index + N * index] = pow( cluster_i->data->GetPosErrorG().Y(), 2 );
-                    ++index;
-                }
-            } else {
-                z_c[index] = cluster_i->evaluation_point;
-                y_c[index] = cluster_i->data->GetPositionG().Y();
-                weight_y_c[index + index * N] = cluster_i->data->GetPosErrorG().Y();
-                
-                ++index;
-            }
+            if( msd_h && !msd_h->GetPlaneView() ){ continue; }
+            z_c[index] = cluster_i->evaluation_point;
+            y_c[index] = cluster_i->vector(1,0);
+            weight_y_c[index + index * N] = cluster_i->covariance(1,1);
+            ++index;
         }
 
         constexpr std::size_t const order_y = Order;
@@ -1816,8 +2121,15 @@ private:
         auto const part1_y = form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) );
         auto const part2_y = expr::compute( transpose( regressor_y ) * weight_y * observation_y );
         auto const parameter_y = expr::compute( part1_y * part2_y );
+        
+//        auto const centering = expr::compute( make_identity_matrix<N>() - 1./N * make_custom_matrix<N,N>([](std::size_t){return 1.;}) );
+//        auto const projection_y = expr::compute( regressor_y * form_inverse( expr::compute( transpose(regressor_y) * regressor_y ) ) * transpose(regressor_y) );
+//        double const dcy_p1 = expr::compute( transpose( observation_y) * transpose(projection_y) * expr::compute(centering * projection_y * observation_y));
+//        double const dcy_p2 = 1./ expr::compute( transpose(observation_y) * centering * observation_y );
+//        double determination_coefficient_y = dcy_p1 * dcy_p2;
 
-        return std::move(parameter_y.data());
+        result_p.y = parameter_y.data();
+//        result_p.determination_coefficient_y = determination_coefficient_y;
     }
     
     template<std::size_t N>
@@ -1895,7 +2207,7 @@ private:
 //        double determination_coefficient_y = dcy_p1 * dcy_p2;
 //        (determination_coefficient_y > 0.95) ? ++over_counter_y : ++below_counter_y;
         
-        return {std::move(parameter_x.data()), std::move(parameter_y.data())};
+        return {std::move(parameter_x.data()), 0, std::move(parameter_y.data()), 0};
     }
     
     constexpr std::vector< track > compute_track_parameters( std::vector<track>&& track_pc ) const {
@@ -1936,27 +2248,37 @@ private:
                 }
             }
             polynomial_fit_parameters result;
-            std::size_t const x_cluster_count = cluster_c.size() -2 - msd_cluster_y_counter;
+//            std::size_t const x_cluster_count = cluster_c.size() -2 - msd_cluster_y_counter; //-tof -vertex - msd_cluster_y
+//            std::size_t const x_cluster_count = cluster_c.size() - msd_cluster_y_counter; // -msd_cluster_y
+//            std::size_t const x_cluster_count = cluster_c.size(); //all
+            std::size_t const x_cluster_count = cluster_c.size() -1 - msd_cluster_y_counter; //-tof/-vertex
             switch( x_cluster_count ){
-                case 4:{result.x = compute_polynomial_parameters_x<4, 4>( cluster_c ); break;}
-                case 5:{result.x = compute_polynomial_parameters_x<5, 4>( cluster_c ); break;}
-                case 6:{result.x = compute_polynomial_parameters_x<6, 4>( cluster_c ); break;}
-                case 7:{result.x = compute_polynomial_parameters_x<7, 4>( cluster_c ); break;}
-                case 8:{result.x = compute_polynomial_parameters_x<8, 4>( cluster_c ); break;}
-                case 9:{result.x = compute_polynomial_parameters_x<9, 4>( cluster_c ); break;}
-                case 10:{result.x = compute_polynomial_parameters_x<10, 4>( cluster_c ); break;}
-                case 11:{result.x = compute_polynomial_parameters_x<11, 4>( cluster_c ); break;}
+                case 4:{compute_polynomial_parameters_x<4, 4>( cluster_c, result ); break;}
+                case 5:{compute_polynomial_parameters_x<5, 4>( cluster_c, result ); break;}
+                case 6:{compute_polynomial_parameters_x<6, 4>( cluster_c, result ); break;}
+                case 7:{compute_polynomial_parameters_x<7, 4>( cluster_c, result ); break;}
+                case 8:{compute_polynomial_parameters_x<8, 4>( cluster_c, result ); break;}
+                case 9:{compute_polynomial_parameters_x<9, 4>( cluster_c, result ); break;}
+                case 10:{compute_polynomial_parameters_x<10, 4>( cluster_c, result ); break;}
+                case 11:{compute_polynomial_parameters_x<11, 4>( cluster_c, result ); break;}
+                case 12:{compute_polynomial_parameters_x<12, 4>( cluster_c, result ); break;}
+                case 13:{compute_polynomial_parameters_x<13, 4>( cluster_c, result ); break;}
             }
-            std::size_t const y_cluster_count = cluster_c.size() -2 - msd_cluster_x_counter;
+//            std::size_t const y_cluster_count = cluster_c.size() -2 - msd_cluster_x_counter;//-tof -vertex -msd_cluster_x
+//            std::size_t const y_cluster_count = cluster_c.size()  - msd_cluster_x_counter; //-msd_cluster_x
+//            std::size_t const y_cluster_count = cluster_c.size(); //all
+            std::size_t const y_cluster_count = cluster_c.size() -1 - msd_cluster_x_counter; //-tof
             switch( y_cluster_count ){
-                case 4:{result.y = compute_polynomial_parameters_y<4, 2>( cluster_c ); break;}
-                case 5:{result.y = compute_polynomial_parameters_y<5, 2>( cluster_c ); break;}
-                case 6:{result.y = compute_polynomial_parameters_y<6, 2>( cluster_c ); break;}
-                case 7:{result.y = compute_polynomial_parameters_y<7, 2>( cluster_c ); break;}
-                case 8:{result.y = compute_polynomial_parameters_y<8, 2>( cluster_c ); break;}
-                case 9:{result.y = compute_polynomial_parameters_y<9, 2>( cluster_c ); break;}
-                case 10:{result.y = compute_polynomial_parameters_y<10, 2>( cluster_c ); break;}
-                case 11:{result.y = compute_polynomial_parameters_y<11, 2>( cluster_c ); break;}
+                case 4:{compute_polynomial_parameters_y<4, 2>( cluster_c, result ); break;}
+                case 5:{compute_polynomial_parameters_y<5, 2>( cluster_c, result ); break;}
+                case 6:{compute_polynomial_parameters_y<6, 2>( cluster_c, result ); break;}
+                case 7:{compute_polynomial_parameters_y<7, 2>( cluster_c, result ); break;}
+                case 8:{compute_polynomial_parameters_y<8, 2>( cluster_c, result ); break;}
+                case 9:{compute_polynomial_parameters_y<9, 2>( cluster_c, result ); break;}
+                case 10:{compute_polynomial_parameters_y<10, 2>( cluster_c, result ); break;}
+                case 11:{compute_polynomial_parameters_y<11, 2>( cluster_c, result ); break;}
+                case 12:{compute_polynomial_parameters_y<12, 2>( cluster_c, result ); break;}
+                case 13:{compute_polynomial_parameters_y<13, 2>( cluster_c, result ); break;}
             }
             track.parameters = std::move(result);
         }
@@ -1968,7 +2290,9 @@ private:
         for( auto && track : track_pc){
             double beam_speed = sqrt( pow(beam_energy_m*beam_mass_number_m, 2) + 2 * beam_mass_number_m * beam_mass_number_m * 931.5 * beam_energy_m )/(beam_mass_number_m * 931.5 + beam_mass_number_m * beam_energy_m) * 30;
             double additional_time = (track.get_clusters().front().evaluation_point - st_position_m)/beam_speed;
-            double tof = (static_cast<TATWpoint const *>(track.get_clusters().back().data)->GetToF() - additional_time);
+            double tof = (static_cast<TATWpoint const *>(track.get_clusters().back().data)->GetMeanTof() - additional_time);
+//            double tof = (static_cast<TATWpoint const *>(track.get_clusters().back().data)->GetToF() - additional_time);
+            if(tof < 0){ std::cerr << "Warning: time of flight is below zero\n";}
             track.tof = tof;
         }
         return std::move(track_pc);
@@ -1977,18 +2301,20 @@ private:
     constexpr std::vector< track > compute_momentum( std::vector<track>&& track_pc ) const {
         for( auto && track : track_pc){
             double beta = track.length/track.tof * 1./30;
+//            puts(__PRETTY_FUNCTION__);
+//            std::cout << "track_length: " << track.length << '\n' << "track_tof: " << track.tof << '\n';
             if(std::isnan(beta)){ std::cerr << "beta_is_nan: " << track.length << " - " << track.tof; }
-            if( beta < 1 && !std::isnan(beta)){
+            if( beta < 1 && beta > 0 && !std::isnan(beta)){
                 double gamma = 1./sqrt(1 - pow(beta, 2));
-//                track.mass = track.momentum/(931.5 * beta * gamma);
-                track.hypothesis.properties.momentum = track.nucleon_number * 931.5 * beta * gamma;
+                track.beta = beta;
                 track.momentum = track.nucleon_number * 931.5 * beta * gamma;
+                track.mass = track.momentum/(beta * gamma);
             }
         }
         return std::move( track_pc );
     }
     
-    std::vector< track > refine_hypotheses( std::vector<track>&& track_pc ) const {
+    std::vector< track > refine_hypotheses( std::vector<track>&& track_pc ) { 
 //        puts(__PRETTY_FUNCTION__);
         int charge{};
         double momentum{};
@@ -2016,8 +2342,8 @@ private:
                 }
                                                       );
         auto position_stepper = make_stepper<data_grkn56>( std::move(position_ode) );
-
-        position_stepper.specify_tolerance(1e-8);
+//        auto position_stepper = make_stepper<data_grkn4>( std::move(position_ode) );
+        position_stepper.specify_tolerance(1e-14);
 
 //        TFile file{"momentum_scan_ol.root", "UPDATE"};
 //        std::unique_ptr<TTree> tree_h{nullptr};
@@ -2045,21 +2371,32 @@ private:
                    track_p.parameters.x[1];
         };
         
+        
+        
         for( auto && track : track_pc ){
             charge = track.hypothesis.properties.charge;
             double relative_momentum = track.momentum / track.hypothesis.properties.nucleon_number;
             std::vector<score_and_momentum> refined_c;
+//            std::cout << "new_track\n";
 //
 //            for( double factor{ track.hypothesis.properties.nucleon_number - 1.5 > 0 ? track.hypothesis.properties.nucleon_number - 1.5 : 0.5 };
 //                 factor < track.hypothesis.properties.nucleon_number + 1.6 ;
 //                 factor+=0.1 ){
+            std::uniform_real_distribution<> distribution{(track.get_clusters().begin()+1)->evaluation_point, track.get_clusters().back().evaluation_point};
+            std::size_t const scoring_point_number = 10;
+            std::vector<double> scoring_point_c(scoring_point_number);
+            for(auto i{0}; i < scoring_point_number; ++i){ scoring_point_c.push_back( distribution(random_generator_m)); }
+            std::sort( scoring_point_c.begin(), scoring_point_c.end());
+            
             for( double factor{ track.hypothesis.properties.nucleon_number - 2 > 0 ? track.hypothesis.properties.nucleon_number - 2 : 0.5 };
                  factor < track.hypothesis.properties.nucleon_number + 2.05 ;
-                 factor+=0.01 ){
+                 factor+=0.05 ){
                 momentum = factor * relative_momentum;
                 if(momentum < 150){  continue; }
+//                std::cout << "momentum: " << momentum << '\n';
 
-                auto starting_point = track.get_clusters().front();
+                auto starting_point = *(track.get_clusters().begin() +1);
+//                auto starting_point = track.get_clusters().front();
                 auto position_os = operating_state< matrix<2,1>, 2> {
                     starting_point.evaluation_point,
 //                    {
@@ -2072,22 +2409,58 @@ private:
                     }
                 };
                 double const z = track.get_clusters().back().evaluation_point;
-                auto step = 1e-3;
-                while( position_os.evaluation_point + step < z ){
+                auto step = 5e-1;
+                
+//                std::cout << "current: [" << position_os.state(details::order_tag<0>{})(0,0) << ", ";
+//                std::cout << position_os.state(details::order_tag<0>{})(1,0) << "] - [";
+//                std::cout << position_os.state(details::order_tag<1>{})(0,0) << ", ";
+//                std::cout << position_os.state(details::order_tag<1>{})(1,0) << "] - ";
+//                std::cout << position_os.evaluation_point << '\n';
+                
+//                auto msd_last_z = (track.get_clusters().end()-1)->evaluation_point;
+                
+                double distance{0};
+                for( auto scoring_point : scoring_point_c ){
+                while( position_os.evaluation_point + step < scoring_point ){
                     auto step_result = position_stepper.step( std::move(position_os), step );
                     auto new_step_length = position_stepper.optimize_step_length(step, step_result.second);
                     step = ( new_step_length > 10 ) ?
                                 10 :
-                                (new_step_length < 1e-3) ? 1e-3 : new_step_length;
+                                (new_step_length < 5e-1) ? 5e-1 : new_step_length;
                     position_os = std::move(step_result.first);
+//                    std::cout << "step/position: " << step << "/" << position_os.evaluation_point << '\n';
+//                    std::cout << "current: [" << position_os.state(details::order_tag<0>{})(0,0) << ", ";
+//                    std::cout << position_os.state(details::order_tag<0>{})(1,0) << "] - [";
+//                    std::cout << position_os.state(details::order_tag<1>{})(0,0) << ", ";
+//                    std::cout << position_os.state(details::order_tag<1>{})(1,0) << "] - ";
+//                    std::cout << position_os.evaluation_point << '\n';
                 }
-                step = z - position_os.evaluation_point;
-                position_os = position_stepper.force_step( std::move(position_os), step );
+                    step = scoring_point - position_os.evaluation_point;
+                    position_os = position_stepper.force_step( std::move(position_os), step );
+//                    std::cout << "step/position: " << step << "/" << position_os.evaluation_point << '\n';
+                    
+                    matrix<2,1> position{ compute_x_l(position_os.evaluation_point, track), compute_y_l(position_os.evaluation_point, track)  };
+                    auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - position );
+                    distance += expr::compute( transpose(residuals) * residuals );
+                }
+//                step = z - position_os.evaluation_point;
+//                position_os = position_stepper.force_step( std::move(position_os), step );
 
+//                std::cout << "current: [" << position_os.state(details::order_tag<0>{})(0,0) << ", ";
+//                std::cout << position_os.state(details::order_tag<0>{})(1,0) << "] - [";
+//                std::cout << position_os.state(details::order_tag<1>{})(0,0) << ", ";
+//                std::cout << position_os.state(details::order_tag<1>{})(1,0) << "] - ";
+//                std::cout << position_os.evaluation_point << '\n';
+                
 //                matrix<2,1> position{ compute_x_l(position_os.evaluation_point, track), compute_y_l(position_os.evaluation_point, track)  };
-                matrix<2,1> position{track.get_clusters().back().vector(0, 0), track.get_clusters().back().vector(1,0)  };
-                auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - position );
-                double distance = sqrt( expr::compute( transpose(residuals) * residuals ) );
+//                matrix<2,1> position{track.get_clusters().back().vector(0, 0), track.get_clusters().back().vector(1,0)  };
+//                std::cout << "comparison_point:" << position(0,0) << ", " << position(1,0) << " - > " << compute_dxdz_l(starting_point.evaluation_point, track) << ", " << compute_dydz_l(starting_point.evaluation_point, track)<< '\n';
+//                std::cout << "comparison_point:" << position(0,0) << ", " << position(1,0) << " - > " << track.get_clusters().back().vector(2, 0) << ", " << track.get_clusters().back().vector(3, 0)<< '\n';
+                
+//                auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - position );
+//                double distance = sqrt( expr::compute( transpose(residuals) * residuals ) );
+//                std::cout << "distance: " << distance << '\n';
+                distance = sqrt(distance/(scoring_point_number-1));
                 refined_c.push_back( score_and_momentum{distance, momentum} );
             }
             
@@ -2108,10 +2481,9 @@ private:
             
             auto minimum_i = std::min_element( refined_c.begin(), refined_c.end(),
                                                [](auto const& v1_p, auto const& v2_p){ return v1_p.score < v2_p.score; } );
-            if( minimum_i == refined_c.end() ){ ++skip_counter; continue ;}
+            if( minimum_i == refined_c.end() ){ continue ;}
             if( std::distance(refined_c.begin(), minimum_i) < lower_limit || std::distance(minimum_i, refined_c.end()) < upper_limit ){
                 track.momentum = minimum_i->momentum;
-                ++minimal_counter;
             }
             else{
                 auto copy_l = [](auto begin_pi, auto end_pi, auto output_i, auto policy_pl){
@@ -2139,18 +2511,15 @@ private:
                 auto const projection = expr::compute( regressor * form_inverse( expr::compute( transpose(regressor) * regressor ) ) * transpose(regressor) );
                 auto const centering = expr::compute( make_identity_matrix<size>() - 1./size * make_custom_matrix<size,size>([](std::size_t){return 1.;}) );
                 double determination_coefficient = expr::compute( transpose( observation) * transpose(projection) * centering * projection * observation) * form_inverse( expr::compute( transpose(observation) * centering * observation ) ) ;
-                determination_coefficient > 0.95 ? ++over_counter : ++below_counter;
-//                R2 = determination_coefficient;
+                track.determination_coefficient_scan = determination_coefficient;
 
                 track.momentum = (-parameter(1,0)/(2*parameter(2,0)));
-                ++final_counter;
             }
 
-            double beta = track.length/track.tof * 1./30;
-            if( beta < 1){
-                double gamma = 1./sqrt(1 - pow(beta, 2));
-                track.nucleon_number = track.momentum/( 931.5 * beta * gamma );
-                track.mass = track.momentum/(beta * gamma);
+            if( track.beta < 1 ){
+                double gamma = 1./sqrt(1 - pow(track.beta, 2));
+                track.nucleon_number = std::round(track.momentum/( 931.5 * track.beta * gamma ));
+                track.mass = track.momentum/(track.beta * gamma);
             }
             
 //            tree_h->Fill();

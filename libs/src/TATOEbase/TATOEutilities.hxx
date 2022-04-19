@@ -73,14 +73,34 @@ struct particle_properties{
 
 struct polynomial_fit_parameters{
     std::array<double, 4> x;
+    double determination_coefficient_x;
     std::array<double, 2> y;
+    double determination_coefficient_y;
 };
 
+
+struct track_slope_parameters{
+    double x;
+    double y;
+    double delta_x;
+    double delta_y;
+};
+
+struct additional_parameters{
+    double theta;
+    double phi;
+    double length;
+    double tof;
+    double beta;
+};
+
+struct vertex_position{ double x; double y;};
 struct reconstructible_track{
     std::vector<int> const & get_indices() const { return index_c; }
     std::vector<int>& get_indices() { return index_c; }
     std::vector<int> index_c;
     particle_properties properties;
+    additional_parameters parameters;
 };
 
 
@@ -93,6 +113,8 @@ struct cluster{
     uint8_t opcode;
 };
 
+
+
 struct reconstructed_track{
     std::vector<cluster> cluster_c;
     std::vector<cluster> const& get_clusters() const { return cluster_c; }
@@ -101,7 +123,11 @@ struct reconstructed_track{
     double shearing_factor;
     polynomial_fit_parameters parameters;
     std::size_t clone_number{0};
-    double computed_momentum;
+    double length;
+    double tof;
+    double beta;
+//    additional_parameters parameters;
+    double determination_coefficient_scan;
 };
 
 struct reconstruction_module{

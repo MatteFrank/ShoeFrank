@@ -50,36 +50,12 @@ struct detector_properties {};
 namespace details{
 
 struct cut{
-//    constexpr friend cut operator+( cut lhs_p, int rhs_p){
-//        return (rhs_p < 0) ?
-//                    ((-rhs_p > static_cast<int>(lhs_p.value)) ? cut{1} : cut{lhs_p.value + rhs_p} ) :
-//                    cut{lhs_p.value + rhs_p};
-//    }
-//    constexpr friend cut operator-( cut lhs_p, int rhs_p){
-//        return (rhs_p > static_cast<int>(lhs_p.value)) ? cut{1} : cut{lhs_p.value - rhs_p};
-//    }
-//    constexpr friend cut operator+( cut lhs_p, unsigned int rhs_p){
-//        return cut{lhs_p.value + rhs_p};
-//    }
-//    constexpr friend cut operator-( cut lhs_p, unsigned int rhs_p){
-//        return (rhs_p > lhs_p.value) ? cut{1} : cut{lhs_p.value - rhs_p};
-//    }
-//    constexpr friend cut operator+( cut lhs_p, long unsigned int rhs_p){
-//        return cut{lhs_p.value + rhs_p};
-//    }
-//    constexpr friend cut operator-( cut lhs_p, long unsigned int rhs_p){
-//        return (rhs_p > lhs_p.value) ? cut{1} : cut{lhs_p.value - rhs_p};
-//    }
     constexpr cut& operator+=( int value_p ){
         (value_p < 0) ?
               ((-value_p > static_cast<int>(value-1)) ? (value=1) : value+=value_p ) :
               value+=value_p;
         return *this;
     }
-//    constexpr cut& operator+=( std::size_t value_p){
-//        value += value_p;
-//        return *this;
-//    }
     constexpr operator std::size_t () const { return value; }
     std::size_t value;
 };
@@ -96,14 +72,14 @@ struct vertex_tag{
     constexpr static uint8_t shift = 3;
     constexpr static double block_weight = 0.5;
     
-//    constexpr static cut_t default_cut_value{15 ,15};
-    constexpr static cut_t default_cut_value{20 ,20};
+//    constexpr static cut_t default_cut_value{15,15};
+//    constexpr static cut_t default_cut_value{20 ,20};
 //    constexpr static cut_t default_cut_value{25 ,25}; //old values
-//    constexpr static cut_t default_cut_value{25 ,8}; //16O200C2H4_effc
-//    constexpr static cut_t default_cut_value{22 ,9}; //16O200C2H4_massc
-//        constexpr static cut_t default_cut_value{15 ,15}; //16O200C2H4_massc
-//        constexpr static cut_t default_cut_value{20,8}; //16O200C2H4_momc
-//    constexpr static cut_t default_cut_value{25 ,16}; //12C200C_effc
+    
+//    constexpr static cut_t default_cut_value{17,21}; //16O200C2H4_basec
+//    constexpr static cut_t default_cut_value{18,13}; //16O200C_basec
+//    constexpr static cut_t default_cut_value{15 ,21}; //12C200C_basec
+    constexpr static cut_t default_cut_value{8, 9}; //16O400C_basec
 };
     
 struct it_tag{
@@ -116,15 +92,17 @@ struct it_tag{
     static constexpr uint8_t shift = 2;
     constexpr static double block_weight = 0.37;
 
-//    constexpr static cut_t default_cut_value{15,15,15,15}; //default scan
-    constexpr static cut_t default_cut_value{20,20,20,20}; //default scan
+//    constexpr static cut_t default_cut_value{5,5,5,5}; //default scan
+//    constexpr static cut_t default_cut_value{20,20,20,20}; //default scan
+//        constexpr static cut_t default_cut_value{30,30,30,30}; //default scan
+//    constexpr static cut_t default_cut_value{40,40,40,40}; //default scan
 //    constexpr static cut_t default_cut_value{50,50,51,51}; //old_values
-//    constexpr static cut_t default_cut_value{24,33,24,37}; //16O200C2H4_effc
-//    constexpr static cut_t default_cut_value{23,30,21,31}; //16O200C2H4_massc
-//        constexpr static cut_t default_cut_value{15,18,16,16}; //16O200C2H4_massc
-//    constexpr static cut_t default_cut_value{29,29,31,37}; //16O200C2H4_momc
-//    constexpr static cut_t default_cut_value{24,20,20,17}; //16O200C2H4_momc
-//    constexpr static cut_t default_cut_value{21,34,26,37}; //12C200C_effc
+    
+//    constexpr static cut_t default_cut_value{59, 49, 63, 61}; //16O200C2H4_basec,
+//    constexpr static cut_t default_cut_value{74, 42, 69, 67}; //16O200C_basec
+//    constexpr static cut_t default_cut_value{73, 51, 77, 41}; //12C200C_basec
+    constexpr static cut_t default_cut_value{39,29,32, 29}; //16O400C_basec
+
 };
 
 struct msd_tag{
@@ -137,16 +115,16 @@ struct msd_tag{
     static constexpr uint8_t shift = 1;
     constexpr static double block_weight = 0.08;
 
-//    constexpr static cut_t default_cut_value{20,25,12,19,3,6};  //16O200C2H4_effc
-//    constexpr static cut_t default_cut_value{15,15,15,15,15,15}; //default
-    constexpr static cut_t default_cut_value{20,20,20,20,20,20}; //default
+//    constexpr static cut_t default_cut_value{5,5,5,5,5,5}; //default
+//    constexpr static cut_t default_cut_value{20,20,20,20,20,20}; //default
+//    constexpr static cut_t default_cut_value{10,10,10,10,10,10}; //default
+    
 //    constexpr static cut_t default_cut_value{11,11,7,7,19,19}; //old_values
-//    constexpr static cut_t default_cut_value{17,25,12,19,6,8}; //16O200C2H4_massc
-//        constexpr static cut_t default_cut_value{15,15,13,12,15,15}; //16O200C2H4_massc
-
-//    constexpr static cut_t default_cut_value{22,19,12,19,3,12};  //16O200C2H4_momc
-//    constexpr static cut_t default_cut_value{23,20,20,18,20,15};  //16O200C2H4_momc
-//    constexpr static cut_t default_cut_value{20,20,19,21,20,19};  //12C200C_effc
+    
+//    constexpr static cut_t default_cut_value{6, 5, 3, 4, 2, 3};  //16O200C2H4_basec
+//    constexpr static cut_t default_cut_value{5,6,4,4,2,4};  //16O200C_basec
+//    constexpr static cut_t default_cut_value{9,6,6,4,4,2};  //12C200C_basec
+    constexpr static cut_t default_cut_value{4, 4, 5, 2, 6, 3};  //16O400C_basec
 };
 
 struct ms2d_tag{
@@ -171,12 +149,12 @@ struct tof_tag{
     static constexpr uint8_t shift = 0;
     constexpr static double block_weight = 0.05;
 
-    constexpr static cut_t default_cut_value{3,3}; //default
-//    constexpr static cut_t default_cut_value{7,3}; //16O200C2H4_effc
-//    constexpr static cut_t default_cut_value{11,2}; //16O200C2H4_massc
-//    constexpr static cut_t default_cut_value{6,2}; //16O200C2H4_momc
-//    constexpr static cut_t default_cut_value{1,3}; //16O200C2H4_momc
-//    constexpr static cut_t default_cut_value{4,5}; //16O200C2H4_effc
+//    constexpr static cut_t default_cut_value{3,3}; //default
+
+//    constexpr static cut_t default_cut_value{7,9}; //16O200C2H4_basec
+//    constexpr static cut_t default_cut_value{9,11}; //16O200C_basec
+//    constexpr static cut_t default_cut_value{12,15};  //12C200C_basec
+    constexpr static cut_t default_cut_value{5,10}; //16O400C_basec
 };
     
 template<class Tag>
@@ -360,13 +338,15 @@ struct track_list
             detector_m{ detector_p },
             vertex_mh{ vertex_ph },
             track_mh{track_ph} {}
-        iterator begin() { return iterator( *this, 0 ); }
+        iterator begin() { return iterator( *this, starting_cluster_m ); }
         iterator end()   { return iterator( *this, track_mh->GetClustersN() ); }
+        void skip_first_layer() { starting_cluster_m = 1; }
         auto const * first_cluster() const {
             return track_mh->GetCluster( track_mh->GetClustersN() -1 );
         }
         vertex_type const * vertex() const { return vertex_mh; }
         std::size_t size() const { return track_mh->GetClustersN(); }
+        track_type const* get_underlying_track() { return track_mh; }
         
     private:
         pseudo_layer form_layer( std::size_t index_p ) const
@@ -385,6 +365,7 @@ struct track_list
         }
         
     private:
+        std::size_t starting_cluster_m{0};
         Detector const & detector_m;
         vertex_type const * vertex_mh;
         track_type const * track_mh;
