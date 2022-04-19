@@ -124,7 +124,7 @@ public:
             for( auto const& index : layer.get_indices() ){ action_m.logger_m << index << " "; }
             action_m.logger_m << "\n";
         }
-        action_m.logger_m.freeze();
+//        action_m.logger_m.freeze();
     }
     
     void submit_reconstructible_track(candidate const& candidate_p)
