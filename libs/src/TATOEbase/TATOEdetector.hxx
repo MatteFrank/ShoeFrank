@@ -76,10 +76,10 @@ struct vertex_tag{
 //    constexpr static cut_t default_cut_value{20 ,20};
 //    constexpr static cut_t default_cut_value{25 ,25}; //old values
     
-//    constexpr static cut_t default_cut_value{17,21}; //16O200C2H4_basec
+    constexpr static cut_t default_cut_value{17,21}; //16O200C2H4_basec
 //    constexpr static cut_t default_cut_value{18,13}; //16O200C_basec
 //    constexpr static cut_t default_cut_value{15 ,21}; //12C200C_basec
-    constexpr static cut_t default_cut_value{8, 9}; //16O400C_basec
+//    constexpr static cut_t default_cut_value{8, 9}; //16O400C_basec
 };
     
 struct it_tag{
@@ -98,10 +98,10 @@ struct it_tag{
 //    constexpr static cut_t default_cut_value{40,40,40,40}; //default scan
 //    constexpr static cut_t default_cut_value{50,50,51,51}; //old_values
     
-//    constexpr static cut_t default_cut_value{59, 49, 63, 61}; //16O200C2H4_basec,
+    constexpr static cut_t default_cut_value{59, 49, 63, 61}; //16O200C2H4_basec,
 //    constexpr static cut_t default_cut_value{74, 42, 69, 67}; //16O200C_basec
 //    constexpr static cut_t default_cut_value{73, 51, 77, 41}; //12C200C_basec
-    constexpr static cut_t default_cut_value{39,29,32, 29}; //16O400C_basec
+//    constexpr static cut_t default_cut_value{39,29,32, 29}; //16O400C_basec
 
 };
 
@@ -121,10 +121,10 @@ struct msd_tag{
     
 //    constexpr static cut_t default_cut_value{11,11,7,7,19,19}; //old_values
     
-//    constexpr static cut_t default_cut_value{6, 5, 3, 4, 2, 3};  //16O200C2H4_basec
+    constexpr static cut_t default_cut_value{6, 5, 3, 4, 2, 3};  //16O200C2H4_basec
 //    constexpr static cut_t default_cut_value{5,6,4,4,2,4};  //16O200C_basec
 //    constexpr static cut_t default_cut_value{9,6,6,4,4,2};  //12C200C_basec
-    constexpr static cut_t default_cut_value{4, 4, 5, 2, 6, 3};  //16O400C_basec
+//    constexpr static cut_t default_cut_value{4, 4, 5, 2, 6, 3};  //16O400C_basec
 };
 
 struct ms2d_tag{
@@ -151,10 +151,10 @@ struct tof_tag{
 
 //    constexpr static cut_t default_cut_value{3,3}; //default
 
-//    constexpr static cut_t default_cut_value{7,9}; //16O200C2H4_basec
+    constexpr static cut_t default_cut_value{7,9}; //16O200C2H4_basec
 //    constexpr static cut_t default_cut_value{9,11}; //16O200C_basec
 //    constexpr static cut_t default_cut_value{12,15};  //12C200C_basec
-    constexpr static cut_t default_cut_value{5,10}; //16O400C_basec
+//    constexpr static cut_t default_cut_value{5,10}; //16O400C_basec
 };
     
 template<class Tag>
