@@ -21,32 +21,32 @@ public:
   virtual       ~TAMCflukaParser();
   
 public:
-  //! Get MC Stc hits
+  // Get MC Stc hits
   static TAMCntuHit*    GetStcHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  //! Get MC BM hits
+  // Get MC BM hits
   static TAMCntuHit*    GetBmHits( EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  //! Get MC VTX hits
+  // Get MC VTX hits
   static TAMCntuHit*    GetVtxHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  //! Get MC ITR hits
+  // Get MC ITR hits
   static TAMCntuHit*    GetItrHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  //! Get MC MSD hits
+  // Get MC MSD hits
   static TAMCntuHit*    GetMsdHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  //! Get MC TW hits
+  // Get MC TW hits
   static TAMCntuHit*    GetTwHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  //! Get MC CAL hits
+  // Get MC CAL hits
   static TAMCntuHit*    GetCalHits(EVENT_STRUCT* evStr, TAGdataDsc* p_ntuhit);
-  //! Get MC tracks
+  // Get MC tracks
   static TAMCntuPart*  GetTracks( EVENT_STRUCT* evStr, TAGdataDsc* p_ntutrck);
-  //! Get MC regions
+  // Get MC regions
   static TAMCntuRegion* GetRegions(EVENT_STRUCT* evStr, TAGdataDsc* p_ntureg);
-  //! Get MC events
+  // Get MC events
   static TAMCntuEvent*  GetEvents(EVENT_STRUCT* evStr,  TAGdataDsc* p_ntuevt);
 
-  //! Find branches in tree
+  // Find branches in tree
   static void           FindBranches(TTree* rootTree, EVENT_STRUCT* evStr);
-  //! Create branches in tree
+  // Create branches in tree
   static void           CreateBranches(TTree* rootTree, EVENT_STRUCT* evStr, Bool_t reg = false);
-  //! Reset
+  // Reset
   static Bool_t         ResetEvent(EVENT_STRUCT* evStr);
 
 };

@@ -30,6 +30,7 @@ class TAVTbaseParGeo;
 class TAVTntuCluster : public TAGdata {
    
 protected:
+   //! Geometry parameter
    TAVTbaseParGeo*    fGeometry;        //! do NOT stored this pointer !
    TObjArray*         fListOfClusters;  ///< list of clusters
 
@@ -40,31 +41,31 @@ public:
    TAVTntuCluster();
    virtual          ~TAVTntuCluster();
    
-   //! Get cluster
+   // Get cluster
    TAVTcluster*       GetCluster(Int_t iSensor, Int_t i);
-   //! Get cluster const
+   // Get cluster const
    const TAVTcluster* GetCluster(Int_t iSensor, Int_t i) const;
-   //! Number of cluster per sensor
+   // Number of cluster per sensor
    Int_t              GetClustersN(Int_t iSensor)   const; 
    
-   //! Get list of clusters
+   // Get list of clusters
    TClonesArray*      GetListOfClusters(Int_t iSensor);
-   //! Get list of clusters const
+   // Get list of clusters const
    TClonesArray*      GetListOfClusters(Int_t iSensor) const;
    
-   //! Create new cluster (empty)
+   // Create new cluster (empty)
    TAVTcluster*       NewCluster(Int_t iSensor);
-   //! Create new cluster from a existing one
+   // Create new cluster from a existing one
    TAVTcluster*       NewCluster(TAVTcluster* clus, Int_t iSensor);
 
    //! Set par geo pointer
    void               SetParGeo(TAVTbaseParGeo* par) { fGeometry = par; }
-   //!  Setup clones
+   //  Setup clones
    virtual void       SetupClones();
-   //! Clear
+   // Clear
    virtual void       Clear(Option_t* opt="");
    
-   //! To stream
+   // To stream
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:

@@ -1,7 +1,6 @@
-
 /*!
- \class TAEDbaseInterface
- \brief  Base class for event display interface
+ \file TAEDbaseInterface.cxx
+ \brief   Implementation of TAEDbaseInterface.
  */
 
 #include "TMath.h"
@@ -36,6 +35,14 @@
 #include "TAGroot.hxx"
 #include "TAGparTools.hxx"
 
+/*!
+ \class TAEDbaseInterface
+ \brief  Base class for event display interface
+ */
+
+//! Class Imp
+ClassImp(TAEDbaseInterface)
+
 Bool_t TAEDbaseInterface::fgIsGeoLoaded   = false;
 Bool_t TAEDbaseInterface::fgIsDisplayed   = false;
 Bool_t TAEDbaseInterface::fgGeoDone       = false;
@@ -43,10 +50,12 @@ Bool_t TAEDbaseInterface::fgGUIFlag       = true;
 Bool_t TAEDbaseInterface::fgDisplayFlag   = true;
 Int_t  TAEDbaseInterface::fgMaxHistosN   =  4;
 
-ClassImp(TAEDbaseInterface)
-
 //__________________________________________________________
-//! Destructor
+//! Constructor
+//!
+//! \param[in] type data type 0 data, 1 MC
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
 TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName, Int_t runNumber)
 : TEveEventManager(),
   fExpName(expName),
@@ -128,6 +137,7 @@ TAEDbaseInterface::~TAEDbaseInterface()
 
 
 //__________________________________________________________
+//! Build default geometry
 void TAEDbaseInterface::BuildDefaultGeometry()
 {
    // World
@@ -138,6 +148,7 @@ void TAEDbaseInterface::BuildDefaultGeometry()
 }
 
 //__________________________________________________________
+//! Fill detector names
 void TAEDbaseInterface::FillDetectorNames()
 {
    std::map<TString, int>::iterator itr = fVolumeNames.begin();
@@ -154,6 +165,7 @@ void TAEDbaseInterface::FillDetectorNames()
 }
 
 //__________________________________________________________
+//! Define material
 void TAEDbaseInterface::DefineMaterial()
 {
    //hall: fill with vacuum
@@ -161,8 +173,10 @@ void TAEDbaseInterface::DefineMaterial()
    TGeoMedium   *med  = new TGeoMedium("Vacuum",1,mat);
 }
 
-
 //__________________________________________________________
+//! Set world medium
+//!
+//! \param[in] materialChoice material
 void TAEDbaseInterface::SetWordMedium(TString materialChoice)
 {
    // search the material by its name
@@ -171,18 +185,27 @@ void TAEDbaseInterface::SetWordMedium(TString materialChoice)
 }
 
 //__________________________________________________________
+//! Set world size Z
+//!
+//! \param[in] sizeZ size in Z-direction
 void TAEDbaseInterface::SetWorldSizeZ(Float_t sizeZ)
 {
    fWorldSizeZ  = sizeZ;
 }
 
 //__________________________________________________________
+//! Set world size XY
+//!
+//! \param[in] sizeXY size in XY-direction
 void TAEDbaseInterface::SetWorldSizeXY(Float_t sizeXY)
 {
    fWorldSizeXY = sizeXY;
 }
 
 //__________________________________________________________
+//! Load geometry file (not used)
+//!
+//! \param[in] fileName file name
 void TAEDbaseInterface::LoadGeometry(const Char_t* fileName)
 {
    if (fgIsGeoLoaded)
@@ -195,6 +218,10 @@ void TAEDbaseInterface::LoadGeometry(const Char_t* fileName)
 }
 
 //__________________________________________________________
+//! Add volume to top volume
+//!
+//! \param[in] volume volume to add
+//! \param[in] transf transformation matrix
 void TAEDbaseInterface::AddGeometry(TGeoVolume* volume, TGeoCombiTrans* transf)
 {
    static Int_t nb = 0;
@@ -214,6 +241,9 @@ void TAEDbaseInterface::AddGeometry(TGeoVolume* volume, TGeoCombiTrans* transf)
 }
 
 //__________________________________________________________
+//! Set volume transparency
+//!
+//! \param[in] transparency a given transparency
 void TAEDbaseInterface::SetTransparency(Char_t  transparency)
 {
    // refresh must be done by user
@@ -228,6 +258,9 @@ void TAEDbaseInterface::SetTransparency(Char_t  transparency)
 }
 
 //__________________________________________________________
+//! Show display
+//!
+//! \param[in] fileName data file name
 void TAEDbaseInterface::ShowDisplay(const TString fileName)
 {
    if (fgIsDisplayed) {
@@ -279,6 +312,7 @@ void TAEDbaseInterface::ShowDisplay(const TString fileName)
 }
 
 //__________________________________________________________
+//! Make GUI
 void TAEDbaseInterface::MakeGUI()
 {
    TEveBrowser* browser = gEve->GetBrowser();
@@ -475,6 +509,7 @@ void TAEDbaseInterface::MakeGUI()
 }
 
 //__________________________________________________________
+//! Clear info view
 void TAEDbaseInterface::ClearInfoView()
 {
    // clear log message
@@ -483,6 +518,7 @@ void TAEDbaseInterface::ClearInfoView()
 }
 
 //______________________________________________________________________________
+//! Update event bar
 void TAEDbaseInterface::UpdateEventBar()
 {
    // display current event number with variable frequency
@@ -501,6 +537,9 @@ void TAEDbaseInterface::UpdateEventBar()
 }
 
 //__________________________________________________________
+//! Loop over events
+//!
+//! \param[in] nEvts number of events to process
 void TAEDbaseInterface::LoopEvent(Int_t nEvts)
 {
    if (!fgGUIFlag) {
@@ -540,12 +579,14 @@ void TAEDbaseInterface::LoopEvent(Int_t nEvts)
 }
 
 //__________________________________________________________
+//! Process next event
 void TAEDbaseInterface::NextEvent()
 {   
    LoopEvent(1);
 }
 
 //__________________________________________________________
+//! Go to a given event
 void TAEDbaseInterface::SetEvent()
 {
    Int_t nEvts = fNumberEvent->GetIntNumber();
@@ -556,6 +597,7 @@ void TAEDbaseInterface::SetEvent()
 }
 
 //__________________________________________________________
+//! Process previous event
 void TAEDbaseInterface::PrevEvent()
 {
    fCurrentEventId -= 2;
@@ -566,6 +608,9 @@ void TAEDbaseInterface::PrevEvent()
 }
 
 //__________________________________________________________
+//! Toggle detector display
+//!
+//! \param[in] id detector id
 void TAEDbaseInterface::ToggleDetector(Int_t id)
 {
    const Char_t* name = fDetectorMenu->GetSelectedEntry()->GetTitle();   
@@ -604,6 +649,9 @@ void TAEDbaseInterface::ToggleDetector(Int_t id)
 }
 
 //__________________________________________________________
+//! Toggle center of camera display
+//!
+//! \param[in] id camera id
 void TAEDbaseInterface::ToggleCamera(Int_t id)
 {
    const Char_t* name = fCameraMenu->GetSelectedEntry()->GetTitle();
@@ -637,24 +685,28 @@ void TAEDbaseInterface::ToggleCamera(Int_t id)
 }
 
 //__________________________________________________________
+//! Toggle quad display
 void TAEDbaseInterface::ToggleQuadDisplay()
 {
    ToggleDisplay(1);
 }
 
 //__________________________________________________________
+//! Toggle line display
 void TAEDbaseInterface::ToggleLineDisplay()
 {
    ToggleDisplay(2);
 }
 
 //__________________________________________________________
+//! Toggle global track display
 void TAEDbaseInterface::ToggleGlbDisplay()
 {
    ToggleDisplay(3);
 }
 
 //__________________________________________________________
+//! Toggle MC hit display
 void TAEDbaseInterface::ToggleMcDisplay()
 {
    if (fType != 1) return;
@@ -662,6 +714,11 @@ void TAEDbaseInterface::ToggleMcDisplay()
 }
 
 //__________________________________________________________
+//! Toggle display for a given flag
+//!
+//! \param[in] flag flag type
+//!
+//! flag: 0 MC, 1 Hit, 2, track, 3 global track
 void TAEDbaseInterface::ToggleDisplay(Int_t flag)
 {
    TEveEventManager *mgr = gEve->GetCurrentEvent();
@@ -705,6 +762,9 @@ void TAEDbaseInterface::ToggleDisplay(Int_t flag)
 }
 
 //__________________________________________________________
+//! Histogram selected
+//!
+//! \param[in] id histogram id
 void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
 {
    // Fill histo list from selection
@@ -763,6 +823,7 @@ void TAEDbaseInterface::HistoSelected(Int_t /*id*/)
 }
 
 //__________________________________________________________
+//! Reset selected histograms
 void TAEDbaseInterface::ResetHisto()
 {
    Int_t nHisto = fSelHistoList->GetEntries();
@@ -774,6 +835,7 @@ void TAEDbaseInterface::ResetHisto()
 }
 
 //__________________________________________________________
+//! Reset all histograms
 void TAEDbaseInterface::ResetAllHisto()
 {
    TList* list = gTAGroot->ListOfAction();
@@ -790,6 +852,7 @@ void TAEDbaseInterface::ResetAllHisto()
 }
 
 //__________________________________________________________
+//! Update canvases
 void TAEDbaseInterface::UpdateDefCanvases()
 {
    Int_t nCanvas = fListOfCanvases->GetEntries();
@@ -816,6 +879,7 @@ void TAEDbaseInterface::UpdateDefCanvases()
 }
 
 //__________________________________________________________
+//! Create canvases
 void TAEDbaseInterface::CreateCanvases()
 {
    // GUI

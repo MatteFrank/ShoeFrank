@@ -23,7 +23,7 @@ public:
    ~TCGprimaryGeneratorAction();
    
 public:
-   //! Generate primaries
+   // Generate primaries
    void GeneratePrimaries(G4Event* anEvent);
    
 private:

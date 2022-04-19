@@ -33,7 +33,6 @@
 
 #include "TCGbaseConstructor.hxx"
 
-
 /*!
  \class TCGbaseConstructor
  \brief Base construction class

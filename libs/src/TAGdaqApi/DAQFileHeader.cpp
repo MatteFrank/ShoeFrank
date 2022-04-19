@@ -1,9 +1,21 @@
+/*!
+ \file DAQFileHeader.cpp
+ \brief  Implementation of DAQFileHeader
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include "DAQFileHeader.hh"
 
+/*!
+ \class DAQFileHeader
+ \brief Base class for DAQ file header
+ */
 
+
+//------------------------------------------+-----------------------------------
+//! Print data
 void DAQFileHeader::printData () const{
 
     printf ("\n");

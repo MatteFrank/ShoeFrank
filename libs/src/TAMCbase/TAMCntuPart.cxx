@@ -15,11 +15,11 @@ using namespace std;
   \brief MC Particle. **
 */
 
+//! Class Imp
 ClassImp(TAMCpart);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAMCpart::TAMCpart()
  : TAGobject(),
    fFlukaId(-1),
@@ -42,7 +42,23 @@ TAMCpart::TAMCpart()
 
 //------------------------------------------+-----------------------------------
 //! Construct with data
-TAMCpart::TAMCpart(Int_t i_id, Int_t i_chg, Int_t i_type, 
+//!
+//! \param[in] i_id sensor id
+//! \param[in] i_chg atomic number
+//! \param[in] i_type type number
+//! \param[in] i_reg region number
+//! \param[in] i_bar baryon number
+//! \param[in] i_dead dead flag
+//! \param[in] i_mass mass of particle
+//! \param[in] i_moth mother index
+//! \param[in] i_time time of particle
+//! \param[in] i_tof time of flight of particle
+//! \param[in] i_trlen track length
+//! \param[in] i_ipos initial position of particle
+//! \param[in] i_fpos final position of particle
+//! \param[in] i_ip initial momentum of particle
+//! \param[in] i_fp final momentum of particle
+TAMCpart::TAMCpart(Int_t i_id, Int_t i_chg, Int_t i_type,
 			       Int_t i_reg, Int_t i_bar, Int_t i_dead,
 			       Double_t i_mass,  Int_t i_moth, 
 			       Double_t i_time,
@@ -70,7 +86,6 @@ TAMCpart::TAMCpart(Int_t i_id, Int_t i_chg, Int_t i_type,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAMCpart::~TAMCpart()
 {
 }
@@ -83,6 +98,7 @@ TAMCpart::~TAMCpart()
   \brief Particle  container. **
 */
 
+//! Class Imp
 ClassImp(TAMCntuPart);
 
       TString TAMCntuPart::fgkBranchName   = "mctrack.";
@@ -91,7 +107,6 @@ const TString TAMCntuPart::fgkDefDataName  = "eveMc";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAMCntuPart::TAMCntuPart()
  : TAGdata(),
    fListOfTracks(0x0)
@@ -101,14 +116,29 @@ TAMCntuPart::TAMCntuPart()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAMCntuPart::~TAMCntuPart()
 {
   delete fListOfTracks;
 }
 
 //------------------------------------------+-----------------------------------
-//! new track
+//! New track
+//!
+//! \param[in] i_id sensor id
+//! \param[in] i_chg atomic number
+//! \param[in] i_type type number
+//! \param[in] i_reg region number
+//! \param[in] i_bar baryon number
+//! \param[in] i_dead dead flag
+//! \param[in] i_mass mass of particle
+//! \param[in] i_moth mother index
+//! \param[in] i_time time of particle
+//! \param[in] i_tof time of flight of particle
+//! \param[in] i_trlen track length
+//! \param[in] i_ipos initial position of particle
+//! \param[in] i_fpos final position of particle
+//! \param[in] i_ip initial momentum of particle
+//! \param[in] i_fp final momentum of particle
 TAMCpart* TAMCntuPart::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
                                    Int_t i_reg, Int_t i_bar, Int_t i_dead,
                                    Double_t i_mass, Int_t i_moth,
@@ -127,42 +157,49 @@ TAMCpart* TAMCntuPart::NewTrack(Int_t i_id, Int_t i_chg, Int_t i_type,
 
 //------------------------------------------+-----------------------------------
 //! Setup clones.
-
 void TAMCntuPart::SetupClones()   {
   if (!fListOfTracks) fListOfTracks = new TClonesArray("TAMCpart", 500);
 }
 
 //------------------------------------------+-----------------------------------
-//! Clear.
+//! Clear event.
+//!
+//! \param[in] opt option for clearing (not used)
 void TAMCntuPart::Clear(Option_t*)
 {
    fListOfTracks->Clear();
 }
 
 //------------------------------------------+-----------------------------------
-//! return n tracks
+//! return number of tracks
 Int_t TAMCntuPart::GetTracksN() const
 {
    return fListOfTracks->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! Access \a i 'th track
-
+//! Access to i 'th track
+//!
+//! \param[in] i track index
 TAMCpart* TAMCntuPart::GetTrack(Int_t i)
 {
    return (TAMCpart*) ((*fListOfTracks)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
-//! Read-only access \a i 'th track
+//! Read-only access to i 'th track (const)
+//!
+//! \param[in] i track index
 const TAMCpart* TAMCntuPart::GetTrack(Int_t i) const
 {
    return (const TAMCpart*) ((*fListOfTracks)[i]);;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAMCntuPart::ToStream(ostream& os, Option_t* option) const
 {
   // os << "TAMCntuPart" 

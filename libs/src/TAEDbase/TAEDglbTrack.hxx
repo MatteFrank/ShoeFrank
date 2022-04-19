@@ -21,17 +21,17 @@ public:
    TAEDglbTrack(const Text_t* name);
    virtual ~TAEDglbTrack();
    
-   //! Add line
+   // Add line
    void AddTracklet(Int_t Z, Float_t x1, Float_t y1, Float_t z1, Float_t x2, Float_t y2, Float_t z2);
    void AddTracklet(Int_t Z, TVector3 pos1, TVector3 pos2);
    
-   //! Set track id object
+   // Set track id object
    void TrackId(TObject* obj);
    
-   //! Reset lines
+   // Reset lines
    void ResetTracklets();
    
-   //! Refit plex
+   // Refit plex
    void RefitPlex();
    
    // secondary selection
@@ -45,11 +45,9 @@ public:
    TObject* GetTrackId() const { return fTrackId; }
    
 private:
-   TObject* fTrackId;
+   TObject* fTrackId;       ///< Object associated to track
    
-   ClassDef(TAEDglbTrack, 0);
-
+   ClassDef(TAEDglbTrack, 0); ///< Global track 
 };
-
 
 #endif

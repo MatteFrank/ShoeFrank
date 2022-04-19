@@ -54,25 +54,25 @@ public:
    virtual ~TCGbaseConstructor();
 	
    //! Get logical mother volume
-	G4LogicalVolume*   GetLogMother()                      { return fLogMother;           }
+	G4LogicalVolume*   GetLogMother()                      { return fLogMother;   }
    //! Set logical mother volume
-	void               SetLogMother(G4LogicalVolume* w)    { fLogMother = w;              }
+	void               SetLogMother(G4LogicalVolume* w)    { fLogMother = w;      }
    
    //! Get physical mother volume
-   G4VPhysicalVolume* GetPhysMother()                     { return fPhysMother;          }
+   G4VPhysicalVolume* GetPhysMother()                     { return fPhysMother;  }
    //! Set physical mother volume
-   void               SetPhysMother(G4VPhysicalVolume* w) { fPhysMother = w;             }
+   void               SetPhysMother(G4VPhysicalVolume* w) { fPhysMother = w;     }
    
    //! virtual construct
-   virtual G4LogicalVolume* Construct()                   { return 0x0;                  }
+   virtual G4LogicalVolume* Construct()                   { return 0x0;          }
    //! Get logical volume
-   virtual G4LogicalVolume* GetLogicVolume() const        { return fLogMother;           }// default wise
+   virtual G4LogicalVolume* GetLogicVolume() const        { return fLogMother;   }// default wise
    
    //! Define material
-   virtual void             DefineMaterial()               { return;                     }
+   virtual void             DefineMaterial()              { return;              }
 
    //! Get G4 materials
-   TCGmaterials* GetParMaterials() { return fpMaterials;      }
+   TCGmaterials* GetParMaterials()                        { return fpMaterials;  }
    
 protected:
    G4LogicalVolume*    fLogMother;  ///< Logical volume

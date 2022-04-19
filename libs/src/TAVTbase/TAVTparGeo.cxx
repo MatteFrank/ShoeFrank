@@ -49,11 +49,11 @@
   \brief Geometry parameters for VTX. **
 */
 
+//! Class Imp
 ClassImp(TAVTparGeo);
 
 const TString TAVTparGeo::fgkBaseName      = "VT";
 const TString TAVTparGeo::fgkDefParaName   = "vtGeo";
-
 
 //______________________________________________________________________________
 //! Standard constructor
@@ -69,9 +69,8 @@ TAVTparGeo::~TAVTparGeo()
 {
 }
 
-
-
 //_____________________________________________________________________________
+//! Define materials
 void TAVTparGeo::DefineMaterial()
 {
   // Silicon material
@@ -86,7 +85,12 @@ void TAVTparGeo::DefineMaterial()
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemoduleName, Bool_t board)
+//! Build vertex in Root geometry
+//!
+//! \param[in] vertexName  vertex volume name
+//! \param[in] basemoduleName module volume base name
+//! \param[in] board flag for implemented passive mother board
+TGeoVolume* TAVTparGeo::BuildVertex(const char* vertexName, const char* basemoduleName, Bool_t board)
 {
   if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
     new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
@@ -136,6 +140,10 @@ TGeoVolume* TAVTparGeo::BuildVertex(const char *vertexName, const char* basemodu
 }
 
 //_____________________________________________________________________________
+//! Add module in vertex for Root geometry
+//!
+//! \param[in] basemoduleName module volume base name
+//! \param[in] vertexName vertex volume name
 TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertexName)
 {
     // create M28 module
@@ -153,6 +161,10 @@ TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertex
 }
 
 //_____________________________________________________________________________
+//! Add module in vertex for Root geometry
+//!
+//! \param[in] boardName board volume name
+//! \param[in] moduleName module volume name
 TGeoVolume* TAVTparGeo::BuildBoard(const char* boardName, const char *moduleName)
 {
    // check if board exists
@@ -183,6 +195,7 @@ TGeoVolume* TAVTparGeo::BuildBoard(const char* boardName, const char *moduleName
 }
 
 //_____________________________________________________________________________
+//! Print Fluka parameters
 string TAVTparGeo::PrintParameters()
 {   
   stringstream outstr;
@@ -207,8 +220,8 @@ string TAVTparGeo::PrintParameters()
   return outstr.str();
 }
 
-
 //_____________________________________________________________________________
+//! Print Fluka rotations
 string TAVTparGeo::PrintRotations()
 {
   stringstream ss;
@@ -293,12 +306,12 @@ string TAVTparGeo::PrintRotations()
       }
     }
   }
+   
   return ss.str();
-
 }
 
-
 //_____________________________________________________________________________
+//! Print Fluka bodies
 string TAVTparGeo::PrintBodies()
 {
 
@@ -378,9 +391,9 @@ string TAVTparGeo::PrintBodies()
 }
 
 //_____________________________________________________________________________
+//! Print Fluka regions
 string TAVTparGeo::PrintRegions()
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeVT()){
@@ -408,34 +421,45 @@ string TAVTparGeo::PrintRegions()
   }
   
   return ss.str();
-  
 }
 
 //_____________________________________________________________________________
-Int_t TAVTparGeo::GetRegEpitaxial(Int_t n){
+//! Get epitaxial region in Fluka for a given layer
+//!
+//! \param[in] n layer index
+Int_t TAVTparGeo::GetRegEpitaxial(Int_t n)
+{
   TString regname;
   regname.Form("VTXE%d",n);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
-Int_t TAVTparGeo::GetRegModule(Int_t n){
+//! Get module region in Fluka for a given layer
+//!
+//! \param[in] n layer index
+Int_t TAVTparGeo::GetRegModule(Int_t n)
+{
   TString regname;
   regname.Form("VTXM%d",n);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
-Int_t TAVTparGeo::GetRegPixel(Int_t n){
+//! Get pixel region in Fluka for a given layer
+//!
+//! \param[in] n layer index
+Int_t TAVTparGeo::GetRegPixel(Int_t n)
+{
   TString regname;
   regname.Form("VTXP%d",n);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
+//! Print subtracted bodies from air in Fluka
 string TAVTparGeo::PrintSubtractBodiesFromAir()
 {
-  
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeVT()){
@@ -444,14 +468,16 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
       ss << " -" << fvModBody.at(i);
     }
     ss << endl;
-
   }
 
    return ss.str();   
 }
 
 //_____________________________________________________________________________
-string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
+//! Print assigned material in Fluka for a given material
+//!
+//! \param[in] Material Root material
+string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
 {
   stringstream ss;
   
@@ -485,7 +511,4 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials *Material)
   }
 
   return ss.str();
-
 }
-
-

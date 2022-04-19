@@ -22,17 +22,17 @@ public:
    ~TAIRntuAlignC();
    
 public:
-   //! Reset
+   // Reset
    void   Reset();
-   //! Define constants
+   // Define constants
    void   DefineConstant(Double_t* weightQ, Double_t* position);
-   //! Accumulate
+   // Accumulate
    Bool_t Accumulate(Double_t* Ucluster, Double_t* Vcluster);
-   //! Sum
+   // Sum
    void   Sum();
-   //! Constraint
+   // Constraint
    void   Constraint(Int_t planeRef1, Int_t planeRef2);
-   //! Minimize
+   // Minimize
    void   Minimize();
    
    //! Return offset U
@@ -57,8 +57,6 @@ private:
    Int_t       fColumnPhi;       ///< Column phi
    
    TMatrixD    fQ;               ///< Q matrices
-
-   
    TMatrixD    fCxInit;          ///< = Q . Px
    TMatrixD    fCyInit;          ///< = Q . Py
    TMatrixD    fCx;              ///< base matrix in X

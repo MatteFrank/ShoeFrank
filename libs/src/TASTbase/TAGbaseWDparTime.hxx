@@ -22,9 +22,8 @@ using namespace std;
 //##############################################################################
 
 class TAGbaseWDparTime : public TAGpara {
+   
   public:
-
-  
   TAGbaseWDparTime();
   virtual         ~TAGbaseWDparTime();
 
@@ -33,28 +32,24 @@ class TAGbaseWDparTime : public TAGpara {
   
   vector<double> GetRawTimeArray(int iBo, int iCha, int TrigCell);
   void InitMap();
-  bool FromFile(TString fileName = "", TString file2Name = "");
+  bool FromFileCFD(TString fileName = "");
+  bool FromFileTcal(TString fileName = "");
+  void GetTimeInfo(FILE*);
   void SetTimeCal(int iBo, int iCha, vector<float> tvec);
-
-  ClassDef(TAGbaseWDparTime,1)
 
   const double sec2Nano = 1E9;
 
-  inline string GetCFDalgo(string det){return cfdalgo.find(det)->second;}
-  inline double GetCFDfrac(string det){return cfdfrac.find(det)->second;}
-  inline double GetCFDdel(string det){return cfddel.find(det)->second;}
+  inline string GetCFDalgo(string det) { return fCfdAlgo.find(det)->second; }
+  inline double GetCFDfrac(string det) { return fCfdFrac.find(det)->second; }
+  inline double GetCFDdel(string det)  { return fCfdDel.find(det)->second;  }
 
-  
 private:
+  map<pair<int,int>, vector<double>> fTimeParCal;
+  map<string,string> fCfdAlgo;
+  map<string,double> fCfdFrac;
+  map<string,double> fCfdDel;
 
-  map<pair<int,int>, vector<double>> time_parcal;
-  map<string,string> cfdalgo;
-  map<string,double> cfdfrac;
-  map<string,double> cfddel;
-
-  
-
-  
+   ClassDef(TAGbaseWDparTime,1)
 };
 
 #endif

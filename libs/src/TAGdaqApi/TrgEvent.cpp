@@ -1,11 +1,26 @@
+/*!
+ \file TrgEvent.cpp
+ \brief  Implementation of TrgEvent
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "TrgEvent.hh"
 
+/*!
+ \class TrgEvent
+ \brief Trigger event
+ */
+
+//------------------------------------------+-----------------------------------
+//! Destructor.
 TrgEvent::~TrgEvent(){	
 }
 
-
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void TrgEvent::readData( unsigned int **p1 ){
 
   unsigned int * p = *p1;
@@ -36,7 +51,8 @@ void TrgEvent::readData( unsigned int **p1 ){
   *p1 = p;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Print data
 void TrgEvent::printData() const {
 
   printf ("Trigger DATA: \n");

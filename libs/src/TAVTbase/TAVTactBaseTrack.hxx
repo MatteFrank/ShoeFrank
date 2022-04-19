@@ -47,7 +47,7 @@ public:
    //! get tracker name
    TString          GetTrackerName()                           { return  TString(GetName());  }
    
-   //! Set TAGgeoTrafo
+   // Set TAGgeoTrafo
    void             SetGeoTrafo(TString name);
    
    
@@ -58,34 +58,34 @@ public:
    static Bool_t    GetRefit()                                 { return fgRefit;              }
    
 protected:
-   //! Fill track histogram
+   // Fill track histogram
    void   FillHistogramm(TAGbaseTrack* track);
-   //! Update track parameters
+   // Update track parameters
    void   UpdateParam(TAGbaseTrack* track);
-   //! Apply cuts on track
+   // Apply cuts on track
    Bool_t AppyCuts(TAGbaseTrack* track) ;
    
-   //! Get track
+   // Get track
    virtual TAGbaseTrack*    GetTrack(Int_t idx);
-   //! Number of tracks (const)
+   // Number of tracks (const)
    virtual Int_t            GetTracksN() const;
-   //! Number of tracks
+   // Number of tracks
    virtual Int_t            GetTracksN();
 
-   //! Add new track
+   // Add new track
    virtual void             AddNewTrack(TAGbaseTrack* track);
-   //! Make new track
+   // Make new track
    virtual TAGbaseTrack*    NewTrack();
-   //! Get cluster from plane
+   // Get cluster from plane
    virtual TAGcluster*      GetCluster(Int_t iPlane, Int_t iClus);
-   //! Get number of cluster for a given plane
+   // Get number of cluster for a given plane
    virtual Int_t            GetClustersN(Int_t iPlane);
-   //! Set beam position
+   // Set beam position
    virtual void             SetBeamPosition(TVector3 pos);
    
-   //! Get par geo pointer
+   // Get par geo pointer
    virtual TAVTbaseParGeo*  GetParGeo();
-   //! Get par conf pointer
+   // Get par conf pointer
    virtual TAVTbaseParConf* GetParConf();
    
 protected:
@@ -97,7 +97,9 @@ protected:
    TAGgeoTrafo*    fpFootGeo;	          ///< First geometry transformer
 	
    Int_t           fTracksMaximum;      ///< maximum number of tracks allowed
+   //! number of clusters required to make a track
    Int_t           fRequiredClusters;   //! number of clusters required to make a track
+   //! Max distance to associate a track and a cluster
    Double_t        fSearchClusDistance; //! Max distance to associate a track and a cluster
    Float_t         fPlaneResolution;    ///< plane resolution
       

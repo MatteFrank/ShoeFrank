@@ -17,6 +17,7 @@ class TDirectory;
 
 class TAGaction : public TAGnamed {
   public:
+    //!  bit cases
     enum { kValid = BIT(15),
            kEof   = BIT(16)
     };
@@ -70,7 +71,7 @@ class TAGaction : public TAGnamed {
 
     // Add histogram to list
     void            AddHistogram(TH1* p_hist);
-    // Set valid histogram filling
+    //! Set valid histogram filling
     void            SetValidHistogram(Bool_t b_ok=kTRUE)  { fbHistValid = b_ok; }
 
     // Chech dependencie

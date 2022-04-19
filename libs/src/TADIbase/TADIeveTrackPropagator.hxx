@@ -23,9 +23,9 @@ public:
    
    //! Set new vertex
    void     SetNewVertex(TEveVectorD& vertex) { fV = vertex; }
-   //! Extrapolate to new vertex
+   // Extrapolate to new vertex
    Bool_t	Extrapole(TEveVectorD& v, TEveVectorD& p, TEveVectorD& vOut, TEveVectorD& pOut);
-   //! Compute momentum and position at a given Z
+   // Compute momentum and position at a given Z
    Bool_t   IntersectPlaneZ(const TEveVectorD& p,  const TEveVectorD& point, TEveVectorD& pOut, TEveVectorD& itsect);
    
 };

@@ -34,9 +34,9 @@ public:
     
     virtual ~TAVTactBaseNtuVertex();
    
-    //! Action
+    // Action
     virtual  Bool_t  Action();
-    //! Create histogram
+    // Create histogram
     virtual  void    CreateHistogram();
     //! virtual method to compute vertex
     virtual  Bool_t  ComputeVertex() = 0;
@@ -77,17 +77,17 @@ protected:
    static void    DisableBmMatching()       { fgCheckBmMatching = false; }
    
 protected:
-    //! Set invalid vertex
+    // Set invalid vertex
     Bool_t   SetNotValidVertex(Int_t idTk);
-    //!Set valid vertex
+    //Set valid vertex
     void     SetValidVertex();
-    //! Check BM matching
+    // Check BM matching
     Bool_t   CheckBmMatching();
-    //! Compute minimal distance VTX track to BM track
+    // Compute minimal distance VTX track to BM track
     void     ComputeInteractionVertex(TABMtrack* lbm, TAVTtrack lvtx);
-    //! Copmpute scatter angle
+    // Copmpute scatter angle
     Double_t ComputeScatterAngle();
-    //! Search for Nuclear reaction
+    // Search for Nuclear reaction
     Int_t    SearchNucReac(TAVTtrack* track0);
 
     ClassDef(TAVTactBaseNtuVertex,0)

@@ -23,30 +23,30 @@ class TAGroot : public TAGobject {
                     TAGroot();
     virtual         ~TAGroot();
 
-    //! Add required item
+    // Add required item
     void            AddRequiredItem(TAGnamed* p_item);
-    //! Add required item name
+    // Add required item name
     void            AddRequiredItem(const char* name);
-    //! Clear required list
+    // Clear required list
     void            ClearRequiredList();
 
-    //! Begin event loop
+    // Begin event loop
     void            BeginEventLoop();
-    //! End event loop
+    // End event loop
     void            EndEventLoop();
-    //! Abort event loop
+    // Abort event loop
     void            AbortEventLoop();
-    //! Next event
+    // Next event
     Bool_t          NextEvent(long nEv=-999);
 
-    //! Wait
+    // Wait
     void            Wait(Int_t i_msec);
 
-    //! Clear all actions
+    // Clear all actions
     void            ClearAllAction();
-    //! Clear all data dsc
+    // Clear all data dsc
     void            ClearAllData();
-    //! Clear all parameters dsc
+    // Clear all parameters dsc
     void            ClearAllPara();
 
     //! Return list of actions
@@ -63,11 +63,11 @@ class TAGroot : public TAGobject {
     // Find parameters dsc
     TAGparaDsc*     FindParaDsc(const char* name, const char* type=0) const;
 
-    //! Default action name
+    // Default action name
     const char*     DefaultActionName();
-    //! Default data dsc name
+    // Default data dsc name
     const char*     DefaultDataDscName();
-    //! Default parameter dsc name
+    // Default parameter dsc name
     const char*     DefaultParaDscName();
 
     //! Set campaign name
@@ -76,9 +76,9 @@ class TAGroot : public TAGobject {
     void            SetRunNumber(Short_t i_run)    {  fRunInfo.SetRunNumber(i_run); fEventId.SetRunNumber(i_run);}
     //! Set event number
     void            SetEventNumber(Int_t i_evt)    {  fEventId.SetEventNumber(i_evt); }
-    //! Set run info
+    // Set run info
     void            SetRunInfo(const TAGrunInfo& info);
-    //! Set event id
+    // Set event id
     void            SetEventId(const TAGeventId& info);
 
     //! Get current campaign name
@@ -115,6 +115,6 @@ class TAGroot : public TAGobject {
    ClassDef(TAGroot,0)
 };
 
-extern TAGroot* gTAGroot;
+extern TAGroot* gTAGroot;  ///< external singleton
 
 #endif

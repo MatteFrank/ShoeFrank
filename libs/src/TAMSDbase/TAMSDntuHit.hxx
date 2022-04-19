@@ -30,10 +30,12 @@ public:
    
    TAMSDhit*          GetStrip(Int_t iSensor, Int_t iStrip);
    const TAMSDhit*    GetStrip(Int_t iSensor, Int_t iStrip) const;
-   
+
+
    TClonesArray*      GetListOfStrips(Int_t iSensor);
    TClonesArray*      GetListOfStrips(Int_t iSensor) const;
    
+
    Int_t              GetStripsN(Int_t iSensor) const;
    
    TAMSDhit*          NewStrip(Int_t sensor, Double_t value, Int_t aView, Int_t aStrip);

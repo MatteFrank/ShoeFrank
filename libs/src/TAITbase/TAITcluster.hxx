@@ -23,7 +23,7 @@ public:
    
    virtual void       SetupClones();
 
-   //! Add pixel to the list
+   // Add pixel to the list
    void               AddPixel(TAIThit* pixel);
    
    ClassDef(TAITcluster,3)                          ///< Describes TAITcluster

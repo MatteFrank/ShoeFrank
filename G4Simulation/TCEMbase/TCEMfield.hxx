@@ -57,10 +57,10 @@ public:
   //! DoesFieldChangeEnergy() returns true.
   virtual G4bool DoesFieldChangeEnergy() const { return false; };
 
-  //! GetFieldValue() returns the field value at a given point[].
+  // GetFieldValue() returns the field value at a given point[].
   // field is really field[6]: Bx,By,Bz.
   // point[] is in global coordinates: x,y,z,t.
-   virtual void GetFieldValue(const G4double* /*Point[4]*/, G4double* /*Bfield*/) const;
+   virtual void GetFieldValue(const G4double Point[4], G4double* Bfield) const;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

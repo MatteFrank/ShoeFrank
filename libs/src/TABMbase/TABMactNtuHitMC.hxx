@@ -1,9 +1,8 @@
 #ifndef _TABMactNtuHitMC_HXX
 #define _TABMactNtuHitMC_HXX
 /*!
-  \file
-  \version $Id: TABMactNtuHitMC.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
-  \brief   Declaration of TABMactNtuHitMC.
+  \file   TABMactNtuHitMC.hxx
+  \brief   Declaration of TABMactNtuHitMC, this class converts the FLUKA MC input into a BM hit (TABMntuHit)
 */
 /*------------------------------------------+---------------------------------*/
 #include <map>
@@ -42,26 +41,25 @@ class TABMactNtuHitMC : public TAGaction {
     void            CreateFakeHits();
 
   private:
-    TAGdataDsc*     fpNtuMC;        // input mc hit
-    TAGdataDsc*     fpNtuEve;       // input eve track dsc
-    TAGdataDsc*     fpNtuRaw;		    // output data dsc
-    TAGparaDsc*     fpParCon;		    // BM config params.
-    TAGparaDsc*     fpParCal;		    // BM calibration params.
-    TAGparaDsc*     fpParGeo;		    // BM geo params.
-    TABMdigitizer*  fDigitizer;     // cluster size digitizer
-    EVENT_STRUCT*   fEventStruct;
+    TAGdataDsc*     fpNtuMC;        ///< input mc hit
+    TAGdataDsc*     fpNtuEve;       ///< input eve track dsc
+    TAGdataDsc*     fpNtuRaw;		    ///< output data dsc
+    TAGparaDsc*     fpParCon;		    ///< BM config params.
+    TAGparaDsc*     fpParCal;		    ///< BM calibration params.
+    TAGparaDsc*     fpParGeo;		    ///< BM geo params.
+    TABMdigitizer*  fDigitizer;     ///< cluster size digitizer
+    EVENT_STRUCT*   fEventStruct;   ///< old version of input mc hit, useful for back compatibility
 
-    //histos
+    // Histos
+    TH1I*            fpHisCell;       ///<hits cell
+    TH1I*            fpHisView;       ///<hits view
+    TH1I*            fpHisPlane;      ///<hits plane
+    TH1F*            fpHisRdrift;     ///<hits drift distance
+    TH1F*            fpDisRdrift;     ///<hits real rdrift - smeared rdrift
+    TH1I*            fpDisReason;     ///<discharged hits reason
+    TH1I*            fpHisHitNum;     ///<hit per event distribution
+    TH1I*            fpHisFakeIndex;  ///<hits fake index (0=fluka hit from primary, 1=fluka hit not from primay, 2=Random hit not from fluka)
 
-    TH1I*            fpHisCell;       //hits cell
-    TH1I*            fpHisView;       //hits view
-    TH1I*            fpHisPlane;      //hits plane
-    TH1F*            fpHisRdrift;     //hits rdrift
-    TH1F*            fpDisRdrift;     //hits real rdrift - smeared rdrift
-    TH1I*            fpDisReason;     //discharged hits reason
-    TH1I*            fpHisHitNum;     //raw hit map
-    TH1I*            fpHisFakeIndex;  //hits fake index
-   
    ClassDef(TABMactNtuHitMC,0)
 };
 

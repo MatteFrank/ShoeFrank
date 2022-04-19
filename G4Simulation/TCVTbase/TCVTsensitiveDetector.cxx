@@ -18,6 +18,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Constructor
+//!
+//! \param[in] name sensitive detector name
 TCVTsensitiveDetector::TCVTsensitiveDetector(G4String name)
 :TCGbaseSensitiveDetector(name)
 {

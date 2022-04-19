@@ -32,20 +32,20 @@ using namespace std;
 class TAGrecoManager {
 
 public:
-   //! singleton class of global foot parameters
+   // singleton class of global foot parameters
 	static TAGrecoManager* Instance( const TString expName = "" );
 	static TAGrecoManager* GetPar();
    
 public:
 	~TAGrecoManager();
 
-   //! From file
+   // From file
 	void  FromFile();
-   //! Print info
+   // Print info
 	void  Print(Option_t* opt = "");
-   //! Get run info
+   // Get run info
    const TAGrunInfo GetGlobalInfo();
-   //! Find MC particle
+   // Find MC particle
    Bool_t Find_MCParticle( string villain );
 
    //! Debug level
@@ -78,20 +78,11 @@ public:
    //! Detector included
    vector<TString> DectIncluded()      { return fDectInclude;         }
 
-    //! VTX resolution
-	 Double_t VTReso() 	         const { return fVTreso;              }
-    //! ITR resolution
-    Double_t ITReso() 	         const { return fITreso;              }
-    //! MSD resolution
-    Double_t MSDReso()           const { return fMSDreso;             }
-    //! TW resolution
-    Double_t TWReso()            const { return fTWreso;              }
-
     //! Reconstruction parameters Getter
     //! Local reconstruction flag
     bool IsMC()								{ return fIsMC; }
 
-    // Reconstruction parameters Getter
+    //! Reconstruction parameters Getter
     Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
     //! Saving tree flag
     Bool_t IsSaveTree()          const { return fEnableTree;          }
@@ -141,12 +132,16 @@ public:
     Bool_t IncludeTOE()          const { return fIncludeTOE;          }
     //! Global reconstruction with GenFit flag
     Bool_t IncludeKalman()       const { return fIncludeKalman;       }
+    //! Global reconstruction with straight line flag
+    Bool_t IncludeStraight()     const { return fIncludeStraight;     }
   
     //! Reconstruction parameters Setter
     //! Set global reconstruction with TOE flag
     void IncludeTOE(Bool_t t)          {  fIncludeTOE = t;            }
     //! Set global reconstruction with GenFit flag
     void IncludeKalman(Bool_t t)       {  fIncludeKalman = t;         }
+    //! Set global reconstruction with straight line flag
+    void IncludeStraight(Bool_t t)     { fIncludeStraight = t;        }
    
     //! Enable global reconstruction from local reconstruction tree
     void EnableLocalReco()             {  fEnableLocalReco = true;    }
@@ -198,7 +193,7 @@ public:
     //! Set calibration process for BM
     void CalibBM(bool t)               {  fDoCalibBM = t;             }
   
-    //! Debug levels
+    // Debug levels
     void SetDebugLevels();
   
 private:
@@ -234,12 +229,7 @@ private:
 	vector<string>       fTrackingSystems;       ///< List of tracking systems
    vector<string>       fKalParticles;          ///< List of Kalmaan particles
    vector<TString>      fDectInclude;           ///< List of included detectors
-
-	Double_t             fVTreso;                ///< VTX resolution
-   Double_t             fITreso;                ///< ITR resolution
-   Double_t             fMSDreso;               ///< MSD resolution
-   Double_t             fTWreso;                ///< TW resolution
-  
+   
    //! reconstruction parameter
    Bool_t               fEnableLocalReco;       ///< Enable global reconstruction from l0 reconstruction
    Bool_t               fEnableTree;            ///< Enbale tree filling
@@ -259,7 +249,6 @@ private:
    Bool_t               fIncludeBM;             ///< Include BM
    Bool_t               fIncludeTG;             ///< Include target
    Bool_t               fIncludeDI;             ///< Include dipole
-
    Bool_t               fIncludeTW;             ///< Include TW
    Bool_t               fIncludeMSD;            ///< Include MSD
    Bool_t               fIncludeCA;             ///< Include CAL
@@ -268,26 +257,27 @@ private:
     
    Bool_t               fIncludeKalman;         ///< Global reconstruction from GenFit
    Bool_t               fIncludeTOE;            ///< Global reconstruction from TOE
+   Bool_t               fIncludeStraight;       ///< Global reconstruction from straight line extrapolation
 
 public:
-   //! Debug with line number
+   // Debug with line number
    static void   DebugLine(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", const char* file = "", Int_t line = -1);
-   //! Debug with variable output
+   // Debug with variable output
    static void   Debug(Int_t level, const char* className = "", const char* funcName = "", const char* format = "", ...);
-   //! Get debug level per classname
+   // Get debug level per classname
    static Int_t  GetDebugLevel(const char* className);
-   //! Get debug level per level and classname
+   // Get debug level per level and classname
    static Bool_t GetDebugLevel(Int_t level, const char* className);
-   //! Get MC debug level per level and classname
+   // Get MC debug level per level and classname
    static Bool_t GetMcDebugLevel(Int_t level, const char* className);
-   //! Get MC dedug level per classname
+   // Get MC dedug level per classname
    static void   GetMcInfo(const char* className = "", const char* funcName = "", const char* format = "", ...);
-   //! Get MC dedug level per classname
+   // Get MC dedug level per classname
    static void   GetMcInfoMsg(const char* className = "", const char* funcName = "", const char* format = "");
 
-   //! Set debug level per classname
+   // Set debug level per classname
    static void   SetClassDebugLevel(const char* className, Int_t level);
-   //! Clear debug level per classname
+   // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
 };
 

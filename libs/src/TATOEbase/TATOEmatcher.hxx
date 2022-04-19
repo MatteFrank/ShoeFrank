@@ -470,7 +470,7 @@ struct empty_matcher{
     std::vector<reconstruction_module> const& retrieve_results() const{ return reconstruction_module_mc; }
     void clear(){}
     void end_event() {}
-    reconstructible_track get_reconstructible_track( data_type const* end_point_ph ) const { return {}; }
+    reconstructible_track get_reconstructible_track( data_type const* /*end_point_ph*/ ) const { return {}; }
 };
 
 template<class Action>

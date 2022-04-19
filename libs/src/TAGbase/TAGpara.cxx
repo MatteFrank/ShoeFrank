@@ -4,7 +4,6 @@
 */
 
 #include "TClass.h"
-
 #include "TAGpara.hxx"
 
 /*!
@@ -12,6 +11,7 @@
   \brief Mother of all parameter objects. **
 */
 
+//! Class Imp
 ClassImp(TAGpara);
 
 //------------------------------------------+-----------------------------------
@@ -27,7 +27,7 @@ TAGpara::~TAGpara()
 {}
 
 //------------------------------------------+-----------------------------------
-// Invalidate parameter object.
+//! Clear
 void TAGpara::Clear(Option_t*)
 {
   ResetBit(kFail);
@@ -35,7 +35,10 @@ void TAGpara::Clear(Option_t*)
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGpara::ToStream(ostream& os, Option_t* option) const
 {
   os <<"TAGpara: " << IsA()->GetName();
@@ -45,7 +48,9 @@ void TAGpara::ToStream(ostream& os, Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! Print
+//!
+//! \param[in] option option for printout
 void TAGpara::Print(Option_t* option) const
 {
   ToStream(cout, option);
@@ -53,11 +58,10 @@ void TAGpara::Print(Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-/*!
- \relates TAGpara
- \brief ostream insertion operator.
- */
-
+//! operator<<
+//!
+//! \param[in] os output stream
+//! \param[in] obj object to printout
 inline ostream& operator<<(ostream& os, const TAGpara& obj)
 {
   obj.ToStream(os);

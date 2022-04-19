@@ -34,7 +34,7 @@ private:
    static TAIRalignC* fgInstance; ///< static instance of class
    
 public:
-   //! Instance of class
+   // Instance of class
    static TAIRalignC* Instance(const TString name = "16O_C2H4_200_1.root", const TString exp = "", Int_t runNUmber = 1,
                                Bool_t flagVtx = false,
                                Bool_t flagIt  = false,
@@ -43,48 +43,48 @@ public:
    virtual ~TAIRalignC();
    
 private:
-   //! ctr
+   // ctr
    TAIRalignC(const TString name, const TString exp, Int_t runNUmber, Bool_t flagVtx, Bool_t flagIt, Bool_t flagMsd, Int_t weight);
 public:
-   //! Loop over events
+   // Loop over events
    void   LoopEvent(Int_t nEvts = 1);
    
 private:
-   //! Create histogram
+   // Create histogram
    void    CreateHistogram();
-   //! Align
+   // Align
    Bool_t  Align(Bool_t rough);
-   //! Fill histogram
+   // Fill histogram
    Bool_t  FillHistograms();
-   //! Define weight
+   // Define weight
    Bool_t  DefineWeights();
-   //! Fill cluster psoiton rough
+   // Fill cluster psoiton rough
    Bool_t  FillClusPosRough(Int_t i, TAGcluster* cluster);
-   //! Fill cluster position precise
+   // Fill cluster position precise
    Bool_t  FillClusPosPrecise(Int_t i, TAGcluster* cluster);
 
-   //! Fill cluster array
+   // Fill cluster array
    void    FillClusterArray();
-   //! Fill parameter map
+   // Fill parameter map
    void    InitParameters();
-   //! Fill status map
+   // Fill status map
    void    FillStatus();
-   //! Fill positiom
+   // Fill positiom
    void    FillPosition();
-   //! Fill status map
+   // Fill status map
    void    FillStatus(TAVTbaseParConf* parConf, Int_t offset = 0);
-   //! Fill position map
+   // Fill position map
    void    FillPosition(TAVTbaseParGeo* parGeo, Int_t offset = 0);
 
-   //! Update alignment parameters
+   // Update alignment parameters
    void    UpdateAlignmentParams();
-   //! Update transformation
+   // Update transformation
    void    UpdateTransfo(Int_t idx);
-   //! Update geo maps
+   // Update geo maps
    void    UpdateGeoMaps();
-   //! Update geom map file
+   // Update geom map file
    void    UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx);
-   //! Reset
+   // Reset
    void    Reset();
       
 private:

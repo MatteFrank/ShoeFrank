@@ -48,6 +48,9 @@
  */
 /*------------------------------------------+---------------------------------*/
 
+//! Class Imp
+ClassImp(TAGbaseEventDisplay)
+
 TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Full";
 TString TAGbaseEventDisplay::fgItrTrackingAlgo = "Full";
 TString TAGbaseEventDisplay::fgMsdTrackingAlgo = "Full";
@@ -55,9 +58,12 @@ Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
 Bool_t  TAGbaseEventDisplay::fgM28ClusMtFlag   = false;
 
-ClassImp(TAGbaseEventDisplay)
-
 //__________________________________________________________
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] type toggle for raw or MC data
 TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber, Int_t type)
  : TAEDbaseInterface(type, expName, runNumber),
    fStClusDisplay(0x0),
@@ -176,13 +182,11 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
       fCaClusDisplay->SetPickable(true);
    }
 
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
       fGlbTrackDisplay = new TAEDglbTrackList("Global Tracks");
    }
 
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
 
       fIrTrackDisplay = new TAEDtrack("Global Straight Tracks");
       fIrTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
@@ -194,6 +198,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
 }
 
 //__________________________________________________________
+//! Destructor
 TAGbaseEventDisplay::~TAGbaseEventDisplay()
 {
    // default destructor
@@ -216,12 +221,14 @@ TAGbaseEventDisplay::~TAGbaseEventDisplay()
 }
 
 //__________________________________________________________
+//! Read parameters files
 void TAGbaseEventDisplay::ReadParFiles()
 {
    fReco->ReadParFiles();
 }
 
 //__________________________________________________________
+//! Set reconstruction alorithm options for trackers
 void TAGbaseEventDisplay::SetRecoOptions()
 {
    fReco->DisableTree();
@@ -241,6 +248,7 @@ void TAGbaseEventDisplay::SetRecoOptions()
 }
 
 //__________________________________________________________
+//! Build default geometry
 void TAGbaseEventDisplay::BuildDefaultGeometry()
 {
    TAEDbaseInterface::BuildDefaultGeometry();
@@ -287,7 +295,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
    }
 
    // Magnet
-   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
       TGeoVolume* mgVol = parGeo->BuildMagnet();
       fVolumeNames[mgVol->GetName()] = kDIP;
@@ -338,18 +346,23 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
 }
 
 //__________________________________________________________
+//! Create reconstruction actions
 void TAGbaseEventDisplay::CreateRecAction()
 {
    fReco->CreateRecAction();
 }
 
 //__________________________________________________________
+//! Create raw data/MC actions
 void TAGbaseEventDisplay::CreateRawAction()
 {
    fReco->CreateRawAction();
 }
 
 //__________________________________________________________
+//! Set input file name
+//!
+//! \param[in] fileName input file name
 void TAGbaseEventDisplay::SetFileName(const TString fileName)
 {
    fReco->SetName(fileName);
@@ -357,12 +370,14 @@ void TAGbaseEventDisplay::SetFileName(const TString fileName)
 }
 
 //__________________________________________________________
+//! Open file
 void TAGbaseEventDisplay::OpenFile()
 {
    fReco->OpenFileIn();
 }
 
 //__________________________________________________________
+//! Add required actions in list
 void TAGbaseEventDisplay::AddRequiredItem()
 {
    fReco->AddRawRequiredItem();
@@ -374,6 +389,7 @@ void TAGbaseEventDisplay::AddRequiredItem()
 
 
 //__________________________________________________________
+//! Add TEve elements
 void TAGbaseEventDisplay::AddElements()
 {
    if (TAGrecoManager::GetPar()->IncludeST()){
@@ -433,20 +449,19 @@ void TAGbaseEventDisplay::AddElements()
       gEve->AddElement(fCaClusDisplay);
    }
 
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
       fGlbTrackDisplay->ResetTracks();
       gEve->AddElement(fGlbTrackDisplay);
    }
 
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeVT() &&
-       TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->ResetTracks();
       gEve->AddElement(fIrTrackDisplay);
    }
 }
 
 //__________________________________________________________
+//! Connect to pad TEve elements
 void TAGbaseEventDisplay::ConnectElements()
 {
    if (TAGrecoManager::GetPar()->IncludeST()){
@@ -502,19 +517,21 @@ void TAGbaseEventDisplay::ConnectElements()
       fCaClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
    }
    
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW() &&
-       !TAGrecoManager::GetPar()->IncludeDI()) {
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       fIrTrackDisplay->SetEmitSignals(true);
       fIrTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
    }
 
-   if (TAGrecoManager::GetPar()->IncludeTOE()) {
+   if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
       TQObject::Connect("TAEDglbTrack", "LineSecSelected(TEveStraightLineSet*, Int_t)", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveStraightLineSet*, Int_t)");
    }
 }
 
 //__________________________________________________________
+//! Update digit information output
+//!
+//! \param[in] qs digit set
+//! \param[in] idx  associated object index
 void TAGbaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
 {
    TAEDcluster* quadHits = dynamic_cast<TAEDcluster*> (qs);
@@ -620,6 +637,10 @@ void TAGbaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
 }
 
 //__________________________________________________________
+//! Update track information output
+//!
+//! \param[in] qs track set
+//! \param[in] idx digit associated object index
 void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
 {
    TAEDtrack* lineTracks = dynamic_cast<TAEDtrack*> (qs);
@@ -671,6 +692,10 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveDigitSet* qs, Int_t idx)
 }
 
 //__________________________________________________________
+//! Update track line information output
+//!
+//! \param[in] ts track line set
+//! \param[in] idx associated object index
 void TAGbaseEventDisplay::UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx)
 {
    TAEDglbTrack* lineTracks = dynamic_cast<TAEDglbTrack*> (ts);
@@ -708,6 +733,10 @@ void TAGbaseEventDisplay::UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx)
 }
 
 //__________________________________________________________
+//! Update BM drift circle information output
+//!
+//! \param[in] qs digit set
+//! \param[in] idx associated object index
 void TAGbaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 {
     if (!fDetectorStatus[kBMN]) return;
@@ -733,6 +762,7 @@ void TAGbaseEventDisplay::UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx)
 }
 
 //__________________________________________________________
+//! Update TEve elements in view
 void TAGbaseEventDisplay::UpdateElements()
 {
    if (fgGUIFlag)
@@ -759,17 +789,18 @@ void TAGbaseEventDisplay::UpdateElements()
    if (TAGrecoManager::GetPar()->IncludeCA())
       UpdateElements("ca");
 
-   if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IncludeTG() &&
-       TAGrecoManager::GetPar()->IncludeVT() && TAGrecoManager::GetPar()->IncludeTW() &&
-       !TAGrecoManager::GetPar()->IncludeDI())
+   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI())
       UpdateElements("ir");
 
-   if (TAGrecoManager::GetPar()->IncludeTOE() && fFlagTrack)
+   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && fFlagTrack)
       UpdateGlbTrackElements();
 
 }
 
 //__________________________________________________________
+//! Update TEve elements in view for a given device
+//!
+//! \param[in] prefix device prefix
 void TAGbaseEventDisplay::UpdateElements(const TString prefix)
 {
    if (prefix == "tw")
@@ -794,6 +825,9 @@ void TAGbaseEventDisplay::UpdateElements(const TString prefix)
 }
 
 //__________________________________________________________
+//! Update quad elements in view for a given device
+//!
+//! \param[in] prefix device prefix
 void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
@@ -901,6 +935,9 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
 }
 
 //__________________________________________________________
+//! Update strip elements in view for a given device
+//!
+//! \param[in] prefix device prefix
 void TAGbaseEventDisplay::UpdateStripElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
@@ -987,6 +1024,9 @@ void TAGbaseEventDisplay::UpdateStripElements()
 }
 
 //__________________________________________________________
+//! Update track elements in view for a given device
+//!
+//! \param[in] prefix device prefix
 void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
@@ -1203,6 +1243,9 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
 }
 
 //__________________________________________________________
+//! Update global track elements in view for a given device
+//!
+//! \param[in] prefix device prefix
 void TAGbaseEventDisplay::UpdateGlbTrackElements()
 {
    TAGntuGlbTrack* pNtuTrack = fReco->GetNtuGlbTrack();
@@ -1232,6 +1275,7 @@ void TAGbaseEventDisplay::UpdateGlbTrackElements()
 }
 
 //__________________________________________________________
+//! Update bar elements (TW)
 void TAGbaseEventDisplay::UpdateBarElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
@@ -1310,8 +1354,8 @@ void TAGbaseEventDisplay::UpdateBarElements()
 
 }
 
-
 //__________________________________________________________
+//! Update crystal elements (CAL)
 void TAGbaseEventDisplay::UpdateCrystalElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
@@ -1381,6 +1425,7 @@ void TAGbaseEventDisplay::UpdateCrystalElements()
 }
 
 //__________________________________________________________
+//! Update STC elements
 void TAGbaseEventDisplay::UpdateStcElements()
 {
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
@@ -1417,6 +1462,7 @@ void TAGbaseEventDisplay::UpdateStcElements()
 }
 
 //__________________________________________________________
+//! Update layer elements (BM)
 void TAGbaseEventDisplay::UpdateLayerElements()
 {
    TABMparGeo* pbmGeo = fReco->GetParGeoBm();;

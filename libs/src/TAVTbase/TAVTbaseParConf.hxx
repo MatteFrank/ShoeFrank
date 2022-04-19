@@ -58,18 +58,21 @@ public:
    TAVTbaseParConf();
     virtual ~TAVTbaseParConf();
 
-   //! Reading from file
+   // Reading from file
    Bool_t          FromFile(const TString& name = "");
    
-   //! Clear
+   // Clear
    virtual void    Clear(Option_t* opt="");
    
-   //! To stream
+   // To stream
    virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
    
-   //! Get status for a sensor
+   // Dead pixel map check
+   Bool_t IsDeadPixel(Int_t sensorId, Int_t aLine, Int_t aColumn);
+   
+   // Get status for a sensor
    virtual Int_t   GetStatus(Int_t idx)      const;
-   //! Get minor status for a sensor
+   // Get minor status for a sensor
    virtual Int_t   GetStatusMinor(Int_t idx) const;
    //! Get tyoe for a sensor
    virtual Int_t   GetType(Int_t idx)        const { return fSensorParameter[idx].Type; }

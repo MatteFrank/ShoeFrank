@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TABMparMap.cxx,v 1.5 2003/06/09 18:41:04 mueller Exp $
-  \brief   Implementation of TABMparMap.
+  \file    TABMparMap.cxx
+  \brief   Beam Monitor map parameters
 */
 
 #include <string.h>
@@ -16,28 +15,29 @@
 //##############################################################################
 
 /*!
-  \class TABMparMap TABMparMap.hxx "TABMparMap.hxx"
-  \brief Map and Geometry parameters for Tof wall. **
+  \class TABMparMap TABMparMap.hxx
+  \brief Beam Monitor map parameters
 */
 
 ClassImp(TABMparMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
 TABMparMap::TABMparMap() {
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
+//!
 TABMparMap::~TABMparMap()
 {}
 
-
 //------------------------------------------+-----------------------------------
-//! Read mapping data from file \a name .
-
+//! Read mapping data
+//!
+//! \param[in] name input file name
+//! \param[in] bmgeo pointer to TABMparGeo object
 Bool_t TABMparMap::FromFile(const TString& name, TABMparGeo *bmgeo) {
 
   Clear();

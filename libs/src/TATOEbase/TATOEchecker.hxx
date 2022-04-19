@@ -36,7 +36,7 @@ struct value_and_error{
 // -------------------------------------------
 //                    Options
 struct no_requirement{
-    bool predicate(reconstruction_module const& rm_p){ return true; }
+    bool predicate(reconstruction_module const& /*rm_p*/){ return true; }
 };
 
 template<int C>

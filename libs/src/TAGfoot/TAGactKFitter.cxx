@@ -1006,10 +1006,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
 		}
 
-		shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
+	//	shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
 
 		h_chargeMC->Fill( mcCharge );
 		h_trackQuality->Fill( trackQuality );
+		shoeOutTrack->SetQuality( trackQuality );
 		h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
 		h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
 		h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present

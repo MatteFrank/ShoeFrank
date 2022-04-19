@@ -28,21 +28,19 @@ public:
    //! Get Max MaxMomentum
    Float_t GetMaxMomentum() const { return fMaxMomentum; }
 
-   //! Set Max MaxMomentum
+   // Set Max MaxMomentum
    void SetMaxMomentum(Float_t m);
    
-   //! Add Track
+   // Add Track
    TAEDeveGlbTrack* AddTrack(TVector3& vertex, TVector3& momentum, Int_t charge);
   
-   //! Reset tracks
+   // Reset tracks
    void ResetTracks();
       
 private:
    TEveRGBAPalette* fPalette;     ///< color palette
    Int_t            fNofTracks;   ///< number of tracks
    Int_t            fMaxMomentum; ///< max momentum
-
 };
-
 
 #endif

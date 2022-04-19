@@ -21,6 +21,7 @@ TAGmaterials* TAGmaterials::fgInstance = 0;
  \brief Class generating material and mixture. **
  */
 
+//! Class Imp
 ClassImp(TAGmaterials);
 
 //______________________________________________________________________________
@@ -38,6 +39,7 @@ TAGmaterials::~TAGmaterials()
 }
 
 //______________________________________________________________________________
+//! Instance
 TAGmaterials* TAGmaterials::Instance()
 {
     if (fgInstance == 0)
@@ -46,7 +48,13 @@ TAGmaterials* TAGmaterials::Instance()
     return fgInstance;
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Create material
+//!
+//! \param[in] name  name of material
+//! \param[in] density density of material
+//! \param[in] temperature temperature of material
+//! \param[in] pressure pressure of material
 TGeoMaterial* TAGmaterials::CreateMaterial(TString name, Float_t density,
                                             Float_t temperature, Float_t pressure)
 {
@@ -108,9 +116,15 @@ TGeoMaterial* TAGmaterials::CreateMaterial(TString name, Float_t density,
 //______________________________________________________________________________
 //! create mixture with differents materials
 //! the material, densities and proportion are seperated by a /
-TGeoMedium*  med = 0x0;
+//!
+//! \param[in] formula  formula of mixture
+//! \param[in] densities densities of mixture
+//! \param[in] prop proportion of each material
+//! \param[in] density density of each material
 TGeoMixture* TAGmaterials::CreateMixture(TString formula, const TString densities, const TString prop, Float_t density)
 {
+   TGeoMedium*  med = 0x0;
+
    vector<TString> listMat = GetStrings(formula);
    Float_t compDensity[listMat.size()];
    Float_t compProp[listMat.size()];
@@ -186,7 +200,7 @@ string TAGmaterials::PrintMaterialFluka()
          int elId = GetFlukaMatId(element->Z());
          CheckFlukaMat(mix->GetDensity(), element->A(), element->Z());
          
-         NameMap[mix->GetName()] = fFlukaMat[elId].Name;
+         fNameMap[mix->GetName()] = fFlukaMat[elId].Name;
          
          if (fgkLowMat[mix->GetName()] == 0) {
             
@@ -206,7 +220,7 @@ string TAGmaterials::PrintMaterialFluka()
       // COMPOUND
       if (nElements != 1) {
          
-         NameMap[mix->GetName()] = mix->GetName();
+         fNameMap[mix->GetName()] = mix->GetName();
          
          for (Int_t e = 0; e < nElements; ++e) {
             
@@ -279,7 +293,11 @@ string TAGmaterials::PrintMaterialFluka()
    return ss.str();
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Append Fluka file (depecreated method)
+//!
+//! \param[in] string string to add
+//! \param[in] what separator to add
 TString TAGmaterials::AppendFluka(const Char_t* string, Int_t what)
 {
    TString name = string;
@@ -297,7 +315,11 @@ TString TAGmaterials::AppendFluka(const Char_t* string, Int_t what)
    return name;
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Prepend Fluka file (depecreated method)
+//!
+//! \param[in] string string to add
+//! \param[in] what separator to add
 TString TAGmaterials::PrependFluka(const Char_t* string, Int_t what)
 {
    TString name = string;
@@ -318,7 +340,12 @@ TString TAGmaterials::PrependFluka(const Char_t* string, Int_t what)
    return name;
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Append Fluka file name (depecreated method)
+//!
+//! \param[in] string string to add
+//! \param[in] what separator to add
+//! \param[in] align align parameter
 TString TAGmaterials::PrependFlukaName(const Char_t* string, Int_t what, Int_t align)
 {
    TString name = string;
@@ -335,17 +362,17 @@ TString TAGmaterials::PrependFlukaName(const Char_t* string, Int_t what, Int_t a
    return name;
 }
 
-
-
-//______________________________________________________________________________
+///------------------------------------------+-----------------------------------
+//! Get Fluka name for material
+//!
+//! \param[in] matname material name
 TString TAGmaterials::GetFlukaMatName(TString matname)
 {
-
   TString flkname;
   
-  map<TString,TString>::iterator it = NameMap.find(matname);
+  map<TString,TString>::iterator it = fNameMap.find(matname);
 
-  if(it == NameMap.end()) 
+  if(it == fNameMap.end())
     cout << "Key-value pair not present in map for material " << matname <<endl; 
   else{
     // cout << "Key-value pair present : "  << it->first << "->" << it->second << endl;;

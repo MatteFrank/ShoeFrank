@@ -29,37 +29,37 @@
 class LocalRecoMC : public BaseReco
 {
 public:
-   //! default constructor
+   // default constructor
    LocalRecoMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
    
    virtual ~LocalRecoMC();
    
-   //! Add required items
+   // Add required items
    virtual void AddRawRequiredItem();
 
-   //! Create raw data action
+   // Create raw data action
    virtual void CreateRawAction();
    
-   //! Set raw histogram directory
+   // Set raw histogram directory
    virtual void SetRawHistogramDir();
    
-   //! Create branch in tree
+   // Create branch in tree
    virtual void SetTreeBranches();
    
-   //! Open File
+   // Open File
    virtual void OpenFileIn();
    
-   //! Close File in
+   // Close File in
    virtual void CloseFileIn();
   
-   ///< ! Global Checks
+   // Global Checks
    virtual void GlobalChecks();
    
-   //! Goto Event
+   // Goto Event
    virtual Bool_t GoEvent(Int_t iEvent);
 
 protected:
-   EVENT_STRUCT*         fEvtStruct;
+   EVENT_STRUCT*         fEvtStruct;   ///< Fluka structure
   
    TAMCactNtuPart*       fActNtuMcTrk;  ///< action for MC tracks
    TAMCactNtuRegion*     fActNtuMcReg;  ///< action for MC region

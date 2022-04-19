@@ -62,6 +62,19 @@ Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pVtVertex  vertex container descriptor
+//! \param[in] pItNtuClus ITR cluster container descriptor
+//! \param[in] pMsdNtuClus MSD point container descriptor
+//! \param[in] pTwNtuRec TW point container descriptor
+//! \param[in] pCaNtuClus CAL cluster container descriptor
+//! \param[out] pNtuTrack global track container descriptor
+//! \param[in] pVtGeoMap VTX geometry parameter descriptor
+//! \param[in] pItGeoMap ITR geometry parameter descriptor
+//! \param[in] pMsdGeoMap MSD geometry parameter descriptor
+//! \param[in] pTwGeoMap TW geometry parameter descriptor
+//! \param[in] pgGeoMap target geometry parameter descriptor
 TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
 								 TAGdataDsc* pVtVertex, TAGdataDsc* pItNtuClus, TAGdataDsc* pMsdNtuClus, TAGdataDsc* pTwNtuRec, TAGdataDsc* pCaNtuClus, TAGdataDsc* pNtuTrack,
 								  TAGparaDsc* pVtGeoMap, TAGparaDsc* pItGeoMap, TAGparaDsc* pMsdGeoMap,TAGparaDsc* pTwGeoMap, TAGparaDsc* pgGeoMap)
@@ -231,7 +244,7 @@ void TAGactNtuGlbTrackS::CreateHistogram()
 }
 
 //_____________________________________________________________________________
-//
+//! Action
 Bool_t TAGactNtuGlbTrackS::Action()
 {
    // GLB
@@ -256,7 +269,7 @@ Bool_t TAGactNtuGlbTrackS::Action()
 }
 
 //_____________________________________________________________________________
-//
+//! Check Vertex
 Bool_t TAGactNtuGlbTrackS::CheckVtx()
 {
    // VTX info
@@ -278,7 +291,7 @@ Bool_t TAGactNtuGlbTrackS::CheckVtx()
 }
 
 //_____________________________________________________________________________
-//  
+//! Find global tracks
 Bool_t TAGactNtuGlbTrackS::FindTracks()
 {
    if (!CheckVtx()) return false;
@@ -327,7 +340,10 @@ Bool_t TAGactNtuGlbTrackS::FindTracks()
 
 
 //_____________________________________________________________________________
-//
+//! Fill MC track id
+//!
+//! \param[in] cluster a given cluster
+//! \param[in] point related global point
 void TAGactNtuGlbTrackS::FillMcTrackId(TAGcluster* cluster, TAGpoint* point)
 {
    for (Int_t k = 0; k < cluster->GetMcTracksN(); ++k) {
@@ -337,7 +353,7 @@ void TAGactNtuGlbTrackS::FillMcTrackId(TAGcluster* cluster, TAGpoint* point)
 }
 
 //_____________________________________________________________________________
-//
+//! Fill global track with VTX track
 TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
 {
    TAGtrack* track   = new TAGtrack();
@@ -427,7 +443,9 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
 }
 
 //_____________________________________________________________________________
-//
+//! Find ITR cluster for a given global track
+//!
+//! \param[in] track a given track
 void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
 {
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
@@ -522,7 +540,9 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
 }
 
 //_____________________________________________________________________________
-//
+//! Find MSD cluster for a given global track
+//!
+//! \param[in] track a given track
 void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
 {
    TAGntuGlbTrack*  pNtuTrack = (TAGntuGlbTrack*)  fpNtuTrack->Object();
@@ -624,7 +644,9 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
 }
 
 //_____________________________________________________________________________
-//
+//! Find TW cluster for a given global track
+//!
+//! \param[in] track a given track
 void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
 {
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
@@ -715,7 +737,9 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
 }
 
 //_____________________________________________________________________________
-//
+//! Find CAL cluster for a given global track
+//!
+//! \param[in] track a given track
 void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
 {
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
@@ -781,7 +805,9 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup all histograms.
+//! Compute mass from track
+//!
+//! \param[in] track a given track
 void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
 {
    Float_t Z = track->GetTwChargeZ();
@@ -808,8 +834,10 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
       printf("Charge %.0f Mass %f\n", Z, mass);
 }
 
-//_____________________________________________________________________________
-//
+//------------------------------------------+-----------------------------------
+//! Fill histogram from track
+//!
+//! \param[in] track a given track
 void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
 {
    Float_t twEnergyLoss  = -1.;
@@ -875,7 +903,7 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
 }
 
 //_____________________________________________________________________________
-//
+//! Fill histograms
 void TAGactNtuGlbTrackS::FillHistogramm()
 {
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
@@ -885,9 +913,11 @@ void TAGactNtuGlbTrackS::FillHistogramm()
       fpHisClusSensor->Fill(0);
 }
 
-//_____________________________________________________________________________
-//
-void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
+//------------------------------------------+-----------------------------------
+//! Update track parameters
+//!
+//! \param[in] track a given track
+void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track)
 {
    TVector3 lineOrigin = track->GetTgtPosition();  // origin in the tracker system
    TVector3 lineSlope  = track->GetTgtDirection();   // slope along z-axis in tracker system
@@ -938,8 +968,13 @@ void TAGactNtuGlbTrackS::UpdateParam(TAGtrack* track, Int_t viewX)
    track->SetTgtDirection(lineSlope);
 }
 
-//_____________________________________________________________________________
-//
+//------------------------------------------+-----------------------------------
+//! Make a linear fit
+//!
+//! \param[in] z Z-position vector
+//! \param[in] x X-position vector
+//! \param[in] dx X-position error vector
+//! \return parameter vector (slope/offset)
 vector<double> TAGactNtuGlbTrackS::GetLinearFit(const vector<double>& z, const vector<double>& x, const vector<double>& dx)
 {
    double zzSum = 0, zxSum = 0, slope, intercept;

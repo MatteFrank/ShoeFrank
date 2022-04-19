@@ -20,7 +20,7 @@ using namespace genfit;
 class TADIgenField : public AbsBField {
    
 private:
-   TADIgeoField* fField;
+   TADIgeoField* fField; ///< Mag field from geometry
    
 public:
    TADIgenField(TADIgeoField* field);

@@ -30,10 +30,19 @@
  \brief NTuplizer for ITR tracks using combinatory algorithm
  */
 
+//! Class Imp
 ClassImp(TAITactNtuTrackF);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuClus cluster container descriptor
+//! \param[out] pNtuTrack track container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pCalib calibration parameter descriptor
+//! \param[in] p_geo_g target geometry descriptor
 TAITactNtuTrackF::TAITactNtuTrackF(const char* name, 
 								   TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
 								   TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, TAGparaDsc* p_geo_g)
@@ -55,7 +64,9 @@ TAITactNtuTrackF::~TAITactNtuTrackF()
 }
 
 //_____________________________________________________________________________
-//
+//! Check if projected track is out of target area
+//!
+//! \param[in] trk a given track
 Bool_t TAITactNtuTrackF::IsGoodCandidate(TAGbaseTrack* trk)
 {
    TAITtrack* track = static_cast<TAITtrack*>(trk);
@@ -81,25 +92,30 @@ Bool_t TAITactNtuTrackF::IsGoodCandidate(TAGbaseTrack* trk)
 }
 
 //_____________________________________________________________________________
-//
-Int_t TAITactNtuTrackF::GetClustersN(Int_t iPlane)
+//! Get number of clusters for a given sensor
+//!
+//! \param[in] iSensor sensor index
+Int_t TAITactNtuTrackF::GetClustersN(Int_t iSensor)
 {
    TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
-   return pNtuClus->GetClustersN(iPlane);
+   return pNtuClus->GetClustersN(iSensor);
 }
 
 //_____________________________________________________________________________
-//
-TAGcluster* TAITactNtuTrackF::GetCluster(Int_t iPlane, Int_t iClus)
+//! Get cluster for a given sensor and a given index
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] iClus cluster index
+TAGcluster* TAITactNtuTrackF::GetCluster(Int_t iSensor, Int_t iClus)
 {
    TAITntuCluster* pNtuClus = (TAITntuCluster*) fpNtuClus->Object();
-   TAITcluster* cluster = pNtuClus->GetCluster(iPlane, iClus);
+   TAITcluster* cluster = pNtuClus->GetCluster(iSensor, iClus);
    
    return cluster;
 }
 
 //_____________________________________________________________________________
-//
+//! Get number of tracks
 Int_t TAITactNtuTrackF::GetTracksN()
 {
    TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
@@ -107,7 +123,9 @@ Int_t TAITactNtuTrackF::GetTracksN()
 }
 
 //_____________________________________________________________________________
-//
+//! Add new track to container using copt cstr
+//!
+//! \param[in] trk a given track
 void TAITactNtuTrackF::AddNewTrack(TAGbaseTrack* trk)
 {
    TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
@@ -116,14 +134,16 @@ void TAITactNtuTrackF::AddNewTrack(TAGbaseTrack* trk)
 }
 
 //_____________________________________________________________________________
-//
+//! Get new track
 TAGbaseTrack* TAITactNtuTrackF::NewTrack()
 {
    return new TAITtrack();
 }
 
 //_____________________________________________________________________________
-//
+//! Set beam position
+//!
+//! \param[in] pos position of beam
 void TAITactNtuTrackF::SetBeamPosition(TVector3 pos)
 {
    TAITntuTrack* pNtuTrack = (TAITntuTrack*) fpNtuTrack->Object();
@@ -131,7 +151,7 @@ void TAITactNtuTrackF::SetBeamPosition(TVector3 pos)
 }
 
 //_____________________________________________________________________________
-//
+//! Get geometry parameters
 TAVTbaseParGeo* TAITactNtuTrackF::GetParGeo()
 {
    TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
@@ -140,7 +160,7 @@ TAVTbaseParGeo* TAITactNtuTrackF::GetParGeo()
 }
 
 //_____________________________________________________________________________
-//
+//! Get configuration parameters
 TAVTbaseParConf* TAITactNtuTrackF::GetParConf()
 {
    TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();

@@ -1,8 +1,7 @@
 #ifndef _TAVTntuHit_HXX
 #define _TAVTntuHit_HXX
 /*!
- \file
- \version $Id: TAVTntuHit.hxx
+ \file TAVTntuHit.hxx
  \brief   Declaration of TAVTntuHit.
  */
 /*------------------------------------------+---------------------------------*/
@@ -17,6 +16,7 @@ class TAVTntuHit : public TAGdata {
 protected:
    //using TObjArray here
    TObjArray*        fListOfPixels;    ///< list of pixels
+   //! geometry parameter
    TAVTparGeo*       fpGeoMap;         //! do not store
    
     std::map<pair<int, int>, int > fMap; //! pixel map
@@ -28,27 +28,27 @@ public:
    TAVTntuHit();
    virtual          ~TAVTntuHit();
    
-   //! Get hit for a given sensor
+   // Get hit for a given sensor
    TAVThit*          GetPixel(Int_t iSensor, Int_t iPixel);
-   //! Get hit  for a given sensor const
+   // Get hit  for a given sensor const
    const TAVThit*    GetPixel(Int_t iSensor, Int_t iPixel) const;
    
-   //! Get list of pixels for a given sensor
+   // Get list of pixels for a given sensor
    TClonesArray*     GetListOfPixels(Int_t iSensor);
-   //! Get list of pixels for a given sensor (const)
+   // Get list of pixels for a given sensor (const)
    TClonesArray*     GetListOfPixels(Int_t iSensor) const;
    
-   //! Get number of pixels for given sensor
+   // Get number of pixels for given sensor
    Int_t             GetPixelsN(Int_t iSensor) const;
    
-   //! New pixel
+   // New pixel
    TAVThit*          NewPixel(Int_t sensor, Double_t value, Int_t aLine, Int_t aColumn);
    
-   //! Set up clone
+   // Set up clone
    virtual void      SetupClones();
-   //! Clear
+   // Clear
    virtual void      Clear(Option_t* opt="");
-   //! To stream
+   // To stream
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:

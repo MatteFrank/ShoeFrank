@@ -41,7 +41,7 @@ public:
   // Update PDG
   static        void    UpdatePDG();
   
-  //  retiurn Fluka id from G4 particle name
+  //! retiurn Fluka id from G4 particle name
   static        Int_t   GetFlukaId(TString g4PartName)    { return fgkG4PartNameToFlukaId.find(g4PartName) == fgkG4PartNameToFlukaId.end() ? -1 : fgkG4PartNameToFlukaId[g4PartName]; }
   
   //! return mass in atomic unit

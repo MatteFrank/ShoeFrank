@@ -27,76 +27,71 @@ class TGCheckButton;
 class TAGbaseEventDisplay : public TAEDbaseInterface
 {
 protected:
-   //! default constructor
+   // default constructor
    TAGbaseEventDisplay(const TString expName, Int_t runNumber, Int_t type);
    
 public:   
    virtual ~TAGbaseEventDisplay();
    
-   //! Build default geometry
+   // Build default geometry
    virtual void BuildDefaultGeometry();
    
-   //! Update elements
+   // Update elements
    virtual void UpdateElements(); 
    
-   //! Add required items
+   // Add required items
    virtual void AddRequiredItem();
 
-   //! Create raw data action
+   // Create raw data action
    virtual void CreateRawAction();
    
-   //! Create raw reco action
+   // Create raw reco action
    virtual void CreateRecAction();
       
-   //! Open File
+   // Open File
    virtual void SetFileName(const TString fileName);
    
-   //! Open File
+   // Open File
    virtual void OpenFile();
    
-   //! Add elements
+   // Add elements
    virtual void AddElements();
    
-   //! Connect elements
+   // Connect elements
    virtual void ConnectElements();
    
-   //! Uodate hit info
+   // Uodate hit info
    void UpdateHitInfo(TEveDigitSet* qs, Int_t idx);
-   //! Uodate track info
+   // Uodate track info
    void UpdateTrackInfo(TEveDigitSet* qs, Int_t idx);
-   //! Uodate global track info
+   // Uodate global track info
    void UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx);
-   //! Uodate BM info
+   // Uodate BM info
    void UpdateDriftCircleInfo(TEveDigitSet* qs, Int_t idx);
    
 protected:   
-   //! Add raw reconstruction required items
-   void AddRequiredRawItem();
-   //! Add reconstruction required items
-   void AddRequiredRecItem();
-
-   //! Read parameter files
+   // Read parameter files
    void ReadParFiles();
-   //! Set reconstruction options
+   // Set reconstruction options
    void SetRecoOptions();
    
-   //! Update STC elements
+   // Update STC elements
    void UpdateStcElements();
-   //! Update BM elements
+   // Update BM elements
    void UpdateLayerElements();
-   //! Update TW elements
+   // Update TW elements
    void UpdateBarElements();
-   //! Update CAL elements
+   // Update CAL elements
    void UpdateCrystalElements();
-   //! Update MSD elements
+   // Update MSD elements
    void UpdateStripElements();
-   //! Update quad elements
+   // Update quad elements
    void UpdateQuadElements(const TString prefix);
-   //! Update track elements
+   // Update track elements
    void UpdateTrackElements(const TString prefix);
-   //! Update global track elements
+   // Update global track elements
    void UpdateGlbTrackElements();
-   //! Update elements
+   // Update elements
    void UpdateElements(const TString prefix);
    
 public:
@@ -208,13 +203,13 @@ protected:
    Bool_t          fIrFlag;                 ///< ITR flag
    Bool_t          fFlagTrack;              ///< flag for tracking
 
-   ///< TW
+   // TW
    map< pair<Int_t, Int_t>, Int_t > fFiredTofBar;       ///< list of fired bar per event
    
-   ///< CA
+   // CA
    map< Int_t, Int_t >  fFiredCaCrystal;     ///< list of fired bar per event
 
-   ///< GUI
+   // GUI
    TGCheckButton*       fClusterButton;      ///< toggle clusters plots
    TGCheckButton*       fRawDataButton;      ///< toggle rawdata plots
    TGCheckButton*       fRateButton;         ///< toggle recompute parameters at each plane

@@ -1,9 +1,25 @@
+/*!
+ \file EmptyEvent.cpp
+ \brief  Implementation of EmptyEvent
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "EmptyEvent.hh"
 
+/*!
+ \class EmptyEvent
+ \brief empty event
+ */
+
+//------------------------------------------+-----------------------------------
+//! Destructor.
 EmptyEvent::~EmptyEvent(){}
 
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void EmptyEvent::readData(unsigned int ** p1){
 
   unsigned int * p = *p1;
@@ -22,7 +38,8 @@ void EmptyEvent::readData(unsigned int ** p1){
   *p1 = p;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Print data
 void EmptyEvent::printData () const {
 
     printf ("EMPTY DATA ROB: \n");
@@ -32,5 +49,4 @@ void EmptyEvent::printData () const {
     printf ("LumiBlock Number: %d\n",  lumiBlock);
     printf ("Event Number: %d\n",  eventNumber);
     printf ("\n");
-
 }

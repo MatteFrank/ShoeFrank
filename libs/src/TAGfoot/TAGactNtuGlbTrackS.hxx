@@ -35,10 +35,10 @@ public:
 
    virtual ~TAGactNtuGlbTrackS();
    
-   //! Create histograms
+   // Create histograms
    virtual  void    CreateHistogram();
    
-   //! Action
+   // Action
    virtual  Bool_t  Action();
 
 public:
@@ -48,34 +48,34 @@ public:
    static void    SetBmMatched(Bool_t flag) { fgBmMatched = flag; }
 
 private:
-   //! Find tracks
+   // Find tracks
    Bool_t     FindTracks();
-   //! Check VTX
+   // Check VTX
    Bool_t     CheckVtx();
-   //! Fill VTX tracks
+   // Fill VTX tracks
    TAGtrack*  FillVtxTracks(TAVTtrack* vtTrack);
-   //! Find ITR cluster for a given track
+   // Find ITR cluster for a given track
    void       FindItrCluster(TAGtrack* track);
-   //! Find MSD cluster for a given track
+   // Find MSD cluster for a given track
    void       FindMsdCluster(TAGtrack* track);
-   //! Find TW cluster for a given track
+   // Find TW cluster for a given track
    void       FindTwCluster(TAGtrack* track, Bool_t update = true);
-   //! Find CAL cluster for a given track
+   // Find CAL cluster for a given track
    void       FindCaCluster(TAGtrack* track);
 
-   //! Fill track histograms
+   // Fill track histograms
    void       FillHistogramm(TAGtrack* track);
-   //! Fill histograms
+   // Fill histograms
    void       FillHistogramm();
-   //! Update track parameters
-   void       UpdateParam(TAGtrack* track, Int_t viewX = -1);
+   // Update track parameters
+   void       UpdateParam(TAGtrack* track);
    
-   //! Compute mass
+   // Compute mass
    void       ComputeMass(TAGtrack* track);
-   //! Fill MC info
+   // Fill MC info
    void       FillMcTrackId(TAGcluster* cluster, TAGpoint* point);
 
-   //! Get linear fit parameter
+   // Get linear fit parameter
    vector<double> GetLinearFit(const vector<double>& z, const vector<double>& x, const vector<double>& dx);
 
 private:

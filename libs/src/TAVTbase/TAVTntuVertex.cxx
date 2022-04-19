@@ -17,6 +17,7 @@
  \brief Class for VTX vertices
  */
 
+//! Class Imp
 ClassImp(TAVTvertex) // Description of a vertex
 
 //______________________________________________________________________________
@@ -35,6 +36,8 @@ TAVTvertex::TAVTvertex()
 
 //______________________________________________________________________________
 //! Copy constructor
+//!
+//! \param[in] aVertex vertex to copy
 TAVTvertex::TAVTvertex(const TAVTvertex& aVertex)
 :  TAGobject(aVertex),
    fVertexPosition(aVertex.fVertexPosition),
@@ -54,7 +57,9 @@ TAVTvertex::~TAVTvertex()
 }
 
 //______________________________________________________________________________
-//
+//! Add track to list
+//!
+//! \param[in] track track to add
 void TAVTvertex::AddTrack(TAVTtrack* track)
 {
     TClonesArray &trackArray = *fListOfTracks;
@@ -62,7 +67,7 @@ void TAVTvertex::AddTrack(TAVTtrack* track)
 }
 
 //____________________________________________________________________________
-//
+//! Clear list
 void TAVTvertex::Reset()
 {
     fListOfTracks->Delete();
@@ -76,7 +81,7 @@ void TAVTvertex::Reset()
  \brief Class for VTX vertices containers
  */
 
-
+//! Class Imp
 ClassImp(TAVTntuVertex);
 
 TString TAVTntuVertex::fgkBranchName   = "vtvtx.";
@@ -98,42 +103,45 @@ TAVTntuVertex::~TAVTntuVertex()
 }
 
 //------------------------------------------+-----------------------------------
-// return the number of vertex
+//! return the number of vertex
 Int_t TAVTntuVertex::GetVertexN() const
 {
     return fListOfVertex->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//  return vertex for a given sensor
-TAVTvertex* TAVTntuVertex::GetVertex(Int_t i)
+//!  return vertex for a given sensor
+//!
+//! \param[in] sensorId sensor index
+TAVTvertex* TAVTntuVertex::GetVertex(Int_t sensorId)
 {
-    if(i>=0 || i< GetVertexN())
-        return (TAVTvertex*)fListOfVertex->At(i);
-    else
-        return 0x0;
-   
-}
-
-//------------------------------------------+-----------------------------------
-//  return vertex for a given sensor
-const TAVTvertex* TAVTntuVertex::GetVertex(Int_t i) const
-{
-    if(i>=0 || i< GetVertexN())
-        return (TAVTvertex*)fListOfVertex->At(i);
+    if(sensorId >= 0 || sensorId < GetVertexN())
+        return (TAVTvertex*)fListOfVertex->At(sensorId);
     else
         return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
-// clear
+//!  return vertex for a given sensor (const)
+//!
+//! \param[in] sensorId sensor index
+const TAVTvertex* TAVTntuVertex::GetVertex(Int_t sensorId) const
+{
+    if(sensorId >= 0 || sensorId < GetVertexN())
+        return (TAVTvertex*)fListOfVertex->At(sensorId);
+    else
+        return 0x0;
+}
+
+//------------------------------------------+-----------------------------------
+//! clear
 void TAVTntuVertex::Clear(Option_t*)
 {
     fListOfVertex->Delete();
 }
 
 //______________________________________________________________________________
-//
+//! Create a new vertex
 TAVTvertex* TAVTntuVertex::NewVertex()
 {
     TClonesArray &vtxArray = *fListOfVertex;
@@ -142,7 +150,9 @@ TAVTvertex* TAVTntuVertex::NewVertex()
 }
 
 //______________________________________________________________________________
-//  
+//! Create a new vertex with copy constructor
+//!
+//! \param[in] vtx vertex to copy
 TAVTvertex* TAVTntuVertex::NewVertex(TAVTvertex& vtx)
 {
     TClonesArray &vtxArray = *fListOfVertex;
@@ -151,6 +161,7 @@ TAVTvertex* TAVTntuVertex::NewVertex(TAVTvertex& vtx)
 }
 
 //----------------------------------------------------------------------------
+//! Set up clones
 void TAVTntuVertex::SetupClones()
 {
     if (!fListOfVertex) {

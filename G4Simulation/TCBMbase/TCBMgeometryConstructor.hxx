@@ -24,7 +24,7 @@ public:
    TCBMgeometryConstructor(TABMparGeo* pParGeo);
    virtual ~TCBMgeometryConstructor();
    
-   //! Method in which the physical volume is constructed
+   // Method in which the physical volume is constructed
    virtual G4LogicalVolume* Construct();
    
    //! Get Box size of BM
@@ -37,7 +37,7 @@ public:
 public:
    //! Get Sensitive detector name of BM
    static const Char_t* GetSDname()  { return fgkBmSDname.Data();}
-   //! Get number of layers
+   // Get number of layers
    void GetLayersN();
    
 private:
@@ -52,11 +52,11 @@ private:
    static TString fgkBmSDname;      ///< BM sensitive detector name
 
 private:
-   //! Define envelop size
+   // Define envelop size
    void DefineMaxMinDimension();
-   //! Define sensitive detector
+   // Define sensitive detector
    void DefineSensitive();
-   //! Define material
+   // Define material
    void DefineMaterial();
 };
 

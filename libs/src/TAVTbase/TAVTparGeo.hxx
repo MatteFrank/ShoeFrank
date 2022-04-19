@@ -32,46 +32,52 @@ public:
    TAVTparGeo();
     virtual ~TAVTparGeo();
   
-   //! Define materials
+   // Define materials
    virtual void  DefineMaterial();
 
-   //! Add CMOS module geometry to vertex
+   // Add CMOS module geometry to vertex
    TGeoVolume* AddModule(const char* basemoduleName = "Module", const char *name = "Vertex");
       
-   //! Add CMOS module geometry to vertex
+   // Add CMOS module geometry to vertex
    TGeoVolume* BuildBoard(const char* basemoduleName = "M28Board", const char *name = "M28Epi");
    
-   //! Build Vertex
+   // Build Vertex
    TGeoVolume* BuildVertex( const char *name = GetBaseName(), const char* basemoduleName = "M28", Bool_t board = false);
    
    //crossing regions (n = layer number; 0<=n<=3)
-   //! Get expitaxial region
+   // Get expitaxial region
    Int_t          GetRegEpitaxial(Int_t n);
-   //! Get module region
+   // Get module region
    Int_t          GetRegModule(Int_t n);
-   //! Get pixel region
+   // Get pixel region
    Int_t          GetRegPixel(Int_t n);
 
    // to print fluka files
-   //! Fluka parameters
+   // Fluka parameters
    virtual string PrintParameters();
-   //! Fluka rorations
+   // Fluka rorations
    virtual string PrintRotations();
-   //! Fluka bodies
+   // Fluka bodies
    virtual string PrintBodies();
-   //! Fluka regions
+   // Fluka regions
    virtual string PrintRegions();
-   //! Fluka material assignment
+   // Fluka material assignment
    virtual string PrintAssignMaterial(TAGmaterials *Material);
-   //! Fluka air substraction
+   // Fluka air substraction
    virtual string PrintSubtractBodiesFromAir();
    
 protected:
+   //! Fluka epitaxial body
    vector<string> fvEpiBody;   //! Fluka epitaxial body
+   //! Fluka module body
    vector<string> fvModBody;   //! Fluka module body
+   //! Fluka pixel body
    vector<string> fvPixBody;   //! Fluka pixel body
+   //! Fluka epitaxial region
    vector<string> fvEpiRegion; //! Fluka epitaxial region
+    //! Fluka module region
    vector<string> fvModRegion; //! Fluka module region
+   //! Fluka pixel region
    vector<string> fvPixRegion; //! Fluka pixel region
 
 public:

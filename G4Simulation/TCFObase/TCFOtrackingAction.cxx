@@ -32,29 +32,24 @@ TCFOtrackingAction::TCFOtrackingAction(TCFObaseEventAction* aEventAction)
     fEventAction = aEventAction ;
 }
 
-//
-//---------------------------------------------------------------------------
-//
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Destructor
 TCFOtrackingAction::~TCFOtrackingAction()
 {
 }
 
-//
-//---------------------------------------------------------------------------
-//
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Pre user tracking action
 void TCFOtrackingAction::PreUserTrackingAction(const G4Track*)
 {
 }
 
-//
-//---------------------------------------------------------------------------
-//
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack){
-
+//! Post user tracking action
+//!
+//! \param[in] aTrack a given track
+void TCFOtrackingAction::PostUserTrackingAction(const G4Track* aTrack)
+{
     TString partName = aTrack->GetDefinition()->GetParticleName() ;
     TString detName  = aTrack->GetVolume()->GetName() ;
     TString regName  = aTrack->GetOriginTouchable()->GetVolume()->GetName() ;

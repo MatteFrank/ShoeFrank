@@ -23,7 +23,7 @@ class TADItrackPropagator : public TAGobject {
 public:
    TADItrackPropagator(TADIgeoField* field);
    
-   //! Extrapole vertex and momentum to a given Z
+   // Extrapole vertex and momentum to a given Z
    Bool_t	ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, TVector3& vOut, TVector3& pOut);
    
    //! Get field
@@ -58,15 +58,13 @@ private:
    Double_t   fStep;         ///< Step size
 
 private:
-   //! Solving Lorentz equation
+   // Solving Lorentz equation
    TVector3 SolveLorentz(TVector3 u, TVector3 field);
-   //! Runge-Kutta fourth computing
+   // Runge-Kutta fourth computing
    void RungeKutta4();
    
 private:
-   //! Conversion factor for light velocity
-   static const Double_t fgkConvFactor;
-   
+   static const Double_t fgkConvFactor;  ///< Conversion factor for light velocity
 };
 
 #endif

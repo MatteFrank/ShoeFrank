@@ -36,12 +36,21 @@
  \brief Base class to NTuplizer VTX-IT-MSD track
  */
 
+//! Class Imp
 ClassImp(TAVTactBaseTrack);
 
 Bool_t TAVTactBaseTrack::fgRefit = true;
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTactBaseTrack::TAVTactBaseTrack(const char* name, 
+//!
+//! \param[in] name action name
+//! \param[in] pNtuClus  cluster container descriptor
+//! \param[out] pNtuTrack  track container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pCalib calibration parameter descriptor
+TAVTactBaseTrack::TAVTactBaseTrack(const char* name,
 										 TAGdataDsc* pNtuClus,TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig,  
 										 TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
 : TAGaction(name, "TAVTactNtuTrack - Base NTuplize Tracker"),
@@ -94,7 +103,7 @@ TAVTactBaseTrack::~TAVTactBaseTrack()
 }
 
 //------------------------------------------+-----------------------------------
-// Setup all histograms.
+//! Setup all histograms.
 void TAVTactBaseTrack::CreateHistogram()
 {
    DeleteHistogram();   
@@ -161,10 +170,10 @@ void TAVTactBaseTrack::CreateHistogram()
    return;
 }
 
-
-
 //_____________________________________________________________________________
-//  
+//! Apply cuts for a given track
+//!
+//! \param[in] track a given track
 Bool_t TAVTactBaseTrack::AppyCuts(TAGbaseTrack* track)
 {
    Bool_t valid = false;  
@@ -177,7 +186,9 @@ Bool_t TAVTactBaseTrack::AppyCuts(TAGbaseTrack* track)
 }
 
 //_____________________________________________________________________________
-//  
+//! Update track parameters
+//!
+//! \param[in] track a given track
 void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 {
    TVector3  origin;  // origin in the tracker system
@@ -263,7 +274,8 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 }
 
 //_____________________________________________________________________________
-//  
+//! Fill histograms per track
+//! \param[in] track a given track
 void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
 {
    TAVTbaseParGeo* pGeoMap  = GetParGeo();
@@ -350,7 +362,9 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
 //}
 
 //______________________________________________________________________________
-//  
+//! Set geo trafo with name
+//!
+//! \param[in] name geo trafo action name
 void TAVTactBaseTrack::SetGeoTrafo(TString name)
 {
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(name.Data());
@@ -359,25 +373,30 @@ void TAVTactBaseTrack::SetGeoTrafo(TString name)
 }
 
 //_____________________________________________________________________________
-//
-Int_t TAVTactBaseTrack::GetClustersN(Int_t iPlane)
+//! Get number of clusters for a given sensor
+//!
+//! \param[in] iSensor sensor index
+Int_t TAVTactBaseTrack::GetClustersN(Int_t iSensor)
 {
    TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*) fpNtuClus->Object();
-   return pNtuClus->GetClustersN(iPlane);
+   return pNtuClus->GetClustersN(iSensor);
 }
 
 //_____________________________________________________________________________
-//
-TAGcluster* TAVTactBaseTrack::GetCluster(Int_t iPlane, Int_t iClus)
+//! Get cluster for a given sensor and a given index
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] iClus cluster index
+TAGcluster* TAVTactBaseTrack::GetCluster(Int_t iSensor, Int_t iClus)
 {
    TAVTntuCluster*  pNtuClus  = (TAVTntuCluster*)  fpNtuClus->Object();
-   TAVTcluster* cluster = pNtuClus->GetCluster(iPlane, iClus);
+   TAVTcluster* cluster = pNtuClus->GetCluster(iSensor, iClus);
    
    return cluster;
 }
 
 //_____________________________________________________________________________
-//
+//! Get number of tracks
 Int_t TAVTactBaseTrack::GetTracksN()
 {
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
@@ -385,7 +404,18 @@ Int_t TAVTactBaseTrack::GetTracksN()
 }
 
 //_____________________________________________________________________________
-//
+//! Get number tracks const
+Int_t TAVTactBaseTrack::GetTracksN() const
+{
+   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
+   
+   return pNtuTrack->GetTracksN();
+}
+
+//_____________________________________________________________________________
+//! Add new track to container using copt cstr
+//!
+//! \param[in] trk a given track
 void TAVTactBaseTrack::AddNewTrack(TAGbaseTrack* trk)
 {
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
@@ -394,14 +424,16 @@ void TAVTactBaseTrack::AddNewTrack(TAGbaseTrack* trk)
 }
 
 //_____________________________________________________________________________
-//
+//! Get new track
 TAGbaseTrack* TAVTactBaseTrack::NewTrack()
 {
    return new TAVTtrack();
 }
 
 //_____________________________________________________________________________
-//
+//! Get track from container
+//!
+//! \param[in] idx track index
 TAGbaseTrack* TAVTactBaseTrack::GetTrack(Int_t idx)
 {
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
@@ -411,16 +443,9 @@ TAGbaseTrack* TAVTactBaseTrack::GetTrack(Int_t idx)
 }
 
 //_____________________________________________________________________________
-//
-Int_t TAVTactBaseTrack::GetTracksN() const
-{
-   TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
-   
-   return pNtuTrack->GetTracksN();
-}
-
-//_____________________________________________________________________________
-//
+//! Set beam position
+//!
+//! \param[in] pos position of beam
 void TAVTactBaseTrack::SetBeamPosition(TVector3 pos)
 {
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
@@ -428,7 +453,7 @@ void TAVTactBaseTrack::SetBeamPosition(TVector3 pos)
 }
 
 //_____________________________________________________________________________
-//
+//! Get geometry parameters
 TAVTbaseParGeo* TAVTactBaseTrack::GetParGeo()
 {
    TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
@@ -437,7 +462,7 @@ TAVTbaseParGeo* TAVTactBaseTrack::GetParGeo()
 }
 
 //_____________________________________________________________________________
-//
+//! Get configuration parameters
 TAVTbaseParConf* TAVTactBaseTrack::GetParConf()
 {
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();

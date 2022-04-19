@@ -39,6 +39,8 @@ TString TCTWgeometryConstructor::fgkTwSDname   = "TwSD";
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Constructor
+//!
+//! \param[in] pParGeo geometry parameter
 TCTWgeometryConstructor::TCTWgeometryConstructor(TATWparGeo* pParGeo)
 : TCGbaseConstructor("TCTWgeometryConstructor", "1.0"),
   fBoxLog(0x0),
@@ -55,6 +57,7 @@ TCTWgeometryConstructor::~TCTWgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct detector
 G4LogicalVolume* TCTWgeometryConstructor::Construct()
 {
    InfoMcMsg("Construct()", "Construct ToF Wall");
@@ -107,6 +110,7 @@ G4LogicalVolume* TCTWgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume
 void  TCTWgeometryConstructor::DefineSensitive()
 {
    // sensitive volume
@@ -123,9 +127,9 @@ void  TCTWgeometryConstructor::DefineSensitive()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define the dimension of the detecteor envelop
 void TCTWgeometryConstructor::DefineMaxMinDimension()
 {
-
    TVector3 size  = fpParGeo->GetBarSize();
    Float_t  thick = fpParGeo->GetBarThick();
 
@@ -142,6 +146,7 @@ void TCTWgeometryConstructor::DefineMaxMinDimension()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCTWgeometryConstructor::DefineMaterial()
 {
     fpMaterials->CreateG4Material(fpParGeo->GetBarMat());

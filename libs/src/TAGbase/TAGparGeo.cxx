@@ -32,6 +32,7 @@
  \brief Map and Geometry parameters for beam/target. **
  */
 
+//! Class Imp
 ClassImp(TAGparGeo);
 
 const TString TAGparGeo::fgkBaseName    = "TG";
@@ -56,6 +57,7 @@ TAGparGeo::~TAGparGeo()
 }
 
 //_____________________________________________________________________________
+//! Define material
 void TAGparGeo::DefineMaterial()
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
@@ -96,7 +98,10 @@ void TAGparGeo::DefineMaterial()
 
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Read from file
+//!
+//! \param[in] name file name
 Bool_t TAGparGeo::FromFile(const TString& name)
 {
    TString nameExp;
@@ -229,7 +234,10 @@ Bool_t TAGparGeo::FromFile(const TString& name)
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAGparGeo::AddTarget(const char *targetName)
+//! Add target for Root geometry
+//!
+//! \param[in] targetName target volume  name
+TGeoVolume* TAGparGeo::AddTarget(const char* targetName)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
       new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
@@ -247,14 +255,19 @@ TGeoVolume* TAGparGeo::AddTarget(const char *targetName)
 }
 
 //_____________________________________________________________________________
+//! Build target for Root geometry
+//!
+//! \param[in] targetName target volume name
 TGeoVolume* TAGparGeo::BuildTarget(const char *targetName)
 {
    return AddTarget(targetName);
 }
 
-
 //_____________________________________________________________________________
-TGeoVolume* TAGparGeo::AddCubicTarget(const char *targetName)
+//! Build cubic target for Root geometry
+//!
+//! \param[in] targetName target volume name
+TGeoVolume* TAGparGeo::AddCubicTarget(const char* targetName)
 {
    // get size
    Float_t dx = fTargetParameter.Size[0]/2.;
@@ -273,7 +286,10 @@ TGeoVolume* TAGparGeo::AddCubicTarget(const char *targetName)
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAGparGeo::AddCylindricTarget(const char *targetName)
+//! Build cylindric target for Root geometry
+//!
+//! \param[in] targetName target volume name
+TGeoVolume* TAGparGeo::AddCylindricTarget(const char* targetName)
 {
    // get size
    Float_t height  = fTargetParameter.Size[0]/2.;
@@ -303,6 +319,9 @@ TGeoVolume* TAGparGeo::AddCylindricTarget(const char *targetName)
 }
 
 //_____________________________________________________________________________
+//! Print
+//!
+//! \param[in] option printout options
 void TAGparGeo::Print(Option_t* option) const
 {
    TString opt(option);
@@ -375,8 +394,9 @@ void TAGparGeo::Print(Option_t* option) const
 
 
 //_____________________________________________________________________________
-string TAGparGeo::PrintStandardBodies( ) {
-
+//! Print Fluka standard bodies
+string TAGparGeo::PrintStandardBodies( )
+{
   stringstream ss;
 
   ss << "* ***Black Body" << endl;
@@ -397,11 +417,10 @@ string TAGparGeo::PrintStandardBodies( ) {
     ss << "XYP airpla     " << zplane << endl;
 
   return ss.str();
-
 }
 
-
 //_____________________________________________________________________________
+//! Print Fluka rotations
 string TAGparGeo::PrintTargRotations()
 {
   stringstream ss;
@@ -432,13 +451,12 @@ string TAGparGeo::PrintTargRotations()
   }
 
   return ss.str();
-
 }
 
-
 //_____________________________________________________________________________
-string TAGparGeo::PrintTargBody( ) {
-
+//! Print Fluka target body
+string TAGparGeo::PrintTargBody( )
+{
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeTG()){
@@ -470,7 +488,7 @@ string TAGparGeo::PrintTargBody( ) {
 
 
 //_____________________________________________________________________________
-// for blackbody and air
+//! for blackbody and air
 string TAGparGeo::PrintStandardRegions1() {
 
   stringstream ss;
@@ -482,62 +500,55 @@ string TAGparGeo::PrintStandardRegions1() {
   else
     ss <<"AIR1          5 air";
 
-
   return ss.str();
-
 }
 
-
 //_____________________________________________________________________________
-//for air 2 because when the calo is present too many bodies
-//are subtracted to air and fluka complains so it's necessary to subdivide air in 2 parts
-string TAGparGeo::PrintStandardRegions2() {
-
+//!for air 2 because when the calo is present too many bodies
+//!are subtracted to air and fluka complains so it's necessary to subdivide air in 2 parts
+string TAGparGeo::PrintStandardRegions2()
+{
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeCA())
     ss <<"AIR2          5 air -airpla";
 
   return ss.str();
-
 }
 
-
 //_____________________________________________________________________________
-string TAGparGeo::PrintTargRegion() {
-
+//! Print Fluka target region
+string TAGparGeo::PrintTargRegion()
+{
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeTG()){
-
     ss << "* ***Target" << endl;
-
     ss << "TARGET      5 +tgt" << endl;
-
   }
 
   return ss.str();
 }
 
-
 //_____________________________________________________________________________
-string TAGparGeo::PrintSubtractTargBodyFromAir() {
-
+//! Print Fluka subtracted target body from air
+string TAGparGeo::PrintSubtractTargBodyFromAir()
+{
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeTG()){
-
     ss << "-tgt " << endl;
-
   }
 
   return ss.str();
-
 }
 
 //_____________________________________________________________________________
-string TAGparGeo::PrintTargAssignMaterial(TAGmaterials *Material) {
-
+//! Print assigned target material in Fluka for a given material
+//!
+//! \param[in] Material Root material
+string TAGparGeo::PrintTargAssignMaterial(TAGmaterials* Material)
+{
   stringstream outstr;
 
   if(TAGrecoManager::GetPar()->IncludeTG()){
@@ -563,8 +574,9 @@ string TAGparGeo::PrintTargAssignMaterial(TAGmaterials *Material) {
 }
 
 //_____________________________________________________________________________
-string TAGparGeo::PrintStandardAssignMaterial() {
-
+//! Print standard assigned material in Fluka for a given material
+string TAGparGeo::PrintStandardAssignMaterial()
+{
   stringstream ss;
 
   int magnetic = 0;
@@ -581,8 +593,9 @@ string TAGparGeo::PrintStandardAssignMaterial() {
 }
 
 //_____________________________________________________________________________
-string TAGparGeo::PrintBeam() {
-
+//! Print Fluka beam
+string TAGparGeo::PrintBeam()
+{
   stringstream str;
 
   string part_type;
@@ -610,13 +623,12 @@ string TAGparGeo::PrintBeam() {
 		   TString::Format("%.3f",GetBeamPar().Position.Z()),"","","","") << endl;
 
   return str.str();
-
 }
 
-
 //_____________________________________________________________________________
-string TAGparGeo::PrintPhysics() {
-
+//! Print Fluka physics
+string TAGparGeo::PrintPhysics()
+{
   stringstream str;
 
   if ( TAGrecoManager::GetPar()->verFLUKA() ) {
@@ -644,5 +656,4 @@ string TAGparGeo::PrintPhysics() {
   }
 
   return str.str();
-
 }

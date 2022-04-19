@@ -32,11 +32,11 @@ public:
    TAVTntuTrack();
    virtual         ~TAVTntuTrack();
    
-   //! Get track
+   // Get track
    TAVTtrack*       GetTrack(Int_t i);
-   //! Get track (const)
+   // Get track (const)
    TAVTtrack const * GetTrack(Int_t i) const;
-   //! Get number of tracks
+   // Get number of tracks
    Int_t            GetTracksN()      const; 
    
    //! Get beam position
@@ -51,16 +51,16 @@ public:
    //! Get list of tracks
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }
 
-   //! Create new track
+   // Create new track
    TAVTtrack*       NewTrack();
-   //! Create new track from existing one
+   // Create new track from existing one
    TAVTtrack*       NewTrack(TAVTtrack& track);
    
-   //! Set up clones
+   // Set up clones
    virtual void     SetupClones();
-   //! Clear
+   // Clear
    virtual void     Clear(Option_t* opt="");
-   //! To stream
+   // To stream
    virtual void     ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:

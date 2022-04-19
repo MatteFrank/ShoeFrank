@@ -21,6 +21,7 @@
   \brief Charge (raw) calibration for vertex
 */
 
+//! Class Imp
 ClassImp(TAVTbaseParCal);
 
 Int_t TAVTbaseParCal::fgkChargesN = 6;
@@ -51,6 +52,9 @@ TAVTbaseParCal::~TAVTbaseParCal()
 }
 
 //------------------------------------------+-----------------------------------
+//! Read from file
+//!
+//! \param[in] name file name
 Bool_t TAVTbaseParCal::FromFile(const TString& name) 
 {   
    // Reading calibration file
@@ -87,7 +91,9 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
 }
 
 //------------------------------------------+-----------------------------------
-// Get Proba
+//! Get charge probability for a given number of pixels in cluster
+//!
+//! \param[in] pixelsN number of pixels
 const TArrayF* TAVTbaseParCal::GetChargeProba(Float_t pixelsN)
 {
    Float_t value[fgkChargesN];
@@ -113,7 +119,9 @@ const TArrayF* TAVTbaseParCal::GetChargeProba(Float_t pixelsN)
 }
 
 //------------------------------------------+-----------------------------------
-// Get Proba
+//! Get charge normalized probability (integral = 1) for a given number of pixels in cluster
+//!
+//! \param[in] pixelsN number of pixels
 const TArrayF* TAVTbaseParCal::GetChargeProbaNorm(Float_t pixelsN)
 {
    Float_t value[fgkChargesN];
@@ -139,14 +147,17 @@ const TArrayF* TAVTbaseParCal::GetChargeProbaNorm(Float_t pixelsN)
 }
 
 //------------------------------------------+-----------------------------------
-// Clear geometry info.
+//! Clear geometry info.
 void TAVTbaseParCal::Clear(Option_t*)
 {
   return;
 }
 
-/*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//------------------------------------------+-----------------------------------
+//! ostream insertion.
+//!
+//! \param[out] os stream output
+//! \param[in] option option for printout
 void TAVTbaseParCal::ToStream(ostream& os, Option_t*) const
 {
 //  os << "TAVTbaseParCal " << GetName() << endl;
@@ -157,7 +168,7 @@ void TAVTbaseParCal::ToStream(ostream& os, Option_t*) const
 }
 
 //------------------------------------------+-----------------------------------
-// Set up quenched Landau parameters
+//! Set up quenched Landau parameters
 void TAVTbaseParCal::SetFunction()
 {
    for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
@@ -185,7 +196,10 @@ void TAVTbaseParCal::SetFunction()
 }
 
 //------------------------------------------+-----------------------------------
-// Quenched Landau
+//! Quenched Landau
+//!
+//! \param[in] x charge
+//! \param[in] par parameters vector
 Double_t TAVTbaseParCal::QLandau(Double_t* x, Double_t* par)
 {
    Float_t xx = (x[0]-par[1])/par[2];
@@ -194,7 +208,10 @@ Double_t TAVTbaseParCal::QLandau(Double_t* x, Double_t* par)
 }
 
 //------------------------------------------+-----------------------------------
-// Quenched Landau
+//! Quenched normalized Landau
+//!
+//! \param[in] x charge
+//! \param[in] par parameters vector
 Double_t TAVTbaseParCal::QLandauNorm(Double_t* x, Double_t* par)
 {
    Float_t xx = (x[0]-par[1])/par[2];
@@ -203,7 +220,10 @@ Double_t TAVTbaseParCal::QLandauNorm(Double_t* x, Double_t* par)
 }
 
 //------------------------------------------+-----------------------------------
-// Total Quenched Landau
+//! Total quenched Landau
+//!
+//! \param[in] x charge
+//! \param[in] par parameters vector
 Double_t TAVTbaseParCal::QLandauTot(Double_t* x, Double_t* /*par*/)
 {
    Float_t xx = x[0];

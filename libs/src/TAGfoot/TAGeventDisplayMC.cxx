@@ -1,6 +1,6 @@
 
 /*!
- \file TAGeventDisplay.cxx
+ \file TAGeventDisplayMC.cxx
  \brief FOOT class to work on MC event display
  */
 /*------------------------------------------+---------------------------------*/
@@ -16,17 +16,23 @@
 #include "LocalRecoMC.hxx"
 #include "GlobalToeReco.hxx"
 
+//! Class Imp
+ClassImp(TAGeventDisplayMC)
+
 /*!
- \class TAGeventDisplay
+ \class TAGeventDisplayMC
  \brief FOOT class to work on MC event display
  */
 /*------------------------------------------+---------------------------------*/
 
 TAGeventDisplayMC* TAGeventDisplayMC::fgInstance = 0x0;
 
-ClassImp(TAGeventDisplayMC)
-
 //__________________________________________________________
+//! Instance
+//!
+//! \param[in] name experiment name
+//! \param[in] runNumber run number
+//! \param[in] type toggle for raw or MC data
 TAGeventDisplayMC* TAGeventDisplayMC::Instance(const TString name, Int_t runNumber, Int_t type)
 {
    if (fgInstance == 0x0)
@@ -35,8 +41,12 @@ TAGeventDisplayMC* TAGeventDisplayMC::Instance(const TString name, Int_t runNumb
    return fgInstance;
 }
 
-
 //__________________________________________________________
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] type toggle for raw or MC data
 TAGeventDisplayMC::TAGeventDisplayMC(const TString expName, Int_t runNumber, Int_t type)
  : TAGbaseEventDisplay(expName, runNumber, type),
    fCaMcDisplay(0x0),
@@ -73,9 +83,9 @@ TAGeventDisplayMC::TAGeventDisplayMC(const TString expName, Int_t runNumber, Int
 }
 
 //__________________________________________________________
+//! default destructor
 TAGeventDisplayMC::~TAGeventDisplayMC()
 {
-   // default destructor
    if (fStMcDisplay)
       delete fStMcDisplay;
    if (fBmMcDisplay)
@@ -93,6 +103,7 @@ TAGeventDisplayMC::~TAGeventDisplayMC()
 }
 
 //__________________________________________________________
+//! Set reconstruction
 void TAGeventDisplayMC::SetLocalReco()
 {
    Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
@@ -116,6 +127,9 @@ void TAGeventDisplayMC::SetLocalReco()
 }
 
 //__________________________________________________________
+//! Get to entry (event)
+//!
+//! \param[in] entry entry to go
 Bool_t TAGeventDisplayMC::GetEntry(Int_t entry)
 {
    if (fType != 2) return true;
@@ -123,6 +137,7 @@ Bool_t TAGeventDisplayMC::GetEntry(Int_t entry)
 }
 
 //__________________________________________________________
+//! Add MC TEve elements
 void TAGeventDisplayMC::AddMcElements()
 {
    if (TAGrecoManager::GetPar()->IncludeCA()) {
@@ -162,6 +177,7 @@ void TAGeventDisplayMC::AddMcElements()
 }
 
 //__________________________________________________________
+//! Connect MC elements
 void TAGeventDisplayMC::ConnectMcElements()
 {
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM())
@@ -187,48 +203,72 @@ void TAGeventDisplayMC::ConnectMcElements()
 }
 
 //__________________________________________________________
+//! Update STC informations
+//!
+//! \param[in] idx associated object index
 void TAGeventDisplayMC::UpdateStInfo(Int_t idx)
 {
    UpdateMcInfo("st", idx);
 }
 
 //__________________________________________________________
+//! Update BM informations
+//!
+//! \param[in] idx associated object index
 void TAGeventDisplayMC::UpdateBmInfo(Int_t idx)
 {
    UpdateMcInfo("bm", idx);
 }
 
 //__________________________________________________________
+//! Update VTX informations
+//!
+//! \param[in] idx associated object index
 void TAGeventDisplayMC::UpdateVtInfo(Int_t idx)
 {
    UpdateMcInfo("vt", idx);
 }
 
 //__________________________________________________________
+//! Update ITR informations
+//!
+//! \param[in] idx associated object index
 void TAGeventDisplayMC::UpdateItInfo(Int_t idx)
 {
    UpdateMcInfo("it", idx);
 }
 
 //__________________________________________________________
+//! Update MSD informations
+//!
+//! \param[in] idx associated object index
 void TAGeventDisplayMC::UpdateMsInfo(Int_t idx)
 {
    UpdateMcInfo("ms", idx);
 }
 
 //__________________________________________________________
+//! Update TW informations
+//!
+//! \param[in] idx associated object index
 void TAGeventDisplayMC::UpdateTwInfo(Int_t idx)
 {
    UpdateMcInfo("tw", idx);
 }
 
 //__________________________________________________________
+//! Update CAL informations
+//!
+//! \param[in] idx associated object index
 void TAGeventDisplayMC::UpdateCaInfo(Int_t idx)
 {
    UpdateMcInfo("ca", idx);
 }
 
 //__________________________________________________________
+//! Update MC informations for a given device
+//!
+//! \param[in] idx associated object index
 void TAGeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
 {
    TAMChit* point = 0x0;
@@ -300,6 +340,7 @@ void TAGeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
 }
 
 //__________________________________________________________
+//! Update MC elements in view
 void TAGeventDisplayMC::UpdateMcElements()
 {
    if (TAGrecoManager::GetPar()->IncludeST())
@@ -325,6 +366,9 @@ void TAGeventDisplayMC::UpdateMcElements()
 }
 
 //__________________________________________________________
+//! Update MC elements for a given device
+//!
+//! \param[in] prefix prefix device
 void TAGeventDisplayMC::UpdateMcElements(const TString prefix)
 {
    
@@ -421,7 +465,6 @@ void TAGeventDisplayMC::UpdateMcElements(const TString prefix)
       }
 
    } //end loop on hits
-   
 }
 
 

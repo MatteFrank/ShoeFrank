@@ -2,6 +2,12 @@
 #ifndef _GlobalReco_HXX_
 #define _GlobalReco_HXX_
 
+/*!
+ \file GlobalReco.hxx
+ \brief Declaration of GlobalReco
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TString.h"
 #include "BaseReco.hxx"
 
@@ -9,28 +15,26 @@
 class GlobalReco : public BaseReco
 {
 public:
-   //! default constructor
-   GlobalReco(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t isMc = true);
+   GlobalReco(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t isMC = true);
    
    virtual ~GlobalReco();
   
   //! Create raw data action
-  virtual void CreateRawAction();
+   virtual void CreateRawAction() { return; }
   
-  //! Open File
+  // Open File
   virtual void OpenFileIn();
   
-  //! Close File in
+  // Close File in
   virtual void CloseFileIn();
   
-  //! Create L0 branch in tree
+  // Create L0 branch in tree
   void SetL0TreeBranches();
   
-  //! Create branch in tree
+  // Create branch in tree
   void SetTreeBranches();
 
-   ClassDef(GlobalReco, 0); 
+   ClassDef(GlobalReco, 0); ///< Class def
 };
-
 
 #endif

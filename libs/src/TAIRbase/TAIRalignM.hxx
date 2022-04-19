@@ -35,31 +35,31 @@ private:
    static TAIRalignM* fgInstance; // static instance of class
    
 public:
-   //! Instance of class
+   // Instance of class
    static TAIRalignM* Instance(const TString name = "16O_C2H4_200_1.root", const TString exp = "", Int_t runNUmber = 1);
    virtual ~TAIRalignM();
    
-   //! Process track
+   // Process track
    void ProcessTrack(TAIRtrack *track, Double_t* param = 0x0);
    
-   //! Allow parameter variations
+   // Allow parameter variations
    void AllowVariations(Bool_t *bSensorOnOff);
-   //! Non linear extrapolation (e.g.: magnetic field)
+   // Non linear extrapolation (e.g.: magnetic field)
    void SetNonLinear(Bool_t *bSensorOnOff, Bool_t *bVarXYT);
    
-   //! Fix sensor
+   // Fix sensor
    void FixSensor(Int_t iSensor);
-   //! Fix parameters
+   // Fix parameters
    void FixParameter(Int_t param, Double_t value);
-   //! Set non linear parameters
+   // Set non linear parameters
    void SetNonLinear(Int_t param);
-   //! Add constraints
+   // Add constraints
    void AddConstraint(Double_t *factor, Double_t value );
-   //! Init global parameters
+   // Init global parameters
    void InitGlobalParameters(Double_t *par);
-   //! Global initialisation
+   // Global initialisation
    void Init(Int_t nGlobal, Int_t nLocal, Int_t nStdDev, Int_t nSensors);
-   //! Set iteration
+   // Set iteration
    void SetIterations(Int_t iter);
    
    //! Set array of local derivatives
@@ -71,47 +71,47 @@ public:
    void SetGlobalDerivative(Int_t index, Double_t value) {
       fGlobalDerivatives[index] = value;
    }
-   //! Local fit
+   // Local fit
    void LocalFit(Int_t iTrack, Double_t *lTrackParam, Int_t lSingleFit);
-   //! Global fit
+   // Global fit
    void GlobalFit(Double_t *parameters,Double_t *errors,Double_t *pulls);
-   //! Print parameters
+   // Print parameters
    void PrintGlobalParameters();
-   //! Set parameter errors
+   // Set parameter errors
    Double_t GetParError(Int_t iPar);
    //! Set number of sensors
    Int_t  GetNParSensor() const {return fNParSensor;}
    
 private:
-   //! ctr
+   // ctr
    TAIRalignM(const TString name, const TString exp = "", Int_t runNUmber = 1);
-   //! Reset local equations
+   // Reset local equations
    void ResetLocalEquation();
-   //! Local equation on X
+   // Local equation on X
    void LocalEquationX(TAIRcluster* cluster, Double_t* param, TAIRtrack* track);
-   //! Local equation on Y
+   // Local equation on Y
    void LocalEquationY(TAIRcluster* cluster, Double_t* param, TAIRtrack* track);
 
 public:
-   //! Loop over events
+   // Loop over events
    void   LoopEvent(Int_t nEvts = 1);
    
 private:
-   //! Create histograms
+   // Create histograms
    void    CreateHistogram();
-   //! Init parameters
+   // Init parameters
    void    InitParameters();
-   //! Fill status
+   // Fill status
    void    FillStatus();
-   //! Fill status from a given configuration file
+   // Fill status from a given configuration file
    void    FillStatus(TAVTbaseParConf* parConf, Int_t offset = 0);
-   //! Update alignment parameters
+   // Update alignment parameters
    void    UpdateAlignmentParams(Double_t* parameters);
-   //! Update geo maps
+   // Update geo maps
    void    UpdateGeoMaps();
-   //! Update geo file
+   // Update geo file
    void    UpdateGeoMapsUVW(fstream &fileIn, fstream &fileOut, Int_t idx);
-   //! Reset
+   // Reset
    void    Reset();
       
 private:

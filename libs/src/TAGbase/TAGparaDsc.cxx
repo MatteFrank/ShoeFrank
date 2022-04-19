@@ -15,10 +15,14 @@
   \brief Persistent descriptor for parameter object . **
 */
 
+//! Class Imp
 ClassImp(TAGparaDsc);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name class name
+//! \param[in] p_para parameter descriptor
 TAGparaDsc::TAGparaDsc(const char* name, TAGpara* p_para)
   : TAGnamed(name, 0),
     fpObject(0),
@@ -53,7 +57,9 @@ TAGparaDsc::~TAGparaDsc()
 }
 
 //------------------------------------------+-----------------------------------
-// Set para object.
+//! Set para object.
+//!
+//! \param[in] p_para parameter descriptor
 void TAGparaDsc::SetObject(TAGpara* p_para)
 {
   delete fpObject;
@@ -63,7 +69,9 @@ void TAGparaDsc::SetObject(TAGpara* p_para)
 }
 
 //------------------------------------------+-----------------------------------
-// Set consumer action.
+//! Set consumer action.
+//!
+//! \param[in] p_action action
 void TAGparaDsc::SetConsumer(TAGaction* p_action)
 {
   if (!fpConsumerList) fpConsumerList = new TList();
@@ -72,7 +80,7 @@ void TAGparaDsc::SetConsumer(TAGaction* p_action)
 }
 
 //------------------------------------------+-----------------------------------
-// Invalidate para object.
+//! Clear
 void TAGparaDsc::Clear(Option_t*)
 {
   if (fpObject) fpObject->Clear();
@@ -81,7 +89,10 @@ void TAGparaDsc::Clear(Option_t*)
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGparaDsc::ToStream(ostream& os, Option_t* option) const
 {
   os << "TAGparaDsc:      " << "'" << GetName() << "'" << endl;
@@ -100,7 +111,9 @@ void TAGparaDsc::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-// Cleanup dangling object references to TObject \a p_obj .
+//! Check dangling object references to TObject p_obj . -> Zombie
+//!
+//! \param[in] p_obj object to be removed
 void TAGparaDsc::RecursiveRemove(TObject* p_obj)
 {
   if (fpConsumerList) while (fpConsumerList->Remove(p_obj));

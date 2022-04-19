@@ -1,11 +1,27 @@
+/*!
+ \file DEMSDEvent.cpp
+ \brief  Implementation of DEMSDEvent
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "DEMSDEvent.hh"
 #include <iostream>
 
+/*!
+ \class DEMSDEvent
+ \brief DE MSD card event
+ */
+
+//------------------------------------------+-----------------------------------
+//! Destructor.
 DEMSDEvent::~DEMSDEvent(){}
 
 
+//------------------------------------------+-----------------------------------
+//! read data
+//!
+//! \param[in] p1 daq file pointer
 void DEMSDEvent::readData(unsigned int **p1){
 
    RemoteEvent::readData(p1);
@@ -27,6 +43,8 @@ void DEMSDEvent::readData(unsigned int **p1){
    fillStrip();
 } 
 
+//------------------------------------------+-----------------------------------
+//! Print data
 void DEMSDEvent::printData () const{
 
   printf ("DEMSDEvent DATA: \n");
@@ -43,7 +61,8 @@ void DEMSDEvent::printData () const{
   printf("\n");
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Check event/trigger number
 bool DEMSDEvent::check() const {
   if( evtSize!=0 ){
     if( eventNumber==triggerCounter)
@@ -55,6 +74,8 @@ bool DEMSDEvent::check() const {
     return true;
 }
 
+//------------------------------------------+-----------------------------------
+//! Fill strip information
 void DEMSDEvent::fillStrip(){
 
    if(evtSize!=0) {

@@ -30,6 +30,7 @@
  \brief Class for ITR tracks
  */
 
+//! Class Imp
 ClassImp(TAITtrack) // Description of a Track
 
 //______________________________________________________________________________
@@ -48,6 +49,8 @@ TAITtrack::~TAITtrack()
 
 //______________________________________________________________________________
 //! Copy constructor
+//!
+//! \param[in] aTrack ytack to copy
 TAITtrack::TAITtrack(const TAGbaseTrack& aTrack)
 : TAGbaseTrack::TAGbaseTrack(aTrack)
 {
@@ -55,16 +58,17 @@ TAITtrack::TAITtrack(const TAGbaseTrack& aTrack)
 }
 
 //______________________________________________________________________________
-//
+//! Set up clones
 void TAITtrack::SetupClones()
 {
    fListOfClusters = new TClonesArray("TAITcluster");
    fListOfClusters->SetOwner(true);
 }
 
-
 // __________________________________________________________________________
-//
+//! Add cluster to track
+//!
+//! \param[in] clus cluster to add
 void TAITtrack::AddCluster(TAGcluster* clus)
 {
    TAITcluster* cluster = static_cast<TAITcluster*>(clus);

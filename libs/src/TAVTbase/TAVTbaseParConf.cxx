@@ -25,6 +25,7 @@
   \brief Base class of configuration parameters for VTX
 */
 
+//! Class Imp
 ClassImp(TAVTbaseParConf);
 
 //______________________________________________________________________________
@@ -41,7 +42,10 @@ TAVTbaseParConf::~TAVTbaseParConf()
 {
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Read from file
+//!
+//! \param[in] name file name
 Bool_t TAVTbaseParConf::FromFile(const TString& name) 
 {   
    // simple file reading, waiting for real config file
@@ -118,7 +122,9 @@ Bool_t TAVTbaseParConf::FromFile(const TString& name)
 }
 
 //------------------------------------------+-----------------------------------
-// Get major number status
+//! Get major number status
+//!
+//! \param[in] idx status number
 Int_t TAVTbaseParConf::GetStatus(Int_t idx) const
 {
    Int_t major = fSensorParameter[idx].Status/10;
@@ -130,7 +136,9 @@ Int_t TAVTbaseParConf::GetStatus(Int_t idx) const
 }
 
 //------------------------------------------+-----------------------------------
-// Get minor number status
+//! Get minor number status
+//!
+//! \param[in] idx status number
 Int_t TAVTbaseParConf::GetStatusMinor(Int_t idx) const
 {
    Int_t major = fSensorParameter[idx].Status/10;
@@ -142,14 +150,32 @@ Int_t TAVTbaseParConf::GetStatusMinor(Int_t idx) const
 }
 
 //------------------------------------------+-----------------------------------
-// Clear geometry info.
+//! Clear geometry info.
 void TAVTbaseParConf::Clear(Option_t*)
 {
   return;
 }
 
+//------------------------------------------+-----------------------------------
+//! Dead pixel map check for given sensor, line and column
+//!
+//! \param[in] sensorId a given sensor
+//! \param[in] aLine a given line
+//! \param[in] aColumn a given column
+Bool_t TAVTbaseParConf::IsDeadPixel(Int_t sensorId, Int_t aLine, Int_t aColumn)
+{
+   std::pair<int, int> pair(aLine, aColumn);
+   if (fSensorParameter[sensorId].DeadPixelMap.find(pair) != fSensorParameter[sensorId].DeadPixelMap.end())
+      return true;
+   
+   return false;
+}
+
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
+//!
+//! \param[out] os stream output
+//! \param[in] option option for printout
 void TAVTbaseParConf::ToStream(ostream& os, Option_t*) const
 {
 //  os << "TAVTbaseParConf " << GetName() << endl;

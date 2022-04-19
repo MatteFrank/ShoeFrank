@@ -17,11 +17,15 @@
  \brief Get trigger event from DAQ **
  */
 
+//! Class Imp
 ClassImp(TAGactNtuEvent);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[out] pNtuEvt  event container descriptor
+//! \param[in]  pDatDaq  daq event descriptor
 TAGactNtuEvent::TAGactNtuEvent(const char* name, TAGdataDsc* pNtuEvt, TAGdataDsc* pDatDaq)
   : TAGaction(name, "TAGactNtuEvent - Unpack trigger raw data"),
   fpDatDaq(pDatDaq),
@@ -43,7 +47,6 @@ Bool_t TAGactNtuEvent::Action()
 {
   TAGdaqEvent* datDaq  = (TAGdaqEvent*) fpDatDaq->Object();
   TAGntuEvent* pNtuEvt = (TAGntuEvent*) fpNtuEvt->Object();
-  //  TAGWDtrigInfo* pWDtrigInfo = (TAGWDtrigInfo*) fpWDtrigInfo->Object();
   
   InfoEvent* infoEvent = datDaq->GetInfoEvent();
   TrgEvent*  trgEvent  = datDaq->GetTrgEvent();
@@ -62,8 +65,6 @@ Bool_t TAGactNtuEvent::Action()
      pNtuEvt->SetBCOofTrigger(trgEvent->BCOofTrigger);
      pNtuEvt->SetSpillNrAndTrgFineDelay(trgEvent->spillNrAndTrgFineDelay);
      pNtuEvt->SetPMTsAndBusy(trgEvent->PMTsAndBusy);
-     // pNtuEvt->SetTriggerID(pWDtrigInfo->GetTriggerID());
-     // cout << "TriggerID:" << pWDtrigInfo->GetTriggerID() << endl;
   }
   SetBit(kValid);
   fpNtuEvt->SetBit(kValid);

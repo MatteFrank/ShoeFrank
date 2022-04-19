@@ -20,8 +20,8 @@
   \brief Charge (raw) calibration for ITR
 */
 
+//! Class Imp
 ClassImp(TAITparCal);
-
 
 //------------------------------------------+-----------------------------------
 //! Standard constructor

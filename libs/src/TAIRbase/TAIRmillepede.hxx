@@ -16,39 +16,39 @@
 class TAIRmillepede : public TObject {
    
 public: 
-   //! Standard constructor
+   // Standard constructor
    TAIRmillepede();
-   //! Destructor
+   // Destructor
    virtual ~TAIRmillepede( );
    
-   //! Initialization
+   // Initialization
    virtual Int_t InitMille(int nglo, int nloc, int nstd,			  
 						   double lResCut, double lResCutInit);
-   //! Global fit
+   // Global fit
    virtual Int_t GlobalFit(double par[], double error[], double pull[]);
-   //! Set global parameters
+   // Set global parameters
    virtual Int_t SetGlobalParameters(double *param);
-   //! Set global parameters
+   // Set global parameters
    virtual Int_t SetGlobalParameter(int iPar, double vPar);
-   //! Set parameters sigma
+   // Set parameters sigma
    virtual Int_t SetParSigma(int iPar, double sigma);
-   //! Set non-linear
+   // Set non-linear
    virtual Int_t SetNonLinear(int index);
-   //! Set Global constraints
+   // Set Global constraints
    virtual Int_t SetGlobalConstraint(double dercs[], double rhs);
-   //! Set local equaqtions
+   // Set local equaqtions
    virtual Int_t SetLocalEquation(double dergb[], double derlc[], double rmeas, double sigma);
-   //! Local fit
+   // Local fit
    virtual Int_t LocalFit(int n, double localParams[], Bool_t bSingleFit);
    //! Get number of local equations
    virtual Int_t GetNLocalEquations() const {return fNLocalEquations;};
    //! Set number of local equations
    virtual void  SetNLocalEquations(int value) {fNLocalEquations = value;};
-   //! Print global parameters
+   // Print global parameters
    virtual Int_t PrintGlobalParameters() const;
-   //! Set iterations
+   // Set iterations
    virtual Int_t SetIterations (double cutfac);
-   //! Get parameter errors
+   // Get parameter errors
    virtual Double_t GetParError(int iPar) const;
    
 private:
@@ -59,15 +59,15 @@ private:
    static const int fgkMaxGloPC	    = 1020; ///< fgkMaxGlobalPar+fgkMaxGloCsts
    
    // Private methods
-   //! Compute SpmInv
+   // Compute SpmInv
    int SpmInv(double v[][fgkMaxGloPC], double b[], int n);
-   //! Compute SpmInv
+   // Compute SpmInv
    int SpmInv(double v[][fgkMaxLocalPar], double b[], int n);
-   //! Compute SpAVAt
+   // Compute SpAVAt
    int SpAVAt(double v[][fgkMaxLocalPar], double a[][fgkMaxLocalPar], double w[][fgkMaxGlobalPar], int n, int m);
-   //! Compute SpAX
+   // Compute SpAX
    int SpAX(double a[][fgkMaxLocalPar], double x[], double y[], int n, int m);
-   //! Compute Chi2
+   // Compute Chi2
    double Chi2DoFLim(int n, int nd);
    
    // Matrices

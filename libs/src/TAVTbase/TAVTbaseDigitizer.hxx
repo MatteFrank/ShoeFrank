@@ -26,20 +26,20 @@ public:
    TAVTbaseDigitizer(TAVTbaseParGeo* parGeo);
    virtual ~TAVTbaseDigitizer();
    
-   //! Function for cluster size
+   // Function for cluster size
    Double_t     FuncClusterSize(Double_t* x, Double_t* par);
-   //! Function for cluster height
+   // Function for cluster height
    Double_t     FuncClusterHeight(Double_t* x, Double_t* par);
-   //! Function for cluster width
+   // Function for cluster width
    Double_t     FuncClusterWidth(Double_t* x, Double_t* par);
-   //! Function for ToT analog
+   // Function for ToT analog
    Double_t     FuncTotAnalog(Double_t* qin, Double_t* par);
-   //! Function for ToT digital
+   // Function for ToT digital
    Double_t     FuncTotDigital(Double_t* qin, Double_t* par);
    // Digitize ADC number
    Int_t        DigitizeAdc(Double_t value, Int_t nbits, Double_t maxValue);
 
-   //! Main process
+   // Main process
    virtual Bool_t Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin = 0, Double_t zout = 0, Double_t time = 0, Int_t sensorId = 0, Int_t Z = -99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
    //! Make clusters
    virtual Bool_t MakeCluster(Double_t /*x0*/, Double_t /*y0*/, Double_t /*zin*/, Double_t /*zout*/) { return false; }
@@ -97,24 +97,24 @@ public:
    //! Get Map
    std::map<int, double>  GetMap() const        { return fMap;             }
    
-   //! Get column from x position
+   // Get column from x position
    Int_t        GetColumn(Float_t x) const;
-   //! Get line from y position
+   // Get line from y position
    Int_t        GetLine(Float_t y)   const;
-   //! Get index line from line/column
+   // Get index line from line/column
    Int_t        GetIndex(Int_t line, Int_t column) const;
    
-   //! Get position from pixel line
+   // Get position from pixel line
    Float_t      GetPositionU(Int_t column)         const;
-   //! Get position from pixel line
+   // Get position from pixel line
    Float_t      GetPositionV(Int_t line)           const;
    
-   //! Get remainder of column
+   // Get remainder of column
    Float_t      GetColRemainder(Float_t x)  const;
-   //! Get remainder of line
+   // Get remainder of line
    Float_t      GetLineRemainder(Float_t y) const;
    
-   //! Get pixel region of column/line
+   // Get pixel region of column/line
    Int_t        GetColRegion(Float_t x)  const;
    Int_t        GetLineRegion(Float_t y) const;
 
@@ -167,9 +167,9 @@ protected:
    Int_t*      fShel;            ///< pointer to current shell
    
 protected:
-   //! Set functoins
+   // Set functoins
    void        SetFunctions();
-   //! Compute last shell
+   // Compute last shell
    Int_t       GetLastShell(Int_t* shell, Int_t maxTurn) const;
    
 public:
@@ -202,7 +202,6 @@ protected:
    static Float_t  fgkNormFactor;   ///< normalization factor
    static Float_t  fgTotMaxValue;   ///< Time over threshold maximum value
    static Int_t    fgTotAdcDepth;   ///< Time over threshold adc depth
-
 };
 
 #endif

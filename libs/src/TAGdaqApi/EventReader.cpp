@@ -1,6 +1,7 @@
-//
-//
-//
+/*!
+ \file EventReader.cpp
+ \brief  Implementation of EventReader
+ */
 #include "EventReader.hh"
 #include <stdlib.h>
 #include <stdint.h>
@@ -11,7 +12,15 @@
 #include <string>
 #include <vector>
 
-// default constructor
+/*!
+ \class EventReader
+ \brief event readefr
+ */
+
+//------------------------------------------+-----------------------------------
+//! default constructor
+//!
+//! \param[in] debugLevel debug level
 EventReader::EventReader(int debugLevel){
   m_isOpened = false;
   m_errorOnRead = false;
@@ -23,7 +32,8 @@ EventReader::EventReader(int debugLevel){
   m_eventsRead = 0;
 }
 
-// default destructor
+//------------------------------------------+-----------------------------------
+//! default destructor
 EventReader::~EventReader(){
   
   // delete all the stored fragments
@@ -39,8 +49,11 @@ EventReader::~EventReader(){
 }
 
 
-// Open DAQ input file
-// it returns false if unable to open file
+//------------------------------------------+-----------------------------------
+//! Open DAQ input file
+//! it returns false if unable to open file
+//!
+//! \param[in] filename file name
 bool EventReader::openFile( std::string filename ){
   std::cout<<"Opening file "<<filename<<std::endl;
   m_eventsRead = 0;
@@ -57,15 +70,15 @@ bool EventReader::openFile( std::string filename ){
   return m_isOpened;
 }
 
-
-// simple close file method
+//------------------------------------------+-----------------------------------
+//! simple close file method
 void EventReader::closeFile(){
   m_file->close();
   m_isOpened = false;
 }
 
-
-// read the header of the whole DAQ file
+//------------------------------------------+-----------------------------------
+//! read the header of the whole DAQ file
 void  EventReader::readFileHeader(){
 
   unsigned int partFile;
@@ -113,9 +126,8 @@ void  EventReader::readFileHeader(){
   }
 }
 
-
-/************************************************/
-// read the full event and stores it in memory
+//------------------------------------------+-----------------------------------
+//! read the full event and stores it in memory
 void  EventReader::getNextEvent(){
   
   unsigned int sizeROS = 0;
@@ -185,8 +197,8 @@ void  EventReader::getNextEvent(){
 
 
 
-/************************************************/
-// skip full event
+//------------------------------------------+-----------------------------------
+//! skip full event
 void  EventReader::skipEvent(){
    
    
@@ -210,9 +222,8 @@ void  EventReader::skipEvent(){
 }
 
 
-//
-// Printing of all information stored
-//
+//------------------------------------------+-----------------------------------
+//! Print data
 void EventReader::printData(){
 
   std::cout<<"--------- Start of Event ------------"<<std::endl;  
@@ -231,10 +242,9 @@ void EventReader::printData(){
 
 
 
-//
-// simple checks on data
-// returns true if all OK
-//
+//------------------------------------------+-----------------------------------
+//! simple checks on data
+//! \return true if all OK
 bool EventReader::check(){
   bool rccheck=true;
   if( m_eventsRead>0 ){
@@ -260,6 +270,7 @@ bool EventReader::check(){
 // *****************************************
 
 //------------------------------------------
+//! pre event
 void EventReader::preEvent(){
 
    unsigned int word = readWord();
@@ -301,8 +312,8 @@ void EventReader::preEvent(){
    }
 }
 
-/****************************************/
-/* Read IN a full event in a local buffer */
+//------------------------------------------+-----------------------------------
+//! Read IN a full event in a local buffer
 char* EventReader::readInEvent(){
 
   m_errorOnRead = false;
@@ -333,7 +344,11 @@ char* EventReader::readInEvent(){
   return m_buffer;
 }
 
-/****************************************/
+//------------------------------------------+-----------------------------------
+//! read ROS information
+//!
+//! \param[in] p1 daq file pointer
+
 unsigned int EventReader::getROSInformation(unsigned int **p1){
   unsigned int * p = *p1;
   unsigned int * base = p;
@@ -366,7 +381,10 @@ unsigned int EventReader::getROSInformation(unsigned int **p1){
 }
 
 
-/****************************************/
+//------------------------------------------+-----------------------------------
+//! read event information
+//!
+//! \param[in] p1 daq file pointer
 void EventReader::readInfoEvent(unsigned int ** p1){
 
   if (m_info!=0) {m_info=0; }
@@ -379,6 +397,8 @@ void EventReader::readInfoEvent(unsigned int ** p1){
 //
 //******* LOW LEVEL FUNCTIONS
 //
+//------------------------------------------+-----------------------------------
+//! read word
 unsigned int  EventReader::readWord(){
   unsigned int word;
   m_errorOnRead = false;
@@ -393,13 +413,18 @@ unsigned int  EventReader::readWord(){
   return word;
 }
 
+//------------------------------------------+-----------------------------------
+//! read string
 std::string EventReader::readString(){
   unsigned int size = readWord();
   unsigned nwords = (size+3)/4;
   return copyString(nwords);
 }
 
-
+//------------------------------------------+-----------------------------------
+//! copy string
+//!
+//! \param[in] nwords number of words to copy
 std::string EventReader::copyString(unsigned int nwords){
   std::string str;
   for(unsigned int i= 0; i<nwords; i++){

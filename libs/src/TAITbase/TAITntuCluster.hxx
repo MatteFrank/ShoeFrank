@@ -27,39 +27,40 @@ class TAVTbaseParGeo;
 class TAITntuCluster : public TAGdata {
    
 protected:
-   TAVTbaseParGeo*    fGeometry;                 //! do NOT stored this pointer !
-   TObjArray*         fListOfClusters;
+   //! Geometry parameter
+   TAVTbaseParGeo*    fGeometry;         //! do NOT stored this pointer !
+   TObjArray*         fListOfClusters;   ///< List of clusters
 
 private:   
-   static TString    fgkBranchName;    // Branch name in TTree
+   static TString    fgkBranchName;     ///< Branch name in TTree
 
 public:
    TAITntuCluster();
    virtual          ~TAITntuCluster();
    
-   //! Get cluster
+   // Get cluster
    TAITcluster*       GetCluster(Int_t iSensor, Int_t i);
-   //! Get cluster (const)
+   // Get cluster (const)
    const TAITcluster* GetCluster(Int_t iSensor, Int_t i) const;
-   //! Number of cluster per sensor
+   // Number of cluster per sensor
    Int_t              GetClustersN(Int_t iSensor)   const; 
    
-   //! Get list of clusters
+   // Get list of clusters
    TClonesArray*      GetListOfClusters(Int_t iSensor);
-   //! Get list of clusters (const)
+   // Get list of clusters (const)
    TClonesArray*      GetListOfClusters(Int_t iSensor) const;
    
-   //! Create new cluster (empty)
+   // Create new cluster (empty)
    TAITcluster*       NewCluster(Int_t iSensor);
-   //! Create new cluster from a existing one
+   // Create new cluster from a existing one
    TAITcluster*       NewCluster(TAITcluster* clus, Int_t iSensor);
 
-   //!  Setup clones
+   //  Setup clones
    virtual void       SetupClones();
-   //! Clear
+   // Clear
    virtual void       Clear(Option_t* opt="");
    
-   //! To stream
+   // To stream
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:

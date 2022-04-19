@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2004-2006 by Olivier Stezowski & Christophe Theisen     *
- *   stezow(AT)ipnl.in2p3.fr, christophe.theisen(AT)cea.fr                       *
+ *   stezow(AT)ipnl.in2p3.fr, christophe.theisen(AT)cea.fr                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,6 +18,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+/*!
+ \file TPGspectrumCalibrator.cxx
+ \brief   Implementation of TPGspectrumCalibrator.
+ */
+
 #include "TPGspectrumCalibrator.hxx"
 
 #include "TROOT.h"
@@ -31,10 +36,21 @@
 
 using namespace std;
 
-// ROOT dictionnary
+/** \class TPGspectrumCalibrator
+ \brief TPGspectrumCalibrator is a service class in order to calibrate a TH1
+ The raw histogram must never be changed
+ The calibrated histogram is just a copy of the raw histogram (same binning).
+ In case of fixed size of bins : the limits of the axis (xmin and xmax) are changed according to the
+ calibration function or parameters.
+ 
+ \author Bertrand Rossé
+ */
+
+//! Class Imp
 ClassImp(TPGspectrumCalibrator);
 
-//__________________________________________________________________________________________________
+//__________________________________________________________
+//! default constructor
 TPGspectrumCalibrator::TPGspectrumCalibrator()
 :	fXRawAxis(0x0),
 fYRawAxis(0x0),
@@ -44,8 +60,9 @@ fHistoCal(0x0)
    
 }
 
-//__________________________________________________________________________________________________
-TPGspectrumCalibrator::~TPGspectrumCalibrator() //destructor
+//__________________________________________________________
+//! default destructor
+TPGspectrumCalibrator::~TPGspectrumCalibrator()
 {
    if (fXRawAxis != 0) delete fXRawAxis;
    if (fYRawAxis != 0) delete fYRawAxis;
@@ -53,7 +70,13 @@ TPGspectrumCalibrator::~TPGspectrumCalibrator() //destructor
    if (fHistoCal != 0) delete fHistoCal;
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibrated with a function a histogram
+//!
+//! \param[in] histo a given histogram
+//! \param[in] function function to use for fit
+//! \param[in] option options
+//! option = "x","y","z", for TH1 (1, 2 or 3 dimensions)
 void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const TF1 *function, const Option_t *option)
 {
    if (!histo) {
@@ -89,11 +112,18 @@ void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const TF1 *function, con
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//!   Calibration with an order 2 polynome (a + bX + c*X*X)
+//!
+//! \param[in] histo a given histogram
+//! \param[in] a 1st parameter
+//! \param[in] b 2nd parameter
+//! \param[in] c 3rd parameter
+//! \param[in] option options
+//! option = "x","y","z", for TH1 (1, 2 or 3 dimensions)
 void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const Double_t a, const Double_t b,
                                       const Double_t c, const Option_t *option) 
 {
-   //Calibration with an order 2 polynome (a + bX + c*X*X)
    if ((b==0.0) && (c==0.0)) {
       printf("Info in <TPGspectrumCalibrator::Calibrate> Invalid parameters !!\n");
       return;
@@ -126,14 +156,25 @@ void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const Double_t a, const 
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibration with an order 1 polynome (a + bX )
+//!
+//! \param[in] histo a given histogram
+//! \param[in] a 1st parameter
+//! \param[in] b 2nd parameter
+//! \param[in] option options
+//! option = "x","y","z", for TH1 (1, 2 or 3 dimensions)
 void TPGspectrumCalibrator::Calibrate(const TH1 *histo, const Double_t a, const Double_t b, const Option_t *option)
 {
-   //Calibration with an order 1 polynome (a + bX )
    Calibrate(histo,a,b,0.0,option);
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibration a 2D histogram with 2 functions
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] functionX calibration function for X-direction
+//! \param[in] functionY calibration function for Y-direction
 void TPGspectrumCalibrator::Calibrate(const TH2 *histo, const TF1 *functionX, const TF1 *functionY)
 {
    if (!histo) {
@@ -158,7 +199,16 @@ void TPGspectrumCalibrator::Calibrate(const TH2 *histo, const TF1 *functionX, co
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//!   Calibration with an order 2 polynome (a + bX + c*X*X) for 2D histogram
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] ax 1st parameter for X-direction
+//! \param[in] bx 2nd parameter for X-direction
+//! \param[in] cx 3rd parameter for X-direction
+//! \param[in] ay 1st parameter for Y-direction
+//! \param[in] by 2nd parameter for Y-direction
+//! \param[in] cy 3rd parameter for Y-direction
 void TPGspectrumCalibrator::Calibrate(const TH2 *histo, const Double_t ax, const Double_t bx, const Double_t cx,
                                       const Double_t ay, const Double_t by, const Double_t cy)
 {
@@ -176,13 +226,26 @@ void TPGspectrumCalibrator::Calibrate(const TH2 *histo, const Double_t ax, const
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//!   Calibration with an order 2 polynome (a + bX) for 2D histogram
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] ax 1st parameter for X-direction
+//! \param[in] bx 2nd parameter for X-direction
+//! \param[in] ay 1st parameter for Y-direction
+//! \param[in] by 2nd parameter for Y-direction
 void TPGspectrumCalibrator::Calibrate(const TH2 *histo, const Double_t ax, const Double_t bx, const Double_t ay, const Double_t by)
 {
    Calibrate(histo,ax,bx,0.0,ay,by,0.0);
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibration a 3D histogram with 3 functions
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] functionX calibration function for X-direction
+//! \param[in] functionY calibration function for Y-direction
+//! \param[in] functionZ calibration function for Z-direction
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const TF1 *functionX, const TF1 *functionY, const TF1 *functionZ)
 {
    if (!histo) {
@@ -212,7 +275,14 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const TF1 *functionX, co
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibration a 3D histogram with 2 functions
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] function1 calibration function for X/Y/Z-direction
+//! \param[in] function2 calibration function for X/Y/Z-direction
+//! \param[in] option axis options
+//! option = "xy","xz","yz" or "xyz" for a TH3 (the axis are calibrated with the same function)
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const TF1 *function1, const TF1 *function2, const Option_t *option)
 {
    if (!histo) {
@@ -251,7 +321,19 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const TF1 *function1, co
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//!   Calibration with an order 2 polynome (a + bX + c*X*X) for 3D histogram
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] ax 1st parameter for X-direction
+//! \param[in] bx 2nd parameter for X-direction
+//! \param[in] cx 3rd parameter for X-direction
+//! \param[in] ay 1st parameter for Y-direction
+//! \param[in] by 2nd parameter for Y-direction
+//! \param[in] cy 3rd parameter for Y-direction
+//! \param[in] az 1st parameter for Z-direction
+//! \param[in] bz 2nd parameter for Z-direction
+//! \param[in] cz 3rd parameter for Z-direction
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const Double_t ax, const Double_t bx, const Double_t cx,
                                       const Double_t ay, const Double_t by, const Double_t cy, const Double_t az, 
                                       const Double_t bz, const Double_t cz)
@@ -271,14 +353,34 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const Double_t ax, const
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//!   Calibration with an order 1 polynome (a + bX) for 3D histogram
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] ax 1st parameter for X-direction
+//! \param[in] bx 2nd parameter for X-direction
+//! \param[in] ay 1st parameter for Y-direction
+//! \param[in] by 2nd parameter for Y-direction
+//! \param[in] az 1st parameter for Z-direction
+//! \param[in] bz 2nd parameter for Z-direction
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo, const Double_t ax, const Double_t bx, const Double_t ay,
                                       const Double_t by, const Double_t az, const Double_t bz)
 {
    Calibrate(histo,ax,bx,0.0,ay,by,0.0,az,bz,0.0);
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibration a 3D histogram with 2 functions with 2 order polynom
+//!
+//! \param[in] histo a given 3D histogram
+//! \param[in] a1 1st parameter for X/Y/Z-direction
+//! \param[in] b1 2nd parameter for X/Y/Z-direction
+//! \param[in] c1 3rd parameter for X/Y/Z-direction
+//! \param[in] a2 1st parameter for X/Y/Z-direction
+//! \param[in] b2 2nd parameter for X/Y/Z-direction
+//! \param[in] c2 3rd parameter for X/Y/Z-direction
+//! \param[in] option axis options
+//! option = "xy","xz","yz" or "xyz" for a TH3 (the axis are calibrated with the same function)
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo,  const Double_t a1, const Double_t b1, const Double_t c1,
                                       const Double_t a2, const Double_t b2, const Double_t c2, const Option_t *option)
 {
@@ -310,7 +412,16 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo,  const Double_t a1, cons
    DrawResult();
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibration a 3D histogram with 2 functions with 1st order polynom
+//!
+//! \param[in] histo a given 2D histogram
+//! \param[in] a1 1st parameter for X/Y/Z-direction
+//! \param[in] b1 2nd parameter for X/Y/Z-direction
+//! \param[in] a2 1st parameter for X/Y/Z-direction
+//! \param[in] b2 2nd parameter for X/Y/Z-direction
+//! \param[in] option axis options
+//! option = "xy","xz","yz" or "xyz" for a TH3 (the axis are calibrated with the same function)
 void TPGspectrumCalibrator::Calibrate(const TH3 *histo,  const Double_t a1, const Double_t b1,
                                       const Double_t a2, const Double_t b2, const Option_t *option)
 {
@@ -318,7 +429,9 @@ void TPGspectrumCalibrator::Calibrate(const TH3 *histo,  const Double_t a1, cons
 }
 
 //__________________________________________________________________________________________________
-TH1* TPGspectrumCalibrator::GetHistoCal() const {
+//! Get histogram
+TH1* TPGspectrumCalibrator::GetHistoCal() const
+{
    if (!fHistoCal) {
       printf("Info in <TPGspectrumCalibrator::GetHistoCal> fHistoCal not defined, return 0 !!\n");
       return 0;
@@ -327,9 +440,12 @@ TH1* TPGspectrumCalibrator::GetHistoCal() const {
 }
 
 //__________________________________________________________________________________________________
+//! draw the calibrated histogram in the current pad with same range of the Raw Histogram
+//! set the range of the calibrated histogram
+//!
+//! \param[in] opt draw options
 void TPGspectrumCalibrator::DrawResult(const Option_t *opt) const
-{   // draw the calibrated histogram in the current pad with same range of the Raw Histogram
-   // set the range of the calibrated histogram
+{
    fHistoCal->GetXaxis()->SetRange(fXRawAxis->GetFirst(),fXRawAxis->GetLast());
    fHistoCal->GetYaxis()->SetRange(fYRawAxis->GetFirst(),fYRawAxis->GetLast());
    fHistoCal->GetZaxis()->SetRange(fZRawAxis->GetFirst(),fZRawAxis->GetLast());
@@ -337,9 +453,11 @@ void TPGspectrumCalibrator::DrawResult(const Option_t *opt) const
 }
 
 //__________________________________________________________________________________________________
+//! Set the TPGspectrumCalibrator with a new raw histogram - the old histogram and the 3 axis are deleted
+//!
+//! \param[in] histo a given histogram
 void TPGspectrumCalibrator::Set(const TH1 *histo)
-{ // Set the TPGspectrumCalibrator with a new raw histogram - the old histogram and the 3 axis are deleted
-   
+{
    if (!histo) {
       printf("Info in <TPGspectrumCalibrator::Set> histo NOT defined !!\n");
       return;
@@ -359,7 +477,11 @@ void TPGspectrumCalibrator::Set(const TH1 *histo)
    fHistoCal->SetTitle("Calibrated Histogram");
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibrated with a function
+//!
+//! \param[in] function function to use for fit
+//! \param[in] option axis options
 void TPGspectrumCalibrator::CalibOneAxis(const TF1 *function, const Option_t *option)
 {
    if (!function) {
@@ -459,7 +581,13 @@ void TPGspectrumCalibrator::CalibOneAxis(const TF1 *function, const Option_t *op
    }
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//!   Calibration with an order 2 polynome (a + bX + c*X*X)
+//!
+//! \param[in] a 1st parameter
+//! \param[in] b 2nd parameter
+//! \param[in] c 3rd parameter
+//! \param[in] option axis options
 void TPGspectrumCalibrator::CalibOneAxis(const Double_t a, const Double_t b, const Double_t c, const Option_t *option)
 {
    if ((b==0.0) && (c==0.0)) {
@@ -478,7 +606,12 @@ void TPGspectrumCalibrator::CalibOneAxis(const Double_t a, const Double_t b, con
    
 }
 
-//__________________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Calibration with an order 1 polynome (a + bX )
+//!
+//! \param[in] a 1st parameter
+//! \param[in] b 2nd parameter
+//! \param[in] option axis options
 void TPGspectrumCalibrator::CalibOneAxis(const Double_t a, const Double_t b, const Option_t *option)
 {
    if ( b==0.0 ) {
@@ -497,6 +630,7 @@ void TPGspectrumCalibrator::CalibOneAxis(const Double_t a, const Double_t b, con
 }
 
 //__________________________________________________________________________________________________
+//! Invert
 void TPGspectrumCalibrator::Invert()
 {
    if (fHistoCal == 0) {

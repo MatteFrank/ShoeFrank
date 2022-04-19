@@ -15,8 +15,6 @@ ClassImp(TAMSDpoint) // Description of Single Detector TAMSDpoint
 TAMSDpoint::TAMSDpoint()
 : TAGcluster(),
    fStation(0),
-   fColClus(0),
-   fRowClus(0),
    fDe1(0),
    fDe2(0),
    fTime(0),
@@ -30,15 +28,12 @@ TAMSDpoint::TAMSDpoint()
 TAMSDpoint::TAMSDpoint(const TAMSDpoint& point)
 :  TAGcluster(point),
    fStation(point.fStation),
-   fColClus(new TAMSDcluster(*point.fColClus)),
-   fRowClus(new TAMSDcluster(*point.fRowClus)),
    fDe1(point.fDe1),
    fDe2(point.fDe2),
    fTime(point.fTime),
    fChargeZ(point.fChargeZ),
    fChargeZProba(point.fChargeZProba)
 {
-   fElementsN = fColClus->GetElementsN() + fRowClus->GetElementsN();
 }
 
 //______________________________________________________________________________
@@ -57,8 +52,6 @@ TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
 TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY)
  : TAGcluster(),
    fStation(layer),
-   fColClus(new TAMSDcluster(*clusX)),
-   fRowClus(new TAMSDcluster(*clusY)),
    fChargeZ(0),
    fChargeZProba(0.)
 {
@@ -69,10 +62,10 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
    fDe2 = clusY->GetEnergyLoss();
 
    Bool_t common = false;
-   for (Int_t j = 0; j < fColClus->GetMcTracksN(); ++j) {
-      Int_t idr = fColClus->GetMcTrackIdx(j);
-      for (Int_t k = 0; k < fRowClus->GetMcTracksN(); ++k) {
-         Int_t idc = fRowClus->GetMcTrackIdx(k);
+   for (Int_t j = 0; j < clusX->GetMcTracksN(); ++j) {
+      Int_t idr = clusX->GetMcTrackIdx(j);
+      for (Int_t k = 0; k < clusY->GetMcTracksN(); ++k) {
+         Int_t idc = clusY->GetMcTrackIdx(k);
          if (idr == idc) {
             AddMcTrackIdx(idr);
             common = true;
@@ -83,13 +76,13 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
    // in case mixing two or more different particles in a point
    if (!common) {
       map<int, int> mapIdx;
-      for (Int_t j = 0; j < fColClus->GetMcTracksN(); ++j) {
-         Int_t idr = fColClus->GetMcTrackIdx(j);
+      for (Int_t j = 0; j < clusX->GetMcTracksN(); ++j) {
+         Int_t idr = clusX->GetMcTrackIdx(j);
          mapIdx[idr] = 1;
       }
       
-      for (Int_t k = 0; k < fRowClus->GetMcTracksN(); ++k) {
-         Int_t idc = fRowClus->GetMcTrackIdx(k);
+      for (Int_t k = 0; k < clusY->GetMcTracksN(); ++k) {
+         Int_t idc = clusY->GetMcTrackIdx(k);
          mapIdx[idc] = 1;
       }
       
@@ -97,7 +90,7 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
          AddMcTrackIdx(it->first);
    }
    
-   fElementsN = fColClus->GetElementsN() + fRowClus->GetElementsN();
+   fElementsN = clusX->GetElementsN() + clusY->GetElementsN();
 }
 
 //______________________________________________________________________________
@@ -189,7 +182,7 @@ int TAMSDntuPoint::GetPointsN(int iStation) const
 
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a strip for a given sensor
 TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const
 {
 	if ( iPoint >= 0  && iPoint < GetPointsN( iStation ) ) {
@@ -210,7 +203,7 @@ TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 }
 
 //------------------------------------------+-----------------------------------
-//! Setup clones. Crate and initialise the list of pixels
+//! Setup clones. Create and initialise the list of points
 void TAMSDntuPoint::SetupClones()
 {
   fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();

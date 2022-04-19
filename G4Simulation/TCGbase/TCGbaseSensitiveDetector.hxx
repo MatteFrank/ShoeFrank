@@ -25,13 +25,13 @@ public:
    TCGbaseSensitiveDetector(G4String);
    virtual ~TCGbaseSensitiveDetector();
    
-   //! Initialize list of collection
+   // Initialize list of collection
    void Initialize(G4HCofThisEvent* HCE);
-   //! End of event
+   // End of event
    void EndOfEvent(G4HCofThisEvent* HCE);
    //! Set copy level
    void SetCopyLevel(G4int level) { fCopyLevel = level; }
-   //! Process hits
+   // Process hits
    G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
    
 protected:
@@ -39,7 +39,7 @@ protected:
    TCGmcCollections* fCollections;  ///< Hit Collections
 
 protected:
-   //! Fill hits from step
+   // Fill hits from step
    void FillHits(G4Step* aStep, TCGmcHit* newHit);
 
 };

@@ -17,6 +17,9 @@
  */
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Constructor
+//!
+//! \param[in] name sensitive detector name
 TCITsensitiveDetector::TCITsensitiveDetector(G4String name)
 :TCGbaseSensitiveDetector(name)
 {

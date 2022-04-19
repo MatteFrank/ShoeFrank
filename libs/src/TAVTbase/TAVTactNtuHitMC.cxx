@@ -32,10 +32,18 @@
 
 using namespace std;
 
+//! Class Imp
 ClassImp(TAVTactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
-//! Constructor
+//! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuMC MC hit container descriptor
+//! \param[in] pNtuEve MC event container descriptor
+//! \param[out] pNtuRaw hit container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] evStr Fluka structure pointer
 TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 : TAVTactBaseNtuHitMC(name, pGeoMap),
    fpNtuMC(pNtuMC),
@@ -54,7 +62,7 @@ TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDs
 }
 
 //------------------------------------------+-----------------------------------
-// Create digitizer
+//! Create digitizer
 void TAVTactNtuHitMC::CreateDigitizer()
 {
    TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
@@ -68,7 +76,7 @@ void TAVTactNtuHitMC::CreateDigitizer()
 }
 
 //------------------------------------------+-----------------------------------
-// Action.
+//! Action.
 bool TAVTactNtuHitMC::Action()
 {
 	TAVTntuHit* pNtuRaw = (TAVTntuHit*) fpNtuRaw->Object();
@@ -114,8 +122,12 @@ bool TAVTactNtuHitMC::Action()
    return kTRUE;
 }
 
-//------------------------------------------+-----------------------------------
-void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEvents)
+//______________________________________________________________________________
+//! Digitize for MC hit and stored MC event when pileup active
+//!
+//! \param[in] storedEvtInfo list of MC events stored
+//! \param[in] storedEvents number fo MC events stored
+void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEvents)
 {
    TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
   
@@ -126,7 +138,6 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
    else
      pNtuMC = TAMCflukaParser::GetVtxHits(fEventStruct, fpNtuMC);
 
-   RawMcHit_t mcHit;
    fMap.clear();
    
    if(FootDebugLevel(1))
@@ -143,24 +154,29 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t> storedEvtInfo, Int_t storedEve
       Int_t trackIdx = hit->GetTrackIdx()-1;
       
       // used for pileup ...
-      if (fgPileup && storedEvents <= fgPileupEventsN) {
-         mcHit.id  = sensorId;
-         mcHit.de  = de;
-         mcHit.x   = posIn.X();
-         mcHit.y   = posIn.Y();
-         mcHit.zi  = posIn.Z();
-         mcHit.zo  = posOut.Z();
-         storedEvtInfo.push_back(mcHit);
-      }
+      if (fgPileup && storedEvents <= fgPileupEventsN)
+         FillPileup(storedEvtInfo, hit, i);
       
-      // Digitizing
+      // Transformations
+      posIn  = fpGeoTrafo->FromGlobalToVTLocal(posIn);
+      posOut = fpGeoTrafo->FromGlobalToVTLocal(posOut);
       posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
       
+      // Digitizing
       DigitizeHit(sensorId, de, posIn, posOut, i, trackIdx);
    }
 }
-//------------------------------------------+-----------------------------------
+
+//______________________________________________________________________________
+//! Digitize from energy loss, position in/out and hit index and track index for a given sensor
+//!
+//! \param[in] sensorId sensor index
+//! \param[in] de energy loss
+//! \param[in] posIn position entering the expitaxial layer
+//! \param[in] posOut position exiting the expitaxial layer
+//! \param[in] idx MC hit index
+//! \param[in] trackIdx MC event index
 void TAVTactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, TVector3& posOut, Int_t idx, Int_t trackIdx)
 {
   TAMCntuPart* pNtuEve  = 0;
@@ -186,8 +202,13 @@ void TAVTactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, T
    }
 }
 
-//------------------------------------------+-----------------------------------
-void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
+//______________________________________________________________________________
+//! Fill pixel from hit index and track index for a given sensor
+//!
+//! \param[in] sensorId sensor index
+//! \param[in] idx MC hit index
+//! \param[in] trackIdx MC event index
+void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx, Bool_t pileup)
 {
 	TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
 	TAVTntuHit* pNtuRaw = (TAVTntuHit*) fpNtuRaw->Object();
@@ -215,6 +236,8 @@ void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
             pixel = fMap[p];
 
          pixel->AddMcTrackIdx(trackIdx, hitId);
+         if (pileup)
+            pixel->SetPileUp();
 
          if(FootDebugLevel(1))
 				printf("line %d col %d\n", line, col);
@@ -233,6 +256,7 @@ void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx)
 }
 
 //___________________________________
+//! Fill noisy pixels for all sensors
 void TAVTactNtuHitMC::FillNoise()
 {
    TAVTparGeo* pGeoMap = (TAVTparGeo*) fpGeoMap->Object();
@@ -242,6 +266,9 @@ void TAVTactNtuHitMC::FillNoise()
 }
 
 //___________________________________
+//! Fill noisy pixel for a given sensor
+//!
+//! \param[in] sensorId sensor index
 void TAVTactNtuHitMC::FillNoise(Int_t sensorId)
 {
 	TAVTntuHit* pNtuRaw = (TAVTntuHit*) fpNtuRaw->Object();

@@ -23,7 +23,11 @@ protected:
    TVector3           fPosition2;                ///< position of the clus in tracker frame / / fitted position in FOOT frame
    TVector3           fPosError2;                ///< position's errors of the clus in tracker frame /  fitted position's error in FOOT frame
    TArrayI            fMcTrackIdx;               ///< Idx of the track created in the simulation
+   TArrayI            fMcHitIdx;                 ///< Idx of the hit created in the simulation
+   //! Map of MC track Id
    map<int, int>      fMcTrackMap;               //! Map of MC track Id
+   //! Map of MC hit Id
+   map<int, int>      fMcHitMap;                 //! Map of MC track Id
    Int_t              fClusterIdx;               ///< cluster index
    Int_t              fElementsN;                ///< number of cluster elements (pixels, strips, points...)
    Int_t              fSensorIdx;                ///< sensor index
@@ -68,8 +72,11 @@ public:
    //! Get fitted position in FOOT frame
    virtual const TVector3&  GetFitPosError()   const { return fPosError2;     }
    
-   //! Get MC info
+   //! Get MC hit index
+   Int_t                    GetMcIndex(Int_t index)    const   { return fMcHitIdx[index];      }
+   //! Get MC track index
    Int_t                    GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+   //! Get MC track size
    Int_t                    GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
    
    //! Compute distance from a track
@@ -85,36 +92,44 @@ public:
    void                     SetClusterIdx(Int_t nb)                       { fClusterIdx = nb;         }
    //! Set sensor index
    void                     SetSensorIdx(Int_t nb)                        { fSensorIdx = nb;          }
-   //! Set position in local frame
+   // Set position in local frame
    virtual void             SetPosition(TVector3& pos);
+   //! Set position in local frame
    virtual void             SetPosition(Float_t u, Float_t v, Float_t z)  { fPosition1.SetXYZ(u,v,z); }
-   //! Set position error in local frame
+   // Set position error in local frame
    virtual void             SetPosError(TVector3& pos);
+   //! Set position error in local frame
    virtual void             SetPosError(Float_t u, Float_t v, Float_t z)  { fPosError1.SetXYZ(u,v,z); }
-   //! Set position in global tracker frame
+   // Set position in global tracker frame
    virtual void             SetPositionG(TVector3& pos);
+   //! Set position in global tracker frame
    virtual void             SetPositionG(Float_t u, Float_t v, Float_t z) { fPosition2.SetXYZ(u,v,z); }
-   //! Set position error in global tracker frame
+   // Set position error in global tracker frame
    virtual void             SetPosErrorG(TVector3& pos);
+   //! Set position error in global tracker frame
    virtual void             SetPosErrorG(Float_t u, Float_t v, Float_t z) { fPosError2.SetXYZ(u,v,z); }
    
    //! Set measured position in FOOT frame
    virtual void             SetMeasPosition(TVector3& pos)                    { fPosition1 = pos;         }
+   //! Set measured position in FOOT frame
    virtual void             SetMeasPosition(Float_t u, Float_t v, Float_t z)  { fPosition1.SetXYZ(u,v,z); }
    //! Set measured position error in FOOT frame
    virtual void             SetMeasPosError(TVector3& pos)                    { fPosError1 = pos;         }
+   //! Set measured position error in FOOT frame
    virtual void             SetMeasPosError(Float_t u, Float_t v, Float_t z)  { fPosError1.SetXYZ(u,v,z); }
    //! Set fitted position in FOOT frame
    virtual void             SetFitPosition(TVector3& pos)                     { fPosition2 = pos;         }
+   //! Set fitted position in FOOT frame
    virtual void             SetFitPosition(Float_t u, Float_t v, Float_t z)   { fPosition2.SetXYZ(u,v,z); }
    //! Get fitted position in FOOT frame
    virtual void             SetFitPosError(TVector3& pos)                     { fPosError2 = pos;         }
+   //! Get fitted position in FOOT frame
    virtual void             SetFitPosError(Float_t u, Float_t v, Float_t z)   { fPosError2.SetXYZ(u,v,z); }
    
-   //! Add MC track Idx
-   void                     AddMcTrackIdx(Int_t trackIdx);
+   // Add MC track Idx
+   void                     AddMcTrackIdx(Int_t trackIdx, Int_t hitIdx = -1);
    
-    ClassDef(TAGcluster,4)
+    ClassDef(TAGcluster,5)
 };
 
 #endif

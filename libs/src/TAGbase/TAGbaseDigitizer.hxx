@@ -6,12 +6,8 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-
 #include "TAGobject.hxx"
 
-
-class TF1;
-class TAVTbaseParGeo;
 class TAGbaseDigitizer : public TAGobject {
    
 public:

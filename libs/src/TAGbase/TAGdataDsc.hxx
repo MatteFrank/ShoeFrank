@@ -21,14 +21,14 @@ class TAGdataDsc : public TAGnamed {
     explicit        TAGdataDsc(const char* name=0, TAGdata* p_data=0);
     virtual         ~TAGdataDsc();
 
-    //! Set object
+    // Set object
     void            SetObject(TAGdata* p_data);
-    //! Set producer
+    // Set producer
     void            SetProducer(TAGaction* p_action);
-    //! Set consumer
+    // Set consumer
     void            SetConsumer(TAGaction* p_action);
 
-    //! Generate object
+    // Generate object
     TAGdata*        GenerateObject();
     //! Object pointer
     TAGdata**       ObjectPointer()     { return &fpObject;       }
@@ -44,13 +44,13 @@ class TAGdataDsc : public TAGnamed {
     //! EOF
     Bool_t          Eof()         const { return TestBit(kEof);   }
 
-    //! Clear
+    // Clear
     virtual void    Clear(Option_t* opt="");
-    //! Generate
+    // Generate
     Bool_t          Generate();
-    //! To stream§
+    // To stream§
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-    //! Recursive Remove
+    // Recursive Remove
     virtual void    RecursiveRemove(TObject* p_obj);
 
   private:

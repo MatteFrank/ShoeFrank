@@ -25,14 +25,13 @@ public:
    virtual ~TAVTactNtuTrackF();
    
 protected:
-   //! Find tilted tracks
+   // Find tilted tracks
    Bool_t FindTiltedTracks();
-   //! Check track candidate
+   // Check track candidate
    virtual Bool_t IsGoodCandidate(TAGbaseTrack* track);
    
 protected:
-   //! Cluster map
-   map<TAGcluster*,  int> fMapClus;
+   map<TAGcluster*,  int> fMapClus;    ///< Cluster map
 
    ClassDef(TAVTactNtuTrackF,0)
 };

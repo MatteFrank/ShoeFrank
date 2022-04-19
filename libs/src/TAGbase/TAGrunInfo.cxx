@@ -12,7 +12,9 @@
   \brief Run number info. **
 */
 
+//! Class Imp
 ClassImp(GlobalParameter_t)
+//! Class Imp
 ClassImp(TAGrunInfo);
 
 TString TAGrunInfo::fgkObjectName = "runinfo";
@@ -26,6 +28,9 @@ TAGrunInfo::TAGrunInfo()
 
 //------------------------------------------+-----------------------------------
 //! Construct with campaign and run number.
+//!
+//! \param[in] s_cam campaign name
+//! \param[in] i_run run number
 TAGrunInfo::TAGrunInfo(TString s_cam, Short_t i_run)
  : fsCam(s_cam),
    fiRun(i_run)
@@ -33,6 +38,8 @@ TAGrunInfo::TAGrunInfo(TString s_cam, Short_t i_run)
 
 //------------------------------------------+-----------------------------------
 //! copy cstr
+//!
+//! \param[in] right run info to copy
 TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
  : fsCam(right.fsCam),
    fiRun(right.fiRun),
@@ -68,7 +75,9 @@ TAGrunInfo::~TAGrunInfo()
 {}
 
 //------------------------------------------+-----------------------------------
-// operator =
+//! operator =
+//!
+//! \param[in] right run info to equal
 const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
 {
    fiRun = right.fiRun;
@@ -103,7 +112,9 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
 }
 
 //------------------------------------------+-----------------------------------
-// Clear run info.
+//! Clear event.
+//!
+//! \param[in] opt option for clearing (not used)
 void TAGrunInfo::Clear(Option_t*)
 {
   fsCam = "";
@@ -111,8 +122,11 @@ void TAGrunInfo::Clear(Option_t*)
   fCrossMap.clear();
 }
 
-//------------------------------------------+-----------------------------------
-// ostream insertion.
+//______________________________________________________________________________
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
 {
   os << "Run info:     "
@@ -155,7 +169,10 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
 }
 
 //------------------------------------------+-----------------------------------
-// Returns true of run info lhs and rhs are equal
+//! Returns true of run info lhs and rhs are equal
+//!
+//! \param[in] lhs left item
+//! \param[in] rhs right item
 bool operator==(const TAGrunInfo& lhs, const TAGrunInfo& rhs)
 {
    return lhs.fsCam==rhs.fsCam && lhs.fiRun==rhs.fiRun;

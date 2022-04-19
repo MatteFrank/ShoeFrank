@@ -94,3 +94,27 @@ CamName:    "MSDCNAO"
 CamDataMC:    0
 CamDate: "Dec 2021"
 CamSum: "MSD beam test at CNAO"
+
+CamNumber:    16
+CamName:    "40Ca_300_MC"
+CamDataMC:    1
+CamDate: "February 2022"
+CamSum: "Simulation data for data taking with ST+BM+VTX+MSD+TW+CAL 40Ca 300 MeV/u"
+
+CamNumber:    17
+CamName:    "Alpha_TW2_MC"
+CamDataMC:    1
+CamDate: "February 2022"
+CamSum: "Simulation data for data taking with ST+BM+VTX+MSD+TW+CAL for alpha clustering studies, TW new. Different projectiles/energies"
+
+CamNumber:    18
+CamName:    "CNAO2021"
+CamDataMC:    0
+CamDate: "December 2021"
+CamSum: "Test experiment at CNAO with ST+TW+CAL @ 150,200,400 MeV/u"
+
+CamNumber:    19
+CamName:    "CNAO2021_MC"
+CamDataMC:    1
+CamDate: "November 2021"
+CamSum: "Simulation data for data taking at CNAO with ST+TW+CAL 12C 150-400 MeV/u"

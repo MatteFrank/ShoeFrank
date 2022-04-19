@@ -21,13 +21,13 @@ public:
    explicit        TAVTactVmeSingleReader(const char* name=0, TAGdataDsc* pDatRaw = 0, TAGparaDsc* p_geomap=0, TAGparaDsc* p_config=0, TAGparaDsc* pParMap=0);
    virtual         ~TAVTactVmeSingleReader();
       
-   //! Open file with a given prefix and suffix for the files
+   // Open file with a given prefix and suffix for the files
    virtual Int_t   Open(const TString& prefix, Option_t* opt = "",  const TString treeName="", Bool_t dscBranch = true);
    
-   //! close files
+   // close files
    virtual void    Close();
    
-   //! Process
+   // Process
    virtual Bool_t  Process();
    
    //! Set start trigger number for re-synchronization
@@ -39,7 +39,7 @@ public:
    static void     SetDefaultFolderName(const Char_t* name) { fgDefaultFolderName = name; }
    //! Get default folder name
    static TString  GetDefaultFolderName()                   { return fgDefaultFolderName; }
-   //! Set trigger jump map
+   // Set trigger jump map
    static void     SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump);
    
 protected:
@@ -60,13 +60,13 @@ protected:
    static           Bool_t fgTrigJumpAuto;                   ///< flag for jump detection
    
 protected:
-   //! Get the event
+   // Get the event
    Bool_t           GetSensorEvent(Int_t iSensor);
    
-   //! Get frame and returns frameRaw
+   // Get frame and returns frameRaw
    Bool_t           GetFrame(Int_t iSensor, MI26_FrameRaw* data);
    
-   //! Set run number
+   // Set run number
    void             SetRunNumber(const TString& name);
    
    ClassDef(TAVTactVmeSingleReader,0)

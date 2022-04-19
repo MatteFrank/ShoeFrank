@@ -42,6 +42,9 @@ TCGprimaryGeneratorAction::~TCGprimaryGeneratorAction()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Generate primary ions for a given event
+//!
+//! \param[in] anEvent a given event
 void TCGprimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
    // particle definition

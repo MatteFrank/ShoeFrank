@@ -36,11 +36,11 @@ public:
     virtual ~TCFObaseEventAction();
 
 public:
-    //! Begin event action
+    // Begin event action
     void   BeginOfEventAction(const G4Event* evt);
-    //! End event action
-    virtual void   EndOfEventAction(const G4Event*);
-    //! Fill collection
+    // End event action
+    virtual void   EndOfEventAction(const G4Event* evt);
+    // Fill collection
     void   ConstructCollection();
 
    //! Get MC info
@@ -72,9 +72,9 @@ protected:
     G4bool                   fInelasticOnly;         ///< Inelastic process flag
 
 protected:
-    //! Number of event to be process
+    // Number of event to be process
     Int_t  GetEventsNToBeProcessed();
-    //! Fill tree and clear containers
+    // Fill tree and clear containers
     virtual void   FillAndClear();
 };
 

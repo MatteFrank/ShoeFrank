@@ -21,6 +21,7 @@
  \brief Base class to decode vertex raw data
  */
 
+//! Class Imp
 ClassImp(TAVTactBaseRaw);
 
 const UInt_t TAVTactBaseRaw::fgkKeyHeader[]     = {0x80008000, 0x80018001, 0x80028002, 0x80038003};
@@ -32,6 +33,12 @@ const UInt_t TAVTactBaseRaw::fgkKeyTail[]       = {0x8bb08bb0, 0x8bb18bb1, 0x8bb
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw input hit container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
 TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAGactionFile(name, "TAVTactBaseRaw - Base action for unpack vertex raw data"),
   fpNtuRaw(pNtuRaw),
@@ -72,7 +79,7 @@ TAVTactBaseRaw::~TAVTactBaseRaw()
 }
 
 //------------------------------------------+-----------------------------------
-// Setup all histograms.
+//! Setup all histograms.
 void TAVTactBaseRaw::CreateHistogram()
 {
    DeleteHistogram();
@@ -132,6 +139,9 @@ void TAVTactBaseRaw::CreateHistogram()
 }
 
 // --------------------------------------------------------------------------------------
+//! Get sensor id for a given key
+//!
+//! \param[in] key a given key
 Int_t TAVTactBaseRaw::GetSensor(UInt_t key)
 {
    TAVTbaseParGeo* pGeoMap = (TAVTbaseParGeo*) fpGeoMap->Object();
@@ -145,6 +155,7 @@ Int_t TAVTactBaseRaw::GetSensor(UInt_t key)
 }
 
 // --------------------------------------------------------------------------------------
+//! Reset frame info
 void TAVTactBaseRaw::ResetFrames()
 {
    fFirstFrame = 0;
@@ -152,6 +163,10 @@ void TAVTactBaseRaw::ResetFrames()
 }
 
 // --------------------------------------------------------------------------------------
+//! Fill histograms related to frame
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] data Mimosa sensor data structure
 void TAVTactBaseRaw::FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
    Bool_t ok = true;
@@ -186,6 +201,10 @@ void TAVTactBaseRaw::FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data)
 }
 
 // --------------------------------------------------------------------------------------
+//!
+//! Fill histogram event related
+//!
+//! \param[in] iSensor sensor index
 void TAVTactBaseRaw::FillHistoEvt(Int_t iSensor)
 {
    //if (fEventNumber - fPrevEventNumber > 1)printf("trig %d  prev %d\n", fTriggerNumber, fPrevTriggerNumber);
@@ -197,6 +216,11 @@ void TAVTactBaseRaw::FillHistoEvt(Int_t iSensor)
 }
 
 // --------------------------------------------------------------------------------------
+//! Fill histogram related to pixel
+//!
+//! \param[in] planeId sensor index
+//! \param[in] aLine line id
+//! \param[in] aColumn column id
 void TAVTactBaseRaw::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn)
 {
    fpHisPixelMap[planeId]->Fill(aLine, aColumn);
@@ -210,7 +234,11 @@ void TAVTactBaseRaw::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn)
 }
 
 // --------------------------------------------------------------------------------------
-Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
+//! Decode Frame
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] frame Mimosa sensor data structure
+Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw* frame)
 {
    // Read the information of a frame for a given sensor
    // We use extensively the structure definined by Gille Clauss
@@ -318,6 +346,12 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame)
 }
 
 // --------------------------------------------------------------------------------------
+//! Add pixel to container
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] value pixel value
+//! \param[in] aLine line id
+//! \param[in] aColumn column id
 void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
 {
    // Add a pixel to the vector of pixels
@@ -332,10 +366,8 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
    Int_t planeId = pParMap->GetPlaneId(iSensor);
-   
-   std::pair<int, int> pair(aLine, aColumn);
-   if (pConfig->GetSensorPar(planeId).DeadPixelMap[pair] == 1) return;
-   
+   if (pConfig->IsDeadPixel(planeId, aLine, aColumn)) return;
+     
    TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);

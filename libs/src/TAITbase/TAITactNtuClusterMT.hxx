@@ -20,13 +20,13 @@ public:
    
    virtual ~TAITactNtuClusterMT();
    
-   //! Action
+   // Action
    virtual  Bool_t Action();
 
-   //! Find cluster charge, noise & position
+   // Find cluster charge, noise & position
    virtual Bool_t  FindClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr);
    
-   //! Get list of pixels
+   // Get list of pixels
    virtual TClonesArray* GetListOfPixels(Int_t sensorId);
 
 private:
@@ -37,7 +37,7 @@ private:
    pthread_t*      fThread[4];     ///< thread pointer
 
 private:
-   //! Create cluster
+   // Create cluster
    Bool_t  CreateClusters(Int_t iSensor, TClonesArray* listOfPixels, Int_t thr);
 
    ClassDef(TAITactNtuClusterMT,0)

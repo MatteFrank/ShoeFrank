@@ -80,13 +80,13 @@ void FillDetectors(Int_t runNumber)
 
    daqActReaderMSD = new TAGactDaqReader("daqActReader", msdDaq);
 
-   msdActRaw = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdCal, msdGeo);
+   msdActRaw = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdCal, msdGeo, msdConf);
    msdActRaw->CreateHistogram();
 
-   msdActHit = new TAMSDactNtuHit("msdActHit", msdDat, msdHit, msdGeo, msdCal);
+   msdActHit = new TAMSDactNtuHit("msdActHit", msdDat, msdHit, msdGeo, msdConf, msdCal);
    msdActHit->CreateHistogram();
 
-   msdActClus = new TAMSDactNtuCluster("msdActClus", msdHit, msdclus, msdConf, msdGeo);
+   msdActClus = new TAMSDactNtuCluster("msdActClus", msdHit, msdclus, msdConf, msdGeo, msdCal);
    msdActClus->CreateHistogram();
 
    msdActPoint = new TAMSDactNtuPoint("msdActPoint", msdclus, msdPoint, msdGeo);

@@ -33,13 +33,13 @@ public:
    ~TAITtrack();
    TAITtrack(const TAGbaseTrack& aTrack);
 
-   //! Set up clones
+   // Set up clones
    void           SetupClones();
 
-    //! Get cluster
+   //! Get cluster
    TAVTbaseCluster* GetCluster(Int_t index)  { return (TAITcluster*)fListOfClusters->At(index); }
  
-   //! Add cluster
+   // Add cluster
    void           AddCluster(TAGcluster* cluster);
    
    ClassDef(TAITtrack,8)                      ///< Describes TAITtrack

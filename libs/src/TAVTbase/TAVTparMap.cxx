@@ -12,6 +12,7 @@
  \brief Map parameters for VTX
  */
 
+//! Class Imp
 ClassImp(TAVTparMap);
 
 //------------------------------------------+-----------------------------------

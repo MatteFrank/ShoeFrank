@@ -7,7 +7,7 @@
 #include "G4ios.hh"
 #include "G4UnitsTable.hh"
 
-
+//! Allocator
 G4Allocator<TCGmcHit> TCGmcHitAllocator;
 
 /*!
@@ -50,6 +50,9 @@ TCGmcHit::~TCGmcHit()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Copy constructor
+//!
+//! \param[in] right hit to copy
 TCGmcHit::TCGmcHit(const TCGmcHit &right)
 : G4VHit(),
   fEdep(right.fEdep),
@@ -77,6 +80,9 @@ TCGmcHit::TCGmcHit(const TCGmcHit &right)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! operator=
+//!
+//! \param[in] right hit to equal
 const TCGmcHit& TCGmcHit::operator=(const TCGmcHit &right)
 {  
    fEdep          = right.fEdep;
@@ -105,12 +111,16 @@ const TCGmcHit& TCGmcHit::operator=(const TCGmcHit &right)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! operator==
+//!
+//! \param[in] right hit to compare
 G4int TCGmcHit::operator==(const TCGmcHit &right) const
 {
   return (this==&right) ? 1 : 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Print
 void TCGmcHit::Print()
 {
     G4cout<<"\n SensorId "<<fSensorId<<G4endl;

@@ -11,10 +11,14 @@
  \brief  Interface for DAQ file reader
  */
 
+//! Class Imp
 ClassImp(TAGactDaqReader);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] p_datdaq daq event descriptor
 TAGactDaqReader::TAGactDaqReader(const char* name, TAGdataDsc* p_datdaq)
   : TAGactionFile(name, "TAGactDaqReader - DAQ file reader", "READ"),
    fDaqFileReader(new EventReader()),
@@ -33,7 +37,12 @@ TAGactDaqReader::~TAGactDaqReader()
 }
 
 //------------------------------------------+-----------------------------------
-// Open data source.
+//! Open data source.
+//!
+//! \param[in] name action name
+//! \param[in] option open file options
+//! \param[in] treeName name of tree in file
+//! \param[in] dscBranch flag for object descriptor
 Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString, Bool_t )
 {
    fCurFileName = name;
@@ -83,21 +92,23 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
 }
 
 //------------------------------------------+-----------------------------------
-// Close input file.
+//! Close input file.
 void TAGactDaqReader::Close()
 {
    fDaqFileReader->closeFile();
 }
 
 //------------------------------------------+-----------------------------------
-// Returns \a true if an input file or connection is open.
+//! Returns true if an input file or connection is open.
 Bool_t TAGactDaqReader::IsOpen() const
 {
    return fDaqFileReader->getIsOpened();
 }
 
 //------------------------------------------+-----------------------------------
-// Reset
+//! Reset
+//!
+//! \param[in] nEvents events to skip
 void TAGactDaqReader::SkipEvents(Int_t nEvents)
 {
    for (Int_t i = 0; i < nEvents; ++i)
@@ -105,7 +116,7 @@ void TAGactDaqReader::SkipEvents(Int_t nEvents)
 }
 
 //------------------------------------------+-----------------------------------
-// Process Reader.
+//! Process Reader.
 Bool_t TAGactDaqReader::Process()
 {
   if (Valid()) return kTRUE;

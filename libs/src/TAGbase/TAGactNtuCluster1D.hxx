@@ -33,15 +33,15 @@ protected:
    Int_t             fDimX;     ///<  dimension X of map
    
 protected:
-   //! Fill maps
+   // Fill maps
    void   FillMaps(Int_t IndX, Int_t idx);
-   //! Shape cluster
+   // Shape cluster
    Bool_t ShapeCluster(Int_t noClus, Int_t IndX);
-   //! Check line
+   // Check line
    Bool_t CheckLine(Int_t idx);
-   //! Clear maps
+   // Clear maps
    void   ClearMaps();
-   //! Set up size map
+   // Set up size map
    void   SetupMaps(Int_t size);
 
    ClassDef(TAGactNtuCluster1D,0)

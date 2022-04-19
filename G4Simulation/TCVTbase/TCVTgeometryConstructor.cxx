@@ -45,6 +45,8 @@ using namespace CLHEP;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Constructor
+//!
+//! \param[in] pParGeo geometry parameter
 TCVTgeometryConstructor::TCVTgeometryConstructor(TAVTbaseParGeo* pParGeo)
 : TCGbaseConstructor("TCVTgeometryConstructor", "1.0"),
   fCmosLog(0x0),
@@ -64,6 +66,7 @@ TCVTgeometryConstructor::~TCVTgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Build sensor
 void TCVTgeometryConstructor::BuildSensor()
 {
    
@@ -121,6 +124,7 @@ void TCVTgeometryConstructor::BuildSensor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define sensitive detector volume
 void  TCVTgeometryConstructor::DefineSensitive()
 {
    // Putting here message
@@ -139,6 +143,7 @@ void  TCVTgeometryConstructor::DefineSensitive()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct detector
 G4LogicalVolume* TCVTgeometryConstructor::Construct()
 {
    //Definition of dimension boxes
@@ -164,6 +169,7 @@ G4LogicalVolume* TCVTgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Place sensor
 void TCVTgeometryConstructor::PlaceSensor()
 {
     Int_t nSensor = fpParGeo->GetSensorsN();
@@ -212,6 +218,7 @@ void TCVTgeometryConstructor::PlaceSensor()
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define materials
 void TCVTgeometryConstructor::DefineMaterial()
 {
     TString pixMat = fpParGeo->GetPixMaterial();
@@ -223,6 +230,7 @@ void TCVTgeometryConstructor::DefineMaterial()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Define the dimension of the detecteor envelop
 void TCVTgeometryConstructor::DefineMaxMinDimension()
 {
    TVector3 delta(0, fpParGeo->GetTotalSize()[1] - fpParGeo->GetEpiSize()[1], 0);

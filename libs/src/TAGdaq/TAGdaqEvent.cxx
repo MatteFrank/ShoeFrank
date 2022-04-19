@@ -10,6 +10,7 @@
   \brief Representation of raw data event. **
 */
 
+//! Class Imp
 ClassImp(TAGdaqEvent);
 
 //------------------------------------------+-----------------------------------
@@ -30,7 +31,9 @@ TAGdaqEvent::~TAGdaqEvent()
 }
 
 //------------------------------------------+-----------------------------------
-// Add fragment
+//! Add fragment
+//!
+//! \param[in] frag add fragment to list
 void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 {
    fListOfFragments.push_back(frag);
@@ -40,7 +43,7 @@ void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 }
 
 //------------------------------------------+-----------------------------------
-// Clear event.
+//! Clear event.
 void TAGdaqEvent::Clear(Option_t*)
 {
    TAGdata::Clear();
@@ -48,8 +51,11 @@ void TAGdaqEvent::Clear(Option_t*)
    fListOfClassTypes.clear();
 }
 
-/*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//______________________________________________________________________________
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGdaqEvent::ToStream(ostream& /*os*/, Option_t* /*option*/) const
 {
 }

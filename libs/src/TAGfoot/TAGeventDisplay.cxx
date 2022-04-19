@@ -39,6 +39,9 @@
 #include "LocalReco.hxx"
 #include "GlobalToeReco.hxx"
 
+//! Class Imp
+ClassImp(TAGeventDisplay)
+
 /*!
  \class TAGeventDisplay
  \brief FOOT class to work on event display
@@ -47,9 +50,12 @@
 
 TAGeventDisplay* TAGeventDisplay::fgInstance = 0x0;
 
-ClassImp(TAGeventDisplay)
-
 //__________________________________________________________
+//! Instance
+//!
+//! \param[in] name experiment name
+//! \param[in] runNumber run number
+//! \param[in] type toggle for raw or MC data
 TAGeventDisplay* TAGeventDisplay::Instance(const TString name, Int_t runNumber, Int_t type)
 {
    if (fgInstance == 0x0)
@@ -59,6 +65,11 @@ TAGeventDisplay* TAGeventDisplay::Instance(const TString name, Int_t runNumber, 
 }
 
 //__________________________________________________________
+//! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
+//! \param[in] type toggle for raw or MC data
 TAGeventDisplay::TAGeventDisplay(const TString expName, Int_t runNumber, Int_t type)
  : TAGbaseEventDisplay(expName, runNumber, type)
 {
@@ -67,11 +78,13 @@ TAGeventDisplay::TAGeventDisplay(const TString expName, Int_t runNumber, Int_t t
 }
 
 //__________________________________________________________
+//! Destructor
 TAGeventDisplay::~TAGeventDisplay()
 {
 }
 
 //__________________________________________________________
+//! Set reconstruction
 void TAGeventDisplay::SetLocalReco()
 {
    Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
@@ -92,6 +105,7 @@ void TAGeventDisplay::SetLocalReco()
 }
 
 //__________________________________________________________
+//! Skip events
 Bool_t TAGeventDisplay::SkipEvent()
 {
    Int_t nEvts = fNumberEvent->GetIntNumber();

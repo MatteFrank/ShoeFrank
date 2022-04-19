@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TABMactNtuHit.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TABMactNtuHit.
+  \file		 TABMactNtuHit.cxx
+  \brief   Declaration of TABMactNtuHit, the class that converts the BM raw hits (TABMrawHit) into a BM hit (TABMhit) with all the information
 */
 
 #include "math.h"
@@ -10,7 +9,7 @@
 
 /*!
   \class TABMactNtuHit TABMactNtuHit.hxx "TABMactNtuHit.hxx"
-  \brief NTuplizer for BM raw hits. **
+  \brief   Declaration of TABMactNtuHit, the class that converts the BM raw hits (TABMrawHit) into a BM hit (TABMhit) with all the information
 */
 
 ClassImp(TABMactNtuHit);
@@ -58,8 +57,7 @@ TABMactNtuHit::~TABMactNtuHit()
 
 
 //------------------------------------------+-----------------------------------
-//! Action.
-
+//! Create histograms
 
 void TABMactNtuHit::CreateHistogram(){
 
@@ -117,6 +115,8 @@ void TABMactNtuHit::CreateHistogram(){
   SetValidHistogram(kTRUE);
 }
 
+//------------------------------------------+-----------------------------------
+//! Action
 Bool_t TABMactNtuHit::Action()
 {
   TABMntuRaw* p_datraw = (TABMntuRaw*) fpDatRaw->Object();

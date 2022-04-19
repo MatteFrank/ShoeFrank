@@ -28,7 +28,7 @@ public:
 
    ~TAVTtrack();
    
-   //! Set up clones
+   // Set up clones
    void                   SetupClones();
 
    //! Set pos vertex
@@ -42,7 +42,7 @@ public:
    //! Get pos vertex
    const TVector3&        GetPosVertex()          const { return fPosVertex;                               }
    
-   //! Add cluster
+   // Add cluster
    void                   AddCluster(TAGcluster* cluster);
    
    ClassDef(TAVTtrack,9)                      ///< Describes TAVTtrack

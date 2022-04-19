@@ -13,6 +13,7 @@
  \brief Base class for VTX cluster containers
  */
 
+//! Class Imp
 ClassImp(TAVTbaseCluster) // Description of a cluster
 
 //______________________________________________________________________________
@@ -20,7 +21,8 @@ ClassImp(TAVTbaseCluster) // Description of a cluster
 TAVTbaseCluster::TAVTbaseCluster()
 :  TAGcluster(),
    fListOfPixels(0x0),
-   fCharge(0.)
+   fCharge(0.),
+   fPileUp(false)
 {
 }
 
@@ -28,7 +30,8 @@ TAVTbaseCluster::TAVTbaseCluster()
 //! Copy constructor
 TAVTbaseCluster::TAVTbaseCluster(const TAVTbaseCluster& cluster)
 :  TAGcluster(cluster),
-   fCharge(cluster.fCharge)
+   fCharge(cluster.fCharge),
+   fPileUp(cluster.fPileUp)
 {
    // TAVTbaseCluster constructor
    if (cluster.fListOfPixels)
@@ -43,7 +46,7 @@ TAVTbaseCluster::~TAVTbaseCluster()
 }
 
 //______________________________________________________________________________
-//
+//! Compute cluster size (lines columns)
 TVector2 TAVTbaseCluster::ComputeSize()
 {
    Int_t minLine = 99999;
@@ -71,7 +74,9 @@ TVector2 TAVTbaseCluster::ComputeSize()
 }
 
 //______________________________________________________________________________
-//  
+//! Set position in detector framework
+//!
+//! \param[in] posGlo cluster position
 void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 {
    fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
@@ -79,7 +84,9 @@ void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 }
 
 //______________________________________________________________________________
-// 
+//! Get pixel for a given index
+//!
+//! \param[in] idx pixel index
 TAVThit* TAVTbaseCluster::GetPixel(Int_t idx)                    
 { 
    if (idx >=0 && idx < fListOfPixels->GetEntries())
@@ -89,7 +96,9 @@ TAVThit* TAVTbaseCluster::GetPixel(Int_t idx)
 }
 
 //______________________________________________________________________________
-//  
+//! Compute distance between a given pixel and the seed one (index = 0) in U direction
+//!
+//! \param[in] index pixel index
 Float_t TAVTbaseCluster::GetPixelDistanceU(Int_t index) const
 {
    TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
@@ -102,7 +111,9 @@ Float_t TAVTbaseCluster::GetPixelDistanceU(Int_t index) const
 }
 
 //______________________________________________________________________________
-//  
+//! Compute distance between a given pixel and the seed one (index = 0) in V direction
+//!
+//! \param[in] index pixel index
 Float_t TAVTbaseCluster::GetPixelDistanceV(Int_t index) const
 {
    TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
@@ -115,7 +126,9 @@ Float_t TAVTbaseCluster::GetPixelDistanceV(Int_t index) const
 }
 
 //______________________________________________________________________________
-//  
+//! Get Seed pixel position in U direction
+//!
+//! Old method taken index = 0
 Float_t TAVTbaseCluster::GetSeedU() const 
 { 
    TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
@@ -123,7 +136,9 @@ Float_t TAVTbaseCluster::GetSeedU() const
 }
 
 //______________________________________________________________________________
-//  
+//! Get Seed pixel position in V direction
+//!
+//! Old method taken index = 0
 Float_t TAVTbaseCluster::GetSeedV() const 
 { 
    TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
@@ -131,25 +146,26 @@ Float_t TAVTbaseCluster::GetSeedV() const
 }
 
 //______________________________________________________________________________
-//  
-//Float_t TAVTbaseCluster::Distance(TAGcluster *aClus) {
-//   // Return the distance between this clusters and the pointed cluster
-//   // regardless of the plane
-//   
-//   TVector3 clusPosition( aClus->GetPositionG() );
-//   
-//   // Now compute the distance beetween the two hits
-//   clusPosition -= (GetPositionG());
-//   
-//   // Insure that z position is 0 for 2D length computation
-//   clusPosition.SetXYZ( clusPosition[0], clusPosition[1], 0.);
-//   
-//   return clusPosition.Mag();
-//}
-
+//! Compute distance to a given cluster
+//!
+//! Return the distance between this clusters and the given cluster
+//! regardless of the plane
+//! \param[in] aClus a given cluster
+Float_t TAVTbaseCluster::Distance(TAGcluster* aClus)
+{
+   TVector3 clusPosition( aClus->GetPositionG() );
+   
+   // Now compute the distance beetween the two hits
+   clusPosition -= (GetPositionG());
+   
+   // Insure that z position is 0 for 2D length computation
+   clusPosition.SetXYZ( clusPosition[0], clusPosition[1], 0.);
+   
+   return clusPosition.Mag();
+}
 
 //______________________________________________________________________________
-//  
+//! Clear pixels list
 void TAVTbaseCluster::ResetPixels()
 {
    fListOfPixels->Delete();

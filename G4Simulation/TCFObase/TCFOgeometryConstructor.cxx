@@ -82,6 +82,9 @@ using namespace CLHEP;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //! Constructor
+//!
+//! \param[in] expName experiment name
+//! \param[in] runNumber run number
 TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t runNumber)
 : TCGbaseGeometryConstructor(expName, runNumber),
   fStartCounter(0x0),
@@ -197,6 +200,7 @@ TCFOgeometryConstructor::~TCFOgeometryConstructor()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct FOOT geometry
 G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
 {
    G4VPhysicalVolume* pWorld = TCGbaseGeometryConstructor::Construct();
@@ -410,6 +414,7 @@ G4VPhysicalVolume* TCFOgeometryConstructor::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//! Construct sensitive detector and field
 void TCFOgeometryConstructor::ConstructSDandField()
 {
    if (!TAGrecoManager::GetPar()->IncludeDI()) return;

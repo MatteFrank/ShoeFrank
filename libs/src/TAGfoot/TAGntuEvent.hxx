@@ -79,21 +79,21 @@ public:
 
   //! Set time to double
   Double_t          TimeToDouble()                    const { return (Double_t)fTimeSec + 1.e-6 * (Double_t)fTimeUsec;}
-   //! Set time from double
+   // Set time from double
   void              TimeFromDouble(Double_t time);
-   //! Set current time
+   // Set current time
   void              SetCurrentTime();
   
-   //! operator+
+   // operator+
   TAGntuEvent&      operator+(Double_t deltatime);
-   //! operator-
+   // operator-
   TAGntuEvent&      operator-(Double_t deltatime);
-  //! operator-
+  // operator-
   friend Double_t   operator-(const TAGntuEvent& lhs, const TAGntuEvent& rhs);
   
-   //! Clear
+   // Clear
   virtual void      Clear(Option_t* opt="");
-   //! To stream
+   // To stream
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
   
 public:

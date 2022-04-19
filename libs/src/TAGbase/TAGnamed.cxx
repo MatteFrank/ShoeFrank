@@ -4,7 +4,6 @@
 */
 
 #include "TClass.h"
-
 #include "TAGnamed.hxx"
 
 /*!
@@ -12,6 +11,7 @@
   \brief Mother of all named TAG objects. **
 */
 
+//! Class Imp
 ClassImp(TAGnamed);
 
 //------------------------------------------+-----------------------------------
@@ -21,35 +21,44 @@ TAGnamed::TAGnamed()
 {}
 
 //------------------------------------------+-----------------------------------
-//! Construct with \a name and \a title.
+//! Construct with a name and a title.
+//!
+//! \param[in] name name
+//! \param[in] title title
 TAGnamed::TAGnamed(const char* name, const char* title)
 : TNamed(name, title)
 {}
 
 //------------------------------------------+-----------------------------------
-//! Construct with \a name and \a title.
+//! Construct with a name and a title.
+//!
+//! \param[in] name name
+//! \param[in] title title
 TAGnamed::TAGnamed(const TString& name, const TString& title)
 : TNamed(name, title)
 {}
 
-
-//------------------------------------------+-----------------------------------
-/*!
- \relates TAGnamed
- \brief ostream insertion operator.
- */
-ostream& operator<<(ostream& os, const TAGnamed& obj)
-{
-  obj.ToStream(os);
-  return os;
-}
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGnamed::~TAGnamed()
 {}
 
+//------------------------------------------+-----------------------------------
+//! operator<<
+//!
+//! \param[in] os output stream
+//! \param[in] obj object name to printout
+ostream& operator<<(ostream& os, const TAGnamed& obj)
+{
+  obj.ToStream(os);
+  return os;
+}
+
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGnamed::ToStream(ostream& os, Option_t* option) const
 {
   os <<"TAGnamed: " << IsA()->GetName() << "  " << GetName() 
@@ -57,8 +66,10 @@ void TAGnamed::ToStream(ostream& os, Option_t* option) const
   return;
 }
 
-/*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//------------------------------------------+---------------------------------
+//! Print
+//!
+//! \param[in] option option for printout
 void TAGnamed::Print(Option_t* option) const
 {
   ToStream(cout, option);

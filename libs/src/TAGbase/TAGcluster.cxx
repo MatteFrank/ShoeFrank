@@ -11,6 +11,7 @@
   \brief Mother of all cluster/point objects. **
 */
 
+//! Class Imp
 ClassImp(TAGcluster);
 
 //------------------------------------------+-----------------------------------
@@ -29,10 +30,15 @@ TAGcluster::TAGcluster()
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
+
+   fMcHitIdx.Reset();
+   fMcHitMap.clear();
 }
 
-//------------------------------------------+-----------------------------------
+//______________________________________________________________________________
 //! Copy constructor
+//!
+//! \param[in] cluster cluster to copy
 TAGcluster::TAGcluster(const TAGcluster& cluster)
  : TAGobject(),
    fPosition1(cluster.fPosition1),
@@ -40,6 +46,7 @@ TAGcluster::TAGcluster(const TAGcluster& cluster)
    fPosition2(cluster.fPosition2),
    fPosError2(cluster.fPosError2),
    fMcTrackIdx(cluster.fMcTrackIdx),
+   fMcHitIdx(cluster.fMcHitIdx),
    fClusterIdx(cluster.fClusterIdx),
    fSensorIdx(cluster.fSensorIdx),
    fElementsN(cluster.fElementsN),
@@ -49,21 +56,27 @@ TAGcluster::TAGcluster(const TAGcluster& cluster)
 }
 
 //______________________________________________________________________________
-//
+//! Set local position
+//!
+//! \param[in] pos position  in sensor framework
 void TAGcluster::SetPosition(TVector3& pos)
 {
    fPosition1.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
-//
+//! Set local position error
+//!
+//! \param[in] pos position error in sensor framework
 void TAGcluster::SetPosError(TVector3& pos)
 {
    fPosError1.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
-//
+//! Set Global position
+//!
+//! \param[in] posGlo position in detector framework
 void TAGcluster::SetPositionG(TVector3& posGlo)
 {
    fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
@@ -71,18 +84,20 @@ void TAGcluster::SetPositionG(TVector3& posGlo)
 }
 
 //______________________________________________________________________________
-//
+//! Set Global position error
+//!
+//! \param[in] posGlo position error in detector framework
 void TAGcluster::SetPosErrorG(TVector3& posGlo)
 {
    fPosError2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
 }
 
 //______________________________________________________________________________
-//
-Float_t TAGcluster::Distance(TAGbaseTrack *aTrack) {
-   // Return the distance between this cluster and the pointed track impact in the plane
-   //
-   
+//! Return the distance between this cluster and the pointed track impact in the plane
+//!
+//! \param[in] aTrack a given track
+Float_t TAGcluster::Distance(TAGbaseTrack* aTrack)
+{
    TVector3 impactPosition(aTrack->Intersection( GetPositionG()[2]));
    impactPosition -= GetPositionG();
    // Insure that z position is 0 for 2D length computation
@@ -92,12 +107,21 @@ Float_t TAGcluster::Distance(TAGbaseTrack *aTrack) {
 }
 
 //______________________________________________________________________________
-//
-void TAGcluster::AddMcTrackIdx(Int_t trackIdx)
+//! Add MC track to list
+//!
+//! \param[in] trackIdx MC track index
+void TAGcluster::AddMcTrackIdx(Int_t trackIdx, Int_t hitIdx)
 {
    if (fMcTrackMap[trackIdx] == 0) {
       fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
       fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
       fMcTrackMap[trackIdx] = 1;
    }
+      
+   if (fMcHitMap[hitIdx] == 0) {
+      fMcHitIdx.Set(fMcTrackIdx.GetSize()+1);
+      fMcHitIdx[fMcTrackIdx.GetSize()-1] = hitIdx;
+      fMcHitMap[hitIdx] = 1;
+   }
+   
 }

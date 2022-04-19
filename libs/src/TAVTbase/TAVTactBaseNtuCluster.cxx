@@ -18,11 +18,15 @@
  \brief Base class to NTuplize cluster
  */
 
+//! Class imp
 ClassImp(TAVTactBaseNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
 TAVTactBaseNtuCluster::TAVTactBaseNtuCluster(const char* name, 
 											 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
  : TAGactNtuCluster2D(name, "TAVTactNtuCluster - NTuplize cluster"),
@@ -92,7 +96,7 @@ void TAVTactBaseNtuCluster::CreateHistogram()
 }
 
 //______________________________________________________________________________
-//
+//! Filling cluster maps.
 void TAVTactBaseNtuCluster::FillMaps()
 {
    // Clear maps
@@ -115,7 +119,7 @@ void TAVTactBaseNtuCluster::FillMaps()
 }
 
 //______________________________________________________________________________
-//
+//! Search for cluster.
 void TAVTactBaseNtuCluster::SearchCluster()
 {
    fClustersN = 0;
@@ -136,7 +140,9 @@ void TAVTactBaseNtuCluster::SearchCluster()
 }
 
 //______________________________________________________________________________
-// Get object in list
+//! Get object from current pixel list
+//!
+//! \param[in] idx list index
 TAGobject*  TAVTactBaseNtuCluster::GetHitObject(Int_t idx) const
 {
    if (idx >= 0 && idx < GetListOfPixels()->GetEntries() )
@@ -148,9 +154,10 @@ TAGobject*  TAVTactBaseNtuCluster::GetHitObject(Int_t idx) const
    }   
 }
 
-
 //______________________________________________________________________________
-//
+//! Apply cuts for a given cluster
+//!
+//! \param[in] cluster a given cluster
 Bool_t TAVTactBaseNtuCluster::ApplyCuts(TAVTbaseCluster* cluster)
 {
    TAVTbaseParConf* pConfig = (TAVTbaseParConf*) fpConfig->Object();
@@ -168,21 +175,23 @@ Bool_t TAVTactBaseNtuCluster::ApplyCuts(TAVTbaseCluster* cluster)
 }
 
 //______________________________________________________________________________
-//
+//! Compute position
 void TAVTactBaseNtuCluster::ComputePosition()
 {
    ComputeCoGPosition();
 }
 
 //______________________________________________________________________________
-//
+//! Compute seed position
+//!
+//! taken position of first pixel
 void TAVTactBaseNtuCluster::ComputeSeedPosition()
 {
    fCurrentPosition.SetXYZ((fPSeed->GetPosition())(0), (fPSeed->GetPosition())(1), 0);   
 }
 
 //______________________________________________________________________________
-//
+//! Compute center of gravity position
 void TAVTactBaseNtuCluster::ComputeCoGPosition()
 {
    if (!fCurListOfPixels) return;
@@ -224,7 +233,10 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
 }
 
 //______________________________________________________________________________
-//
+//! Fill data members of a given cluster
+//!
+//! \param[in] iSensor index of sensor
+//! \param[in] cluster a given cluster
 void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster)
 {
    TAVTbaseParGeo* pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();

@@ -67,7 +67,7 @@ public:
    //!Set energy loss
    void        SetEnergyLoss(Double_t e)     { fEnergyLoss = e;    }
    
-   //! Clear
+   // Clear
    void        Clear(Option_t* opt);
   
    ClassDef(TAGpoint,10)
@@ -84,9 +84,9 @@ public:
 	TAGntuPoint();
 	virtual ~TAGntuPoint();
 	
-   //! New point from measured/fitted position/error
+   // New point from measured/fitted position/error
    TAGpoint*         NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
-   //! New point from measured/fitted position/error and momentum/error
+   // New point from measured/fitted position/error and momentum/error
    TAGpoint*         NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
 
    //! Get number of points
@@ -94,11 +94,11 @@ public:
    //! Get point
 	TAGpoint*         GetPoint(Int_t iPoint );
 
-   //! Clear
+   // Clear
 	virtual void      Clear(Option_t* opt="");
-   //! To stream
+   // To stream
 	virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
-   //! Set up clones
+   // Set up clones
    virtual void      SetupClones();
 
 public:

@@ -27,17 +27,17 @@ public:
    TAVTdigitizerG(TAVTbaseParGeo* parGeo);
    virtual ~TAVTdigitizerG();
    
-   //! Make cluster
-   Bool_t   MakeCluster(Double_t x0, Double_t y0, Double_t zin, Double_t zout);
+   // Make cluster
+   Bool_t   MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/);
    
 private:
    TF1*     fFuncClusterDisX;   ///< cluster distribution function in X
    TF1*     fFuncClusterDisY;   ///< cluster distribution function in Y
    
 private:
-   //! Set functions
+   // Set functions
    void     SetFunctions();
-   //! Get Adc value
+   // Get Adc value
    Int_t    GetAdcValue(Float_t charge);
 
 private:

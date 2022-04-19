@@ -19,6 +19,7 @@
   \brief Reader action for ascii single file **
 */
 
+//! Class Imp
 ClassImp(TAVTactVmeSingleReader);
 
 TString TAVTactVmeSingleReader::fgDefaultFolderName = "run_";
@@ -31,8 +32,14 @@ map<pair<int, int>, int > TAVTactVmeSingleReader::fgTrigJumpMap = { {{0, 0}, 0}}
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTactVmeSingleReader::TAVTactVmeSingleReader(const char* name, TAGdataDsc* pDatRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
- : TAVTactBaseRaw(name, pDatRaw, pGeoMap, pConfig, pParMap),
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
+TAVTactVmeSingleReader::TAVTactVmeSingleReader(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+ : TAVTactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap),
    fRunNumber(-1),
    fTrigJumpStart(-1),
    fTrigReset(0)
@@ -57,7 +64,12 @@ TAVTactVmeSingleReader::~TAVTactVmeSingleReader()
 {
 }
 
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
+//! Fill trigger jump maps for a given sensor, trigger number and jump in trigger
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] trigger trigger value
+//! \param[in] jump value of the jump in trigger
 void TAVTactVmeSingleReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t jump)
 {
    pair<int, int> id{iSensor, trigger};
@@ -65,7 +77,12 @@ void TAVTactVmeSingleReader::SetTrigJumpMap(Int_t iSensor, Int_t trigger, Int_t 
 }
 
 //------------------------------------------+-----------------------------------
-// Open ascii data sources.
+//! Open ascii data sources.
+//!
+//! \param[in] name action name
+//! \param[in] opt open file options
+//! \param[in] treeName name of tree in file
+//! \param[in] dscBranch flag for object descriptor
 Int_t TAVTactVmeSingleReader::Open(const TString& name, Option_t* opt, const TString, Bool_t )
 {
    TString inputFileName;
@@ -100,14 +117,14 @@ Int_t TAVTactVmeSingleReader::Open(const TString& name, Option_t* opt, const TSt
 }
 
 //------------------------------------------+-----------------------------------
-// Close input file.
+//! Close input file.
 void TAVTactVmeSingleReader::Close()
 {
 	  fRawFileAscii.close();
 }
 
 //------------------------------------------+-----------------------------------
-// Process
+//! Process
 Bool_t TAVTactVmeSingleReader::Process()
 {
    Char_t tmp[255];
@@ -164,6 +181,9 @@ Bool_t TAVTactVmeSingleReader::Process()
 // private method
 
 // --------------------------------------------------------------------------------------
+//! Get event for a given sensor
+//!
+//! \param[in] iSensor sensor index
 Bool_t TAVTactVmeSingleReader::GetSensorEvent(Int_t iSensor)
 {
    Char_t tmp[255];
@@ -298,6 +318,10 @@ Bool_t TAVTactVmeSingleReader::GetSensorEvent(Int_t iSensor)
 
 
 // --------------------------------------------------------------------------------------
+//! Fill Mimosa frame structure for a given sensor
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] data Mimosa frame structure
 Bool_t TAVTactVmeSingleReader::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
    Char_t tmp[255];
@@ -346,6 +370,9 @@ Bool_t TAVTactVmeSingleReader::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 }
 
 // --------------------------------------------------------------------------------------
+//! Set run number from file
+//!
+//! \param[in] filename input daq file name
 void TAVTactVmeSingleReader::SetRunNumber(const TString& filename)
 {
    TString name(filename);

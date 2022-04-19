@@ -11,7 +11,7 @@ class TAMSDparGeo;
 class TF1;
 class TAMSDdigitizer : public TAGbaseDigitizer {
    
-   // Class to digitize the energy into pixel based on given patterns
+   // Class to digitize the energy into strips based on given patterns
 public:
    TAMSDdigitizer(TAMSDparGeo* parGeo);
    virtual ~TAMSDdigitizer();

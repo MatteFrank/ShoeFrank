@@ -12,6 +12,7 @@
  \brief Simple container class for tracks with the associated clusters
  */
 
+//! Class Imp
 ClassImp(TAIRntuTrack);
 
 TString TAIRntuTrack::fgkBranchName   = "irtrack.";
@@ -39,7 +40,9 @@ Int_t TAIRntuTrack::GetTracksN() const
 }
 
 //------------------------------------------+-----------------------------------
-//! return a Track for a given sensor
+//! return a Track for a given index
+//!
+//! \param[in] iTrack track index
 TAIRtrack* TAIRntuTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -49,7 +52,9 @@ TAIRtrack* TAIRntuTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a Track for a given index (const)
+//!
+//! \param[in] iTrack track index
 const TAIRtrack* TAIRntuTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -77,7 +82,7 @@ void TAIRntuTrack::Clear(Option_t*)
 }
 
 //______________________________________________________________________________
-//  
+//! Create new track
 TAIRtrack* TAIRntuTrack::NewTrack()
 {
    TClonesArray &trackArray = *fListOfTracks;
@@ -86,7 +91,9 @@ TAIRtrack* TAIRntuTrack::NewTrack()
 }
 
 //______________________________________________________________________________
-//  
+//! Create new track from copy constructor
+//!
+//! \param[in] trk a given track
 TAIRtrack* TAIRntuTrack::NewTrack(TAIRtrack& trk)
 {
    TClonesArray &trackArray = *fListOfTracks;
@@ -94,8 +101,11 @@ TAIRtrack* TAIRntuTrack::NewTrack(TAIRtrack& trk)
    return track;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAIRntuTrack::ToStream(ostream& os, Option_t* option) const
 {
 	  

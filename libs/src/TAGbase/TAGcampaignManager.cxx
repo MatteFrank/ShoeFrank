@@ -15,6 +15,7 @@
  \brief Class that manage the campaigns. **
  */
 
+//! Class Imp
 ClassImp(TAGcampaignManager);
 
 const TString TAGcampaignManager::fgkDefaultActName = "actCamMan";
@@ -25,6 +26,8 @@ const TString TAGcampaignManager::fgkDefaultCamName = "FOOT.cam";
 
 //_____________________________________________________________________________
 //! Constructor
+//!
+//! \param[in] exp experiment name
 TAGcampaignManager::TAGcampaignManager(const TString exp)
  : TAGaction(fgkDefaultActName.Data(), "TAGcampaignManager - Campaign Manager"),
    fFileStream(new TAGparTools()),
@@ -46,7 +49,10 @@ TAGcampaignManager::~TAGcampaignManager()
    delete fCurCampaign;
 }
 
-//_____________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Read global experiment file
+//!
+//! \param[in] ifile file name of the list of experiments
 Bool_t TAGcampaignManager::FromFile(TString ifile)
 {
   //Initialization of Geom Parameters
@@ -60,7 +66,7 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
       Error("FromFile()", "failed to open file '%s'", ifile.Data());
       return false;
    }
-  
+
    Int_t     number;
    while(!fFileStream->Eof()) {
       TString   name;
@@ -127,7 +133,10 @@ Bool_t TAGcampaignManager::FromFile(TString ifile)
    return true;
 }
 
-//_____________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Print
+//!
+//! \param[in] opt option for printout
 void TAGcampaignManager::Print(Option_t* opt) const
 {
    TString option(opt);
@@ -167,6 +176,7 @@ void TAGcampaignManager::Print(Option_t* opt) const
  \brief Class for campaign. **
  */
 
+//! Class Imp
 ClassImp(TAGcampaign);
 
 map<Int_t, TString> TAGcampaign::fgTWcalFileType = {{0, "TATW_Energy"},{1, "TATW_Tof"}, {2, "TATWEnergy"} };
@@ -189,7 +199,10 @@ TAGcampaign::~TAGcampaign()
 {
 }
 
-//_____________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Read experiment file
+//!
+//! \param[in] ifile experiment file name
 bool TAGcampaign::FromFile(TString ifile)
 {
    if (!Open(ifile)) {
@@ -323,6 +336,10 @@ bool TAGcampaign::FromFile(TString ifile)
 }
 
 //_____________________________________________________________________________
+//! Get geometry file name from detector name and run number
+//!
+//! \param[in] detName detector name
+//! \param[in] runNumber run number
 const Char_t* TAGcampaign::GetGeoFile(const TString& detName, Int_t runNumber)
 {
    TString nameFile = fFileGeoMap[detName];
@@ -337,6 +354,12 @@ const Char_t* TAGcampaign::GetGeoFile(const TString& detName, Int_t runNumber)
 }
 
 //_____________________________________________________________________________
+//! Get configuration file name from detector name and run number
+//!
+//! \param[in] detName detector name
+//! \param[in] runNumber run number
+//! \param[in] bName beam particle name
+//! \param[in] bEnergy beam energy
 const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, TString bName, Int_t bEnergy)
 {
    TString nameFile = fFileConfMap[detName];
@@ -356,6 +379,11 @@ const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, 
 }
 
 //_____________________________________________________________________________
+//! Get mapping file name from detector name and run number
+//!
+//! \param[in] detName detector name
+//! \param[in] runNumber run number
+//! \param[in] item 0 for channel, 1 for bars
 const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, Int_t item)
 {
    vector<TString> vecFile = fFileMap[detName];
@@ -373,6 +401,10 @@ const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, I
 }
 
 //_____________________________________________________________________________
+//! Get region file name from detector name and run number
+//!
+//! \param[in] detName detector name
+//! \param[in] runNumber run number
 const Char_t* TAGcampaign::GetRegFile(const TString& detName, Int_t runNumber)
 {
   TString nameFile = fFileRegMap[detName];
@@ -387,6 +419,13 @@ const Char_t* TAGcampaign::GetRegFile(const TString& detName, Int_t runNumber)
 }
 
 //_____________________________________________________________________________
+//! Get calibration file name from detector name and run number
+//!
+//! \param[in] detName detector name
+//! \param[in] runNumber run number
+//! \param[in] isTofCalib  flag for TW calibration
+//! \param[in] isTofBarCalib  flag for TW calibration per bar
+//! \param[in] elossTuning  flag for TW calibration with energy loss tuning
 const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib,
                                       Bool_t isTofBarCalib, Bool_t elossTuning)
 {
@@ -405,6 +444,12 @@ const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, 
 }
 
 //_____________________________________________________________________________
+//! Get calibration item name from detector name and run number
+//!
+//! \param[in] detName detector name
+//! \param[in] runNumber run number
+//! \param[in] item   0 for channel, 1 for bars
+//! \param[in] isTofBarCalib  flag for TW calibration per bar
 const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib)
 {
    vector<TString> vecFile = fFileCalMap[detName];
@@ -430,6 +475,12 @@ const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, I
 }
 
 //_____________________________________________________________________________
+//! Get file name from detector name and run number (check run number array)
+//!
+//! \param[in] detName detector name
+//! \param[in] runNumber run number
+//! \param[in] nameFile  file name
+//! \param[in] array  run number array from global experiment file
 const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array)
 {
    if (nameFile.IsNull()) {
@@ -449,6 +500,7 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
          Warning("GetFile()", "File %s not found !", nameFile.Data());
          exit(0);
       }
+      
       return Form("%s", nameFile.Data());
    }
 
@@ -486,6 +538,9 @@ const Char_t* TAGcampaign::GetFile(const TString& detName, Int_t runNumber, cons
 }
 
 //_____________________________________________________________________________
+//! Check if detector present
+//!
+//! \param[in] detName detector name
 Bool_t TAGcampaign::IsDetectorOn(const TString& detName)
 {
    for ( vector<TString>::iterator it = fDetectorVec.begin(); it != fDetectorVec.end(); ++it) {
@@ -498,6 +553,9 @@ Bool_t TAGcampaign::IsDetectorOn(const TString& detName)
 }
 
 //_____________________________________________________________________________
+//! Print
+//!
+//! \param[in] opt print out options
 void TAGcampaign::Print(Option_t* opt) const
 {
    TString option(opt);

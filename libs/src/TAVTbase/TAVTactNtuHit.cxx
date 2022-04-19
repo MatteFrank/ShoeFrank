@@ -21,13 +21,20 @@
  \brief Get vertex raw data from DAQ (binary format)
  */
 
+//! Class Imp
+ClassImp(TAVTactNtuHit);
 
 UInt_t TAVTactNtuHit::fgTStolerance = 40;
 
-ClassImp(TAVTactNtuHit);
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[out] pNtuRaw hit container descriptor
+//! \param[in] pDatDaq daq event container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
 TAVTactNtuHit::TAVTactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq),
@@ -44,7 +51,7 @@ TAVTactNtuHit::~TAVTactNtuHit()
 }
 
 //------------------------------------------+-----------------------------------
-// Action.
+//! Action.
 Bool_t TAVTactNtuHit::Action()
 {
    TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
@@ -96,7 +103,8 @@ Bool_t TAVTactNtuHit::Action()
    }
    
    Int_t diff = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
-   fpHisBCOofTrigger->Fill(evtNumber, diff);
+   if (ValidHistogram())
+      fpHisBCOofTrigger->Fill(evtNumber, diff);
    
    if (TMath::Abs(float(diff)) > fgTStolerance) {
       Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);

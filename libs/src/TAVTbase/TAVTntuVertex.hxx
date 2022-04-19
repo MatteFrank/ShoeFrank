@@ -3,7 +3,6 @@
 
 /*!
  \file TAVTntuVertex.hxx
- \version $Id: TAVTvertex
  \brief   class, simple container class for vertices with the associated tracks
  \author Ch. Finck, R. Rescigno
  */
@@ -42,7 +41,7 @@ public:
     TAVTtrack*     GetTrack(Int_t index)          { return (TAVTtrack*)fListOfTracks->At(index); }
    //! Get Tracks (const)
     TAVTtrack const* GetTrack(Int_t index)  const { return (TAVTtrack*)fListOfTracks->At(index); }
-    //! Add track
+    // Add track
     void           AddTrack(TAVTtrack* track);
    
     //! Get Vertex Position
@@ -78,7 +77,7 @@ public:
     //! Get BM matched flag
     Bool_t IsBmMatched()                    const { return fIsBmMatched; }
    
-    //! Reset
+    // Reset
     void Reset();
     
     ClassDef(TAVTvertex,1)                      // Describes TAVTvertex
@@ -99,21 +98,21 @@ public:
     TAVTntuVertex();
     virtual           ~TAVTntuVertex();
    
-    //! Get vertex
+    // Get vertex
     TAVTvertex*        GetVertex(Int_t i);
-    //! Get vertex (const)
+    // Get vertex (const)
     const TAVTvertex*  GetVertex(Int_t i) const;
-    //! Get number of vertices
+    // Get number of vertices
     Int_t              GetVertexN()  const;
    
-    //! Create new vertex
+    // Create new vertex
     TAVTvertex*        NewVertex();
-    //! Creat new vertex from existing one
+    // Creat new vertex from existing one
     TAVTvertex*        NewVertex(TAVTvertex& vertex);
    
-    //! Set up clones
+    // Set up clones
     virtual void       SetupClones();
-    //! Clear
+    // Clear
     virtual void       Clear(Option_t* opt="");
         
 public:

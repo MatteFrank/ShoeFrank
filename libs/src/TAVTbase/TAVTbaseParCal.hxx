@@ -2,7 +2,6 @@
 #define _TAVTbaseParCal_HXX
 /*!
   \file TAVTbaseParCal.hxx
-  \version $Id: TAVTbaseParCal.hxx
   \brief   Declaration of TAVTbaseParCal.
 */
 /*------------------------------------------+---------------------------------*/
@@ -58,19 +57,19 @@ public:
    TAVTbaseParCal();
     virtual ~TAVTbaseParCal();
 
-   //! Read from file
+   // Read from file
    Bool_t             FromFile(const TString& name = "");
     
-   //! Clear
+   // Clear
    virtual void       Clear(Option_t* opt="");
    
-   //! Stream output
+   // Stream output
    virtual void       ToStream(ostream& os = cout, Option_t* option = "") const;
    
    //! Get Lnadau parameter
    LandauParameter_t& GetLandauPar(Int_t idx) {return fLandauParameter[idx];}
    
-   //! Get charge probabilities for a given number of pixel
+   // Get charge probabilities for a given number of pixel
    const TArrayF*     GetChargeProba(Float_t pixelsN);
    
    //! Get charge normalized (integral) probabilities for a given number of pixel
@@ -100,13 +99,13 @@ public:
    //! return defaut cal name
    const Char_t*      GetDefaultCalName()         const { return fkDefaultCalName.Data(); }
 
-   //! Quenched Landau function
+   // Quenched Landau function
    Double_t           QLandau(Double_t *x, Double_t *par);
    
-   //! Quenched Landau function
+   // Quenched Landau function
    Double_t           QLandauNorm(Double_t *x, Double_t *par);
 
-   //! Total quenched Landau function
+   // Total quenched Landau function
    Double_t           QLandauTot(Double_t *x, Double_t *par);
    
    ClassDef(TAVTbaseParCal,1)

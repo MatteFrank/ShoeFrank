@@ -24,10 +24,10 @@ TString TABMntuTrack::fgkBranchName   = "bmtrack.";
 TABMntuTrack::TABMntuTrack()
  : TAGdata(),
    fListOfTracks(0),
+   fPrunedTrack(0),
    fStatus(-1000),
    fPrunedStatus(-1)
 {
-   fPrunedTrack=nullptr;
    SetupClones();
 }
 
@@ -38,7 +38,8 @@ TABMntuTrack::~TABMntuTrack()
 {
   if(fListOfTracks)
     fListOfTracks->Delete();
-  fPrunedTrack->Delete();
+  if(fPrunedTrack)
+    fPrunedTrack->Delete();
 }
 
 //------------------------------------------+-----------------------------------
@@ -48,6 +49,8 @@ void TABMntuTrack::SetupClones()
 {
   if (!fListOfTracks)
     fListOfTracks = new TClonesArray("TABMtrack");
+  if (!fPrunedTrack)
+    fPrunedTrack = new TClonesArray("TABMtrack");
   return;
 }
 
@@ -60,7 +63,7 @@ void TABMntuTrack::Clear(Option_t*)
   fStatus=-1000;
   fPrunedStatus=-1;
   if(fPrunedTrack)
-    fPrunedTrack->Clear();
+    fPrunedTrack->Delete();
   if(fListOfTracks)
     fListOfTracks->Delete();
 
@@ -77,8 +80,9 @@ TABMtrack* TABMntuTrack::NewTrack(TABMtrack trk)
 TABMtrack* TABMntuTrack::NewPrunedTrack(TABMtrack trk, Int_t view)
 {
   fPrunedStatus=view;
-  fPrunedTrack = new TABMtrack(trk);
-  return fPrunedTrack;
+  TClonesArray &trackArray = *fPrunedTrack;
+  TABMtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TABMtrack(trk);
+  return track;
 }
 
 

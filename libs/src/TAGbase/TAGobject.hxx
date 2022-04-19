@@ -16,15 +16,16 @@ using namespace std;
 
 class TAGobject : public TObject {
   public:
+    //! fail bit
     enum { kFail = BIT(14)
     };
 
                     TAGobject();
     virtual         ~TAGobject();
 
-    //! To stream
+    // To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-    //! Print
+    // Print
     virtual void    Print(Option_t* option="") const;
     //! Fail
     Bool_t          Fail()              const { return TestBit(kFail); }

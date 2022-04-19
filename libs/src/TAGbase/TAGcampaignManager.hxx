@@ -31,20 +31,20 @@ public:
    //! Get number of devices
    Int_t             GetDevicesN() const { return fDevicesN;    }
    
-   //! Get geometry file name
+   // Get geometry file name
    const Char_t*     GetGeoFile(const  TString& detName, Int_t runNumber);
-   //! Get configuration file name
+   // Get configuration file name
    const Char_t*     GetConfFile(const TString& detName, Int_t runNumber, TString bName = "", Int_t bEnergy = -1);
-   //! Get mapping file name
+   // Get mapping file name
    const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber, Int_t item = 0);
-   //! Get region file name
+   // Get region file name
    const Char_t*     GetRegFile(const  TString& detName, Int_t runNumber);
-   //! Get calibration file name
+   // Get calibration file name
    const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib = false,
                                 Bool_t isTofBarCalib = false, Bool_t elossTuning = false);
-   //! Detector on flag
+   // Detector on flag
    Bool_t            IsDetectorOn(const TString& detName);
-   //! Print out information
+   // Print out information
    void              Print(Option_t* opt = "") const;
    //! Get list of detector
    const vector<TString>& GetDetVector() const { return fDetectorVec; }
@@ -118,7 +118,7 @@ private:
 public:
    TAGcampaignManager(const TString exp = "");
    virtual ~TAGcampaignManager();
-   //! From file
+   // From file
    Bool_t               FromFile(TString ifile = "");
    
    //! Get number of campaign
@@ -151,7 +151,7 @@ public:
    { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib, elossTuning);  }
    //! Get detector on flag
    Bool_t               IsDetectorOn(const TString& detName)                         { return fCurCampaign->IsDetectorOn(detName);           }
-   //! Print out informations
+   // Print out informations
    void                 Print(Option_t* opt = "") const;
    
 private:

@@ -18,11 +18,17 @@
  \brief Get vertex raw data from re-synchronized sensors in single file (binary format)
  */
 
+//! Class Imp
 ClassImp(TAVTactStdDaqRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
 TAVTactStdDaqRaw::TAVTactStdDaqRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
@@ -38,7 +44,7 @@ TAVTactStdDaqRaw::~TAVTactStdDaqRaw()
 }
 
 //------------------------------------------+-----------------------------------
-// Action.
+//! Action.
 Bool_t TAVTactStdDaqRaw::Action()
 {
    if (GetEvent())
@@ -51,7 +57,7 @@ Bool_t TAVTactStdDaqRaw::Action()
 }
 
 //------------------------------------------+-----------------------------------
-// Get next event.
+//! Get next event.
 Bool_t TAVTactStdDaqRaw::GetEvent()
 {
    fData.clear();
@@ -82,7 +88,12 @@ Bool_t TAVTactStdDaqRaw::GetEvent()
 }
 
 //------------------------------------------+-----------------------------------
-// Open ascii data sources.
+//! Open ascii data sources.
+//!
+//! \param[in] name action name
+//! \param[in] opt open file options
+//! \param[in] treeName name of tree in file
+//! \param[in] dscBranch flag for object descriptor 
 Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/,  Bool_t /*dscBranch*/)
 {
    TString inputFileName;
@@ -115,13 +126,16 @@ Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /
 }
 
 //------------------------------------------+-----------------------------------
-// Close input file.
+//! Close input file.
 void TAVTactStdDaqRaw::Close()
 {
       fDaqFile.close();
 }
 
 // --------------------------------------------------------------------------------------
+//! Set run number from file
+//!
+//! \param[in] filename input daq file name
 void TAVTactStdDaqRaw::SetRunNumber(const TString& filename)
 {
    TString name(filename);

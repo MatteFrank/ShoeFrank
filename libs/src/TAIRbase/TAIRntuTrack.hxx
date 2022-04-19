@@ -25,31 +25,37 @@
 class TAIRntuTrack : public TAGdata {
    
 private:
-   TClonesArray*    fListOfTracks;		// tracks
+   TClonesArray*    fListOfTracks;		///< list of IR tracks
    
 private:
-   static TString   fgkBranchName;    // Branch name in TTree
+   static TString   fgkBranchName;    ///< Branch name in TTree
    
 public:
    TAIRntuTrack();
    virtual         ~TAIRntuTrack();
    
+   // Get track
    TAIRtrack*       GetTrack(Int_t i);
+   // Get track
    const TAIRtrack* GetTrack(Int_t i) const;
+   // Get number of tracks
    Int_t            GetTracksN()      const; 
    
+   //! Get list of tracks
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }
 
+   // New track
    TAIRtrack*       NewTrack();
+   // New track
    TAIRtrack*       NewTrack(TAIRtrack& track);
       
    virtual void     SetupClones();
    virtual void     Clear(Option_t* opt="");
    
-   
    virtual void     ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:
+   //! Get branch name
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }  
    
    ClassDef(TAIRntuTrack,1)

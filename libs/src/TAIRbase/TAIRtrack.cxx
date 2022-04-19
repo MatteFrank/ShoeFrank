@@ -20,10 +20,11 @@
  The line is found by a fit to the hits in the silicon planes
  */
 
+//! Class Imp
 ClassImp(TAIRtrack) // Description of a Track
 
 //______________________________________________________________________________
-//  
+//! Default constructor
 TAIRtrack::TAIRtrack()
 :  TAGbaseTrack()
 {
@@ -31,30 +32,32 @@ TAIRtrack::TAIRtrack()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
+//!
+//! \param[in] aTrack a given track
+TAIRtrack::TAIRtrack(const TAIRtrack& aTrack)
+: TAGbaseTrack::TAGbaseTrack(aTrack)
+{
+}
+
+//______________________________________________________________________________
+//! Destructor
 TAIRtrack::~TAIRtrack()
 {
 }
 
 //______________________________________________________________________________
-//
-TAIRtrack::TAIRtrack(const TAIRtrack& aTrack)
-: TAGbaseTrack::TAGbaseTrack(aTrack)
-{
-   
-}
-
-//______________________________________________________________________________
-//
+//! Set up clones
 void TAIRtrack::SetupClones()
 {
    fListOfClusters = new TClonesArray("TAIRcluster");
    fListOfClusters->SetOwner(true);
 }
 
-
 // __________________________________________________________________________
-//
+//! Add cluster to track
+//!
+//! \param[in] clus cluster to add
 void TAIRtrack::AddCluster(TAGcluster* clus)
 {
    TAIRcluster* cluster = static_cast<TAIRcluster*>(clus);

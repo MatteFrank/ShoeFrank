@@ -34,7 +34,7 @@ public:
    //! Action
    virtual  Bool_t Action() { return false; }
    
-   //! Apply basic cuts
+   // Apply basic cuts
    virtual Bool_t  ApplyCuts(TAVTbaseCluster* cluster);
 
    // Base creation of histogram
@@ -43,7 +43,7 @@ public:
     //! Get list of pixels for a given plane
    TClonesArray*   GetListOfPixels()   const { return fListOfPixels;    }
     //! Return seed pixel
-   TAVThit*     GetSeedPixel()      const { return fPSeed;           }
+   TAVThit*     GetSeedPixel()         const { return fPSeed;           }
    //! Get total charge
    Float_t GetClusterPulseSum()        const { return fClusterPulseSum; }
    
@@ -58,10 +58,10 @@ public:
    //! Set position of current cluster
    void SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition.SetXYZ(u,v,z);  }
    
-   //! Compute position
+   // Compute position
    virtual void ComputePosition();
    
-   //! Get object in list
+   // Get object in list
    TAGobject*  GetHitObject(Int_t idx) const;
    
 protected:
@@ -85,15 +85,15 @@ protected:
    TString        fTitleDev;          ///< device name for histogram title
 
 protected:
-   //! Search cluster
+   // Search cluster
    void   SearchCluster();
-   //! Fill hit maps
+   // Fill hit maps
    void   FillMaps();
-   //! Compute Seed position (first index)
+   // Compute Seed position (first index)
    void   ComputeSeedPosition();
-   //! Compute CoG position
+   // Compute CoG position
    void   ComputeCoGPosition();
-   //! Fiil cluster info
+   // Fill cluster info
    void   FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster);
 
    ClassDef(TAVTactBaseNtuCluster,0)

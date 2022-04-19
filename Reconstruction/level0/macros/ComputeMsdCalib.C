@@ -73,7 +73,7 @@ void FillDetectors(Int_t runNumber)
 
    daqActReaderMSD = new TAGactDaqReader("daqActReader", msdDaq);
 
-   msdActRaw = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdCal, msdGeo);
+   msdActRaw = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdCal, msdGeo, msdConf);
    msdActHit = new TAMSDactNtuHit("msdActHit", msdDat, msdHit, msdGeo, msdConf, msdCal);
    msdActHit->CreateHistogram();
 }
@@ -183,7 +183,8 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    }
 
    calfile = fopen(calfile_name, "w");
-   fprintf(calfile, "# SigmaNoiseLevel\n");
+   fprintf(calfile, "# SigmaSeedLevel\n");
+   fprintf(calfile, "# SigmaHitLevel\n");
 
    cout << "\nBeginning the Event Loop " << endl;
    tagr.BeginEventLoop();
@@ -233,7 +234,8 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    for (int sen = 0; sen < sensors; sen++)
    {
       fprintf(calfile, "#sensorId: %i\n", sen);
-      fprintf(calfile, "%i\n", 5);
+      fprintf(calfile, "%i\n", 50);
+      fprintf(calfile, "%i\n", 10);
 
       for (int ch = 0; ch < NChannels; ch++)
       {

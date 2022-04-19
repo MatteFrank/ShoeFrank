@@ -22,10 +22,10 @@ public:
    //! Return number of tracks
    Int_t      GetNofTracks()     const { return fNofTracks; }
    
-   //! Add Track
+   // Add Track
    TAEDglbTrack* NewTrack(const Char_t* label);
   
-   //! Reset tracks
+   // Reset tracks
    void ResetTracks();
       
 private:
@@ -33,6 +33,5 @@ private:
    
    ClassDef(TAEDglbTrackList, 0);
 };
-
 
 #endif

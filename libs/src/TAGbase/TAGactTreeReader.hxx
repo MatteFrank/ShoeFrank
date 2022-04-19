@@ -39,26 +39,26 @@ class TAGactTreeReader : public TAGactionFile {
     explicit        TAGactTreeReader(const char* name=0);
     virtual         ~TAGactTreeReader();
 
-    //! Set up branch
+    // Set up branch
     void            SetupBranch(TAGdataDsc* p_data, const char* branch);
-    //! Check branch
+    // Check branch
     Bool_t          CheckBranch(const char* branch, Bool_t verbose = false);
 
-    //! Open file
+    // Open file
     virtual Int_t   Open(const TString& name, Option_t* option="READ", const TString treeName="tree", Bool_t dscBranch = true);
-    //! Adding a friend tree
+    // Adding a friend tree
     virtual void    AddFriendTree(TString fileName = "", TString treeName = "EventTree");
-    //! Close file
+    // Close file
     virtual void    Close();
-    //! Open file flag
+    // Open file flag
     virtual Bool_t  IsOpen() const;
-    //! Reset event
+    // Reset event
     virtual void    Reset(Int_t iEvent = 0);
-    //! Number of event
+    // Number of event
     virtual Int_t   NEvents();
-    //! Process
+    // Process
     virtual Bool_t  Process();
-    //! To stream
+    // To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
     //! Get tree
     virtual TTree*  GetTree() { return fpTree; }

@@ -20,11 +20,11 @@ public:
    TCITgeometryConstructor(TAVTbaseParGeo* pParGeo);
    virtual ~TCITgeometryConstructor();
    
-   //! Method in which the physical volume is constructed
+   // Method in which the physical volume is constructed
    G4LogicalVolume* Construct();
-   //! Build support
+   // Build support
    G4LogicalVolume* BuildPlumeSupport();
-   //! Place support
+   // Place support
    void             PlacePlumeSupport();
 
 public:
@@ -38,9 +38,9 @@ private:
    static TString fgkItEpiSDname; ///< SD name
 
 private:
-   //! Define sensitive detector
+   // Define sensitive detector
    void DefineSensitive();
-   //! Define material
+   // Define material
    void DefineMaterial();
 };
 

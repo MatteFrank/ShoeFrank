@@ -28,12 +28,13 @@ public:
    virtual ~TAGbaseMaterials();
    
 protected:
+   //! pointer for ionisation property
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
 
    static map<TString, TString> fgkCommonName; ///< Common name for some material map
    static map<TString, Int_t>   fgkLowMat;     ///< Low material map for Fluka
    static TString               fgkWhat;       ///< kWhat symbol for Fluka
-   static Int_t                 fgkWhatWidth;
+   static Int_t                 fgkWhatWidth;  ///< kWhat width
 
    /*!
     \struct FlukaMat_t
@@ -54,25 +55,25 @@ protected:
    map<TString, Int_t>          fPrintedElt;    ///< printed element
 
 protected:
-   //! Get isotope from formula
+   // Get isotope from formula
    void             GetIsotopes(const TString formula);
-   //! Get sub formula
+   // Get sub formula
    TString          GetSubFormula(const TString formula);
-   //! Get isotope and weight from formula
+   // Get isotope and weight from formula
    void             GetIsotopeAndWeight(const TString formula);
-   //! Get strings
+   // Get strings
    vector<TString>  GetStrings(TString key, const Char_t delimiter = '/');
-   //! Get coefficient
+   // Get coefficient
    void             GetCoeff(TString key, Float_t* coeff, Int_t size,  const Char_t delimiter = '/');
-   //! Find value from string
+   // Find value from string
    TString          FindByValue(TString value);
-   //! Create default materials
+   // Create default materials
    virtual void     CreateDefaultMaterials();
-   //! Read Fluka materials
+   // Read Fluka materials
    Bool_t           ReadFlukaDefMat();
-   //! Get Fluka material Id
+   // Get Fluka material Id
    Int_t            GetFlukaMatId(Double_t Z);
-   //! Check Fluka material
+   // Check Fluka material
    void             CheckFlukaMat(Double_t density, Double_t A, Double_t Z);
 
    ClassDef(TAGbaseMaterials,0)

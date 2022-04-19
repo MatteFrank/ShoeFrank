@@ -22,6 +22,7 @@
  \brief Geometry parameters for ITR
  */
 
+//! Class Imp
 ClassImp(TAITparGeo);
 
 //##############################################################################
@@ -51,6 +52,7 @@ TAITparGeo::~TAITparGeo()
 }
 
 //_____________________________________________________________________________
+//! Define materials
 void TAITparGeo::DefineMaterial()
 {
    // material for M28
@@ -89,6 +91,7 @@ void TAITparGeo::DefineMaterial()
 }
 
 //_____________________________________________________________________________
+//! Read support informations
 void TAITparGeo::ReadSupportInfo()
 {
    ReadVector3(fSupportSize);
@@ -163,6 +166,12 @@ void TAITparGeo::ReadSupportInfo()
 }
 
 //_____________________________________________________________________________
+//! Build inner tracker in Root geometry
+//!
+//! \param[in] itName  inner tracker volume name
+//! \param[in] basemoduleName module volume base name
+//! \param[in] board flag for implemented passive mother board
+//! \param[in] suport flag for implemented support
 TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemoduleName, Bool_t board, Bool_t suport)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
@@ -230,6 +239,10 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
 }
 
 //_____________________________________________________________________________
+//! Build plume support in Root geometry
+//!
+//! \param[in] basemoduleName module volume base name
+//! \param[in] vertexName vertex volume name
 TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char *vertexName)
 {
    // create media
@@ -342,9 +355,11 @@ TGeoVolume* TAITparGeo::BuildPlumeSupport(const char* basemoduleName, const char
 }
 
 //_____________________________________________________________________________
+//! Get Z-position for a given layer
+//!
+//! \param[in] layer a given layer
 Float_t TAITparGeo::GetPassiveLayerPosZ(Int_t layer)
 {
-   
    Float_t posZ = 0;
    
    // first kapton layer
@@ -375,48 +390,56 @@ Float_t TAITparGeo::GetPassiveLayerPosZ(Int_t layer)
 }
 
 //_____________________________________________________________________________
+//! Get Foam Layer position in Z-direction
 Float_t TAITparGeo::GetFoamLayer()
 {
    return GetPassiveLayerPosZ(0);
 }
 
 //_____________________________________________________________________________
+//! Get 1st Kapton Layer position in Z-direction
 Float_t TAITparGeo::Get1stKaptonLayer()
 {
    return GetPassiveLayerPosZ(1);
 }
 
 //_____________________________________________________________________________
+//! Get 1st Al Layer position in Z-direction
 Float_t TAITparGeo::Get1stAlLayer()
 {
    return GetPassiveLayerPosZ(2);
 }
 
 //_____________________________________________________________________________
+//! Get 2nd Kapton Layer position in Z-direction
 Float_t TAITparGeo::Get2ndKaptonLayer()
 {
    return GetPassiveLayerPosZ(3);
 }
 
 //_____________________________________________________________________________
+//! Get 2nd Al Layer position in Z-direction
 Float_t TAITparGeo::Get2ndAlLayer()
 {
    return GetPassiveLayerPosZ(4);
 }
 
 //_____________________________________________________________________________
+//! Get 3rd Kapton Layer position in Z-direction
 Float_t TAITparGeo::Get3rdKaptonLayer()
 {
    return GetPassiveLayerPosZ(5);
 }
 
 //_____________________________________________________________________________
+//! Get Epoxy Layer position in Z-direction
 Float_t TAITparGeo::GetEpoxyLayer()
 {
    return GetPassiveLayerPosZ(6);
 }
 
 //_____________________________________________________________________________
+//! Print Fluka parameters
 string TAITparGeo::PrintParameters()
 {
   stringstream outstr;
@@ -446,6 +469,7 @@ string TAITparGeo::PrintParameters()
 }
 
 //_____________________________________________________________________________
+//! Print Fluka rotations
 string TAITparGeo::PrintRotations()
 {
   stringstream ss;
@@ -538,6 +562,7 @@ string TAITparGeo::PrintRotations()
 }
 
 //_____________________________________________________________________________
+//! Print Fluka bodies
 string TAITparGeo::PrintBodies()
 {
 
@@ -867,9 +892,9 @@ string TAITparGeo::PrintBodies()
 }
 
 //_____________________________________________________________________________
+//! Print Fluka regions
 string TAITparGeo::PrintRegions()
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeIT()){
@@ -918,61 +943,95 @@ string TAITparGeo::PrintRegions()
   }
   
   return ss.str();
-  
 }
 
 //_____________________________________________________________________________
-Int_t TAITparGeo::GetRegEpitaxial(Int_t n){
+//! Get epitaxial region in Fluka for a given layer
+//!
+//! \param[in] n layer index
+Int_t TAITparGeo::GetRegEpitaxial(Int_t n)
+{
   TString regname;
   regname.Form("ITRE%02d",n);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
-Int_t TAITparGeo::GetRegModule(Int_t n){
+//! Get module region in Fluka for a given layer
+//!
+//! \param[in] n layer index
+Int_t TAITparGeo::GetRegModule(Int_t n)
+{
   TString regname;
   regname.Form("ITRM%d",n);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
-Int_t TAITparGeo::GetRegPixel(Int_t n){
+//! Get pixel region in Fluka for a given layer
+//!
+//! \param[in] n layer index
+Int_t TAITparGeo::GetRegPixel(Int_t n)
+{
   TString regname;
   regname.Form("ITRP%d",n);
   return GetCrossReg(regname);
 }
+
 //_____________________________________________________________________________
-Int_t TAITparGeo::GetRegFoam(Int_t n){
+//! Get Foam region in Fluka for a given layer
+//!
+//! \param[in] n layer index
+Int_t TAITparGeo::GetRegFoam(Int_t n)
+{
   TString regname;
   regname.Form("ITRF%02d",n*4);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
-Int_t TAITparGeo::GetRegKapton(Int_t n, Int_t lay, Bool_t side){
+//! Get Kapton region in Fluka for a given layer
+//!
+//! \param[in] n sensor index
+//! \param[in] lay layer index
+//! \param[in] side side index
+Int_t TAITparGeo::GetRegKapton(Int_t n, Int_t lay, Bool_t side)
+{
   TString regname;
   regname.Form("ITRK%02d",n*4 + ((side==true) ? 0:100) + ((lay==0) ? 0:(lay+1)) );
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
-Int_t TAITparGeo::GetRegAluminum(Int_t n, Int_t lay, Bool_t side){
+//! Get Al region in Fluka for a given layer
+//!
+//! \param[in] n sensor index
+//! \param[in] lay layer index
+//! \param[in] side side index
+Int_t TAITparGeo::GetRegAluminum(Int_t n, Int_t lay, Bool_t side)
+{
   TString regname;
   regname.Form("ITRA%2d",n*4 + ((side==true) ? 0:100) + lay*2 );
   return GetCrossReg(regname);
 }
 
+
 //_____________________________________________________________________________
-Int_t TAITparGeo::GetRegEpoxy(Int_t n, Bool_t side){
+//! Get Epoxy region in Fluka for a given layer
+//!
+//! \param[in] n sensor index
+//! \param[in] side side index
+Int_t TAITparGeo::GetRegEpoxy(Int_t n, Bool_t side)
+{
   TString regname;
   regname.Form("ITRY%2d",n*4 + ((side==true) ? 0:100));
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
+//! Print subtracted bodies from air in Fluka
 string TAITparGeo::PrintSubtractBodiesFromAir()
 {
-  
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeIT()){
@@ -1015,9 +1074,11 @@ string TAITparGeo::PrintSubtractBodiesFromAir()
 }
 
 //_____________________________________________________________________________
-string TAITparGeo::PrintAssignMaterial(TAGmaterials *material)
+//! Print assigned material in Fluka for a given material
+//!
+//! \param[in] material Root material
+string TAITparGeo::PrintAssignMaterial(TAGmaterials* material)
 {
-
   stringstream ss;
   
   if(TAGrecoManager::GetPar()->IncludeIT()){
@@ -1073,6 +1134,5 @@ string TAITparGeo::PrintAssignMaterial(TAGmaterials *material)
   }
 
   return ss.str();
-
 }
 

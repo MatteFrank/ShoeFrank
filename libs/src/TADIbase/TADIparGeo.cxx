@@ -1,4 +1,9 @@
 
+/*!
+ \file TADIparGeo.cxx
+ \brief Implementation of TADIparGeo.cxx
+ */
+
 #include <Riostream.h>
 
 #include "TGeoBBox.h"
@@ -20,10 +25,11 @@
 //##############################################################################
 
 /*!
-  \class TADIparGeo TADIparGeo.hxx "TADIparGeo.hxx"
+  \class TADIparGeo
   \brief Map and Geometry parameters for magnets. **
 */
 
+//! Class Imp
 ClassImp(TADIparGeo);
 
 const TString TADIparGeo::fgkDefParaName     = "diGeo";
@@ -47,8 +53,11 @@ TADIparGeo::~TADIparGeo()
 {
 }
 
-//______________________________________________________________________________
-Bool_t TADIparGeo::FromFile(const TString& name) 
+//------------------------------------------+-----------------------------------
+//! Read from file
+//!
+//! \param[in] name file name
+Bool_t TADIparGeo::FromFile(const TString& name)
 {
    // simple file reading, waiting for real config file
    TString nameExp;
@@ -203,9 +212,9 @@ Bool_t TADIparGeo::FromFile(const TString& name)
 }
 
 //_____________________________________________________________________________
+//! Define material
 void TADIparGeo::DefineMaterial()
 {
-   
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
       new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
    }
@@ -227,6 +236,9 @@ void TADIparGeo::DefineMaterial()
 }
 
 //_____________________________________________________________________________
+//! Get magnet position
+//!
+//! \param[in] iMagnet a given magnet
 TVector3 TADIparGeo::GetPosition(Int_t iMagnet)
 {
    TGeoHMatrix* hm = GetTransfo(iMagnet);
@@ -238,6 +250,15 @@ TVector3 TADIparGeo::GetPosition(Int_t iMagnet)
 }
 
 //_____________________________________________________________________________
+//! Transformation from global detector to local magnet framework
+//!
+//! \param[in] detID magnet id
+//! \param[in] xg X position in detector framework
+//! \param[in] yg Y position in detector framework
+//! \param[in] zg Z position in detector framework
+//! \param[out] xl X position in magnet framework
+//! \param[out] yl Y position in magnet framework
+//! \param[out] zl Z position in magnet framework
 void TADIparGeo::Global2Local(Int_t detID,
 									Double_t xg, Double_t yg, Double_t zg, 
 									Double_t& xl, Double_t& yl, Double_t& zl) const
@@ -251,6 +272,11 @@ void TADIparGeo::Global2Local(Int_t detID,
 }   
 
 //_____________________________________________________________________________
+//! Transformation from global detector to local magnet framework
+//!
+//! \param[in] detID magnet id
+//! \param[in] glob position in detector framework
+//! \return position in magnet framework
 TVector3 TADIparGeo::Global2Local(Int_t detID, TVector3& glob) const
 {
    if (detID < 0 || detID > GetMagnetsN()) {
@@ -262,6 +288,11 @@ TVector3 TADIparGeo::Global2Local(Int_t detID, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
+//! Transformation from global detector to local magnet framework for vector (no translation)
+//!
+//! \param[in] detID magnet id
+//! \param[in] glob position in detector framework
+//! \return position in magnet framework
 TVector3 TADIparGeo::Global2LocalVect(Int_t detID, TVector3& glob) const
 {
    if (detID < 0 || detID > GetMagnetsN()) {
@@ -273,6 +304,15 @@ TVector3 TADIparGeo::Global2LocalVect(Int_t detID, TVector3& glob) const
 }   
 
 //_____________________________________________________________________________
+//! Transformation from local magnet to global detector framework
+//!
+//! \param[in] detID magnet id
+//! \param[in] xl X position in magnet framework
+//! \param[in] yl Y position in magnet framework
+//! \param[in] zl Z position in magnet framework
+//! \param[out] xg X position in detector framework
+//! \param[out] yg Y position in detector framework
+//! \param[out] zg Z position in detector framework
 void TADIparGeo::Local2Global(Int_t detID,
 									Double_t xl, Double_t yl, Double_t zl, 
 									Double_t& xg, Double_t& yg, Double_t& zg) const
@@ -286,6 +326,11 @@ void TADIparGeo::Local2Global(Int_t detID,
 }
 
 //_____________________________________________________________________________
+//! Transformation from local magnet to global detector framework
+//!
+//! \param[in] detID magnet id
+//! \param[in] loc position in magnet framework
+//! \return position in detector framework
 TVector3 TADIparGeo::Local2Global(Int_t detID, TVector3& loc) const
 {
    if (detID < 0 || detID > GetMagnetsN()) {
@@ -296,8 +341,12 @@ TVector3 TADIparGeo::Local2Global(Int_t detID, TVector3& loc) const
    return LocalToMaster(detID, loc);
 }
 
-
 //_____________________________________________________________________________
+//! Transformation from local magnet to global detector framework for vector (no translation)
+//!
+//! \param[in] detID magnet id
+//! \param[in] loc position in magnet framework
+//! \return position in detector framework
 TVector3 TADIparGeo::Local2GlobalVect(Int_t detID, TVector3& loc) const
 {
    if (detID < 0 || detID > GetMagnetsN()) {
@@ -309,6 +358,10 @@ TVector3 TADIparGeo::Local2GlobalVect(Int_t detID, TVector3& loc) const
 }
 
 //_____________________________________________________________________________
+//! Build vertex in Root geometry
+//!
+//! \param[in] basemoduleName  base module name for magnet
+//! \param[in] magnetName dipole volume name
 TGeoVolume* TADIparGeo::BuildMagnet(const char* basemoduleName, const char *magnetName)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
@@ -343,6 +396,7 @@ TGeoVolume* TADIparGeo::BuildMagnet(const char* basemoduleName, const char *magn
 }
 
 //_____________________________________________________________________________
+//! Compute envelop of detector
 void TADIparGeo::DefineMaxMinDimension()
 {
    TVector3 size(0, 0, 0);
@@ -375,6 +429,7 @@ void TADIparGeo::DefineMaxMinDimension()
 }
 
 //_____________________________________________________________________________
+//! Print Fluka rotations
 string TADIparGeo::PrintRotations()
 {
   stringstream ss;
@@ -460,13 +515,13 @@ string TADIparGeo::PrintRotations()
   }
 
   return ss.str();
-
 }
 
 
 //_____________________________________________________________________________
-string TADIparGeo::PrintBodies(){
-   
+//! Print Fluka bodies
+string TADIparGeo::PrintBodies()
+{
    stringstream ss;
    
    if ( TAGrecoManager::GetPar()->IncludeDI()){   
@@ -531,13 +586,11 @@ string TADIparGeo::PrintBodies(){
      }
      
    }
-   
    return ss.str();
 }
 
-
-
 //_____________________________________________________________________________
+//! Print Fluka regions
 string TADIparGeo::PrintRegions(){
 
   stringstream ss;
@@ -568,23 +621,33 @@ string TADIparGeo::PrintRegions(){
 }
 
 //_____________________________________________________________________________
-Int_t TADIparGeo::GetRegMagnet(Int_t n){
+//! Get magnet region in Fluka for a given layer
+//!
+//! \param[in] n magnet index
+Int_t TADIparGeo::GetRegMagnet(Int_t n)
+{
   TString regname;
   regname.Form("MAG%d",n);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
-Int_t TADIparGeo::GetRegShield(Int_t n){
+//! Get magnet shieldregion in Fluka for a given layer
+//!
+//! \param[in] n shield index
+Int_t TADIparGeo::GetRegShield(Int_t n)
+{
   TString regname;
   regname.Form("MAG_SH%d",n);
   return GetCrossReg(regname);
 }
 
-
 //_____________________________________________________________________________
-string TADIparGeo::PrintAssignMaterial(TAGmaterials *Material) {
-
+//! Print assigned material in Fluka for a given material
+//!
+//! \param[in] Material Root material
+string TADIparGeo::PrintAssignMaterial(TAGmaterials* Material)
+{
   stringstream ss;
   
   if(TAGrecoManager::GetPar()->IncludeDI()){
@@ -611,14 +674,12 @@ string TADIparGeo::PrintAssignMaterial(TAGmaterials *Material) {
   }
 
   return ss.str();
-  
 }
 
-
-
 //_____________________________________________________________________________
-string TADIparGeo::PrintSubtractBodiesFromAir() {
-
+//! Print subtracted bodies from air in Fluka
+string TADIparGeo::PrintSubtractBodiesFromAir()
+{
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeDI()){
@@ -636,8 +697,9 @@ string TADIparGeo::PrintSubtractBodiesFromAir() {
     return ss.str();
 }
 
-
 //_____________________________________________________________________________
+//!
+//! Print Fluka parameters
  string TADIparGeo::PrintParameters()
  {   
    stringstream outstr;

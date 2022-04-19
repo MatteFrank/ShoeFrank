@@ -23,18 +23,18 @@
 #include "TAGdata.hxx"
 #include "TAGntuPoint.hxx"
 
-
-#define build_string(expr) \
-    (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
-
 using namespace std;
 
 //
 class TAGtrack : public TAGnamed {
 public:
+   /*!
+    \struct polynomial_fit_parameters
+    \brief  polynonial fit  parameters
+    */
     struct polynomial_fit_parameters{
-        std::array<double, 4> parameter_x;
-        std::array<double, 2> parameter_y;
+        std::array<double, 4> parameter_x; ///< parameter x
+        std::array<double, 2> parameter_y; ///< parameter y
     };
     
 public:
@@ -51,11 +51,7 @@ public:
    			TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov, 
    			TVector3* TwPos, TVector3* TwMom, 
    			TMatrixD* TwPos_cov, TMatrixD* TwMom_cov, 
-   			vector<TAGpoint*>* shoeTrackPointRepo
-		);   
-
-   void SetMCInfo( int MCparticle_id, float trackQuality );
-   void SetExtrapInfoTW( TVector3* pos, TVector3* mom, TMatrixD* pos_cov, TMatrixD* mom_cov );
+   			vector<TAGpoint*>* shoeTrackPointRepo);
 
    virtual         ~TAGtrack();
    
@@ -164,6 +160,7 @@ public:
    //! Get Target track position
    TVector3         GetTgtPosition()              { return fTgtPos;     }
    
+   //! Set Target track momentum
    void             SetTgtMomentum(TVector3 pos)  { fTgtMom = pos;      }
    //! Get Target track momentum
    TVector3         GetTgtMomentum()              { return fTgtMom;     }
@@ -193,7 +190,7 @@ public:
    //! Get TW track momentum error
    TVector3         GetTwMomError()               { return fTwMomError; }
 
-   //! Distance to a track near target
+   // Distance to a track near target
    Double_t         Distance(TAGtrack* track, Float_t z) const;
    
    //! Get list of points
@@ -208,51 +205,51 @@ public:
    //! Get  point
    TAGpoint*        GetPoint(Int_t index)         { return (TAGpoint*)fListOfPoints->At(index); }
    
-   //! Get MC info
+   // Get MC info
    TArrayI          GetMcTrackIdx();
    
-   //! Get theta angle at target
+   // Get theta angle at target
    Double_t         GetTgtTheta()           const;
    
-   //! Get phi angle at target
+   // Get phi angle at target
    Double_t         GetTgtPhi()             const;
    
-   //! Intersection near target
+   // Intersection near target
    TVector3         Intersection(Double_t posZ) const;
    
-   //! Get Total Energy Loss (MSD+TW+CAL)
+   // Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetTotEnergyLoss()      const;
    
-   //! Get Total Energy Loss (MSD+TW+CAL)
+   // Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetMsdEnergyLoss()      const;
    
-   //! Get Total Energy Loss (MSD+TW+CAL)
+   // Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetTwEnergyLoss()       const;
    
 
-   //! Add measured point
-   //! with copy cstr
+   // Add measured point
+   // with copy cstr
    TAGpoint*        AddPoint(TAGpoint* point);
-   //! from position, momentun and fitted position, momentun with associated errors
+   // from position, momentun and fitted position, momentun with associated errors
    TAGpoint*        AddPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
-   //! from position and errors
+   // from position and errors
    TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr);
-   //! from position, errors and fitted position, errors
+   // from position, errors and fitted position, errors
    TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr);
-   //! from position, momentun and fitted position, momentun with associated errors
+   // from position, momentun and fitted position, momentun with associated errors
    TAGpoint*        AddPoint(TString name, TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr);
 
-   //! Clear
+   // Clear
    void             Clear(Option_t* opt="");
    
-   //! Set up clones
+   // Set up clones
    void             SetupClones();
    
    //! Set paramters of polynom fit
    void             SetParameters( polynomial_fit_parameters parameters ){ fParameters = std::move( parameters ); }
    //! Get paramters of polynom fit
    polynomial_fit_parameters const&    GetParameters( ) const{ return fParameters; }
-   //! Get position in z from polynom fit
+   // Get position in z from polynom fit
    TVector3         GetPosition( double z );
    
 private:
@@ -316,39 +313,36 @@ public:
    TAGntuGlbTrack();
    virtual         ~TAGntuGlbTrack();
    
-   //! Get global track
+   // Get global track
    TAGtrack*        GetTrack(Int_t i);
-   //! Get global track (comst)
+   // Get global track (comst)
    const TAGtrack*  GetTrack(Int_t i) const;
-   //! Get number of global tracks
+   // Get number of global tracks
    Int_t            GetTracksN()      const;
    
    //! Get list of global tracks
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }
    
-   //! New track
+   // New track
    TAGtrack*        NewTrack();
-   //! New track with mass, momentum, charge and tof
+   // New track with mass, momentum, charge and tof
    TAGtrack*        NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof);
-   //! New track with copy cstr
+   // Add a new track to the repo  --- Genfit
    TAGtrack* 		NewTrack(string name, long evNum, int pdgID, float pdgMass, int measCh, float mass, float length, float tof, float chi2, int ndof, float pVal, TVector3* TgtPos, TVector3* TgtMom, TMatrixD* TgtPos_cov, TMatrixD* TgtMom_cov, TVector3* TwPos, TVector3* TwMom, TMatrixD* TwPos_cov, TMatrixD* TwMom_cov, vector<TAGpoint*>* shoeTrackPointRepo);   
-
+   // New track with copy cstr
    TAGtrack*        NewTrack(TAGtrack& track);
 
-   //! Set up clones
+   // Set up clones
    virtual void     SetupClones();
-   //! Clear
+   // Clear
    virtual void     Clear(Option_t* opt="");
-   //! To stream
+   // To stream
    virtual void     ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:
    //! Get branch name
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
-   int m_debug;
-	string m_kalmanOutputDir;
-
    ClassDef(TAGntuGlbTrack,2)
 };
 

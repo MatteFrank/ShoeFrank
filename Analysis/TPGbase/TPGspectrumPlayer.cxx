@@ -18,6 +18,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+/*!
+ \file TPGspectrumPlayer.cxx
+ \brief   Implementation of TPGspectrumPlayer.
+ */
+
 #include <Riostream.h>
 
 #include "KeySymbols.h"
@@ -35,10 +40,16 @@
 #include "TPGpeakCreator.hxx"
 #include "TPGspectrumPlayer.hxx"
 
-//
+
+/** \class TPGspectrumPlayer
+ \brief class to work on spectra
+ */
+
+//! Class Imp
 ClassImp(TPGspectrumPlayer)
 
 //__________________________________________________________
+//! default constructor
 TPGspectrumPlayer::TPGspectrumPlayer()
 : TNamed("SpectrumPlayer","Player for spectra"),
 fCreator(0x0),
@@ -56,9 +67,9 @@ fContextMenu(0x0)
 }
 
 //__________________________________________________________
+//! default destructor
 TPGspectrumPlayer::~TPGspectrumPlayer()
 {
-   // default destructor
    fPeakList = 0x0;
    
    if (fCreator)
@@ -71,8 +82,11 @@ TPGspectrumPlayer::~TPGspectrumPlayer()
    Disconnect();
 }
 
-
-//__________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Check peak inside histogram range
+//!
+//! \param[in] h a given histogram
+//! \param[in] peak a given peak
 Bool_t TPGspectrumPlayer::IsInRange(TH1* h, TPGbasePeak* peak)
 {
    if ( h->GetDimension() != 1) {
@@ -97,6 +111,9 @@ Bool_t TPGspectrumPlayer::IsInRange(TH1* h, TPGbasePeak* peak)
 }
 
 //__________________________________________________________
+//! Connect to canvas
+//!
+//! \param[in] canvas a given canvas
 Bool_t TPGspectrumPlayer::Connect(TCanvas *canvas)
 {
    TCanvas *localCanvas = canvas;
@@ -131,6 +148,9 @@ Bool_t TPGspectrumPlayer::Connect(TCanvas *canvas)
 }
 
 //__________________________________________________________
+//! Disconnect from canvas
+//!
+//! \param[in] canvas a given canvas
 Bool_t TPGspectrumPlayer::Disconnect(TCanvas *canvas)
 {
    TCanvas *localCanvas = canvas;
@@ -158,6 +178,12 @@ Bool_t TPGspectrumPlayer::Disconnect(TCanvas *canvas)
 } 
 
 //__________________________________________________________
+//! Handle movement on pad
+//!
+//! \param[in] eventType event type
+//! \param[in] eventX position X on pad
+//! \param[in] eventY position Y on pad or key board action
+//! \param[in] select selected object
 void TPGspectrumPlayer::HandleMovement(Int_t eventType, Int_t eventX, Int_t eventY, TObject* select)
 { 
    // handle cursor mouvement
@@ -186,6 +212,7 @@ void TPGspectrumPlayer::HandleMovement(Int_t eventType, Int_t eventX, Int_t even
 }
 
 //__________________________________________________________
+//! Popup fit menu
 void TPGspectrumPlayer::PopupFitMenu()
 {
    TMethod* m = Class()->GetMethod("FitAll", "");
@@ -199,6 +226,11 @@ void TPGspectrumPlayer::PopupFitMenu()
 
 
 //__________________________________________________________
+//! Fit all with a given function
+//!
+//! \param[in] nameFunc function name
+//! \param[in] optFit fit options
+//! \param[in] optBkg background options
 void TPGspectrumPlayer::FitAll(const char* nameFunc, Option_t* optFit, Option_t* optBkg)
 {
    // fit all peak in list with a common function and background
@@ -268,8 +300,10 @@ void TPGspectrumPlayer::FitAll(const char* nameFunc, Option_t* optFit, Option_t*
    }
 }
 
-
 //__________________________________________________________
+//! Get background histogram
+//!
+//! \param[in] opt background options
 TH1 *TPGspectrumPlayer::Background(Option_t* opt)
 { 
    // set bkg from current histo in pad
@@ -284,9 +318,12 @@ TH1 *TPGspectrumPlayer::Background(Option_t* opt)
 }
 
 //__________________________________________________________
+//! Set bkg from histo
+//!
+//! \param[in] histo a given histogram
+//! \param[in] opt background options
 void TPGspectrumPlayer::DoBackground(TH1 *histo, Option_t* opt)
 { 
-   // set bkg from histo
    TH1 *bg = Background(histo,opt);
    if ( bg ) {
       histo->Add(bg,-1.0);
@@ -295,13 +332,19 @@ void TPGspectrumPlayer::DoBackground(TH1 *histo, Option_t* opt)
 }
 
 //__________________________________________________________
+// Set peak list from outside
+//!
+//! \param[in] col a given collection
 void TPGspectrumPlayer::SetPeakList(TSeqCollection *col)
 { 
-   // set peak list from outside
    col ? fPeakList = col : fPeakList = dynamic_cast<TSeqCollection*>(fInnerPeakList);
 }
 
 //__________________________________________________________
+//! Set paramater (not used)
+//!
+//! \param[in] name parameter name
+//! \param[in] value object value
 Bool_t TPGspectrumPlayer::SetParameter(const char* name, const TObject *value)
 {
    // set parameters from list
@@ -326,6 +369,9 @@ Bool_t TPGspectrumPlayer::SetParameter(const char* name, const TObject *value)
 }
 
 //__________________________________________________________
+//! Set default peak width
+//!
+//! \param[in] name function name
 void TPGspectrumPlayer::SetDefaultPeakFWHM(const char* name)
 {
    TPGpeakCreator* peakCreator = TPGpeakCreator::IsTPGpeakCreator(TVirtualPad::Pad());
@@ -338,6 +384,9 @@ void TPGspectrumPlayer::SetDefaultPeakFWHM(const char* name)
 }
 
 //__________________________________________________________
+//! Find peaks
+//!
+//! \param[in] opt search options
 Int_t TPGspectrumPlayer::FindPeaks(Option_t* opt)
 {
    // find peak method
@@ -350,6 +399,10 @@ Int_t TPGspectrumPlayer::FindPeaks(Option_t* opt)
 }
 
 //__________________________________________________________
+//! Rename peak
+//!
+//! \param[in] baseName peaks base name
+//! \param[in] force force renaming
 Bool_t TPGspectrumPlayer::RenamePeak(const Char_t* baseName, Bool_t force)
 {
    // rename and re-ordered peak with respect to position
@@ -379,6 +432,9 @@ Bool_t TPGspectrumPlayer::RenamePeak(const Char_t* baseName, Bool_t force)
 }
 
 //__________________________________________________________
+//! Add peak
+//!
+//! \param[in] peak peak to add
 void TPGspectrumPlayer::AddPeak(TPGbasePeak* peak)
 {
    // add peak to list
@@ -387,6 +443,10 @@ void TPGspectrumPlayer::AddPeak(TPGbasePeak* peak)
 }
 
 //__________________________________________________________
+//! Sort peak list
+//!
+//! \param[in] parName peak name list
+//! \param[in] sortDes descending order flag
 void TPGspectrumPlayer::SortPeakList(const Char_t* parName, Bool_t sortDes)
 {
    // sort peak respect to given parameter
@@ -432,6 +492,7 @@ void TPGspectrumPlayer::SortPeakList(const Char_t* parName, Bool_t sortDes)
 }
 
 //__________________________________________________________
+//! Show peak list
 void TPGspectrumPlayer::ShowPeakList() const
 { 
    // re-draw peaks onto current pad
@@ -439,6 +500,9 @@ void TPGspectrumPlayer::ShowPeakList() const
 }
 
 //__________________________________________________________
+//! Collect peak to list
+//!
+//! \param[in] o collect option
 Int_t TPGspectrumPlayer::CollectPeaks(Option_t* o)
 {
    // create peak list from pad
@@ -468,6 +532,9 @@ Int_t TPGspectrumPlayer::CollectPeaks(Option_t* o)
 }
 
 //__________________________________________________________
+//! Print
+//!
+//! \param[in] opt print option
 void TPGspectrumPlayer::Print(Option_t* opt) const
 {
    // print peak info

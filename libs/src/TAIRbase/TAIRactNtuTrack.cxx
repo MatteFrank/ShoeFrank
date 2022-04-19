@@ -28,6 +28,7 @@
 /*!
  \class TAIRactNtuTrack
  \brief NTuplizer for Inner tracker tracks. **
+ 
  Combining VTX tracks with IT clusters
  */
 
@@ -35,6 +36,15 @@ Bool_t  TAIRactNtuTrack::fgBmMatched = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuClus  cluster container descriptor
+//! \param[in] pVtVertex  vertex container descriptor
+//! \param[out] pNtuTrack  track container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pvtGeoMap VTX geometry parameter descriptor
+//! \param[in] pCalib calibration parameter descriptor
 TAIRactNtuTrack::TAIRactNtuTrack(const char* name,
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pVtVertex, TAGdataDsc* pNtuTrack,
 								 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pvtGeoMap, TAGparaDsc* pCalib)
@@ -112,7 +122,7 @@ void TAIRactNtuTrack::CreateHistogram()
 }
 
 //_____________________________________________________________________________
-//
+//! Action
 Bool_t TAIRactNtuTrack::Action()
 {
    // IT
@@ -136,7 +146,7 @@ Bool_t TAIRactNtuTrack::Action()
 }
 
 //_____________________________________________________________________________
-//
+//! Check VTX vertex
 Bool_t TAIRactNtuTrack::CheckVtx()
 {
    // VTX info
@@ -158,7 +168,8 @@ Bool_t TAIRactNtuTrack::CheckVtx()
 }
 
 //_____________________________________________________________________________
-//
+//! Fill IR tracks from VTX track
+//! \param[in] track a given track
 TAIRtrack* TAIRactNtuTrack::FillTracks(TAVTtrack* vtTrack)
 {
    TAIRtrack* track   = new TAIRtrack();
@@ -184,7 +195,7 @@ TAIRtrack* TAIRactNtuTrack::FillTracks(TAVTtrack* vtTrack)
 }
 
 //_____________________________________________________________________________
-//  
+//! Find tracks
 Bool_t TAIRactNtuTrack::FindTracks()
 {
    if (!CheckVtx()) return false;
@@ -280,7 +291,8 @@ Bool_t TAIRactNtuTrack::FindTracks()
 }
 
 //_____________________________________________________________________________
-//
+//! Fill histograms per track
+//! \param[in] track a given track
 void TAIRactNtuTrack::FillHistogramm(TAGbaseTrack* track)
 {
    fpHisTheta->Fill(track->GetTheta());
@@ -321,7 +333,7 @@ void TAIRactNtuTrack::FillHistogramm(TAGbaseTrack* track)
 }
 
 //_____________________________________________________________________________
-//
+//! Fill histograms
 void TAIRactNtuTrack::FillHistogramm()
 {
    TAIRntuTrack*   pNtuTrack = (TAIRntuTrack*)   fpNtuTrack->Object();

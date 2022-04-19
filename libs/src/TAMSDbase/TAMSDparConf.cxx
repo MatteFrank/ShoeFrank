@@ -74,17 +74,17 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
       if(FootDebugLevel(1))
          cout << "Status: "<< fSensorParameter[p].Status << endl;
       
-      // read min of pixel per cluster
+      // read min of strip per cluster
       ReadItem(fSensorParameter[p].MinNofStripsInCluster);
       if(FootDebugLevel(1))
-         cout << "Minimum number of pixels per cluster: "<< fSensorParameter[p].MinNofStripsInCluster << endl;
+         cout << "Minimum number of strips per cluster: "<< fSensorParameter[p].MinNofStripsInCluster << endl;
       
-      // read max of pixel per cluster
+      // read max of strip per cluster
       ReadItem(fSensorParameter[p].MaxNofStripsInCluster);
       if(FootDebugLevel(1))
-         cout << "Maximum number of pixels per cluster: "<< fSensorParameter[p].MaxNofStripsInCluster << endl;
+         cout << "Maximum number of strips per cluster: "<< fSensorParameter[p].MaxNofStripsInCluster << endl;
       
-      // read dead pixel map
+      // read dead strips map
       fSensorParameter[p].DeadStripMap.Set(640);
       ReadItem(fSensorParameter[p].DeadStripMap);
       if(FootDebugLevel(1)) {

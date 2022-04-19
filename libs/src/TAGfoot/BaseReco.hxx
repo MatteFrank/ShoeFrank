@@ -63,6 +63,7 @@
 #include "TAMSDntuTrack.hxx"
 #include "TATWntuPoint.hxx"
 #include "TACAntuHit.hxx"
+#include "TACAactNtuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TAIRntuTrack.hxx"
 #include "TAGntuGlbTrack.hxx"
@@ -105,16 +106,16 @@ class TAMCntuEvent;
 class BaseReco : public TNamed // using TNamed for the in/out files
 {
 public:
-   //! default constructor
+   // default constructor
    BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout);
    
-   //! default destructor
+   // default destructor
    virtual ~BaseReco();
    
-   //! Read parameters
+   // Read parameters
    void ReadParFiles();
 
-   //! Create raw action
+   // Create raw action
    virtual void CreateRecAction();
    
    //! Create rec action
@@ -123,46 +124,46 @@ public:
    //! Add required items
    virtual void AddRawRequiredItem()   { return; }
    
-   //! Add required items
+   // Add required items
    virtual void AddRecRequiredItem();
    
    //! Set raw histogram directory
    virtual void SetRawHistogramDir()   { return; }
    
-   //! Set rec histogram directory
+   // Set rec histogram directory
    virtual void SetRecHistogramDir();
    
-   //! Loop events
+   // Loop events
    virtual void LoopEvent(Int_t nEvents);
    
    //! Goto Event
    virtual Bool_t GoEvent(Int_t /*iEvent*/) { return true; }
    
-   //! Begin loop
+   // Begin loop
    virtual void BeforeEventLoop();
 
-   //! End loop
+   // End loop
    virtual void AfterEventLoop();
    
    //! Open File In
    virtual void OpenFileIn()  { return; }
   
-   ///< ! Global Checks
+   // Global Checks
    virtual void GlobalChecks();
    
    //! Close File in
    virtual void CloseFileIn() { return; }
       
-   //! Open File Out
+   // Open File Out
    virtual void OpenFileOut();
    
-   //! Close File Out
+   // Close File Out
    virtual void CloseFileOut();
    
-   //! Create branch in tree
+   // Create branch in tree
    virtual void SetTreeBranches();
   
-  //! Create L0 branch in tree
+  // Create L0 branch in tree
   virtual void SetL0TreeBranches();
    
    //! Set experiment name
@@ -233,70 +234,107 @@ public:
    //! Flag for MC data
    Bool_t IsMcData()           { return fFlagMC;          }
    
-   //! Set Vtx Tracking algorithm
+   // Set Vtx Tracking algorithm
    void SetVtxTrackingAlgo(char c);
    
-   //! Set Itr Tracking algorithm
+   // Set Itr Tracking algorithm
    void SetItrTrackingAlgo(char c);
    
-   //! Set Msd Tracking algorithm
+   // Set Msd Tracking algorithm
    void SetMsdTrackingAlgo(char c);
   
-   ///< Campaign checks
+   // Campaign checks
    void CampaignChecks();
    
-   ///< Add friend tree
+   // Add friend tree
    void AddFriendTree(TString fileName, TString treeName);
 
-   //! Par geo getters
+   // Par geo getters
+   //! Get parameters geo transformations
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
+   //! Get dipole geometry parameters
    TADIparGeo*          GetParGeoDi()       const { return (TADIparGeo*)fpParGeoDi->Object();        }
+   //! Get STC geometry parameters
    TASTparGeo*          GetParGeoSt()       const { return (TASTparGeo*)fpParGeoSt->Object();        }
+   //! Get target geometry parameters
    TAGparGeo*           GetParGeoG()        const { return (TAGparGeo*)fpParGeoG->Object();          }
+   //! Get BM geometry parameters
    TABMparGeo*          GetParGeoBm()       const { return (TABMparGeo*)fpParGeoBm->Object();        }
+   //! Get VTX geometry parameters
    TAVTparGeo*          GetParGeoVtx()      const { return (TAVTparGeo*)fpParGeoVtx->Object();       }
+   //! Get ITR geometry parameters
    TAITparGeo*          GetParGeoIt()       const { return (TAITparGeo*)fpParGeoIt->Object();        }
+   //! Get MSD geometry parameters
    TAMSDparGeo*         GetParGeoMsd()      const { return (TAMSDparGeo*)fpParGeoMsd->Object();      }
+   //! Get TW geometry parameters
    TATWparGeo*          GetParGeoTw()       const { return (TATWparGeo*)fpParGeoTw->Object();        }
+   //! Get CAL geometry parameters
    TACAparGeo*          GetParGeoCa()       const { return (TACAparGeo*)fpParGeoCa->Object();        }
    
-   //! Containers getters
+   // Containers getters
+   //! Get STC hits containers
    TASTntuHit*          GetNtuHitSt()       const { return (TASTntuHit*) fpNtuHitSt->Object();       }
+   //! Get BM hits containers
    TABMntuHit*          GetNtuHitBm()       const { return (TABMntuHit*)fpNtuHitBm->Object();        }
+   //! Get BM tracks containers
    TABMntuTrack*        GetNtuTrackBm()     const { return (TABMntuTrack*)fpNtuTrackBm->Object();    }
    
+   //! Get VTX clusters containers
    TAVTntuCluster*      GetNtuClusterVtx()  const { return (TAVTntuCluster*)fpNtuClusVtx->Object();  }
+   //! Get VTX Tracks containers
    TAVTntuTrack*        GetNtuTrackVtx()    const { return (TAVTntuTrack*)fpNtuTrackVtx->Object();   }
+   //! Get VTX vertex containers
    TAVTntuVertex*       GetNtuVertexVtx()   const { return (TAVTntuVertex*)fpNtuVtx->Object();       }
+   //! Get VTX vertex desciptor
    TAGdataDsc*          GetDscVertexVtx()   const { return fpNtuVtx;                                 }
    
+   //! Get ITR clusters containers
    TAITntuCluster*      GetNtuClusterIt()   const { return (TAITntuCluster*)fpNtuClusIt->Object();   }
+   //! Get ITR tracks containers
    TAITntuTrack*        GetNtuTrackIt()     const { return (TAITntuTrack*)fpNtuTrackIt->Object();    }
 
+   //! Get MSD clusters containers
    TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
+   //! Get MSD points containers
    TAMSDntuPoint*       GetNtuPointMsd()    const { return (TAMSDntuPoint*)fpNtuRecMsd->Object();    }
+   //! Get MSD tracks containers
    TAMSDntuTrack*       GetNtuTrackMsd()    const { return (TAMSDntuTrack*)fpNtuTrackMsd->Object();  }
 
+   //! Get TW hits containers
    TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuHitTw->Object();       }
+   //! Get TW points containers
    TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
    
+   //! Get CAL hits containers
    TACAntuHit*          GetNtuHitCa()       const { return (TACAntuHit*) fpNtuHitCa->Object();       }
+   //! Get CAL clusters containers
    TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
 
+   //! Get global tracks containers
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
-   TAGntuGlbTrack*  GetGlobTrackRepo() const { return (TAGntuGlbTrack*) fpNtuGlbTrackK->Object(); }
+   //! Get field
    TADIgeoField*        GetFootField()      const { return fField;                                   }
    
-   //! MC container Getter
+   // MC container Getter
+   //! MC event container Getter
    TAMCntuEvent*        GetNtuMcEvt()       const { return (TAMCntuEvent*)fpNtuMcEvt->Object();      }
+   //! MC particle container Getter
    TAMCntuPart*         GetNtuMcTrk()       const { return (TAMCntuPart*)fpNtuMcTrk->Object();       }
+   //! MC region container Getter
    TAMCntuRegion*       GetNtuMcReg()       const { return (TAMCntuRegion*)fpNtuMcReg->Object();     }
+   //! MC STC hit container Getter
    TAMCntuHit*          GetNtuMcSt()        const { return (TAMCntuHit*)fpNtuMcSt->Object();         }
+   //! MC BM hit container Getter
    TAMCntuHit*          GetNtuMcBm()        const { return (TAMCntuHit*)fpNtuMcBm->Object();         }
+   //! MC VTX hit container Getter
    TAMCntuHit*          GetNtuMcVtx()       const { return (TAMCntuHit*)fpNtuMcVt->Object();         }
+   //! MC ITR hit container Getter
    TAMCntuHit*          GetNtuMcIt()        const { return (TAMCntuHit*)fpNtuMcIt->Object();         }
+   //! MC MSD hit container Getter
    TAMCntuHit*          GetNtuMcMsd()       const { return (TAMCntuHit*)fpNtuMcMsd->Object();        }
+   //! MC TW hit container Getter
    TAMCntuHit*          GetNtuMcTw()        const { return (TAMCntuHit*)fpNtuMcTw->Object();         }
+   //! MC CAL hit container Getter
    TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
 
@@ -323,6 +361,7 @@ public:
    static Bool_t IsSaveMc()    { return fSaveMcFlag;  }
    
 protected:
+
    TString               fExpName;        ///< Experiment name
    TAGcampaignManager*   fCampManager;    ///< Campaign manager
    Int_t                 fRunNumber;      ///< Run number
@@ -401,8 +440,7 @@ protected:
    TAGdataDsc*           fpNtuTrackMsd;  ///< input track data dsc for MSD
    TAGdataDsc*           fpNtuVtx;       ///< input Vtx data dsc for VTX
 
-   TAGdataDsc*           fpNtuGlbTrack;  ///< input data dsc global track TOE
-   TAGdataDsc*           fpNtuGlbTrackK; ///< input data  dsc global track GenFit
+   TAGdataDsc*           fpNtuGlbTrack;  ///< input data dsc global track TOE/GenFit
    
    TAGactionFile*        fActEvtReader;  ///< Tree/event reader
    TAGactTreeWriter*     fActEvtWriter;  ///< write histo and tree
@@ -423,14 +461,15 @@ protected:
    TATWactNtuPoint*      fActPointTw;    ///< action for TW points
    TATWactCalibTW*       fActCalibTw;    ///< action for TW calibration
 
-   TACAactNtuCluster*    fActClusCa;     ///< action for CAL clusters
+   TACAactNtuCluster*    fActClusCa;     ///< action for clusters
+   TACAactNtuHit*        fActNtuHitCa;   ///< action for hit
 
    TAGactNtuGlbTrack*    fActGlbTrack;   ///< Global tracking action
     
    TAGactNtuGlbTrackS*   fActGlbTrackS;  ///< action for straight tracks
   
    TAGactKFitter*        fActGlbkFitter; ///< Global tracking kalman Fitter
-   TAGFtrackingStudies*  fActGlbTrackStudies;    // Global tracking studies with GenFit
+   TAGFtrackingStudies*  fActGlbTrackStudies;    ///< Global tracking studies with GenFit
 
    Bool_t                fFlagOut;          ///< flag for output file
    Bool_t                fFlagTree;         ///< flag to save in tree
@@ -452,31 +491,31 @@ protected:
    Int_t                 fSkipEventsN;      ///< number of events to skip
    
  protected:
-   //! Create reconstruction action for BM
+   // Create reconstruction action for BM
    void CreateRecActionBm();
-   //! Create reconstruction action for VTX
+   // Create reconstruction action for VTX
    void CreateRecActionVtx();
-   //! Create reconstruction action for ITR
+   // Create reconstruction action for ITR
    void CreateRecActionIt();
-   //! Create reconstruction action for MSD
+   // Create reconstruction action for MSD
    void CreateRecActionMsd();
-   //! Create reconstruction action for TW
+   // Create reconstruction action for TW
    void CreateRecActionTw();
-   //! Create reconstruction action for CAL
+   // Create reconstruction action for CAL
    void CreateRecActionCa();
-   //! Create reconstruction action for global tracks with TOE
+   // Create reconstruction action for global tracks with TOE
    void CreateRecActionGlb();
-   //! Create reconstruction action for global tracks with GenFit
+   // Create reconstruction action for global tracks with GenFit
    void CreateRecActionGlbGF();
-   //! Create reconstruction action for global straight tracks
+   // Create reconstruction action for global straight tracks
    void CreateRecActionGlbS();
 
 protected:
-   static Bool_t fgItrTrackFlag; ////< ITR tracking flag
-   static Bool_t fgMsdTrackFlag; ////< MSD tracking flag
-   static Bool_t fSaveMcFlag;    ////< MC saving flag
+   static Bool_t fgItrTrackFlag; ///< ITR tracking flag
+   static Bool_t fgMsdTrackFlag; ///< MSD tracking flag
+   static Bool_t fSaveMcFlag;    ///< MC saving flag
 
-   ClassDef(BaseReco, 1);        ////< Base class for reconstruction
+   ClassDef(BaseReco, 1);        ///< Base class for reconstruction
 };
 
 

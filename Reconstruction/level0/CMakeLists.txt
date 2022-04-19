@@ -75,6 +75,10 @@ target_link_libraries(DecodeRaw ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIB
 #
 install(TARGETS DecodeRaw DESTINATION bin)
 
+add_executable(DecodeWD DecodeWD.cc)
+target_link_libraries(DecodeWD ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
+install(TARGETS DecodeWD DESTINATION bin)
+
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #

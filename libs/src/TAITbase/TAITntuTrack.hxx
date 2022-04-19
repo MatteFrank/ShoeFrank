@@ -35,11 +35,11 @@ public:
    TAITntuTrack();
    virtual         ~TAITntuTrack();
    
-   //! Get track
+   // Get track
    TAITtrack*       GetTrack(Int_t i);
-   //! Get track (const)
+   // Get track (const)
    const TAITtrack* GetTrack(Int_t i) const;
-   //! Get number of tracks
+   // Get number of tracks
    Int_t            GetTracksN()      const; 
    
    //! Get beam position
@@ -52,18 +52,18 @@ public:
    void             SetPileUp(Bool_t pileup = true) { fPileup = pileup;     }
 
    //! Get list of tracks
-   TClonesArray*    GetListOfTracks() { return fListOfTracks; }
+   TClonesArray*    GetListOfTracks()               { return fListOfTracks; }
 
-   //! Create new track
+   // Create new track
    TAITtrack*       NewTrack();
-   //! Create new track from existing one
+   // Create new track from existing one
    TAITtrack*       NewTrack(TAITtrack& track);
    
-   //! Set up clones
+   // Set up clones
    virtual void     SetupClones();
-   //! Clear
+   // Clear
    virtual void     Clear(Option_t* opt="");
-   //! To stream
+   // To stream
    virtual void     ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:

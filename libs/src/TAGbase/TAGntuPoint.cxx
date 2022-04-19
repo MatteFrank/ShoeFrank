@@ -15,6 +15,7 @@
 
 #include <array>
 
+//! Class Imp
 ClassImp(TAGpoint) // Description of Single Detector TAGpoint
 
 //______________________________________________________________________________
@@ -29,7 +30,11 @@ TAGpoint::TAGpoint()
 }
 
 //______________________________________________________________________________
-//  build a point
+//!  build a point
+//!
+//! \param[in] name device name
+//! \param[in] measPos measured position
+//! \param[in] measPosErr measured position error
 TAGpoint::TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr)
 : TAGcluster(),
    fDevName(name),
@@ -42,7 +47,12 @@ TAGpoint::TAGpoint(TString name, TVector3 measPos, TVector3 measPosErr)
 }
 
 //______________________________________________________________________________
-//  build a point
+//!  build a point
+//!
+//! \param[in] measPos measured position
+//! \param[in] measPosErr measured position error
+//! \param[in] fitPos fitted position
+//! \param[in] fitPosErr fitted position error
 TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr)
 : TAGcluster(),
   fDevName(""),
@@ -57,7 +67,14 @@ TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVect
 }
 
 //______________________________________________________________________________
-//  build a point
+//!  build a point
+//!
+//! \param[in] measPos measured position
+//! \param[in] measPosErr measured position error
+//! \param[in] fitPos fitted position
+//! \param[in] fitPosErr fitted position error
+//! \param[in] mom momentum
+//! \param[in] momErr momentum error
 TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
  : TAGcluster(),
    fDevName(""),
@@ -72,7 +89,13 @@ TAGpoint::TAGpoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVect
 }
 
 //______________________________________________________________________________
-//  build a point
+//!  build a point
+//!
+//! \param[in] name device name
+//! \param[in] measPos measured position
+//! \param[in] measPosErr measured position error
+//! \param[in] fitPos fitted position
+//! \param[in] fitPosErr fitted position error
 TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr)
 : TAGcluster(),
    fDevName(name),
@@ -87,7 +110,15 @@ TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 
 }
 
 //______________________________________________________________________________
-//  build a point
+//!  build a point
+//!
+//! \param[in] name device name
+//! \param[in] measPos measured position
+//! \param[in] measPosErr measured position error
+//! \param[in] fitPos fitted position
+//! \param[in] fitPosErr fitted position error
+//! \param[in] mom momentum
+//! \param[in] momErr momentum error
 TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 : TAGcluster(),
    fDevName(name),
@@ -102,7 +133,14 @@ TAGpoint::TAGpoint(TString name,TVector3 measPos, TVector3 measPosErr, TVector3 
 }
 
 //______________________________________________________________________________
-//  build a point
+//!  build a point
+//!
+//! \param[in] trackDetID device name
+//! \param[in] iPlane plane index
+//! \param[in] iClus cluster index
+//! \param[in] iPart MC track index vector
+//! \param[in] measPos measured position
+//! \param[in] measPosErr measured position error
 TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int>* iPart, TVector3* measPos, TVector3* measPosErr )
                   : TAGcluster(),
    fDevName(trackDetID),
@@ -118,8 +156,16 @@ TAGpoint::TAGpoint( string trackDetID, int iPlane, int iClus, vector<int>* iPart
 	SetMeasPosError(*measPosErr);
 }
 
-//______________________________________________________________________________
-void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* recoPos_cov, TMatrixD* recoMom_cov ) {
+//----------------------------------------------------------------------------------------------------
+//! Set reconstruction informations
+//!
+//!
+//! \param[in] recoPos reconstructed position
+//! \param[in] recoMom reconstructed momentum
+//! \param[in] recoPos_cov reconstructed position matrix
+//! \param[in] recoMom_cov reconstructed momentum matrix
+void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* recoPos_cov, TMatrixD* recoMom_cov )
+{
 	SetFitPosition(*recoPos);
    TVector3 temp = EvalError( *recoPos_cov );
 	SetFitPosError(temp);
@@ -145,21 +191,26 @@ void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* reco
 }
 
 //----------------------------------------------------------------------------------------------------
-TVector3 TAGpoint::EvalError( TMatrixD cov ) {
-
-	TVector3 vec(0,0,0);
-  
-
+//! Evaluate error from matrix
+//!
+//!
+//! \param[in] cov covariance matrix
+TVector3 TAGpoint::EvalError( TMatrixD cov )
+{
+   TVector3 vec(0,0,0);
 	vec = TVector3( cov(0,0)*cov(0,0), cov(1,1)*cov(1,1), cov(2,2)*cov(2,2) ); // * diagFactor;
-
-  
-  return vec;
+   
+   return vec;
 }
 
 //----------------------------------------------------------------------------------------------------
-//  measure the Kalman uncertainty INCLUDING the cross terms in the covariance matrix. CORRELATION considered!!!
-double TAGpoint::EvalError( TVector3 mom, TMatrixD cov ) {
-
+//!  measure the Kalman uncertainty INCLUDING the cross terms in the covariance matrix. CORRELATION considered!!!
+//!
+//!
+//! \param[in] mom momentum vector
+//! \param[in] cov covariance matrix
+double TAGpoint::EvalError( TVector3 mom, TMatrixD cov )
+{
   // if ( cov.GetNcols() != 3 || cov.GetNrows() != 3 )
 
   array<double,3> partialDer = { mom.x()/sqrt(mom.Mag()), mom.y()/sqrt(mom.Mag()), mom.z()/sqrt(mom.Mag()) };
@@ -179,8 +230,10 @@ double TAGpoint::EvalError( TVector3 mom, TMatrixD cov ) {
   return dp;
 }
 
-//______________________________________________________________________________
-// Clear
+//------------------------------------------+-----------------------------------
+//! Clear event.
+//!
+//! \param[in] opt clear option
 void TAGpoint::Clear(Option_t*)
 {
 }
@@ -192,6 +245,7 @@ void TAGpoint::Clear(Option_t*)
  \brief Global point container. **
  */
 
+//! Class Imp
 ClassImp(TAGntuPoint);
 
 TString TAGntuPoint::fgkBranchName   = "glbpoint.";
@@ -214,6 +268,11 @@ TAGntuPoint::~TAGntuPoint()
 
 //______________________________________________________________________________
 //!  standard constructor
+//!
+//! \param[in] measPos measured position
+//! \param[in] measPosErr measured position error
+//! \param[in] fitPos fitted position
+//! \param[in] fitPosErr fitted position error
 TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr)
 {
    TClonesArray &pixelArray = *fListOfPoints;
@@ -224,6 +283,13 @@ TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 
 
 //______________________________________________________________________________
 //!  standard + momentum constructor
+//!
+//! \param[in] measPos measured position
+//! \param[in] measPosErr measured position error
+//! \param[in] fitPos fitted position
+//! \param[in] fitPosErr fitted position error
+//! \param[in] mom momentum
+//! \param[in] momErr momentum error
 TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 fitPos, TVector3 fitPosErr, TVector3 mom, TVector3 momErr)
 {
 	TClonesArray &pixelArray = *fListOfPoints;
@@ -233,15 +299,18 @@ TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 
 }
 
 //------------------------------------------+-----------------------------------
+//! Get number of points
 Int_t TAGntuPoint::GetPointsN()
 {
 	return fListOfPoints->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-// return a pixel for a given sensor
-TAGpoint* TAGntuPoint::GetPoint(Int_t iPoint) {
-
+//! return a point
+//!
+//! \param[in] iPoint point index
+TAGpoint* TAGntuPoint::GetPoint(Int_t iPoint)
+{
 	if ( iPoint < 0  || iPoint >= GetPointsN() ) {
       Error("GetPoint", "Index %d outside the limit %d", iPoint, GetPointsN() -1);
 	}
@@ -249,7 +318,7 @@ TAGpoint* TAGntuPoint::GetPoint(Int_t iPoint) {
 }
 
 //------------------------------------------+-----------------------------------
-// Setup clones. Crate and initialise the list of pixels
+//! Setup clones. Crate and initialise the list of pixels
 void TAGntuPoint::SetupClones()
 {
    if (fListOfPoints) return;
@@ -257,14 +326,19 @@ void TAGntuPoint::SetupClones()
 }
 
 //------------------------------------------+-----------------------------------
-// Clear event.
+//! Clear event.
+//!
+//! \param[in] opt clear option
 void TAGntuPoint::Clear(Option_t*)
 {
 	fListOfPoints->Clear("C");
 }
 
 /*------------------------------------------+---------------------------------*/
-// ostream insertion.
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAGntuPoint::ToStream(ostream& os, Option_t* option) const
 {
    // for (Int_t i = 0; i < m_vtxGeo->GetSensorsN(); ++i) {

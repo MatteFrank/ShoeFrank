@@ -25,6 +25,7 @@ class TAGionisMaterials;
 class TAVTbaseParGeo : public TAGparTools {
       
 protected:
+   //! pointer for ionisation property
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
    Int_t      fSensorsN;         ///< Number of sensors
    TString    fkDefaultGeoName;  ///< default par geo file name
@@ -89,28 +90,25 @@ public:
    TAVTbaseParGeo();
     virtual ~TAVTbaseParGeo();
 
-   //! Transform point from the global detector reference frame
-   //! to the local sensor reference frame of the detection id
+   // Transform point from the global detector reference frame
+   // to the local sensor reference frame of the detection id
    void            Detector2Sensor(Int_t detID,  Double_t xg, Double_t yg, Double_t zg, 
                                    Double_t& xl, Double_t& yl, Double_t& zl) const;
    
    TVector3        Detector2Sensor(Int_t detID, TVector3& glob) const;
    TVector3        Detector2SensorVect(Int_t detID, TVector3& glob) const;
    
-   //! Transform point from the local reference frame
-   //! of the detection id to the global reference frame 
+   // Transform point from the local reference frame
+   // of the detection id to the global reference frame
    void            Sensor2Detector(Int_t detID,  Double_t xl, Double_t yl, Double_t zl, 
                                 Double_t& xg, Double_t& yg, Double_t& zg) const;
    
    TVector3        Sensor2Detector(Int_t detID, TVector3& loc) const;
    TVector3        Sensor2DetectorVect(Int_t detID, TVector3& loc) const;
    
-   //! Get position sensor
+   // Get position sensor
    TVector3        GetSensorPosition(Int_t iSensor);
    
-   //! Get Sensor idx for a given type and sensor in type
-   Int_t GetSensorIdx(Int_t iSensor, Int_t type);
-
    //! Get number of Sensors
    Int_t GetSensorsN()                 const { return fSensorsN;       }
    //! Get number of Sensors per link
@@ -162,25 +160,25 @@ public:
    //! Set MC flag
    void   SetMcFlag(Bool_t flag = true)      { fFlagMC = flag;         }
    
-   //! Get position from pixel line/column
+   // Get position from pixel line/column
    virtual Float_t GetPositionU(Int_t column)         const;
    virtual Float_t GetPositionV(Int_t line)           const;
    virtual Int_t   GetIndex(Int_t line, Int_t column) const;
    
-   //! Get column/line from x/y position
+   // Get column/line from x/y position
    virtual Int_t   GetColumn(Float_t x) const;
    virtual Int_t   GetLine(Float_t y)   const;
 
-   //! return aary of sensor id's for a given layer
+   // return aary of sensor id's for a given layer
    virtual UChar_t* GetSensorsPerLayer(Int_t iLayer);
 
-   //! Get layer position in Z
+   // Get layer position in Z
    virtual Float_t GetLayerPosZ(Int_t layer);
 
-   //! Read parameters from file
+   // Read parameters from file
    virtual Bool_t   FromFile(const TString& name = "");
 
-   // Read support info if any
+   //! Read support info if any
    virtual void     ReadSupportInfo() { return; }
    
    // Define material

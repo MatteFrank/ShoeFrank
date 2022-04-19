@@ -19,7 +19,7 @@ public:
    TAIRcluster(const TAVTbaseCluster& cluster);
    ~TAIRcluster();
    
-   //! Compute distance from a track
+   // Compute distance from a track
    Float_t            Distance(TAIRtrack *aTrack);
 
    

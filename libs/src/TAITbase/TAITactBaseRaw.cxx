@@ -22,11 +22,17 @@
  \brief Base class to get Ntuplize ITR raw data
  */
 
+//! Class Imp
 ClassImp(TAITactBaseRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw input hit container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pParMap mapping parameter descriptor
 TAITactBaseRaw::TAITactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAVTactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
@@ -42,6 +48,12 @@ TAITactBaseRaw::~TAITactBaseRaw()
 
 
 // --------------------------------------------------------------------------------------
+//! Add pixel to container
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] value pixel value
+//! \param[in] aLine line id
+//! \param[in] aColumn column id
 void TAITactBaseRaw::AddPixel(Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
 {
    // Add a pixel to the vector of pixels
@@ -55,11 +67,9 @@ void TAITactBaseRaw::AddPixel(Int_t iSensor, Int_t value, Int_t aLine, Int_t aCo
    TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
    TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
    
-   Int_t planeId = pParMap->GetPlaneId(iSensor, fDataLink);
-   
-   std::pair<int, int> pair(aLine, aColumn);
-   if (pConfig->GetSensorPar(planeId).DeadPixelMap[pair] == 1) return;
-   
+   Int_t planeId = pParMap->GetPlaneId(iSensor, fDataLink);   
+   if (pConfig->IsDeadPixel(planeId, aLine, aColumn)) return;
+
    TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);

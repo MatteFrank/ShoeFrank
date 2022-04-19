@@ -20,7 +20,7 @@ class TAMCactNtuRegion : public TAGaction {
                                   EVENT_STRUCT* evStr=0);
     virtual         ~TAMCactNtuRegion();
 
-   //! Action
+    // Action
     virtual Bool_t  Action();
 
   private:
