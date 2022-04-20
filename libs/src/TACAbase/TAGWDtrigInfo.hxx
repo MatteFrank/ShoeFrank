@@ -27,6 +27,7 @@ public:
 
   inline Double_t GetWDruntime(){return fWDruntime;}
   inline Double_t GetWDtrigNum(){return fWDtrigNum;}
+  inline Double_t GetMajRate(){return fMajRate;}
 
   
   void AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t> words);
