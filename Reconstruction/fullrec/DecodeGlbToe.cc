@@ -116,13 +116,14 @@ int main (int argc, char *argv[])  {
    if (mth)
       glbRec->EnableM28lusMT();
    
-   if (nSkipEv > 0 && (mc || lrc))
-      glbRec->GoEvent(nSkipEv);
+
    
    TStopwatch watch;
    watch.Start();
     
     glbRec->BeforeEventLoop();
+    if (nSkipEv > 0 && (mc || lrc))
+       glbRec->GoEvent(nSkipEv);
 //    static_cast<TAGactTreeReader*>(gTAGroot->FindAction("evtReader"))->Reset();
 //    gTAGroot->SetEventNumber(100000);
 //    gTAGroot->SetEventNumber(1000000);

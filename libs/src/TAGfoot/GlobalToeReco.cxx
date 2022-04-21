@@ -58,7 +58,7 @@ void GlobalToeReco::OpenFileIn()
 //! Close inout file
 void GlobalToeReco::CloseFileIn()
 {
-  fActEvtReader->Close();
+ // fActEvtReader->Close();
 }
 
 //__________________________________________________________

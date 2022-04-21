@@ -160,6 +160,8 @@ void TAVTactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEv
       // Transformations
       posIn  = fpGeoTrafo->FromGlobalToVTLocal(posIn);
       posOut = fpGeoTrafo->FromGlobalToVTLocal(posOut);
+      posIn[2] = posOut[2] = 0;
+
       posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);
       

@@ -566,6 +566,20 @@ void TAGbaseEventDisplay::UpdateHitInfo(TEveDigitSet* qs, Int_t idx)
          cout << Form("with %3d strips in sensor %d\n", clus->GetStripsN(), clus->GetSensorIdx());
          cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
       }
+      
+   } else if (obj->InheritsFrom("TAMSDpoint")) {
+      TAMSDpoint* point = (TAMSDpoint*)obj;
+      if (point == 0x0) return;
+      TVector3 pos = point->GetPositionG();
+      fInfoView->AddLine( Form("Point # %3d\n", idx) );
+      fInfoView->AddLine( Form("with de: %.1g in sensor %d\n", point->GetEnergyLoss(), point->GetSensorIdx()) );
+      fInfoView->AddLine( Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout << Form("Cluster # %3d\n", idx);
+         cout << Form("with de: %.1g in sensor %d\n", point->GetEnergyLoss(), point->GetSensorIdx());
+         cout << Form("at position: (%.3g %.3g) cm\n", pos.X(), pos.Y());
+      }
 
    } else if (obj->InheritsFrom("TAVTvertex")) {
       TAVTvertex* vtx = (TAVTvertex*)obj;

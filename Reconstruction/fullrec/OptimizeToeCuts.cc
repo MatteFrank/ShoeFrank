@@ -18,9 +18,8 @@ struct gso{ static constexpr uint8_t shift = 1; };
 }
 namespace scoring{
     struct baseline { static constexpr uint8_t shift = 2;};
-    struct mass { static constexpr uint8_t shift = 3;};
-    struct momentum { static constexpr uint8_t shift = 4; };
-struct new_baseline { static constexpr uint8_t shift = 5;};
+    struct momentum { static constexpr uint8_t shift = 3; };
+     struct new_baseline { static constexpr uint8_t shift = 4;};
 }
 
 int main (int argc, char *argv[])  {
@@ -43,7 +42,6 @@ int main (int argc, char *argv[])  {
        if( std::string{argv[i]} == "-score" ){
            auto scoring_function = std::string{argv[++i]};
            if( scoring_function == "baseline"){ opcode |= flag_set<scoring::baseline>{}; }
-           else if( scoring_function == "mass"){ opcode |= flag_set<scoring::mass>{}; }
            else if( scoring_function == "momentum"){ opcode |= flag_set<scoring::momentum>{}; }
            else if( scoring_function == "new_baseline"){ opcode |= flag_set<scoring::new_baseline>{}; }
        }
@@ -116,17 +114,6 @@ int main (int argc, char *argv[])  {
                                                    >( "toeActOptimizer" );
             break;
         }
-        case flag_set< procedure::grfs, scoring::mass >{} : {
-            std::cout << "grfs+mass\n";
-            o_h = new_optimizer<
-                                    config_t,
-                                   mass_scorer,
-                                    global_scan_procedure,
-                                    rough_scan_procedure,
-                                    fine_scan_procedure
-                                                   >( "toeActOptimizer" );
-            break;
-        }
         case flag_set< procedure::grfs, scoring::momentum >{} : {
             std::cout << "grfs+momentum\n";
             o_h = new_optimizer<
@@ -152,15 +139,6 @@ int main (int argc, char *argv[])  {
             o_h = new_optimizer<
                                 config_t,
                                 new_baseline_scorer,
-                                global_scan_procedure_only
-                                               >( "toeActOptimizer" );
-            break;
-        }
-        case flag_set< procedure::gso, scoring::mass >{} : {
-            std::cout << "gso+mass\n";
-            o_h = new_optimizer<
-                                config_t,
-                                mass_scorer,
                                 global_scan_procedure_only
                                                >( "toeActOptimizer" );
             break;
@@ -204,8 +182,9 @@ int main (int argc, char *argv[])  {
         o_h->output_cuts();
         
         gTAGroot->ClearAllData();
-        static_cast<TAGactTreeReader*>(gTAGroot->FindAction("evtReader"))->Reset(event_to_skip);
-        gTAGroot->SetEventNumber(event_to_skip);
+//        static_cast<TAGactTreeReader*>(gTAGroot->FindAction("evtReader"))->Reset(event_to_skip);
+//        gTAGroot->SetEventNumber(event_to_skip);
+        glbRec->GoEvent(event_to_skip);
         glbRec->LoopEvent(nTotEv);
         o_h->call();
         

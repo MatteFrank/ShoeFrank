@@ -55,12 +55,14 @@ Bool_t TASTactNtuHit::Action() {
 
    p_nturaw->SetupClones();
 
-   double timestamp=0, charge_dep=0, de_dep=0; 
+   double timestamp=0, charge_dep=0, de_dep=0, amp_tot=-10000 , ped=-10000; 
    
    if(p_datraw->GetSuperHit()){
      if(FootDebugLevel(1))printf("got super hit\n");
      timestamp = p_datraw->GetSuperHit()->GetTime();
      charge_dep =  p_datraw->GetSuperHit()->GetCharge();
+     amp_tot= p_datraw->GetSuperHit()->GetAmplitude(); 
+     ped= p_datraw->GetSuperHit()->GetPedestal();
      de_dep = -1000.; //calibration missing
 
      p_nturaw->NewHit(charge_dep, de_dep, timestamp);
@@ -74,6 +76,8 @@ Bool_t TASTactNtuHit::Action() {
      if(ValidHistogram()){
        hTime->Fill(timestamp);
        hTotCharge->Fill(charge_dep);
+       hTotAmplitude->Fill(amp_tot);
+       hPedestal->Fill(ped);
        for(int iHit=0;iHit<nHit;iHit++){
 	 Double_t amplitude = p_datraw->GetHit(iHit)->GetAmplitude();
 	 Double_t charge= p_datraw->GetHit(iHit)->GetCharge();
@@ -146,6 +150,16 @@ void TASTactNtuHit::CreateHistogram(){
   sprintf(histoname,"stTotCharge");
   hTotCharge = new TH1F(histoname, histoname, 1100, -0.1, 10.9);
   AddHistogram(hTotCharge);
+
+  sprintf(histoname,"stTotAmplitude"); 
+  hTotAmplitude = new TH1F(histoname, histoname, 100, -0.1, 10.9);
+  AddHistogram(hTotAmplitude);
+
+  sprintf(histoname,"stTotPedestal"); 
+  hPedestal = new TH1F(histoname, histoname, 200, -5, 5);
+  AddHistogram(hPedestal);
+
+
   
   for(int iCh=0;iCh<8;iCh++){
     sprintf(histoname,"stTime_ch%d", iCh);

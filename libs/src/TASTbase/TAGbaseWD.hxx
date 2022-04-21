@@ -59,6 +59,7 @@ public:
    void SetAmplitude(double value)   { fAmplitude=value;       }
    void SetPedestal(double value)    { fPedestal=value;        }
 
+
   ClassDef(TAGbaseWD,4);
     //
   protected:

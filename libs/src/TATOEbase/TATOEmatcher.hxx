@@ -20,6 +20,8 @@
 #include "TATOEdetector.hxx"
 
 #include "TAMCntuPart.hxx"
+#include "TAMCntuRegion.hxx"
+
 #include "TAGparGeo.hxx"
 #include "TAGroot.hxx"
 #include "TAGdataDsc.hxx"
@@ -117,11 +119,12 @@ public:
                                        }
                                        );
         
-//        std::cout << "generate_candidate:\n";
-//        for( auto const& layer : candidate_index_mc ){
-//            for( auto const& index : layer.get_indices() ){ std::cout << index << " "; }
-//            std::cout << "\n";
-//        }
+        action_m.logger_m.add_root_header("generate_candidate_indices");
+        for( auto const& layer : candidate_index_mc ){
+            for( auto const& index : layer.get_indices() ){ action_m.logger_m << index << " "; }
+            action_m.logger_m << "\n";
+        }
+//        action_m.logger_m.freeze();
     }
     
     void submit_reconstructible_track(candidate const& candidate_p)
@@ -180,6 +183,10 @@ public:
         };
         
         
+        auto primary_aftereffect = aftereffect::make_aftereffect(
+                        [this]( int index_p ){ return index_p == 0; },
+                        [](int index_p){ return std::vector<int>{index_p}; }
+                                                                 );
         
         auto origin_aftereffect = aftereffect::make_aftereffect(
                             [this]( int index_p )
@@ -190,7 +197,6 @@ public:
                                     ( track_h->GetInitPos().Z() >= target_limits_m.first ) &&
                                     ( track_h->GetInitPos().Z() <= target_limits_m.second )    :
                                     false;
-                                return false;
                             },
                             [](int index_p){ return std::vector<int>{index_p}; }
                                                             );
@@ -231,25 +237,30 @@ public:
             return real_charge == reconstructed_charge;
         };
         
-        action_m.logger_m.template add_sub_header< details::immutable_tag >("submit_reconstructible_track");
+//        action_m.logger_m.template add_sub_header< details::immutable_tag >("submit_reconstructible_track");
         
         auto track_index_c = find_indices( candidate_p );
+        action_m.logger_m << "candidate_indices: ";
+        for(auto index: track_index_c){ action_m.logger_m << index << " ";}
+        action_m.logger_m << '\n';
 
+        //TODO: what if several indices are available, and one was already selected by another ? -> potential fake degradation of resolution
         //need to clarify whats is going on here
         if( !track_index_c.empty() ){
             auto result_o = aftereffect::first_of( track_index_c.begin(),
                                                    track_index_c.end(),
+                                                   primary_aftereffect,
                                                    origin_aftereffect,
                                                    scattered_aftereffect );
-        
+            
             
             if( result_o.has_value() &&
                 check_reconstructibility( result_o.value() ) ) { //&&
                 //check_charge_reconstruction(candidate_p, result_o.value()) ){
                 
                 action_m.logger_m.add_sub_header("track_registered");
-                auto particle = form_particle(result_o.value());
-                auto reconstructible = reconstructible_track{result_o.value(), std::move(particle)};
+                
+                auto reconstructible = form_reconstructible(result_o.value());
                 output_reconstructible( reconstructible );
                 register_reconstructible_track( candidate_p.data, std::move(reconstructible) );
             }
@@ -257,20 +268,70 @@ public:
     }
     
 private:
-    particle_properties form_particle( std::vector<int> const& index_pc ) const
+    reconstructible_track form_reconstructible( std::vector<int> const& index_pc ) const
     {
-        auto mc_track_h = index_pc.size() > 1 ? data_mhc->GetTrack(index_pc[1]) : data_mhc->GetTrack(index_pc[0]) ;
+        auto mc_track_index = index_pc.size() > 1 ? index_pc[1] : index_pc[0] ;
+        auto * mc_track_h = data_mhc->GetTrack(mc_track_index);
         //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
         
+//        auto * geometric_parameter_h = static_cast<TAGparGeo*>(  gTAGroot->FindParaDsc( TAGparGeo::GetDefParaName() )->Object() );
+        TVector3 momentum;
+//        double start_time{0};
+//        double end_time{0};
+        auto * region_hc{ static_cast<TAMCntuRegion*>( gTAGroot->FindDataDsc( TAMCntuRegion::GetDefParaName() )->Object() ) };
+        for(auto i{0}; i < region_hc->GetRegionsN(); ++ i){
+            auto * region_h = region_hc->GetRegion(i);
+//            std::cout << region_h->GetOldCrossN() << "->" << region_h->GetCrossN() << '\n';
+            if(  region_h->GetID()-1 ==  mc_track_index  &&
+//                 ( region_h->GetOldCrossN() == geometric_parameter_h->GetRegTarget() &&
+//                   region_h->GetCrossN() ==  geometric_parameter_h->GetRegAirPreTW()     )    ) {
+                ( region_h->GetOldCrossN() == 59 &&
+                  region_h->GetCrossN() ==  2   )    ) {
+                momentum = region_h->GetMomentum();
+//                start_time = region_h->GetTime();
+                break;
+            }
+//            if(  region_h->GetID()-1 ==  mc_track_index  &&
+//                 ( region_h->GetOldCrossN() == geometric_parameter_h->GetRegTarget() &&
+//                   region_h->GetCrossN() ==  geometric_parameter_h->GetRegAirPreTW()     )    ) {
+//                ( region_h->GetOldCrossN() == 3 &&
+//                  region_h->GetCrossN() >  241   )    ) {
+//                std::cout << "found tof region\n";
+//                end_time = region_h->GetTime();
+                //break;
+//            }
+        }
         
-        return particle_properties{
-            mc_track_h->GetInitP().Mag() * 1000,
+//        auto momentum = mc_track_h->GetInitP();
+        auto track_slope_x = momentum.X()/momentum.Z();
+        auto track_slope_y =  momentum.Y()/momentum.Z();
+        double beta = mc_track_h->GetTrkLength()/(mc_track_h->GetTof()*1e9) * 1./30;
+//        double tof = end_time - start_time;
+//        std::cout << "times: " << start_time*1e9 << " - " << end_time *1e9 << '\n';
+//        std::cout << "mc_tof: " << tof*1e9 << " - " << mc_track_h->GetTof()*1e9 << '\n';
+//        double beta = mc_track_h->GetTrkLength()/(tof*1e9) * 1./30;
+        double gamma = 1./sqrt(1 - pow(beta, 2));
+        int nucleon_number = std::round(momentum.Mag()*1000./(931.5 * beta * gamma));
+//        int nucleon_number = mc_track_h->GetMass();
+        double mass = momentum.Mag()*1000/(beta * gamma);
+        
+        particle_properties particle{
+            momentum.Mag() * 1000,
             mc_track_h->GetCharge(),
-            static_cast<int>( mc_track_h->GetMass() * 1.1 ), //bad hack to get number of nucleons
-            mc_track_h->GetMass(),
-            mc_track_h->GetInitP().X()/mc_track_h->GetInitP().Z(),
-            mc_track_h->GetInitP().Y()/mc_track_h->GetInitP().Z()
+//            static_cast<int>( mc_track_h->GetMass() * 1.1 ), //bad hack to get number of nucleons
+            nucleon_number,
+           // mc_track_h->GetMass(),
+            mass,
+            track_slope_x,
+            track_slope_y
         };
+        
+        auto theta = acos( momentum.Z()/momentum.Mag() );
+        auto phi = atan2( momentum.Y(), momentum.X() );
+        additional_parameters parameters{ theta, phi, mc_track_h->GetTrkLength(), mc_track_h->GetTof(), beta};
+//        additional_parameters parameters{ theta, phi, mc_track_h->GetTrkLength(), tof, beta};
+        
+        return reconstructible_track{ index_pc, std::move(particle), std::move(parameters)};
     }
     
     void register_reconstructible_track(data_type const* end_point_ph, reconstructible_track&& reconstructible_p)
@@ -319,6 +380,12 @@ public:
             for(auto i{0}; i < full_state.data->GetMcTracksN(); ++i){ result.mc_index_c.push_back( full_state.data->GetMcTrackIdx(i) ); }
             cluster_c.push_back( std::move(result ));
         }
+//        auto track_slope_start_x = full_state_c.front().vector(2,0);
+//        auto track_slope_start_y = full_state_c.front().vector(3,0);
+//        auto track_slope_end_x = full_state_c.back().vector(2,0);
+//        auto track_slope_end_y = full_state_c.back().vector(3,0);
+////        track_slope_parameters track_slope{ track_slope_start_x, track_slope_start_y, abs(track_slope_end_x - track_slope_start_x), abs(track_slope_end_y - track_slope_start_y)  };
+//        vertex_position vertex{ full_state_c.front().vector(0,0), full_state_c.front().vector(1,0)};
         
         //store both chisquare as well -> distribution of mean value then 
         auto particle = particle_properties{
@@ -331,7 +398,8 @@ public:
         action_m.logger_m << "mass: " << particle.mass << '\n';
         action_m.logger_m << "momentum: " << particle.momentum << '\n';
         
-        auto reconstructed = reconstructed_track{ cluster_c, std::move(particle), track_p.total_chisquared, track_p.parameters, track_p.clone, track_p.hypothesis.properties.momentum };
+        
+        auto reconstructed = reconstructed_track{ cluster_c, std::move(particle), track_p.total_chisquared, track_p.parameters, track_p.clone, track_p.length, track_p.tof, track_p.beta, track_p.determination_coefficient_scan };
         register_reconstructed_track( state_c.back().data , std::move(reconstructed) );
     }    
     

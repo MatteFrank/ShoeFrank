@@ -38,7 +38,7 @@
 ClassImp(BaseReco)
 
 Bool_t  BaseReco::fgItrTrackFlag  = false;
-Bool_t  BaseReco::fgMsdTrackFlag  = true;
+Bool_t  BaseReco::fgMsdTrackFlag  = false;
 Bool_t  BaseReco::fSaveMcFlag     = true;
 
 //__________________________________________________________
@@ -300,11 +300,11 @@ void BaseReco::LoopEvent(Int_t nEvents)
 {
   Int_t frequency = 1;
 
-  if (nEvents > 100000)      frequency = 10000;
-  else if (nEvents > 10000)  frequency = 1000;
-  else if (nEvents > 1000)   frequency = 100;
-  else if (nEvents > 100)    frequency = 10;
-  else if (nEvents > 10)     frequency = 1;
+  if (nEvents >= 100000)      frequency = 10000;
+  else if (nEvents >= 10000)  frequency = 1000;
+  else if (nEvents >= 1000)   frequency = 100;
+  else if (nEvents >= 100)    frequency = 10;
+  else if (nEvents >= 10)     frequency = 1;
 
 
   if (fSkipEventsN > 0)

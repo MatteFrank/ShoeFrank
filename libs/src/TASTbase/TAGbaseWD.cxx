@@ -56,11 +56,13 @@ TAGbaseWD::~TAGbaseWD(){
 
 
 
+
+
+
 double TAGbaseWD::ComputeBaseline(TWaveformContainer *w){
 
-  
   return TMath::Mean(w->GetVectA().begin()+2, w->GetVectA().begin()+27);
-
+  
 }
 
 
@@ -69,40 +71,40 @@ double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr){
 
   vector<double> tmp_amp = w->GetVectA();
   vector<double> tmp_time = w->GetVectT();
-  
-  double chargePed = 0.;
-  double prod=1;
-  
+  double prod;
   double deltat=0.; //trapezi
   double b1=0, b2=0;
   double a1, a2;
-  double m,q,t1,t2,thalf;
+  double m,q,t1,t2,thalf,dq;
+  double pedestal=0;
+  double pedestal_tot=0;
+  double mean=0.0008816;
 
-  const int Nsideband=30;
-  
-  for (int j = 5; j<Nsideband; j++){
+  for (int j = 10; j<60; j++){ 
     a1 = tmp_amp.at(j);
     a2 = tmp_amp.at(j+1);
     t1 = tmp_time.at(j);
     t2 = tmp_time.at(j+1);
-    if(a1>fBaseline+thr)continue;
     prod=a1*a2;
     if(prod<0){
       m = (a2-a1)/(t2-t1);
       q = a2-m*t2;
       thalf = -q/m;
-      chargePed+=0.5*a1*(thalf-t1);
-      chargePed+=0.5*a2*(t2-thalf);
+      dq=0.5*a1*(thalf-t1)+0.5*a2*(t2-thalf);
     }else{
-      chargePed += 0.5*(a1+a2)*(t2-t1);
+      dq = 0.5*(a1+a2)*(t2-t1);
+    }
+    if(tmp_amp.at(j)<(mean+thr)){
+      pedestal+=dq;
     }
   }
-  return -chargePed*(tmp_time.size()/(Double_t)Nsideband);
+  pedestal_tot= -(pedestal*tmp_amp.size()/50);
 
+  return pedestal_tot;
 }
 
 
-double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){
+double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){ 
 
   return  -((TMath::MinElement(w->GetVectA().size()-5, &w->GetVectA()[5])) - fBaseline);
 
@@ -113,34 +115,43 @@ double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){
 
 double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr){
 
+
   vector<double> tmp_amp = w->GetVectA();
   vector<double> tmp_time = w->GetVectT();
-  
+
   double charge = 0.;
-  double prod=1;
-  
+  double prod;
+  double chargetot=0;
+
   double deltat=0.; //trapezi
   double b1=0, b2=0;
   double a1, a2;
-  double m,q,t1,t2,thalf;
+  double m,q,t1,t2,thalf, dq;
+  double mean= 0.0008816;
+
   for (int j = 0; j<tmp_amp.size()-1; j++){
     a1 = tmp_amp.at(j);
     a2 = tmp_amp.at(j+1);
     t1 = tmp_time.at(j);
     t2 = tmp_time.at(j+1);
     prod=a1*a2;
-    if(a1>fBaseline+thr)continue;
     if(prod<0){
       m = (a2-a1)/(t2-t1);
       q = a2-m*t2;
       thalf = -q/m;
-      charge+=0.5*a1*(thalf-t1);
-      charge+=0.5*a2*(t2-thalf);
+      dq=0.5*a1*(thalf-t1)+0.5*a2*(t2-thalf);
     }else{
-      charge += 0.5*(a1+a2)*(t2-t1);
+      dq = 0.5*(a1+a2)*(t2-t1);
     }
+
+    if(tmp_amp.at(j)<(mean+thr)){
+      charge+=dq;
+    }
+
   }
-  return -(charge - fPedestal);
+  chargetot=charge; 
+  return -(chargetot + fPedestal); 
+  
 
 }
 

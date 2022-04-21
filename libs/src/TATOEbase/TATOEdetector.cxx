@@ -78,22 +78,25 @@ std::vector< track_list< detector_properties< details::vertex_tag> >::iterable_t
     std::vector< iterable_track > track_c;
     
     std::size_t size{0};
+//    std::cout << "vertex: " << vertex_pch.size() << '\n';
     for( auto const * vertex_h : vertex_pch ){
         size += vertex_h->GetTracksN();
     }
     track_c.reserve( size );
-
     
-    auto fill = [this]( std::vector< iterable_track >& track_pc,
+    auto fill_l = [this]( std::vector< iterable_track >& track_pc,
                     TAVTvertex const * vertex_h )
                 {
-                    for( auto i =0 ; i < vertex_h->GetTracksN() ; ++i ){
-                        track_pc.emplace_back( *this, vertex_h, vertex_h->GetTrack(i) );
-                    }
+//                    std::cout << "vertex_validity: " << vertex_h->GetValidity() << '\n';
+//                    if(vertex_h->GetValidity() > 0){
+                        for( auto i =0 ; i < vertex_h->GetTracksN() ; ++i ){
+                            track_pc.emplace_back( *this, vertex_h, vertex_h->GetTrack(i) );
+                        }
+//                    }
                 };
     
     for( auto const * vertex_h : vertex_pch ){
-        fill(track_c, vertex_h);
+        fill_l(track_c, vertex_h);
     }
     
     return track_c;

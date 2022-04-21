@@ -162,6 +162,7 @@ bool TAMSDactNtuHitMC::Action()
       
       posIn  = fpGeoTrafo->FromGlobalToMSDLocal(posIn);
       posOut = fpGeoTrafo->FromGlobalToMSDLocal(posOut);
+      posIn[2] = posOut[2] = 0;
 
       posIn  = pGeoMap->Detector2Sensor(sensorId, posIn);
       posOut = pGeoMap->Detector2Sensor(sensorId, posOut);

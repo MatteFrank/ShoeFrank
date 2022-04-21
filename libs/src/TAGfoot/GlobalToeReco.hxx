@@ -35,6 +35,9 @@ public:
   
    // Create branch in tree
    void SetTreeBranches();
+    
+    
+    bool GoEvent(Int_t iEvent){ fSkipEventsN = iEvent; fActEvtReader->Reset(iEvent); return true; }
 
    ClassDef(GlobalToeReco, 0); ///< Class def
 };
