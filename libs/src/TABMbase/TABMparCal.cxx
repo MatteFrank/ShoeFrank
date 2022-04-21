@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TABMparCal.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
-  \brief   Implementation of TABMparCal.
+  \file    TABMparCal.cxx
+  \brief   Implementation of the Beam Monitor calibration parameter class
 */
 
 #include <string.h>
@@ -21,8 +20,8 @@ using namespace std;
 //##############################################################################
 
 /*!
-  \class TABMparCal TABMparCal.hxx "TABMparCal.hxx"
-  \brief conf parameters for the beam monitor. **
+  \class TABMparCal TABMparCal.hxx
+  \brief Implementation of the Beam Monitor calibration parameter class
 */
 
 ClassImp(TABMparCal);
@@ -47,7 +46,10 @@ TABMparCal::~TABMparCal(){
   delete fpSTrel;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Read the geometry input file
+//!
+//! \param[in] inputname input file name
 Bool_t TABMparCal::FromFile(const TString& inputname) {
   ifstream infile;
   TString filename;
@@ -136,8 +138,14 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   return kFALSE;
 }
 
-//********************************** T0 ********************************
+//********************************** T0 methods ********************************
 
+//------------------------------------------+-----------------------------------
+//! Print the calculated T0s in a separated output file in a format compatible with the input FromFile method
+//!
+//! \param[in] output_filename output file name where write the T0s
+//! \param[in] input_filename  the input data file name used to evaluate the T0s
+//! \param[in] tot_num_ev  the input data file length
 void TABMparCal::PrintT0s(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
@@ -149,7 +157,10 @@ void TABMparCal::PrintT0s(TString output_filename, TString input_filename, Long6
   return;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Set the T0 vector with another vector
+//!
+//! \param[in] t0 vector to be copied
 void TABMparCal::SetT0s(vector<Float_t> t0s) {
 
   if(t0s.size() == 36) {
@@ -161,7 +172,11 @@ void TABMparCal::SetT0s(vector<Float_t> t0s) {
   return;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Set a T0 value to a specific cell
+//!
+//! \param[in] cha cellid index of the cell [0-35]
+//! \param[in] t0in t0 value
 void TABMparCal::SetT0(Int_t cha, Float_t t0in){
 
 if(cha<36 && cha>=0)
@@ -173,6 +188,9 @@ else {
   return;
 }
 
+//------------------------------------------+-----------------------------------
+//! Print on the terminal all the T0 values
+//!
 void TABMparCal::CoutT0(){
   cout<<"Print BM T0 time:"<<endl;
   for(Int_t i=0;i<fT0Vec.size();i++)
@@ -180,7 +198,13 @@ void TABMparCal::CoutT0(){
   cout<<endl;
 }
 
-//********************************** ADC ********************************
+//********************************** ADC methods ********************************
+
+//------------------------------------------+-----------------------------------
+//! Read the ADC parameters from an external file
+//!
+//! \param[in] inputname input file name
+//! \param[in] p_bmmap pointer to TABMparMap class object
 Bool_t TABMparCal::LoadAdc(TString inputname, TABMparMap *p_bmmap){
   ifstream infile;
   TString filename;
@@ -224,6 +248,12 @@ Bool_t TABMparCal::LoadAdc(TString inputname, TABMparMap *p_bmmap){
   return kFALSE;
 }
 
+//------------------------------------------+-----------------------------------
+//! Print the calculated ADC values in a separated output file in a format compatible with the LoadAdc method
+//!
+//! \param[in] output_filename output file name where write the ADC values
+//! \param[in] input_filename  the input data file name used to evaluate the ADC values
+//! \param[in] tot_num_ev  the input data file length
 void TABMparCal::PrintAdc(TString output_filename, TString input_filename, Long64_t tot_num_ev){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::out);
@@ -235,6 +265,9 @@ void TABMparCal::PrintAdc(TString output_filename, TString input_filename, Long6
   return;
 }
 
+//------------------------------------------+-----------------------------------
+//! Print on the terminal all the ADC values
+//!
 void TABMparCal::CoutAdc(){
   cout<<"Print BM ADC pedestals:"<<endl;
   for(Int_t i=0;i<fAdcPedVec.size();i++)
@@ -242,6 +275,10 @@ void TABMparCal::CoutAdc(){
   cout<<endl;
 }
 
+//------------------------------------------+-----------------------------------
+//! Reset the ADC values
+//!
+//! \param[in] size number of channels read by the adc
 void TABMparCal::ResetAdc(Int_t size){
   fAdcPedVec.clear();
   if(size<=0)
@@ -250,8 +287,12 @@ void TABMparCal::ResetAdc(Int_t size){
   return;
 };
 
-//********************************** STREL AND RESOLUTION ********************************
+//********************************** Space time relations and resolution methods ********************************
 
+//------------------------------------------+-----------------------------------
+//! Print the calculated space time relation values in a separated output file in a format compatible with the FromFile method
+//!
+//! \param[in] output_filename output file name in which the Space time relations wil be written
 void TABMparCal::PrintResoStrel(TString output_filename){
   ofstream outfile;
   outfile.open(output_filename.Data(),ios::app);
@@ -269,17 +310,27 @@ void TABMparCal::PrintResoStrel(TString output_filename){
   return;
 }
 
-
+//------------------------------------------+-----------------------------------
+//! Reset the Space Time relations to the default
+//!
 void TABMparCal::ResetStrelFunc(){
   delete fpSTrel;
   fpSTrel=new TF1("McStrel","0.0096625*x -6.461555e-05*x*x + 2.366075e-07*x*x*x -3.0815525e-10*x*x*x*x", 0., 330.);
 }
 
+//------------------------------------------+-----------------------------------
+//! Set the resolution function
+//!
+//! \param[in] inreso input resolution function
 void TABMparCal::SetResoFunc(TF1* inreso){
   delete fpResoFunc;
   fpResoFunc=(TF1*)(inreso->Clone("bmResoFunc"));
 }
 
+//------------------------------------------+-----------------------------------
+//! Set the space time relation function
+//!
+//! \param[in] inreso input resolution function
 void TABMparCal::SetSTrelFunc(TF1* instrel){
   delete fpSTrel;
   fpSTrel=(TF1*)(instrel->Clone("bmParSTrel"));
@@ -287,7 +338,6 @@ void TABMparCal::SetSTrelFunc(TF1* instrel){
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-
 void TABMparCal::ToStream(ostream& os, Option_t*) const
 {
   os << "TABMparCal " << GetName() << endl;
@@ -296,7 +346,6 @@ void TABMparCal::ToStream(ostream& os, Option_t*) const
 
 //------------------------------------------+-----------------------------------
 //! Clear geometry info.
-
 void TABMparCal::Clear(Option_t*)
 {
 

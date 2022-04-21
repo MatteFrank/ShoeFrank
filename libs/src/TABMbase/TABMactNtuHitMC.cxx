@@ -1,26 +1,27 @@
 /*!
-  \file
-  \version $Id: TABMactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
-  \brief   Implementation of TABMactNtuHitMC.
+  \file   TABMactNtuHitMC.hxx
+  \brief   Declaration of TABMactNtuHitMC, this class converts the FLUKA MC input into a BM hit (TABMntuHit)
 */
+/*------------------------------------------+---------------------------------*/
+
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuPart.hxx"
 #include "TAMCflukaParser.hxx"
-
 #include "TABMactNtuHitMC.hxx"
 
 /*!
+  \file   TABMactNtuHitMC.hxx
   \class TABMactNtuHitMC TABMactNtuHitMC.hxx "TABMactNtuHitMC.hxx"
-  \brief NTuplizer for BM raw hits. **
+  \brief   Declaration of TABMactNtuHitMC, this class converts the FLUKA MC input into a BM hit (TABMntuHit)
 */
+/*------------------------------------------+---------------------------------*/
 
 
 ClassImp(TABMactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
                                  TAGdataDsc* dscntuMC,
                                  TAGdataDsc* dscntuEve,
@@ -62,6 +63,8 @@ TABMactNtuHitMC::~TABMactNtuHitMC()
 }
 
 //------------------------------------------+-----------------------------------
+//! Initialize the digitizer
+
 void TABMactNtuHitMC::CreateDigitizer()
 {
    TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuRaw->Object();
@@ -74,6 +77,7 @@ void TABMactNtuHitMC::CreateDigitizer()
 
 
 //------------------------------------------+-----------------------------------
+//! Create the histos
 void TABMactNtuHitMC::CreateHistogram(){
   DeleteHistogram();
 
@@ -207,6 +211,7 @@ Bool_t TABMactNtuHitMC::Action()
 }
 
 //------------------------------------------+-----------------------------------
+//! Create fake noisy hits
 void TABMactNtuHitMC::CreateFakeHits()
 {
   Int_t nfake=(Int_t)fabs(gRandom->Gaus(0,4));

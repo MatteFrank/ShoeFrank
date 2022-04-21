@@ -1,7 +1,6 @@
 /*!
-  \file
-  \version $Id: TABMntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
-  \brief   Implementation of TABMntuHit.
+  \file TABMntuHit.cxx
+  \brief   Declaration of TABMntuHit, the class for the BM hits
 */
 
 #include "TABMntuHit.hxx"
@@ -9,8 +8,8 @@
 using namespace std;
 
 /*!
-  \class TABMntuHit TABMntuHit.hxx "TABMntuHit.hxx"
-  \brief Mapping and Geometry parameters for Tof wall. **
+  \file TABMntuHit.cxx
+  \brief   Declaration of TABMntuHit, the class for the BM hits
 */
 
 
@@ -45,7 +44,14 @@ TABMntuHit::~TABMntuHit() {
 
 //______________________________________________________________________________
 //! new hit
-
+//!
+//! \param[in] id  cellid [0-35]
+//! \param[in] il  layer [0-5]
+//! \param[in] iv  view [0-1]
+//! \param[in] ic  cell [0-2]
+//! \param[in] r   drift distance in cm
+//! \param[in] t   drift time in ns
+//! \param[in] s   drift distance resolution in cm
 TABMhit* TABMntuHit::NewHit(Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t, Double_t s)
 {
   TClonesArray &pixelArray = *fListOfHits;
@@ -115,11 +121,16 @@ void TABMntuHit::ToStream(ostream& os, Option_t* option) const
   return;
 }
 
+/*------------------------------------------+---------------------------------*/
+//! clear the fCellOccMap map
 void TABMntuHit::ClearCellOccupy(){
   fCellOccMap.clear();
   return;
 }
 
+/*------------------------------------------+---------------------------------*/
+//! Get the number of hit registered in a given cell (pos) for the current event
+//! \param[in] pos cellid index [0-35]
 Int_t TABMntuHit::GetCellOccupy(Int_t pos){
    std::map<Int_t,Int_t>::iterator it=fCellOccMap.find(pos);
   if(it==fCellOccMap.end())
@@ -127,6 +138,8 @@ Int_t TABMntuHit::GetCellOccupy(Int_t pos){
   return it->second;
 }
 
+/*------------------------------------------+---------------------------------*/
+//! print on the terminal the whole BM occupancy for the current event
 void TABMntuHit::PrintCellOccupy(){
 
   cout<<"TABMactNtuHit::fCellOccMap: print fCellOccMap"<<endl;
@@ -137,6 +150,8 @@ void TABMntuHit::PrintCellOccupy(){
 return;
 }
 
+/*------------------------------------------+---------------------------------*/
+//! Evaluate the BM efficiency with the method described in Paoloni et al. (2012)
 void TABMntuHit::Efficiency_paoloni(Int_t pivot[], Int_t probe[]){
 
   //yzview
@@ -214,6 +229,8 @@ return;
 }
 
 
+//------------------------------------------+-----------------------------------
+//! access \a i 'th hit
 TABMhit* TABMntuHit::GetHit(Int_t i)
 {
    return (TABMhit*) ((*fListOfHits)[i]);

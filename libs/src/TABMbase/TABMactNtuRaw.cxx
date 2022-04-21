@@ -1,15 +1,14 @@
 /*!
-  \file
-  \version $Id: TABMactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
-  \brief   Implementation of TABMactNtuRaw.
+  \file   TABMactNtuRaw.cxx
+  \brief   Declaration of TABMactNtuRaw, the class that convert the FOOT DAQ input to create a BM raw hit object (TABMntuRaw)
 */
 
 
 #include "TABMactNtuRaw.hxx"
 
 /*!
-  \class TABMactNtuRaw TABMactNtuRaw.hxx "TABMactNtuRaw.hxx"
-  \brief Get Beam Monitor raw data from DAQ. **
+\file   TABMactNtuRaw.cxx
+\brief   Declaration of TABMactNtuRaw, the class that convert the FOOT DAQ input to create a BM raw hit object (TABMntuRaw)
 */
 
 ClassImp(TABMactNtuRaw);
@@ -50,7 +49,7 @@ TABMactNtuRaw::~TABMactNtuRaw()
 }
 
 //------------------------------------------+-----------------------------------
-
+//! Create the histograms
 void TABMactNtuRaw::CreateHistogram()
 {
   DeleteHistogram();
@@ -165,7 +164,10 @@ Bool_t TABMactNtuRaw::Action() {
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
+//! Decode the BM hits from the FOOT DAQ and the start counter trigger time
+//!
+//! \param[in] evt FOOT DAQ TDCevent object with the tdc measurements
+//! \param[in] sttrigger trigger time provided by the start counter
 Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
 
    TABMntuRaw*    p_datraw = (TABMntuRaw*)    fpDatRaw->Object();
@@ -278,6 +280,8 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
    return kTRUE;
 }
 
+//------------------------------------------+-----------------------------------
+//! Evaluate the T0s of each channel from the histograms created in CreateHistogram() and print the results on the terminal
 void TABMactNtuRaw::EvaluateT0time(){
   int  start_bin, peak_bin, cellid;
   TABMparCal*    p_parcal = (TABMparCal*)    fpParCal->Object();

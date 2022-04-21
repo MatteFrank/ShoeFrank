@@ -55,7 +55,7 @@ public:
   Int_t Close();
   Int_t UpdateFile();
   inline void SetMaxFiles(Int_t value){fMaxFiles=value;}
-  
+  inline void SetInitName(TString name){fInitName = name;}  
   
 private:
   TAGdataDsc*     fpDatDaq;		    // input data dsc
@@ -80,6 +80,7 @@ private:
   Bool_t WaveformsTimeCalibration();
   Bool_t CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
   void Clear();
+
 
   
   vector<double> ADC2Volt(vector<int>, double);

@@ -67,11 +67,9 @@ void TAITactBaseRaw::AddPixel(Int_t iSensor, Int_t value, Int_t aLine, Int_t aCo
    TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
    TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
    
-   Int_t planeId = pParMap->GetPlaneId(iSensor, fDataLink);
-   
-   std::pair<int, int> pair(aLine, aColumn);
-   if (pConfig->GetSensorPar(planeId).DeadPixelMap[pair] == 1) return;
-   
+   Int_t planeId = pParMap->GetPlaneId(iSensor, fDataLink);   
+   if (pConfig->IsDeadPixel(planeId, aLine, aColumn)) return;
+
    TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
