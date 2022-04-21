@@ -90,7 +90,7 @@ int TAGFselector::Categorize( ) {
 	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Backtracking")
 		Categorize_Backtracking();
 	else
-		cout <<"ERROR :: TAGFselector::MakeFit  -->	 TAGrecoManager::GetPar()->PreselectStrategy() not defined" << endl, exit(0);
+		cout <<"ERROR :: TAGFselector::Categorize  -->	 TAGrecoManager::GetPar()->PreselectStrategy() not defined" << endl, exit(0);
 
 	return 0;
 }
@@ -313,7 +313,7 @@ int TAGFselector::Categorize_TruthMC( )
 				//Set a unique ID for the particle that will be used in the map of Genfit tracks to fit
 				outName += Form("_%d_%d", int(round(mass/m_AMU)), *itTrackMC);
 
-				if ( m_debug > 0 )		cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<< *itTrackMC << "  charge="<<charge << "  mass="<<mass<< "\n";
+				if ( m_debug > 0 ) cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<< *itTrackMC << "  charge="<<charge << "  mass="<<mass<< "\n";
 
 				if(m_trackCategoryMap->find(outName) == m_trackCategoryMap->end())
 				{
@@ -844,7 +844,7 @@ void TAGFselector::CategorizeMSD()	{
 
 		
 		for ( int MSDnPlane = minMSDdetPlane; MSDnPlane <= maxMSDdetPlane; MSDnPlane++ ) {
-			TVector3 guessOnMSD = ExtrapolateToOuterTracker( itTrack->second, MSDnPlane ); //RZ: Local or Global?!?!?!? CHECK!!!!!!!!
+			TVector3 guessOnMSD = ExtrapolateToOuterTracker( itTrack->second, MSDnPlane ); //RZ: NOW LOCAL COORDS!!
 			// TVector3 guessOnMSD = m_GeoTrafo->FromMSDLocalToGlobal( ExtrapolateToOuterTracker( itTrack->second, MSDnPlane) );
 			if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
 				continue;
@@ -1265,7 +1265,7 @@ void TAGFselector::BackTracklets()
 				{
 					TVector3 guessOnMSD = m_GeoTrafo->FromGlobalToMSDLocal( pos + mom*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z()));
 					
-					if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
+					if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) ) //RZ: should be ok since X,Y local coordinates of MSD are currently in the detector fram
 						continue;
 
 					int indexOfMinY = -1;
