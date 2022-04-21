@@ -608,6 +608,7 @@ void TAGFselector::CategorizeIT()	{
 	// ExtrapFromVTXtoIT 
 	TVector3 tmpExtrap, tmpVTX;
 	TAGgeoTrafo* m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+	TAITparGeo* m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
 
 	// same index if VTX_tracklets (for one vertex..)
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
@@ -645,14 +646,25 @@ void TAGFselector::CategorizeIT()	{
 
 			// select a matching plane -> CHECK!!!!!!!!!!!!!!!
 			// RZ: there is a potentially bad issue here with the bending plane!!! the intersection might be in another sensor since it is done with a linear extrapolation. Would it be better to only check the y? how much do we risk of f-ing this up?
-			
 
+			Int_t sensorId;
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); iPlane++ ) {
 				// cout << "Found plane::" << *iPlane << " at z::" << tmpITz << "\n";
-
+				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
+				{
+					Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", *iPlane);
+					throw -1;
+				}
 				TVector3 guessOnPlaneIT = m_GeoTrafo->FromGlobalToITLocal( tmpExtrap ); //RZ: IsInActive controls local or global variables????
-				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( tmpExtrap.Y() ) )	
+				guessOnPlaneIT = m_IT_geo->Detector2Sensor(sensorId, guessOnPlaneIT); //Move to local coords
+				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( guessOnPlaneIT.Y() ) )
+				{
+					if(m_debug > 1) cout << "Extrapolation to IT not in active region of sensor " << sensorId << endl;
 					continue;
+				}
+
+				if(m_debug > 1)
+					cout << "Extrapolation to IT is in active area of sensor " << sensorId << endl;
 
 	// cout << "TAGFselector::CategorizeIT()     check\n";
 				int sensorMatch = (*iPlane);

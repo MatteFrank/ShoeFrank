@@ -162,12 +162,12 @@ Bool_t TAGactKFitter::Action()	{
 		}
 	}
 
-
 	m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, m_measParticleMC_collection);
 
 	if ( m_selector->Categorize() >= 0 ) {
 
 		if ( TAGrecoManager::GetPar()->IsMC() ) {
+			//RZ: Check selection efficiency counts --> better define the "visible" particles, right now is not really compatible with TrueParticle selection
 			FillGenCounter( m_selector->CountParticleGenaratedAndVisible() );
 		}
 
@@ -195,7 +195,6 @@ Bool_t TAGactKFitter::Action()	{
 
 	// m_mapTrack.clear();
 
-	// fpGlobTrackRepoGenFit->SetBit(kValid);
 	fpGlobTrackRepo->SetBit(kValid);
 	return true;
 
@@ -680,10 +679,14 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		if(m_debug > 0) cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << "\n";
 
 		// check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
+		//RZ: see if this is needed. TrueParticle could work even without this check, but other algorithms might benefit from this check. Although I am quite sure tracks without a TW point are cut anyways in other parts of the code.....
 		if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )  {
 			int MeasId = trackIt->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
 			if( m_sensorIDmap->GetFitPlaneIDFromMeasID(MeasId) != m_sensorIDmap->GetFitPlaneTW())
-			continue;
+			{
+				Warning("MakeFit()", "Track has no measurement in the TW! Skipping...");
+				continue;
+			}
 			
 			if ( !UpdatePDG::GetPDG()->IsParticleDefined( tok.at(0) + tok.at(1) ) )
 			{
@@ -809,9 +812,9 @@ int TAGactKFitter::MakeFit( long evNum ) {
 				RecordTrackInfo( fitTrack, newTrackName );
 				if(m_debug > 0) cout << "DONE\n";
 
+				m_vectorConvergedTrack.push_back( fitTrack );
 			}
 		}
-		m_vectorConvergedTrack.push_back( fitTrack );
 		
 		// // fill a vector with the categories fitted at least onece
 		// if ( find( m_categoryFitted.begin(), m_categoryFitted.end(), (*hitSample).first ) == m_categoryFitted.end() )
@@ -1071,12 +1074,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//Energy in GeV
 	shoeOutTrack->SetFitEnergy( energyAtTgt);
 	shoeOutTrack->SetFitEnergyLoss( energyAtTgt - energyOutTw );
-
-	/*RZ: Quantities to
-	1) CHECK:
-	2) ADD: fCalEnergy
-	3) DISCUSS: fMcTrackMap, polynomial_fit_parameters, fTgtDir/Pos/Mom (ERROR!!!!!!!!!!!!!)
-	*/
 
 	//MC additional variables if running on simulations
 	int trackMC_id = -1;
