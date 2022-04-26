@@ -55,7 +55,10 @@ public:
   Int_t Close();
   Int_t UpdateFile();
   inline void SetMaxFiles(Int_t value){fMaxFiles=value;}
-  inline void SetInitName(TString name){fInitName = name;}  
+  inline void SetInitName(TString name){
+    fInitName = name;
+    fCurrName = name;
+  }  
   
 private:
   TAGdataDsc*     fpDatDaq;		    // input data dsc
@@ -67,6 +70,7 @@ private:
   TAGdataDsc*     fpWDtrigInfo;		    // output data dsc
 
   TString         fInitName;
+  TString         fCurrName;
   FILE            *fWDstream;
   Int_t           fEventsN;
   Bool_t          fgStdAloneFlag;

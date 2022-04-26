@@ -84,12 +84,10 @@ Int_t TAGactWDreader::Open(const TString &fname){
   fWDstream = fopen(fname.Data(),"r");
   if(fWDstream==NULL){
     cout<<"ERROR in TAGactWDreader::cannot open the file="<<fname.Data()<<endl;
-  return kFALSE;
   }else{
     cout<<"TAGactWDReader::file "<<fname.Data()<<" opened"<<endl;
   }
 
-  fProcFiles++;
   return kTRUE;
   
 }
@@ -98,16 +96,20 @@ Int_t TAGactWDreader::Open(const TString &fname){
 
 Int_t TAGactWDreader::UpdateFile(){
   
-  
-  Int_t pos1 = fInitName.Last('_');
-  Int_t pos2 = fInitName.Last('.');
-  TString baseName = fInitName(0, pos1+1);
-  TString ext = fInitName(pos2, fInitName.Length()-pos2);
-  TString slocRunNum = fInitName(pos1+1, pos2-pos1-1);
-  Int_t locRunNum = atoi(slocRunNum.Data());
-  TString currFileName = baseName+to_string(locRunNum+fProcFiles)+ext;
-  
-  Open(currFileName);
+  do{
+    Int_t pos1 = fInitName.Last('_');
+    Int_t pos2 = fInitName.Last('.');
+    TString baseName = fInitName(0, pos1+1);
+    TString ext = fInitName(pos2, fInitName.Length()-pos2);
+    TString slocRunNum = fInitName(pos1+1, pos2-pos1-1);
+    Int_t locRunNum = atoi(slocRunNum.Data());
+    fCurrName = baseName+to_string(locRunNum+fProcFiles)+ext;
+    fProcFiles++;
+    if(fProcFiles>=fMaxFiles){
+      return kFALSE;
+    }
+  }while(access(fCurrName.Data(), F_OK )!=0);
+
 
   return kTRUE;
   
@@ -117,8 +119,9 @@ Int_t TAGactWDreader::UpdateFile(){
 
 Int_t TAGactWDreader::Close(){
 
-  if(fgStdAloneFlag)
+  if(fgStdAloneFlag && fWDstream!=NULL)
     fclose(fWDstream);
+  fWDstream=NULL;
 
   return kTRUE;
 }
@@ -181,15 +184,17 @@ Bool_t TAGactWDreader::Action() {
       
    if(fgStdAloneFlag){
      if(eof){
-       if(fProcFiles<fMaxFiles){
-	 Close();
-	 UpdateFile();
+       Close();
+       Bool_t status = UpdateFile();
+       if(status){
+	 Open(fCurrName);
 	 return kTRUE;
        }else{
 	 return kFALSE;
        }
      }
    }
+       
    
    
 
