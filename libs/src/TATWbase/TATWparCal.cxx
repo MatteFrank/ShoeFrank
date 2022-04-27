@@ -10,7 +10,7 @@
 
 #include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
-
+#include <TCanvas.h>
 #include "TATWparCal.hxx"
 
 
@@ -33,6 +33,7 @@ TATWparCal::TATWparCal()
     f_isBarCalibration(false),
     f_isElossTuningON(false),
     fZraw(-1),
+    fHisRate(NULL),
     f_dist_min_Z(std::numeric_limits<float>::max()) //inf
 {
 
@@ -147,6 +148,33 @@ Bool_t TATWparCal::FromCalibFile(const TString& name, Bool_t isTof, Bool_t barCa
   return kFALSE;
     
 }  
+
+
+
+
+//------------------------------------------+-----------------------------------
+Bool_t TATWparCal::FromRateFile(const TString& name, Int_t initRun, Int_t endRun)
+{
+
+  TString name_exp = name;
+  gSystem->ExpandPathName(name_exp);
+  
+  TFile *f = new TFile(name_exp.Data());
+  if(f->IsOpen()){
+    Info("FromRateFile()", "Open file %s to import rate distribution", name_exp.Data());
+    TH2D *hisRate = (TH2D*)f->Get("Rate_vs_runnumber_C_C_200_MeV");
+    if(hisRate!=NULL)fHisRate = (TH1D*)(hisRate->ProjectionY("hisRate",initRun, endRun));
+    fHisRate->SetDirectory(0);
+    delete f;
+  }else{
+    Info("FromRateFile()", "Cannot open file %s!!!!!, rate distribution not set", name_exp.Data());
+  }
+  
+
+  return kFALSE;
+    
+}
+
 
 //------------------------------------------+-----------------------------------
 Bool_t TATWparCal::FromElossTuningFile(const TString& name)

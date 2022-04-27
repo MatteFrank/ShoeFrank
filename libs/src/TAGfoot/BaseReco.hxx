@@ -172,6 +172,11 @@ public:
    //! Set run number
    void SetRunNumber(Int_t run)                { fRunNumber = run; }
 
+  void SetRateRuns(Int_t run1, Int_t run2){
+    fRateInitRun=run1;
+    fRateEndRun=run2;
+  }
+
    //! Enable tree
    void EnableTree()           { fFlagTree = true;        }
    //! Disable tree
@@ -211,6 +216,11 @@ public:
    void EnableTWZmatch()       { fFlagZmatch_TW = true;   }
    //! Disable Z reconstruction matching for TW
    void DisableTWZmatch()      { fFlagZmatch_TW = false;  }
+
+   //! Enable tw eloss smearing due to rate
+   void EnableTWRateSmearMC()       { fFlagRateSmear_TW = true;   }
+   //! DIsable tw eloss smearing due to rate
+   void DisableTWRateSmearMC()      { fFlagRateSmear_TW = false;  }
    
    //! Enable Reconstruction cutter for TOE
    void EnableRecCutter()      { fFlagRecCutter = true;   }
@@ -483,13 +493,18 @@ protected:
    Bool_t                fFlagZtrueMC;      ///< Z true MC flag
    Bool_t                fFlagZrecPUoff;    ///< Z rec TW PU off flag
    Bool_t                fFlagZmatch_TW;    ///< TW Z match
+   Bool_t                fFlagRateSmear_TW; ///< TW eloss emaring due to rate
 
    Bool_t                fFlagMC;           ///< MC flag
    Bool_t                fReadL0Hits;       ///< read back hits
    Bool_t                fM28ClusMtFlag;    ///< flag for multi-threading clustering
    Bool_t                fFlagRecCutter;    ///< cutter flag for TOE Glb reco
    Int_t                 fSkipEventsN;      ///< number of events to skip
-   
+
+   Int_t                 fRateInitRun;      //number of run for rate info importing (MC)
+   Int_t                 fRateEndRun;       //number of run for rate info importing (MC)
+
+  
  protected:
    // Create reconstruction action for BM
    void CreateRecActionBm();

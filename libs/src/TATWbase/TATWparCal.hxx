@@ -13,6 +13,9 @@
 #include "TObject.h"
 #include "TArrayF.h"
 #include "TF1.h"
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TFile.h"
 
 #include "TDatabasePDG.h"
 #include "TParticlePDG.h"
@@ -88,10 +91,14 @@ private:
   Int_t      SelectProtonsFromNeutrons(float distance_Z1);
   void       ComputeBBDistance(double edep, double tof, int tw_layer);
 
+  
   int     fZraw;
   float   f_dist_min_Z;
 
   vector<float> f_dist_Z;
+
+ 
+  
   
 public:
 
@@ -103,6 +110,7 @@ public:
   //
   //! Read from file
   Bool_t          FromCalibFile(const TString& name = "", Bool_t isTofcal = false, Bool_t Corr = false);
+  Bool_t          FromRateFile(const TString& name = "", Int_t initRun=-1, Int_t endRun=-1);
   Bool_t          FromElossTuningFile(const TString& name = "");
   Bool_t          FromFileZID(const TString& name = "", Int_t zbeam=-1);
   Bool_t          FromBarStatusFile(const TString& name = "");
@@ -116,7 +124,10 @@ public:
   Int_t           GetBisecChargeZ() const {return fZraw;}
   Float_t         GetDistBB(int ichg) const { return f_dist_Z[ichg-1];}
   Double_t        GetElossThreshold(Int_t ilayer, Int_t ibar);
+  TH1D*           GetRate(){ return fHisRate;}
+
   //
+  
   //! Set Methods
   void            SetBisecChargeZ(int chg) {fZraw = chg;}
   void            SetDistBB(int ichg, float dist) {f_dist_Z[ichg-1] = dist;}
@@ -137,6 +148,8 @@ public:
 // public:
 //   static const Char_t* GetDefaultCalName()      { return fgkDefaultCalName.Data(); }
 
+   TH1D *fHisRate;
+  
   ClassDef(TATWparCal,1)
 };
 

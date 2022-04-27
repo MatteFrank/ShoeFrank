@@ -12,7 +12,7 @@
 
 #include "TAMCntuHit.hxx"
 #include "TAMCntuPart.hxx"
-
+#include <TCanvas.h>
 #include "TATWdigitizer.hxx"
 
 /*!
@@ -34,6 +34,7 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
                                  TAGparaDsc* p_parGeoG,
                                  Bool_t isZmc,
 				 Bool_t isZrecPUoff,
+				 Bool_t isRateSmear,
                                  EVENT_STRUCT* evStr)
  : TAGaction(name, "TATWactNtuHitMC - NTuplize ToF raw data"),
    fpNtuMC(p_ntuMC),
@@ -46,6 +47,7 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    fCntWrong(0),
    fIsZtrueMC(isZmc),
    fIsZrecPUoff(isZrecPUoff),
+   fIsRateSmear(isRateSmear),
    fEventStruct(evStr)
 {
    if (fEventStruct == 0x0) {
@@ -56,6 +58,11 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    AddDataOut(p_hitraw, "TATWntuHit");
    AddPara(p_parcal,"TATWparCal");
    AddPara(p_parGeoG,"TAGparGeo");
+
+
+   f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   f_pargeo = (TAGparGeo*)fParGeoG->Object();
+   f_parcal = (TATWparCal*)fpCalPar->Object();
    
    CreateDigitizer();
    
@@ -68,17 +75,18 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
      fDigitizer->SetPileUpOff();
      Warning("TATWactNtuHitMC"," In FootGlobal.par EnableTWnoPU: y --> TW with Zrec and Pile Up Off...if is not the case set EnableTWnoPU: n");
   }
-
-   f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   if(fIsRateSmear){
+     fDigitizer->SetRateSmearing();
+   }
    
-   f_pargeo = (TAGparGeo*)fParGeoG->Object();
+
    
    fZbeam = f_pargeo->GetBeamPar().AtomicNumber;
    
    fMapPU.clear();
    fVecPuOff.clear();
    
-   f_parcal = (TATWparCal*)fpCalPar->Object();  
+   
 }
 
 //------------------------------------------+-----------------------------------
@@ -162,6 +170,10 @@ void TATWactNtuHitMC::CreateHistogram()
       AddHistogram(fpHisDistZ[iZ-1]);
       
    }
+
+   if(fDigitizer->GetRate()!=NULL)fpHisRate = (TH1D*)(f_parcal->GetRate()->Clone("hisRate"));
+   AddHistogram(fpHisRate);
+
    
    SetValidHistogram(kTRUE);
 }
@@ -172,7 +184,7 @@ void TATWactNtuHitMC::CreateDigitizer()
 {
    TATWntuHit* pNtuRaw = (TATWntuHit*) fpNtuRaw->Object();
    
-   fDigitizer = new TATWdigitizer(pNtuRaw);
+   fDigitizer = new TATWdigitizer(pNtuRaw, fParGeoG , fpCalPar);
 }
 
 //------------------------------------------+-----------------------------------
@@ -333,7 +345,8 @@ bool TATWactNtuHitMC::Action() {
 	cout<<"after ... trID::"<<trackId<<" Z::"<<Z<<" barID::"<<barId<<endl;
       
       barId+=TATWparGeo::GetLayerOffset()*layer;  //offset for the horizontal bars Id
-      
+
+
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, timeST, time, barId, Z);
       
       TATWhit* hit = fDigitizer->GetCurrentHit();

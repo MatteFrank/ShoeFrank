@@ -18,7 +18,9 @@ int main (int argc, char *argv[])  {
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    Int_t nSkipEv = 0;
-
+   Int_t rateInitRun=-1;
+   Int_t rateEndRun=-1;
+   
    for (int i = 0; i < argc; i++){
       if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);   }   // Root file name for output
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);   }   // Root file in input
@@ -26,7 +28,8 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]);  }   // Number of events to be analized
       if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }   // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);   }   // Run Number
-      
+      if(strcmp(argv[i],"-rateInitRun") == 0)   { rateInitRun = atoi(argv[++i]);   }   // Run Number for rate info importing
+      if(strcmp(argv[i],"-rateEndRun") == 0)   { rateEndRun = atoi(argv[++i]);   }   // Run Number for rate info importing
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
       if(strcmp(argv[i],"-nomc") == 0)  { nomc = true;   } // disbale MC info saving in output tree
 
@@ -67,6 +70,10 @@ int main (int argc, char *argv[])  {
    Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
    Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
+   Bool_t TWRateSmear = TAGrecoManager::GetPar()->IsTWRateSmearMC();
+
+
+   cout << "TWRateSmear::" << TWRateSmear << endl;
    
    if(!zmc && zrec && !out.IsNull()) {
      Int_t pos_out = out.Last('.');
@@ -108,6 +115,11 @@ int main (int argc, char *argv[])  {
    
    if(zmatch)
      locRec->EnableTWZmatch();
+
+   if(TWRateSmear){
+     locRec->EnableTWRateSmearMC();
+     locRec->SetRateRuns(rateInitRun, rateEndRun);
+   }
    
    TStopwatch watch;
    watch.Start();

@@ -4,7 +4,8 @@
 #include <map>
 
 #include "TAGbaseDigitizer.hxx"
-
+#include "TATWparCal.hxx"
+#include "TATWparGeo.hxx"
 #include "TATWntuHit.hxx"
 
 /*!
@@ -25,7 +26,7 @@ class TF1;
 class TATWdigitizer : public TAGbaseDigitizer {
    
 public:
-   TATWdigitizer(TATWntuHit* pNtuRaw);
+  TATWdigitizer(TATWntuHit* pNtuRaw, TAGparaDsc* pParGeo, TAGparaDsc* pParCal);
    ~TATWdigitizer();
    
    void           SetFunctions();
@@ -36,10 +37,14 @@ public:
    Float_t        GetResCharge(Float_t energy);
    Float_t        GetResEnergyExp(Float_t energy);
    Float_t        GetResEnergyMC(Float_t energy);
+   Float_t        GetElossShiftRate();
 
+   TH1D*          GetRate() {return fHisRate;}
+  
    Double_t       ResLinear(Double_t* x, Double_t* par);
    Double_t       ResFormula(Double_t* x, Double_t* par);
    Double_t       ResExponential(Double_t* x, Double_t* par);
+   Double_t       RateSaturation(Double_t* x, Double_t* par);
    
    Bool_t         IsOverEnergyThreshold(double ethr, double ene);  
    Double_t       GetEnergyThreshold() {return fEnergyThreshold;}
@@ -49,7 +54,8 @@ public:
 
    void           SetMCtrue() {fMCtrue = true;}
    void           SetPileUpOff() {fPileUpOff = true;}
- 
+   void           SetRateSmearing() {fMCRateSmearing = true;}
+  
    Float_t        GetResPos(Float_t edep);
    Float_t        GetResToF(Float_t edep);
    Float_t        GetResTimeTW(Float_t edep);
@@ -71,19 +77,32 @@ public:
 private:
    TATWntuHit*   fpNtuRaw;
    TATWhit*   fCurrentHit;
-   TATWparGeo*   fpParGeo;
+   TAGparaDsc*   fpParGeo;
+   TAGparaDsc*   fpParCal;
+
+   TATWparCal*   twParCal;
+  TATWparGeo*   twParGeo;
    
    // flags
    Bool_t         fMCtrue;
    Bool_t         fPileUpOff;
+   Bool_t         fMCRateSmearing;
 
    // deltaE
+   
    TF1*          fDeResE;
    Float_t       fDeResECst;
    Float_t       fDeErrResECst;
    Float_t       fDeResEC;
    Float_t       fDeErrResEC;
 
+  //rate saturation effect
+   TH1D*         fHisRate;
+   TF1*          fDeRateShift;
+   Float_t       fDeRateShiftPar0;
+   Float_t       fDeRateShiftPar1;
+   Float_t       fDeRateShiftPar2;
+  
    TF1*          fDeResE_MC;
    Float_t       fEmcA;  // MeV
    Float_t       fEmcErrA;  // MeV

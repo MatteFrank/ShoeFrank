@@ -103,6 +103,8 @@ public:
     //! TW calibration per bar flag
     Bool_t IsTWCalBar()          const { return fEnableTWCalBar;      }
     //! MC region flag
+    Bool_t IsTWRateSmearMC()     const { return fEnableTWRateSmearMC;      }
+    //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
     //! TW Calibration flag
     Bool_t CalibTW()             const { return fDoCalibTW;           }
@@ -241,6 +243,7 @@ private:
    Bool_t               fEnableTWnoPU;          ///< Enable TW no pileup
    Bool_t               fEnableTWZmatch;        ///< Enable TW MC atomic charge Z matching
    Bool_t               fEnableTWCalBar;        ///< Enable TW calibration per bar
+   Bool_t               fEnableTWRateSmearMC;   ///< Enable TW smeareing due to rate
    Bool_t               fDoCalibTW;             ///< Enable TW cliabration process
    Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
    Bool_t               fEnableRegionMc;        ///< Enable MC region reading

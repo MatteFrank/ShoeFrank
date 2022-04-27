@@ -27,7 +27,7 @@
 #include "TF1.h"
 #include "TMath.h"
 #include "TRandom.h"
-
+#include <TCanvas.h>
 #include "TATWdigitizer.hxx"
 
 #include "TAGroot.hxx"
@@ -36,12 +36,20 @@
 Float_t TATWdigitizer::fgHfactor = 1.45;
 
 // --------------------------------------------------------------------------------------
-TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw)
+TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw ,TAGparaDsc* pParGeo, TAGparaDsc* pParCal)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
+   fpParGeo(pParGeo),
+   fpParCal(pParCal),
    fCurrentHit(0x0),
    fMCtrue(true),
    fPileUpOff(false),
+   fMCRateSmearing(false),
+   // Rate saturation effect
+   fHisRate(NULL),
+   fDeRateShiftPar0(0.0),
+   fDeRateShiftPar1(0.0),
+   fDeRateShiftPar2(1.0),
    // Eloss parameter for Experimental Resolution eith ResLinear
    fDeResECst(7.033),
    fDeErrResECst(0.05592),
@@ -109,21 +117,25 @@ TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw)
    fGain(1),
    fElossMeasLimit(90),  // MeV. Is the maximum Eloss measured up to now...resolution beyond this value is not reliable and is set constant
    fEnergyThreshold(0)
-
 {
    SetFunctions();
    SetInitParFunction();
    
-   fpParGeo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
+   twParGeo =   (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
+   twParCal = (TATWparCal*)fpParCal->Object();
 
-   fSlatLength = fpParGeo->GetBarDimension().Y();
-
+   fSlatLength = twParGeo->GetBarDimension().Y();
+   fHisRate = twParCal->GetRate();
+         
    fMap.clear();
 }
 
 // --------------------------------------------------------------------------------------
 void  TATWdigitizer::SetFunctions()
 {
+
+   fDeRateShift     = new TF1("ElossRateShift", this, &TATWdigitizer::RateSaturation, 0, 200, 3, "TATWdigitizer", "ElossRateShift");  // 0-200 MeV range in energy loss
+  
    fDeResE     = new TF1("ResEnergy", this, &TATWdigitizer::ResLinear, 0, 200, 2, "TATWdigitizer", "ResEnergy");  // 0-200 MeV range in energy loss
 
    fDeResE_MC    = new TF1("ResEnergy_MC", this, &TATWdigitizer::ResFormula, 0, 200, 3, "TATWdigitizer", "ResEnergy_MC");  // 0-200 MeV range in energy loss
@@ -156,7 +168,9 @@ void  TATWdigitizer::SetInitParFunction()
    fTimeTWResE->SetParameters(fTimeTW_C, fTimeTW_B, fTimeTW_C); // 
    fTofResE->SetParameters(fTofCstE, fTofLambdaE, fTofk0E); // fig7
    fPosResE->SetParameters(fPosCstE, fPosLambdaE, fPosk0E); // fit from data in table IV
-   
+
+   fDeRateShift->SetParameters(fDeRateShiftPar0,fDeRateShiftPar1,fDeRateShiftPar2);
+
    fDeAttLeft->SetParameters(fDeAttCstLeft, fDeAttLambdaLeft, fSlatLength/2.); // fig8
    fDeAttRight->SetParameters(fDeAttCstRight, fDeAttLambdaRight, fSlatLength/2.); // fig8
 }
@@ -171,6 +185,7 @@ TATWdigitizer::~TATWdigitizer()
    delete fPosResE;
    delete fDeAttLeft;
    delete fDeAttRight;
+   delete fDeRateShift;
 }
 
 // --------------------------------------------------------------------------------------
@@ -219,6 +234,21 @@ Double_t TATWdigitizer::ResFormula(Double_t* x, Double_t* par)
    
    return res;
 }
+
+
+// --------------------------------------------------------------------------------------
+Double_t TATWdigitizer::RateSaturation(Double_t* x, Double_t* par)
+{
+   Float_t eloss = x[0];
+   Float_t A = par[0];
+   Float_t B = par[1];
+   Float_t C = par[2];
+   
+   Float_t res = A+B*TMath::Exp(-eloss/C);//to change with the proper model
+   
+   return res;
+}
+
 
 // --------------------------------------------------------------------------------------
 Double_t TATWdigitizer::ResExponential(Double_t* x, Double_t* par)
@@ -274,6 +304,27 @@ Float_t TATWdigitizer::GetResEnergyExp(Float_t energy)
    return energy*relRes/100.;
 
 }
+
+
+//___________________________________________________________________________________________
+Float_t TATWdigitizer::GetElossShiftRate()
+{
+
+  if(fHisRate==NULL) return 0.0f;
+  
+  Float_t rate = fHisRate->GetRandom();
+  Float_t shift = fDeRateShift->Eval(rate);
+
+  if (FootDebugLevel(1)) {
+    cout << "Eloss smearing with rate::" << rate << "   shift::" << shift << endl;
+  }
+
+  
+  return shift;
+
+}
+
+
 
 //___________________________________________________________________________________________
 Float_t TATWdigitizer::GetResEnergyMC(Float_t energy)
@@ -393,7 +444,7 @@ Bool_t TATWdigitizer::IsOverEnergyThreshold(double edep_thr, double edep) {
 //___________________________________________________________________________________________
 Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t timeST, Double_t time, Int_t barid, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/){
 
-
+	
   Int_t dummyTrigType=-1000;
   Bool_t roughDig = true;
   // hit position, bars and layer
@@ -411,9 +462,12 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 
    // energy resolution
    Float_t Eloss = edep;
+   Float_t ElossShiftRate = GetElossShiftRate();
    Float_t resElossExp = GetResEnergyExp(Eloss);  // phys + experimental fluctuation
    Float_t resElossMC = GetResEnergyMC(Eloss);  // physical fluctuaction (landau)
-   Eloss += gRandom->Gaus(0,sqrt(pow(resElossExp,2)-pow(resElossMC,2)));
+
+   //   Eloss += gRandom->Gaus(0,sqrt(pow(resElossExp,2)-pow(resElossMC,2)));
+   Eloss += gRandom->Gaus(ElossShiftRate,sqrt(pow(resElossExp,2)-pow(resElossMC,2)));
    /*
   
    fDeAttAsymSmear = gRandom->Uniform(-fDeAttAsym, +fDeAttAsym); // asymmetry btw left/right ends

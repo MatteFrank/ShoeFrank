@@ -17,12 +17,13 @@ NumberFiles: 1
 "./geomaps/CNAO2021_MC/TAGdetector.geo": 150;200;300;400
 
 DetectorName: "TW"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/CNAO2021_MC/TATWdetector.geo": -1
 "./config/CNAO2021_MC/TATW_BBparameters.cfg": -1
 "./config/CNAO2021_MC/TATWbarsMapStatus.map": -1
 "./calib/CNAO2021_MC/TATW_Energy_Calibration.cal": -1
 "./calib/CNAO2021_MC/TATW_Tof_Calibration.cal": -1
+"./calib/CNAO2021_MC/rate.root": -1
 
 DetectorName: "CA"
 NumberFiles: 3

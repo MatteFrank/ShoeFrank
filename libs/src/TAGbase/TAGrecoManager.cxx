@@ -69,7 +69,8 @@ TAGrecoManager::TAGrecoManager( const TString expName )
 : fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),			    fIsMC(true),
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
   fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
-  fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fDoCalibTW(false),      fDoCalibBM(false),        fEnableRegionMc(false),
+  fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fEnableTWRateSmearMC(false),
+  fDoCalibTW(false),      fDoCalibBM(false),        fEnableRegionMc(false),
   fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
   fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
   fIncludeKalman(false),   fIncludeTOE(false),   fIncludeStraight(false)
@@ -407,6 +408,13 @@ void TAGrecoManager::FromFile()
       else                      fEnableTWCalBar = false;
       if (fDebugLevel > 0)
         printf("EnableTWCalBar: %d\n", fEnableTWCalBar);
+    }
+
+    if (key.Contains("EnableTWRateSmearMC:")  ) {
+      if ( item.Contains("y"))  fEnableTWRateSmearMC = true;
+      else                      fEnableTWRateSmearMC = false;
+      if (fDebugLevel > 0)
+        printf("EnableTWRateSmearMC: %d\n", fEnableTWRateSmearMC);
     }
     
     if (key.Contains("EnableRegionMc:")  ) {

@@ -294,7 +294,7 @@ bool TAGcampaign::FromFile(TString ifile)
          }
         
          // calib
-         if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith(".dat"))) || fileName.Contains("T0"))  { // needed for ST
+         if ((fileName.Contains("calib") && (fileName.EndsWith(".cal") || fileName.EndsWith(".dat") || fileName.EndsWith(".root") )) || fileName.Contains("T0"))  { // needed for ST
             
             // check order in TW calibration files
             if (fileName.Contains(fgTWcalFileType[0]) && fFileCalMap[detName].size() != 0 ) {
@@ -427,7 +427,7 @@ const Char_t* TAGcampaign::GetRegFile(const TString& detName, Int_t runNumber)
 //! \param[in] isTofBarCalib  flag for TW calibration per bar
 //! \param[in] elossTuning  flag for TW calibration with energy loss tuning
 const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib,
-                                      Bool_t isTofBarCalib, Bool_t elossTuning)
+                                      Bool_t isTofBarCalib, Bool_t elossTuning, Bool_t rate)
 {
    //  isTofCalib is also used as isCalTemperature
    Int_t item = -1;
@@ -439,8 +439,11 @@ const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, 
 
    if (elossTuning)
       item = 2;
+
+   if (rate)
+      item = 3;
    
-   return GetCalItem(detName, runNumber, item, isTofBarCalib);
+   return GetCalItem(detName, runNumber, item, isTofBarCalib,rate);
 }
 
 //_____________________________________________________________________________
@@ -450,7 +453,7 @@ const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, 
 //! \param[in] runNumber run number
 //! \param[in] item   0 for channel, 1 for bars
 //! \param[in] isTofBarCalib  flag for TW calibration per bar
-const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib)
+const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib,Bool_t rate)
 {
    vector<TString> vecFile = fFileCalMap[detName];
    if (vecFile.size() == 0)
@@ -458,14 +461,14 @@ const Char_t* TAGcampaign::GetCalItem(const TString& detName, Int_t runNumber, I
 
    TString nameFile = vecFile[item];
    
-   if (isTofBarCalib) {
+   if (isTofBarCalib && (!rate)) {
       Int_t pos = nameFile.Last('.');
       nameFile.Insert(pos, "_perBar");
    }
    
    vector<TArrayI> vecRun = fRunsCalMap[detName];
    TArrayI arrayRun = vecRun[item];
-  
+   
    if (nameFile.IsNull()) {
      Warning("GetCalFile()", "Empty calibration file for detector %s and run %d\n", detName.Data(), runNumber);
      return Form("");

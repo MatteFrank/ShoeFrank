@@ -41,7 +41,7 @@ public:
    const Char_t*     GetRegFile(const  TString& detName, Int_t runNumber);
    // Get calibration file name
    const Char_t*     GetCalFile(const  TString& detName, Int_t runNumber, Bool_t isTofCalib = false,
-                                Bool_t isTofBarCalib = false, Bool_t elossTuning = false);
+                                Bool_t isTofBarCalib = false, Bool_t elossTuning = false, Bool_t rate=false);
    // Detector on flag
    Bool_t            IsDetectorOn(const TString& detName);
    // Print out information
@@ -81,7 +81,7 @@ private:
    //! Get file name
    const Char_t* GetFile(const TString& detName, Int_t runNumber, const TString& nameFile, TArrayI array);
    //! Get calibration items
-   const Char_t* GetCalItem(const  TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib = false);
+  const Char_t* GetCalItem(const  TString& detName, Int_t runNumber, Int_t item, Bool_t isTofBarCalib = false, Bool_t israte=false);
 
 private:
    static map<Int_t, TString> fgTWcalFileType; ///< Map of special TW calibration file name
@@ -147,8 +147,8 @@ public:
    //! Get current calibration file name
    const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1,
                                       Bool_t isTofCalib = false, Bool_t isTofBarCalib = false,
-                                      Bool_t elossTuning = false)
-   { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib, elossTuning);  }
+                                      Bool_t elossTuning = false, Bool_t rate=false)
+  { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib, elossTuning,rate);  }
    //! Get detector on flag
    Bool_t               IsDetectorOn(const TString& detName)                         { return fCurCampaign->IsDetectorOn(detName);           }
    // Print out informations

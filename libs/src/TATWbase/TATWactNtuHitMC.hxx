@@ -38,6 +38,7 @@ public:
                             TAGparaDsc *p_pargeoG=0,
                             Bool_t isZmc = false,
 			    Bool_t isZrecPUoff = false,
+			    Bool_t isRateSmear = false,
                             EVENT_STRUCT* evStr = 0);
   
    virtual  ~TATWactNtuHitMC();
@@ -67,6 +68,7 @@ private:
    
    Bool_t fIsZtrueMC;
    Bool_t fIsZrecPUoff;
+   Bool_t fIsRateSmear;
 
    TH1F* fpHisHitCol;
    TH1F* fpHisHitLine;
@@ -86,7 +88,8 @@ private:
    vector<TH1F*> fpHisDistZ_MC;
    vector<TH1F*> fpHisDistZ;
    vector<TH1D*> fpHisResPos;
-   
+  TH1D *fpHisRate;
+  
    map<int, TATWhit*> fMapPU; //! map for pilepup
    vector<TATWhit*> fVecPuOff; //! vector for pilepup Off
    

@@ -150,20 +150,20 @@ void LocalRecoMC::CreateRawAction()
         fActEvtReader->SetupBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
       
       fpNtuHitTw   = new TAGdataDsc("twRaw", new TATWntuHit());
-      fActNtuHitTw = new TATWactNtuHitMC("twActNtu", fpNtuMcTw, fpNtuMcSt, fpNtuMcTrk, fpNtuHitTw,  fpParCalTw, fpParGeoG, fFlagZtrueMC, fFlagZrecPUoff, fEvtStruct);
+      fActNtuHitTw = new TATWactNtuHitMC("twActNtu", fpNtuMcTw, fpNtuMcSt, fpNtuMcTrk, fpNtuHitTw,  fpParCalTw, fpParGeoG, fFlagZtrueMC, fFlagZrecPUoff, fFlagRateSmear_TW, fEvtStruct);
       if (fFlagHisto)
-         fActNtuHitTw->CreateHistogram();
+	fActNtuHitTw->CreateHistogram();
    }
    
    if(TAGrecoManager::GetPar()->IncludeCA()) {
-      fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
-      if (TAGrecoManager::GetPar()->IsReadRootObj())
-        fActEvtReader->SetupBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
+     fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
+     if (TAGrecoManager::GetPar()->IsReadRootObj())
+       fActEvtReader->SetupBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
       
-      fpNtuHitCa   = new TAGdataDsc("caRaw", new TACAntuHit());
-      fActNtuHitCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcTrk, fpNtuHitCa, fpParGeoCa, fpParCalCa, fpParGeoG, fEvtStruct);
-      if (fFlagHisto)
-         fActNtuHitCa->CreateHistogram();
+     fpNtuHitCa   = new TAGdataDsc("caRaw", new TACAntuHit());
+     fActNtuHitCa = new TACAactNtuHitMC("caActNtu", fpNtuMcCa, fpNtuMcTrk, fpNtuHitCa, fpParGeoCa, fpParCalCa, fpParGeoG, fEvtStruct);
+     if (fFlagHisto)
+       fActNtuHitCa->CreateHistogram();
    }
 }
 
@@ -174,14 +174,14 @@ void LocalRecoMC::CreateRawAction()
 //! \param[in] iEvent event number to go
 Bool_t LocalRecoMC::GoEvent(Int_t iEvent)
 {
-   // only possible for MC data
-   if (iEvent < fActEvtReader->NEvents()) {
-      fSkipEventsN = iEvent;
-      fActEvtReader->Reset(iEvent);
-      return true;
-   }
+  // only possible for MC data
+  if (iEvent < fActEvtReader->NEvents()) {
+    fSkipEventsN = iEvent;
+    fActEvtReader->Reset(iEvent);
+    return true;
+  }
    
-   return false;
+  return false;
 }
 
 //__________________________________________________________

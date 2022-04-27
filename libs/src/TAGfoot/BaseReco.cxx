@@ -52,6 +52,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
    fRunNumber(runNumber),
+   fRateInitRun(-1),
+   fRateEndRun(-1),
    fFriendFileName(""),
    fFriendTreeName(""),
    fpParTimeWD(0x0),
@@ -121,6 +123,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagHisto(false),
    fFlagTrack(false),
    fFlagTWbarCalib(false),
+   fFlagRateSmear_TW(false),
    fgVtxTrackingAlgo("Full"),
    fgItrTrackingAlgo("Full"),
    fgMsdTrackingAlgo("Full"),
@@ -407,7 +410,7 @@ void BaseReco::SetRecHistogramDir()
    // TW
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TATWparGeo::GetBaseName());
-      fActPointTw->SetHistogramDir(subfolder);
+       fActPointTw->SetHistogramDir(subfolder);
    }
 
    // CA
@@ -621,6 +624,11 @@ void BaseReco::ReadParFiles()
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
+
+      if(fFlagRateSmear_TW && fFlagMC){
+	parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber, isTof_calib, fFlagTWbarCalib, fFlagRateSmear_TW);
+	parCal->FromRateFile(parFileName, fRateInitRun, fRateEndRun);
+      }
       
       if(fFlagTWbarCalib) {
          parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
