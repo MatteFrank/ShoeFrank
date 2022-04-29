@@ -156,7 +156,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     if( fpMsdPoint && fpMsdGeoMap && !fpVtxClus ){ opcode &= ~flag_set<details::msd_tag>{}; opcode |= flag_set<details::ms2d_tag>{}; }
     
 #include<bitset>
-    std::cout << "opcode: " << std::bitset<8>(opcode) << '\n';
+  //  std::cout << "opcode: " << std::bitset<8>(opcode) << '\n';
     switch( opcode ){
         case flag_set<details::vertex_tag, details::it_tag, details::tof_tag>{}: {
             auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
@@ -246,7 +246,7 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                             .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h) )
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
-            std::cout << "full_config\n";
+           // std::cout << "full_config\n";
             auto* action_h =  new_TATOEactGlb(
                         std::move(ukf),
                         std::move(list),
