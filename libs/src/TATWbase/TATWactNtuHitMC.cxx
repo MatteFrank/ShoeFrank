@@ -171,8 +171,10 @@ void TATWactNtuHitMC::CreateHistogram()
       
    }
 
-   if(fDigitizer->GetRate()!=NULL)fpHisRate = (TH1D*)(f_parcal->GetRate()->Clone("hisRate"));
-   AddHistogram(fpHisRate);
+   if(fDigitizer->GetRate()) {
+      fpHisRate = (TH1D*)(f_parcal->GetRate()->Clone("hisRate"));
+      AddHistogram(fpHisRate);
+   }
 
    
    SetValidHistogram(kTRUE);
