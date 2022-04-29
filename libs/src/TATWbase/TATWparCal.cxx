@@ -449,7 +449,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	  xmin+=deltaToFmin*100;
       }
       if(FootDebugLevel(4)) {
-	cout<<"xmin::"<<xmin<</*" "<<fBB_x<<" "<<fBB_prime_x<<*/" dist::"<<dist<<" f_prime::"<<f_prime_dist_min<<endl;
+         cout<<"xmin::"<<xmin<</*" "<<fBB_x<<" "<<fBB_prime_x<<*/" dist::"<<dist<<" f_prime::"<<f_prime_dist_min<<endl;
       }
       
       
@@ -465,7 +465,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	  xmax-=deltaToFmin*100;
       }
       if(FootDebugLevel(4)) {
-	cout<<"xmax::"<<xmax<</*" "<<fBB_x<<" "<<fBB_prime_x<<*/" dist::"<<dist<<" f_prime::"<<f_prime_dist_max<<endl;
+         cout<<"xmax::"<<xmax<</*" "<<fBB_x<<" "<<fBB_prime_x<<*/" dist::"<<dist<<" f_prime::"<<f_prime_dist_max<<endl;
       }
       
       
@@ -522,7 +522,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
       dist=std::numeric_limits<float>::max(); //inf
       f_dist_Z.push_back( dist );
       if (FootDebugLevel(4))
-	printf("tof (%.f) is outside the selected interval [%.f,%.f] so Zraw is set to %d\n",tof,xmin,xmax,fZraw);      
+         printf("tof (%.f) is outside the selected interval [%.f,%.f] so Zraw is set to %d\n",tof,xmin,xmax,fZraw);
     }
 
     if(FootDebugLevel(4)) printf("for loop over iZ::%d  with dist::%.5f\n\n",iZ,f_dist_Z.at(iZ-1));
@@ -534,8 +534,8 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
     printf("Z::%d  edep::%f  tof::%f \n",fZraw,edep,tof);
     
   return;
-  
 }
+
 //------------------------------------------+-----------------------------------
 //! Clear geometry info.
 void TATWparCal::Clear(Option_t*)
