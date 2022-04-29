@@ -213,14 +213,14 @@ public:
    void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
   
    //! Enable Z reconstruction matching for TW
-   void EnableTWZmatch()       { fFlagZmatch_TW = true;   }
+   void EnableTWZmatch()       { fFlagZmatchTw = true;   }
    //! Disable Z reconstruction matching for TW
-   void DisableTWZmatch()      { fFlagZmatch_TW = false;  }
+   void DisableTWZmatch()      { fFlagZmatchTw = false;  }
 
    //! Enable tw eloss smearing due to rate
-   void EnableTWRateSmearMC()       { fFlagRateSmear_TW = true;   }
+   void EnableTWRateSmearMC()       { fFlagRateSmearTw = true;   }
    //! DIsable tw eloss smearing due to rate
-   void DisableTWRateSmearMC()      { fFlagRateSmear_TW = false;  }
+   void DisableTWRateSmearMC()      { fFlagRateSmearTw = false;  }
    
    //! Enable Reconstruction cutter for TOE
    void EnableRecCutter()      { fFlagRecCutter = true;   }
@@ -492,8 +492,8 @@ protected:
    TString               fgMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
    Bool_t                fFlagZtrueMC;      ///< Z true MC flag
    Bool_t                fFlagZrecPUoff;    ///< Z rec TW PU off flag
-   Bool_t                fFlagZmatch_TW;    ///< TW Z match
-   Bool_t                fFlagRateSmear_TW; ///< TW eloss emaring due to rate
+   Bool_t                fFlagZmatchTw;     ///< TW Z match
+   Bool_t                fFlagRateSmearTw;  ///< TW eloss emaring due to rate
 
    Bool_t                fFlagMC;           ///< MC flag
    Bool_t                fReadL0Hits;       ///< read back hits
@@ -501,8 +501,8 @@ protected:
    Bool_t                fFlagRecCutter;    ///< cutter flag for TOE Glb reco
    Int_t                 fSkipEventsN;      ///< number of events to skip
 
-   Int_t                 fRateInitRun;      //number of run for rate info importing (MC)
-   Int_t                 fRateEndRun;       //number of run for rate info importing (MC)
+   Int_t                 fRateInitRun;      ///< Number of run for rate info importing (MC)
+   Int_t                 fRateEndRun;       ///< Number of run for rate info importing (MC)
 
   
  protected:

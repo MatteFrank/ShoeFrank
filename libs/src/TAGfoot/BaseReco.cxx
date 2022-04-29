@@ -123,13 +123,13 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagHisto(false),
    fFlagTrack(false),
    fFlagTWbarCalib(false),
-   fFlagRateSmear_TW(false),
+   fFlagRateSmearTw(false),
    fgVtxTrackingAlgo("Full"),
    fgItrTrackingAlgo("Full"),
    fgMsdTrackingAlgo("Full"),
    fFlagZtrueMC(false),
    fFlagZrecPUoff(false),
-   fFlagZmatch_TW(false),
+   fFlagZmatchTw(false),
    fFlagMC(false),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),
@@ -410,7 +410,7 @@ void BaseReco::SetRecHistogramDir()
    // TW
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TATWparGeo::GetBaseName());
-       fActPointTw->SetHistogramDir(subfolder);
+      fActPointTw->SetHistogramDir(subfolder);
    }
 
    // CA
@@ -625,9 +625,9 @@ void BaseReco::ReadParFiles()
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
 
-      if(fFlagRateSmear_TW && fFlagMC){
-	parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber, isTof_calib, fFlagTWbarCalib, fFlagRateSmear_TW);
-	parCal->FromRateFile(parFileName, fRateInitRun, fRateEndRun);
+      if(fFlagRateSmearTw && fFlagMC){
+         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber, isTof_calib, fFlagTWbarCalib, fFlagRateSmearTw);
+         parCal->FromRateFile(parFileName, fRateInitRun, fRateEndRun);
       }
       
       if(fFlagTWbarCalib) {
@@ -884,7 +884,7 @@ void BaseReco::CreateRecActionTw()
    fpNtuRecTw = new TAGdataDsc("twPoint", new TATWntuPoint());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
-   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuHitTw, fpNtuRecTw, fpParGeoTw, fpParCalTw,fFlagZmatch_TW,fFlagZtrueMC);
+   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuHitTw, fpNtuRecTw, fpParGeoTw, fpParCalTw, fFlagZmatchTw, fFlagZtrueMC);
    if (fFlagHisto)
      fActPointTw->CreateHistogram();
 }
