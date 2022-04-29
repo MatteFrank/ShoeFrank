@@ -70,18 +70,18 @@ public:
    Float_t        GetTimeRight(Float_t pos, Float_t time, Float_t edep);
    
    void           SetGain(Float_t g)   { fGain = g;          }
-   TATWhit*    GetCurrentHit()      { return fCurrentHit; }
+   TATWhit*       GetCurrentHit()      { return fCurrentHit; }
  
    void           ClearMap()           { fMap.clear();       }
    
 private:
    TATWntuHit*   fpNtuRaw;
-   TATWhit*   fCurrentHit;
+   TATWhit*      fCurrentHit;
    TAGparaDsc*   fpParGeo;
    TAGparaDsc*   fpParCal;
 
    TATWparCal*   twParCal;
-  TATWparGeo*   twParGeo;
+   TATWparGeo*   twParGeo;
    
    // flags
    Bool_t         fMCtrue;
