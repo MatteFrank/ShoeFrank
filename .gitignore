@@ -7,7 +7,7 @@
 
 *.png
 *.root
-
+!rate.root
 *.so
 *.o
 
