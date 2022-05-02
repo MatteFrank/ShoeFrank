@@ -14,6 +14,11 @@
 //! Class Imp
 ClassImp(TADIgenField);
 
+//! \brief Constructor called for null magnetic field
+TADIgenField::TADIgenField() : AbsBField(), fField(0x0)
+{
+}
+
 //______________________________________________________________________________
 //! Constructor
 TADIgenField::TADIgenField(TADIgeoField* field)
@@ -42,12 +47,12 @@ void TADIgenField::get(const double& posX, const double& posY, const double& pos
    TVector3 pos(posX, posY, posZ);
    TVector3 outField(0, 0, 0);
    
-   outField = fField->GetField(pos)*TAGgeoTrafo::GausToKGaus(); //GENFIT expects kGauss
+   if(fField)
+    outField = fField->GetField(pos)*TAGgeoTrafo::GausToKGaus(); //GENFIT expects kGauss
    
    Bx = outField.X();
    By = outField.Y();
    Bz = outField.Z();
-   
 }
 
 //______________________________________________________________________________
@@ -57,7 +62,13 @@ void TADIgenField::get(const double& posX, const double& posY, const double& pos
 //! \return field in kGauss
 TVector3 TADIgenField::get(const TVector3& position) const
 {
-  return fField->GetField(position)*TAGgeoTrafo::GausToKGaus(); //GENFIT expects kGauss
+  if(!fField)
+  {
+    TVector3 nullfield = TVector3(0,0,0);
+    return nullfield;
+  }
+  else
+    return fField->GetField(position)*TAGgeoTrafo::GausToKGaus(); //GENFIT expects kGauss
 }
 
 //______________________________________________________________________________
@@ -74,6 +85,7 @@ void TADIgenField::getGauss(const double& posX, const double& posY, const double
    TVector3 pos(posX, posY, posZ);
    TVector3 outField(0, 0, 0);
    
+  if(fField)
    outField = fField->GetField(pos); 
    
    Bx = outField.X();
@@ -89,5 +101,11 @@ void TADIgenField::getGauss(const double& posX, const double& posY, const double
 //! \return field in Gauss
 TVector3 TADIgenField::getGauss(const TVector3& position) const
 {
-  return fField->GetField(position); 
+  if(!fField)
+  {
+    TVector3 nullfield = TVector3(0,0,0);
+    return nullfield;
+  }
+  else
+    return fField->GetField(position); 
 }

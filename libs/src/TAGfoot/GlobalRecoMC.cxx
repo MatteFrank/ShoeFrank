@@ -27,7 +27,7 @@ GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn,
 {
 
 	EnableTracking();
-	fFlagMC = TAGrecoManager::GetPar()->IsMC();		// to be changed
+	fFlagMC = fCampManager->GetCampaignPar(fCampManager->GetCurrentCamNumber()).McFlag;;		// to be changed
 
 }
 

@@ -251,13 +251,13 @@ bool TAGFdetectorMap::GetSensorID(int planeId, int* sensorId)
 
 	for(map<string, int>::iterator itDet = m_detectorIndex.begin(); itDet != m_detectorIndex.end(); ++itDet)
 	{
-		if(IsFitPlaneInDet(planeId, itDet->first))
+		if( IsFitPlaneInDet(planeId, itDet->first) )
 		{
 			for(int i=0; i < m_DetToFitPlaneMap.at(itDet->first).size(); ++i)
 			{
 				if( m_DetToFitPlaneMap.at(itDet->first).at(i) == planeId )
 				{
-					*sensorId = m_DetToFitPlaneMap.at(itDet->first).at(i);
+					*sensorId = m_DetToFitPlaneMap.at(itDet->first).at(i) - GetMinFitPlane(itDet->first);
 					check = true;
 					break;
 				}
