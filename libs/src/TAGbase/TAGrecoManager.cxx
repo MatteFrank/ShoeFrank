@@ -66,7 +66,7 @@ TAGrecoManager::~TAGrecoManager()
 //!
 //! \param[in] expName experiment name
 TAGrecoManager::TAGrecoManager( const TString expName )
-: fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),			    fIsMC(true),
+: fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
   fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
   fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fEnableTWRateSmearMC(false),
@@ -194,14 +194,6 @@ void TAGrecoManager::FromFile()
 		if (  fSkipN <= 0 )	fSkipN = -1;
 		else 					fSkipN -= 1;
 	}
-
-	if (key.Contains("MC sample:")  ) {
-      if ( item.Contains("y")) fIsMC = true;
-      else                     fIsMC = false;
-      if (fDebugLevel > 0)
-        printf("MC sample: %d\n", fIsMC);
-      
-    }
     
     if (key.Contains("MC Particle Types:")) {
       fMcParticles.clear();
@@ -287,7 +279,7 @@ void TAGrecoManager::FromFile()
     }
     
     if (key.Contains("Kalman preselection strategy:")) {
-      vector<TString> tmp_Modes = { "TrueParticle", "Sept2020" };
+      vector<TString> tmp_Modes = { "TrueParticle", "Sept2020", "Linear", "Backtracking" };
       istringstream sss(item.Data());
       
       TString inputMode;

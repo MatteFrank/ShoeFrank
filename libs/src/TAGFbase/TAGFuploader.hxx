@@ -59,7 +59,7 @@ public:
 	virtual ~TAGFuploader();
 	
 	int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );
-	void GetPossibleCharges( vector<int>* chVect );
+	void GetPossibleCharges( vector<int>* chVect, bool IsMC );
 	int GetNumGenParticle_noFrag();
 
 	map< int, vector<int> >* TakeMeasParticleMC_Collection();
