@@ -76,7 +76,7 @@ public:
 
 	TAGFselector(map< int, vector<AbsMeasurement*> >* allHitMeas, vector<int>* chVect, 
 						TAGFdetectorMap* SensorIDmap, map<TString, Track*>* trackCategoryMap, 
-						map< int, vector<int> >* measParticleMC_collection);
+						map< int, vector<int> >* measParticleMC_collection, bool isMC);
 	virtual ~TAGFselector();
 
 	int					Categorize();
@@ -126,10 +126,14 @@ private:
 	map< int, vector<int> >* m_measParticleMC_collection;	///< Map of MC particles associated w/ global measurement index
 	
 	TAGgeoTrafo* m_GeoTrafo;								///< GeoTrafo object for reference frame transformations
+	TAVTparGeo* m_VT_geo;									///< Geometry transformations for VTX detector
+	TAITparGeo* m_IT_geo;									///< Geometry transformations for IT detector
+	TAMSDparGeo* m_MSD_geo;									///< Geometry transformations for MSD detector
+	TATWparGeo* m_TW_geo;									///< Geometry transformations for TW detector
 
 	TAMCntuPart* m_McNtuEve;								///< MC eve for efficiency/quality checks
 
-	Bool_t flagMC; 											///< flag for MC variables
+	Bool_t m_IsMC; 											///< flag for MC variables
 	int m_debug;											///< Global debug value
 	string m_systemsON;										///< String w/ systems on in the campaign
 	

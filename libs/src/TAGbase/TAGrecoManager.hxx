@@ -80,7 +80,6 @@ public:
 
     //! Reconstruction parameters Getter
     //! Local reconstruction flag
-    bool IsMC()								{ return fIsMC; }
 
     //! Reconstruction parameters Getter
     Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
@@ -219,7 +218,6 @@ private:
    Float_t              fChi2;                  ///< Chi2 cut
    Int_t                fMeasureN;              ///< Number of measurements
    Int_t                fSkipN;                 ///< Number of events to skip
-   Bool_t               fIsMC;                  ///< MC flag
 	vector<string>       fMcParticles;           ///< Kalman MC particles
    string               fKalmanMode;            ///< Kalman mode
    string               fKPreselectStrategy;    ///< Kalman preselection strategy

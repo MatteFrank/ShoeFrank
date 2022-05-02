@@ -28,27 +28,34 @@
 //! \param[in] measParticleMC_collection Pointer to the map containing the MC particles found in the event for each measurement; the key is the global index of the measurement
 TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vector<int>* chargeVect, 
 								TAGFdetectorMap* SensorIDmap , map<TString, Track*>* trackCategoryMap, 
-								map< int, vector<int> >* measParticleMC_collection) {
+								map< int, vector<int> >* measParticleMC_collection, bool IsMC) {
 
 	m_allHitMeas = allHitMeas;
 	m_chargeVect = chargeVect;
 	m_SensorIDMap = SensorIDmap;
 	m_trackCategoryMap = trackCategoryMap;
 	m_measParticleMC_collection = measParticleMC_collection;
+	m_IsMC = IsMC;
 
 	m_debug = TAGrecoManager::GetPar()->Debug();
 
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
+	if(TAGrecoManager::GetPar()->IncludeVT()) 
+		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+	if(TAGrecoManager::GetPar()->IncludeIT())
+		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
+	if(TAGrecoManager::GetPar()->IncludeMSD())
+		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+	if(TAGrecoManager::GetPar()->IncludeTW())
+		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
 	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
-	  m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+	if ( m_IsMC )	m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
-	if ( TAGrecoManager::GetPar()->IsMC() )
-		m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 }
 
 
@@ -76,7 +83,8 @@ int TAGFselector::Categorize( ) {
 
 	// fill m_mapTrack
 	if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" ){
-	  //		if ( !TAGrecoManager::GetPar()->IsMC() )		Error("TAGactKFitter::Action()", "Asked TrueParticle tracking but running not on MC." ), exit(0); 
+		if ( !m_IsMC )
+			Error("TAGFselector::Categorize()", "Asked TrueParticle tracking but running not on MC." ), exit(0); 
 		if(m_debug > 0) cout << "TAGFselector::Categorize_TruthMC START\n";
 		
 		Categorize_TruthMC();
@@ -149,7 +157,7 @@ map<string, int> TAGFselector::CountParticleGenaratedAndVisible() {
 		mass = particle->GetMass();
 
 
-		if ( particle->GetCharge() < 1 || particle->GetCharge() > 8)
+		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)
 		 	continue;
 
 		string outName, pdgName;
@@ -331,13 +339,12 @@ int TAGFselector::Categorize_TruthMC( )
 
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> ( *itHit ) )->clone() ;
 
-				// m_trackCategoryMap->at(outName)->insertPoint( new genfit::TrackPoint(hitToAdd, m_trackCategoryMap->at(outName)) );
 				m_trackCategoryMap->at(outName)->insertMeasurement( hitToAdd );
 
 				foundHit++;
 			
 			} //End of loop on MC particles per cluster/measurement
-			// if ( foundHit =! 0 ) break;
+
 		} //End of loop on measurements per sensor
 	
 	} //End of loop on sensors
@@ -441,7 +448,7 @@ int TAGFselector::Categorize_Linear()
 		int Z_Hypo = GetChargeFromTW(itTrack->second);
 		if( Z_Hypo == -1 )
 		{
-			Z_Hypo = 8;
+			Z_Hypo = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber;
 			itTrack->second->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
 		}
 		else
@@ -450,15 +457,12 @@ int TAGFselector::Categorize_Linear()
 				if( m_trackRepVec.at(nRep)->getPDGCharge() == Z_Hypo )	(itTrack->second)->addTrackRep( m_trackRepVec.at( nRep )->clone() );
 		}
 
-		// TVector3 pos = TVector3(0,0,0);
+		//Get first track measurement and use it to set the track seed
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
-		TVector3 pos = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
-				firstTrackMeas->getRawHitCoords()(0), //X
-				firstTrackMeas->getRawHitCoords()(1), //Y
-				m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z())); //Z
-		// pos.SetX( m_GeoTrafo->FromVTLocalToGlobal( firstTrackMeas->getRawHitCoords()).X() );
-		// pos.SetY( m_GeoTrafo->FromVTLocalToGlobal( firstTrackMeas->getRawHitCoords()).Y() );
-		// pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		int SensorId = m_SensorIDMap->GetSensorIDFromMeasID( firstTrackMeas->getHitId() );
+		TVector3 pos = TVector3(firstTrackMeas->getRawHitCoords()(0), firstTrackMeas->getRawHitCoords()(1), 0);
+		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(SensorId, pos ) ); //Move position to global coords
+
 		pos = pos - m_trackSlopeMap[itTrack->first]*pos.Z();
 
 		TVector3 mom = m_trackSlopeMap[itTrack->first];
@@ -502,7 +506,7 @@ void TAGFselector::CategorizeVT()
 			cout << "Vertex number " << iVtx << " seems to be empty\n";
 			continue;
 		}
-		else if( !TAGrecoManager::GetPar()->IsMC() && !vtxPD->IsBmMatched() )
+		else if( !m_IsMC && !vtxPD->IsBmMatched() )
 		{
 			if(m_debug > 0)
 			{
@@ -516,7 +520,6 @@ void TAGFselector::CategorizeVT()
 		//loop over tracks for each Vertex
 		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
 
-
 			TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
 
 			// N clusters per tracklet
@@ -529,40 +532,39 @@ void TAGFselector::CategorizeVT()
 			Track*  fitTrack_ = new Track();  // container of the tracking objects
 			fitTrack_->setStateSeed(pos_, mom_);
 
-			// loop over clusters in the tracklet get clusters in tracklet
+			// loop over clusters in the tracklet --> inverse numbering
 			for (int iCluster = ncluster - 1; iCluster >= 0; iCluster--) {
 
 				TAVTcluster* clus = (TAVTcluster*) tracklet->GetCluster( iCluster );
 				if (!clus->IsValid()) continue;
 
-				//RZ: CHECK THESE NUMBERS!!!!!!!!
-				int plane = clus->GetSensorIdx();
-				int clusIdPerPlane = clus->GetClusterIdx();
+				int sensor = clus->GetSensorIdx();
+				int clusIdPerSensor = clus->GetClusterIdx();
+				int plane = m_SensorIDMap->GetFitPlaneID("VT", sensor);
 
 				int index=0;
-				while( clusIdPerPlane != vtntuclus->GetCluster(plane, index)->GetClusterIdx() )
+				while( clusIdPerSensor != vtntuclus->GetCluster(sensor, index)->GetClusterIdx() )
 					index++;
 
-
-				// if ( m_allHitMeas->find( plane ) == m_allHitMeas->end() )									continue;
-				// if ( m_allHitMeas->at(plane).find( clusIdPerPlane ) == m_allHitMeas->at(plane).end() )		continue;
+				// if ( m_allHitMeas->find( plane ) == m_allHitMeas->end() )	continue;
+				// if ( m_allHitMeas->at(plane).find( index ) == m_allHitMeas->at(plane).end() )	continue;
 
 
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (  m_allHitMeas->at(plane).at(index) ))->clone();
 				fitTrack_->insertMeasurement( hitToAdd );
-				// fitTrack_->insertPoint( new genfit::TrackPoint(hitToAdd, fitTrack_) );
 
 				if( m_debug > 1) 
 				{
-					cout << "VTX::PLANE::" << plane << "\n";
-					cout << "VTX::CLUS_IDx::" << clusIdPerPlane << "\n";
+					cout << "VTX::SENSOR::" << sensor << "\n";
+					cout << "VTX::FITPLANE::" << plane << "\n";
+					cout << "VTX::CLUS_IDx::" << clusIdPerSensor << "\n";
 					cout << "VTX::CLUS_ID::" << index << "\n";
 					cout << "VTX::CLUS_POS::"; 
 					hitToAdd->getRawHitCoords().Print();
 				}
 
 
-				if ( m_debug > 1 && TAGrecoManager::GetPar()->IsMC() ) {
+				if ( m_debug > 1 && m_IsMC ) {
 					vector<int> iPart = m_measParticleMC_collection->at( hitToAdd->getHitId() );
 					cout << "\t-- Truth particles of the measurement:\n";
 					for (int k=0; k< iPart.size(); k++) {
@@ -607,42 +609,30 @@ void TAGFselector::CategorizeIT()	{
 
 	// ExtrapFromVTXtoIT 
 	TVector3 tmpExtrap, tmpVTX;
-	TAGgeoTrafo* m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-	TAITparGeo* m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
 
 	// same index if VTX_tracklets (for one vertex..)
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
 		int addedMeas = 0;
-		PlanarMeasurement* lastVTXMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement());
-		tmpVTX = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
-				lastVTXMeas->getRawHitCoords()(0), //X
-				lastVTXMeas->getRawHitCoords()(1), //Y
-				m_SensorIDMap->GetFitPlane( lastVTXMeas->getPlaneId() )->getO().Z())); //Z
-		// tmpVTX.SetX( m_GeoTrafo->FromVTLocalToGlobal(lastVTXMeas->getRawHitCoords()).X() );
-		// tmpVTX.SetY( m_GeoTrafo->FromVTLocalToGlobal(lastVTXMeas->getRawHitCoords()).Y() );
-		// tmpVTX.SetZ( m_SensorIDMap->GetFitPlane( lastVTXMeas->getPlaneId() )->getO().Z() );
-
 		
+		//Get last VT measurement for extrapolation
+		PlanarMeasurement* lastVTXMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement());
+		int VTsensorId = m_SensorIDMap->GetSensorIDFromMeasID( lastVTXMeas->getHitId() );
+		tmpVTX = TVector3(lastVTXMeas->getRawHitCoords()(0), lastVTXMeas->getRawHitCoords()(1), 0);
+		tmpVTX = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, tmpVTX) ); //move to global coords
+
+		//Get some parameters for IT FitPlanes
 		int maxITdetPlane = m_SensorIDMap->GetMaxFitPlane("IT");
 		int minITdetPlane = m_SensorIDMap->GetMinFitPlane("IT");
 		double tmpITz;
-
-
-		// Info ("TAGFselector::CategorizeIT()", "Min IT plane %d and max IT plane %d", minITdetPlane, maxITdetPlane );
-				
 		vector<float>* allZinIT = m_SensorIDMap->GetPossibleITz();
 
 
 		for ( int iz = 0; iz < allZinIT->size(); iz++ ) {
-
 			
-			// tmpITz = m_GeoTrafo->FromGlobalToVTLocal(m_SensorIDMap->GetFitPlane(ITnPlane)->getO()).Z();
 			tmpITz = allZinIT->at(iz);
-			// cout << "FOUND " << m_SensorIDMap->GetPlanesAtZ( tmpITz )->size() << " IT PLANES FOUND AT Z::" << tmpITz << "\n";
 			tmpExtrap = tmpVTX + m_trackSlopeMap[itTrack->first]*( tmpITz - tmpVTX.Z() );
 
 			vector<int>* planesAtZ  = m_SensorIDMap->GetPlanesAtZ( tmpITz );
-			// cout << "planes at z::" << tmpITz << " -> " << planesAtZ->size() << "\n";
 
 			// select a matching plane -> CHECK!!!!!!!!!!!!!!!
 			// RZ: there is a potentially bad issue here with the bending plane!!! the intersection might be in another sensor since it is done with a linear extrapolation. Would it be better to only check the y? how much do we risk of f-ing this up?
@@ -663,23 +653,15 @@ void TAGFselector::CategorizeIT()	{
 					continue;
 				}
 
-				if(m_debug > 1)
-					cout << "Extrapolation to IT is in active area of sensor " << sensorId << endl;
+				if(m_debug > 1)	cout << "Extrapolation to IT is in active area of sensor " << sensorId << endl;
 
-	// cout << "TAGFselector::CategorizeIT()     check\n";
 				int sensorMatch = (*iPlane);
 
 				int indexOfMinY = -1.;
 				double distanceInY = .1, distanceInX;
-				//RZ: TO BE CHECKED!! ADDED TO AVOID ERRORS
-				Bool_t areLightFragments = false;
-				if (areLightFragments) distanceInY = .5;
-				// loop all absMeas in the found IT plane
 
-				// cout << "TAGFselector::CategorizeIT()     check1\n";
 				if ( m_allHitMeas->find( sensorMatch ) == m_allHitMeas->end() )   {
-					// cout << "TAGFselector::CategorizeIT() -- WARNING extapolated plane empty!\n";
-					// cin.get();
+					if( m_debug > 1)	cout << "TAGFselector::CategorizeIT() -- WARNING extapolated plane empty!\n";
 					continue;
 				}
 
@@ -701,15 +683,12 @@ void TAGFselector::CategorizeIT()	{
 					distanceInY += .05; 
 
 				}while (indexOfMinY == -1 && distanceInY < .3);
-	// cout << "TAGFselector::CategorizeIT()     check2\n";
-				// insert measurement in GF Track
 				
-				
+				//Insert measurement in GF track if found!
 				if (indexOfMinY != -1 && distanceInX < 1.){
 					if(m_debug > 0) cout << "ITcheck\tTrack::" << itTrack->first << "\tdistanceInY::" << distanceInY << "\tdistanceinX::" << distanceInX << "\n";
 					AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> ( m_allHitMeas->at(sensorMatch).at(indexOfMinY) ))->clone();
 					(itTrack->second)->insertMeasurement( hitToAdd );
-					// (itTrack->second)->insertPoint( new genfit::TrackPoint(hitToAdd, (itTrack->second)) );
 					addedMeas++;
 					
 				}
@@ -746,13 +725,9 @@ void TAGFselector::CategorizeMSD()	{
 
 		//RZ: SET STATE SEED
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
-		TVector3 pos = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
-						firstTrackMeas->getRawHitCoords()(0), //X
-						firstTrackMeas->getRawHitCoords()(1), //Y
-						m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z())); //Z
-		// pos.SetX( m_GeoTrafo->FromVTLocalToGlobal(firstTrackMeas->getRawHitCoords()).X() );
-		// pos.SetY( m_GeoTrafo->FromVTLocalToGlobal(firstTrackMeas->getRawHitCoords()).Y() );
-		// pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		int VTsensorId = m_SensorIDMap->GetSensorIDFromMeasID( firstTrackMeas->getHitId() );
+		TVector3 pos = TVector3( firstTrackMeas->getRawHitCoords()(0), firstTrackMeas->getRawHitCoords()(1), 0);
+		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
 		
 		if(m_debug > 0)
 		{
@@ -800,13 +775,10 @@ void TAGFselector::CategorizeMSD()	{
 			{
 				m_fitter_extrapolation->processTrackWithRep( testTrack, testTrack->getTrackRep(repId) );
 				
-				if(m_debug > 0)	cout << "Processed\n";
-				
-				TVector3 guessOnMSD = ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId); //RZ: Local or global?!?!?!?!? CHECK!!!!!!!!!!!!!!!
-				// TVector3 guessOnMSD = m_GeoTrafo->FromMSDLocalToGlobal( ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId) );
-				
 				if(m_debug > 0)
 				{
+					cout << "Processed\n";
+					TVector3 guessOnMSD = ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId); //RZ: In local reference frame of FitPlane!!
 					cout << "GuessOnMSD: ";
 					guessOnMSD.Print();
 					cout << "\t\t charge = " << Z_Hypo << "  chi2 = " << m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ) << "\n";
@@ -827,15 +799,8 @@ void TAGFselector::CategorizeMSD()	{
 			delete testTrack;
 
 		}
-		// m_fitter_extrapolation->processTrack(itTrack->second);
 
-
-		//------------------------------ track rep check  ------------------------------
-		// int nRep = itTrack->second->getNumReps();
-		// float chi2=10000;
-		// for (int r=0; r<nRep; r++) {
-
-		// }
+		//Set cardinal rep as the one with the best chi2
 		itTrack->second->setCardinalRep( idCardRep );
 		
 		double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( itTrack->second->getCardinalRep()->getPDGCharge() ) );
@@ -856,19 +821,15 @@ void TAGFselector::CategorizeMSD()	{
 
 		
 		for ( int MSDnPlane = minMSDdetPlane; MSDnPlane <= maxMSDdetPlane; MSDnPlane++ ) {
+
 			TVector3 guessOnMSD = ExtrapolateToOuterTracker( itTrack->second, MSDnPlane ); //RZ: NOW LOCAL COORDS!!
-			// TVector3 guessOnMSD = m_GeoTrafo->FromMSDLocalToGlobal( ExtrapolateToOuterTracker( itTrack->second, MSDnPlane) );
 			if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
 				continue;
-// cout << "TAGFselector::CategorizeMSD()     MSDcheck3\n";
+
 			int indexOfMinY = -1;
 			int count = 0;
 			double distanceInY = 1;
 			int sensorMatch = MSDnPlane;
-			//RZ: TO BE CHECKED!! ADDED TO AVOID ERRORS
-			Bool_t areLightFragments = false;
-			if (areLightFragments) distanceInY = 2;
-			// loop all absMeas in the found IT plane
 
 			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
 				if(m_debug > 0) cout << "TAGFselector::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
@@ -902,24 +863,17 @@ void TAGFselector::CategorizeMSD()	{
 				}
 				count++;
 			}
-			// cout << "TAGFselector::CategorizeMSD()     MSDcheck5\n";
-			// insert measurementi in GF Track
+
+			// insert measurement in GF Track
 			if (indexOfMinY != -1){
 
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(sensorMatch).at(indexOfMinY)))->clone();
 				(itTrack->second)->insertMeasurement( hitToAdd );
-				// (itTrack->second)->insertPoint( new genfit::TrackPoint(hitToAdd, (itTrack->second) ));
 				findMSD++;
 			}
 
 		} // end loop MSD planes
-		// cout << "TAGFselector::CategorizeMSD()     MSDcheck6\n";
-		// if (findMSD < 5)
-		// {
-		// 	delete itTrack->second;
-		// 	m_trackTempMap.erase(itTrack++);
-		// }
-		// else
+		
 		++itTrack;
 
 	}// end loop on GF Track candidates
@@ -944,15 +898,10 @@ void TAGFselector::CategorizeMSD_Linear()
 		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
 
 		//RZ: SET STATE SEED
-		// TVector3 pos = TVector3(0,0,0);
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
-		TVector3 pos = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
-						firstTrackMeas->getRawHitCoords()(0), //X
-						firstTrackMeas->getRawHitCoords()(1), //Y
-						m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z())); //Z
-		// pos.SetX( m_GeoTrafo->FromMSDLocalToGlobal(firstTrackMeas->getRawHitCoords()).X() );
-		// pos.SetY( m_GeoTrafo->FromMSDLocalToGlobal(firstTrackMeas->getRawHitCoords()).Y() );
-		// pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		int VTsensorId = m_SensorIDMap->GetSensorIDFromMeasID( firstTrackMeas->getHitId() );
+		TVector3 pos = TVector3( firstTrackMeas->getRawHitCoords()(0), firstTrackMeas->getRawHitCoords()(1), 0);
+		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
 		
 		if(m_debug > 0)
 		{
@@ -960,7 +909,15 @@ void TAGFselector::CategorizeMSD_Linear()
 		}
 
 		for ( int MSDnPlane = minMSDdetPlane; MSDnPlane <= maxMSDdetPlane; MSDnPlane++ ) {
-			TVector3 guessOnMSD = m_GeoTrafo->FromGlobalToMSDLocal( pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z()));
+
+			int sensorId;
+			if( !m_SensorIDMap->GetSensorID(MSDnPlane, &sensorId) )
+			{
+				Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", MSDnPlane);
+				throw -1;
+			}
+			TVector3 guessOnMSD = m_GeoTrafo->FromGlobalToMSDLocal(pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z()));
+			guessOnMSD = m_MSD_geo->Detector2Sensor( sensorId,  guessOnMSD );
 			
 			if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
 				continue;
@@ -969,10 +926,6 @@ void TAGFselector::CategorizeMSD_Linear()
 			int count = 0;
 			double distanceInY = 1;
 			int sensorMatch = MSDnPlane;
-			//RZ: TO BE CHECKED!! ADDED TO AVOID ERRORS
-			Bool_t areLightFragments = false;
-			if (areLightFragments) distanceInY = 2;
-			// loop all absMeas in the found IT plane
 
 			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
 				if(m_debug > 0) cout << "TAGFselector::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
@@ -1047,8 +1000,7 @@ void TAGFselector::CategorizeTW()
 		TVector3 guessOnTW;
 		try
 		{
-			guessOnTW = ExtrapolateToOuterTracker( itTrack->second, planeTW); //RZ: Local or global?!?!?!?!? CHECK!!!!!!!!!!!!!!!!!!
-			// guessOnTW = m_GeoTrafo->FromTWLocalToGlobal(ExtrapolateToOuterTracker( itTrack->second, planeTW));
+			guessOnTW = ExtrapolateToOuterTracker( itTrack->second, planeTW); //RZ: Local coords!
 		}
 		catch(genfit::Exception& ex)
 		{
@@ -1063,7 +1015,6 @@ void TAGFselector::CategorizeTW()
 		double TWdistance = 4.;
 		int indexOfMin = -1;
 		int count = 0;
-
 
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
@@ -1086,7 +1037,6 @@ void TAGFselector::CategorizeTW()
 		if (indexOfMin != -1)	{
 			AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(planeTW).at(indexOfMin)))->clone();
 			(itTrack->second)->insertMeasurement( hitToAdd );
-			// (itTrack->second)->insertPoint( new genfit::TrackPoint(hitToAdd, (itTrack->second)) );
 		}
 	}
 	
@@ -1102,18 +1052,14 @@ void TAGFselector::CategorizeTW_Linear()
 	// Extrapolate to TW
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++) 
 	{
-		// TVector3 pos = TVector3(0,0,0);
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
-		TVector3 pos = m_GeoTrafo->FromVTLocalToGlobal( TVector3(
-						firstTrackMeas->getRawHitCoords()(0), //X
-						firstTrackMeas->getRawHitCoords()(1), //Y
-						m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z())); //Z
-		// pos.SetX( m_GeoTrafo->FromVTLocalToGlobal(firstTrackMeas->getRawHitCoords()).X() );
-		// pos.SetY( m_GeoTrafo->FromVTLocalToGlobal(firstTrackMeas->getRawHitCoords()).Y() );
-		// pos.SetZ( m_SensorIDMap->GetFitPlane( firstTrackMeas->getPlaneId() )->getO().Z() );
+		int VTsensorId = m_SensorIDMap->GetSensorIDFromMeasID( firstTrackMeas->getHitId() );
+		TVector3 pos = TVector3( firstTrackMeas->getRawHitCoords()(0), firstTrackMeas->getRawHitCoords()(1), 0);
+		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
 
 		int planeTW = m_SensorIDMap->GetFitPlaneTW();
-		TVector3 guessOnTW = m_GeoTrafo->FromGlobalToTWLocal(pos + m_trackSlopeMap[itTrack->first]*( m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z() ));
+		TVector3 guessOnTW =  m_GeoTrafo->FromGlobalToTWLocal( pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z()) );
+		// guessOnTW = m_TW_geo->Detector2Sensor( 0, guessOnTW );
 
 		if( m_debug > 1) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
 
@@ -1395,8 +1341,6 @@ void TAGFselector::CategorizeVT_back()
 
 
 
-
-
 //--------------------------------------------------------------------------------------------
 
 
@@ -1408,39 +1352,13 @@ void TAGFselector::FillTrackCategoryMap()  {
 	{
 		TString outName;
 		int MeasId = itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
-		if( m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
+		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" && m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
+		{
+			if(m_debug > 0)
+				Info("FillTrackCategoryMap()", "Found track candidate (%d) with no TW point! Skipping...", itTrack->first);
 			continue;
+		}
 
-
-		// int nRep = itTrack->second->getNumReps();
-		// int customCardRepID = -1;
-		// float tmp_chi2 = 666;
-		// // cout << "\nSelectorKalmanGF::FillTrackCategoryMap()  --  number of Reps = "<< nRep <<"\n";
-		// for (int r=0; r<nRep; r++) {
-		// 	float currentRep_Chi2 = itTrack->second->getFitStatus( itTrack->second->getTrackRep(r) )->getChi2();
-		// 	if ( tmp_chi2 > currentRep_Chi2 ){	
-		// 		tmp_chi2 = currentRep_Chi2;
-		// 		customCardRepID = r;
-		// 	}
-		// 	// cout << "\t\t charge = " << itTrack->second->getTrackRep(r)->getPDGCharge() 
-		// 	// 		<< "  chi2 = " << currentRep_Chi2 << "\n";
-		// }
-		// cout << "\t\t\t\t CARDINAL charge = " << itTrack->second->getCardinalRep()->getPDGCharge() 
-		// 			<< "  chi2 = " << itTrack->second->getFitStatus( itTrack->second->getCardinalRep() )->getChi2() << "\n";
-
-		// if ( customCardRepID >= 0 && customCardRepID < nRep ) {
-		// 	itTrack->second->setCardinalRep( customCardRepID );
-		// }
-		// else {
-		// 	cout << "TAGFselector::FillTrackCategoryMap() :: ERROR  -- wrong rep number! = " << customCardRepID<<"\n";
-		// }	
-
-		// if ( customCardRepID == -1 )
-		// 	cout<< "TAGFselector::FillTrackCategoryMap() :: ERROR  --  Never found a Cardinal rep"<< "\n";
-
-
-		// int measCharge = int( round( (itTrack->second)->getFittedState(-1).getCharge() ) );
-		// int measMass = int( round( (itTrack->second)->getFittedState(-1).getMass()/m_AMU ) );
 		int measCharge = itTrack->second->getCardinalRep()->getPDGCharge();
 		int measMass;
 		if( TAGrecoManager::GetPar()->PreselectStrategy() == "Linear" )
@@ -1483,74 +1401,75 @@ void TAGFselector::FillTrackCategoryMap()  {
 
 //! \brief Get the possible charge of a selected track from the TW measurement
 //!
-//! Currently uses MC information OR all charges from 1 to 8 since we have problems w/ TWpoints
-//! \return Charge measured from the TW for the track
+//! Currently uses MC information (returns charge of most frequent particle along the track) OR the charge of the TWpoint associated to the track
+//! \param[in] trackToCheck Pointer to GenFit track
+//! \return Charge measured from the TW
 int TAGFselector::GetChargeFromTW(Track* trackToCheck){
 
-// RZ: Think of a way of passing the raw TW measurements to this function. The vector of possible charge values is already available at this point -> THIS FUNCTION DOES NOTHING RIGHT NOW!!
 	int charge = -1;
 
-	if( !TAGrecoManager::GetPar()->IsMC() ) //do not use MC!
-	{
-		TATWpoint* twpoint = 0x0;
-		for (unsigned int jTracking = 0; jTracking < trackToCheck->getNumPointsWithMeasurement(); ++jTracking){
+	// if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" ) //do not use MC!
+	// {
+	TATWpoint* twpoint = 0x0;
+	for (unsigned int jTracking = trackToCheck->getNumPointsWithMeasurement() - 1; jTracking >= 0; --jTracking){
 
-			if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
-			
-			int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
-
-			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) );
-
-			charge = twpoint->GetChargeZ();
-		}
-	}	//end of charge calculation from data
-
-	else	//use MC!
-	{	
-		int MeasId = trackToCheck->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
-		if(m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
-			return -1;
+		if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
 		
-		if(m_measParticleMC_collection->at(MeasId).size() == 1)
-		{
-			return m_McNtuEve->GetTrack( m_measParticleMC_collection->at(MeasId).at(0) )->GetCharge();
-		}
-		else
-		{
-			map<int,int> ChargeOccMap;
+		int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
 
-			for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
-			{
-				if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > 8)
-					continue;
-				ChargeOccMap[ m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() ] = 1;
-			}
+		twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
 
-			for(int i = 0; i < trackToCheck->getNumPointsWithMeasurement() - 1; ++i)
-			{
-				MeasId = trackToCheck->getPointWithMeasurement(i)->getRawMeasurement()->getHitId();
-				for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
-				{
-					charge = m_McNtuEve->GetTrack( *itTrackMC )->GetCharge();
-					if(ChargeOccMap.find(charge) == ChargeOccMap.end()) 
-						continue;
+		charge = twpoint->GetChargeZ();
+		break;
+	}
+	// }	//end of charge calculation from data
+
+	// else	//use MC!
+	// {	
+	// 	int MeasId = trackToCheck->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
+	// 	if(m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
+	// 		return -1;
+		
+	// 	if(m_measParticleMC_collection->at(MeasId).size() == 1)
+	// 	{
+	// 		return m_McNtuEve->GetTrack( m_measParticleMC_collection->at(MeasId).at(0) )->GetCharge();
+	// 	}
+	// 	else
+	// 	{
+	// 		map<int,int> ChargeOccMap;
+
+	// 		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
+	// 		{
+	// 			if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)
+	// 				continue;
+	// 			ChargeOccMap[ m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() ] = 1;
+	// 		}
+
+	// 		for(int i = 0; i < trackToCheck->getNumPointsWithMeasurement() - 1; ++i)
+	// 		{
+	// 			MeasId = trackToCheck->getPointWithMeasurement(i)->getRawMeasurement()->getHitId();
+	// 			for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
+	// 			{
+	// 				charge = m_McNtuEve->GetTrack( *itTrackMC )->GetCharge();
+	// 				if(ChargeOccMap.find(charge) == ChargeOccMap.end()) 
+	// 					continue;
 				
-					ChargeOccMap[ charge ]++;
-				}
-			}
+	// 				ChargeOccMap[ charge ]++;
+	// 			}
+	// 		}
 			
-			int occ = 0;
+	// 		int occ = 0;
 
-			for(map<int,int>::iterator itMap = ChargeOccMap.begin(); itMap != ChargeOccMap.end(); ++itMap)
-			{
-				if(itMap->second > occ)
-				{
-					occ = itMap->second;
-					charge = itMap->first;
-				}
-			}
-		}
-	} //end MC charge calcualtion
+	// 		for(map<int,int>::iterator itMap = ChargeOccMap.begin(); itMap != ChargeOccMap.end(); ++itMap)
+	// 		{
+	// 			if(itMap->second > occ)
+	// 			{
+	// 				occ = itMap->second;
+	// 				charge = itMap->first;
+	// 			}
+	// 		}
+	// 	}
+	// } //end MC charge calcualtion
 
 
 	return charge;
@@ -1582,27 +1501,13 @@ TVector3 TAGFselector::ExtrapolateToOuterTracker( Track* trackToFit, int whichPl
 		exit(0);
 	}
 
-	// if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getCardinalRep()))->hasForwardPrediction() )  == false) {
-	//   TVector3 x(0.,0.,0.);
-	//   return x;
-	// }
-
 	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	KalmanFittedStateOnPlane kfTest;
 
-	// if( repId==-1 )
-	// {
-	// 	kfTest = *(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getCardinalRep( )))->getForwardUpdate());
-	// 	trackToFit->getCardinalRep()->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false);
-	// }
-	// else
-	// {
 	kfTest = *(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep( repId )))->getForwardUpdate());
-	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local or global?!?!??!?! CHECK!!!!!!!
-	// }
-	// std::cout << "state after extrapolating back to reference plane \n";
-	//kfTest.Print();
+	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
+
 
 	TVector3 posi;
 	posi.SetXYZ((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());

@@ -268,13 +268,6 @@ int TAGFuploader::UploadHitsTW() {
 //!
 //! \return Pointer to the map GlobalMeasureId -> vector of MC particles
 map< int, vector<int> >* TAGFuploader::TakeMeasParticleMC_Collection() {
-
-	if ( !TAGrecoManager::GetPar()->IsMC() )
-	{
-		Error("TakeMeasParticleMC_Collection()", "Not running on MC!!");
-		exit(0);
-	}
-
  	return m_measParticleMC_collection;
 }
 
@@ -314,7 +307,7 @@ int TAGFuploader::GetTWTrackFixed ( TATWpoint* point ) {
 //! \brief Get all the possible charges measured by the TOF-Wall in the event
 //!
 //! \param[out] chVect Pointer to vector where to store the possible charge values
-void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
+void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 
 	// // -------- TW CHARGE RETRIEVE NOT WORKING with Sept2020 but only with TruthParticles -----------------
 
@@ -341,14 +334,14 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 	// }
 
 
-	if( TAGrecoManager::GetPar()->IsMC() )
+	if( IsMC )
 	{	
 		TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 		
 		for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 
 			TAMCpart* point = m_McNtuEve->GetTrack(iPart);		
-			if ( point->GetCharge() > 0 && point->GetCharge() <= 8) {
+			if ( point->GetCharge() > 0 && point->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {
 				if ( find( chVect->begin(), chVect->end(), point->GetCharge() ) == chVect->end() ) {
 					chVect->push_back( point->GetCharge() );
 					if ( m_debug > 0 )		
@@ -359,7 +352,7 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect ) {
 	}
 	else
 	{
-		for(int i=1; i<=8; ++i)	chVect->push_back( i );
+		for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
 	}
 
 
@@ -381,7 +374,7 @@ int TAGFuploader::GetNumGenParticle_noFrag() {
 	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 
 		TAMCpart* particle = m_McNtuEve->GetTrack(iPart);		
-		if ( particle->GetCharge() > 0 && particle->GetCharge() <= 8) {
+		if ( particle->GetCharge() > 0 && particle->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {
 
 			if ( particle->GetInitPos().z() > 1 ) continue;
 			if ( particle->GetFinalPos().z() < 120 ) continue;

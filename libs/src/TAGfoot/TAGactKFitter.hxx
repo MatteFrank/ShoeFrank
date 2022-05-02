@@ -133,10 +133,12 @@ public:
 	void GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
 
 	void FillGenCounter( map<string, int> mappa );
+	void SetMcSample();
 
 private:
 
-	void	EvaluateProjectionEfficiency(string* PartName, Track* fitTrack);
+	void	EvaluateProjectionEfficiency(Track* fitTrack);
+	void	CheckChargeHypothesis(string* PartName, Track* fitTrack);
 
 	TAGdataDsc*  fpGlobTrackRepo;						///< Ntuple of fitted tracks -> OUTPUT
 
@@ -147,7 +149,7 @@ private:
 	AbsKalmanFitter*  m_dafRefFitter;					///< DAF (Deterministic annealing filter) with kalman ref
 	AbsKalmanFitter*  m_dafSimpleFitter;				///< DAF (Deterministic annealing filter) with simple kalman
 
-	TAMCntuPart*  m_trueParticleRep;					///< Ptr to TAMCntuPart object
+	TAMCntuPart*  m_trueParticleRep=0x0;				///< Ptr to TAMCntuPart object
 
 	TAGFuploader* m_uploader;							///< GenFit Uploader
 	TAGFselector* m_selector;							///< GenFit Selector
@@ -169,19 +171,6 @@ private:
 
 	EventDisplay* display;								///< GenFit event display
 
-	//  delete non va fatto il delete perche APPARENTEMENTE gia fatto
-	// vector<TAVTntuHit*> m_VT_hitCollection;
-	// vector<TAIThit*> m_IT_hitCollection;
-	// vector<TAMSDntuHit*> m_MSD_hitCollection;
-	// vector<TATWpoint*> m_TW_hitCollection;
-
-	// vector<TAVTcluster*> m_VT_clusCollection;
-	// vector<TAITcluster*> m_IT_clusCollection;
-	// vector<TAMSDcluster*> m_MSD_clusCollection;
-
-	// map <string, vector<AbsMeasurement*> > m_hitCollectionToFit;
-	// map <int, vector<AbsMeasurement*> > m_hitCollectionToFit_dataLike;
-	// vector<AbsMeasurement*> m_allHitsInMeasurementFormat;
 
 	shared_ptr<TASTparGeo> m_ST_geo;					///< Pointer to ST parGeo
 	shared_ptr<TABMparGeo> m_BM_geo;					///< Pointer to BM parGeo
@@ -265,6 +254,7 @@ private:
 
 	int m_NTWTracks;									///< Total number of track candidates that reach the TW
 	int m_NTWTracksGoodHypo;							///< Total number of track candidates reaching the TW that have the correct charge hypo
+	bool m_IsMC;
 
 	ClassDef(TAGactKFitter,0);
 };

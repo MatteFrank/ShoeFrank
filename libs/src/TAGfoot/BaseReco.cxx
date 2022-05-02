@@ -962,6 +962,8 @@ void BaseReco::CreateRecActionGlbGF()
 		// Initialisation of KFfitter
 		fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
 		fActGlbkFitter = new TAGactKFitter("glbActKFitter", fpNtuGlbTrack);
+      if(fFlagMC)
+         fActGlbkFitter->SetMcSample();
 		if (fFlagHisto)
 			fActGlbkFitter->CreateHistogram();
 	}

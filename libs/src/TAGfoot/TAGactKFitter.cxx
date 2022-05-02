@@ -16,12 +16,11 @@
 //----------------------------------------------------------------------------------------------------
 
 //! \brief Default constructor for GenFit Kalman fitter
-TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), fpGlobTrackRepo(outTrackRepo) {
+TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"), 
+		fpGlobTrackRepo(outTrackRepo),
+		m_IsMC(false) {
 
 	AddDataOut(outTrackRepo, "TAGntuGlbTrack");
-
-	if ( TAGrecoManager::GetPar()->IsMC() )
-		m_trueParticleRep = (TAMCntuPart*)   gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
 	int nIter = 20; // max number of iterations
 	double dPVal = 1.E-3; // convergence criterion
@@ -113,6 +112,15 @@ TAGactKFitter::~TAGactKFitter() {
 
 
 
+//----------------------------------------------------------------------------------------------------
+//! \brief Set the needed variables when MC sample is available 
+void TAGactKFitter::SetMcSample()
+{
+	m_IsMC = true;
+	m_trueParticleRep = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+}
+
+
 
 //----------------------------------------------------------------------------------------------------
 
@@ -147,26 +155,25 @@ Bool_t TAGactKFitter::Action()	{
 
 	m_uploader->TakeMeasHits4Fit( m_allHitMeasGF );
 	vector<int> chVect;
-	m_uploader->GetPossibleCharges( &chVect );
+	m_uploader->GetPossibleCharges( &chVect, m_IsMC );
 
-	if ( TAGrecoManager::GetPar()->IsMC() ) {
-			m_measParticleMC_collection = m_uploader->TakeMeasParticleMC_Collection();
-			m_numGenParticle_noFrag += m_uploader->GetNumGenParticle_noFrag();
+	if ( m_IsMC ) {
+		m_measParticleMC_collection = m_uploader->TakeMeasParticleMC_Collection();
+		m_numGenParticle_noFrag += m_uploader->GetNumGenParticle_noFrag();
 	}
 
 	if(m_debug > 0)	{
 		cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
 		cout << "Plane\tN. hits" << endl;
-		for(auto it = m_allHitMeasGF.begin(); it != m_allHitMeasGF.end(); ++it)		{
+		for(auto it = m_allHitMeasGF.begin(); it != m_allHitMeasGF.end(); ++it)	
 			cout << it->first << "\t" << it->second.size() << endl;
-		}
 	}
 
-	m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, m_measParticleMC_collection);
+	m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, m_measParticleMC_collection, m_IsMC);
 
 	if ( m_selector->Categorize() >= 0 ) {
 
-		if ( TAGrecoManager::GetPar()->IsMC() ) {
+		if ( m_IsMC ) {
 			//RZ: Check selection efficiency counts --> better define the "visible" particles, right now is not really compatible with TrueParticle selection
 			FillGenCounter( m_selector->CountParticleGenaratedAndVisible() );
 		}
@@ -176,7 +183,7 @@ Bool_t TAGactKFitter::Action()	{
 	
 	chVect.clear();
 	
-	if( TAGrecoManager::GetPar()->IsMC() )	m_measParticleMC_collection->clear();
+	if( m_IsMC )	m_measParticleMC_collection->clear();
 	
 	m_allHitMeasGF.clear();
 
@@ -223,10 +230,10 @@ void TAGactKFitter::Finalize() {
   //     system(("mkdir "+pathName).c_str());
   // }
 
-	// if ( TAGrecoManager::GetPar()->IsMC() ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
-	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintPurity();
+	// if ( m_IsMC ) 		m_trackAnalysis->EvaluateAndFill_MomentumResolution( &h_dPOverP_x_bin, &h_resoP_over_Pkf, &h_biasP_over_Pkf );
+	if ( m_IsMC )	PrintPurity();
 	PrintEfficiency();
-	if ( TAGrecoManager::GetPar()->IsMC() ) 		PrintSelectionEfficiency();
+	if ( m_IsMC )	PrintSelectionEfficiency();
 	
 	if( ValidHistogram() )
 	{
@@ -503,6 +510,7 @@ void TAGactKFitter::CreateGeometry()  {
 
 		for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
 			TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)) );
+			cout << "ITsensor::" << i << "\tpos::"; m_IT_geo->GetSensorPosition(i).Print();
 			float xMin, xMax, yMin, yMax;
 			xMin = m_IT_geo->GetEpiOffset().X() - m_IT_geo->GetEpiSize().X()/2;
 			xMax = m_IT_geo->GetEpiOffset().X() + m_IT_geo->GetEpiSize().X()/2;
@@ -528,6 +536,7 @@ void TAGactKFitter::CreateGeometry()  {
 			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
 			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "IT");
 			++indexOfPlane;
+			cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 
 			// Some debug print-outs for geometry
 			if(m_debug > 1)
@@ -663,11 +672,6 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	if(m_debug > 0)			
 		cout << "\n  ----------------------\nEvento numero " << m_evNum << " track " << m_mapTrack.size() << endl;
 	
-	// TAMCntuHit* vtNtuHitMc = (TAMCntuHit*)   gTAGroot->FindDataDsc("vtMc", "TAMCntuHit")->Object();
-
-	// for(int ii=0; ii<vtNtuHitMc->GetHitsN(); ++ii)
-	// 	vtNtuHitMc->GetHit(ii)->GetInPosition().Print();
-
 	// loop over all hit category
 	for ( map<TString,Track*>::iterator trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt) {
 
@@ -679,14 +683,8 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		if(m_debug > 0) cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << "\n";
 
 		// check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
-		//RZ: see if this is needed. TrueParticle could work even without this check, but other algorithms might benefit from this check. Although I am quite sure tracks without a TW point are cut anyways in other parts of the code.....
+		// This check has to be done only when using the TrueParticle selection -> Naming is different for data-Like!
 		if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )  {
-			int MeasId = trackIt->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
-			if( m_sensorIDmap->GetFitPlaneIDFromMeasID(MeasId) != m_sensorIDmap->GetFitPlaneTW())
-			{
-				Warning("MakeFit()", "Track has no measurement in the TW! Skipping...");
-				continue;
-			}
 			
 			if ( !UpdatePDG::GetPDG()->IsParticleDefined( tok.at(0) + tok.at(1) ) )
 			{
@@ -727,8 +725,10 @@ int TAGactKFitter::MakeFit( long evNum ) {
 	    fitTrack->checkConsistency();
 	    if ( m_debug > 2 )	    fitTrack->Print();
 		
-		if( TAGrecoManager::GetPar()->IsMC() )
-			EvaluateProjectionEfficiency(&PartName, fitTrack);
+		if( m_IsMC )	EvaluateProjectionEfficiency(fitTrack);
+
+		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" )
+			CheckChargeHypothesis(&PartName, fitTrack);
 
 		std::string newTrackName = trackIt->first.Data();
 		if(PartName != tok.at(0))
@@ -812,9 +812,9 @@ int TAGactKFitter::MakeFit( long evNum ) {
 				RecordTrackInfo( fitTrack, newTrackName );
 				if(m_debug > 0) cout << "DONE\n";
 
-				m_vectorConvergedTrack.push_back( fitTrack );
 			}
 		}
+		m_vectorConvergedTrack.push_back( fitTrack );
 		
 		// // fill a vector with the categories fitted at least onece
 		// if ( find( m_categoryFitted.begin(), m_categoryFitted.end(), (*hitSample).first ) == m_categoryFitted.end() )
@@ -952,11 +952,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	float startMass	= std::atoi( tok.at(1).c_str() )*m_AMU;                                  //Initial mass of the fit in GeV
 	int fitCh 	= track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
 	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );           // dipendono dallo stato considerato in GeV
-	int nucleonsN = round(fitMass/m_AMU);
-	// track->getCardinalRep()->getRadiationLenght();   // to be done! Check update versions...
 
 	//Stop if the fitted charge is outside of boundaries
-	if(fitCh < 0 || fitCh > 8) {return;}
+	if(fitCh < 0 || fitCh > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {return;}
 
 	//Vertexing for track length
 	if( m_debug > 1)	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
@@ -1078,7 +1076,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//MC additional variables if running on simulations
 	int trackMC_id = -1;
 	double trackQuality = -1;
-	if ( TAGrecoManager::GetPar()->IsMC() ) {
+	if ( m_IsMC ) {
 
 		TVector3 mcMom, mcPos;
 
@@ -1138,8 +1136,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 
 	//Histogram filling
-
-	// 	ANGULAR VARIBLE
 	if( ValidHistogram() )
 	{
 		h_dR->Fill ( recoMom_target.DeltaR( TVector3(0,0,0) ) );
@@ -1263,7 +1259,7 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 	*iSensor = m_sensorIDmap->GetSensorIDFromMeasID( hitID );
 	*iClus = m_sensorIDmap->GetHitIDFromMeasID( hitID );
 
-	if ( TAGrecoManager::GetPar()->IsMC() )
+	if ( m_IsMC )
 		*iPart = m_measParticleMC_collection->at( hitID );
 
 }
@@ -1691,12 +1687,10 @@ void TAGactKFitter::InitEventDisplay() {
 }
 
 
-//! \brief Evaluate the efficiency of the forward projection and check if the current charge hypothesis matches the value obtained from TW
+//! \brief Evaluate the efficiency of the forward projection
 //!
-//! In case of mismatch, the function corrects the intial hypothesis and reset the seed for the track fit
-//! \param[in,out] PartName Pointer to the name of the particle ("H,"He","Li"...). If the particle hypothesis changes, this variable is updated with the new name
 //! \param[in] fitTrack Pointer to the track under study
-void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTrack)
+void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 {
 	int MeasId, PlaneId;
 	int chargeHypo, chargeMC;
@@ -1725,18 +1719,28 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 				good=true;
 			}
 		}
-
 	}
+}
 
+
+//! \brief Check if the current charge hypothesis matches the value obtained from TW
+//!
+//! In case of mismatch, the function corrects the intial hypothesis and reset the seed for the track fit
+//! \param[in,out] PartName Pointer to the name of the particle ("H,"He","Li"...). If the particle hypothesis changes, this variable is updated with the new name
+//! \param[in] fitTrack Pointer to the track under study
+void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack)
+{
 	int chargeFromTW = m_selector->GetChargeFromTW( fitTrack );
 	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;
-	if( chargeFromTW == -1 || chargeFromTW > 8 || chargeFromTW < 1 )
+	if( chargeFromTW < 1 || chargeFromTW > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber )
+	{
+		Info("CheckChargeHypothesis()", "Wrong evaluation of TW charge for track candidate %s. No check performed...", PartName->c_str());
 		return;
-	
+	}
 
 	m_NTWTracks++;
 
-	//Charge hypo != form TW -> change PartName and reset seed
+	//Charge hypo != form TW --> change PartName and reset seed
 	if(chargeFromTW != fitTrack->getCardinalRep()->getPDGCharge())
 	{
 		if(m_debug > 0)	Info("EvaluateProjectionEfficiency()", "Charge Hypo (%d) wrong, changing to measured from TW (%d)", int(fitTrack->getCardinalRep()->getPDGCharge()), chargeFromTW);
@@ -1781,6 +1785,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(string* PartName, Track* fitTra
 				*PartName = "fail";	break;
 		}
 	}
+	//Charge from TW == chargeHypo --> goodHypo!
 	else
 		m_NTWTracksGoodHypo++;
 
