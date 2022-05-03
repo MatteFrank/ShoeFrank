@@ -112,6 +112,7 @@ private:
 	void		CategorizeVT_back();
 
 	void		FillTrackCategoryMap();
+	void		ClearTrackTempMap();
 	TVector3	ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId =-1);
 
 

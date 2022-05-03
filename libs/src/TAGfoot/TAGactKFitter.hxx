@@ -103,7 +103,7 @@ public:
 	virtual	void   CreateHistogram();
 
 
-	int MakeFit(long evNum);
+	int MakeFit(long evNum, TAGFselector* selector);
 	void MakePrefit();
 
 	void RecordTrackInfo( Track* track, string hitSampleName );
@@ -138,7 +138,9 @@ public:
 private:
 
 	void	EvaluateProjectionEfficiency(Track* fitTrack);
-	void	CheckChargeHypothesis(string* PartName, Track* fitTrack);
+	void	CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselector* selector);
+	void	ClearData();
+	void	ClearHistos();
 
 	TAGdataDsc*  fpGlobTrackRepo;						///< Ntuple of fitted tracks -> OUTPUT
 
@@ -151,15 +153,15 @@ private:
 
 	TAMCntuPart*  m_trueParticleRep=0x0;				///< Ptr to TAMCntuPart object
 
-	TAGFuploader* m_uploader;							///< GenFit Uploader
-	TAGFselector* m_selector;							///< GenFit Selector
+	// TAGFuploader* m_uploader;							///< GenFit Uploader
+	// TAGFselector* m_selector;							///< GenFit Selector
 	TAGntuGlbTrack* m_outTrackRepo;						///< CHECK WITH MATTEO HOW TO DO THIS
 
 	TAGFdetectorMap* m_sensorIDmap;						///< GenFit detector Map for index handling
 	TAGF_KalmanStudies* m_trackAnalysis;				///< GenFit custom output class
 
 	map< int, vector<AbsMeasurement*> > m_allHitMeasGF;	///< Map of GenFit measurements; the key is the FitPlane index
-	map< int, vector<int> >* m_measParticleMC_collection;	///< Map of the MC particles found in each measurement; the key is the global measurement ID (det*1E7 + sensor*1E5 + hit)
+	map< int, vector<int> > m_measParticleMC_collection;	///< Map of the MC particles found in each measurement; the key is the global measurement ID (det*1E7 + sensor*1E5 + hit)
 
 	map<TString,Track*> m_mapTrack;						///< Map of the tracks sent to the MakeFit function; the key is the track name, i.e. particle hypothesis ("H_3", "Li_7", ...) + an index containing the vertex number and tracklet number (1E3*vertex+tracklet). For "TrueParticle" selection, the number at the end of the track name is the MC particle ID
 	vector<Track*> m_vectorConvergedTrack;				///< Vector of fitted+converged tracks
