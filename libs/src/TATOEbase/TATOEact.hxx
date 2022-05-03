@@ -2621,6 +2621,7 @@ private:
            track_h->SetTgtMomentum(vec);
            vec = GetMomentumAtZ(track_h, transformation_h->GetTWCenter().Z());
            track_h->SetTwMomentum(vec);
+           track_h->SetLength(track.length);
         }
     }
     
