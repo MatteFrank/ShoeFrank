@@ -2554,7 +2554,7 @@ private:
             parameters.parameter_x = track.parameters.x;
             parameters.parameter_y = track.parameters.y;
             track_h->SetParameters( parameters );
-            
+           
             auto & value_c = track.get_clusters();
             for(auto& value : value_c){
                 //
@@ -2615,10 +2615,13 @@ private:
                     
                 }
             }
-            
+           auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
+
+           TVector3 vec = GetMomentumAtZ(track_h, transformation_h->GetTGCenter().Z());
+           track_h->SetTgtMomentum(vec);
+           vec = GetMomentumAtZ(track_h, transformation_h->GetTWCenter().Z());
+           track_h->SetTwMomentum(vec);
         }
-        
-        
     }
     
     void output_current_hypothesis()
