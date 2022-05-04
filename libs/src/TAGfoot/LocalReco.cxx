@@ -80,21 +80,23 @@ void LocalReco::CreateRawAction()
 
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || (TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag) || TAGrecoManager::GetPar()->IncludeCA()) {
 
-      fpDatRawSt   = new TAGdataDsc("stDat", new TASTntuRaw());
-      fpDatRawTw   = new TAGdataDsc("twdDat", new TATWntuRaw());
-      fpDatRawCa   = new TAGdataDsc("caDat", new TACAntuRaw());
+      fpDatRawSt      = new TAGdataDsc("stDat", new TASTntuRaw());
+      fpDatRawTw      = new TAGdataDsc("twdDat", new TATWntuRaw());
+      fpDatRawCa      = new TAGdataDsc("caDat", new TACAntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
+      
       if (!fgStdAloneFlag){
-	TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
-	TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber,true);
-	parTimeWD->FromFileTcal(parFileName.Data());
+         TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+         TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber, true);
+         parTimeWD->FromFileTcal(parFileName.Data());
       }
-      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD, fpParTimeWD,fgStdAloneFlag);
+      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
+                                      fpParTimeWD, fgStdAloneFlag);
       if (fgStdAloneFlag)
-	fActWdRaw->SetMaxFiles(fNumFileStdAlone);
+         fActWdRaw->SetMaxFiles(fNumFileStdAlone);
       
       if (fFlagHisto)
-	fActWdRaw->CreateHistogram();
+         fActWdRaw->CreateHistogram();
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() ||(TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
