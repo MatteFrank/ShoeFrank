@@ -371,8 +371,7 @@ void TAMSDactNtuCluster::ComputeEta(TAMSDcluster* cluster)
    cluster->SetEta(fCurrentEta);
 }
 
-//______________________________________________________________________________
-//
+
 void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
 {
   Float_t eCorrection = 1.;
@@ -383,6 +382,7 @@ void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
 
   cluster->SetEnergyLossCorr(fCurrentEnergy * eCorrection);
 }
+
 
 //______________________________________________________________________________
 //
