@@ -39,6 +39,8 @@ public:
 
   Float_t ComputeEtaChargeCorrection(Float_t eta);
   Float_t ComputeEtaPosCorrection(Float_t eta);
+  Double_t GetElossParam(Float_t eta);
+
 
  ClassDef(TAMSDparCal, 0)
 };
