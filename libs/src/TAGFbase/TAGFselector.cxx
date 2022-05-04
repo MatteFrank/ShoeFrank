@@ -64,6 +64,30 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 //! NEED TO CHECK IF SOMETHING IS MISSING HERE
 TAGFselector::~TAGFselector()
 {
+	//Clear TrackTempMap
+	for(auto it = m_trackTempMap.begin(); it != m_trackTempMap.end(); ++it)
+		delete it->second;
+	
+	m_trackTempMap.clear();
+
+	m_chargeVect->clear();
+
+	for(auto it = m_allHitMeas->begin(); it != m_allHitMeas->end(); ++it)
+	{
+		for(auto itvec : it->second)
+			delete itvec;
+		it->second.clear();
+	}
+	m_allHitMeas->clear();
+
+	for(auto it : m_trackRepVec)
+		delete it;
+	m_trackRepVec.clear();
+	
+	m_trackSlopeMap.clear();
+
+	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
+		it->second.clear();
 }
 
 
@@ -474,6 +498,7 @@ int TAGFselector::Categorize_Linear()
 
 		// preFitter->processTrackWithRep( itTrack->second, itTrack->second->getCardinalRep() );
 	}
+	delete preFitter;
 
 	FillTrackCategoryMap();
 
@@ -590,9 +615,10 @@ void TAGFselector::CategorizeVT()
 
 			int IdTrack = iVtx*1000 + iTrack;
 
-			m_trackTempMap[IdTrack] = fitTrack_;
+			m_trackTempMap[IdTrack] = new Track(*fitTrack_);
 			m_trackSlopeMap[IdTrack] = tracklet->GetSlopeZ();
 		
+			delete fitTrack_;
 		}	// end track loop
 
 	} //end loop on vertices
@@ -877,6 +903,7 @@ void TAGFselector::CategorizeMSD()	{
 		++itTrack;
 
 	}// end loop on GF Track candidates
+	delete m_fitter_extrapolation;
 
 }
 
@@ -1039,6 +1066,7 @@ void TAGFselector::CategorizeTW()
 			(itTrack->second)->insertMeasurement( hitToAdd );
 		}
 	}
+	delete m_fitter_extrapolation;
 	
 }
 
@@ -1320,7 +1348,7 @@ void TAGFselector::BackTracklets()
 		}
 
 	}
-	
+	delete m_fitter_extrapolation;
 
 	return;
 }
@@ -1390,7 +1418,7 @@ void TAGFselector::FillTrackCategoryMap()  {
 		}
 
 		outName += Form("_%d_%d", measMass, itTrack->first);
-		(*m_trackCategoryMap)[outName] = itTrack->second;
+		(*m_trackCategoryMap)[outName] = new Track(*(itTrack->second));
 
 	}
 }
@@ -1636,6 +1664,5 @@ TString TAGFselector::GetRecoTrackName(Track* tr)
 	Error("GetRecoTrackName()", "Track not found in Category Map!!");
 	throw -1;
 }
-
 
 

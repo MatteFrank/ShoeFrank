@@ -78,7 +78,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 
 	TAGrecoManager::GetPar()->Print("all");
 	cout << "TAGactKFitter::TAGactKFitter -- 1" << endl;
-	m_uploader = new TAGFuploader( m_sensorIDmap );
+	// m_uploader = new TAGFuploader( m_sensorIDmap );
 	cout << "TAGactKFitter::TAGactKFitter -- 2" << endl;
 	m_trackAnalysis = new TAGF_KalmanStudies();
 
@@ -105,9 +105,36 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 //!
 //! Delete all the objects used for Kalman Filter extrapolation
 TAGactKFitter::~TAGactKFitter() {
-    delete m_fitter;
-    delete m_fitter_extrapolation;
-    delete m_refFitter;
+	ClearData();
+	ClearHistos();
+
+	delete m_fitter;
+	delete m_fitter_extrapolation;
+	delete m_refFitter;
+	delete m_dafRefFitter;
+	delete m_dafSimpleFitter;
+
+	delete m_trueParticleRep;
+	// delete m_outTrackRepo;
+	delete m_sensorIDmap;
+	delete m_trackAnalysis;
+
+	m_Particles.clear();
+	m_ParticleIndex.clear();
+	m_Isotopes.clear();
+	m_IsotopesIndex.clear();
+	m_vecHistoColor.clear();
+
+	delete display;
+	delete m_TopVolume;
+	delete m_GeoTrafo;
+
+	m_NClusGood.clear();
+	m_NClusTrack.clear();
+	m_genCount_vector.clear();
+	m_nConvergedTracks_all.clear();
+	m_nConvergedTracks_matched.clear();
+	m_nSelectedTrackCandidates.clear();
 }
 
 
@@ -148,17 +175,20 @@ void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
 //! Upload clusters/points in GenFit format, categorize them and fit the selected tracks
 //! \return True if the action was successful
 Bool_t TAGactKFitter::Action()	{
+	ClearData();
 
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
 
 	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
+
+	TAGFuploader* m_uploader = new TAGFuploader( m_sensorIDmap );
 
 	m_uploader->TakeMeasHits4Fit( m_allHitMeasGF );
 	vector<int> chVect;
 	m_uploader->GetPossibleCharges( &chVect, m_IsMC );
 
 	if ( m_IsMC ) {
-		m_measParticleMC_collection = m_uploader->TakeMeasParticleMC_Collection();
+		m_measParticleMC_collection = *(m_uploader->TakeMeasParticleMC_Collection());
 		m_numGenParticle_noFrag += m_uploader->GetNumGenParticle_noFrag();
 	}
 
@@ -169,7 +199,7 @@ Bool_t TAGactKFitter::Action()	{
 			cout << it->first << "\t" << it->second.size() << endl;
 	}
 
-	m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, m_measParticleMC_collection, m_IsMC);
+	TAGFselector* m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC);
 
 	if ( m_selector->Categorize() >= 0 ) {
 
@@ -178,29 +208,13 @@ Bool_t TAGactKFitter::Action()	{
 			FillGenCounter( m_selector->CountParticleGenaratedAndVisible() );
 		}
 
-		MakeFit(evNum);
+		MakeFit(evNum, m_selector);
 	}
 	
 	chVect.clear();
 	
-	if( m_IsMC )	m_measParticleMC_collection->clear();
-	
-	m_allHitMeasGF.clear();
-
-	for ( auto it = m_mapTrack.cbegin(), next_it = m_mapTrack.cbegin(); it != m_mapTrack.cend(); it = next_it)	{
-		next_it = it; ++next_it;	
-		delete (*it).second;
-		m_mapTrack.erase(it);
-	}
-	// for ( map<TString,Track*>::iterator trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); trackIt++) {
-	// 	delete (*trackIt).second;
-	// }
-	// for (auto it = m_mapTrack.begin(); it != m_mapTrack.end(); /* don't increment here*/) {
-	//     delete it->second;
-	//     it = m_mapTrack.erase(it);  // update here
-	// }
-
-	// m_mapTrack.clear();
+	delete m_selector;
+	delete m_uploader;
 
 	fpGlobTrackRepo->SetBit(kValid);
 	return true;
@@ -660,7 +674,7 @@ void TAGactKFitter::CreateGeometry()  {
 //!
 //! \param[in] evNum Event number
 //! \return Number of fitted tracks in the event
-int TAGactKFitter::MakeFit( long evNum ) {
+int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 
 	if ( m_debug > 0 )		cout << "Starting MakeFit " << endl;
 
@@ -728,7 +742,7 @@ int TAGactKFitter::MakeFit( long evNum ) {
 		if( m_IsMC )	EvaluateProjectionEfficiency(fitTrack);
 
 		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" )
-			CheckChargeHypothesis(&PartName, fitTrack);
+			CheckChargeHypothesis(&PartName, fitTrack, m_selector);
 
 		std::string newTrackName = trackIt->first.Data();
 		if(PartName != tok.at(0))
@@ -812,9 +826,9 @@ int TAGactKFitter::MakeFit( long evNum ) {
 				RecordTrackInfo( fitTrack, newTrackName );
 				if(m_debug > 0) cout << "DONE\n";
 
+				m_vectorConvergedTrack.push_back( fitTrack );
 			}
 		}
-		m_vectorConvergedTrack.push_back( fitTrack );
 		
 		// // fill a vector with the categories fitted at least onece
 		// if ( find( m_categoryFitted.begin(), m_categoryFitted.end(), (*hitSample).first ) == m_categoryFitted.end() )
@@ -1165,6 +1179,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
     //! Get the accumulated X/X0 (path / radiation length) of the material crossed in the last extrapolation.
     // virtual double getRadiationLenght() const = 0;
 
+	for(auto it : shoeTrackPointRepo)
+		delete it;
+	shoeTrackPointRepo.clear();
+
 }
 
 
@@ -1260,7 +1278,7 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 	*iClus = m_sensorIDmap->GetHitIDFromMeasID( hitID );
 
 	if ( m_IsMC )
-		*iPart = m_measParticleMC_collection->at( hitID );
+		*iPart = m_measParticleMC_collection.at( hitID );
 
 }
 
@@ -1706,7 +1724,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 		m_NClusTrack.at( PlaneId )++;
 
 		bool good = false;
-		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
+		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection.at(MeasId).begin(); itTrackMC != m_measParticleMC_collection.at(MeasId).end(); ++itTrackMC)
 		{
 			TAMCpart* particle = m_trueParticleRep->GetTrack(*itTrackMC);
 			chargeMC = particle->GetCharge();
@@ -1728,7 +1746,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 //! In case of mismatch, the function corrects the intial hypothesis and reset the seed for the track fit
 //! \param[in,out] PartName Pointer to the name of the particle ("H,"He","Li"...). If the particle hypothesis changes, this variable is updated with the new name
 //! \param[in] fitTrack Pointer to the track under study
-void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack)
+void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselector* m_selector)
 {
 	int chargeFromTW = m_selector->GetChargeFromTW( fitTrack );
 	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;
@@ -1793,3 +1811,98 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack)
 
 
 
+
+void TAGactKFitter::ClearData()
+{
+	for(auto it = m_allHitMeasGF.begin(); it != m_allHitMeasGF.end(); ++it)
+	{
+		for(auto itvec : it->second)
+			delete itvec;
+		it->second.clear();
+	}
+	m_allHitMeasGF.clear();
+
+	for(auto it : m_vectorConvergedTrack)
+		delete it;
+	m_vectorConvergedTrack.clear();
+
+	if( m_IsMC )
+	{
+		for(auto it = m_measParticleMC_collection.begin(); it != m_measParticleMC_collection.end(); ++it)
+			it->second.clear();
+		m_measParticleMC_collection.clear();
+	}
+
+	for ( auto trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); trackIt++)
+		delete trackIt->second;
+	m_mapTrack.clear();
+
+}
+
+
+void TAGactKFitter::ClearHistos()
+{
+	delete h_purity;
+	delete h_trackEfficiency;
+	delete h_trackQuality;
+	delete h_trackMC_true_id;
+	delete h_trackMC_reco_id;
+	delete h_length;
+	delete h_tof;
+	delete h_nMeas;
+	delete h_mass;
+	delete h_chi2;
+	delete h_pVal;
+	delete h_chargeMC;
+	delete h_chargeMeas;
+	delete h_chargeFlip;
+	delete h_momentum;
+	delete h_dR;
+	delete h_phi;
+	delete h_theta;
+	delete h_eta;
+	delete h_dx_dz;
+	delete h_dy_dz;
+	delete h_mcMom;
+	delete h_mcPosX;
+	delete h_mcPosY;
+	delete h_mcPosZ;
+
+	for(auto it = h_deltaP.begin(); it != h_deltaP.end(); ++it)
+		delete it->second;
+	h_deltaP.clear();
+
+	for(auto it = h_sigmaP.begin(); it != h_sigmaP.end(); ++it)
+		delete it->second;
+	h_sigmaP.clear();
+
+	for(auto it = h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); ++it)
+		delete it->second;
+	h_resoP_over_Pkf.clear();
+
+	for(auto it = h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it)
+		delete it->second;
+	h_biasP_over_Pkf.clear();
+
+	for(auto it : h_momentum_true)
+		delete it;
+	h_momentum_true.clear();
+
+	for(auto it : h_momentum_reco)
+		delete it;
+	h_momentum_reco.clear();
+
+	for(auto it : h_ratio_reco_true)
+		delete it;
+	h_ratio_reco_true.clear();
+
+
+	for(auto it = h_dPOverP_x_bin.begin(); it != h_dPOverP_x_bin.end(); ++it)
+	{
+		for(auto iit = it->second.begin(); iit != it->second.end(); ++iit)
+			delete iit->second;
+		it->second.clear();
+	}
+	h_dPOverP_x_bin.clear();
+
+}

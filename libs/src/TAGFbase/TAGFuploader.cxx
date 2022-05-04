@@ -40,7 +40,18 @@ TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 //!
 //! CURRENTLY NOT USED -> CHECK. Added to have a complete documentation of the class
 TAGFuploader::~TAGFuploader()
-{}
+{
+	for(auto it = m_allHitMeas->begin(); it != m_allHitMeas->end(); ++it)
+	{
+		for(auto itvec : it->second)
+			delete itvec;
+		it->second.clear();
+	}
+	m_allHitMeas->clear();
+
+	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
+		it->second.clear();
+}
 
 
 //----------------------------------------------------------------------------------------------------
