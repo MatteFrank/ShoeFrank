@@ -222,7 +222,8 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     ComputePosition(cluster);
     ComputeCog(cluster);
     ComputeEta(cluster);
-    ComputeCorrEnergy(cluster);
+    if (fpCalib)
+       ComputeCorrEnergy(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);    
@@ -370,7 +371,8 @@ void TAMSDactNtuCluster::ComputeEta(TAMSDcluster* cluster)
    cluster->SetEta(fCurrentEta);
 }
 
-
+//______________________________________________________________________________
+//
 void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
 {
   Float_t eCorrection = 1.;
@@ -381,7 +383,6 @@ void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
 
   cluster->SetEnergyLossCorr(fCurrentEnergy * eCorrection);
 }
-
 
 //______________________________________________________________________________
 //
