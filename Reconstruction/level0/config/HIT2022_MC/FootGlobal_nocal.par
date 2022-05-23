@@ -18,11 +18,11 @@ Genfit Event Display ON: n
 
 IncludeKalman:   n
 IncludeTOE:      n
-IncludeStraight: y
-EnableLocalReco: n
+IncludeStraight: n
+EnableLocalReco: y
 
 Kalman Mode:       ref
-Tracking Systems Considered:      VT IT MSD TW
+Tracking Systems Considered:      BM MSD TW
 Reverse Tracking:       false
 
 Kalman preselection strategy: Sept2020
@@ -55,10 +55,10 @@ IncludeDI:			   n
 IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
-IncludeVT:			   y
+IncludeVT:			   n
 IncludeIT:	         n
-IncludeMSD:			   y
+IncludeMSD:			   n
 IncludeTW:			   y
-IncludeCA:			   y
+IncludeCA:			   n
 
 FLUKA version: pro
