@@ -801,6 +801,37 @@ string TACAparGeo::PrintBodies()
       outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
    }
 
+
+      if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
+
+
+      TString plaName = "MP";
+      int dir[2];
+      
+      // Vertical planes
+      dir[0] = -1; dir[1] = 0; //dir[0] =1 -> right plane
+      
+      int id = 2;
+      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + id);
+      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+      
+      id = 0;
+      dir[0] = -1; // left plane
+      hm = GetCombiTransfo(fCrystalsN + id);
+      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+
+      dir[1] = -1; dir[0] = 0; //dir[1] =1 -> botton plane
+      id = 4;
+      hm = GetCombiTransfo(fCrystalsN + id);
+      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+      
+      id = 1;
+      hm = GetCombiTransfo(fCrystalsN + id);
+      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+
+ 
+   }
+
    return outstr.str();
 }
 
