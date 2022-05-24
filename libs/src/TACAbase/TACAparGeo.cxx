@@ -668,6 +668,37 @@ string TACAparGeo::PrintBodies()
       outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
    }
 
+
+      if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
+
+
+      TString plaName = "MP";
+      int dir[2];
+      
+      // Vertical planes
+      dir[0] = -1; dir[1] = 0; //dir[0] =1 -> right plane
+      
+      int id = 2;
+      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + id);
+      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+      
+      id = 0;
+      dir[0] = -1; // left plane
+      hm = GetCombiTransfo(fCrystalsN + id);
+      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+
+      dir[1] = -1; dir[0] = 0; //dir[1] =1 -> botton plane
+      id = 4;
+      hm = GetCombiTransfo(fCrystalsN + id);
+      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+      
+      id = 1;
+      hm = GetCombiTransfo(fCrystalsN + id);
+      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+
+ 
+   }
+
    return outstr.str();
 }
 
@@ -1036,7 +1067,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
    }
 
    // CENTRAL_DET 2x2 Modules
-   if ( fConfigTypeGeo.CompareTo("CENTRAL_DET") == 0 || fConfigTypeGeo.CompareTo("FULL_DET") != 0 ) {
+   if ( fConfigTypeGeo.CompareTo("CENTRAL_DET") == 0 ) {
       line.Form(" +air_cal -(AP000_1 + AP000_2 +AP000_3 +AP000_4 +AP000_5 +AP000_6)\n");
       outstr << line.Data();
       line.Form(" +air_cal -(AP001_1 + AP001_2 +AP001_3 +AP001_4 +AP001_5 +AP001_6)\n");
@@ -1047,6 +1078,37 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       outstr << line.Data();
       return outstr.str();
    }
+
+
+   //FIVE MOD in a row
+   if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
+
+      // 4 first modules
+      int id = 3;
+      line.Form(" +air_cal -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 0;
+      line.Form(" +air_cal -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 1;
+      line.Form("+air_cal  -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 2;
+      line.Form("AIR_CAL1    5 | +air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      // fifth crystal
+      id = 4;
+      line.Form("+air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+   }
+
+
 
    // FULL Detector 
    if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
@@ -1236,6 +1298,9 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
    
    if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL9", 
+                          "1.", Form("%d",magnetic), "", "") << endl;
+   } else if  (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
+      outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL1", 
                           "1.", Form("%d",magnetic), "", "") << endl;
    }  else
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", 
