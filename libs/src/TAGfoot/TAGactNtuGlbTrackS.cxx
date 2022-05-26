@@ -58,7 +58,8 @@
  Computing energy loss and scattering angle
  */
 
-Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
+Bool_t  TAGactNtuGlbTrackS::fgBmMatched  = false;
+Bool_t  TAGactNtuGlbTrackS::fgCaTwUpdate = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -196,13 +197,24 @@ void TAGactNtuGlbTrackS::CreateHistogram()
       fOffsetMsd = nHistos;
       nHistos += pGeoMapMs->GetStationsN();
    }
-
-   fOffsetTof = nHistos;
    
-   for (Int_t i = 0; i < nHistos+1; ++i) {
-      fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
+   fOffsetTof = nHistos;
+
+   if (TAGrecoManager::GetPar()->IncludeTW())
+      nHistos++;
+      
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      nHistos++;
+   
+   for (Int_t i = 0; i < nHistos; ++i) {
+      if (i != 7 && i != 8) {
+         fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
+         fpHisResY[i] = new TH1F(Form("%sResY%d", prefix.Data(), i+1), Form("%s - ResidualY of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
+      } else {
+         fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -2, 2);
+         fpHisResY[i] = new TH1F(Form("%sResY%d", prefix.Data(), i+1), Form("%s - ResidualY of sensor %d", titleDev.Data(), i+1), 400, -2, 2);
+      }
       AddHistogram(fpHisResX[i]);
-      fpHisResY[i] = new TH1F(Form("%sResY%d", prefix.Data(), i+1), Form("%s - ResidualY of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
       AddHistogram(fpHisResY[i]);
    }
    
@@ -721,7 +733,8 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
          track->SetTwTof(tof);
    
          bestCluster->SetFound();
-         UpdateParam(track);
+         if (fgCaTwUpdate)
+            UpdateParam(track);
 
          if(FootDebugLevel(1))
             printf("TW\n");
@@ -797,7 +810,8 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
       track->SetFitEnergy(Ek*TAGgeoTrafo::MevToGev());
       
       bestCluster->SetFound();
-      UpdateParam(track);
+      if (fgCaTwUpdate)
+         UpdateParam(track);
          
       if(FootDebugLevel(1))
          printf("CA\n");
@@ -880,6 +894,7 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
       }
       
       if (devName.Contains(TACAparGeo::GetBaseName())) {
+         offset = fOffsetTof+1;
          caEnergyRes = cluster->GetEnergyLoss();
       }
       

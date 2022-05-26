@@ -629,7 +629,7 @@ string TACAparGeo::PrintBodies()
    }
 
    // FIVE Modules: calo geometry for the HIT test beam
-   // Divide air_cal with one vertical plane in two parts in order to have
+   // Divide air_cal in two parts thourgh one vertical plane in order to have
    // 2 and 3 modules in each region
    if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
        TString plaName = "MP";
@@ -1277,6 +1277,9 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
 
    if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL9",
+                          "1.", Form("%d",magnetic), "", "") << endl;
+   } else if  (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
+      outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL1",
                           "1.", Form("%d",magnetic), "", "") << endl;
    } else if  (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL1",
