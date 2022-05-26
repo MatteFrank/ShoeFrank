@@ -42,7 +42,10 @@ const Int_t   TACAparGeo::fgkCrystalsNperModule = 9;
 
 
 //_____________________________________________________________________________
+<<<<<<< HEAD
 //! Default constructor
+=======
+>>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
 TACAparGeo::TACAparGeo()
 : TAGparTools(),
   fIonisation(new TAGionisMaterials())
@@ -87,15 +90,15 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 
    // BGO crystals
    ReadStrings(fCrystalMat);
-    if (FootDebugLevel(1))
+   if (FootDebugLevel(1))
       cout << "   Crystals material : " <<  fCrystalMat << endl;
 
    ReadItem(fCrystalDensity);
-    if (FootDebugLevel(1))
+   if (FootDebugLevel(1))
       cout << "   Crystals density : " <<  fCrystalDensity << endl;
 
    ReadItem(fCrystalIonisMat);
-    if (FootDebugLevel(1))
+   if (FootDebugLevel(1))
       cout << "   Crystals mean excitation energy : " <<  fCrystalIonisMat << endl;
 
    TVector3 crystalFront;
