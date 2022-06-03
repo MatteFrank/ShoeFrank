@@ -58,32 +58,33 @@ int main (int argc, char *argv[])  {
      cout<<out.Data()<<endl;
    }
    
-   GlobalAlign* locRec = new GlobalAlign(exp, runNb, in, out);
+   GlobalAlign* glbAlign = new GlobalAlign(exp, runNb, in, out);
+
+   glbAlign->EnableTracking();
 
    // global setting
    if(his)
-      locRec->EnableHisto();
+      glbAlign->EnableHisto();
    
    if(zmatch)
-     locRec->EnableTWZmatch();
+     glbAlign->EnableTWZmatch();
    
    if (tbc)
-     locRec->EnableTWcalibPerBar();
-   
+     glbAlign->EnableTWcalibPerBar();
    
    if (nSkipEv > 0)
-      locRec->GoEvent(nSkipEv);
+      glbAlign->GoEvent(nSkipEv);
    
    TStopwatch watch;
    watch.Start();
    
-   locRec->BeforeEventLoop();
-   locRec->LoopEvent(nTotEv);
-   locRec->AfterEventLoop();
+   glbAlign->BeforeEventLoop();
+   glbAlign->LoopEvent(nTotEv);
+   glbAlign->AfterEventLoop();
    
    watch.Print();
 
-   delete locRec;
+   delete glbAlign;
    
    return 0;
 } 
