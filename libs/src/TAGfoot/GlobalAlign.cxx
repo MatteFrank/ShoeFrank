@@ -30,7 +30,9 @@ ClassImp(GlobalAlign)
 GlobalAlign::GlobalAlign(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : LocalReco(expName, runNumber, fileNameIn, fileNameout)
 {
-   fFlagOut = false;
+   EnableMsdTracking();
+   
+   TAGrecoManager::GetPar()->IncludeStraight(false);
 }
 
 //__________________________________________________________
@@ -72,6 +74,9 @@ void GlobalAlign::LoopEvent(Int_t nEvents)
 void GlobalAlign::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
+   
+   if (fFlagOut)
+      CloseFileOut();
    
    CloseFileIn();
 }
