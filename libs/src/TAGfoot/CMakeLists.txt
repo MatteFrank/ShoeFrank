@@ -29,6 +29,7 @@ set( with_dictionnaries
    BaseReco
    LocalRecoMC
    LocalReco
+   GlobalAlign
    TAGactNtuGlbTrack
    TAGactNtuGlbTrackS
    GlobalReco

@@ -20,6 +20,7 @@
 #pragma link C++ class BaseReco;
 #pragma link C++ class LocalRecoMC;
 #pragma link C++ class LocalReco;
+#pragma link C++ class GlobalAlign;
 
 #pragma link C++ class TAGactNtuGlbTrack;
 #pragma link C++ class GlobalToeReco;
