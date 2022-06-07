@@ -31,8 +31,8 @@ ClassImp(LocalReco)
  */
 /*------------------------------------------+---------------------------------*/
 
-Bool_t  LocalReco::fgStdAloneFlag = false;
-Int_t   LocalReco::fNumFileStdAlone=1;
+Bool_t  LocalReco::fgStdAloneFlag    = false;
+Int_t   LocalReco::fgNumFileStdAlone = 1;
 
 //__________________________________________________________
 //! Constructor
@@ -93,7 +93,7 @@ void LocalReco::CreateRawAction()
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
                                       fpParTimeWD, fgStdAloneFlag);
       if (fgStdAloneFlag)
-         fActWdRaw->SetMaxFiles(fNumFileStdAlone);
+         fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
       if (fFlagHisto)
          fActWdRaw->CreateHistogram();
