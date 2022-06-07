@@ -91,21 +91,6 @@ target_link_libraries(DecodeMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBR
 #
 install(TARGETS DecodeMC DESTINATION bin)
 
-
-
-#----------------------------------------------------------------------------
-# Add the executable, and link it to the Genfit and root libraries
-#
-add_executable(GlobalAlign GlobalAlign.cc)
-#
-target_link_libraries(GlobalAlign ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
-
-#----------------------------------------------------------------------------
-# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
-#
-install(TARGETS GlobalAlign DESTINATION bin)
-
-
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
