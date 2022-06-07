@@ -15,7 +15,7 @@ ClassImp(GlobalAlign)
 
 /*!
  \class GlobalAlign
- \brief Reconstruction class from raw data
+ \brief Global alignment class from raw data
  */
 /*------------------------------------------+---------------------------------*/
 
