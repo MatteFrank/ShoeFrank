@@ -4,7 +4,7 @@
 
 /*!
  \file GlobalAlign.hxx
- \brief Reconstruction class from raw data
+ \brief Global al.ignment class from raw data
  \author Ch. Finck
  */
 /*------------------------------------------+---------------------------------*/
