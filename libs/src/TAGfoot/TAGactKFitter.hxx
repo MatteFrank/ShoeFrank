@@ -210,6 +210,7 @@ private:
 
 	TH1F* h_trackMC_true_id;							///< MC true particle Id -- histo
 	TH1F* h_trackMC_reco_id;							///< Fitted particle Id -- histo
+	TH1F* h_nTracksPerEv;								///< Numbrer of Fitted track per event -- histo
 	
 	TH1F* h_length;										///< Fitted track length (TG-TW) -- histo
 	TH1F* h_tof;										///< Fitted track Time-Of-Flight (TG-TW) -- histo
