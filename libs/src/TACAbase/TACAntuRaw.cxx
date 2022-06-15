@@ -156,9 +156,9 @@ void TACAntuRaw::NewHit(TWaveformContainer *W){
 //! ostream insertion.
 void TACAntuRaw::ToStream(ostream& os, Option_t* option) const
 {
-  os << "TACAntuRaw " << GetName()
-	 << " fHistN"    << fHistN
-     << endl;
+   os << "TACAntuRaw " << GetName()
+	   << " fHistN" << fHistN
+      << endl;
 }
 
 
