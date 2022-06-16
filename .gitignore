@@ -17,6 +17,8 @@
 *.cint_rdict.pcm
 *.d
 
+build
+
 Reconstruction/level0/results
 Reconstruction/level0/DecodeMC
 
