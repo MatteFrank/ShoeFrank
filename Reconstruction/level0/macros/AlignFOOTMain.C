@@ -166,10 +166,20 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Int_t indoalign=5,
   TString nameOut;
   if(extname.Length()==0){
     nameOut = nameFile(nameFile.Last('/')+1, pos);
-    nameOut.Prepend("shoetree_");
+    nameOut.Prepend("alignout_");
     nameOut.Append("_out.root");
   }else
     nameOut=extname;
+
+  //vectors adopted for the alignment, all values are in local frames
+  vector<TVector3> bmvtxslopevec;
+  vector<TVector3> bmvtxoriginvec;
+  vector<TVector3> bmslopevec;
+  vector<TVector3> bmoriginvec;
+  vector<TVector3> msdvtxslopevec;
+  vector<TVector3> msdvtxoriginvec;
+  vector<TVector3> msdslopevec;
+  vector<TVector3> msdoriginvec;
 
   int status;
   TFile *file_out = new TFile(nameOut,"RECREATE");
@@ -197,11 +207,17 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Int_t indoalign=5,
     if(IncludeDAQ)
       status=DataAcquisition();
     if(bmNtuTrack->GetTracksN()==1 && vtxmatchvertex!=nullptr)
-      status=VTXSYNC();
+      status=VTXSYNC(); //check the VT sync
 
-    //combined analysis
-    status=BMVTX();
-  }//Loop on event
+    //Fill vectors of tracks adopted for detectors alignment
+    if(doalign>0){
+      status=FillTrackVect(bmvtxslopevec, bmvtxoriginvec, bmslopevec, bmoriginvec, msdvtxslopevec, msdvtxoriginvec, msdslopevec, msdoriginvec);
+    }
+
+  }//Loop on events
+
+  //here the VTX is fixed, the BM will be shifted and tilted 
+  AlignBM(bmvtxslopevec, bmvtxoriginvec, bmslopevec, bmoriginvec);
 
   file_out->Write();
   file_out->Close();
