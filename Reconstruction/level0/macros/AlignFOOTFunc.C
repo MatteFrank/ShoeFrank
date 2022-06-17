@@ -54,6 +54,9 @@
 
 #endif
 
+#define DEG2RAD  0.01745329251994329577
+#define RAD2DEG  57.2957795130823208768
+
 //setting global parameters
 #define   debug        0
 
@@ -221,14 +224,15 @@ int Booking(TFile* file_out) {
     h = new TH1D("msd_cls_num_total","Total number of msd clusters x event;Total number clusters;Events",21,-0.5,20.5);
     for(int i=0;i<msdparGeo->GetSensorsN();i++){
       h = new TH1D(Form("msd_cls_num_%d",i),"Number of msd clusters;Number clusters;Events",21,-0.5,20.5);
-      h = new TH1D(Form("msd_clspos_msdsys_%d",i),"msd cluster position in the msd system;pos [cm];Events",1000,-5.,5.);
-      h = new TH1D(Form("msd_clspos_glbsys_%d",i),"msd cluster position in the glb system;pos [cm];Events",1000,-5.,5.);
-
-      //check the msd internal alignment
-      h = new TH1D(Form("msd_residualAllX_%d",i),"Residual of MSD tracks with MSD clusters for all the MSD tracks on X view;(Trackpos-cluspos).X[cm];Events",500,-0.5,0.5);
-      h = new TH1D(Form("msd_residualAllY_%d",i),"Residual of MSD tracks with MSD clusters for all the MSD tracks on Y view;(Trackpos-cluspos).Y[cm];Events",500,-0.5,0.5);
-      h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on X view;(Trackpos-cluspos).X[cm];Events",500,-0.5,0.5);
-      h = new TH1D(Form("msd_residual1TrkY_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on Y view;(Trackpos-cluspos).Y[cm];Events",500,-0.5,0.5);
+      if(i%2==0){
+        h = new TH1D(Form("msd_clspos_msdsys_%d",i),"msd cluster position in the msd system;pos [cm];Events",1000,-5.,5.);
+        h = new TH1D(Form("msd_clspos_glbsys_%d",i),"msd cluster position in the glb system;pos [cm];Events",1000,-5.,5.);
+        //check the msd internal alignment
+        h = new TH1D(Form("msd_residualAllX_%d",i),"Residual of MSD tracks with MSD clusters for all the MSD tracks on X view;(Trackpos-cluspos).X[cm];Events",400,-0.02,0.02);
+        h = new TH1D(Form("msd_residualAllY_%d",i),"Residual of MSD tracks with MSD clusters for all the MSD tracks on Y view;(Trackpos-cluspos).Y[cm];Events",400,-0.02,0.02);
+        h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on X view;(Trackpos-cluspos).X[cm];Events",400,-0.02,0.02);
+        h = new TH1D(Form("msd_residual1TrkY_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on Y view;(Trackpos-cluspos).Y[cm];Events",400,-0.02,0.02);
+      }
     }
 
     h = new TH1D("msd_trk_num","Number of msd tracks per event;Number of msd tracks;Events",21,-0.5,20.5);
@@ -281,18 +285,22 @@ int Booking(TFile* file_out) {
   h2 = new TH2D("origin_yx_bmvtx","BM originY vs VTX originX;BM originY;vtx originX",600,-3.,3.,600,-3.,3.);
   for(Int_t i=0;i<maxentries/1000+1;i++){
     h2 = new TH2D(Form("origin_xx_bmvtx_%d",i),"BM originX vs VTX originX;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
-    h2 = new TH2D(Form("origin_yy_bmvtx_%d",i),"BM originY vs VTX originY;BM originY;vtx originY",600,-3.,3.,600,-3.,3.);
+    // h2 = new TH2D(Form("origin_yy_bmvtx_%d",i),"BM originY vs VTX originY;BM originY;vtx originY",600,-3.,3.,600,-3.,3.);
   }
   gDirectory->cd("..");
   file_out->cd("..");
 
   file_out->mkdir("BMVTX");
   file_out->cd("BMVTX");
+  h = new TH1D("slopeX_vt_diff_start","angle difference bm_track - vtx_track in vtx sys;[rad];Events",2000,-0.3,0.3);
+  h = new TH1D("slopeY_vt_diff_start","angle difference bm_track - vtx_track in vtx sys;[rad];Events",2000,-0.3,0.3);
+  h = new TH1D("originX_vt_diff_start","Difference of bm tracks and vtx tracks X projection in vtx center in vtx local frame;x diff[cm];Events",1000,-5.,5.);
+  h = new TH1D("originY_vt_diff_start","Difference of bm tracks and vtx tracks Y projection in vtx center in vtx local frame;y diff[cm];Events",1000,-5.,5.);
   for(Int_t i=0;i<doalign;i++){
-    h = new TH1D(Form("slopeX_glb_diff_%d",i),"angle difference bm_track - vtx_track in glb sys;[rad];Events",2000,-0.3,0.3);
-    h = new TH1D(Form("slopeY_glb_diff_%d",i),"angle difference bm_track - vtx_track in glb sys;[rad];Events",2000,-0.3,0.3);
-    h = new TH1D(Form("originX_glb_diff_%d",i),"Difference of bm tracks and vtx tracks X projection on tg in glb sys;x diff[cm];Events",1000,-5.,5.);
-    h = new TH1D(Form("originY_glb_diff_%d",i),"Difference of bm tracks and vtx tracks Y projection on tg in glb sys;y diff[cm];Events",1000,-5.,5.);
+    h = new TH1D(Form("slopeX_diff_%d",i),"angle difference bm_track - vtx_track in vtx sys;[rad];Events",2000,-0.3,0.3);
+    h = new TH1D(Form("slopeY_diff_%d",i),"angle difference bm_track - vtx_track in vtx sys;[rad];Events",2000,-0.3,0.3);
+    h = new TH1D(Form("originX_diff_%d",i),"Difference of bm tracks and vtx tracks X projection in vtx center in vtx local frame;x diff[cm];Events",1000,-5.,5.);
+    h = new TH1D(Form("originY_diff_%d",i),"Difference of bm tracks and vtx tracks Y projection in vtx center in vtx local frame;y diff[cm];Events",1000,-5.,5.);
   }
 
   gDirectory->cd("..");
@@ -427,10 +435,12 @@ int MSD(){
   for (int i = 0; i < msdparGeo->GetSensorsN(); i++) {
     totalmsdnclus+=msdntuclus->GetClustersN(i);
     myfill(Form("MSD/msd_cls_num_%d",i),msdntuclus->GetClustersN(i));
-    for(int k=0;k<msdntuclus->GetClustersN(i);k++){
-      TAMSDcluster *msdclus=msdntuclus->GetCluster(i,k);
-      myfill(Form("MSD/msd_clspos_msdsys_%d",i), msdclus->GetPosition().Y());
-      myfill(Form("MSD/msd_clspos_glbsys_%d",i), msdclus->GetPositionG().Y());
+    if(i%2==0){
+      for(int k=0;k<msdntuclus->GetClustersN(i);k++){
+        TAMSDcluster *msdclus=msdntuclus->GetCluster(i,k);
+        myfill(Form("MSD/msd_clspos_msdsys_%d",i), msdclus->GetPosition().Y());
+        myfill(Form("MSD/msd_clspos_glbsys_%d",i), msdclus->GetPositionG().Y());
+      }
     }
   }
   myfill("MSD/msd_cls_num_total",totalmsdnclus);
@@ -456,13 +466,20 @@ int MSD(){
 
     //check the msd internal alignment
     for(int k=0;k<track->GetClustersN();k++){
-      TAGcluster *msdclus=track->GetCluster(k);
-      TVector3 trkpos=ProjectToZ(track->GetSlopeZ(), track->GetOrigin(),msdclus->GetPosition().Z());
-      myfill(Form("MSD/msd_residualAllX_%d",msdclus->GetSensorIdx()),trkpos.X()-msdclus->GetPosition().X());
-      myfill(Form("MSD/msd_residualAllY_%d",msdclus->GetSensorIdx()),trkpos.Y()-msdclus->GetPosition().Y());
-      if(msdntutrack->GetTracksN()==1){
-        myfill(Form("MSD/msd_residual1TrkX_%d",msdclus->GetSensorIdx()),trkpos.X()-msdclus->GetPosition().X());
-        myfill(Form("MSD/msd_residual1TrkY_%d",msdclus->GetSensorIdx()),trkpos.Y()-msdclus->GetPosition().Y());
+      TAMSDpoint* msdclus = (TAMSDpoint*)track->GetCluster(k);
+      //WARNING!! in theory GetPosition() should return the position in the local frame and GetPositionG should return the position in the global frame, but at the moment GetPosition() returns a (0,0,0) vector and GetPositionG return the position in the local frame, once it will be fixed, please modify here!
+      TVector3 cluspos=msdclus->GetPositionG();
+      TVector3 trkpos=ProjectToZ(track->GetSlopeZ(), track->GetOrigin(),cluspos.Z());
+      if(msdclus->GetSensorIdx()%2==0){
+        myfill(Form("MSD/msd_residualAllX_%d",msdclus->GetSensorIdx()),trkpos.X()-cluspos.X());
+        myfill(Form("MSD/msd_residualAllY_%d",msdclus->GetSensorIdx()),trkpos.Y()-cluspos.Y());
+        if(msdntutrack->GetTracksN()==1){
+          myfill(Form("MSD/msd_residual1TrkX_%d",msdclus->GetSensorIdx()),trkpos.X()-cluspos.X());
+          myfill(Form("MSD/msd_residual1TrkY_%d",msdclus->GetSensorIdx()),trkpos.Y()-cluspos.Y());
+        }
+      }else{
+        cout<<"WARNING!!! in MSD()::msdclus->GetSensorIdx()="<<msdclus->GetSensorIdx()<<endl;
+        cout<<"When this code has been written, all the TAMSDpoint are related to an even number of sensor index. Something changed in TAMSDpoint, please check and update the macro!!!"<<endl;
       }
     }
   }
@@ -522,7 +539,7 @@ int VTXSYNC(){
   myfill("VTXSYNC/origin_xy_bmvtx",bmtrack->GetOrigin().X(),vtxmatchvertex->GetVertexPosition().Y());
   myfill("VTXSYNC/origin_yx_bmvtx",bmtrack->GetOrigin().Y(),vtxmatchvertex->GetVertexPosition().X());
   myfill(Form("VTXSYNC/origin_xx_bmvtx_%d",evnum/1000),bmtrack->GetOrigin().X(),vtxmatchvertex->GetVertexPosition().X());
-  myfill(Form("VTXSYNC/origin_yy_bmvtx_%d",evnum/1000),bmtrack->GetOrigin().Y(),vtxmatchvertex->GetVertexPosition().Y());
+  // myfill(Form("VTXSYNC/origin_yy_bmvtx_%d",evnum/1000),bmtrack->GetOrigin().Y(),vtxmatchvertex->GetVertexPosition().Y());
 
   if(debug)
     cout<<"VTXSYNC analysis done"<<endl;
@@ -530,14 +547,153 @@ int VTXSYNC(){
   return 0;
 }
 
-int BMVTX(){
+
+int FillTrackVect(vector<TVector3> &bmvtxslopevec, vector<TVector3> &bmvtxoriginvec, vector<TVector3> &bmslopevec, vector<TVector3> &bmoriginvec, vector<TVector3> &msdvtxslopevec, vector<TVector3> &msdvtxoriginvec, vector<TVector3> &msdslopevec, vector<TVector3> &msdoriginvec){
+
+  //fill bm and vtx vectors
+  //select events with: 1 bm reconstructed tracks, 1 vtx vertex with 1 associated track
+  if(bmNtuTrack->GetTracksN()==1 && vtxNtuVertex->GetVertexN()==1){
+    TAVTvertex *vtxvertex = vtxNtuVertex->GetVertex(0);
+    if(vtxvertex->GetTracksN()==1){
+      TAVTtrack *vttrack=vtxvertex->GetTrack(0);
+      TABMtrack* bmtrack = bmNtuTrack->GetTrack(0);
+      bmvtxslopevec.push_back(vttrack->GetSlopeZ());
+      bmslopevec.push_back(bmtrack->GetSlope());
+      bmvtxoriginvec.push_back(vttrack->GetOrigin());
+      bmoriginvec.push_back(bmtrack->GetOrigin());
+      TVector3 bmprojvt=ProjectToZ(bmtrack->GetSlope(), bmtrack->GetOrigin(),geoTrafo->FromGlobalToBMLocal(geoTrafo->GetVTCenter()).Z());
+      TVector3 bmvecvt=geoTrafo->VecFromGlobalToVTLocal(geoTrafo->VecFromBMLocalToGlobal(bmtrack->GetSlope()));
+      myfill("BMVTX/slopeX_vt_diff_start",bmvecvt.X()-vttrack->GetSlopeZ().X());
+      myfill("BMVTX/slopeY_vt_diff_start",bmvecvt.Y()-vttrack->GetSlopeZ().Y());
+      myfill("BMVTX/originX_vt_diff_start",bmprojvt.X()-vttrack->GetOrigin().X());
+      myfill("BMVTX/originY_vt_diff_start",bmprojvt.Y()-vttrack->GetOrigin().Y());
+    }
+  }
+
+  //fill msd and vtx vectors
+  //select events with: 1 msd reconstructed tracks, 1 vtx vertex with 1 associated track
+  if(msdntutrack->GetTracksN()==1 && vtxNtuVertex->GetVertexN()==1){
+    TAVTvertex *vtxvertex = vtxNtuVertex->GetVertex(0);
+    if(vtxvertex->GetTracksN()==1){
+      TAVTtrack *vttrack=vtxvertex->GetTrack(0);
+      TAMSDtrack* msdtrack = msdntutrack->GetTrack(0);
+      msdvtxslopevec.push_back(vttrack->GetSlopeZ());
+      msdslopevec.push_back(msdtrack->GetSlopeZ());
+      msdvtxoriginvec.push_back(vttrack->GetOrigin());
+      msdoriginvec.push_back(msdtrack->GetOrigin());
+    }
+  }
+
+  return 0;
+}
+
+//align BM and VT
+int AlignBM(vector<TVector3> &bmvtxslopevec, vector<TVector3> &bmvtxoriginvec, vector<TVector3> &bmslopevec, vector<TVector3> &bmoriginvec){
 
   if(debug)
-    cout<<"BMVTX analysis start"<<endl;
+    cout<<"AlignBM analysis start"<<endl;
 
+    TF1 *gaus=new TF1("gaus","gaus", -3., 3.);
+    TVector3 bmnewpos, bmnewangle;
+
+    //initial residual btw bm and vtx tracks:
+    gaus->SetParameters(((TH1D*)gDirectory->Get("BMVTX/originX_vt_diff_start"))->GetEntries(),((TH1D*)gDirectory->Get("BMVTX/originX_vt_diff_start"))->GetMean(), ((TH1D*)gDirectory->Get("BMVTX/originX_vt_diff_start"))->GetStdDev());
+    ((TH1D*)gDirectory->Get("BMVTX/originX_vt_diff_start"))->Fit("gaus","QB+");
+    Double_t BMxtra=gaus->GetParameter(1);
+    gaus->SetParameters(((TH1D*)gDirectory->Get("BMVTX/originY_vt_diff_start"))->GetEntries(),((TH1D*)gDirectory->Get("BMVTX/originY_vt_diff_start"))->GetMean(), ((TH1D*)gDirectory->Get("BMVTX/originY_vt_diff_start"))->GetStdDev());
+    ((TH1D*)gDirectory->Get("BMVTX/originY_vt_diff_start"))->Fit("gaus","QB+");
+    Double_t BMytra=gaus->GetParameter(1);
+    gaus->SetParameters(((TH1D*)gDirectory->Get("BMVTX/slopeX_vt_diff_start"))->GetEntries(),((TH1D*)gDirectory->Get("BMVTX/slopeX_vt_diff_start"))->GetMean(), ((TH1D*)gDirectory->Get("BMVTX/slopeX_vt_diff_start"))->GetStdDev());
+    ((TH1D*)gDirectory->Get("BMVTX/slopeX_vt_diff_start"))->Fit("gaus","QB+");
+    Double_t BMxrot=atan(gaus->GetParameter(1))*RAD2DEG;
+    gaus->SetParameters(((TH1D*)gDirectory->Get("BMVTX/slopeY_vt_diff_start"))->GetEntries(),((TH1D*)gDirectory->Get("BMVTX/slopeY_vt_diff_start"))->GetMean(), ((TH1D*)gDirectory->Get("BMVTX/slopeY_vt_diff_start"))->GetStdDev());
+    ((TH1D*)gDirectory->Get("BMVTX/slopeY_vt_diff_start"))->Fit("gaus","QB+");
+    Double_t BMyrot=-atan(gaus->GetParameter(1))*RAD2DEG;
+    cout<<"residuals between BM and VTX tracks with the current geo parameters:"<<endl;
+    cout<<"BMxtra="<<BMxtra<<"  BMytra="<<BMytra<<endl;
+    cout<<"BMxrot="<<BMxrot<<"  BMyrot="<<BMyrot<<endl;
+
+    bmnewpos.SetXYZ(-BMxtra+geoTrafo->GetDeviceCenter("BM").X(),-BMytra+geoTrafo->GetDeviceCenter("BM").Y(),geoTrafo->GetDeviceCenter("BM").Z());
+    bmnewangle.SetXYZ(-BMxrot+geoTrafo->GetDeviceAngle("BM").X(),-BMyrot+geoTrafo->GetDeviceAngle("BM").Y(),geoTrafo->GetDeviceAngle("BM").Z());
+
+    Double_t loc[] = {0.,0.,0};
+    Double_t glo[] = {0.,0.,0};
+
+    for(Int_t i=0;i<doalign;i++){
+
+      //define the trasformation matrix
+      TGeoRotation bmrot;
+      bmrot.RotateX(bmnewangle.X());
+      bmrot.RotateY(bmnewangle.Y());
+      loc[0] = bmnewpos.X();
+      loc[1] = bmnewpos.Y();
+      loc[2] = bmnewpos.Z();
+      glo[0] = 0.;
+      glo[1] = 0.;
+      glo[2] = 0.;
+      bmrot.LocalToMaster(loc, glo);
+      TGeoTranslation bmtrans(glo[0], glo[1], glo[2]);
+      TGeoHMatrix  bmtransfo;
+      bmtransfo=bmtrans;
+      bmtransfo*=bmrot;
+      glo[0] = geoTrafo->GetVTCenter().X();
+      glo[1] = geoTrafo->GetVTCenter().Y();
+      glo[2] = geoTrafo->GetVTCenter().Z();
+      loc[0] = 0.;
+      loc[1] = 0.;
+      loc[2] = 0.;
+      bmtransfo.MasterToLocal(glo,loc);
+      TVector3 vtxposbmsys (loc[0],loc[1],loc[2]);   //VTX position in bmn local framework  with new align parameters
+
+      //fill the bm-vtx residual plots
+      for(Int_t k=0;k<bmslopevec.size();k++){
+        Double_t bmslopelocal[3]  = {bmslopevec.at(k).X(), bmslopevec.at(k).Y(), bmslopevec.at(k).Z()};
+        Double_t bmslopeglobal[3] = {0., 0., 0.};
+        bmtransfo.LocalToMasterVect(bmslopelocal,bmslopeglobal);
+        TVector3 vtxslopeglobal=geoTrafo->VecFromVTLocalToGlobal(bmvtxslopevec.at(k));
+        ((TH1D*)gDirectory->Get(Form("BMVTX/slopeX_diff_%d",i)))->Fill(bmslopeglobal[0]/bmslopeglobal[2]-vtxslopeglobal[0]/vtxslopeglobal[2]);
+        ((TH1D*)gDirectory->Get(Form("BMVTX/slopeY_diff_%d",i)))->Fill(bmslopeglobal[1]/bmslopeglobal[2]-vtxslopeglobal[1]/vtxslopeglobal[2]);
+
+        TVector3 bmvtxlocal = ProjectToZ(bmslopevec.at(k), bmoriginvec.at(k),vtxposbmsys.Z());
+        Double_t bmoriginlocal[3] = {bmvtxlocal.X(), bmvtxlocal.Y(), bmvtxlocal.Z()};
+        Double_t bmoriginglobal[3] = {0., 0., 0.};
+        bmtransfo.LocalToMaster(bmoriginlocal,bmoriginglobal);
+
+        TVector3 vtxoriginglobal=geoTrafo->FromVTLocalToGlobal(bmvtxoriginvec.at(k));
+        ((TH1D*)gDirectory->Get(Form("BMVTX/originX_diff_%d",i)))->Fill(bmoriginglobal[0]-vtxoriginglobal[0]);
+        ((TH1D*)gDirectory->Get(Form("BMVTX/originY_diff_%d",i)))->Fill(bmoriginglobal[1]-vtxoriginglobal[1]);
+      }
+
+      //estimate the new bm geometry parameters
+      gaus->SetParameters(((TH1D*)gDirectory->Get(Form("BMVTX/originX_diff_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("BMVTX/originX_diff_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("BMVTX/originX_diff_%d",i)))->GetStdDev());
+      ((TH1D*)gDirectory->Get(Form("BMVTX/originX_diff_%d",i)))->Fit("gaus","QB+");
+      Double_t newbmxtra=gaus->GetParameter(1);
+      gaus->SetParameters(((TH1D*)gDirectory->Get(Form("BMVTX/originY_diff_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("BMVTX/originY_diff_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("BMVTX/originY_diff_%d",i)))->GetStdDev());
+      ((TH1D*)gDirectory->Get(Form("BMVTX/originY_diff_%d",i)))->Fit("gaus","QB+");
+      Double_t newbmytra=gaus->GetParameter(1);
+      bmnewpos.SetXYZ(-newbmxtra+bmnewpos.X(),-newbmytra+bmnewpos.Y(),geoTrafo->GetDeviceCenter("BM").Z());
+
+      gaus->SetParameters(((TH1D*)gDirectory->Get(Form("BMVTX/slopeX_diff_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("BMVTX/slopeX_diff_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("BMVTX/slopeX_diff_%d",i)))->GetStdDev());
+      ((TH1D*)gDirectory->Get(Form("BMVTX/slopeX_diff_%d",i)))->Fit("gaus","QB+");
+      Double_t newbmyrot=atan(gaus->GetParameter(1))*RAD2DEG;
+      gaus->SetParameters(((TH1D*)gDirectory->Get(Form("BMVTX/slopeY_diff_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("BMVTX/slopeY_diff_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("BMVTX/slopeY_diff_%d",i)))->GetStdDev());
+      ((TH1D*)gDirectory->Get(Form("BMVTX/slopeY_diff_%d",i)))->Fit("gaus","QB+");
+      Double_t newbmxrot=-atan(gaus->GetParameter(1))*RAD2DEG;
+      bmnewangle.SetXYZ(-newbmxrot+bmnewangle.X(),-newbmyrot+bmnewangle.Y(),geoTrafo->GetDeviceAngle("BM").Z());
+
+      if(i==0)
+        cout<<"Total number of doalign iterations="<<doalign<<".  Do align parameters:"<<endl;
+      cout<<"iteration="<<i<<endl;
+      cout<<"bm-vtx residual on X traslation: newbmxtra="<<newbmxtra<<"; Y traslation: newbmytra="<<newbmytra<<endl;
+      cout<<"bm new position parameters:"<<endl;
+      cout<<"BmPosX: "<<bmnewpos.X()<<" BmPosY: "<<bmnewpos.Y()<<" BmPosZ: "<<bmnewpos.Z()<<endl;
+      cout<<"bm-vtx residual on X rotation: newbmxrot="<<newbmxrot<<"; Y rotation: newbmyrot="<<newbmyrot<<endl;
+      cout<<"bm new rotation parameters:"<<endl;
+      cout<<"BmAngX: "<<bmnewangle.X()<<" BmAngY: "<<bmnewangle.Y()<<"  BmAngZ: "<<bmnewangle.Z()<<endl<<endl;
+    }
 
   if(debug)
-    cout<<"BMVTX analysis done"<<endl;
+    cout<<"AlignBM analysis done"<<endl;
 
   return 0;
 }
