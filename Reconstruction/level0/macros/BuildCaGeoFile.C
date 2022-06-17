@@ -24,8 +24,8 @@
    //////// Set config values
 
    // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD)
-   TString fConfig_typegeo = "FIVE_MOD";
-   // TString fConfig_typegeo = "FULL_DET";
+   //TString fConfig_typegeo = "FIVE_MOD";
+   TString fConfig_typegeo = "FULL_DET";
 
    // half dimensions of BGO crystal
    double xdim1 = 1.;
@@ -42,6 +42,7 @@ TObjArray *    fListOfModules;   //!
 TVector3       fcalSize;
 const TString fgkDefaultCrysName = "caCrys";
 const TString fDetectorName = "CA";
+TString fgPath;
 
 void EndGeometry(FILE* fp);
 
@@ -64,7 +65,15 @@ public:
 void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
 {
 
+
    FILE* fp = fopen(fileOutName.Data(), "w");
+
+   if (fp == NULL) { 
+      cerr << "Can't open file: " << fileOutName.Data() << endl;
+      return;
+   }
+
+   fgPath = gSystem->DirName(fileOutName.Data()); 
 
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
@@ -95,6 +104,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    fprintf(fp,"Delta:        %f\n\n", delta);
 
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
+      cout << TAGgeoTrafo::GetDefaultGeomName() << " : " << TAGgeoTrafo::GetDefaultGeomName() << std::flush << endl;
       new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
    }
 
@@ -119,12 +129,12 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    double trp_hipot = TMath::Sqrt( zdim * zdim * 4  + deltaX * deltaX );
    double alfa = TMath::ASin (deltaX / trp_hipot);
    double alfa_degree = alfa  * 180./ TMath::Pi();
-   cout << "alfa_degree " << alfa_degree << endl;
+   cout << "alfa_degree " << alfa_degree << std::flush << endl;
 
    // compute some values of the full piramid dimensions
    double piramid_hipot = xdim2 / TMath::Sin(alfa);
 
-   //cout << "piramid_hipot " << piramid_hipot << endl;
+   //cout << "piramid_hipot " << piramid_hipot << std::flush << endl;
    double piramid_base = piramid_hipot * TMath::Cos(alfa);
    double piramid_base_c = piramid_base - zdim; // distance from center to the piramid vertex
 
@@ -343,7 +353,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    }
 
    if ( fConfig_typegeo.CompareTo("FULL_DET") == 0 ) {
-      cout << "****  WARNING : FULL_DET geometry is not ready for FLUKA simulation!" << endl;
+      cout << "****  WARNING : FULL_DET geometry is not ready for FLUKA simulation!" << std::flush << endl;
    }
 
    // displacement of module center (SECOND LEVEL)
@@ -560,9 +570,9 @@ TVector3 PrintCalorimeterSize(FILE * fp, double &shift)
    fCaloSize[2] = fCaloSize[2]*1.05; //to build the bounding box a little bit bigger (safer for FLUKA)
 
    cout << "  Calorimeter Size: "
-        << fCaloSize[0] << ", " << fCaloSize[1] << ", " << fCaloSize[2] << " cm" << endl;
+        << fCaloSize[0] << ", " << fCaloSize[1] << ", " << fCaloSize[2] << " cm" << std::flush << endl;
    shift = (maxpoint[2] + minpoint[2])/2;
-   cout << "Shift " << (maxpoint[2] + minpoint[2] + delta[2])/2 << endl;
+   cout << "Shift " << (maxpoint[2] + minpoint[2] + delta[2])/2 << std::flush << endl;
 
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"// Parameter of the Calorimeter bounding box (cm)\n");
@@ -619,15 +629,22 @@ void GetListOfModules( TGeoNode * node, TGeoHMatrix matrix )
 //-----------------------------------------------------------------------------
 void ShowDetectorIdsMap()
 {
+   // Draw cristal id position on modules
+   // This help to create the map of cystal ID to board/channel
 
-   TCanvas * c = new TCanvas("modules", "Modules ID", 500, 500);
+   double aspectradio = (fcalSize[1]/fcalSize[0]);
+   gStyle->SetTitleFontSize(gStyle->GetTitleFontSize()/aspectradio);
+   gStyle->SetFrameLineWidth(0);
+
+   // Draw modules position 
+   TCanvas * c = new TCanvas("modules", "Modules ID", 900, 900 * aspectradio + 20);
 
    Int_t nModule = fListOfModules->GetEntriesFast();
    gStyle->SetOptStat(0);
-   TH2F* modGrid = new TH2F("Modules"," Modules ID", 200, -fcalSize[0]/2, fcalSize[0]/2 , 200, -fcalSize[1]/2, fcalSize[1]/2 );
+   TH2F* modGrid = new TH2F("Modules"," Modules ID", 200, -fcalSize[0]/2, fcalSize[0]/2 , 200, -fcalSize[1]/2, fcalSize[1]/2  + 3*xdim1  );
 
-   double xdimA1 = xdim1 * 3 + delta + 0.03 ;
-   modGrid->Draw();
+   double xdimA1 = xdim1 * 3 + delta + 0.6 ;
+   modGrid->Draw("A");
 
    for (int ii=0; ii<nModule; ii++) {
       NodeTrafo *crt = ((NodeTrafo *)(fListOfModules->At(ii)));
@@ -637,16 +654,30 @@ void ShowDetectorIdsMap()
       Double_t *trans = mat.GetTranslation();
       TBox* mod = new TBox(trans[0]-xdimA1, trans[1]-xdimA1, trans[0]+xdimA1, trans[1]+xdimA1);
       mod->Draw();
+      
       TText* id = new TText(trans[0], trans[1], Form("%3d", ii));
       id->SetTextAlign(22);
+      id->SetTextSize(0.07/aspectradio);
       id->Draw();
    }
 
-   TCanvas * c1 = new TCanvas("crytals", "Crystals ID", 500, 500);
+   // Draw cristal id position on modules
+   TCanvas * c1 = new TCanvas("crytals", "Crystals ID ", 900, 900 * aspectradio + 30);
 
    Int_t nCry = fListOfCrystals->GetEntriesFast();
-   TH2F* crimap = new TH2F(""," Crystal ID", 200, -fcalSize[0]/2, fcalSize[0]/2 , 200, -fcalSize[1]/2, fcalSize[1]/2 );
-   crimap->Draw();
+   TH2F* crimap = new TH2F(""," Crystal ID to be mapped with Board/channel", 200, -fcalSize[0]/2, fcalSize[0]/2, 200 , -fcalSize[1]/2, fcalSize[1]/2  + 3*xdim1 );
+   crimap->Draw("A");
+
+   for (int ii=0; ii<nModule; ii++) {
+      NodeTrafo *mod = ((NodeTrafo *)(fListOfModules->At(ii)));
+      // Get module transformation matrix (module/detector)
+      TGeoHMatrix mat = mod->mat;
+      // Get only the center coordinates
+      Double_t *trans = mat.GetTranslation();
+      TBox* mod = new TBox(trans[0]-xdimA1, trans[1]-xdimA1, trans[0]+xdimA1, trans[1]+xdimA1);
+      mod->SetFillColor(kGray);
+      mod->Draw();
+   }
 
    for (int ii=0; ii<nCry; ii++) {
       NodeTrafo *crt = ((NodeTrafo *)(fListOfCrystals->At(ii)));
@@ -654,12 +685,30 @@ void ShowDetectorIdsMap()
       TGeoHMatrix mat = crt->mat;
       // Get only the center coordinates
       Double_t *trans = mat.GetTranslation();
-      TBox* mod = new TBox(trans[0]-xdim1, trans[1]-xdim1, trans[0]+xdim1, trans[1]+xdim1);
-      mod->Draw();
-      TText* id = new TText(trans[0], trans[1], Form("%3d", ii));
-      id->SetTextAlign(22);id->SetTextSize(0.015);
+      TBox* cry = new TBox(trans[0]-xdim1, trans[1]-xdim1, trans[0]+xdim1, trans[1]+xdim1);
+      cry->SetFillColor(kYellow);
+      cry->Draw();
+      TText* id = new TText(trans[0], trans[1]+xdim1/4, Form("%3d", ii));
+      id->SetTextAlign(22);
+      id->SetTextSize(0.02/aspectradio);
       id->Draw();
    }
+
+   // Save the cristal id position on modules as PDF
+   TString path = fgPath + TString("/CA_crystal_pos_map.pdf");
+   c1->SaveAs(path.Data());
+
+   // Create a .map file 
+   TString filemap = fgPath + TString("TACAdetector.map");
+   FILE* fmap = fopen(filemap.Data(), "w");
+   fprintf(fmap, "#number of crystal present\n");
+   fprintf(fmap, "CrystalsN: %d\n", nCry );
+
+   fprintf(fmap, "#crysid crymodule channelID crysBoard(HW) activecrys\n");
+   for (int ii=0; ii<nCry; ii++) {
+      fprintf(fmap, " %d     %d         %d         %d           %d\n", ii, 0, 0, 161, 1);
+   }
+   fclose(fmap);
 
 
 }
@@ -674,7 +723,7 @@ void EndGeometry(FILE* fp)
    fListOfModules = new TObjArray();
 
    TGeoVolume* detector = gGeoManager->FindVolumeFast(fDetectorName.Data());
-   cout << "  Detector NAME " << detector->GetName() << endl;
+   cout << "  Detector NAME " << detector->GetName() << std::flush << endl;
 
    TGeoVolumeAssembly * dummy = new TGeoVolumeAssembly("dummyVol");
    dummy->AddNode(detector, 1);
@@ -689,8 +738,8 @@ void EndGeometry(FILE* fp)
    Int_t nCry = fListOfCrystals->GetEntriesFast();
    Int_t nModule = fListOfModules->GetEntriesFast();
 
-   cout << "  Number of modules: " << nModule << endl;
-   cout << "  Number of Calorimeter crystals: " << nCry << endl;
+   cout << "  Number of modules: " << nModule << std::flush << endl;
+   cout << "  Number of Calorimeter crystals: " << nCry << std::flush << endl;
 
    double shift;
    fcalSize = PrintCalorimeterSize(fp, shift);
