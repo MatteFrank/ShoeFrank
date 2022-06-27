@@ -27,6 +27,11 @@
 
 //##############################################################################
 
+/*!
+  \file TACAparGeo.cxx
+  \brief Geometry parameters of the Calorimeter
+*/
+
 const TString TACAparGeo::fgkDefParaName     = "caGeo";
 const TString TACAparGeo::fgkBaseName        = "CA";
 const Color_t TACAparGeo::fgkDefaultCryCol   = kAzure+6;
@@ -37,6 +42,7 @@ const Int_t   TACAparGeo::fgkCrystalsNperModule = 9;
 
 
 //_____________________________________________________________________________
+//! Default constructor
 TACAparGeo::TACAparGeo()
 : TAGparTools(),
   fIonisation(new TAGionisMaterials())
@@ -45,13 +51,17 @@ TACAparGeo::TACAparGeo()
 }
 
 //______________________________________________________________________________
+//! Default destructor
 TACAparGeo::~TACAparGeo()
 {
    delete fIonisation;
    Clear();
 }
 
-//______________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Read geometric parameters from file
+//!
+//! \param[in] name file name
 Bool_t TACAparGeo::FromFile(const TString& name)
 {
    // Read config map created with macro BuildCaGeoFile.C
@@ -86,7 +96,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 
    ReadItem(fCrystalIonisMat);
     if (FootDebugLevel(1))
-      cout << "   Crystals mean exciation energy : " <<  fCrystalIonisMat << endl;
+      cout << "   Crystals mean excitation energy : " <<  fCrystalIonisMat << endl;
 
    TVector3 crystalFront;
    ReadVector3(crystalFront);
@@ -143,7 +153,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    DefineMaterial();
 
    // Air around each module. It is need ONLY by FLUKA geometry
-   // it will be remove if a truncate piramid body is implemented in FLUKA
+   // it will be remove if a truncate pyramid body is implemented in FLUKA
    TVector3 airModflukaFront;
    ReadVector3(airModflukaFront);
    if (FootDebugLevel(1))
@@ -176,7 +186,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    TVector3 position;
    TVector3 tilt;
 
-   // Crystals
+   // ------- Crystals
    ReadItem(fCrystalsN);
    if (FootDebugLevel(1))
       cout  << "Number of crystals: " <<  fCrystalsN << endl;
@@ -188,7 +198,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    SetupMatrices(fCrystalsN + fModulesN);
    fListOfCrysAng.resize(fCrystalsN);
 
-   // Read transformtion info
+   // Read transformation info
    Int_t idCry = 0;
    for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
 
@@ -221,8 +231,8 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       AddTransMatrix(new TGeoHMatrix(transfo), idCry);
    }
 
-   // Modules
-   // Read transformtion info
+   // -------  Modules
+   // Read transformation info
    Int_t nModule = 0;
    fListOfModAng.resize(fModulesN);
    for (Int_t imod = 0; imod < fModulesN; ++imod) {
@@ -263,40 +273,86 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 
 
 //_____________________________________________________________________________
+//! Build a row/column index to by used in clustering
+//! line (row) increase from left to right
+//! column increase from bottom to top
 void TACAparGeo::ComputeCrystalIndexes()
 {
-   Float_t zdim   = GetCrystalThick();
-   Float_t xdim1  = GetCrystalWidthFront();
-   Float_t xdim2  = GetCrystalWidthBack();
-   Float_t deltaX = (xdim2 - xdim1);
-   Float_t trp    = TMath::Sqrt( zdim * zdim * 4  + deltaX * deltaX );
-   Float_t alfa   = TMath::ASin (deltaX / trp);
 
-   Float_t deltax = fCrystalDelta * TMath::Cos(alfa*2);
+   TVector3 local;
+   TVector3 point;
 
-   Float_t piramid_hipot  = xdim2 / TMath::Sin(alfa);
-   Float_t piramid_base   = piramid_hipot * TMath::Cos(alfa);
-   Float_t piramid_base_c = piramid_base - zdim; // distance from center to the piramid vertex
+   // Find X and Y dimension of calorimeter on the front face
+   Float_t zdim = GetCrystalThick();
+   TVector3 maxpoint(-999., -999., -999.);
+   TVector3 minpoint( 999.,  999.,  999.);
+   TVector3 lastpoint;
+   Double_t width = 0;
+   Double_t n = 0;
+   for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
+      // central point in front
+      local[0] = 0 ;
+      local[1] = 0 ;
+      local[2] = -zdim;
+      point =  Crystal2DetectorVect(iCry, local);
 
-   Float_t width = TMath::Sin(alfa*2) * piramid_base_c + deltax;
-   Int_t lines   = 18;
-   Int_t cols    = 18;
+      if ( point[0] > maxpoint[0] ) maxpoint[0] = point[0];
+      if ( point[1] > maxpoint[1] ) maxpoint[1] = point[1];
+
+      if ( point[0] < minpoint[0] ) minpoint[0] = point[0];
+      if ( point[1] < minpoint[1] ) minpoint[1] = point[1];
+      
+      // get distance between two crystals
+      if (iCry > 0 && iCry < 2 ) {
+         width += TMath::Abs(lastpoint[0] - point[0]);
+         //cout << width << endl;
+         n += 1;
+      }
+      lastpoint = point;
+   }
+   width /= n;
+   Double_t interModWidth = fCrystalsN/GetCrystalsNperModule() * 0.1;
+   
+   TVector3 dim = maxpoint - minpoint;
+
+   Int_t cols   = (int)(dim[0]-interModWidth+width)/width + 1;
+   Int_t rows   = (int)(dim[1]-interModWidth+width)/width + 1; 
+   
+   if (FootDebugLevel(1)) cout << "Crystal Index map for clustering:" << endl;
 
    for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
-      TVector3 pos = GetCrystalPosition(iCry);
+      // central point in front
+      local[0] = 0 ;
+      local[1] = 0 ;
+      local[2] = -zdim;
+      point =  Crystal2DetectorVect(iCry, local);
 
-      for (Int_t i = -lines/2; i < lines/2; ++i) {
-         for (Int_t j = -cols/2; j < cols/2; ++j) {
-            if ( (pos[0] > i*width && pos[0] <= (i+1)*width) && (pos[1] > j*width && pos[1] <= (j+1)*width)) {
-               pair<int, int> idx(i+lines/2, j+cols/2);
+      for (Int_t i = 0; i<cols; ++i) {
+         for (Int_t j = 0; j<rows; ++j) {
+
+            if ( (point[0] >= i*width - cols*width/2 && point[0] <= (i+1)*width - cols*width/2) && 
+                 (point[1] >= j*width - rows*width/2 && point[1] <= (j+1)*width - rows*width/2)) {
+ 
+               pair<int, int> idx(i, j);
                fMapIndexes[iCry] = idx;
-            }
+               if (FootDebugLevel(1)) {
+                  cout  << "   iCry: "  << iCry 
+                        //<< " " << i << " " << j
+                        //<< " pos[0] " << point[0] << " pos[1] " << point[1]
+                        << "   col "    << idx.first << " row " << idx.second << endl;
+               }
+            } 
          }
       }
    }
+
 }
 
 //_____________________________________________________________________________
+//! Get line (row) 
+//
+//! \param[in] iCry crystal ID
+//! \return line (row) position
 Int_t TACAparGeo::GetCrystalLine(Int_t iCry)
 {
    pair<int, int> idx = fMapIndexes[iCry];
@@ -305,6 +361,10 @@ Int_t TACAparGeo::GetCrystalLine(Int_t iCry)
 }
 
 //_____________________________________________________________________________
+//! Get column (row) 
+//
+//! \param[in] iCry crystal ID
+//! \return column position
 Int_t TACAparGeo::GetCrystalCol(Int_t iCry)
 {
    pair<int, int> idx = fMapIndexes[iCry];
@@ -314,6 +374,10 @@ Int_t TACAparGeo::GetCrystalCol(Int_t iCry)
 
 
 //_____________________________________________________________________________
+//! build the Calorimeter
+//!
+//! \param[in] caName name of the detector
+//! \return the root representation of the Calorimeter
 TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
 {
    if (FootDebugLevel(1)) {
@@ -357,6 +421,7 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
          caloCristal->SetFillColor(fgkDefaultCryCol);
          caloCristal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
          detector->AddNode(caloCristal, iCry, hm);
+
       }
    }
 
@@ -376,20 +441,28 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
 }
 
 //_____________________________________________________________________________
+//! Get sensor central position on detector framework
+//!
+//! \param[in] idx sensor index [0 - (fCrystalsN-1)]
+//! \return position in detector framework
 TVector3 TACAparGeo::GetCrystalPosition(Int_t idx)
 {
    TGeoHMatrix* hm = GetTransfo(idx);
    if (hm) {
       TVector3 local(0,0,0);
-      fCurrentPosition =  Crystal2Detector(idx, local);
+      fCurrentPosition = Crystal2Detector(idx, local);
    }
    return fCurrentPosition;
 }
 
 //_____________________________________________________________________________
+//! Get sensor angle on detector framework
+//!
+//! \param[in] idx sensor index [0 - (fCrystalsN-1)]
+//! \return position in detector framework
 TVector3 TACAparGeo::GetCrystalAngle(Int_t idx)
 {
-   if (idx < 0 || idx > fCrystalsN) {
+   if (idx < 0 || idx >= fCrystalsN) {
       Warning("GetCrystalAngle()","Wrong crystal id number: %d ", idx);
       return TVector3(0,0,0);
    }
@@ -398,6 +471,10 @@ TVector3 TACAparGeo::GetCrystalAngle(Int_t idx)
 }
 
 //_____________________________________________________________________________
+//! Get module central position on detector framework
+//!
+//! \param[in] idx module index [0 - (fModulesN-1)]
+//! \return position in detector framework
 TVector3 TACAparGeo::GetModulePosition(Int_t idx)
 {
    TGeoHMatrix* hm = GetTransfo(fCrystalsN + idx);
@@ -409,10 +486,14 @@ TVector3 TACAparGeo::GetModulePosition(Int_t idx)
 }
 
 //_____________________________________________________________________________
+//! Get module angle on detector framework
+//!
+//! \param[in] idx module index [0 - (fModulesN-1)]
+//! \return position in detector framework
 TVector3 TACAparGeo::GetModuleAngle(Int_t idx)
 {
-   if (idx < 0 || idx > fCrystalsN) {
-      Warning("GetCrystalAngle()","Wrong crystal id number: %d ", idx);
+   if (idx < 0 || idx > fModulesN) {
+      Warning("GetModuleAngle()", "Wrong module id number: %d ", idx);
       return TVector3(0,0,0);
    }
 
@@ -420,10 +501,15 @@ TVector3 TACAparGeo::GetModuleAngle(Int_t idx)
 }
 
 //_____________________________________________________________________________
+//! Transformation from sensor to detector framework
+//!
+//! \param[in] idx sensor index [0 - (fCrystalsN-1)]
+//! \param[in] loc position in sensor framework
+//! \return position in detector framework
 TVector3 TACAparGeo::Crystal2Detector(Int_t idx, TVector3& loc) const
 {
-   if (idx < 0 || idx > fCrystalsN) {
-      Warning("Crystal2Detector()","Wrong detector id number: %d ", idx);
+   if (idx < 0 || idx >= fCrystalsN) {
+      Warning("Crystal2Detector()","Wrong crystal id number: %d ", idx);
       return TVector3(0,0,0);
    }
 
@@ -432,10 +518,15 @@ TVector3 TACAparGeo::Crystal2Detector(Int_t idx, TVector3& loc) const
 
 
 //_____________________________________________________________________________
+//! Transformation sensor to detector framework for vectors (no translation)
+//!
+//! \param[in] idx sensor index [0 - (fCrystalsN-1)]
+//! \param[in] loc position in sensor framework
+//! \return position in detector framework
 TVector3 TACAparGeo::Crystal2DetectorVect(Int_t idx, TVector3& loc) const
 {
-   if (idx < 0 || idx > fCrystalsN) {
-      Warning("Crystal2DetectorVect()","Wrong detector id number: %d ", idx);
+   if (idx < 0 || idx >= fCrystalsN) {
+      Warning("Crystal2DetectorVect()","Wrong crystal id number: %d ", idx);
       TVector3(0,0,0);
    }
 
@@ -443,10 +534,15 @@ TVector3 TACAparGeo::Crystal2DetectorVect(Int_t idx, TVector3& loc) const
 }
 
 //_____________________________________________________________________________
+//! Transformation from sensor to detector framework
+//!
+//! \param[in] idx sensor index [0 - (fCrystalsN-1)]
+//! \param[in] glob position in detector framework
+//! \return position in sensor framework
 TVector3 TACAparGeo::Detector2Crystal(Int_t idx, TVector3& glob) const
 {
-   if (idx < 0 || idx > fCrystalsN) {
-      Warning("Detector2Sensor()","Wrong detector id number: %d ", idx);
+   if (idx < 0 || idx >= fCrystalsN) {
+      Warning("Detector2Sensor()", "Wrong crystal id number: %d ", idx);
       return TVector3(0,0,0);
    }
 
@@ -454,10 +550,15 @@ TVector3 TACAparGeo::Detector2Crystal(Int_t idx, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
+//! Transformation from sensor to detector framework for vectors (no translation)
+//!
+//! \param[in] idx sensor index [0 - (fCrystalsN-1)]
+//! \param[in] glob position in detector framework
+//! \return position in sensor framework
 TVector3 TACAparGeo::Detector2CrystalVect(Int_t idx, TVector3& glob) const
 {
-   if (idx < 0 || idx > fCrystalsN) {
-      Warning("Detector2SensorVect()","Wrong detector id number: %d ", idx);
+   if (idx < 0 || idx >= fCrystalsN) {
+      Warning("Detector2SensorVect()","Wrong crystal id number: %d ", idx);
       return TVector3(0,0,0);
    }
 
@@ -465,6 +566,7 @@ TVector3 TACAparGeo::Detector2CrystalVect(Int_t idx, TVector3& glob) const
 }
 
 //_____________________________________________________________________________
+//! Define the Calorimeter material
 void TACAparGeo::DefineMaterial()
 {
 
@@ -497,7 +599,7 @@ void TACAparGeo::DefineMaterial()
 void TACAparGeo::SetCrystalColorOn(Int_t idx)
 {
    if (!gGeoManager) {
-      Error("SetBarcolorOn()", "No Geo manager defined");
+      Error("SetCrystalColorOn()", "No Geo manager defined");
       return;
    }
 
@@ -513,7 +615,7 @@ void TACAparGeo::SetCrystalColorOn(Int_t idx)
 void TACAparGeo::SetCrystalColorOff(Int_t idx)
 {
    if (!gGeoManager) {
-      Error("SetBarcolorOn()", "No Geo manager defined");
+      Error("SetCrystalColorOff()", "No Geo manager defined");
       return;
    }
 
@@ -526,6 +628,7 @@ void TACAparGeo::SetCrystalColorOff(Int_t idx)
 
 
 //_____________________________________________________________________________
+//! Print the Calorimeter rotations for the FLUKA geometry file
 string TACAparGeo::PrintRotations()
 {
    // Defines rotations and translations to be applied
@@ -575,6 +678,7 @@ string TACAparGeo::PrintRotations()
 
 
 //_____________________________________________________________________________
+//! Print the Calorimeter bodies for the FLUKA geometry file
 string TACAparGeo::PrintBodies()
 {
 
@@ -584,7 +688,7 @@ string TACAparGeo::PrintBodies()
    if ( !TAGrecoManager::GetPar()->IncludeCA())
       return outstr.str();
 
-   outstr << "* ***Calorimeter" << endl;
+   outstr << "* ***Calorimeter, setup: " << fConfigTypeGeo.Data() << endl;
 
    // get global calorimter position
    TVector3 center, angle;
@@ -627,17 +731,24 @@ string TACAparGeo::PrintBodies()
       }
    }
 
-   // FIVE Modules: calo geometry for the HIT test beam
-   // Divide air_cal in two parts thourgh one vertical plane in order to have
-   // 2 and 3 modules in each region
-   if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
+   // FIVE Modules or SEVEN Modules: calo geometry for the HIT test beam
+   // Divide air_cal in several parts thourgh one vertical plane in order to have
+   //   2 and 3 modules in each region (FIVE_MOD)
+   //   3, 1, 3 modules in each region  (SEVEN_MOD)
+   if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0 ||
+       fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0) {
       TString plaName = "MP";
       int dir[2];
-      // Vertical and right plane
-      dir[0] = -1; dir[1] = 0;
-      int id = 2;
-      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+      // Vertical 
+      dir[0] = -1; dir[1] = 0; //dir[0] =-1 -> left plane
+      int imod = 2;
+      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0) {
+         imod = 0;
+         hm = GetCombiTransfo(fCrystalsN + imod);
+         outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      }     
    }
 
    // FULL Detector:
@@ -648,43 +759,43 @@ string TACAparGeo::PrintBodies()
       int dir[2];
       // Vertical planes
       dir[0] = 1; dir[1] = 0; //dir[0] =1 -> right plane
-      int id = 16;
-      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 4;
-      hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 0;
-      hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 6; dir[0] = -1; //dir[0] =-1 -> left plane
-      hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 18;
-      hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+      int imod = 16;
+      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 4;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 0;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 6; dir[0] = -1; //dir[0] =-1 -> left plane
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 18;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
       // horizontal planes
       dir[0] = 0; dir[1] = 1; //dir[1] =1 -> top plane
-      id = 9;
-      hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 11;
-      hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+      imod = 9;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 11;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
       dir[1] = -1;  //dir[1] =1 -> botton plane
-      id = 8;
-      hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
-      id = 10;
-      hm = GetCombiTransfo(fCrystalsN + id);
-      outstr << SPrintParallelPla( id, hm, plaName, fModAirFlukaSize, dir );
+      imod = 8;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 10;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
    }
 
    return outstr.str();
 }
 
 //-----------------------------------------------------------------------------
-// Print the planes parallel to a module
+//! Print the planes parallel to a module
 TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyName,
                                        Double_t *trd2Size, int * dir )
 {
@@ -692,7 +803,7 @@ TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyN
    // dir[1] Y direction could be (-1, 0, 1)
 
    if ( dir[0] != 0 && dir[1] != 0 ) {
-      cout << "ErrorTACAparGeo::SPrintParallelPla: Incompatible \"dir\" parameter\n" << endl;
+      cout << "Error: TACAparGeo::SPrintParallelPla: Incompatible \"dir\" parameter\n" << endl;
       exit(-1);
    }
 
@@ -763,10 +874,10 @@ TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyN
 }
 
 //-----------------------------------------------------------------------------
-// Print the body definition in FLUKA FREE format
+//! Print the body definition in FLUKA FREE format
 TString TACAparGeo::SPrintCrystalBody( int id, TGeoCombiTrans* hm, TString bodyName, Double_t *trd2Size )
 {
-   // There is no truncate piramid in FLUKA, so we need to define
+   // There is no truncate pyramid in FLUKA, so we need to define
    // 6 half planes
 
    TString outstr;
@@ -881,6 +992,7 @@ TString TACAparGeo::SPrintCrystalBody( int id, TGeoCombiTrans* hm, TString bodyN
 }
 
 //_____________________________________________________________________________
+//! Print the Calorimeter regions for the FLUKA geometry file
 string TACAparGeo::PrintRegions()
 {
    stringstream outstr;
@@ -888,7 +1000,7 @@ string TACAparGeo::PrintRegions()
    if ( !TAGrecoManager::GetPar()->IncludeCA())
       return outstr.str();
 
-   outstr << "* ***Calorimeter" << endl;
+   outstr << "* ***Calorimeter, setup: " << fConfigTypeGeo.Data() << endl;
 
    TString line;
    for (Int_t id=0; id<fCrystalsN; id++) {
@@ -903,6 +1015,7 @@ string TACAparGeo::PrintRegions()
 }
 
 //_____________________________________________________________________________
+//! Print the Calorimeter air regions around a module for the FLUKA geometry file
 TString TACAparGeo::PrintModuleAirRegions()
 {
    TString modRegion = "";
@@ -915,7 +1028,7 @@ TString TACAparGeo::PrintModuleAirRegions()
       line.Form("ACAL_%02d       5 ", im);
       modRegion += line.Data();
 
-      // create piramid in front and back of each crystal
+      // create     pyramid      in front and back of each crystal
       Int_t iCry = im * fgkCrystalsNperModule;
       for (Int_t id=0; id<fgkCrystalsNperModule; id++) {
          line.Form(" | +AP%03d_1 -P%03d_1 +P%03d_3 +P%03d_4 +P%03d_5 +P%03d_6\n",
@@ -926,7 +1039,7 @@ TString TACAparGeo::PrintModuleAirRegions()
          modRegion += line.Data();
       }
 
-      // create regions between crytals in a RAW
+      // create regions between crytals in a ROW
       Int_t nRows = 3;
       iCry = im * fgkCrystalsNperModule;
       for (Int_t ir=0; ir<nRows; ir++) {
@@ -939,7 +1052,7 @@ TString TACAparGeo::PrintModuleAirRegions()
          iCry += 3;
       }
 
-      // create regions between RAWs in a module
+      // create regions between ROWs in a module
       iCry = im * fgkCrystalsNperModule;
       // central
       line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_4 +P%03d_3\n",
@@ -1014,14 +1127,20 @@ TString TACAparGeo::PrintModuleAirRegions()
    return modRegion;
 }
 
-Int_t TACAparGeo::GetRegCrystal(Int_t n)
+//_____________________________________________________________________________
+//! Get the FLUKA region index of the Calorimeter crystal
+//!
+//! \param[in] icry cellid index [0-35]
+//! \return region index
+Int_t TACAparGeo::GetRegCrystal(Int_t icry)
 {
    TString regname;
-   regname.Form("CAL%03d",n);
+   regname.Form("CAL%03d", icry);
    return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
+//! Print the Calorimeter regions that need to be subtracted from the air for the FLUKA geometry file
 string TACAparGeo::PrintSubtractBodiesFromAir()
 {
 
@@ -1061,11 +1180,10 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       return outstr.str();
    }
 
-
    //FIVE MOD in a row: geometry for the HIT test beam
    if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
       // first 3 modules
-      int id = 3;
+      int id = 3; //module id
       line.Form(" +air_cal -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
@@ -1078,7 +1196,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
                 id, id, id, id, id, id);
       outstr << line.Data();
 
-      // last 2 crystal
+      // last 2 modules
       id = 2;
       line.Form("AIR_CAL1    5 | +air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
@@ -1089,6 +1207,42 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       outstr << line.Data();
    }
 
+   //SEVEN MOD in a row: geometry for the HIT test beam
+   if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0) {
+      // first 3 modules
+      int id = 5;
+      line.Form(" +air_cal -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 3;
+      line.Form(" +air_cal -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 1;
+      line.Form(" +air_cal -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      // central module
+      id = 0;
+      line.Form("AIR_CAL1    5 | +air_cal +MP000 -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      // last 3 modules
+      id = 2;
+      line.Form("AIR_CAL2    5 | +air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 4;
+      line.Form("+air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 6;
+      line.Form("+air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+   }
 
    // FULL Detector
    if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
@@ -1237,6 +1391,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
 }
 
 //_____________________________________________________________________________
+//! Print the Calorimeter parameters
 string TACAparGeo::PrintParameters()
 {
    stringstream outstr;
@@ -1255,6 +1410,7 @@ string TACAparGeo::PrintParameters()
 
 
 //_____________________________________________________________________________
+//! Print the Calorimeter material for the FLUKA geometry file
 string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
 {
    stringstream outstr;
@@ -1280,6 +1436,9 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
                           "1.", Form("%d",magnetic), "", "") << endl;
    } else if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL1",
+                          "1.", Form("%d",magnetic), "", "") << endl;
+   } else if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0) {
+      outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL2",
                           "1.", Form("%d",magnetic), "", "") << endl;
    } else
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0",
@@ -1309,10 +1468,10 @@ void TACAparGeo::Clear(Option_t*)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-
 void TACAparGeo::ToStream(ostream& os, Option_t*) const
 {
-   //  os << "TACAparGeo " << GetName() << endl;
+   os << "TACAparGeo " << GetName() << endl
+      << " Number of crystals: " <<  fCrystalsN << endl;
    //  os << "p 8p   ref_x   ref_y   ref_z   hor_x   hor_y   hor_z"
    //     << "   ver_x   ver_y   ver_z  width" << endl;
 
