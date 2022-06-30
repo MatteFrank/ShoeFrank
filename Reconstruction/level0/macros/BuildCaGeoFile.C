@@ -3,11 +3,9 @@
 
 // July 2022: Updated by E. Lopez
 
-#if defined(__CLING__)
-   // ROOT6-specific code here ...
-
-#elif  !defined(__CINT__) || defined(__MAKECINT__)
-   // ROOT5-specific code here ...
+  
+#if !defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__)
+   // 
    #include "TGeoBBox.h"
    #include "TGeoNode.h"
    #include "TGeoManager.h"
@@ -19,7 +17,21 @@
    #include "TObjString.h"
    #include "TROOT.h"
    #include "TSystem.h"
+   #include "TVector3.h"
+   #include "TString.h"
+   #include "TStyle.h"
+   #include "TCanvas.h"
+   #include "TBox.h"
+   #include "TH2F.h"
+   #include "TText.h"
+
+   #include "TAGgeoTrafo.hxx"
+   #include "TAGmaterials.hxx"
+
+   using namespace std;
+
 #endif
+
 
 ///////////////////////////////////////////////////
    //////// Set config values
@@ -65,7 +77,6 @@ public:
 // main
 void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
 {
-
 
    FILE* fp = fopen(fileOutName.Data(), "w");
 
@@ -780,7 +791,7 @@ void ComputeCrystalIndexes()
    Double_t interModWidth = nCry/9 * 0.1;
    
    TVector3 dim = maxpoint - minpoint;
-   dim.Print();
+   //dim.Print();
 
    Int_t cols   = (int)(dim[0]-interModWidth+width)/width + 1;
    Int_t rows   = (int)(dim[1]-interModWidth+width)/width + 1;  
