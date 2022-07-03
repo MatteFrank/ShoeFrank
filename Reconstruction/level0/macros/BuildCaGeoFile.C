@@ -3,16 +3,8 @@
 
 // July 2022: Updated by E. Lopez
 
-<<<<<<< HEAD
   
 #if !defined(__CINT__) || defined(__MAKECINT__)
-=======
-#if defined(__CLING__)
-   // ROOT6-specific code here ...
-
-#elif  !defined(__CINT__) || defined(__MAKECINT__)
-   // ROOT5-specific code here ...
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
    #include "TGeoBBox.h"
    #include "TGeoNode.h"
    #include "TGeoManager.h"
@@ -40,7 +32,6 @@
 
 #endif
 
-<<<<<<< HEAD
 
 ///////////////////////////////////////////////////
    //////// Set config values
@@ -53,19 +44,6 @@
    double xdim1 = 1.05;
    double xdim2 = 1.45;
    double ydim1 = xdim1; // assume square
-=======
-///////////////////////////////////////////////////
-   //////// Set config values
-
-   // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD)
-   TString fConfig_typegeo = "FIVE_MOD";
-   // TString fConfig_typegeo = "FULL_DET";
-
-   // half dimensions of BGO crystal
-   double xdim1 = 1.;
-   double xdim2 = 1.45;
-   double ydim1 = xdim1; // assume squart
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
    double ydim2 = xdim2;
    double zdim  = 12.;
    double delta = 0.095; // 1mm between crystals
@@ -97,11 +75,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////
 // main
-<<<<<<< HEAD
 void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
-=======
-void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
 {
 
    FILE* fp = fopen(fileOutName.Data(), "w");
@@ -163,16 +137,11 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
 
    TGeoVolumeAssembly * detector = new TGeoVolumeAssembly(fDetectorName.Data());
 
-<<<<<<< HEAD
    // half open angle of the truncate pyramid
-=======
-   // half open angle of the truncate piramide
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
    double deltaX = (xdim2 - xdim1);
    double trp_hipot = TMath::Sqrt( zdim * zdim * 4  + deltaX * deltaX );
    double alfa = TMath::ASin (deltaX / trp_hipot);
    double alfa_degree = alfa  * 180./ TMath::Pi();
-<<<<<<< HEAD
    cout << "alfa_degree " << alfa_degree << std::flush << endl;
 
    // compute some values of the full pyramid dimensions
@@ -187,22 +156,6 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    double deltaz = - delta * TMath::Sin(alfa*2);
    double posx = TMath::Sin(alfa*2) * pyramid_base_c + deltax;
    double posz = TMath::Cos(alfa*2) * pyramid_base_c + deltaz;
-=======
-   cout << "alfa_degree " << alfa_degree << endl;
-
-   // compute some values of the full piramid dimensions
-   double piramid_hipot = xdim2 / TMath::Sin(alfa);
-
-   //cout << "piramid_hipot " << piramid_hipot << endl;
-   double piramid_base = piramid_hipot * TMath::Cos(alfa);
-   double piramid_base_c = piramid_base - zdim; // distance from center to the piramid vertex
-
-   // translation of crystal center after 2*alfa rotation about vetex piramid
-   double deltax = delta * TMath::Cos(alfa*2);
-   double deltaz = - delta * TMath::Sin(alfa*2);
-   double posx = TMath::Sin(alfa*2) * piramid_base_c + deltax;
-   double posz = TMath::Cos(alfa*2) * piramid_base_c + deltaz;
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
 
    // create on BGO crystal
    TGeoVolume *caloCristal = gGeoManager->MakeTrd2(fgkDefaultCrysName, medBGO, xdim1, xdim2, ydim1, ydim2, zdim);
@@ -243,15 +196,9 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    TGeoTranslation * trasUp = new TGeoTranslation(0, posx, posz - pyramid_base_c );
    TGeoRotation * rotDn = new TGeoRotation ();
    rotDn->RotateX(alfa_degree * 2);
-<<<<<<< HEAD
    TGeoTranslation * trasDn = new TGeoTranslation(0, -posx, posz - pyramid_base_c );
 
    //---- Crystal Support as truncate pyramid (just for visual proposes)
-=======
-   TGeoTranslation * trasDn = new TGeoTranslation(0, -posx, posz - piramid_base_c );
-
-   //---- Crystal Support as truncate piramid (just for visual propouses)
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
    double deltaZsup = -0.5; // delta distance from back
    double zdimS  = (zdim  + deltaZsup - deltaZsup *TMath::Sin(alfa*3)) *.5;
    double xdimS1 = (((xdim1+xdim2)*0.5) * 3 + 2 * delta) * TMath::Cos(alfa*3) ;
@@ -272,7 +219,6 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    fprintf(fp,"Widthfront:   %f   Heightfront:  %f    DummyLength:       0.\n", xdimS1, ydimS1);
    fprintf(fp,"Widthback :   %f	 Heightback :  %f	   Length:           %f\n", xdimS2, ydimS2, zdimS);
    fprintf(fp,"PositionZ:     %f\n\n", shiftS);
-<<<<<<< HEAD
 
    TGeoVolume* support = gGeoManager->MakeTrd2("MOD_SUPPORT", medAl, xdimS1, xdimS2, ydimS1, ydimS2, zdimS);
    support->SetLineColor(kGray);
@@ -281,16 +227,6 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
 
 
    //---------------- Container air as truncate pyramid
-=======
-
-   //TGeoVolume* support = gGeoManager->MakeTrd2("MOD_SUPPORT", medAl, xdimS1, xdimS2, ydimS1, ydimS2, zdimS);
-   //support->SetLineColor(kGray);
-   //support->SetLineColor(kGray);
-   //mod->AddNode(support, 0, new TGeoTranslation(0, 0, shiftS));
-
-
-   //---------------- Container air as truncate piramid
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
    //------------------- needed for FLUKA
    //
    double delZ = .15;
@@ -334,7 +270,6 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    }
 
 
-<<<<<<< HEAD
    ///////////////////////////////////////
    // Detector with 5 or 7 Modules in a row: geometry for the HIT test beam
    if ( fConfig_typegeo.CompareTo("FIVE_MOD") == 0 ||
@@ -567,63 +502,6 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    }
 
 
-=======
-
-   // Detector with 5 Modules in a row: geometry for the HIT test beam
-   if ( fConfig_typegeo.CompareTo("FIVE_MOD") == 0 ) {
-
-      //first module, centered on the beam
-      detector->AddNode(mod, 1);
-
-      //calculate the traslation and rotation of the first two neighbours
-      double deltaM  = 4 * delta;
-      double deltaMx = deltaM * TMath::Cos(alfa*6);
-      double deltaMz = - deltaM * TMath::Sin(alfa*6);
-      double posModx = TMath::Sin(alfa*6) * piramid_base_c + deltaMx;
-      double posModz = TMath::Cos(alfa*6) * piramid_base_c + deltaMz;
-
-      TGeoRotation * rotUpDet = new TGeoRotation (); rotUpDet->RotateX(-alfa_degree * 6); //up
-      TGeoRotation * rotDnDet = new TGeoRotation (); rotDnDet->RotateX(alfa_degree * 6); //down
-      TGeoRotation * rotPDet  = new TGeoRotation (); rotPDet->RotateY(alfa_degree * 6); //positive
-      TGeoRotation * rotNDet  = new TGeoRotation (); rotNDet->RotateY(-alfa_degree * 6); //negative
-      TGeoTranslation * trasUpDet = new TGeoTranslation(0, posModx, posModz - piramid_base_c );
-      TGeoTranslation * trasDnDet = new TGeoTranslation(0, -posModx, posModz - piramid_base_c );
-      TGeoTranslation * trasPDet  = new TGeoTranslation(posModx, 0, posModz - piramid_base_c );
-      TGeoTranslation * trasNDet  = new TGeoTranslation(-posModx, 0, posModz - piramid_base_c );
-      TGeoRotation * rotLeftZ  = new TGeoRotation ();
-      TGeoRotation * rotRightZ = new TGeoRotation ();
-      rotLeftZ->RotateZ(-0.2);
-      rotRightZ->RotateZ(0.2);
-
-      detector->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoHMatrix(*rotLeftZ) ) );
-      detector->AddNode(mod, 3, new TGeoHMatrix( TGeoCombiTrans(*trasPDet, *rotPDet) * TGeoHMatrix(*rotRightZ)) );
-
-      //calculate the traslation and rotation of the furthest crystals
-      deltaM  = 8 * delta  ;
-      deltaMx = deltaM * TMath::Cos(alfa*12);
-      deltaMz = - deltaM * TMath::Sin(alfa*12);
-      posModx = TMath::Sin(alfa*12) * (piramid_base_c) + deltaMx;
-      posModz = TMath::Cos(alfa*12) * (piramid_base_c) + deltaMz;
-
-      TGeoRotation * rotUpDet2 = new TGeoRotation (); rotUpDet2->RotateX(-alfa_degree * 12);
-      TGeoRotation * rotDnDet2 = new TGeoRotation (); rotDnDet2->RotateX(alfa_degree * 12);
-      TGeoRotation * rotPDet2  = new TGeoRotation (); rotPDet2->RotateY(alfa_degree * 12);
-      TGeoRotation * rotNDet2  = new TGeoRotation (); rotNDet2->RotateY(-alfa_degree * 12);
-      TGeoTranslation * trasUpDet2 = new TGeoTranslation(0, posModx, posModz - piramid_base_c );
-      TGeoTranslation * trasDnDet2 = new TGeoTranslation(0, -posModx, posModz - piramid_base_c );
-      TGeoTranslation * trasPDet2  = new TGeoTranslation(posModx, 0, posModz - piramid_base_c );
-      TGeoTranslation * trasNDet2  = new TGeoTranslation(-posModx, 0, posModz - piramid_base_c );
-
-      detector->AddNode(mod, 4, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) ) );
-      detector->AddNode(mod, 5, new TGeoHMatrix( TGeoCombiTrans(*trasPDet2, *rotPDet2) ) );
-
-      EndGeometry(fp);
-      return;
-   }
-
-
-
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
    ////////////////////////////////////////////////////////////
    ////////////    create Detector
 
@@ -633,20 +511,14 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    double deltaM  = 5 * delta; // 2mm between MODULES
    double deltaMx = deltaM * TMath::Cos(alfa*3);
    double deltaMz = - deltaM * TMath::Sin(alfa*3);
-<<<<<<< HEAD
    double posModx = TMath::Sin(alfa*3) * pyramid_base_c + deltaMx;
    double posModz = TMath::Cos(alfa*3) * pyramid_base_c + deltaMz;
-=======
-   double posModx = TMath::Sin(alfa*3) * piramid_base_c + deltaMx;
-   double posModz = TMath::Cos(alfa*3) * piramid_base_c + deltaMz;
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
 
    // set rotations/translation (left/right/up/down)
    TGeoRotation * rotUpDet = new TGeoRotation (); rotUpDet->RotateX(-alfa_degree * 3);
    TGeoRotation * rotDnDet = new TGeoRotation (); rotDnDet->RotateX(alfa_degree * 3);
    TGeoRotation * rotPDet  = new TGeoRotation (); rotPDet->RotateY(alfa_degree * 3);
    TGeoRotation * rotNDet  = new TGeoRotation (); rotNDet->RotateY(-alfa_degree * 3);
-<<<<<<< HEAD
    TGeoTranslation * trasUpDet = new TGeoTranslation(0, posModx, posModz - pyramid_base_c );
    TGeoTranslation * trasDnDet = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
    TGeoTranslation * trasPDet  = new TGeoTranslation(posModx, 0, posModz - pyramid_base_c );
@@ -655,16 +527,6 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    TGeoRotation * rotRightZ = new TGeoRotation ();
    rotLeftZ->RotateZ(-0.3);
    rotRightZ->RotateZ(0.3);
-=======
-   TGeoTranslation * trasUpDet = new TGeoTranslation(0, posModx, posModz - piramid_base_c );
-   TGeoTranslation * trasDnDet = new TGeoTranslation(0, -posModx, posModz - piramid_base_c );
-   TGeoTranslation * trasPDet  = new TGeoTranslation(posModx, 0, posModz - piramid_base_c );
-   TGeoTranslation * trasNDet  = new TGeoTranslation(-posModx, 0, posModz - piramid_base_c );
-   TGeoRotation * rotLeftZ  = new TGeoRotation ();
-   TGeoRotation * rotRightZ = new TGeoRotation ();
-   rotLeftZ->RotateZ(-0.2);
-   rotRightZ->RotateZ(0.2);
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
 
    detector->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoCombiTrans(*trasDnDet, *rotDnDet) * TGeoHMatrix(*rotLeftZ) ) );
    detector->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoCombiTrans(*trasUpDet, *rotUpDet) * TGeoHMatrix(*rotRightZ)) );
@@ -894,12 +756,11 @@ TVector3 PrintCalorimeterSize(FILE * fp, double &shift)
       }
    }
 
-   // minpoint[2] = minpoint[2]*1.05;
    fCaloSize = maxpoint - minpoint + delta;
    fCaloSize[2] = fCaloSize[2]*1.05; //to build the bounding box a little bit bigger (safer for FLUKA)
 
    cout << "  Calorimeter Size: "
-        << fCaloSize[0] << ", " << fCaloSize[1] << ", " << fCaloSize[2] << " cm" << endl;
+        << fCaloSize[0] << ", " << fCaloSize[1] << ", " << fCaloSize[2] << " cm" << std::flush << endl;
    shift = (maxpoint[2] + minpoint[2])/2;
    cout << "Shift " << (maxpoint[2] + minpoint[2] + delta[2])/2 << std::flush << endl;
 
@@ -1217,8 +1078,8 @@ void EndGeometry(FILE* fp)
    Int_t nCry = fListOfCrystals->GetEntriesFast();
    Int_t nModule = fListOfModules->GetEntriesFast();
 
-   cout << "  Number of modules: " << nModule << endl;
-   cout << "  Number of Calorimeter crystals: " << nCry << endl;
+   cout << "  Number of modules: " << nModule << std::flush << endl;
+   cout << "  Number of Calorimeter crystals: " << nCry << std::flush << endl;
 
    double shift;
    fcalSize = PrintCalorimeterSize(fp, shift);
