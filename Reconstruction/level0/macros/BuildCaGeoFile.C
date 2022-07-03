@@ -899,11 +899,7 @@ TVector3 PrintCalorimeterSize(FILE * fp, double &shift)
    fCaloSize[2] = fCaloSize[2]*1.05; //to build the bounding box a little bit bigger (safer for FLUKA)
 
    cout << "  Calorimeter Size: "
-<<<<<<< HEAD
-        << fCaloSize[0] << ", " << fCaloSize[1] << ", " << fCaloSize[2] << " cm" << std::flush << endl;
-=======
         << fCaloSize[0] << ", " << fCaloSize[1] << ", " << fCaloSize[2] << " cm" << endl;
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
    shift = (maxpoint[2] + minpoint[2])/2;
    cout << "Shift " << (maxpoint[2] + minpoint[2] + delta[2])/2 << std::flush << endl;
 
@@ -987,15 +983,10 @@ void ShowDetectorIdsMap()
       Double_t *trans = mat.GetTranslation();
       TBox* mod = new TBox(trans[0]-xdimA1, trans[1]-xdimA1, trans[0]+xdimA1, trans[1]+xdimA1);
       mod->Draw();
-<<<<<<< HEAD
       
       TText* id = new TText(trans[0], trans[1], Form("%3d", ii));
       id->SetTextAlign(22);
       id->SetTextSize(0.07/aspectradio);
-=======
-      TText* id = new TText(trans[0], trans[1], Form("%3d", ii));
-      id->SetTextAlign(22);
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
       id->Draw();
    }
 
@@ -1023,19 +1014,12 @@ void ShowDetectorIdsMap()
       TGeoHMatrix mat = crt->mat;
       // Get only the center coordinates
       Double_t *trans = mat.GetTranslation();
-<<<<<<< HEAD
       TBox* cry = new TBox(trans[0]-xdim1, trans[1]-xdim1, trans[0]+xdim1, trans[1]+xdim1);
       cry->SetFillColor(kYellow);
       cry->Draw();
       TText* id = new TText(trans[0], trans[1]+xdim1/4, Form("%3d", ii));
       id->SetTextAlign(22);
       id->SetTextSize(0.02/aspectradio);
-=======
-      TBox* mod = new TBox(trans[0]-xdim1, trans[1]-xdim1, trans[0]+xdim1, trans[1]+xdim1);
-      mod->Draw();
-      TText* id = new TText(trans[0], trans[1], Form("%3d", ii));
-      id->SetTextAlign(22);id->SetTextSize(0.015);
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
       id->Draw();
    }
 
@@ -1233,13 +1217,8 @@ void EndGeometry(FILE* fp)
    Int_t nCry = fListOfCrystals->GetEntriesFast();
    Int_t nModule = fListOfModules->GetEntriesFast();
 
-<<<<<<< HEAD
-   cout << "  Number of modules: " << nModule << std::flush << endl;
-   cout << "  Number of Calorimeter crystals: " << nCry << std::flush << endl;
-=======
    cout << "  Number of modules: " << nModule << endl;
    cout << "  Number of Calorimeter crystals: " << nCry << endl;
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
 
    double shift;
    fcalSize = PrintCalorimeterSize(fp, shift);
@@ -1266,7 +1245,6 @@ void EndGeometry(FILE* fp)
    TCanvas * c = new TCanvas("CAL3D", "Calorimeter", 300, 300);
    top->AddNode(detector, 1);
    top->AddNode(detBox, 1, new TGeoTranslation(0, 0, shift));
-<<<<<<< HEAD
    gGeoManager->SetVisLevel(7);
 
    gGeoManager->CloseGeometry();
@@ -1277,8 +1255,4 @@ void EndGeometry(FILE* fp)
    top->Draw("ogl");
 
 
-=======
-   top->Draw("ogl");
-
->>>>>>> 61b4fcf0 (added the calo geo with 5 modules for HIT)
 }
