@@ -31,7 +31,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-rateInitRun") == 0)   { rateInitRun = atoi(argv[++i]);   }   // Run Number for rate info importing
       if(strcmp(argv[i],"-rateEndRun") == 0)   { rateEndRun = atoi(argv[++i]);   }   // Run Number for rate info importing
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
-      if(strcmp(argv[i],"-nomc") == 0)  { nomc = true;   } // disbale MC info saving in output tree
+      if(strcmp(argv[i],"-nomc") == 0)  { nomc = true;   } // disable MC info saving in output tree
 
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
@@ -42,7 +42,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -nsk value     : [def=0] Skip number of events"<<endl;
          cout<<"      -run value     : [def=-1] Run number"<<endl;
-         cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
+         cout<<"      -exp name      : [def=""] experiment name for config/geomap extention"<<endl;
          cout<<"      -nomc          : no MC info saved in output tree "<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
