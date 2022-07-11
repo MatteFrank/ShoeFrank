@@ -236,12 +236,14 @@ int main (int argc, char *argv[]) {
       geofile << msdGeo->PrintSubtractBodiesFromAir();
    if (TAGrecoManager::GetPar()->IncludeDI())
       geofile << diGeo->PrintSubtractBodiesFromAir();
-   if (TAGrecoManager::GetPar()->IncludeTG())
-      geofile << generalGeo->PrintStandardRegions2();
+   //if (TAGrecoManager::GetPar()->IncludeTG())
+   //   geofile << generalGeo->PrintStandardRegions2();
    if (TAGrecoManager::GetPar()->IncludeTW())
       geofile << twGeo->PrintSubtractBodiesFromAir();
-   if (TAGrecoManager::GetPar()->IncludeCA())
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
+      geofile << generalGeo->PrintStandardRegions2();
       geofile << caGeo->PrintSubtractBodiesFromAir();
+   }
    
    if (TAGrecoManager::GetPar()->IncludeST())
       geofile << stcGeo->PrintRegions();
