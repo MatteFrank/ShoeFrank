@@ -1,9 +1,4 @@
 
-/*!
- \file BaseFragment.cpp
- \brief  Implementation of BaseFragment
- */
-
 #include "DAQMarkers.hh"
 #include "BaseFragment.hh"
 #include "InfoEvent.hh"
@@ -14,12 +9,9 @@
 #include "DECardEvent.hh"
 #include "DEMSDEvent.hh"
 #include "WDEvent.hh"
+#include "ArduinoEvent.hh"
 #include <stdio.h>
 
-/*!
- \class BaseFragment
- \brief Base class for all fragments..
- */
 
 std::string FRAGnames[] =
   {"Event Header data",
@@ -29,23 +21,19 @@ std::string FRAGnames[] =
    "Empty   fragment ",
    "VTX     fragment ",
    "WD      fragment ",
-   "MSD     fragment "};  ///< fragment name
+   "MSD     fragment ",
+   "Arduino fragment "};
 
 unsigned int FRAGkeys[] =
   {EventHeaderID, dataV2495, dataV1720, dataV1190,
-   dataEmpty, dataVTX, dataWD, dataMSD}; ///< fragment keys
+   dataEmpty, dataVTX, dataWD, dataMSD, dataArduino};
 
 
 std::map<unsigned int, std::string> BaseFragment::fragnames;
 
-//------------------------------------------+-----------------------------------
-//! Destructor.
+// virtual destructor for the base class
 BaseFragment::~BaseFragment(){}
 
-//------------------------------------------+-----------------------------------
-//! read data
-//!
-//! \param[in] p1 daq file pointer
 void BaseFragment::readData(unsigned int **p1){
   unsigned int *p = *p1;
   channelID= *p;
@@ -53,17 +41,12 @@ void BaseFragment::readData(unsigned int **p1){
   *p1 = p;
 }
 
-//------------------------------------------+-----------------------------------
-//! Print data
 void BaseFragment::printData() const {
   printf ("Generic Base Fragment: \n");
   printf ("Channel ID (hex): %x\n",  channelID);
 }
 
-//------------------------------------------+-----------------------------------
-//! create a concrete class based on channelID pointed ; it reads it; returns NULL if error
-//!
-//! \param[in] p daq file pointer
+// create a concrete class based on channelID pointed ; it reads it; returns NULL if error
 BaseFragment* BaseFragment::create(unsigned int **p){
 
   BaseFragment* p_bf = NULL;
@@ -85,6 +68,8 @@ BaseFragment* BaseFragment::create(unsigned int **p){
     p_bf = new WDEvent;
   } else if( chID==dataMSD ){ // get MSD info
     p_bf = new DEMSDEvent;
+  } else if( chID==dataArduino ){ // get Arduino info
+    p_bf = new ArduinoEvent;
   }
   u_int chID2= (*(*p));
   unsigned int *p2=*p;
@@ -94,10 +79,6 @@ BaseFragment* BaseFragment::create(unsigned int **p){
   return p_bf;
 }
 
-//------------------------------------------+-----------------------------------
-//! Get fragment name from key
-//!
-//! \param[in] key a given key
 std::string BaseFragment::fragmentName(unsigned int key){
   if( fragnames.size()==0 ){
     for(unsigned int i=0; i<FRAGTYPES; i++){

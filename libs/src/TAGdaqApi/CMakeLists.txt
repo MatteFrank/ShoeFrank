@@ -33,6 +33,7 @@ set( files
    EventReader
    RemoteEvent
    fADCEvent
+   ArduinoEvent
 )
 
 # add includes : current 
