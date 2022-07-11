@@ -17,7 +17,13 @@
 *.cint_rdict.pcm
 *.d
 
+*_ACLiC_*
+
 build
+bin
+cmake
+include
+.vscode
 
 Reconstruction/level0/results
 Reconstruction/level0/DecodeMC
