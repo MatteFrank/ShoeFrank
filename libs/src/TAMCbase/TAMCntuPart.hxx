@@ -122,7 +122,7 @@ class TAMCntuPart : public TAGdata {
    // Get particle (const)
 	const TAMCpart* GetTrack(Int_t i) const;
    
-   // Get nuimber of tracks
+   // Get number of tracks
    Int_t           GetTracksN() const;
    
    // New track
