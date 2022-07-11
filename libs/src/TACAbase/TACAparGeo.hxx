@@ -98,13 +98,17 @@ public:
    string          PrintSubtractBodiesFromAir();
    string          PrintParameters();
    
+   // 2D positions and dimensions fro clustering
    Int_t           GetCrystalLine(Int_t iCrystal);
    Int_t           GetCrystalCol(Int_t iCrystal);
+   Int_t           GetMaxNumLines()   { return fNumLine; }
+   Int_t           GetMaxNumColumns() { return fNumCol; }
 
 private:
    TString         SPrintCrystalBody(int id, TGeoCombiTrans * hm, TString bodyName, Double_t *trd2Size);
    TString         SPrintParallelPla(int id, TGeoCombiTrans * hm, TString bodyName, Double_t *trd2Size, int * dir);   
    TString         PrintModuleAirRegions();
+   
    //! Build a row/col index to by used in clustering
    void            ComputeCrystalIndexes();
    
@@ -124,7 +128,6 @@ public:
    static Color_t GetDefaultModCol()      { return fgkDefaultModCol;      }
    //! Get number of crystal per module (9)
    static Int_t   GetCrystalsNperModule() { return fgkCrystalsNperModule; }
-   //static Int_t   GetModuleId(Int_t idx)  { return idx / fgkCrystalsNperModule; }
 
 
 private:
@@ -165,7 +168,10 @@ private:
    
    vector<TVector3>    fListOfCrysAng;     ///< list of angles for crystal
    vector<TVector3>    fListOfModAng;      ///< list of angles for module
+
    map<int, pair<int, int> > fMapIndexes;  ///< index map for line/column numbers
+   Int_t               fNumLine;           /// 
+   Int_t               fNumCol;            ///
 
    ClassDef(TACAparGeo, 2)
 };

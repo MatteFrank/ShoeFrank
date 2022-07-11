@@ -294,7 +294,7 @@ void TACAparGeo::ComputeCrystalIndexes()
       local[0] = 0 ;
       local[1] = 0 ;
       local[2] = -zdim;
-      point =  Crystal2DetectorVect(iCry, local);
+      point =  Crystal2Detector(iCry, local);
 
       if ( point[0] > maxpoint[0] ) maxpoint[0] = point[0];
       if ( point[1] > maxpoint[1] ) maxpoint[1] = point[1];
@@ -311,27 +311,30 @@ void TACAparGeo::ComputeCrystalIndexes()
       lastpoint = point;
    }
    width /= n;
-   Double_t interModWidth = fCrystalsN/GetCrystalsNperModule() * 0.1;
+   Double_t interModWidth = fCrystalsN/GetCrystalsNperModule() * 0.15;
    
    TVector3 dim = maxpoint - minpoint;
 
-   Int_t cols   = (int)(dim[0]-interModWidth+width)/width + 1;
-   Int_t rows   = (int)(dim[1]-interModWidth+width)/width + 1; 
-   
-   if (FootDebugLevel(1)) cout << "Crystal Index map for clustering:" << endl;
+   fNumCol   = (int)(dim[0]-interModWidth+width)/width + 1;
+   fNumLine   = (int)(dim[1]-interModWidth+width)/width + 1; 
+
+   if (FootDebugLevel(1)) {
+      cout  << "   width: " << width << "   rows: " << fNumLine << " cols: " << fNumCol << endl << endl;
+      cout << "Crystal Index map for clustering:" << endl;
+   }
 
    for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
       // central point in front
       local[0] = 0 ;
       local[1] = 0 ;
       local[2] = -zdim;
-      point =  Crystal2DetectorVect(iCry, local);
+      point =  Crystal2Detector(iCry, local);
 
-      for (Int_t i = 0; i<cols; ++i) {
-         for (Int_t j = 0; j<rows; ++j) {
+      for (Int_t i = 0; i<fNumCol; ++i) {
+         for (Int_t j = 0; j<fNumLine; ++j) {
 
-            if ( (point[0] >= i*width - cols*width/2 && point[0] <= (i+1)*width - cols*width/2) && 
-                 (point[1] >= j*width - rows*width/2 && point[1] <= (j+1)*width - rows*width/2)) {
+            if ( (point[0] >= i*width - fNumCol*width/2 && point[0] <= (i+1)*width - fNumCol*width/2) && 
+                 (point[1] >= j*width - fNumLine*width/2 && point[1] <= (j+1)*width - fNumLine*width/2)) {
  
                pair<int, int> idx(i, j);
                fMapIndexes[iCry] = idx;
