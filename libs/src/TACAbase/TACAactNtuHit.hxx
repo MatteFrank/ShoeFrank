@@ -25,47 +25,47 @@ public:
                                 TAGdataDsc* p_datdaq=0,
                                 TAGparaDsc* p_parmap=0,
                                 TAGparaDsc* p_parcal=0);
-  virtual         ~TACAactNtuHit();
+   virtual       ~TACAactNtuHit();
 
-  Bool_t   Action();
+   Bool_t   Action();
 
-  void     CreateHistogram();
-  void     SetTemperatureFunctions();
-  void     SetParFunction();
+   void     CreateHistogram();
+   void     SetTemperatureFunctions();
+   void     SetParFunction();
 
-  Double_t TemperatureCorrFunction(Double_t* x, Double_t* par);
+   Double_t TemperatureCorrFunction(Double_t* x, Double_t* par);
 
-  Double_t GetTime(Double_t RawTime, Int_t  crysId);
-  Double_t GetEnergy(Double_t rawEnergy, Int_t  crysId);
-  Double_t GetTemperatureCorrection(Double_t rawEnergy, Int_t  crysId);
-  Double_t GetEqualisationCorrection(Double_t rawEnergy, Int_t  crysId);
+   Double_t GetTime(Double_t RawTime, Int_t  crysId);
+   Double_t GetEnergy(Double_t rawEnergy, Int_t  crysId);
+   Double_t GetTemperatureCorrection(Double_t rawEnergy, Double_t temp, Int_t  crysId);
+   Double_t GetEqualisationCorrection(Double_t rawEnergy, Int_t  crysId);
    
 private:
-  TAGdataDsc*     fpDatRaw;		    // input data dsc
-  TAGdataDsc*     fpNtuRaw;		    // output data dsc
-  TAGparaDsc*     fpParMap;        // output data dsc
-  TAGparaDsc*     fpParCal;        // output data dsc
+   TAGdataDsc*     fpDatRaw;		    // input data dsc
+   TAGdataDsc*     fpNtuRaw;		    // output data dsc
+   TAGparaDsc*     fpParMap;         // output data dsc
+   TAGparaDsc*     fpParCal;         // output data dsc
 
-  Double_t        fTcorr1Par1;
-  Double_t        fTcorr1Par0;
-  Double_t        fTcorr2Par1;
-  Double_t        fTcorr2Par0;
-  Double_t        fT1;
-  Double_t        fT2;
+   Double_t        fTcorr1Par1;
+   Double_t        fTcorr1Par0;
+   Double_t        fTcorr2Par1;
+   Double_t        fTcorr2Par0;
+   Double_t        fT1;
+   Double_t        fT2;
 
 
-  TH1F*           fhArrivalTime[9];
-  TH1F*           fhCharge[9];
-  TH1F*           fhAmplitude[9];
-  TH1F*           fhTrigTime;
-  TH1F*           fhTotCharge;
-  TH1F*           fhEventTime;
-  TH1F*           fhChannelMap;
+   TH1F*           fhArrivalTime[9];
+   TH1F*           fhCharge[9];
+   TH1F*           fhAmplitude[9];
+   TH1F*           fhTrigTime;
+   TH1F*           fhTotCharge;
+   TH1F*           fhEventTime;
+   TH1F*           fhChannelMap;
 
-  TF1*            fTcorr1;
-  TF1*            fTcorr2;
+   TF1*            fTcorr1;
+   TF1*            fTcorr2;
   
-   ClassDef(TACAactNtuHit,0)
+   ClassDef(TACAactNtuHit, 0)
 };
 
 #endif
