@@ -177,8 +177,8 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fCaClusDisplay = new TAEDcluster("Calorimeter Cluster");
       fCaClusDisplay->SetMaxEnergy(fMaxEnergy);
-      fCaClusDisplay->SetDefWidth(fQuadDefWidth*4);
-      fCaClusDisplay->SetDefHeight(fQuadDefHeight*4);
+      fCaClusDisplay->SetDefWidth(fQuadDefWidth*10);
+      fCaClusDisplay->SetDefHeight(fQuadDefHeight*10);
       fCaClusDisplay->SetPickable(true);
    }
 
@@ -1397,9 +1397,9 @@ void TAGbaseEventDisplay::UpdateCrystalElements()
       
       x = posG(0);
       y = posG(1);
-      z = posG(2);
-      
-      fCaClusDisplay->AddHit(nhits*10, x, y, z);
+      z = posG(2)-1; // let move it a bit foward 
+      // let made the cluster size propotional to the num of hists
+      fCaClusDisplay->AddHit(nhits*50, x, y, z, nhits/2+1, nhits/2+1);
       fCaClusDisplay->QuadId(clus);
       
    } //end loop on clusters
