@@ -34,13 +34,15 @@ TACArawHit::TACArawHit()
   fChg = -1000;
   fAmplitude = -1000;
   fTime =-1000;
+  fTemp = 25;
 }
 
 //------------------------------------------+-----------------------------------
 //! constructor.
-TACArawHit::TACArawHit(TWaveformContainer *W)
+TACArawHit::TACArawHit(TWaveformContainer *W, double temp = 25)
   : TAGbaseWD(W){
 
+  fTemp = temp;
   fBaseline = ComputeBaseline(W);
   fPedestal = ComputePedestal(W,0.0);
   fChg = ComputeCharge(W,0.0);
@@ -56,7 +58,7 @@ TACArawHit::~TACArawHit(){
 
 }
 
-// do not need these interfaces, done by compilator
+// do not need these interfaces, done by compiler
 double TACArawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
   return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
 }
@@ -125,7 +127,6 @@ void TACAntuRaw::Clear(Option_t*){
   TAGdata::Clear();
   fHistN = 0;
 
-  
   if (fListOfHits) fListOfHits->Clear();
 }
 
@@ -145,10 +146,10 @@ const TACArawHit* TACAntuRaw::GetHit(Int_t i) const{
 
 //------------------------------------------+-----------------------------------
 //! New hit
-void TACAntuRaw::NewHit(TWaveformContainer *W){
+void TACAntuRaw::NewHit(TWaveformContainer *W, double temp) {
   
   TClonesArray &pixelArray = *fListOfHits;
-  TACArawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACArawHit(W);
+  TACArawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACArawHit(W, temp);
   fHistN++;
 }
 
