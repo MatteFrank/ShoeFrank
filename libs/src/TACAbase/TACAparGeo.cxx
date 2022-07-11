@@ -282,13 +282,15 @@ void TACAparGeo::ComputeCrystalIndexes()
    TVector3 local;
    TVector3 point;
 
-   // Find X and Y dimension of calorimeter on the front face
-   Float_t zdim = GetCrystalThick();
-   TVector3 maxpoint(-999., -999., -999.);
-   TVector3 minpoint( 999.,  999.,  999.);
-   TVector3 lastpoint;
+   // Find number of X and Y different positions of calorimeter crystals
+
    Double_t width = 0;
-   Double_t n = 0;
+   Float_t zdim = GetCrystalThick();
+   double xdim1 = GetCrystalWidthFront(); 
+   double ydim1 = GetCrystalHeightFront();
+   vector<double> xcry;
+   vector<double> ycry;
+
    for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
       // central point in front
       local[0] = 0 ;
@@ -296,27 +298,29 @@ void TACAparGeo::ComputeCrystalIndexes()
       local[2] = -zdim;
       point =  Crystal2Detector(iCry, local);
 
-      if ( point[0] > maxpoint[0] ) maxpoint[0] = point[0];
-      if ( point[1] > maxpoint[1] ) maxpoint[1] = point[1];
+      double x = point[0];
+      double y = point[1];
+      if (iCry == 0) {
+         xcry.push_back( x );
+         ycry.push_back( y );      
+      } else {
+         bool foundX = false;
+         for(std::size_t i = 0; i < xcry.size(); ++i) {
+            if ( TMath::Abs(xcry[i] - x) < xdim1 ) foundX = true;
+         }
+         if (!foundX) xcry.push_back(x);
 
-      if ( point[0] < minpoint[0] ) minpoint[0] = point[0];
-      if ( point[1] < minpoint[1] ) minpoint[1] = point[1];
-      
-      // get distance between two crystals
-      if (iCry > 0 && iCry < 2 ) {
-         width += TMath::Abs(lastpoint[0] - point[0]);
-         //cout << width << endl;
-         n += 1;
+         bool foundY = false;
+         for(std::size_t ii = 0; ii < ycry.size(); ++ii) {
+            if ( TMath::Abs(ycry[ii] - y) < ydim1 ) foundY = true;
+         }
+         if (!foundY) ycry.push_back(y);
       }
-      lastpoint = point;
    }
-   width /= n;
-   Double_t interModWidth = fCrystalsN/GetCrystalsNperModule() * 0.15;
-   
-   TVector3 dim = maxpoint - minpoint;
 
-   fNumCol   = (int)(dim[0]-interModWidth+width)/width + 1;
-   fNumLine   = (int)(dim[1]-interModWidth+width)/width + 1; 
+   width    = TMath::Abs(xcry[1] - xcry[0]);
+   fNumCol  = xcry.size();
+   fNumLine = ycry.size();
 
    if (FootDebugLevel(1)) {
       cout  << "   width: " << width << "   rows: " << fNumLine << " cols: " << fNumCol << endl << endl;
