@@ -147,7 +147,7 @@ void LocalReco::CreateRawAction()
          fActNtuHitIt->CreateHistogram();
    }
 
-   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()  && !fgStdAloneFlag) {
       fpDatRawMsd   = new TAGdataDsc("msdDat", new TAMSDntuRaw());
       fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd, fpParConfMsd);
       if (fFlagHisto)
