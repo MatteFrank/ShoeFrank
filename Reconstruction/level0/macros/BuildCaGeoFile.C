@@ -4,8 +4,7 @@
 // July 2022: Updated by E. Lopez
 
   
-#if !defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__)
-   // 
+#if !defined(__CINT__) || defined(__MAKECINT__)
    #include "TGeoBBox.h"
    #include "TGeoNode.h"
    #include "TGeoManager.h"
@@ -24,6 +23,7 @@
    #include "TBox.h"
    #include "TH2F.h"
    #include "TText.h"
+   #include "TString.h"
 
    #include "TAGgeoTrafo.hxx"
    #include "TAGmaterials.hxx"
@@ -38,24 +38,24 @@
 
    // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, SEVEN_MOD, FULL_DET_V1)
    // TODO: FULL_DET_V1. the new full setup need to be created
-   TString fConfig_typegeo = "SEVEN_MOD";
+   TString fConfig_typegeo = "FULL_DET_V1";
 
    // half dimensions of BGO crystal
-   double xdim1 = 1.;
+   double xdim1 = 1.05;
    double xdim2 = 1.45;
    double ydim1 = xdim1; // assume square
    double ydim2 = xdim2;
    double zdim  = 12.;
-   double delta = 0.1; // 1mm between crystals
+   double delta = 0.095; // 1mm between crystals
 
 ///////////////////////////////////////////////////
 
 TObjArray *    fListOfCrystals;  //!
 TObjArray *    fListOfModules;   //!
 TVector3       fcalSize;
-const TString fgkDefaultCrysName = "caCrys";
-const TString fDetectorName = "CA";
-TString fgPath;
+const TString  fgkDefaultCrysName = "caCrys";
+const TString  fDetectorName = "CA";
+TString        fgPath;
 
 void EndGeometry(FILE* fp);
 
@@ -272,15 +272,18 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    ///////////////////////////////////////
    // Detector with 5 or 7 Modules in a row: geometry for the HIT test beam
    if ( fConfig_typegeo.CompareTo("FIVE_MOD") == 0 ||
-        fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ) {
+        fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ||
+        fConfig_typegeo.CompareTo("FULL_DET_V1") == 0
+        ) {
+      
 
       //first module, centered on the beam
-      detector->AddNode(mod, 1);
+      //detector->AddNode(mod, 1);
 
       //calculate the translation and rotation of the first two neighbors
-      double deltaM  = 4 * delta;
-      double deltaMx = deltaM * TMath::Cos(alfa*6);
-      double deltaMz = - deltaM * TMath::Sin(alfa*6);
+      double deltaM  = 5 * delta;
+      double deltaMx = deltaM * TMath::Cos(alfa*3);
+      double deltaMz = - deltaM * TMath::Sin(alfa*3);
       double posModx = TMath::Sin(alfa*6) * pyramid_base_c + deltaMx;
       double posModz = TMath::Cos(alfa*6) * pyramid_base_c + deltaMz;
 
@@ -290,16 +293,18 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
       TGeoTranslation * trasNDet  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
       TGeoRotation * rotLeftZ  = new TGeoRotation ();
       TGeoRotation * rotRightZ = new TGeoRotation ();
-      rotLeftZ->RotateZ(-0.2);
-      rotRightZ->RotateZ(0.2);
+      //rotLeftZ->RotateZ(-0.2);
+      //rotRightZ->RotateZ(0.2);
 
-      detector->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoHMatrix(*rotLeftZ) ) );
-      detector->AddNode(mod, 3, new TGeoHMatrix( TGeoCombiTrans(*trasPDet, *rotPDet) * TGeoHMatrix(*rotRightZ)) );
+      TGeoVolumeAssembly * mod3 = new TGeoVolumeAssembly("CAL_3_MOD");
+      mod3->AddNode(mod, 1); // first module, centered on the beam
+      mod3->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoHMatrix(*rotLeftZ) ) );
+      mod3->AddNode(mod, 3, new TGeoHMatrix( TGeoCombiTrans(*trasPDet, *rotPDet) * TGeoHMatrix(*rotRightZ)) );
 
       //calculate the translation and rotation of the furthest crystals
-      deltaM  = 8 * delta  ;
-      deltaMx = deltaM * TMath::Cos(alfa*12);
-      deltaMz = - deltaM * TMath::Sin(alfa*12);
+      deltaM  = 10 * delta  ;
+      deltaMx = deltaM * TMath::Cos(alfa*7);
+      deltaMz = - deltaM * TMath::Sin(alfa*7);
       posModx = TMath::Sin(alfa*12) * (pyramid_base_c) + deltaMx;
       posModz = TMath::Cos(alfa*12) * (pyramid_base_c) + deltaMz;
 
@@ -308,18 +313,21 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
       TGeoTranslation * trasPDet2  = new TGeoTranslation(posModx, 0, posModz - pyramid_base_c );
       TGeoTranslation * trasNDet2  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
 
-      detector->AddNode(mod, 4, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) ) );
-      detector->AddNode(mod, 5, new TGeoHMatrix( TGeoCombiTrans(*trasPDet2, *rotPDet2) ) );
+      TGeoVolumeAssembly * mod5 = new TGeoVolumeAssembly("CAL_5_MOD");
+      mod5->AddNode(mod3, 1);
+      mod5->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) ) );
+      mod5->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasPDet2, *rotPDet2) ) );
 
       if ( fConfig_typegeo.CompareTo("FIVE_MOD") == 0 ) {
+         detector->AddNode(mod5, 1);
          EndGeometry(fp);
          return;
       }
 
       //calculate the translation and rotation of the furthest crystals
-      deltaM  = 12 * delta  ;
-      deltaMx = deltaM * TMath::Cos(alfa*18);
-      deltaMz = - deltaM * TMath::Sin(alfa*18);
+      deltaM  = 15 * delta  ;
+      deltaMx = deltaM * TMath::Cos(alfa*10);
+      deltaMz = - deltaM * TMath::Sin(alfa*10);
       posModx = TMath::Sin(alfa*18) * (pyramid_base_c) + deltaMx;
       posModz = TMath::Cos(alfa*18) * (pyramid_base_c) + deltaMz;
 
@@ -328,13 +336,173 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
       TGeoTranslation * trasPDet3  = new TGeoTranslation(posModx, 0, posModz - pyramid_base_c );
       TGeoTranslation * trasNDet3  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
 
-      detector->AddNode(mod, 6, new TGeoHMatrix( TGeoCombiTrans(*trasNDet3, *rotNDet3) ) );
-      detector->AddNode(mod, 7, new TGeoHMatrix( TGeoCombiTrans(*trasPDet3, *rotPDet3) ) );
+      TGeoVolumeAssembly * mod7 = new TGeoVolumeAssembly("CAL_7_MOD");
+      mod7->AddNode(mod5, 1);
+      mod7->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasNDet3, *rotNDet3) ) );
+      mod7->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasPDet3, *rotPDet3) ) );
       
+      if ( fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ) {
+         detector->AddNode(mod7, 1);
+         EndGeometry(fp);
+         return;
+      }
+
+      // 3 rows of 7 modules
+      // set rotations/translation (1 module up/down, 1rst level)
+      deltaM  = 5 * delta;
+      deltaMx = deltaM * TMath::Cos(alfa*3);
+      deltaMz = - deltaM * TMath::Sin(alfa*3);
+      posModx = TMath::Sin(alfa*6) * pyramid_base_c + deltaMx;
+      posModz = TMath::Cos(alfa*6) * pyramid_base_c + deltaMz;
+
+      TGeoRotation * rotUpDet = new TGeoRotation (); rotUpDet->RotateX(-alfa_degree * 3);
+      TGeoRotation * rotDnDet = new TGeoRotation (); rotDnDet->RotateX(alfa_degree * 3);
+      TGeoTranslation * trasUpDet = new TGeoTranslation(0, posModx, posModz - pyramid_base_c );
+      TGeoTranslation * trasDnDet = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
+      detector->AddNode(mod7, 1); 
+      detector->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasUpDet, *rotUpDet) * TGeoHMatrix(*rotUpDet) ) );
+      detector->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasDnDet, *rotDnDet) * TGeoHMatrix(*rotDnDet)) );
+
+      // set rotations/translation (4 modules diagonal left/right/up/down)
+      TGeoRotation * rotUpDet1 = new TGeoRotation (); rotUpDet1->RotateX(-alfa_degree * 6);
+      TGeoRotation * rotDnDet1 = new TGeoRotation (); rotDnDet1->RotateX(alfa_degree * 6);
+      TGeoRotation * rotPDet1  = new TGeoRotation (); rotPDet1->RotateY(alfa_degree * 6);
+      TGeoRotation * rotNDet1  = new TGeoRotation (); rotNDet1->RotateY(-alfa_degree * 6);
+      TGeoTranslation * trasUpDet1 = new TGeoTranslation(0, posModx, posModz - pyramid_base_c );
+      TGeoTranslation * trasDnDet1 = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
+      TGeoTranslation * trasPDet1  = new TGeoTranslation(posModx, 0, posModz - pyramid_base_c );
+      TGeoTranslation * trasNDet1  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
+      rotLeftZ->RotateZ(-0.2);
+      rotRightZ->RotateZ(0.2);
+
+      detector->AddNode(mod, 3, new TGeoHMatrix( TGeoCombiTrans(*trasNDet1, *rotNDet1) * TGeoCombiTrans(*trasDnDet1, *rotDnDet1) * TGeoHMatrix(*rotLeftZ) ) );
+      detector->AddNode(mod, 4, new TGeoHMatrix( TGeoCombiTrans(*trasNDet1, *rotNDet1) * TGeoCombiTrans(*trasUpDet1, *rotUpDet1) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 5, new TGeoHMatrix( TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoCombiTrans(*trasDnDet1, *rotDnDet1) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 6, new TGeoHMatrix( TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoCombiTrans(*trasUpDet1, *rotUpDet1) * TGeoHMatrix(*rotLeftZ) ) );
+
+      //  (next 4 modules 2dn level horizontal diagonal left/right/up/down)
+      rotLeftZ->RotateZ(-0.2);
+      rotRightZ->RotateZ(0.2);
+
+      detector->AddNode(mod,  7, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) * TGeoCombiTrans(*trasDnDet, *rotDnDet1) * TGeoHMatrix(*rotLeftZ) ) );
+      detector->AddNode(mod,  8, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) * TGeoCombiTrans(*trasUpDet, *rotUpDet1) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod,  9, new TGeoHMatrix( TGeoCombiTrans(*trasPDet2, *rotPDet2) * TGeoCombiTrans(*trasDnDet, *rotDnDet1) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 10, new TGeoHMatrix( TGeoCombiTrans(*trasPDet2, *rotPDet2) * TGeoCombiTrans(*trasUpDet, *rotUpDet1) * TGeoHMatrix(*rotLeftZ) ) );
+
+      //  (next 4 modules 3dn level horizontal diagonal left/right/up/down)
+      rotLeftZ->RotateZ(-0.2);
+      rotRightZ->RotateZ(0.2);
+
+      detector->AddNode(mod, 11, new TGeoHMatrix( TGeoCombiTrans(*trasNDet3, *rotNDet3) * TGeoCombiTrans(*trasDnDet, *rotDnDet1) * TGeoHMatrix(*rotLeftZ) ) );
+      detector->AddNode(mod, 12, new TGeoHMatrix( TGeoCombiTrans(*trasNDet3, *rotNDet3) * TGeoCombiTrans(*trasUpDet, *rotUpDet1) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 13, new TGeoHMatrix( TGeoCombiTrans(*trasPDet3, *rotPDet3) * TGeoCombiTrans(*trasDnDet, *rotDnDet1) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 14, new TGeoHMatrix( TGeoCombiTrans(*trasPDet3, *rotPDet3) * TGeoCombiTrans(*trasUpDet, *rotUpDet1) * TGeoHMatrix(*rotLeftZ) ) );
+
+      // set rotations/translation (1 module up/down, 2nd level)
+      deltaM  = 10 * delta;
+      deltaMx = deltaM * TMath::Cos(alfa*7);
+      deltaMz = - deltaM * TMath::Sin(alfa*7);
+      posModx = TMath::Sin(alfa*12) * pyramid_base_c + deltaMx;
+      posModz = TMath::Cos(alfa*12) * pyramid_base_c + deltaMz;
+
+      TGeoRotation * rotUpDet2 = new TGeoRotation (); rotUpDet2->RotateX(-alfa_degree * 9);
+      TGeoRotation * rotDnDet2 = new TGeoRotation (); rotDnDet2->RotateX(alfa_degree * 9);
+      TGeoTranslation * trasUpDet2 = new TGeoTranslation(0, posModx, posModz - pyramid_base_c );
+      TGeoTranslation * trasDnDet2 = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
+      detector->AddNode(mod, 15, new TGeoHMatrix( TGeoCombiTrans(*trasUpDet2, *rotUpDet) * TGeoHMatrix(*rotUpDet2) ) );
+      detector->AddNode(mod, 16, new TGeoHMatrix( TGeoCombiTrans(*trasDnDet2, *rotDnDet) * TGeoHMatrix(*rotDnDet2)) );
+
+      // (4 modules diagonal left/right/up/down 2nd level vertically)
+      rotLeftZ->RotateZ(-0.1); 
+      rotRightZ->RotateZ(0.1);
+
+      deltaM  = 6 * delta;
+      deltaMx = deltaM * TMath::Cos(alfa*4);
+      deltaMz = - deltaM * TMath::Sin(alfa*4);
+      posModx = TMath::Sin(alfa*6) * pyramid_base_c + deltaMx;
+      posModz = TMath::Cos(alfa*6) * pyramid_base_c + deltaMz;      
+      trasPDet1  = new TGeoTranslation(posModx, 0, posModz - pyramid_base_c );
+      trasNDet1  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
+
+      deltaM  = 10 * delta;
+      deltaMx = deltaM * TMath::Cos(alfa*4);
+      deltaMz = - deltaM * TMath::Sin(alfa*4);
+      posModx = TMath::Sin(alfa*12) * pyramid_base_c + deltaMx;
+      posModz = TMath::Cos(alfa*12) * pyramid_base_c + deltaMz;  
+
+      rotUpDet2 = new TGeoRotation (); rotUpDet2->RotateX(-alfa_degree * 12);
+      rotDnDet2 = new TGeoRotation (); rotDnDet2->RotateX(alfa_degree * 12);
+      trasUpDet2 = new TGeoTranslation(0, posModx, posModz - pyramid_base_c );
+      trasDnDet2 = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
+
+      detector->AddNode(mod, 17, new TGeoHMatrix( TGeoCombiTrans(*trasNDet1, *rotNDet1) * TGeoCombiTrans(*trasDnDet2, *rotDnDet2) * TGeoHMatrix(*rotLeftZ) ) );
+      detector->AddNode(mod, 18, new TGeoHMatrix( TGeoCombiTrans(*trasNDet1, *rotNDet1) * TGeoCombiTrans(*trasUpDet2, *rotUpDet2) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 19, new TGeoHMatrix( TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoCombiTrans(*trasDnDet2, *rotDnDet2) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 20, new TGeoHMatrix( TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoCombiTrans(*trasUpDet2, *rotUpDet2) * TGeoHMatrix(*rotLeftZ) ) );
+
+      //  (next 4 modules 2dn level horizontal and vertical diagonal left/right/up/down)
+      rotLeftZ->RotateZ(-0.2);
+      rotRightZ->RotateZ(0.2);
+
+      deltaM  = 12 * delta;
+      deltaMx = deltaM * TMath::Cos(alfa*7);
+      deltaMz = - deltaM * TMath::Sin(alfa*7);
+      posModx = TMath::Sin(alfa*12) * pyramid_base_c + deltaMx;
+      posModz = TMath::Cos(alfa*12) * pyramid_base_c + deltaMz;      
+      rotPDet2->RotateY(alfa_degree * .1);
+      rotNDet2->RotateY(-alfa_degree * .1);
+      trasPDet2  = new TGeoTranslation(posModx, 0, posModz - pyramid_base_c );
+      trasNDet2  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
+
+      detector->AddNode(mod, 21, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) * TGeoCombiTrans(*trasDnDet2, *rotDnDet2) * TGeoHMatrix(*rotLeftZ) ) );
+      detector->AddNode(mod, 22, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) * TGeoCombiTrans(*trasUpDet2, *rotUpDet2) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 23, new TGeoHMatrix( TGeoCombiTrans(*trasPDet2, *rotPDet2) * TGeoCombiTrans(*trasDnDet2, *rotDnDet2) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 24, new TGeoHMatrix( TGeoCombiTrans(*trasPDet2, *rotPDet2) * TGeoCombiTrans(*trasUpDet2, *rotUpDet2) * TGeoHMatrix(*rotLeftZ) ) );
+
+      // set rotations/translation (1 module up/down, 3nd level)
+      deltaM  = 15 * delta;
+      deltaMx = deltaM * TMath::Cos(alfa*10);
+      deltaMz = - deltaM * TMath::Sin(alfa*10);
+      posModx = TMath::Sin(alfa*18) * pyramid_base_c + deltaMx;
+      posModz = TMath::Cos(alfa*18) * pyramid_base_c + deltaMz;
+
+      TGeoRotation * rotUpDet3 = new TGeoRotation (); rotUpDet3->RotateX(-alfa_degree * 15);
+      TGeoRotation * rotDnDet3 = new TGeoRotation (); rotDnDet3->RotateX( alfa_degree * 15);
+      TGeoTranslation * trasUpDet3 = new TGeoTranslation(0, posModx, posModz - pyramid_base_c );
+      TGeoTranslation * trasDnDet3 = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
+      detector->AddNode(mod, 25, new TGeoHMatrix( TGeoCombiTrans(*trasUpDet3, *rotUpDet) * TGeoHMatrix(*rotUpDet3) ) );
+      detector->AddNode(mod, 26, new TGeoHMatrix( TGeoCombiTrans(*trasDnDet3, *rotDnDet) * TGeoHMatrix(*rotDnDet3)) );
+
+      // (4 modules diagonal left/right/up/down 3nd level vertically)
+      rotLeftZ->RotateZ(-0.2); 
+      rotRightZ->RotateZ(0.2);
+
+      deltaM  = 9 * delta;
+      deltaMx = deltaM * TMath::Cos(alfa*4);
+      deltaMz = - deltaM * TMath::Sin(alfa*4);
+      posModx = TMath::Sin(alfa*6) * pyramid_base_c + deltaMx;
+      posModz = TMath::Cos(alfa*6) * pyramid_base_c + deltaMz;      
+      trasPDet1  = new TGeoTranslation(posModx, 0, posModz - pyramid_base_c );
+      trasNDet1  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
+      rotUpDet3 = new TGeoRotation (); rotUpDet3->RotateX(-alfa_degree * 18);
+      rotDnDet3 = new TGeoRotation (); rotDnDet3->RotateX( alfa_degree * 18);
+
+      deltaM  = 15 * delta;
+      deltaMx = deltaM * TMath::Cos(alfa*10);
+      deltaMz = - deltaM * TMath::Sin(alfa*10);
+      posModx = TMath::Sin(alfa*18) * pyramid_base_c + deltaMx;
+      posModz = TMath::Cos(alfa*18) * pyramid_base_c + deltaMz;  
+
+      detector->AddNode(mod, 27, new TGeoHMatrix( TGeoCombiTrans(*trasNDet1, *rotNDet1) * TGeoCombiTrans(*trasDnDet3, *rotDnDet3) * TGeoHMatrix(*rotLeftZ) ) );
+      detector->AddNode(mod, 28, new TGeoHMatrix( TGeoCombiTrans(*trasNDet1, *rotNDet1) * TGeoCombiTrans(*trasUpDet3, *rotUpDet3) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 29, new TGeoHMatrix( TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoCombiTrans(*trasDnDet3, *rotDnDet3) * TGeoHMatrix(*rotRightZ)) );
+      detector->AddNode(mod, 30, new TGeoHMatrix( TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoCombiTrans(*trasUpDet3, *rotUpDet3) * TGeoHMatrix(*rotLeftZ) ) );
+
+      // End FULL_DET_V1
       EndGeometry(fp);
       return;
-   }
 
+   }
 
 
    ////////////////////////////////////////////////////////////
@@ -343,7 +511,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    // Detector with 4 central modules (FIRST LEVEL)
 
    // displacement of module center
-   double deltaM  = 2 * delta; // 2mm between MODULES
+   double deltaM  = 5 * delta; // 2mm between MODULES
    double deltaMx = deltaM * TMath::Cos(alfa*3);
    double deltaMz = - deltaM * TMath::Sin(alfa*3);
    double posModx = TMath::Sin(alfa*3) * pyramid_base_c + deltaMx;
@@ -360,8 +528,8 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
    TGeoTranslation * trasNDet  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
    TGeoRotation * rotLeftZ  = new TGeoRotation ();
    TGeoRotation * rotRightZ = new TGeoRotation ();
-   rotLeftZ->RotateZ(-0.2);
-   rotRightZ->RotateZ(0.2);
+   rotLeftZ->RotateZ(-0.3);
+   rotRightZ->RotateZ(0.3);
 
    detector->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoCombiTrans(*trasDnDet, *rotDnDet) * TGeoHMatrix(*rotLeftZ) ) );
    detector->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasNDet, *rotNDet) * TGeoCombiTrans(*trasUpDet, *rotUpDet) * TGeoHMatrix(*rotRightZ)) );
@@ -741,8 +909,8 @@ void ShowDetectorIdsMap()
 void ComputeCrystalIndexes()
 {
    // Build a row/col index to by used in clustering
-   // Here, we only check if the algohorimy is OK
-   // the real fuction is TACAparGeo::ComputeCrystalIndexes()
+   // Here, we only check if the algohorim is OK
+   // the real fuction is at TACAparGeo::ComputeCrystalIndexes()
 
    // DEBUG
    double aspectradio = (fcalSize[1]/fcalSize[0]);
@@ -754,13 +922,13 @@ void ComputeCrystalIndexes()
    Double_t * point  = new Double_t [3];
 
    // Find X and Y dimension of calo front face to get the number of columns and rows
-   TVector3 maxpoint(-999., -999., -999.);
-   TVector3 minpoint( 999.,  999.,  999.);
-   TVector3 lastpoint;
+
    Double_t width = 0;
-   Double_t n = 0;
    int nCry = fListOfCrystals->GetEntriesFast();
+   vector<double> xcry;
+   vector<double> ycry;
    for (Int_t iCry = 0; iCry < nCry; ++iCry) {
+     
       //TVector3 pos = GetCrystalPosition(iCry);
       NodeTrafo *crt = ((NodeTrafo *)(fListOfCrystals->At(iCry)));
       // Get module transformation matrix (module/detector)
@@ -772,32 +940,36 @@ void ComputeCrystalIndexes()
       local[1] = 0 ;
       local[2] = -zdim;
       matCurrent.LocalToMaster(local, point);
+      double x = point[0];
+      double y = point[1];
+      if (iCry == 0) {
+         xcry.push_back( x );
+         ycry.push_back( y );      
+      } else {
+         bool foundx = false;
+         for(std::size_t i = 0; i < xcry.size(); ++i) {
+            if ( TMath::Abs(xcry[i] - x) < xdim1 ) foundx = true;
+         }
+         if (!foundx) xcry.push_back(x);
 
-      if ( point[0] > maxpoint[0] ) maxpoint[0] = point[0];
-      if ( point[1] > maxpoint[1] ) maxpoint[1] = point[1];
-
-      if ( point[0] < minpoint[0] ) minpoint[0] = point[0];
-      if ( point[1] < minpoint[1] ) minpoint[1] = point[1];
-      
-      // get distance beetwing two crystals
-      if (iCry > 0 && iCry < 2 ) {
-         width += TMath::Abs(lastpoint[0] - point[0]);
-         cout << width << endl;
-         n += 1;
+         bool foundy = false;
+         for(std::size_t ii = 0; ii < ycry.size(); ++ii) {
+            if ( TMath::Abs(ycry[ii] - y) < ydim1 ) foundy = true;
+         }
+         if (!foundy) ycry.push_back(y);
       }
-      lastpoint = point;
    }
-   width /= n;
-   Double_t interModWidth = nCry/9 * 0.1;
-   
-   TVector3 dim = maxpoint - minpoint;
-   //dim.Print();
 
-   Int_t cols   = (int)(dim[0]-interModWidth+width)/width + 1;
-   Int_t rows   = (int)(dim[1]-interModWidth+width)/width + 1;  
+   width        = TMath::Abs(xcry[1] - xcry[0]);
+   Int_t cols   = xcry.size();
+   Int_t rows   = ycry.size(); 
+
+
    cout  << "   width: " << width << "   rows: " << rows << " cols: " << cols << endl;
 
-
+   TVector3 maxpoint(-999., -999., -999.);
+   TVector3 minpoint( 999.,  999.,  999.);
+   TVector3 dim;
    for (Int_t iCry = 0; iCry < nCry; ++iCry) {
       NodeTrafo *crt = ((NodeTrafo *)(fListOfCrystals->At(iCry)));
       // Get module transformation matrix (module/detector)
@@ -816,7 +988,7 @@ void ComputeCrystalIndexes()
             if( iCry == 0) {
                // DEBUG: draw the if condition TBox for row/column index
                TBox* modBox1 = new TBox(i*width-cols*width/2+.05, j*width-rows*width/2+.05, (i+1)*width-cols*width/2-.05, (j+1)*width-rows*width/2-.05);
-               modBox1->SetLineColor(kYellow);
+               modBox1->SetFillColor(kYellow);
                modBox1->Draw();
             }
             if ( (point[0] >= i*width - cols*width/2 && point[0] <= (i+1)*width - cols*width/2) && 
@@ -825,8 +997,35 @@ void ComputeCrystalIndexes()
                pair<int, int> idx(i, j);
           
                cout  << "   iCry: "  << iCry << " " << i << " " << j
-                     << " pos[0] " << point[0] << " pos[1] " << point[1]
+                     << " pos X " << point[0] << " pos Y " << point[1]
                      << " col "    << idx.first << " row " << idx.second << endl;
+               
+               // DEBUG : get X dimensions
+               if( i==0 && j==0 ) { // most left crystal
+                  NodeTrafo *crt = ((NodeTrafo *)(fListOfCrystals->At(iCry)));
+                  // Get module transformation matrix (module/detector)
+                  TGeoHMatrix mat = crt->mat;
+                  TGeoHMatrix matCurrent(crt->mat);
+                  local[0] = -xdim1 ;
+                  local[1] = 0 ;
+                  local[2] = -zdim;
+                  Double_t point1[3];
+                  matCurrent.LocalToMaster(local, point1);
+                  minpoint[0] = point1[0];
+               }
+               if( i==cols-1 && j==0) {// most right crystal
+                  NodeTrafo *crt = ((NodeTrafo *)(fListOfCrystals->At(iCry)));
+                  // Get module transformation matrix (module/detector)
+                  TGeoHMatrix mat = crt->mat;
+                  TGeoHMatrix matCurrent(crt->mat);
+                  local[0] = +xdim1 ;
+                  local[1] = 0 ;
+                  local[2] = -zdim;
+                  Double_t point2[3];  
+                  matCurrent.LocalToMaster(local, point2);
+                  maxpoint[0] = point2[0];
+               }
+               
             } 
          }
       }
@@ -837,6 +1036,10 @@ void ComputeCrystalIndexes()
       modBox->Draw();
 
    }
+
+   //DEBUG: Front width
+   dim = maxpoint - minpoint;
+   dim.Print();
 }
 
 //-----------------------------------------------------------------------------
@@ -893,6 +1096,14 @@ void EndGeometry(FILE* fp)
    TCanvas * c = new TCanvas("CAL3D", "Calorimeter", 300, 300);
    top->AddNode(detector, 1);
    top->AddNode(detBox, 1, new TGeoTranslation(0, 0, shift));
+   gGeoManager->SetVisLevel(7);
+
+   gGeoManager->CloseGeometry();
+
+   //cout << endl << endl << "Export geometry " << endl;
+   //gGeoManager->Export("calogeom.gdml");
+
    top->Draw("ogl");
+
 
 }
