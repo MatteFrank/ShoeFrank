@@ -38,65 +38,63 @@ class WDEvent;
 class TAGactWDreader : public TAGaction {
 
 public:
-  explicit        TAGactWDreader(const char* name,
-				 TAGdataDsc* p_datdaq,
-				 TAGdataDsc* p_stwd, 
-				 TAGdataDsc* p_twwd,
-				 TAGdataDsc* p_cawd,
-				 TAGdataDsc* p_WDtrigInfo,
-				 TAGparaDsc* p_WDmap,
+  explicit           TAGactWDreader(const char* name,
+                                 TAGdataDsc* p_datdaq,
+                                 TAGdataDsc* p_stwd, 
+                                 TAGdataDsc* p_twwd,
+                                 TAGdataDsc* p_cawd,
+                                 TAGdataDsc* p_WDtrigInfo,
+                                 TAGparaDsc* p_WDmap,
                                  TAGparaDsc* p_WDtim,
-				 Bool_t standAlone);
+                                 Bool_t standAlone);
 
-  virtual         ~TAGactWDreader();
-  void CreateHistogram();
-  virtual Bool_t  Action();
-  Int_t Open(const TString &name);
-  Int_t Close();
-  Int_t UpdateFile();
-  inline void SetMaxFiles(Int_t value){fMaxFiles=value;}
-  inline void SetInitName(TString name){
-    fInitName = name;
-    fCurrName = name;
-  }  
+   virtual          ~TAGactWDreader();
+   void              CreateHistogram();
+   virtual Bool_t    Action();
+   Int_t             Open(const TString &name);
+   Int_t             Close();
+   Int_t             UpdateFile();
+   inline void       SetMaxFiles(Int_t value) {fMaxFiles = value;}
+   inline void       SetInitName(TString name) {
+                        fInitName = name;
+                        fCurrName = name;
+                     }  
   
 private:
-  TAGdataDsc*     fpDatDaq;		    // input data dsc
-  TAGdataDsc*     fpStWd;		    // output data dsc
-  TAGdataDsc*     fpTwWd;		    // output data dsc
-  TAGdataDsc*     fpCaWd;		    // output data dsc
-  TAGparaDsc*     fpWDTim;		    // parameter dsc
-  TAGparaDsc*     fpWDMap;		    // parameter dsc
-  TAGdataDsc*     fpWDtrigInfo;		    // output data dsc
+   TAGdataDsc*     fpDatDaq;          // input data dsc
+   TAGdataDsc*     fpStWd;            // output data dsc
+   TAGdataDsc*     fpTwWd;            // output data dsc
+   TAGdataDsc*     fpCaWd;            // output data dsc
+   TAGparaDsc*     fpWDTim;           // parameter dsc
+   TAGparaDsc*     fpWDMap;           // parameter dsc
+   TAGdataDsc*     fpWDtrigInfo;      // output data dsc
 
-  TString         fInitName;
-  TString         fCurrName;
-  FILE            *fWDstream;
-  Int_t           fEventsN;
-  Bool_t          fgStdAloneFlag;
-  Int_t           fProcFiles;
-  Int_t           fMaxFiles;        
+   TString         fInitName;
+   TString         fCurrName;
+   FILE            *fWDstream;
+   Int_t           fEventsN;
+   Bool_t          fgStdAloneFlag;
+   Int_t           fProcFiles;
+   Int_t           fMaxFiles;        
 
   
 private:
-  Int_t DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
-  Int_t ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
-  Bool_t WaveformsTimeCalibration();
-  Bool_t CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
-  void Clear();
+   Int_t DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
+   Int_t ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
+   Bool_t WaveformsTimeCalibration();
+   Bool_t CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
+   void Clear();
 
-
-  
-  vector<double> ADC2Volt(vector<int>, double);
-  vector<double> ADC2Volt_CLK(vector<int>);
-  double ComputeJitter(TWaveformContainer*);
-  void  SavePlot(TWaveformContainer *w, string type);
+   vector<double> ADC2Volt(vector<int>, double);
+   vector<double> ADC2Volt_CLK(vector<int>);
+   double ComputeJitter(TWaveformContainer*);
+   void  SavePlot(TWaveformContainer *w, string type);
  
 private:
-  vector<TWaveformContainer*> fSTwaves;
-  vector<TWaveformContainer*> fTWwaves;
-  vector<TWaveformContainer*> fCAwaves;
-  map<pair<int,int>, TWaveformContainer*> fCLKwaves;
+   vector<TWaveformContainer*> fSTwaves;
+   vector<TWaveformContainer*> fTWwaves;
+   vector<TWaveformContainer*> fCAwaves;
+   map<pair<int,int>, TWaveformContainer*> fCLKwaves;
 
    ClassDef(TAGactWDreader,0)
 };
