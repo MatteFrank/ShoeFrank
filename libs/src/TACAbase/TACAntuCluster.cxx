@@ -82,7 +82,7 @@ void TACAcluster::SetPositionG(TVector3& posGlo)
 // 
 TACAhit* TACAcluster::GetHit(Int_t idx)
 { 
-   if (idx >=0 && idx < fListOfHits->GetEntries())
+   if (idx >= 0 && idx < fListOfHits->GetEntries())
 	  return (TACAhit*)fListOfHits->At(idx);
    else
 	  return 0x0;
@@ -213,17 +213,17 @@ TACAcluster* TACAntuCluster::NewCluster(TACAcluster* clus)
 void TACAntuCluster::ToStream(ostream& os, Option_t* option) const
 {
    os << "TACAntuCluster " << GetName()
-   << Form("  nClus=%3d", GetClustersN())
-   << endl;
+      << Form("  nClus=%3d", GetClustersN())
+      << endl;
    
-   //TODO properly
-   //os << "slat stat    adct    adcb    tdct    tdcb" << endl;
    for (Int_t j = 0; j < GetClustersN(); j++) {
       const TACAcluster*  cluster = GetCluster(j);
-         if (cluster)
-            os << Form("%4d", j);
+      if (cluster)
+         os << Form("  %4d  (%5.2f, %5.2f, %5.2f) E=%5.2f", 
+                       j, cluster->GetPosition().X(), 
+                       cluster->GetPosition().Y(), cluster->GetPosition().Z(),
+                       cluster->GetEnergy() );
       os << endl;
-      
    }
 }
 
