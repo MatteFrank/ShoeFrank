@@ -146,14 +146,14 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp, Int_t  crysId)
 {
 
-   // Old. Run temp was written on calib file
+   // Old. Each run temp was written on calib file
    // TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
    // Double_t T0 = parcal->GetTemperatureCry(crysId); 
 
    // Current temperature from sensor for crysId
    Double_t T0 = temp;
 
-   // Set temp parameter per crysID (for now is the same for all crystal)
+   // Set temp parameter per crysID (for now, it is the same for all crystal)
    // fTcorr1->SetParFunction(crysId);
    // fTcorr2->SetParFunction(crysId);
 
