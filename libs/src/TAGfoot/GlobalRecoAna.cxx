@@ -61,8 +61,8 @@ void GlobalRecoAna::LoopEvent() {
   Int_t currEvent=0;
 
   TATWparGeo* TWparGeo = (TATWparGeo*)fpParGeoTw->Object();
-
-  while(gTAGroot->NextEvent()) {
+  int ixx = 0;
+  while(gTAGroot->NextEvent()) { //for every event
 
     DiffApp_trkIdx = false; 
 
@@ -357,7 +357,7 @@ void GlobalRecoAna::LoopEvent() {
 
 
       //--CROSS SECTION - RECO PARAMETERS
-      if ((Z_meas >=0.) && (Th_meas >=0.) && (Ek_meas >=0.) && (M_meas >=0. ) && (M_meas <=90. )) {   
+      if ((Z_meas >=0.) && (Th_meas >=0.) && (Ek_meas >=0.) /*&& (M_meas >=0. ) */ && (M_meas <=90. )) {   
         ((TH1D*)gDirectory->Get("xsecrec-/charge"))->Fill(Z_meas); 
       //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
       //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
@@ -479,8 +479,7 @@ void GlobalRecoAna::LoopEvent() {
       ((TH1D*)gDirectory->Get("Charge"))->Fill(Z_meas);
       ((TH1D*)gDirectory->Get("Charge_True"))->Fill(Z_true);
       // charge efficiency
-      if (Z_meas == Z_true){
-        
+      if (Z_meas == Z_true){        
         ((TH1D*)gDirectory->Get("Charge_purity")) -> Fill(Z_meas);
         //((TH1D*)gDirectory->Get("Charge_efficiency")) -> Divide(((TH1D*)gDirectory->Get("Charge_True")));
       }
@@ -567,9 +566,10 @@ void GlobalRecoAna::LoopEvent() {
     //end loop on ntracks
       
     
-
+    
    
     if (fFlagMC){
+      ixx++;
           
           // Definisco la regione target all'inizializzazione
         
@@ -587,18 +587,24 @@ void GlobalRecoAna::LoopEvent() {
           Int_t n_particles = m_trueParticleRep -> GetTracksN();        // n° of particles of an event
 
         
-          for (Int_t i= 0 ; i < n_particles; i++) {                         // for every particle
+          for (Int_t i= 0 ; i < n_particles; i++) {                         // for every particle in an event
+          //cout << "evento: "<< ixx << "traccia: " << i <<endl;
             TAMCpart* particle = m_trueParticleRep->GetTrack(i);
             auto  Mid = particle->GetMotherID();              // Get TRpaid-1
             auto Reg = particle->GetRegion();
             auto finalPos = particle-> GetFinalPos();
-            
-            if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
-                  particle->GetCharge()>0 && particle->GetCharge()<=8 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
+
+            if (  Mid==0 && Reg == 59)
+            cout <<"finalpos :"<<finalPos.Z()<<endl;
+
+            if (  Mid==0 && Reg == 59 &&           // if the particle is generated in the target and it is the fragment of a primary
+                  particle->GetCharge()>0 && particle->GetCharge()<=9 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
                   particle->GetMass()>0.8 && particle->GetMass()<30
                   )  {                            
                         
                           Float_t charge_tr = particle-> GetCharge();
+                          cout <<"charge: "<< charge_tr <<endl;
+                          ((TH1D*)gDirectory->Get("Charge_MC")) -> Fill(charge_tr);
 
                           ((TH1D*)gDirectory->Get(Form("xsecrec-true/Z_true")))->Fill(charge_tr);
 
@@ -617,7 +623,7 @@ void GlobalRecoAna::LoopEvent() {
                                     for (int k=0; k < mass_nbin; k++) {
                                       Float_t mass_tr = particle -> GetMass();
                                     if(mass_tr>=mass_binning[k][0] && mass_tr <mass_binning[k][1]) {
-                                
+                                      
                                       ((TH1D*)gDirectory->Get(Form("xsecrec-true/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
                                       
                                                             
@@ -635,12 +641,14 @@ void GlobalRecoAna::LoopEvent() {
 
           //true detectable
                     //! NB: 50 IN GSI2021_MC
-          if (  (Mid==0 ) && Reg == 50  &&  finalPos.Z() > 190     &&    // if the particle is generated in the target and it is the fragment of a primary AND DIES IN THE TW
-                  particle->GetCharge()>0 && particle->GetCharge()<=8 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectil)
+          if (  (Mid==0 ) && Reg == 59  &&  finalPos.Z() > 90.     &&    // if the particle is generated in the target and it is the fragment of a primary AND DIES IN THE TW
+                  particle->GetCharge()>0 && particle->GetCharge()<=9 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectil)
                   particle->GetMass()>0.8 && particle->GetMass()<30
                   )  {                            
-                        
+
                           Float_t charge_tr = particle-> GetCharge();
+                          ((TH1D*)gDirectory->Get("Charge_MC_det")) -> Fill(charge_tr);
+
                           for (int i = 0; i<th_nbin; i++) {
                           
                           
@@ -731,6 +739,8 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("Energy","",100, 0 ,800.);
   h = new TH1D("Charge","",10, 0 ,10.);
   h = new TH1D("Charge_True","",10, 0 ,10.);
+  h = new TH1D("Charge_MC","",10, 0 ,10.);
+  h = new TH1D("Charge_MC_det","",10, 0 ,10.);
   h = new TH1D("Charge_purity","",10, 0 ,10.);
   h = new TH1D("Mass","Mass [amu]",200, 0 ,20.);
   h = new TH1D("Mass_True","Mass_True [amu]",200, 0 ,20.);
@@ -821,23 +831,23 @@ theta_binning[10][0] = double(10);
 theta_binning[10][1] =  double(90);
 //cout << " theta binning "<< 10 << " "<< theta_binning[10][0] << " "<< theta_binning[10][1];
 
-ek_nbin = 10;
+ek_nbin = 1;
 ek_binning = new double *[ek_nbin];
 for (int i = 0; i<ek_nbin; i++) {
   ek_binning[i] = new double [2];
   ek_binning[i][0] = double (i*100);
-  ek_binning[i][1] = double ((i+1)*100);
+  ek_binning[i][1] = double ((i+1)*2000);
 }
   //ek_binning[4] = new double [2];
   //ek_binning[4][0] = double(400);
   //ek_binning[4][1] =  double(1000);
 
-mass_nbin = 10;
+mass_nbin = 1;
 mass_binning = new double *[mass_nbin];
 for (int i = 0; i<mass_nbin; i++) {
   mass_binning[i] = new double [2];
   mass_binning[i][0] = double (i*2);
-  mass_binning[i][1] = double ((i+1)*2);
+  mass_binning[i][1] = double ((i+1)*100);
 }
  
 
