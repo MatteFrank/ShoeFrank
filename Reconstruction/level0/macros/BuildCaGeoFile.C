@@ -97,7 +97,8 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/testCALO/TACAdetector.geo")
 
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"// Parameter of Geometry \n");
-   fprintf(fp,"// type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD)\n");
+   fprintf(fp,"// type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, \n");
+   fprintf(fp,"//                   SEVEN_MOD, FULL_DET_V1) \n");
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"TypeGeo:        \"%s\"\n\n", fConfig_typegeo.Data());
 
@@ -891,18 +892,32 @@ void ShowDetectorIdsMap()
    TString path = fgPath + TString("/CA_crystal_pos_map.pdf");
    c1->SaveAs(path.Data());
 
-   // Create a .map file 
-   TString filemap = fgPath + TString("TACAdetector.map");
+   // Create a template .map file for this geometry
+   TString filemap = fgPath + TString("/TACAdetector.map");
    FILE* fmap = fopen(filemap.Data(), "w");
+
    fprintf(fmap, "#number of crystal present\n");
    fprintf(fmap, "CrystalsN: %d\n", nCry );
 
    fprintf(fmap, "#crysid crymodule channelID crysBoard(HW) activecrys\n");
    for (int ii=0; ii<nCry; ii++) {
-      fprintf(fmap, " %d     %d         %d         %d           %d\n", ii, 0, 0, 161, 1);
+      fprintf(fmap, "  %3d       %d         %d         %d           %d\n", ii, 0, 0, 161, 1);
    }
-   fclose(fmap);
 
+   int board = 1, mux = 0, ch = 0;
+   if (nCry > 320) nCry = 320;
+   fprintf(fmap, "#map for Arduino temp reading\n");
+   fprintf(fmap, "#crysid  Board   multiplexor  channelID \n");
+   for (int ii=0; ii<nCry; ii++) {
+      if ( ii>0 && ii%80 == 0 ) board++;
+      if ( ii>0 && ii%16 == 0 ) mux++;
+      if ( ii>0 && mux%5 == 0 ) mux = 0;
+      if ( ch%16 == 0 ) ch = 0;
+      fprintf(fmap, "  %3d      %d          %d          %d\n", ii, board, mux, ch++);
+   }
+
+   fclose(fmap);
+   cout << endl << "Template file map create at: " << filemap.Data() << endl << endl;
 
 }
 
@@ -1081,9 +1096,8 @@ void EndGeometry(FILE* fp)
 
    fclose(fp);
 
-
-   ShowDetectorIdsMap();
    ComputeCrystalIndexes();
+   ShowDetectorIdsMap();
 
    /////// Draw ROOT geometry
    // Add module to top volumen
