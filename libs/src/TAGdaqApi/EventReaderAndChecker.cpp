@@ -38,16 +38,16 @@ void EventReaderAndChecker::printStatistics(){
 
   int errors = m_fileErrors;
   std::cout<<"Final statistics: "<<std::endl
-	   <<"File errors:"<<m_fileErrors<<std::endl;
+           <<"File errors:"<<m_fileErrors<<std::endl;
 
   // set to false the ifFound flags
   std::cout<<" Marker        What             Occurrencies     Errors     Flag"<<std::endl;
   for(std::map<u_int, ErrInfo>::iterator it=m_infos.begin();
       it!=m_infos.end(); ++it){ 
     std::cout<<std::setw(7)<<(std::hex)<<(it->first)<<"    "<<(std::dec)
-	     <<std::setw(15)<<BaseFragment::fragmentName(it->first)
-	     <<std::setw(10)<<it->second.counts
-	     <<std::setw(14)<<it->second.errors;
+             <<std::setw(15)<<BaseFragment::fragmentName(it->first)
+             <<std::setw(10)<<it->second.counts
+             <<std::setw(14)<<it->second.errors;
 
     if( it->second.counts!= m_eventsRead || it->second.errors>0 ){
       std::cout<<"   @@@ """;
@@ -57,8 +57,8 @@ void EventReaderAndChecker::printStatistics(){
   }
 
   std::cout<<std::endl
-	   <<"Total errors "<<errors<<" after reading "
-	   <<m_eventsRead<<" events."<<std::endl;
+           <<"Total errors "<<errors<<" after reading "
+           <<m_eventsRead<<" events."<<std::endl;
 }
 
 
@@ -68,13 +68,13 @@ bool EventReaderAndChecker::check(){
   bool checkPassed = true;
   if( m_eventsRead==0 ){
     std::cout<<" Check must be called after the first event has been read"
-	     <<std::endl;
+             <<std::endl;
     return false;
   } else if( m_eventsRead==1 ){
     // this is the first event get all the keys!
     ErrInfo nullInfo;
     for(std::map<u_int, BaseFragment*>::iterator it=m_fragments.begin();
-	it!=m_fragments.end(); ++it){
+        it!=m_fragments.end(); ++it){
       unsigned int key = it->first;
       m_infos[key] = nullInfo;
     }
@@ -109,86 +109,86 @@ bool EventReaderAndChecker::check(){
       m_fileErrors++;
       // no other checks... since I do no know what to check!!
       std::cout<<" Fragment with ID "<<std::hex<<(it->first)<<std::dec
-	       <<" is missing in first event and present in event nr "
-	       <<eventNumber<<std::endl;
+               <<" is missing in first event and present in event nr "
+               <<eventNumber<<std::endl;
       checkPassed = false;
     } else {
       iterr->second.isFound = true;
       iterr->second.counts++;       // count fragment occurrencies
       bool chk = it->second->check();
       if( !chk ) {
-	iterr->second.errors++;
-	std::cout<<" Fragment with ID "<<std::hex<<(it->first)<<std::dec
-		 <<" failed internal check in event nr "
-		 <<eventNumber<<std::endl;
-	checkPassed = false;
+        iterr->second.errors++;
+        std::cout<<" Fragment with ID "<<std::hex<<(it->first)<<std::dec
+                 <<" failed internal check in event nr "
+                 <<eventNumber<<std::endl;
+        checkPassed = false;
       }
       //
       // look inside objects
       //
       if( keym==EventHeaderID ){
-	if( infoEv->eventNumber != eventNumber ){
-	  iterr->second.errors++;
-	  std::cout<<" Event with ID "<<std::hex<<(iterr->first)<<std::dec
-		   <<" has event number "<<infoEv->eventNumber<<" instead of "
-		   <<eventNumber<<std::endl;	  
-	  checkPassed = false;
-	}
+        if( infoEv->eventNumber != eventNumber ){
+          iterr->second.errors++;
+          std::cout<<" Event with ID "<<std::hex<<(iterr->first)<<std::dec
+                   <<" has event number "<<infoEv->eventNumber<<" instead of "
+                   <<eventNumber<<std::endl;          
+          checkPassed = false;
+        }
       } else if( keym==dataV1720 ){  // flash ADC  -> check event number
-	fADCEvent* fadc = static_cast<fADCEvent*>(it->second);
-	if( fadc->eventNumber != eventNumber ){
-	  iterr->second.errors++;
-	  std::cout<<" FlashADC with ID "<<std::hex<<(iterr->first)<<std::dec
-		   <<" has event number "<<fadc->eventNumber<<" instead of "
-		   <<eventNumber<<std::endl;	  
-	  checkPassed = false;
-	}
+        fADCEvent* fadc = static_cast<fADCEvent*>(it->second);
+        if( fadc->eventNumber != eventNumber ){
+          iterr->second.errors++;
+          std::cout<<" FlashADC with ID "<<std::hex<<(iterr->first)<<std::dec
+                   <<" has event number "<<fadc->eventNumber<<" instead of "
+                   <<eventNumber<<std::endl;          
+          checkPassed = false;
+        }
       } else if( keym==dataEmpty ){ // empty check ev num
-	EmptyEvent* emptyp = static_cast<EmptyEvent*>(it->second);
-	if( emptyp->eventNumber != eventNumber ){
-	  iterr->second.errors++;
-	  std::cout<<" Empty Event with ID "<<std::hex<<(iterr->first)<<std::dec
-		   <<" has event number "<<emptyp->eventNumber<<" instead of "
-		   <<eventNumber<<std::endl;	  
-	  checkPassed = false;
-	}
+        EmptyEvent* emptyp = static_cast<EmptyEvent*>(it->second);
+        if( emptyp->eventNumber != eventNumber ){
+          iterr->second.errors++;
+          std::cout<<" Empty Event with ID "<<std::hex<<(iterr->first)<<std::dec
+                   <<" has event number "<<emptyp->eventNumber<<" instead of "
+                   <<eventNumber<<std::endl;          
+          checkPassed = false;
+        }
       } else if( keym==dataV1190 ){ // TDC check ev num
-	TDCEvent* tdcp = static_cast<TDCEvent*>(it->second);
-	if( tdcp->eventNumber != eventNumber ){
-	  iterr->second.errors++;
-	  std::cout<<" TDC Event with ID "<<std::hex<<(iterr->first)<<std::dec
-		   <<" has event number "<<tdcp->eventNumber<<" instead of "
-		   <<eventNumber<<std::endl;	  
-	  checkPassed = false;
-	}
+        TDCEvent* tdcp = static_cast<TDCEvent*>(it->second);
+        if( tdcp->eventNumber != eventNumber ){
+          iterr->second.errors++;
+          std::cout<<" TDC Event with ID "<<std::hex<<(iterr->first)<<std::dec
+                   <<" has event number "<<tdcp->eventNumber<<" instead of "
+                   <<eventNumber<<std::endl;          
+          checkPassed = false;
+        }
       } else if( keym==dataWD ){ // remote check ev num
-	WDEvent* wdp = static_cast<WDEvent*>(it->second);
-	if( wdp->eventNumber != eventNumber ){
-	  iterr->second.errors++;
-	  std::cout<<" WD Event with ID "<<std::hex<<(iterr->first)<<std::dec
-	           <<" has event number "<<wdp->eventNumber<<"instead of "
-	           <<eventNumber<<std::endl;
-	  checkPassed = false;
-	  }
-	} else if( keym==dataVTX ){ // DE boards
-	// check ev number
-	DECardEvent* dep = static_cast<DECardEvent*>(it->second);
-      	if( dep->eventNumber != eventNumber ){
-	  iterr->second.errors++;
-	  std::cout<<" DECard Event with ID "<<std::hex<<(iterr->first)<<std::dec
-		   <<" has event number "<<dep->eventNumber<<" instead of "
-		   <<eventNumber<<std::endl;	  
-	  checkPassed = false;
-	}
-	// check BCO
-	if( abs((int)(dep->BCOofTrigger)-(int)(trgEv->BCOofTrigger))>20 ){
-	  iterr->second.errors++;
-	  std::cout<<" DECard Event with ID "<<std::hex<<(iterr->first)<<std::dec
-		   <<" has BCO "<<dep->BCOofTrigger
-		   <<" instead of "<<trgEv->BCOofTrigger<<" in event "
-		   <<eventNumber<<std::endl;	  
-	  checkPassed = false;
-	}
+        WDEvent* wdp = static_cast<WDEvent*>(it->second);
+        if( wdp->eventNumber != eventNumber ){
+          iterr->second.errors++;
+          std::cout<<" WD Event with ID "<<std::hex<<(iterr->first)<<std::dec
+                   <<" has event number "<<wdp->eventNumber<<"instead of "
+                   <<eventNumber<<std::endl;
+          checkPassed = false;
+          }
+        } else if( keym==dataVTX ){ // DE boards
+        // check ev number
+        DECardEvent* dep = static_cast<DECardEvent*>(it->second);
+              if( dep->eventNumber != eventNumber ){
+          iterr->second.errors++;
+          std::cout<<" DECard Event with ID "<<std::hex<<(iterr->first)<<std::dec
+                   <<" has event number "<<dep->eventNumber<<" instead of "
+                   <<eventNumber<<std::endl;          
+          checkPassed = false;
+        }
+        // check BCO
+        if( abs((int)(dep->BCOofTrigger)-(int)(trgEv->BCOofTrigger))>20 ){
+          iterr->second.errors++;
+          std::cout<<" DECard Event with ID "<<std::hex<<(iterr->first)<<std::dec
+                   <<" has BCO "<<dep->BCOofTrigger
+                   <<" instead of "<<trgEv->BCOofTrigger<<" in event "
+                   <<eventNumber<<std::endl;          
+          checkPassed = false;
+        }
       }
     }
   }
@@ -200,7 +200,7 @@ bool EventReaderAndChecker::check(){
     if( it->second.isFound == false ){
       it->second.errors++;
       std::cout<<" Fragment with ID "<<std::hex<<(it->first)<<std::dec
-	       <<" is missing in event nr "<<eventNumber<<std::endl;
+               <<" is missing in event nr "<<eventNumber<<std::endl;
       checkPassed = false;
     }
   }
