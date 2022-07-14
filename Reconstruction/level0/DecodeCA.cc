@@ -1,7 +1,10 @@
-// To be use on CA testbeams.
-// read daq from WD boards and write file with simple ntuple quantities
+// To be use on CA test-beams.
+// read daq from WD boards and Arduino 
+// write file with simple ntuple quantities
 // to used by standalone analysis/calibration software developed by Lorenzo
 // 2022, E. Lopez
+
+
 
 
 #include <Riostream.h>
@@ -38,12 +41,14 @@
 
 #include "TAGrecoManager.hxx"
 
+#include "DAQMarkers.hh"
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //------------------------------------------+-----------------------------------
 //! CAactRaw2Ntu Action class
-// Main parts taken from TAGactWDreader
+//! WD read parts taken from TAGactWDreader
 
 #define NSAMPLING 1024
 #define GLB_EVT_HEADER 0xeadebaba
@@ -58,14 +63,15 @@
 #define TGEN_BANK_HEADER 0x4e454754
 #define TRGC_BANK_HEADER 0x43475254
 
+#define ARDUINO_HEADER 0x00463730
+
 
 class CAactRaw2Ntu : public TAGaction {
 
 public:
 
   explicit        CAactRaw2Ntu( TAGparaDsc* pCAmap=0,
-                                TAGparaDsc* pWDmap=0,
-                                TAGparaDsc* pWDtim=0);
+                                TAGparaDsc* pWDmap=0);
   virtual        ~CAactRaw2Ntu();
 
          Bool_t   Action();
@@ -81,21 +87,19 @@ public:
                         fCurrName = name;
                      } 
          void     DrawChAmp(int ch, Option_t* opt = NULL);
-
+        void      SetMaxFiles(Int_t value) {fMaxFiles = value;}
 
 private:
          Int_t    ReadStdAloneEvent(bool &endoffile, 
-                                   // TAGWDtrigInfo* p_WDtrigInfo, 
-                                    TAGbaseWDparTime *p_WDTim, 
                                     TAGbaseWDparMap *p_WDMap);
          Bool_t   WaveformsTimeCalibration();
   vector<double>  ADC2Volt(vector<int>, double);
+  double          ADC2Temp(double adc);
  
 
 private:
    TAGparaDsc*     fpCAParMap;  // parameter dsc
    TAGparaDsc*     fpWDMap;     // parameter dsc
-   TAGparaDsc*     fpWDTim;     // parameter dsc
 
    FILE            *fWDstream;
    TFile           *fCAnutOut;
@@ -109,8 +113,7 @@ private:
 
    TACAparGeo*    fGeometry;
 
-   //vector<TWaveformContainer*> fCAwaves; //waveform
-
+   // output 
    double  *       fTempCh;
    UShort_t **     fAmpCh;     // waveform for each channel/crystal
 
@@ -121,21 +124,20 @@ private:
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 //!
-//! \param[in]  pWDMap  daq map descriptor
-CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap, TAGparaDsc* pWDtim)
+//! \param[in]  pCAMap  CA map descriptor
+//! \param[in]  pWDMap  WD daq map descriptor
+CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap)
   : TAGaction("CAactRaw2Ntu", "CAactRaw2Ntu - Unpack CA raw data"),
   //fpNtuEvt(pNtuEvt),
   fpCAParMap(pCAmap),
-  fpWDMap(pWDmap),
-  fpWDTim(pWDtim)
+  fpWDMap(pWDmap)
 {
    AddPara(pCAmap, "TACAparMap");
    AddPara(pWDmap, "TAGbaseWDparMap");
-   AddPara(pWDtim, "TAGbaseWDparTime");
 
    fGeometry = (TACAparGeo*) gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
  
-   fProcFiles=0;  
+   fProcFiles=1;  
    fMaxFiles=1;
 
    int nCry = fGeometry->GetCrystalsN();
@@ -193,6 +195,7 @@ Int_t CAactRaw2Ntu::OpenOut(const TString &nameOut) {
 }
 
 //------------------------------------------+-----------------------------------
+//! Update filename to read next file   xxxx_0001.data, xxxx_0002.data, ...
 Int_t CAactRaw2Ntu::UpdateFile() {
   
    do {
@@ -202,7 +205,8 @@ Int_t CAactRaw2Ntu::UpdateFile() {
       TString ext = fInitName(pos2, fInitName.Length()-pos2);
       TString slocRunNum = fInitName(pos1+1, pos2-pos1-1);
       Int_t locRunNum = atoi(slocRunNum.Data());
-      fCurrName = baseName+to_string(locRunNum+fProcFiles)+ext;
+      fCurrName = baseName+TString(Form("%04d",locRunNum+fProcFiles))+ext;
+      cout << fCurrName << endl;
       fProcFiles++;
       if (fProcFiles>=fMaxFiles) {
          return kFALSE;
@@ -239,9 +243,11 @@ void CAactRaw2Ntu::Clear() {
 
    int nCry = fGeometry->GetCrystalsN();
 
-   fill_n(fTempCh, nCry, 0);
    for (int cryID=0; cryID<nCry; ++cryID) {
-      fill_n(fAmpCh[cryID],  NSAMPLING, 0);
+      fTempCh[cryID] = 0;
+      for(int i=0; i<NSAMPLING; ++i) {
+         fAmpCh[cryID][i] = 0;
+      }
    }
  
    return;
@@ -252,18 +258,17 @@ void CAactRaw2Ntu::SetTreeBranches() {
 
    // Creating the TTree with a branch for each channel
    fTree = new TTree("tree", "Waveforms");
-   
-   // Branch setting
 
    // Get number of channels (crystals)
    int nCry = fGeometry->GetCrystalsN();
-
+   // Set Branch 
    for (int cryID=0; cryID<nCry; ++cryID) {
       fTree->Branch(Form("ch_%d", cryID), fAmpCh[cryID], Form("waveform[%d]/s", NSAMPLING));
       fTree->Branch(Form("temp_adc_%d", cryID), &fTempCh[cryID]);
    }
 
-   // cross check WD map vs geo maps
+   //  DEBUG
+   //  cross check WD map vs geo maps
    TAGbaseWDparMap* pWDmap = (TAGbaseWDparMap*)fpWDMap->Object();
    TACAparMap* pCAmap = (TACAparMap*)fpCAParMap->Object();
    vector<int> boards = pWDmap->GetBoards("CALO");
@@ -293,9 +298,9 @@ Bool_t CAactRaw2Ntu::Action() {
    Clear();
 
    bool eof = false;
-   int nmicro = ReadStdAloneEvent(eof, (TAGbaseWDparTime*)fpWDTim->Object(), (TAGbaseWDparMap*)fpWDMap->Object());
 
-   // WaveformsTimeCalibration();
+   ReadStdAloneEvent(eof, (TAGbaseWDparMap*)fpWDMap->Object());
+
    fTree->Fill();
   
    fEventsN++;
@@ -317,10 +322,13 @@ Bool_t CAactRaw2Ntu::Action() {
 }
 
 //------------------------------------------+-----------------------------------
+// Draw a canvas with the waveform for channel ch
+//!
+//! \param[in]  ch  channel
+//! \param[in]  opt histogram option 
 void CAactRaw2Ntu::DrawChAmp(int ch, Option_t *opt) {
 
    // Draw 
-
    TCanvas *c1 = (TCanvas *)gROOT->FindObject(Form("wd_ch%d", ch));
    if( !c1 ) { 
       c1 = new TCanvas( Form("wd_ch%d", ch), Form("Waveforms ch #%d",ch),  10, 10, 600, 600); 
@@ -333,7 +341,6 @@ void CAactRaw2Ntu::DrawChAmp(int ch, Option_t *opt) {
    TH1F * hChADC = (TH1F *)gROOT->FindObject(Form("ca_ch%d", ch));
    if(!hChADC) {
       hChADC = new TH1F(Form("ca_ch%d", ch), Form("ch #%d waveform (ADC counts)", ch), NSAMPLING, 0, NSAMPLING);
-      //hChADC->GetYaxis()->SetRangeUser(fRange+fRange/2, TMath::Abs(fRange/5.)); // ?Volt dynamic range?
       hChADC->GetYaxis()->SetRangeUser(0, 65535); // ADC range 16 bits
       gStyle->SetOptStat(0);
    }
@@ -357,6 +364,8 @@ void CAactRaw2Ntu::DrawChAmp(int ch, Option_t *opt) {
 
 
 //------------------------------------------+-----------------------------------
+//! \param[in]  v_amp  vector with the ADC counts
+//! \param[in]  dynamic_range  ADC dynamic range
 vector<double> CAactRaw2Ntu::ADC2Volt(vector<int> v_amp, double dynamic_range) {
    vector<double> v_volt;
    double v_sa;
@@ -380,229 +389,217 @@ vector<double> CAactRaw2Ntu::ADC2Volt(vector<int> v_amp, double dynamic_range) {
 }
 
 //------------------------------------------+-----------------------------------
-Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, 
-                                         //TAGWDtrigInfo *p_WDtrigInfo, 
-                                         TAGbaseWDparTime *p_WDTim, 
-                                         TAGbaseWDparMap *p_WDMap) {
+double CAactRaw2Ntu::ADC2Temp(double adc) {
+
+   // the NTC (negative temperature coefficient) sensor
+
+   const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate 
+   const double R0 = 10000.0; // series resistance in the voltage divider (Ohm)
+   const double Ron = 50.;// value of the multiplexer Ron (Ohm) for ADG406B (dual supply)
+   
+   double Vadc = (VCC/1023.0) * adc; // 10-bit ADC: max. value is 1023
+   double Rt = (Vadc/(VCC-Vadc))*R0 - Ron; // voltage divider equation with Ron correction
+
+   // The Steinhart-Hart formula is given below with the nominal coefficients a, b and c, 
+   // which after calibration will be replaced by three constants for each crystal:
+   double a = 0.00138867, b = 0.000204491, c = 1.05E-07;
+   double temp = 1./ (a + b * log(Rt) + c * pow(log(Rt), 3)) - 273.15;
+   
+   return temp;
+}
+
+//------------------------------------------+-----------------------------------
+//! Read block of CA WD waveform and Arduino temp from daq file
+Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap) {
 
    u_int word;
-   int board_id=0, ch_num=0;;
-   float temperature=0, range=0;
-   float sampling_freq;
-   int trig_cell=0;
-   //int adc_sa=0;
-   int ser_evt_number;
 
-   //int TGEN[65];
-   int nmicro=0;
-   //TWaveformContainer *w;
    bool endEvent = false;
    bool startEvent = false;
-   //bool foundTimeCalib = false;
    bool eof=false;
    int ret=0;
 
    int nCry = fGeometry->GetCrystalsN();
 
-   
-   while(!endEvent) {
+   while (!endEvent) {
 
       ret = fread(&word, 4, 1, fWDstream); 
-      if (FootDebugLevel(1)) printf("word:%08x\n", word);
+      if (FootDebugLevel(2)) printf("word:%08x\n", word);
+
       if (ret == 0) {
+         cout << "End file ..." << endl;
          endoffile = true;
          return 0;
       }
 
-      if (word == FILE_HEADER) {
-         fseek(fWDstream, -4, SEEK_CUR);
-         p_WDTim->GetTimeInfo(fWDstream);
-         //foundTimeCalib = true;
-
-      } else if (word == EVT_HEADER && !startEvent) {
-
-         if (FootDebugLevel(1)) printf("found evt header::%08x", word);
+      if ( (word == EventMarker) && !startEvent ) {
          startEvent = true;
+         if (FootDebugLevel(1)) printf("\n ================= Found new event =================\n");
+      } else if ((word == EventMarker) && startEvent) {
+         fseek(fWDstream, -4, SEEK_CUR);
+         endEvent = true;
+         return 0;
+      } 
+
+      /////////////////////////////////////////////////
+      // Read waveforms
+      if (word == EVT_HEADER) {
+
          ret = fread(&word, 4, 1, fWDstream);
-         //ser_evt_number =  word& 0xffff;
-         
-         ret = fread(&word, 4,1, fWDstream);
+         int ser_evt_number =  word& 0xffff;
+         if (FootDebugLevel(1)) 
+            printf("====== WD ========== Event num::%d\n", ser_evt_number);
+
+         ret = fread(&word, 4, 1, fWDstream);
          
          // read waveDAQ boards
-         while(fread(&word, 4,1,fWDstream) !=0 && (word & 0xffff)== BOARD_HEADER){
-            board_id = (word>>16)  & 0xffff;
-            if (FootDebugLevel(1)) printf("found board header::%08x num%d\n", word, board_id);
+         while (fread(&word, 4, 1, fWDstream) !=0 && (word & 0xffff) == BOARD_HEADER) {
+            
+            int board_id = (word>>16)  & 0xffff;
+            if (FootDebugLevel(2)) printf("found board header::%08x num %d\n", word, board_id);
 
             ret = fread(&word, 4, 1, fWDstream);
-            temperature = *((float*)&word);
-            if (FootDebugLevel(1)) printf("temperature::%08x num%d\n", word, board_id);
+            float temperature = *((float*)&word);
+            if (FootDebugLevel(2)) printf("temperature::%08x num %d\n", word, board_id);
             
             ret = fread(&word, 4, 1, fWDstream);
-            range = *((float*)&word);
+            float range = *((float*)&word);
             fRange = range;
             
-            if (FootDebugLevel(1)) printf("range::%08x num%d\n", word, board_id);
+            if (FootDebugLevel(2)) printf("range::%08x num %d\n", word, board_id);
                
             ret = fread(&word, 4, 1, fWDstream);
-            //sampling_freq =  (word >>16)& 0xffff;
+            int sampling_freq =  (word >>16)& 0xffff;
             //flags = word & 0xffff;
-            //if (FootDebugLevel(1)) printf("sampling::%08x  num%d\n", word, board_id);
-
-            while(fread(&word, 4,1,fWDstream) !=0 && (word & 0xffff)== CH_HEADER){	
+            if (FootDebugLevel(2)) printf("sampling::%08x  num%d\n", word, board_id);
+            
+            // read channels
+            while(fread(&word, 4,1,fWDstream) !=0 && (word & 0xffff) == CH_HEADER) {	
                char tmp_chstr[3]={'0','0','\0'};
                tmp_chstr[1] = (word>>24)  & 0xff;
                tmp_chstr[0] = (word>>16)  & 0xff;
-               ch_num = atoi(tmp_chstr);
-               if (FootDebugLevel(1)) printf("found channel header::%08x num%d\n", word, ch_num);
+               int ch_num = atoi(tmp_chstr);
+               if (FootDebugLevel(2)) printf("   found channel header::%08x num %d\n", word, ch_num);
                   
                ret = fread(&word, 4, 1, fWDstream);
-               trig_cell = (word>>16) &0xffff;
+               int trig_cell = (word>>16) &0xffff;
                //fe_settings = ((word)&0xffff);
 
-               // read a block of 32 bit NSAMPLING/2
-               // split each 32 bit into two 16 bit values
-               int w_adc[NSAMPLING];
+               // read a block of 32 bit x NSAMPLING/2
                uint32_t usa[NSAMPLING/2];
                ret = fread(usa, 4, NSAMPLING/2, fWDstream);
-               for(int iSa=0; iSa<NSAMPLING/2; iSa++){
-                  uint adc_sa = usa[iSa];
-                  int adctmp = ((adc_sa >> 16) & 0xffff);
-                  //uint adctmp = (adc_sa & 0xffff);	  
-                  w_adc[2*iSa] = adctmp;
-                  //adctmp = ((adc_sa >> 16) & 0xffff);
-                  adctmp = (adc_sa & 0xffff);
-                  w_adc[2*iSa+1] = adctmp;
-               }
 
-               /*
-               w = new TWaveformContainer();
-               w->SetChannelId(ch_num);
-               w->SetBoardId(board_id);
-               w->GetVectA() = w_amp;
-               //w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
-               //w->GetVectT() = w->GetVectRawT();
-               w->SetNEvent(fEventsN);
-               w->SetEmptyFlag(false);
-               //w->SetTrigType(trig_type);
-               w->SetTriggerCellId(trig_cell);
-               */
-
-               if (FootDebugLevel(1)) printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
+               if (FootDebugLevel(2)) printf("   found waveform board:%d  channel:%d\n", board_id,ch_num);
                   
                string ch_type;
                ch_type = p_WDMap->GetChannelType(board_id, ch_num);
-
-               if (FootDebugLevel(1)) printf("type::%s\n", ch_type.data());
-            
+               if (FootDebugLevel(2)) printf("   type::%s\n", ch_type.data());
+ 
                // Only process CALO channels
                if (ch_type == "CALO") {
+                  if (FootDebugLevel(1)) printf("   found CALO waveform board:%d  channel:%d\n", board_id, ch_num);
+
+                  // split each 32 bit into two 16 bit values
+                  int w_adc[NSAMPLING];
+                  for (int iSa=0; iSa<NSAMPLING/2; iSa++) {
+                     uint adc_sa = usa[iSa];
+                     int adctmp = ((adc_sa >> 16) & 0xffff);
+                     //uint adctmp = (adc_sa & 0xffff);	  
+                     w_adc[2*iSa] = adctmp;
+                     //adctmp = ((adc_sa >> 16) & 0xffff);
+                     adctmp = (adc_sa & 0xffff);
+                     w_adc[2*iSa+1] = adctmp;
+                  }
 
                   // convert ADC count to Volt
                   //vector<int> wd_adc(w_adc, w_adc+NSAMPLING); // convert array to vector
                   //vector<double> w_amp;
                   //w_amp = ADC2Volt(wd_adc, range);
 
+                  // Get the crystal ID for the corresponding board - channel
                   int criID = ((TACAparMap*)fpCAParMap->Object())->GetCrystalId(board_id, ch_num);
                   if (criID >=0 && criID < nCry) {
-                     //vector<double> v = w->GetVectA();
                      uint adc5 = w_adc[5];
-                     for(int i=0; i<NSAMPLING; ++i) {
-
-                       // if (i>5 && i < NSAMPLING-4) {
-                       //    if (fabs(w_adc[i]-adc5)>32000) { // 32000 ??? some setting on the boards???
-                       //       if (w_adc[i]-adc5<32000)w_adc[i] += 65535;
-                       //       if (w_adc[i]-adc5>32000)w_adc[i] -= 65535;
-                       //    }
-                       // }
+                     for (int i=0; i<NSAMPLING; ++i) {
                         fAmpCh[criID][i] = (UShort_t)w_adc[i];    // UShort_t
-                     //   fAmpCh[criID][i] = w_amp[i];            // Float_t
                      }
                   }
-
                } 
-               //else if (ch_type == "CLK"){
-                  //fCLKwaves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
-               //} 
             }
-
+            // go back the last read
             fseek(fWDstream, -4, SEEK_CUR);
          }
+         // go back the last read   
          fseek(fWDstream, -4, SEEK_CUR);
-
-         // Read CALO temp sensors
-         //while(fread(&word, 4,1,fWDstream) !=0 && (word & 0xffff)== TEMP_HEADER){
-
-            // dummy fake temp for each event
-            TRandom3 t(0);
-            for (int cryID=0; cryID<nCry; ++cryID) {   //
-               fTempCh[cryID] = t.Gaus(25, .5);
-            }
-
-         //}
-        
- 
-
-      /*
-      } else if((word &0xffff)== TRIG_HEADER){
-         if(foundTimeCalib)continue;
-         vector<uint32_t> trigInfoWords;
-         int tbo,nbanks;
-         tbo =  (word >> 16)& 0xffff;
+      }
+         
+      /////////////////////////////////////////////////
+      // Read CALO temp sensors
+      if( word == ARDUINO_HEADER) {
 
          ret = fread(&word, 4, 1, fWDstream);
-         nbanks =  word & 0xffff;
-         
-         if (FootDebugLevel(1)) printf("found trigger board %d header, nbanks::%d, word::%08x\n",tbo,nbanks,word);
-         for(int ibank=0;ibank<nbanks;ibank++){
-            ret = fread(&word, 4, 1, fWDstream);
-            if(word == TRGI_BANK_HEADER){
-            if (FootDebugLevel(1)) printf("trig header::%08x\n",word);
-            trigInfoWords.push_back(word);
-            ret = fread(&word, 4, 1, fWDstream);
-            int size =  word;
-            trigInfoWords.push_back(word);
-            if (FootDebugLevel(1)) printf("size::%08x\n",word);
-            for(int i=0;i<size;i++){
-               ret = fread(&word, 4, 1, fWDstream);
-               if (FootDebugLevel(1)) printf("data::%08x\n",word);
-               trigInfoWords.push_back(word);
-            }
-            }else if(word == TGEN_BANK_HEADER){
-            if (FootDebugLevel(1)) printf("trig header::%08x\n",word);
-            trigInfoWords.push_back(word);
-            ret = fread(&word, 4, 1, fWDstream);
-            int size = word;
-            trigInfoWords.push_back(word);
-            if (FootDebugLevel(1)) printf("size::%08x\n",word);
-            for(int i=0;i<size;i++){
-               ret = fread(&word, 4, 1, fWDstream);
-               if (FootDebugLevel(1)) printf("data::%08x\n",word);
-               trigInfoWords.push_back(word);
-            }
-            } else if((word)==  TRGC_BANK_HEADER) {
-               trigInfoWords.push_back(word);
-               ret = fread(&word, 4, 1, fWDstream);
-               int size = word;
-               if(FootDebugLevel(1)) printf("TRCG bank size::%08x\n", word);
-               trigInfoWords.push_back(word);
-               for(int i=0;i<size;i++){
-                  ret = fread(&word, 4, 1, fWDstream);
-                  if(FootDebugLevel(1)) printf("word::%08x\n",word);
-                  trigInfoWords.push_back(word);
+         double time = *((float*)&word);
+         //if (FootDebugLevel(1)) cout << "    time:" << time << endl;
+
+         ret = fread(&word, 4, 1, fWDstream);
+         double time_ms  = *((float*)&word);
+         //if (FootDebugLevel(1)) cout << "    time ms:" << time_ms << endl;
+
+         ret = fread(&word, 4, 1, fWDstream);
+         int numEvent  = word & 0xffff;  
+         if (FootDebugLevel(1)) 
+            cout << " === Arduino   Event num:" << numEvent << endl;
+
+         ret = fread(&word, 4, 1, fWDstream);// skip word
+
+         ret = fread(&word, 4, 1, fWDstream); 
+         int eventSize = word & 0xffff;
+         if (FootDebugLevel(1)) cout << "    event Size:" << eventSize << endl;
+
+         int nWordRead=0;
+         // if event no empty, read the boards (80 channel each),  5 mux x 16 channel
+         if (eventSize > 0) {
+            //int nChRead = 0;
+            while ( nWordRead < eventSize-1 ) {
+               ret = fread(&word, 4, 1, fWDstream); ++nWordRead;
+               u_int boardID =  word & 0xffff;
+               if (FootDebugLevel(1)) 
+                  cout << "   boardID:" << boardID << endl;
+
+               // loop over 5 multiplexer   
+               for (int k=0; k<5; ++k) {
+                  ret = fread(&word, 4, 1, fWDstream); ++nWordRead;
+                  u_int muxnum =  word & 0xffff;
+                  if (FootDebugLevel(1)) 
+                     cout << "    mux:" << muxnum << endl;
+
+                  for (int ch=0; ch<16; ++ch) {
+                     ret = fread(&word, 4, 1, fWDstream); ++nWordRead;
+                     double tempADC =  *((float*)&word); // average over 8 measurements
+
+                     // not connected channel will read 1023
+                     if (tempADC < 1023) {
+                        int iCry = ((TACAparMap*)fpCAParMap->Object())->GetArduinoCrystalId(boardID, muxnum, ch);
+                        if (iCry < 0 || iCry >= nCry) { 
+                           Error("CAactRaw2Ntu", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d", boardID, muxnum, ch);
+                           continue;
+                        }
+                        double temp = ADC2Temp(tempADC);
+                        //if (FootDebugLevel(1)) 
+                           cout << "      cryID:" << iCry << "  ADC:" << tempADC  << " T:" << temp  << endl;
+
+                        fTempCh[iCry] = temp; 
+                        //fTempCh[nChRead]   = temp;               
+                        //nChRead++;
+                     }
+                  } // for ch
                }
             }
          }
-         p_WDtrigInfo->AddInfo(tbo, trig_type, nbanks, trigInfoWords);
-      */
-
-      } else if(word == EVT_HEADER && startEvent) {
-         if (FootDebugLevel(1)) printf("found new event\n");
-         fseek(fWDstream, -4, SEEK_CUR);
-         endEvent = true;
-      }
+      } 
    }
 
-   return nmicro;
+   return 0;
 }
 
 
@@ -627,7 +624,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
    //   if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
-   //   if(strcmp(argv[i],"-nf") == 0)    { nFiles = atoi(argv[++i]);  }   //  Number of files
+      if(strcmp(argv[i],"-nf") == 0)    { nFiles = atoi(argv[++i]);  }   //  Number of files
    //   if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
       if(strcmp(argv[i],"-draw") == 0)   { draw = true;   } // enable draw waveform sampling
 
@@ -638,8 +635,8 @@ int main (int argc, char *argv[])  {
          cout<<"      -in path/file  : [def=""] data input file"<<endl;
          cout<<"      -out path/file : [def=*_standalone.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
-   //      cout<<"      -nsk value     : [def=0] Skip number of events"<<endl;
-   //      cout<<"      -run value     : [def=-1] Run number"<<endl;
+         cout<<"      -nf value      : [def=1] Number of files"<<endl;
+         cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experiment name for config/geomap extention"<<endl;
    //      cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
@@ -679,15 +676,16 @@ int main (int argc, char *argv[])  {
    parMapWD->FromFile(parFileName.Data());
 
    // WD time map
-   TAGparaDsc *pParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
-   TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) pParTimeWD->Object();
-   parFileName = campManager->GetCurCalFile(TASTparGeo::GetBaseName(), runNb);
-   parTimeWD->FromFileCFD(parFileName.Data());
+   //TAGparaDsc *pParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+   //TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) pParTimeWD->Object();
+   //parFileName = campManager->GetCurCalFile(TASTparGeo::GetBaseName(), runNb);
+   //parTimeWD->FromFileCFD(parFileName.Data());
 
-   CAactRaw2Ntu * caDatReader = new CAactRaw2Ntu(pParMapCa, pParMapWD, pParTimeWD);
+   CAactRaw2Ntu * caDatReader = new CAactRaw2Ntu(pParMapCa, pParMapWD);
    if (!caDatReader->Open(in)) return -1;
    caDatReader->SetInitName(in);
    caDatReader->SetTreeBranches();
+   if (nFiles > 1) caDatReader->SetMaxFiles(nFiles);
    
    // Set output
    TString nameOut;
@@ -703,7 +701,7 @@ int main (int argc, char *argv[])  {
    tagr.AddRequiredItem(caDatReader);
 
    int frequency = 50;     // frequency to update info/draw
-   int frequency2 = 1000;  // frequency to clean waveform canvas
+   int frequency2 = 2000;  // frequency to clean waveform canvas
 
 
    TStopwatch watch;
@@ -735,73 +733,9 @@ int main (int argc, char *argv[])  {
 
    caDatReader->CloseOut();
 
-   //theApp->Run(); // keep canvas open
+   delete campManager;
 
-
-
-   /*
-   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
-   
-   geoTrafo->FromFile(parFileName);
-   
-   TFile* f = new TFile(name.Data());
-   f->ls();
-   
-   TTree* tree = (TTree*)gDirectory->Get("EventTree");
-   
-   Evento *ev  = new Evento();
-   
-   EVENT_STRUCT evStr;
-   
-   ev->FindBranches(tree,&evStr);
-   
-   outFile = new TAGactTreeWriter("outFile");
-   
-   FillMCCa(&evStr, runNumber);
-   
-   tagr.AddRequiredItem("caActRaw");
-   tagr.AddRequiredItem("outFile");
-   tagr.Print();
-   
-   Int_t pos = name.Last('.');
-   TString nameOut = name(0, pos);
-   nameOut.Append("_OutCa.root");
-   
-   if (outFile->Open(nameOut.Data(), "RECREATE")) return;
-   caActRaw->SetHistogramDir(outFile->File());
-   
-   cout<<" Beginning the Event Loop "<<endl;
-   tagr.BeginEventLoop();
-   TStopwatch watch;
-   watch.Start();
-   
-   Long64_t nentries = tree->GetEntries();
-   
-   cout<<"Running against ntuple with:: "<<nentries<<" entries!"<<endl;
-   Long64_t nbytes = 0, nb = 0;
-   for (Long64_t ientry = 0; ientry < nentries; ientry++) {
-      
-      nb = tree->GetEntry(ientry);
-      nbytes += nb;
-      
-      if(ientry % 100 == 0)
-         cout<<" Loaded Event:: " << ientry << endl;
-      
-      //if (ientry == 500)
-      if (ientry == 50000)
-         break;
-      
-      if (!tagr.NextEvent()) break;
-   }
-   
-   tagr.EndEventLoop();
-   
-   outFile->Print();
-   outFile->Close();
-   
-   watch.Print();
-   */
+   return 0;
 }
 
 
