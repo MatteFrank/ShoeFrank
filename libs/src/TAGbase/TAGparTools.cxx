@@ -66,11 +66,11 @@ void TAGparTools::ReadItem(TString& item)
    TString key;
    while (pos == -1) {
       if (fFileStream.eof()) break;
-	  fFileStream.getline(buf, 1024);
-     if (buf[0] == '/') continue;
-     if (buf[0] == '#') continue;
-	  key = buf;
-	  pos = key.First(":");
+      fFileStream.getline(buf, 1024);
+      if (buf[0] == '/') continue;
+      if (buf[0] == '#') continue;
+      key = buf;
+      pos = key.First(":");
    }
    item = key(pos+1, key.Length()-pos);   
    if(FootDebugLevel(3)) cout << item.Data() << endl;
@@ -83,24 +83,24 @@ void TAGparTools::ReadItem(TString& item)
 //! \param[out] item read string
 void TAGparTools::ReadItem(TString& key, TString& item)
 {
-  Int_t pos = -1;
-  Char_t buf[1024];
-  TString line;
-  while (pos == -1) {
-    if (fFileStream.eof()) break;
-    fFileStream.getline(buf, 1024);
-    if (buf[0] == '/') continue;
-    if (buf[0] == '#') continue;
-    if (buf[0] == '\n') continue;
-    if (buf[0] == ' ') continue;
-    if (buf[0] == '\0') continue;
-    line = buf;
-    pos = line.First(":");
-  }
-  
-  key = line(0, pos+1);
-  item = line(pos+1, line.Length()-pos);
-  item = Normalize(item.Data());
+   Int_t pos = -1;
+   Char_t buf[1024];
+   TString line;
+   while (pos == -1) {
+      if (fFileStream.eof()) break;
+      fFileStream.getline(buf, 1024);
+      if (buf[0] == '/') continue;
+      if (buf[0] == '#') continue;
+      if (buf[0] == '\n') continue;
+      if (buf[0] == ' ') continue;
+      if (buf[0] == '\0') continue;
+      line = buf;
+      pos = line.First(":");
+   }
+
+   key = line(0, pos+1);
+   item = line(pos+1, line.Length()-pos);
+   item = Normalize(item.Data());
 }
 
 //______________________________________________________________________________
@@ -319,38 +319,38 @@ void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter,
 {
    TString key;
    if (keyFlag)
-     TAGparTools::ReadItem(key);
+      TAGparTools::ReadItem(key);
    else {
-     Char_t buf[255];
-     do {
-       fFileStream.getline(buf, 255);
-       if (fFileStream.eof()) return;
-       key = buf;
-     } while (buf[0] == '/' || buf[0] == '\0');
+      Char_t buf[255];
+      do {
+         fFileStream.getline(buf, 255);
+         if (fFileStream.eof()) return;
+         key = buf;
+      } while (buf[0] == '/' || buf[0] == '\0');
    }
   
    if (key.IsNull()) return;
    
    TObjArray* list = key.Tokenize(delimiter);
    if (list->GetEntries() != size)
-	  Error("ReadItem()","wrong tokenize for [%s] with size %d", key.Data(), size);
-   
+      Error("ReadItem()","wrong tokenize for [%s] with size %d", key.Data(), size);
+
    for (Int_t k = 0; k < list->GetEntries(); k++) {
-	  TObjString* obj = (TObjString*)list->At(k);
-	  TString item = obj->GetString();
-     item =  Normalize(item);
+      TObjString* obj = (TObjString*)list->At(k);
+      TString item = obj->GetString();
+      item =  Normalize(item);
       Int_t pos = item.First(" ");
       if (pos == -1)
          pos = item.Length();
       TString value(item(0, pos));      
-	  coeff[k] = item.Atof();
+      coeff[k] = item.Atof();
    }
    
    if(FootDebugLevel(3)) {
-	  for (Int_t i = 0; i < list->GetEntries(); ++i) {
-		 cout << coeff[i] << " " ;      
-	  }
-	  cout << endl;
+      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+         cout << coeff[i] << " " ;      
+      }
+      cout << endl;
    }
    delete list;
 }
@@ -453,23 +453,23 @@ void TAGparTools::ReadStringsInts(TString& aString, TArrayI& array, const Char_t
 void TAGparTools::GetRange(const char* cstr, Int_t& begin, Int_t& end, Int_t& incr, Int_t& n)
 {
    TString str(cstr);
-   
+
    incr = 1;
    Ssiz_t pos = str.First('-');
-   
+
    if ( pos < 0 ) {
-	  begin = str.Atoi();
-	  end = -1;
-	  n = 1;
+      begin = str.Atoi();
+      end = -1;
+      n = 1;
    } else {
-	  begin = str.Atoi();
-	  end = TString(str(pos+1,str.Length()-pos)).Atoi();
-	  if ( begin > end ) {
-		 incr = -1;
-		 n = begin-end+1;
-	  } else {
-		 n = end-begin+1;
-	  }    
+      begin = str.Atoi();
+      end = TString(str(pos+1,str.Length()-pos)).Atoi();
+      if ( begin > end ) {
+         incr = -1;
+         n = begin-end+1;
+      } else {
+         n = end-begin+1;
+      }    
    }
 }
 
@@ -480,27 +480,27 @@ void TAGparTools::GetRange(const char* cstr, Int_t& begin, Int_t& end, Int_t& in
 TString TAGparTools::Normalize(const char* line)
 {
    TString rv(line);
-   
+
    if ( rv.Length() <= 0 ) return TString();
-   
+
    while ( rv[0] == ' ' || rv == '\t')
-	  rv.Remove(0,1);
-   
+      rv.Remove(0,1);
+
    while ( rv[rv.Length()-1] == ' ' || rv[rv.Length()-1] == '\t')
-	  rv.Remove(rv.Length()-1,1);
-   
+      rv.Remove(rv.Length()-1,1);
+
    Ssiz_t i(0);
    bool kill = false;
-   
+
    for ( i = 0; i < rv.Length(); ++i ) {
-	  if ( rv[i] == ' ' || rv[i] == '\t') {
-		 if (kill) {
-			rv.Remove(i,1);
-			--i;
-		 } else
-			kill = true;
-	  } else 
-		 kill = false;
+      if ( rv[i] == ' ' || rv[i] == '\t') {
+         if (kill) {
+         rv.Remove(i,1);
+         --i;
+         } else
+         kill = true;
+      } else 
+         kill = false;
    }
    
    return rv;
@@ -514,15 +514,15 @@ Bool_t TAGparTools::Open(const TString& name)
 {
    // openning file
    gSystem->ExpandPathName(name);
-   
+
    fFileStream.open(name.Data());
    if (!fFileStream) {
-	  Error("Open()", "failed to open file '%s'", name.Data());
-	  return false;
+      Error("Open()", "failed to open file '%s'", name.Data());
+      return false;
    }
-   
+
    fFileName = name;
-   
+
    return true;
 }
 
@@ -757,24 +757,24 @@ void TAGparTools::SetupMatrices(Int_t size)
 //! \param[in] fWHAT6 what6 string
 //! \param[in] fSDUM fSDUM string
 string  TAGparTools::PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, TString fWHAT3,
-		 TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM) {
+                               TString fWHAT4, TString fWHAT5, TString fWHAT6, TString fSDUM) {
   
-  stringstream fLine;
-	
-  if (fTitle.Sizeof() != 10) fTitle.Resize(10);
-  if (fSDUM.Sizeof() != 10) fSDUM.Resize(10);
-  if (fWHAT1.Sizeof() > 10) fWHAT1.Resize(10);
-  if (fWHAT2.Sizeof() > 10) fWHAT2.Resize(10);
-  if (fWHAT3.Sizeof() > 10) fWHAT3.Resize(10);
-  if (fWHAT4.Sizeof() > 10) fWHAT4.Resize(10);
-  if (fWHAT5.Sizeof() > 10) fWHAT5.Resize(10);
-  if (fWHAT6.Sizeof() > 10) fWHAT6.Resize(10);
+   stringstream fLine;
 
-  fLine << setw(10) << fTitle << setw(10) << fWHAT1 << setw(10) << fWHAT2
-	<< setw(10) << fWHAT3 << setw(10) << fWHAT4 << setw(10) << fWHAT5
-	<< setw(10) << fWHAT6 << setw(10) << fSDUM;
-	
-  return fLine.str();
+   if (fTitle.Sizeof() != 10) fTitle.Resize(10);
+   if (fSDUM.Sizeof() != 10) fSDUM.Resize(10);
+   if (fWHAT1.Sizeof() > 10) fWHAT1.Resize(10);
+   if (fWHAT2.Sizeof() > 10) fWHAT2.Resize(10);
+   if (fWHAT3.Sizeof() > 10) fWHAT3.Resize(10);
+   if (fWHAT4.Sizeof() > 10) fWHAT4.Resize(10);
+   if (fWHAT5.Sizeof() > 10) fWHAT5.Resize(10);
+   if (fWHAT6.Sizeof() > 10) fWHAT6.Resize(10);
+
+   fLine << setw(10) << fTitle << setw(10) << fWHAT1 << setw(10) << fWHAT2
+   << setw(10) << fWHAT3 << setw(10) << fWHAT4 << setw(10) << fWHAT5
+   << setw(10) << fWHAT6 << setw(10) << fSDUM;
+
+   return fLine.str();
   
 }
 
@@ -784,7 +784,7 @@ string  TAGparTools::PrintCard(TString fTitle, TString fWHAT1, TString fWHAT2, T
 //! \param[in] regname region name
 Int_t  TAGparTools::GetCrossReg(TString &regname)
 {
-  return gTAGroot->CurrentRunInfo().GetRegion(regname);
+   return gTAGroot->CurrentRunInfo().GetRegion(regname);
 }
 
 //____________________________________________________________________________
