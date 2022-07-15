@@ -276,10 +276,6 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
         fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ||
         fConfig_typegeo.CompareTo("FULL_DET_V1") == 0
         ) {
-      
-
-      //first module, centered on the beam
-      //detector->AddNode(mod, 1);
 
       //calculate the translation and rotation of the first two neighbors
       double deltaM  = 5 * delta;
