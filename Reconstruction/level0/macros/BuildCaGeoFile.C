@@ -37,8 +37,8 @@
    //////// Set config values
 
    // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, SEVEN_MOD, FULL_DET_V1)
-   // TODO: FULL_DET_V1. the new full setup need to be created
-   TString fConfig_typegeo = "ONE_MOD";
+   // TODO: FULL_DET_V1. the new full setup need to be created the fluka air regions
+   TString fConfig_typegeo = "SEVEN_MOD";
 
    // half dimensions of BGO crystal
    double xdim1 = 1.05;
@@ -75,7 +75,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////
 // main
-void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022_CA/TACAdetector.geo")
+void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
 {
 
    FILE* fp = fopen(fileOutName.Data(), "w");
@@ -892,7 +892,6 @@ void ShowDetectorIdsMap()
    TString path = fgPath + TString("/CA_crystal_pos_map.pdf");
    c1->SaveAs(path.Data());
 
-   ///////////// ---------------------------------------------
    // Create a template .map file for this geometry
    TString filemap = fgPath + TString("/TACAdetector.map");
    FILE* fmap = fopen(filemap.Data(), "w");
