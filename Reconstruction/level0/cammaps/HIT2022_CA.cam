@@ -1,12 +1,11 @@
 // Campaign file
 CamName: "HIT2022_CA"
-RunNumber: 1-2272
-NumberDevices: 1
+RunNumber: 1-100
+NumberDevices: 2
 
 DetectorName: "FOOT"
 NumberFiles: 1
 "./geomaps/HIT2022_CA/FOOT.geo": -1
-
 
 DetectorName: "CA"
 NumberFiles: 4
@@ -14,6 +13,6 @@ NumberFiles: 4
 "./config/HIT2022_CA/TACAdetector.map": -1
 "./config/HIT2022_CA/WDChannelMap.map": -1
 "./calib/HIT2022_CA/TACA_Energy_Calibration.cal": -1
-"./calib/HIT2022_CA/TACA_Temperature_Calibration_perCry.cal": -1
+
 
 

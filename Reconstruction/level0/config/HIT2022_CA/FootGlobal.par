@@ -6,14 +6,14 @@
 
 
 
-Debug:	0
+Debug:   0
 
 
-############	MC selection Control Parameters	################
+############   MC selection Control Parameters   ################
 MC Particle Types:  C11  C12  C13 C14  Li6  Li7  Be7  Be9  Be10  B10  B11  N14  N15  O16 O15
 
 
-############	Kalman Filter Control Parameters	################
+############   Kalman Filter Control Parameters   ################
 
 IncludeKalman:   n
 IncludeTOE:      n
@@ -21,16 +21,16 @@ IncludeStraight: n
 EnableLocalReco: n
 
 Kalman Mode:       ref
-Tracking Systems Considered:      VT IT MSD TW
+Tracking Systems Considered:      
 Reverse Tracking:       false
 
 Kalman preselection strategy: Sept2020
 
-Kalman Particle Types:	C
+Kalman Particle Types:   C
 
 Genfit Event Display ON: n
 
-############	END - Kalman Filter Control Parameters	################
+############   END - Kalman Filter Control Parameters   ################
 
 ############   Options for reconstruction   ################
 
@@ -48,14 +48,14 @@ EnableRegionMc:      n
 
 ############   END - Options for reconstruction   ################
 
-IncludeDI:			   n
-IncludeST:			   n
-IncludeBM:			   n
-IncludeTG:			   n
-IncludeVT:			   n
-IncludeIT:	                    n
-IncludeMSD:			   n
-IncludeTW:			   n
-IncludeCA:			   y
+IncludeDI:            n
+IncludeST:            n
+IncludeBM:            n
+IncludeTG:            n
+IncludeVT:            n
+IncludeIT:            n
+IncludeMSD:           n
+IncludeTW:            n
+IncludeCA:            y
 
 FLUKA version: pro
