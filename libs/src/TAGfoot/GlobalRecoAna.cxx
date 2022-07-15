@@ -202,7 +202,7 @@ void GlobalRecoAna::LoopEvent() {
 
       	// ComputeMCtruth(TrkIdMC, Z_true, P_true, P_cross, Ek_true);
 
-      TrkIdMC = (fGlbTrack->GetMcTrackIdx())[0];      // i take as id the one given by the kalman filter algoritm
+      TrkIdMC = (fGlbTrack->GetMcTrackIdx())[0];      //! THE ID IS OF THE FIRST PARTICLE INTERACTING IN THE FIRST POINT!!!
       if(fFlagMC){
       	if(TrkIdMC !=-1){
       	  TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);
@@ -476,12 +476,12 @@ void GlobalRecoAna::LoopEvent() {
        
 
       ((TH1D*)gDirectory->Get("Energy"))->Fill(Ek_meas*fpFootGeo->GevToMev());
-      ((TH1D*)gDirectory->Get("Charge"))->Fill(Z_meas);
-      ((TH1D*)gDirectory->Get("Charge_True"))->Fill(Z_true);
+      ((TH1D*)gDirectory->Get("Charge_trk"))->Fill(Z_meas);
+      ((TH1D*)gDirectory->Get("Charge_trk_True"))->Fill(Z_true);
       // charge efficiency
       if (Z_meas == Z_true){        
         ((TH1D*)gDirectory->Get("Charge_purity")) -> Fill(Z_meas);
-        //((TH1D*)gDirectory->Get("Charge_efficiency")) -> Divide(((TH1D*)gDirectory->Get("Charge_True")));
+        
       }
 
 
@@ -584,9 +584,13 @@ void GlobalRecoAna::LoopEvent() {
           //TAMCntuPart* m_trueParticleRep = (TAMCntuPart*)   gTAGroot->FindDataDsc("mctrack", "TAMCntuPart")->Object(); //container of all particles of an event
 
           TAMCntuPart* m_trueParticleRep = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
-          Int_t n_particles = m_trueParticleRep -> GetTracksN();        // n° of particles of an event
 
-        
+          Int_t n_particles = m_trueParticleRep -> GetTracksN();        // n° of particles of an event
+          ((TH1D*)gDirectory->Get("MC_check/TracksN_MC")) -> Fill(m_trueParticleRep -> GetTracksN());
+          
+
+
+
           for (Int_t i= 0 ; i < n_particles; i++) {                         // for every particle in an event
           //cout << "evento: "<< ixx << "traccia: " << i <<endl;
             TAMCpart* particle = m_trueParticleRep->GetTrack(i);
@@ -594,8 +598,24 @@ void GlobalRecoAna::LoopEvent() {
             auto Reg = particle->GetRegion();
             auto finalPos = particle-> GetFinalPos();
 
-            if (  Mid==0 && Reg == 59)
-            cout <<"finalpos :"<<finalPos.Z()<<endl;
+            //Fill histos for MC variables checks
+            ((TH1D*)gDirectory->Get("MC_check/Charge_MC")) -> Fill(particle-> GetCharge());
+            ((TH1D*)gDirectory->Get("MC_check/Mass_MC")) -> Fill(particle-> GetMass());
+            
+            ((TH1D*)gDirectory->Get("MC_check/InitPos_MC")) -> Fill(particle-> GetInitPos().Z() );      //! aggiungi Z nel nome
+            ((TH1D*)gDirectory->Get("MC_check/FinalPos_MC")) -> Fill(particle-> GetFinalPos().Z() );
+            ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC")) -> Fill(particle-> GetTrkLength());
+            ((TH1D*)gDirectory->Get("MC_check/Dead_MC")) -> Fill(particle-> GetDead());   //
+            ((TH1D*)gDirectory->Get("MC_check/Time_MC")) -> Fill(particle-> GetTime());   //
+            ((TH1D*)gDirectory->Get("MC_check/Tof_MC")) -> Fill(particle-> GetTof());    //
+            ((TH1D*)gDirectory->Get("MC_check/Type_MC")) -> Fill(particle-> GetType());   
+            ((TH1D*)gDirectory->Get("MC_check/Region_MC")) -> Fill(particle->  GetRegion());   //
+            ((TH1D*)gDirectory->Get("MC_check/Baryon_MC")) -> Fill(particle->  GetBaryon());   //
+            ((TH1D*)gDirectory->Get("MC_check/FlukaID_MC")) -> Fill(particle->  GetFlukaID());
+            ((TH1D*)gDirectory->Get("MC_check/MotherID_MC")) -> Fill(particle->  GetMotherID());
+            
+            //((TH1D*)gDirectory->Get("MC/MotherID_MC")) -> Fill(particle->  GetMotherID());
+
 
             if (  Mid==0 && Reg == 59 &&           // if the particle is generated in the target and it is the fragment of a primary
                   particle->GetCharge()>0 && particle->GetCharge()<=9 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
@@ -737,8 +757,9 @@ void GlobalRecoAna:: Booking(){
 
   h = new TH1D("ntrk","",10, 0 ,10.);
   h = new TH1D("Energy","",100, 0 ,800.);
-  h = new TH1D("Charge","",10, 0 ,10.);
-  h = new TH1D("Charge_True","",10, 0 ,10.);
+  h = new TH1D("Charge_trk","",10, 0 ,10.);
+  h = new TH1D("Charge_trk_True","",10, 0 ,10.);
+  //h = new TH1D("Charge_efficiency","Charge_trk_True / Charge_MC ",10, 0 ,10.);
   h = new TH1D("Charge_MC","",10, 0 ,10.);
   h = new TH1D("Charge_MC_det","",10, 0 ,10.);
   h = new TH1D("Charge_purity","",10, 0 ,10.);
@@ -1051,6 +1072,25 @@ for (int i = 0; i<mass_nbin; i++) {
  
 
   if(fFlagMC){
+    gDirectory->mkdir("MC_check");
+    gDirectory->cd("MC_check");
+    h = new TH1D("TracksN_MC","",100, 0., 100.);
+    h = new TH1D("Charge_MC","",20, 0., 20.);
+    h = new TH1D("Mass_MC","",400, 0., 50.);
+    h = new TH1D("InitPos_MC","",400, 0., 200.);
+    h = new TH1D("FinalPos_MC","",400, 0., 200.);
+    h = new TH1D("TrkLength_MC","",500, 0., 2000.);
+    h = new TH1D("Dead_MC","",500, 0., 2000.);
+    h = new TH1D("Time_MC","",100, 0., 20.);
+    h = new TH1D("Tof_MC","",100, 0., 20.);
+    h = new TH1D("Type_MC","",50, 0., 50.);
+    h = new TH1D("Region_MC","",40, 0., 40.);
+    h = new TH1D("Baryon_MC","",40, 0., 40.);
+    h = new TH1D("FlukaID_MC","",40, 0., 40.);
+    h = new TH1D("MotherID_MC","",40, 0., 40.);
+    h = new TH1D("MotherID_MC","",40, 0., 40.);
+    gDirectory->cd("..");
+
     gDirectory->mkdir("MC");
     gDirectory->cd("MC");
     h2 = new TH2D("ChargePoi_vs_ChargeVT","",11, -1. ,10.,11, -1. ,10.);
@@ -1061,6 +1101,9 @@ for (int i = 0; i<mass_nbin; i++) {
       h2 = new TH2D("MCpartVsGlbtrackNum","Number of MC particles exit from target Vs number of reconstructed tracks;",11, -0.5, 10.5,11, -0.5, 10.5);
       h2 = new TH2D("MCpartVsGlbtrackNum_angle10","Number of MC particles exit from target with angle <10 Vs number of reconstructed tracks;",11, -0.5, 10.5,11, -0.5, 10.5);
     }
+
+    
+
 
     for(int iz=0; iz<=primary_cha; iz++){
       gDirectory->mkdir(Form("Z%d",iz));
@@ -2242,6 +2285,10 @@ void GlobalRecoAna::AfterEventLoop(){
       
       h = new TH1D("luminosity","",1, 0. ,1.);
       ((TH1D*)gDirectory->Get("luminosity"))->SetBinContent(1,Ntg*nTotEv  );
+      
+
+    //h =  ((TH1D*)gDirectory->Get("Charge_trk_True")) -> Clone();
+  //=  ((TH1D*)gDirectory->Get("Charge_trk_True")) -> Divide(((TH1D*)gDirectory->Get("Charge_True")));
   
 
   gTAGroot->EndEventLoop();
