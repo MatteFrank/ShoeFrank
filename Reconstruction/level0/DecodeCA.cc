@@ -581,7 +581,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
                      if (tempADC < 1023) {
                         int iCry = ((TACAparMap*)fpCAParMap->Object())->GetArduinoCrystalId(boardID, muxnum, ch);
                         if (iCry < 0 || iCry >= nCry) { 
-                           Error("CAactRaw2Ntu", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d", boardID, muxnum, ch);
+                           Error("CAactRaw2Ntu", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d -> iCry %d", boardID, muxnum, ch, iCry);
                            continue;
                         }
                         double temp = ADC2Temp(tempADC);
