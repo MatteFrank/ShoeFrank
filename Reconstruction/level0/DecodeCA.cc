@@ -23,6 +23,7 @@
 #include <TApplication.h>
 #include <TGApplication.h>
 #include <TH1.h>
+#include <TPad.h>
 
 #include "TAGcampaignManager.hxx"
 #include "TAGaction.hxx"
@@ -118,6 +119,9 @@ private:
    UShort_t **     fAmpCh;     // waveform for each channel/crystal
 
    double          fRange;
+
+   TH1F * fhChADC [9];
+
 };
 
 
@@ -328,34 +332,48 @@ Bool_t CAactRaw2Ntu::Action() {
 //! \param[in]  opt histogram option 
 void CAactRaw2Ntu::DrawChAmp(int ch, Option_t *opt) {
 
+   int chPad[9] = {5, 6, 4, 2, 3, 1, 8, 9, 7};
+   TString option = opt;
+
    // Draw 
    TCanvas *c1 = (TCanvas *)gROOT->FindObject(Form("wd_ch%d", ch));
-   if( !c1 ) { 
+   if ( !c1 ) { 
       c1 = new TCanvas( Form("wd_ch%d", ch), Form("Waveforms ch #%d",ch),  10, 10, 600, 600); 
       TRootCanvas *rc = (TRootCanvas *)c1->GetCanvasImp();
       rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
-      gSystem->ProcessEvents();
-   }
-   c1->cd();
-   
-   TH1F * hChADC = (TH1F *)gROOT->FindObject(Form("ca_ch%d", ch));
-   if(!hChADC) {
-      hChADC = new TH1F(Form("ca_ch%d", ch), Form("ch #%d waveform (ADC counts)", ch), NSAMPLING, 0, NSAMPLING);
-      hChADC->GetYaxis()->SetRangeUser(0, 65535); // ADC range 16 bits
+      c1->Divide(3,3,0,0);
+      gStyle->SetTitleFontSize(0.25);
+      gStyle->SetTitleY(.35);
       gStyle->SetOptStat(0);
+      //gSystem->ProcessEvents();
+   }
+   c1->cd(); 
+
+   
+   TH1F *hCheck = (TH1F *)gROOT->FindObject(Form("ca_ch%d", ch));
+   if (!hCheck) {
+      for( int pad = 0; pad<9; ++pad) {
+         c1->cd(chPad[pad]);
+         fhChADC[pad] = new TH1F(Form("ca_ch%d", ch+pad), Form("ch #%d waveform (ADC counts)", ch+pad), NSAMPLING, 0, NSAMPLING);
+         fhChADC[pad]->GetYaxis()->SetRangeUser(0, 65535); // ADC range 16 bits
+         fhChADC[pad]->SetDirectory(0);
+         fhChADC[pad]->Draw();
+      }
    }
 
-   for (int i=0; i<NSAMPLING; ++i) {
-      hChADC->SetBinContent(i, fAmpCh[ch][i]);
+   for( int ipad = 8; ipad>=0; --ipad ) {
+      c1->cd(chPad[ipad]);
+
+      for (int i=0; i<NSAMPLING; ++i) {
+         fhChADC[ipad]->SetBinContent(i, fAmpCh[ch+ipad][i]);
+      }
+      if( fAmpCh[ch+ipad][0] == 0 && fAmpCh[ch+ipad][15] == 0 ) continue;
+      fhChADC[ipad]->DrawCopy(opt);
+      //cout << "Draw channel " << ch+ipad << endl;
+      gPad->Modified();
    }
 
-   TString option = opt;
- 
-   if (option.Contains("SAME")) 
-      hChADC->DrawCopy(opt);
-   else
-      hChADC->Draw(opt); // clear, start new draw
-
+   c1->cd(); 
    c1->Modified();
    c1->Update();
    gSystem->ProcessEvents();
@@ -519,6 +537,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
                   // Get the crystal ID for the corresponding board - channel
                   int criID = ((TACAparMap*)fpCAParMap->Object())->GetCrystalId(board_id, ch_num);
                   if (criID >=0 && criID < nCry) {
+                     if (FootDebugLevel(1)) printf("      copy waveform for crystal:%d\n", criID);
                      uint adc5 = w_adc[5];
                      for (int i=0; i<NSAMPLING; ++i) {
                         fAmpCh[criID][i] = (UShort_t)w_adc[i];    // UShort_t
@@ -585,7 +604,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
                            continue;
                         }
                         double temp = ADC2Temp(tempADC);
-                        //if (FootDebugLevel(1)) 
+                        if (FootDebugLevel(1)) 
                            cout << "      cryID:" << iCry << "  ADC:" << tempADC  << " T:" << temp  << endl;
 
                         fTempCh[iCry] = temp; 
@@ -701,7 +720,7 @@ int main (int argc, char *argv[])  {
    tagr.AddRequiredItem(caDatReader);
 
    int frequency = 50;     // frequency to update info/draw
-   int frequency2 = 2000;  // frequency to clean waveform canvas
+   int frequency2 = 500;  // frequency to clean waveform canvas
 
 
    TStopwatch watch;
@@ -712,18 +731,19 @@ int main (int argc, char *argv[])  {
 
    Int_t ev = 0;
    while (tagr.NextEvent() ) {
-      gSystem->ProcessEvents();
       ev++;
-      if (ev % frequency == 0) {
+      if (ev % frequency == 0 || ev == 1 ) {
          cout << "Event: " << ev << endl;
 
          if (draw) {
-            if (ev % frequency2 == 0 || ev == 0)
-               caDatReader->DrawChAmp(0, ""); // clean pad
+            if (ev % frequency2 == 0 || ev == 1)
+               caDatReader->DrawChAmp(0, "L"); // clean pad
             else
-               caDatReader->DrawChAmp(0, "SAME");
+               caDatReader->DrawChAmp(0, "LSAME");
          }
       }
+      gSystem->ProcessEvents();
+
       if (ev > nTotEv) break;
    }
 
@@ -732,6 +752,8 @@ int main (int argc, char *argv[])  {
 
 
    caDatReader->CloseOut();
+
+   //theApp->Run();
 
    delete campManager;
 
