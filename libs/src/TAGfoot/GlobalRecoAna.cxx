@@ -202,7 +202,19 @@ void GlobalRecoAna::LoopEvent() {
 
       	// ComputeMCtruth(TrkIdMC, Z_true, P_true, P_cross, Ek_true);
 
-      TrkIdMC = (fGlbTrack->GetMcTrackIdx())[0];      //! THE ID IS OF THE FIRST PARTICLE INTERACTING IN THE FIRST POINT!!!
+      
+      if ((fGlbTrack->GetMcTrackIdx()).GetSize() > 1){
+      cout << "track size: "<< (fGlbTrack->GetMcTrackIdx()).GetSize() << endl;
+      for (int i =0; i< (fGlbTrack->GetMcTrackIdx()).GetSize(); i++){
+      cout <<"TRACK ID "<<i<<": "<< (fGlbTrack->GetMcTrackIdx())[i] <<endl;
+
+      }
+      cout <<"most probable id: "<< fGlbTrack->GetMcMainTrackId() << endl;
+      cout <<"track id: "<< fGlbTrack->GetTrackId() << endl;
+      }
+      
+      
+      TrkIdMC = fGlbTrack->GetMcMainTrackId();      //! THE ID IS OF THE FIRST PARTICLE INTERACTING IN THE FIRST POINT!!!
       if(fFlagMC){
       	if(TrkIdMC !=-1){
       	  TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);

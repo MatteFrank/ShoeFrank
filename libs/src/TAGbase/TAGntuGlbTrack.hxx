@@ -207,6 +207,9 @@ public:
    
    // Get MC info
    TArrayI          GetMcTrackIdx();
+
+     // Get MC info of the most probable particle
+   Int_t         GetMcMainTrackId();
    
    // Get theta angle at target
    Double_t         GetTgtTheta()           const;
