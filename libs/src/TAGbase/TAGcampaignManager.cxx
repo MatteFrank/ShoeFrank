@@ -450,7 +450,7 @@ const Char_t* TAGcampaign::GetCalFile(const  TString& detName, Int_t runNumber, 
    if (rate)
       item = 3;
    
-   return GetCalItem(detName, runNumber, item, isTofBarCalib,rate);
+   return GetCalItem(detName, runNumber, item, isTofBarCalib, rate);
 }
 
 //_____________________________________________________________________________

@@ -40,6 +40,7 @@ const Float_t TAGgeoTrafo::fgkGevToMev      = 1e3;
 const Float_t TAGgeoTrafo::fgkGevToKev      = 1e6;
 const Float_t TAGgeoTrafo::fgkMevToGev      = 1e-3;
 const Float_t TAGgeoTrafo::fgkGausToTesla   = 1e-4;
+const Float_t TAGgeoTrafo::fgkAmuToGev      = 0.9315;
 const Float_t TAGgeoTrafo::fgkGausToKGaus   = 1e-3;
 const Float_t TAGgeoTrafo::fgkMassFactor    = 0.9383; // GeV
 const Float_t TAGgeoTrafo::fgkElectronMass  = 0.5109; // MeV

@@ -836,6 +836,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 
 	}	// end  - loop over all hit category
 
+	h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
+
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
 		cout << "display->addEvent size  " << m_vectorConvergedTrack.size() << "\n";
@@ -902,6 +904,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	Float_t TwTof = -1;
 	vector<string> tok = TAGparTools::Tokenize( fitTrackName , "_" );
 	string PartName = tok.at(0);
+
+
 
 	// Fill Points and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
 	vector<vector<int>> mcParticleID_track;
@@ -1570,11 +1574,13 @@ void TAGactKFitter::CreateHistogram()	{
 	h_trackMC_reco_id = new TH1F("h_trackMC_reco_id", "h_trackMC_reco_id", 45, 0., 45);
 	AddHistogram(h_trackMC_reco_id);
 
+	h_nTracksPerEv= new TH1F("h_nTracksPerEv", "h_nTracksPerEv", 15, 0., 15);
+	AddHistogram(h_nTracksPerEv);
 
 	h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality", 55, 0, 1.1);
 	AddHistogram(h_trackQuality);
 
-	h_length = new TH1F("m_length", "m_length", 340, 0, 120);
+	h_length = new TH1F("m_length", "m_length", 400, 0, 200);
 	AddHistogram(h_length);
 
 	h_tof = new TH1F("m_tof", "m_tof", 200, 0, 20);
@@ -1847,6 +1853,7 @@ void TAGactKFitter::ClearHistos()
 	delete h_trackQuality;
 	delete h_trackMC_true_id;
 	delete h_trackMC_reco_id;
+	delete h_nTracksPerEv;
 	delete h_length;
 	delete h_tof;
 	delete h_nMeas;

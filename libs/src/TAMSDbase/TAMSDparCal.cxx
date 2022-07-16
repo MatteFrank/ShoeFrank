@@ -131,6 +131,14 @@ Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedP
       return -1;
 }
 
+//_____________________________________________________________________
+Double_t TAMSDparCal::GetElossParam(Float_t eta)
+{
+   return fMapCal->GetElossParam(eta);
+}
+
+
+
 //______________________________________________________________________________
 //
 Float_t TAMSDparCal::ComputeEtaChargeCorrection(Float_t eta)
@@ -166,3 +174,5 @@ Float_t TAMSDparCal::ComputeEtaPosCorrection(Float_t eta)
    
    return correction;
 }
+
+

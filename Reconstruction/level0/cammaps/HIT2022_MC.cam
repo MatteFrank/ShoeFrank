@@ -1,0 +1,43 @@
+// Campaign file
+CamName: "HIT2022_MC"
+RunNumber: 100;101;200;201
+NumberDevices: 7
+
+DetectorName: "FOOT"
+NumberFiles: 2
+"./geomaps/HIT2022_MC/FOOT.geo": -1
+"./geomaps/HIT2022_MC/FOOT.reg": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/HIT2022_MC/TASTdetector.geo": -1
+
+DetectorName: "BM"
+NumberFiles: 3
+"./geomaps/HIT2022_MC/TABMdetector.geo": -1
+"./config/HIT2022_MC/TABMdetector.cfg": -1
+"./calib/HIT2022_MC/TABM_T0_Calibration.cal": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/HIT2022_MC/TAGdetector.geo": 100;101;200;201
+
+DetectorName: "MSD"
+NumberFiles: 2
+"./geomaps/HIT2022_MC/TAMSDdetector.geo": -1
+"./config/HIT2022_MC/TAMSDdetector.cfg": -1
+
+DetectorName: "TW"
+NumberFiles: 6
+"./geomaps/HIT2022_MC/TATWdetector.geo": -1
+"./config/HIT2022_MC/TATW_BBparameters.cfg": -1
+"./config/HIT2022_MC/TATWbarsMapStatus.map": -1
+"./calib/HIT2022_MC/TATW_Energy_Calibration.cal": -1
+"./calib/HIT2022_MC/TATW_Tof_Calibration.cal": -1
+"./calib/HIT2022_MC/rate.root": -1
+
+DetectorName: "CA"
+NumberFiles: 3
+"./geomaps/HIT2022_MC/TACAdetector.geo": -1
+"./calib/HIT2022_MC/TACA_Energy_Calibration.cal": -1
+"./config/HIT2022_MC/TACAcrystalMapStatus.map": -1

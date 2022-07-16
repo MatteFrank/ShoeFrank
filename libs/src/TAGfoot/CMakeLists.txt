@@ -32,7 +32,10 @@ set( with_dictionnaries
    TAGactNtuGlbTrack
    TAGactNtuGlbTrackS
    GlobalReco
+   GlobalRecoAna
+   GlobalRecoMassAna   
    GlobalToeReco
+   
 )
 
 set( without_dictionnaries

@@ -222,6 +222,8 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     ComputePosition(cluster);
     ComputeCog(cluster);
     ComputeEta(cluster);
+    if (fpCalib)
+       ComputeCorrEnergy(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);
     posG = pGeoMap->Sensor2Detector(iSensor, posG);    
@@ -257,7 +259,7 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   Float_t pos, posErr = 0;
   tCorrection = 0.;
   tCorrection2 = 0.;
-   
+
   Float_t tClusterPulseSum = 0.;
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
@@ -283,11 +285,12 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
+  fCurrentEnergy = tClusterPulseSum;
   
   
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
-  cluster->SetEnergyLoss(tClusterPulseSum);
+  cluster->SetEnergyLoss(fCurrentEnergy);
 }
 
 //______________________________________________________________________________
@@ -366,6 +369,19 @@ void TAMSDactNtuCluster::ComputeEta(TAMSDcluster* cluster)
 
    fCurrentEta = eta;
    cluster->SetEta(fCurrentEta);
+}
+
+//______________________________________________________________________________
+//
+void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
+{
+  Float_t eCorrection = 1.;
+
+  TAMSDparCal* p_parcal = (TAMSDparCal*) fpCalib->Object();
+
+  eCorrection = p_parcal->GetElossParam(fCurrentEta);
+
+  cluster->SetEnergyLossCorr(fCurrentEnergy * eCorrection);
 }
 
 //______________________________________________________________________________

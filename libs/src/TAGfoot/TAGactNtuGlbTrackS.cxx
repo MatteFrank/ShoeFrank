@@ -58,7 +58,8 @@
  Computing energy loss and scattering angle
  */
 
-Bool_t  TAGactNtuGlbTrackS::fgBmMatched = false;
+Bool_t  TAGactNtuGlbTrackS::fgBmMatched  = false;
+Bool_t  TAGactNtuGlbTrackS::fgCaTwUpdate = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -196,13 +197,24 @@ void TAGactNtuGlbTrackS::CreateHistogram()
       fOffsetMsd = nHistos;
       nHistos += pGeoMapMs->GetStationsN();
    }
-
-   fOffsetTof = nHistos;
    
-   for (Int_t i = 0; i < nHistos+1; ++i) {
-      fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
+   fOffsetTof = nHistos;
+
+   if (TAGrecoManager::GetPar()->IncludeTW())
+      nHistos++;
+      
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      nHistos++;
+   
+   for (Int_t i = 0; i < nHistos; ++i) {
+      if (i != 7 && i != 8) {
+         fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
+         fpHisResY[i] = new TH1F(Form("%sResY%d", prefix.Data(), i+1), Form("%s - ResidualY of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
+      } else {
+         fpHisResX[i] = new TH1F(Form("%sResX%d", prefix.Data(), i+1), Form("%s - ResidualX of sensor %d", titleDev.Data(), i+1), 400, -2, 2);
+         fpHisResY[i] = new TH1F(Form("%sResY%d", prefix.Data(), i+1), Form("%s - ResidualY of sensor %d", titleDev.Data(), i+1), 400, -2, 2);
+      }
       AddHistogram(fpHisResX[i]);
-      fpHisResY[i] = new TH1F(Form("%sResY%d", prefix.Data(), i+1), Form("%s - ResidualY of sensor %d", titleDev.Data(), i+1), 400, -0.2, 0.2);
       AddHistogram(fpHisResY[i]);
    }
    
@@ -220,7 +232,7 @@ void TAGactNtuGlbTrackS::CreateHistogram()
    fpHisTrackEvt = new TH1F(Form("%sTrackEvt", prefix.Data()), Form("%s - Number of tracks per event", titleDev.Data()), 20, -0.5, 19.5);
    AddHistogram(fpHisTrackEvt);
    
-   fpHisTrackClus = new TH1F(Form("%sTrackClus", prefix.Data()), Form("%s - Number of clusters per track", titleDev.Data()), 16, -0.5, 15.5);
+   fpHisTrackClus = new TH1F(Form("%sTrackClus", prefix.Data()), Form("%s - Number of clusters per track", titleDev.Data()), 11, -0.5, 10.5);
    AddHistogram(fpHisTrackClus);
    
    fpHisClusSensor = new TH1F(Form("%sClusSensor", prefix.Data()), Form("%s - Number of tracked clusters per sensor", titleDev.Data()), 16, -0.5, 15.5);
@@ -366,8 +378,8 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
       
       // from VT local to FOOT global
       posG = fpFootGeo->FromVTLocalToGlobal(posG);
-      
-      TAGpoint* point = track->AddPoint(TAVTparGeo::GetBaseName(), posG, errG);
+
+      TAGpoint* point = track->AddPoint(TAVTparGeo::GetBaseName(), posG, errG, posG, errG);
       point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName()));
       point->SetSensorIdx(cluster->GetSensorIdx());
       point->SetClusterIdx(cluster->GetClusterIdx());
@@ -512,7 +524,7 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
 
          posG = fpFootGeo->FromITLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(TAITparGeo::GetBaseName(), posG, errG);
+         TAGpoint* point = track->AddPoint(TAITparGeo::GetBaseName(), posG, errG, posG, errG);
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAITparGeo::GetBaseName()));
          point->SetSensorIdx(iSensor);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
@@ -599,7 +611,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          
          posG = fpFootGeo->FromMSDLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(TAMSDparGeo::GetBaseName(), posG, errG);
+         TAGpoint* point = track->AddPoint(TAMSDparGeo::GetBaseName(), posG, errG, posG, errG);
          point->SetSensorIdx(iStation);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
@@ -710,7 +722,7 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
       
          posG = fpFootGeo->FromTWLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(TATWparGeo::GetBaseName(), posG, errG);
+         TAGpoint* point = track->AddPoint(TATWparGeo::GetBaseName(), posG, errG, posG, errG);
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
          point->SetSensorIdx(0);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
@@ -721,7 +733,8 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
          track->SetTwTof(tof);
    
          bestCluster->SetFound();
-         UpdateParam(track);
+         if (fgCaTwUpdate)
+            UpdateParam(track);
 
          if(FootDebugLevel(1))
             printf("TW\n");
@@ -786,7 +799,7 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
          
       posG = fpFootGeo->FromCALocalToGlobal(posG);
          
-      TAGpoint* point = track->AddPoint(TACAparGeo::GetBaseName(), posG, errG);
+      TAGpoint* point = track->AddPoint(TACAparGeo::GetBaseName(), posG, errG, posG, errG);
       point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TACAparGeo::GetBaseName()));
       point->SetSensorIdx(0);
       point->SetClusterIdx(bestCluster->GetClusterIdx());
@@ -797,7 +810,8 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
       track->SetFitEnergy(Ek*TAGgeoTrafo::MevToGev());
       
       bestCluster->SetFound();
-      UpdateParam(track);
+      if (fgCaTwUpdate)
+         UpdateParam(track);
          
       if(FootDebugLevel(1))
          printf("CA\n");
@@ -858,8 +872,9 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
       
       fpHisClusSensor->Fill(idx+1);
       
-      Float_t posZ       = cluster->GetPositionG()[2];
-      TVector3 impact    = track->Intersection(posZ);
+      Float_t posZ    = cluster->GetPositionG()[2];
+      TVector3 impact = track->Intersection(posZ);
+ 
       
       if (devName.Contains(TAVTparGeo::GetBaseName()))
          offset = 0;
@@ -879,6 +894,7 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
       }
       
       if (devName.Contains(TACAparGeo::GetBaseName())) {
+         offset = fOffsetTof+1;
          caEnergyRes = cluster->GetEnergyLoss();
       }
       

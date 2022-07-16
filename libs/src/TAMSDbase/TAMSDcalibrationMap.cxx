@@ -117,3 +117,17 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
    
    fin.close();
 }
+
+Double_t TAMSDcalibrationMap::GetElossParam(Float_t eta)
+{  
+   // find the eta bin
+   int eta_bin = -1;
+   for (int i = 0; i < fEloss.eta.size(); i++) {
+      if (eta < fEloss.eta[i]) {
+         eta_bin = i;
+         break;
+      }
+   }
+
+   return fEloss.correction[eta_bin-1];
+}

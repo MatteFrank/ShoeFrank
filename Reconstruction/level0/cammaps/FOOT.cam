@@ -118,3 +118,15 @@ CamName:    "CNAO2021_MC"
 CamDataMC:    1
 CamDate: "November 2021"
 CamSum: "Simulation data for data taking at CNAO with ST+TW+CAL 12C 150-400 MeV/u"
+
+CamNumber:    20
+CamName:    "HIT2022"
+CamDataMC:    0
+CamDate: "July 2022"
+CamSum: "Data for HIT with BM+ST+(MSD)+TW+CA 4He 100-200 MeV/u"
+
+CamNumber:    21
+CamName:    "HIT2022_MC"
+CamDataMC:    1
+CamDate: "July 2022"
+CamSum: "Simulation data for data taking at HIT with BM+ST+(MSD)+TW+CA 4He 100-200 MeV/u"

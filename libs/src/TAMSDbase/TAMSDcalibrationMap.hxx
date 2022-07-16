@@ -38,6 +38,7 @@ public:
   PedParameter_t            GetPedestal(Int_t sensorId, Int_t stripId)       { return fPedestal[ sensorId*fStripsN + stripId];  }
   Double_t                  GetPedestalSeedLevel(Int_t sensorId)             { return fSigmaNoiseLevelSeed[sensorId];               }
   Double_t                  GetPedestalHitLevel(Int_t sensorId)              { return fSigmaNoiseLevelHit[sensorId];               }
+  Double_t                  GetElossParam(Float_t eta);
 
   ClassDef(TAMSDcalibrationMap, 0)
 };
