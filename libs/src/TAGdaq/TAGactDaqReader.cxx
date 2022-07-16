@@ -200,6 +200,12 @@ Bool_t TAGactDaqReader::Process()
    if (evWD)
       datDaq->AddFragment(evWD);
 
+   //ARDUINO for CALO temperature monitoring
+   const ArduinoEvent* evArduino = static_cast<const ArduinoEvent*>(fDaqFileReader->getFragmentID(dataArduino | 0x30));
+   if (evArduino)
+      datDaq->AddFragment(evArduino);
+   
+
    if (fDaqFileReader->endOfFileReached()) {
       if (fDaqFileChain) {
          Close();

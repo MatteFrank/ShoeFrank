@@ -386,16 +386,23 @@ const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, 
 //! \param[in] item 0 for channel, 1 for bars
 const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, Int_t item)
 {
+   // check if key detName exist in the map
+   if (fFileMap.count(detName) == 0) {
+      Warning("GetMapFile()", "No mapping file set for detector %s and run %d\n", detName.Data(), runNumber);
+      return Form("");
+   }
+ 
    vector<TString> vecFile = fFileMap[detName];
+   cout << vecFile[item].Data() << endl;
    TString nameFile = vecFile[item];
    
    vector<TArrayI> vecRun = fRunsMap[detName];
    TArrayI arrayRun = vecRun[item];
   
-  if (nameFile.IsNull()) {
-    Warning("GetMapFile()", "Empty mapping file for detector %s and run %d\n", detName.Data(), runNumber);
-    return Form("");
-  }
+   if (nameFile.IsNull()) {
+      Warning("GetMapFile()", "Empty mapping file for detector %s and run %d\n", detName.Data(), runNumber);
+      return Form("");
+   }
   
    return GetFile(detName, runNumber, nameFile, arrayRun);
 }

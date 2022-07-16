@@ -20,6 +20,7 @@
 
 class TACAcluster;
 class TACAparGeo;
+class TACAntuHit;
 class TH1F;
 class TH2F;
 class TACAactNtuCluster : public TAGactNtuCluster2D {
@@ -41,54 +42,60 @@ public:
    virtual  void   CreateHistogram();
    
    //! Get total charge
-   Float_t GetClusterPulseSum()          const { return fClusterPulseSum; }
+   //Float_t         GetClusterPulseSum()          const { return fClusterPulseSum; }
    
    //! Get position of current cluster
-   TVector3&       GetCurrentPosition()        { return fCurrentPosition; }
+   //TVector3&       GetCurrentPosition()        { return fCurrentPosition; }
    
    //! Get position error of current cluster
-   TVector3&       GetCurrentPosError()        { return fCurrentPosError; }
+   //TVector3&       GetCurrentPosError()        { return fCurrentPosError; }
    
    //! Set position of current cluster
-   void SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition.SetXYZ(u,v,z);  }
+   //void            SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition.SetXYZ(u,v,z);  }
    
    //! Compute position
-   virtual void ComputePosition(TACAcluster* cluster);
+   virtual void    ComputePosition(TACAcluster* cluster);
    
-   // Get object in list
-   TAGobject*  GetHitObject(Int_t idx) const;
+   void            DrawEventClusters(int ievent, Option_t *opt);
+   
+   //! Get object in list
+   TAGobject*      GetHitObject(Int_t idx) const;
    
 protected:
-   TAGdataDsc*     fpNtuRaw;         // input data dsc
-   TAGdataDsc*     fpNtuClus;        // output data dsc
-   TAGdataDsc*     fpNtuTwPoint;     // input data dsc
+   TAGdataDsc*     fpNtuRaw;         ///< input data dsc
+   TAGdataDsc*     fpNtuClus;        ///< output data dsc
+   TAGdataDsc*     fpNtuTwPoint;     ///< input data dsc
 
-   TAGparaDsc*     fpConfig;		    // config para dsc
-   TAGparaDsc*     fpGeoMap;		    // geometry para dsc
-   
-   TVector3       fCurrentPosition;  // pointer to current position
-   TVector3       fCurrentPosError ; // pointer to current position error
-   Float_t        fClusterPulseSum;  // total charge of cluster
-   
-   Int_t          fClustersN;        // number of cluster
+   TACAntuHit*     fpNtuHit;         ///< list of Hits
 
-   TH1F*          fpHisHitTot;       // Total number of hits per cluster
-   TH1F*          fpHisChargeTot;    // Total charge per cluster
-   TH2F*          fpHisClusMap;      // cluster map per sensor
-   
-   TH1F*          fpHisHitTwMatch;   // Number of hit that match a TW point
-   TH1F*          fpHisResTwMag;     // Minimal distance in position with TW
-   TH2F*          fpHisTwDeCaE;      // TW-deltaE vs CA-E
 
-   TString        fPrefix;           // prefix of histogram
-   TString        fTitleDev;         // device name for histogram title
+   TAGparaDsc*     fpConfig;		    ///< config para dsc
+   TAGparaDsc*     fpGeoMap;		    ///< geometry para dsc
+   
+   //TVector3       fCurrentPosition;  ///< pointer to current position
+   //TVector3       fCurrentPosError ; ///< pointer to current position error
+   //Float_t        fClusterPulseSum;  ///< total charge of cluster
+   
+   Int_t          fClustersN;        ///< number of cluster
+
+   TH1F*          fpHisHitTot;       ///< Total number of hits per cluster
+   TH1F*          fpHisChargeTot;    ///< Total charge per cluster
+   TH2F*          fpHisClusMap;      ///< cluster map per sensor
+   
+   TH1F*          fpHisHitTwMatch;   ///< Number of hit that match a TW point
+   TH1F*          fpHisResTwMag;     ///< Minimal distance in position with TW
+   TH2F*          fpHisTwDeCaE;      ///< TW-deltaE vs CA-E
+
+   TString        fPrefix;           ///< prefix of histogram
+   TString        fTitleDev;         ///< device name for histogram title
 
 protected:
-   Bool_t CreateClusters();
-   void   SearchCluster();
-   void   FillMaps();
-   void   FillClusterInfo(TACAcluster* cluster);
-   void   ComputeMinDist(TACAcluster* cluster);
+   Bool_t         CreateClusters();
+   void           SearchCluster();
+   Bool_t         ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, double seedCharge);
+   void           FillMaps();
+   void           FillClusterInfo(TACAcluster* cluster);
+   void           ComputeMinDist(TACAcluster* cluster);
 
    ClassDef(TACAactNtuCluster,0)
 };

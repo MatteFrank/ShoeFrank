@@ -18,8 +18,8 @@ class TACAcluster : public TAGcluster {
 protected:
    TVector3           fPosition;                 // position of the cluster in plane frame
    TVector3           fPosError;                 // position's errors of the cluster in plane frame
-   TVector3           fPositionG;                // position of the clus in tracker frame
-   TVector3           fPosErrorG;                // position's errors of the clus in tracker frame
+   TVector3           fPositionG;                // position of the cluster in tracker frame
+   TVector3           fPosErrorG;                // position's errors of the cluster in tracker frame
    TClonesArray*      fListOfHits;               // list of hits attached to this cluster
    
    Int_t              fIndexSeed;                // index of seed crystal

@@ -19,20 +19,26 @@ using namespace std;
  */
 class TACArawHit : public TAGbaseWD {
 
+protected:
+   Double32_t fTemp;
+
 public:
-  TACArawHit();
-  TACArawHit(TWaveformContainer *w);
-  virtual         ~TACArawHit();
-  
+   TACArawHit();
+   TACArawHit(TWaveformContainer *w, double temp);
+   virtual         ~TACArawHit();
 
-  virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
-  virtual double ComputeCharge( TWaveformContainer *w, double thr);
-  virtual double ComputeAmplitude( TWaveformContainer *w);
-  virtual double ComputePedestal( TWaveformContainer *w, double thr);
-  virtual double ComputeBaseline( TWaveformContainer *w);
-  
+   Double_t GetTemperature()          const { return fTemp;  }   
 
-  ClassDef(TACArawHit,2);
+   void SetTemperature(double aTemp)        { fTemp = aTemp; }
+
+
+   virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
+   virtual double ComputeCharge( TWaveformContainer *w, double thr);
+   virtual double ComputeAmplitude( TWaveformContainer *w);
+   virtual double ComputePedestal( TWaveformContainer *w, double thr);
+   virtual double ComputeBaseline( TWaveformContainer *w);
+
+   ClassDef(TACArawHit, 3);
   //
 };
 
@@ -48,7 +54,7 @@ public:
   TACArawHit*       GetHit(Int_t i_ind);
   const TACArawHit* GetHit(Int_t i_ind) const;
   
-  void              NewHit(TWaveformContainer *W);
+  void              NewHit(TWaveformContainer *W, double temp=25);
   void              SetupClones();
   
   virtual void      Clear(Option_t* opt="");

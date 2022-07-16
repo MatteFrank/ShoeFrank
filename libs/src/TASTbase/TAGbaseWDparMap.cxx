@@ -64,17 +64,18 @@ Bool_t TAGbaseWDparMap::FromFile(const TString& name) {
       sscanf(bufConf, "B%d",&board);
       //      printf("Board%d\n",board);
       for(int iCh=0;iCh<18;iCh++){
-	incF.getline(bufConf, 200, '\n');
-	sscanf(bufConf, "%d\t%c\t%s", &channel, &isenabled, detector);
-	//printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
-	key = make_pair(board, iCh);
-	chmap[key] = detector;
-	if(bolist.count(detector)){
-	  vector<int> tmplist = bolist.find(detector)->second;
-	  if(find(tmplist.begin(), tmplist.end(),board)==tmplist.end())	bolist[detector].push_back(board);
-	}else{
-	  bolist[detector].push_back(board);
-	}
+        incF.getline(bufConf, 200, '\n');
+        sscanf(bufConf, "%d\t%c\t%s", &channel, &isenabled, detector);
+        //printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
+        key = make_pair(board, iCh);
+        chmap[key] = detector;
+        if(bolist.count(detector)){
+          vector<int> tmplist = bolist.find(detector)->second;
+          if(find(tmplist.begin(), tmplist.end(),board)==tmplist.end())
+            bolist[detector].push_back(board);
+        }else{
+          bolist[detector].push_back(board);
+        }
       }
     }
   }

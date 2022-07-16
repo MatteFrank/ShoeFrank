@@ -19,6 +19,7 @@
 #include "DECardEvent.hh"
 #include "DEMSDEvent.hh"
 #include "WDEvent.hh"
+#include "ArduinoEvent.hh"
 
 #include "TAGdaqEvent.hxx"
 

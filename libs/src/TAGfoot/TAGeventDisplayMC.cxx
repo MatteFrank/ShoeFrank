@@ -55,7 +55,8 @@ TAGeventDisplayMC::TAGeventDisplayMC(const TString expName, Int_t runNumber, Int
    fItMcDisplay(0x0),
    fVtMcDisplay(0x0),
    fBmMcDisplay(0x0),
-   fStMcDisplay(0x0)
+   fStMcDisplay(0x0),
+   fPartTrackDisplay(0x0)
 {
    // local reco
    SetLocalReco();
@@ -80,6 +81,8 @@ TAGeventDisplayMC::TAGeventDisplayMC(const TString expName, Int_t runNumber, Int
    
    if (TAGrecoManager::GetPar()->IncludeCA())
       fCaMcDisplay = new TAEDpoint("Cal MC hit");
+   
+   fPartTrackDisplay = new TAEDglbTrack("MC tracks");
 }
 
 //__________________________________________________________
@@ -100,6 +103,8 @@ TAGeventDisplayMC::~TAGeventDisplayMC()
       delete fTwMcDisplay;
    if(fCaMcDisplay)
       delete fCaMcDisplay;
+   if(fPartTrackDisplay)
+      delete fPartTrackDisplay;
 }
 
 //__________________________________________________________
@@ -174,6 +179,9 @@ void TAGeventDisplayMC::AddMcElements()
       fStMcDisplay->ResetPoints();
       gEve->AddElement(fStMcDisplay);
    }
+
+   fPartTrackDisplay->ResetTracklets();
+   gEve->AddElement(fPartTrackDisplay);
 }
 
 //__________________________________________________________
@@ -363,6 +371,27 @@ void TAGeventDisplayMC::UpdateMcElements()
    
    if (TAGrecoManager::GetPar()->IncludeCA())
       UpdateMcElements("ca");
+
+   // ----  Add MC tracks (this should be an option?)
+   if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
+      fPartTrackDisplay->ResetTracklets();
+   }
+   if (!fgDisplayFlag) // do not update event display
+      return;
+
+   TAMCntuPart* pNtuHit = fReco->GetNtuMcTrk();
+   if (!pNtuHit) return;
+   int nTracks = pNtuHit->GetTracksN();
+   for (int trackIdx=0; trackIdx<nTracks; ++trackIdx) {
+      TAMCpart* track = pNtuHit->GetTrack(trackIdx);
+      TVector3 posI = track->GetInitPos();
+      TVector3 posF = track->GetFinalPos();
+      TVector3 length = posF - posI;
+      // tracks that escape have very long path, let made it shorter for visual propose
+      if (length.Mag() > 250) {  posF = posI + length.Unit()*35; }
+      fPartTrackDisplay->AddTracklet(track->GetCharge(), posI, posF);
+      fPartTrackDisplay->TrackId(track);
+   }
 }
 
 //__________________________________________________________
@@ -465,6 +494,7 @@ void TAGeventDisplayMC::UpdateMcElements(const TString prefix)
       }
 
    } //end loop on hits
+
 }
 
 

@@ -19,9 +19,9 @@ public:
    virtual ~TAEDcluster();
    
    //! Set width of quad
-   void SetQuadWidth(Float_t w)  { w = fQuadWidth;        }
+   void SetQuadWidth(Float_t w)  { fQuadWidth = w;        }
    //! Set height of quad
-   void SetQuadHeight(Float_t h) { h = fQuadHeight;       }
+   void SetQuadHeight(Float_t h) { fQuadHeight = h;       }
    
    //! Get width of quad
    Float_t GetQuadWidth()        { return fQuadWidth;     }

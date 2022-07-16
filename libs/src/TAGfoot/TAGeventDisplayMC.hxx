@@ -62,13 +62,16 @@ public:
    
 private:
    //Display
-   TAEDpoint*      fStMcDisplay;  ///< STC MC hits display
-   TAEDpoint*      fBmMcDisplay;  ///< BM MC hits display
-   TAEDpoint*      fVtMcDisplay;  ///< VTX MC hits display
-   TAEDpoint*      fItMcDisplay;  ///< ITR MC hits display
-   TAEDpoint*      fMsdMcDisplay; ///< MSD MC hits display
-   TAEDpoint*      fTwMcDisplay;  ///< TW MC hits display
-   TAEDpoint*      fCaMcDisplay;  ///< CAL MC hits display
+   TAEDpoint*      fStMcDisplay;        ///< STC MC hits display
+   TAEDpoint*      fBmMcDisplay;        ///< BM MC hits display
+   TAEDpoint*      fVtMcDisplay;        ///< VTX MC hits display
+   TAEDpoint*      fItMcDisplay;        ///< ITR MC hits display
+   TAEDpoint*      fMsdMcDisplay;       ///< MSD MC hits display
+   TAEDpoint*      fTwMcDisplay;        ///< TW MC hits display
+   TAEDpoint*      fCaMcDisplay;        ///< CAL MC hits display
+
+   TAEDglbTrack*   fPartTrackDisplay;   ///< list of line to display MC particle track
+
 
 private:
    // Update MC elements
