@@ -21,7 +21,7 @@ IncludeStraight: n
 EnableLocalReco: n
 
 Kalman Mode:       ref
-Tracking Systems Considered:      
+Tracking Systems Considered:    TW  
 Reverse Tracking:       false
 
 Kalman preselection strategy: Sept2020
