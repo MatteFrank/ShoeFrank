@@ -41,12 +41,29 @@ TAGdaqEvent *rawevent = 0x0;
 TAMSDactNtuRaw *msdActRaw = 0x0;
 TAMSDactNtuHit *msdActHit = 0x0;
 
-void FillDetectors(Int_t runNumber)
+void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1000,
+                     TString expName = "GSI2021", Int_t runNumber = 1)
 {
+   gROOT->SetBatch(kTRUE);
+   gErrorIgnoreLevel = kWarning;
+
+   TAGrecoManager::Instance(expName);
+   TAGrecoManager::GetPar()->FromFile();
+   TAGrecoManager::GetPar()->Print();
+
+   TAGroot tagr;
+
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
+
+   TAGgeoTrafo *geoTrafo = new TAGgeoTrafo();
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   geoTrafo->FromFile(parFileName);
+
    //###################### FILLING MSD #################################
    TAGparaDsc *msdMap = new TAGparaDsc("msdMap", new TAMSDparMap());
    TAMSDparMap *map = (TAMSDparMap *)msdMap->Object();
-   TString parFileName = campManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), runNumber);
    map->FromFile(parFileName.Data());
 
    TAGparaDsc *msdGeo = new TAGparaDsc("msdGeo", new TAMSDparGeo());
@@ -76,38 +93,6 @@ void FillDetectors(Int_t runNumber)
    msdActRaw = new TAMSDactNtuRaw("msdActRaw", msdDat, msdDaq, msdMap, msdCal, msdGeo, msdConf);
    msdActHit = new TAMSDactNtuHit("msdActHit", msdDat, msdHit, msdGeo, msdConf, msdCal);
    msdActHit->CreateHistogram();
-}
-
-void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1000,
-                     TString expName = "GSI2021", Int_t runNumber = 1, Int_t fileNumber = 1)
-{
-   gROOT->SetBatch(kTRUE);
-   gErrorIgnoreLevel = kWarning;
-
-   TAGrecoManager::Instance(expName);
-   TAGrecoManager::GetPar()->FromFile();
-   TAGrecoManager::GetPar()->Print();
-
-   TAGroot tagr;
-
-   campManager = new TAGcampaignManager(expName);
-   campManager->FromFile();
-
-   TAGgeoTrafo *geoTrafo = new TAGgeoTrafo();
-   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
-   geoTrafo->FromFile(parFileName);
-
-   TAGparaDsc *msdGeo = new TAGparaDsc("msdGeo", new TAMSDparGeo());
-   TAMSDparGeo *geomap = (TAMSDparGeo *)msdGeo->Object();
-   parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fileNumber);
-   geomap->FromFile(parFileName.Data());
-
-   TAGparaDsc *msdMap = new TAGparaDsc("msdMap", new TAMSDparMap());
-   TAMSDparMap *map = (TAMSDparMap *)msdMap->Object();
-   parFileName = campManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), runNumber);
-   map->FromFile(parFileName.Data());
-
-   FillDetectors(runNumber);
    daqActReaderMSD->Open(filename);
 
    tagr.AddRequiredItem(daqActReaderMSD);
@@ -131,24 +116,19 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    TAxis *ped_axis[sensors];
    TAxis *sig_axis[sensors];
 
+
    for (int sen = 0; sen < sensors; sen++)
    {
       ped_graph[sen] = new TGraph(NChannels);
       ped_graph[sen]->SetTitle(Form("Pedestals for detector %i RUN %i", sen, runNumber));
       ped_graph[sen]->GetXaxis()->SetTitle("channel");
       ped_graph[sen]->GetYaxis()->SetTitle("Pedestal");
-      ped_axis[sen] = ped_graph[sen]->GetXaxis();
-      ped_axis[sen]->SetLimits(0, NChannels);
-      ped_axis[sen]->SetNdivisions(NChannels / 64, false);
-
+ 
       sig_graph[sen] = new TGraph(NChannels);
       sig_graph[sen]->SetTitle(Form("Sigmas for detector %i RUN %i", sen, runNumber));
       sig_graph[sen]->GetXaxis()->SetTitle("channel");
       sig_graph[sen]->GetYaxis()->SetTitle("Sigma");
-      sig_axis[sen] = sig_graph[sen]->GetXaxis();
-      sig_axis[sen]->SetLimits(0, NChannels);
-      sig_axis[sen]->SetNdivisions(NChannels / 64, false);
-
+   
       for (int ch = 0; ch < NChannels; ch++)
       {
          hADC[sen][ch] = new TH1D(Form("pedestal_channel_%d_sensor_%d", ch, sen), Form("Pedestal %d", ch), 50, 4096, -1);
@@ -167,7 +147,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    char overwrite[3];
    TString calfile_name = "./calib/" + expName + "/TAMSD_Pedestal.cal";
 
-   cout << "\nComputing MSD calibration file for campaign " << expName << " with run " << runNumber << endl;
+   cout << "\nComputing MSD calibration file for campaign " << expName << " with run " << dec << runNumber << endl;
    cout << "(Make sure you are using a calibration run with no beam)" << endl;
 
    if (FILE *file = fopen("./calib/" + expName + "/TAMSD_Pedestal.cal", "r"))
@@ -184,8 +164,10 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
    double high_threshold, low_threshold;
    cout << "\tEnter value for high threshold: \n";
+   cout << "\t";
    cin >> high_threshold;
    cout << "\tEnter value for low threshold: \n";
+   cout << "\t";
    cin >> low_threshold;
 
    calfile = fopen(calfile_name, "w");
@@ -204,7 +186,6 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
       rawevent = (TAGdaqEvent *)(tagr.FindDataDsc("msdDaq", "TAGdaqEvent")->Object());
       Int_t nFragments = rawevent->GetFragmentsN();
-
       for (Int_t i = 0; i < nFragments; ++i)
       {
          TString type = rawevent->GetClassType(i);
@@ -229,7 +210,6 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
             }
          }
       }
-
       // printf("\n");
       if (++nEvents % 100 == 0)
          printf("Event for pedestal calculation: %d\n", nEvents);
@@ -359,15 +339,24 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
    // plot correlation in telescope planes
    TCanvas *calibrations = new TCanvas("calib", "calibrations", 1920, 1080);
+   ped_graph[0]->GetXaxis()->SetRangeUser(0,NChannels);
+   ped_graph[0]->GetXaxis()->SetRangeUser(0,NChannels);
+   ped_graph[0]->GetXaxis()->SetNdivisions(NChannels / 64, false);
    ped_graph[0]->Draw("AL*");
    calibrations->Print(calfile_name + ".pdf(", "pdf");
+   sig_graph[0]->GetXaxis()->SetRangeUser(0,NChannels);
+   sig_graph[0]->GetXaxis()->SetNdivisions(NChannels / 64, false);
    sig_graph[0]->Draw("AL*");
    calibrations->Print(calfile_name + ".pdf", "pdf");
 
    for (int i = 2; i < 2 * sensors; i += 2)
    {
+      ped_graph[i / 2]->GetXaxis()->SetRangeUser(0,NChannels);
+      ped_graph[i / 2]->GetXaxis()->SetNdivisions(NChannels / 64, false);     
       ped_graph[i / 2]->Draw("AL*");
       calibrations->Print(calfile_name + ".pdf", "pdf");
+      sig_graph[i / 2]->GetXaxis()->SetRangeUser(0,NChannels);
+      sig_graph[i / 2]->GetXaxis()->SetNdivisions(NChannels / 64, false);
       sig_graph[i / 2]->Draw("AL*");
       calibrations->Print(calfile_name + ".pdf", "pdf");
    }
