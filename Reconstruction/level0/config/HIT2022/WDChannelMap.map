@@ -18,7 +18,7 @@ B27
 15	n	EMPTY
 16	y	CLK
 17	y	CLK	
-B166
+B158
 0	y	TW
 1	y	TW
 2	y	TW
@@ -35,6 +35,44 @@ B166
 13	n	EMPTY
 14	n	EMPTY
 15	n	EMPTY
+16	y	CLK
+17	y	CLK
+B161
+0	y	CALO
+1	y	CALO
+2	y	CALO
+3	y	CALO
+4	n	EMPTY
+5	n	EMPTY
+6	n	EMPTY
+7	n	EMPTY
+8	n	EMPTY
+9	n	EMPTY
+10	n	EMPTY
+11	n	EMPTY
+12	n	EMPTY
+13	n	EMPTY
+14	n	EMPTY
+15	n	EMPTY
+16	y	CLK
+17	y	CLK
+B164
+0	y	CA
+1	y	CA
+2	y	CA
+3	y	CA
+4	y	CA
+5	y	CA
+6	y	CA
+7	y	CA
+8	y	CA
+9	y	CA
+10	y	CA
+11	y	CA
+12	y	CA
+13	y	CA
+14	y	CA
+15	y	CA
 16	y	CLK
 17	y	CLK
 B165
@@ -56,7 +94,7 @@ B165
 15	y	TW
 16	y	CLK
 17	y	CLK
-B157
+B166
 0	y	TW
 1	y	TW
 2	y	TW
@@ -113,7 +151,7 @@ B168
 15	y	TW
 16	y	CLK
 17	y	CLK
-B158
+B170
 0	y	TW
 1	y	TW
 2	y	TW
@@ -126,28 +164,9 @@ B158
 9	y	TW
 10	y	TW
 11	y	TW
-12	n	EMPTY
-13	n	EMPTY
-14	n	EMPTY
-15	n	EMPTY
-16	y	CLK
-17	y	CLK
-B161
-0	y	CALO
-1	y	CALO
-2	y	CALO
-3	y	CALO
-4	y	CALO
-5	y	CALO
-6	y	CALO
-7	y	CALO
-8	y	CALO
-9	n	EMPTY
-10	n	EMPTY
-11	n	EMPTY
-12	y	CALO
-13	y	CALO
-14	y	CALO
-15	y	CALO
+12	y	TW
+13	y	TW
+14	y	TW
+15	y	TW
 16	y	CLK
 17	y	CLK

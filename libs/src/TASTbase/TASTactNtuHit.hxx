@@ -45,7 +45,10 @@ private:
   TH1F *hTotCharge;
   TH1F *hTotAmplitude; 
   TH1F *hPedestal;
-   
+  TH1F *hEff;
+  
+  
+  
 private:
   void   SavePlot(TGraph g,TF1 f1, TF1 f2, TASTrawHit *hit);
 
