@@ -826,7 +826,7 @@ void ShowDetectorIdsMap()
    gStyle->SetTitleFontSize(gStyle->GetTitleFontSize()/aspectradio);
    gStyle->SetFrameLineWidth(0);
 
-   // Draw modules position 
+   // Draw modules position
    TCanvas * c = new TCanvas("modules", "Modules ID", 900, 900 * aspectradio + 20);
 
    Int_t nModule = fListOfModules->GetEntriesFast();
@@ -955,7 +955,7 @@ void ComputeCrystalIndexes()
       double y = point[1];
       if (iCry == 0) {
          xcry.push_back( x );
-         ycry.push_back( y );      
+         ycry.push_back( y );
       } else {
          bool foundx = false;
          for(std::size_t i = 0; i < xcry.size(); ++i) {
@@ -1037,7 +1037,7 @@ void ComputeCrystalIndexes()
                   maxpoint[0] = point2[0];
                }
                
-            } 
+            }
          }
       }
 

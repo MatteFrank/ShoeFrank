@@ -70,13 +70,18 @@ void TATWactNtuPoint::CreateHistogram()
 {
    DeleteHistogram();
    
+   TATWparGeo* pGeoMap  = (TATWparGeo*) fpGeoMap->Object();
+   fpHisPointMap = new TH2F("twPointMap", "TW - Point map",
+                                  pGeoMap->GetNBars(), -pGeoMap->GetDimension()[0]/2., pGeoMap->GetDimension()[0]/2.,
+                                  pGeoMap->GetNBars(), -pGeoMap->GetDimension()[1]/2., pGeoMap->GetDimension()[1]/2.);
+      
+   AddHistogram(fpHisPointMap);
+   
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
      fpHisDist.push_back(new TH1F(Form("twMinDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 1000, 0., 10));
      AddHistogram(fpHisDist[iZ-1]);
   
-
-   fpHisDeltaE.push_back(new TH1F(Form("twDeltaE_Z%d",iZ),Form("DeltaE_Z%d",iZ),1000,-25.,25.));
-     
+     fpHisDeltaE.push_back(new TH1F(Form("twDeltaE_Z%d",iZ),Form("DeltaE_Z%d",iZ),1000,-25.,25.));
      AddHistogram(fpHisDeltaE[iZ-1]);
      
      fpHisDeltaTof.push_back( new TH1F(Form("twDeltaTof_Z%d",iZ),Form("DeltaTof_Z%d",iZ),1000,-5.,5) );
@@ -87,7 +92,6 @@ void TATWactNtuPoint::CreateHistogram()
      
      fpHisTofMean.push_back( new TH1F(Form("twTofMean_Z%d",iZ),Form("TofMean_Z%d",iZ),1400,6,20) );
      AddHistogram(fpHisTofMean[iZ-1]);
-     
    }
    
    SetValidHistogram(kTRUE);
@@ -115,286 +119,294 @@ Bool_t TATWactNtuPoint::FindPoints()
 {
    TATWntuHit* pNtuHit      = (TATWntuHit*) fpNtuRaw->Object();
    TATWntuPoint* pNtuPoint  = (TATWntuPoint*) fpNtuPoint->Object();
-
+   
    Bool_t isClustering=true;
-
+   
    Float_t minDist = 99999;
    Int_t minId = -1;
    Bool_t best = false;
    
    Int_t nHitsX = pNtuHit->GetHitN(LayerX);
    Int_t nHitsY = pNtuHit->GetHitN(LayerY);
-
+   
    if(FootDebugLevel(4)) {
-     cout<<""<<endl;
-     cout<<"Hits::  "<<nHitsX<<" "<<nHitsY<<endl;
+      cout<<""<<endl;
+      cout<<"Hits::  "<<nHitsX<<" "<<nHitsY<<endl;
    }
-
-   Int_t nHitsX_good(0); 
-   Int_t nHitsY_good(0); 
-   Int_t totChargeX(0); 
-   Int_t totChargeY(0); 
-
+   
+   Int_t nHitsX_good(0);
+   Int_t nHitsY_good(0);
+   Int_t totChargeX(0);
+   Int_t totChargeY(0);
+   
    fmapMultHit.clear();
    for (Int_t idx = 0; idx < nHitsX; ++idx) {  // loop over front TW hits
-
-     TATWhit* hitX = pNtuHit->GetHit(idx, LayerX);
-
-     if(FootDebugLevel(4))
-       cout<<"Z_x::"<<hitX->GetChargeZ()<<"  bar_x::"<<hitX->GetBar()<<endl;
-     
-     if(!hitX) continue;
-     if(!hitX->IsValid()) continue;
-     if(fIsZMCtrue && hitX->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
-     if((Int_t)hitX->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
-     // remove double hit in the same layer of the same track when Z = Ztrue
-     if(fIsZMCtrue && IsMultHit(hitX) ) continue;
-     
-     nHitsX_good++;
-     totChargeX+=hitX->GetChargeZ();
-
-     fmapHitX[idx] = hitX;
-
-     if(FootDebugLevel(4))
-       cout<<"X  eloss::"<<hitX->GetEnergyLoss()<<" tof::"<<hitX->GetToF()<<" Z::"<<hitX->GetChargeZ()<<" x::"<<hitX->GetPosition()<<" y::"<<fparGeoTW->GetBarPosition(LayerX, hitX->GetBar())[1]<<endl;      	 
-
+      
+      TATWhit* hitX = pNtuHit->GetHit(idx, LayerX);
+      
+      if(FootDebugLevel(4))
+         cout<<"Z_x::"<<hitX->GetChargeZ()<<"  bar_x::"<<hitX->GetBar()<<endl;
+      
+      if(!hitX) continue;
+      if(!hitX->IsValid()) continue;
+      if(fIsZMCtrue && hitX->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
+      if((Int_t)hitX->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
+                                                 // remove double hit in the same layer of the same track when Z = Ztrue
+      if(fIsZMCtrue && IsMultHit(hitX) ) continue;
+      
+      nHitsX_good++;
+      totChargeX+=hitX->GetChargeZ();
+      
+      fmapHitX[idx] = hitX;
+      
+      if(FootDebugLevel(4))
+         cout<<"X  eloss::"<<hitX->GetEnergyLoss()<<" tof::"<<hitX->GetToF()<<" Z::"<<hitX->GetChargeZ()<<" x::"<<hitX->GetPosition()<<" y::"<<fparGeoTW->GetBarPosition(LayerX, hitX->GetBar())[1]<<endl;
+      
    }
-       
+   
    fmapMultHit.clear();
    for (Int_t idy = 0; idy < nHitsY; ++idy) {  // loop over front TW hits
-
-     TATWhit* hitY = pNtuHit->GetHit(idy, LayerY);
-     
-     if(FootDebugLevel(4))
-       cout<<"Z_y::"<<hitY->GetChargeZ()<<"  bar_y::"<<hitY->GetBar()<<endl;
-     
-     if(!hitY) continue;
-     if(!hitY->IsValid()) continue;
-     if(fIsZMCtrue && hitY->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
-     if((Int_t)hitY->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
-     // remove double hit in the same layer of the same track when Z = Ztrue
-     if(fIsZMCtrue && IsMultHit(hitY) ) continue;
-     
-     nHitsY_good++;
-     totChargeY+=hitY->GetChargeZ();
-
-     fmapHitY[idy] = hitY;
-
-     if(FootDebugLevel(4))
-       cout<<"Y  eloss::"<<hitY->GetEnergyLoss()<<" tof::"<<hitY->GetToF()<<" Z::"<<hitY->GetChargeZ()<<" x::"<<fparGeoTW->GetBarPosition(LayerY, hitY->GetBar())[0]<<" y::"<<hitY->GetPosition()<<endl;
+      
+      TATWhit* hitY = pNtuHit->GetHit(idy, LayerY);
+      
+      if(FootDebugLevel(4))
+         cout<<"Z_y::"<<hitY->GetChargeZ()<<"  bar_y::"<<hitY->GetBar()<<endl;
+      
+      if(!hitY) continue;
+      if(!hitY->IsValid()) continue;
+      if(fIsZMCtrue && hitY->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
+      if((Int_t)hitY->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
+                                                 // remove double hit in the same layer of the same track when Z = Ztrue
+      if(fIsZMCtrue && IsMultHit(hitY) ) continue;
+      
+      nHitsY_good++;
+      totChargeY+=hitY->GetChargeZ();
+      
+      fmapHitY[idy] = hitY;
+      
+      if(FootDebugLevel(4))
+         cout<<"Y  eloss::"<<hitY->GetEnergyLoss()<<" tof::"<<hitY->GetToF()<<" Z::"<<hitY->GetChargeZ()<<" x::"<<fparGeoTW->GetBarPosition(LayerY, hitY->GetBar())[0]<<" y::"<<hitY->GetPosition()<<endl;
    }
-
+   
    TATWpoint *point = nullptr;
-
+   
    if( nHitsX_good >= nHitsY_good ) {
-
-     fmapMoreHits = fmapHitX;
-     fmapLessHits = fmapHitY;
-     
-     if(fIsZMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
-       if(totChargeX>fZbeam && totChargeY<fZbeam+1) { 
-	 if(FootDebugLevel(1))
-	   Warning("FindPoints()"," Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
-	 fmapMoreHits = fmapHitY;
-	 fmapLessHits = fmapHitX;
-       }
-       else if(totChargeX>fZbeam && totChargeY>fZbeam) { 
-	 if(FootDebugLevel(1))
-	   Warning("FindPoints()","no TW point has been assigned: Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
-	 return true;
-       }
-     }
-
+      
+      fmapMoreHits = fmapHitX;
+      fmapLessHits = fmapHitY;
+      
+      if(fIsZMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
+         if(totChargeX>fZbeam && totChargeY<fZbeam+1) {
+            if(FootDebugLevel(1))
+               Warning("FindPoints()"," Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+            fmapMoreHits = fmapHitY;
+            fmapLessHits = fmapHitX;
+         }
+         else if(totChargeX>fZbeam && totChargeY>fZbeam) {
+            if(FootDebugLevel(1))
+               Warning("FindPoints()","no TW point has been assigned: Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+            return true;
+         }
+      }
+      
    } else { //if( nHitsY_good > nHitsX_good )
-     
-
-     fmapMoreHits = fmapHitY;
-     fmapLessHits = fmapHitX;
-
-     if(fIsZMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
-       if(totChargeY>fZbeam && totChargeX<fZbeam+1) {  // remove double hit in the same layer of the same track when Zrec is not active
-	 if(FootDebugLevel(1))
-	   Warning("FindPoints()"," Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
-	 fmapMoreHits = fmapHitX;
-	 fmapLessHits = fmapHitY;
-       }
-       else if(totChargeX>fZbeam && totChargeY>fZbeam) { 
-	 if(FootDebugLevel(1))
-	   Warning("FindPoints()","no TW point has been assigned: Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
-	 return true;
-       }
-     }
-
+      
+      
+      fmapMoreHits = fmapHitY;
+      fmapLessHits = fmapHitX;
+      
+      if(fIsZMCtrue) { // remove double hit in the same layer of the same track when Zrec is not active
+         if(totChargeY>fZbeam && totChargeX<fZbeam+1) {  // remove double hit in the same layer of the same track when Zrec is not active
+            if(FootDebugLevel(1))
+               Warning("FindPoints()"," Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+            fmapMoreHits = fmapHitX;
+            fmapLessHits = fmapHitY;
+         }
+         else if(totChargeX>fZbeam && totChargeY>fZbeam) {
+            if(FootDebugLevel(1))
+               Warning("FindPoints()","no TW point has been assigned: Zbeam: %d hitsX: %d hitsY: %d totZx: %d totZy: %d",fZbeam,nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+            return true;
+         }
+      }
+      
    }
-
+   
    
    if( nHitsX_good==0 || nHitsY_good==0 ) isClustering = false;
    
    if(!isClustering) {
-     
-     for (Int_t ihit = 0; ihit < pNtuHit->GetHitN(); ++ihit) {  // loop over all TW hits
-       
-       TATWhit *hit = pNtuHit->GetHit(ihit);
-       Int_t layer = hit->GetLayer();
-       
-       if(!hit) continue;
-       if(!hit->IsValid()) continue;
-       if(fIsZMCtrue && hit->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
-       if((Int_t)hit->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
-       
-       if(nHitsX_good >= nHitsY_good) {
-	 
-	 if(layer==(Int_t)LayerY) continue; // skip for rear hits
-	 point = pNtuPoint->NewPoint(hit->GetPosition(), fDefPosErr, hit, fparGeoTW->GetBarPosition(LayerX, hit->GetBar()).y(), fDefPosErr, hit, hit->GetLayer());
-
-       } else {	 // if(nHitsX_good < nHitsY_good)
-	   
-	 if(layer==(Int_t)LayerX) continue;  // skip for front hits
-	 point = pNtuPoint->NewPoint(fparGeoTW->GetBarPosition(LayerY,hit->GetBar()).x(), fDefPosErr, hit, hit->GetPosition(), fDefPosErr, hit, hit->GetLayer());
-	 
-       }  
-   
-       if(point==nullptr) { //continue;
-
-       if(FootDebugLevel(1))
-
-	 Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
-	 continue;  // no TW point can be assigned...
-       }
-       
-       point->SetChargeZ(hit->GetChargeZ());
-        point->SetSensorIdx(0);
-        point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
-
-       double z = fgeoTrafo->FromGlobalToTWLocal(fgeoTrafo->GetTWCenter()).z(); 
-       TVector3 posLoc(point->GetPosition().x(),point->GetPosition().y(), z);
-       TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
-       point->SetPositionGlb(posGlb);
-       
-       if(FootDebugLevel(4))
-	 cout<<"point ID::"<<point->GetPointMatchMCtrkID()<<" Z::"<<point->GetChargeZ()<<" barID::"<<hit->GetBar()<<endl;
-       
-       if(FootDebugLevel(4)) {
-	 cout<<"Layer::  "<<layer<<"  position:: x::"<<posLoc.x()<<" y::"<<posLoc.y()<<" z::"<<posLoc.z()<<endl;
-	 cout<<"global::"<<posGlb.x()<<"  "<<posGlb.y()<<" "<<posGlb.z()<<endl;
-	 cout<<"Z::"<<hit->GetChargeZ()<<" "<<endl;
-	 
-       }     
-     }
+      
+      for (Int_t ihit = 0; ihit < pNtuHit->GetHitN(); ++ihit) {  // loop over all TW hits
+         
+         TATWhit *hit = pNtuHit->GetHit(ihit);
+         Int_t layer = hit->GetLayer();
+         
+         if(!hit) continue;
+         if(!hit->IsValid()) continue;
+         if(fIsZMCtrue && hit->GetEnergyLoss()<0) continue; // remove hit under threshold in MC with Z true
+         if((Int_t)hit->GetChargeZ()<=0) continue; //exclude neutrons and hits with Z charge < 0
+         
+         if(nHitsX_good >= nHitsY_good) {
+            
+            if(layer==(Int_t)LayerY) continue; // skip for rear hits
+            point = pNtuPoint->NewPoint(hit->GetPosition(), fDefPosErr, hit, fparGeoTW->GetBarPosition(LayerX, hit->GetBar()).y(), fDefPosErr, hit, hit->GetLayer());
+            
+         } else {	 // if(nHitsX_good < nHitsY_good)
+            
+            if(layer==(Int_t)LayerX) continue;  // skip for front hits
+            point = pNtuPoint->NewPoint(fparGeoTW->GetBarPosition(LayerY,hit->GetBar()).x(), fDefPosErr, hit, hit->GetPosition(), fDefPosErr, hit, hit->GetLayer());
+            
+         }
+         
+         if(point==nullptr) { //continue;
+            
+            if(FootDebugLevel(1))
+               
+               Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+            continue;  // no TW point can be assigned...
+         }
+         
+         point->SetChargeZ(hit->GetChargeZ());
+         point->SetSensorIdx(0);
+         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
+         
+         double z = fgeoTrafo->FromGlobalToTWLocal(fgeoTrafo->GetTWCenter()).z();
+         TVector3 posLoc(point->GetPosition().x(),point->GetPosition().y(), z);
+         TVector3 posGlb = fgeoTrafo->FromTWLocalToGlobal(posLoc);
+         point->SetPositionGlb(posGlb);
+         
+         if(FootDebugLevel(4))
+            cout<<"point ID::"<<point->GetPointMatchMCtrkID()<<" Z::"<<point->GetChargeZ()<<" barID::"<<hit->GetBar()<<endl;
+         
+         if(FootDebugLevel(4)) {
+            cout<<"Layer::  "<<layer<<"  position:: x::"<<posLoc.x()<<" y::"<<posLoc.y()<<" z::"<<posLoc.z()<<endl;
+            cout<<"global::"<<posGlb.x()<<"  "<<posGlb.y()<<" "<<posGlb.z()<<endl;
+            cout<<"Z::"<<hit->GetChargeZ()<<" "<<endl;
+            
+         }
+      }
    }
    
    
    else {  // TW clustering
-
-     
-     for(auto it1=fmapMoreHits.begin(); it1!=fmapMoreHits.end(); ++it1) {
-       
-       Int_t id1 = it1->first;
-       TATWhit * hit1 = it1->second;
-       Int_t layer1 = hit1->GetLayer();
-       Int_t bar1 = hit1->GetBar();
-       
-       minDist = fparGeoTW->GetBarHeight() - 2*fparGeoTW->GetBarWidth(); // borders have no overlapp (44 cm -2*2cm)
-       
-       // use the time difference to compute position for the layer with more hits (and less Pile-up probability)
-       Double_t pos1 = GetPositionFromDeltaTime(layer1,bar1,hit1);
-       
-       best = false;
-       
-       if(FootDebugLevel(4))
-	 cout<<"MORE  eloss::"<<hit1->GetEnergyLoss()<<" tof::"<<hit1->GetToF()<<" Z::"<<hit1->GetChargeZ()<<endl;
-       
-       for(auto it2=fmapLessHits.begin(); it2!=fmapLessHits.end(); ++it2) {
-	 
-     	 Int_t id2 = it2->first;
-     	 TATWhit * hit2 = it2->second;
-     	 Int_t layer2 = hit2->GetLayer();
-     	 Int_t bar2 = hit2->GetBar();
-	 
-     	 Double_t pos2  = GetPositionFromBarCenter(layer2,bar2,hit2);
-	 
-     	 Double_t dist = TMath::Abs(pos2 - pos1);
+      
+      
+      for(auto it1=fmapMoreHits.begin(); it1!=fmapMoreHits.end(); ++it1) {
          
-     	 if (dist < minDist) {
-     	   minDist = dist;
-     	   minId   = id2;
-     	   best    = true;
-     	 }
-
-       }
-       
-       if (best) {
-	 
-       	 TATWhit* hitmin = fmapLessHits[minId];
-       	 if(!hitmin) continue;
-
-	 if(FootDebugLevel(4))
-	   cout<<"MIN  eloss::"<<hitmin->GetEnergyLoss()<<" tof::"<<hitmin->GetToF()<<" Z::"<<hitmin->GetChargeZ()<<endl;
-
-	 Int_t bar_min   = hitmin->GetBar();
-	 
-	 TVector3 posLoc = GetLocalPointPosition(layer1,pos1,bar1,bar_min);
-
-	 if( fIsZmatch && !IsPointWithMatchedZ(hit1,hitmin) ) {
-	   if(FootDebugLevel(1))
-	     Warning("FindPoints()","no TW point has been assigned: mismatched Z Z1: %d Z2: %d",hit1->GetChargeZ(),hitmin->GetChargeZ());
-	   continue;
-	 }
-	 
-	 point = SetTWPoint(pNtuPoint,layer1,hit1,hitmin,posLoc);
-
-	 if(!point) {
-	   if(FootDebugLevel(1))
-	     Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
-	   
-	   return true;
-	 }
-
-	 Int_t Z = point->GetChargeZ();
-
-	 if(FootDebugLevel(4)) {
-	   cout<<"fIsZmatch::"<<fIsZmatch<<"  hit1_Z::"<<hit1->GetChargeZ()<<" hitmin_Z::"<<hitmin->GetChargeZ()<<" point_Z::"<<point->GetChargeZ()<<endl;
-	   cout<<"point ID::"<<point->GetPointMatchMCtrkID()<<" Z::"<<point->GetChargeZ()<<" barID::"<<hit1->GetBar()<<endl;	   
-	   cout<<"Bars::  "<<bar1<<"  "<<bar_min<<"  MainLayer::"<<point->GetMainLayer()<<endl;
-	   cout<<"Eloss1::"<<hit1->GetEnergyLoss()<<"  Eloss2::"<<hitmin->GetEnergyLoss()<<endl;
-	   cout<<"Eloss1::"<<point->GetEnergyLoss1()<<"  Eloss2::"<<point->GetEnergyLoss2()<<endl;
-	   cout<<"hits  Tof1::"<<hit1->GetToF()<<"  Tof2::"<<hitmin->GetToF()<<endl;
-	   cout<<"hits  Time1::"<<hit1->GetTime()<<"  Time2::"<<hitmin->GetTime()<<endl;
-	   cout<<"point Tof1::"<<point->GetTof1()<<"  Tof2::"<<point->GetTof2()<<endl;
-	   cout<<"Z::"<<Z<<"  "<<hitmin->GetChargeZ()<<" "<<endl;
-	 }
-
-	 if (ValidHistogram()) {
-	   
-	   if( Z>0 && Z < fZbeam+1 ) {
-
-	     fpHisDist[Z-1]->Fill(minDist);
-	     fpHisElossMean[Z-1]->Fill(point->GetEnergyLoss()/2.);
-	     fpHisTofMean[Z-1]->Fill(point->GetMeanTof());
-	     fpHisDeltaE[Z-1]->Fill(point->GetColumnHit()->GetEnergyLoss()-point->GetRowHit()->GetEnergyLoss());
-	     fpHisDeltaTof[Z-1]->Fill(point->GetColumnHit()->GetTime()-point->GetRowHit()->GetTime());
-	     
-	   }
-	 }
-
-       }  // if(best)
-
-     }  // close moreHits loop
-
+         Int_t id1 = it1->first;
+         TATWhit * hit1 = it1->second;
+         Int_t layer1 = hit1->GetLayer();
+         Int_t bar1 = hit1->GetBar();
+         
+         minDist = fparGeoTW->GetBarHeight() - 2*fparGeoTW->GetBarWidth(); // borders have no overlapp (44 cm -2*2cm)
+         
+         // use the time difference to compute position for the layer with more hits (and less Pile-up probability)
+         Double_t pos1 = GetPositionFromDeltaTime(layer1,bar1,hit1);
+         
+         best = false;
+         
+         if(FootDebugLevel(4))
+            cout<<"MORE  eloss::"<<hit1->GetEnergyLoss()<<" tof::"<<hit1->GetToF()<<" Z::"<<hit1->GetChargeZ()<<endl;
+         
+         for(auto it2=fmapLessHits.begin(); it2!=fmapLessHits.end(); ++it2) {
+            
+            Int_t id2 = it2->first;
+            TATWhit * hit2 = it2->second;
+            Int_t layer2 = hit2->GetLayer();
+            Int_t bar2 = hit2->GetBar();
+            
+            Double_t pos2  = GetPositionFromBarCenter(layer2,bar2,hit2);
+            
+            Double_t dist = TMath::Abs(pos2 - pos1);
+            
+            if (dist < minDist) {
+               minDist = dist;
+               minId   = id2;
+               best    = true;
+            }
+            
+         }
+         
+         if (best) {
+            
+            TATWhit* hitmin = fmapLessHits[minId];
+            if(!hitmin) continue;
+            
+            if(FootDebugLevel(4))
+               cout<<"MIN  eloss::"<<hitmin->GetEnergyLoss()<<" tof::"<<hitmin->GetToF()<<" Z::"<<hitmin->GetChargeZ()<<endl;
+            
+            Int_t bar_min   = hitmin->GetBar();
+            
+            TVector3 posLoc = GetLocalPointPosition(layer1,pos1,bar1,bar_min);
+            
+            if( fIsZmatch && !IsPointWithMatchedZ(hit1,hitmin) ) {
+               if(FootDebugLevel(1))
+                  Warning("FindPoints()","no TW point has been assigned: mismatched Z Z1: %d Z2: %d",hit1->GetChargeZ(),hitmin->GetChargeZ());
+               continue;
+            }
+            
+            point = SetTWPoint(pNtuPoint,layer1,hit1,hitmin,posLoc);
+            
+            if(!point) {
+               if(FootDebugLevel(1))
+                  Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+               
+               return true;
+            }
+            
+            Int_t Z = point->GetChargeZ();
+            
+            if(FootDebugLevel(4)) {
+               cout<<"fIsZmatch::"<<fIsZmatch<<"  hit1_Z::"<<hit1->GetChargeZ()<<" hitmin_Z::"<<hitmin->GetChargeZ()<<" point_Z::"<<point->GetChargeZ()<<endl;
+               cout<<"point ID::"<<point->GetPointMatchMCtrkID()<<" Z::"<<point->GetChargeZ()<<" barID::"<<hit1->GetBar()<<endl;
+               cout<<"Bars::  "<<bar1<<"  "<<bar_min<<"  MainLayer::"<<point->GetMainLayer()<<endl;
+               cout<<"Eloss1::"<<hit1->GetEnergyLoss()<<"  Eloss2::"<<hitmin->GetEnergyLoss()<<endl;
+               cout<<"Eloss1::"<<point->GetEnergyLoss1()<<"  Eloss2::"<<point->GetEnergyLoss2()<<endl;
+               cout<<"hits  Tof1::"<<hit1->GetToF()<<"  Tof2::"<<hitmin->GetToF()<<endl;
+               cout<<"hits  Time1::"<<hit1->GetTime()<<"  Time2::"<<hitmin->GetTime()<<endl;
+               cout<<"point Tof1::"<<point->GetTof1()<<"  Tof2::"<<point->GetTof2()<<endl;
+               cout<<"Z::"<<Z<<"  "<<hitmin->GetChargeZ()<<" "<<endl;
+            }
+            
+            if (ValidHistogram()) {
+               
+               if( Z>0 && Z < fZbeam+1 ) {
+                  
+                  fpHisDist[Z-1]->Fill(minDist);
+                  fpHisElossMean[Z-1]->Fill(point->GetEnergyLoss()/2.);
+                  fpHisTofMean[Z-1]->Fill(point->GetMeanTof());
+                  fpHisDeltaE[Z-1]->Fill(point->GetColumnHit()->GetEnergyLoss()-point->GetRowHit()->GetEnergyLoss());
+                  fpHisDeltaTof[Z-1]->Fill(point->GetColumnHit()->GetTime()-point->GetRowHit()->GetTime());
+               }
+               
+            }
+            
+         }  // if(best)
+         
+      }  // close moreHits loop
+      
    }  // close clustering
-
+   
    if(point==nullptr) { //continue;
-     if(FootDebugLevel(1))
-       Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
+      if(FootDebugLevel(1))
+         Warning("FindPoints()","no TW point has been assigned: hitsX: %d hitsY: %d totZx: %d totZy: %d",nHitsX_good,nHitsY_good,totChargeX,totChargeY);
    }
-
+   
+   if (ValidHistogram()) {
+      
+      Int_t nPoints = pNtuPoint->GetPointsN();
+      for( Int_t i = 0; i < nPoints; ++i ) {
+         TATWpoint* aPoint =  pNtuPoint->GetPoint(i);
+         TVector3 posG = aPoint->GetPositionG();
+         
+         fpHisPointMap->Fill(posG[0], posG[1]);
+      }
+   }
    
    return true;
-      
 }
 
-
-//___________________________________________//
+//___________________________________________
 Bool_t TATWactNtuPoint::IsMultHit(TATWhit *hit)
 {
 

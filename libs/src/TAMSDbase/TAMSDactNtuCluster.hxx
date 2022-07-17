@@ -41,6 +41,9 @@ public:
    void    ComputeCog(TAMSDcluster* cluster);
    //! Compute eta of cluster
    void    ComputeEta(TAMSDcluster* cluster);
+   //! Compute corrected energy of cluster
+   void    ComputeCorrEnergy(TAMSDcluster* cluster);
+
 
    //! Get list of strips for a given plane
    TClonesArray*   GetListOfStrips()   const { return fListOfStrips;    }
@@ -77,7 +80,8 @@ private:
    Float_t         fCurrentPosition;   // pointer to current position
    Float_t         fCurrentPosError ;  // pointer to current position error
    Float_t         fCurrentCog;        // pointer to current center of gravity
-   Float_t         fCurrentEta;        // pointer to current center of gravity
+   Float_t         fCurrentEta;        // pointer to current eta
+   Float_t         fCurrentEnergy;     // pointer to current energy
    TClonesArray*   fListOfStrips;      // list of strips
    TClonesArray*   fCurListOfStrips;   // list of strips in current cluster
    

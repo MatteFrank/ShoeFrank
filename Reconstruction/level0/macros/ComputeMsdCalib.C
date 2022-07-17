@@ -182,6 +182,12 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
       }
    }
 
+   double high_threshold, low_threshold;
+   cout << "\tEnter value for high threshold: \n";
+   cin >> high_threshold;
+   cout << "\tEnter value for low threshold: \n";
+   cin >> low_threshold;
+
    calfile = fopen(calfile_name, "w");
    fprintf(calfile, "# SigmaSeedLevel\n");
    fprintf(calfile, "# SigmaHitLevel\n");
@@ -234,12 +240,12 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    for (int sen = 0; sen < sensors; sen++)
    {
       fprintf(calfile, "#sensorId: %i\n", sen);
-      fprintf(calfile, "%i\n", 50);
-      fprintf(calfile, "%i\n", 10);
+      fprintf(calfile, "%f\n", high_threshold);
+      fprintf(calfile, "%f\n", low_threshold);
 
       for (int ch = 0; ch < NChannels; ch++)
       {
-         //Fitting histos with gaus to compute ped and raw_sigma
+         // Fitting histos with gaus to compute ped and raw_sigma
          if (hADC[sen][ch]->GetEntries())
          {
             hADC[sen][ch]->Fit("gaus", "QS");
@@ -313,7 +319,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    {
       for (int ch = 0; ch < NChannels; ch++)
       {
-         //Fitting histos with gaus to compute ped and raw_sigma
+         // Fitting histos with gaus to compute ped and raw_sigma
          if (hSignal[sen][ch]->GetEntries())
          {
             hSignal[sen][ch]->Fit("gaus", "QS");
@@ -336,7 +342,14 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          ped_graph[sen]->SetPoint(ch, ch, pedestals[sen][ch]);
          sig_graph[sen]->SetPoint(ch, ch, sigma[sen][ch]);
 
-         fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], (sigma[sen][ch] < 1.8 || sigma[sen][ch] > 5));
+         if (ch % 64)
+         {
+            fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], (sigma[sen][ch] < 1.8 || sigma[sen][ch] > 5));
+         }
+         else
+         {
+            fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], 1);
+         }
       }
    }
 
@@ -368,6 +381,6 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    signals.shrink_to_fit();
    sigma.clear();
    sigma.shrink_to_fit();
-   
+
    return;
 }

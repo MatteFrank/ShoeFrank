@@ -43,9 +43,14 @@ public:
 
 public:
    //! BM match
-   static Bool_t  IsBmMatched()             { return fgBmMatched; }
+   static Bool_t  IsBmMatched()              { return fgBmMatched;  }
    //! Set BM match
-   static void    SetBmMatched(Bool_t flag) { fgBmMatched = flag; }
+   static void    SetBmMatched(Bool_t flag)  { fgBmMatched = flag;  }
+   //! Get update track parameter for TW & CA points flag
+   static Bool_t  IsCaTwUpdate()             { return fgCaTwUpdate; }
+   //! Set update track parameter for TW & CA points flag
+   static void    SetCaTwUpdate(Bool_t flag) { fgCaTwUpdate = flag; }
+
 
 private:
    // Find tracks
@@ -142,6 +147,7 @@ private:
 
 private:
    static Bool_t fgBmMatched;           ///< vertex matched with BM flag
+   static Bool_t fgCaTwUpdate;          ///< flag to update the track with TW and CA points
 
    ClassDef(TAGactNtuGlbTrackS, 0)
 
