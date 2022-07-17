@@ -9,7 +9,7 @@ NumberFiles: 1
 
 DetectorName: "ST"
 NumberFiles: 1
-"./config/GSI2021/WDChannelMap.map": -1
+"./config/HIT2022_CA/WDChannelMap.map": -1
 
 DetectorName: "CA"
 NumberFiles: 4

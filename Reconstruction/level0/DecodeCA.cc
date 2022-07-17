@@ -442,7 +442,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
    while (!endEvent) {
 
       ret = fread(&word, 4, 1, fWDstream); 
-      if (FootDebugLevel(2)) printf("word:%08x\n", word);
+      if (FootDebugLevel(3)) printf("word:%08x\n", word);
 
       if (ret == 0) {
          cout << "End file ..." << endl;
@@ -514,7 +514,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
                if (FootDebugLevel(2)) printf("   type::%s\n", ch_type.data());
  
                // Only process CALO channels
-               if (ch_type == "CALO") {
+               if (ch_type == "CALO" || ch_type == "CA") {
                   if (FootDebugLevel(1)) printf("   found CALO waveform board:%d  channel:%d\n", board_id, ch_num);
 
                   // split each 32 bit into two 16 bit values

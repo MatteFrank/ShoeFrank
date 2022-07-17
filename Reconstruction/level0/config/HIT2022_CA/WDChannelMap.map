@@ -1,5 +1,24 @@
 !WD channel map
-B161
+B27
+0	y	ST
+1	y	ST
+2	y	ST
+3	y	ST
+4	y	ST
+5	y	ST
+6	y	ST
+7	y	ST
+8	n	EMPTY
+9	n	EMPTY
+10	n	EMPTY
+11	n	EMPTY
+12	n	EMPTY
+13	n	EMPTY
+14	n	EMPTY
+15	n	EMPTY
+16	y	CLK
+17	y	CLK
+B164
 0	y	CALO
 1	y	CALO
 2	y	CALO
@@ -9,12 +28,12 @@ B161
 6	y	CALO
 7	y	CALO
 8	y	CALO
-9	n	EMPTY
-10	n	EMPTY
-11	n	EMPTY
-12	y	EMPTY
-13	y	EMPTY
-14	y	EMPTY
-15	y	EMPTY
+9	n	CALO
+10	n	CALO
+11	n	CALO
+12	y	CALO
+13	y	CALO
+14	y	CALO
+15	y	CALO
 16	y	CLK
 17	y	CLK
