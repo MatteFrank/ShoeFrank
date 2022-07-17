@@ -56,6 +56,10 @@ Bool_t TASTactNtuHit::Action() {
    p_nturaw->SetupClones();
 
    double timestamp=0, charge_dep=0, de_dep=0, amp_tot=-10000 , ped=-10000; 
+
+   double thr= 0.275;
+   int neff=6;
+   vector<double> vampot;
    
    if(p_datraw->GetSuperHit()){
      if(FootDebugLevel(1))printf("got super hit\n");
@@ -83,18 +87,29 @@ Bool_t TASTactNtuHit::Action() {
 	 Double_t charge= p_datraw->GetHit(iHit)->GetCharge();
 	 Double_t time = p_datraw->GetHit(iHit)->GetTime();
 	 int iCh  = p_datraw->GetHit(iHit)->GetChID();
+	 if(amplitude>thr)vampot.push_back(iCh);
 	 if(iCh<8){
 	   hArrivalTime[iCh]->Fill(time-timestamp);
 	   hAmplitude[iCh]->Fill(amplitude);
 	   hCharge[iCh]->Fill(charge);
 	 }
        }
-     }
-   
+     }   
    }else{
      if(FootDebugLevel(1))printf("super hit missing\n");
    }
 
+
+   if(vampot.size()>=neff){
+     hEff->Fill(8);
+     for(int ich=0;ich<8;ich++){
+       if(find(vampot.begin(), vampot.end(), ich) != vampot.end()){
+	 hEff->Fill(ich);
+       }
+     }
+   }
+
+   
   
    
    fpNtuRaw->SetBit(kValid);
@@ -160,7 +175,11 @@ void TASTactNtuHit::CreateHistogram(){
   AddHistogram(hPedestal);
 
 
-  
+  sprintf(histoname,"stEff"); 
+  hEff = new TH1F(histoname, histoname, 9, -0.5, 8.5);
+  AddHistogram(hEff);
+
+
   for(int iCh=0;iCh<8;iCh++){
     sprintf(histoname,"stTime_ch%d", iCh);
     hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -2., 2.);
@@ -175,6 +194,11 @@ void TASTactNtuHit::CreateHistogram(){
     AddHistogram(hAmplitude[iCh]);
   }
 
+
+
+
+
+  
   SetValidHistogram(kTRUE);
   
 }

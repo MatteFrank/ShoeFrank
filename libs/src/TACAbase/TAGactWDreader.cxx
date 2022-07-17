@@ -217,168 +217,181 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtr
    bool foundFooter = false;
    while (iW < evt->evtSize && !foundFooter) {
       
-      if (evt->values.at(iW) == GLB_EVT_HEADER) {
-         if (FootDebugLevel(1)) printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
+     if (evt->values.at(iW) == GLB_EVT_HEADER) {
+       if (FootDebugLevel(1)) printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
             
-         iW+=5;
-         nmicro = evt->values.at(iW);
-         nmicro = 1000;
+       iW+=5;
+       nmicro = evt->values.at(iW);
+       nmicro = 1000;
             
-         iW++; //
-         if (FootDebugLevel(1)) printf("word:%08x\n", evt->values.at(iW));
+       iW++; //
+       if (FootDebugLevel(1)) printf("word:%08x\n", evt->values.at(iW));
 
-         //found evt_header
-         if (evt->values.at(iW) == EVT_HEADER) {
-            if (FootDebugLevel(1)) printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
+       //found evt_header
+       if (evt->values.at(iW) == EVT_HEADER) {
+	 if (FootDebugLevel(1)) printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
                   
-            iW++;
-            trig_type = (evt->values.at(iW)>>16) & 0xffff;
-            ser_evt_number =  evt->values.at(iW)& 0xffff;
+	 iW++;
+	 trig_type = (evt->values.at(iW)>>16) & 0xffff;
+	 ser_evt_number =  evt->values.at(iW)& 0xffff;
                   
-            iW++;
-            bco_counter = (int)evt->values.at(iW);
+	 iW++;
+	 bco_counter = (int)evt->values.at(iW);
                   
-            iW++;
-            while ((evt->values.at(iW) & 0xffff)== BOARD_HEADER) {
-               board_id = (evt->values.at(iW)>>16)  & 0xffff;
-               if (FootDebugLevel(1)) printf("found board header::%08x num%d\n", evt->values.at(iW), board_id);
-               iW++;
-               temperature = *((float*)&evt->values.at(iW));
-               if (FootDebugLevel(1)) printf("temperatrue::%08x num%d\n", evt->values.at(iW), board_id);
+	 iW++;
+	 while ((evt->values.at(iW) & 0xffff)== BOARD_HEADER) {
+	   board_id = (evt->values.at(iW)>>16)  & 0xffff;
+	   if (FootDebugLevel(1)) printf("found board header::%08x num%d\n", evt->values.at(iW), board_id);
+	   iW++;
+	   temperature = *((float*)&evt->values.at(iW));
+	   if (FootDebugLevel(1)) printf("temperatrue::%08x num%d\n", evt->values.at(iW), board_id);
                                         
-               iW++;
-               range = *((float*)&evt->values.at(iW));
+	   iW++;
+	   range = *((float*)&evt->values.at(iW));
                            
-               if (FootDebugLevel(1))
-                  printf("range::%08x num%d\n", evt->values.at(iW), board_id);
+	   if (FootDebugLevel(1))
+	     printf("range::%08x num%d\n", evt->values.at(iW), board_id);
                
-               iW++;
+	   iW++;
                
-               sampling_freq =  (evt->values.at(iW) >>16)& 0xffff;
-               flags = evt->values.at(iW) & 0xffff;
-               if (FootDebugLevel(1)) printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
+	   sampling_freq =  (evt->values.at(iW) >>16)& 0xffff;
+	   flags = evt->values.at(iW) & 0xffff;
+	   if (FootDebugLevel(1)) printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
                      
-               iW++;
+	   iW++;
                            
-               while((evt->values.at(iW) & 0xffff)== CH_HEADER) {
+	   while((evt->values.at(iW) & 0xffff)== CH_HEADER) {
             
-                  char tmp_chstr[3]={'0','0','\0'};
-                  tmp_chstr[1] = (evt->values.at(iW)>>24)  & 0xff;
-                  tmp_chstr[0] = (evt->values.at(iW)>>16)  & 0xff;
-                  ch_num = atoi(tmp_chstr);
-                  if (FootDebugLevel(1))
-                     printf("found channel header::%08x num%d\n", evt->values.at(iW), ch_num);
+	     char tmp_chstr[3]={'0','0','\0'};
+	     tmp_chstr[1] = (evt->values.at(iW)>>24)  & 0xff;
+	     tmp_chstr[0] = (evt->values.at(iW)>>16)  & 0xff;
+	     ch_num = atoi(tmp_chstr);
+	     if (FootDebugLevel(1))
+	       printf("found channel header::%08x num%d\n", evt->values.at(iW), ch_num);
                               
-                  iW++;
-                  trig_cell = (evt->values.at(iW)>>16) &0xffff;
+	     iW++;
+	     trig_cell = (evt->values.at(iW)>>16) &0xffff;
                               
-                  fe_settings = ((evt->values.at(iW))&0xffff);
-                  iW++;
+	     fe_settings = ((evt->values.at(iW))&0xffff);
+	     iW++;
                               
-                  int adctmp=0;
-                  int delta=0,deltaold=0;
-                  bool jump_up=false;
-                  vector<int> w_adc;
-                  w_amp.clear();
+	     int adctmp=0;
+	     int delta=0,deltaold=0;
+	     bool jump_up=false;
+	     vector<int> w_adc;
+	     w_amp.clear();
                               
-                  for(int iSa=0;iSa<512;iSa++) {
-                     adc_sa = evt->values.at(iW);
-                     adctmp  = (adc_sa & 0xffff);
-                     w_adc.push_back(adctmp);
-                     adctmp = ((adc_sa >> 16) & 0xffff);
-                     w_adc.push_back(adctmp);
-                     iW++;
-                  }
+	     for(int iSa=0;iSa<512;iSa++) {
+	       adc_sa = evt->values.at(iW);
+	       adctmp  = (adc_sa & 0xffff);
+	       w_adc.push_back(adctmp);
+	       adctmp = ((adc_sa >> 16) & 0xffff);
+	       w_adc.push_back(adctmp);
+	       iW++;
+	     }
                               
-                  if (ch_num != 16 && ch_num != 17) {
-                     w_amp = ADC2Volt(w_adc, range);
-                  } else {
-                     w_amp = ADC2Volt_CLK(w_adc);
-                  }
+	     if (ch_num != 16 && ch_num != 17) {
+	       w_amp = ADC2Volt(w_adc, range);
+	     } else {
+	       w_amp = ADC2Volt_CLK(w_adc);
+	     }
                               
                               
-                  w = new TWaveformContainer();
-                  w->SetChannelId(ch_num);
-                  w->SetBoardId(board_id);
-                  w->GetVectA() = w_amp;
-                  w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
-                  w->GetVectT() = w->GetVectRawT();
-                  w->SetNEvent(fEventsN);
-                  w->SetEmptyFlag(false);
-                  w->SetTrigType(trig_type);
-                  w->SetTriggerCellId(trig_cell);
-                  if (FootDebugLevel(1)) printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
+	     w = new TWaveformContainer();
+	     w->SetChannelId(ch_num);
+	     w->SetBoardId(board_id);
+	     w->GetVectA() = w_amp;
+	     w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
+	     w->GetVectT() = w->GetVectRawT();
+	     w->SetNEvent(fEventsN);
+	     w->SetEmptyFlag(false);
+	     w->SetTrigType(trig_type);
+	     w->SetTriggerCellId(trig_cell);
+	     if (FootDebugLevel(1)) printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
                               
-                  string ch_type;
-                  ch_type = p_WDMap->GetChannelType(board_id, ch_num);
+	     string ch_type;
+	     ch_type = p_WDMap->GetChannelType(board_id, ch_num);
                               
-                  if (FootDebugLevel(1)) printf("type::%s\n", ch_type.data());
+	     if (FootDebugLevel(1)) printf("type::%s\n", ch_type.data());
                               
-                  if (ch_type =="ST") {
-                     fSTwaves.push_back(w);
-                  }else if (ch_type == "TW") {
-                     fTWwaves.push_back(w);
-                  }else if (ch_type == "CALO") {
-                     fCAwaves.push_back(w);
-                   }else if (ch_type == "CLK") {
-                     fCLKwaves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
-                  } else {
-                     if (FootDebugLevel(1)) {
-                        cout<<"******************************************* "<<endl;
-                        cout<<"*******    CORRUPTED EVENT      *********** "<<endl;
-                        cout<<"*******    Bo:: "<<board_id<<" Cha:: "<<ch_num<<"      *********** "<<endl;
-                        cout<<"******************************************* "<<endl;
-                     }
-                  }
-                  nhitsA++;
-                  w_amp.clear();
-               }
-            }
-         } else if (evt->values.at(iW) == EVT_FOOTER) {
-            if (FootDebugLevel(1)) printf("found footer\n");
-            return nmicro;
-         }
+	     if (ch_type =="ST") {
+	       fSTwaves.push_back(w);
+	     }else if (ch_type == "TW") {
+	       fTWwaves.push_back(w);
+	     }else if (ch_type == "CALO") {
+	       fCAwaves.push_back(w);
+	     }else if (ch_type == "CLK") {
+	       fCLKwaves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
+	     } else {
+	       if (FootDebugLevel(1)) {
+		 cout<<"******************************************* "<<endl;
+		 cout<<"*******    CORRUPTED EVENT      *********** "<<endl;
+		 cout<<"*******    Bo:: "<<board_id<<" Cha:: "<<ch_num<<"      *********** "<<endl;
+		 cout<<"******************************************* "<<endl;
+	       }
+	     }
+	     nhitsA++;
+	     w_amp.clear();
+	   }
+	 }
+       } else if (evt->values.at(iW) == EVT_FOOTER) {
+	 if (FootDebugLevel(1)) printf("found footer\n");
+	 return nmicro;
+       }
               
-         vector<uint32_t> trigInfoWords;
-         int tbo,nbanks;
-         if ((evt->values.at(iW) &0xffff)== TRIG_HEADER) {
-            tbo =  (evt->values.at(iW) >> 16)& 0xffff;
-            iW++;
-            nbanks =  evt->values.at(iW) & 0xffff;
-            iW++;
-            if (FootDebugLevel(1)) printf("found trigger board %d header, nbanks::%d\n",tbo,nbanks);
-            for(int ibank=0;ibank<nbanks;ibank++) {
-               if (evt->values.at(iW) == TRGI_BANK_HEADER) {
-                  if (FootDebugLevel(1)) printf("trig header::%08x\n",evt->values.at(iW));
-                  trigInfoWords.push_back(evt->values.at(iW));
-                  iW++;
-                  int size =  evt->values.at(iW);
-                  trigInfoWords.push_back(evt->values.at(iW));
-                  if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
-                  iW++;
-                  for(int i=0;i<size;i++) {
-                     int word= evt->values.at(iW);
-                     if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
-                     trigInfoWords.push_back(evt->values.at(iW));
-                     iW++;
-                  }
-               }else if (evt->values.at(iW) == TGEN_BANK_HEADER) {
-                  if (FootDebugLevel(1)) printf("trig header::%08x\n",evt->values.at(iW));
-                  trigInfoWords.push_back(evt->values.at(iW));
-                  iW++;
-                  int size = evt->values.at(iW);
-                  trigInfoWords.push_back(evt->values.at(iW));
-                  if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
-                  iW++;
-                  for(int i=0;i<size;i++) {
-                     if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
-                     trigInfoWords.push_back(evt->values.at(iW));
-                     iW++;
-                  }
-               }
-            }
-            p_WDtrigInfo->AddInfo(tbo, trig_type, nbanks, trigInfoWords);
-         }
+       vector<uint32_t> trigInfoWords;
+       int tbo,nbanks;
+       if ((evt->values.at(iW) &0xffff)== TRIG_HEADER) {
+	 tbo =  (evt->values.at(iW) >> 16)& 0xffff;
+	 iW++;
+	 nbanks =  evt->values.at(iW) & 0xffff;
+	 iW++;
+	 if (FootDebugLevel(1)) printf("found trigger board %d header, nbanks::%d\n",tbo,nbanks);
+	 for(int ibank=0;ibank<nbanks;ibank++) {
+	   if (evt->values.at(iW) == TRGI_BANK_HEADER) {
+	     if (FootDebugLevel(1)) printf("TRGI header::%08x\n",evt->values.at(iW));
+	     trigInfoWords.push_back(evt->values.at(iW));
+	     iW++;
+	     int size =  evt->values.at(iW);
+	     trigInfoWords.push_back(evt->values.at(iW));
+	     if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+	     iW++;
+	     for(int i=0;i<size;i++) {
+	       int word= evt->values.at(iW);
+	       if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
+	       trigInfoWords.push_back(evt->values.at(iW));
+	       iW++;
+	     }
+	   }else if (evt->values.at(iW) == TGEN_BANK_HEADER) {
+	     if (FootDebugLevel(1)) printf("TGEN header::%08x\n",evt->values.at(iW));
+	     trigInfoWords.push_back(evt->values.at(iW));
+	     iW++;
+	     int size = evt->values.at(iW);
+	     trigInfoWords.push_back(evt->values.at(iW));
+	     if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+	     iW++;
+	     for(int i=0;i<size;i++) {
+	       if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
+	       trigInfoWords.push_back(evt->values.at(iW));
+	       iW++;
+	     }
+	   }else if (evt->values.at(iW) == TRGC_BANK_HEADER) {
+	     trigInfoWords.push_back(evt->values.at(iW));
+	     if (FootDebugLevel(1)) printf("TRCG header::%08x\n",evt->values.at(iW));
+	     iW++;
+	     int size = evt->values.at(iW);
+	     if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+	     trigInfoWords.push_back(evt->values.at(iW));
+	     iW++;
+	     for(int i=0;i<size;i++) {
+	       if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
+	       trigInfoWords.push_back(evt->values.at(iW));
+	       iW++;
+	     }
+	   }
+	 }
+       	 p_WDtrigInfo->AddInfo(tbo, trig_type, nbanks, trigInfoWords);
+       }
          
          
          if (evt->values.at(iW) == EVT_FOOTER) {
@@ -863,7 +876,7 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrig
          for (int ibank=0; ibank<nbanks; ibank++) {
             ret = fread(&word, 4, 1, fWDstream);
             if (word == TRGI_BANK_HEADER) {
-            if (FootDebugLevel(1)) printf("trig header::%08x\n",word);
+            if (FootDebugLevel(1)) printf("TRGI header::%08x\n",word);
             trigInfoWords.push_back(word);
             ret = fread(&word, 4, 1, fWDstream);
             int size =  word;
@@ -875,7 +888,7 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrig
                trigInfoWords.push_back(word);
             }
             }else if (word == TGEN_BANK_HEADER) {
-            if (FootDebugLevel(1)) printf("trig header::%08x\n",word);
+            if (FootDebugLevel(1)) printf("TGEN header::%08x\n",word);
             trigInfoWords.push_back(word);
             ret = fread(&word, 4, 1, fWDstream);
             int size = word;
