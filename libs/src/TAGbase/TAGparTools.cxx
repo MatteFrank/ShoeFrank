@@ -469,7 +469,7 @@ void TAGparTools::GetRange(const char* cstr, Int_t& begin, Int_t& end, Int_t& in
          n = begin-end+1;
       } else {
          n = end-begin+1;
-      }    
+      }
    }
 }
 

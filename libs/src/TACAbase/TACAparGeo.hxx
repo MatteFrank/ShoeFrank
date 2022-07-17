@@ -108,7 +108,7 @@ private:
    TString         SPrintCrystalBody(int id, TGeoCombiTrans * hm, TString bodyName, Double_t *trd2Size);
    TString         SPrintParallelPla(int id, TGeoCombiTrans * hm, TString bodyName, Double_t *trd2Size, int * dir);   
    TString         PrintModuleAirRegions();
-   
+
    //! Build a row/col index to by used in clustering
    void            ComputeCrystalIndexes();
    

@@ -836,6 +836,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 
 	}	// end  - loop over all hit category
 
+	h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
+
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
 		cout << "display->addEvent size  " << m_vectorConvergedTrack.size() << "\n";
@@ -902,6 +904,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	Float_t TwTof = -1;
 	vector<string> tok = TAGparTools::Tokenize( fitTrackName , "_" );
 	string PartName = tok.at(0);
+
+
 
 	// Fill Points and retrieve the true MC particle for each measuerement [ nMeasurement, shoeID of generated particle in the particle array ]
 	vector<vector<int>> mcParticleID_track;

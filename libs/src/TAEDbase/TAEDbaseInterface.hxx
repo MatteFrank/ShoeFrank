@@ -149,6 +149,8 @@ public:
    void         HistoSelected(Int_t id);
    // Reset histogram
    void         ResetHisto();
+   // Save view
+   void         SaveView();
 
    // Make gui
    void         MakeGUI();
@@ -244,6 +246,7 @@ protected:
    TGMainFrame*       frmMain;           ///< main frame
    TGTextView*        fInfoView;         ///< text view for hit/track info
    TGTextEntry*       fEventEntry;       ///< text entry for event number
+   TGTextEntry*       fSaveViewEntry;    ///< text entry for saving viewer file name
    TGNumberEntry*     fNumberEvent;      ///< number of events to loop
    TGCheckButton*     fRefreshButton;    ///< refresh display for each event otherwise superimpose events
    TGCheckButton*     fQuadButton;       ///< Toggle on/off clusters/hits

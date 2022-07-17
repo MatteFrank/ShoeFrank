@@ -75,6 +75,7 @@ TAEDbaseInterface::TAEDbaseInterface(Int_t type, const TString expName, Int_t ru
   fQuadDefHeight(0.1),
   fInfoView(0x0),
   fEventEntry(0x0),
+  fSaveViewEntry(0x0),
   fRefreshButton(0),
   fQuadButton(0),
   fQuadMcButton(0),
@@ -447,6 +448,19 @@ void TAEDbaseInterface::MakeGUI()
    fEventProgress = new TGHProgressBar(infoFrameView, TGProgressBar::kFancy);
    infoFrameView->AddFrame(fEventProgress, new TGLayoutHints(kLHintsLeft | kLHintsCenterY  |
                                                              kLHintsExpandX, 2, 10, 0, 10));
+   
+   // Save view
+   TGTextButton* saveView = new TGTextButton(infoFrameView,"&SaveView");
+   saveView->Connect("Clicked()","TAEDbaseInterface",this,"SaveView()");
+   saveView->SetToolTipText("Save View");
+   infoFrameView->AddFrame(saveView, new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
+   
+   fSaveViewEntry = new TGTextEntry(infoFrameView);
+   fSaveViewEntry->Resize(120, fSaveViewEntry->GetDefaultHeight());
+   fSaveViewEntry->SetText("view.png");
+   infoFrameView->AddFrame(fSaveViewEntry, new TGLayoutHints(kLHintsLeft | kLHintsCenterY,
+                                                           2, 10, 0, 10));
+
    // selection
    TGLabel*  infoName = new TGLabel(infoFrameView, "Selection:");
    infoFrameView->AddFrame(infoName,  new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));
@@ -515,6 +529,17 @@ void TAEDbaseInterface::ClearInfoView()
    // clear log message
    fInfoView->Clear();
    fInfoView->ShowBottom();
+}
+
+//__________________________________________________________
+//! Save view
+void TAEDbaseInterface::SaveView()
+{
+   TGLViewer* glviewer = gEve->GetDefaultGLViewer();
+
+   TString buf = fSaveViewEntry->GetDisplayText();
+   
+   glviewer->SavePicture(buf.Data());
 }
 
 //______________________________________________________________________________

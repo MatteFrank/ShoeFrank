@@ -228,7 +228,8 @@ void TACAactNtuCluster::SearchCluster()
       }
    }
 
-   cout << "CA - Found : " << fClustersN << " clusters on event: " << gTAGroot->CurrentEventId().EventNumber() << endl;
+   if(FootDebugLevel(2))
+     cout << "CA - Found : " << fClustersN << " clusters on event: " << gTAGroot->CurrentEventId().EventNumber() << endl;
 
    /*
    for (Int_t i = 0; i < fpNtuHit->GetHitsN(); ++i) { // loop over hit crystals
