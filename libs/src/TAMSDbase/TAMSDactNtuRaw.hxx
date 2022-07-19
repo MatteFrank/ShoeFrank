@@ -66,6 +66,7 @@ private:
    static UInt_t fkgThreshold;
    static Bool_t fgPedestalSub;
    static Bool_t fgCommonModeSub;
+   static Bool_t isPedestal;
 };
 
 #endif
