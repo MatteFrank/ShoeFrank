@@ -131,7 +131,7 @@ CamDataMC:    1
 CamDate: "July 2022"
 CamSum: "Simulation data for data taking at HIT with BM+ST+(MSD)+TW+CA 4He 100-200 MeV/u"
 
-CamNumber:    21
+CamNumber:    22
 CamName:    "HIT2022_CA"
 CamDataMC:    0
 CamDate: "July 2022"
