@@ -460,6 +460,7 @@ void TAEDbaseInterface::MakeGUI()
    fSaveViewEntry->SetText("view.png");
    infoFrameView->AddFrame(fSaveViewEntry, new TGLayoutHints(kLHintsLeft | kLHintsCenterY,
                                                            2, 10, 0, 10));
+   
    // selection
    TGLabel*  infoName = new TGLabel(infoFrameView, "Selection:");
    infoFrameView->AddFrame(infoName,  new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 0, 5, 0));

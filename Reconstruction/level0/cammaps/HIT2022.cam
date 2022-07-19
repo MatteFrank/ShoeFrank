@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "HIT2022"
-RunNumber: 100;101;200;201;210
+RunNumber: 100;101;200;201;210; 4536-4538;
 NumberDevices: 8
 
 DetectorName: "FOOT"
@@ -17,7 +17,7 @@ NumberFiles: 5
 "./config/HIT2022/TASTdetector.cfg": -1
 "./config/HIT2022/WDChannelMap.map": -1
 "./calib/HIT2022/WDpar.cal": -1;
-"./calib/HIT2022/WDTimeCalibration/tcalib.dat": -1;
+"./calib/HIT2022/WDTimeCalibration/tcalib.dat": 4538;
 
 DetectorName: "BM"
 NumberFiles: 4

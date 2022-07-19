@@ -284,26 +284,26 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtr
    bool foundFooter = false;
    while (iW < evt->evtSize && !foundFooter) {
       
-      if (evt->values.at(iW) == GLB_EVT_HEADER) {
-         if (FootDebugLevel(1)) printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
+     if (evt->values.at(iW) == GLB_EVT_HEADER) {
+       if (FootDebugLevel(1)) printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
             
-         iW+=5;
-         nmicro = evt->values.at(iW);
-         nmicro = 1000;
+       iW+=5;
+       nmicro = evt->values.at(iW);
+       nmicro = 1000;
             
-         iW++; //
-         if (FootDebugLevel(1)) printf("word:%08x\n", evt->values.at(iW));
+       iW++; //
+       if (FootDebugLevel(1)) printf("word:%08x\n", evt->values.at(iW));
 
-         //found evt_header
-         if (evt->values.at(iW) == EVT_HEADER) {
-            if (FootDebugLevel(1)) printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
+       //found evt_header
+       if (evt->values.at(iW) == EVT_HEADER) {
+	 if (FootDebugLevel(1)) printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
                   
-            iW++;
-            trig_type = (evt->values.at(iW)>>16) & 0xffff;
-            ser_evt_number =  evt->values.at(iW)& 0xffff;
+	 iW++;
+	 trig_type = (evt->values.at(iW)>>16) & 0xffff;
+	 ser_evt_number =  evt->values.at(iW)& 0xffff;
                   
-            iW++;
-            bco_counter = (int)evt->values.at(iW);
+	 iW++;
+	 bco_counter = (int)evt->values.at(iW);
                   
             iW++;
             while ((evt->values.at(iW) & 0xffff)== BOARD_HEADER) {
@@ -313,73 +313,73 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtr
                temperature = *((float*)&evt->values.at(iW));
                if (FootDebugLevel(1)) printf("temperature::%08x num%d\n", evt->values.at(iW), board_id);
                                         
-               iW++;
-               range = *((float*)&evt->values.at(iW));
+	   iW++;
+	   range = *((float*)&evt->values.at(iW));
                            
-               if (FootDebugLevel(1))
-                  printf("range::%08x num%d\n", evt->values.at(iW), board_id);
+	   if (FootDebugLevel(1))
+	     printf("range::%08x num%d\n", evt->values.at(iW), board_id);
                
-               iW++;
+	   iW++;
                
-               sampling_freq =  (evt->values.at(iW) >>16)& 0xffff;
-               flags = evt->values.at(iW) & 0xffff;
-               if (FootDebugLevel(1)) printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
+	   sampling_freq =  (evt->values.at(iW) >>16)& 0xffff;
+	   flags = evt->values.at(iW) & 0xffff;
+	   if (FootDebugLevel(1)) printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
                      
-               iW++;
+	   iW++;
                            
-               while((evt->values.at(iW) & 0xffff)== CH_HEADER) {
+	   while((evt->values.at(iW) & 0xffff)== CH_HEADER) {
             
-                  char tmp_chstr[3]={'0','0','\0'};
-                  tmp_chstr[1] = (evt->values.at(iW)>>24)  & 0xff;
-                  tmp_chstr[0] = (evt->values.at(iW)>>16)  & 0xff;
-                  ch_num = atoi(tmp_chstr);
-                  if (FootDebugLevel(1))
-                     printf("found channel header::%08x num%d\n", evt->values.at(iW), ch_num);
+	     char tmp_chstr[3]={'0','0','\0'};
+	     tmp_chstr[1] = (evt->values.at(iW)>>24)  & 0xff;
+	     tmp_chstr[0] = (evt->values.at(iW)>>16)  & 0xff;
+	     ch_num = atoi(tmp_chstr);
+	     if (FootDebugLevel(1))
+	       printf("found channel header::%08x num%d\n", evt->values.at(iW), ch_num);
                               
-                  iW++;
-                  trig_cell = (evt->values.at(iW)>>16) &0xffff;
+	     iW++;
+	     trig_cell = (evt->values.at(iW)>>16) &0xffff;
                               
-                  fe_settings = ((evt->values.at(iW))&0xffff);
-                  iW++;
+	     fe_settings = ((evt->values.at(iW))&0xffff);
+	     iW++;
                               
-                  int adctmp=0;
-                  int delta=0,deltaold=0;
-                  bool jump_up=false;
-                  vector<int> w_adc;
-                  w_amp.clear();
+	     int adctmp=0;
+	     int delta=0,deltaold=0;
+	     bool jump_up=false;
+	     vector<int> w_adc;
+	     w_amp.clear();
                               
-                  for(int iSa=0;iSa<512;iSa++) {
-                     adc_sa = evt->values.at(iW);
-                     adctmp  = (adc_sa & 0xffff);
-                     w_adc.push_back(adctmp);
-                     adctmp = ((adc_sa >> 16) & 0xffff);
-                     w_adc.push_back(adctmp);
-                     iW++;
-                  }
+	     for(int iSa=0;iSa<512;iSa++) {
+	       adc_sa = evt->values.at(iW);
+	       adctmp  = (adc_sa & 0xffff);
+	       w_adc.push_back(adctmp);
+	       adctmp = ((adc_sa >> 16) & 0xffff);
+	       w_adc.push_back(adctmp);
+	       iW++;
+	     }
                               
-                  if (ch_num != 16 && ch_num != 17) {
-                     w_amp = ADC2Volt(w_adc, range);
-                  } else {
-                     w_amp = ADC2Volt_CLK(w_adc);
-                  }
+	     if (ch_num != 16 && ch_num != 17) {
+	       w_amp = ADC2Volt(w_adc, range);
+	     } else {
+	       w_amp = ADC2Volt_CLK(w_adc);
+	     }
                               
                               
-                  w = new TWaveformContainer();
-                  w->SetChannelId(ch_num);
-                  w->SetBoardId(board_id);
-                  w->GetVectA() = w_amp;
-                  w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
-                  w->GetVectT() = w->GetVectRawT();
-                  w->SetNEvent(fEventsN);
-                  w->SetEmptyFlag(false);
-                  w->SetTrigType(trig_type);
-                  w->SetTriggerCellId(trig_cell);
-                  if (FootDebugLevel(1)) printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
+	     w = new TWaveformContainer();
+	     w->SetChannelId(ch_num);
+	     w->SetBoardId(board_id);
+	     w->GetVectA() = w_amp;
+	     w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
+	     w->GetVectT() = w->GetVectRawT();
+	     w->SetNEvent(fEventsN);
+	     w->SetEmptyFlag(false);
+	     w->SetTrigType(trig_type);
+	     w->SetTriggerCellId(trig_cell);
+	     if (FootDebugLevel(1)) printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
                               
-                  string ch_type;
-                  ch_type = p_WDMap->GetChannelType(board_id, ch_num);
+	     string ch_type;
+	     ch_type = p_WDMap->GetChannelType(board_id, ch_num);
                               
-                  if (FootDebugLevel(1)) printf("type::%s\n", ch_type.data());
+	     if (FootDebugLevel(1)) printf("type::%s\n", ch_type.data());
                               
                   if (ch_type =="ST") {
                      fSTwaves.push_back(w);

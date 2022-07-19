@@ -128,7 +128,6 @@ public:
    //! Get number of crystal per module (9)
    static Int_t   GetCrystalsNperModule() { return fgkCrystalsNperModule; }
 
-
 private:
    static const TString fgkBaseName;         ///< Detector base name
    static const TString fgkDefParaName;
