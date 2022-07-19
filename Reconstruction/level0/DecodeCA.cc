@@ -150,6 +150,7 @@ CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap)
    fAmpCh = new UShort_t* [nCry];
 
    for (int cryID=0; cryID<nCry; ++cryID) {
+      fTempCh[cryID] = 0;
       fAmpCh[cryID] = new UShort_t [NSAMPLING];
    }
    fRange = 0.1;
@@ -248,7 +249,7 @@ void CAactRaw2Ntu::Clear() {
    int nCry = fGeometry->GetCrystalsN();
 
    for (int cryID=0; cryID<nCry; ++cryID) {
-      fTempCh[cryID] = 0;
+      //fTempCh[cryID] = 0;
       for(int i=0; i<NSAMPLING; ++i) {
          fAmpCh[cryID][i] = 0;
       }
@@ -578,7 +579,12 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
          int nWordRead=0;
          // if event no empty, read the boards (80 channel each),  5 mux x 16 channel
          if (eventSize > 0) {
-            //int nChRead = 0;
+
+            // only reset values if there a not empty event
+            for (int cryID=0; cryID<nCry; ++cryID) {
+               fTempCh[cryID] = 0;
+            }
+
             while ( nWordRead < eventSize-1 ) {
                ret = fread(&word, 4, 1, fWDstream); ++nWordRead;
                u_int boardID =  word & 0xffff;
