@@ -500,10 +500,10 @@ void BaseReco::ReadParFiles()
          parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
          parMapWD->FromFile(parFileName.Data());
 
-	 fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
-	 TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
-	 TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
-	 parTimeWD->FromFileCFD(parFileName.Data());
+         fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+         TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+         TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+         parTimeWD->FromFileCFD(parFileName.Data());
       }
    }
 
@@ -692,25 +692,41 @@ void BaseReco::ReadParFiles()
       fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
 
-     if(fFlagMC) { // set in MC threshold and active crystals from data informations
-        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->FromCrysStatusFile(parFileName.Data());
+      if(fFlagMC) { // set in MC threshold and active crystals from data informations
+         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parCal->FromCrysStatusFile(parFileName.Data());
 
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->LoadEnergyCalibrationMap(parFileName.Data());
+         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parCal->LoadEnergyCalibrationMap(parFileName.Data());
 
-     } else {
-        fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
-        TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
-        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parMap->FromFile(parFileName.Data());
-        
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+      } else {
+         // Allow WD map, if only CA is activated (reconstruction beam test)
+         if(!fpParMapWD) {
+            fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
+            TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)fpParMapWD->Object();
+            parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
+            parMapWD->FromFile(parFileName.Data());
+         }
 
-        parCal->LoadEnergyCalibrationMap(parFileName.Data());
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
-        parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
-     }
+         if(!fpParTimeWD) {
+            fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+            TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+            TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+            parTimeWD->FromFileCFD(parFileName.Data());
+         }
+
+         fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+         TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
+         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parMap->FromFile(parFileName.Data());
+         
+         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+
+         parCal->LoadEnergyCalibrationMap(parFileName.Data());
+         // Obsolete for the moment (same temp correction for all crystals)
+         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
+         parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
+      }
    }
 }
 
@@ -770,8 +786,8 @@ void BaseReco::CreateRecActionVtx()
          fpNtuVtx = new TAGdataDsc("vtVtx",   new TAVTntuVertex());
    }
 
-  fpNtuClusVtx  = new TAGdataDsc("vtClus", new TAVTntuCluster());
-  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
+   fpNtuClusVtx  = new TAGdataDsc("vtClus", new TAVTntuCluster());
+   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
    if (fM28ClusMtFlag)
       fActClusVtx   = new TAVTactNtuClusterMT("vtActClus", fpNtuHitVtx, fpNtuClusVtx, fpParConfVtx, fpParGeoVtx);

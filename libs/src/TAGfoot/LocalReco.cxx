@@ -91,7 +91,7 @@ void LocalReco::CreateRawAction()
          parTimeWD->FromFileTcal(parFileName.Data());
       }
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
-                                      fpParTimeWD, fgStdAloneFlag);
+                                      fpParTimeWD, fpParMapCa, fgStdAloneFlag);
       if (fgStdAloneFlag)
          fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
@@ -276,7 +276,7 @@ void LocalReco::SetRawHistogramDir()
     if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
       //fActWdRaw->SetHistogramDir(subfolder);
-      fActNtuHitCa ->SetHistogramDir(subfolder);
+      fActNtuHitCa->SetHistogramDir(subfolder);
     }
 }
 

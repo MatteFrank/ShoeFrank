@@ -13,12 +13,14 @@
 #include "TASTntuRaw.hxx"
 #include "TATWntuRaw.hxx"
 #include "TACAntuRaw.hxx"
+#include "TACAparMap.hxx"
 #include "TAGWDtrigInfo.hxx"
 #include "TAGbaseWDparTime.hxx"
 #include "TAGbaseWDparMap.hxx"
 #include <TH2F.h>
 
 class WDEvent;
+class ArduinoEvent;
 
 
 #define NSAMPLING 1024
@@ -34,6 +36,7 @@ class WDEvent;
 #define TGEN_BANK_HEADER 0x4e454754
 #define TRGC_BANK_HEADER 0x43475254
 
+#define ARDUINO_HEADER 0x00463730
 
 class TAGactWDreader : public TAGaction {
 
@@ -46,6 +49,7 @@ public:
                                  TAGdataDsc* p_WDtrigInfo,
                                  TAGparaDsc* p_WDmap,
                                  TAGparaDsc* p_WDtim,
+                                 TAGparaDsc* p_CAmap,
                                  Bool_t standAlone);
 
    virtual          ~TAGactWDreader();
@@ -67,6 +71,7 @@ private:
    TAGdataDsc*     fpCaWd;            // output data dsc
    TAGparaDsc*     fpWDTim;           // parameter dsc
    TAGparaDsc*     fpWDMap;           // parameter dsc
+   TAGparaDsc*     fpCAMap;           // parameter dsc
    TAGdataDsc*     fpWDtrigInfo;      // output data dsc
 
    TString         fInitName;
@@ -79,18 +84,20 @@ private:
 
   
 private:
-   Int_t DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
-   Int_t ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
-   Bool_t WaveformsTimeCalibration();
-   Bool_t CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
-   void Clear();
+   Int_t          DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p_CAmap);
+   Int_t          DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
+   Int_t          ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap, TACAparMap *p_CAmap);
+   Bool_t         WaveformsTimeCalibration();
+   Bool_t         CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw, TACAparMap *p_CAmap);
+   void           Clear();
 
    vector<double> ADC2Volt(vector<int>, double);
    vector<double> ADC2Volt_CLK(vector<int>);
-   double ComputeJitter(TWaveformContainer*);
-   void  SavePlot(TWaveformContainer *w, string type);
+   double         ComputeJitter(TWaveformContainer*);
+   void           SavePlot(TWaveformContainer *w, string type);
  
 private:
+   double  *                   fTempCA;
    vector<TWaveformContainer*> fSTwaves;
    vector<TWaveformContainer*> fTWwaves;
    vector<TWaveformContainer*> fCAwaves;

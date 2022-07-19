@@ -28,7 +28,7 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
     fpNtuRaw(p_nturaw),
     fpParMap(p_parmap),
     fpParCal(p_parcal),
-    // this should be read from calib file for each crystal ??
+    // this should be read from calibration file for each crystal ??
     fTcorr1Par1(-0.0011),
     fTcorr1Par0(0.167),
     fTcorr2Par1(4.94583e-03),
@@ -65,7 +65,11 @@ Bool_t TACAactNtuHit::Action() {
 
    int nhit = p_datraw->GetHitsN();
 
+   Double_t totCharge = 0;
+
    int ch_num, bo_num;
+
+   int nCry = p_parmap->GetCrystalsN();
 
    for (int ih = 0; ih < nhit; ++ih) {
       TACArawHit *aHi = p_datraw->GetHit(ih);
@@ -76,36 +80,68 @@ Bool_t TACAactNtuHit::Action() {
       Double_t timeOth = aHi->GetTimeOth();
       Double_t charge  = aHi->GetCharge();
       Double_t amplitude  = aHi->GetAmplitude();
-      // Double_t temp  = aHi->GetTemperature();
+      Double_t tempADC  = aHi->GetTemperature(); // in ADC count
 
       // here needed mapping file
       Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
-      if (crysId == -1) // pb with mapping
+      if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation 
+         Error("Action", " --- Not well mapped WD vs crystal ID. board: %d  ch: %d -> crysId %d", bo_num, ch_num, crysId);
          continue;
+      }
+
+      double temp = ADC2Temp(tempADC);
 
       Double_t type = 0; // I define a fake type (I do not know what it really is...) (gtraini)
 
       // Temperature correction
-      //Double_t charge_tcorr = GetTemperatureCorrection(charge, temp, crysId);
-      //AS:: we wait for a proper integration of T inside the DAQ
-      Double_t charge_tcorr = charge;
-      Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
-      Double_t energy = GetEnergy(charge_equalis, crysId);
-      Double_t tof    = GetTime(time, crysId);
+      Double_t charge_tcorr = GetTemperatureCorrection(charge, temp, crysId);
 
-      TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time,type);
+      Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
+
+      totCharge += charge_equalis;
+
+      Double_t energy = GetEnergy(charge_equalis, crysId);
+
+      //Double_t tof    = GetTime(time, crysId);
+
+      TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time, type);
       createdhit->SetValid(true);
   
       if (ValidHistogram()) {
-         fhCharge[crysId]->Fill(energy);
-         fhChannelMap->Fill(crysId);
-         fhAmplitude[crysId]->Fill(amplitude);
+         if (crysId < 9) {
+            fhCharge[crysId]->Fill(energy);
+            fhChannelMap->Fill(crysId);
+            fhAmplitude[crysId]->Fill(amplitude);
+         } 
+
+         fhTotCharge->Fill(totCharge);
       }
    }
 
    fpNtuRaw->SetBit(kValid);
 
    return kTRUE;
+}
+
+// --------------------------------------------------------------------------------------
+Double_t TACAactNtuHit::ADC2Temp(Double_t adc) {
+
+   // the NTC (negative temperature coefficient) sensor
+
+   const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate 
+   const double R0 = 10000.0; // series resistance in the voltage divider (Ohm)
+   const double Ron = 50.;// value of the multiplexer Ron (Ohm) for ADG406B (dual supply)
+   
+   double Vadc = (VCC/1023.0) * adc; // 10-bit ADC: max. value is 1023
+   double Rt = (Vadc/(VCC-Vadc))*R0 - Ron; // voltage divider equation with Ron correction
+
+   // The Steinhart-Hart formula is given below with the nominal coefficients a, b and c, 
+   // which after calibration could be replaced by three constants for each crystal:
+   double a = 0.00138867, b = 0.000204491, c = 1.05E-07;
+
+   Double_t temp = 1./ (a + b * log(Rt) + c * pow(log(Rt), 3)) - 273.15;
+   
+   return temp;
 }
 
 // --------------------------------------------------------------------------------------
@@ -142,6 +178,8 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
    return m0;
 }
 
+
+
 //------------------------------------------+-----------------------------------
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp, Int_t  crysId)
 {
@@ -165,9 +203,7 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp,
    Double_t delta = (fT1 - T0) * m0;
 
    Double_t charge_tcorr = charge + delta;
-
-   //return charge; //ricordarsi di cambiare quando avremo la calibrazione!!!!!!
-  
+ 
    return charge_tcorr;
 
 }
@@ -219,13 +255,13 @@ Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 //------------------------------------------+-----------------------------------
 //! Histograms
 
-void TACAactNtuHit::CreateHistogram(){
+void TACAactNtuHit::CreateHistogram() {
 
    DeleteHistogram();
 
    char histoname[100]="";
    if (FootDebugLevel(1))
-      cout<<"I have created the CA histo. "<<endl;
+      cout << "Calorimeter Histograms created. "<<endl;
 
    // sprintf(histoname,"stEvtTime");
    // fhEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);

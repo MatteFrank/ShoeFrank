@@ -39,6 +39,7 @@ public:
    Double_t GetEnergy(Double_t rawEnergy, Int_t  crysId);
    Double_t GetTemperatureCorrection(Double_t rawEnergy, Double_t temp, Int_t  crysId);
    Double_t GetEqualisationCorrection(Double_t rawEnergy, Int_t  crysId);
+   Double_t ADC2Temp(Double_t adc);
    
 private:
    TAGdataDsc*     fpDatRaw;		    // input data dsc
