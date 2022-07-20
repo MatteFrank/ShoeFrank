@@ -69,11 +69,11 @@ void TABMactNtuTrack::CreateHistogram()
 
   fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResTot);
-  fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of the tracks at the target center", 250, -3., 3.,250 , -3, 3);
+  fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of the tracks at the target center; X[cm]; Y[cm]", 250, -3., 3.,250 , -3, 3);
   AddHistogram(fpHisMap);
-  fpHisMapTW = new TH2F("bmTrackTWMap","BM - Position of the tracks at the TW center", 500, -10., 10.,500 , -10, 10);
+  fpHisMapTW = new TH2F("bmTrackTWMap","BM - Position of the tracks at the TW center; X[cm]; Y[cm]", 500, -10., 10.,500 , -10, 10);
   AddHistogram(fpHisMapTW);
-  fpHisMylar12d = new TH2F("bmTrackCenter","BM - Position of the tracks on the BM center plane", 500, -3., 3.,500 , -3., 3.);
+  fpHisMylar12d = new TH2F("bmTrackCenter","BM - Position of the tracks on the BM center plane; X[cm]; Y[cm]", 500, -3., 3.,500 , -3., 3.);
   AddHistogram(fpHisMylar12d);
   // fpHis0MSD = new TH2F("bmMsd0","BM - Position of the tracks on the MSD 0 plane in global ref", 500, -5., 5.,500 , -5., 5.);
   // AddHistogram(fpHis0MSD);
@@ -331,7 +331,7 @@ Bool_t TABMactNtuTrack::Action()
     p_ntutrk->NewPrunedTrack(xtracktr.at(1),1);
     xtracktr.pop_back();
   }
-  
+
   CombineTrack(ytracktr, xtracktr, p_ntutrk);
 
   if (ValidHistogram()){

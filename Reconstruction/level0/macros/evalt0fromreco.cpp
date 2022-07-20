@@ -40,7 +40,7 @@ void evalt0fromreco(TString in_filename, Bool_t evalreso=false){
   //calculate T0:
   TH1D *tdcraw, *reso;
   for(Int_t i=0;i<36;i++){
-    tdcraw=((TH1D*)gDirectory->Get(Form("BM/bmraw/TdcLessSyncCha_%d",i)));        //for bmgsi2020std.root
+    tdcraw=((TH1D*)gDirectory->Get(Form("BM/bmraw/bmRawTdcLessSyncCha_%d",i)));        //for bmgsi2020std.root
     // tdcraw=((TH1D*)gDirectory->Get(Form("BM/bmraw/bmRawTdcLessSyncCha_%d",i))); //for gsi2021 output
     Int_t start_bin=-1000;
     Int_t peak_bin=tdcraw->GetMaximumBin();
