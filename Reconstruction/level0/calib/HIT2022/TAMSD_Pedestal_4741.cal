@@ -1,23 +1,23 @@
 # SigmaSeedLevel
 # SigmaHitLevel
 #sensorId: 0
-20.000000
-5.000000
+25.000000
+10.000000
 #sensorId: 1
-20.000000
-5.000000
+25.000000
+10.000000
 #sensorId: 2
-20.000000
-5.000000
+25.000000
+10.000000
 #sensorId: 3
-20.000000
-5.000000
+25.000000
+10.000000
 #sensorId: 4
-20.000000
-5.000000
+25.000000
+10.000000
 #sensorId: 5
-20.000000
-5.000000
+25.000000
+10.000000
 ############
 #sensorId stripId AsicId AsicCh Mean Sigma status
 #sensorId: 0
