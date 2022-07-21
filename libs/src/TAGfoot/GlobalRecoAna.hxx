@@ -109,6 +109,7 @@ class GlobalRecoAna : public BaseReco {
 
   //setting variables maybe we should use a config file?
   Double_t Th_meas;
+  Double_t Th_reco;
   Double_t purity_cut;      //minumum purity value for a track to be defined as pure
   Double_t clean_cut;       //is a 100% pure track
 
