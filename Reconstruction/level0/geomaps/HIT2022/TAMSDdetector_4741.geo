@@ -88,7 +88,7 @@ AlignementTilt:    0.000
 Inputs:            6
 Type:              1
 PositionsX:        0.0000  PositionsY:     0.0000   PositionsZ:    4.125
-Tilt1:             0.0000  Tilt2:        180.0000   Tilt3:         0.0
+Tilt1:             0.0000  Tilt2:        180.0000   Tilt3:         -90.0
 AlignementU:       0.000
 AlignementV:       0.000
 AlignementTilt:    0.000
