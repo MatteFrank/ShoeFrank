@@ -320,9 +320,14 @@ void TACAparGeo::ComputeCrystalIndexes()
       }
    }
 
-   width    = TMath::Abs(xcry[1] - xcry[0]);
+   sort(xcry.begin(), xcry.end());
+   sort(ycry.begin(), ycry.end());
+
    fNumCol  = xcry.size();
    fNumLine = ycry.size();
+
+   width    = TMath::Abs( (xcry.back()-xcry[0])/(fNumCol-1) );
+   double widthHalf = width/2.;
 
    if (FootDebugLevel(1)) {
       cout  << "   width: " << width << "   rows: " << fNumLine << " cols: " << fNumCol << endl << endl;
@@ -339,8 +344,8 @@ void TACAparGeo::ComputeCrystalIndexes()
       for (Int_t i = 0; i<fNumCol; ++i) {
          for (Int_t j = 0; j<fNumLine; ++j) {
 
-            if ( (point[0] >= i*width - fNumCol*width/2 && point[0] <= (i+1)*width - fNumCol*width/2) && 
-                 (point[1] >= j*width - fNumLine*width/2 && point[1] <= (j+1)*width - fNumLine*width/2)) {
+            if ( (point[0] >= i*width + xcry[0] - widthHalf && point[0] <= (i+1)*width + xcry[0] - widthHalf) && 
+                 (point[1] >= j*width + ycry[0] - widthHalf && point[1] <= (j+1)*width + ycry[0] - widthHalf)) {
  
                pair<int, int> idx(i, j);
                fMapIndexes[iCry] = idx;
@@ -743,9 +748,10 @@ string TACAparGeo::PrintBodies()
    // FIVE Modules or SEVEN Modules: calo geometry for the HIT test beam
    // Divide air_cal in several parts thourgh one vertical plane in order to have
    //   2 and 3 modules in each region (FIVE_MOD)
-   //   3, 1, 3 modules in each region  (SEVEN_MOD)
+   //   3, 1, 3 modules in each region  (SEVEN_MOD), (SEVEN_MOD_HIT22)
    if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0 ||
-       fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0) {
+       fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 ||
+       fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0) {
       TString plaName = "MP";
       int dir[2];
       // Vertical 
@@ -753,7 +759,8 @@ string TACAparGeo::PrintBodies()
       int imod = 2;
       TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
       outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
-      if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0) {
+      if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 ||
+          fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0) {
          imod = 0;
          hm = GetCombiTransfo(fCrystalsN + imod);
          outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
@@ -1217,7 +1224,8 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
    }
 
    //SEVEN MOD in a row: geometry for the HIT test beam
-   if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0) {
+   if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 ||
+       fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0)  {
       // first 3 modules
       int id = 5;
       line.Form(" +air_cal -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
@@ -1446,7 +1454,8 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
    } else if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL1",
                           "1.", Form("%d",magnetic), "", "") << endl;
-   } else if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0) {
+   } else if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 || 
+              fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL2",
                           "1.", Form("%d",magnetic), "", "") << endl;
    } else

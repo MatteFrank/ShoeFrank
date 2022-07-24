@@ -36,9 +36,9 @@
 ///////////////////////////////////////////////////
    //////// Set config values
 
-   // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, SEVEN_MOD, FULL_DET_V1)
-   // TODO: FULL_DET_V1. the new full setup need to be created the fluka air regions
-   TString fConfig_typegeo = "SEVEN_MOD";
+   // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, SEVEN_MOD, SEVEN_MOD_HIT22, FULL_DET_V1)
+   // TODO: FULL_DET_V1. for the new full setup it is need to create the FLUKA air regions
+   TString fConfig_typegeo = "SEVEN_MOD_HIT22";
 
    // half dimensions of BGO crystal
    double xdim1 = 1.05;
@@ -84,6 +84,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
       cerr << "Can't open file: " << fileOutName.Data() << endl;
       return;
    }
+   printf("TypeGeo:        \"%s\"\n\n", fConfig_typegeo.Data());
 
    fgPath = gSystem->DirName(fileOutName.Data()); 
 
@@ -98,7 +99,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"// Parameter of Geometry \n");
    fprintf(fp,"// type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, \n");
-   fprintf(fp,"//                   SEVEN_MOD, FULL_DET_V1) \n");
+   fprintf(fp,"//                   SEVEN_MOD, SEVEN_MOD_HIT22, FULL_DET_V1) \n");
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"TypeGeo:        \"%s\"\n\n", fConfig_typegeo.Data());
 
@@ -274,6 +275,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
    // Detector with 5 or 7 Modules in a row: geometry for the HIT test beam
    if ( fConfig_typegeo.CompareTo("FIVE_MOD") == 0 ||
         fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ||
+        fConfig_typegeo.CompareTo("SEVEN_MOD_HIT22") == 0 ||
         fConfig_typegeo.CompareTo("FULL_DET_V1") == 0
         ) {
 
@@ -335,10 +337,25 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
 
       TGeoVolumeAssembly * mod7 = new TGeoVolumeAssembly("CAL_7_MOD");
       mod7->AddNode(mod5, 1);
-      mod7->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasNDet3, *rotNDet3) ) );
+      // case of data taken on HIT 2022
+      if ( fConfig_typegeo.CompareTo("SEVEN_MOD_HIT22") == 0 ) {
+         deltaM  = 5 * delta;
+         deltaMx = deltaM * TMath::Cos(alfa*3);
+         deltaMz = - deltaM * TMath::Sin(alfa*3);
+         posModx = TMath::Sin(alfa*6) * pyramid_base_c + deltaMx;
+         posModz = TMath::Cos(alfa*6) * pyramid_base_c + deltaMz;
+         rotRightZ->RotateZ(0.4);
+         //TGeoRotation * rotDnDet = new TGeoRotation (); rotDnDet->RotateX(alfa_degree * 3);
+         TGeoTranslation * trasDnDet = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
+         TGeoRotation * rotDnDet1 = new TGeoRotation (); rotDnDet1->RotateX(alfa_degree * 6);
+         mod7->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) * TGeoCombiTrans(*trasDnDet, *rotDnDet1) * TGeoHMatrix(*rotRightZ)) );
+      } else {
+         mod7->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasNDet3, *rotNDet3) ) );
+      }
       mod7->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasPDet3, *rotPDet3) ) );
+
       
-      if ( fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ) {
+      if ( fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 || fConfig_typegeo.CompareTo("SEVEN_MOD_HIT22") == 0 ) {
          detector->AddNode(mod7, 1);
          EndGeometry(fp);
          return;
@@ -508,7 +525,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
    // Detector with 4 central modules (FIRST LEVEL)
 
    // displacement of module center
-   double deltaM  = 5 * delta; // 2mm between MODULES
+   double deltaM  = 2 * delta; // 2mm between MODULES
    double deltaMx = deltaM * TMath::Cos(alfa*3);
    double deltaMz = - deltaM * TMath::Sin(alfa*3);
    double posModx = TMath::Sin(alfa*3) * pyramid_base_c + deltaMx;
@@ -707,7 +724,7 @@ void PrintModules(FILE * fp)
 TVector3 PrintCalorimeterSize(FILE * fp, double &shift)
 {
    TVector3 fCaloSize;
-   TVector3 delta(0.1, 0.1, 0.1); // Add some space around
+   TVector3 delta(1.5, 1.5, 1.5); // Add some space around
    TVector3 maxpoint(-999., -999., -999.);
    TVector3 minpoint( 999.,  999.,  999.);
 
@@ -756,13 +773,17 @@ TVector3 PrintCalorimeterSize(FILE * fp, double &shift)
       }
    }
 
-   fCaloSize = maxpoint - minpoint + delta;
-   fCaloSize[2] = fCaloSize[2]*1.05; //to build the bounding box a little bit bigger (safer for FLUKA)
+   // Case of not symetrical geometry
+   TVector3 midpoint = maxpoint + minpoint;
+   //midpoint *= 2;
+   TVector3 midpointAbs = TVector3(abs(midpoint.X()), abs(midpoint.Y()), 0);
+
+   fCaloSize = (maxpoint - minpoint) + midpointAbs + delta;
 
    cout << "  Calorimeter Size: "
         << fCaloSize[0] << ", " << fCaloSize[1] << ", " << fCaloSize[2] << " cm" << std::flush << endl;
    shift = (maxpoint[2] + minpoint[2])/2;
-   cout << "Shift " << (maxpoint[2] + minpoint[2] + delta[2])/2 << std::flush << endl;
+   cout << "Shift " << (maxpoint[2] + minpoint[2])/2 << std::flush << endl;
 
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"// Parameter of the Calorimeter bounding box (cm)\n");
@@ -831,7 +852,7 @@ void ShowDetectorIdsMap()
 
    Int_t nModule = fListOfModules->GetEntriesFast();
    gStyle->SetOptStat(0);
-   TH2F* modGrid = new TH2F("Modules"," Modules ID", 200, -fcalSize[0]/2, fcalSize[0]/2 , 200, -fcalSize[1]/2, fcalSize[1]/2  + 3*xdim1  );
+   TH2F* modGrid = new TH2F("Modules"," Modules ID (Back view)", 200, -fcalSize[0]/2, fcalSize[0]/2 , 200, -fcalSize[1]/2, fcalSize[1]/2  + 3*xdim1  );
 
    double xdimA1 = xdim1 * 3 + delta + 0.6 ;
    modGrid->Draw("A");
@@ -852,10 +873,10 @@ void ShowDetectorIdsMap()
    }
 
    // Draw cristal id position on modules
-   TCanvas * c1 = new TCanvas("crytals", "Crystals ID ", 900, 900 * aspectradio + 30);
+   TCanvas * c1 = new TCanvas("crytals", "Crystals ID  (Back view)", 900, 900 * aspectradio + 30);
 
    Int_t nCry = fListOfCrystals->GetEntriesFast();
-   TH2F* crimap = new TH2F(""," Crystal ID to be mapped with Board/channel", 200, -fcalSize[0]/2, fcalSize[0]/2, 200 , -fcalSize[1]/2, fcalSize[1]/2  + 3*xdim1 );
+   TH2F* crimap = new TH2F(""," Crystal ID to be mapped with Board/channel  (Back view)", 200, -fcalSize[0]/2, fcalSize[0]/2, 200 , -fcalSize[1]/2, fcalSize[1]/2  + 3*xdim1 );
    crimap->Draw("A");
 
    for (int ii=0; ii<nModule; ii++) {
@@ -917,7 +938,7 @@ void ShowDetectorIdsMap()
 
 }
 
-void ComputeCrystalIndexes()
+TVector3 ComputeCrystalIndexes()
 {
    // Build a row/col index to by used in clustering
    // Here, we only check if the algohorim is OK
@@ -926,13 +947,12 @@ void ComputeCrystalIndexes()
    // DEBUG
    double aspectradio = (fcalSize[1]/fcalSize[0]);
    TCanvas * c1 = new TCanvas("crytals11", "Crystals ID ", 900, 900 * aspectradio + 20);
-   TH2F* crimap = new TH2F("11"," check to col/row map", 200, -fcalSize[0]/2, fcalSize[0]/2, 200 , -fcalSize[1]/2, fcalSize[1]/2  + 3*xdim1 );
-   crimap->Draw();
+
 
    Double_t * local  = new Double_t [3];
    Double_t * point  = new Double_t [3];
 
-   // Find X and Y dimension of calo front face to get the number of columns and rows
+   // Find number of X and Y different positions of calorimeter crystals
 
    Double_t width = 0;
    int nCry = fListOfCrystals->GetEntriesFast();
@@ -971,12 +991,22 @@ void ComputeCrystalIndexes()
       }
    }
 
-   width        = TMath::Abs(xcry[1] - xcry[0]);
+   // get position of midpoint (to center the histogram)
+   sort(xcry.begin(), xcry.end());
+   sort(ycry.begin(), ycry.end());
+
+   TVector3 posO((xcry.back()+xcry[0])/2, (ycry.back()+ycry[0])/2, 0); 
+   posO.Print();
+
    Int_t cols   = xcry.size();
    Int_t rows   = ycry.size(); 
-
-
+ 
+   width        = TMath::Abs( (xcry.back()-xcry[0])/(cols-1) );
+   double widthHalf = width/2.;
    cout  << "   width: " << width << "   rows: " << rows << " cols: " << cols << endl;
+
+   TH2F* crimap = new TH2F("11"," check to col/row map", 200, -fcalSize[0]/2+posO[0], fcalSize[0]/2+posO[0], 200 , -fcalSize[1]/2+posO[1], fcalSize[1]/2+posO[1] );
+   crimap->Draw();
 
    TVector3 maxpoint(-999., -999., -999.);
    TVector3 minpoint( 999.,  999.,  999.);
@@ -998,45 +1028,20 @@ void ComputeCrystalIndexes()
          for (Int_t j = 0; j<rows; ++j) {
             if( iCry == 0) {
                // DEBUG: draw the if condition TBox for row/column index
-               TBox* modBox1 = new TBox(i*width-cols*width/2+.05, j*width-rows*width/2+.05, (i+1)*width-cols*width/2-.05, (j+1)*width-rows*width/2-.05);
+               TBox* modBox1 = new TBox(i*width+xcry[0]-widthHalf+.1, j*width+ycry[0]-widthHalf+.1, (i+1)*width+xcry[0]-widthHalf-.1, (j+1)*width+ycry[0]-widthHalf-.1);
                modBox1->SetFillColor(kYellow);
+               modBox1->SetLineColor(kBlue);
                modBox1->Draw();
             }
-            if ( (point[0] >= i*width - cols*width/2 && point[0] <= (i+1)*width - cols*width/2) && 
-                 (point[1] >= j*width - rows*width/2 && point[1] <= (j+1)*width - rows*width/2)) {
+            if ( (point[0] >= i*width + xcry[0] - widthHalf && point[0] <= (i+1)*width + xcry[0] - widthHalf) && 
+                 (point[1] >= j*width + ycry[0] - widthHalf && point[1] <= (j+1)*width + ycry[0] - widthHalf)) {
  
                pair<int, int> idx(i, j);
           
                cout  << "   iCry: "  << iCry << " " << i << " " << j
                      << " pos X " << point[0] << " pos Y " << point[1]
                      << " col "    << idx.first << " row " << idx.second << endl;
-               
-               // DEBUG : get X dimensions
-               if( i==0 && j==0 ) { // most left crystal
-                  NodeTrafo *crt = ((NodeTrafo *)(fListOfCrystals->At(iCry)));
-                  // Get module transformation matrix (module/detector)
-                  TGeoHMatrix mat = crt->mat;
-                  TGeoHMatrix matCurrent(crt->mat);
-                  local[0] = -xdim1 ;
-                  local[1] = 0 ;
-                  local[2] = -zdim;
-                  Double_t point1[3];
-                  matCurrent.LocalToMaster(local, point1);
-                  minpoint[0] = point1[0];
-               }
-               if( i==cols-1 && j==0) {// most right crystal
-                  NodeTrafo *crt = ((NodeTrafo *)(fListOfCrystals->At(iCry)));
-                  // Get module transformation matrix (module/detector)
-                  TGeoHMatrix mat = crt->mat;
-                  TGeoHMatrix matCurrent(crt->mat);
-                  local[0] = +xdim1 ;
-                  local[1] = 0 ;
-                  local[2] = -zdim;
-                  Double_t point2[3];  
-                  matCurrent.LocalToMaster(local, point2);
-                  maxpoint[0] = point2[0];
-               }
-               
+
             }
          }
       }
@@ -1047,10 +1052,8 @@ void ComputeCrystalIndexes()
       modBox->Draw();
 
    }
-
-   //DEBUG: Front width
-   dim = maxpoint - minpoint;
-   dim.Print();
+  
+    return posO;
 }
 
 //-----------------------------------------------------------------------------
@@ -1092,7 +1095,7 @@ void EndGeometry(FILE* fp)
 
    fclose(fp);
 
-   ComputeCrystalIndexes();
+   TVector3 posTras = ComputeCrystalIndexes();
    ShowDetectorIdsMap();
 
    /////// Draw ROOT geometry
@@ -1105,7 +1108,8 @@ void EndGeometry(FILE* fp)
    detBox->SetTransparency(85);
    TCanvas * c = new TCanvas("CAL3D", "Calorimeter", 300, 300);
    top->AddNode(detector, 1);
-   top->AddNode(detBox, 1, new TGeoTranslation(0, 0, shift));
+   cout << posTras[0] << ", " << posTras[1] << endl;
+   top->AddNode(detBox, 1, new TGeoTranslation(0, 0, shift)); //new TGeoTranslation(posTras[0], posTras[1], shift));
    gGeoManager->SetVisLevel(7);
 
    gGeoManager->CloseGeometry();
