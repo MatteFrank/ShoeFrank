@@ -33,8 +33,8 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
     fTcorr1Par0(0.167),
     fTcorr2Par1(4.94583e-03),
     fTcorr2Par0(9000.),
-    fT1(27.0),
-    fT2(38.0)
+    fT1(270.),
+    fT2(380.)
 {
    AddDataIn(p_datraw, "TACAntuRaw");
    AddDataOut(p_nturaw, "TACAntuHit");
