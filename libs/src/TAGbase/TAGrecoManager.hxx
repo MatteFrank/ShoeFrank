@@ -77,6 +77,19 @@ public:
    vector<string>  MCParticles()       { return fMcParticles;         }
    //! Detector included
    vector<TString> DectIncluded()      { return fDectInclude;         }
+   
+   //! TOE TGT tag
+   const char*     GetTgtTag(int idx)            { return fTgtTag[idx].c_str();}
+   //! TOE VTX tag cut
+   vector<int>     GetVtxTagCuts(string idx)     { return fVtxTagCuts[idx];  }
+   //! TOE ITR tag cut
+   vector<int>     GetItrTagCuts(string idx)     { return fItrTagCuts[idx];  }
+   //! TOE MSD tag cut
+   vector<int>     GetMsdTagCuts(string idx)     { return fMsdTagCuts[idx];  }
+   //! TOE MSD 2D tag cut
+   vector<int>     GetMsd2TagCuts(string idx)    { return fMsd2TagCuts[idx]; }
+   //! TOE TW tag cut
+   vector<int>     GetTwTagCuts(string idx)      { return fTwTagCuts[idx];   }
 
     //! Reconstruction parameters Getter
     //! Local reconstruction flag
@@ -229,6 +242,15 @@ private:
 	vector<string>       fTrackingSystems;       ///< List of tracking systems
    vector<string>       fKalParticles;          ///< List of Kalmaan particles
    vector<TString>      fDectInclude;           ///< List of included detectors
+   
+   // TOE parameters
+   vector<string>                    fTgtTag;      ///< TOE TGT tag
+   map<string, vector<int>>          fVtxTagCuts;  ///< TOE VTX cuts
+   map<string, vector<int>>          fItrTagCuts;  ///< TOE ITR cuts
+   map<string, vector<int>>          fMsdTagCuts;  ///< TOE MSD cuts
+   map<string, vector<int>>          fMsd2TagCuts; ///< TOE MSD 2D cuts
+   map<string, vector<int>>          fTwTagCuts;   ///< TOE TW cuts
+
    
    //! reconstruction parameter
    Bool_t               fEnableLocalReco;       ///< Enable global reconstruction from l0 reconstruction
