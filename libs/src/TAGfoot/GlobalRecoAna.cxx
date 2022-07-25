@@ -68,8 +68,7 @@ void GlobalRecoAna::LoopEvent() {
 
   TATWparGeo* TWparGeo = (TATWparGeo*)fpParGeoTw->Object();
   
-  while(gTAGroot->NextEvent()) { //for every event
-
+  while(gTAGroot->NextEvent()) { //for every event    
     DiffApp_trkIdx = false; 
 
     if (currEvent % 100 == 0)
@@ -399,9 +398,12 @@ void GlobalRecoAna::LoopEvent() {
       ((TH2D*)gDirectory->Get("Z_TWvsZ_fit"))->Fill(fGlbTrack->GetTwChargeZ(),fGlbTrack->GetFitChargeZ());
   
 
-
-      //--CROSS SECTION - RECO PARAMETERS
-      if ((Z_meas >=0.) /*&& (Th_meas >=0.) && (Ek_meas >=0.) && (M_meas >=0. )  && (M_meas <=90. )*/) {   
+      //-------------------------------------------------------------
+      //--CROSS SECTION fragmentation- RECO PARAMETERS : i don't want not fragmented primary
+      if (
+      Z_meas >=0. && Z_meas <8. /*&& (Th_meas >=0.) && (Ek_meas >=0.) && (M_meas >=0. )  && (M_meas <=90. )*/
+      && !(fGlbTrack->GetPointsN() == 1 && fGlbTrack->GetTwChargeZ()==8)      // i don't want not fragmented primary
+      ) {   
         ((TH1D*)gDirectory->Get("xsecrec-trk/charge"))->Fill(Z_meas); 
       //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
       //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
@@ -646,13 +648,14 @@ void GlobalRecoAna::LoopEvent() {
             auto  Mid = particle->GetMotherID();              // Get TRpaid-1
             auto Reg = particle->GetRegion();
             auto finalPos = particle-> GetFinalPos();
-
+            Float_t Ek_tr_tot = (sqrt(pow(particle->GetMass(),2) + pow((particle->GetInitP()).Mag(),2)) - particle->GetMass());
+            Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
            
             if (debug_trackid )myfile << "  fluka ID: " << particle->GetFlukaID() << "("<<particle->GetCharge()<<")"<<endl;
             //Fill histos for MC variables checks
             ((TH1D*)gDirectory->Get("MC_check/Charge_MC")) -> Fill(particle-> GetCharge());
             ((TH1D*)gDirectory->Get("MC_check/Mass_MC")) -> Fill(particle-> GetMass());
-            
+            ((TH1D*)gDirectory->Get("MC_check/Ek_tot_MC")) -> Fill(Ek_tr_tot);
             ((TH1D*)gDirectory->Get("MC_check/InitPosZ_MC")) -> Fill(particle-> GetInitPos().Z() );      
             ((TH1D*)gDirectory->Get("MC_check/FinalPosZ_MC")) -> Fill(particle-> GetFinalPos().Z() );
             ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC")) -> Fill(particle-> GetTrkLength());            
@@ -677,16 +680,17 @@ void GlobalRecoAna::LoopEvent() {
 
 
             if (  Mid==0 && Reg == 59 &&           // if the particle is generated in the target and it is the fragment of a primary
-                  particle->GetCharge()>0 && particle->GetCharge()<=9 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
+                  particle->GetCharge()>0 && particle->GetCharge()<8 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
                   particle->GetMass()>0.8 && particle->GetMass()<30
                   )  {                            
                         
                           Float_t charge_tr = particle-> GetCharge();
+                          
                           //cout <<"charge: "<< charge_tr <<endl;
                           
                           ((TH1D*)gDirectory->Get("MC_check/Charge_MC_tg")) -> Fill(particle-> GetCharge());
                           ((TH1D*)gDirectory->Get("MC_check/Mass_MC_tg")) -> Fill(particle-> GetMass());
-
+                          ((TH1D*)gDirectory->Get("MC_check/Ek_tot_MC_tg")) -> Fill(Ek_tr_tot);
                           ((TH1D*)gDirectory->Get("MC_check/InitPosZ_MC_tg")) -> Fill(particle-> GetInitPos().Z() );      
                           ((TH1D*)gDirectory->Get("MC_check/FinalPosZ_MC_tg")) -> Fill(particle-> GetFinalPos().Z() );
                           ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC_tg")) -> Fill(particle-> GetTrkLength());            
@@ -695,7 +699,6 @@ void GlobalRecoAna::LoopEvent() {
                           ((TH1D*)gDirectory->Get("MC_check/MotherID_MC_tg")) -> Fill(particle->  GetMotherID());
                           ((TH1D*)gDirectory->Get("MC_check/Theta_MC_tg")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi()); 
                           
-
                           ((TH1D*)gDirectory->Get(Form("xsecrec-true/Z_true")))->Fill(charge_tr);
 
                           for (int i = 0; i<th_nbin; i++) {
@@ -705,8 +708,7 @@ void GlobalRecoAna::LoopEvent() {
                           if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
                                                 
                             for (int j=0; j < ek_nbin; j++) {
-                              Float_t Ek_tr_tot = (sqrt(pow(particle->GetMass(),2) + pow((particle->GetInitP()).Mag(),2)) - particle->GetMass());
-                              Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
+                              
                               
                               if(Ek_tr_tot >=ek_binning[j][0] && Ek_tr_tot<ek_binning[j][1]) {
                                             
@@ -737,14 +739,14 @@ void GlobalRecoAna::LoopEvent() {
 
 
           if (  (Mid==0 ) && Reg == 59  &&  finalPos.Z() > 90.     &&    // if the particle is generated in the target and it is the fragment of a primary AND DIES IN THE TW
-                  particle->GetCharge()>0 && particle->GetCharge()<=9 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectil)
+                  particle->GetCharge()>0 && particle->GetCharge()<8 &&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectil)
                   particle->GetMass()>0.8 && particle->GetMass()<30
                   )  {                            
                          if (debug_trackid ) myfile << "  fluka ID - detected: " << particle->GetFlukaID() << endl << "   real charge: "<< particle-> GetCharge()<<endl;
                           Float_t charge_tr = particle-> GetCharge();
                           ((TH1D*)gDirectory->Get("MC_check/Charge_MC_tg_tw")) -> Fill(charge_tr);                          
                           ((TH1D*)gDirectory->Get("MC_check/Mass_MC_tg_tw")) -> Fill(particle-> GetMass());
-
+                          ((TH1D*)gDirectory->Get("MC_check/Ek_tot_MC_tg_tw")) -> Fill(Ek_tr_tot);
                           ((TH1D*)gDirectory->Get("MC_check/InitPosZ_MC_tg_tw")) -> Fill(particle-> GetInitPos().Z() );      
                           ((TH1D*)gDirectory->Get("MC_check/FinalPosZ_MC_tg_tw")) -> Fill(particle-> GetFinalPos().Z() );
                           ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC_tg_tw")) -> Fill(particle-> GetTrkLength());            
@@ -762,8 +764,7 @@ void GlobalRecoAna::LoopEvent() {
                           if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
                                                 
                             for (int j=0; j < ek_nbin; j++) {
-                              Float_t Ek_tr_tot = (sqrt(pow(particle->GetMass(),2) + pow((particle->GetInitP()).Mag(),2)) - particle->GetMass());
-                              Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
+                              
                               
                               if(Ek_tr_tot >=ek_binning[j][0] && Ek_tr_tot<ek_binning[j][1]) {
                                             
@@ -1170,6 +1171,9 @@ for (int i = 0; i<mass_nbin; i++) {
     h = new TH1D("Mass_MC","",400, 0., 50.);
     h = new TH1D("Mass_MC_tg","",400, 0., 50.);
     h = new TH1D("Mass_MC_tg_tw","",400, 0., 50.);
+    h = new TH1D("Ek_tot_MC","",1000, 0 ,20000.);
+    h = new TH1D("Ek_tot_MC_tg","",1000, 0 ,20000.);
+    h = new TH1D("Ek_tot_MC_tg_tw","",1000, 0 ,20000.);
     h = new TH1D("InitPosZ_MC","",400, 0., 200.);
     h = new TH1D("InitPosZ_MC_tg","",400, 0., 200.);
     h = new TH1D("InitPosZ_MC_tg_tw","",400, 0., 200.);
