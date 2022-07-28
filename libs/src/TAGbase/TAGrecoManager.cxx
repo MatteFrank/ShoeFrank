@@ -347,13 +347,13 @@ void TAGrecoManager::FromFile()
 
         if (key.Contains("VTX Tag Cuts:")) {
            istringstream formulasStream( item.Data() );
-           int tmp = 0;
+           size_t tmp = 0;
           if (fDebugLevel > 0)
               printf("VTX Tag Cuts: ");
            while ( formulasStream >> tmp ) {
               fVtxTagCuts[tgtstring].push_back(tmp);
               if (fDebugLevel > 0)
-                 printf(" %d ", tmp);
+                 printf(" %lu ", tmp);
            }
            if (fDebugLevel > 0)
               printf("\n");
@@ -364,13 +364,13 @@ void TAGrecoManager::FromFile()
 
         if (key.Contains("IT Tag Cuts:")) {
            istringstream formulasStream( item.Data() );
-           int tmp = 0;
+           size_t tmp = 0;
            if (fDebugLevel > 0)
               printf("IT Tag Cuts: ");
            while ( formulasStream >> tmp ) {
               fItrTagCuts[tgtstring].push_back(tmp);
               if (fDebugLevel > 0)
-                 printf(" %d ", tmp);
+                 printf(" %lu ", tmp);
            }
            if (fDebugLevel > 0)
               printf("\n");
@@ -381,13 +381,13 @@ void TAGrecoManager::FromFile()
 
         if (key.Contains("MSD Tag Cuts:")) {
            istringstream formulasStream( item.Data() );
-           int tmp = 0;
+           size_t tmp = 0;
            if (fDebugLevel > 0)
               printf("MSD Tag Cuts: ");
            while ( formulasStream >> tmp ) {
               fMsdTagCuts[tgtstring].push_back(tmp);
               if (fDebugLevel > 0)
-                 printf(" %d ", tmp);
+                 printf(" %lu ", tmp);
            }
            if (fDebugLevel > 0)
               printf("\n");
@@ -398,13 +398,13 @@ void TAGrecoManager::FromFile()
 
         if (key.Contains("MSD2 Tag Cuts:")) {
            istringstream formulasStream( item.Data() );
-           int tmp = 0;
+           size_t tmp = 0;
            if (fDebugLevel > 0)
               printf("MSD2 Tag Cuts: ");
            while ( formulasStream >> tmp ) {
               fMsd2TagCuts[tgtstring].push_back(tmp);
               if (fDebugLevel > 0)
-                 printf(" %d ", tmp);
+                 printf(" %lu ", tmp);
            }
            if (fDebugLevel > 0)
               printf("\n");
@@ -415,13 +415,13 @@ void TAGrecoManager::FromFile()
 
         if (key.Contains("TOF Tag Cuts:")) {
            istringstream formulasStream( item.Data() );
-           int tmp = 0;
+           size_t tmp = 0;
            if (fDebugLevel > 0)
               printf("TOF Tag Cuts: ");
            while ( formulasStream >> tmp ) {
               fTwTagCuts[tgtstring].push_back(tmp);
               if (fDebugLevel > 0)
-                 printf(" %d ", tmp);
+                 printf(" %lu ", tmp);
            }
            if (fDebugLevel > 0)
               printf("\n");
