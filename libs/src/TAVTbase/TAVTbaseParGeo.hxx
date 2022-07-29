@@ -76,8 +76,8 @@ protected:
    TVector3   fMaxPosition;  ///< maximum position
    TVector3   fSizeBox;      ///< box size
    Int_t      fSensPerLayer; ///< number of sensor per layer
-   UChar_t*   fSensorArray;  ///< Array of sensor
-   std::map<float, std::vector<UChar_t>> fSensorMap; ///< map sensor
+   std::size_t*    fSensorArray;  ///< Array of sensor
+   std::map<float, std::vector<std::size_t>> fSensorMap; ///< map sensor
 
 protected:
    static const Int_t   fgkDefSensorsN;   ///< default number of sensors
@@ -169,8 +169,8 @@ public:
    virtual Int_t   GetColumn(Float_t x) const;
    virtual Int_t   GetLine(Float_t y)   const;
 
-   // return aary of sensor id's for a given layer
-   virtual UChar_t* GetSensorsPerLayer(Int_t iLayer);
+   // return array of sensor id's for a given layer
+   virtual std::size_t* GetSensorsPerLayer(Int_t iLayer);
 
    // Get layer position in Z
    virtual Float_t GetLayerPosZ(Int_t layer);
