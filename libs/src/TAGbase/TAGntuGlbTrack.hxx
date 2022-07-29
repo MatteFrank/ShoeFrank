@@ -23,6 +23,11 @@
 #include "TAGdata.hxx"
 #include "TAGntuPoint.hxx"
 
+#include <fstream>
+#include <iostream>
+#include <ostream>
+#include <sstream>
+
 using namespace std;
 
 //
@@ -210,6 +215,9 @@ public:
 
      // Get MC info of the most probable particle
    Int_t         GetMcMainTrackId();
+
+   //stamp the ID MC info of the point crossing the TW
+   void CheckTWTrackId();
    
    // Get theta angle at target
    Double_t         GetTgtTheta()           const;
