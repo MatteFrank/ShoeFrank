@@ -59,19 +59,15 @@ struct cut{
 template<class D> struct detector_traits{};
 
 struct vertex_tag{
-    using vector_matrix =  matrix<2, 1>;
-    using covariance_matrix =  matrix<2, 2> ;
-    using measurement_matrix =  matrix<2,4> ;
-    using data_type = TAVTbaseCluster; //to be noted
-    using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = std::array<cut, 2>;
+    using vector_matrix      = matrix<2, 1>;
+    using covariance_matrix  = matrix<2, 2>;
+    using measurement_matrix = matrix<2, 4>;
+    using data_type          = TAVTbaseCluster; //to be noted
+    using candidate          = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+    using cut_t              = std::array<cut, 2>;
     constexpr static uint8_t shift = 3;
     constexpr static double block_weight = 0.5;
-    
-//    constexpr static cut_t default_cut_value{15,15};
-//    constexpr static cut_t default_cut_value{20 ,20};
-//    constexpr static cut_t default_cut_value{25 ,25}; //old values
-    
+   
     constexpr static cut_t default_cut_value{17,21}; //16O200C2H4_basec
 //    constexpr static cut_t default_cut_value{18,13}; //16O200C_basec
 //    constexpr static cut_t default_cut_value{15 ,21}; //12C200C_basec
@@ -79,21 +75,15 @@ struct vertex_tag{
 };
     
 struct it_tag{
-    using vector_matrix =  matrix<2, 1>;
-    using covariance_matrix =  matrix<2, 2> ;
-    using measurement_matrix =  matrix<2,4> ;
-    using data_type = TAITcluster;
-    using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = std::array<cut, 4>;
+    using vector_matrix      = matrix<2, 1>;
+    using covariance_matrix  = matrix<2, 2>;
+    using measurement_matrix = matrix<2, 4>;
+    using data_type          = TAITcluster;
+    using candidate          = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+    using cut_t              = std::array<cut, 4>;
     static constexpr uint8_t shift = 2;
     constexpr static double block_weight = 0.37;
-
-//    constexpr static cut_t default_cut_value{5,5,5,5}; //default scan
-//    constexpr static cut_t default_cut_value{20,20,20,20}; //default scan
-//    constexpr static cut_t default_cut_value{30,30,30,30}; //default scan
-//    constexpr static cut_t default_cut_value{40,40,40,40}; //default scan
-//    constexpr static cut_t default_cut_value{50,50,51,51}; //old_values
-    
+   
     constexpr static cut_t default_cut_value{59, 49, 63, 61}; //16O200C2H4_basec,
 //    constexpr static cut_t default_cut_value{74, 42, 69, 67}; //16O200C_basec
 //    constexpr static cut_t default_cut_value{73, 51, 77, 41}; //12C200C_basec
@@ -102,21 +92,15 @@ struct it_tag{
 };
 
 struct msd_tag{
-    using vector_matrix =  matrix<1, 1> ;
-    using covariance_matrix = matrix<1, 1> ;
-    using measurement_matrix =  matrix<1,4> ;
-    using data_type = TAMSDcluster;
-    using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = std::array<cut, 6>;
+    using vector_matrix      = matrix<1, 1>;
+    using covariance_matrix  = matrix<1, 1>;
+    using measurement_matrix = matrix<1, 4>;
+    using data_type          = TAMSDcluster;
+    using candidate          = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+    using cut_t              = std::array<cut, 6>;
     static constexpr uint8_t shift = 1;
     constexpr static double block_weight = 0.08;
-
-//    constexpr static cut_t default_cut_value{5,5,5,5,5,5}; //default
-//    constexpr static cut_t default_cut_value{20,20,20,20,20,20}; //default
-//    constexpr static cut_t default_cut_value{10,10,10,10,10,10}; //default
-    
-//    constexpr static cut_t default_cut_value{11,11,7,7,19,19}; //old_values
-    
+   
     constexpr static cut_t default_cut_value{6, 5, 3, 4, 2, 3};  //16O200C2H4_basec
 //    constexpr static cut_t default_cut_value{5,6,4,4,2,4};  //16O200C_basec
 //    constexpr static cut_t default_cut_value{9,6,6,4,4,2};  //12C200C_basec
@@ -124,28 +108,27 @@ struct msd_tag{
 };
 
 struct ms2d_tag{
-    using vector_matrix =  matrix<2, 1> ;
-    using covariance_matrix = matrix<2, 2> ;
-    using measurement_matrix =  matrix<2,4> ;
-    using data_type = TAMSDpoint;
-    using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = cut;
+    using vector_matrix      = matrix<2, 1>;
+    using covariance_matrix  = matrix<2, 2>;
+    using measurement_matrix = matrix<2, 4>;
+    using data_type          = TAMSDpoint;
+    using candidate          = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+    using cut_t              = cut;
     static constexpr uint8_t shift = 4;
     constexpr static double block_weight = 0.5;
+   
     constexpr static cut_t default_cut_value{25};
 };
 
 struct tof_tag{
-    using vector_matrix =  matrix<2, 1>;
-    using covariance_matrix =  matrix<2, 2> ;
-    using measurement_matrix =  matrix<2,4> ;
-    using data_type = TATWpoint;
-    using candidate = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
-    using cut_t = std::array<cut, 2 >;
+    using vector_matrix      = matrix<2, 1>;
+    using covariance_matrix  = matrix<2, 2>;
+    using measurement_matrix = matrix<2, 4>;
+    using data_type          = TATWpoint;
+    using candidate          = candidate_impl< vector_matrix, covariance_matrix, measurement_matrix, data_type>;
+    using cut_t              = std::array<cut, 2 >;
     static constexpr uint8_t shift = 0;
     constexpr static double block_weight = 0.05;
-
-//    constexpr static cut_t default_cut_value{3,3}; //default
 
     constexpr static cut_t default_cut_value{7,9}; //16O200C2H4_basec
 //    constexpr static cut_t default_cut_value{9,11}; //16O200C_basec
@@ -166,8 +149,8 @@ struct detector_traits<detector_properties<Tag>>
 
 
 namespace orientation{
-struct x{ static constexpr std::size_t index = 0; };
-struct y{ static constexpr std::size_t index = 1; };
+   struct x{ static constexpr std::size_t index = 0; };
+   struct y{ static constexpr std::size_t index = 1; };
 }//namespace orientation
 
 template<class DetectorProperties>
@@ -327,19 +310,21 @@ struct track_list
         };
         
     public:
-        
         iterable_track( Detector const & detector_p,
-                        vertex_type const * vertex_ph,
-                        track_type const * track_ph ) :
-            detector_m{ detector_p },
-            vertex_mh{ vertex_ph },
-            track_mh{track_ph} {}
+                       vertex_type const * vertex_ph,
+                       track_type const * track_ph )
+        : detector_m{ detector_p },
+          vertex_mh{ vertex_ph },
+          track_mh{track_ph} {}
+       
         iterator begin() { return iterator( *this, starting_cluster_m ); }
         iterator end()   { return iterator( *this, track_mh->GetClustersN() ); }
+       
         void skip_first_layer() { starting_cluster_m = 1; }
         auto const * first_cluster() const {
             return track_mh->GetCluster( track_mh->GetClustersN() -1 );
         }
+       
         vertex_type const * vertex() const { return vertex_mh; }
         std::size_t size() const { return track_mh->GetClustersN(); }
         track_type const* get_underlying_track() { return track_mh; }
@@ -371,9 +356,10 @@ struct track_list
     
 public:
     track_list( Detector const & detector_p,
-                std::vector<iterable_track> track_pc ) :
-        detector_m{ detector_p },
-        track_c{ std::move(track_pc) } {}
+                std::vector<iterable_track> track_pc )
+    : detector_m{ detector_p },
+      track_c{ std::move(track_pc) } {}
+   
     iterator begin() { return track_c.begin(); }
     iterator end() { return track_c.end(); }
     
@@ -417,8 +403,8 @@ public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAVTntuVertex* vertex_phc,
                          TAVTntuCluster* cluster_phc,
-                         TAVTparGeo* geo_ph ) :
-        vertex_mhc{ vertex_phc },
+                         TAVTparGeo* geo_ph )
+    :   vertex_mhc{ vertex_phc },
         cluster_mhc{ cluster_phc },
         depth_mc{ retrieve_depth(geo_ph) } {}
    
@@ -497,11 +483,11 @@ private:
     
     using sensor_container_t = std::array<std::size_t, 8>;
     const std::array<sensor_container_t, 4> plane_mc{
-        sensor_container_t{  0,  1,  2,  3,  8,  9, 10, 11 },
-        sensor_container_t{ 16, 17, 18, 19, 24, 25, 26, 27 },
-        sensor_container_t{ 4,  5,  6,  7,  12, 13, 14, 15 },
-        sensor_container_t{ 20, 21, 22, 23, 28, 29, 30, 31 }
-           }; //moche
+       sensor_container_t{  0,  1,  2,  3,  8,  9, 10, 11 },
+       sensor_container_t{ 16, 17, 18, 19, 24, 25, 26, 27 },
+       sensor_container_t{ 4,  5,  6,  7,  12, 13, 14, 15 },
+       sensor_container_t{ 20, 21, 22, 23, 28, 29, 30, 31 }
+    }; //moche
     
     const std::array<double, layer> depth_mc;
     
@@ -587,11 +573,10 @@ private:
 public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAMSDntuCluster* cluster_phc,
-                         TAMSDparGeo* geo_ph )  :
-    cluster_mhc{cluster_phc},
-    view_mc{ retrieve_view(geo_ph) },
-    depth_mc{ retrieve_depth(geo_ph) }
-    { }
+                         TAMSDparGeo* geo_ph )
+    : cluster_mhc{cluster_phc},
+     view_mc{ retrieve_view(geo_ph) },
+     depth_mc{ retrieve_depth(geo_ph) }{ }
     
     
 private:
@@ -696,8 +681,8 @@ private:
 public:
     
     detector_properties( TATWntuPoint* cluster_phc,
-                         TATWparGeo* geo_ph) :
-        cluster_mhc{cluster_phc},
+                         TATWparGeo* geo_ph)
+    :   cluster_mhc{cluster_phc},
         depth_m{ retrieve_depth(geo_ph) } {}
     
     constexpr std::size_t layer_count() const { return 1; }
@@ -710,9 +695,7 @@ public:
         std::vector<candidate> candidate_c;
         std::size_t entries = cluster_mhc->GetPointsN();
         candidate_c.reserve( entries );
-        
-//        std::cout << "detector_properties<details::tof_tag>::generate_candidate : " << entries << '\n';
-        
+       
         for(std::size_t i{0}; i < entries ; ++i)
         {
             auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
@@ -780,11 +763,9 @@ private:
 public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAMSDntuPoint* cluster_phc,
-                         TAMSDparGeo* geo_ph )  :
-        cluster_mhc{cluster_phc},
-        depth_mc{ retrieve_depth(geo_ph) }
-    {}
-    
+                         TAMSDparGeo* geo_ph )
+    :   cluster_mhc{cluster_phc},
+        depth_mc{ retrieve_depth(geo_ph) } {}
     
 private:
     template<std::size_t ... Indices>
