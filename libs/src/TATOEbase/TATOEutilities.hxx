@@ -168,6 +168,12 @@ private:
     virtual void set_cuts( details::msd_tag, details::msd_tag::cut_t const& ) = 0;
     virtual void set_cuts( details::tof_tag, details::tof_tag::cut_t const&) = 0;
     virtual void set_cuts( details::ms2d_tag, details::ms2d_tag::cut_t const&) = 0;
+   
+   virtual void set_cuts( details::vertex_tag, std::vector<std::size_t> const& ) = 0;
+   virtual void set_cuts( details::it_tag, std::vector<std::size_t> const& ) = 0;
+   virtual void set_cuts( details::msd_tag, std::vector<std::size_t> const& ) = 0;
+   virtual void set_cuts( details::tof_tag, std::vector<std::size_t> const&) = 0;
+   virtual void set_cuts( details::ms2d_tag, std::vector<std::size_t> const&) = 0;
     
     virtual std::vector<reconstruction_module> const& retrieve_matched_results( ) const = 0;
     

@@ -89,6 +89,12 @@ private:
     
    TH1F*             fpHisMass;        ///< mass histogram
    
+   std::vector<size_t> fCutVtx;
+   std::vector<size_t> fCutItr;
+   std::vector<size_t> fCutMsd;
+   std::vector<size_t> fCutMsd2;
+   std::vector<size_t> fCutTw;
+   
    ClassDef(TAGactNtuGlbTrack,0)  ///< TAGactNtuGlbTrack
 };
 

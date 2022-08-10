@@ -21,7 +21,6 @@
 
 #include "state.hpp"
 #include "matrix_new.hpp"
-//#include "expr.hpp"
 
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -39,9 +38,6 @@ class TAVTcluster;
 #include "TAMSDntuPoint.hxx"
 
 #include "TATWntuPoint.hxx"
-
-
-//#include "TAGntuGlbTrack.hxx"
 
 
 template<class Tag>
@@ -94,7 +90,7 @@ struct it_tag{
 
 //    constexpr static cut_t default_cut_value{5,5,5,5}; //default scan
 //    constexpr static cut_t default_cut_value{20,20,20,20}; //default scan
-//        constexpr static cut_t default_cut_value{30,30,30,30}; //default scan
+//    constexpr static cut_t default_cut_value{30,30,30,30}; //default scan
 //    constexpr static cut_t default_cut_value{40,40,40,40}; //default scan
 //    constexpr static cut_t default_cut_value{50,50,51,51}; //old_values
     
@@ -425,8 +421,7 @@ public:
         vertex_mhc{ vertex_phc },
         cluster_mhc{ cluster_phc },
         depth_mc{ retrieve_depth(geo_ph) } {}
-    
-    
+   
 private:
     template<std::size_t ... Indices>
     auto retrieve_depth_impl( TAVTparGeo* geo_ph,
@@ -444,10 +439,7 @@ private:
     {
         return retrieve_depth_impl( geo_ph, std::make_index_sequence<layer>{} );
     }
-    
-    
-    
-    
+   
 public:
     
     constexpr std::size_t layer_count() const { return layer; }
@@ -466,8 +458,9 @@ public:
     
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
     
-    constexpr void set_cuts( details::vertex_tag::cut_t&&  cut_pc ){ cut_mc = std::move(cut_pc); }
-    
+    constexpr void set_cuts( details::vertex_tag::cut_t&&  cut_pc ) { cut_mc = std::move(cut_pc); }
+              void set_cuts( std::vector<std::size_t> cut_pc )      { cut_mc = {cut_pc[0], cut_pc[1]}; }
+
 private:
     std::vector< TAVTvertex const *> retrieve_vertices( ) const;
     
@@ -547,8 +540,9 @@ public:
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
     constexpr details::cut get_cut_values( std::size_t index_p ) const { return cut_mc[index_p]; }
     
-    constexpr void set_cuts( details::it_tag::cut_t&& cut_pc  ){ cut_mc = std::move(cut_pc); }
-    
+    constexpr void set_cuts( details::it_tag::cut_t&& cut_pc ) { cut_mc = std::move(cut_pc); }
+              void set_cuts( std::vector<std::size_t> cut_pc ) { cut_mc = { cut_pc[0], cut_pc[1], cut_pc[2], cut_pc[3]}; }
+
     layer_generator<detector_properties> form_layers() const
     {
         return {*this};
@@ -647,7 +641,9 @@ public:
     
     std::vector<candidate> generate_candidates(std::size_t index_p) const ;
     
-    constexpr void set_cuts( details::msd_tag::cut_t&& cut_pc  ){ cut_mc = std::move(cut_pc); }
+    constexpr void set_cuts( details::msd_tag::cut_t&& cut_pc ) { cut_mc = std::move(cut_pc); }
+              void set_cuts( std::vector<std::size_t>  cut_pc ) { cut_mc = {cut_pc[0], cut_pc[1], cut_pc[2], cut_pc[3], cut_pc[4], cut_pc[5]}; }
+
 };
 
 
@@ -752,7 +748,9 @@ public:
         };
     }
     
-    constexpr void set_cuts( details::tof_tag::cut_t&& cut_pc ){ cut_mc = std::move(cut_pc); }
+    constexpr void set_cuts( details::tof_tag::cut_t&& cut_pc ) { cut_mc = std::move(cut_pc); }
+              void set_cuts( std::vector<std::size_t>  cut_pc ) { cut_mc = {cut_pc[0], cut_pc[1]}; }
+
 };
 
 //______________________________________________________________________________
@@ -810,7 +808,9 @@ public:
     constexpr double layer_depth( std::size_t index_p) const { return depth_mc[index_p]; }
     constexpr details::cut get_cut_value() const { return cut_m; }
     
-    constexpr void set_cuts( details::cut cut_p  ){ cut_m = std::move(cut_p); }
+    constexpr void set_cuts( details::cut cut_p  )            { cut_m = std::move(cut_p); }
+              void set_cuts( std::vector<std::size_t> cut_p ) { cut_m = {cut_p[0]}; }
+
     
     layer_generator<detector_properties> form_layers() const
     {
