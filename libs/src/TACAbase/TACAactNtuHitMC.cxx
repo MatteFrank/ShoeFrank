@@ -63,7 +63,7 @@ void TACAactNtuHitMC::CreateHistogram()
    DeleteHistogram();
 
    TACAparGeo* parGeo   = (TACAparGeo*) fpGeoMap->Object();
-   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();;
+   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();
 
    TGeoElementTable table;
    table.BuildDefaultElements();
@@ -168,7 +168,7 @@ void TACAactNtuHitMC::CreateHistogram()
 
    // 12-20
    // for(int z=0; z<nNucleonBeam/2; z++) {
-   for(int z=0; z<nNucleonBeam; z++) {
+   for(int z=0; z<=nNucleonBeam; z++) {
       TGeoElement * elem = table.GetElement(z+1);
       fpHisIon_Ek[z] = new TH1F(Form( "caDeIonSpectrum%d", z+1),
                                 Form( "^{%d}%s ; Ekin [GeV]; Events Norm", elem->N(), elem->GetName() ),
@@ -177,7 +177,7 @@ void TACAactNtuHitMC::CreateHistogram()
    }
 
    // 21-29
-   for(int z=0; z<nNucleonBeam; z++) {
+   for(int z=0; z<=nNucleonBeam; z++) {
       // for(int z=0; z<6; z++) {
       TGeoElement * elem = table.GetElement(z+1);
       fpHisIon_dE[z] = new TH1F(Form( "caDeIon%d", z+1),
@@ -232,7 +232,8 @@ Bool_t TACAactNtuHitMC::Action()
 {
    TAMCntuHit* pNtuMC   = 0x0;
    TAMCntuPart* pNtuEve  = 0x0;
-
+   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();
+   
    if (fEventStruct == 0x0) {
      pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
      pNtuEve = (TAMCntuPart*) fpNtuEve->Object();
@@ -315,7 +316,7 @@ Bool_t TACAactNtuHitMC::Action()
       if ( fluID <= -2 || fluID == 1 ) {
 
          // Select Heavy-Ions with charge from 2 to 8 and Protons (z=1)
-         if ( (z > 1 && z <= 8) || fluID == 1 ) {
+         if ( (z > 1 && z <= tagParGeo->GetBeamPar().AtomicMass) || fluID == 1 ) {
 
             double tof = 0.;
             double p = sqrt( px*px + py*py + pz*pz);
