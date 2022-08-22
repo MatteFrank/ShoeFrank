@@ -45,6 +45,7 @@ TAVTbaseParGeo::TAVTbaseParGeo()
    fSensorsN(0),
    fkDefaultGeoName(""),
    fLayersN(fSensorsN),
+   fSubLayersN(fSensorsN),
    fFlagMC(false),
    fFlagIt(false),
    fSensPerLayer(0),
@@ -210,7 +211,7 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
          cout << "   Position: " << fSensorParameter[p].Position[0] << " " << fSensorParameter[p].Position[1] << " " << fSensorParameter[p].Position[2] << endl;
       
       // fill map
-      fSensorMap[fSensorParameter[p].Position[2]].push_back(fSensorParameter[p].SensorIdx);
+      fSensorMap[fSensorParameter[p].Position[2]].push_back(fSensorParameter[p].SensorIdx-1);
       
       // read sensor angles
       ReadVector3(fSensorParameter[p].Tilt);

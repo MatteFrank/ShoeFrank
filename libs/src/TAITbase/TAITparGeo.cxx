@@ -40,6 +40,7 @@ TAITparGeo::TAITparGeo()
 {
    fFlagIt          = true;
    fLayersN         = fgkDefLayersN;
+   fSubLayersN      = fLayersN*2;
    fSensPerLayer    = fgkDefSensPerLayer;
    fSensPerPlume    = fgkDefSensPerPlume;
    fkDefaultGeoName = "./geomaps/TAITdetector.geo";

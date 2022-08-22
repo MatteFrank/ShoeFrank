@@ -29,7 +29,8 @@ protected:
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
    Int_t      fSensorsN;         ///< Number of sensors
    TString    fkDefaultGeoName;  ///< default par geo file name
-   Int_t      fLayersN;          ///< Number of layer (planes)
+   Int_t      fLayersN;          ///< Number of layer (planes/stations)
+   Int_t      fSubLayersN;       ///< Number of sub layer (planes)
 
    TString    fTypeName;         ///< Type name
    Int_t      fTypeNumber;       ///< Type number
@@ -115,6 +116,8 @@ public:
    Int_t GetSensPerDataLink()          const { return fSensorsN;       }
    //! Get number of layers
    Int_t GetLayersN()                  const { return fLayersN;        }
+   //! Get number of sub layers
+   Int_t GetSubLayersN()               const { return fSubLayersN;     }
 
    //! Get type name of sensor
    const Char_t* GetTypeName()         const { return fTypeName.Data();}
