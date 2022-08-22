@@ -482,10 +482,10 @@ private:
     constexpr static std::size_t layer{4};
     
     using sensor_container_t = std::array<std::size_t, 8>;
-    const std::array<sensor_container_t, 4> plane_mc{
+    std::array<sensor_container_t, 4> plane_mc{
        sensor_container_t{  0,  1,  2,  3,  8,  9, 10, 11 },
        sensor_container_t{ 16, 17, 18, 19, 24, 25, 26, 27 },
-       sensor_container_t{ 4,  5,  6,  7,  12, 13, 14, 15 },
+       sensor_container_t{  4,  5,  6,  7, 12, 13, 14, 15 },
        sensor_container_t{ 20, 21, 22, 23, 28, 29, 30, 31 }
     }; //moche
     
@@ -494,16 +494,23 @@ private:
 public:
     //might go to intermediate struc holding the data ?
     detector_properties( TAITntuCluster* cluster_phc,
-                         TAITparGeo* geo_ph )  :
-        cluster_mhc{cluster_phc},
-        depth_mc{ retrieve_depth(geo_ph) }
-    { }
+                         TAITparGeo* geo_ph )
+     : cluster_mhc{cluster_phc},
+       depth_mc{ retrieve_depth(geo_ph) }
+    { set_plane_mc(geo_ph); }
     
-    
+   void set_plane_mc(TAITparGeo* geo_ph) {
+      sensor_container_t array[4];
+      for (Int_t i = 0; i < geo_ph->GetSubLayersN(); ++i) {
+         std::size_t* p = geo_ph->GetSensorsPerLayer(i);
+         std::copy(p, p+8, array[i].begin());
+      }
+      plane_mc = {array[0], array[1], array[2], array[3]};
+   }
+   
 private:
     template<std::size_t ... Indices>
-    auto retrieve_depth_impl( TAITparGeo* geo_ph,
-                                        std::index_sequence<Indices...> ) const
+    auto retrieve_depth_impl( TAITparGeo* geo_ph, std::index_sequence<Indices...> ) const
         -> std::array<double, layer>
     {
         auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
