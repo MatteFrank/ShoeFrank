@@ -397,14 +397,14 @@ void GlobalRecoAna::LoopEvent() {
       ((TH2D*)gDirectory->Get("Z_truevsZ_reco"))->Fill(Z_true,Z_meas);
       ((TH2D*)gDirectory->Get("Z_TWvsZ_fit"))->Fill(fGlbTrack->GetTwChargeZ(),fGlbTrack->GetFitChargeZ());
   
-
+      if(fFlagMC){
       //-------------------------------------------------------------
-      //--CROSS SECTION fragmentation- RECO PARAMETERS : i don't want not fragmented primary
+      //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA : i don't want not fragmented primary
       if (
       Z_meas >=0. && Z_meas <8. /*&& (Th_meas >=0.) && (Ek_meas >=0.) && (M_meas >=0. )  && (M_meas <=90. )*/
       && !(fGlbTrack->GetPointsN() == 1 && fGlbTrack->GetTwChargeZ()==8)      // i don't want not fragmented primary
       ) {   
-        ((TH1D*)gDirectory->Get("xsecrec-trk/charge"))->Fill(Z_meas); 
+        ((TH1D*)gDirectory->Get("xsecrec2-trkMC/charge"))->Fill(Z_meas); 
       //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
       //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
       //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
@@ -413,7 +413,7 @@ void GlobalRecoAna::LoopEvent() {
             
         for (int i = 0; i<th_nbin; i++) {   
           
-         if ( Z_meas>0 && Z_meas<=primary_cha){
+         if ( Z_meas>0 && Z_meas<primary_cha){
 
 
          if(Th_meas>=theta_binning[i][0] && Th_meas<theta_binning[i][1]){
@@ -431,7 +431,7 @@ void GlobalRecoAna::LoopEvent() {
                   for (int k=0; k < mass_nbin; k++) {
                    if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
               
-                     ((TH1D*)gDirectory->Get(Form("xsecrec-trk/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
+                     ((TH1D*)gDirectory->Get(Form("xsecrec2-trkMC/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
                       
                                           
 
@@ -446,10 +446,62 @@ void GlobalRecoAna::LoopEvent() {
          }
         }
       }
+      }
+      //--END CROSS SECTION - RECO PARAMETERS FROM REAL DATA
 
-      //--END CROSS SECTION - RECO PARAMETERS
+      
+      if (fFlagMC == true){
+      //-------------------------------------------------------------
+      //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
+      if (
+      Z_meas >=0. && Z_meas <8. /*&& (Th_meas >=0.) && (Ek_meas >=0.) && (M_meas >=0. )  && (M_meas <=90. )*/
+      && !(fGlbTrack->GetPointsN() == 1 && fGlbTrack->GetTwChargeZ()==8)      // i don't want not fragmented primary
+      ) {   
+        ((TH1D*)gDirectory->Get("xsecrec-trkREAL/charge"))->Fill(Z_meas); 
+      //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
+      //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
+      //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
 
 
+            
+        for (int i = 0; i<th_nbin; i++) {   
+          
+         if ( Z_meas>0 && Z_meas<primary_cha){
+
+
+         if(Th_meas>=theta_binning[i][0] && Th_meas<theta_binning[i][1]){
+            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
+            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
+
+            //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
+          
+                    
+           for (int j=0; j < ek_nbin; j++) {
+             if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
+              
+                //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/Mass_bin_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]))))->Fill(M_meas);
+             
+                  for (int k=0; k < mass_nbin; k++) {
+                   if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
+              
+                     ((TH1D*)gDirectory->Get(Form("xsecrec-trkREAL/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
+                      
+                                          
+
+                    }
+                  }
+
+
+              }
+
+            }
+          }
+         }
+        }
+      }
+      }
+      
+      //--END CROSS SECTION - RECO PARAMETERS FROM MC DATA
       
       /*
 
@@ -699,7 +751,7 @@ void GlobalRecoAna::LoopEvent() {
                           ((TH1D*)gDirectory->Get("MC_check/MotherID_MC_tg")) -> Fill(particle->  GetMotherID());
                           ((TH1D*)gDirectory->Get("MC_check/Theta_MC_tg")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi()); 
                           
-                          ((TH1D*)gDirectory->Get(Form("xsecrec-true/Z_true")))->Fill(charge_tr);
+                          ((TH1D*)gDirectory->Get(Form("xsecrec2-true/Z_true")))->Fill(charge_tr);
 
                           for (int i = 0; i<th_nbin; i++) {
                           
@@ -716,7 +768,7 @@ void GlobalRecoAna::LoopEvent() {
                                       Float_t mass_tr = particle -> GetMass();
                                     if(mass_tr>=mass_binning[k][0] && mass_tr <mass_binning[k][1]) {
                                       
-                                      ((TH1D*)gDirectory->Get(Form("xsecrec-true/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
+                                      ((TH1D*)gDirectory->Get(Form("xsecrec2-true/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
                                       
                                                             
 
@@ -755,7 +807,7 @@ void GlobalRecoAna::LoopEvent() {
                           ((TH1D*)gDirectory->Get("MC_check/MotherID_MC_tg_tw")) -> Fill(particle->  GetMotherID());
                           ((TH1D*)gDirectory->Get("MC_check/Theta_MC_tg_tw")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi()); 
 
-                          ((TH1D*)gDirectory->Get(Form("xsecrec-true_DET/Z_true_DET")))->Fill(charge_tr);
+                          ((TH1D*)gDirectory->Get(Form("xsecrec2-true_DET/Z_true_DET")))->Fill(charge_tr);
 
                           for (int i = 0; i<th_nbin; i++) {
                           
@@ -772,7 +824,7 @@ void GlobalRecoAna::LoopEvent() {
                                       Float_t mass_tr = particle -> GetMass();
                                     if(mass_tr>=mass_binning[k][0] && mass_tr <mass_binning[k][1]) {
                                 
-                                      ((TH1D*)gDirectory->Get(Form("xsecrec-true_DET/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
+                                      ((TH1D*)gDirectory->Get(Form("xsecrec2-true_DET/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
                                       
                                                             
 
@@ -959,10 +1011,10 @@ for (int i = 0; i<mass_nbin; i++) {
 }
  
 
-// Cross section recostruction histos
+// Cross section recostruction histos MC
   
-  gDirectory->mkdir("xsecrec-trk");
-  gDirectory->cd("xsecrec-trk");
+  gDirectory->mkdir("xsecrec2-trkMC");
+  gDirectory->cd("xsecrec2-trkMC");
   h = new TH1D("charge","",10, 0. ,10.);
 
   for(int iz=0; iz<=primary_cha; iz++){
@@ -1011,10 +1063,62 @@ for (int i = 0; i<mass_nbin; i++) {
 //----------- end cross section recostruction
 
 
+// Cross section recostruction histos from REAL DATA
+  
+  gDirectory->mkdir("xsecrec-trkREAL");
+  gDirectory->cd("xsecrec-trkREAL");
+  h = new TH1D("charge","",10, 0. ,10.);
+
+  for(int iz=0; iz<=primary_cha; iz++){
+    gDirectory->mkdir(Form("Z_%d-%d_%d",iz, iz , iz+1));
+    gDirectory->cd(Form("Z_%d-%d_%d",iz, iz , iz+1));
+
+    
+    //h = new TH1D("Theta_meas","",200, 0 ,20.);
+    //h = new TH1D("Ek_meas","",100, 0 ,2000.);
+   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
+
+
+    for (int i = 0; i<th_nbin; i++) {
+      gDirectory->mkdir(Form("theta_%d-%d_%d",i,int(theta_binning[i][0]),int(theta_binning[i][1])));
+      gDirectory->cd(Form("theta_%d-%d_%d",i,int(theta_binning[i][0]),int(theta_binning[i][1])));
+     // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
+     // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
+
+      for (int j=0; j <ek_nbin; j++) {
+        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
+        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
+        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,90.);
+
+          for (int k=0; k<mass_nbin; k++) {
+            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
+            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
+            h = new TH1D("A_","",200, 0 ,90.);
+
+            /*
+            gDirectory->mkdir("Efficiencies");
+            gDirectory->cd("Efficiencies");
+            h = new TH1D("Z_eff","",10, 0 ,10.);
+            gDirectory->cd("..");
+            */
+
+          gDirectory->cd("..");
+          }
+      gDirectory->cd("..");
+      }
+      gDirectory->cd("..");
+    }
+    gDirectory->cd("..");
+  }
+  gDirectory->cd("..");
+
+//----------- end cross section recostruction from REAL DATA
+
+
   // Cross section TRUE histos
   
-  gDirectory->mkdir("xsecrec-true");
-  gDirectory->cd("xsecrec-true");
+  gDirectory->mkdir("xsecrec2-true");
+  gDirectory->cd("xsecrec2-true");
 
   h = new TH1D("Z_true","",10, 0 ,10.);
 
@@ -1060,8 +1164,8 @@ for (int i = 0; i<mass_nbin; i++) {
 
  // Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
   
-  gDirectory->mkdir("xsecrec-true_DET");
-  gDirectory->cd("xsecrec-true_DET");
+  gDirectory->mkdir("xsecrec2-true_DET");
+  gDirectory->cd("xsecrec2-true_DET");
   h = new TH1D("Z_true_DET","",10, 0 ,10.);
 
   for(int iz=0; iz<=primary_cha; iz++){
