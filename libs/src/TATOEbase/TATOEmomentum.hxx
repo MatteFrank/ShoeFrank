@@ -1,13 +1,12 @@
-//
-// Plot tot residual + Fit for FIRST data
-//
-/** TATOEmomentum class
- 
+
+/*!
+ \file TATOEmomentum.hxx
+ \brief Declaration of TATOEmomentum
  \author A. Sécher
  */
 
 //
-//File      : TATOEmomentum.hpp
+//File      : TATOEmomentum.hxx
 //Author    : Alexandre Sécher (alexandre.secher@iphc.cnrs.fr)
 //Date      : 12/05/2021
 //Framework : PhD thesis, CNRS/IPHC/DRS/DeSis, Strasbourg, France
@@ -20,6 +19,7 @@
 
 #include "TAGntuGlbTrack.hxx"
 
+// Get momentum for a given position in Z
 TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z );
 
 
