@@ -45,22 +45,24 @@ Bool_t TACAparMap::FromFile(const TString& name)
   if (!Open(name))
     return false;
   
+   Info("FromFile()", "Open file %s for crystal status map\n", name.Data());
+
+   
   // read for parameter
   Double_t* para = new Double_t[5];
-  // Int_t nCrys = 0;
 
   // number of crystal
-  ReadItem(nCrys);
+  ReadItem(fCrystalsN);
 
   if (FootDebugLevel(1)) {
-    printf("CrystalsN: %d\n", nCrys);
+    printf("CrystalsN: %d\n", fCrystalsN);
     printf("CrystalId ModuleId ChannelId BoardId ActiveCrystal \n");
   }
 
   //To read header
   ReadItem(para, 5, ' ', false);  
-  // cout << "n crys: " << nCrys << endl;
-  for (Int_t i = 0; i < nCrys; ++i) { // Loop over crystal
+
+   for (Int_t i = 0; i < fCrystalsN; ++i) { // Loop over crystal
 
     // read parameters (boardId chId, crysId)
     ReadItem(para, 5, ' ', false);
