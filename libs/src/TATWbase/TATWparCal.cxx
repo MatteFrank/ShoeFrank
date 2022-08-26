@@ -125,7 +125,6 @@ Bool_t TATWparCal::FromCalibFile(const TString& name, Bool_t isTof, Bool_t barCa
   TString name_exp = name;
   gSystem->ExpandPathName(name_exp);
   int verbose = 0;
-  // fMapCal->LoadCalibrationMap(name_exp.Data());
 
   if(f_isBarCalibration) {  // calibration per TW bar
     if(isTof==0)
@@ -261,28 +260,14 @@ Bool_t TATWparCal::FromBarStatusFile(const TString& name) {
 
   if (!Open(nameExp)) return false;
 
-  if(FootDebugLevel(4))
-     Info("FromBarStatusFile()", "Open file %s", name.Data());
-
+  Info("FromBarStatusFile()", "Open file %s for bar status map\n", name.Data());
+   
   Double_t* tmp = new Double_t[4];
-  
-  // (fBarsParameter.LayerId).clear();
-  // (fBarsParameter.BarId).clear();
-  // (fBarsParameter.ActiveBar).clear();
-  // (fBarsParameter.ElossThr).clear();
-
   for (Int_t ibar = 0; ibar < (Int_t)nSlats; ibar++) { // Loop over the bars
 
     // read parameters
     ReadItem(tmp, 4, ' ');
-    
-    // (fBarsParameter.LayerId).push_back((Int_t)tmp[0]);
-    // (fBarsParameter.BarId).push_back((Int_t)tmp[1]);
-    // (fBarsParameter.ElossThr).push_back(tmp[2]);
-    // (fBarsParameter.ActiveBar).push_back((Bool_t)tmp[3]);
-
     fPairId = TPairId((Int_t)tmp[0],(Int_t)tmp[1]);
-    // fPairId = std::make_pair(tmp[0],tmp[1]);
 
     if(FootDebugLevel(4))
       cout<< endl <<fPairId.first<<" "<<fPairId.second<<endl;   
