@@ -393,7 +393,6 @@ const Char_t* TAGcampaign::GetMapFile(const TString& detName, Int_t runNumber, I
    }
  
    vector<TString> vecFile = fFileMap[detName];
-   cout << vecFile[item].Data() << endl;
    TString nameFile = vecFile[item];
    
    vector<TArrayI> vecRun = fRunsMap[detName];
