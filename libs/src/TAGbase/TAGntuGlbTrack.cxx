@@ -476,31 +476,6 @@ Int_t multiplicity = -1;
 }
 
 
-//------------------------------------------+-----------------------------------
-//! Get MC points crossing the TW and their trackId
-void TAGtrack::CheckTWTrackId()
-{  
-   
-   for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
-      const TAGpoint* point = GetPoint(iPoint);     
-      
-         if (iPoint == (GetPointsN() -1) ) {    //from all the points of a track, i take only the TW one   
-            cout<<point->GetDevName() << " POINT; TrackIdMc: ";        
-         
-
-            for( Int_t i = 0; i < point->GetMcTracksN(); ++i) { //I check how many different MC tracks crosses the TW with same MCID
-         
-               Int_t trackIdx = point->GetMcTrackIdx(i);         
-               cout<<trackIdx<<" ";
-         
-            }
-         }  
-            //cout << "track id :"<<trackIdx << endl;         
-        
-   } cout<<endl; 
-   
-}
-
 
 //##############################################################################
 
