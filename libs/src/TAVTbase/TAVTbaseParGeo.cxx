@@ -1,6 +1,6 @@
 
 /*!
- \file TAVTbaseParGeo.hxx
+ \file TAVTbaseParGeo.cxx
  \brief Base class of geometrical parameters for VTX
  */
 
