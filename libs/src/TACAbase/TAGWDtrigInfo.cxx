@@ -40,9 +40,11 @@ void TAGWDtrigInfo::AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t>
 
   //  fTriggerID = triggerID;
 
-  
-  int TGEN[NMAXTRIG+1];  
-  
+  for(int i=0;i<NMAXTRIG;i++)fTriggersPrevCounter[i] = fTriggersCounter[i];
+  fWDprevruntime= fWDruntime;
+
+  int TGEN[NMAXTRIG+1];
+
   int iW=0;
 
 
@@ -104,9 +106,9 @@ void TAGWDtrigInfo::AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t>
       }
     }
   }
-  
-  
-  
+
+
+
   uint64_t TriggerGenerationBin[NCLK];
   for(unsigned int ibin = 0; ibin<32; ibin++){
     TriggerGenerationBin[(ibin + 32 - TGEN[0]) % 32] = TGEN[ibin+1]; // bit 31:0
@@ -114,7 +116,7 @@ void TAGWDtrigInfo::AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t>
   for(unsigned int ibin = 0; ibin<NCLK; ibin++){
     TriggerGenerationBin[(ibin + 32 - TGEN[0]) % 32] = (((uint64_t)TGEN[ibin+33])<<32) | TriggerGenerationBin[(ibin + 32 - TGEN[0]) % 32]; // bit 63:32
   }
-  
+
   uint64_t iTriggerGenerationBin = 0;
   uint64_t TrigOr = 0;
   for(unsigned int iclktick=0; iclktick<NCLK; iclktick++){
@@ -147,18 +149,15 @@ void TAGWDtrigInfo::AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t>
     */
   }
 
-  
+
   if(fWDtrigNum>0){
     fMajRate = (fTriggersCounter[40]-fTriggersPrevCounter[40])/(fWDruntime-fWDprevruntime);
   }
 
   // cout << "t::" << fWDruntime << "  rate::" << fMajRate << "  counter::" << fTriggersCounter[40] << endl;
-  
-  for(int i=0;i<NMAXTRIG;i++)fTriggersPrevCounter[i] = fTriggersCounter[i];
-  fWDprevruntime= fWDruntime;
-    
+
   return;
-  
+
 }
 
 
@@ -177,7 +176,7 @@ void TAGWDtrigInfo::Clear(Option_t*)
     fTriggersTiming[i][j]=0;
     }
   }
-  
+
 }
 
 
@@ -188,4 +187,3 @@ void TAGWDtrigInfo::ToStream(ostream& os, Option_t* option) const
   os << "TAGWDtrigInfo"
   << endl;
 }
-

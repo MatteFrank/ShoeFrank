@@ -129,9 +129,6 @@ Bool_t TATWparGeo::FromFile(const TString& name)
             << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
          mytilt.push_back(tilt);
-
-	 // fvTilt[iLayer][iBar].SetXYZ(tilt[0], tilt[1], tilt[2]);
-	 
 	 
          TGeoRotation rot;
          rot.RotateX(tilt[0]);

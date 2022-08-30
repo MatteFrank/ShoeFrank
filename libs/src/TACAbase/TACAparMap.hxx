@@ -23,28 +23,25 @@ public:
   TACAparMap();
     virtual         ~TACAparMap();
 
-    // void            FromFile(std::string FileName);
     Bool_t          FromFile(const TString& name);
 
     void            Clear(Option_t* opt="");
 
     Int_t           GetCrystalId(Int_t boardId, Int_t channelId);
-    // Int_t           GetCrystalsN() {return nCrystals;}
-    Int_t           GetCrystalsN() const {return nCrys;}
-    Int_t           GetBoardId(Int_t cryId) {return fBoardId[cryId]; }
-    Int_t           GetChannelId(Int_t cryId) {return fChannelId[cryId]; }
-    Int_t           GetModuleId(Int_t cryId) {return fModuleId[cryId]; }
+   
+    Int_t           GetCrystalsN()            const { return fCrystalsN;        }
+    Int_t           GetBoardId(Int_t cryId)         { return fBoardId[cryId];   }
+    Int_t           GetChannelId(Int_t cryId)       { return fChannelId[cryId]; }
+    Int_t           GetModuleId(Int_t cryId)        { return fModuleId[cryId];  }
 
 private:
-  // Int_t nCrystals;
-  Int_t nCrys;
+  Int_t                      fCrystalsN;
   map< pair<int, int>, int > fCrysId;
-  vector<Int_t> fModuleId;
-  vector<Int_t> fBoardId;
-  vector<Int_t> fChannelId;
+  vector<Int_t>              fModuleId;
+  vector<Int_t>              fBoardId;
+  vector<Int_t>              fChannelId;
   
   ClassDef(TACAparMap,1)
-
 };
 
 #endif

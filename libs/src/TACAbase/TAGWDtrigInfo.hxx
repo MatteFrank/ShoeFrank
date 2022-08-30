@@ -23,22 +23,24 @@ public:
   Int_t GetTriggerID()const {return fTriggerID;}
   inline Int_t* GetTriggersStatus(){return fTriggersStatus;}
   inline Int_t* GetTriggersCounter(){return fTriggersCounter;}
+  inline Int_t* GetTriggersPrevCounter(){return fTriggersPrevCounter;}
   void GetTriggersTiming(Int_t timing[NMONTRIG][NCLK]){timing=fTriggersTiming;}
 
   inline Double_t GetWDruntime(){return fWDruntime;}
-  inline Double_t GetWDtrigNum(){return fWDtrigNum;}
+  inline Double_t GetWDprevruntime(){return fWDprevruntime;}
+  inline Int_t GetWDtrigNum(){return fWDtrigNum;}
   inline Double_t GetMajRate(){return fMajRate;}
 
-  
+
   void AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t> words);
   virtual void      Clear(Option_t* opt="");
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
-  
+
 public:
   static const Char_t* GetBranchName() { return fgkBranchName.Data(); }
-  
+
 private:
-  
+
   Int_t            fTriggerID;
   Int_t            fTriggersStatus[NMAXTRIG];
   Int_t            fTriggersTiming[NMONTRIG][NCLK];
@@ -49,12 +51,12 @@ private:
   Double_t         fMajRate;
   Double_t         fWDprevruntime;
 
-  
+
 private:
   static TString    fgkBranchName;
-  
+
   ClassDef(TAGWDtrigInfo,1)
-  
+
 };
 
 #endif
