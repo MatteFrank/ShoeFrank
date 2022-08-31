@@ -93,20 +93,33 @@ void GlobalRecoAna::LoopEvent() {
     fEvtGlbTrkVec.clear();
     //*************  loop on global tracks *****************
 
-    if (debug_trackid )myfile<< "------- track reconstruction "<< endl;
+    if (debug_trackid )myfile<<endl<< "------- track reconstruction "<< endl;
     for(int it=0;it<nt;it++){
-      if (debug_trackid )myfile<< "track n° "<< it << endl;
+      if (debug_trackid )myfile<<endl<< "track n° "<< it << endl;
       fGlbTrack = myGlb->GetTrack(it);
       if(isnan(fGlbTrack->GetCalEnergy())){//check if tof + track arc_length + mass hyp are ok
       	cout<<"TRK energy ISNAN! -> TOF value = "<<fGlbTrack->GetTwTof()<<endl;
       	continue;
       }
 
-      //loop on meas points of a glb track
+      
       
       Th_reco = fGlbTrack -> GetTgtTheta() *180./TMath::Pi();
      
       int charge = -100;
+
+      //Assignment of a true track idx (TrkIdMC)  to global reco track
+      Int_t tmp_size = 0;
+      Int_t my_mult(-1);
+      Int_t TrkIdMC = -1;
+      bool pure_trk = false;
+      bool clean_trk = false;
+
+      Int_t N_TrkIdMC_TW =-1; 
+      Int_t TrkIdMC_TW = -2;
+
+      //loop on meas points of a glb track
+      
       if(FootDebugLevel(1))
       	cout<<"===NEW TRACK with "<<fGlbTrack->GetPointsN()<<" points =="<<endl;
 
@@ -167,12 +180,7 @@ void GlobalRecoAna::LoopEvent() {
       if(FootDebugLevel(1))
         cout<<"loop on global track hit done"<<endl;
 
-      //Assignment of a true track idx (TrkIdMC)  to global reco track
-      Int_t tmp_size = 0;
-      Int_t my_mult(-1);
-      Int_t TrkIdMC = -1;
-      bool pure_trk = false;
-      bool clean_trk = false;
+      
       for(map<int,int>::iterator it=mapclu.begin(); it!=mapclu.end(); it++){
       	if(FootDebugLevel(1))
       	  cout<<mapclu.size()<<" :: MAPtrk ["<<it->first<<"]["<<it->second<<"]"<<endl;
@@ -197,6 +205,7 @@ void GlobalRecoAna::LoopEvent() {
       }
       if(FootDebugLevel(1) && fFlagMC)
       	cout<<"IDX TRK = "<<TrkIdMC<<" "<<endl;
+      
 	    //	if(TrkIdMC != )//to do ::: check if our trk index is different than the true (MC) one assigned by toe/genfit
 
       
@@ -229,14 +238,23 @@ void GlobalRecoAna::LoopEvent() {
       P_cross.SetXYZ(-999.,-999.,-999.);
       P_cross_calo.SetXYZ(-999.,-999.,-999.);
 
+      
 
       if(fFlagMC){
       TrkIdMC = fGlbTrack->GetMcMainTrackId();   //associo l'IdMC alla particella più frequente della traccia
-      if (debug_trackid )myfile << "  TrkIdMC= "<< TrkIdMC << endl;
+      if (debug_trackid )myfile << "  TrkIdMC= "<< TrkIdMC << " --> ";
+      
 
-
-      //---- start study on TW ghost hits or pileup
+      
+      
+      	if(TrkIdMC !=-1){
+      	  TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);
+          if (debug_trackid )myfile <<" Fluka code: " << pNtuMcTrk->GetFlukaID()<<"("<<pNtuMcTrk->GetCharge()<<")"<< endl<< "  charge TW : "<< fGlbTrack->GetTwChargeZ()<<"  charge Fit : "<<fGlbTrack->GetFitChargeZ() <<endl<<"---------"<<endl;
+      	  
+          //---- start study on TW ghost hits or pileup
       if (debug_trackid ){      //check del punto del TW
+        
+
         for(int ic=0;ic<fGlbTrack->GetPointsN();ic++) {
 
           TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
@@ -245,7 +263,13 @@ void GlobalRecoAna::LoopEvent() {
 
           if(str.Contains(TATWparGeo::GetBaseName())){ // from all the points of the track, i just want the one of TW
             
-            myfile << "TW Point, MC tracks check: ";
+            N_TrkIdMC_TW = tmp_poi->GetMcTracksN();
+            TrkIdMC_TW = tmp_poi->GetMcTrackIdx(0);
+
+            myfile << "TW Point, MC tracks check: TrkIdMC= ";
+
+            
+
             for( Int_t i = 0; i < tmp_poi->GetMcTracksN(); ++i) { //I check how many different MC tracks crosses the TW with same MCID
          
                Int_t trackIdx = tmp_poi->GetMcTrackIdx(i);         
@@ -253,6 +277,21 @@ void GlobalRecoAna::LoopEvent() {
          
             }
             myfile << endl;
+
+            if (tmp_poi->GetMcTracksN() == 1){
+              if (TrkIdMC == tmp_poi->GetMcTrackIdx(0)) {
+                  myfile << " TrkIdMC of track and TW match" << endl;
+              } else {
+                myfile << " TrkIdMC of track and TW NOT match: " <<"trackId: "<<TrkIdMC << " TWid: "<< tmp_poi->GetMcTrackIdx(0)  <<endl;
+                //continue;
+              }
+
+            }
+
+            if (tmp_poi->GetMcTracksN() > 1){
+                myfile << "ghost hit candidate "<<endl;
+                //continue;
+            }
 
             myfile << "Inspect of TW Hits: ";
             TATWpoint *tw_point = GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx());
@@ -287,32 +326,12 @@ void GlobalRecoAna::LoopEvent() {
         }
       }
       //---- stop study on TW ghost hits or pileup
-
-
-
-      /*
-      streambuf *coutbuf = cout.rdbuf(); //save old buf
-      cout.rdbuf(myfile.rdbuf()); //redirect cout
-      fGlbTrack->CheckTWTrackId();
-      cout.rdbuf(coutbuf); //reset cout
-
-        //check ghost hits of TW
-      for( Int_t iPoint = 0; iPoint < fGlbTrack->GetPointsN(); ++iPoint ) {     
-        if (iPoint == (fGlbTrack->GetPointsN() -1) ) {   
-            TAGpoint* point = fGlbTrack->GetPoint(iPoint);      //It is a TW point
-            point -> CheckGhostHits();
-        }}
-      */
-     
-
-
-
-
-      
-      	if(TrkIdMC !=-1){
-      	  TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);
-          if (debug_trackid )myfile <<" Fluka code: " << pNtuMcTrk->GetFlukaID()<<endl<< "  charge TW : "<< fGlbTrack->GetTwChargeZ()<<"  charge Fit : "<<fGlbTrack->GetFitChargeZ() <<endl<<"---------"<<endl;
-      	  Z_true = pNtuMcTrk->GetCharge();
+          
+          
+          
+          
+          
+          Z_true = pNtuMcTrk->GetCharge();
       	  P_true = pNtuMcTrk->GetInitP();//also MS contribution in target!
           M_true = pNtuMcTrk->GetMass();
       	  Ek_true_tot = (sqrt(pow(pNtuMcTrk->GetMass(),2) + pow((pNtuMcTrk->GetInitP()).Mag(),2)) - pNtuMcTrk->GetMass());
@@ -384,8 +403,8 @@ void GlobalRecoAna::LoopEvent() {
           cout<<"twstatus="<<twstatus<<"  this track analysis will be skipped"<<endl;          
         continue;
       } 
-
       
+           
 
 
       Double_t Tof_tw=fGlbTrack->GetTwTof();
@@ -460,11 +479,22 @@ void GlobalRecoAna::LoopEvent() {
       double Dg=beta*pow((1-beta*beta),-3./2.)*Dbeta; //delta gamma
       double DE=M_meas*Dg; //delta mass
       //----------
-
+      
       
       ((TH2D*)gDirectory->Get(Form("Ekin/Z%d/DE_vs_Ekin",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev(),DE*fpFootGeo->GevToMev());
       ((TH1D*)gDirectory->Get(Form("Ekin/Z%d/Ek_meas",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev());
-      ((TH2D*)gDirectory->Get("Z_truevsZ_reco"))->Fill(Z_true,Z_meas);
+      
+      if (debug_trackid ){
+        if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {      //stampa solo se TW point ha id della traccia e non c'è gosh hits
+      ((TH2D*)gDirectory->Get("Z_truevsZ_reco_TWFixed"))->Fill(Z_true,Z_meas);
+        }}
+
+      if (debug_trackid ){
+        if (N_TrkIdMC_TW == 1) {      //stampa solo se non c'è gosh hits
+      ((TH2D*)gDirectory->Get("Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);
+        }}
+      
+      ((TH2D*)gDirectory->Get("Z_truevsZ_reco"))->Fill(Z_true,Z_meas); 
       ((TH2D*)gDirectory->Get("Z_TWvsZ_fit"))->Fill(fGlbTrack->GetTwChargeZ(),fGlbTrack->GetFitChargeZ());
   
       if(fFlagMC){
@@ -483,7 +513,7 @@ void GlobalRecoAna::LoopEvent() {
             
         for (int i = 0; i<th_nbin; i++) {   
           
-         //if ( Z_meas>0 && Z_meas<primary_cha){
+         if ( Z_meas>0 && Z_meas<primary_cha){
 
 
          if(Th_meas>=theta_binning[i][0] && Th_meas<theta_binning[i][1]){
@@ -513,7 +543,7 @@ void GlobalRecoAna::LoopEvent() {
 
             }
           }
-        // }
+        }
         }
       }
       }
@@ -648,7 +678,7 @@ void GlobalRecoAna::LoopEvent() {
       ((TH1D*)gDirectory->Get("Energy"))->Fill(Ek_meas*fpFootGeo->GevToMev());
       ((TH1D*)gDirectory->Get("Charge_trk"))->Fill(Z_meas);
       ((TH1D*)gDirectory->Get("Charge_trk_True"))->Fill(Z_true);
-      // charge efficiency
+      // charge purity
       if (Z_meas == Z_true){        
         ((TH1D*)gDirectory->Get("Charge_purity")) -> Fill(Z_meas);
         
@@ -739,7 +769,7 @@ void GlobalRecoAna::LoopEvent() {
       
     
     
-    if (debug_trackid ) myfile << "-----------------  MC study "<< endl;
+    if (debug_trackid ) myfile <<endl<< "-----------------  MC study "<< endl;
    
     if (fFlagMC){
       
@@ -982,6 +1012,9 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("ThTrue","",200, 0 ,50.);
   h = new TH1D("Tof_tw","TOF from TW center; [ns]",200, 0., 10.);
   h = new TH1D("Beta","Beta;",200, 0., 1.);
+  h2  = new TH2D("Z_truevsZ_reco_TWFixed","",10, 0 ,10., 10, 0 ,10.);
+  h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","",10, 0 ,10., 10, 0 ,10.);
+  
   h2  = new TH2D("Z_truevsZ_reco","",10, 0 ,10., 10, 0 ,10.);
   h2  = new TH2D("Z_TWvsZ_fit","",10, 0 ,10., 10, 0 ,10.);
 
