@@ -63,14 +63,9 @@ int main (int argc, char *argv[])  {
    if (nomc)
       BaseReco::DisableSaveMc();
    
-   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
-   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
-   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
-   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+   Bool_t TWRateSmear = TAGrecoManager::GetPar()->IsTWRateSmearMC();
    Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
    Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
-   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
-   Bool_t TWRateSmear = TAGrecoManager::GetPar()->IsTWRateSmearMC();
 
 
    cout << "TWRateSmear::" << TWRateSmear << endl;
@@ -90,31 +85,11 @@ int main (int argc, char *argv[])  {
    BaseReco* locRec = new LocalRecoMC(exp, runNb, in, out);
 
    // global setting
-   if (ntu)
-      locRec->EnableTree();
-   if(his)
-      locRec->EnableHisto();
-   if(hit) {
-      locRec->EnableTree();
-      locRec->EnableSaveHits();
-   }
-   if (trk)
-      locRec->EnableTracking();
-   
    if (mth)
       locRec->EnableM28lusMT();
    
    if (nSkipEv > 0)
       locRec->GoEvent(nSkipEv);
-   
-   if(zmc)
-     locRec->EnableZfromMCtrue();
-   
-   if(zrec && !zmc)
-     locRec->EnableZrecWithPUoff();
-   
-   if(zmatch)
-     locRec->EnableTWZmatch();
 
    if(TWRateSmear){
      locRec->EnableTWRateSmearMC();

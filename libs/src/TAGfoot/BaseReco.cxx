@@ -38,7 +38,6 @@
 ClassImp(BaseReco)
 
 Bool_t  BaseReco::fgItrTrackFlag  = false;
-Bool_t  BaseReco::fgMsdTrackFlag  = false;
 Bool_t  BaseReco::fSaveMcFlag     = true;
 
 //__________________________________________________________
@@ -260,6 +259,49 @@ void BaseReco::GlobalChecks()
 }
 
 //__________________________________________________________
+//! Global reconstruction settings
+void BaseReco::GlobalSettings()
+{
+   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
+   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
+   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
+   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
+   Bool_t obj = TAGrecoManager::GetPar()->IsReadRootObj();
+   Bool_t zma = TAGrecoManager::GetPar()->IsTWZmatch();
+   Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
+   Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
+   Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
+
+   // global setting
+   if (ntu)
+      EnableTree();
+   
+   if(his)
+      EnableHisto();
+   
+   if(hit) {
+      EnableTree();
+      EnableSaveHits();
+   }
+   
+   if (trk)
+      EnableTracking();
+   
+   if(zma)
+      EnableTWZmatch();
+   
+   if (tbc)
+      EnableTWcalibPerBar();
+   
+   if(zmc)
+      EnableZfromMCtrue();
+   
+   if(zrec && !zmc)
+      EnableZrecWithPUoff();
+
+}
+
+//__________________________________________________________
 //! Add friend tree in root file
 //!
 //! \param[in] fileName root file name
@@ -274,6 +316,8 @@ void BaseReco::AddFriendTree(TString fileName, TString treeName)
 //! Actions before loop event
 void BaseReco::BeforeEventLoop()
 {
+   GlobalSettings();
+   
    ReadParFiles();
    CreateRawAction();
    CreateRecAction();
@@ -286,7 +330,6 @@ void BaseReco::BeforeEventLoop()
    OpenFileIn();
 
    GlobalChecks();
-
 
    if (fFlagOut)
       OpenFileOut();
@@ -403,7 +446,7 @@ void BaseReco::SetRecHistogramDir()
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
       fActClusMsd->SetHistogramDir(subfolder);
       fActPointMsd->SetHistogramDir(subfolder);
-      if (fgMsdTrackFlag && fFlagTrack)
+      if (fFlagMsdTrack && fFlagTrack)
          fActTrackMsd->SetHistogramDir(subfolder);
    }
 
@@ -862,7 +905,7 @@ void BaseReco::CreateRecActionMsd()
    if (fFlagHisto)
       fActPointMsd->CreateHistogram();
 
-   if (fgMsdTrackFlag && fFlagTrack) {
+   if (fFlagMsdTrack && fFlagTrack) {
       fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
 
       if (fgMsdTrackingAlgo.Contains("Std") ) {
@@ -1100,7 +1143,7 @@ void BaseReco::SetTreeBranches()
   if (TAGrecoManager::GetPar()->IncludeMSD()) {
     fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
      fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
-     if (fgMsdTrackFlag && fFlagTrack)
+     if (fFlagMsdTrack && fFlagTrack)
         fActEvtWriter->SetupElementBranch(fpNtuTrackMsd, TAMSDntuTrack::GetBranchName());
   }
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
@@ -1175,7 +1218,7 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("msdActNtu");
       gTAGroot->AddRequiredItem("msdActClus");
       gTAGroot->AddRequiredItem("msdActPoint");
-      if (fgMsdTrackFlag && fFlagTrack)
+      if (fFlagMsdTrack && fFlagTrack)
          gTAGroot->AddRequiredItem("msdActTrack");
    }
 

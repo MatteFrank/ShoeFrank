@@ -165,14 +165,6 @@ public:
    static void DisableItrTracking() { BaseReco::DisableItrTracking();   }
    //! Enable ITR tracking
    static void EnableItrTracking()  { BaseReco::EnableItrTracking();    }
-   
-   //! MSD tracking flag
-   static Bool_t IsMsdTracking()    { return BaseReco::IsMsdTracking(); }
-   
-   //! Disable MSD tracking
-   static void DisableMsdTracking() { BaseReco::DisableMsdTracking();   }
-   //! Enable MSD tracking
-   static void EnableMsdTracking()  { BaseReco::EnableMsdTracking();    }
 
 protected:
    BaseReco*       fReco;                   ///< Base reconstruction
@@ -202,6 +194,7 @@ protected:
    TAEDtrack*      fIrTrackDisplay;         ///< list of line to display tracks
    Bool_t          fIrFlag;                 ///< ITR flag
    Bool_t          fFlagTrack;              ///< flag for tracking
+   Bool_t          fFlagMsdTrack;           ///< flag for Msd tracking
 
    // TW
    map< pair<Int_t, Int_t>, Int_t > fFiredTofBar;       ///< list of fired bar per event
