@@ -45,9 +45,8 @@ Bool_t TACAparMap::FromFile(const TString& name)
   if (!Open(name))
     return false;
   
-   Info("FromFile()", "Open file %s for crystal status map\n", name.Data());
+  Info("FromFile()", "Open file %s for crystal status map\n", name.Data());
 
-   
   // read for parameter
   Double_t* para = new Double_t[5];
 
@@ -83,7 +82,6 @@ Bool_t TACAparMap::FromFile(const TString& name)
 
     if (FootDebugLevel(1))
       printf("%2d %2d %2d B%2d %d\n", crysId, moduleId, channelId, boardId, activeCrys);
-      
   }
 
   delete [] para;
@@ -104,13 +102,10 @@ Int_t TACAparMap::GetCrystalId(Int_t boardId, Int_t channelId)
 {
   pair<int, int> idx(boardId, channelId);
   
-  if (fCrysId.count(make_pair(boardId, channelId))) {
-     auto itr = fCrysId.find(make_pair(boardId, channelId));
+  if (fCrysId.count(idx)) {
+     auto itr = fCrysId.find(idx);
      return fCrysId[idx];
   }
 
-  //if (itr == fCrysId.end())
-    return -1;
-  
-  //return fCrysId[idx];
+   return -1;
 }
