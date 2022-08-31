@@ -263,15 +263,16 @@ void BaseReco::GlobalChecks()
 //! Global reconstruction settings
 void BaseReco::GlobalSettings()
 {
-   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
-   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
-   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
-   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
-   Bool_t obj = TAGrecoManager::GetPar()->IsReadRootObj();
-   Bool_t zma = TAGrecoManager::GetPar()->IsTWZmatch();
-   Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
-   Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
-   Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
+   Bool_t ntu    = TAGrecoManager::GetPar()->IsSaveTree();
+   Bool_t his    = TAGrecoManager::GetPar()->IsSaveHisto();
+   Bool_t hit    = TAGrecoManager::GetPar()->IsSaveHits();
+   Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
+   Bool_t trkMsd = TAGrecoManager::GetPar()->IsMsdTracking();
+   Bool_t obj    = TAGrecoManager::GetPar()->IsReadRootObj();
+   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
+   Bool_t tbc    = TAGrecoManager::GetPar()->IsTWCalBar();
+   Bool_t zmc    = TAGrecoManager::GetPar()->IsTWZmc();
+   Bool_t zrec   = TAGrecoManager::GetPar()->IsTWnoPU();
 
    // global setting
    if (ntu)
@@ -287,8 +288,11 @@ void BaseReco::GlobalSettings()
    
    if (trk)
       EnableTracking();
+ 
+   if (trkMsd)
+      EnableMsdTracking();
    
-   if(zma)
+   if(zmatch)
       EnableTWZmatch();
    
    if (tbc)
