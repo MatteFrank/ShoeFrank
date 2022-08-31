@@ -121,6 +121,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagHits(false),
    fFlagHisto(false),
    fFlagTrack(false),
+   fFlagMsdTrack(false),
    fFlagTWbarCalib(false),
    fFlagRateSmearTw(false),
    fgVtxTrackingAlgo("Full"),
