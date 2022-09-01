@@ -275,7 +275,7 @@ void GlobalRecoAna::LoopEvent() {
                   }
                 }
                 
-            } else   if  (indexSize = 1) {                
+            } else   if  (indexSize == 1) {                
                 myfile <<"----------------------------"<<endl<<"TW GHOST CHECK - McTracks = 1"<<endl;
                 myfile << "row id "<<rowHit->GetMcTrackIdx(0)<<" POS: "<<rowHit->GetPosition() << " and column id "<<colHit->GetMcTrackIdx(0)<<" POS : "<<colHit->GetPosition() << " matching"<<endl;
 
