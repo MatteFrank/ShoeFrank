@@ -36,6 +36,7 @@ Genfit Event Display ON: n
 EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
+EnableMsdTrack:      n
 
 EnableSaveHits:      y
 EnableRootObject:    n

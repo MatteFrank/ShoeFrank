@@ -61,6 +61,7 @@ TOF Tag Cuts:   9  11
 EnableTree:          n
 EnableHisto:         y
 EnableTracking:      y
+EnableMsdTrack:      n
 
 EnableSaveHits:      n
 EnableRootObject:    n
