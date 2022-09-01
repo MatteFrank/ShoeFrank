@@ -62,6 +62,7 @@ EnableTree:          n
 EnableHisto:         y
 EnableTracking:      y
 EnableMsdTrack:      n
+EnableItrTrack:      n
 
 EnableSaveHits:      n
 EnableRootObject:    n
@@ -78,7 +79,7 @@ IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:	           y
+IncludeIT:	         y
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y
