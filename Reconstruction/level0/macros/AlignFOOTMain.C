@@ -210,6 +210,10 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, TString extname=""
   // extrapolate the alignment parameter of all the detectors with respect to the target
   TString foldername="BM";
   AlignWrtTarget(bmtrk,foldername);
+  foldername="VT";
+  AlignWrtTarget(vttrk,foldername);
+  foldername="MSD";
+  AlignWrtTarget(msdtrk,foldername);
 
   //here the VT is fixed, the BM will be shifted and tilted
   foldername="BMVT";

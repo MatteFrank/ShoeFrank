@@ -198,6 +198,10 @@ int Booking(TFile* file_out) {
       h = new TH1D("AlignWrtTarget_slopeY_glbsys_afterrot","BM my in glb sys ;my;Events",1000,-0.1,0.1);
       h = new TH1D("AlignWrtTarget_tgposX_glbsys_afterrot","BM projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
       h = new TH1D("AlignWrtTarget_tgposY_glbsys_afterrot","BM projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_slopeX_glbsys_final","BM mx in glb sys ;mx;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_slopeY_glbsys_final","BM my in glb sys ;my;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_tgposX_glbsys_final","BM projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_tgposY_glbsys_final","BM projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
     gDirectory->cd("..");
     file_out->cd("..");
   }
@@ -231,6 +235,14 @@ int Booking(TFile* file_out) {
       h = new TH1D("AlignWrtTarget_slopeY_glbsys","VT my in glb sys ;my;Events",1000,-0.1,0.1);
       h = new TH1D("AlignWrtTarget_tgposX_glbsys","VT projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
       h = new TH1D("AlignWrtTarget_tgposY_glbsys","VT projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_slopeX_glbsys_afterrot","VT mx in glb sys ;mx;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_slopeY_glbsys_afterrot","VT my in glb sys ;my;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_tgposX_glbsys_afterrot","VT projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_tgposY_glbsys_afterrot","VT projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_slopeX_glbsys_final","VT mx in glb sys ;mx;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_slopeY_glbsys_final","VT my in glb sys ;my;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_tgposX_glbsys_final","VT projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_tgposY_glbsys_final","VT projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
     gDirectory->cd("..");
     file_out->cd("..");
   }
@@ -279,6 +291,14 @@ int Booking(TFile* file_out) {
     h = new TH1D("AlignWrtTarget_slopeY_glbsys","MSD my in glb sys ;my;Events",1000,-0.1,0.1);
     h = new TH1D("AlignWrtTarget_tgposX_glbsys","MSD projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
     h = new TH1D("AlignWrtTarget_tgposY_glbsys","MSD projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
+    h = new TH1D("AlignWrtTarget_slopeX_glbsys_afterrot","MSD mx in glb sys ;mx;Events",1000,-0.1,0.1);
+    h = new TH1D("AlignWrtTarget_slopeY_glbsys_afterrot","MSD my in glb sys ;my;Events",1000,-0.1,0.1);
+    h = new TH1D("AlignWrtTarget_tgposX_glbsys_afterrot","MSD projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
+    h = new TH1D("AlignWrtTarget_tgposY_glbsys_afterrot","MSD projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
+    h = new TH1D("AlignWrtTarget_slopeX_glbsys_final","MSD mx in glb sys ;mx;Events",1000,-0.1,0.1);
+    h = new TH1D("AlignWrtTarget_slopeY_glbsys_final","MSD my in glb sys ;my;Events",1000,-0.1,0.1);
+    h = new TH1D("AlignWrtTarget_tgposX_glbsys_final","MSD projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
+    h = new TH1D("AlignWrtTarget_tgposY_glbsys_final","MSD projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
     gDirectory->cd("..");
     file_out->cd("..");
   }
@@ -743,12 +763,75 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
   ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-1.,1.);
-  resxtra=gaus->GetParameter(1);
+  Double_t newresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
   ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-1.,1.);
-  resytra=gaus->GetParameter(1);
-  cout<<"resxtra="<<resxtra<<"  resytra="<<resytra<<endl;
-  cout<<detname.Data()<<"PosX: "<<-resxtra<<"  "<<detname.Data()<<"PosY= "<<-resytra<<endl<<endl<<endl;
+  Double_t newresytra=gaus->GetParameter(1);
+  cout<<"newresxtra="<<newresxtra<<"  newresytra="<<newresytra<<endl;
+  TVector3 detfinalpos(-newresxtra+detcenter.X(),-newresytra+detcenter.Y(),detcenter.Z());
+  cout<<detname.Data()<<"new position estimate PosX: "<<detfinalpos.X()<<"  "<<detname.Data()<<"PosY= "<<detfinalpos.Y()<<"  "<<detname.Data()<<"PosZ= "<<detfinalpos.Z()<<endl;
+
+  //define the trasformation matrix
+  TGeoRotation detfinalrot;
+  detfinalrot.RotateX(detnewangle.X());
+  detfinalrot.RotateY(detnewangle.Y());
+  loc[0] = detfinalpos.X();
+  loc[1] = detfinalpos.Y();
+  loc[2] = detfinalpos.Z();
+  glo[0] = 0.;
+  glo[1] = 0.;
+  glo[2] = 0.;
+  detfinalrot.LocalToMaster(loc, glo);
+  TGeoTranslation detfinaltrans(glo[0], glo[1], glo[2]);
+  TGeoHMatrix  detfinaltransfo;
+  detfinaltransfo=detfinaltrans;
+  detfinaltransfo*=detfinalrot;
+
+
+  slopexname=detname+"/AlignWrtTarget_slopeX_glbsys_final";
+  slopeyname=detname+"/AlignWrtTarget_slopeY_glbsys_final";
+  tgposxname=detname+"/AlignWrtTarget_tgposX_glbsys_final";
+  tgposyname=detname+"/AlignWrtTarget_tgposY_glbsys_final";
+
+  for(Int_t k=0;k<dettrk.size();k++){
+    Double_t slope_loc[3]={dettrk.at(k).slopeloc.X(),dettrk.at(k).slopeloc.Y(),dettrk.at(k).slopeloc.Z()};
+    Double_t origin_loc[3]={dettrk.at(k).originloc.X(),dettrk.at(k).originloc.Y(),dettrk.at(k).originloc.Z()};
+    Double_t slope_glo[3] = {0., 0., 0.};
+    Double_t origin_glo[3] = {0., 0., 0.};
+    detfinaltransfo.LocalToMasterVect(slope_loc, slope_glo);
+    detfinaltransfo.LocalToMaster(origin_loc,origin_glo);
+    TVector3 slope_vecglo(slope_glo[0], slope_glo[1],slope_glo[2]);
+    TVector3 origin_vecglo(origin_glo[0], origin_glo[1], origin_glo[2]);
+    TVector3 projtg_glo=ProjectToZ(slope_vecglo, origin_vecglo,geoTrafo->GetTGCenter().Z());
+    myfill(slopexname.Data(),slope_vecglo.X()/slope_vecglo.Z());
+    myfill(slopeyname.Data(),slope_vecglo.Y()/slope_vecglo.Z());
+    myfill(tgposxname.Data(),projtg_glo.X());
+    myfill(tgposyname.Data(),projtg_glo.Y());
+  }
+
+  gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  Double_t finalresxrot=gaus->GetParameter(1);
+  gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  Double_t finalresyrot=gaus->GetParameter(1);
+
+  gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-1.,1.);
+  Double_t finalresxtra=gaus->GetParameter(1);
+  gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-1.,1.);
+  Double_t finalresytra=gaus->GetParameter(1);
+
+  cout<<endl<<endl<<endl;
+  cout<<"AlignWrtTarget::final results for "<<detname.Data()<<endl;
+  cout<<detname.Data()<<"new position estimate:"<<endl;
+  cout<<detname.Data()<<"PosX: "<<detfinalpos.X()<<"  "<<detname.Data()<<"PosY= "<<detfinalpos.Y()<<"  "<<detname.Data()<<"PosZ= "<<detfinalpos.Z()<<endl;
+  cout<<detname.Data()<<"new rotation estimate:"<<endl;
+  cout<<detname.Data()<<"AngX: "<<detnewangle.X()<<"  "<<detname.Data()<<"AngY: "<<detnewangle.Y()<<"  "<<detname.Data()<<"AngZ: "<<detnewangle.Z()<<endl;
+  cout<<"residual on traslations with the new geometrical parameters: finalresxtra="<<finalresxtra<<" finalresytra="<<finalresytra<<endl;
+  cout<<"residual on rotations with the new geometrical parameters: finalresxrot="<<finalresxrot<<" finalresyrot="<<finalresyrot<<endl<<endl;
+
 
   if(debug)
     cout<<"AlignWrtTarget analysis done with the "<<detname.Data()<<endl;
@@ -969,11 +1052,12 @@ int AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString 
   ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-1.,1.);
   Double_t finalresytra=gaus->GetParameter(1);
 
+  cout<<endl<<endl<<endl;
   cout<<detname.Data()<<" AlignDetaVsDetb analysis done"<<endl;
   cout<<"Detector A new position parameters:"<<endl;
   cout<<detname.Data()<<"PosX: "<<detanewpos.X()<<"  "<<detname.Data()<<"PosY: "<<detanewpos.Y()<<"  "<<detname.Data()<<"PosZ: "<<detanewpos.Z()<<endl;
   cout<<"Detector A new rotation parameters:"<<endl;
-  cout<<detname.Data()<<"AngX: "<<detanewangle.X()<<"  "<<detname.Data()<<"AngY: "<<detanewangle.Y()<<"  "<<detname.Data()<<"AngZ: "<<detanewangle.Z()<<endl<<endl;
+  cout<<detname.Data()<<"AngX: "<<detanewangle.X()<<"  "<<detname.Data()<<"AngY: "<<detanewangle.Y()<<"  "<<detname.Data()<<"AngZ: "<<detanewangle.Z()<<endl;
   cout<<"residual on traslations with the new geometrical parameters: finalresxtra="<<finalresxtra<<" finalresytra="<<finalresytra<<endl;
   cout<<"residual on rotations with the new geometrical parameters: finalresxrot="<<finalresxrot<<" finalresyrot="<<finalresyrot<<endl<<endl;
 
