@@ -1,3 +1,7 @@
+/*!
+ \file TACAdigitizer.cxx
+ \brief   Implementation of TACAdigitizer.
+ */
 
 #include "TRandom3.h"
 #include "TF1.h"
@@ -8,10 +12,15 @@
 #include "TACAparGeo.hxx"
 #include "TACAdigitizer.hxx"
 
+/*!
+ \class TACAdigitizer
+ \brief digitizer for calorimeter hits **
+ */
 
 Float_t TACAdigitizer::fgThreshold = 80; // MeV
 
 // --------------------------------------------------------------------------------------
+//! Constructor
 TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
@@ -27,6 +36,7 @@ TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw)
 }
 
 // --------------------------------------------------------------------------------------
+//! Set functions
 void  TACAdigitizer::SetFunctions()
 {
    // compute energy resolution
@@ -34,6 +44,7 @@ void  TACAdigitizer::SetFunctions()
 }
 
 // --------------------------------------------------------------------------------------
+//! Set parameter function
 void  TACAdigitizer::SetParFunction()
 {
    // Resolution parameter
@@ -41,12 +52,17 @@ void  TACAdigitizer::SetParFunction()
 }
 
 // --------------------------------------------------------------------------------------
+//! Destructor
 TACAdigitizer::~TACAdigitizer()
 {
    delete fDeResE;
 }
 
-//___________________________________________________________________________________________
+// --------------------------------------------------------------------------------------
+//! Resolution energy function
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
 Double_t TACAdigitizer::ResEnergy(Double_t* x, Double_t* par)
 {
    Float_t energy = x[0];
@@ -56,12 +72,28 @@ Double_t TACAdigitizer::ResEnergy(Double_t* x, Double_t* par)
 }
 
 //___________________________________________________________________________________________
+//! Get resolution energy
+//!
+//! \param[in] edep energy loss
 Float_t TACAdigitizer::GetResEnergy(Float_t edep)
 {
    return fDeResE->Eval(edep)*edep;
 }
 
-//___________________________________________________________________________________________
+//------------------------------------------+-----------------------------------
+//! Fill hit signal
+//!
+//! \param[in] edep energy loss
+//! \param[in] x0  impact position in X direction
+//! \param[in] y0  impact position in Y direction
+//! \param[in] zin impact position in z direction
+//! \param[in] zout outgoing position in z direction
+//! \param[in] time impact time
+//! \param[in] id crystal id
+//! \param[in] Z atomic charge of the particle
+//! \param[in] px0 momentum in X direction
+//! \param[in] py0 momentum in Y direction
+//! \param[in] pz0 momentum in z direction
 Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
 
@@ -82,8 +114,11 @@ Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 }
 
 //___________________________________________________________________________________________
-void TACAdigitizer::SmearEnergy(TACAparCal* parCal){
-
+//! Smearing energy
+//!
+//! \param[in] parCal calibration parameter
+void TACAdigitizer::SmearEnergy(TACAparCal* parCal)
+{
   for (auto const& element : fMap) {
     Double_t charge = element.second->GetCharge();
     Double_t thres = parCal->GetCrystalThres(element.second->GetCrystalId());

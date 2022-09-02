@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TACAactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \file TACAactNtuHit.cxx
   \brief   Implementation of TACAactNtuHit.
 */
 
@@ -9,15 +8,21 @@
 #include "TACAactNtuHit.hxx"
 
 /*!
-  \class TACAactNtuHit TACAactNtuHit.hxx "TACAactNtuHit.hxx"
+  \class TACAactNtuHit
   \brief Action to create CA hits from RAW data. **
 */
 
+//! Class Imp
 ClassImp(TACAactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] p_datraw raw data input container descriptor
+//! \param[out] p_nturaw data output container descriptor
+//! \param[in] p_parmap mapping parameter descriptor
+//! \param[in] p_parcal calibration parameter descriptor
 TACAactNtuHit::TACAactNtuHit(const char* name,
                              TAGdataDsc* p_datraw,
                              TAGdataDsc* p_nturaw,
@@ -56,9 +61,8 @@ TACAactNtuHit::~TACAactNtuHit()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-
-Bool_t TACAactNtuHit::Action() {
-
+Bool_t TACAactNtuHit::Action()
+{
    TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
@@ -109,6 +113,7 @@ Bool_t TACAactNtuHit::Action() {
 }
 
 // --------------------------------------------------------------------------------------
+//! Set functions
 void  TACAactNtuHit::SetTemperatureFunctions()
 {
    // Angular slope as function of amplitude/charge for temp fT1
@@ -119,6 +124,7 @@ void  TACAactNtuHit::SetTemperatureFunctions()
 }
 
 // --------------------------------------------------------------------------------------
+//! Set parameters functions
 void  TACAactNtuHit::SetParFunction(/* Int_t  crysId*/)
 {
    // if we manage to have a set of calibration for each crystal
@@ -133,6 +139,10 @@ void  TACAactNtuHit::SetParFunction(/* Int_t  crysId*/)
 }
 
 // --------------------------------------------------------------------------------------
+//! Coorelation temperature function
+//!
+//! \param[in] x input vector
+//! \param[in] par parameter vector
 Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 {
    // Angular slope as function of amplitude/charge
@@ -143,19 +153,15 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 }
 
 //------------------------------------------+-----------------------------------
+//! Return temperature correlation
+//!
+//! \param[in] charge input charge
+//! \param[in] temp input temperature
+//! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp, Int_t  crysId)
 {
-
-   // Old. Each run temp was written on calib file
-   // TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
-   // Double_t T0 = parcal->GetTemperatureCry(crysId); 
-
    // Current temperature from sensor for crysId
    Double_t T0 = temp;
-
-   // Set temp parameter per crysID (for now, it is the same for all crystal)
-   // fTcorr1->SetParFunction(crysId);
-   // fTcorr2->SetParFunction(crysId);
 
    Double_t m1 = fTcorr1->Eval(charge);
    Double_t m2 = fTcorr2->Eval(charge);
@@ -165,15 +171,15 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp,
    Double_t delta = (fT1 - T0) * m0;
 
    Double_t charge_tcorr = charge + delta;
-
-   //return charge; //ricordarsi di cambiare quando avremo la calibrazione!!!!!!
   
    return charge_tcorr;
-
 }
 
-
 //------------------------------------------+-----------------------------------
+//! Returns equalized correction
+//!
+//! \param[in] charge_tcorr input charge correlation
+//! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
    TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
@@ -185,6 +191,10 @@ Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  
 }
 
 //------------------------------------------+-----------------------------------
+//! Get calibrated energy
+//!
+//! \param[in] rawenergy raw energy
+//! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
 {
    TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
@@ -200,6 +210,10 @@ Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
 }
 
 //------------------------------------------+-----------------------------------
+//! Get calibrated time
+//!
+//! \param[in] RawTime raw time
+//! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 {
   // TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
@@ -218,7 +232,6 @@ Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 
 //------------------------------------------+-----------------------------------
 //! Histograms
-
 void TACAactNtuHit::CreateHistogram(){
 
    DeleteHistogram();
@@ -260,5 +273,4 @@ void TACAactNtuHit::CreateHistogram(){
    }
 
    SetValidHistogram(kTRUE);
-
 }

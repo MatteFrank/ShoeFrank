@@ -1,17 +1,34 @@
+/*!
+ \file TACAcalibrationMap.cxx
+ \brief  Implementation of TACAcalibrationMap
+ */
+
 #include "TError.h"
 
 #include "TACAcalibrationMap.hxx"
 #include "TAGxmlParser.hxx"
 #include "TAGrecoManager.hxx"
 
+
+/*!
+ \class TACAcalibrationMap
+ \brief Calibration map class
+ */
+
+//! Class Imp
 ClassImp(TACAcalibrationMap)
 
+//_____________________________________________________________________
+//! Constructor
 TACAcalibrationMap::TACAcalibrationMap()
 : TAGobject()
 {
 }
 
 //_____________________________________________________________________
+//! Load crystal temperature calibration map file
+//!
+//! \param[in] FileName input file
 void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
 {
 
@@ -71,6 +88,9 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
 }
 
 //_____________________________________________________________________
+//! Load crystal energy calibration map file
+//!
+//! \param[in] FileName input file
 void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
 {
    
@@ -124,6 +144,9 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
 }
 
 //_____________________________________________________________________
+//! Export to xml file
+//!
+//! \param[in] FileName input file
 void TACAcalibrationMap::ExportToFile(std::string FileName)
 {
   TAGxmlParser x;
@@ -142,6 +165,9 @@ void TACAcalibrationMap::ExportToFile(std::string FileName)
 }
 
 //_______________________________________________
+//! Check crystal number
+//!
+//! \param[in] cryId crystal id
 bool TACAcalibrationMap::Exists(Int_t cryId)
 {
   if (fCalibrationMap.count(cryId)==0)
@@ -152,6 +178,10 @@ bool TACAcalibrationMap::Exists(Int_t cryId)
 }
 
 //_______________________________________________
+//! Get energy loss parameter
+//!
+//! \param[in] cryId crystal id
+//! \param[in] parId parameter id
 Double_t TACAcalibrationMap::GetElossParam(Int_t cryId, UInt_t parId)
 {
    if (parId == 0)

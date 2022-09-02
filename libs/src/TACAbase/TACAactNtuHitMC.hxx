@@ -1,8 +1,7 @@
 #ifndef _TACAactNtuHitMC_HXX
 #define _TACAactNtuHitMC_HXX
 /*!
-  \file
-  \version $Id: TACAactNtuHitMC.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+  \file TACAactNtuHitMC.hxx
   \brief   Declaration of TACAactNtuHitMC.
 */
 /*------------------------------------------+---------------------------------*/
@@ -19,8 +18,8 @@
 #include "TH2F.h"
 
 
-#define MAX_NCRY 300      //max number of the crystals in the calorimeter
-#define MAX_ANUMBER 18     //max atomic number
+#define MAX_NCRY 300       ///< max number of the crystals in the calorimeter
+#define MAX_ANUMBER 18     ///< max atomic number
 
 class TACAdigitizer;
 class TACAactNtuHitMC : public TAGaction {
@@ -37,48 +36,45 @@ class TACAactNtuHitMC : public TAGaction {
 
     virtual        ~TACAactNtuHitMC();
 
-    virtual Bool_t Action();
-
-    void           SmearEnergy();
+    virtual        Bool_t Action();
 
     void           CreateHistogram();
 
   private:
-   TAGdataDsc*     fpNtuMC;     // input mc hit
-   TAGdataDsc*     fpNtuEve;    // input eve track dsc
-   TAGdataDsc*     fpNtuRaw;		    // output data dsc
-   TAGparaDsc*     fpGeoMap;          // geometry para dsc
-   TAGparaDsc*     fpCalMap;          // calib para dsc
-   TAGparaDsc*     fpGeoMapG;       // geometry para dsc for beam
-   TAGgeoTrafo*    fpGeoTrafo;
-   TACAdigitizer*  fDigitizer;       // cluster size digitizer
-   EVENT_STRUCT*   fEventStruct;
+   TAGdataDsc*     fpNtuMC;      ///< input mc hit
+   TAGdataDsc*     fpNtuEve;     ///< input eve track dsc
+   TAGdataDsc*     fpNtuRaw;	   ///<  output data dsc
+   TAGparaDsc*     fpGeoMap;     ///<  geometry para dsc
+   TAGparaDsc*     fpCalMap;     ///<  calib para dsc
+   TAGparaDsc*     fpGeoMapG;    ///<  geometry para dsc for beam
+   TAGgeoTrafo*    fpGeoTrafo;   ///<  global transformation
+   TACAdigitizer*  fDigitizer;   ///<  cluster size digitizer
+   EVENT_STRUCT*   fEventStruct; ///<  old Fluka structure
 
-   TH1F* fpHisDeTot;
-   TH1F* fpHisDeTotMc;
-   TH1F* fpHisNeutron_dE;
-   TH1F* fpHisMass;
-   TH1F* fpHisTime;
-   TH1F* fpHisRange;
-   TH1F* fpHisIon_Ek[MAX_ANUMBER];
-   TH1F* fpHisIon_dE[MAX_ANUMBER];
-   TH1F* fpHisEnPerCry[MAX_NCRY];
-   TH1F* fpHisEnVsPositionPerCry[MAX_NCRY];
+   TH1F*           fpHisDeTot;                         ///< Total energy loss histogram
+   TH1F*           fpHisDeTotMc;                       ///< Total MC energy loss histogram
+   TH1F*           fpHisNeutrondE;                     ///< Neutron energy loss histogram
+   TH1F*           fpHisMass;                          ///< MC mass histogram
+   TH1F*           fpHisTime;                          ///< MC time histogram
+   TH1F*           fpHisRange;                         ///< MC range histogram
+   TH1F*           fpHisIonEk[MAX_ANUMBER];            ///< MC kenetic energy histogram
+   TH1F*           fpHisIondE[MAX_ANUMBER];            ///< MC energy loss histogram
+   TH1F*           fpHisEnPerCry[MAX_NCRY];            ///< energy loss per crystal histogram
+   TH1F*           fpHisEnVsPositionPerCry[MAX_NCRY];  ///< energy loss per positon crystal histogram
 
-   TH2F* fpHisCryHitVsEnDep;
-   TH2F* fpHisRangeVsMass;
-   TH2F* fpHisCryHitVsZ;
-   TH2F* fpHisEnDepVsZ;
-   TH2F* fpHisHitMapXY;
-   TH2F* fpHisHitMapZYin;
-   TH2F* fpHisHitMapZYout;
-   TH2I* fpHisParticleVsRegion;
+   TH2F*           fpHisCryHitVsEnDep;                 ///< hit vs energy loss histogram
+   TH2F*           fpHisRangeVsMass;                   ///< range vs mass histogram
+   TH2F*           fpHisCryHitVsZ;                     ///< hit vs atomic charge histogram
+   TH2F*           fpHisEnDepVsZ;                      ///< energy loss vs atomic charge histogram
+   TH2F*           fpHisHitMapXY;                      ///< Hit map histogram
+   TH2F*           fpHisHitMapZYin;                    ///< Hit ZY in map histogram
+   TH2F*           fpHisHitMapZYout;                   ///< Hit ZY out map histogram
+   TH2I*           fpHisParticleVsRegion;              ///< particle vs region histogram
 
   private:
    void           CreateDigitizer();
 
    ClassDef(TACAactNtuHitMC,0)
-
 };
 
 #endif
