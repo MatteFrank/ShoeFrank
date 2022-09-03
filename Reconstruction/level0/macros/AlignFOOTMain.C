@@ -1,10 +1,7 @@
-#include "AlignFOOTFunc.C"
-
-
-
+#include "AlignFOOTFunc.h"
 
 // main
-void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Int_t indoalign=5, TString extname="")
+void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, TString extname="")
 
 {
 
@@ -20,8 +17,6 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Int_t indoalign=5,
     cout<<"FATAL ERROR: your input file do not contains a tree, check it!  input file="<<nameFile.Data()<<endl;
     return;
   }
-
-  doalign=indoalign;
 
   //define and charge varaibles and geometrical parameters
   TAGroot gTAGroot;
@@ -60,6 +55,12 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Int_t indoalign=5,
   geoTrafo = new TAGgeoTrafo();
   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
   geoTrafo->FromFile(parFileName);
+
+  TAGparaDsc* fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
+  parGeo = (TAGparGeo*)fpParGeoG->Object();
+  parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
+  parGeo->FromFile(parFileName.Data());
+
 
   TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
   stparGeo = (TASTparGeo*)parGeoSt->Object();
@@ -171,15 +172,10 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Int_t indoalign=5,
   }else
     nameOut=extname;
 
-  //vectors adopted for the alignment, all values are in local frames
-  vector<TVector3> bmvtxslopevec;
-  vector<TVector3> bmvtxoriginvec;
-  vector<TVector3> bmslopevec;
-  vector<TVector3> bmoriginvec;
-  vector<TVector3> msdvtxslopevec;
-  vector<TVector3> msdvtxoriginvec;
-  vector<TVector3> msdslopevec;
-  vector<TVector3> msdoriginvec;
+  //vectors of tracks of primaries reconstructed by the single detectors and adopted for the alignment. All values are in local frames,
+  vector<beamtrk> bmtrk;
+  vector<beamtrk> vttrk;
+  vector<beamtrk> msdtrk;
 
   int status;
   TFile *file_out = new TFile(nameOut,"RECREATE");
@@ -189,13 +185,14 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Int_t indoalign=5,
   cout<<"I'll process "<<maxentries<<" events. The input tree contains a total of "<<tree->GetEntries()<<" events."<<endl;
   cout<<"Now I'll start the event loop"<<endl;
 
+  Zbeam = parGeo->GetBeamPar().AtomicNumber;
+  cout<<"ZBEAM = "<<Zbeam<<endl;
+
   for (evnum = 0; evnum < maxentries; ++evnum) {
 
     if(evnum%100==0) printf("Processed Events: %d\n", evnum);
     tree->GetEntry(evnum);
 
-    if(IncludeSC)
-      status=StartCounter();
     if(IncludeBM)
       status=BeamMonitor();
     if(IncludeVT)
@@ -206,18 +203,24 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Int_t indoalign=5,
       status=TofWall();
     if(IncludeDAQ)
       status=DataAcquisition();
-    if(bmNtuTrack->GetTracksN()==1 && vtxmatchvertex!=nullptr)
-      status=VTXSYNC(); //check the VT sync
 
-    //Fill vectors of tracks adopted for detectors alignment
-    if(doalign>0){
-      status=FillTrackVect(bmvtxslopevec, bmvtxoriginvec, bmslopevec, bmoriginvec, msdvtxslopevec, msdvtxoriginvec, msdslopevec, msdoriginvec);
-    }
-
+    status=FillTrackVect(bmtrk, vttrk, msdtrk); //fill the tracks in GLOBAL FRAME adopted for alignment
   }//Loop on events
 
-  //here the VTX is fixed, the BM will be shifted and tilted 
-  AlignBM(bmvtxslopevec, bmvtxoriginvec, bmslopevec, bmoriginvec);
+  // extrapolate the alignment parameter of all the detectors with respect to the target
+  TString foldername="BM";
+  AlignWrtTarget(bmtrk,foldername);
+  foldername="VT";
+  AlignWrtTarget(vttrk,foldername);
+  foldername="MSD";
+  AlignWrtTarget(msdtrk,foldername);
+
+  //here the VT is fixed, the BM will be shifted and tilted
+  foldername="BMVT";
+  AlignDetaVsDetb(bmtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("BM"), geoTrafo->GetDeviceAngle("BM"));
+
+  foldername="MSDVT";
+  AlignDetaVsDetb(msdtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("MSD"), geoTrafo->GetDeviceAngle("MSD"));
 
   file_out->Write();
   file_out->Close();
