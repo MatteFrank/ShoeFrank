@@ -1,8 +1,8 @@
 /*!
- \file
- \version $Id: TAMSDactNtuPoint.cxx $
+ \file TAMSDactNtuPoint.cxx
  \brief   Implementation of TAMSDactNtuPoint.
  */
+
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -20,13 +20,19 @@
 
 /*!
  \class TAMSDactNtuPoint
- \brief NTuplizer for micro strip. **
+ \brief NTuplizer for micro strip point
  */
 
+//! Class imp
 ClassImp(TAMSDactNtuPoint);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuCluster cluster input container descriptor
+//! \param[out] pNtuPoint point output container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
 TAMSDactNtuPoint::TAMSDactNtuPoint(const char* name,
 				   TAGdataDsc* pNtuCluster, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap)
   : TAGaction(name, "TAMSDactNtuPoint - NTuplize points"),
@@ -76,7 +82,7 @@ void TAMSDactNtuPoint::CreateHistogram()
 }
 
 //______________________________________________________________________________
-//
+//! Action
 Bool_t TAMSDactNtuPoint::Action()
 {
    Bool_t ok = FindPoints();
@@ -87,12 +93,13 @@ Bool_t TAMSDactNtuPoint::Action()
 }
 
 //______________________________________________________________________________
-//
+//! Find points
 Bool_t TAMSDactNtuPoint::FindPoints()
 {
   TAMSDntuCluster* pNtuCluster  = (TAMSDntuCluster*) fpNtuCluster->Object();
   TAMSDntuPoint* pNtuPoint      = (TAMSDntuPoint*) fpNtuPoint->Object();
   TAMSDparGeo* pGeoMap          = (TAMSDparGeo*) fpGeoMap->Object();
+   
   if(FootDebugLevel(1)) {  
     cout<<"****************************"<<endl;
     cout<<"  NtuPoint hits "<<endl;

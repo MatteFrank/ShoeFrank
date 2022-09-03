@@ -1,3 +1,8 @@
+/*!
+ \file TAMSDdigitizer.cxx
+ \brief   Implementation of TAMSDdigitizer.
+ */
+
 #include "TAMSDdigitizer.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -13,9 +18,17 @@ using namespace std;
 
 Float_t TAMSDdigitizer::fgChargeGain  = 1.;
 Bool_t  TAMSDdigitizer::fgSmearFlag   = false;
-Float_t TAMSDdigitizer::fgDefSmearPos =  70;    // in micron
+Float_t TAMSDdigitizer::fgDefSmearPos = 70;    // in micron
+
+/*!
+ \class TAMSDdigitizer
+ \brief digitizer for MSD
+ */
 
 // --------------------------------------------------------------------------------------
+//! Constructor
+//!
+//! \param[in] parGeo geometry parameter
 TAMSDdigitizer::TAMSDdigitizer(TAMSDparGeo* parGeo)
 : TAGbaseDigitizer(),
   fpParGeo(parGeo),
@@ -41,12 +54,25 @@ TAMSDdigitizer::TAMSDdigitizer(TAMSDparGeo* parGeo)
 }
 
 // --------------------------------------------------------------------------------------
+//! Destructor
 TAMSDdigitizer::~TAMSDdigitizer() 
 {   
 }
 
 //------------------------------------------+-----------------------------------
-//! fill strip signal
+//! Fill hit signal
+//!
+//! \param[in] edep energy loss
+//! \param[in] x0  impact position in X direction
+//! \param[in] y0  impact position in Y direction
+//! \param[in] zin impact position in z direction
+//! \param[in] zout outgoing position in z direction
+//! \param[in] time impact time
+//! \param[in] sensorId plane id
+//! \param[in] Z atomic charge of the particle
+//! \param[in] px0 momentum in X direction
+//! \param[in] py0 momentum in Y direction
+//! \param[in] pz0 momentum in z direction
 Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double_t zin, Double_t zout,  Double_t /*time*/, Int_t sensorId, Int_t /*Z*/, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
   if (fgSmearFlag) {
@@ -139,8 +165,10 @@ Bool_t TAMSDdigitizer::Process( Double_t edep, Double_t x0, Double_t y0,  Double
   return true;
 }
 
-
 //___________________________________________________________________________________________
+//! Get eta for a given position
+//!
+//! \param[in] pos a given position
 Double_t TAMSDdigitizer::GetEta(Double_t pos)
 {
    Double_t a   = fEtaLimLo;
@@ -164,6 +192,7 @@ Double_t TAMSDdigitizer::GetEta(Double_t pos)
 }
 
 // --------------------------------------------------------------------------------------
+//! Set functions
 void TAMSDdigitizer::SetFunctions()
 {
    // compute X0 vs Eta
@@ -174,6 +203,7 @@ void TAMSDdigitizer::SetFunctions()
 }
 
 // --------------------------------------------------------------------------------------
+//! Set parameter function
 void TAMSDdigitizer::SetParFunction()
 {
    // position of impact X0 versus Eta
@@ -185,6 +215,10 @@ void TAMSDdigitizer::SetParFunction()
 }
 
 // --------------------------------------------------------------------------------------
+//! Eta function
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
 Double_t TAMSDdigitizer::EtaX0(Double_t* x, Double_t* par)
 {
    Float_t xx = x[0];
@@ -193,7 +227,11 @@ Double_t TAMSDdigitizer::EtaX0(Double_t* x, Double_t* par)
    return X0;
 }
 
-//___________________________________________________________________________________________
+// --------------------------------------------------------------------------------------
+//! Resolution energy function
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
 Double_t TAMSDdigitizer::ResEnergy(Double_t* x, Double_t* par)
 {
    Float_t energy = x[0];
@@ -202,13 +240,20 @@ Double_t TAMSDdigitizer::ResEnergy(Double_t* x, Double_t* par)
    return res;
 }
 
-//___________________________________________________________________________________________
+// --------------------------------------------------------------------------------------
+//! Get resolution energy
+//!
+//! \param[in] edep energy loss
 Double_t TAMSDdigitizer::GetResEnergy(Float_t edep)
 {
    return fDeResE->Eval(edep)*edep;
 }
 
 // --------------------------------------------------------------------------------------
+//! Fill strips
+//!
+//! \param[in] strip strip id
+//! \param[in] value strip value
 void TAMSDdigitizer::FillMap(Int_t strip, Double_t value)
 {
   if (strip < 0) return;
@@ -219,7 +264,10 @@ void TAMSDdigitizer::FillMap(Int_t strip, Double_t value)
       fMap[strip] = fMap[strip]+value;
 }
 
-//_____________________________________________________________________________
+// --------------------------------------------------------------------------------------
+//! Get strip number from position
+//!
+//! \param[in] pos a given position
 Int_t TAMSDdigitizer::GetStrip(Float_t pos) const
 {
   // equivalent to  floor((-y-ymin)/fPitchV)-1

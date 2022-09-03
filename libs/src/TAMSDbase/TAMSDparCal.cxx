@@ -1,13 +1,26 @@
+/*!
+ \file TAMSDparCal.cxx
+ \brief   Implementation of TAMSDparCal.
+ */
+
 #include "TError.h"
 
 #include "TAMSDparCal.hxx"
 
+/*!
+ \class TAMSDparCal
+ \brief Calibration class for MSD
+ */
+
+//! Class Imp
 ClassImp(TAMSDparCal)
 
 //_____________________________________________________________________
+//! Constructor
+//!
+//! \param[in] strip_number_p strip number
 TAMSDparCal::TAMSDparCal(int strip_number_p)
 : TAGparTools()
-
 {
   // Standard constructor
   fMapCal = new TAMSDcalibrationMap(strip_number_p);
@@ -16,6 +29,7 @@ TAMSDparCal::TAMSDparCal(int strip_number_p)
 }
 
 //------------------------------------------+-----------------------------------
+//! Destructor
 TAMSDparCal::~TAMSDparCal()
 {
   if (fMapCal)
@@ -35,6 +49,7 @@ TAMSDparCal::~TAMSDparCal()
 }
 
 //_________________________________________
+//! Set functions parameters
 void TAMSDparCal::SetFunctions()
 {
    fFuncEta = new TF1("fFuncEta","pol6",0,1);
@@ -74,7 +89,10 @@ void TAMSDparCal::SetFunctions()
    fFunc3->SetParameter(5,-9.32504);
 }
 
-//_________________________________________
+//_____________________________________________________________________
+//! Load energy calibration map file
+//!
+//! \param[in] name input file
 Bool_t TAMSDparCal::LoadEnergyCalibrationMap(TString name)
 {
    Clear();
@@ -87,12 +105,16 @@ Bool_t TAMSDparCal::LoadEnergyCalibrationMap(TString name)
 }
 
 //_____________________________________________________________________
+//! return energy loss parameters
 TAMSDcalibrationMap::ElossParameter_t TAMSDparCal::GetElossParameters()
 {
     return fMapCal->GetElossParameters();
 }
 
-//_________________________________________
+//_____________________________________________________________________
+//! Load pesdtal file
+//!
+//! \param[in] name input file
 Bool_t TAMSDparCal::LoadPedestalMap(TString name)
 {
    Clear();
@@ -105,11 +127,20 @@ Bool_t TAMSDparCal::LoadPedestalMap(TString name)
 }
 
 //_____________________________________________________________________
+//! Get pedestal parameter
+//!
+//! \param[in] sensorId sensor id
+//! \param[in] stripId strip id
 TAMSDcalibrationMap::PedParameter_t TAMSDparCal::GetPedestal(Int_t sensorId, Int_t stripId) {
     return fMapCal->GetPedestal( sensorId, stripId );
 }
 
 //_____________________________________________________________________
+//! Get pedestal value
+//!
+//! \param[in] sensorId sensor id
+//! \param[in] pedestal_p pedestal parameter
+//! \param[in] seed seed flag
 Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed)
 {
    Double_t sigLevel = 0;
@@ -132,15 +163,18 @@ Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedP
 }
 
 //_____________________________________________________________________
+//! Get energy loss parameter
+//!
+//! \param[in] eta eta value
 Double_t TAMSDparCal::GetElossParam(Float_t eta)
 {
    return fMapCal->GetElossParam(eta);
 }
 
-
-
-//______________________________________________________________________________
-//
+//_____________________________________________________________________
+//! Compute eta charge correction
+//!
+//! \param[in] eta eta value
 Float_t TAMSDparCal::ComputeEtaChargeCorrection(Float_t eta)
 {   
    //TODO: template for charge loss correction wrt eta, will need to use parameters loaded from "TAMSD_Energy_Calibration.cal"
@@ -154,8 +188,10 @@ Float_t TAMSDparCal::ComputeEtaChargeCorrection(Float_t eta)
    return correction;
 }
 
-//______________________________________________________________________________
-//
+//_____________________________________________________________________
+//! Compute eta position correction
+//!
+//! \param[in] eta eta value
 Float_t TAMSDparCal::ComputeEtaPosCorrection(Float_t eta)
 {
    //TODO: template for hit position correction wrt eta, will need to use parameters loaded from "TAMSD_Energy_Calibration.cal"

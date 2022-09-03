@@ -1,12 +1,10 @@
 #ifndef _TAMSDparGeo_HXX
 #define _TAMSDparGeo_HXX
 /*!
-  \file
-  \version $Id: TAMSDparGeo.hxx,v 1.2 2003/06/22 19:33:36 mueller Exp $
+  \file TAMSDparGeo.hxx
   \brief   Declaration of TAMSDparGeo.
 */
 /*------------------------------------------+---------------------------------*/
-
 
 #include <map>
 #include <sstream>
@@ -66,29 +64,31 @@ public:
   string      PrintSubtractBodiesFromAir();
 
 private:
-  vector<string> fvMetalBody;
-  vector<string> fvModBody;
-  vector<string> fvStripBody;
-  vector<string> fvMetalRegion;
-  vector<string> fvModRegion;
-  vector<string> fvStripRegion;
-
-  Int_t          fStripsN;         // Number of strips
-  Float_t        fPitch;           // Pitch value
-  
-  TVector3       fMetalSize;        // Sensitive size of metallization
-  Float_t        fMetalThickness;   // Thickness of metallization
-  TString        fMetalMat;         // Material of metallization
-  Float_t        fMetalDensity;     // density of metallization
+  Int_t          fStripsN;          ///< Number of strips
+  Float_t        fPitch;            ///< Pitch value
+  TVector3       fMetalSize;        ///< Sensitive size of metallization
+  Float_t        fMetalThickness;   ///< Thickness of metallization
+  TString        fMetalMat;         ///< Material of metallization
+  Float_t        fMetalDensity;     ///< density of metallization
+   
+  vector<string> fvMetalBody;       ///< Fluka metal body vector
+  vector<string> fvModBody;         ///< Fluka body vector
+  vector<string> fvStripBody;       ///< Fluka strip  vector
+  vector<string> fvMetalRegion;     ///< Fluka metal region vector
+  vector<string> fvModRegion;       ///< Fluka  mod region vector
+  vector<string> fvStripRegion;     ///< Fluka strip region vector
   
 private:
-  static const TString fgkBaseName;   // MSD base name
-  static const TString fgkDefParaName;
+  static const TString fgkBaseName;    ///< MSD base name
+  static const TString fgkDefParaName; //< default parameter name
   
 public:
+  //! Get base name
   static const Char_t* GetBaseName()                    { return fgkBaseName.Data();    }
+  //! Get default parameter name
   static const Char_t* GetDefParaName()                 { return fgkDefParaName.Data(); }
-  static Int_t GetSensorId(Int_t boardId, Int_t sideId) { return 2*(boardId-1)+sideId;      }
+  //! Get sensor id from board and side id
+  static Int_t GetSensorId(Int_t boardId, Int_t sideId) { return 2*(boardId-1)+sideId;  }
 
   ClassDef(TAMSDparGeo,3)
 };

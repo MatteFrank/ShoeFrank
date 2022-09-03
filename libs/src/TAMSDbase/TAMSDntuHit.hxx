@@ -1,8 +1,7 @@
 #ifndef _TAMSDntuHit_HXX
 #define _TAMSDntuHit_HXX
 /*!
- \file
- \version $Id: TAMSDntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+ \file TAMSDntuHit.hxx
  \brief   Declaration of TAMSDntuHit.
  */
 /*------------------------------------------+---------------------------------*/
@@ -16,13 +15,13 @@ class TAMSDntuHit : public TAGdata {
    
 protected:
    //using TObjArray here
-   TObjArray*        fListOfStrips;
-   TAMSDparGeo*      fpGeoMap;         //! do not store
+   TObjArray*        fListOfStrips;    ///< list of strips
+   TAMSDparGeo*      fpGeoMap;         //! geometry parameter, do not store
    
-   std::map<pair<int, int>, int > fMap; //!
+   std::map<pair<int, int>, int > fMap; //! map
 
 private:
-   static TString    fgkBranchName;    // Branch name in TTree
+   static TString    fgkBranchName;    ///< Branch name in TTree
    
 public:
    TAMSDntuHit();
@@ -47,6 +46,7 @@ public:
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
    
 public:
+   //! Get branch name
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
    ClassDef(TAMSDntuHit,2)

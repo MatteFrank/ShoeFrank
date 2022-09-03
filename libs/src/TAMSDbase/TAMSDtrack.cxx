@@ -1,10 +1,14 @@
+/*!
+ \file TAMSDtrack.cxx
+ \brief Implementation of TAMSDtrack
+ */
+
 #include "TMath.h"
 #include "TClonesArray.h"
 
 #include "TAGrecoManager.hxx"
 #include "TAMSDntuPoint.hxx"
 #include "TAMSDtrack.hxx"
-
 
 //#################################################################
 
@@ -19,11 +23,16 @@
   //                                                              //
   //////////////////////////////////////////////////////////////////
 
+/*!
+ \class TAMSDtrack
+ \brief simple container class for tracks with the associated points
+ */
 
+//! Class Imp
 ClassImp(TAMSDtrack) // Description of a Track
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TAMSDtrack::TAMSDtrack()
 :  TAGbaseTrack()
 {
@@ -31,13 +40,15 @@ TAMSDtrack::TAMSDtrack()
 }
 
 //______________________________________________________________________________
-//  
+//! Destructor
 TAMSDtrack::~TAMSDtrack()
 {
 }
 
 //______________________________________________________________________________
-//
+//!  build track from copy
+//!
+//! \param[in] aTrack track to copy
 TAMSDtrack::TAMSDtrack(const TAGbaseTrack& aTrack)
 : TAGbaseTrack::TAGbaseTrack(aTrack)
 {
@@ -45,15 +56,17 @@ TAMSDtrack::TAMSDtrack(const TAGbaseTrack& aTrack)
 }
 
 //______________________________________________________________________________
-//
+//! Setup clones
 void TAMSDtrack::SetupClones()
 {
    fListOfClusters = new TClonesArray("TAMSDpoint");
    fListOfClusters->SetOwner(true);
 }
 
-// __________________________________________________________________________
-//
+//______________________________________________________________________________
+//!  Add cluster to track
+//!
+//! \param[in] clus cluster to add
 void TAMSDtrack::AddCluster(TAGcluster* clus)
 {
    TAMSDpoint* point = static_cast<TAMSDpoint*>(clus);

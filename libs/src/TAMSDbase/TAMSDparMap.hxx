@@ -1,12 +1,11 @@
 #ifndef _TAMSDparMap_HXX
 #define _TAMSDparMap_HXX
+
 /*!
- \file
- \version $Id: TAMSDparMap.hxx,v 1.1
+ \file TAMSDparMap.hxx
  \brief   Declaration of TAMSDparMap.
  */
 /*------------------------------------------+---------------------------------*/
-
 
 #include <vector>
 
@@ -22,14 +21,16 @@ public:
 
    Bool_t          FromFile(const TString& name);
    Int_t           GetSensorId(Int_t boardId, Int_t viewId);
+   
+   //! Get number of sensors
    Int_t           GetSensorsN() const { return fSensorsN; }
   
 private:
-  Int_t         fSensorsN;
-  vector<Int_t> fSensId;
-  vector<Int_t> fBoardId;
-  vector<Int_t> fViewId;
-  TString       fkDefaultMapName; // default detector mapping file
+  Int_t            fSensorsN;        ///< number of sensors
+  vector<Int_t>    fSensId;          ///< sensor id vector
+  vector<Int_t>    fBoardId;         ///< board id vector
+  vector<Int_t>    fViewId;          ///< view id vector
+  TString          fkDefaultMapName; ///< default detector mapping file
   
   ClassDef(TAMSDparMap,2)
   

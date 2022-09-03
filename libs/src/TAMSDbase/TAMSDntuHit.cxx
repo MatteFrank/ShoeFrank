@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAMSDntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+ \file TAMSDntuHit.cxx
  \brief   Implementation of TAMSDntuHit.
  */
 
@@ -11,7 +10,7 @@
 #include "TAGrecoManager.hxx"
 
 /*!
- \class TAMSDntuHit TAMSDntuHit.hxx "TAMSDntuHit.hxx"
+ \class TAMSDntuHit 
  \brief Container class for VTX ntu hit **
  */
 
@@ -28,6 +27,7 @@
 
 //##############################################################################
 
+//! Class Imp
 ClassImp(TAMSDntuHit);
 
 TString TAMSDntuHit::fgkBranchName   = "msdrh.";
@@ -57,6 +57,8 @@ TAMSDntuHit::~TAMSDntuHit()
 
 //------------------------------------------+-----------------------------------
 //! return number of strips for a given sensor.
+//!
+//! \param[in] iSensor sensor id
 Int_t TAMSDntuHit::GetStripsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -69,6 +71,9 @@ Int_t TAMSDntuHit::GetStripsN(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
+//! Get list of strips
+//!
+//! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor)
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -81,6 +86,9 @@ TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor)
 }
 
 //------------------------------------------+-----------------------------------
+//! Get list of strips (const)
+//!
+//! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -95,6 +103,9 @@ TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor) const
 
 //------------------------------------------+-----------------------------------
 //! return a strip for a given sensor
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] iStrip strip id
 TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip)
 {
    if (iStrip >=0 || iStrip < GetStripsN(iSensor)) {
@@ -107,7 +118,10 @@ TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a strip for a given sensor
+//! return a strip for a given sensor (const)
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] iStrip strip id
 const TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip) const
 {
    if (iStrip >=0 || iStrip < GetStripsN(iSensor)) {
@@ -149,7 +163,12 @@ void TAMSDntuHit::Clear(Option_t*)
 }
 
 //______________________________________________________________________________
-//
+//! New cluster
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] value charge value
+//! \param[in] aView plane view
+//! \param[in] aStrip strip id
 TAMSDhit* TAMSDntuHit::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_t aStrip)
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
@@ -176,6 +195,9 @@ TAMSDhit* TAMSDntuHit::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAMSDntuHit::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {

@@ -1,11 +1,11 @@
 #ifndef _TAMSDactNtuTrack_HXX
 #define _TAMSDactNtuTrack_HXX
 /*!
- \file
- \version $Id: TAMSDactNtuTrack.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAMSDactNtuTrack.hxx
  \brief   Declaration of TAMSDactNtuTrack.
  */
 /*------------------------------------------+---------------------------------*/
+
 #include "TAVTactNtuTrack.hxx"
 
 class TAVTbaseParGeo;
@@ -22,8 +22,6 @@ public:
    virtual ~TAMSDactNtuTrack();
    
 protected:
-   Bool_t                   IsGoodCandidate(TAGbaseTrack* track);
-   
    void                     AddNewTrack(TAGbaseTrack* track);
    TAGbaseTrack*            NewTrack();
    Int_t                    GetTracksN();

@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAMSDparGeo.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
+  \file TAMSDparGeo.cxx
   \brief   Implementation of TAMSDparGeo.
 */
 
@@ -21,10 +20,16 @@
 const TString TAMSDparGeo::fgkBaseName      = "MSD";
 const TString TAMSDparGeo::fgkDefParaName   = "msdGeo";
 
+/*!
+ \class TAMSDparGeo
+ \brief Geometry parameters for MSD **
+ */
 
+//! Class imp
 ClassImp(TAMSDparGeo);
 
 //_____________________________________________________________________________
+//! Standard constructor
 TAMSDparGeo::TAMSDparGeo()
 : TAVTbaseParGeo()
 {
@@ -32,12 +37,14 @@ TAMSDparGeo::TAMSDparGeo()
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAMSDparGeo::~TAMSDparGeo()
 {
 }
 
 
 //_____________________________________________________________________________
+//! Define material
 void TAMSDparGeo::DefineMaterial()
 {
     TAVTbaseParGeo::DefineMaterial();
@@ -56,7 +63,10 @@ void TAMSDparGeo::DefineMaterial()
     }
 }
 
-//_____________________________________________________________________________
+//_____________________________________________________________________
+//! From file
+//!
+//! \param[in] name input file
 Bool_t TAMSDparGeo::FromFile(const TString& name)
 {
    cout << setiosflags(ios::fixed) << setprecision(5);
@@ -232,6 +242,9 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
 
 
 //_____________________________________________________________________________
+//! Get strip position
+//!
+//! \param[in] strip strip number
 Float_t TAMSDparGeo::GetPosition(Int_t strip) const
 {
   Float_t x = (Float_t(2*strip - fStripsN + 1) * fPitch)/2.;
@@ -239,7 +252,11 @@ Float_t TAMSDparGeo::GetPosition(Int_t strip) const
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *vertexName)
+//! Add module in MSD for Root geometry
+//!
+//! \param[in] basemoduleName module volume base name
+//! \param[in] msdName MSD volume name
+TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *msdName)
 {
    // create MSD module
    const Char_t* matName = fEpiMat.Data();
@@ -256,6 +273,10 @@ TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *verte
 }
 
 //_____________________________________________________________________________
+//! Build MSD in Root geometry
+//!
+//! \param[in] basemoduleName  plsnr volume name
+//! \param[in] msdName MSD base name
 TGeoVolume* TAMSDparGeo::BuildMicroStripDetector(const char* basemoduleName, const char *msdName)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
@@ -285,6 +306,7 @@ TGeoVolume* TAMSDparGeo::BuildMicroStripDetector(const char* basemoduleName, con
 }
 
 //_____________________________________________________________________________
+//! Print Fluka parameters
 string TAMSDparGeo::PrintParameters()
 {
   stringstream outstr;
@@ -312,6 +334,7 @@ string TAMSDparGeo::PrintParameters()
 
 
 //_____________________________________________________________________________
+//! Print Fluka rotations
 string TAMSDparGeo::PrintRotations()
 {
   stringstream ss;
@@ -401,11 +424,10 @@ string TAMSDparGeo::PrintRotations()
 
 }
 
-
 //_____________________________________________________________________________
+//! Print Fluka bodies
 string TAMSDparGeo::PrintBodies()
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
@@ -526,9 +548,9 @@ string TAMSDparGeo::PrintBodies()
 }
 
 //_____________________________________________________________________________
+//! Print Fluka regions
 string TAMSDparGeo::PrintRegions()
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
@@ -560,28 +582,42 @@ string TAMSDparGeo::PrintRegions()
 }
 
 //_____________________________________________________________________________
-Int_t TAMSDparGeo::GetRegStrip(Int_t n){
+//! Get strip regions
+//!
+//! \param[in] n region number
+Int_t TAMSDparGeo::GetRegStrip(Int_t n)
+{
   TString regname;
   regname.Form("MSDS%d",n);
   return GetCrossReg(regname);
 }
+
 //_____________________________________________________________________________
-Int_t TAMSDparGeo::GetRegModule(Int_t n){
+//! Get module regions
+//!
+//! \param[in] n region number
+Int_t TAMSDparGeo::GetRegModule(Int_t n)
+{
   TString regname;
   regname.Form("MSDP%d",n);
   return GetCrossReg(regname);
 }
+
 //_____________________________________________________________________________
-Int_t TAMSDparGeo::GetRegMetal(Int_t n){
+//! Get metal regions
+//!
+//! \param[in] n region number
+Int_t TAMSDparGeo::GetRegMetal(Int_t n)
+{
   TString regname;
   regname.Form("MSDM%d",n);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
+//! Print Fluka subtracted bodies from air
 string TAMSDparGeo::PrintSubtractBodiesFromAir()
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
@@ -597,9 +633,11 @@ string TAMSDparGeo::PrintSubtractBodiesFromAir()
 }
 
 //_____________________________________________________________________________
-string TAMSDparGeo::PrintAssignMaterial(TAGmaterials *Material)
+//! Print Fluka assigned material
+//!
+//! \param[in] Material a given material
+string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
