@@ -2,8 +2,7 @@
 #define _TATWntuHit_HXX
 
 /*!
- \File
- \version $Id: TATWntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+ \File TATWntuHit.hxx
  \brief   Declaration of TATWntuHit.
  */
 /*------------------------------------------+---------------------------------*/
@@ -23,6 +22,10 @@
 #include "TAGdata.hxx"
 #include "Parameters.h"
 
+/*!
+ \class TAThHit
+ \brief class for TW  hit **
+ */
 class TATWhit : public TAGobject {
    
 private:
@@ -110,6 +113,11 @@ public:
 };
 
 //##############################################################################
+
+/*!
+ \class TATWntuHit
+ \brief Container class for TW ntu hit **
+ */
 
 class TATWntuHit : public TAGdata {
    

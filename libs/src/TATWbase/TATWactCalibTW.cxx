@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TATWactCalibTW.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \file TATWactCalibTW.cxx
   \brief   Implementation of TATWactCalibTW.
 */
 
@@ -14,10 +13,11 @@
 #include "Parameters.h"
 
 /*!
-  \class TATWactCalibTW TATWactCalibTW.hxx "TATWactCalibTW.hxx"
-  \brief Get Beam Monitor raw data from WD. **
+  \class TATWactCalibTW
+  \brief TW calibration action from WD. **
 */
 
+//! Class Imp
 ClassImp(TATWactCalibTW);
 
 //------------------------------------------+-----------------------------------
@@ -84,24 +84,24 @@ void TATWactCalibTW::CreateHistogram()
 	for(Int_t PosID=0; PosID < nSlatCross; ++PosID)
 	{
 		//Allocate memory for all the histograms
-		_hQLayerX.push_back(new TH1D(Form("hQLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hQLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), QBINS, QMIN, QMAX));
+		fhQLayerX.push_back(new TH1D(Form("hQLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hQLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), QBINS, QMIN, QMAX));
 
-		_hQLayerY.push_back(new TH1D(Form("hQLayerY-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hQLayerY-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), QBINS, QMIN, QMAX));
+		fhQLayerY.push_back(new TH1D(Form("hQLayerY-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hQLayerY-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), QBINS, QMIN, QMAX));
 
-		_hTOFLayerX.push_back(new TH1D(Form("hTOFLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hTOFLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), TOFBINS, TOFMIN, TOFMAX));
+		fhTOFLayerX.push_back(new TH1D(Form("hTOFLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hTOFLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), TOFBINS, TOFMIN, TOFMAX));
 
-		_hTOFLayerY.push_back(new TH1D(Form("hTOFLayerY-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hTOFLayerY-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), TOFBINS, TOFMIN, TOFMAX));
+		fhTOFLayerY.push_back(new TH1D(Form("hTOFLayerY-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hTOFLayerY-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), TOFBINS, TOFMIN, TOFMAX));
 
 		//Setup the histogram and axis title for readability when debugging
-		_hQLayerX.at(PosID)->SetTitle(Form("hQLayerX-PartID%d-En%.3lf-Pos%d;Q [V*ns]; Entries", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID));
-		_hQLayerY.at(PosID)->SetTitle(Form("hQLayerX-PartID%d-En%.3lf-Pos%d;Q [V*ns]; Entries", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID));
-		_hTOFLayerX.at(PosID)->SetTitle(Form("hTOFLayerX-PartID%d-En%.3lf-Pos%d;TOF_{raw} [ns]; Entries", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID));
-		_hTOFLayerY.at(PosID)->SetTitle(Form("hTOFLayerY-PartID%d-En%.3lf-Pos%d;TOF_{raw} [ns]; Entries", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID));
+		fhQLayerX.at(PosID)->SetTitle(Form("hQLayerX-PartID%d-En%.3lf-Pos%d;Q [V*ns]; Entries", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID));
+		fhQLayerY.at(PosID)->SetTitle(Form("hQLayerX-PartID%d-En%.3lf-Pos%d;Q [V*ns]; Entries", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID));
+		fhTOFLayerX.at(PosID)->SetTitle(Form("hTOFLayerX-PartID%d-En%.3lf-Pos%d;TOF_{raw} [ns]; Entries", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID));
+		fhTOFLayerY.at(PosID)->SetTitle(Form("hTOFLayerY-PartID%d-En%.3lf-Pos%d;TOF_{raw} [ns]; Entries", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID));
 
-		AddHistogram(_hQLayerX.at(PosID));
-		AddHistogram(_hQLayerY.at(PosID));
-		AddHistogram(_hTOFLayerX.at(PosID));
-		AddHistogram(_hTOFLayerY.at(PosID));
+		AddHistogram(fhQLayerX.at(PosID));
+		AddHistogram(fhQLayerY.at(PosID));
+		AddHistogram(fhTOFLayerX.at(PosID));
+		AddHistogram(fhTOFLayerY.at(PosID));
 	}
 
   SetValidHistogram(kTRUE);
@@ -238,11 +238,11 @@ Bool_t TATWactCalibTW::Action() {
 	//Fill the histograms if the event is "clean"
 	if(std::get<0>(HitLayerX) != -1 && std::get<0>(HitLayerY) != -1 && std::get<0>(HitLayerX) == std::get<0>(HitLayerY))
 	{
-		_hQLayerX.at(std::get<0>(HitLayerX))->Fill(std::get<1>(HitLayerX));
-		_hTOFLayerX.at(std::get<0>(HitLayerX))->Fill(std::get<2>(HitLayerX));
+		fhQLayerX.at(std::get<0>(HitLayerX))->Fill(std::get<1>(HitLayerX));
+		fhTOFLayerX.at(std::get<0>(HitLayerX))->Fill(std::get<2>(HitLayerX));
 
-		_hQLayerY.at(std::get<0>(HitLayerY))->Fill(std::get<1>(HitLayerY));
-		_hTOFLayerY.at(std::get<0>(HitLayerY))->Fill(std::get<2>(HitLayerY));
+		fhQLayerY.at(std::get<0>(HitLayerY))->Fill(std::get<1>(HitLayerY));
+		fhTOFLayerY.at(std::get<0>(HitLayerY))->Fill(std::get<2>(HitLayerY));
 	}
 
   fpNtuRaw->SetBit(kValid);

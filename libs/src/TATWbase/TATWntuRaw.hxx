@@ -1,8 +1,7 @@
 #ifndef _TATWntuRaw_HXX
 #define _TATWntuRaw_HXX
 /*!
-  \file
-  \version $Id: TATWntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+  \file TATWntuRaw.hxx
   \brief   Declaration of TATWntuRaw.
 */
 /*------------------------------------------+---------------------------------*/
@@ -12,10 +11,10 @@ using namespace std;
 #include "TClonesArray.h"
 #include "TAGdata.hxx"
 #include "TAGbaseWD.hxx"
-//
 
-/**
- * This class stores the params of a single channel waveform
+
+/*! \class TATWrawHit
+ \brief This class stores the params of a single channel waveform
  */
 class TATWrawHit : public TAGbaseWD {
 
@@ -37,6 +36,9 @@ public:
 
 //##############################################################################
 
+/*! \class TATWntuRaw
+ \brief Container class for raw hit
+ */
 class TATWntuRaw : public TAGdata {
 public:
 
@@ -48,23 +50,24 @@ public:
   void              NewHit(TWaveformContainer *w,  string algo, double frac, double del);
 
 
-  virtual void    Clear(Option_t* opt="");
-  void            SetupClones();
-  virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
-  void            UpdateRunTime(int value){fRunTime+=value;}
-
-  ClassDef(TATWntuRaw,3);
-
-
-  
+  virtual void      Clear(Option_t* opt="");
+  void              SetupClones();
+  virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
+  void              UpdateRunTime(int value){fRunTime+=value;}
+   
+public:
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
-  
 private:
-  static TString fgkBranchName;    // Branch name in TTree
-  Int_t           fHitsN;		    // 
+  Int_t           fHitsN;		    //
   TClonesArray*   fListOfHits;
   Int_t           fRunTime;
+   
+private:
+  static TString  fgkBranchName;    // Branch name in TTree
+   
+   ClassDef(TATWntuRaw,3);
+
 };
 
 #endif

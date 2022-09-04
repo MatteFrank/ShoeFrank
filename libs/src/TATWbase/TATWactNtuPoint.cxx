@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TATWactNtuPoint.cxx $
+ \file TATWactNtuPoint.cxx
  \brief   Implementation of TATWactNtuPoint.
  */
 #include "TClonesArray.h"
@@ -21,6 +20,7 @@
  \brief NTuplizer for TW reconstructed points. **
  */
 
+//! Class Imp
 ClassImp(TATWactNtuPoint);
 
 //------------------------------------------+-----------------------------------

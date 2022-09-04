@@ -1,11 +1,16 @@
 
+/*!
+ \file TATWpoint.cxx
+ \brief   Implementation of TATWpoint.
+ */
+
 #include "TATWntuPoint.hxx"
 
 #include "TString.h"
 #include "TClonesArray.h"
 #include "TATWparGeo.hxx"
 
-
+//! Class Imp
 ClassImp(TATWpoint) // Description of Single Detector TATWpoint
 
 
@@ -62,26 +67,7 @@ TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Doub
    fDe2    = fColumnHit->GetEnergyLoss();
    fTof1   = fRowHit->GetToF();
    fTof2   = fColumnHit->GetToF();
-
-   // // assign to the point the matched MC track id if no Pile-Up, else for pile-up events assign -1
-   // if(fLayer==(Int_t)LayerX) {
-       
-   //   if(fRowHit->GetMcTracksN()==1)
-   //     fId     = fRowHit->GetMcTrackIdx(0);
-   //   else {
-   //     fId = -1; // pile-up
-   //     // cout<<"NmctracksX::"<<fRowHit->GetMcTracksN()<<endl;
-   //   }
-     
-   // } else {
-   //    if(fColumnHit->GetMcTracksN()==1)
-   //     fId     = fColumnHit->GetMcTrackIdx(0);
-   //   else {
-   //     fId = -1;  // pile-up
-   //     // cout<<"NmctracksY::"<<fColumnHit->GetMcTracksN()<<endl;
-   //   }
-   // }
-  
+   
   Bool_t common = false;
   for (Int_t j = 0; j < fColumnHit->GetMcTracksN(); ++j) {
       Int_t idr = fColumnHit->GetMcTrackIdx(j);
@@ -151,6 +137,7 @@ void TATWpoint::Clear(Option_t*)
    delete fColumnHit;
 }
 
+//##############################################################################
 
 /*!
   \file
@@ -158,9 +145,9 @@ void TATWpoint::Clear(Option_t*)
   \brief   Implementation of TATWntuPoint.
 */
 
+//! Class Imp
 ClassImp(TATWntuPoint);
 
-//##############################################################################
 
 TString TATWntuPoint::fgkBranchName   = "twpt.";
 

@@ -1,9 +1,21 @@
+
+/*!
+ \file TATWchannelMap.cxx
+ \brief   Implementation of TATWcalibrationMap.
+ */
+
 #include "TError.h"
 
 #include "TATWchannelMap.hxx"
 #include "TAGxmlParser.hxx"
 #include "TAGrecoManager.hxx"
 
+/*!
+ \class TATWchannelMap
+ \brief mapping class for TW
+ */
+
+//! Class Imp
 ClassImp(TATWchannelMap)
 
 TATWchannelMap::TATWchannelMap()
