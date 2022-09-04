@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \file TASTactNtuHit.cxx
   \brief   Implementation of TASTactNtuHit.
 */
 
@@ -12,8 +11,8 @@
 #include <stdint.h>
 
 /*!
-  \class TASTactNtuHit TASTactNtuHit.hxx "TASTactNtuHit.hxx"
-  \brief Get Beam Monitor raw data from WD. **
+  \class TASTactNtuHit
+  \brief Get ST raw data from WD. **
 */
 
 ClassImp(TASTactNtuHit);

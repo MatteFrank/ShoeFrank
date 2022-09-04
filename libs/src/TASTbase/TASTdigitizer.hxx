@@ -1,6 +1,13 @@
 #ifndef _TASTdigitizer_HXX
 #define _TASTdigitizer_HXX
 
+/*!
+ \file TASTdigitizer.hxx
+ \brief   Declaration of TASTdigitizer.
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include <map>
 #include "TAGbaseDigitizer.hxx"
 

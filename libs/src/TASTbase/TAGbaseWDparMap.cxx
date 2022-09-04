@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGbaseWDparMap.cxx,v 1.5 2003/06/09 18:41:04 mueller Exp $
+  \file TAGbaseWDparMap.cxx
   \brief   Implementation of TAGbaseWDparMap.
 */
 
@@ -13,7 +12,7 @@
 //##############################################################################
 
 /*!
-  \class TAGbaseWDparMap TAGbaseWDparMap.hxx "TAGbaseWDparMap.hxx"
+  \class TAGbaseWDparMap 
   \brief Map parameters for onion and daisy. **
 */
 

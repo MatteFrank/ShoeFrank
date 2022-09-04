@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \file TASTactNtuHitMC.cxx
   \brief   Implementation of TASTactNtuHitMC.
 */
 
@@ -17,8 +16,8 @@
 #include "TASTactNtuHitMC.hxx"
 
 /*!
-  \class TASTactNtuHitMC TASTactNtuHitMC.hxx "TASTactNtuHitMC.hxx"
-  \brief NTuplizer for BM raw hits. **
+  \class TASTactNtuHitMC
+  \brief NTuplizer for ST MC hits. **
 */
 
 ClassImp(TASTactNtuHitMC);

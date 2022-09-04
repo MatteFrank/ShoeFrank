@@ -1,16 +1,20 @@
+/*!
+ \file TASTntuHit.hxx
+ \brief   Declaration of TASTntuHit.
+ */
+/*------------------------------------------+---------------------------------*/
+
+#ifndef TWAVEFORM_CONTAINER
+#define TWAVEFORM_CONTAINER
+
 #include "TF1.h"
 #include "TH1D.h"
 #include "TGraph.h"
 #include <vector>
 #include "Parameters.h"
 
-
-#ifndef TWAVEFORM_CONTAINER
-#define TWAVEFORM_CONTAINER
-
 using namespace std;
 
-// this class holds the waveform, channel id of the WD and the BoardId
 class TWaveformContainer
 {
 

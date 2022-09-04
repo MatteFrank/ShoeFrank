@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGbaseWD.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \file TAGbaseWD.cxx
   \brief   Implementation of TAGbaseWD.
 */
 
@@ -14,16 +13,16 @@
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
+
 /*!
-  \class TAGbaseWD TAGbaseWD.hxx "TAGbaseWD.hxx"
+  \class TAGbaseWD
+ \brief This class stores the params of a single channel waveform
 */
 
-
-
-using namespace std;
-
+//! Class Imp
 ClassImp(TAGbaseWD);
 
+using namespace std;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

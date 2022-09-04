@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \file TASTntuHit.cxx
   \brief   Implementation of TASTntuHit.
 */
 
@@ -8,11 +7,7 @@
 
 #include "TASTntuHit.hxx"
 
-/*!
-  \class TASTntuHit TASTntuHit.hxx "TASTntuHit.hxx"
-  \brief Mapping and Geometry parameters for IR detectors. **
-*/
-
+//! Class Imp
 ClassImp(TASThit);
 
 //------------------------------------------+-----------------------------------
@@ -64,7 +59,7 @@ void TASThit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 
 
 //##############################################################################
-
+//! Class Imp
 ClassImp(TASTntuHit);
 
 TString TASTntuHit::fgkBranchName   = "strh.";

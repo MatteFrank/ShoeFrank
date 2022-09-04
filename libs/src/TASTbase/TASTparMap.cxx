@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTparMap.cxx,v 1.5 2003/06/09 18:41:04 mueller Exp $
+  \file TASTparMap.cxx
   \brief   Implementation of TASTparMap.
 */
 
@@ -16,17 +15,17 @@
 //##############################################################################
 
 /*!
-  \class TASTparMap TASTparMap.hxx "TASTparMap.hxx"
-  \brief Map parameters for onion and daisy. **
+  \class TASTparMap
+  \brief Map parameters for ST
 */
 
+//! Class Imp
 ClassImp(TASTparMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
-TASTparMap::TASTparMap() {
-
+TASTparMap::TASTparMap()
+{
   vector<int> tdchaID;             tdchaID.clear();   
   vector<int> tdboaID;             tdboaID.clear();   
 

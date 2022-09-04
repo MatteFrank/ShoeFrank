@@ -1,8 +1,7 @@
 #ifndef _TASTparMap_HXX
 #define _TASTparMap_HXX
 /*!
-  \file
-  \version $Id: TASTparMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+  \file TASTparMap.hxx
   \brief   Declaration of TASTparMap.
 */
 /*------------------------------------------+---------------------------------*/

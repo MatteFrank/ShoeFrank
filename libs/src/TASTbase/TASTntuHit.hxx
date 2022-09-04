@@ -1,8 +1,7 @@
 #ifndef _TASTntuHit_HXX
 #define _TASTntuHit_HXX
 /*!
- \file
- \version $Id: TASTntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+ \file TASTntuHit.hxx
  \brief   Declaration of TASTntuHit.
  */
 /*------------------------------------------+---------------------------------*/
@@ -16,6 +15,10 @@ using namespace std;
 #include "TAGdata.hxx"
 #include "TArrayI.h"
 
+/*!
+ \class TASThit
+ \brief Hit class for ST
+ */
 class TASThit : public TAGobject {
 public:
    
@@ -54,6 +57,10 @@ private:
 
 //##############################################################################
 
+/*!
+ \class TASTntuHit
+ \brief Hit conatiner class for St
+ */
 class TASTntuHit : public TAGdata {
 public:
    

@@ -19,7 +19,7 @@
 
 /*!
   \class TAGbaseWDparTime 
-  \brief Map parameters for onion and daisy. **
+  \brief Map Time parameters for WD
 */
 
 ClassImp(TAGbaseWDparTime);

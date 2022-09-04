@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTparGeo.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
+  \file TASTparGeo.cxx
   \brief   Implementation of TASTparGeo.
 */
 
@@ -20,10 +19,11 @@
 //##############################################################################
 
 /*!
-  \class TASTparGeo TASTparGeo.hxx "TASTparGeo.hxx"
+  \class TASTparGeo 
   \brief Map and Geometry parameters for the start counter. **
 */
 
+//! Class Imp
 ClassImp(TASTparGeo);
 
 const TString TASTparGeo::fgkBaseName    = "ST";

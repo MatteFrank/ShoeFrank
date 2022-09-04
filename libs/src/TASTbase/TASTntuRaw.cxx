@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \file TASTntuRaw.cxx
   \brief   Implementation of TASTntuRaw.
 */
 
@@ -14,14 +13,10 @@ using namespace std;
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
-/*!
-  \class TASTntuRaw TASTntuRaw.hxx "TASTntuRaw.hxx"
-  \brief Mapping and Geometry parameters for IR detectors. **
-*/
-
 
 #define ST_AMP_THR 0.008
 
+//! Class Imp
 ClassImp(TASTrawHit);
 
 TString TASTntuRaw::fgkBranchName   = "stdat.";
@@ -98,6 +93,7 @@ double TASTrawHit::ComputePedestal(TWaveformContainer *w, double thr){
 
 //##############################################################################
 
+//! Class Imp
 ClassImp(TASTntuRaw);
 
 //------------------------------------------+-----------------------------------

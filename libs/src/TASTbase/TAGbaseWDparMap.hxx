@@ -1,8 +1,7 @@
 #ifndef _TAGbaseWDparMap_HXX
 #define _TAGbaseWDparMap_HXX
 /*!
-  \file
-  \version $Id: TAGbaseWDparMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+  \file TAGbaseWDparMap.hxx
   \brief   Declaration of TAGbaseWDparMap.
 */
 /*------------------------------------------+---------------------------------*/

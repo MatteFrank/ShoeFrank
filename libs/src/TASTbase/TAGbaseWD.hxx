@@ -1,8 +1,7 @@
 #ifndef _TAGbaseWD_HXX
 #define _TAGbaseWD_HXX
 /*!
-  \file
-  \version $Id: TAGbaseWD.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+  \file TAGbaseWD.hxx
   \brief   Declaration of TAGbaseWD.
 */
 /*------------------------------------------+---------------------------------*/
@@ -14,11 +13,6 @@ using namespace std;
 #include "TAGdata.hxx"
 #include "TAGdataDsc.hxx"
 #include "TWaveformContainer.hxx"
-//
-
-/**
- * This class stores the params of a single channel waveform
- */
 
 class TAGbaseWD : public TAGobject {
 

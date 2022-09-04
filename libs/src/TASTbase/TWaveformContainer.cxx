@@ -1,3 +1,8 @@
+/*!
+ \file TWaveformContainer.cxx
+ \brief   Implementation of TWaveformContainer.
+ */
+
 #include "TWaveformContainer.hxx"
 #include "TAxis.h"
 #include "TLine.h"
@@ -7,6 +12,12 @@
 #include "TLegend.h"
 #include "TGraphErrors.h"
 #include <vector>
+
+
+/*!
+ \class TASThit
+ \brief this class holds the waveform, channel id of the WD and the BoardId
+ */
 
 TWaveformContainer::TWaveformContainer(){
   fVectT.clear();
