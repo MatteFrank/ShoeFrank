@@ -8,6 +8,11 @@
 #include "TACAparGeo.hxx"
 #include "TACAntuCluster.hxx"
 
+/*!
+ \class TACAcluster
+ \brief cluster for CAL detectors.
+ */
+
 //! Class Imp
 ClassImp(TACAcluster) // Description of a cluster
 

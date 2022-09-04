@@ -21,6 +21,8 @@ Float_t TACAdigitizer::fgThreshold = 80; // MeV
 
 // --------------------------------------------------------------------------------------
 //! Constructor
+//!
+//! \param[in] pNtuRaw hit container
 TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
