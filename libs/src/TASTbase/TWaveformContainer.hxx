@@ -19,7 +19,6 @@ class TWaveformContainer
 {
 
 public:
-
   TWaveformContainer();
   ~TWaveformContainer();
   TWaveformContainer(const TWaveformContainer &other);
@@ -51,16 +50,14 @@ public:
   vector<double>& GetVectRawT()   { return fVectRawT;       }
   vector<double>& GetVectA()      { return fVectA;          }
 
-
-  
 private:
-  Int_t  fTrigType;
-  Int_t  fTriggerCellId;
-  Int_t  fChannelId;
-  Int_t  fBoardId;
-  Int_t  fNEvent;
-  Bool_t fHighlevelDebug;
-  Bool_t fIsEmptyFlag;
+  Int_t          fTrigType;
+  Int_t          fTriggerCellId;
+  Int_t          fChannelId;
+  Int_t          fBoardId;
+  Int_t          fNEvent;
+  Bool_t         fHighlevelDebug;
+  Bool_t         fIsEmptyFlag;
   
   vector<double> fVectT;
   vector<double> fVectRawT;

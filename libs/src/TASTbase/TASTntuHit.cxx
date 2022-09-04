@@ -12,7 +12,6 @@ ClassImp(TASThit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TASThit::TASThit()
  : TAGobject(),
    fCharge(0.),
@@ -35,7 +34,6 @@ TASThit::TASThit(Double_t charge, Double_t De, Double_t time)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TASThit::~TASThit()
 {
 }
@@ -66,7 +64,6 @@ TString TASTntuHit::fgkBranchName   = "strh.";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TASTntuHit::TASTntuHit()
 : TAGdata(),
  fListOfHits(0)
@@ -78,10 +75,8 @@ TASTntuHit::TASTntuHit()
   SetupClones();
 }
 
-
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TASTntuHit::~TASTntuHit()
 {
   delete fListOfHits;
@@ -105,7 +100,6 @@ TASThit* TASTntuHit::NewHit(double charge, double de, double time)
 
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
-
 TASThit* TASTntuHit::GetHit(Int_t i)
 {
    return (TASThit*) ((*fListOfHits)[i]);;
@@ -113,27 +107,20 @@ TASThit* TASTntuHit::GetHit(Int_t i)
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
-
 const TASThit* TASTntuHit::GetHit(Int_t i) const
 {
    return (const TASThit*) ((*fListOfHits)[i]);;
 }
 
-   
 //------------------------------------------+-----------------------------------
 //! Setup clones.
-
 void TASTntuHit::SetupClones()
 {
   if (!fListOfHits) fListOfHits = new TClonesArray("TASThit");
-   
-  return;
 }
-   
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
-
 void TASTntuHit::Clear(Option_t*)
 {
   TAGdata::Clear();

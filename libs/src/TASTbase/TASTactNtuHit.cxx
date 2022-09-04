@@ -15,6 +15,7 @@
   \brief Get ST raw data from WD. **
 */
 
+//! Class Imp
 ClassImp(TASTactNtuHit);
 
 
@@ -38,16 +39,13 @@ TASTactNtuHit::TASTactNtuHit(const char* name,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TASTactNtuHit::~TASTactNtuHit()
 {}
 
 //------------------------------------------+-----------------------------------
 //! Action.
-
-Bool_t TASTactNtuHit::Action() {
-
-  
+Bool_t TASTactNtuHit::Action()
+{
    TASTntuRaw*   p_datraw = (TASTntuRaw*) fpDatRaw->Object();
    TASTntuHit*   p_nturaw = (TASTntuHit*)  fpNtuRaw->Object();
    TASTparMap*   p_parmap = (TASTparMap*)  fpParMap->Object();
@@ -62,67 +60,61 @@ Bool_t TASTactNtuHit::Action() {
    vector<double> vampot;
    
    if(p_datraw->GetSuperHit()){
-     if(FootDebugLevel(1))printf("got super hit\n");
-     timestamp = p_datraw->GetSuperHit()->GetTime();
-     charge_dep =  p_datraw->GetSuperHit()->GetCharge();
-     amp_tot= p_datraw->GetSuperHit()->GetAmplitude(); 
-     ped= p_datraw->GetSuperHit()->GetPedestal();
-     de_dep = -1000.; //calibration missing
-
-     p_nturaw->NewHit(charge_dep, de_dep, timestamp);
-     
-     p_nturaw->SetTriggerTime(timestamp);
-     p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
-
-     p_nturaw->SetCharge(charge_dep);
-     p_nturaw->SetTrigType(p_datraw->GetSuperHit()->GetTriggerType());
-     int nHit =  p_datraw->GetHitsN(); 
-     if(ValidHistogram()){
-       hTime->Fill(timestamp);
-       hTotCharge->Fill(charge_dep);
-       hTotAmplitude->Fill(amp_tot);
-       hPedestal->Fill(ped);
-       for(int iHit=0;iHit<nHit;iHit++){
-	 Double_t amplitude = p_datraw->GetHit(iHit)->GetAmplitude();
-	 Double_t charge= p_datraw->GetHit(iHit)->GetCharge();
-	 Double_t time = p_datraw->GetHit(iHit)->GetTime();
-	 int iCh  = p_datraw->GetHit(iHit)->GetChID();
-	 if(amplitude>thr[iCh])vampot.push_back(iCh);
-	 if(iCh<8){
-	   hArrivalTime[iCh]->Fill(time-timestamp);
-	   hAmplitude[iCh]->Fill(amplitude);
-	   hCharge[iCh]->Fill(charge);
-	 }
-       }
-     }   
+      if(FootDebugLevel(1))printf("got super hit\n");
+      timestamp = p_datraw->GetSuperHit()->GetTime();
+      charge_dep =  p_datraw->GetSuperHit()->GetCharge();
+      amp_tot= p_datraw->GetSuperHit()->GetAmplitude();
+      ped= p_datraw->GetSuperHit()->GetPedestal();
+      de_dep = -1000.; //calibration missing
+      
+      p_nturaw->NewHit(charge_dep, de_dep, timestamp);
+      
+      p_nturaw->SetTriggerTime(timestamp);
+      p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
+      
+      p_nturaw->SetCharge(charge_dep);
+      p_nturaw->SetTrigType(p_datraw->GetSuperHit()->GetTriggerType());
+      int nHit =  p_datraw->GetHitsN();
+      if(ValidHistogram()){
+         hTime->Fill(timestamp);
+         hTotCharge->Fill(charge_dep);
+         hTotAmplitude->Fill(amp_tot);
+         hPedestal->Fill(ped);
+         for(int iHit=0;iHit<nHit;iHit++){
+            Double_t amplitude = p_datraw->GetHit(iHit)->GetAmplitude();
+            Double_t charge= p_datraw->GetHit(iHit)->GetCharge();
+            Double_t time = p_datraw->GetHit(iHit)->GetTime();
+            int iCh  = p_datraw->GetHit(iHit)->GetChID();
+            if(amplitude>thr[iCh])vampot.push_back(iCh);
+            if(iCh<8){
+               hArrivalTime[iCh]->Fill(time-timestamp);
+               hAmplitude[iCh]->Fill(amplitude);
+               hCharge[iCh]->Fill(charge);
+            }
+         }
+      }
    }else{
-     if(FootDebugLevel(1))printf("super hit missing\n");
+      if(FootDebugLevel(1))printf("super hit missing\n");
    }
-
+   
    hEff->Fill(8);
    if(vampot.size()==7)hEff->Fill(9);
    if(vampot.size()==8)hEff->Fill(10);
    if(vampot.size()>=neff){
-     for(int ich=0;ich<8;ich++){
-       if(find(vampot.begin(), vampot.end(), ich) != vampot.end()){
-	 hEff->Fill(ich);
-       }
-     }
+      for(int ich=0;ich<8;ich++){
+         if(find(vampot.begin(), vampot.end(), ich) != vampot.end()){
+            hEff->Fill(ich);
+         }
+      }
    }
-
-   
-  
    
    fpNtuRaw->SetBit(kValid);
    return kTRUE;
-
-
-
 }
 
-void TASTactNtuHit::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *myHit){
-
-
+//------------------------------------------+-----------------------------------
+void TASTactNtuHit::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *myHit)
+{
   TCanvas c("c","",600,600);
   c.cd();
 
@@ -142,16 +134,11 @@ void TASTactNtuHit::SavePlot(TGraph WaveGraph, TF1 fun1, TF1 fun2, TASTrawHit *m
   fun2.Draw("same");
 
   c.Print(Form("waveform_ch%d_nev%d.png", myHit->GetChID(), fEventsN));
-  
 }
 
-
-
-
-
-
-void TASTactNtuHit::CreateHistogram(){
-
+//------------------------------------------+-----------------------------------
+void TASTactNtuHit::CreateHistogram()
+{
   DeleteHistogram();
 
   char histoname[100]="";
@@ -194,12 +181,6 @@ void TASTactNtuHit::CreateHistogram(){
     hAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
     AddHistogram(hAmplitude[iCh]);
   }
-
-
-
-
-
-  
+   
   SetValidHistogram(kTRUE);
-  
 }

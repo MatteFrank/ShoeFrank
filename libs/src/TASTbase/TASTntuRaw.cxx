@@ -59,37 +59,10 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double d
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TASTrawHit::~TASTrawHit(){
+TASTrawHit::~TASTrawHit()
+{
 
 }
-
-
-// do not need these interfaces, done by compilator
-double TASTrawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
-  return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
-}
-
-
-double TASTrawHit::ComputeCharge(TWaveformContainer *w, double thr){
-  return TAGbaseWD::ComputeCharge(w,thr);
-}
-
-
-double TASTrawHit::ComputeAmplitude(TWaveformContainer *w){
-  return TAGbaseWD::ComputeAmplitude(w);
-}
-
-
-double TASTrawHit::ComputeBaseline(TWaveformContainer *w){
-  return TAGbaseWD::ComputeBaseline(w);
-}
-
-
-double TASTrawHit::ComputePedestal(TWaveformContainer *w, double thr){
-  return  TAGbaseWD::ComputePedestal(w,thr);
-}
-
-
 
 //##############################################################################
 
@@ -104,11 +77,8 @@ TASTntuRaw::TASTntuRaw() :
   SetupClones();
 }
 
-
-
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TASTntuRaw::~TASTntuRaw() {
   if(fListOfHits)delete fListOfHits;
   if(fSuperHit) delete fSuperHit;
@@ -116,20 +86,16 @@ TASTntuRaw::~TASTntuRaw() {
 
 //------------------------------------------+-----------------------------------
 //! Setup clones.
-
 void TASTntuRaw::SetupClones()
 {
   if (!fListOfHits) fListOfHits = new TClonesArray("TASTrawHit");
 }
 
-
 //------------------------------------------+-----------------------------------
 //! Clear event.
-
 void TASTntuRaw::Clear(Option_t*){
   TAGdata::Clear();
   fHistN = 0;
-  
   
   if (fListOfHits) fListOfHits->Clear();
 }
@@ -137,21 +103,23 @@ void TASTntuRaw::Clear(Option_t*){
 
 //-----------------------------------------------------------------------------
 //! access to the hit
-TASTrawHit* TASTntuRaw::GetHit(Int_t i){
+TASTrawHit* TASTntuRaw::GetHit(Int_t i)
+{
   return (TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
-const TASTrawHit* TASTntuRaw::GetHit(Int_t i) const{
+const TASTrawHit* TASTntuRaw::GetHit(Int_t i) const
+{
   return (const TASTrawHit*) ((*fListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
 //! New hit
-void TASTntuRaw::NewHit(TWaveformContainer *W, string algo, double frac, double del){
-  
+void TASTntuRaw::NewHit(TWaveformContainer *W, string algo, double frac, double del)
+{
   TClonesArray &pixelArray = *fListOfHits;
   TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W, algo, frac, del);
   fHistN++;
@@ -159,9 +127,8 @@ void TASTntuRaw::NewHit(TWaveformContainer *W, string algo, double frac, double 
 
 //------------------------------------------+-----------------------------------
 //! new super hit
-void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double frac, double del){
-
-
+void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double frac, double del)
+{
   if(!vW.size()){
     printf("Warning, ST waveforms not found!!\n");
     fSuperHit = new TASTrawHit();
@@ -196,16 +163,10 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double
   wsum->GetVectT() = time;
   wsum->GetVectRawT() = time;
   wsum->SetNEvent(vW.at(0)->GetNEvent());
-
-  //cout << "trigid::" << TrigType << endl;
   
   fSuperHit = new TASTrawHit(wsum,algo, frac, del);
-
-
-  // cout<< "superhit  algo::" << algo.data() << "   frac::" << frac << "  del::" << del << endl;
   
   delete wsum;
-  
 }
 
 

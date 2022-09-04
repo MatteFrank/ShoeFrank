@@ -31,10 +31,9 @@ public:
   Double_t       GetCharge()                const   { return fCharge;               }
   Double_t       GetDe()                    const   { return fCharge;               }
   
-  inline void SetTime(double value){ fTime = value;}
-  inline void SetCharge(double value){ fCharge = value;}
-  inline void SetDe(double value){ fDe = value;}
-  
+  inline void SetTime(double value)                 { fTime = value;                }
+  inline void SetCharge(double value)               { fCharge = value;              }
+  inline void SetDe(double value)                   { fDe = value;                  }
 
   Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
   Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
@@ -80,10 +79,10 @@ public:
    void SetTriggerTimeOth(double value) { fTrigTimeOth = value; }
    void SetTrigType(int value)          { fTrigType=value;      }
   
-   double GetCharge()         const { return fCharge;      }
-   double GetTriggerTime()    const { return fTrigTime;    }
-   double GetTriggerTimeOth() const { return fTrigTimeOth; }
-   int    GetTrigType()       const { return fTrigType;    }
+   double GetCharge()             const { return fCharge;       }
+   double GetTriggerTime()        const { return fTrigTime;     }
+   double GetTriggerTimeOth()     const { return fTrigTimeOth;  }
+   int    GetTrigType()           const { return fTrigType;     }
 
   
 public:
