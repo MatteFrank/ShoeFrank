@@ -66,14 +66,6 @@ int main (int argc, char *argv[])  {
    }
    
    Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
-   Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
-   Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
-   Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
-   Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
-   Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
-   Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
-   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
-   Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
 
    TAGrecoManager::GetPar()->IncludeTOE(true);
    TAGrecoManager::GetPar()->IncludeKalman(false);
@@ -82,41 +74,16 @@ int main (int argc, char *argv[])  {
    
    if (lrc)
       glbRec = new GlobalToeReco(exp, runNb, in, out, mc, inMc);
-   else if (mc) {
+   else if (mc)
      glbRec = new LocalRecoMC(exp, runNb, in, out);
-     
-      if(zmc)
-         glbRec->EnableZfromMCtrue();
-      if(zrec && !zmc)
-        glbRec->EnableZrecWithPUoff();
-      if(zmatch)
-        glbRec->EnableTWZmatch();
-
-   } else {
+   else
      glbRec = new LocalReco(exp, runNb, in, out);
-     if (tbc)
-       glbRec->EnableTWcalibPerBar();
-     if(zmatch)
-       glbRec->EnableTWZmatch();
-   }
+   
    
 
    // global setting
-   if (ntu)
-      glbRec->EnableTree();
-   if(his)
-      glbRec->EnableHisto();
-   if(hit) {
-      glbRec->EnableTree();
-      glbRec->EnableSaveHits();
-   }
-   if (trk)
-      glbRec->EnableTracking();
-   
    if (mth)
       glbRec->EnableM28lusMT();
-   
-
    
    TStopwatch watch;
    watch.Start();
@@ -124,10 +91,8 @@ int main (int argc, char *argv[])  {
     glbRec->BeforeEventLoop();
     if (nSkipEv > 0 && (mc || lrc))
        glbRec->GoEvent(nSkipEv);
-//    static_cast<TAGactTreeReader*>(gTAGroot->FindAction("evtReader"))->Reset();
-//    gTAGroot->SetEventNumber(100000);
-//    gTAGroot->SetEventNumber(1000000);
-    glbRec->LoopEvent(nTotEv);
+   
+   glbRec->LoopEvent(nTotEv);
    glbRec->AfterEventLoop();
    
    watch.Print();

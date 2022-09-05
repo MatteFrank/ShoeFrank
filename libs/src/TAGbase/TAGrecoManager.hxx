@@ -115,9 +115,11 @@ public:
     //! TW calibration per bar flag
     Bool_t IsTWCalBar()          const { return fEnableTWCalBar;      }
     //! MC region flag
-    Bool_t IsTWRateSmearMC()     const { return fEnableTWRateSmearMC;      }
+    Bool_t IsTWRateSmearMC()     const { return fEnableTWRateSmearMC; }
     //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
+    //! MSD tracking
+    Bool_t IsMsdTracking()       const { return fEnableMsdTrack;   }
     //! TW Calibration flag
     Bool_t CalibTW()             const { return fDoCalibTW;           }
     //! BM Calibration flag
@@ -171,6 +173,11 @@ public:
     void EnableRegionMc()              {  fEnableRegionMc = true;     }
     //! Disable MC region reading
     void DisableRegionMc()             {  fEnableRegionMc = false;    }
+   
+    //! Enable MSD tracking
+    void EnableMsdTrack()              {  fEnableMsdTrack = true;     }
+    //! Disable MC region reading
+    void DisableMsdTrack()             {  fEnableMsdTrack = false;    }
    
     //! Enable filling in tree
     void EnableTree()                  {  fEnableTree = true;         }
@@ -267,6 +274,7 @@ private:
    Bool_t               fDoCalibTW;             ///< Enable TW cliabration process
    Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
    Bool_t               fEnableRegionMc;        ///< Enable MC region reading
+   Bool_t               fEnableMsdTrack;         ///< Enable MSD tracking
 
    Bool_t               fIncludeST;             ///< Include STC
    Bool_t               fIncludeBM;             ///< Include BM
