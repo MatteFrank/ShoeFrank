@@ -112,7 +112,7 @@ static TAGntuEvent* tgevent;
 int Zbeam;
 TString tobeprint;
 Int_t vtxsynch=0; //=0 is still synch, !=0 is the number of events where the synch is lost
-Int_t checkrate=1000; //rate to check the correlation between BM and VTX synch
+Int_t checkrate=5000; //rate to check the correlation between BM and VTX synch
 
 //use the detector GLOBAL frame!
 struct beamtrk {
@@ -560,7 +560,7 @@ void VTXSYNC(){
 
   if(vtxsynch==0 && evnum%checkrate==0 && evnum>1){// check the synchronization every checkrate events
     Double_t corr=((TH2D*)gDirectory->Get("VTXSYNC/origin_xx_bmvtx_unsynch"))->GetCorrelationFactor();
-    if(corr<0.6){
+    if(corr<0.5){
       cout<<"BM-VT correlation lost: correlation factor:"<<corr<<endl;
       cout<<"The synchronization has been lost somewhere between events number"<<evnum-checkrate<<" and "<<evnum<<endl;
       vtxsynch=evnum-checkrate-1; //the -1 is to take into account the case in which the synch is lost from the beginning
