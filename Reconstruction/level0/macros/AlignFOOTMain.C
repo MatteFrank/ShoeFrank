@@ -1,18 +1,24 @@
 #include "AlignFOOTFunc.h"
 
 // main
-void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, TString extname="")
+// nameFile=Input file name
+// entries: number of events to be processed (use 0 to process the whole file)
+// alignStraight: calculate the straight alignment parameters
+// alignVs: calculate the straight alignment parameters with respect to the VTX (or other fixed detector)
+// check: check the sub-detector response for the input file
+// printFile: print the alignment and/or the checkup results in an external text file
+void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraight=false, Bool_t alignVs=false, Bool_t check=true, Bool_t printFile=false)
 
 {
 
   //Open the input file
   TTree *tree = 0;
-  TFile *f = new TFile(nameFile.Data());
-  if(f->IsOpen()==false){
+  TFile *inputFile = new TFile(nameFile.Data());
+  if(inputFile->IsOpen()==false){
     cout<<"FATAL ERROR: I cannot open the input file, check it!  input file="<<nameFile.Data()<<endl;
     return;
   }
-  tree = (TTree*)f->Get("tree");
+  tree = (TTree*)inputFile->Get("tree");
   if(tree==nullptr){
     cout<<"FATAL ERROR: your input file do not contains a tree, check it!  input file="<<nameFile.Data()<<endl;
     return;
@@ -20,7 +26,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, TString extname=""
 
   //define and charge varaibles and geometrical parameters
   TAGroot gTAGroot;
-  runinfo=(TAGrunInfo*)(f->Get("runinfo"));
+  runinfo=(TAGrunInfo*)(inputFile->Get("runinfo"));
   const TAGrunInfo construninfo(*runinfo);
   gTAGroot.SetRunInfo(construninfo);
   TString expName=runinfo->CampaignName();
@@ -164,65 +170,76 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, TString extname=""
 
 
   Int_t pos = nameFile.Last('.');
-  TString nameOut;
-  if(extname.Length()==0){
-    nameOut = nameFile(nameFile.Last('/')+1, pos);
-    nameOut.Prepend("alignout_");
-    nameOut.Append("_out.root");
-  }else
-    nameOut=extname;
+  TString nameOut, txtout;
+  nameOut = nameFile(nameFile.Last('/')+1, pos);
+  nameOut.Prepend("alignout_");
+  txtout=nameOut;
+  nameOut.Append("_out.root");
+  txtout.Append("_out.txt");
+  if(printFile==true)
+    freopen(txtout.Data(),"w",stdout);
 
   //vectors of tracks of primaries reconstructed by the single detectors and adopted for the alignment. All values are in local frames,
   vector<beamtrk> bmtrk;
   vector<beamtrk> vttrk;
   vector<beamtrk> msdtrk;
 
-  int status;
   TFile *file_out = new TFile(nameOut,"RECREATE");
-  status=Booking(file_out);
+  Booking(file_out);
 
   cout<<"input file="<<nameFile.Data()<<endl;
   cout<<"I'll process "<<maxentries<<" events. The input tree contains a total of "<<tree->GetEntries()<<" events."<<endl;
-  cout<<"Now I'll start the event loop"<<endl;
-
   Zbeam = parGeo->GetBeamPar().AtomicNumber;
   cout<<"ZBEAM = "<<Zbeam<<endl;
 
   for (evnum = 0; evnum < maxentries; ++evnum) {
 
-    if(evnum%100==0) printf("Processed Events: %d\n", evnum);
+    if(evnum%100==0 && printFile==false)
+      printf("Processed Events: %d\n", evnum);
+
     tree->GetEntry(evnum);
 
     if(IncludeBM)
-      status=BeamMonitor();
+      BeamMonitor();
     if(IncludeVT)
-      status=Vertex();
+      Vertex();
     if(IncludeMSD)
-      status=MSD();
+      MSD();
     if(IncludeTW)
-      status=TofWall();
+      TofWall();
     if(IncludeDAQ)
-      status=DataAcquisition();
+      DataAcquisition();
+    if(IncludeBM && IncludeVT)
+      VTXSYNC(); //to check the VTX and the BM synchronization
 
-    status=FillTrackVect(bmtrk, vttrk, msdtrk); //fill the tracks in GLOBAL FRAME adopted for alignment
+    FillTrackVect(bmtrk, vttrk, msdtrk); //fill the tracks in GLOBAL FRAME adopted for alignment
   }//Loop on events
 
+  TString foldername;
   // extrapolate the alignment parameter of all the detectors with respect to the target
-  TString foldername="BM";
-  AlignWrtTarget(bmtrk,foldername);
-  foldername="VT";
-  AlignWrtTarget(vttrk,foldername);
-  foldername="MSD";
-  AlignWrtTarget(msdtrk,foldername);
+  if(alignStraight){
+    foldername="BM";
+    AlignWrtTarget(bmtrk,foldername);
+    foldername="VT";
+    AlignWrtTarget(vttrk,foldername);
+    foldername="MSD";
+    AlignWrtTarget(msdtrk,foldername);
+  }
 
-  //here the VT is fixed, the BM will be shifted and tilted
-  foldername="BMVT";
-  AlignDetaVsDetb(bmtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("BM"), geoTrafo->GetDeviceAngle("BM"));
-
-  foldername="MSDVT";
-  AlignDetaVsDetb(msdtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("MSD"), geoTrafo->GetDeviceAngle("MSD"));
+  if(alignVs){
+    //here the VT is fixed, the BM will be shifted and tilted
+    foldername="BMVT";
+    AlignDetaVsDetb(bmtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("BM"), geoTrafo->GetDeviceAngle("BM"));
+    //here the VT is fixed, the MSD will be shifted and tilted
+    foldername="MSDVT";
+    AlignDetaVsDetb(msdtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("MSD"), geoTrafo->GetDeviceAngle("MSD"));
+  }
 
   file_out->Write();
+
+  //Check the detector status for the current run:
+  CheckUp(inputFile, file_out);
+
   file_out->Close();
 
   cout<<"program executed; output file= "<<nameOut.Data()<<endl;
