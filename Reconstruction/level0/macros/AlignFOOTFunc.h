@@ -689,8 +689,8 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   Double_t resytra=gaus->GetParameter(1);
 
   cout<<"AlignWrtTarget:: first residual parameters:"<<endl;
-  cout<<"resxrot="<<resxrot<<"  resyrot="<<resyrot<<endl;
   cout<<"resxtra="<<resxtra<<"  resytra="<<resytra<<endl;
+  cout<<"resxrot="<<resxrot<<"  resyrot="<<resyrot<<endl;
   TVector3 detcenter = geoTrafo->GetDeviceCenter(detname.Data());
   TVector3 detnewangle(xrotpar+geoTrafo->GetDeviceAngle(detname.Data()).X(),yrotpar+geoTrafo->GetDeviceAngle(detname.Data()).Y(),geoTrafo->GetDeviceAngle(detname.Data()).Z());
   cout<<"new "<<detname.Data()<<" rotation parameters:"<<endl;
@@ -752,7 +752,16 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
   Double_t newresytra=gaus->GetParameter(1);
   cout<<"newresxtra="<<newresxtra<<"  newresytra="<<newresytra<<endl;
-  TVector3 detfinalpos(-newresxtra+detcenter.X(),-newresytra+detcenter.Y(),detcenter.Z());
+
+  loc[0] = 0.;
+  loc[1] = 0.;
+  loc[2] = 0.;
+  glo[0] = -newresxtra;
+  glo[1] = -newresytra;
+  glo[2] = 0.;
+  detrot.MasterToLocal(glo,loc);
+
+  TVector3 detfinalpos(loc[0]+detcenter.X(),loc[1]+detcenter.Y(),loc[2]+detcenter.Z());
   cout<<detname.Data()<<"new position estimate PosX: "<<detfinalpos.X()<<"  "<<detname.Data()<<"PosY= "<<detfinalpos.Y()<<"  "<<detname.Data()<<"PosZ= "<<detfinalpos.Z()<<endl;
 
   //define the trasformation matrix
@@ -810,7 +819,7 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   cout<<endl<<endl<<endl;
   cout<<"AlignWrtTarget::final results for "<<detname.Data()<<endl;
   cout<<detname.Data()<<"new position estimate:"<<endl;
-  cout<<detname.Data()<<"PosX: "<<detfinalpos.X()<<"  "<<detname.Data()<<"PosY= "<<detfinalpos.Y()<<"  "<<detname.Data()<<"PosZ= "<<detfinalpos.Z()<<endl;
+  cout<<detname.Data()<<"PosX: "<<detfinalpos.X()<<"  "<<detname.Data()<<"PosY: "<<detfinalpos.Y()<<"  "<<detname.Data()<<"PosZ: "<<detfinalpos.Z()<<endl;
   cout<<detname.Data()<<"new rotation estimate:"<<endl;
   cout<<detname.Data()<<"AngX: "<<detnewangle.X()<<"  "<<detname.Data()<<"AngY: "<<detnewangle.Y()<<"  "<<detname.Data()<<"AngZ: "<<detnewangle.Z()<<endl;
   cout<<"residual on traslations with the new geometrical parameters: finalresxtra="<<finalresxtra<<" finalresytra="<<finalresytra<<endl;
@@ -880,7 +889,7 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
   detanewangle.SetXYZ(xrotpar+detaangle.X(),yrotpar+detaangle.Y(),detaangle.Z());
 
   cout<<"Initial residuals between "<<detname.Data()<<" with the current geo parameters:"<<endl;
-  cout<<"Initial residual on translations: resxrot="<<resxtra<<"  resytra="<<resytra<<endl;
+  cout<<"Initial residual on translations: resxtra="<<resxtra<<"  resytra="<<resytra<<endl;
   cout<<"Initial residual on rotations in mx and my: resxrot="<<resxrot<<"  resyrot="<<resyrot<<endl;
   cout<<"Initial residual on rotation in degree: xrotpar="<<xrotpar<<"  yrotpar="<<yrotpar<<endl;
   cout<<"Detector A initial rotation parameters: detaangle.X()="<<detaangle.X()<<"  detaangle.Y()="<<detaangle.Y()<<"  detaangle.Z()="<<detaangle.Z()<<endl;
@@ -956,8 +965,15 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
   ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
   Double_t newresytra=gaus->GetParameter(1);
-  detanewpos.SetXYZ(-newresxtra+detacenter.X(),-newresytra+detacenter.Y(),detacenter.Z());
 
+  loc[0] = 0.;
+  loc[1] = 0.;
+  loc[2] = 0.;
+  glo[0] = -newresxtra;
+  glo[1] = -newresytra;
+  glo[2] = 0.;
+  detarot.MasterToLocal(glo,loc);
+  detanewpos.SetXYZ(loc[0]+detacenter.X(),loc[1]+detacenter.Y(),loc[2]+detacenter.Z());
 
   cout<<"first rotation step done with "<<detname.Data()<<endl;
   cout<<"residual on traslations with the new rotation parameters: newresxtra="<<newresxtra<<" newresytra="<<newresytra<<endl;
