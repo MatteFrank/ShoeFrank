@@ -212,6 +212,9 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     if(IncludeBM && IncludeVT)
       VTXSYNC(); //to check the VTX and the BM synchronization
 
+    if(IncludeTW && (IncludeVT || IncludeMSD))
+      FillTWalign(); //Align the TW with the VT or MSD tracks
+
     FillTrackVect(bmtrk, vttrk, msdtrk); //fill the tracks in GLOBAL FRAME adopted for alignment
   }//Loop on events
 
@@ -233,6 +236,14 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     //here the VT is fixed, the MSD will be shifted and tilted
     foldername="MSDVT";
     AlignDetaVsDetb(msdtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("MSD"), geoTrafo->GetDeviceAngle("MSD"));
+  }
+
+
+  // if((alignVs || alignStraight) && IncludeTW && (IncludeVT || IncludeMSD))
+  //   AlignTWOld();
+  if((alignVs || alignStraight) && IncludeTW && (IncludeVT || IncludeMSD)){
+    AlignTW(0); //layer 0 (vertical layer, provide X pos)
+    AlignTW(1); //layer 1 
   }
 
   file_out->Write();

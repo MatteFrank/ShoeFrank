@@ -313,6 +313,24 @@ void Booking(TFile* file_out) {
     file_out->cd("..");
   }
 
+  if(IncludeTW && (IncludeVT || IncludeMSD)){
+    file_out->mkdir("TWalign");
+    file_out->cd("TWalign");
+    h = new TH1D("tw_Xbar","TW Xbar;FrontBar X",20,-0.5,19.5);
+    h = new TH1D("tw_Ybar","TW Ybar;RearBar Y",20,-0.5,19.5);
+    h = new TH1D("tw_Xposbarloc","TW X pos in TW local frame;FrontBar X",21,-20.5,20.5);
+    h = new TH1D("tw_Yposbarloc","TW Y pos in TW local frame;RearBar Y",21,-20.5,20.5);
+    h = new TH1D("tw_Xposbarglo","TW X pos in TW global frame before twalign;FrontBar X",410,-20.5,20.5);
+    h = new TH1D("tw_Yposbarglo","TW Y pos in TW global frame before twalign;RearBar Y",410,-20.5,20.5);
+    h2 = new TH2D("track_projTW","Projection of the tracks on the TW;X[cm];Y[cm]",600,-30.,30.,600,-30.,30.);
+    h = new TH1D("track_projXTW","Projection of the tracks X coord on the TW;X[cm]",820,-41.,41.);
+    h = new TH1D("track_projYTW","Projection of the tracks Y coord on the TW;Y[cm]",820,-41.,41.);
+    h = new TH1D("track_Xshift","Number of shifted Xbars for the track-twpoint matching;Nbar",21,-10.5,10.5);
+    h = new TH1D("track_Yshift","Number of shifted Ybars for the track-twpoint matching;Nbar",21,-10.5,10.5);
+    gDirectory->cd("..");
+    file_out->cd("..");
+  }
+
   //check the vtx syncronization
   file_out->mkdir("VTXSYNC");
   file_out->cd("VTXSYNC");
@@ -593,6 +611,120 @@ void VTXSYNC(){
   return;
 }
 
+void FillTWalign(){
+
+  if(twNtuPoint->GetPointsN()!=1)
+    return;
+
+  TVector3 trkproj; //track parameters projected on the tw
+  TATWpoint *twpoint = twNtuPoint->GetPoint(0);
+
+  if(IncludeMSD && false){ //msd track preferred since it is closer to the TW
+    if(msdntutrack->GetTracksN()!=1)
+      return;
+    TAMSDtrack* msdtrack = msdntutrack->GetTrack(0);
+    TVector3 msdslopeglo=geoTrafo->VecFromMSDLocalToGlobal(msdtrack->GetSlopeZ());
+    TVector3 msdoriginglo=geoTrafo->FromMSDLocalToGlobal(msdtrack->GetOrigin());
+    trkproj=ProjectToZ(msdslopeglo, msdoriginglo,geoTrafo->GetTWCenter().Z());
+  }else{ //if msd isn't present, use the vtx track
+    if(vtxsynch!=0)
+      return;
+    if(vtxNtuVertex->GetVertexN()!=1)
+      return;
+    TAVTvertex *vtxvertex = vtxNtuVertex->GetVertex(0);
+    if(vtxvertex->GetTracksN()!=1)
+      return;
+    TAVTtrack *vttrack=vtxvertex->GetTrack(0);
+    TVector3 vtslopeglo=geoTrafo->VecFromVTLocalToGlobal(vttrack->GetSlopeZ());
+    TVector3 vtoriginglo=geoTrafo->FromVTLocalToGlobal(vttrack->GetOrigin());
+    trkproj=ProjectToZ(vtslopeglo, vtoriginglo,geoTrafo->GetTWCenter().Z());
+  }
+
+  TVector3 twproj=geoTrafo->FromTWLocalToGlobal(twpoint->GetPosition());
+
+  myfill("TWalign/tw_Xbar",twpoint->GetRowID());
+  myfill("TWalign/tw_Ybar",twpoint->GetColumnID());
+  myfill("TWalign/tw_Xposbarloc",twpoint->GetPosition().X());
+  myfill("TWalign/tw_Yposbarloc",twpoint->GetPosition().Y());
+  myfill("TWalign/tw_Xposbarglo",twproj.X());
+  myfill("TWalign/tw_Yposbarglo",twproj.Y());
+  myfill("TWalign/track_projXTW",trkproj.X());
+  myfill("TWalign/track_projYTW",trkproj.Y());
+  myfill("TWalign/track_projTW",trkproj.X(),trkproj.Y());
+  myfill("TWalign/track_Xshift",(Int_t)((twproj.X()-trkproj.X())/twparGeo->GetBarWidth()));
+  myfill("TWalign/track_Yshift",(Int_t)((twproj.Y()-trkproj.Y())/twparGeo->GetBarWidth()));
+
+  return;
+}
+
+void AlignTWOld(){
+
+  TH1D *h=((TH1D*)gDirectory->Get("TWalign/track_Xshift"));
+  Double_t twxrescenter= h->GetXaxis()->GetBinCenter(h->GetMaximumBin());
+  Double_t twxcentrecont= h->GetBinContent(h->GetMaximumBin());
+  Double_t twxprevcont= h->GetBinContent(h->GetMaximumBin()-1);
+  Double_t twxnextcont= h->GetBinContent(h->GetMaximumBin()+1);
+  Double_t twshiftX=(twxrescenter*twxcentrecont+(twxrescenter+1)*twxnextcont+(twxrescenter-1)*twxprevcont)*twparGeo->GetBarWidth()/(twxcentrecont+twxnextcont+twxprevcont);
+
+  h=((TH1D*)gDirectory->Get("TWalign/track_Yshift"));
+  Double_t twyrescenter= h->GetXaxis()->GetBinCenter(h->GetMaximumBin());
+  Double_t twycentrecont= h->GetBinContent(h->GetMaximumBin());
+  Double_t twyprevcont= h->GetBinContent(h->GetMaximumBin()-1);
+  Double_t twynextcont= h->GetBinContent(h->GetMaximumBin()+1);
+  Double_t twshiftY=(twyrescenter*twycentrecont+(twyrescenter+1)*twynextcont+(twyrescenter-1)*twyprevcont)*twparGeo->GetBarWidth()/(twycentrecont+twyprevcont+twynextcont);
+
+  cout<<"TW shift evaluated as: twshiftX="<<twshiftX<<" cm;   twshiftY="<<twshiftY<<" cm"<<endl;
+
+  TVector3 twnewpos(geoTrafo->GetTWCenter().X()-twshiftX,geoTrafo->GetTWCenter().Y()-twshiftY,geoTrafo->GetTWCenter().Z());
+  cout<<"Old TW position parameters:"<<endl;
+  cout<<"TofWallPosX: "<<geoTrafo->GetTWCenter().X()<<"  TofWallPosY: "<<geoTrafo->GetTWCenter().Y()<<"  TofWallPosZ: "<<geoTrafo->GetTWCenter().Z()<<endl;
+  cout<<"New TW position parameters:"<<endl;
+  cout<<"TofWallPosX: "<<twnewpos.X()<<"  TofWallPosY: "<<twnewpos.Y()<<"  TofWallPosZ: "<<twnewpos.Z()<<endl;
+
+  return;
+}
+
+void AlignTW(Int_t layer){
+
+  TString trkname="TWalign/track_projXTW";
+  TString twname="TWalign/tw_Xbar";
+
+  TH1D *trkplt=((TH1D*)gDirectory->Get((layer==0 ? "TWalign/track_projXTW":"TWalign/track_projYTW")));
+  TH1D *twplt=((TH1D*)gDirectory->Get((layer==0 ? "TWalign/tw_Xbar":"TWalign/tw_Ybar")));
+  Int_t minres=2e9;
+  Double_t bestres=0.;
+  for(Int_t i=-10;i<10;i++) {
+    TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
+    newtrk->Reset("ICESM");
+    for(Int_t k=0;k<trkplt->GetNbinsX();k++){
+      if((k+i)<newtrk->GetNbinsX() && (k+i)>0)
+        newtrk->SetBinContent(k+i,trkplt->GetBinContent(k));
+    }
+    newtrk->Rebin(20);
+    Int_t res=0;
+    for(Int_t k=1;k<twplt->GetNbinsX();k++){
+      res+=fabs(newtrk->GetBinContent(newtrk->GetMaximumBin()-twplt->GetMaximumBin()+k)-twplt->GetBinContent(k));
+    }
+    if(res<minres){
+      bestres=i;
+      minres=res;
+    }
+    newtrk->Delete();
+  }
+  Double_t shift=-(layer==0 ? twparGeo->GetBarPosition(layer,twplt->GetMaximumBin()-1).X() : twparGeo->GetBarPosition(layer,twplt->GetMaximumBin()-1).Y()) + trkplt->GetXaxis()->GetBinCenter(trkplt->GetMaximumBin()) + bestres*0.1;
+
+  if(layer==0){
+    cout<<"TW old alignment parameters:"<<endl;
+    cout<<"TofWallOldPosX: "<<geoTrafo->GetTWCenter().X()<<"  TofWallPosY: "<<geoTrafo->GetTWCenter().Y()<<"  TofWallPosZ: "<<geoTrafo->GetTWCenter().Z()<<endl;
+    cout<<"new TW alignment parameters:"<<endl;
+    cout<<"TofWallPosX: "<<shift;
+  }else{
+    cout<<"  TofWallPosY: "<<shift<<"  TofWallPosZ: "<<geoTrafo->GetTWCenter().Z()<<endl;
+    cout<<"WARNING: Please take into account the new TW geometrical parameters only AFTER correction of the FOOT.geo file with the new MSD and/or VT detector geometrical parameters!"<<endl<<endl<<endl;
+  }
+
+  return;
+}
 
 void FillTrackVect(vector<beamtrk> &bmtrk, vector<beamtrk> &vttrk, vector<beamtrk> &msdtrk){
 
@@ -617,7 +749,7 @@ void FillTrackVect(vector<beamtrk> &bmtrk, vector<beamtrk> &vttrk, vector<beamtr
 
   //fill VT tracks
   if(IncludeVT){
-    if(vtxNtuVertex->GetVertexN()==1){
+    if(vtxNtuVertex->GetVertexN()==1 && vtxsynch==0){
       TAVTvertex *vtxvertex = vtxNtuVertex->GetVertex(0);
       if(vtxvertex->GetTracksN()==1){
         TAVTtrack *vttrack=vtxvertex->GetTrack(0);
