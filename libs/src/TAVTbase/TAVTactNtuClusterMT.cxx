@@ -38,7 +38,7 @@ ClassImp(TAVTactNtuClusterMT);
 TAVTactNtuClusterMT::TAVTactNtuClusterMT(const char* name,
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
-: TAVTactBaseNtuClusterMT(name, pConfig, pGeoMap),
+: TAVTactBaseClusterMT(name, pConfig, pGeoMap),
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus)
 {
@@ -57,11 +57,13 @@ TAVTactNtuClusterMT::~TAVTactNtuClusterMT()
 //! Action
 Bool_t TAVTactNtuClusterMT::Action()
 {
-   fgSensorOff = 0;
+   TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
-   ThreadStart();
-   ThreadJoin();
-   ThreadStop();
+   for (Int_t i = 0; i < pConfig->GetSensorsN(); i+=fThreadsN) {
+      ThreadStart(i);
+      ThreadJoin();
+     // ThreadStop();
+   }
    
    fpNtuClus->SetBit(kValid);
    
@@ -153,4 +155,37 @@ TClonesArray* TAVTactNtuClusterMT::GetListOfPixels(Int_t sensorId)
    TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();
 
    return pNtuHit->GetListOfPixels(sensorId);
+}
+
+
+//______________________________________________________________________________
+//! Start threads
+Bool_t TAVTactNtuClusterMT::ThreadStart(Int_t iSensor)
+{
+   fThreads.clear();
+   TClonesArray* listOfPixels = 0x0;
+   for (Int_t i = 0; i < fThreadsN; ++i) {
+      listOfPixels = GetListOfPixels(i+iSensor);
+      fThreads.push_back(thread(&TAVTactNtuClusterMT::FindClusters, this,  i+iSensor,  listOfPixels, i));
+   }
+
+   return true;
+}
+
+//______________________________________________________________________________
+//! Stop threads
+Bool_t TAVTactNtuClusterMT::ThreadStop()
+{
+   for (auto& t: fThreads) t.detach();
+   
+   return true;
+}
+
+//______________________________________________________________________________
+//! Join threads
+Bool_t TAVTactNtuClusterMT::ThreadJoin()
+{
+   for (auto& t: fThreads) t.join();
+   
+   return true;
 }
