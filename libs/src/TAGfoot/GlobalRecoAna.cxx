@@ -6,6 +6,7 @@
 #include <ostream>
 #include <sstream>
 
+
 #include <TMultiGraph.h>
 #include <TLegend.h>
 
@@ -227,6 +228,7 @@ void GlobalRecoAna::LoopEvent() {
      
       //------------TRUE MC VALUES-------------
       Int_t Z_true = -999;
+      Int_t FlukaID= -999;
       Double_t Ek_true = -1., Ek_cross = -1., Ek_cross_calo = -1., Ek_true_tot;
       Double_t M_true = -1., M_cross = -1., M_cross_calo = -1.;
       Double_t Tof_true = -1.;
@@ -338,6 +340,7 @@ void GlobalRecoAna::LoopEvent() {
          
          
           Z_true = pNtuMcTrk->GetCharge();
+          FlukaID = pNtuMcTrk->GetFlukaID();
        P_true = pNtuMcTrk->GetInitP();//also MS contribution in target!
           M_true = pNtuMcTrk->GetMass();
        Ek_true_tot = (sqrt(pow(pNtuMcTrk->GetMass(),2) + pow((pNtuMcTrk->GetInitP()).Mag(),2)) - pNtuMcTrk->GetMass());
@@ -529,10 +532,17 @@ void GlobalRecoAna::LoopEvent() {
             //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
 
             //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
-            string path = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
-            //((TH1D*)gDirectory->Get(Form("xsecrec-trkMC/Z_%d-%d_%d/theta_%d-%d_%d/theta_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Th_reco);
+            //string pathmigz = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/migMatrix";
+            //((TH2D*)gDirectory->Get(pathmigz.c_str()))->Fill(Z_true,Z_meas);
+
+            string path = "xsecrec-trkMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
           ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_true);
-                   
+          
+
+          string path_matrix = "xsecrec-trkMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
+          ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z_true,Z_meas);
+
+
            /*for (int j=0; j < ek_nbin; j++) {
              if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
              
@@ -586,9 +596,16 @@ void GlobalRecoAna::LoopEvent() {
             //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
 
             //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
-            string path = "xsecrec-trkTWfixMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
-            //((TH1D*)gDirectory->Get(Form("xsecrec-trkTWfixMC/Z_%d-%d_%d/theta_%d-%d_%d/theta_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Th_reco);
+            //string pathmigz = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/migMatrix";
+            //((TH2D*)gDirectory->Get(pathmigz.c_str()))->Fill(Z_true,Z_meas);
+
+          string path = "xsecrec-trkTWfixMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
           ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_true);
+          
+
+          string path_matrix = "xsecrec-trkTWfixMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
+          ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z_true,Z_meas);
+          //if ((theta_binning[i][1] <=1) && Z_true == 6) cout <<"TRk : " << FlukaID << endl;
                    
            /*for (int j=0; j < ek_nbin; j++) {
              if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
@@ -642,9 +659,15 @@ void GlobalRecoAna::LoopEvent() {
             //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
 
             //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
-            string path = "xsecrec-trkGHfixMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
-            //((TH1D*)gDirectory->Get(Form("xsecrec-trkGHfixMC/Z_%d-%d_%d/theta_%d-%d_%d/theta_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Th_reco);
-          ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_true);
+
+            //string pathmigz = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/migMatrix";
+            //((TH2D*)gDirectory->Get(pathmigz.c_str()))->Fill(Z_true,Z_meas);
+
+          string path = "xsecrec-trkGHfixMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
+          ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_true);    
+
+          string path_matrix = "xsecrec-trkGHfixMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
+          ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z_true,Z_meas);
                    
            /*for (int j=0; j < ek_nbin; j++) {
              if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
@@ -697,9 +720,8 @@ void GlobalRecoAna::LoopEvent() {
             //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
             //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
 
-            string path = "xsecrec-trkREAL/Z_" + to_string(Z_meas) +"-"+to_string(Z_meas)+"_"+to_string(Z_meas+1)+"/theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
-            //((TH1D*)gDirectory->Get(Form("xsecrec-trkREAL/Z_%d-%d_%d/theta_%d-%d_%d/theta_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Th_reco);
-            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_reco);
+            string path = "xsecrec-trkREAL/Z_" + to_string(Z_meas) +"#"+to_string(Z_meas-0.5)+"_"+to_string(Z_meas+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
+            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_reco);    
 
            /*for (int j=0; j < ek_nbin; j++) {
              if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
@@ -921,11 +943,13 @@ void GlobalRecoAna::LoopEvent() {
                           for (int i = 0; i<th_nbin; i++) {
                          
                          
-                          Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());          
+                          Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi()); 
+                                  
                           if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
 
-                            string path = "xsecrec-true_cut/Z_" + to_string(int(charge_tr)) +"-"+to_string(int(charge_tr))+"_"+to_string(int(charge_tr)+1)+"/theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
+                            string path = "xsecrec-true_cut/Z_" + to_string(int(charge_tr)) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
                             ((TH1D*)gDirectory->Get(path.c_str()))->Fill(theta_tr);
+                            //if ((theta_binning[i][1] <=1) && charge_tr == 6) cout <<"MC : " <<particle->GetFlukaID() << endl;
 
                             //((TH1D*)gDirectory->Get(Form("xsecrec-true_cut/Z_%d-%d_%d/theta_%d-%d_%d/theta_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(theta_tr);                    
                             /*for (int j=0; j < ek_nbin; j++) {
@@ -987,7 +1011,7 @@ void GlobalRecoAna::LoopEvent() {
                           Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());          
                           if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
                            
-                            string path = "xsecrec-true_DET/Z_" + to_string(int(charge_tr)) +"-"+to_string(int(charge_tr))+"_"+to_string(int(charge_tr)+1)+"/theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
+                            string path = "xsecrec-true_DET/Z_" + to_string(int(charge_tr)) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
                             ((TH1D*)gDirectory->Get(path.c_str()))->Fill(theta_tr);
                            
                             /*for (int j=0; j < ek_nbin; j++) {
@@ -1238,25 +1262,28 @@ for (int i = 0; i<mass_nbin; i++) {
  if(fFlagMC){
   gDirectory->mkdir("xsecrec-trkMC");
   gDirectory->cd("xsecrec-trkMC");
-  h = new TH1D("charge","",10, 0. ,10.);
+  h = new TH1D("charge","",10, -0.5 ,9.5);
 
   for(int iz=0; iz<=primary_cha; iz++){
-    gDirectory->mkdir(Form("Z_%d-%d_%d",iz, iz , iz+1));
-    gDirectory->cd(Form("Z_%d-%d_%d",iz, iz , iz+1));
-
+    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+    gDirectory->mkdir(name.c_str());
+    gDirectory->cd(name.c_str());
+    name = "";
    
     //h = new TH1D("Theta_meas","",200, 0 ,20.);
     //h = new TH1D("Ek_meas","",100, 0 ,2000.);
    // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
+      //h2 = new TH2D("migMatrix","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
 
 
     for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
       gDirectory->mkdir(path.c_str());
       gDirectory->cd(path.c_str());
      // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
      // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
       h = new TH1D("theta_","",200, 0 ,90.);
+      h2 = new TH2D("migMatrix_Z","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
       /*for (int j=0; j <ek_nbin; j++) {
         gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
         gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
@@ -1287,8 +1314,11 @@ for (int i = 0; i<mass_nbin; i++) {
   h = new TH1D("charge","",10, 0. ,10.);
 
   for(int iz=0; iz<=primary_cha; iz++){
-    gDirectory->mkdir(Form("Z_%d-%d_%d",iz, iz , iz+1));
-    gDirectory->cd(Form("Z_%d-%d_%d",iz, iz , iz+1));
+    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+    gDirectory->mkdir(name.c_str());
+    gDirectory->cd(name.c_str());
+    name = "";
+    //h2 = new TH2D("migMatrix","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
 
    
     //h = new TH1D("Theta_meas","",200, 0 ,20.);
@@ -1297,12 +1327,13 @@ for (int i = 0; i<mass_nbin; i++) {
 
 
     for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
       gDirectory->mkdir(path.c_str());
       gDirectory->cd(path.c_str());
      // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
      // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
       h = new TH1D("theta_","",200, 0 ,90.);
+      h2 = new TH2D("migMatrix_Z","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
       /*for (int j=0; j <ek_nbin; j++) {
         gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
         gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
@@ -1334,8 +1365,12 @@ for (int i = 0; i<mass_nbin; i++) {
   h = new TH1D("charge","",10, 0. ,10.);
 
   for(int iz=0; iz<=primary_cha; iz++){
-    gDirectory->mkdir(Form("Z_%d-%d_%d",iz, iz , iz+1));
-    gDirectory->cd(Form("Z_%d-%d_%d",iz, iz , iz+1));
+    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+    gDirectory->mkdir(name.c_str());
+    gDirectory->cd(name.c_str());
+    name = "";
+
+    //h2 = new TH2D("migMatrix","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
 
    
     //h = new TH1D("Theta_meas","",200, 0 ,20.);
@@ -1344,12 +1379,13 @@ for (int i = 0; i<mass_nbin; i++) {
 
 
     for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
       gDirectory->mkdir(path.c_str());
       gDirectory->cd(path.c_str());
      // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
      // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
       h = new TH1D("theta_","",200, 0 ,90.);
+      h2 = new TH2D("migMatrix_Z","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
       /*for (int j=0; j <ek_nbin; j++) {
         gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
         gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
@@ -1383,8 +1419,10 @@ for (int i = 0; i<mass_nbin; i++) {
   h = new TH1D("charge","",10, 0. ,10.);
 
   for(int iz=0; iz<=primary_cha; iz++){
-    gDirectory->mkdir(Form("Z_%d-%d_%d",iz, iz , iz+1));
-    gDirectory->cd(Form("Z_%d-%d_%d",iz, iz , iz+1));
+    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+    gDirectory->mkdir(name.c_str());
+    gDirectory->cd(name.c_str());
+    name = "";
 
    
     //h = new TH1D("Theta_meas","",200, 0 ,20.);
@@ -1393,7 +1431,7 @@ for (int i = 0; i<mass_nbin; i++) {
 
 
     for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
       gDirectory->mkdir(path.c_str());
       gDirectory->cd(path.c_str());
      // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
@@ -1432,8 +1470,9 @@ for (int i = 0; i<mass_nbin; i++) {
 
 
   for(int iz=0; iz<=primary_cha; iz++){
-    gDirectory->mkdir(Form("Z_%d-%d_%d",iz, iz , iz+1));
-    gDirectory->cd(Form("Z_%d-%d_%d",iz, iz , iz+1));
+    string pathZ = "Z_"+to_string(iz)+"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5); 
+    gDirectory->mkdir(pathZ.c_str());
+    gDirectory->cd(Form(pathZ.c_str()));
 
    
    // h = new TH1D("Theta_meas","",200, 0 ,20.);
@@ -1442,7 +1481,7 @@ for (int i = 0; i<mass_nbin; i++) {
 
 
     for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
       gDirectory->mkdir(path.c_str());
       gDirectory->cd(path.c_str());
       //h = new TH1D(Form("Ek_bin"),"",100, 0 ,800.);
@@ -1478,8 +1517,9 @@ for (int i = 0; i<mass_nbin; i++) {
   h = new TH1D("Z_true_DET","",10, 0 ,10.);
 
   for(int iz=0; iz<=primary_cha; iz++){
-    gDirectory->mkdir(Form("Z_%d-%d_%d",iz, iz , iz+1));
-    gDirectory->cd(Form("Z_%d-%d_%d",iz, iz , iz+1));
+    string pathZ = "Z_"+to_string(iz)+"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5); 
+    gDirectory->mkdir(pathZ.c_str());
+    gDirectory->cd(Form(pathZ.c_str()));
 
    
    // h = new TH1D("Theta_meas","",200, 0 ,20.);
@@ -1488,7 +1528,7 @@ for (int i = 0; i<mass_nbin; i++) {
 
 
     for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"-"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
       gDirectory->mkdir(path.c_str());
       gDirectory->cd(path.c_str());
       //h = new TH1D(Form("Ek_bin"),"",100, 0 ,800.);
