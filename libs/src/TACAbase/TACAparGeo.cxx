@@ -1,4 +1,9 @@
 
+/*!
+ \file TACAparGeo.cxx
+ \brief Implementation of TACAparGeo
+ */
+
 #include <iostream>
 #include <fstream>
 #include <Riostream.h>
@@ -28,7 +33,7 @@
 //##############################################################################
 
 /*!
-  \file TACAparGeo.cxx
+  \class TACAparGeo
   \brief Geometry parameters of the Calorimeter
 */
 
@@ -40,6 +45,8 @@ const Color_t TACAparGeo::fgkDefaultModCol   = kGray;
 const TString TACAparGeo::fgkDefaultCrysName = "caCrys";
 const Int_t   TACAparGeo::fgkCrystalsNperModule = 9;
 
+//! Class Imp
+ClassImp(TACAparGeo)
 
 //_____________________________________________________________________________
 //! Default constructor
@@ -610,6 +617,8 @@ void TACAparGeo::DefineMaterial()
 
 //_____________________________________________________________________________
 //! set color on for fired bars
+//!
+//! \param[in] idx crystal id
 void TACAparGeo::SetCrystalColorOn(Int_t idx)
 {
    if (!gGeoManager) {
@@ -626,6 +635,8 @@ void TACAparGeo::SetCrystalColorOn(Int_t idx)
 
 //_____________________________________________________________________________
 //! reset color for unfired bars
+//!
+//! \param[in] idx crystal id
 void TACAparGeo::SetCrystalColorOff(Int_t idx)
 {
    if (!gGeoManager) {
@@ -639,7 +650,6 @@ void TACAparGeo::SetCrystalColorOff(Int_t idx)
    if (vol)
       vol->SetLineColor(GetDefaultCryCol());
 }
-
 
 //_____________________________________________________________________________
 //! Print the Calorimeter rotations for the FLUKA geometry file
@@ -812,8 +822,14 @@ string TACAparGeo::PrintBodies()
 
 //-----------------------------------------------------------------------------
 //! Print the planes parallel to a module
+//!
+//! \param[in] id crystal id
+//! \param[in] hm transformation matrix
+//! \param[in] bodyName body name
+//! \param[in] trd2Size truncate shape vector
+//! \param[in] dir direction vector
 TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyName,
-                                       Double_t *trd2Size, int * dir )
+                                       Double_t* trd2Size, int* dir )
 {
    // dir[0] X direction could be (-1, 0, 1)
    // dir[1] Y direction could be (-1, 0, 1)
@@ -891,6 +907,11 @@ TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyN
 
 //-----------------------------------------------------------------------------
 //! Print the body definition in FLUKA FREE format
+//!
+//! \param[in] id crystal id
+//! \param[in] hm transformation matrix
+//! \param[in] bodyName body name
+//! \param[in] trd2Size truncate shape vector
 TString TACAparGeo::SPrintCrystalBody( int id, TGeoCombiTrans* hm, TString bodyName, Double_t *trd2Size )
 {
    // There is no truncate pyramid in FLUKA, so we need to define
@@ -1428,7 +1449,9 @@ string TACAparGeo::PrintParameters()
 
 //_____________________________________________________________________________
 //! Print the Calorimeter material for the FLUKA geometry file
-string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
+//!
+//! \param[in] Material input material
+string TACAparGeo::PrintAssignMaterial(TAGmaterials* Material)
 {
    stringstream outstr;
 
@@ -1484,8 +1507,11 @@ void TACAparGeo::Clear(Option_t*)
    return;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TACAparGeo::ToStream(ostream& os, Option_t*) const
 {
    os << "TACAparGeo " << GetName() << endl

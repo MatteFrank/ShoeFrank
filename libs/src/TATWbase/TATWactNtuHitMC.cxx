@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TATWactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TATWactNtuHitMC.cxx
  \brief   Implementation of TATWactNtuHitMC.
  */
 #include "TAGgeoTrafo.hxx"
@@ -16,8 +15,8 @@
 #include "TATWdigitizer.hxx"
 
 /*!
- \class TATWactNtuHitMC TATWactNtuHitMC.hxx "TATWactNtuHitMC.hxx"
- \brief NTuplizer for BM raw hits. **
+ \class TATWactNtuHitMC
+ \brief NTuplizer for TW MC hits. **
  */
 
 ClassImp(TATWactNtuHitMC);
@@ -78,20 +77,15 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    if(fIsRateSmear){
       fDigitizer->SetRateSmearing();
    }
-   
-   
-   
+
    fZbeam = f_pargeo->GetBeamPar().AtomicNumber;
    
    fMapPU.clear();
    fVecPuOff.clear();
-   
-   
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TATWactNtuHitMC::~TATWactNtuHitMC()
 {
    delete fDigitizer;
@@ -101,7 +95,6 @@ TATWactNtuHitMC::~TATWactNtuHitMC()
 //! Setup all histograms.
 void TATWactNtuHitMC::CreateHistogram()
 {
-   
    DeleteHistogram();
    
    fpHisHitCol = new TH1F("twHitCol", "ToF Wall - Column hits", 22, 0., 22);
@@ -189,7 +182,6 @@ void TATWactNtuHitMC::CreateDigitizer()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-
 bool TATWactNtuHitMC::Action() {
    
    if(FootDebugLevel(4))

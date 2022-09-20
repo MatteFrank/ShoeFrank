@@ -1,5 +1,12 @@
 #ifndef _TAMSDparCal_HXX
 #define _TAMSDparCal_HXX
+
+/*!
+ \file TAMSDparCal.hxx
+ \brief   Declaration of TAMSDparCal.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <string>
 #include <map>
 #include <TSystem.h>
@@ -14,11 +21,11 @@
 class TAMSDparCal : public TAGparTools
 {
 private:
-  TAMSDcalibrationMap *fMapCal;
-   TF1* fFunc1;
-   TF1* fFunc2;
-   TF1* fFunc3;
-   TF1* fFuncEta;
+  TAMSDcalibrationMap* fMapCal;  ///< Calibration map
+   TF1*                fFunc1;   ///< 1st function
+   TF1*                fFunc2;   ///< 2nd function
+   TF1*                fFunc3;   ///< 3rd function
+   TF1*                fFuncEta; ///< Eta function
    
 private:
    void SetFunctions();
@@ -40,7 +47,6 @@ public:
   Float_t ComputeEtaChargeCorrection(Float_t eta);
   Float_t ComputeEtaPosCorrection(Float_t eta);
   Double_t GetElossParam(Float_t eta);
-
 
  ClassDef(TAMSDparCal, 0)
 };

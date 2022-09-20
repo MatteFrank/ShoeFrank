@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAMSDactNtuTrack.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+ \file TAMSDactNtuTrack.cxx
  \brief   Implementation of TAMSDactNtuTrack.
  */
 #include "TClonesArray.h"
@@ -22,13 +21,20 @@
 
 /*!
  \class TAMSDactNtuTrack
- \brief NTuplizer for Inner tracker tracks. **
+ \brief NTuplizer for MSD tracks.
  */
 
+//! Class imp
 ClassImp(TAMSDactNtuTrack);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuClus cluster container descriptor
+//! \param[out] pNtuTrack track container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
 TAMSDactNtuTrack::TAMSDactNtuTrack(const char* name,
 								 TAGdataDsc* pNtuClus, TAGdataDsc* pNtuTrack, TAGparaDsc* pConfig, 
 								 TAGparaDsc* pGeoMap)
@@ -49,7 +55,9 @@ TAMSDactNtuTrack::~TAMSDactNtuTrack()
 }
 
 //_____________________________________________________________________________
-//
+//! Get number of clusters for a given sensor
+//!
+//! \param[in] iPlane plane index
 Int_t TAMSDactNtuTrack::GetClustersN(Int_t iPlane)
 {
    TAMSDntuPoint*  pNtuClus  = (TAMSDntuPoint*)  fpNtuClus->Object();
@@ -57,7 +65,10 @@ Int_t TAMSDactNtuTrack::GetClustersN(Int_t iPlane)
 }
 
 //_____________________________________________________________________________
-//
+//! Get cluster for a given sensor and a given index
+//!
+//! \param[in] iPlane plane index
+//! \param[in] iClus cluster index
 TAGcluster* TAMSDactNtuTrack::GetCluster(Int_t iPlane, Int_t iClus)
 {
    TAMSDntuPoint*  pNtuClus  = (TAMSDntuPoint*) fpNtuClus->Object();
@@ -67,7 +78,7 @@ TAGcluster* TAMSDactNtuTrack::GetCluster(Int_t iPlane, Int_t iClus)
 }
 
 //_____________________________________________________________________________
-//
+//! Get number of tracks
 Int_t TAMSDactNtuTrack::GetTracksN()
 {
    TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*) fpNtuTrack->Object();
@@ -75,7 +86,9 @@ Int_t TAMSDactNtuTrack::GetTracksN()
 }
 
 //_____________________________________________________________________________
-//
+//! Add new track to container using copt cstr
+//!
+//! \param[in] trk a given track
 void TAMSDactNtuTrack::AddNewTrack(TAGbaseTrack* trk)
 {
    TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*) fpNtuTrack->Object();
@@ -84,14 +97,16 @@ void TAMSDactNtuTrack::AddNewTrack(TAGbaseTrack* trk)
 }
 
 //_____________________________________________________________________________
-//
+//! New track
 TAGbaseTrack* TAMSDactNtuTrack::NewTrack()
 {
    return new TAMSDtrack();
 }
 
 //_____________________________________________________________________________
-//
+//! Set beam position
+//!
+//! \param[in] pos position of beam
 void TAMSDactNtuTrack::SetBeamPosition(TVector3 pos)
 {
    TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*) fpNtuTrack->Object();
@@ -99,7 +114,7 @@ void TAMSDactNtuTrack::SetBeamPosition(TVector3 pos)
 }
 
 //_____________________________________________________________________________
-//
+//! Get geometry parameters
 TAVTbaseParGeo* TAMSDactNtuTrack::GetParGeo()
 {
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
@@ -108,11 +123,10 @@ TAVTbaseParGeo* TAMSDactNtuTrack::GetParGeo()
 }
 
 //_____________________________________________________________________________
-//
+//! Get configuration parameters
 TAVTbaseParConf* TAMSDactNtuTrack::GetParConf()
 {
    TAMSDparConf* pConfig = (TAMSDparConf*) fpConfig->Object();
    
    return pConfig;
 }
-

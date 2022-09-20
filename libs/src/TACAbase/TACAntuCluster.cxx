@@ -1,16 +1,23 @@
-////////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TACAcluster                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+
+
+/*!
+ \file TACAntuCluster.cxx
+ \brief Implementation TACAntuCluster
+ */
 
 #include "TACAparGeo.hxx"
 #include "TACAntuCluster.hxx"
 
+/*!
+ \class TACAcluster
+ \brief cluster for CAL detectors.
+ */
+
+//! Class Imp
 ClassImp(TACAcluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//! Constructor
 TACAcluster::TACAcluster()
 :  TAGcluster(),
    fPosition(0., 0., 0.),
@@ -25,7 +32,7 @@ TACAcluster::TACAcluster()
 }
 
 //______________________________________________________________________________
-//
+//! Setup clones
 void TACAcluster::SetupClones()
 {
    fListOfHits = new TClonesArray("TACAhit");
@@ -33,7 +40,9 @@ void TACAcluster::SetupClones()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
+//!
+//! \param[in] cluster cluster to copy
 TACAcluster::TACAcluster(const TACAcluster& cluster)
 :  TAGcluster(cluster),
    fPosition(cluster.fPosition),
@@ -49,7 +58,7 @@ TACAcluster::TACAcluster(const TACAcluster& cluster)
 }
 
 //______________________________________________________________________________
-//  
+//! Destrictor
 TACAcluster::~TACAcluster()
 { 
    // TACAcluster default destructor
@@ -57,21 +66,27 @@ TACAcluster::~TACAcluster()
 }
 
 //______________________________________________________________________________
-//  
+//! Set cluster positon
+//!
+//! \param[in] pos position
 void TACAcluster::SetPosition(TVector3& pos)
 {
    fPosition.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
-//  
+//! Set cluster positon error
+//!
+//! \param[in] pos position error
 void TACAcluster::SetPosError(TVector3& pos)
 {
    fPosError.SetXYZ(pos.X(), pos.Y(), pos.Z());
 }
 
 //______________________________________________________________________________
-//  
+//! Set global cluster positon
+//!
+//! \param[in] posGlo global position
 void TACAcluster::SetPositionG(TVector3& posGlo)
 {
    fPositionG.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
@@ -79,7 +94,9 @@ void TACAcluster::SetPositionG(TVector3& posGlo)
 }
 
 //______________________________________________________________________________
-// 
+//! Get cluster hit
+//!
+//! \param[in] idx index hit
 TACAhit* TACAcluster::GetHit(Int_t idx)
 { 
    if (idx >= 0 && idx < fListOfHits->GetEntries())
@@ -89,14 +106,16 @@ TACAhit* TACAcluster::GetHit(Int_t idx)
 }
 
 //______________________________________________________________________________
-//  
+//! Delete hits in container
 void TACAcluster::ResetHits()
 {
    fListOfHits->Delete();
 }
 
 //______________________________________________________________________________
-//
+//! Add hit
+//!
+//! \param[in] hit hit to add
 void TACAcluster::AddHit(TACAhit* hit)
 {
    for (Int_t k = 0; k < hit->GetMcTracksN(); ++k) {
@@ -110,6 +129,7 @@ void TACAcluster::AddHit(TACAhit* hit)
 
 //###############################################################################
 
+//! Class Imp
 ClassImp(TACAntuCluster);
 
 TString TACAntuCluster::fgkBranchName   = "caclus.";
@@ -156,6 +176,8 @@ TClonesArray* TACAntuCluster::GetListOfClusters() const
 
 //------------------------------------------+-----------------------------------
 //! return a cluster
+//!
+//! \param[in] iCluster cluster index
 TACAcluster* TACAntuCluster::GetCluster(Int_t iCluster)
 {
    TClonesArray* list = GetListOfClusters();
@@ -163,7 +185,9 @@ TACAcluster* TACAntuCluster::GetCluster(Int_t iCluster)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a cluster const
+//!
+//! \param[in] iCluster cluster index
 const TACAcluster* TACAntuCluster::GetCluster(Int_t iCluster) const
 {
    TClonesArray* list = GetListOfClusters();
@@ -187,7 +211,7 @@ void TACAntuCluster::Clear(Option_t*)
 }
 
 //______________________________________________________________________________
-//
+//! New cluster (default constructor)
 TACAcluster* TACAntuCluster::NewCluster()
 {
    TClonesArray &clusterArray = *GetListOfClusters();
@@ -198,7 +222,9 @@ TACAcluster* TACAntuCluster::NewCluster()
 }
 
 //______________________________________________________________________________
-//
+//! New cluster (copy constructor)
+//!
+//! \param[in] clus cluster to copy
 TACAcluster* TACAntuCluster::NewCluster(TACAcluster* clus)
 {
    TClonesArray &clusterArray = *GetListOfClusters();
@@ -210,6 +236,9 @@ TACAcluster* TACAntuCluster::NewCluster(TACAcluster* clus)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TACAntuCluster::ToStream(ostream& os, Option_t* option) const
 {
    os << "TACAntuCluster " << GetName()

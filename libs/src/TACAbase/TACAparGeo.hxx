@@ -3,7 +3,7 @@
 
 /*!
   \file TACAparGeo.hxx
-  \brief   Declaration of TACAparGeo, to handle the geometry of the Calorimeter
+  \brief   Declaration of TACAparGeo
 */
 
 #include "Riostream.h"
@@ -51,22 +51,41 @@ public:
    Int_t           GetCrystalsN()            const  { return fCrystalsN;      }
    //! Get the crystal truncate pyramid half dimensions 
    const Double_t* GetCrystalSize()          const  { return fCrystalSize;    }
+   //! Get the crystal front width
    Float_t         GetCrystalWidthFront()    const  { return fCrystalSize[0]; }
+   //! Get the crystal front height
    Float_t         GetCrystalHeightFront()   const  { return fCrystalSize[2]; }
+   //! Get the crystal thickness
    Float_t         GetCrystalThick()         const  { return fCrystalSize[4]; }
+   //! Get the crystal back width
    Float_t         GetCrystalWidthBack()     const  { return fCrystalSize[1]; }
+   //! Get the crystal back height
    Float_t         GetCrystalHeightBack()    const  { return fCrystalSize[3]; }
+   //! Get the crystal material
    TString         GetCrystalMat()           const  { return fCrystalMat;     }
 
    //! Get the support truncate pyramid half dimensions dimensions
    const Double_t* GetSupportSize()          const  { return fSupportSize;    }
+   //! Get the support front width
    Float_t         GetSupportWidthFront()    const  { return fSupportSize[0]; }
+   //! Get the support front height
    Float_t         GetSupportHeightFront()   const  { return fSupportSize[2]; }
+   //! Get the support thickness
    Float_t         GetSupportThick()         const  { return fSupportSize[4]; }
+   //! Get the support back width
    Float_t         GetSupportWidthBack()     const  { return fSupportSize[1]; }
+   //! Get the support back height
    Float_t         GetSupportHeightBack()    const  { return fSupportSize[3]; }
+   //! Get the support material
    TString         GetSupportMat()           const  { return fSupportMat;     }
+   //! Get the support position in Z
    Float_t         GetSupportPositionZ()     const  { return fSupportPositionZ;}
+   
+   // 2D positions and dimensions fro clustering
+   //! Get maximum of line number
+   Int_t           GetMaxNumLines()          const  { return fNumLine;         }
+   //! Get maximum of colomn number
+   Int_t           GetMaxNumColumns()        const  { return fNumCol;          }
 
    //!Get dimension of truncate pyramid of air around the module
    const Double_t* GetModuleSize()           const  { return fModAirFlukaSize; }
@@ -98,11 +117,9 @@ public:
    string          PrintSubtractBodiesFromAir();
    string          PrintParameters();
    
-   // 2D positions and dimensions fro clustering
+   // 2D positions and dimensions for clustering
    Int_t           GetCrystalLine(Int_t iCrystal);
    Int_t           GetCrystalCol(Int_t iCrystal);
-   Int_t           GetMaxNumLines()   { return fNumLine; }
-   Int_t           GetMaxNumColumns() { return fNumCol; }
 
 private:
    TString         SPrintCrystalBody(int id, TGeoCombiTrans * hm, TString bodyName, Double_t *trd2Size);
@@ -123,23 +140,27 @@ public:
    static const Char_t* GetBaseName()     { return fgkBaseName.Data();    }
    //! Get the parameter name of this class (caGeo)
    static const Char_t* GetDefParaName()  { return fgkDefParaName.Data(); }
+   //! Get default crystal color
    static Color_t GetDefaultCryCol()      { return fgkDefaultCryCol;      }
+   //! Get default on crystal color
    static Color_t GetDefaultCryColOn()    { return fgkDefaultCryColOn;    }
+   //! Get default module color
    static Color_t GetDefaultModCol()      { return fgkDefaultModCol;      }
    //! Get number of crystal per module (9)
    static Int_t   GetCrystalsNperModule() { return fgkCrystalsNperModule; }
-
-private:
-   static const TString fgkBaseName;         ///< Detector base name
-   static const TString fgkDefParaName;
-   static const Color_t fgkDefaultCryCol;    ///< default color of slat/crystal;
-   static const Color_t fgkDefaultCryColOn;  ///< default color of fired slat/crystal;
-   static const Color_t fgkDefaultModCol;    ///< default color of module support;
-   static const TString fgkDefaultCrysName;  ///< default crystal name;
-   static const Int_t   fgkCrystalsNperModule;  ///< Number of crystals per module;
-
+   
+   //! Get default crystal name
    static const Char_t* GetDefaultCrysName(Int_t idx) { return Form("%s_%d", fgkDefaultCrysName.Data(), idx); }
 
+private:
+   static const TString fgkBaseName;            ///< Detector base name
+   static const TString fgkDefParaName;         ///< default parameter name
+   static const Color_t fgkDefaultCryCol;       ///< default color of slat/crystal;
+   static const Color_t fgkDefaultCryColOn;     ///< default color of fired slat/crystal;
+   static const Color_t fgkDefaultModCol;       ///< default color of module support;
+   static const TString fgkDefaultCrysName;     ///< default crystal name;
+   static const Int_t   fgkCrystalsNperModule;  ///< Number of crystals per module;
+   
 private:
    TVector3            fCaloSize;         ///< Size of a box contained the detector
    Float_t             fCaloBoxPositionZ; ///< Z position of the contained box 
@@ -149,28 +170,28 @@ private:
    Double_t            fCrystalSize[5];   ///< Dimension of truncate pyramid, see TGeoTrd2
    Float_t             fCrystalDelta;     ///< delta between two crystal in a module
    TString             fCrystalMat;       ///< Definition of BGO material
-   Float_t             fCrystalDensity;
-   Float_t             fCrystalIonisMat;
-   TAGionisMaterials*  fIonisation;        ///<! pointer for ionisation property
+   Float_t             fCrystalDensity;   ///< Crystal material density
+   Float_t             fCrystalIonisMat;  ///< Crystal material
+   TAGionisMaterials*  fIonisation;       ///<! pointer for ionisation property
 
    Double_t            fSupportSize[5];    ///< Dimension of truncate pyramid for the module support, see TGeoTrd2
-   TString             fSupportMat;        ///< 
-   Float_t             fSupportDensity;
+   TString             fSupportMat;        ///<  Support material
+   Float_t             fSupportDensity;    ///< Support material density
    Float_t             fSupportPositionZ;  ///< z shift respect to module origin
 
    Double_t            fModAirFlukaSize[5];   ///< Dimension of truncate pyramid of air around the module
-   Float_t             fModAirFlukaPositionZ;
+   Float_t             fModAirFlukaPositionZ; ///< Fluka air module
 
    TString             fkDefaultGeoName;   ///< default par geo file name
-   TString             fDetectorName;
+   TString             fDetectorName;      ///< Detector name
    TString             fConfigTypeGeo;     ///< config/setup geometry of Calorimeter
    
    vector<TVector3>    fListOfCrysAng;     ///< list of angles for crystal
    vector<TVector3>    fListOfModAng;      ///< list of angles for module
 
    map<int, pair<int, int> > fMapIndexes;  ///< index map for line/column numbers
-   Int_t               fNumLine;           /// 
-   Int_t               fNumCol;            ///
+   Int_t               fNumLine;           ///< line index
+   Int_t               fNumCol;            ///< column index
 
    ClassDef(TACAparGeo, 2)
 };

@@ -1,8 +1,7 @@
 #ifndef _TACAactNtuCluster_HXX
 #define _TACAactNtuCluster_HXX
 /*!
- \file
- \version $Id: TACAactNtuCluster.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TACAactNtuCluster.hxx
  \brief   Declaration of TACAactNtuCluster.
  */
 /*------------------------------------------+---------------------------------*/
@@ -41,22 +40,8 @@ public:
    //! Base creation of histogram
    virtual  void   CreateHistogram();
    
-   //! Get total charge
-   //Float_t         GetClusterPulseSum()          const { return fClusterPulseSum; }
-   
-   //! Get position of current cluster
-   //TVector3&       GetCurrentPosition()        { return fCurrentPosition; }
-   
-   //! Get position error of current cluster
-   //TVector3&       GetCurrentPosError()        { return fCurrentPosError; }
-   
-   //! Set position of current cluster
-   //void            SetCurrentPosition(Float_t u, Float_t v, Float_t z) { fCurrentPosition.SetXYZ(u,v,z);  }
-   
    //! Compute position
    virtual void    ComputePosition(TACAcluster* cluster);
-   
-   void            DrawEventClusters(int ievent, Option_t *opt);
    
    //! Get object in list
    TAGobject*      GetHitObject(Int_t idx) const;
@@ -72,10 +57,6 @@ protected:
    TAGparaDsc*     fpConfig;		    ///< config para dsc
    TAGparaDsc*     fpGeoMap;		    ///< geometry para dsc
    
-   //TVector3       fCurrentPosition;  ///< pointer to current position
-   //TVector3       fCurrentPosError ; ///< pointer to current position error
-   //Float_t        fClusterPulseSum;  ///< total charge of cluster
-   
    Int_t          fClustersN;        ///< number of cluster
 
    TH1F*          fpHisHitTot;       ///< Total number of hits per cluster
@@ -90,11 +71,17 @@ protected:
    TString        fTitleDev;         ///< device name for histogram title
 
 protected:
+   // Create clusters
    Bool_t         CreateClusters();
+   // Search cluster
    void           SearchCluster();
+   // Shape cluster
    Bool_t         ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, double seedCharge);
+   // Fill maps
    void           FillMaps();
+   // Fill cluster information
    void           FillClusterInfo(TACAcluster* cluster);
+   // Compute minimum distance to a cluster
    void           ComputeMinDist(TACAcluster* cluster);
 
    ClassDef(TACAactNtuCluster,0)

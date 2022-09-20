@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAMSDparMap.cxx,v 1.5 2003/06/09 18:41:04 mueller Exp $
+ \file TAMSDparMap.cxx
  \brief   Implementation of TAMSDparMap.
  */
 
@@ -12,15 +11,15 @@
 //##############################################################################
 
 /*!
- \class TAVTparMap TAVTparMap.hxx "TAVTparMap.hxx"
- \brief Mapping for MSD. **
+ \class TAMSDparMap
+ \brief Mapping for MSD.
  */
 
+//! Class Imp
 ClassImp(TAMSDparMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TAMSDparMap::TAMSDparMap()
  : TAGparTools(),
    fSensorsN(0)
@@ -30,13 +29,14 @@ TAMSDparMap::TAMSDparMap()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAMSDparMap::~TAMSDparMap()
 {
 }
 
 //------------------------------------------+-----------------------------------
-//! Read mapping data from file \a name .
+//! Read from file
+//!
+//! \param[in] name file name
 Bool_t TAMSDparMap::FromFile(const TString& name)
 {
   Clear();
@@ -83,6 +83,10 @@ Bool_t TAMSDparMap::FromFile(const TString& name)
 }
 
 //------------------------------------------+-----------------------------------
+//! Get sensor id from board and view id
+//!
+//! \param[in] boardId board Id
+//! \param[in] viewId view Id
 Int_t TAMSDparMap::GetSensorId(Int_t boardId, Int_t viewId)
 {
 

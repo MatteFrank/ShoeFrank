@@ -1,11 +1,25 @@
+/*!
+ \file TAMSDcalibrationMap.cxx
+ \brief  Implementation of TAMSDcalibrationMap
+ */
+
 #include "TError.h"
 
 #include "TAMSDcalibrationMap.hxx"
 #include "TAGrecoManager.hxx"
 
+/*!
+ \class TAMSDcalibrationMap
+ \brief Calibration map class
+ */
+
+//! Class Imp
 ClassImp(TAMSDcalibrationMap)
 
 //_____________________________________________________________________
+//! Destructor
+//!
+//! \param[in] strip_number_p number of strips
 TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
 : TAGobject(),
   fStripsN{strip_number_p}
@@ -14,6 +28,9 @@ TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
 }
 
 //_____________________________________________________________________
+//! Load energy calibration map file
+//!
+//! \param[in] FileName input file
 void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
 {
    
@@ -52,6 +69,9 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
 }
 
 //_____________________________________________________________________
+//! Load pedestal map file
+//!
+//! \param[in] FileName input file
 void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
 {
    
@@ -119,6 +139,10 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
    fin.close();
 }
 
+//_____________________________________________________________________
+//! Get energy loss parameter
+//!
+//! \param[in] eta eta value
 Double_t TAMSDcalibrationMap::GetElossParam(Float_t eta)
 {  
    // find the eta bin

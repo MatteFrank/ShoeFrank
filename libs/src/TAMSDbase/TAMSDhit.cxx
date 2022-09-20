@@ -1,4 +1,9 @@
 
+/*!
+ \file TAMSDhit.cxx
+ \brief   Implementation of TAMSDhit.
+ */
+
 #include "TString.h"
 #include "TClonesArray.h"
 
@@ -7,11 +12,16 @@
 
 #include "TAMSDhit.hxx"
 
+/*!
+ \class TAMSDhit
+ \brief Hit for MSD detectors. **
+ */
+
+//! Class imp
 ClassImp(TAMSDhit) // Description of Single Detector TAMSDhit 
 
-
 //______________________________________________________________________________
-//  build the hit from the index
+//!  build the hit from the index
 TAMSDhit::TAMSDhit()
  : TAGobject(),
    fSensorId(0),
@@ -25,6 +35,12 @@ TAMSDhit::TAMSDhit()
 }
 
 //______________________________________________________________________________
+//!  build hit
+//!
+//! \param[in] input sensor index
+//! \param[in] value measured charge
+//! \param[in] view plane view id
+//! \param[in] strip strip id
 TAMSDhit::TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip)
  : TAGobject(),
    fSensorId(input),
@@ -38,6 +54,9 @@ TAMSDhit::TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip)
 }
 
 //______________________________________________________________________________
+//!  build hit from copy
+//!
+//! \param[in] hit hit to copy
 TAMSDhit::TAMSDhit(const TAMSDhit& hit)
  : TAGobject(hit),
    fSensorId(hit.fSensorId),
@@ -51,7 +70,7 @@ TAMSDhit::TAMSDhit(const TAMSDhit& hit)
 }
 
 //______________________________________________________________________________
-//
+//! Clear
 void TAMSDhit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
@@ -59,7 +78,9 @@ void TAMSDhit::Clear(Option_t* /*option*/)
 }
 
 //______________________________________________________________________________
-//
+//!  Compare to a hit
+//!
+//! \param[in] hit hit to compare
 Bool_t TAMSDhit::IsEqual(const TObject* hit) const
 {
    return ((fSensorId == ((TAMSDhit*)hit)->fSensorId) &&
@@ -69,7 +90,10 @@ Bool_t TAMSDhit::IsEqual(const TObject* hit) const
 }
 
 //______________________________________________________________________________
-//
+//! Add MC track and hit indexes
+//!
+//! \param[in] trackId MC track index
+//! \param[in] mcId MC hit index
 void TAMSDhit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
@@ -79,7 +103,11 @@ void TAMSDhit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
    fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
 }
 
+
 //______________________________________________________________________________
+//!  Compare to a hit
+//!
+//! \param[in] obj hit to compare
 Int_t TAMSDhit::Compare(const TObject* obj) const
 {
    Int_t view = fView;

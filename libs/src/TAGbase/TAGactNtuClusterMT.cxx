@@ -25,7 +25,7 @@ TAGactNtuClusterMT::TAGactNtuClusterMT(const char* name, const char* title )
  : TAGaction(name, title),
    fDimX(-1),
    fDimY(-1),
-   fThreadsN(-1)
+   fThreadsN(fgMaxThreadsN)
 {
    for (Int_t i = 0; i < fgkLimThreadsN; ++i) {
       fFlagMap[i] = 0x0;

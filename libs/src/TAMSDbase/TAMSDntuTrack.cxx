@@ -1,9 +1,19 @@
+/*!
+ \file TAMSDntuTrack.cxx
+ \brief   Implementation of TAMSDntuTrack.
+ */
+
 #include "TMath.h"
 #include "TAGgeoTrafo.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuTrack.hxx"
 
+/*!
+ \class TAMSDntuTrack
+ \brief track container class for MSD
+ */
 
+//! Class imp
 ClassImp(TAMSDntuTrack);
 
 TString TAMSDntuTrack::fgkBranchName   = "mstrack.";
@@ -35,6 +45,8 @@ Int_t TAMSDntuTrack::GetTracksN() const
 
 //------------------------------------------+-----------------------------------
 //! return a Track for a given sensor
+//!
+//! \param[in] iTrack track index
 TAMSDtrack* TAMSDntuTrack::GetTrack(Int_t iTrack)
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -44,7 +56,9 @@ TAMSDtrack* TAMSDntuTrack::GetTrack(Int_t iTrack)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a strip for a given sensor
+//! return a Track for a given sensor (const)
+//!
+//! \param[in] iTrack track index
 const TAMSDtrack* TAMSDntuTrack::GetTrack(Int_t iTrack) const
 {
    if (iTrack >=0 || iTrack < GetTracksN())
@@ -72,7 +86,7 @@ void TAMSDntuTrack::Clear(Option_t*)
 }
 
 //______________________________________________________________________________
-//  
+//! New track
 TAMSDtrack* TAMSDntuTrack::NewTrack()
 {
    TClonesArray &trackArray = *fListOfTracks;
@@ -80,8 +94,10 @@ TAMSDtrack* TAMSDntuTrack::NewTrack()
    return track;
 }
 
-//______________________________________________________________________________
-//  
+//------------------------------------------+-----------------------------------
+//! New track from copy constructor
+//!
+//! \param[in] trk track to copy
 TAMSDtrack* TAMSDntuTrack::NewTrack(TAMSDtrack& trk)
 {
    TClonesArray &trackArray = *fListOfTracks;
@@ -91,9 +107,11 @@ TAMSDtrack* TAMSDntuTrack::NewTrack(TAMSDtrack& trk)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAMSDntuTrack::ToStream(ostream& os, Option_t* option) const
 {
-	  
    os << "TAMSDntuTrack " << GetName()
    << Form("  nStripss=%3d", GetTracksN())
    << endl;

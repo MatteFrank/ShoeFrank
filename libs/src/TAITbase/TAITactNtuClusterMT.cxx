@@ -3,6 +3,7 @@
  \version $Id: TAITactNtuClusterMT.cxx
  \brief   Implementation of TAITactNtuClusterMT.
  */
+
 #include "TClonesArray.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -10,8 +11,8 @@
 
 #include "TAGrecoManager.hxx"
 
-#include "TAVTparGeo.hxx"
-#include "TAVTparConf.hxx"
+#include "TAITparGeo.hxx"
+#include "TAITparConf.hxx"
 #include "TAITntuHit.hxx"
 #include "TAITntuHit.hxx"
 #include "TAITntuCluster.hxx"
@@ -36,7 +37,7 @@ ClassImp(TAITactNtuClusterMT);
 TAITactNtuClusterMT::TAITactNtuClusterMT(const char* name,
 									 TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus,
 									 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
-: TAVTactBaseNtuClusterMT(name, pConfig, pGeoMap),
+: TAVTactBaseClusterMT(name, pConfig, pGeoMap),
   fpNtuRaw(pNtuRaw),
   fpNtuClus(pNtuClus)
 {
@@ -58,11 +59,10 @@ TAITactNtuClusterMT::~TAITactNtuClusterMT()
 //! Action
 Bool_t TAITactNtuClusterMT::Action()
 {
-   TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
+   TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
    
    for (Int_t i = 0; i < pConfig->GetSensorsN(); i+=fThreadsN) {
-      fgSensorOff = i;
-      ThreadStart();
+      ThreadStart(i);
       ThreadJoin();
       ThreadStop();
    }
@@ -155,4 +155,36 @@ TClonesArray* TAITactNtuClusterMT::GetListOfPixels(Int_t sensorId)
    TAITntuHit* pNtuHit  = (TAITntuHit*) fpNtuRaw->Object();
    
    return pNtuHit->GetListOfPixels(sensorId);
+}
+
+//______________________________________________________________________________
+//! Start threads
+Bool_t TAITactNtuClusterMT::ThreadStart(Int_t iSensor)
+{
+   fThreads.clear();
+   TClonesArray* listOfPixels = 0x0;
+   for (Int_t i = 0; i < fThreadsN; ++i) {
+      listOfPixels = GetListOfPixels(i+iSensor);
+      fThreads.push_back(thread(&TAITactNtuClusterMT::FindClusters, this,  i+iSensor,  listOfPixels, i));
+   }
+   
+   return true;
+}
+
+//______________________________________________________________________________
+//! Stop threads
+Bool_t TAITactNtuClusterMT::ThreadStop()
+{
+   for (auto& t: fThreads) t.detach();
+   
+   return true;
+}
+
+//______________________________________________________________________________
+//! Join threads
+Bool_t TAITactNtuClusterMT::ThreadJoin()
+{
+   for (auto& t: fThreads) t.join();
+   
+   return true;
 }

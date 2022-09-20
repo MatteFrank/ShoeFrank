@@ -1,16 +1,23 @@
-////////////////////////////////////////////////////////////
-// Class Description of TAMSDrawHit                        //
-//                                                        //
-//                                                        //
-////////////////////////////////////////////////////////////
+/*!
+ \file TAMSDntuRaw.cxx
+ \brief   Implementation of TAMSDntuRaw.
+ */
+
+
 #include "TClonesArray.h"
 
 #include "TAMSDntuRaw.hxx"
 
+/*!
+ \class TAMSDrawHit
+ \brief Raw hit for MSD detectors. **
+ */
+
+//! Class imp
 ClassImp(TAMSDrawHit) 
 
 //______________________________________________________________________________
-//
+// Constructor
 TAMSDrawHit::TAMSDrawHit()
 : TObject(),
    fSensorId(0),
@@ -20,11 +27,15 @@ TAMSDrawHit::TAMSDrawHit()
    fStrip(0),
    fIsSeed(false)
 {
-   
 }
 
 //______________________________________________________________________________
-//
+//!  build raw hit
+//!
+//! \param[in] id plane id
+//! \param[in] view plane view id
+//! \param[in] strip strip id
+//! \param[in] charge raw measured charge
 TAMSDrawHit::TAMSDrawHit(Int_t id, Int_t view, Int_t strip, Double_t charge)
 : TObject(),
    fSensorId(id),
@@ -34,11 +45,12 @@ TAMSDrawHit::TAMSDrawHit(Int_t id, Int_t view, Int_t strip, Double_t charge)
    fStrip(strip),
    fIsSeed(false)
 {
-
 }
 
-//_______________________________________
-//!Compare return 1 if grater 0 if equal -1 if lower
+//______________________________________________________________________________
+//!  Compare to a hit
+//!
+//! \param[in] obj hit to compare
 Int_t TAMSDrawHit::Compare(const TObject* obj) const
 {
    Int_t aLine = fView;
@@ -73,10 +85,16 @@ Int_t TAMSDrawHit::Compare(const TObject* obj) const
 
 TString TAMSDntuRaw::fgkBranchName   = "msdrd.";
 
+/*!
+ \class TAMSDntuRaw
+ \brief Raw hit container for MSD detectors. **
+ */
+
+//! Class imp
 ClassImp(TAMSDntuRaw)
 
 //______________________________________________________________________________
-//
+//! Detector
 TAMSDntuRaw::TAMSDntuRaw() 
 : TAGdata(),
   fListOfStrips(0x0)
@@ -90,7 +108,7 @@ TAMSDntuRaw::TAMSDntuRaw()
 }
 
 //______________________________________________________________________________
-//  
+//! Destructor
 TAMSDntuRaw::~TAMSDntuRaw()
 {
   // TAMSDntuRaw default destructor
@@ -98,7 +116,9 @@ TAMSDntuRaw::~TAMSDntuRaw()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of strips for a given sensor.
+//! return number of strips for a given sensor (const)
+//!
+//! \param[in] iSensor sensor id
 Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
@@ -109,8 +129,10 @@ Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
    }
 }
 
-//______________________________________________________________________________
-//
+//------------------------------------------+-----------------------------------
+//! return number of strips for a given sensor
+//!
+//! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuRaw::GetStrips(Int_t iSensor) const
 { 
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
@@ -123,7 +145,10 @@ TClonesArray* TAMSDntuRaw::GetStrips(Int_t iSensor) const
 }
 
 //------------------------------------------+-----------------------------------
-//! return a strip for a given sensor
+//! Get strip (const)
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] iStrip strip index
 const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
 {
    if (iStrip >=0 || iStrip < GetStripsN(iSensor))
@@ -135,7 +160,10 @@ const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
 }
  
 //------------------------------------------+-----------------------------------
-//! return a strip for a given sensor
+//! Get strip
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] iStrip strip index
 TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
 {
    if (iStrip >=0 || iStrip < GetStripsN(iSensor))
@@ -146,9 +174,13 @@ TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
    }
 }
 
-
 //______________________________________________________________________________
-//  
+//!  Add raw hit
+//!
+//! \param[in] sensor sensor id
+//! \param[in] view plane view id
+//! \param[in] strip strip id
+//! \param[in] value raw measured charge
 TAMSDrawHit* TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double_t value)
 {
    if (sensor >= 0  || sensor < fpGeoMap->GetSensorsN()) {
@@ -161,7 +193,7 @@ TAMSDrawHit* TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double
 }
 
 //______________________________________________________________________________
-//  
+//! Setup clones
 void TAMSDntuRaw::SetupClones()
 {
    if (fListOfStrips) return;
@@ -176,7 +208,7 @@ void TAMSDntuRaw::SetupClones()
 }
 
 //______________________________________________________________________________
-//  
+//! Clear
 void TAMSDntuRaw::Clear(Option_t* /*opt*/)
 {
    TAGdata::Clear();
@@ -187,8 +219,11 @@ void TAMSDntuRaw::Clear(Option_t* /*opt*/)
    }
 }
 
-//______________________________________________________________________________
-//  
+/*------------------------------------------+---------------------------------*/
+//! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAMSDntuRaw::ToStream(ostream& os, Option_t* option) const
 {
    for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {

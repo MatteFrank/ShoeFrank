@@ -1,6 +1,13 @@
 #ifndef _TASTdigitizer_HXX
 #define _TASTdigitizer_HXX
 
+/*!
+ \file TASTdigitizer.hxx
+ \brief   Declaration of TASTdigitizer.
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include <map>
 #include "TAGbaseDigitizer.hxx"
 
@@ -29,7 +36,7 @@ public:
    void           SetGain(Float_t g)    { fGain = g;          }
    void           SetResTime(Float_t r) { fResTime = r;       }
 
-   TASThit*    GetCurrentHit()       { return fCurrentHit; }
+   TASThit*       GetCurrentHit()       { return fCurrentHit; }
    void           ClearMap()            { fMap.clear();       }
   
 private:
@@ -37,7 +44,7 @@ private:
    TF1*          fFuncBirks;
    Float_t       fGain;
    Float_t       fResTime;
-   TASThit*   fCurrentHit;
+   TASThit*      fCurrentHit;
 
    map<int, TASThit*> fMap; //! map for pilepup
 

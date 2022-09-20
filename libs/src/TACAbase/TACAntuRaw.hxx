@@ -1,8 +1,7 @@
 #ifndef _TACAntuRaw_HXX
 #define _TACAntuRaw_HXX
 /*!
-  \file
-  \version $Id: TACAntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+  \file TACAntuRaw.hxx
   \brief   Declaration of TACAntuRaw.
 */
 /*------------------------------------------+---------------------------------*/
@@ -12,37 +11,43 @@ using namespace std;
 #include "TClonesArray.h"
 #include "TAGdata.hxx"
 #include "TAGbaseWD.hxx"
-//
 
-/**
- * This class stores the params of a single channel waveform
+
+/*!
+ \class TACArawHit
+ \brief class for raw hit.
  */
+
 class TACArawHit : public TAGbaseWD {
 
 protected:
-   Double32_t fTemp;
+   Double32_t fTemp;   ///< temperature
 
 public:
    TACArawHit();
    TACArawHit(TWaveformContainer *w, double temp);
    virtual         ~TACArawHit();
 
+   //! Get temperature
    Double_t GetTemperature()          const { return fTemp;  }   
-
+   //! Set temperature
    void SetTemperature(double aTemp)        { fTemp = aTemp; }
 
-
-   virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
-   virtual double ComputeCharge( TWaveformContainer *w, double thr);
-   virtual double ComputeAmplitude( TWaveformContainer *w);
-   virtual double ComputePedestal( TWaveformContainer *w, double thr);
-   virtual double ComputeBaseline( TWaveformContainer *w);
-
    ClassDef(TACArawHit, 3);
-  //
+
+//   virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
+//   virtual double ComputeCharge( TWaveformContainer *w, double thr);
+//   virtual double ComputeAmplitude( TWaveformContainer *w);
+//   virtual double ComputePedestal( TWaveformContainer *w, double thr);
+//   virtual double ComputeBaseline( TWaveformContainer *w);
+
 };
 
 //##############################################################################
+/*!
+ \class TACAntuRaw
+ \brief Container for raw hit.
+ */
 
 class TACAntuRaw : public TAGdata {
 public:
@@ -60,18 +65,16 @@ public:
   virtual void      Clear(Option_t* opt="");
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
 
-
-
-  
 public:
+   //! Get branch name
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
 private:
-   Int_t           fHistN;          //
-   TClonesArray*   fListOfHits;         // hits
+   Int_t           fHistN;          ///< Number of hits (useless)
+   TClonesArray*   fListOfHits;     ///< list of  hits
 
 private:
-   static TString fgkBranchName;    // Branch name in TTree
+   static TString fgkBranchName;    ///< Branch name in TTree
   
   ClassDef(TACAntuRaw,1);
 

@@ -119,7 +119,9 @@ public:
     //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
     //! MSD tracking
-    Bool_t IsMsdTracking()       const { return fEnableMsdTrack;   }
+    Bool_t IsMsdTracking()       const { return fEnableMsdTrack;      }
+    //! ITR tracking
+    Bool_t IsItrTracking()       const { return fEnableItrTrack;      }
     //! TW Calibration flag
     Bool_t CalibTW()             const { return fDoCalibTW;           }
     //! BM Calibration flag
@@ -176,8 +178,13 @@ public:
    
     //! Enable MSD tracking
     void EnableMsdTrack()              {  fEnableMsdTrack = true;     }
-    //! Disable MC region reading
+    //! Disable MSD tracking
     void DisableMsdTrack()             {  fEnableMsdTrack = false;    }
+   
+    //! Enable ITR tracking
+    void EnableItrTrack()              {  fEnableItrTrack = true;     }
+    //! Disable ITR tracking
+    void DisableItrTrack()             {  fEnableItrTrack = false;    }
    
     //! Enable filling in tree
     void EnableTree()                  {  fEnableTree = true;         }
@@ -274,7 +281,8 @@ private:
    Bool_t               fDoCalibTW;             ///< Enable TW cliabration process
    Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
    Bool_t               fEnableRegionMc;        ///< Enable MC region reading
-   Bool_t               fEnableMsdTrack;         ///< Enable MSD tracking
+   Bool_t               fEnableMsdTrack;        ///< Enable MSD tracking
+   Bool_t               fEnableItrTrack;        ///< Enable ITR tracking
 
    Bool_t               fIncludeST;             ///< Include STC
    Bool_t               fIncludeBM;             ///< Include BM

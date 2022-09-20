@@ -1,3 +1,8 @@
+/*!
+ \file TATWparGeo.cxx
+ \brief   Implementation of TATWparGeo.
+ */
+
 #include <Riostream.h>
 
 #include "TGeoBBox.h"
@@ -30,6 +35,14 @@ const Color_t TATWparGeo::fgkDefaultModCol   = kGray+1;
 const Color_t TATWparGeo::fgkDefaultModColOn = kRed-6;
 const TString TATWparGeo::fgkDefaultBarName = "twBar";
 
+
+/*!
+ \class TATWparGeo
+ \brief geometry class for TW
+ */
+
+//! Class Imp
+ClassImp(TATWparGeo);
 
 //_____________________________________________________________________________
 TATWparGeo::TATWparGeo()

@@ -1,7 +1,5 @@
-
 /*!
-  \file
-  \version $Id: TATWparCal.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
+  \file TATWparCal.cxx
   \brief   Implementation of TATWparCal.
  */
 
@@ -17,10 +15,11 @@
 //##############################################################################
 
 /*!
-  \class TATWparCal TATWparCal.hxx "TATWparCal.hxx"
+  \class TATWparCal
   \brief Charge (raw) calibration for vertex. **
  */
 
+//! Class Imp
 ClassImp(TATWparCal);
 
 TString TATWparCal::fgkBarStatus = "./config/TATWbarsMapStatus.map";

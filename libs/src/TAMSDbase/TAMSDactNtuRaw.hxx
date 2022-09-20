@@ -41,32 +41,40 @@ public:
     ClassDef(TAMSDactNtuRaw,0)
    
 public:
-   static void EnablePedSub()  { fgPedestalSub = true;  }
-   static void DisablePedSub() { fgPedestalSub = false; }
-   static void EnableCNSub()  { fgCommonModeSub = true;  }
-   static void DisableCNSub() { fgCommonModeSub = false; }
+   //! Enable pedestal subtraction
+   static void EnablePedSub()  { fgPedestalSub = true;    }
+   //! Disable pedestal subtraction
+   static void DisablePedSub() { fgPedestalSub = false;   }
+   //! Enable common mode subtraction
+   static void EnableCNSub()   { fgCommonModeSub = true;  }
+   //! Disable common mode subtraction
+   static void DisableCNSub()  { fgCommonModeSub = false; }
+   //! Enable pedestal run
+   static void EnablePedRun()  { fgPedestal = true;       }
+   //! Disable pedestal run
+   static void DisablePedRun() { fgPedestal = false;      }
 
 private:
-    TAGdataDsc*     fpDatRaw;		        // output data dsc
-    TAGdataDsc*     fpDatDaq;		        // input data dsc
-    TAGparaDsc*     fpParMap;            // parameter dsc
-    TAGparaDsc*     fpParCal;            // parameter dsc
-    TAGparaDsc*     fpParGeo;            // parameter dsc
-    TAGparaDsc*     fpParConf;           // parameter dsc
+    TAGdataDsc*     fpDatRaw;		        ///< output data dsc
+    TAGdataDsc*     fpDatDaq;		        ///< input data dsc
+    TAGparaDsc*     fpParMap;            ///< mapping parameter dsc
+    TAGparaDsc*     fpParCal;            ///< calibration parameter dsc
+    TAGparaDsc*     fpParGeo;            ///< geometry parameter dsc
+    TAGparaDsc*     fpParConf;           ///< configuration parameter dsc
 
-    TH1F*           fpHisSeedMap[16];
-    TH1F*           fpHisStripMap[16];
-    TH1F*           fpHisCommonMode[16];
+    TH1F*           fpHisSeedMap[16];    ///< seed map
+    TH1F*           fpHisStripMap[16];   ///< strip map
+    TH1F*           fpHisCommonMode[16]; ///< commom mode
    
 private:
-    Bool_t DecodeHits(const DEMSDEvent* evt);
+    Bool_t   DecodeHits(const DEMSDEvent* evt);
     Double_t ComputeCN(Int_t strip, Double_t *VaContent, Int_t type);
 
 private:
-   static UInt_t fkgThreshold;
-   static Bool_t fgPedestalSub;
-   static Bool_t fgCommonModeSub;
-   static Bool_t isPedestal;
+   static UInt_t fkgThreshold;           ///< charge threshold
+   static Bool_t fgPedestalSub;          ///< pedestal substraction flag
+   static Bool_t fgCommonModeSub;        ///< common noise substraction flag
+   static Bool_t fgPedestal;             ///< Flag for pedestal runs
 };
 
 #endif

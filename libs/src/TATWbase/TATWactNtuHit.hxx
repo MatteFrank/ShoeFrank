@@ -1,8 +1,7 @@
 #ifndef _TATWactNtuHit_HXX
 #define _TATWactNtuHit_HXX
 /*!
-  \file
-  \version $Id: TATWactNtuHit.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
+  \file TATWactNtuHit.hxx
   \brief   Declaration of TATWactNtuHit.
 */
 /*------------------------------------------+---------------------------------*/

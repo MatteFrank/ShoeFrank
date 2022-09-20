@@ -205,6 +205,11 @@ public:
    //! Disable MSD tracking
    void DisableMsdTracking()   { fFlagMsdTrack = false;   }
    
+   //! Enable ITR tracking
+   void EnableItrTracking()    { fFlagItrTrack = true;    }
+   //! Disable ITR tracking
+   void DisableItrTracking()   { fFlagItrTrack = false;   }
+   
    //! Enable TW calibration per bar
    void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
    //! Disable TW calibration per bar
@@ -357,13 +362,6 @@ public:
   
 
 public:
-   //! Disable ITR tracking
-   static void DisableItrTracking() { fgItrTrackFlag = false; }
-   //! Enable ITR tracking
-   static void EnableItrTracking()  { fgItrTrackFlag = true;  }
-   //! Check ITR tracking
-   static Bool_t IsItrTracking()    { return fgItrTrackFlag;  }
-   
    //! Disable MC info saving in output tree
    static void DisableSaveMc() { fSaveMcFlag = false; }
    //! Enable MC info saving in output tree
@@ -488,6 +486,7 @@ protected:
    Bool_t                fFlagHisto;        ///< flag for histo generatiom
    Bool_t                fFlagTrack;        ///< flag for tracking
    Bool_t                fFlagMsdTrack;     ///< flag for MSD tracking
+   Bool_t                fFlagItrTrack;     ///< flag for ITR tracking
    Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar
    TString               fgVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)

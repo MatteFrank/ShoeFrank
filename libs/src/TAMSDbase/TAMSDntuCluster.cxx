@@ -4,10 +4,20 @@
 //                                                        //
 ////////////////////////////////////////////////////////////
 
+/*!
+ \file TAMSDntuCluster.cxx
+ \brief Implementation TAMSDntuCluster
+ */
+
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuCluster.hxx"
 
+/*!
+ \class TAMSDntuCluster
+ \brief simple container class for cluster MSD 
+ */
 
+//! Class imp
 ClassImp(TAMSDntuCluster);
 
 TString TAMSDntuCluster::fgkBranchName   = "msdclus.";
@@ -30,7 +40,9 @@ TAMSDntuCluster::~TAMSDntuCluster()
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of clusters
+//! return number of clusters (const)
+//!
+//! \param[in] iSensor sensor id
 Int_t TAMSDntuCluster::GetClustersN(Int_t iSensor) const
 {
   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -42,6 +54,8 @@ Int_t TAMSDntuCluster::GetClustersN(Int_t iSensor) const
 
 //------------------------------------------+-----------------------------------
 //! return number of clusters
+//!
+//! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor)
 {
   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -53,6 +67,8 @@ TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor)
 
 //------------------------------------------+-----------------------------------
 //! return number of clusters
+//!
+//! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor) const
 {
   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -65,6 +81,9 @@ TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor) const
 
 //------------------------------------------+-----------------------------------
 //! return a cluster
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] iCluster cluster index
 TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 {
   if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
@@ -75,7 +94,10 @@ TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a strip for a given sensor
+//! return a strip for a given sensor (const)
+//!
+//! \param[in] iSensor sensor id
+//! \param[in] iCluster cluster index
 const TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) const
 {
   if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
@@ -111,8 +133,10 @@ void TAMSDntuCluster::Clear(Option_t*)
   }   
 }
 
-//______________________________________________________________________________
-//  
+//------------------------------------------+-----------------------------------
+//! new cluster from default constructor
+//!
+//! \param[in] iSensor sensor id
 TAMSDcluster* TAMSDntuCluster::NewCluster(Int_t iSensor)
 {
   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -126,8 +150,11 @@ TAMSDcluster* TAMSDntuCluster::NewCluster(Int_t iSensor)
   }   
 }
 
-//______________________________________________________________________________
-//  
+//------------------------------------------+-----------------------------------
+//! new cluster from copy constructor
+//!
+//! \param[in] clus cluster to copy
+//! \param[in] iSensor sensor id
 TAMSDcluster* TAMSDntuCluster::NewCluster(TAMSDcluster* clus, Int_t iSensor)
 {
   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
@@ -143,6 +170,9 @@ TAMSDcluster* TAMSDntuCluster::NewCluster(TAMSDcluster* clus, Int_t iSensor)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAMSDntuCluster::ToStream(ostream& os, Option_t* option) const
 {
   for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {
