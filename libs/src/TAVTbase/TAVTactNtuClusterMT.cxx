@@ -160,6 +160,8 @@ TClonesArray* TAVTactNtuClusterMT::GetListOfPixels(Int_t sensorId)
 
 //______________________________________________________________________________
 //! Start threads
+//!
+//! \param[in] sensorId index of sensor
 Bool_t TAVTactNtuClusterMT::ThreadStart(Int_t iSensor)
 {
    fThreads.clear();
