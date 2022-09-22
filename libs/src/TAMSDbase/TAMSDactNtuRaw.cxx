@@ -19,7 +19,7 @@ ClassImp(TAMSDactNtuRaw);
 UInt_t TAMSDactNtuRaw::fkgThreshold    = 0;
 Bool_t TAMSDactNtuRaw::fgPedestalSub   = true;
 Bool_t TAMSDactNtuRaw::fgCommonModeSub = true;
-Bool_t TAMSDactNtuRaw::fgPedestal      = true;
+Bool_t TAMSDactNtuRaw::fgPedestal      = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
