@@ -51,6 +51,8 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   Th_reco = -999.;        //questo lo otterrò dall'oggetto traccia
 
   f = new TFile(fileNameIn.Data(),"READ");
+  //TTree *tree = 0x0;
+  //tree = (TTree*)f->Get("tree");
 
 
 }
@@ -61,7 +63,7 @@ GlobalRecoAna::~GlobalRecoAna()
 
 void GlobalRecoAna::LoopEvent() {
   bool debug_trackid = true;   // to check relation between tracking reconstruction and MC events
-  //fFlagMC = false;
+  fFlagMC = false;
  
 
   Int_t currEvent=0;
@@ -86,7 +88,8 @@ void GlobalRecoAna::LoopEvent() {
       TAMCntuEvent* myMcNtuEvent = (TAMCntuEvent*)fpNtuMcEvt->GenerateObject();
       TAMCntuPart* myMcNtuPart = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
     }
-
+    //static TAGgeoTrafo*  geoTrafo; //geometry
+    //const double myangle = TMath::ATan(((TWparGeo->GetBarHeight()-2*TWparGeo->GetBarWidth())/2-TMath::Abs(geoTrafo->GetTWCenter().y())-0.7)/geoTrafo->GetTWCenter().z());  // in deg /TMath::Pi()*180 for rad
    
     Int_t nt =  myGlb->GetTracksN();
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
@@ -695,9 +698,15 @@ void GlobalRecoAna::LoopEvent() {
       }
       //--END CROSS SECTION - RECO PARAMETERS FROM MC DATA + GHOST HITS FIX
 
-
+      
      
       if (fFlagMC == false){
+      //TAGWDtrigInfo *wdTrig = new TAGWDtrigInfo();
+      //tree->SetBranchAddress(TAGWDtrigInfo::GetBranchName(), &wdTrig);
+      //printf("%s\n",TAGWDtrigInfo::GetBranchName());
+
+
+
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
       if (
@@ -886,6 +895,7 @@ void GlobalRecoAna::LoopEvent() {
             Float_t Ek_tr_tot = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass );
             Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
             Float_t Ek_true = Ek_tr_tot / (double)baryon;
+            Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());   // in deg
             
            
             if (debug_trackid )myfile << "  fluka ID: " << particle->GetFlukaID() << "("<<particle->GetCharge()<<")"<<endl;
@@ -943,7 +953,7 @@ void GlobalRecoAna::LoopEvent() {
                           for (int i = 0; i<th_nbin; i++) {
                          
                          
-                          Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi()); 
+                           
                                   
                           if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
 
@@ -985,10 +995,10 @@ void GlobalRecoAna::LoopEvent() {
                     //! finalPos.Z() > 90 IN 16O_400
 
 
-          if (  (Mid==0 ) && Reg == 50  &&  finalPos.Z() > 190.    // if the particle is generated in the target and it is the fragment of a primary AND DIES IN THE TW
-                  && particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectil)
+          if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
+                  particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
                   && Ek_true>100   //enough energy/n to go beyond the target
-                  // particle->GetMass()>0.8 && particle->GetMass()<30
+                  && theta_tr <= 8.  //  myangle // angular aperture < 8 deg
                   )  {                            
                          if (debug_trackid ) myfile << "  fluka ID - detected: " << particle->GetFlukaID() << endl << "   real charge: "<< particle-> GetCharge()<<endl;
                           Float_t charge_tr = particle-> GetCharge();
@@ -1128,7 +1138,7 @@ void GlobalRecoAna::LoopEvent() {
 
 
 void GlobalRecoAna:: Booking(){
-//fFlagMC = false;
+fFlagMC = false;
 
   if(FootDebugLevel(1))
     cout<<"start GlboalRecoAna::Booking"<<endl;
@@ -2852,9 +2862,15 @@ void GlobalRecoAna::BeforeEventLoop(){
 void GlobalRecoAna::AfterEventLoop(){
 
   //stamp luminosity
-     
-      h = new TH1D("luminosity","",1, 0. ,1.);
-      ((TH1D*)gDirectory->Get("luminosity"))->SetBinContent(1,Ntg*nTotEv  );
+  string luminosity_name="";
+    if (fFlagMC == true){
+      luminosity_name = "luminosityMC";
+    }
+      else if (fFlagMC == false){  // real data
+      luminosity_name = "luminosityREAL";
+    }
+      h = new TH1D(luminosity_name.c_str(),"",1, 0. ,1.);
+      ((TH1D*)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1,Ntg*nTotEv  );
      
 
     //h =  ((TH1D*)gDirectory->Get("Charge_trk_True")) -> Clone();
