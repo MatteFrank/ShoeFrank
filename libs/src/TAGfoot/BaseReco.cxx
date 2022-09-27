@@ -113,7 +113,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActTrackIt(0x0),
    fActClusMsd(0x0),
    fActPointTw(0x0),
+#ifdef TOE_FLAG
    fActGlbTrack(0x0),
+#endif
    fActGlbTrackS(0x0),
    fFlagOut(true),
    fFlagTree(false),
@@ -414,12 +416,13 @@ void BaseReco::SetRecHistogramDir()
         fActGlbkFitter->SetHistogramDir(subfolder);
         if (TAGrecoManager::GetPar()->IsLocalReco()) return;
       }
-
+#ifdef TOE_FLAG
       if (TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
          TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
          fActGlbTrack->SetHistogramDir(subfolder);
          if (TAGrecoManager::GetPar()->IsLocalReco()) return;
       }
+#endif
    }
 
    //BMN
@@ -472,10 +475,12 @@ void BaseReco::SetRecHistogramDir()
    }
 
    // Global straight track
+#ifdef TOE_FLAG
    if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAGgeoTrafo::GetBaseName());
       fActGlbTrackS->SetHistogramDir(subfolder);
    }
+#endif
 }
 
 //__________________________________________________________
@@ -956,6 +961,7 @@ void BaseReco::CreateRecActionCa()
 //! Create global track reconstruction TOE action
 void BaseReco::CreateRecActionGlb()
 {
+#ifdef TOE_FLAG
   if(fFlagRecCutter) {
      SetL0TreeBranches();
      return;
@@ -983,6 +989,7 @@ void BaseReco::CreateRecActionGlb()
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
   }
+#endif
 }
 
 //__________________________________________________________

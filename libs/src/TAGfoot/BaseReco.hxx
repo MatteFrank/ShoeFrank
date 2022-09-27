@@ -91,7 +91,9 @@
 #include "TAVTactNtuVertex.hxx"
 
 #include "TAGactNtuGlbTrackS.hxx"
+#ifdef TOE_FLAG
 #include "TAGactNtuGlbTrack.hxx"
+#endif
 
 #include "TAGactKFitter.hxx"
 #include "UpdatePDG.hxx"
@@ -473,8 +475,9 @@ protected:
    TACAactNtuCluster*    fActClusCa;     ///< action for clusters
    TACAactNtuHit*        fActNtuHitCa;   ///< action for hit
 
+#ifdef TOE_FLAG
    TAGactNtuGlbTrack*    fActGlbTrack;   ///< Global tracking action
-    
+#endif
    TAGactNtuGlbTrackS*   fActGlbTrackS;  ///< action for straight tracks
   
    TAGactKFitter*        fActGlbkFitter; ///< Global tracking kalman Fitter
