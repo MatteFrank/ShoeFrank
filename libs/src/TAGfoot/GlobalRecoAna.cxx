@@ -11,14 +11,16 @@
 #include <TLegend.h>
 
 
+#include "BaseReco.hxx"
 #include "LocalReco.hxx"
+
 #include "LocalRecoMC.hxx"
 #include "GlobalRecoAna.hxx"
 
 using namespace std;
 ofstream myfile("example3.txt");
 
-GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t innTotEv) : BaseReco(expName, runNumber, fileNameIn, fileNameout)
+GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t innTotEv) : LocalReco(expName, runNumber, fileNameIn, fileNameout)
 {
   nchargeok_vt = 0;
   nchargeok_vt_clu = 0;
@@ -51,8 +53,9 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   Th_reco = -999.;        //questo lo otterrò dall'oggetto traccia
 
   f = new TFile(fileNameIn.Data(),"READ");
-  //TTree *tree = 0x0;
-  //tree = (TTree*)f->Get("tree");
+
+  
+  //TFile *f_out = new TFile(fileNameout.Data());
 
 
 }
@@ -63,22 +66,39 @@ GlobalRecoAna::~GlobalRecoAna()
 
 void GlobalRecoAna::LoopEvent() {
   bool debug_trackid = true;   // to check relation between tracking reconstruction and MC events
-  fFlagMC = false;
+  
+  
  
 
   Int_t currEvent=0;
  
 
   TATWparGeo* TWparGeo = (TATWparGeo*)fpParGeoTw->Object();
- 
-  while(gTAGroot->NextEvent()) { //for every event    
+  
+
+  while(gTAGroot->NextEvent()) { //for every event
+    //fFlagMC = true;     //N.B.: for MC FAKE REAL
     DiffApp_trkIdx = false;
 
     if (currEvent % 100 == 0)
       printf("Event: %d\n", currEvent);
    if (debug_trackid ) myfile <<endl<<endl<<"current Event: " <<currEvent <<endl;
 
+    if (fFlagMC == false){          // I accept only triggered events
 
+    TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
+    //cout << "value :"<< wdTrig -> GetTriggersStatus()[1] <<"trigger id: "<< wdTrig -> GetTriggerID() <<endl;
+
+    if (wdTrig -> GetTriggersStatus()[1] == 0) {
+      ++currEvent;
+      continue;
+    }
+    //cout << currEvent<<"* event: trigger event" << endl;
+    }
+
+    //fFlagMC = false;   //N.B.: for MC FAKE REAL
+
+  
 
     TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
     resetStatus();
@@ -701,9 +721,7 @@ void GlobalRecoAna::LoopEvent() {
       
      
       if (fFlagMC == false){
-      //TAGWDtrigInfo *wdTrig = new TAGWDtrigInfo();
-      //tree->SetBranchAddress(TAGWDtrigInfo::GetBranchName(), &wdTrig);
-      //printf("%s\n",TAGWDtrigInfo::GetBranchName());
+      
 
 
 
@@ -711,7 +729,7 @@ void GlobalRecoAna::LoopEvent() {
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
       if (
       Z_meas >0. && Z_meas <= primary_cha
-      && TriggerCheck(fGlbTrack) == true  
+      //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
       ) {  
         ((TH1D*)gDirectory->Get("xsecrec-trkREAL/charge"))->Fill(Z_meas);
       //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
@@ -758,6 +776,67 @@ void GlobalRecoAna::LoopEvent() {
       }
      
       //--END CROSS SECTION - RECO PARAMETERS FROM  REAL DATA
+
+
+
+      if (fFlagMC == true){
+      //TAGWDtrigInfo *wdTrig = new TAGWDtrigInfo();
+      //tree->SetBranchAddress(TAGWDtrigInfo::GetBranchName(), &wdTrig);
+      //printf("%s\n",TAGWDtrigInfo::GetBranchName());
+
+
+
+      //-------------------------------------------------------------
+      //--CROSS SECTION fragmentation for trigger efficiency
+      if (
+      Z_meas >0. && Z_meas <= primary_cha
+      && TriggerCheck(fGlbTrack) == true  
+      ) {  
+        ((TH1D*)gDirectory->Get("xsecrec-trkTrigger/charge"))->Fill(Z_meas);
+      //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
+      //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
+      //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
+
+
+           
+        for (int i = 0; i<th_nbin; i++) {  
+         
+         //if ( Z_meas>0 && Z_meas<primary_cha){
+
+
+         if(Th_reco>=theta_binning[i][0] && Th_reco<theta_binning[i][1]){
+            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
+            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
+
+            string path = "xsecrec-trkTrigger/Z_" + to_string(Z_meas) +"#"+to_string(Z_meas-0.5)+"_"+to_string(Z_meas+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
+            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_reco);    
+
+           /*for (int j=0; j < ek_nbin; j++) {
+             if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
+             
+                //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/Mass_bin_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]))))->Fill(M_meas);
+             
+                  for (int k=0; k < mass_nbin; k++) {
+                   if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
+             
+                     ((TH1D*)gDirectory->Get(Form("xsecrec-trkREAL/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
+                     
+                                         
+
+                    }
+                  }
+
+
+              }
+
+            } */
+          }
+         //}
+        }
+      }
+      }
+     
+      //--END CROSS SECTION  fragmentation for trigger efficiency
 
     
 
@@ -1138,7 +1217,7 @@ void GlobalRecoAna::LoopEvent() {
 
 
 void GlobalRecoAna:: Booking(){
-fFlagMC = false;
+//fFlagMC = false; //N.B.: for MC FAKE REAL
 
   if(FootDebugLevel(1))
     cout<<"start GlboalRecoAna::Booking"<<endl;
@@ -1468,6 +1547,56 @@ for (int i = 0; i<mass_nbin; i++) {
   gDirectory->cd("..");
   }
 //----------- end cross section recostruction from REAL DATA
+
+
+// Cross section recostruction histos from REAL DATA
+ 
+  if(fFlagMC == true){
+  gDirectory->mkdir("xsecrec-trkTrigger");
+  gDirectory->cd("xsecrec-trkTrigger");
+  h = new TH1D("charge","",10, 0. ,10.);
+
+  for(int iz=0; iz<=primary_cha; iz++){
+    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+    gDirectory->mkdir(name.c_str());
+    gDirectory->cd(name.c_str());
+    name = "";
+
+   
+    //h = new TH1D("Theta_meas","",200, 0 ,20.);
+    //h = new TH1D("Ek_meas","",100, 0 ,2000.);
+   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
+
+
+    for (int i = 0; i<th_nbin; i++) {
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      gDirectory->mkdir(path.c_str());
+      gDirectory->cd(path.c_str());
+     // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
+     // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
+      h = new TH1D("theta_","",200, 0 ,90.);
+      /*for (int j=0; j <ek_nbin; j++) {
+        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
+        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
+        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,90.);
+
+          for (int k=0; k<mass_nbin; k++) {
+            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
+            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
+            h = new TH1D("A_","",200, 0 ,90.);
+
+          gDirectory->cd("..");
+          }
+      gDirectory->cd("..");
+      }*/
+      gDirectory->cd("..");
+    }
+    gDirectory->cd("..");
+  }
+  gDirectory->cd("..");
+  }
+//----------- end cross section recostruction from REAL DATA
+
 
 
   // Cross section TRUE histos
@@ -1855,6 +1984,14 @@ void GlobalRecoAna::SetupTree(){
     fpNtuRecTw = new TAGdataDsc("twpt",new TATWntuPoint());
     gTAGroot->AddRequiredItem("twpt");
     myReader->SetupBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
+
+    if (fFlagMC == false){
+    fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
+    gTAGroot->AddRequiredItem("WDtrigInfo");
+    myReader->SetupBranch(fpNtuWDtrigInfo, TAGWDtrigInfo::GetBranchName());
+    }
+
+
     if(fFlagMC){
       fpNtuMcTw = new TAGdataDsc("mctw",new TAMCntuHit());
       gTAGroot->AddRequiredItem("mctw");
@@ -2846,7 +2983,16 @@ void GlobalRecoAna::BeforeEventLoop(){
   pure_track_xcha.resize(primary_cha+1,std::make_pair(0,0));
   Ntg=GetParGeoG()->GetTargetPar().Density*TMath::Na()*GetParGeoG()->GetTargetPar().Size.Z()/GetParGeoG()->GetTargetPar().AtomicMass;
 
- 
+  
+  //lettura trigger
+  //wdTrig = new TAGWDtrigInfo();
+  //fpwdTrig = new TAGdataDsc(TAGWDtrigInfo::GetBranchName(), new TAGWDtrigInfo());
+
+  //myReader->SetupBranch(fpwdTrig, TAGWDtrigInfo::GetBranchName());
+  //myReader
+  //
+  //printf("TRIGGER: %s\n",TAGWDtrigInfo::GetBranchName());
+
  
 
   if(FootDebugLevel(1)) {
