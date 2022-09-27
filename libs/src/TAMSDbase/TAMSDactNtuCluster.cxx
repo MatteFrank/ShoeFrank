@@ -232,7 +232,6 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
-    ComputeCog(cluster);
     ComputeEta(cluster);
     if (fpCalib)
        ComputeCorrEnergy(cluster);
@@ -269,22 +268,25 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
 {
   if (!fCurListOfStrips) return;
     
-  Float_t tCorrection, tCorrection2, tCorTemp;
-  Float_t pos, posErr = 0;
-  tCorrection = 0.;
-  tCorrection2 = 0.;
+  Float_t tCorrection  = 0.;
+  Float_t tCorrection2 = 0;
+  Float_t pos          = 0.;
+  Float_t cog          = 0.;
+  Float_t posErr       = 0;
+  Float_t tStrip       = 0.;
 
   Float_t tClusterPulseSum = 0.;
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
-    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
-    tCorTemp = strip->GetPosition()*strip->GetEnergyLoss();
-    tCorrection  += tCorTemp;
-    tClusterPulseSum  += strip->GetEnergyLoss();
+    TAMSDhit* strip   = (TAMSDhit*)fCurListOfStrips->At(i);
+    tCorrection      += strip->GetPosition()*strip->GetEnergyLoss();
+    tStrip           += strip->GetStrip()*strip->GetEnergyLoss();
+    tClusterPulseSum += strip->GetEnergyLoss();
   }
   
-  pos = tCorrection*(1./tClusterPulseSum);
-  
+  pos = tCorrection/tClusterPulseSum;
+  cog = tStrip/tClusterPulseSum;
+   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
     TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
     tCorrection2 = strip->GetEnergyLoss()*(strip->GetPosition()-pos)*(strip->GetPosition()-pos);
@@ -299,39 +301,13 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
-  fCurrentEnergy = tClusterPulseSum;
-  
+  fCurrentCog      = cog;
+  fCurrentEnergy   = tClusterPulseSum;
   
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
-  cluster->SetEnergyLoss(fCurrentEnergy);
-}
-
-//_____________________________________________________________________________
-//! Compute the cluster COG position (the same ??)
-//!
-//! \param[in] cluster a given cluster
-void TAMSDactNtuCluster::ComputeCog(TAMSDcluster* cluster)
-{
-  if (!fCurListOfStrips) return;
-    
-  Float_t num = 0;
-  Float_t den = 0;
-  Float_t cog = 0;
-   
-  Float_t tClusterPulseSum = 0.;
-  
-  for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
-    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
-    num += strip->GetStrip()*strip->GetEnergyLoss();
-    den += strip->GetEnergyLoss();
-  }
-  
-  cog = num / den;
-
-  fCurrentCog = cog;
-   
   cluster->SetCog(fCurrentCog);
+  cluster->SetEnergyLoss(fCurrentEnergy);
 }
 
 //_____________________________________________________________________________

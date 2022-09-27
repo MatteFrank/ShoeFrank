@@ -36,8 +36,6 @@ public:
 
    // Compute position
    void    ComputePosition(TAMSDcluster* cluster);
-   // Compute center of gravity of cluster
-   void    ComputeCog(TAMSDcluster* cluster);
    // Compute eta of cluster
    void    ComputeEta(TAMSDcluster* cluster);
    // Compute corrected energy of cluster
