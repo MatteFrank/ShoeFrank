@@ -1,3 +1,8 @@
+/*!
+ \file TATWparGeo.cxx
+ \brief   Implementation of TATWparGeo.
+ */
+
 #include <Riostream.h>
 
 #include "TGeoBBox.h"
@@ -30,6 +35,14 @@ const Color_t TATWparGeo::fgkDefaultModCol   = kGray+1;
 const Color_t TATWparGeo::fgkDefaultModColOn = kRed-6;
 const TString TATWparGeo::fgkDefaultBarName = "twBar";
 
+
+/*!
+ \class TATWparGeo
+ \brief geometry class for TW
+ */
+
+//! Class Imp
+ClassImp(TATWparGeo);
 
 //_____________________________________________________________________________
 TATWparGeo::TATWparGeo()
@@ -129,9 +142,6 @@ Bool_t TATWparGeo::FromFile(const TString& name)
             << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
          mytilt.push_back(tilt);
-
-	 // fvTilt[iLayer][iBar].SetXYZ(tilt[0], tilt[1], tilt[2]);
-	 
 	 
          TGeoRotation rot;
          rot.RotateX(tilt[0]);

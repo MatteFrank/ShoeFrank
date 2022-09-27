@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGbaseWD.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \file TAGbaseWD.cxx
   \brief   Implementation of TAGbaseWD.
 */
 
@@ -14,26 +13,37 @@
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
+
 /*!
-  \class TAGbaseWD TAGbaseWD.hxx "TAGbaseWD.hxx"
+  \class TAGbaseWD
+ \brief This class stores the params of a single channel waveform
 */
 
-
+//! Class Imp
+ClassImp(TAGbaseWD);
 
 using namespace std;
 
-ClassImp(TAGbaseWD);
-
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAGbaseWD::TAGbaseWD(): fTime(999999.), fChg(0.), fChId(0),fPedestal(0), fBaseline(0),
-			fAmplitude(0),fBoardId(0),fTriggerTypeId(0), fTriggerCellId(-1000),  fMcId(-999){
+TAGbaseWD::TAGbaseWD()
+ : fTime(999999.),
+   fChg(0.),
+   fChId(0),
+   fPedestal(0),
+   fBaseline(0),
+   fAmplitude(0),
+   fBoardId(0),
+   fTriggerTypeId(0),
+   fTriggerCellId(-1000),
+   fMcId(-999)
+{
 }
 
-
-TAGbaseWD::TAGbaseWD(TWaveformContainer *W){
-
+//------------------------------------------+-----------------------------------
+//! Constructor
+TAGbaseWD::TAGbaseWD(TWaveformContainer *W)
+{
   fChId=W->GetChannelId();
   fBoardId=W->GetBoardId();
   fTriggerTypeId = W->GetTrigType();
@@ -44,31 +54,23 @@ TAGbaseWD::TAGbaseWD(TWaveformContainer *W){
   fPedestal = -9999999999;
   fBaseline = -9999999999;
   fMcId = -999;
-  
-
 }
 
-TAGbaseWD::~TAGbaseWD(){
-
-  
+//------------------------------------------+-----------------------------------
+//! Destructor
+TAGbaseWD::~TAGbaseWD()
+{
 }
 
-
-
-
-
-
-
-double TAGbaseWD::ComputeBaseline(TWaveformContainer *w){
-
+//------------------------------------------+-----------------------------------
+double TAGbaseWD::ComputeBaseline(TWaveformContainer *w)
+{
   return TMath::Mean(w->GetVectA().begin()+2, w->GetVectA().begin()+27);
-  
 }
 
-
-double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr){
-
-
+//------------------------------------------+-----------------------------------
+double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr)
+{
   vector<double> tmp_amp = w->GetVectA();
   vector<double> tmp_time = w->GetVectT();
   double prod;
@@ -103,19 +105,15 @@ double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr){
   return pedestal_tot;
 }
 
-
-double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w){ 
-
+//------------------------------------------+-----------------------------------
+double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w)
+{
   return  -((TMath::MinElement(w->GetVectA().size()-5, &w->GetVectA()[5])) - fBaseline);
-
 }
 
-
-
-
-double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr){
-
-
+//------------------------------------------+-----------------------------------
+double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr)
+{
   vector<double> tmp_amp = w->GetVectA();
   vector<double> tmp_time = w->GetVectT();
 
@@ -149,17 +147,15 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr){
     }
 
   }
-  chargetot=charge; 
-  return -(chargetot + fPedestal); 
-  
-
+   
+  chargetot=charge;
+   
+  return -(chargetot + fPedestal);
 }
 
-
-
-
-double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
-  
+//------------------------------------------+-----------------------------------
+double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright)
+{
   vector<double> time = w->GetVectT();
   vector<double> amp = w->GetVectA();
 
@@ -223,14 +219,11 @@ double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, do
   }
   
   return tarr;
-
-  
 }
 
-
-double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac){
-
-
+//------------------------------------------+-----------------------------------
+double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac)
+{
   // evaluate the absolute threshold
   Double_t AbsoluteThreshold=-frac*fAmplitude+fBaseline;
 
@@ -252,28 +245,18 @@ double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac){
     i_thr--;
   }
   
-
   return t_arr;
-
-
-
-
 }
 
-
-
-double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac){
-
-
+//------------------------------------------+-----------------------------------
+double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac)
+{
   // evaluate the absolute threshold
   Double_t AbsoluteThreshold=-frac*fAmplitude+fBaseline;
-
-
   
   int i_ampmin = TMath::LocMin(w->GetVectA().size(),&(w->GetVectA())[0]);
   Int_t i_thr = i_ampmin;
   bool foundthreshold = false;
-
 
   //found the threshold bin
   while(!foundthreshold && i_thr>=0 && i_thr< w->GetVectA().size()){
@@ -297,10 +280,6 @@ double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac){
     }
   }
 
-  
-
-
-  
   //compute the ang. coefficient (least squares)
   double m,q;
   double xy=0,x=0,y=0, xsq=0;
@@ -318,8 +297,4 @@ double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac){
   double t_arr = -q/m;
 
   return t_arr;
-
-
-
-
 }

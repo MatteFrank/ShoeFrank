@@ -1,5 +1,5 @@
 /*!
- \file
+ \file TACAactNtuCluster.cxx
  \brief   Implementation of TACAactNtuCluster.
  */
 #include "TClonesArray.h"
@@ -22,11 +22,18 @@
  \brief NTuplizer for calorimeter clusters. **
  */
 
+//! Class Imp
 ClassImp(TACAactNtuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit input container descriptor
+//! \param[out] pNtuClus cluster output container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pTwPoint TW point input container descriptor
 TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGdataDsc* pTwPoint)
  : TAGactNtuCluster2D(name, "TACAactNtuCluster - NTuplize cluster"),
    fpNtuRaw(pNtuRaw),
@@ -34,8 +41,6 @@ TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGd
    fpConfig(pConfig),
    fpGeoMap(pGeoMap),
    fpNtuTwPoint(pTwPoint),
-//   fCurrentPosition(0., 0., 0.),
-//   fCurrentPosError(0., 0., 0.),
    fClustersN(0)
 {
    AddDataIn(pNtuRaw,   "TACAntuHit");
@@ -46,6 +51,8 @@ TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGd
    fDimY = 18;
    fDimX = 18;
    SetupMaps(fDimY*fDimX);
+   
+   fpNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
 }
 
 //------------------------------------------+-----------------------------------
@@ -92,12 +99,9 @@ void TACAactNtuCluster::CreateHistogram()
 }
 
 //______________________________________________________________________________
-//
+//! Action
 Bool_t TACAactNtuCluster::Action()
 {
-
-   fpNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
-
    if (fpNtuHit->GetHitsN() == 0) {
       fpNtuClus->SetBit(kValid);
       return true;
@@ -110,18 +114,16 @@ Bool_t TACAactNtuCluster::Action()
    fpNtuClus->SetBit(kValid);
 
    return true;
-
 }
 
 //______________________________________________________________________________
-//
+//! Fill maps
 void TACAactNtuCluster::FillMaps()
 {
    // Clear maps
    ClearMaps();
 
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-   //TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
 
    // fill maps for cluster
    for (Int_t i = 0; i < fpNtuHit->GetHitsN(); i++) { // loop over hit crystals
@@ -156,9 +158,6 @@ Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, do
    TACAhit* hit = (TACAhit*)pixel;
    double charge = hit->GetCharge();
 
-   //if( charge < fChargeThreshold ) return false;
-
-   //if( charge > fFactor * seedCharge ) return false;
    if( charge > seedCharge ) return false;
 
    fFlagMap[idx] = numClus;
@@ -231,25 +230,6 @@ void TACAactNtuCluster::SearchCluster()
    if(FootDebugLevel(2))
      cout << "CA - Found : " << fClustersN << " clusters on event: " << gTAGroot->CurrentEventId().EventNumber() << endl;
 
-   /*
-   for (Int_t i = 0; i < fpNtuHit->GetHitsN(); ++i) { // loop over hit crystals
-      TACAhit* hit = fpNtuHit->GetHit(i);
-
-      if (hit->Found()) continue;
-      if (!hit->IsValid()) continue;
-
-      Int_t id   = hit->GetCrystalId();
-      Int_t line = pGeoMap->GetCrystalLine(id);
-      Int_t col  = pGeoMap->GetCrystalCol(id);
-      if (!CheckLine(line)) continue;
-      if (!CheckCol(col)) continue;
-
-      // loop over lines & columns
-      if ( ShapeCluster(fClustersN, line, col) )
-         fClustersN++;
-
-   }
-   */
 }
 
 //______________________________________________________________________________
@@ -268,7 +248,9 @@ TAGobject*  TACAactNtuCluster::GetHitObject(Int_t idx) const
 
 
 //______________________________________________________________________________
-//
+//! Apply cut for a given cluster
+//!
+//! \param[in] cluster a given cluster
 Bool_t TACAactNtuCluster::ApplyCuts(TACAcluster* cluster)
 {
   // TACAparConf* pConfig = (TACAparConf*) fpConfig->Object();
@@ -285,7 +267,7 @@ Bool_t TACAactNtuCluster::ApplyCuts(TACAcluster* cluster)
 }
 
 //______________________________________________________________________________
-//
+//! Create clusters
 Bool_t TACAactNtuCluster::CreateClusters()
 {
    TACAntuCluster* pNtuClus = (TACAntuCluster*) fpNtuClus->Object();
@@ -343,11 +325,9 @@ Bool_t TACAactNtuCluster::CreateClusters()
 ///_____________________________________________________________________________
 //! Compute the cluster centroid position
 //!
-//! \param[in] cluster 
+//! \param[in] cluster a given cluster
 void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
 {
-   //TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
-
    if (cluster->GetListOfHits() == 0) return;
 
    TVector3 posWeightSum, posWeightSum2, posWeight;
@@ -383,9 +363,6 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
    
    posErr *= 1./clusterPulseSum;
 
-   //fCurrentPosition.SetXYZ(pos[0], pos[1], pos[2]);
-   //fCurrentPosError.SetXYZ(TMath::Sqrt(posErr[0]), TMath::Sqrt(posErr[1]), 0);
-
    cluster->SetIndexSeed(iMax);
    cluster->SetPosition(pos);
    cluster->SetPosError(posErr);
@@ -393,13 +370,15 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
    cluster->SetEnergy(clusterPulseSum);
 }
 
-//______________________________________________________________________________
-//
+///_____________________________________________________________________________
+//! Fill cluster informations
+//!
+//! \param[in] cluster a given cluster
 void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
 {
    ComputePosition(cluster);
 
-   //if (ApplyCuts(cluster)) {
+   if (ApplyCuts(cluster)) {
       if (fpNtuTwPoint)
          ComputeMinDist(cluster);
 
@@ -413,13 +392,15 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
       }
 
       cluster->SetValid(true);
-   //} else {
-   //   cluster->SetValid(false);
-   //}
+   } else {
+      cluster->SetValid(false);
+   }
 }
 
-//______________________________________________________________________________
-//
+///_____________________________________________________________________________
+//! Compute minimum distance to a cluster
+//!
+//! \param[in] cluster a given cluster
 void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
 {
    TAGgeoTrafo* pFootGeo = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));

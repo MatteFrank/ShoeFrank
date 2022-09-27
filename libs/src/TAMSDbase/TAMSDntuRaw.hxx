@@ -1,13 +1,20 @@
 #ifndef _TAMSDntuRaw_HXX
 #define _TAMSDntuRaw_HXX
 
+/*!
+ \file TAMSDntuRaw.hxx
+ \brief   Declaration of TAMSDntuRaw.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TAGdata.hxx"
 #include "TObjArray.h"
 #include "TClonesArray.h"
 #include "TString.h"
 
-// --------------------------------------------------------------------------------------
-/** TAMSDrawHit simple class containers for raw hit (strip)
+/*!
+ \class TAMSDrawHit
+ \brief simple class containers for raw hit (strip)
  
  \author Ch. Finck
  */
@@ -15,19 +22,20 @@
 class TAMSDrawHit : public TObject {
    
 protected:
-   Int_t      fSensorId;
-   Double_t   fCharge;
-   Int_t      fIndex;
-   Int_t      fView;
-   Int_t      fStrip;
-   Bool_t     fIsSeed;
+   Int_t      fSensorId;  ///< Sensor id
+   Double_t   fCharge;    ///< strip charge
+   Int_t      fIndex;     ///< strip index
+   Int_t      fView;      ///< plane view
+   Int_t      fStrip;     ///< strip number
+   Bool_t     fIsSeed;    ///< seed flag
          
 public:
    TAMSDrawHit();
    TAMSDrawHit( Int_t id, Int_t view, Int_t strip, Double_t charge);
+   //! Destructor
    virtual ~TAMSDrawHit() {;}
 
-   //! Comapre method
+   // Comapre method
    Int_t      Compare(const TObject* obj) const;
    //! Get input type
    Int_t      GetSensorId()     const    { return fSensorId; }
@@ -61,19 +69,22 @@ public:
 };
 
 //######################################################################################
-/** TAMSDntuRaw class for raw data
+/*!
+ \class TAMSDntuRaw
+ \brief simple class containers for raw hit (strip)
  
  \author Ch. Finck
  */
+
 class TAMSDparGeo;
 class TAMSDntuRaw : public TAGdata {
    
 protected:
-   TObjArray*   fListOfStrips;
-   TAMSDparGeo* fpGeoMap; //!
+   TObjArray*   fListOfStrips;  ///< list of strips
+   TAMSDparGeo* fpGeoMap;       //!
    
 private:
-   static TString fgkBranchName;    // Branch name in TTree
+   static TString fgkBranchName;    ///< Branch name in TTree
 
 public:
    TAMSDntuRaw();
@@ -100,7 +111,8 @@ public:
    //! To stream
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
 
-public:   
+public:
+   //! Get branch name
    static const Char_t* GetBranchName()   { return fgkBranchName.Data(); }
 
    ClassDef(TAMSDntuRaw,2)

@@ -88,8 +88,10 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
    
-   fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
-     
+   fFlagTrack    = TAGrecoManager::GetPar()->IsTracking();
+   fFlagMsdTrack = TAGrecoManager::GetPar()->IsMsdTracking();
+   fFlagItrTrack = TAGrecoManager::GetPar()->IsItrTracking();
+
    // default constructon
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {
       fStClusDisplay = new TAEDcluster("Start counter Hit");
@@ -134,7 +136,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
       fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
       fItClusDisplay->SetPickable(true);
 
-      if (IsItrTracking()) {
+      if (fFlagItrTrack) {
          fItTrackDisplay = new TAEDtrack("Inner Tracker Track");
          fItTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
          fItTrackDisplay->SetDefWidth(fBoxDefWidth);
@@ -157,7 +159,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
       fMsdPointDisplay->SetDefHeight(fQuadDefHeight*4);
       fMsdPointDisplay->SetPickable(true);
       
-      if (IsMsdTracking()) {
+      if (fFlagMsdTrack) {
          fMsdTrackDisplay = new TAEDtrack("Micro Strip Track");
          fMsdTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
          fMsdTrackDisplay->SetDefWidth(fBoxDefWidth);
@@ -420,7 +422,7 @@ void TAGbaseEventDisplay::AddElements()
       fItClusDisplay->ResetHits();
       gEve->AddElement(fItClusDisplay);
 
-      if (IsItrTracking()) {
+      if (fFlagItrTrack) {
          fItTrackDisplay->ResetTracks();
          gEve->AddElement(fItTrackDisplay);
       }
@@ -433,7 +435,7 @@ void TAGbaseEventDisplay::AddElements()
       fMsdPointDisplay->ResetHits();
       gEve->AddElement(fMsdPointDisplay);
       
-      if (IsMsdTracking()) {
+      if (fFlagMsdTrack) {
          fMsdTrackDisplay->ResetTracks();
          gEve->AddElement(fMsdTrackDisplay);
       }
@@ -488,7 +490,7 @@ void TAGbaseEventDisplay::ConnectElements()
       fItClusDisplay->SetEmitSignals(true);
       fItClusDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
 
-      if (IsItrTracking()) {
+      if (fFlagItrTrack) {
          fItTrackDisplay->SetEmitSignals(true);
          fItTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
       }
@@ -501,7 +503,7 @@ void TAGbaseEventDisplay::ConnectElements()
       fMsdPointDisplay->SetEmitSignals(true);
       fMsdPointDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateHitInfo(TEveDigitSet*, Int_t)");
       
-      if (IsMsdTracking()) {
+      if (fFlagMsdTrack) {
          fMsdTrackDisplay->SetEmitSignals(true);
          fMsdTrackDisplay->Connect("SecSelected(TEveDigitSet*, Int_t )", "TAGbaseEventDisplay", this, "UpdateTrackInfo(TEveDigitSet*, Int_t)");
       }
@@ -1053,10 +1055,10 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
       if (prefix == "ir")
          fIrTrackDisplay->ResetTracks();
 
-      if (prefix == "it" && IsItrTracking())
+      if (prefix == "it" && fFlagItrTrack)
          fItTrackDisplay->ResetTracks();
       
-      if (prefix == "ms" && IsMsdTracking())
+      if (prefix == "ms" && fFlagMsdTrack)
          fMsdTrackDisplay->ResetTracks();
    }
 
@@ -1118,7 +1120,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
       fVtxTrackDisplay->RefitPlex();
    }
 
-   if (prefix == "it" && !fIrFlag && IsItrTracking()) {
+   if (prefix == "it" && !fIrFlag && fFlagItrTrack) {
 
       TAITparGeo*  parGeo   = fReco->GetParGeoIt();
       Int_t nPlanes         = parGeo->GetSensorsN();
@@ -1157,7 +1159,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
       fItTrackDisplay->RefitPlex();
    }
 
-   if (prefix == "ms" && !fIrFlag && IsMsdTracking()) {
+   if (prefix == "ms" && !fIrFlag && fFlagMsdTrack) {
       TAMSDparGeo*  parGeo   = fReco->GetParGeoMsd();
       Int_t nPlanes         = parGeo->GetSensorsN();
       Float_t posfirstPlane = parGeo->GetSensorPosition(0)[2]*1.1;

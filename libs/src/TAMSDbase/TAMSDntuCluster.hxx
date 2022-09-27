@@ -1,6 +1,12 @@
 #ifndef _TAMSDntuCluster_HXX
 #define _TAMSDntuCluster_HXX
 
+/*!
+ \file TAMSDntuCluster.hxx
+ \brief   Declaration of TAMSDntuCluster.
+ */
+/*------------------------------------------+---------------------------------*/
+
 // ROOT classes
 #include "TObject.h"
 #include "TList.h"
@@ -10,31 +16,21 @@
 
 #include "TAGdata.hxx"
 #include "TAMSDntuHit.hxx"
-
 #include "TAMSDcluster.hxx"
 
-
 class TAMSDtrack;
-//class TAVTbaseParGeo;
 class TAMSDparGeo;
-
-/** TAMSDcluster class, simple container class for tracks with the associated clusters                    
- 
- \author Ch. Finck
- */
-
 
 //##############################################################################
 
 class TAMSDntuCluster : public TAGdata {
    
 protected:
-  //   TAVTbaseParGeo*    fGeometry;                 //! do NOT stored this pointer !
-  TAMSDparGeo*       fGeometry;                 //! do NOT stored this pointer !
-  TObjArray*         fListOfClusters;
+  TAMSDparGeo*       fGeometry;        //! do NOT stored this pointer !
+  TObjArray*         fListOfClusters;  ///< list of clusters
 
 private:   
-  static TString    fgkBranchName;    // Branch name in TTree
+  static TString    fgkBranchName;    ///< Branch name in TTree
 
 public:
   TAMSDntuCluster();
@@ -57,6 +53,7 @@ public:
   virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
   
 public:
+   //! Get branch name
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
   ClassDef(TAMSDntuCluster,1)

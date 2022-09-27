@@ -1,8 +1,7 @@
 #ifndef _TACAactNtuHit_HXX
 #define _TACAactNtuHit_HXX
 /*!
-  \file
-  \version $Id: TACAactNtuHit.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
+  \file TACAactNtuHit.hxx
   \brief   Declaration of TACAactNtuHit.
 */
 /*------------------------------------------+---------------------------------*/
@@ -20,12 +19,12 @@ class TACAactNtuHit : public TAGaction {
 
 public:
 
-  explicit        TACAactNtuHit(const char* name=0,
+  explicit  TACAactNtuHit(const char* name=0,
                                 TAGdataDsc* p_datraw=0,
                                 TAGdataDsc* p_datdaq=0,
                                 TAGparaDsc* p_parmap=0,
                                 TAGparaDsc* p_parcal=0);
-   virtual       ~TACAactNtuHit();
+   virtual  ~TACAactNtuHit();
 
    Bool_t   Action();
 
@@ -41,29 +40,29 @@ public:
    Double_t GetEqualisationCorrection(Double_t rawEnergy, Int_t  crysId);
    
 private:
-   TAGdataDsc*     fpDatRaw;		    // input data dsc
-   TAGdataDsc*     fpNtuRaw;		    // output data dsc
-   TAGparaDsc*     fpParMap;         // output data dsc
-   TAGparaDsc*     fpParCal;         // output data dsc
+   TAGdataDsc*     fpDatRaw;		    ///< input raw data
+   TAGdataDsc*     fpNtuRaw;		    ///< loutput calibrated data
+   TAGparaDsc*     fpParMap;         ///< mapping pointer
+   TAGparaDsc*     fpParCal;         ///< calibration pointer
 
-   Double_t        fTcorr1Par1;
-   Double_t        fTcorr1Par0;
-   Double_t        fTcorr2Par1;
-   Double_t        fTcorr2Par0;
-   Double_t        fT1;
-   Double_t        fT2;
+   Double_t        fTcorr1Par1;      ///< Temperature correlation parameter 1
+   Double_t        fTcorr1Par0;      ///< Temperature correlation parameter 0
+   Double_t        fTcorr2Par1;      ///< Temperature correlation parameter 1
+   Double_t        fTcorr2Par0;      ///< Temperature correlation parameter 0
+   Double_t        fT1;              ///< Temperature  parameter 1
+   Double_t        fT2;              ///< Temperature  parameter 2
 
 
-   TH1F*           fhArrivalTime[9];
-   TH1F*           fhCharge[9];
-   TH1F*           fhAmplitude[9];
-   TH1F*           fhTrigTime;
-   TH1F*           fhTotCharge;
-   TH1F*           fhEventTime;
-   TH1F*           fhChannelMap;
+   TH1F*           fhArrivalTime[9];  ///< histograms for arrival time
+   TH1F*           fhCharge[9];       ///< histograms for charge
+   TH1F*           fhAmplitude[9];    ///< histograms for amplitude
+   TH1F*           fhTrigTime;        ///< histogram for trigger time
+   TH1F*           fhTotCharge;       ///< histogram for total charge
+   TH1F*           fhEventTime;       ///< histogram for event type
+   TH1F*           fhChannelMap;      ///< histogram for channel map
 
-   TF1*            fTcorr1;
-   TF1*            fTcorr2;
+   TF1*            fTcorr1;           ///< histogram for correlation tempetarure 1
+   TF1*            fTcorr2;           ///< histogram for correlation tempetarure 2
   
    ClassDef(TACAactNtuHit, 0)
 };

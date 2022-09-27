@@ -1,8 +1,7 @@
 #ifndef _TACAparMap_HXX
 #define _TACAparMap_HXX
 /*!
-  \file
-  \version $Id: TACAparMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+  \file TACAparMap.hxx
   \brief   Declaration of TACAparMap.
 */
 /*------------------------------------------+---------------------------------*/
@@ -23,28 +22,29 @@ public:
   TACAparMap();
     virtual         ~TACAparMap();
 
-    // void            FromFile(std::string FileName);
     Bool_t          FromFile(const TString& name);
 
     void            Clear(Option_t* opt="");
 
     Int_t           GetCrystalId(Int_t boardId, Int_t channelId);
-    // Int_t           GetCrystalsN() {return nCrystals;}
-    Int_t           GetCrystalsN() const {return nCrys;}
-    Int_t           GetBoardId(Int_t cryId) {return fBoardId[cryId]; }
-    Int_t           GetChannelId(Int_t cryId) {return fChannelId[cryId]; }
-    Int_t           GetModuleId(Int_t cryId) {return fModuleId[cryId]; }
+   
+   //! Get number of crystals
+    Int_t           GetCrystalsN()            const { return fCrystalsN;        }
+   //! Get board id
+    Int_t           GetBoardId(Int_t cryId)         { return fBoardId[cryId];   }
+   //! Get channel id
+    Int_t           GetChannelId(Int_t cryId)       { return fChannelId[cryId]; }
+   //! Get module id
+    Int_t           GetModuleId(Int_t cryId)        { return fModuleId[cryId];  }
 
 private:
-  // Int_t nCrystals;
-  Int_t nCrys;
-  map< pair<int, int>, int > fCrysId;
-  vector<Int_t> fModuleId;
-  vector<Int_t> fBoardId;
-  vector<Int_t> fChannelId;
+  Int_t                      fCrystalsN;  ///< number of crystal
+  map< pair<int, int>, int > fCrysId;     ///< crystal map
+  vector<Int_t>              fModuleId;   ///< module id vector
+  vector<Int_t>              fBoardId;    ///< board id vector
+  vector<Int_t>              fChannelId;  ///< channel id vector
   
   ClassDef(TACAparMap,1)
-
 };
 
 #endif

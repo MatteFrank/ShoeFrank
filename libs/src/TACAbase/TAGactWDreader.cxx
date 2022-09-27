@@ -26,10 +26,21 @@
   \brief Get ST, TW and CA raw data from WaveDAQ. **
 */
 
+//! Class Imp
 ClassImp(TAGactWDreader);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] p_datdaq daq event container descriptor
+//! \param[out] p_stwd ST wave form container descriptor
+//! \param[out] p_twwd TW wave form container descriptor
+//! \param[out] p_cawd CA wave form container descriptor
+//! \param[in] p_WDtrigInfo trigger wave form container descriptor
+//! \param[in] p_WDmap mapping parameter descriptor
+//! \param[in] p_WDtim time parameter descriptor
+//! \param[in] stdAlone standalone DAQ flag
 TAGactWDreader::TAGactWDreader(const char* name,
               TAGdataDsc* p_datdaq,
               TAGdataDsc* p_stwd, 
@@ -37,8 +48,8 @@ TAGactWDreader::TAGactWDreader(const char* name,
               TAGdataDsc* p_cawd,
               TAGdataDsc* p_WDtrigInfo,
               TAGparaDsc* p_WDmap, 
-                TAGparaDsc* p_WDtim,
-               Bool_t stdAlone)
+              TAGparaDsc* p_WDtim,
+              Bool_t stdAlone)
   : TAGaction(name, "TAGactWDreader - Unpack WaveDAQ raw data"),
     fpDatDaq(p_datdaq),
     fpStWd(p_stwd),
@@ -73,10 +84,10 @@ TAGactWDreader::~TAGactWDreader()
 {}
 
 //------------------------------------------+-----------------------------------
-//! Action.
-
-
-Int_t TAGactWDreader::Open(const TString &fname) {
+//! Open
+//!
+//! \param[in] fname file name
+Int_t TAGactWDreader::Open(const TString& fname) {
 
    fWDstream = fopen(fname.Data(),"r");
    if (fWDstream==NULL) {
@@ -89,10 +100,10 @@ Int_t TAGactWDreader::Open(const TString &fname) {
 
 }
 
-
-
-Int_t TAGactWDreader::UpdateFile() {
-  
+//------------------------------------------+-----------------------------------
+//! Update file
+Int_t TAGactWDreader::UpdateFile()
+{
    do {
       Int_t pos1 = fInitName.Last('_');
       Int_t pos2 = fInitName.Last('.');
@@ -110,10 +121,10 @@ Int_t TAGactWDreader::UpdateFile() {
    return kTRUE;
 }
 
-
-
-Int_t TAGactWDreader::Close() {
-
+//------------------------------------------+-----------------------------------
+//! Close file
+Int_t TAGactWDreader::Close()
+{
    if (fgStdAloneFlag && fWDstream!=NULL)
       fclose(fWDstream);
    fWDstream=NULL;
@@ -121,9 +132,10 @@ Int_t TAGactWDreader::Close() {
    return kTRUE;
 }
 
-
-Bool_t TAGactWDreader::Action() {
-
+//------------------------------------------+-----------------------------------
+//! Action
+Bool_t TAGactWDreader::Action()
+{
    if (FootDebugLevel(1)) { cout << " Entering the TAGactWDreader action " << endl; }
 
    TAGdaqEvent*         p_datdaq;
@@ -188,8 +200,13 @@ Bool_t TAGactWDreader::Action() {
 
 //------------------------------------------+-----------------------------------
 //! Decoding
-
-Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap) {
+//!
+//! \param[in] evt wave dream event descriptor
+//! \param[in] p_WDtrigInfo trigger wave form container descriptor
+//! \param[in] p_WDmap time parameter descriptor
+//! \param[in] p_WDtim time parameter descriptor
+Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime* p_WDTim, TAGbaseWDparMap* p_WDMap)
+{
   
    u_int word;
    
@@ -410,14 +427,19 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtr
     
 //------------------------------------------+-----------------------------------
 //! Setup all histograms.
-    
-void TAGactWDreader::CreateHistogram() {
+void TAGactWDreader::CreateHistogram()
+{
   DeleteHistogram();
   SetValidHistogram(kTRUE);
 }
 
 //------------------------------------------+-----------------------------------
-vector<double> TAGactWDreader::ADC2Volt(vector<int> v_amp, double dynamic_range) {
+//! Get volt vector
+//!
+//! \param[in] v_amp amplitude vector
+//! \param[in] dynamic_range dynamic range
+vector<double> TAGactWDreader::ADC2Volt(vector<int> v_amp, double dynamic_range)
+{
    vector<double> v_volt;
    double v_sa;
    
@@ -440,6 +462,9 @@ vector<double> TAGactWDreader::ADC2Volt(vector<int> v_amp, double dynamic_range)
 }
 
 //------------------------------------------+-----------------------------------
+//! Get volt vector clock
+//!
+//! \param[in] v_amp amplitude vector
 vector<double> TAGactWDreader::ADC2Volt_CLK(vector<int> v_amp) {
 
    vector<double> v_volt;
@@ -457,7 +482,9 @@ vector<double> TAGactWDreader::ADC2Volt_CLK(vector<int> v_amp) {
 }
 
 //------------------------------------------+-----------------------------------
-Bool_t TAGactWDreader::WaveformsTimeCalibration() {
+//! Wave form time calibration
+Bool_t TAGactWDreader::WaveformsTimeCalibration()
+{
 
    double dt, t_trig_ref, t_trig;
    TWaveformContainer *wclk_ref;
@@ -574,6 +601,7 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration() {
 }
 
 //------------------------------------------+-----------------------------------
+//! Compute time jitter
 double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
 {
    vector<double> tzeros, nclock;
@@ -655,9 +683,14 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
    return phase;
 }
 
-
-Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw) {
-
+//------------------------------------------+-----------------------------------
+//! Create hits
+//!
+//! \param[in] p_straw ST raw data container
+//! \param[in] p_twraw TW raw data container
+//! \param[in] p_caraw CA raw data container
+Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACAntuRaw* p_caraw)
+{
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)fpWDTim->Object();
 
    string  algoST = p_WDtim->GetCFDalgo("ST");
@@ -697,6 +730,7 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
 }
 
 //------------------------------------------+-----------------------------------
+//! Clear
 void TAGactWDreader::Clear()
 {
    for(int i=0; i<fSTwaves.size(); i++) {
@@ -724,8 +758,13 @@ void TAGactWDreader::Clear()
    return;
 }
 
-
-
+//------------------------------------------+-----------------------------------
+//! Read stand alone
+//!
+//! \param[in] endoffile end of file flag
+//! \param[in] p_WDtrigInfo trigger wave form container descriptor
+//! \param[in] p_WDmap mapping parameter descriptor
+//! \param[in] p_WDtim time parameter descriptor
 Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap) {
 
    u_int word;
@@ -924,11 +963,13 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrig
   return nmicro;
 }
 
-
-
-
-void  TAGactWDreader::SavePlot(TWaveformContainer *w, string type) {
-
+//------------------------------------------+-----------------------------------
+//! Save plots
+//!
+//! \param[in] w wave form container
+//! \param[in] type type of data
+void  TAGactWDreader::SavePlot(TWaveformContainer *w, string type)
+{
    TCanvas c("c","",600,600);
    c.cd();
 

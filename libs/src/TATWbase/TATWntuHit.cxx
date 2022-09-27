@@ -1,25 +1,18 @@
 /*!
-  \class TATWntuHit TATWntuHit.hxx "TATWntuHit.hxx"
-  \brief Container class for VTX ntu hit **
+ \file TATWntuHit.cxx
+ \brief   Implementation of TATWntuHit.
  */
-
-////////////////////////////////////////////////////////////
-// Class Description of TATWhit                        //
-//                                                        //
-//                                                        //
-////////////////////////////////////////////////////////////
-
 
 #include "TString.h"
 #include "TClonesArray.h"
 
 #include "TATWntuHit.hxx"
 
+//! Class Imp
 ClassImp(TATWhit) // Description of Single Detector TATWhit 
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TATWhit::TATWhit()
   : fLayer(-1),
     fBar(-1),
@@ -43,7 +36,6 @@ TATWhit::TATWhit()
     fTrigType(-1000)
 {
 }
-
 
 //______________________________________________________________________________
 //  build a hit from a rawHit
@@ -171,9 +163,10 @@ void TATWhit::Clear(Option_t* /*option*/)
 
 //##############################################################################
 
-ClassImp(TATWntuHit);
 TString TATWntuHit::fgkBranchName   = "twrh.";
 
+
+ClassImp(TATWntuHit);
 
 //------------------------------------------+-----------------------------------
 //! 

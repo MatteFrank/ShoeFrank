@@ -75,8 +75,12 @@ void TABMactNtuHit::CreateHistogram(){
   AddHistogram(fpHisEval_paoloni_Yview);
   fpHisCell = new TH1I( "bmRawHitCell", "cell index; index; Counter", 3, -0.5, 2.5);
 	AddHistogram(fpHisCell);
-  fpHisHitXCell = new TH1I( "bmRawHitXEvent", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
-  AddHistogram(fpHisHitXCell);
+  fpHisHitXCellAll = new TH1I( "bmRawHitXEventAll", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
+  AddHistogram(fpHisHitXCellAll);
+  fpHisHitXCellX = new TH1I( "bmRawHitXEventXview", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
+  AddHistogram(fpHisHitXCellX);
+  fpHisHitXCellY = new TH1I( "bmRawHitXEventYview", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
+  AddHistogram(fpHisHitXCellY);
   fpHisView = new TH1I( "bmRawHitView", "view index; index; Counter", 2, -0.5, 1.5);
   AddHistogram(fpHisView);
   fpHisPlane = new TH1I( "bmRawHitPlane", "plane index; index; Counter", 6, -0.5, 5.5);
@@ -133,10 +137,17 @@ Bool_t TABMactNtuHit::Action()
   p_nturaw->ClearCellOccupy();
 
 	if(ValidHistogram())
-	  fpHisHitXCell->Fill(p_datraw->GetHitsN());
+	  fpHisHitXCellAll->Fill(p_datraw->GetHitsN());
+
+	Int_t XHitnum=0, YHitnum=0;
 
   for (Int_t i = 0; i < p_datraw->GetHitsN(); i++) {//loop on p_datrawhit
     const TABMrawHit* hit = p_datraw->GetHit(i);
+
+		if(hit->GetView()==0)
+			YHitnum++;
+		else
+			XHitnum++;
 
 		if (ValidHistogram()){
 			if(hit->GetView()==0){
@@ -178,7 +189,12 @@ Bool_t TABMactNtuHit::Action()
     }
   }
 
-  //print cell_occupy
+	if (ValidHistogram()){
+		fpHisHitXCellX->Fill(XHitnum);
+		fpHisHitXCellY->Fill(YHitnum);
+  }
+
+	//print cell_occupy
   if(FootDebugLevel(3))
     p_nturaw->PrintCellOccupy();
 

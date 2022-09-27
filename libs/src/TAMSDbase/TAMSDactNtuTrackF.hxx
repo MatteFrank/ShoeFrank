@@ -1,8 +1,7 @@
 #ifndef _TAMSDactNtuTrackF_HXX
 #define _TAMSDactNtuTrackF_HXX
 /*!
- \file
- \version $Id: TAMSDactNtuTrackF.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+ \file TAMSDactNtuTrackF.hxx
  \brief   Declaration of TAMSDactNtuTrackF.
  */
 /*------------------------------------------+---------------------------------*/
@@ -24,7 +23,7 @@ public:
    virtual ~TAMSDactNtuTrackF();
    
 private:
-   TAGparaDsc*     fpGeoMapG;       // Global geometry para dsc
+   TAGparaDsc*              fpGeoMapG;       ///< target geometry para dsc
    
 private:
    Bool_t                   IsGoodCandidate(TAGbaseTrack* track);

@@ -1,6 +1,14 @@
 #ifndef _TAMSDtrack_HXX
 #define _TAMSDtrack_HXX
 
+/*!
+ \file TAMSDtrack.hxx
+ \brief   Declaration of TAMSDtrack.
+ 
+ \author Ch. Finck
+ */
+/*------------------------------------------+---------------------------------*/
+
 // ROOT classes
 #include "TClonesArray.h"
 
@@ -9,13 +17,7 @@
 #include "TAMSDntuPoint.hxx"
 #include "TAGbaseTrack.hxx"
 
-
 //##############################################################################
-
-/** TAMSDtrack class, simple container class for tracks with the associated points
- 
- \author Ch. Finck
- */
 
 class TAVTbaseCluster;
 class TClonesArray;

@@ -58,62 +58,27 @@ int main (int argc, char *argv[])  {
       TAGrecoManager::GetPar()->DisableHisto();
    }
 
-
-
 	Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
-	Bool_t ntu = TAGrecoManager::GetPar()->IsSaveTree();
-	Bool_t his = TAGrecoManager::GetPar()->IsSaveHisto();
-	Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
-	Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
-	Bool_t zmc = TAGrecoManager::GetPar()->IsTWZmc();
-	Bool_t zrec = TAGrecoManager::GetPar()->IsTWnoPU();
-	Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
-	Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
-
-
+	
 	BaseReco* glbRec = 0x0;
 
 	// check input file exists 
-   	if ( gSystem->AccessPathName(in,kFileExists) ) {
-   		cout << "ERROR -- input file not exists " << in << ". Cheers!"<< endl;
-   		exit(0);
-   	}
-
-
+   if ( gSystem->AccessPathName(in,kFileExists) ) {
+      cout << "ERROR -- input file not exists " << in << ". Cheers!"<< endl;
+      exit(0);
+   }
    
    if (lrc)
       glbRec = new GlobalReco(exp, runNb, in, out, mc);
    else if (mc) {
      glbRec = new LocalRecoMC(exp, runNb, in, out);
      
-      if(zmc)
-        glbRec->EnableZfromMCtrue();
-      if(zrec && !zmc)
-        glbRec->EnableZrecWithPUoff();
-      if(zmatch)
-         glbRec->EnableTWZmatch();
-
    } else {
       glbRec = new LocalReco(exp, runNb, in, out);
-      if (tbc)
-         glbRec->EnableTWcalibPerBar();
-      if(zmatch)
-         glbRec->EnableTWZmatch();
    }
    
    
    // global setting
-   if (ntu)
-      glbRec->EnableTree();
-   if(his)
-      glbRec->EnableHisto();
-   if(hit) {
-      glbRec->EnableTree();
-      glbRec->EnableSaveHits();
-   }
-   if (trk)
-      glbRec->EnableTracking();
-   
    if (mth)
       glbRec->EnableM28lusMT();
 

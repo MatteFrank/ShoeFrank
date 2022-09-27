@@ -1,9 +1,20 @@
+/*!
+ \file TATWcalibrationMap.cxx
+ \brief   Implementation of TATWcalibrationMap.
+ */
+
 #include "TError.h"
 
 #include "TATWcalibrationMap.hxx"
 #include "TAGxmlParser.hxx"
 #include "TAGrecoManager.hxx"
 
+/*!
+ \class TATWcalibrationMap
+ \brief Calibration class for TW
+ */
+
+//! Class Imp
 ClassImp(TATWcalibrationMap)
 
 TATWcalibrationMap::TATWcalibrationMap()

@@ -1,29 +1,36 @@
 /*!
-  \file
-  \version $Id: TAMSDactNtuRaw.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \file TAMSDactNtuRaw.cxx
   \brief   Implementation of TAMSDactNtuRaw.
 */
-
 
 #include "TAMSDactNtuRaw.hxx"
 #include "TAGrecoManager.hxx"
 
 /*!
-  \class TAMSDactNtuRaw TAMSDactNtuRaw.hxx "TAMSDactNtuRaw.hxx"
+  \class TAMSDactNtuRaw
   \brief Get MSD raw data from DAQ. **
 */
 
-#define MIP_ADC 18
+#define MIP_ADC 18  ///< MIP ADC value
 
+//! Class imp
 ClassImp(TAMSDactNtuRaw);
 
-UInt_t TAMSDactNtuRaw::fkgThreshold = 0;
-Bool_t TAMSDactNtuRaw::fgPedestalSub = true;
+UInt_t TAMSDactNtuRaw::fkgThreshold    = 0;
+Bool_t TAMSDactNtuRaw::fgPedestalSub   = true;
 Bool_t TAMSDactNtuRaw::fgCommonModeSub = true;
+Bool_t TAMSDactNtuRaw::fgPedestal      = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[out] dscdatraw data output container descriptor
+//! \param[in] dscdatdaq raw data input container descriptor
+//! \param[in] dscparmap mapping parameter descriptor
+//! \param[in] dscparcal calibration parameter descriptor
+//! \param[in] dscpargeo geometry parameter descriptor
+//! \param[in] dscparconf configuration parameter descriptor
 TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
                              TAGdataDsc* dscdatraw,
                              TAGdataDsc* dscdatdaq,
@@ -52,13 +59,12 @@ TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAMSDactNtuRaw::~TAMSDactNtuRaw()
 {
 }
 
 //------------------------------------------+-----------------------------------
-
+//! Create histograms
 void TAMSDactNtuRaw::CreateHistogram()
 {
   DeleteHistogram();
@@ -84,7 +90,12 @@ void TAMSDactNtuRaw::CreateHistogram()
 }
 
 //------------------------------------------+-----------------------------------
-Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t *VaContent, Int_t type)
+//! Compute common noise
+//!
+//! \param[in] strip strip number
+//! \param[in] VaContent input vector
+//! \param[in] type type
+Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t* VaContent, Int_t type)
 {
    Float_t cn = 0;
    Int_t cnt = 0;
@@ -180,7 +191,9 @@ Bool_t TAMSDactNtuRaw::Action()
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
+//! Decode hits
+//!
+//! \param[in] evt DAQ event
 Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 {
    TAMSDntuRaw*    p_datraw = (TAMSDntuRaw*)    fpDatRaw->Object();
@@ -223,93 +236,108 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       
       Double_t VaContent[64] = {0};
       
-      view = 0;
-      sensorId = p_parmap->GetSensorId(boardId, view);
-      if (p_parconf->GetSensorPar(sensorId).DeadStripMap[i] == 1) continue;
+      TAMSDrawHit* hit;
 
-      auto pedestal = p_parcal->GetPedestal( sensorId, i );
-      
-      if( pedestal.status ) {
-         if (fgPedestalSub) {
-            Bool_t seedX = false;
-            valueX = p_parcal->GetPedestalValue(sensorId, pedestal, true);
-            meanX = pedestal.mean;
-            valueX = adcX - valueX;
-            
-            if (fgCommonModeSub) {
-               if (i % 64 == 0) {
-                  for (int VaChan = 0; VaChan < 64; VaChan++)
-                     VaContent[VaChan] = evt->Xplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
-                  
-                  cnX = ComputeCN(i, VaContent, 0);
-                  if (ValidHistogram())
-                     fpHisCommonMode[sensorId]->Fill(cnX);
+      if(fgPedestal) {
+         
+         view=0;
+         sensorId = p_parmap->GetSensorId(boardId, view);
+         hit = p_datraw->AddStrip(sensorId, view, i, adcX);
+         
+         view=1;
+         sensorId = p_parmap->GetSensorId(boardId, view);
+         hit = p_datraw->AddStrip(sensorId, view, i, adcY);
+         
+      } else {
+         
+         view = 0;
+         sensorId = p_parmap->GetSensorId(boardId, view);
+         
+         if (p_parconf->GetSensorPar(sensorId).DeadStripMap[i] == 1) continue;
+         
+         auto pedestal = p_parcal->GetPedestal( sensorId, i );
+         
+         if( pedestal.status ) {
+            if (fgPedestalSub) {
+               Bool_t seedX = false;
+               valueX = p_parcal->GetPedestalValue(sensorId, pedestal, true);
+               meanX = pedestal.mean;
+               valueX = adcX - valueX;
+               
+               if (fgCommonModeSub) {
+                  if (i % 64 == 0) {
+                     for (int VaChan = 0; VaChan < 64; VaChan++)
+                        VaContent[VaChan] = evt->Xplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
+                     
+                     cnX = ComputeCN(i, VaContent, 0);
+                     if (ValidHistogram())
+                        fpHisCommonMode[sensorId]->Fill(cnX);
+                  }
                }
+               
+               valueX -= cnX;
+               if (valueX > 0) {
+                  seedX = true;
+                  if (ValidHistogram())
+                     fpHisSeedMap[sensorId]->Fill(i, adcX-meanX-cnX);
+               }
+               
+               valueX = p_parcal->GetPedestalValue(sensorId, pedestal, false);
+               valueX = adcX - valueX - cnX;
+               if (valueX > 0) {
+                  TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcX-meanX-cnX);
+                  hit->SetSeed(seedX);
+                  
+                  if (ValidHistogram())
+                     fpHisStripMap[sensorId]->Fill(i, adcX-meanX-cnX);
+               }
+               
             }
-      
-            valueX -= cnX;
-            if (valueX > 0) {
-               seedX = true;
-               if (ValidHistogram())
-                  fpHisSeedMap[sensorId]->Fill(i, adcX-meanX-cnX);
-            }
-            
-            valueX = p_parcal->GetPedestalValue(sensorId, pedestal, false);
-            valueX = adcX - valueX - cnX;
-            if (valueX > 0) {
-               TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcX-meanX-cnX);
-               hit->SetSeed(seedX);
-             
-               if (ValidHistogram())
-                  fpHisStripMap[sensorId]->Fill(i, adcX-meanX-cnX);
-            }
-            
          }
-      }
-      
-
-      view = 1;
-      sensorId = p_parmap->GetSensorId(boardId, view);
-      pedestal = p_parcal->GetPedestal( sensorId, i );
-      
-      if( pedestal.status ) {
-         if (fgPedestalSub) {
-            Bool_t seedY = false;
-            valueY = p_parcal->GetPedestalValue(sensorId, pedestal, true);
-            meanY = pedestal.mean;
-            valueY = adcY - valueY;
-            
-            if (fgCommonModeSub) {
-               if (i % 64 == 0) {
-                  for (int VaChan = 0; VaChan < 64; VaChan++)
-                     VaContent[VaChan] = evt->Yplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
-                  
-                  cnY = ComputeCN(i, VaContent, 0);
-                  if (ValidHistogram())
-                     fpHisCommonMode[sensorId]->Fill(cnY);
+         
+         view = 1;
+         sensorId = p_parmap->GetSensorId(boardId, view);
+         pedestal = p_parcal->GetPedestal( sensorId, i );
+         
+         if( pedestal.status ) {
+            if (fgPedestalSub) {
+               Bool_t seedY = false;
+               valueY = p_parcal->GetPedestalValue(sensorId, pedestal, true);
+               meanY = pedestal.mean;
+               valueY = adcY - valueY;
+               
+               if (fgCommonModeSub) {
+                  if (i % 64 == 0) {
+                     for (int VaChan = 0; VaChan < 64; VaChan++)
+                        VaContent[VaChan] = evt->Yplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
+                     
+                     cnY = ComputeCN(i, VaContent, 0);
+                     if (ValidHistogram())
+                        fpHisCommonMode[sensorId]->Fill(cnY);
+                  }
                }
-            }
-            
-            valueY -= cnY;
-            if (valueY > 0) {
-               seedY = true;
-               if (ValidHistogram())
-                  fpHisSeedMap[sensorId]->Fill(i, adcY-meanY-cnY);
-            }
-            
-            valueY = p_parcal->GetPedestalValue(sensorId, pedestal, false);
-            valueY = adcY - valueY - cnY;
-            if (valueY > 0) {
-              TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcY-meanY-cnY);
-               hit->SetSeed(seedY);
-
-               if (ValidHistogram())
-                  fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
-            }
-            
-            if(FootDebugLevel(2)) {
-               if(valueX>0 || valueY>0)
-                  cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
+               
+               valueY -= cnY;
+               if (valueY > 0) {
+                  seedY = true;
+                  if (ValidHistogram())
+                     fpHisSeedMap[sensorId]->Fill(i, adcY-meanY-cnY);
+               }
+               
+               valueY = p_parcal->GetPedestalValue(sensorId, pedestal, false);
+               valueY = adcY - valueY - cnY;
+               if (valueY > 0) {
+                  TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcY-meanY-cnY);
+                  hit->SetSeed(seedY);
+                  
+                  if (ValidHistogram())
+                     fpHisStripMap[sensorId]->Fill(i, adcY-meanY-cnY);
+               }
+               
+               if(FootDebugLevel(2)) {
+                  if(valueX>0 || valueY>0)
+                     cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
+               }
             }
          }
       }

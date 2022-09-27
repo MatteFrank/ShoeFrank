@@ -91,7 +91,9 @@
 #include "TAVTactNtuVertex.hxx"
 
 #include "TAGactNtuGlbTrackS.hxx"
+#ifdef TOE_FLAG
 #include "TAGactNtuGlbTrack.hxx"
+#endif
 
 #include "TAGactKFitter.hxx"
 #include "UpdatePDG.hxx"
@@ -150,6 +152,9 @@ public:
   
    // Global Checks
    virtual void GlobalChecks();
+
+   // Global sets
+   virtual void GlobalSettings();
    
    //! Close File in
    virtual void CloseFileIn() { return; }
@@ -196,6 +201,16 @@ public:
    void EnableTracking()       { fFlagTrack = true;       }
    //! Disable tracking
    void DisableTracking()      { fFlagTrack = false;      }
+   
+   //! Enable MSD tracking
+   void EnableMsdTracking()    { fFlagMsdTrack = true;    }
+   //! Disable MSD tracking
+   void DisableMsdTracking()   { fFlagMsdTrack = false;   }
+   
+   //! Enable ITR tracking
+   void EnableItrTracking()    { fFlagItrTrack = true;    }
+   //! Disable ITR tracking
+   void DisableItrTracking()   { fFlagItrTrack = false;   }
    
    //! Enable TW calibration per bar
    void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
@@ -349,20 +364,6 @@ public:
   
 
 public:
-   //! Disable ITR tracking
-   static void DisableItrTracking() { fgItrTrackFlag = false; }
-   //! Enable ITR tracking
-   static void EnableItrTracking()  { fgItrTrackFlag = true;  }
-   //! Check ITR tracking
-   static Bool_t IsItrTracking()    { return fgItrTrackFlag;  }
-   
-   //! Disable MSD tracking
-   static void DisableMsdTracking() { fgMsdTrackFlag = false; }
-   //! Enable MSD tracking
-   static void EnableMsdTracking()  { fgMsdTrackFlag = true;  }
-   //! Check MSD tracking
-   static Bool_t IsMsdTracking()    { return fgMsdTrackFlag;  }
-   
    //! Disable MC info saving in output tree
    static void DisableSaveMc() { fSaveMcFlag = false; }
    //! Enable MC info saving in output tree
@@ -474,8 +475,9 @@ protected:
    TACAactNtuCluster*    fActClusCa;     ///< action for clusters
    TACAactNtuHit*        fActNtuHitCa;   ///< action for hit
 
+#ifdef TOE_FLAG
    TAGactNtuGlbTrack*    fActGlbTrack;   ///< Global tracking action
-    
+#endif
    TAGactNtuGlbTrackS*   fActGlbTrackS;  ///< action for straight tracks
   
    TAGactKFitter*        fActGlbkFitter; ///< Global tracking kalman Fitter
@@ -486,6 +488,8 @@ protected:
    Bool_t                fFlagHits;         ///< flag to save hits in tree
    Bool_t                fFlagHisto;        ///< flag for histo generatiom
    Bool_t                fFlagTrack;        ///< flag for tracking
+   Bool_t                fFlagMsdTrack;     ///< flag for MSD tracking
+   Bool_t                fFlagItrTrack;     ///< flag for ITR tracking
    Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar
    TString               fgVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)

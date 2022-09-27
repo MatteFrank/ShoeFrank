@@ -88,7 +88,7 @@ void RemoteEvent::readData(unsigned int **p1){
     //std::cout<<"\n The previous word is:"<< std::hex << *(p-1) << std::endl;
     //std::cout<<"\n The current word is:"<< std::hex << WORD << std::endl;
   } else {
-    std::cout<<"Size of RemoteEvent " << std::hex << channelID << " is zero!"<<std::endl;
+    //std::cout<<"Size of RemoteEvent " << std::hex << channelID << " is zero!"<<std::endl;
   }
   *p1 = p;
 }

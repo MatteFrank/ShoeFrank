@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "HIT2022_MC"
-RunNumber: 100;101;200;201
+RunNumber: 100;140;200;220
 NumberDevices: 7
 
 DetectorName: "FOOT"
@@ -20,7 +20,7 @@ NumberFiles: 3
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/HIT2022_MC/TAGdetector.geo": 100;101;200;201
+"./geomaps/HIT2022_MC/TAGdetector.geo": 100;140;200;220
 
 DetectorName: "MSD"
 NumberFiles: 2

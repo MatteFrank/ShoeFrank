@@ -1,8 +1,7 @@
 #ifndef _TAGbaseWDparTime_HXX
 #define _TAGbaseWDparTime_HXX
 /*!
-  \file
-  \version $Id: TAGbaseWDparTime.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+  \file TAGbaseWDparTime.hxx
   \brief   Declaration of TAGbaseWDparTime.
 */
 /*------------------------------------------+---------------------------------*/

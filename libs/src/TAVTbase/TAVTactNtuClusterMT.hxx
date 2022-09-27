@@ -6,13 +6,18 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TAVTactBaseNtuClusterMT.hxx"
+#include <thread>
+#include <vector>
+
+#include "TAVTactBaseClusterMT.hxx"
+
+using namespace std;
 
 class TAVTntuCluster;
 class TAVThit;
 class TAVTparGeo;
 
-class TAVTactNtuClusterMT : public TAVTactBaseNtuClusterMT {
+class TAVTactNtuClusterMT : public TAVTactBaseClusterMT {
    
 public:
    explicit  TAVTactNtuClusterMT(const char* name     = 0,
@@ -33,10 +38,21 @@ public:
    // Get list of pixels
    virtual TClonesArray* GetListOfPixels(Int_t sensorId);
 
+   // Thread start
+   Bool_t   ThreadStart(Int_t iSensor);
+   
+   // Thread join
+   Bool_t   ThreadJoin();
+   
+   // Thread stop
+   Bool_t   ThreadStop();
+   
 private:
    TAGdataDsc*     fpNtuRaw;		  ///< input data dsc
    TAGdataDsc*     fpNtuClus;		  ///< output data dsc
    Bool_t          fOk;            ///< ok flag
+   vector<thread>  fThreads;       ///< thread array
+
 
 private:
    // Create cluster per thread

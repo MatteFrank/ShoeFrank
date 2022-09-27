@@ -56,6 +56,8 @@ class GlobalRecoAna : public BaseReco {
   void ComputeMCtruth( Int_t trkid, int &cha, TVector3 &mom, TVector3 &mom_cross, double &ek);
   Double_t ComputeTrkEkin(TAGtrack *track);//from calo infos
   void resetStatus(); //to reset the subdetectors status flags
+  bool TriggerCheck(TAGtrack * fGlbTrack);
+  bool TriggerCheckMC(TAGtrack * fGlbTrack);
 
   //fill plots
   void FillGlbTrackPlots();
@@ -109,6 +111,7 @@ class GlobalRecoAna : public BaseReco {
 
   //setting variables maybe we should use a config file?
   Double_t Th_meas;
+  Double_t Th_reco;
   Double_t purity_cut;      //minumum purity value for a track to be defined as pure
   Double_t clean_cut;       //is a 100% pure track
 

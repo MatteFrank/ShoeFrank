@@ -52,6 +52,10 @@ Bool_t TAMCactNtuPart::Action()
 
   TAMCflukaParser::GetTracks(fpEvtStr, fpNtuMC);
 
+  if (ValidHistogram()) {
+
+  }
+
   fpNtuMC->SetBit(kValid);
   
   return kTRUE;

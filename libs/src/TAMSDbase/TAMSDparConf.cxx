@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAMSDparConf.cxx
+  \file TAMSDparConf.cxx
   \brief   Implementation of TAMSDparConf.
 */
 
@@ -11,28 +10,32 @@
 //##############################################################################
 
 /*!
-  \class TAMSDparConf TAMSDparConf.hxx "TAMSDparConf.hxx"
+  \class TAMSDparConf
   \brief Map and Geometry parameters for MSD **
 */
 
+//! Class imp
 ClassImp(TAMSDparConf);
 
 
 //______________________________________________________________________________
+//! Standard constructor
 TAMSDparConf::TAMSDparConf()
 : TAVTbaseParConf()
 {
-   // Standard constructor
    fkDefaultConfName = "./config/TAMSDdetector.cfg";
 }
 
 //______________________________________________________________________________
+//! Destructor
 TAMSDparConf::~TAMSDparConf()
 {
-   // Destructor
 }
 
-//______________________________________________________________________________
+//_____________________________________________________________________
+//! From file
+//!
+//! \param[in] name input file
 Bool_t TAMSDparConf::FromFile(const TString& name)
 {
    // simple file reading, waiting for real config file

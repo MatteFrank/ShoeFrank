@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \file TASTntuHit.cxx
   \brief   Implementation of TASTntuHit.
 */
 
@@ -8,16 +7,11 @@
 
 #include "TASTntuHit.hxx"
 
-/*!
-  \class TASTntuHit TASTntuHit.hxx "TASTntuHit.hxx"
-  \brief Mapping and Geometry parameters for IR detectors. **
-*/
-
+//! Class Imp
 ClassImp(TASThit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TASThit::TASThit()
  : TAGobject(),
    fCharge(0.),
@@ -40,7 +34,6 @@ TASThit::TASThit(Double_t charge, Double_t De, Double_t time)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TASThit::~TASThit()
 {
 }
@@ -64,14 +57,13 @@ void TASThit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 
 
 //##############################################################################
-
+//! Class Imp
 ClassImp(TASTntuHit);
 
 TString TASTntuHit::fgkBranchName   = "strh.";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TASTntuHit::TASTntuHit()
 : TAGdata(),
  fListOfHits(0)
@@ -83,10 +75,8 @@ TASTntuHit::TASTntuHit()
   SetupClones();
 }
 
-
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TASTntuHit::~TASTntuHit()
 {
   delete fListOfHits;
@@ -110,7 +100,6 @@ TASThit* TASTntuHit::NewHit(double charge, double de, double time)
 
 //------------------------------------------+-----------------------------------
 //! Access \a i 'th hit
-
 TASThit* TASTntuHit::GetHit(Int_t i)
 {
    return (TASThit*) ((*fListOfHits)[i]);;
@@ -118,27 +107,20 @@ TASThit* TASTntuHit::GetHit(Int_t i)
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
-
 const TASThit* TASTntuHit::GetHit(Int_t i) const
 {
    return (const TASThit*) ((*fListOfHits)[i]);;
 }
 
-   
 //------------------------------------------+-----------------------------------
 //! Setup clones.
-
 void TASTntuHit::SetupClones()
 {
   if (!fListOfHits) fListOfHits = new TClonesArray("TASThit");
-   
-  return;
 }
-   
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
-
 void TASTntuHit::Clear(Option_t*)
 {
   TAGdata::Clear();

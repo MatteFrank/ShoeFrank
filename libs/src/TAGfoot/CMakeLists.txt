@@ -29,14 +29,17 @@ set( with_dictionnaries
    BaseReco
    LocalRecoMC
    LocalReco
-   TAGactNtuGlbTrack
    TAGactNtuGlbTrackS
    GlobalReco
    GlobalRecoAna
    GlobalRecoMassAna   
    GlobalToeReco
-   
 )
+
+if (TOE_DIR)
+   set(with_dictionnaries ${with_dictionnaries} TAGactNtuGlbTrack)
+   set(dict_option "-DTOE_FLAG=1")
+endif(TOE_DIR)
 
 set( without_dictionnaries
 )
@@ -83,7 +86,7 @@ endforeach()
 
 
 if (ROOT6_USED)
-  ROOT6_GENERATE_DICTIONARY(G_${LIBNAME} ${headers} MODULE ${LIBNAME} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS "")
+  ROOT6_GENERATE_DICTIONARY(G_${LIBNAME} ${headers} MODULE ${LIBNAME} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS ${dict_option})
 else()
   ROOT5_GENERATE_DICTIONARY(G_${LIBNAME} ${headers} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS "")
 endif()

@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \file TASTactNtuHitMC.cxx
   \brief   Implementation of TASTactNtuHitMC.
 */
 
@@ -17,15 +16,15 @@
 #include "TASTactNtuHitMC.hxx"
 
 /*!
-  \class TASTactNtuHitMC TASTactNtuHitMC.hxx "TASTactNtuHitMC.hxx"
-  \brief NTuplizer for BM raw hits. **
+  \class TASTactNtuHitMC
+  \brief NTuplizer for ST MC hits. **
 */
 
+//! Class Imp
 ClassImp(TASTactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TASTactNtuHitMC::TASTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNturaw, EVENT_STRUCT* evStr)
   : TAGaction(name, "TASTactNtuHitMC - NTuplize ToF raw data"),
    fpNtuMC(pNtuMC),
@@ -56,7 +55,6 @@ void TASTactNtuHitMC::CreateDigitizer()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TASTactNtuHitMC::~TASTactNtuHitMC()
 {
    delete fDigitizer;
@@ -64,7 +62,6 @@ TASTactNtuHitMC::~TASTactNtuHitMC()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-
 Bool_t TASTactNtuHitMC::Action()
 {
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());

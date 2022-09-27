@@ -56,9 +56,9 @@ IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   n
-IncludeIT:	         n
-IncludeMSD:			   n
+IncludeIT:	                   n
+IncludeMSD:			   y
 IncludeTW:			   y
-IncludeCA:			   n
+IncludeCA:			   y
 
 FLUKA version: pro

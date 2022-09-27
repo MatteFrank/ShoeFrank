@@ -25,12 +25,20 @@
 
 #include "TRandom3.h"
 #include "TF1.h"
+/*!
+ \file TASTdigitizer.cxx
+ \brief   Implementation of TASTdigitizer.
+ */
+
 #include "TMath.h"
 
 #include "TASTparGeo.hxx"
 #include "TASTdigitizer.hxx"
 
-// Compute the number of photons for 5 mm slice width
+/*!
+ \class TATWcalibrationMap
+ \brief Compute the number of photons for 5 mm slice width
+ */
 
 // --------------------------------------------------------------------------------------
 TASTdigitizer::TASTdigitizer(TASTntuHit* pNtuRaw)

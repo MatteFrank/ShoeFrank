@@ -1,8 +1,7 @@
 #ifndef _TATWparMap_HXX
 #define _TATWparMap_HXX
 /*!
-  \file
-  \version $Id: TATWparMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+  \file TATWparMap.hxx
   \brief   Declaration of TATWparMap.
 */
 /*------------------------------------------+---------------------------------*/
@@ -24,17 +23,15 @@ class TATWparMap : public TAGpara {
 
     Bool_t          FromFile(const TString& name);
 
-  //    bool            GetIDFromTDC(int channel, int board, int &detID, int &chaID);
-
     virtual void    Clear(Option_t* opt="");
 
-    Int_t GetTDID(int add)    const { return fTDchaID.at(add); }
-    Int_t GetTDboaID(int add) const { return fTDboaID.at(add); }
-    Int_t GetDetID(int add)   const { return fDetID.at(add);   }
+    Int_t GetTDID(int add)       const { return fTDchaID.at(add); }
+    Int_t GetTDboaID(int add)    const { return fTDboaID.at(add); }
+    Int_t GetDetID(int add)      const { return fDetID.at(add);   }
     TATWchannelMap* GetChannelMap()    { return fcMap;            }
 
-    Bool_t IsTWChannel(int iCha);
-    Bool_t IsTWBoard(int iBo);
+    Bool_t       IsTWChannel(int iCha);
+    Bool_t        IsTWBoard(int iBo);
     pair<int,int> GetClockChannel(int ch_num, int bo_num);
 
   private:
@@ -42,10 +39,10 @@ class TATWparMap : public TAGpara {
    
   private:
     TATWchannelMap* fcMap;
-    Int_t        fTrefCh;
-    vector<int>  fTDchaID;
-    vector<int>  fTDboaID;
-    vector<int>  fDetID;
+    Int_t           fTrefCh;
+    vector<int>     fTDchaID;
+    vector<int>     fTDboaID;
+    vector<int>     fDetID;
    
    ClassDef(TATWparMap,1)
 };

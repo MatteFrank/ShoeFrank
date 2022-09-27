@@ -1,11 +1,25 @@
+/*!
+ \file TAMSDcalibrationMap.cxx
+ \brief  Implementation of TAMSDcalibrationMap
+ */
+
 #include "TError.h"
 
 #include "TAMSDcalibrationMap.hxx"
 #include "TAGrecoManager.hxx"
 
+/*!
+ \class TAMSDcalibrationMap
+ \brief Calibration map class
+ */
+
+//! Class Imp
 ClassImp(TAMSDcalibrationMap)
 
 //_____________________________________________________________________
+//! Destructor
+//!
+//! \param[in] strip_number_p number of strips
 TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
 : TAGobject(),
   fStripsN{strip_number_p}
@@ -14,6 +28,9 @@ TAMSDcalibrationMap::TAMSDcalibrationMap(int strip_number_p)
 }
 
 //_____________________________________________________________________
+//! Load energy calibration map file
+//!
+//! \param[in] FileName input file
 void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
 {
    
@@ -52,6 +69,9 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
 }
 
 //_____________________________________________________________________
+//! Load pedestal map file
+//!
+//! \param[in] FileName input file
 void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
 {
    
@@ -69,6 +89,7 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
       int sensorId, stripId;
       int asicId, asicCh;
       double Q_corrp0, Q_corrp1, Q_corrp2;
+      int status;
       double sigmaLevelSeed, sigmaLevelHit;
       int k = 0;
       
@@ -106,11 +127,11 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
             continue;
          }
          
-         sscanf(line, "%d %d %d %d %lf %lf %lf",&sensorId, &stripId, &asicId, &asicCh, &Q_corrp0, &Q_corrp1, &Q_corrp2);
+         sscanf(line, "%d %d %d %d %lf %lf %d",&sensorId, &stripId, &asicId, &asicCh, &Q_corrp0, &Q_corrp1, &status);
          if(FootDebugLevel(1))
-            Info("LoadPedestalMap()","sensorId: %d stripId %d Mean: %5.1f Sigma: %3.1f status: %d\n",sensorId, stripId, Q_corrp0, Q_corrp1, int(Q_corrp2));
+            Info("LoadPedestalMap()","sensorId: %d stripId %d Mean: %5.1f Sigma: %3.1f status: %d\n",sensorId, stripId, Q_corrp0, Q_corrp1, status);
          
-         fPedestal.push_back( PedParameter_t{Q_corrp0, Q_corrp1, static_cast<bool>(true-Q_corrp2)} );
+         fPedestal.push_back( PedParameter_t{Q_corrp0, Q_corrp1, !(static_cast<bool>(status))} );
       }
    } else
       Info("LoadPedestalMap()","File for pedestal %s not open!!",FileName.Data());
@@ -118,6 +139,10 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
    fin.close();
 }
 
+//_____________________________________________________________________
+//! Get energy loss parameter
+//!
+//! \param[in] eta eta value
 Double_t TAMSDcalibrationMap::GetElossParam(Float_t eta)
 {  
    // find the eta bin

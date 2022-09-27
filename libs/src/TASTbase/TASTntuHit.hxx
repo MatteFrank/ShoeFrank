@@ -1,8 +1,7 @@
 #ifndef _TASTntuHit_HXX
 #define _TASTntuHit_HXX
 /*!
- \file
- \version $Id: TASTntuHit.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+ \file TASTntuHit.hxx
  \brief   Declaration of TASTntuHit.
  */
 /*------------------------------------------+---------------------------------*/
@@ -16,6 +15,10 @@ using namespace std;
 #include "TAGdata.hxx"
 #include "TArrayI.h"
 
+/*!
+ \class TASThit
+ \brief Hit class for ST
+ */
 class TASThit : public TAGobject {
 public:
    
@@ -28,10 +31,9 @@ public:
   Double_t       GetCharge()                const   { return fCharge;               }
   Double_t       GetDe()                    const   { return fCharge;               }
   
-  inline void SetTime(double value){ fTime = value;}
-  inline void SetCharge(double value){ fCharge = value;}
-  inline void SetDe(double value){ fDe = value;}
-  
+  inline void SetTime(double value)                 { fTime = value;                }
+  inline void SetCharge(double value)               { fCharge = value;              }
+  inline void SetDe(double value)                   { fDe = value;                  }
 
   Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
   Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
@@ -54,6 +56,10 @@ private:
 
 //##############################################################################
 
+/*!
+ \class TASTntuHit
+ \brief Hit conatiner class for St
+ */
 class TASTntuHit : public TAGdata {
 public:
    
@@ -73,10 +79,10 @@ public:
    void SetTriggerTimeOth(double value) { fTrigTimeOth = value; }
    void SetTrigType(int value)          { fTrigType=value;      }
   
-   double GetCharge()         const { return fCharge;      }
-   double GetTriggerTime()    const { return fTrigTime;    }
-   double GetTriggerTimeOth() const { return fTrigTimeOth; }
-   int    GetTrigType()       const { return fTrigType;    }
+   double GetCharge()             const { return fCharge;       }
+   double GetTriggerTime()        const { return fTrigTime;     }
+   double GetTriggerTimeOth()     const { return fTrigTimeOth;  }
+   int    GetTrigType()           const { return fTrigType;     }
 
   
 public:

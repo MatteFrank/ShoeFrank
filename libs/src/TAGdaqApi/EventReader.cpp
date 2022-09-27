@@ -371,7 +371,7 @@ unsigned int EventReader::getROSInformation(unsigned int **p1){
       if( bp!=NULL ){
 	m_fragments[id] = bp;
       } else {
-	std::cout<< "Null pointer ?? " << (std::hex)<< *base << std::endl;
+	//std::cout<< "Null pointer ?? " << (std::hex)<< *base << std::endl;
       }
     } while (*base!=0 && bp!=NULL);
     //std::cout<< "After base=" << (std::hex)<< *base << std::endl;    

@@ -19,7 +19,7 @@
 
 /*!
   \class TAGbaseWDparTime 
-  \brief Map parameters for onion and daisy. **
+  \brief Map Time parameters for WD
 */
 
 ClassImp(TAGbaseWDparTime);
@@ -33,7 +33,6 @@ TAGbaseWDparTime::TAGbaseWDparTime()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGbaseWDparTime::~TAGbaseWDparTime()
 {
 }
@@ -41,7 +40,6 @@ TAGbaseWDparTime::~TAGbaseWDparTime()
 //------------------------------------------+-----------------------------------
 bool TAGbaseWDparTime::FromFileCFD(TString cfd_filename)
 {
-
    //get cfd parameters for each detectors
    FILE *stream = fopen(cfd_filename.Data(), "r");
    if(stream==NULL){
@@ -93,13 +91,10 @@ bool TAGbaseWDparTime::FromFileCFD(TString cfd_filename)
    
    fclose(stream);
    
-   
    return true;
 }
 
-
-
-
+//------------------------------------------+-----------------------------------
 bool TAGbaseWDparTime::FromFileTcal(TString tcal_filename)
 {
 
@@ -116,17 +111,13 @@ bool TAGbaseWDparTime::FromFileTcal(TString tcal_filename)
   GetTimeInfo(stream);
 
   fclose(stream);
-    
-  
    
    return true;
-  
 }
 
-
-
-
-void TAGbaseWDparTime::GetTimeInfo(FILE *stream){
+//------------------------------------------+-----------------------------------
+void TAGbaseWDparTime::GetTimeInfo(FILE *stream)
+{
   u_int word;
   int board_id=0, ch_num=0,ret=0;
   float time_bin=0;
@@ -164,18 +155,12 @@ void TAGbaseWDparTime::GetTimeInfo(FILE *stream){
     fseek(stream, -4, SEEK_CUR);
   }
 
-
   return;
 }
 
- 
-
-
-
-
-void TAGbaseWDparTime::InitMap(){
-
-
+//------------------------------------------+-----------------------------------
+void TAGbaseWDparTime::InitMap()
+{
   pair<int,int> key;
   for(int iBo=0;iBo<NMAX_BO_ID;iBo++){
     for(int iCh=0;iCh<NMAX_CH_ID;iCh++){

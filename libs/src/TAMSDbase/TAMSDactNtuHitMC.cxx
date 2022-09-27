@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAMSDactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \file TAMSDactNtuHitMC.cxx
   \brief   Implementation of TAMSDactNtuHitMC.
 */
 
@@ -27,18 +26,26 @@
 
 /*!
   \class TAMSDactNtuHitMC"
-  \brief NTuplizer for vertex raw hits. **
+  \brief NTuplizer for vertex raw hits.
 */
 
 using namespace std;
 
+//! Class imp
 ClassImp(TAMSDactNtuHitMC);
 
 Float_t TAMSDactNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAMSDactNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
-//
+//! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuMC MC input container descriptor
+//! \param[in] pNtuEve MC particle input container descriptor
+//! \param[out] pNtuRaw raw data output container descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] evStr old Fluka container descriptor
 TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve,TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
 :  TAGaction(name, "TAMSDactNtuHitMC - NTuplize MSD MC data"),
    fpNtuMC(pNtuMC),
@@ -187,6 +194,11 @@ bool TAMSDactNtuHitMC::Action()
 
 
 //------------------------------------------+-----------------------------------
+//! Fill strip hit
+//!
+//! \param[in] sensorId plane id
+//! \param[in] hitId MC hit id
+//! \param[in] trackIdx MC particle id
 void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
 {
   TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
@@ -236,6 +248,7 @@ void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
 }
 
 //___________________________________
+//! Fill noise
 void TAMSDactNtuHitMC::FillNoise()
 {
    TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
@@ -244,7 +257,10 @@ void TAMSDactNtuHitMC::FillNoise()
    }
 }
 
-//___________________________________
+//------------------------------------------+-----------------------------------
+//! Fill noisy strip
+//!
+//! \param[in] sensorId plane id
 void TAMSDactNtuHitMC::FillNoise(Int_t sensorId)
 {
   TAMSDntuHit* pNtuRaw = (TAMSDntuHit*) fpNtuRaw->Object();
@@ -261,6 +277,7 @@ void TAMSDactNtuHitMC::FillNoise(Int_t sensorId)
 }
 
 // --------------------------------------------------------------------------------------
+//! Compute noise level from sigma
 void TAMSDactNtuHitMC::ComputeNoiseLevel()
 {
   // computing number of noise strips (sigma level) from gaussian

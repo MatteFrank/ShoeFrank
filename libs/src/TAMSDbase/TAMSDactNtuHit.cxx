@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAMSDactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+ \file TAMSDactNtuHit.cxx
  \brief   Implementation of TAMSDactNtuHit.
  */
 
@@ -11,15 +10,22 @@
 #include "TAGrecoManager.hxx"
 
 /*!
- \class TAMSDactNtuHit TAMSDactNtuHit.hxx "TAMSDactNtuHit.hxx"
- \brief Get Beam Monitor raw data from WD. **
+ \class TAMSDactNtuHit
+ \brief Get MSD raw data from WD. **
  */
 
+//! Class imp
 ClassImp(TAMSDactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] p_datraw raw data input container descriptor
+//! \param[out] p_nturaw hit output container descriptor
+//! \param[in] p_pargeo geometry parameter descriptor
+//! \param[in] p_parconf configuration parameter descriptor
+//! \param[in] p_parcal calibration parameter descriptor
 TAMSDactNtuHit::TAMSDactNtuHit(const char* name,
                                TAGdataDsc* p_datraw,
                                TAGdataDsc* p_nturaw,
@@ -49,7 +55,6 @@ TAMSDactNtuHit::~TAMSDactNtuHit()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-
 Bool_t TAMSDactNtuHit::Action()
 {
    TAMSDntuRaw*   p_datraw = (TAMSDntuRaw*)  fpDatRaw->Object();
@@ -96,9 +101,8 @@ Bool_t TAMSDactNtuHit::Action()
 
 //------------------------------------------+-----------------------------------
 //! Histograms
-
-void TAMSDactNtuHit::CreateHistogram(){
-   
+void TAMSDactNtuHit::CreateHistogram()
+{
    DeleteHistogram();
    
    SetValidHistogram(kTRUE);

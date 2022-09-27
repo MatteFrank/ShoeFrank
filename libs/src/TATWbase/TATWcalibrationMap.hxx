@@ -5,6 +5,12 @@
 #include <TSystem.h>
 #include "TAGobject.hxx"
 #include "Parameters.h"
+/*!
+ \file TATWcalibrationMap.hxx
+ \brief   Declaration of TATWcalibrationMap.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include "TAGparTools.hxx"
 #include "TATWparGeo.hxx"
 
@@ -43,11 +49,12 @@ public:
   void LoadBarElossTuning(std::string Filename);
   
   bool Exists(Int_t BarId);
-   void ExportToFile(std::string FileName);
+  void ExportToFile(std::string FileName);
 
-   TCalibrationMapType::iterator begin() { return fCalibrationMap.begin(); }
-   TCalibrationMapType::iterator end()   { return fCalibrationMap.end();   }
-   Int_t GetNumberOfBars() const         { return fCalibrationMap.size();  }
+  TCalibrationMapType::iterator begin() { return fCalibrationMap.begin(); }
+  TCalibrationMapType::iterator end()   { return fCalibrationMap.end();   }
+  Int_t GetNumberOfBars() const         { return fCalibrationMap.size();  }
+   
   Int_t GetNumberOfElossPos() const ;
   Int_t GetNumberOfTofPos() const;
 

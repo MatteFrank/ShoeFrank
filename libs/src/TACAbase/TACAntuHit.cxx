@@ -1,21 +1,15 @@
 /*!
- \file
- \version $Id: TACAntuHit.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+ \file TACAntuHit.cxx
  \brief   Implementation of TACAntuHit.
  */
 
 #include "TACAntuHit.hxx"
 
-/*!
- \class TACAntuHit TACAntuHit.hxx "TACAntuHit.hxx"
- \brief Mapping and Geometry parameters for CA detectors. **
- */
-
+//! Class Imp
 ClassImp(TACAhit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TACAhit::TACAhit()
  : TAGobject(),
    fTime(999999.),
@@ -28,13 +22,19 @@ TACAhit::TACAhit()
   Clear();
 }
 
-//------------------------------------------+-----------------------------------
-TACAhit::TACAhit(int cha, double charge, double time, int typ)
+//______________________________________________________________________________
+//!  build hit
+//!
+//! \param[in] cha crystal index
+//! \param[in] charge measured charge
+//! \param[in] time measured time
+//! \param[in] type given type
+TACAhit::TACAhit(int cha, double charge, double time, int type)
  : TAGobject(),
    fTime(time),
    fCharge(charge),
    fCrystalId(cha),
-   fType(typ),
+   fType(type),
    fPosition(),
    fIsValid(true)
 {
@@ -42,12 +42,11 @@ TACAhit::TACAhit(int cha, double charge, double time, int typ)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TACAhit::~TACAhit()
 {}
 
 //______________________________________________________________________________
-//
+//! Clear
 void TACAhit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
@@ -55,7 +54,10 @@ void TACAhit::Clear(Option_t* /*option*/)
 }
 
 //______________________________________________________________________________
-//
+//! Add MC track and hit indexes
+//!
+//! \param[in] trackId MC track index
+//! \param[in] mcId MC hit index
 void TACAhit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 {
    fMCindex.Set(fMCindex.GetSize()+1);
@@ -67,13 +69,13 @@ void TACAhit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 
 //##############################################################################
 
+//! Class Imp
 ClassImp(TACAntuHit);
 
 TString TACAntuHit::fgkBranchName   = "carh.";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TACAntuHit::TACAntuHit()
  : TAGdata(),
    fListOfHits(0x0)
@@ -85,7 +87,6 @@ TACAntuHit::TACAntuHit()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TACAntuHit::~TACAntuHit()
 {
    delete fListOfHits;
@@ -93,20 +94,22 @@ TACAntuHit::~TACAntuHit()
 
 //------------------------------------------+-----------------------------------
 //! Setup clones.
-
 void TACAntuHit::SetupClones()
 {
    if (!fListOfHits) fListOfHits = new TClonesArray("TACAhit");
 }
 
 //------------------------------------------+-----------------------------------
+//! return number of hits
 Int_t TACAntuHit::GetHitsN() const
 {
    return fListOfHits->GetEntries();
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a pixel for a given crystal
+//!
+//! \param[in] id crystal id
 TACAhit* TACAntuHit::GetHit(Int_t id)
 {
    if (id >=0 || id < 22*22) {
@@ -118,7 +121,9 @@ TACAhit* TACAntuHit::GetHit(Int_t id)
 }
 
 //------------------------------------------+-----------------------------------
-//! return a pixel for a given sensor
+//! return a pixel for a given crystal const
+//!
+//! \param[in] id crystal id
 const TACAhit* TACAntuHit::GetHit(Int_t id) const
 {
    if (id >=0 || id < 22*22) {
@@ -130,7 +135,12 @@ const TACAhit* TACAntuHit::GetHit(Int_t id) const
 }
 
 //______________________________________________________________________________
-//
+//! new hit
+//!
+//! \param[in] crys crystal index
+//! \param[in] charge measured charge
+//! \param[in] time measured time
+//! \param[in] type given type
 TACAhit* TACAntuHit::NewHit(int crys, double charge, double time, int type)
 {
    TClonesArray &pixelArray = *fListOfHits;
@@ -142,7 +152,6 @@ TACAhit* TACAntuHit::NewHit(int crys, double charge, double time, int type)
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
-
 void TACAntuHit::Clear(Option_t*)
 {
   TAGdata::Clear();
@@ -151,9 +160,11 @@ void TACAntuHit::Clear(Option_t*)
    return;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
-
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TACAntuHit::ToStream(ostream& os, Option_t* option) const
 {
    os << "TACAntuHit " << GetName()
