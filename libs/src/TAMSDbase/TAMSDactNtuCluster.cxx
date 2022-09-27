@@ -23,6 +23,8 @@
 //! Class imp
 ClassImp(TAMSDactNtuCluster);
 
+Bool_t TAMSDactNtuCluster::fgSeedAlgo = true;
+
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 //!
@@ -128,7 +130,7 @@ Bool_t TAMSDactNtuCluster::Action()
 Bool_t TAMSDactNtuCluster::FindClusters(Int_t iSensor)
 {
   // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
-  // Look in a iterative way to next neighbour
+  // Look in an iterative way to next neighbour
   
   FillMaps();
   SearchCluster();
@@ -144,7 +146,7 @@ void TAMSDactNtuCluster::SearchCluster()
   // Search for cluster
   for (Int_t iStrip = 0; iStrip < fListOfStrips->GetEntries(); ++iStrip) { // loop over seed strips
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iStrip);
-    if (!strip->IsSeed()) continue;
+    if (!strip->IsSeed() && fgSeedAlgo) continue;
     if (strip->Found()) continue;
     
     Int_t stripId  = strip->GetStrip();
