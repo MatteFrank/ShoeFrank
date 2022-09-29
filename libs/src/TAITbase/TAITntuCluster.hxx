@@ -55,6 +55,9 @@ public:
    // Create new cluster from a existing one
    TAITcluster*       NewCluster(TAITcluster* clus, Int_t iSensor);
 
+   //! Set par geo pointer
+   void               SetParGeo(TAVTbaseParGeo* par) { fGeometry = par; }
+
    //  Setup clones
    virtual void       SetupClones();
    // Clear

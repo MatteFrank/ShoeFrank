@@ -77,7 +77,17 @@ target_link_libraries(DecodeGlbMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_L
 #
 install(TARGETS DecodeGlb DESTINATION bin)
 
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(ConvertNtuple ConvertNtuple.cc)
+#
+target_link_libraries(ConvertNtuple ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS ConvertNtuple DESTINATION bin)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
@@ -85,7 +95,6 @@ install(TARGETS DecodeGlb DESTINATION bin)
 add_executable(DecodeGlbAna DecodeGlbAna.cc)
 #
 target_link_libraries(DecodeGlbAna ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
-
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
