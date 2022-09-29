@@ -144,15 +144,15 @@ public:
    //! Disable tracking
    void DisableTracking()      { fFlagTrack = false;      }
    
-//   //! Enable MSD tracking
-//   void EnableMsdTracking()    { fFlagMsdTrack = true;    }
-//   //! Disable MSD tracking
-//   void DisableMsdTracking()   { fFlagMsdTrack = false;   }
-//   
-//   //! Enable ITR tracking
-//   void EnableItrTracking()    { fFlagItrTrack = true;    }
-//   //! Disable ITR tracking
-//   void DisableItrTracking()   { fFlagItrTrack = false;   }
+   //! Enable MSD tracking
+   void EnableMsdTracking()    { fFlagMsdTrack = true;    }
+   //! Disable MSD tracking
+   void DisableMsdTracking()   { fFlagMsdTrack = false;   }
+   
+   //! Enable ITR tracking
+   void EnableItrTracking()    { fFlagItrTrack = true;    }
+   //! Disable ITR tracking
+   void DisableItrTracking()   { fFlagItrTrack = false;   }
    
    // Par geo getters
    //! Get parameters geo transformations
@@ -307,6 +307,8 @@ protected:
    
    Bool_t                fFlagOut;          ///< flag for output file
    Bool_t                fFlagTrack;        ///< flag for tracking
+   Bool_t                fFlagMsdTrack;     ///< flag for MSD tracking
+   Bool_t                fFlagItrTrack;     ///< flag for ITR tracking
    Bool_t                fFlagMC;           ///< MC flag
    Bool_t                fReadL0Hits;       ///< read back hits
 
@@ -331,7 +333,6 @@ protected:
    vector<TVector3>     fTrackSlopezVt;
    vector<TVector3>     fTrackOriginVt;
    vector<vector<TVector3> > fTrackClusPosVecVt;
-   
    vector<int>          fTrackClustersNvt;
    vector<int>          fTrackClusHitsNvt;
    vector<float>        fTrackChi2Vt;
@@ -343,8 +344,17 @@ protected:
    vector<int>          fSensorIdIt;
    vector<int>          fClustersNit;
    vector<TVector3>     fClusPosIt;
-   vector<vector<TVector3> > fTrackClusPosVecIt;
+   vector<vector<TVector3> > fClusPosVecIt;
    
+   Int_t                fTracksNit;
+   vector<int>          fTrackIdIt;
+   vector<TVector3>     fTrackClusPosIt;
+   vector<TVector3>     fTrackSlopezIt;
+   vector<TVector3>     fTrackOriginIt;
+   vector<vector<TVector3> > fTrackClusPosVecIt;
+   vector<int>          fTrackClustersNit;
+   vector<int>          fTrackClusHitsNit;
+   vector<float>        fTrackChi2It;
    
    //MSD
    vector<int>          fStationIdMsd;
@@ -353,6 +363,16 @@ protected:
    vector<double>       fEnergyLoss2Msd;
    vector<double>       fTimeMsd;
    vector<TVector3>     fPosMsd;
+   
+   Int_t                fTracksNmsd;
+   vector<int>          fTrackIdMsd;
+   vector<TVector3>     fTrackClusPosMsd;
+   vector<TVector3>     fTrackSlopezMsd;
+   vector<TVector3>     fTrackOriginMsd;
+   vector<vector<TVector3> > fTrackClusPosVecMsd;
+   vector<int>          fTrackClustersNmsd;
+   vector<int>          fTrackClusHitsNmsd;
+   vector<float>        fTrackChi2Msd;
    
    //TW
    Int_t                fPointsNtw;

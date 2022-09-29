@@ -68,6 +68,8 @@ ConvertNtuple::ConvertNtuple(TString expName, Int_t runNumber, TString fileNameI
    fpNtuGlbTrack(0x0),
    fFlagOut(true),
    fFlagTrack(false),
+   fFlagItrTrack(false),
+   fFlagMsdTrack(false),
    fFlagMC(false),
    fReadL0Hits(false)
 {
@@ -388,11 +390,11 @@ void ConvertNtuple::GlobalSettings()
    if (trk)
       EnableTracking();
    
-   //   if (trkMsd)
-   //      EnableMsdTracking();
-   //
-   //   if (trkItr)
-   //      EnableItrTracking();
+   if (trkMsd)
+      EnableMsdTracking();
+   
+   if (trkItr)
+      EnableItrTracking();
 }
 
 //__________________________________________________________
@@ -450,8 +452,8 @@ void ConvertNtuple::CreateRecActionIt()
    fpNtuClusIt = new TAGdataDsc("itClus", new TAITntuCluster());
    GetNtuClusterIt()->SetParGeo(GetParGeoIt());
    
-   //   if (fFlagItrTrack && fFlagTrack)
-   //      fpNtuTrackIt = new TAGdataDsc("itTrack", new TAITntuTrack());
+   if (fFlagItrTrack && fFlagTrack)
+      fpNtuTrackIt = new TAGdataDsc("itTrack", new TAITntuTrack());
 }
 
 //__________________________________________________________
@@ -464,8 +466,8 @@ void ConvertNtuple::CreateRecActionMsd()
    fpNtuRecMsd  = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
    GetNtuPointMsd()->SetParGeo(GetParGeoMsd());
    
-   //   if (fFlagMsdTrack && fFlagTrack)
-   //      fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
+   if (fFlagMsdTrack && fFlagTrack)
+      fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
 }
 
 //__________________________________________________________
@@ -517,12 +519,17 @@ void ConvertNtuple::SetL0TreeBranches()
       fActEvtReader->SetupBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
    }
    
-   if (TAGrecoManager::GetPar()->IncludeIT())
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fActEvtReader->SetupBranch(fpNtuClusIt,  TAITntuCluster::GetBranchName());
+      if (fFlagItrTrack && fFlagTrack)
+         fActEvtReader->SetupBranch(fpNtuTrackIt,  TAITntuTrack::GetBranchName());
+   }
    
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fActEvtReader->SetupBranch(fpNtuClusMsd,  TAMSDntuCluster::GetBranchName());
       fActEvtReader->SetupBranch(fpNtuRecMsd,  TAMSDntuPoint::GetBranchName());
+      if (fFlagMsdTrack && fFlagTrack)
+         fActEvtReader->SetupBranch(fpNtuTrackMsd,  TAMSDntuTrack::GetBranchName());
    }
    
    if(TAGrecoManager::GetPar()->IncludeTW())
@@ -620,7 +627,17 @@ void ConvertNtuple::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       fTreeOut->Branch("it_sensor_id",        &fSensorIdIt );
       fTreeOut->Branch("it_clus_n",           &fClustersNit );
-      fTreeOut->Branch("vt_clus_pos_vec",     &fTrackClusPosVecIt );
+      fTreeOut->Branch("vt_clus_pos_vec",     &fClusPosVecIt );
+      
+      if(fFlagItrTrack) {
+         fTreeOut->Branch("it_trk_n",            &fTracksNit );
+         fTreeOut->Branch("it_trk_chi2",         &fTrackChi2It );
+         fTreeOut->Branch("it_trk_slopez",       &fTrackSlopezIt );
+         fTreeOut->Branch("it_trk_origin",       &fTrackOriginIt );
+         fTreeOut->Branch("it_trk_clus_pos_vec", &fTrackClusPosVecIt );
+         fTreeOut->Branch("it_trk_clus",         &fTrackClustersNit );
+         fTreeOut->Branch("it_trk_clus_hits",    &fTrackClusHitsNit);
+      }
    }
    
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
@@ -630,6 +647,16 @@ void ConvertNtuple::SetTreeBranches()
       fTreeOut->Branch("msd_eloss1",          &fEnergyLoss1Msd);
       fTreeOut->Branch("msd_eloss2",          &fEnergyLoss2Msd);
       fTreeOut->Branch("msd_pos",             &fPosMsd );
+      
+      if(fFlagMsdTrack) {
+         fTreeOut->Branch("msd_trk_n",            &fTracksNmsd );
+         fTreeOut->Branch("msd_trk_chi2",         &fTrackChi2Msd );
+         fTreeOut->Branch("msd_trk_slopez",       &fTrackSlopezMsd );
+         fTreeOut->Branch("msd_trk_origin",       &fTrackOriginMsd );
+         fTreeOut->Branch("msd_trk_clus_pos_vec", &fTrackClusPosVecMsd );
+         fTreeOut->Branch("msd_trk_clus",         &fTrackClustersNmsd );
+         fTreeOut->Branch("msd_trk_clus_hits",    &fTrackClusHitsNmsd);
+      }
    }
    
    if (TAGrecoManager::GetPar()->IncludeTW()) {
@@ -724,7 +751,6 @@ void ConvertNtuple::ResetTreeOut()
       fTrackSlopezVt.clear();
       fTrackOriginVt.clear();
       fTrackClusPosVecVt.clear();
-      
       fTrackClustersNvt.clear();
       fTrackClusHitsNvt.clear();
       fTrackChi2Vt.clear();
@@ -738,7 +764,19 @@ void ConvertNtuple::ResetTreeOut()
       fSensorIdIt.clear();
       fClustersNit.clear();
       fClusPosIt.clear();
-      fTrackClusPosVecIt.clear();
+      fClusPosVecIt.clear();
+      
+      if(fFlagItrTrack) {
+         fTracksNit = 0;
+         fTrackIdIt.clear();
+         fTrackClusPosIt.clear();
+         fTrackSlopezIt.clear();
+         fTrackOriginIt.clear();
+         fTrackClusPosVecIt.clear();
+         fTrackClustersNit.clear();
+         fTrackClusHitsNit.clear();
+         fTrackChi2It.clear();
+      }
    }
    
    //MSD
@@ -749,6 +787,18 @@ void ConvertNtuple::ResetTreeOut()
       fEnergyLoss2Msd.clear();
       fTimeMsd.clear();
       fPosMsd.clear();
+      
+      if(fFlagMsdTrack) {
+         fTracksNmsd = 0;
+         fTrackIdMsd.clear();
+         fTrackClusPosMsd.clear();
+         fTrackSlopezMsd.clear();
+         fTrackOriginMsd.clear();
+         fTrackClusPosVecMsd.clear();
+         fTrackClustersNmsd.clear();
+         fTrackClusHitsNmsd.clear();
+         fTrackChi2Msd.clear();
+      }
    }
    
    //TW
@@ -928,36 +978,34 @@ void ConvertNtuple::FillTreeOutVt()
    TAVTntuTrack* vtTrack = (TAVTntuTrack*)fpNtuTrackVtx->Object();
    
    fTracksNvt = vtTrack->GetTracksN();
-   if( vtTrack->GetTracksN() > 0 ) {
-      for( Int_t iTrack = 0; iTrack < vtTrack->GetTracksN(); ++iTrack ) {
-         TAVTtrack* track = vtTrack->GetTrack(iTrack);
-         fTrackIdVt.push_back(iTrack);
-         Float_t Chi2 = track-> GetChi2();
-         fTrackChi2Vt.push_back(Chi2);
+   for( Int_t iTrack = 0; iTrack < vtTrack->GetTracksN(); ++iTrack ) {
+      TAVTtrack* track = vtTrack->GetTrack(iTrack);
+      fTrackIdVt.push_back(iTrack);
+      Float_t Chi2 = track-> GetChi2();
+      fTrackChi2Vt.push_back(Chi2);
+      
+      TVector3 slopez = track->GetSlopeZ();
+      fTrackSlopezVt.push_back(slopez);
+      TVector3 origin = track->GetOrigin();
+      fTrackOriginVt.push_back(origin);
+      
+      Float_t nCluster =  track->GetClustersN();
+      fTrackClustersNvt.push_back(nCluster);
+      
+      Int_t TotHits = 0;
+      for( Int_t iclus = 0; iclus < nCluster; ++iclus ) {
+         TAVTcluster* clus = (TAVTcluster*)track->GetCluster(iclus);
+         TVector3 p_clus = clus->GetPositionG();
          
-         TVector3 slopez = track->GetSlopeZ();
-         fTrackSlopezVt.push_back(slopez);
-         TVector3 origin = track->GetOrigin();
-         fTrackOriginVt.push_back(origin);
+         Int_t nHits = clus->GetPixelsN();
+         TotHits += nHits;
          
-         Float_t nCluster =  track->GetClustersN();
-         fTrackClustersNvt.push_back(nCluster);
-         
-         Int_t TotHits = 0;
-         for( Int_t iclus = 0; iclus < nCluster; ++iclus ) {
-            TAVTcluster* clus = (TAVTcluster*)track->GetCluster(iclus);
-            TVector3 p_clus = clus->GetPositionG();
-            
-            Int_t nHits = clus->GetPixelsN();
-            TotHits += nHits;
-            
-            p_clus = fpFootGeo->FromVTLocalToGlobal(p_clus);
-            fTrackClusPosVt.push_back(p_clus);
-         }
-         fTrackClusHitsNvt.push_back(TotHits);
-         fTrackClusPosVecVt.push_back(fTrackClusPosVt);
-         fTrackClusPosVt.clear();
+         p_clus = fpFootGeo->FromVTLocalToGlobal(p_clus);
+         fTrackClusPosVt.push_back(p_clus);
       }
+      fTrackClusHitsNvt.push_back(TotHits);
+      fTrackClusPosVecVt.push_back(fTrackClusPosVt);
+      fTrackClusPosVt.clear();
    }
 }
 
@@ -980,9 +1028,45 @@ void ConvertNtuple::FillTreeOutIt()
          p_clus = fpFootGeo->FromITLocalToGlobal(p_clus);
          fClusPosIt.push_back(p_clus);
       }
-      fTrackClusPosVecIt.push_back(fClusPosIt);
+      fClusPosVecIt.push_back(fClusPosIt);
       fClusPosIt.clear();
    }
+   
+   if(fFlagItrTrack) {
+      TAITntuTrack* itTrack = (TAITntuTrack*)fpNtuTrackIt->Object();
+      
+      fTracksNit = itTrack->GetTracksN();
+      for( Int_t iTrack = 0; iTrack < itTrack->GetTracksN(); ++iTrack ) {
+         TAITtrack* track = itTrack->GetTrack(iTrack);
+         fTrackIdIt.push_back(iTrack);
+         Float_t Chi2 = track-> GetChi2();
+         fTrackChi2It.push_back(Chi2);
+         
+         TVector3 slopez = track->GetSlopeZ();
+         fTrackSlopezIt.push_back(slopez);
+         TVector3 origin = track->GetOrigin();
+         fTrackOriginIt.push_back(origin);
+         
+         Float_t nCluster =  track->GetClustersN();
+         fTrackClustersNit.push_back(nCluster);
+         
+         Int_t TotHits = 0;
+         for( Int_t iclus = 0; iclus < nCluster; ++iclus ) {
+            TAITcluster* clus = (TAITcluster*)track->GetCluster(iclus);
+            TVector3 p_clus = clus->GetPositionG();
+            
+            Int_t nHits = clus->GetPixelsN();
+            TotHits += nHits;
+            
+            p_clus = fpFootGeo->FromVTLocalToGlobal(p_clus);
+            fTrackClusPosIt.push_back(p_clus);
+         }
+         fTrackClusHitsNit.push_back(TotHits);
+         fTrackClusPosVecIt.push_back(fTrackClusPosVt);
+         fTrackClusPosIt.clear();
+      }
+   }
+
 }
 
 //__________________________________________________________
@@ -1012,6 +1096,41 @@ void ConvertNtuple::FillTreeOutMsd()
          fEnergyLoss2Msd.push_back(edep2);
          fTimeMsd.push_back(time);
          fPosMsd.push_back(posG);
+      }
+   }
+   
+   if(fFlagMsdTrack) {
+      TAMSDntuTrack* itTrack = (TAMSDntuTrack*)fpNtuTrackMsd->Object();
+      
+      fTracksNmsd = itTrack->GetTracksN();
+      for( Int_t iTrack = 0; iTrack < itTrack->GetTracksN(); ++iTrack ) {
+         TAMSDtrack* track = itTrack->GetTrack(iTrack);
+         fTrackIdMsd.push_back(iTrack);
+         Float_t Chi2 = track-> GetChi2();
+         fTrackChi2Msd.push_back(Chi2);
+         
+         TVector3 slopez = track->GetSlopeZ();
+         fTrackSlopezMsd.push_back(slopez);
+         TVector3 origin = track->GetOrigin();
+         fTrackOriginMsd.push_back(origin);
+         
+         Float_t nCluster =  track->GetClustersN();
+         fTrackClustersNmsd.push_back(nCluster);
+         
+         Int_t TotHits = 0;
+         for( Int_t iclus = 0; iclus < nCluster; ++iclus ) {
+            TAMSDcluster* clus = (TAMSDcluster*)track->GetCluster(iclus);
+            TVector3 p_clus = clus->GetPositionG();
+            
+            Int_t nHits = clus->GetStripsN();
+            TotHits += nHits;
+            
+            p_clus = fpFootGeo->FromVTLocalToGlobal(p_clus);
+            fTrackClusPosMsd.push_back(p_clus);
+         }
+         fTrackClusHitsNmsd.push_back(TotHits);
+         fTrackClusPosVecMsd.push_back(fTrackClusPosVt);
+         fTrackClusPosMsd.clear();
       }
    }
 }
