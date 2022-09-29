@@ -1,9 +1,9 @@
 
-#ifndef _BaseReco_HXX_
-#define _BaseReco_HXX_
+#ifndef _ConvertNtuple_HXX_
+#define _ConvertNtuple_HXX_
 
 /*!
- \file BaseReco.hxx
+ \file ConvertNtuple.hxx
  \brief  Base class for reconstruction
  \author Ch. Finck
  */
@@ -13,22 +13,11 @@
 #include "TNamed.h"
 #include "TString.h"
 #include "TFile.h"
+#include "TTree.h"
 
 #include "TAGaction.hxx"
-#include "TAGactTreeWriter.hxx"
 #include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
-
-#include "TAGbaseWDparTime.hxx"
-#include "TAGbaseWDparMap.hxx"
-
-#include "TASTparMap.hxx"
-#include "TABMparMap.hxx"
-#include "TAVTparMap.hxx"
-#include "TAITparMap.hxx"
-#include "TAMSDparMap.hxx"
-#include "TATWparMap.hxx"
-#include "TACAparMap.hxx"
 
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"
@@ -40,101 +29,64 @@
 #include "TATWparGeo.hxx"
 #include "TACAparGeo.hxx"
 
-#include "TADIgenField.hxx"
-#include "TADIgeoField.hxx"
-
-#include "TABMparCal.hxx"
-#include "TAMSDparCal.hxx"
-#include "TATWparCal.hxx"
-#include "TACAparCal.hxx"
-
-#include "TABMparConf.hxx"
-#include "TAVTparConf.hxx"
-#include "TAITparConf.hxx"
-#include "TAMSDparConf.hxx"
-
 #include "TASTntuHit.hxx"
+
 #include "TABMntuHit.hxx"
+#include "TABMntuTrack.hxx"
+
 #include "TAVTntuHit.hxx"
+#include "TAVTntuCluster.hxx"
+#include "TAVTntuTrack.hxx"
+#include "TAVTtrack.hxx"
+#include "TAVTntuVertex.hxx"
+
 #include "TAITntuHit.hxx"
+#include "TAITntuCluster.hxx"
 #include "TAITntuTrack.hxx"
+
 #include "TAMSDntuHit.hxx"
+#include "TAMSDntuCluster.hxx"
 #include "TAMSDntuPoint.hxx"
 #include "TAMSDntuTrack.hxx"
+
+#include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
+
 #include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
-#include "TAIRntuTrack.hxx"
+
 #include "TAGntuGlbTrack.hxx"
 
 #include "TAGactionFile.hxx"
 
-#include "TACAactNtuHit.hxx"
+#include "TAMCntuHit.hxx"
+#include "TAMCntuPart.hxx"
+#include "TAMCntuRegion.hxx"
+#include "TAMCntuEvent.hxx"
 
-#include "TAVTactNtuCluster.hxx"
-#include "TAVTactNtuClusterMT.hxx"
-#include "TAITactNtuCluster.hxx"
-#include "TAITactNtuClusterMT.hxx"
-#include "TAMSDactNtuCluster.hxx"
-#include "TAMSDactNtuPoint.hxx"
-#include "TACAactNtuCluster.hxx"
-#include "TATWactNtuPoint.hxx"
-#include "TATWactCalibTW.hxx"
+using namespace std;
 
-#include "TABMactNtuTrack.hxx"
-#include "TAVTactNtuTrack.hxx"
-#include "TAVTactNtuTrackF.hxx"
-#include "TAITactNtuTrack.hxx"
-#include "TAITactNtuTrackF.hxx"
-#include "TAMSDactNtuTrack.hxx"
-#include "TAMSDactNtuTrackF.hxx"
-
-#include "TAVTactNtuVertex.hxx"
-
-#include "TAGactNtuGlbTrackS.hxx"
-#ifdef TOE_FLAG
-#include "TAGactNtuGlbTrack.hxx"
-#endif
-
-#include "TAGactKFitter.hxx"
-#include "UpdatePDG.hxx"
-
-#include "TAGFtrackingStudies.hxx"
-
-class TAMCntuHit;
-class TAMCntuPart;
-class TAMCntuRegion;
-class TAMCntuEvent;
-
-class BaseReco : public TNamed // using TNamed for the in/out files
+class ConvertNtuple : public TNamed // using TNamed for the in/out files
 {
 public:
    // default constructor
-   BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout);
+   ConvertNtuple(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC = false, TString fileNameMcIn = "", TString treeNameMc = "EventTree");
    
    // default destructor
-   virtual ~BaseReco();
+   virtual ~ConvertNtuple();
    
    // Read parameters
    void ReadParFiles();
-
+   
    // Create raw action
    virtual void CreateRecAction();
    
    //! Create rec action
    virtual void CreateRawAction()      { return; }
    
-   //! Add required items
-   virtual void AddRawRequiredItem()   { return; }
-   
+
    // Add required items
    virtual void AddRecRequiredItem();
-   
-   //! Set raw histogram directory
-   virtual void SetRawHistogramDir()   { return; }
-   
-   // Set rec histogram directory
-   virtual void SetRecHistogramDir();
    
    // Loop events
    virtual void LoopEvent(Int_t nEvents);
@@ -149,22 +101,19 @@ public:
    virtual void AfterEventLoop();
    
    //! Open File In
-   virtual void OpenFileIn()  { return; }
-  
-   // Global Checks
-   virtual void GlobalChecks();
-
-   // Global sets
-   virtual void GlobalSettings();
+   virtual void OpenFileIn();
    
    //! Close File in
-   virtual void CloseFileIn() { return; }
+   virtual void CloseFileIn();
       
    // Open File Out
    virtual void OpenFileOut();
    
    // Close File Out
    virtual void CloseFileOut();
+   
+   // Global sets
+   virtual void GlobalSettings();
    
    // Create branch in tree
    virtual void SetTreeBranches();
@@ -178,108 +127,36 @@ public:
    //! Set run number
    void SetRunNumber(Int_t run)                { fRunNumber = run; }
 
-  void SetRateRuns(Int_t run1, Int_t run2){
-    fRateInitRun=run1;
-    fRateEndRun=run2;
-  }
-
-   //! Enable tree
-   void EnableTree()           { fFlagTree = true;        }
-   //! Disable tree
-   void DisableTree()          { fFlagTree = false;       }
+   // Fill tree out
+   void FillTreeOut();
    
-   //! Enable save hits
-   void EnableSaveHits()       { fFlagHits = true;        }
-   //! Disable save hits
-   void DisableSaveHits()      { fFlagHits = false;       }
-
-   //! Enable Histo
-   void EnableHisto()          { fFlagHisto = true;       }
-   //! Disable Histo
-   void DisableHisto()         { fFlagHisto = false;      }
+   //! Flag for MC data
+   Bool_t IsMcData()           { return fFlagMC;          }
+   
+   // Campaign checks
+   void CampaignChecks();
+   
+   // Add friend tree
+   void AddFriendTree(TString fileName, TString treeName);
    
    //! Enable tracking
    void EnableTracking()       { fFlagTrack = true;       }
    //! Disable tracking
    void DisableTracking()      { fFlagTrack = false;      }
    
-   //! Enable MSD tracking
-   void EnableMsdTracking()    { fFlagMsdTrack = true;    }
-   //! Disable MSD tracking
-   void DisableMsdTracking()   { fFlagMsdTrack = false;   }
+//   //! Enable MSD tracking
+//   void EnableMsdTracking()    { fFlagMsdTrack = true;    }
+//   //! Disable MSD tracking
+//   void DisableMsdTracking()   { fFlagMsdTrack = false;   }
+//   
+//   //! Enable ITR tracking
+//   void EnableItrTracking()    { fFlagItrTrack = true;    }
+//   //! Disable ITR tracking
+//   void DisableItrTracking()   { fFlagItrTrack = false;   }
    
-   //! Enable ITR tracking
-   void EnableItrTracking()    { fFlagItrTrack = true;    }
-   //! Disable ITR tracking
-   void DisableItrTracking()   { fFlagItrTrack = false;   }
-   
-   //! Enable TW calibration per bar
-   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
-   //! Disable TW calibration per bar
-   void DisableTWcalibPerBar() { fFlagTWbarCalib = false; }
-
-   //! Enable using true MC charge for TW
-   void EnableZfromMCtrue()    { fFlagZtrueMC = true;     }
-   //! Disable using true MC charge for TW
-   void DisableZfromMCtrue()   { fFlagZtrueMC = false;    }
-
-   //! Enable Z reconstruction with pileup off for TW
-   void EnableZrecWithPUoff()  { fFlagZrecPUoff = true;   }
-   //! Disable Z reconstruction with pileup off for TW
-   void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
-  
-   //! Enable Z reconstruction matching for TW
-   void EnableTWZmatch()       { fFlagZmatchTw = true;   }
-   //! Disable Z reconstruction matching for TW
-   void DisableTWZmatch()      { fFlagZmatchTw = false;  }
-
-   //! Enable tw eloss smearing due to rate
-   void EnableTWRateSmearMC()       { fFlagRateSmearTw = true;   }
-   //! DIsable tw eloss smearing due to rate
-   void DisableTWRateSmearMC()      { fFlagRateSmearTw = false;  }
-   
-   //! Enable Reconstruction cutter for TOE
-   void EnableRecCutter()      { fFlagRecCutter = true;   }
-   //! Disable Reconstruction cutter for TOE
-   void DisableRecCutter()     { fFlagRecCutter = false;  }
-
-   //! Enable multi-threading for M28 clustering
-   void DisableM28ClusMT()     { fM28ClusMtFlag = false;  }
-   //! Disable multi-threading for M28 clustering
-   void EnableM28lusMT()       { fM28ClusMtFlag = true;   }
-   //! Check multi-threading for M28 clustering
-   Bool_t IsM28ClusMT()        { return fM28ClusMtFlag;   }
-   
-   //! Enable read L0 hits
-   void EnableReadL0Hits()     { fReadL0Hits = true;      }
-   //! Disable read L0 hits
-   void DisableReadL0Hits()    { fReadL0Hits = false;     }
-   //! Check read L0 hits
-   Bool_t IsReadL0Hits()       { return fReadL0Hits;      }
-
-   //! Flag for MC data
-   Bool_t IsMcData()           { return fFlagMC;          }
-   
-   // Set Vtx Tracking algorithm
-   void SetVtxTrackingAlgo(char c);
-   
-   // Set Itr Tracking algorithm
-   void SetItrTrackingAlgo(char c);
-   
-   // Set Msd Tracking algorithm
-   void SetMsdTrackingAlgo(char c);
-  
-   // Campaign checks
-   void CampaignChecks();
-   
-   // Add friend tree
-   void AddFriendTree(TString fileName, TString treeName);
-
    // Par geo getters
    //! Get parameters geo transformations
    TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
-   //! Get dipole geometry parameters
-   TADIparGeo*          GetParGeoDi()       const { return (TADIparGeo*)fpParGeoDi->Object();        }
    //! Get STC geometry parameters
    TASTparGeo*          GetParGeoSt()       const { return (TASTparGeo*)fpParGeoSt->Object();        }
    //! Get target geometry parameters
@@ -338,8 +215,6 @@ public:
 
    //! Get global tracks containers
    TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
-   //! Get field
-   TADIgeoField*        GetFootField()      const { return fField;                                   }
    
    // MC container Getter
    //! MC event container Getter
@@ -373,29 +248,19 @@ public:
    static Bool_t IsSaveMc()    { return fSaveMcFlag;  }
    
 protected:
-
    TString               fExpName;        ///< Experiment name
    TAGcampaignManager*   fCampManager;    ///< Campaign manager
    Int_t                 fRunNumber;      ///< Run number
+   Int_t                 fSkipEventsN;    ///< Skipped events
    TAGroot*              fTAGroot;        ///< pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;       ///< trafo prointer
+   TFile*                fActEvtWriter;   ///< File writer
+   TTree*                fTreeOut;        ///< Flay Ntuple out
    TString               fFriendFileName; ///< Friend file name
    TString               fFriendTreeName; ///< Friend tree name
 
-   TAGparaDsc*           fpParTimeWD;     ///< WD time parameter
-
-   TAGparaDsc*           fpParMapWD;      ///< WD mapping parameter
-   TAGparaDsc*           fpParMapSt;      ///< STC mapping parameter
-   TAGparaDsc*           fpParMapBm;      ///< BM mapping parameter
-   TAGparaDsc*           fpParMapVtx;     ///< VTX mapping parameter
-   TAGparaDsc*           fpParMapIt;      ///< ITR mapping parameter
-   TAGparaDsc*           fpParMapMsd;     ///< MSD mapping parameter
-   TAGparaDsc*           fpParMapTw;      ///< TW mapping parameter
-   TAGparaDsc*           fpParMapCa;      ///< CAL mapping parameter
-
    TAGparaDsc*           fpParGeoSt;      ///< STC geometry parameter
    TAGparaDsc*           fpParGeoG;       ///< Beam/target geometry parameter
-   TAGparaDsc*           fpParGeoDi;      ///< Dipole geometry parameter
    TAGparaDsc*           fpParGeoBm;      ///< BM geometry parameter
    TAGparaDsc*           fpParGeoVtx;     ///< VTX geometry parameter
    TAGparaDsc*           fpParGeoIt;      ///< ITR geometry parameter
@@ -403,27 +268,12 @@ protected:
    TAGparaDsc*           fpParGeoTw;      ///< TW geometry parameter
    TAGparaDsc*           fpParGeoCa;      ///< CAL geometry parameter
    
-   TAGparaDsc*           fpParCalBm;      ///< BM calibration parameter
-   TAGparaDsc*           fpParCalMsd;     ///< MSD calibration parameter
-   TAGparaDsc*           fpParCalTw;      ///< TW calibration parameter
-   TAGparaDsc*           fpParCalCa;      ///< CAL calibration parameter
-
-   TAGparaDsc*           fpParConfBm;     ///< BM configuration parameter
-   TAGparaDsc*           fpParConfVtx;    ///< VTX configuration parameter
-   TAGparaDsc*           fpParConfIt;     ///< ITR configuration parameter
-   TAGparaDsc*           fpParConfMsd;    ///< MSD configuration parameter
-   
-   TAGdataDsc*           fpDatRawSt;     ///< Raw hit input dsc for STC
    TAGdataDsc*           fpNtuHitSt;     ///< Hit input dsc for STC
-   TAGdataDsc*           fpDatRawBm;     ///< Raw hit input dsc for BM
    TAGdataDsc*           fpNtuHitBm;     ///< Hit input dsc for STC
    TAGdataDsc*           fpNtuHitVtx;    ///< Hit input dsc for VTX
    TAGdataDsc*           fpNtuHitIt;     ///< Hit input dsc for ITR
-   TAGdataDsc*           fpDatRawMsd;    ///< Raw hit input dsc for MSD
    TAGdataDsc*           fpNtuHitMsd;    ///< Hit input dsc for MSD
-   TAGdataDsc*           fpDatRawTw;     ///< Raw hit input dsc for TW
    TAGdataDsc*           fpNtuHitTw;     ///< Hit input dsc for TW
-   TAGdataDsc*           fpDatRawCa;     ///< Raw hit input dsc for CAL
    TAGdataDsc*           fpNtuHitCa;     ///< Hit input dsc for CAL
 
    TAGdataDsc*           fpNtuClusVtx;	  ///< input cluster data dsc for VTX
@@ -444,72 +294,126 @@ protected:
    TAGdataDsc*           fpNtuMcTw;      ///< input MC dsc for TW
    TAGdataDsc*           fpNtuMcCa;      ///< input MC dsc for CAL
   
-   TADIgeoField*         fField;         ///< magnetic field
-
    TAGdataDsc*           fpNtuTrackBm;   ///< input track data dsc for BM
    TAGdataDsc*           fpNtuTrackVtx;  ///< input track data dsc for VTX
    TAGdataDsc*           fpNtuTrackIt;   ///< input track data dsc for ITR
    TAGdataDsc*           fpNtuTrackMsd;  ///< input track data dsc for MSD
    TAGdataDsc*           fpNtuVtx;       ///< input Vtx data dsc for VTX
-
+   
    TAGdataDsc*           fpNtuGlbTrack;  ///< input data dsc global track TOE/GenFit
    
    TAGactionFile*        fActEvtReader;  ///< Tree/event reader
-   TAGactTreeWriter*     fActEvtWriter;  ///< write histo and tree
-
-   TABMactNtuTrack*      fActTrackBm;    ///< action for tracks
    
-   TAGaction*            fActClusVtx;    ///< action for VTX clusters
-   TAVTactBaseNtuTrack*  fActTrackVtx;   ///< action for VTX tracks
-   TAVTactBaseNtuVertex* fActVtx;        ///< action for VTX vertex
    
-   TAGaction*            fActClusIt;     ///< action for ITR clusters
-   TAVTactBaseNtuTrack*  fActTrackIt;    ///< action for ITR tracks
-
-   TAMSDactNtuCluster*   fActClusMsd;    ///< action for MSD clusters
-   TAMSDactNtuPoint*     fActPointMsd;   ///< action for MSD points
-   TAVTactBaseNtuTrack*  fActTrackMsd;   ///< action for MSD tracsk
-
-   TATWactNtuPoint*      fActPointTw;    ///< action for TW points
-   TATWactCalibTW*       fActCalibTw;    ///< action for TW calibration
-
-   TACAactNtuCluster*    fActClusCa;     ///< action for clusters
-   TACAactNtuHit*        fActNtuHitCa;   ///< action for hit
-
-#ifdef TOE_FLAG
-   TAGactNtuGlbTrack*    fActGlbTrack;   ///< Global tracking action
-#endif
-   TAGactNtuGlbTrackS*   fActGlbTrackS;  ///< action for straight tracks
-  
-   TAGactKFitter*        fActGlbkFitter; ///< Global tracking kalman Fitter
-   TAGFtrackingStudies*  fActGlbTrackStudies;    ///< Global tracking studies with GenFit
-
    Bool_t                fFlagOut;          ///< flag for output file
-   Bool_t                fFlagTree;         ///< flag to save in tree
-   Bool_t                fFlagHits;         ///< flag to save hits in tree
-   Bool_t                fFlagHisto;        ///< flag for histo generatiom
    Bool_t                fFlagTrack;        ///< flag for tracking
-   Bool_t                fFlagMsdTrack;     ///< flag for MSD tracking
-   Bool_t                fFlagItrTrack;     ///< flag for ITR tracking
-   Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar
-   TString               fgVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
-   Bool_t                fFlagZtrueMC;      ///< Z true MC flag
-   Bool_t                fFlagZrecPUoff;    ///< Z rec TW PU off flag
-   Bool_t                fFlagZmatchTw;     ///< TW Z match
-   Bool_t                fFlagRateSmearTw;  ///< TW eloss emaring due to rate
-
    Bool_t                fFlagMC;           ///< MC flag
    Bool_t                fReadL0Hits;       ///< read back hits
-   Bool_t                fM28ClusMtFlag;    ///< flag for multi-threading clustering
-   Bool_t                fFlagRecCutter;    ///< cutter flag for TOE Glb reco
-   Int_t                 fSkipEventsN;      ///< number of events to skip
 
-   Int_t                 fRateInitRun;      ///< Number of run for rate info importing (MC)
-   Int_t                 fRateEndRun;       ///< Number of run for rate info importing (MC)
+   //Output fields
+   //ST
+   Int_t                 fHitsNst;
+   vector<float>         fChargeSt;
+   vector<float>         fTimeSt;
+   vector<TVector3>      fPosSt;
+   
+   //BM
+   Int_t                 fTracksNbm;
+   vector<int>           fTrackIdBm;
+   vector<TVector3>      fPversBm;
+   vector<TVector3>      fR0Bm;
+   vector<float>         fTrackChi2Bm;
 
-  
+   //VTX
+   Int_t                fTracksNvt;
+   vector<int>          fTrackIdVt;
+   vector<TVector3>     fTrackClusPosVt;
+   vector<TVector3>     fTrackSlopezVt;
+   vector<TVector3>     fTrackOriginVt;
+   vector<vector<TVector3> > fTrackClusPosVecVt;
+   
+   vector<int>          fTrackClustersNvt;
+   vector<int>          fTrackClusHitsNvt;
+   vector<float>        fTrackChi2Vt;
+   
+   Int_t                fVextexNvt;
+   vector<TVector3>     fVertexPosVt;
+   
+   //ITR
+   vector<int>          fSensorIdIt;
+   vector<int>          fClustersNit;
+   vector<TVector3>     fClusPosIt;
+   vector<vector<TVector3> > fTrackClusPosVecIt;
+   
+   
+   //MSD
+   vector<int>          fStationIdMsd;
+   vector<int>          fPointsNmsd;
+   vector<double>       fEnergyLoss1Msd;
+   vector<double>       fEnergyLoss2Msd;
+   vector<double>       fTimeMsd;
+   vector<TVector3>     fPosMsd;
+   
+   //TW
+   Int_t                fPointsNtw;
+   vector<double>       fEnergyLossTw;
+   vector<double>       fTimeTw;
+   vector<TVector3>     fPosTw;
+   vector<double>       fChargeZTw;
+   
+   //CA
+   Int_t                fClustersNca;
+   vector<double>       fEnergyCa;
+   vector<TVector3>     fPosCa;
+
+   //Glb track
+   vector<Long64_t>     fEvtNumberGlb;      ///< event number
+   vector<int>          fPdgIdGlb;          ///< PDG Id used in the fit
+   vector<double>       fLengthGlb;         ///< track length from target to TW
+   vector<double>       fChi2Glb;           ///< Chi2 of the fitted track
+   vector<Int_t>        fNdofGlb;           ///< number of freedom of the fitted track
+   vector<double>       fPvalGlb;           ///< p-Value of the fitted track
+   vector<double>       fQualityGlb;        ///< quality factor of the fitted track
+   
+   vector<double>       fMassGlb;           ///< Initial mass
+   vector<double>       fMomModuleGlb;      ///< Momentum module
+   vector<int>          fTwChargeZGlb;      ///< TW atomic charge Z
+   vector<double>       fTwTofGlb;          ///< TW time of flight
+   vector<double>       fCalEnergyGlb;      ///< CAL energy (loss)
+   vector<int>          fTrkIdGlb;          ///< track absolute Id
+   
+   vector<double>       fFitMassGlb;         ///< fitted mass
+   vector<int>          fFitChargeZGlb;      ///< fitted charge Z
+   vector<double>       fFitTofGlb;          ///< fitted time of flight
+   vector<double>       fFitEnergyLossGlb;   ///< fitted energy loss
+   vector<double>       fFitEnergyGlb;       ///< fitted energy
+   
+   //Particle momentum and positions computed on target middle
+   vector<TVector3>     fTgtDirGlb;          ///< Direction of particle at target
+   vector<TVector3>     fTgtPosGlb;          ///< Position of particle at target
+   vector<TVector3>     fTgtPosErrorGlb;     ///< Position error of particle at target
+   vector<TVector3>     fTgtMomGlb;          ///< Momentum of particle at target
+   vector<TVector3>     fTgtMomErrorGlb;     ///< Momentum error of particle at target
+   
+   //Particle momentum and positions computed on TW Wall
+   vector<TVector3>     fTwPosGlb;           ///< Position of particle at TW
+   vector<TVector3>     fTwPosErrorGlb;      ///< Position error of particle at TW
+   vector<TVector3>     fTwMomGlb;           ///< Momentum of particle at TW
+   vector<TVector3>     fTwMomErrorGlb;      ///< Momentum error of particle at TW
+
+   //MC
+   Int_t                fPartsNmc;
+   vector<double>       fPartChargeMc;
+   vector<double>       fPartMassMc;
+   vector<double>       fPartTofMc;
+   vector<double>       fPartLengthMc;
+   vector<float>        fPartInPosxMc;
+   vector<float>        fPartInPosyMc;
+   vector<float>        fPartInPoszMc;
+   vector<float>        fPartOutPosxMc;
+   vector<float>        fPartOutPosyMc;
+   vector<float>        fPartOutPoszMc;
+
  protected:
    // Create reconstruction action for BM
    void CreateRecActionBm();
@@ -525,17 +429,35 @@ protected:
    void CreateRecActionCa();
    // Create reconstruction action for global tracks with TOE
    void CreateRecActionGlb();
-   // Create reconstruction action for global tracks with GenFit
-   void CreateRecActionGlbGF();
-   // Create reconstruction action for global straight tracks
-   void CreateRecActionGlbS();
-
+   
+   // Fill tree Out ST
+   void FillTreeOutSt();
+   // Fill tree Out BM
+   void FillTreeOutBm();
+   // Fill tree Out VT
+   void FillTreeOutVt();
+   // Fill tree Out IT
+   void FillTreeOutIt();
+   // Fill tree Out MSD
+   void FillTreeOutMsd();
+   // Fill tree Out TW
+   void FillTreeOutTw();
+   // Fill tree Out CA
+   void FillTreeOutCa();
+   // Fill tree Out Glb
+   void FillTreeOutGlb();
+   // Fill tree Out MC
+   void FillTreeOutMc();
+   
+   // Reset items in tree out
+   void ResetTreeOut();
+   
 protected:
    static Bool_t fgItrTrackFlag; ///< ITR tracking flag
    static Bool_t fgMsdTrackFlag; ///< MSD tracking flag
    static Bool_t fSaveMcFlag;    ///< MC saving flag
 
-   ClassDef(BaseReco, 1);        ///< Base class for reconstruction
+   ClassDef(ConvertNtuple, 1);        ///< Base class for reconstruction
 };
 
 

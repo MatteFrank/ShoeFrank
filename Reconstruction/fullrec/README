@@ -86,3 +86,6 @@ Reverse Tracking:   false
 . . .
 - command:
 DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+
+4) Convert recontructed tree into a flat Ntpule (std::vector)
+ConvertNtuple -in run4313_Out.root -out run4313_FlatOut.root -nev 10000 -exp GSI2021 -run 4313 (-mc)
