@@ -167,7 +167,6 @@ void ConvertNtuple::CampaignChecks()
    }
 }
 
-
 //__________________________________________________________
 //! Add friend tree in root file
 //!
@@ -196,7 +195,6 @@ void ConvertNtuple::BeforeEventLoop()
    AddRecRequiredItem();
    
    OpenFileIn();
-   
    
    if (fFlagOut)
       OpenFileOut();
@@ -398,7 +396,7 @@ void ConvertNtuple::GlobalSettings()
 }
 
 //__________________________________________________________
-//! Create reconstruction actions
+//! Create reconstruction containers
 void ConvertNtuple::CreateRecAction()
 {
    if (TAGrecoManager::GetPar()->IncludeBM())
@@ -424,7 +422,7 @@ void ConvertNtuple::CreateRecAction()
 }
 
 //__________________________________________________________
-//! Create BM reconstruction actions
+//! Create BM reconstruction containers
 void ConvertNtuple::CreateRecActionBm()
 {
    if(fFlagTrack)
@@ -432,7 +430,7 @@ void ConvertNtuple::CreateRecActionBm()
 }
 
 //__________________________________________________________
-//! Create VTX reconstruction actions
+//! Create VTX reconstruction containers
 void ConvertNtuple::CreateRecActionVtx()
 {
    if(fFlagTrack) {
@@ -446,7 +444,7 @@ void ConvertNtuple::CreateRecActionVtx()
 }
 
 //__________________________________________________________
-//! Create ITR reconstruction actions
+//! Create ITR reconstruction containers
 void ConvertNtuple::CreateRecActionIt()
 {
    fpNtuClusIt = new TAGdataDsc("itClus", new TAITntuCluster());
@@ -457,7 +455,7 @@ void ConvertNtuple::CreateRecActionIt()
 }
 
 //__________________________________________________________
-//! Create MSD reconstruction actions
+//! Create MSD reconstruction containers
 void ConvertNtuple::CreateRecActionMsd()
 {
    fpNtuClusMsd = new TAGdataDsc("msdClus", new TAMSDntuCluster());
@@ -471,21 +469,21 @@ void ConvertNtuple::CreateRecActionMsd()
 }
 
 //__________________________________________________________
-//! Create TW reconstruction actions
+//! Create TW reconstruction containers
 void ConvertNtuple::CreateRecActionTw()
 {
    fpNtuRecTw = new TAGdataDsc("twPoint", new TATWntuPoint());
 }
 
 //__________________________________________________________
-//! Create CAL reconstruction actions
+//! Create CAL reconstruction containers
 void ConvertNtuple::CreateRecActionCa()
 {
    fpNtuClusCa = new TAGdataDsc("caClus", new TACAntuCluster());
 }
 
 //__________________________________________________________
-//! Create global track reconstruction TOE action
+//! Create global track reconstruction containers
 void ConvertNtuple::CreateRecActionGlb()
 {
    if(fFlagTrack)
@@ -905,7 +903,7 @@ void ConvertNtuple::FillTreeOut()
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill ST tree Out
 void ConvertNtuple::FillTreeOutSt()
 {
    TASTntuHit* stHits = (TASTntuHit*) fpNtuHitSt->Object();
@@ -929,7 +927,7 @@ void ConvertNtuple::FillTreeOutSt()
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill BM tree Out
 void ConvertNtuple::FillTreeOutBm()
 {
    ///Track in BM
@@ -942,8 +940,8 @@ void ConvertNtuple::FillTreeOutBm()
       fTrackIdBm.push_back(iTrack);
       
       TABMtrack* track = bmTrack->GetTrack(iTrack);
-      TVector3 Pvers  = track->GetSlope();  //direction of the track from mylar1_pos to mylar2_pos
-      TVector3 R0     = track->GetOrigin();              //position of the track on the xy plane at z=0
+      TVector3 Pvers  = track->GetSlope();
+      TVector3 R0     = track->GetOrigin(); 
       Double_t mychi2 = track->GetChiSquare();
       
       fTrackChi2Bm.push_back(mychi2);
@@ -954,7 +952,7 @@ void ConvertNtuple::FillTreeOutBm()
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill VTX tree Out
 void ConvertNtuple::FillTreeOutVt()
 {
    //  ///Vertex collection
@@ -1010,7 +1008,7 @@ void ConvertNtuple::FillTreeOutVt()
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill ITR tree Out
 void ConvertNtuple::FillTreeOutIt()
 {
    TAITntuCluster* itClus = (TAITntuCluster*) fpNtuClusIt->Object();
@@ -1066,11 +1064,10 @@ void ConvertNtuple::FillTreeOutIt()
          fTrackClusPosIt.clear();
       }
    }
-
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill MSD tree Out
 void ConvertNtuple::FillTreeOutMsd()
 {
    TAMSDntuPoint* msPoint = (TAMSDntuPoint*) fpNtuRecMsd->Object();
@@ -1136,7 +1133,7 @@ void ConvertNtuple::FillTreeOutMsd()
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill TW tree Out
 void ConvertNtuple::FillTreeOutTw()
 {
    TATWntuPoint* twPoint = (TATWntuPoint*) fpNtuRecTw->Object();
@@ -1160,7 +1157,7 @@ void ConvertNtuple::FillTreeOutTw()
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill CAL tree Out
 void ConvertNtuple::FillTreeOutCa()
 {
    TACAntuCluster* cluster = (TACAntuCluster*) fpNtuClusCa->Object();
@@ -1181,7 +1178,7 @@ void ConvertNtuple::FillTreeOutCa()
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill GLB tree Out
 void ConvertNtuple::FillTreeOutGlb()
 {
    // Glb Track
@@ -1279,7 +1276,7 @@ void ConvertNtuple::FillTreeOutGlb()
 }
 
 //__________________________________________________________
-//! Fill tree Out
+//! Fill MC tree Out
 void ConvertNtuple::FillTreeOutMc()
 {
    //truth track coll
@@ -1305,7 +1302,7 @@ void ConvertNtuple::FillTreeOutMc()
       fPartOutPosyMc.push_back(FinalPos.y());
       fPartOutPoszMc.push_back(FinalPos.z());
       
-      Double_t tof       =  track->GetTof();              // time of flight
+      Double_t tof       =  track->GetTof();
       Double_t trkLength =  track->GetTrkLength();
       
       fPartTofMc.push_back(tof);

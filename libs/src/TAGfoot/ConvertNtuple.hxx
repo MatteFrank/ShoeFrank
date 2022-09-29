@@ -305,86 +305,86 @@ protected:
    TAGactionFile*        fActEvtReader;  ///< Tree/event reader
    
    
-   Bool_t                fFlagOut;          ///< flag for output file
-   Bool_t                fFlagTrack;        ///< flag for tracking
-   Bool_t                fFlagMsdTrack;     ///< flag for MSD tracking
-   Bool_t                fFlagItrTrack;     ///< flag for ITR tracking
-   Bool_t                fFlagMC;           ///< MC flag
-   Bool_t                fReadL0Hits;       ///< read back hits
+   Bool_t                fFlagOut;       ///< flag for output file
+   Bool_t                fFlagTrack;     ///< flag for tracking
+   Bool_t                fFlagMsdTrack;  ///< flag for MSD tracking
+   Bool_t                fFlagItrTrack;  ///< flag for ITR tracking
+   Bool_t                fFlagMC;        ///< MC flag
+   Bool_t                fReadL0Hits;    ///< read back hits
 
    //Output fields
    //ST
-   Int_t                 fHitsNst;
-   vector<float>         fChargeSt;
-   vector<float>         fTimeSt;
-   vector<TVector3>      fPosSt;
+   Int_t                 fHitsNst;       ///< ST hit number
+   vector<float>         fChargeSt;      ///< ST charge
+   vector<float>         fTimeSt;        ///< ST time
+   vector<TVector3>      fPosSt;         ///< ST position
    
    //BM
-   Int_t                 fTracksNbm;
-   vector<int>           fTrackIdBm;
-   vector<TVector3>      fPversBm;
-   vector<TVector3>      fR0Bm;
-   vector<float>         fTrackChi2Bm;
+   Int_t                 fTracksNbm;     ///< BM track number
+   vector<int>           fTrackIdBm;     ///< BM track id
+   vector<TVector3>      fPversBm;       ///< BM track slope
+   vector<TVector3>      fR0Bm;          ///< BM track origin
+   vector<float>         fTrackChi2Bm;   ///< BM track chi2
 
    //VTX
-   Int_t                fTracksNvt;
-   vector<int>          fTrackIdVt;
-   vector<TVector3>     fTrackClusPosVt;
-   vector<TVector3>     fTrackSlopezVt;
-   vector<TVector3>     fTrackOriginVt;
-   vector<vector<TVector3> > fTrackClusPosVecVt;
-   vector<int>          fTrackClustersNvt;
-   vector<int>          fTrackClusHitsNvt;
-   vector<float>        fTrackChi2Vt;
+   Int_t                fTracksNvt;              ///< VTX track number
+   vector<int>          fTrackIdVt;              ///< VTX track id
+   vector<TVector3>     fTrackClusPosVt;         ///< VTX track position
+   vector<TVector3>     fTrackSlopezVt;          ///< VTX track slope
+   vector<TVector3>     fTrackOriginVt;          ///< VTX track origin
+   vector<vector<TVector3> > fTrackClusPosVecVt; ///< VTX cluster track position
+   vector<int>          fTrackClustersNvt;       ///< VTX cluster track number
+   vector<int>          fTrackClusHitsNvt;       ///< VTX hit cluster track number
+   vector<float>        fTrackChi2Vt;            ///< VTX track Chi2
    
-   Int_t                fVextexNvt;
-   vector<TVector3>     fVertexPosVt;
+   Int_t                fVextexNvt;              ///< VTX vertice number
+   vector<TVector3>     fVertexPosVt;            ///< VTX vertice position
    
    //ITR
-   vector<int>          fSensorIdIt;
-   vector<int>          fClustersNit;
-   vector<TVector3>     fClusPosIt;
-   vector<vector<TVector3> > fClusPosVecIt;
+   vector<int>          fSensorIdIt;             ///< ITR sensor id
+   vector<int>          fClustersNit;            ///< ITR cluster number
+   vector<TVector3>     fClusPosIt;              ///< ITR cluster position
+   vector<vector<TVector3> > fClusPosVecIt;      ///< ITR cluster position vector
    
-   Int_t                fTracksNit;
-   vector<int>          fTrackIdIt;
-   vector<TVector3>     fTrackClusPosIt;
-   vector<TVector3>     fTrackSlopezIt;
-   vector<TVector3>     fTrackOriginIt;
-   vector<vector<TVector3> > fTrackClusPosVecIt;
-   vector<int>          fTrackClustersNit;
-   vector<int>          fTrackClusHitsNit;
-   vector<float>        fTrackChi2It;
+   Int_t                fTracksNit;              ///< ITR track number
+   vector<int>          fTrackIdIt;              ///< ITR track id
+   vector<TVector3>     fTrackClusPosIt;         ///< ITR track position
+   vector<TVector3>     fTrackSlopezIt;          ///< ITR track slope
+   vector<TVector3>     fTrackOriginIt;          ///< ITR track origin
+   vector<vector<TVector3> > fTrackClusPosVecIt; ///< ITR cluster track posi
+   vector<int>          fTrackClustersNit;       ///< ITR cluster track numb
+   vector<int>          fTrackClusHitsNit;       ///< ITR hit cluster track
+   vector<float>        fTrackChi2It;            ///< ITR track Chi2
    
    //MSD
-   vector<int>          fStationIdMsd;
-   vector<int>          fPointsNmsd;
-   vector<double>       fEnergyLoss1Msd;
-   vector<double>       fEnergyLoss2Msd;
-   vector<double>       fTimeMsd;
-   vector<TVector3>     fPosMsd;
+   vector<int>          fStationIdMsd;           ///< MSD station id
+   vector<int>          fPointsNmsd;             ///< MSD point number
+   vector<double>       fEnergyLoss1Msd;         ///< MSD point energy loss position
+   vector<double>       fEnergyLoss2Msd;         ///< MSD point energy loss position
+   vector<double>       fTimeMsd;                ///< MSD point time
+   vector<TVector3>     fPosMsd;                 ///< MSD point position
    
-   Int_t                fTracksNmsd;
-   vector<int>          fTrackIdMsd;
-   vector<TVector3>     fTrackClusPosMsd;
-   vector<TVector3>     fTrackSlopezMsd;
-   vector<TVector3>     fTrackOriginMsd;
-   vector<vector<TVector3> > fTrackClusPosVecMsd;
-   vector<int>          fTrackClustersNmsd;
-   vector<int>          fTrackClusHitsNmsd;
-   vector<float>        fTrackChi2Msd;
+   Int_t                fTracksNmsd;             ///< MSD track number
+   vector<int>          fTrackIdMsd;             ///< MSD track id
+   vector<TVector3>     fTrackClusPosMsd;        ///< MSD track position
+   vector<TVector3>     fTrackSlopezMsd;         ///< MSD track slope
+   vector<TVector3>     fTrackOriginMsd;         ///< MSD track origin
+   vector<vector<TVector3> > fTrackClusPosVecMsd;///< MSD cluster track p
+   vector<int>          fTrackClustersNmsd;      ///< MSD cluster track n
+   vector<int>          fTrackClusHitsNmsd;      ///< MSD hit cluster tra
+   vector<float>        fTrackChi2Msd;           ///< MSD track Chi2
    
    //TW
-   Int_t                fPointsNtw;
-   vector<double>       fEnergyLossTw;
-   vector<double>       fTimeTw;
-   vector<TVector3>     fPosTw;
-   vector<double>       fChargeZTw;
+   Int_t                fPointsNtw;              ///< TW point number
+   vector<double>       fEnergyLossTw;           ///< TW point energy loss
+   vector<double>       fTimeTw;                 ///< TW point time
+   vector<TVector3>     fPosTw;                  ///< TW point position
+   vector<double>       fChargeZTw;              ///< TW point charge Z
    
    //CA
-   Int_t                fClustersNca;
-   vector<double>       fEnergyCa;
-   vector<TVector3>     fPosCa;
+   Int_t                fClustersNca;            ///< CAL cluster number
+   vector<double>       fEnergyCa;               ///< CAL cluster energy
+   vector<TVector3>     fPosCa;                  ///< CAL cluster position
 
    //Glb track
    vector<Long64_t>     fEvtNumberGlb;      ///< event number
@@ -422,17 +422,17 @@ protected:
    vector<TVector3>     fTwMomErrorGlb;      ///< Momentum error of particle at TW
 
    //MC
-   Int_t                fPartsNmc;
-   vector<double>       fPartChargeMc;
-   vector<double>       fPartMassMc;
-   vector<double>       fPartTofMc;
-   vector<double>       fPartLengthMc;
-   vector<float>        fPartInPosxMc;
-   vector<float>        fPartInPosyMc;
-   vector<float>        fPartInPoszMc;
-   vector<float>        fPartOutPosxMc;
-   vector<float>        fPartOutPosyMc;
-   vector<float>        fPartOutPoszMc;
+   Int_t                fPartsNmc;           ///< particle number
+   vector<double>       fPartChargeMc;       ///< particle charge
+   vector<double>       fPartMassMc;         ///< particle mass
+   vector<double>       fPartTofMc;          ///< particle tof
+   vector<double>       fPartLengthMc;       ///< particle length
+   vector<float>        fPartInPosxMc;       ///< particle input position x
+   vector<float>        fPartInPosyMc;       ///< particle input position y
+   vector<float>        fPartInPoszMc;       ///< particle input position z
+   vector<float>        fPartOutPosxMc;      ///< particle output position x
+   vector<float>        fPartOutPosyMc;      ///< particle output position y
+   vector<float>        fPartOutPoszMc;      ///< particle output position z
 
  protected:
    // Create reconstruction action for BM
