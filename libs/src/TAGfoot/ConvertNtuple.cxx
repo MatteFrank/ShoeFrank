@@ -510,13 +510,13 @@ void ConvertNtuple::SetL0TreeBranches()
       fActEvtReader->SetupBranch(fpNtuHitSt,TASTntuHit::GetBranchName());
    }
    
-   if (TAGrecoManager::GetPar()->IncludeBM())
+   if (TAGrecoManager::GetPar()->IncludeBM() && fFlagTrack)
       fActEvtReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
    
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT() && fFlagTrack) {
       fActEvtReader->SetupBranch(fpNtuTrackVtx,  TAVTntuTrack::GetBranchName());
       fActEvtReader->SetupBranch(fpNtuClusVtx,   TAVTntuCluster::GetBranchName());
-      fActEvtReader->SetupBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+      fActEvtReader->SetupBranch(fpNtuVtx,       TAVTntuVertex::GetBranchName());
    }
    
    if (TAGrecoManager::GetPar()->IncludeIT()) {
@@ -604,14 +604,14 @@ void ConvertNtuple::SetTreeBranches()
       fTreeOut->Branch("st_pos",              &fPosSt );
    }
    
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM() && fFlagTrack) {
       fTreeOut->Branch("bm_trk_n",            &fTracksNbm );
       fTreeOut->Branch("bm_trk_chi2",         &fTrackChi2Bm );
       fTreeOut->Branch("bm_Pvers",            &fPversBm );
       fTreeOut->Branch("bm_R0",               &fR0Bm );
    }
    
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT() && fFlagTrack) {
       fTreeOut->Branch("vertex_n",            &fVextexNvt );
       fTreeOut->Branch("vertex_Pos",          &fVertexPosVt );
       
@@ -629,7 +629,7 @@ void ConvertNtuple::SetTreeBranches()
       fTreeOut->Branch("it_clus_n",           &fClustersNit );
       fTreeOut->Branch("vt_clus_pos_vec",     &fClusPosVecIt );
       
-      if(fFlagItrTrack) {
+      if(fFlagItrTrack && fFlagTrack) {
          fTreeOut->Branch("it_trk_n",            &fTracksNit );
          fTreeOut->Branch("it_trk_chi2",         &fTrackChi2It );
          fTreeOut->Branch("it_trk_slopez",       &fTrackSlopezIt );
@@ -648,7 +648,7 @@ void ConvertNtuple::SetTreeBranches()
       fTreeOut->Branch("msd_eloss2",          &fEnergyLoss2Msd);
       fTreeOut->Branch("msd_pos",             &fPosMsd );
       
-      if(fFlagMsdTrack) {
+      if(fFlagMsdTrack && fFlagTrack) {
          fTreeOut->Branch("msd_trk_n",            &fTracksNmsd );
          fTreeOut->Branch("msd_trk_chi2",         &fTrackChi2Msd );
          fTreeOut->Branch("msd_trk_slopez",       &fTrackSlopezMsd );
@@ -735,7 +735,7 @@ void ConvertNtuple::ResetTreeOut()
    }
    
    //BM
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeBM() && fFlagTrack) {
       fTracksNbm = 0;
       fTrackIdBm.clear();
       fPversBm.clear();
@@ -744,7 +744,7 @@ void ConvertNtuple::ResetTreeOut()
    }
    
    //VTX
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
+   if (TAGrecoManager::GetPar()->IncludeVT() && fFlagTrack) {
       fTracksNvt = 0;
       fTrackIdVt.clear();
       fTrackClusPosVt.clear();
@@ -766,7 +766,7 @@ void ConvertNtuple::ResetTreeOut()
       fClusPosIt.clear();
       fClusPosVecIt.clear();
       
-      if(fFlagItrTrack) {
+      if(fFlagItrTrack && fFlagTrack) {
          fTracksNit = 0;
          fTrackIdIt.clear();
          fTrackClusPosIt.clear();
@@ -788,7 +788,7 @@ void ConvertNtuple::ResetTreeOut()
       fTimeMsd.clear();
       fPosMsd.clear();
       
-      if(fFlagMsdTrack) {
+      if(fFlagMsdTrack && fFlagTrack) {
          fTracksNmsd = 0;
          fTrackIdMsd.clear();
          fTrackClusPosMsd.clear();
@@ -879,10 +879,10 @@ void ConvertNtuple::FillTreeOut()
    if (TAGrecoManager::GetPar()->IncludeST())
       FillTreeOutSt();
    
-   if (TAGrecoManager::GetPar()->IncludeBM())
+   if (TAGrecoManager::GetPar()->IncludeBM() && fFlagTrack)
       FillTreeOutBm();
    
-   if (TAGrecoManager::GetPar()->IncludeVT())
+   if (TAGrecoManager::GetPar()->IncludeVT() && fFlagTrack)
       FillTreeOutVt();
    
    if (TAGrecoManager::GetPar()->IncludeIT())
@@ -1032,7 +1032,7 @@ void ConvertNtuple::FillTreeOutIt()
       fClusPosIt.clear();
    }
    
-   if(fFlagItrTrack) {
+   if(fFlagItrTrack && fFlagTrack) {
       TAITntuTrack* itTrack = (TAITntuTrack*)fpNtuTrackIt->Object();
       
       fTracksNit = itTrack->GetTracksN();
@@ -1099,7 +1099,7 @@ void ConvertNtuple::FillTreeOutMsd()
       }
    }
    
-   if(fFlagMsdTrack) {
+   if(fFlagMsdTrack && fFlagTrack) {
       TAMSDntuTrack* itTrack = (TAMSDntuTrack*)fpNtuTrackMsd->Object();
       
       fTracksNmsd = itTrack->GetTracksN();
