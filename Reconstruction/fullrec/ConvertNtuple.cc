@@ -27,9 +27,9 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);   }   // Root file in input
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]);  }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]);  }   // Number of events to be analized
-      if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
+      if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }   // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);   }   // Run Number
-      if(strcmp(argv[i],"-inmc") == 0)  { inMc = TString(argv[++i]);   } // MC file name
+      if(strcmp(argv[i],"-inmc") == 0)  { inMc = TString(argv[++i]); }   // MC file name
 
       if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
 
@@ -61,7 +61,9 @@ int main (int argc, char *argv[])  {
    watch.Start();
     
     conv->BeforeEventLoop();
-   conv->GoEvent(nSkipEv);
+   
+   if (nSkipEv > 0)
+      conv->GoEvent(nSkipEv);
    
    conv->LoopEvent(nTotEv);
    conv->AfterEventLoop();

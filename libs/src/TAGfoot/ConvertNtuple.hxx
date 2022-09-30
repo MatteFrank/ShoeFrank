@@ -92,7 +92,7 @@ public:
    virtual void LoopEvent(Int_t nEvents);
    
    //! Goto Event
-   virtual Bool_t GoEvent(Int_t /*iEvent*/) { return true; }
+   virtual Bool_t GoEvent(Int_t iEvent);
    
    // Begin loop
    virtual void BeforeEventLoop();
