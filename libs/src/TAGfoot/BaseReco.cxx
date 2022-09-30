@@ -475,12 +475,10 @@ void BaseReco::SetRecHistogramDir()
    }
 
    // Global straight track
-#ifdef TOE_FLAG
    if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAGgeoTrafo::GetBaseName());
       fActGlbTrackS->SetHistogramDir(subfolder);
    }
-#endif
 }
 
 //__________________________________________________________
