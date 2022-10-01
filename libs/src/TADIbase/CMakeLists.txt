@@ -20,11 +20,16 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 #
 set( with_dictionnaries
    TADIgeoField
-   TADIgenField
    TADIparGeo
    TADItrackPropagator
    TADItrackEmProperties
 )
+
+
+if (GENFIT_DIR)
+   set(with_dictionnaries ${with_dictionnaries} TADIgenField)
+   set(dict_option "-DGENFIT_FLAG=1")
+endif(GENFIT_DIR)
 
 set( without_dictionnaries
 )
@@ -55,7 +60,7 @@ endforeach()
 
 
 if (ROOT6_USED)
-  ROOT6_GENERATE_DICTIONARY(G_${LIBNAME} ${headers} MODULE ${LIBNAME} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS "")
+  ROOT6_GENERATE_DICTIONARY(G_${LIBNAME} ${headers} MODULE ${LIBNAME} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS "${dict_option}")
 else()
   ROOT5_GENERATE_DICTIONARY(G_${LIBNAME} ${headers} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}.LinkDef.h OPTIONS "")
 endif()

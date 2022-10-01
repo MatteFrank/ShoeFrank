@@ -7,6 +7,7 @@
 #include "BaseReco.hxx"
 #include "TAMCntuEvent.hxx"
 #include "TAMCntuRegion.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "GlobalToeReco.hxx"
 

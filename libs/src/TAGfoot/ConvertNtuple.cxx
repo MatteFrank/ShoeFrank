@@ -233,7 +233,7 @@ void ConvertNtuple::LoopEvent(Int_t nEvents)
    }
 }
 
-/__________________________________________________________
+//__________________________________________________________
 //! Go to a given event
 //!
 //! \param[in] iEvent event number to go

@@ -15,6 +15,7 @@
 #include "TFile.h"
 #include "TTree.h"
 
+#include "TAGactTreeReader.hxx"
 #include "TAGaction.hxx"
 #include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -302,7 +303,7 @@ protected:
    
    TAGdataDsc*           fpNtuGlbTrack;  ///< input data dsc global track TOE/GenFit
    
-   TAGactionFile*        fActEvtReader;  ///< Tree/event reader
+   TAGactTreeReader*     fActEvtReader;  ///< Tree/event reader
    
    
    Bool_t                fFlagOut;       ///< flag for output file
