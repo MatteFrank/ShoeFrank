@@ -40,7 +40,6 @@
 #include "TATWparGeo.hxx"
 #include "TACAparGeo.hxx"
 
-#include "TADIgenField.hxx"
 #include "TADIgeoField.hxx"
 
 #include "TABMparCal.hxx"
@@ -53,6 +52,7 @@
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"
 
+#include "TAMCntuHit.hxx"
 #include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
 #include "TAVTntuHit.hxx"
@@ -96,10 +96,12 @@
 #include "TAGactNtuGlbTrack.hxx"
 #endif
 
+#ifdef GENFIT_FLAG
+#include "TADIgenField.hxx"
 #include "TAGactKFitter.hxx"
 #include "UpdatePDG.hxx"
-
 #include "TAGFtrackingStudies.hxx"
+#endif
 
 class TAMCntuHit;
 class TAMCntuPart;
@@ -481,8 +483,10 @@ protected:
 #endif
    TAGactNtuGlbTrackS*   fActGlbTrackS;  ///< action for straight tracks
   
+#ifdef GENFIT_FLAG
    TAGactKFitter*        fActGlbkFitter; ///< Global tracking kalman Fitter
    TAGFtrackingStudies*  fActGlbTrackStudies;    ///< Global tracking studies with GenFit
+#endif
 
    Bool_t                fFlagOut;          ///< flag for output file
    Bool_t                fFlagTree;         ///< flag to save in tree

@@ -9,8 +9,11 @@
 
 #include <TMultiGraph.h>
 #include <TLegend.h>
+#include <TCanvas.h>
+#include <TGraphErrors.h>
 
-
+#include "TAVTtrack.hxx"
+#include "TAMCntuPart.hxx"
 #include "LocalReco.hxx"
 #include "LocalRecoMC.hxx"
 #include "GlobalRecoAna.hxx"

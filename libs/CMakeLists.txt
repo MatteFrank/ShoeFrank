@@ -6,8 +6,12 @@
 #
 MESSAGE("libs:")
 #
-add_subdirectory(GenFit)
+if (GENFIT_DIR)
+  add_subdirectory(GenFit)
+endif(GENFIT_DIR)
+
 if (TOE_DIR)
   add_subdirectory(TOE)
 endif(TOE_DIR)
+
 add_subdirectory(src)

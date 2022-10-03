@@ -25,7 +25,7 @@
 //! Class Imp
 ClassImp(ConvertNtuple)
 
-Bool_t  ConvertNtuple::fSaveMcFlag     = true;
+Bool_t  ConvertNtuple::fSaveMcFlag = true;
 
 //__________________________________________________________
 //! Constructor
@@ -231,6 +231,22 @@ void ConvertNtuple::LoopEvent(Int_t nEvents)
       fTreeOut->Fill();
       ResetTreeOut();
    }
+}
+
+//__________________________________________________________
+//! Go to a given event
+//!
+//! \param[in] iEvent event number to go
+Bool_t ConvertNtuple::GoEvent(Int_t iEvent)
+{
+   // only possible for MC data
+   if (iEvent < fActEvtReader->NEvents()) {
+      fSkipEventsN = iEvent;
+      fActEvtReader->Reset(iEvent);
+      return true;
+   }
+   
+   return false;
 }
 
 //__________________________________________________________
@@ -941,7 +957,7 @@ void ConvertNtuple::FillTreeOutBm()
       
       TABMtrack* track = bmTrack->GetTrack(iTrack);
       TVector3 Pvers  = track->GetSlope();
-      TVector3 R0     = track->GetOrigin(); 
+      TVector3 R0     = track->GetOrigin();
       Double_t mychi2 = track->GetChiSquare();
       
       fTrackChi2Bm.push_back(mychi2);

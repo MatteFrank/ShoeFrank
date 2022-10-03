@@ -61,6 +61,7 @@ if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/README DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/)
 endif(FILECOPY)
 
+if (GENFIT_DIR)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
@@ -76,6 +77,7 @@ target_link_libraries(DecodeGlbMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_L
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS DecodeGlb DESTINATION bin)
+endif (GENFIT_DIR)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
