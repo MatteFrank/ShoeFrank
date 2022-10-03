@@ -98,6 +98,8 @@ public:
 
   TAMSDpoint*         GetPoint( int iStation, int iPoint ) const ;
 
+  void                SetParGeo(TAMSDparGeo* par) { fGeometry = par; }
+
   virtual void        Clear(Option_t* opt="");
 
   virtual void        ToStream(ostream& os=cout, Option_t* option="") const;

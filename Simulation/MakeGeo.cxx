@@ -23,7 +23,6 @@
 #include "TAGroot.hxx"
 
 #include "TAGrecoManager.hxx"
-#include <FieldManager.h>
 
 #include "TAGcampaignManager.hxx"
 

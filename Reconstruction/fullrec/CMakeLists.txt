@@ -61,6 +61,7 @@ if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/README DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/)
 endif(FILECOPY)
 
+if (GENFIT_DIR)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
@@ -76,8 +77,19 @@ target_link_libraries(DecodeGlbMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_L
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS DecodeGlb DESTINATION bin)
+endif (GENFIT_DIR)
 
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(ConvertNtuple ConvertNtuple.cc)
+#
+target_link_libraries(ConvertNtuple ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS ConvertNtuple DESTINATION bin)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
@@ -86,23 +98,19 @@ add_executable(DecodeGlbAna DecodeGlbAna.cc)
 #
 target_link_libraries(DecodeGlbAna ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
-
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS DecodeGlbAna DESTINATION bin)
 
-
-
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
+if (TOE_DIR)
 add_executable(DecodeGlbToe DecodeGlbToe.cc)
 #
-#target_compile_options( DecodeGlbToe PUBLIC -g -I/usr/local/Cellar/gperftools/2.8/include/ )
 target_compile_options( DecodeGlbToe PUBLIC -march=native )
 target_link_libraries(DecodeGlbToe ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
-#target_link_options(DecodeGlbToe PUBLIC  -L/usr/local/Cellar/gperftools/2.8/lib/ -lprofiler)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
@@ -127,3 +135,4 @@ install(TARGETS OptimizeToeCuts DESTINATION bin)
 
     endif()
 endif()
+endif (TOE_DIR)

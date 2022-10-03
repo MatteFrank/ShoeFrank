@@ -18,6 +18,14 @@ MESSAGE("${PROJECT_NAME}:")
 option(Geant4_DIR "Include G4 simulation" OFF)
 
 #------------------------------------------------------------------------------
+# option TOE
+option(TOE_DIR "Include TOE reconstruction" ON)
+
+#------------------------------------------------------------------------------
+# option GenFit
+option(GENFIT_DIR "Include GENFIT_DIR reconstruction" ON)
+
+#------------------------------------------------------------------------------
 # option copying files into build directory
 option(FILECOPY "Files copying" OFF)
 
@@ -128,7 +136,8 @@ endif()
 #----------------------------------------------------------------------------
 # GenFit
 #
-SET(GENFIT_INCLUDE_DIR
+if (GENFIT_DIR)
+  SET(GENFIT_INCLUDE_DIR
       ${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/core/include/
 		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/eventDisplay/include/
 		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/fields/include/
@@ -140,14 +149,18 @@ SET(GENFIT_INCLUDE_DIR
 		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/utilities/include/
       )
 
-set (GENFIT_LIBRARIES  genfit2)
+  set (GENFIT_LIBRARIES  genfit2)
+  add_compile_definitions(GENFIT_FLAG=1)
+endif(GENFIT_DIR)
 
 #----------------------------------------------------------------------------
 # TOE
 #
-SET(TOE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/TOE/)
-
-set (TOE_LIBRARIES  TOE)
+if (TOE_DIR)
+  SET(TOE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/TOE/)
+  SET(TOE_LIBRARIES  TOE)
+  add_compile_definitions(TOE_FLAG=1)
+endif(TOE_DIR)
 
 #----------------------------------------------------------------------------
 ## for rootlogon.C
