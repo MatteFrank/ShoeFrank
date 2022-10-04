@@ -1,5 +1,5 @@
 #include "TROOT.h"
-#include "BM_MSD_strel_func.cpp"
+#include "BM_MSD_strel_func.C"
 
 using namespace std;
 using namespace TMath;
