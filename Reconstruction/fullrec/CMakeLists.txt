@@ -7,7 +7,7 @@ MESSAGE("  ${PROJECT_NAME}:")
 #----------------------------------------------------------------------------
 # Copy rootlogon
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/fullrec/rootlogon.C"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../level0/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/fullrec/rootlogon.C"  @ONLY)
 
 #----------------------------------------------------------------------------
 # Copy geomaps + config + calib + cammaps (tmp solution)
