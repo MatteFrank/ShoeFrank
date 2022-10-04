@@ -96,9 +96,9 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
     FillSeparated();
 
     for(int iL=0; iL<3; iL++) {
-      if(msdNtuPoint->GetPointN(iL)) {
+      if(msdNtuPoint->GetPointsN(iL)) {
 
-	for(int iPoi=0; iPoi<msdNtuPoint->GetPointN(iL); iPoi++) {
+	for(int iPoi=0; iPoi<msdNtuPoint->GetPointsN(iL); iPoi++) {
 	  TAMSDpoint* aPoi = msdNtuPoint->GetPoint(iL,iPoi);
 	  sprintf(hname,"Sensor_%d",iL);
 	  ((TH2D*)gDirectory->Get(hname))->Fill(aPoi->GetPosition().X(),aPoi->GetPosition().Y());
