@@ -122,6 +122,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagHits(false),
    fFlagHisto(false),
    fFlagTrack(false),
+   fFlagMsdPed(false),
    fFlagMsdTrack(false),
    fFlagTWbarCalib(false),
    fFlagRateSmearTw(false),
@@ -269,6 +270,7 @@ void BaseReco::GlobalSettings()
    Bool_t hit    = TAGrecoManager::GetPar()->IsSaveHits();
    Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
    Bool_t trkMsd = TAGrecoManager::GetPar()->IsMsdTracking();
+   Bool_t pedMsd = TAGrecoManager::GetPar()->IsMsdPedestal();
    Bool_t trkItr = TAGrecoManager::GetPar()->IsItrTracking();
    Bool_t obj    = TAGrecoManager::GetPar()->IsReadRootObj();
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
@@ -293,6 +295,9 @@ void BaseReco::GlobalSettings()
  
    if (trkMsd)
       EnableMsdTracking();
+   
+   if (pedMsd)
+      EnableMsdPedestal();
 
    if (trkItr)
       EnableItrTracking();
