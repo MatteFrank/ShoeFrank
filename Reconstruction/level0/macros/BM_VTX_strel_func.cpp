@@ -10,6 +10,7 @@
 #include <TProfile.h>
 #include <TBrowser.h>
 #include <TGraphErrors.h>
+#include <TROOT.h>
 
 
 #include "TAGparGeo.hxx"
@@ -420,10 +421,10 @@ void PostLoopAnalysis(){
 
   TF1 mygraphpoly ("mygraphpoly","pol4", 0, 200);
   mygraphpoly.FixParameter(0,0);
-  xgraph[strelNbin]=bmparconf->GetHitTimeCut();
-  ygraph[strelNbin]=0.8; //manually force the last strel point
-  xerrgraph[strelNbin]=(Double_t)bmparconf->GetHitTimeCut()/strelNbin;
-  yerrgraph[strelNbin]=0.01;
+  xgraph[strelNbin-1]=bmparconf->GetHitTimeCut();
+  ygraph[strelNbin-1]=0.8; //manually force the last strel point
+  xerrgraph[strelNbin-1]=(Double_t)bmparconf->GetHitTimeCut()/strelNbin;
+  yerrgraph[strelNbin-1]=0.01;
   TGraphErrors *mygraph = new TGraphErrors (strelNbin+1, xgraph, ygraph, xerrgraph, yerrgraph);
   mygraph->Fit("mygraphpoly","QRB+");
   mygraph->Write();
