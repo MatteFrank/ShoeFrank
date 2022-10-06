@@ -11,6 +11,7 @@ set(LIBNAME LocalReco)
 # Copy rootlogon
 #
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/rootlogon.C"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/benchmark.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"  @ONLY)
 
 #----------------------------------------------------------------------------
 # Copy geomaps + config + macro
@@ -18,7 +19,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_B
 if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/geomaps/ DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/geomaps/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/config/)
- file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/macros/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/)
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/macros/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/  PATTERN "*.cmake" EXCLUDE)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cammaps/ DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/cammaps/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/calib/   DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/calib/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/README   DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/)
@@ -101,27 +102,43 @@ install(TARGETS DecodeMC DESTINATION bin)
 add_executable(CalibrateTof CalibrateTof.cc)
 #
 target_link_libraries(CalibrateTof ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
+
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS CalibrateTof DESTINATION bin)
+
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
 add_executable(CalibrateBm CalibrateBm.cc)
 #
 target_link_libraries(CalibrateBm ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
+
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS CalibrateBm DESTINATION bin)
+
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
 add_executable(AnalyzeBmStd AnalyzeBmStd.cc)
 #
 target_link_libraries(AnalyzeBmStd ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
+
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS AnalyzeBmStd DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Run BenchMark macro
+#
+execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh)
+#
+add_custom_command(TARGET AnalyzeBmStd POST_BUILD
+    COMMAND "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Reconstruction/level0/
+    COMMENT "Running macro BenchMark.C"
+)
