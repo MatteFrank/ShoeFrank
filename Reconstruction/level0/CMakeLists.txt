@@ -136,9 +136,11 @@ install(TARGETS AnalyzeBmStd DESTINATION bin)
 # Run BenchMark macro
 #
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh)
-#
-#add_custom_command(TARGET AnalyzeBmStd POST_BUILD
-#    COMMAND "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"
-#    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Reconstruction/level0/
-#    COMMENT "Running macro BenchMark.C"
-#)
+
+if (BENCHMARK)
+  add_custom_command(TARGET AnalyzeBmStd POST_BUILD
+      COMMAND "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Reconstruction/level0/
+      COMMENT "Running macro BenchMark.C"
+  )
+endif(BENCHMARK)
