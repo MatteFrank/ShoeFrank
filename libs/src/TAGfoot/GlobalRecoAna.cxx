@@ -495,6 +495,7 @@ void GlobalRecoAna::LoopEvent() {
      
       ((TH2D*)gDirectory->Get(Form("Ekin/Z%d/DE_vs_Ekin",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev(),DE*fpFootGeo->GevToMev());
       ((TH1D*)gDirectory->Get(Form("Ekin/Z%d/Ek_meas",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev());
+
      
       if (debug_trackid ){
         if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {      //stampa solo se TW point ha id della traccia e non c'è gosh hits
@@ -508,6 +509,33 @@ void GlobalRecoAna::LoopEvent() {
      
       ((TH2D*)gDirectory->Get("Z_truevsZ_reco"))->Fill(Z_true,Z_meas);
       ((TH2D*)gDirectory->Get("Z_TWvsZ_fit"))->Fill(fGlbTrack->GetTwChargeZ(),fGlbTrack->GetFitChargeZ());
+
+      //Unfolding folder
+      if(
+	 Z_true >=0. && Z_true <primary_cha
+	 && !(fGlbTrack->GetPointsN() == 1 && fGlbTrack->GetTwChargeZ()==8) 
+	 ){ //
+	
+	for (int i = 0; i<th_nbin; i++){
+	  if(Th_reco>theta_binning[i][0] && Th_reco<theta_binning[i][1])
+	    theta_bin_meas=i+1; 
+	  if(Th_true>theta_binning[i][0] && Th_true<theta_binning[i][1])
+	    theta_bin_true=i+1;
+	}	
+	for (int j=0; j<ek_nbin; j++) {
+	  if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1])
+	    Ek_bin_meas=j+1;
+	  if((Ek_true*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_true*fpFootGeo->GevToMev())<ek_binning[j][1])
+	    Ek_bin_true=j+1;
+	}
+		
+	Int_t tmp_meas=((Z_meas-1)*(th_nbin)*(ek_nbin))+((Ek_bin_meas-1)*theta_bin_meas)+theta_bin_meas; 
+	Int_t tmp_true=((Z_true-1)*(th_nbin)*(ek_nbin))+((Ek_bin_true-1)*theta_bin_true)+theta_bin_true; 
+	((TH2D*)gDirectory->Get(Form("Unfolding/Unfolding_trk_vs_true")))->Fill(tmp_meas, tmp_true);
+	((TH1D*)gDirectory->Get(Form("Unfolding/RecoDistribution")))->Fill(tmp_meas);
+      }
+      
+      //
  
       if(fFlagMC){
       //-------------------------------------------------------------
@@ -1259,6 +1287,15 @@ for (int i = 0; i<mass_nbin; i++) {
   mass_binning[i][0] = double (i*2);
   mass_binning[i][1] = double ((i+1)*100);
 }
+
+
+//UNFOLDING folders 
+ gDirectory->mkdir("Unfolding");
+ gDirectory->cd("Unfolding");
+ Int_t tot_bin=th_nbin*ek_nbin*primary_cha;
+ h2 = new TH2D("Unfolding_trk_vs_true","Unfolding;trk;true", tot_bin, 0, tot_bin, tot_bin, 0, tot_bin);
+ h = new TH1D("RecoDistribution","", tot_bin, 0., tot_bin);
+ gDirectory->cd("..");
  
 
 // Cross section recostruction histos MC
@@ -1412,6 +1449,8 @@ for (int i = 0; i<mass_nbin; i++) {
   gDirectory->cd("..");
  }
 //----------- end cross section recostruction + GHOST HITS FIXED
+
+
 
 
 // Cross section recostruction histos from REAL DATA
