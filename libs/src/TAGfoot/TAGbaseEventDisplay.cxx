@@ -244,6 +244,8 @@ void TAGbaseEventDisplay::SetRecoOptions()
       fReco->EnableTracking();
    }
    
+   fReco->GlobalSettings();
+   
    fpFootGeo = fReco->GetGeoTrafo();
    
    gTAGroot->SetRunNumber(fRunNumber);
@@ -1160,7 +1162,7 @@ void TAGbaseEventDisplay::UpdateTrackElements(const TString prefix)
    }
 
    if (prefix == "ms" && !fIrFlag && fFlagMsdTrack) {
-      TAMSDparGeo*  parGeo   = fReco->GetParGeoMsd();
+      TAMSDparGeo*  parGeo  = fReco->GetParGeoMsd();
       Int_t nPlanes         = parGeo->GetSensorsN();
       Float_t posfirstPlane = parGeo->GetSensorPosition(0)[2]*1.1;
       Float_t posLastPlane  = parGeo->GetSensorPosition(nPlanes-1)[2]*1.1;
