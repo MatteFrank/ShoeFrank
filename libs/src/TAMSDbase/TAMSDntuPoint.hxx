@@ -41,7 +41,7 @@ public:
    TAMSDpoint();
    TAMSDpoint(const TAMSDpoint& point);
    TAMSDpoint( int layer, double x, double y, TVector3 position);
-   TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY);
+   TAMSDpoint(Int_t layer, TAMSDcluster* clusX, TAMSDcluster* clusY);
 
    virtual ~TAMSDpoint() {};
 
@@ -89,7 +89,7 @@ public:
   virtual ~TAMSDntuPoint();
 
   TAMSDpoint*         NewPoint( int iStation, double x, double y, TVector3 position);
-  TAMSDpoint*         NewPoint(Int_t iStation, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY);
+  TAMSDpoint*         NewPoint(Int_t iStation, TAMSDcluster* clusX, TAMSDcluster* clusY);
   TAMSDpoint*         NewPoint(TAMSDpoint* point, Int_t iStation);
 
   int                 GetPointsN(int iStation) const;
@@ -97,6 +97,8 @@ public:
   TClonesArray*       GetListOfPoints(int iStation) const;
 
   TAMSDpoint*         GetPoint( int iStation, int iPoint ) const ;
+
+  void                SetParGeo(TAMSDparGeo* par) { fGeometry = par; }
 
   virtual void        Clear(Option_t* opt="");
 

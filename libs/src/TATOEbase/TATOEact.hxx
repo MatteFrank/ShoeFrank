@@ -156,22 +156,16 @@ public:
    }
    
    void Action() override {
-      //        puts(__PRETTY_FUNCTION__);
       
       ++event;
-      //        std::cout << "---event---\n";
       logger_m.clear();
       
-      //        matcher_m.clear();
       matcher_m.generate_candidate_indices();
       
       auto hypothesis_c = form_hypothesis();
       
-      //        std::cout << "hypothesis: " << hypothesis_c.size() << '\n';
-      
       for(auto & hypothesis : hypothesis_c){
          current_hypothesis_m = hypothesis;
-         //            std::cout << "hypothesis: " << hypothesis.charge << " - " << hypothesis.mass << " - " << hypothesis.momentum << " -- " << hypothesis.get_end_points().size() << '\n';
          reconstruct();
       }
       
@@ -185,9 +179,6 @@ public:
       track_c = refine_hypotheses( std::move(track_c) );
       
       register_tracks_upward( std::move( track_c ) );
-      
-      //        logger_m.freeze_everything();
-      //        logger_m.output();
       
       auto result_c = matcher_m.retrieve_results();
       for( auto& checker : computation_checker_mc ){
@@ -204,9 +195,6 @@ public:
       //for each
       // - set current_hypothesis_m
       // - reconstruct: either consume the arborescence and release global tracks -> better
-      
-      
-      
       
       //reconstruct
       // - create arborescence from first layer of vertex
@@ -421,10 +409,6 @@ private:
                                      mass_identification< histogram<>, isolate_charge<9>, MO >
                                      >{} );
       
-      //        histogram_checker_mc.push_back(
-      //                TATOEchecker<
-      //                    momentum_resolution< histogram<reconstruction_base<momentum_based, reconstructed_based>>, no_requirement, MO >
-      //                            >{} );
       histogram_checker_mc.push_back(
                                      TATOEchecker<
                                      momentum_resolution< histogram<reconstruction_base<theta_based, reconstructible_based>>, no_requirement, MO >,
@@ -1114,8 +1098,6 @@ public:
             
          }
          
-         //            std::cout << "cluster_added: " << leaf_h->depth()-1 << '\n';
-         //            std::cout << "cluster_intrack: " << track.size() << '\n';
          if( leaf_h->depth()-1 < track.size()-1 ){ leaf_h->mark_invalid(); }
          
       }
@@ -1127,9 +1109,7 @@ public:
    void advance_reconstruction( arborescence<node_type>& arborescence_p,
                                const detector_properties<details::ms2d_tag>& ms2d_p )
    {
-      //         puts(__PRETTY_FUNCTION__);
       logger_m.add_root_header("START_RECONSTRUCTION");
-      //        std::cout << "START_RECONSTRUCTION\n";
       
       auto layer_c = ms2d_p.form_layers();
       auto generating_candidate_c = layer_c.generating_candidates();
@@ -1235,18 +1215,15 @@ public:
       
       for(auto iterator = enriched_c.begin() ; iterator != end ; ++iterator ){
          auto state = ukf_m.correct_state( ps_p, *iterator ); //should be sliced properly
-         auto modified_covariance = iterator->covariance;
-         modified_covariance(0,0) *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
-         modified_covariance(1,1) *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
-         auto modified_candidate = *iterator;
+         auto modified_covariance      = iterator->covariance;
+         modified_covariance(0,0)     *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+         modified_covariance(1,1)     *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+         auto modified_candidate       = *iterator;
          modified_candidate.covariance = modified_covariance;
-         auto chisquared_corrected = ukf_m.compute_chisquared(state, modified_candidate);
-         
-         //            auto chisquared_corrected = ukf_m.compute_chisquared(state, *iterator ); //add parameter -> cut value ? // go back to prediction ?
-         auto distance = ukf_m.compute_distance( ps_p, state );
-         
-         auto cs = make_corrected_state( std::move(state),
-                                        chisquared{std::move(iterator->prediction), chisquared_corrected, distance} );
+         auto chisquared_corrected     = ukf_m.compute_chisquared(state, modified_candidate);
+         auto distance                 = ukf_m.compute_distance( ps_p, state );
+         auto cs                       = make_corrected_state( std::move(state),
+                                                              chisquared{std::move(iterator->prediction), chisquared_corrected, distance} );
          
          auto fs = full_state{ std::move(cs),
             data_handle<data_type>{ iterator->data },
@@ -1258,9 +1235,6 @@ public:
       
       return fs_c;
    }
-   
-   
-   
    
    std::vector<full_state> confront(const state& ps_p, const detector_properties<details::tof_tag>::layer& layer_p)  //optionnal is more relevant here
    {
@@ -1285,12 +1259,12 @@ public:
       std::for_each( candidate_c.begin(), candidate_end,
                     [this, &ps_p, &enriched_c, &layer_p]( candidate c_p )
                     {
-                       auto modified_covariance = c_p.covariance;
-                       modified_covariance(0,0) *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
-                       modified_covariance(1,1) *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
-                       auto modified_candidate = c_p;
+                       auto modified_covariance     = c_p.covariance;
+                       modified_covariance(0,0)     *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+                       modified_covariance(1,1)     *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+                       auto modified_candidate       = c_p;
                        modified_candidate.covariance = modified_covariance;
-                       auto chi2_predicted = ukf_m.compute_chisquared(ps_p, modified_candidate);
+                       auto chi2_predicted           = ukf_m.compute_chisquared(ps_p, modified_candidate);
                        
                        enriched_c.push_back( make_enriched_candidate( std::move( c_p ) ,
                                                                      chisquared{chi2_predicted} )   );
@@ -1310,17 +1284,17 @@ public:
       for(auto iterator = enriched_c.begin() ; iterator != enriched_end ; ++iterator ){
          auto state = ukf_m.correct_state( ps_p, *iterator ); //should be sliced properly
          
-         auto modified_covariance = iterator->covariance;
-         modified_covariance(0,0) *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
-         modified_covariance(1,1) *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
-         auto modified_candidate = *iterator;
+         auto modified_covariance      = iterator->covariance;
+         modified_covariance(0,0)     *= pow(double(layer_p.cut_value( orientation::x{} ) * current_hypothesis_m.light_ion_boost), 2);
+         modified_covariance(1,1)     *= pow(double(layer_p.cut_value( orientation::y{} ) * current_hypothesis_m.light_ion_boost), 2);
+         auto modified_candidate       = *iterator;
          modified_candidate.covariance = modified_covariance;
-         auto chisquared_corrected = ukf_m.compute_chisquared(state, modified_candidate);
+         auto chisquared_corrected     = ukf_m.compute_chisquared(state, modified_candidate);
          
-         auto distance = ukf_m.compute_distance( ps_p, state );
+         auto distance                 = ukf_m.compute_distance( ps_p, state );
          
-         auto cs = make_corrected_state( std::move(state),
-                                        chisquared{std::move(iterator->prediction), chisquared_corrected, distance} );
+         auto cs                       = make_corrected_state( std::move(state),
+                                                              chisquared{std::move(iterator->prediction), chisquared_corrected, distance} );
          
          auto fs = full_state{ std::move(cs),
             data_handle<data_type>{ iterator->data } ,
@@ -1364,12 +1338,10 @@ public:
          auto state = ukf_m.correct_state( ps_p, ec ); //should be sliced properly
          
          auto chisquared_corrected = ukf_m.compute_chisquared(state, modified_candidate);
-         //            auto chisquared_corrected = ukf_m.compute_chisquared(state, ec );
+         auto distance             = ukf_m.compute_distance( ps_p, state );
          
-         auto distance = ukf_m.compute_distance( ps_p, state );
-         
-         auto cs = make_corrected_state( std::move(state),
-                                        chisquared{std::move(ec.prediction), chisquared_corrected, distance} );
+         auto cs                   = make_corrected_state( std::move(state),
+                                                           chisquared{std::move(ec.prediction), chisquared_corrected, distance} );
          
          auto fs = full_state{ std::move(cs),
             data_handle<data_type>{ ec.data },
@@ -1378,7 +1350,6 @@ public:
          };
          
          fs_c.push_back( std::move(fs) );
-         
       }
       
       return fs_c;
@@ -1399,23 +1370,23 @@ public:
       logger_m << "theta: " << theta << '\n';
       auto semi_major_axis = layer_p.cut_value(orientation::x{}) * current_hypothesis_m.light_ion_boost * error.X();
       auto semi_minor_axis = layer_p.cut_value(orientation::y{}) * current_hypothesis_m.light_ion_boost * error.Y();
-      auto ellipse_y = semi_major_axis * semi_minor_axis * sin(theta) /
-      sqrt( semi_minor_axis * semi_minor_axis * cos(theta) * cos(theta) +
-           semi_major_axis * semi_major_axis * sin(theta) * sin(theta));
-      auto ellipse_x = semi_major_axis * semi_minor_axis * cos(theta) /
-      sqrt( semi_minor_axis * semi_minor_axis * cos(theta) * cos(theta) +
-           semi_major_axis * semi_major_axis * sin(theta) * sin(theta));
       
-      auto mps = split_half( ps_p.vector , details::row_tag{});
-      mps.first(0,0) += ellipse_x;
-      mps.first(1,0) += ellipse_y;
+      auto ellipse_y       = semi_major_axis * semi_minor_axis * sin(theta) / sqrt( semi_minor_axis * semi_minor_axis * cos(theta) * cos(theta) +
+                             semi_major_axis * semi_major_axis * sin(theta) * sin(theta));
+      
+      auto ellipse_x       = semi_major_axis * semi_minor_axis * cos(theta) / sqrt( semi_minor_axis * semi_minor_axis * cos(theta) * cos(theta) +
+                             semi_major_axis * semi_major_axis * sin(theta) * sin(theta));
+      
+      auto mps             = split_half( ps_p.vector , details::row_tag{});
+      mps.first(0,0)      += ellipse_x;
+      mps.first(1,0)      += ellipse_y;
       
       
-      using candidate = typename underlying<Enriched>::candidate;
-      using vector = typename underlying<candidate>::vector;
-      using covariance = typename underlying<candidate>::covariance;
+      using candidate          = typename underlying<Enriched>::candidate;
+      using vector             = typename underlying<candidate>::vector;
+      using covariance         = typename underlying<candidate>::covariance;
       using measurement_matrix = typename underlying<candidate>::measurement_matrix;
-      using data = typename underlying<candidate>::data_type;
+      using data               = typename underlying<candidate>::data_type;
       
       auto modified_covariance = ec_p.covariance;
       
@@ -1481,7 +1452,7 @@ public:
       
       auto cutter_candidate = candidate{
          vector{ std::move(v) },
-         //                        covariance{ ec_p.covariance },
+
          covariance{modified_covariance},
          measurement_matrix{ ec_p.measurement_matrix },
          data_handle<data>{ ec_p.data }
@@ -1501,15 +1472,10 @@ public:
       }
       logger_m << '\n';
       
-      //        logger_m.freeze();
-      
       return ec_p.prediction < cutter_chisquared;
    }
    
-   
-   
-   
-   
+
    //----------------------------------------------------------------------------------------
    //final cross-check and registering
    
@@ -1520,15 +1486,10 @@ public:
       double total_chisquared{0};
       for( auto value_i = value_c.begin() +1 ; value_i != value_c.end(); ++value_i){
          auto const& value = *value_i;
-         //            std::cout << value.prediction << " ";
-         //            total_chisquared += value.prediction;
          total_chisquared += value.correction;
-         //            total_chisquared += value.distance;
-         //            total_chisquared += value.prediction/value.correction;
       }
-      //        std::cout << '\n';
+
       double shearing_factor = sqrt( total_chisquared / (value_c.size() -1) );
-      //        std::cout << "shearing_factor: " << shearing_factor << std::endl;
       if( std::isnan(shearing_factor) ){ std::cout << "shearing_factor is nan\n"; std::terminate(); }
       
       track_mc.push_back( track{ current_hypothesis_m, shearing_factor, std::move(value_c) } );
@@ -1554,32 +1515,22 @@ public:
             end_point_ch.push_back( end_point_h );
          }
       }
-      //        std::cout << "track_size: " << track_pc.size() << std::endl;
-      
-      //        std::cout << "looping on endpoints" << std::endl;
-      
-      //        std::cout<< "total: " << end_point_ch.size() << "\n";
+     
       for( auto const * end_point_h : end_point_ch ){
-         //            std::cout << "partionning: " << std::endl;
          auto end_iterator = std::partition( track_pc.begin(), track_pc.end(),
                                             [&end_point_h](track const & track_p)
                                             { return track_p.get_clusters().back().data == end_point_h; } );
          
          
-         //            std::cout << "sorting: " <<std::endl;
          std::sort( track_pc.begin(), end_iterator,
                    [](track const & track1_p, track const & track2_p)
                    {  return track1_p.total_chisquared < track2_p.total_chisquared ; } );  //change this to pred/corr ? and see impact
          
-         //            std::cout << "selecting" << std::endl;
          final_track_c.push_back( track_pc.front() );
          final_track_c.back().clone = std::distance(track_pc.begin(), end_iterator);
          
-         //            std::cout << "erasing" << std::endl;
          track_pc.erase(track_pc.begin(), end_iterator);
       }
-      
-      //        std::cout << "all done" << std::endl;
       
       return final_track_c;
    }
@@ -1602,8 +1553,8 @@ public:
    
    constexpr std::vector< track > compute_arc_length( std::vector<track>&& track_pc  ) const {
       constexpr std::size_t const exponent = 5; //max exponent of z in derivatives
-      constexpr std::size_t const order_x = 4;
-      constexpr std::size_t const order_y = 2;
+      constexpr std::size_t const order_x  = 4;
+      constexpr std::size_t const order_y  = 2;
       
       for( auto&& track : track_pc ){
          auto size = track.get_clusters().size();
@@ -1620,9 +1571,6 @@ public:
          
          auto const parameter_x = make_custom_matrix<4,1>( [&track]( std::size_t index_p){ return track.parameters.x[index_p]; } );
          auto const parameter_y = make_custom_matrix<2,1>( [&track]( std::size_t index_p){ return track.parameters.y[index_p]; } );
-         //            std::cout << "parameter_x: \n" << parameter_x;
-         //            std::cout << "parameter_y: \n" << parameter_y;
-         
          
          // ====================  arc length computation ===================
          
@@ -1635,7 +1583,6 @@ public:
                                                                         return static_cast<double>( ( column_index == row_index+1 ) ?  column_index : 0. );
                                                                      }
                                                                      );
-         //        std::cout << "mixing_x: \n" << mixing_x;
          
          auto const mixing_y = make_custom_matrix<exponent, order_y>(
                                                                      [&order_y]( std::size_t index_p ){
@@ -1644,7 +1591,6 @@ public:
                                                                         return static_cast<double>( ( column_index == row_index+1 ) ?  column_index : 0. );
                                                                      }
                                                                      );
-         //        std::cout << "mixing_y: \n" << mixing_y;
          
          //------------ "ode" ----------------
          auto ode = make_ode<double, 1>(
@@ -1655,8 +1601,6 @@ public:
                                                                                                       std::size_t column_index = index_p % exponent;
                                                                                                       return pow( value, column_index );
                                                                                                    } );
-                                           //            std::cout << "evaluation_point: " << os_p.evaluation_point << '\n';
-                                           //            std::cout << "polynomial: \n" << polynomial;
                                            double const dx_dz = expr::compute( polynomial * mixing_x * parameter_x );
                                            double const dy_dz = expr::compute( polynomial * mixing_y * parameter_y );
                                            
@@ -1668,7 +1612,6 @@ public:
          auto stepper = make_stepper<data_rkf45>( std::move(ode) );
          auto end_point = track.get_clusters().back().evaluation_point;
          auto os = operating_state<double, 1>{ track.get_clusters().front().evaluation_point, 0 };
-         //            stepper.specify_tolerance(1e-5);
          stepper.specify_tolerance(1e-13);
          
          auto step = 5e-1;
@@ -1698,7 +1641,6 @@ public:
       std::size_t index{0};
       
       for( auto cluster_i{cluster_pc.begin()+1}; cluster_i != cluster_pc.end() ; ++cluster_i ){
-         //        for( auto cluster_i{cluster_pc.begin()}; cluster_i != cluster_pc.end() ; ++cluster_i ){
          auto * msd_h =dynamic_cast<TAMSDcluster const*>( cluster_i->data );
          if( msd_h && msd_h->GetPlaneView() ){ continue; } //check if msd is in correct orientation
          z_c[index] = cluster_i->evaluation_point;
@@ -1716,10 +1658,7 @@ public:
                                                                  return pow( z_c[row_index], column_index );
                                                               }
                                                               );
-      //        std::cout << "zx:\n";
-      //        for( auto const& z : z_c ){ std::cout << z << '\n';}
       auto const observation_x = matrix<N, 1>{ std::move(x_c) };
-      //        std::cout << "observation_x: \n" << observation_x;
       auto const weight_x = matrix<N, N>{ std::move(weight_x_c)};
       
       //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
@@ -1742,7 +1681,6 @@ public:
       
       std::size_t index{0};
       for( auto cluster_i{cluster_pc.begin()+1}; cluster_i != cluster_pc.end() ; ++cluster_i ){
-         //        for( auto cluster_i{cluster_pc.begin()}; cluster_i != cluster_pc.end() ; ++cluster_i ){
          auto * msd_h =dynamic_cast<TAMSDcluster const*>( cluster_i->data );
          if( msd_h && !msd_h->GetPlaneView() ){ continue; }
          z_c[index] = cluster_i->evaluation_point;
@@ -1759,10 +1697,7 @@ public:
                                                                  return pow( z_c[row_index], column_index );
                                                               }
                                                               );
-      //        std::cout << "zy:\n";
-      //        for( auto const& z : z_c ){ std::cout << z << '\n';}
       auto const observation_y = matrix<N, 1>{ std::move(y_c) };
-      //        std::cout << "observation_y: \n" << observation_y;
       auto const weight_y = matrix<N, N>{ std::move(weight_y_c)};
       
       //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
@@ -1771,7 +1706,6 @@ public:
       auto const parameter_y = expr::compute( part1_y * part2_y );
       
       result_p.y = parameter_y.data();
-      //        result_p.determination_coefficient_y = determination_coefficient_y;
    }
    
    template<std::size_t N>
@@ -1810,13 +1744,12 @@ public:
                                                               }
                                                               );
       auto const observation_x = matrix<N, 1>{ std::move(x_c) };
-      auto const weight_x = matrix<N, N>{ std::move(weight_x_c)};
+      auto const weight_x      = matrix<N, N>{ std::move(weight_x_c)};
       
       //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
-      auto const part1_x = form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) );
-      auto const part2_x = expr::compute( transpose( regressor_x ) * weight_x * observation_x );
-      auto const parameter_x = expr::compute( part1_x * part2_x );
-      //        std::cout << "parameter_x: \n" << parameter_x;
+      auto const part1_x       = form_inverse( expr::compute( transpose(regressor_x) * weight_x * regressor_x ) );
+      auto const part2_x       = expr::compute( transpose( regressor_x ) * weight_x * observation_x );
+      auto const parameter_x   = expr::compute( part1_x * part2_x );
       
       constexpr std::size_t const order_y = 2;
       auto const regressor_y = make_custom_matrix<N, order_y>(
@@ -1827,13 +1760,12 @@ public:
                                                               }
                                                               );
       auto const observation_y = matrix<N, 1>{ std::move(y_c) };
-      auto const weight_y = matrix<N, N>{ std::move(weight_y_c)};
+      auto const weight_y      = matrix<N, N>{ std::move(weight_y_c)};
       
       //computation splitted to reduce instantiation depth (not allowed over 900 for gcc by default)
-      auto const part1_y = form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) );
-      auto const part2_y = expr::compute( transpose( regressor_y ) * weight_y * observation_y );
-      auto const parameter_y = expr::compute( part1_y * part2_y );
-      //        std::cout << "parameter_y: \n" << parameter_y;
+      auto const part1_y       = form_inverse( expr::compute( transpose(regressor_y) * weight_y * regressor_y ) );
+      auto const part2_y       = expr::compute( transpose( regressor_y ) * weight_y * observation_y );
+      auto const parameter_y   = expr::compute( part1_y * part2_y );
       
       return {std::move(parameter_x.data()), 0, std::move(parameter_y.data()), 0};
    }
@@ -1856,8 +1788,6 @@ public:
             case 15:{ track.parameters = compute_polynomial_parameters<15>( cluster_c ); break; }
             case 16:{ track.parameters = compute_polynomial_parameters<16>( cluster_c ); break; }
          }
-         
-         
       }
       
       return std::move( track_pc );
@@ -1913,7 +1843,7 @@ public:
          double beam_speed = sqrt( pow(beam_energy_m*beam_mass_number_m, 2) + 2 * beam_mass_number_m * beam_mass_number_m * 931.5 * beam_energy_m )/(beam_mass_number_m * 931.5 + beam_mass_number_m * beam_energy_m) * 30;
          double additional_time = (track.get_clusters().front().evaluation_point - st_position_m)/beam_speed;
          double tof = (static_cast<TATWpoint const *>(track.get_clusters().back().data)->GetMeanTof() - additional_time);
-         //            double tof = (static_cast<TATWpoint const *>(track.get_clusters().back().data)->GetToF() - additional_time);
+
          if(tof < 0){ std::cerr << "Warning: time of flight is below zero\n";}
          track.tof = tof;
       }
@@ -1923,8 +1853,6 @@ public:
    constexpr std::vector< track > compute_momentum( std::vector<track>&& track_pc ) const {
       for( auto && track : track_pc){
          double beta = track.length/track.tof * 1./30;
-         //            puts(__PRETTY_FUNCTION__);
-         //            std::cout << "track_length: " << track.length << '\n' << "track_tof: " << track.tof << '\n';
          if(std::isnan(beta)){ std::cerr << "beta_is_nan: " << track.length << " - " << track.tof; }
          if( beta < 1 && beta > 0 && !std::isnan(beta)){
             double gamma = 1./sqrt(1 - pow(beta, 2));
@@ -1937,7 +1865,6 @@ public:
    }
    
    std::vector< track > refine_hypotheses( std::vector<track>&& track_pc ) {
-      //        puts(__PRETTY_FUNCTION__);
       int charge{};
       double momentum{};
       struct point{
@@ -1964,7 +1891,6 @@ public:
                                                     }
                                                     );
       auto position_stepper = make_stepper<data_grkn56>( std::move(position_ode) );
-      //        auto position_stepper = make_stepper<data_grkn4>( std::move(position_ode) );
       position_stepper.specify_tolerance(1e-14);
       
       auto compute_y_l = []( double z, auto const& track_p ){ return track_p.parameters.y[1] * z + track_p.parameters.y[0];  };
@@ -1987,7 +1913,6 @@ public:
          charge = track.hypothesis.properties.charge;
          double relative_momentum = track.momentum / track.hypothesis.properties.nucleon_number;
          std::vector<score_and_momentum> refined_c;
-         //            std::cout << "new_track\n";
          //
          std::uniform_real_distribution<> distribution{(track.get_clusters().begin()+1)->evaluation_point, track.get_clusters().back().evaluation_point};
          std::size_t const scoring_point_number = 10;
@@ -2000,10 +1925,8 @@ public:
              factor+=0.05 ){
             momentum = factor * relative_momentum;
             if(momentum < 150){  continue; }
-            //                std::cout << "momentum: " << momentum << '\n';
             
             auto starting_point = *(track.get_clusters().begin() +1);
-            //                auto starting_point = track.get_clusters().front();
             auto position_os = operating_state< matrix<2,1>, 2> {
                starting_point.evaluation_point,
                {
@@ -2026,7 +1949,6 @@ public:
                }
                step = scoring_point - position_os.evaluation_point;
                position_os = position_stepper.force_step( std::move(position_os), step );
-               //                    std::cout << "step/position: " << step << "/" << position_os.evaluation_point << '\n';
                
                matrix<2,1> position{ compute_x_l(position_os.evaluation_point, track), compute_y_l(position_os.evaluation_point, track)  };
                auto residuals = expr::compute(position_os.state( details::order_tag<0>{}) - position );
@@ -2069,11 +1991,13 @@ public:
                                                                    }
                                                                    );
             auto const observation = matrix<size, 1>{ std::move(score_c) };
-            auto const parameter = expr::compute( form_inverse( expr::compute( transpose(regressor) * regressor ) ) *
+            auto const parameter   = expr::compute( form_inverse( expr::compute( transpose(regressor) * regressor ) ) *
                                                  expr::compute( transpose( regressor ) * observation ) );
-            auto const projection = expr::compute( regressor * form_inverse( expr::compute( transpose(regressor) * regressor ) ) * transpose(regressor) );
-            auto const centering = expr::compute( make_identity_matrix<size>() - 1./size * make_custom_matrix<size,size>([](std::size_t){return 1.;}) );
+            auto const projection  = expr::compute( regressor * form_inverse( expr::compute( transpose(regressor) * regressor ) ) * transpose(regressor) );
+            auto const centering   = expr::compute( make_identity_matrix<size>() - 1./size * make_custom_matrix<size,size>([](std::size_t){return 1.;}) );
+            
             double determination_coefficient = expr::compute( transpose( observation) * transpose(projection) * centering * projection * observation) * form_inverse( expr::compute( transpose(observation) * centering * observation ) ) ;
+            
             track.determination_coefficient_scan = determination_coefficient;
             
             track.momentum = (-parameter(1,0)/(2*parameter(2,0)));
@@ -2085,10 +2009,8 @@ public:
             track.mass = track.momentum/(track.beta * gamma);
          }
          
-         //            tree_h->Fill();
       }
       
-      //        tree_h->Write();
       return track_pc;
    }
    
@@ -2103,15 +2025,12 @@ public:
          matcher_m.submit_reconstructed_track( track );
          // -----------------------------
          if( !reconstructed_track_mhc ){ continue; }
-         //            std::cout << "current_hypothesis_mass: " << track.particle.mass << std::endl;
-         //            std::cout << "reconstruction_momentum: "<< track.particle.momentum << "\n";
          auto * track_h = reconstructed_track_mhc->NewTrack(
                                                             track.mass /1000 ,
                                                             track.momentum / 1000.,
                                                             static_cast<double>(track.hypothesis.properties.charge),
                                                             track.tof
                                                             );
-         //            std::cout << "registered_momentum: " << track_h->GetMomentum() << "\n";
          TAGtrack::polynomial_fit_parameters parameters;
          parameters.parameter_x = track.parameters.x;
          parameters.parameter_y = track.parameters.y;
@@ -2119,11 +2038,8 @@ public:
          
          auto & value_c = track.get_clusters();
          for(auto& value : value_c){
-            //
-            //                std::cout << "( " << value.vector(0,0) <<  ", " << value.vector(1,0) <<  " ) -- ( " <<value.vector(2,0) << ", " << value.vector(3,0) <<  " ) -- " << value.evaluation_point << " -- " <<  value.chisquared << std::endl;
-            //                ////
+           
             TVector3 corrected_position{ value.vector(0,0), value.vector(1,0), value.evaluation_point };
-            //                corrected_position.Print();
             
             auto momentum_z = sqrt( pow( value.vector(2,0), 2) + pow( value.vector(3,0), 2) + 1 ) * track.momentum ;
             momentum_z /= 1000.;
@@ -2134,8 +2050,6 @@ public:
             TVector3 position_error{ 0.01 ,0.01, 0.01 };
             TVector3 momentum_error{ 10, 10, 10 };
             
-            
-            // track_h->AddCorrPoint( corrected_position, position_error, momentum, momentum_error ); //corr point not really meas
             
             if( value.data ){ //needed because first point is vertex, which has no cluster associated
                auto * transformation_h = static_cast<TAGgeoTrafo*>( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()));
@@ -2195,15 +2109,8 @@ public:
       logger_m << "mass: " << current_hypothesis_m.properties.mass << '\n';
       logger_m << "momentum: " << current_hypothesis_m.properties.momentum << '\n';
       
-      //   auto * root_h = current_node_mh->get_ancestor();
-      //   action_m.logger_m << "track_slope_x: " << root_h->get_value().vector(2, 0) << '\n';
-      //    action_m.logger_m << "track_slope_y: " << root_h->get_value().vector(3, 0) << '\n';
    }
-   
-   
-   
 };
-
 
 
 template<class UKF, class DetectorList>

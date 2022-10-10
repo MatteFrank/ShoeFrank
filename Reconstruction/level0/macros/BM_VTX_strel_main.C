@@ -1,4 +1,4 @@
-#include "BM_VTX_strel_func.cpp"
+#include "BM_VTX_strel_func.C"
 
 using namespace std;
 using namespace TMath;

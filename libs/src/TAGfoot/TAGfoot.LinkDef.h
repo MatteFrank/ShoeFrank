@@ -21,6 +21,8 @@
 #pragma link C++ class LocalRecoMC;
 #pragma link C++ class LocalReco;
 
+#pragma link C++ class ConvertNtuple;
+
 #pragma link C++ class TAGactNtuGlbTrack;
 #pragma link C++ class GlobalToeReco;
 

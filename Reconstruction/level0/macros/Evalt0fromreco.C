@@ -26,7 +26,7 @@
 using namespace std;
 using namespace TMath;
 
-void evalt0fromreco(TString in_filename, Bool_t evalreso=false){
+void Evalt0fromreco(TString in_filename, Bool_t evalreso=false){
 
   TFile *infile = new TFile(in_filename.Data(),"READ");
   if(!infile->IsOpen()){

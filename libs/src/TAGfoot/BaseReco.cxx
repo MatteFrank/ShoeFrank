@@ -113,13 +113,16 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActTrackIt(0x0),
    fActClusMsd(0x0),
    fActPointTw(0x0),
+#ifdef TOE_FLAG
    fActGlbTrack(0x0),
+#endif
    fActGlbTrackS(0x0),
    fFlagOut(true),
    fFlagTree(false),
    fFlagHits(false),
    fFlagHisto(false),
    fFlagTrack(false),
+   fFlagMsdPed(false),
    fFlagMsdTrack(false),
    fFlagTWbarCalib(false),
    fFlagRateSmearTw(false),
@@ -267,6 +270,7 @@ void BaseReco::GlobalSettings()
    Bool_t hit    = TAGrecoManager::GetPar()->IsSaveHits();
    Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
    Bool_t trkMsd = TAGrecoManager::GetPar()->IsMsdTracking();
+   Bool_t pedMsd = TAGrecoManager::GetPar()->IsMsdPedestal();
    Bool_t trkItr = TAGrecoManager::GetPar()->IsItrTracking();
    Bool_t obj    = TAGrecoManager::GetPar()->IsReadRootObj();
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
@@ -291,6 +295,9 @@ void BaseReco::GlobalSettings()
  
    if (trkMsd)
       EnableMsdTracking();
+   
+   if (pedMsd)
+      EnableMsdPedestal();
 
    if (trkItr)
       EnableItrTracking();
@@ -378,8 +385,10 @@ void BaseReco::LoopEvent(Int_t nEvents)
 //! Actions after loop event
 void BaseReco::AfterEventLoop()
 {
+#ifdef GENFIT_FLAG
    if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
-   
+#endif
+
    fTAGroot->EndEventLoop();
     
    if (fFlagOut)
@@ -409,17 +418,20 @@ void BaseReco::SetRecHistogramDir()
    
    if (fFlagTrack) {
 
+#ifdef GENFIT_FLAG
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
         TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
         fActGlbkFitter->SetHistogramDir(subfolder);
         if (TAGrecoManager::GetPar()->IsLocalReco()) return;
       }
-
+#endif
+#ifdef TOE_FLAG
       if (TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
          TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
          fActGlbTrack->SetHistogramDir(subfolder);
          if (TAGrecoManager::GetPar()->IsLocalReco()) return;
       }
+#endif
    }
 
    //BMN
@@ -956,6 +968,7 @@ void BaseReco::CreateRecActionCa()
 //! Create global track reconstruction TOE action
 void BaseReco::CreateRecActionGlb()
 {
+#ifdef TOE_FLAG
   if(fFlagRecCutter) {
      SetL0TreeBranches();
      return;
@@ -983,12 +996,14 @@ void BaseReco::CreateRecActionGlb()
     if (fFlagHisto)
       fActGlbTrack->CreateHistogram();
   }
+#endif
 }
 
 //__________________________________________________________
 //! Create global track reconstruction GenFit action
 void BaseReco::CreateRecActionGlbGF()
 {
+#ifdef GENFIT_FLAG
 	if(fFlagTrack) {
 		SetL0TreeBranches();
 
@@ -1026,6 +1041,7 @@ void BaseReco::CreateRecActionGlbGF()
 		if (fFlagHisto)
 			fActGlbkFitter->CreateHistogram();
 	}
+#endif
 }
 
 //__________________________________________________________

@@ -141,6 +141,9 @@ class GlobalRecoAna : public LocalReco {
   Int_t mass_nbin;
   Double_t **mass_binning;
 
+  //Unfolding
+  Int_t theta_bin_meas, Ek_bin_meas, theta_bin_true, Ek_bin_true;
+
   TFile *f;
 
   //TAGWDtrigInfo * wdTrig;

@@ -7,4 +7,9 @@
 //Framework : PhD thesis, CNRS/IPHC/DRS/DeSis, Strasbourg, France
 //
 
+/*!
+ \file TATOEprocedure.cxx
+ \brief   Implementation of TATOEprocedure.
+ */
+
 #include "TATOEprocedure.hxx"

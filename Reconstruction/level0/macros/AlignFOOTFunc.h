@@ -338,6 +338,9 @@ void Booking(TFile* file_out) {
   h2 = new TH2D("origin_xx_bmvtx_synch","BM originX vs VTX originX when they are synch;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
   h2 = new TH2D("origin_xx_bmvtx_unsynch","BM originX vs VTX originX current bunch of events;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
   h2 = new TH2D("origin_xx_bmvtx_lost","BM originX vs VTX originX after the unsync;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+  for(Int_t i=0;i<maxentries/checkrate;i++)
+    h2 = new TH2D(Form("origin_xx_bmvtx_%d",i),"BM originX vs VTX originX current bunch of events;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+  
   gDirectory->cd("..");
   file_out->cd("..");
 
@@ -389,8 +392,8 @@ void BeamMonitor(){
     cout<<"BeamMonitor start"<<endl;
 
   //BM reconstructed analysis
-    Int_t nbmHits  = bmNtuHit->GetHitsN();
-    myfill("BM/BM_Hit_num",nbmHits);
+    //~ Int_t nbmHits  = bmNtuHit->GetHitsN();
+    //~ myfill("BM/BM_Hit_num",nbmHits);
 
     ///BM tracks
     int  Nbmtrack = bmNtuTrack->GetTracksN();
@@ -590,6 +593,18 @@ void VTXSYNC(){
       ((TH2D*)gDirectory->Get("VTXSYNC/origin_xx_bmvtx_unsynch"))->Reset("ICESM");
     }
   }
+  
+  if(evnum%checkrate==0 && evnum>1){
+    Double_t corr=((TH2D*)gDirectory->Get(Form("VTXSYNC/origin_xx_bmvtx_%d",(int)((Double_t)evnum/checkrate)-1)))->GetCorrelationFactor();
+    if(corr<0.5 && vtxsynch==0){
+      cout<<"BM-VTX synch lost. correlation factor="<<corr<<endl<<"The correlation is lost somewhere between "<<evnum-checkrate<<" and "<<evnum<<endl;
+      vtxsynch=evnum;
+    }
+    if(corr>0.5 && vtxsynch!=0){
+      cout<<"BM-VTX synch recovered! correlation factor="<<corr<<endl<<"The correlation has been recovered somewhere between "<<evnum-checkrate<<" and "<<evnum<<endl;
+      vtxsynch=0;
+    }
+  }
 
   //select events with only one BM track and one vtx track
   if(bmNtuTrack->GetTracksN()!=1)
@@ -603,6 +618,7 @@ void VTXSYNC(){
   TAVTtrack *vttrack=vtxvertex->GetTrack(0);
   TABMtrack* bmtrack = bmNtuTrack->GetTrack(0);
   myfill("VTXSYNC/origin_xx_bmvtx_all",bmtrack->GetOrigin().X(),vttrack->GetOrigin().X());
+  myfill(Form("VTXSYNC/origin_xx_bmvtx_%d",(int)((Double_t)evnum/checkrate)),bmtrack->GetOrigin().X(),vttrack->GetOrigin().X());
   myfill((vtxsynch==0) ? "VTXSYNC/origin_xx_bmvtx_unsynch":"VTXSYNC/origin_xx_bmvtx_lost",bmtrack->GetOrigin().X(),vttrack->GetOrigin().X());
 
   if(debug)

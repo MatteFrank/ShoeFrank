@@ -64,7 +64,7 @@ Bool_t TAITactNtuClusterMT::Action()
    for (Int_t i = 0; i < pConfig->GetSensorsN(); i+=fThreadsN) {
       ThreadStart(i);
       ThreadJoin();
-      ThreadStop();
+    //  ThreadStop();
    }
    
    fpNtuClus->SetBit(kValid);

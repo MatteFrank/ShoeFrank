@@ -34,18 +34,8 @@ public:
    // Base creation of histogram
    virtual  void   CreateHistogram();
 
-   // Compute position
-   void    ComputePosition(TAMSDcluster* cluster);
-   // Compute center of gravity of cluster
-   void    ComputeCog(TAMSDcluster* cluster);
-   // Compute eta of cluster
-   void    ComputeEta(TAMSDcluster* cluster);
-   // Compute corrected energy of cluster
-   void    ComputeCorrEnergy(TAMSDcluster* cluster);
-
-
    //! Get list of strips for a given plane
-   TClonesArray*   GetListOfStrips()   const { return fListOfStrips;    }
+   TClonesArray* GetListOfStrips()     const { return fListOfStrips;    }
    
    //! Get position of current cluster
    Float_t       GetCurrentPosition()  const { return fCurrentPosition; }
@@ -91,9 +81,27 @@ private:
    TH1F*          fpHisClusChargeTot;  ///< Total cluster charge for all sensors
 
 private:
+   // Compute position
+   void    ComputePosition(TAMSDcluster* cluster);
+   // Compute eta of cluster
+   void    ComputeEta(TAMSDcluster* cluster);
+   // Compute corrected energy of cluster
+   void    ComputeCorrEnergy(TAMSDcluster* cluster);
+
+   // Search cluster
    void    SearchCluster();
-   void    FillMaps();
+   // Create cluster
    Bool_t  CreateClusters(Int_t iSensor);
+   // Fill maps
+   void    FillMaps();
+   
+private:
+   static  Bool_t fgSeedAlgo; ///< flag for seed algorithm
+   
+public:
+   static void   EnableSeedAlgo()  { fgSeedAlgo = true;  }
+   static void   DisableSeedAlgo() { fgSeedAlgo = false; }
+   static Bool_t IsSeedAlgo()      { return fgSeedAlgo;  }
 
    ClassDef(TAMSDactNtuCluster,1)
 };
