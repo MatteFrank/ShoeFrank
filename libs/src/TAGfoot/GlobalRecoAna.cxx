@@ -75,15 +75,35 @@ void GlobalRecoAna::LoopEvent() {
 
   TATWparGeo* TWparGeo = (TATWparGeo*)fpParGeoTw->Object();
   
+  int count_event = 0;
 
   while(gTAGroot->NextEvent()) { //for every event
-    //fFlagMC = true;     //N.B.: for MC FAKE REAL
+    //fFlagMC = false;     //N.B.: for MC FAKE REAL
     DiffApp_trkIdx = false;
-
+    //cout <<"current event: "<< currEvent << endl << "fixed current event: " <<count_event <<endl;
     if (currEvent % 100 == 0)
-      printf("Event: %d\n", currEvent);
-   if (debug_trackid ) myfile <<endl<<endl<<"current Event: " <<currEvent <<endl;
+      cout <<"current Event: " <<currEvent << "fixed current event:" <<count_event <<endl;
+   if (debug_trackid ) myfile <<endl<<endl<<"current Event: " <<currEvent << "fixed current event:" <<count_event <<endl;
 
+   
+
+
+    TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
+    resetStatus();
+    TATWntuPoint* myTWNtuPt = (TATWntuPoint*)fpNtuRecTw->GenerateObject();
+    TACAntuCluster* pCaNtuClu = (TACAntuCluster*)fpNtuClusCa->GenerateObject();
+
+    if(fFlagMC){
+      TAMCntuEvent* myMcNtuEvent = (TAMCntuEvent*)fpNtuMcEvt->GenerateObject();
+      TAMCntuPart* myMcNtuPart = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
+    }
+    //static TAGgeoTrafo*  geoTrafo; //geometry
+    //const double myangle = TMath::ATan(((TWparGeo->GetBarHeight()-2*TWparGeo->GetBarWidth())/2-TMath::Abs(geoTrafo->GetTWCenter().y())-0.7)/geoTrafo->GetTWCenter().z());  // in deg /TMath::Pi()*180 for rad
+   
+    Int_t nt =  myGlb->GetTracksN();
+    ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
+    if (nt != 0) ++count_event;
+    //fFlagMC = true;     //N.B.: for MC FAKE REAL
     if (fFlagMC == false){          // I accept only triggered events
 
     TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
@@ -96,26 +116,14 @@ void GlobalRecoAna::LoopEvent() {
     //cout << currEvent<<"* event: trigger event" << endl;
     }
 
-    //fFlagMC = false;   //N.B.: for MC FAKE REAL
+    //fFlagMC = false;     //N.B.: for MC FAKE REAL
 
-  
 
-    TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
-    resetStatus();
-    TATWntuPoint* myTWNtuPt = (TATWntuPoint*)fpNtuRecTw->GenerateObject();
-    TACAntuCluster* pCaNtuClu = (TACAntuCluster*)fpNtuClusCa->GenerateObject();
-    if(fFlagMC){
-      TAMCntuEvent* myMcNtuEvent = (TAMCntuEvent*)fpNtuMcEvt->GenerateObject();
-      TAMCntuPart* myMcNtuPart = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
-    }
-    //static TAGgeoTrafo*  geoTrafo; //geometry
-    //const double myangle = TMath::ATan(((TWparGeo->GetBarHeight()-2*TWparGeo->GetBarWidth())/2-TMath::Abs(geoTrafo->GetTWCenter().y())-0.7)/geoTrafo->GetTWCenter().z());  // in deg /TMath::Pi()*180 for rad
-   
-    Int_t nt =  myGlb->GetTracksN();
-    ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
     //    if(myVtTr->GetTracksN()>1){
     fEvtGlbTrkVec.clear();
     //*************  loop on global tracks *****************
+    bool isOxygenInEvent = false;
+    
 
     if (debug_trackid )myfile<<endl<< "------- track reconstruction "<< endl;
     for(int it=0;it<nt;it++){
@@ -125,7 +133,7 @@ void GlobalRecoAna::LoopEvent() {
       cout<<"TRK energy ISNAN! -> TOF value = "<<fGlbTrack->GetTwTof()<<endl;
       continue;
       }
-
+      bool isOxygenInEvent = false;
           
      
       Th_reco = fGlbTrack -> GetTgtTheta() *180./TMath::Pi();
@@ -146,7 +154,7 @@ void GlobalRecoAna::LoopEvent() {
      
       if(FootDebugLevel(1))
       cout<<"===NEW TRACK with "<<fGlbTrack->GetPointsN()<<" points =="<<endl;
-
+      
       map<int, int> mapclu;
       mapclu.clear();
       fGlbTrkVec.clear();
@@ -171,14 +179,14 @@ void GlobalRecoAna::LoopEvent() {
             itpoints.push_back(ic);
        if(cluID!=-1)
          mapclu[cluID]++;
-      }
+      }/*
       if(str.Contains(TAMSDparGeo::GetBaseName())){//msd
        MSDanal(tmp_poi, cluID);
           if(tmp_poi->GetClusterIdx()>=0)
             msdpoints.push_back(ic);
        if(cluID!=-1)
          mapclu[cluID]++;
-      }
+      }*/
       if(str.Contains(TATWparGeo::GetBaseName())){//tw
           TWanal(tmp_poi, cluID);
           if(tmp_poi->GetClusterIdx()>=0){
@@ -920,6 +928,9 @@ void GlobalRecoAna::LoopEvent() {
         pure_track_xcha.at(Z_meas).second++;
       } */
 
+      if (Z_meas==8) isOxygenInEvent = true;
+
+
       if(fGlbTrkVec.at(4).size()!=fGlbTrkVec.at(3).size() || fGlbTrkVec.at(3).size()>1){
         cout<<"WARNING in global reco:: the number of tw or calo hits associated to a global track is not the expected one:"<<endl;
         cout<<"number of associated twhits="<<fGlbTrkVec.at(3).size()<<"; number of associated calo hits:"<<fGlbTrkVec.at(4).size()<<endl;
@@ -932,8 +943,61 @@ void GlobalRecoAna::LoopEvent() {
     }
     //------------  end loop on ntracks
      
-   
-   
+     //loop su tracklets del vertex
+     // if oxygenexist (se ) and triggenON 
+     // stampo plot con theta di ogni traccia del vertex
+
+
+
+     //TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object();
+     TAVTntuVertex *vertexContainer = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
+    int vertexNumber = vertexContainer->GetVertexN();
+    TAVTvertex* vtxPD   = 0x0; //NEW
+
+    if (isOxygenInEvent == false && nt>0) { //trigger is already on 
+    for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) {
+      vtxPD = vertexContainer->GetVertex(iVtx);
+      /*if (vtxPD == 0x0){
+			cout << "Vertex number " << iVtx << " seems to be empty\n";
+			continue;
+		}
+		else if( !m_IsMC && !vtxPD->IsBmMatched() )
+		{
+			if(m_debug > 0)
+			{
+				Info("CategorizeVT()", "In event %d: vertex %d found but not matched with BM tracks; Skipping...",gTAGroot->CurrentEventId().EventNumber(), iVtx);
+			}
+			continue;
+		}*/
+
+    //loop over tracks for each Vertex
+		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
+
+			TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
+
+      double theta_vtx = tracklet->GetTheta();
+
+      //cout<< "theta vertex: " <<theta_vtx <<endl;      
+      ((TH1D*)gDirectory->Get("theta_VTX")) -> Fill( theta_vtx);
+
+
+    }
+    }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     if (debug_trackid ) myfile <<endl<< "-----------------  MC study "<< endl;
    
     if (fFlagMC){
@@ -1078,6 +1142,7 @@ void GlobalRecoAna::LoopEvent() {
                   particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
                   && Ek_true>100   //enough energy/n to go beyond the target
                   && theta_tr <= 8.  //  myangle // angular aperture < 8 deg
+                  && finalPos.Z() > 193.  //i want that my fragment reaches the TW
                   )  {                            
                          if (debug_trackid ) myfile << "  fluka ID - detected: " << particle->GetFlukaID() << endl << "   real charge: "<< particle-> GetCharge()<<endl;
                           Float_t charge_tr = particle-> GetCharge();
@@ -1128,6 +1193,70 @@ void GlobalRecoAna::LoopEvent() {
                         }
 
           //--END CROSS SECTION - TRUE PARAMETERS
+
+
+          //XSEC THETA <2
+                    //! NB: 50 IN GSI2021_MC
+                    //! NB: 59 IN 16O_400
+                    //! finalPos.Z() > 189.15 IN GSI2021_MC
+                    //! finalPos.Z() > 90 IN 16O_400
+
+
+          if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
+                  particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
+                  && Ek_true>100   //enough energy/n to go beyond the target
+                  && theta_tr <= 2.  //  myangle // angular aperture < 8 deg
+                  && finalPos.Z() > 193.  //i want that my fragment reaches the TW
+                  )  {                            
+                         if (debug_trackid ) myfile << "  fluka ID - detected: " << particle->GetFlukaID() << endl << "   real charge: "<< particle-> GetCharge()<<endl;
+                          Float_t charge_tr = particle-> GetCharge();
+                          ((TH1D*)gDirectory->Get("MC_check/Charge_MC_tg_tw")) -> Fill(charge_tr);                          
+                          ((TH1D*)gDirectory->Get("MC_check/Mass_MC_tg_tw")) -> Fill(particle-> GetMass());
+                          ((TH1D*)gDirectory->Get("MC_check/Ek_tot_MC_tg_tw")) -> Fill(Ek_tr_tot);
+                          ((TH1D*)gDirectory->Get("MC_check/InitPosZ_MC_tg_tw")) -> Fill(particle-> GetInitPos().Z() );      
+                          ((TH1D*)gDirectory->Get("MC_check/FinalPosZ_MC_tg_tw")) -> Fill(particle-> GetFinalPos().Z() );
+                          ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC_tg_tw")) -> Fill(particle-> GetTrkLength());            
+                          ((TH1D*)gDirectory->Get("MC_check/Type_MC_tg_tw")) -> Fill(particle-> GetType());            
+                          ((TH1D*)gDirectory->Get("MC_check/FlukaID_MC_tg_tw")) -> Fill(particle->  GetFlukaID());
+                          ((TH1D*)gDirectory->Get("MC_check/MotherID_MC_tg_tw")) -> Fill(particle->  GetMotherID());
+                          ((TH1D*)gDirectory->Get("MC_check/Theta_MC_tg_tw")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi());
+
+                          ((TH1D*)gDirectory->Get(Form("xsecrec-true_DET2/Z_true_DET")))->Fill(charge_tr);
+
+                         for (int i = 0; i<th_nbin; i++) {
+                         
+                         
+                          Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());          
+                          if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
+                           
+                            string path = "xsecrec-true_DET2/Z_" + to_string(int(charge_tr)) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
+                            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(theta_tr);
+                           
+                            /*for (int j=0; j < ek_nbin; j++) {
+                             
+                             
+                              if(Ek_tr_tot >=ek_binning[j][0] && Ek_tr_tot<ek_binning[j][1]) {
+                                           
+                                    for (int k=0; k < mass_nbin; k++) {
+                                      Float_t mass_tr = particle -> GetMass();
+                                    if(mass_tr>=mass_binning[k][0] && mass_tr <mass_binning[k][1]) {
+                               
+                                      ((TH1D*)gDirectory->Get(Form("xsecrec-true_DET/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
+                                     
+                                                           
+
+                                      }
+                                    }
+
+
+                                }
+
+                              }*/
+                            }
+                          }
+                        }
+
+                        //------------------------ end xsec theta<2
 
 
           }
@@ -1236,6 +1365,7 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("Mass","Mass [amu]",200, 0 ,20.);
   h = new TH1D("Mass_True","Mass_True [amu]",200, 0 ,20.);
   h = new TH1D("ThReco","",200, 0 ,50.);
+  h = new TH1D("theta_VTX","",200, 0 ,50.);
   h = new TH1D("ThTrue","",200, 0 ,50.);
   h = new TH1D("Tof_tw","TOF from TW center; [ns]",200, 0., 10.);
   h = new TH1D("Beta","Beta;",200, 0., 1.);
@@ -1695,6 +1825,54 @@ for (int i = 0; i<mass_nbin; i++) {
   gDirectory->cd("..");
   }
 //----------- end cross section TRUE
+
+
+// Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
+  if(fFlagMC){
+  gDirectory->mkdir("xsecrec-true_DET2");
+  gDirectory->cd("xsecrec-true_DET2");
+  h = new TH1D("Z_true_DET","",10, 0 ,10.);
+
+  for(int iz=0; iz<=primary_cha; iz++){
+    string pathZ = "Z_"+to_string(iz)+"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5); 
+    gDirectory->mkdir(pathZ.c_str());
+    gDirectory->cd(Form(pathZ.c_str()));
+
+   
+   // h = new TH1D("Theta_meas","",200, 0 ,20.);
+   // h = new TH1D("Ek_meas","",100, 0 ,800.);
+   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
+
+
+    for (int i = 0; i<th_nbin; i++) {
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      gDirectory->mkdir(path.c_str());
+      gDirectory->cd(path.c_str());
+      //h = new TH1D(Form("Ek_bin"),"",100, 0 ,800.);
+      //h = new TH1D(Form("Mass_bin"),"",200, 0 ,30.);
+      h = new TH1D("theta_","",200, 0 ,90.);
+
+      /*for (int j=0; j <ek_nbin; j++) {
+        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
+        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
+        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,30.);
+
+          for (int k=0; k<mass_nbin; k++) {
+            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
+            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
+            h = new TH1D("A_","",200, 0 ,30.);
+
+          gDirectory->cd("..");
+          }
+      gDirectory->cd("..");
+      }*/
+      gDirectory->cd("..");
+    }
+    gDirectory->cd("..");
+  }
+  gDirectory->cd("..");
+  }
+//----------- end cross section theta<2
 
 
   /*
