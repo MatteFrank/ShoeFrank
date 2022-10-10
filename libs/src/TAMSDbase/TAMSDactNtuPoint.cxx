@@ -120,9 +120,7 @@ Bool_t TAMSDactNtuPoint::FindPoints()
          TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iClus2);
          if (rowHit == 0) continue;
          
-         TAMSDpoint* point = pNtuPoint->NewPoint(iLayer/2,
-                                                 colHit->GetPosition().Y(), colHit->GetPosError().Y(), colHit,
-                                                 rowHit->GetPosition().X(), rowHit->GetPosError().X(), rowHit);
+         TAMSDpoint* point = pNtuPoint->NewPoint(iLayer/2, colHit, rowHit);
        
          auto posx =  rowHit->GetPositionG().X() + colHit->GetPositionG().X();
          auto posy =  rowHit->GetPositionG().Y() + colHit->GetPositionG().Y();

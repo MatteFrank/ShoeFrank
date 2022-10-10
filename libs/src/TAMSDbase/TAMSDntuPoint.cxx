@@ -67,15 +67,21 @@ TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
 //! \param[in] y position in y
 //! \param[in] dy error position in y
 //! \param[in] clusY cluster in Y plane
-TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY)
+TAMSDpoint::TAMSDpoint(Int_t layer, TAMSDcluster* clusX, TAMSDcluster* clusY)
  : TAGcluster(),
    fStation(layer),
    fChargeZ(0),
    fChargeZProba(0.)
 {
-   fPosition1.SetXYZ(x,y,0);
-   fPosError1.SetXYZ(dx,dy,0);
+   Double_t y1  = clusY->GetPosition().X() + clusY->GetPosition().Y();
+   Double_t dy1 = clusY->GetPosError().X() + clusY->GetPosError().Y();
    
+   Double_t x1  = clusX->GetPosition().X() + clusX->GetPosition().Y();
+   Double_t dx1 = clusX->GetPosError().X() + clusX->GetPosError().Y();
+
+   fPosition1.SetXYZ(x1,y1,0);
+   fPosError1.SetXYZ(dx1,dy1,0);
+      
    fDe1 = clusX->GetEnergyLoss();
    fDe2 = clusY->GetEnergyLoss();
 
@@ -170,11 +176,11 @@ TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 
 //! \param[in] y position in y
 //! \param[in] dy error position in y
 //! \param[in] clusY cluster in Y plane
-TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY)
+TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, TAMSDcluster* clusX, TAMSDcluster* clusY)
 {
    if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
       TClonesArray &pointArray = *GetListOfPoints(iStation);
-      TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, dx, clusX, y, dy, clusY);
+      TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, clusX, clusY);
       return point;
    } else {
       cout << Form("Wrong sensor number %d\n", iStation);
