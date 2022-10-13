@@ -128,7 +128,7 @@ int TAGFuploader::UploadClusVT(){
 			if (m_debug > 1)	      Info( "UploadClusVT()", "entered cycle clusVT of sensor %d", iSensor );
 
 			TAVTcluster* clus = vtclus->GetCluster(iSensor, iClus);
-			if(iClus != clus->GetClusterIdx())
+			if(m_debug > 1 && iClus != clus->GetClusterIdx())
 			{
 				Warning("UploadClusVT()","VT INDEX MISMATCH!! Index::%d  Idx::%d", iClus, clus->GetClusterIdx());
 			}
