@@ -88,7 +88,7 @@ Bool_t TAVTactStdDaqRaw::GetEvent()
 }
 
 //------------------------------------------+-----------------------------------
-//! Open ascii data sources.
+//! Open binary data sources.
 //!
 //! \param[in] name action name
 //! \param[in] opt open file options
