@@ -392,7 +392,7 @@ int TAGFselector::Categorize_dataLike( ) {
 	if(!TAGrecoManager::GetPar()->IncludeVT())
 	{
 		Error("Categorize_dataLike()", "Vertex is needed for data-like selection!");
-		throw -1;
+		exit(0);
 	}
 	else
 		CategorizeVT();
@@ -410,7 +410,9 @@ int TAGFselector::Categorize_dataLike( ) {
 	
 	if(TAGrecoManager::GetPar()->IncludeMSD())
 		CategorizeMSD();
-	
+	else
+		SetTrackSeedNoMSD();
+
 	if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
 
 	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
@@ -520,7 +522,7 @@ void TAGFselector::CategorizeVT()
 	TAVTvertex* vtxPD   = 0x0; //NEW
 
 	TVector3 pos_(0, 0, 0);		//global coord [cm]
-    TVector3 mom_(0, 0, 2.);	//GeV //considering that fragments have same velocity of beam this should be changed accordingly
+    TVector3 mom_(0, 0, 7.);	//GeV //considering that fragments have same velocity of beam this should be changed accordingly
 
     if ( m_debug > 1 )		cout << "TAGFselector::CategorizeVT()  --  " << vertexNumber << "\n";
 
@@ -905,6 +907,113 @@ void TAGFselector::CategorizeMSD()	{
 	}// end loop on GF Track candidates
 	delete m_fitter_extrapolation;
 
+}
+
+
+//! \brief Set the Track seed and perform first level fit of the track
+//!
+//! Auxiliary function to have a functioning VT tracklet extrapolation up to the TW when MSD is not included
+void TAGFselector::SetTrackSeedNoMSD()
+{
+	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
+
+	//Set the seed of the track fit when MSD is not included
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
+
+		//RZ: SET STATE SEED
+		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
+		int VTsensorId = m_SensorIDMap->GetSensorIDFromMeasID( firstTrackMeas->getHitId() );
+		TVector3 pos = TVector3( firstTrackMeas->getRawHitCoords()(0), firstTrackMeas->getRawHitCoords()(1), 0);
+		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
+		
+		if(m_debug > 0)
+		{
+			cout << "***POS SEED***\nVTX: "; pos.Print();
+		}
+
+		pos = pos - m_trackSlopeMap[itTrack->first]*pos.Z();
+
+		if(m_debug > 0)
+		{
+			cout << "TGT: "; pos.Print();
+		}
+
+		//Set mom seed for extrapolation: use track slope and then scale for particle mass hypo with beta of the primary
+		TVector3 mom = m_trackSlopeMap[itTrack->first];
+		
+		if(m_debug > 0)
+		{
+			cout << "\n***MOM SEED***\nDIR: "; mom.Print();
+		}
+
+		m_fitter_extrapolation->setMaxIterations(1);
+		float chi2 = 10000;
+		int idCardRep = -1;
+		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<"\n";
+
+		for(int repId = 0; repId < itTrack->second->getNumReps(); ++repId)
+		{
+			Track* testTrack = new Track(* itTrack->second );
+			int Z_Hypo = testTrack->getTrackRep(repId)->getPDGCharge();
+			double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(Z_Hypo) );
+			int A_Hypo = round(mass_Hypo/m_AMU);
+
+			if(m_debug > 0)	cout << "Z_Hypo::" << Z_Hypo << "\tA_Hypo::" << A_Hypo << "\n";
+
+			mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
+
+			if(m_debug > 0)
+			{
+				cout << "MOM: "; mom.Print();
+			}
+
+			testTrack->setStateSeed(pos, mom);
+			try
+			{
+				m_fitter_extrapolation->processTrackWithRep( testTrack, testTrack->getTrackRep(repId) );
+				
+				if(m_debug > 0)
+				{
+					cout << "Processed\n";
+					cout << "\t\t charge = " << Z_Hypo << "  chi2 = " << m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ) << "\n";
+				}
+
+				if(chi2 > m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ))
+				{
+					chi2 = m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) );
+					idCardRep = repId;
+				}
+			}
+			catch (genfit::Exception& e)
+			{
+				std::cerr << e.what();
+				continue;
+			}
+			delete testTrack;
+
+		}
+
+		//Set cardinal rep as the one with the best chi2
+		itTrack->second->setCardinalRep( idCardRep );
+		
+		double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( itTrack->second->getCardinalRep()->getPDGCharge() ) );
+		int A_Hypo = round(mass_Hypo/m_AMU);
+
+		mom.SetMag( TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
+
+		itTrack->second->setStateSeed(pos, mom);
+		m_fitter_extrapolation->processTrackWithRep( itTrack->second, itTrack->second->getCardinalRep() );
+
+		if(m_debug > 0)
+		{
+			itTrack->second->getCardinalRep()->Print();
+			cout << "CardRep charge::" << itTrack->second->getCardinalRep()->getPDGCharge() << "\n";
+		}
+		
+		++itTrack;
+
+	}// end loop on GF Track candidates
+	delete m_fitter_extrapolation;
 }
 
 
@@ -1520,8 +1629,9 @@ TVector3 TAGFselector::ExtrapolateToOuterTracker( Track* trackToFit, int whichPl
 		repId = trackToFit->getCardinalRepId();
 	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(-1, trackToFit->getTrackRep(repId));
 	if (tp == nullptr) {
-		Error("ExtrapolateToOuterTracker()", "Track has no TrackPoint with fitterInfo");
-		exit(0);
+		// Error("ExtrapolateToOuterTracker()", "Track has no TrackPoint with fitterInfo");
+		// exit(0);
+		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
 	if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasForwardUpdate() )  == false) {
