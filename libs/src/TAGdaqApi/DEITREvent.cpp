@@ -15,6 +15,8 @@
 
 const u_int DEITREvent::m_itrHeader = 0xfafafafa;
 const u_int DEITREvent::m_itrTail   = 0xabcdabcd;
+const u_int DEITREvent::m_maxSize   = 2047;
+
 
 //------------------------------------------+-----------------------------------
 //! Constructor.
@@ -75,7 +77,7 @@ void DEITREvent::readData(unsigned int **p1)
 {
    evtSize   = 0;
    u_int * p = *p1;
-   u_int * p_max = *p1 + 2047;
+   u_int * p_max = *p1 + m_maxSize;
    
    channelID= *p;
    ++p;

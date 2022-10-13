@@ -43,7 +43,8 @@ class DEITREvent : public RemoteEvent {
   protected:
    static const u_int  m_itrHeader; ///< ITR header
    static const u_int  m_itrTail;   ///< ITR tailer
-   
+   static const u_int  m_maxSize;   ///< ITR maximum event size
+
 };
 
 #endif
