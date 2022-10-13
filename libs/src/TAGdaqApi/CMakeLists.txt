@@ -22,6 +22,7 @@ set( EXTRA_EXTERNAL_LIBRARIES "")
 set( files
    BaseFragment
    DECardEvent
+   DEITREvent
    DEMSDEvent
    EventReaderAndChecker
    TDCEvent

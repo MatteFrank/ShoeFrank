@@ -5,7 +5,7 @@
 
 #include "TH2F.h"
 
-#include "DECardEvent.hh"
+#include "DEITREvent.hh"
 #include "DAQMarkers.hh"
 
 #include "TAGrecoManager.hxx"
@@ -73,8 +73,8 @@ Bool_t TAITactNtuHit::Action()
    for (Int_t i = 0; i < nFragments; ++i) {
       
        TString type = datDaq->GetClassType(i);
-       if (type.Contains("DECardEvent")) {
-          const DECardEvent* evt = static_cast<const DECardEvent*> (datDaq->GetFragment(i));
+       if (type.Contains("DEITREvent")) {
+          const DEITREvent* evt = static_cast<const DEITREvent*> (datDaq->GetFragment(i));
           fData      = evt->values;
           fEventSize = evt->evtSize;
           fDataLink  = evt->channelID - (dataVTX | 0x30);
@@ -143,7 +143,7 @@ Bool_t TAITactNtuHit::DecodeEvent()
 Bool_t TAITactNtuHit::GetVtxHeader()
 {
    do {
-      if (fData[fIndex] == DECardEvent::GetVertexHeader()) {
+      if (fData[fIndex] == DEITREvent::GetItrHeader()) {
          return true;
       }
    } while (fIndex++ < fEventSize);
