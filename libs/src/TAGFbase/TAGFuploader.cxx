@@ -285,8 +285,6 @@ map< int, vector<int> >* TAGFuploader::TakeMeasParticleMC_Collection() {
 
 
 
-
-
 // to be checked
 int TAGFuploader::GetTWTrackFixed ( TATWpoint* point ) {
 
@@ -320,31 +318,6 @@ int TAGFuploader::GetTWTrackFixed ( TATWpoint* point ) {
 //! \param[out] chVect Pointer to vector where to store the possible charge values
 void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 
-	// // -------- TW CHARGE RETRIEVE NOT WORKING with Sept2020 but only with TruthParticles -----------------
-
-	// TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-	// int tmp_ch;
-
-	// // save hits in the collection
-	// for (int iPoint = 0; iPoint < twPoint->GetPointsN(); iPoint++) {
-
-	// 	TATWpoint* point = twPoint->GetPoint( iPoint );
-
-	// 	tmp_ch = point->GetChargeZ();
-	// 	// if ( m_debug > 1 ) 
-	// 		cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
-	// 	if ( tmp_ch > -1) {
-
-	// 		if ( find( chVect->begin(), chVect->end(), tmp_ch ) == chVect->end() )
-	// 			chVect->push_back( tmp_ch );	
-
-	// 	}
-
-	// // // 	// check if correct MC charge... for cross check only
-		
-	// }
-
-
 	if( IsMC )
 	{	
 		TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
@@ -361,12 +334,27 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 			}
 		}
 	}
-	else
+	else //data-like: get all possible charges from TW
 	{
-		for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
+		// for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
+		TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
+		int tmp_ch;
+
+		// save hits in the collection
+		for (int iPoint = 0; iPoint < twPoint->GetPointsN(); iPoint++) {
+
+			TATWpoint* point = twPoint->GetPoint( iPoint );
+			tmp_ch = point->GetChargeZ();
+
+			if ( m_debug > 1 ) cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
+			
+			if ( tmp_ch > -1)
+			{
+				if ( find( chVect->begin(), chVect->end(), tmp_ch ) == chVect->end() )
+					chVect->push_back( tmp_ch );	
+			}
+		}
 	}
-
-
 }
 
 

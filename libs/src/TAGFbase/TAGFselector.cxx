@@ -516,7 +516,7 @@ void TAGFselector::CategorizeVT()
 {
 	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object();
 		//cluster test
-	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the riht clus Index -> TO BE CHANGED!
+	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
 
 	int vertexNumber = vertexContainer->GetVertexN();
 	TAVTvertex* vtxPD   = 0x0; //NEW
@@ -542,7 +542,7 @@ void TAGFselector::CategorizeVT()
 			continue;
 		}
 
-		if ( m_debug > 0 )		cout  << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<"\n";
+		if ( m_debug > 0 )	cout << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<"\n";
 
 		//loop over tracks for each Vertex
 		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {

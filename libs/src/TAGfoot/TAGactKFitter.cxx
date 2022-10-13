@@ -479,23 +479,19 @@ void TAGactKFitter::CreateGeometry()  {
 			yMax = m_VT_geo->GetEpiOffset().Y() + m_VT_geo->GetEpiSize().Y()/2;
 			genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane(xMin, xMax, yMin, yMax);
 			TVector3 normal_versor = TVector3(0,0,1);
-			TVector3 trafoNorm =  m_VT_geo->Detector2SensorVect(i, normal_versor);
+			TVector3 trafoNorm = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, normal_versor));
 			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, trafoNorm, activeArea));
 
 			//Set versors
 			TVector3 U(1.,0,0);
 			TVector3 V(0,1.,0);
-			TVector3 trafoU = m_VT_geo->Detector2SensorVect(i, U);
-			TVector3 trafoV = m_VT_geo->Detector2SensorVect(i, V);
-			detectorplane->setU(trafoU);
-			detectorplane->setV(trafoV);
-			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "VT");
-			++indexOfPlane;
-
+			TVector3 trafoU = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, U));
+			TVector3 trafoV = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, V));
+			// detectorplane->setU(trafoU);
+			// detectorplane->setV(trafoV);
 			// Some debug print-outs for geometry
-			if(m_debug > 1)
-			{
+			// if(m_debug > 1)
+			// {
 				cout << "VT sensor::" << i << endl;
 				cout << "origin::"; origin_.Print();
 				cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
@@ -504,7 +500,12 @@ void TAGactKFitter::CreateGeometry()  {
 				cout << "trafoU::"; trafoU.Print();
 				cout << "trafoV::"; trafoV.Print();
 				cout << "Z versor::"; trafoNorm.Print();
-			}
+			// }
+			detectorplane->setUV(trafoU, trafoV);
+			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
+			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "VT");
+			++indexOfPlane;
+
 		}
 	}
 
@@ -840,7 +841,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
-		cout << "display->addEvent size  " << m_vectorConvergedTrack.size() << "\n";
+		if (m_vectorConvergedTrack.size() > 1)
+			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << "display->addEvent size " << m_vectorConvergedTrack.size() << "\n";
 		display->addEvent(m_vectorConvergedTrack);
 	}
 	m_vectorConvergedTrack.clear();

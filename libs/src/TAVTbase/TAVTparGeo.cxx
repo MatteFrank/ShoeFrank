@@ -257,19 +257,19 @@ string TAVTparGeo::PrintRotations()
 	  //rot around x
 	  if(fSensorParameter[iSens].Tilt[0]!=0){
 	    ss << PrintCard("ROT-DEFI", "100.", "",
-			    Form("%f",fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
+			    Form("%f",-fSensorParameter[iSens].Tilt[0]*TMath::RadToDeg()),
 			    "", "", "", Form("vt_%d",iSens) ) << endl;
 	  }
 	  //rot around y      
 	  if(fSensorParameter[iSens].Tilt[1]!=0){
 	    ss << PrintCard("ROT-DEFI", "200.", "",
-			    Form("%f",fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
+			    Form("%f",-fSensorParameter[iSens].Tilt[1]*TMath::RadToDeg()),
 			    "", "", "", Form("vt_%d",iSens) ) << endl;
 	  }
 	  //rot around z
 	  if(fSensorParameter[iSens].Tilt[2]!=0){
 	    ss << PrintCard("ROT-DEFI", "300.", "",
-			    Form("%f",fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
+			    Form("%f",-fSensorParameter[iSens].Tilt[2]*TMath::RadToDeg()),
 			    "", "", "", Form("vt_%d",iSens) ) << endl;
 	  }
 	  
@@ -285,15 +285,15 @@ string TAVTparGeo::PrintRotations()
 	if(fAngle.Mag()!=0){
 	  
 	  if(fAngle.X()!=0){
-	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",-fAngle.X()),"", "", 
 			    "", Form("vt_%d",iSens)) << endl;
 	  }
 	  if(fAngle.Y()!=0){
-	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",-fAngle.Y()),"", "", 
 			    "", Form("vt_%d",iSens)) << endl;
 	  }
 	  if(fAngle.Z()!=0){
-	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",-fAngle.Z()),"", "", 
 			    "", Form("vt_%d",iSens)) << endl;
 	  }
 	}
