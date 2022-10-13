@@ -1,6 +1,6 @@
 /*!
  \file  TAITactStdDaqRaw.cxx
- \brief   Get vertex raw data from re-synchronized sensors in single file (binary format)
+ \brief Implementation of TAITactStdDaqRaw
  */
 
 #include "DECardEvent.hh"
@@ -15,7 +15,7 @@
 
 /*!
  \class TAITactStdDaqRaw
- \brief Get vertex raw data from re-synchronized sensors in single file (binary format)
+ \brief Get ITR raw data from single file (binary format)
  */
 
 //! Class Imp
