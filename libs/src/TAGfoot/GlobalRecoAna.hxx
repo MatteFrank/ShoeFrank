@@ -23,13 +23,15 @@
 #include "TAGdataDsc.hxx"
 
 #include "BaseReco.hxx"
+#include "LocalReco.hxx"
 #include "TAGrunInfo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "GlobalRecoMassAna.hxx"
+#include "TAGWDtrigInfo.hxx"
 
 using namespace std;
 
-class GlobalRecoAna : public BaseReco {
+class GlobalRecoAna : public LocalReco {
 
   public:
   GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t nTotEv);
@@ -143,6 +145,13 @@ class GlobalRecoAna : public BaseReco {
   Int_t theta_bin_meas, Ek_bin_meas, theta_bin_true, Ek_bin_true;
 
   TFile *f;
+
+  //TAGWDtrigInfo * wdTrig;
+  //TAGdataDsc*           fpwdTrig;     ///< trigger
+
+  //! MC BM hit container Getter
+   //TAGWDtrigInfo*          GetTrigInfo()        const { return (TAGWDtrigInfo*)fpwdTrig->Object();         }
+
 
 };
 
