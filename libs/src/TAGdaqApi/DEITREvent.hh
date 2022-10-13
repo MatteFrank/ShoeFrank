@@ -35,9 +35,9 @@ class DEITREvent : public RemoteEvent {
    
    
   public:
-   //! Get VTX header file
+   //! Get ITR header file
    static  u_int  GetItrHeader()        { return m_itrHeader; }
-   //! Get VTX tailer file
+   //! Get ITR tailer file
    static  u_int  GetItrTail()          { return m_itrTail;   }
 
   protected:
