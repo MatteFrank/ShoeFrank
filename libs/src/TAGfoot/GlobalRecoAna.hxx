@@ -152,6 +152,8 @@ class GlobalRecoAna : public LocalReco {
   //! MC BM hit container Getter
    //TAGWDtrigInfo*          GetTrigInfo()        const { return (TAGWDtrigInfo*)fpwdTrig->Object();         }
 
+  TVector3 vertex_direction_frag;
+  TVector3 vertex_direction;
 
 };
 

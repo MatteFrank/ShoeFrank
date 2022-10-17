@@ -49,6 +49,7 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   purity_cut=0.51;
   clean_cut=1.;
   nTotEv=innTotEv;
+ 
 
 
   Th_meas = -999.; //maybe we should use a config file?  //!theta mes     //questo viene ottenuto ispezionando il vtx
@@ -56,6 +57,12 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
 
   f = new TFile(fileNameIn.Data(),"READ");
 
+  /*    already done in BaseReco.cxx
+  TAGgeoTrafo *geoTrafo = (TAGgeoTrafo*) fpFootGeo->GenerateObject();
+    TAGcampaignManager* campManager = (TAGcampaignManager*) fCampManager ->GenerateObject(); ///< Campaign manager
+    TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+     geoTrafo->FromFile(parFileName);
+  */
   
   //TFile *f_out = new TFile(fileNameout.Data());
 
@@ -106,6 +113,9 @@ void GlobalRecoAna::LoopEvent() {
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
     if (nt != 0) ++count_event;
     //fFlagMC = true;     //N.B.: for MC FAKE REAL
+    
+    
+    /*
     if (fFlagMC == false){          // I accept only triggered events
 
     TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
@@ -115,8 +125,18 @@ void GlobalRecoAna::LoopEvent() {
       ++currEvent;
       continue;
     }
+
+
+
+
+    if (currEvent == nTotEv) {     //!temporaneo
+      break;
+    }  
+
+
+    
     //cout << currEvent<<"* event: trigger event" << endl;
-    }
+    }*/
 
     //fFlagMC = false;     //N.B.: for MC FAKE REAL
 
@@ -759,7 +779,7 @@ void GlobalRecoAna::LoopEvent() {
       
      
       if (fFlagMC == false){
-      
+      TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
 
 
 
@@ -767,8 +787,10 @@ void GlobalRecoAna::LoopEvent() {
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
       if (
       Z_meas >0. && Z_meas <= primary_cha
+      && wdTrig -> GetTriggersStatus()[1] == 1     //fragmentation hardware trigger ON
       //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
       ) {  
+        ((TH1D*)gDirectory->Get("ThReco_frag"))->Fill(Th_reco);
         ((TH1D*)gDirectory->Get("xsecrec-trkREAL/charge"))->Fill(Z_meas);
       //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
       //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
@@ -881,6 +903,10 @@ void GlobalRecoAna::LoopEvent() {
       ((TH1D*)gDirectory->Get("Energy"))->Fill(Ek_meas*fpFootGeo->GevToMev());
       ((TH1D*)gDirectory->Get("Charge_trk"))->Fill(Z_meas);
       ((TH1D*)gDirectory->Get("Charge_trk_True"))->Fill(Z_true);
+      ((TH2D*)gDirectory->Get("Z_track_Mixing_matrix"))->Fill(Z_meas,Z_true);
+      
+
+
       // charge purity
       if (Z_meas == Z_true){        
         ((TH1D*)gDirectory->Get("Charge_purity")) -> Fill(Z_meas);
@@ -891,6 +917,7 @@ void GlobalRecoAna::LoopEvent() {
       ((TH1D*)gDirectory->Get("Mass"))->Fill(M_meas);
       ((TH1D*)gDirectory->Get("Mass_True"))->Fill(M_true);
       ((TH1D*)gDirectory->Get("ThReco"))->Fill(Th_reco);
+
       ((TH1D*)gDirectory->Get("ThTrue"))->Fill(Th_true);
       ((TH1D*)gDirectory->Get("Tof_tw"))->Fill(Tof_tw);
       ((TH1D*)gDirectory->Get("Beta"))->Fill(beta);
@@ -973,18 +1000,24 @@ void GlobalRecoAna::LoopEvent() {
     }
     //------------  end loop on ntracks
      
-     //loop su tracklets del vertex
-     // if oxygenexist (se ) and triggenON 
-     // stampo plot con theta di ogni traccia del vertex
-
-
-
-     //TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object();
-     TAVTntuVertex *vertexContainer = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
+    
+    //-------------- STUDY OF VERTEX AND TW ALLIGNMENT / ROTATIONS
+    TAVTntuVertex *vertexContainer = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
     int vertexNumber = vertexContainer->GetVertexN();
     TAVTvertex* vtxPD   = 0x0; //NEW
+    
+    
+    int TWpointsNumber = myTWNtuPt->GetPointsN();
+    //cout << nTWpoints <<endl;
+    
+    
 
-    if (isOxygenInEvent == false && nt>0) { //trigger is already on 
+    if (fFlagMC == false) {
+    TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
+
+    cout << "event: "<< currEvent << " -- n tracks: "<< nt <<" -- n tracklets of vertex: "<< vertexNumber << endl;
+
+    //study of VT tracklets
     for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) {
       vtxPD = vertexContainer->GetVertex(iVtx);
       /*if (vtxPD == 0x0){
@@ -1002,18 +1035,85 @@ void GlobalRecoAna::LoopEvent() {
 
     //loop over tracks for each Vertex
 		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
+      
+      
 
 			TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
+      TVector3 direction = (tracklet->GetSlopeZ()).Unit();
 
-      double theta_vtx = tracklet->GetTheta();
+      double theta_vtx = direction.Theta()*TMath::RadToDeg();
+      double phi_vtx = direction.Phi()*TMath::RadToDeg();
 
       //cout<< "theta vertex: " <<theta_vtx <<endl;      
+     
+
+       TVector3 direction_glb = fpFootGeo->FromVTLocalToGlobal(direction);
+       double phi_vtx_glb = direction_glb.Phi()*TMath::RadToDeg();
+       
+      //projection of a trackel on TW
+      
+      Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+      posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
+      TVector3 A3 = tracklet->Intersection(posZtw);
+      TVector3 A4 = fpFootGeo->FromVTLocalToGlobal(A3);
+      Float_t VTTWX = A4.X();
+      Float_t VTTWY = A4.Y(); //questi sono in coordinate globali
+
+      
+
+      if (isOxygenInEvent == false /*&& nt>0*/ && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
+      ((TH2D*)gDirectory->Get("vt_twProjection_frag")) -> Fill(VTTWX,VTTWY);
+      ((TH1D*)gDirectory->Get("phi_VTX_global_frag")) -> Fill( phi_vtx_glb);
+      ((TH1D*)gDirectory->Get("theta_VTX_frag")) -> Fill( theta_vtx);
+      ((TH1D*)gDirectory->Get("phi_VTX_frag")) -> Fill( phi_vtx);          
+      vertex_direction_frag += direction_glb;
+      } else if (wdTrig -> GetTriggerID() == 40) {
+      ((TH2D*)gDirectory->Get("vt_twProjection")) -> Fill(VTTWX,VTTWY);
+      ((TH1D*)gDirectory->Get("phi_VTX_global")) -> Fill( phi_vtx_glb);
       ((TH1D*)gDirectory->Get("theta_VTX")) -> Fill( theta_vtx);
+      ((TH1D*)gDirectory->Get("phi_VTX")) -> Fill( phi_vtx); 
+      vertex_direction += direction_glb;
+      }
+
+    }
+
+    
+
+    
+    
 
 
     }
+    
+
+
+    //study of tw points
+    for(int ipoint=0; ipoint<TWpointsNumber; ipoint++) {
+      TATWpoint *twp = myTWNtuPt->GetPoint(ipoint);
+      //Float_t tw_x = fpFootGeo->FromTWLocalToGlobal((twp->GetRowHit())->GetPosition()); // global frame
+      //Float_t tw_y = fpFootGeo->FromTWLocalToGlobal((twp->GetColumnHit())->GetPosition());
+
+      if (isOxygenInEvent == false && nt>0 && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
+      ((TH2D*)gDirectory->Get("TWpointsDistribution_frag")) -> Fill(twp->GetPositionGlb().X(),twp->GetPositionGlb().Y()); //global frame
+      
+      } else if (wdTrig -> GetTriggerID() == 40) {
+        //int Z_tw_reco = twp-> GetChargeZ();
+        //TAMCpart *pNtuMcTrk_ = GetNtuMcTrk()->GetTrack(twp->GetPointMatchMCtrkID());
+        //int Z_tw_MC = pNtuMcTrk_ ->GetCharge(); 
+
+        //((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix"))->Fill(Z_tw_reco,Z_tw_MC);
+
+        ((TH2D*)gDirectory->Get("TWpointsDistribution")) -> Fill(twp->GetPositionGlb().X(),twp->GetPositionGlb().Y()); //global frame  
+
+
+
+
+      }
     }
+
+
     }
+    
 
 
 
@@ -1326,6 +1426,11 @@ void GlobalRecoAna::LoopEvent() {
             double CosTheta = initMom(2)/InitPmod;
             double Theta = TMath::ACos(CosTheta)*180./TMath::Pi();
             int indexSize = twp->GetMcTracksN();
+
+            ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix")) -> Fill(charge,Z_MC); //global frame 
+
+
+
             //if(charge > 0 && charge < kCharges+1 && moth == primaryID && reg == TG_region && Ekin_point > 100. && finalPos(2) > 190. && momang <= myangle && initPos.x()<sigma_beamTG && initPos.x()>-sigma_beamTG && initPos.y()<sigma_beamTG && initPos.y()>-sigma_beamTG && Ekin_point <= Ekin_max){
                                                               //NB: 50 IN GSI2021
             if(charge > 0 && charge <9 && moth == 0 && reg == 50 && finalPos(2) > 190.) {   // i want only the particles generated in the target toward the TW
@@ -1365,8 +1470,9 @@ void GlobalRecoAna::LoopEvent() {
    
     ++currEvent;
 
+    //if (currEvent == nTotEv) {
     if (currEvent == nTotEv) {
-     
+      
       break;
     }
   }//end event loop
@@ -1389,16 +1495,36 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("Energy","",100, 0 ,800.);
   h = new TH1D("Charge_trk","",10, 0 ,10.);
   h = new TH1D("Charge_trk_True","",10, 0 ,10.);
+  h2 = new TH2D("Z_track_Mixing_matrix", "Mixing_matrix",8,0.5,9.,8,1.,8.5);
+  h2 = new TH2D("Z_tw_Mixing_matrix", "Mixing_matrix",8,0.5,9.,8,1.,8.5);
+  
   //h = new TH1D("Charge_efficiency","Charge_trk_True / Charge_MC ",10, 0 ,10.);
  
   h = new TH1D("Charge_purity","",10, 0 ,10.);
   h = new TH1D("Mass","Mass [amu]",200, 0 ,20.);
   h = new TH1D("Mass_True","Mass_True [amu]",200, 0 ,20.);
   h = new TH1D("ThReco","",200, 0 ,50.);
-  h = new TH1D("theta_VTX","",200, 0 ,50.);
+  h = new TH1D("ThReco_frag","",200, 0 ,50.);
+  h = new TH1D("ThReco","",200, 0 ,50.);
+  h = new TH1D("theta_VTX_frag","",100, 0 ,50.);
+  h = new TH1D("theta_VTX","",100, 0 ,50.);
+  h = new TH1D("phi_VTX_frag","",100, -180 ,180.);
+  h = new TH1D("phi_VTX","",100, -180 ,180.);
+  h = new TH1D("phi_VTX_global_frag","",100, -180 ,180.);
+  h = new TH1D("phi_VTX_global","",100, -180 ,180.);
+  
   h = new TH1D("ThTrue","",200, 0 ,50.);
   h = new TH1D("Tof_tw","TOF from TW center; [ns]",200, 0., 10.);
   h = new TH1D("Beta","Beta;",200, 0., 1.);
+
+  h2  = new TH2D("trackletdirection_frag","",40, -2 ,2., 40, -2 ,2.);
+  h2  = new TH2D("trackletdirection","",40, -2 ,2., 40, -2 ,2.);
+  h2  = new TH2D("vt_twProjection_frag","",20, -10 ,10., 20, -10 ,10.);
+  h2  = new TH2D("vt_twProjection","",20, -10 ,10., 20, -10 ,10.);
+  h2  = new TH2D("TWpointsDistribution_frag","",40, -20. ,20., 40, -20 ,20.);
+  h2  = new TH2D("TWpointsDistribution","",40, -20. ,20., 40, -20 ,20.);
+  
+  
 
   h2  = new TH2D("Z_truevsZ_reco_TWFixed","",10, 0 ,10., 10, 0 ,10.);
   h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","",10, 0 ,10., 10, 0 ,10.);
@@ -3236,7 +3362,16 @@ void GlobalRecoAna::AfterEventLoop(){
     }
       h = new TH1D(luminosity_name.c_str(),"",1, 0. ,1.);
       ((TH1D*)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1,Ntg*nTotEv  );
-     
+
+  if (fFlagMC == false){  
+  //stamp direction of every vertex object    
+  ((TH2D*)gDirectory->Get("trackletdirection_frag")) -> Fill(vertex_direction_frag.X(),vertex_direction_frag.Y());
+  cout << "fragment vtx direction: X= " << vertex_direction_frag.X() << " Y= " << vertex_direction_frag.Y() << " theta = " << vertex_direction_frag.Theta()*180/TMath::Pi() << " phi = " << vertex_direction_frag.Phi()*180/TMath::Pi() << endl;
+
+  ((TH2D*)gDirectory->Get("trackletdirection")) -> Fill(vertex_direction.X(),vertex_direction.Y());
+  cout << "beam vtx direction: X= " << vertex_direction.X() << " Y= " << vertex_direction.Y() << " theta = " << vertex_direction.Theta()*180/TMath::Pi() << " phi = " << vertex_direction.Phi()*180/TMath::Pi() << endl;
+
+  }
 
     //h =  ((TH1D*)gDirectory->Get("Charge_trk_True")) -> Clone();
   //=  ((TH1D*)gDirectory->Get("Charge_trk_True")) -> Divide(((TH1D*)gDirectory->Get("Charge_True")));
