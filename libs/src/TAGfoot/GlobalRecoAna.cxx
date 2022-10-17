@@ -2003,7 +2003,7 @@ for (int i = 0; i<mass_nbin; i++) {
   for(int iz=0; iz<=primary_cha; iz++){
     string pathZ = "Z_"+to_string(iz)+"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5); 
     gDirectory->mkdir(pathZ.c_str());
-    gDirectory->cd(Form(pathZ.c_str()));
+    gDirectory->cd(pathZ.c_str());
 
    
    // h = new TH1D("Theta_meas","",200, 0 ,20.);

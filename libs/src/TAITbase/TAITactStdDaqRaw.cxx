@@ -1,6 +1,6 @@
 /*!
- \file  TAVTactStdDaqRaw.cxx
- \brief   Get vertex raw data from re-synchronized sensors in single file (binary format)
+ \file  TAITactStdDaqRaw.cxx
+ \brief Implementation of TAITactStdDaqRaw
  */
 
 #include "DECardEvent.hh"
@@ -8,18 +8,18 @@
 #include "TAGrecoManager.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAGroot.hxx"
-#include "TAVTparGeo.hxx"
-#include "TAVTparConf.hxx"
+#include "TAITparGeo.hxx"
+#include "TAITparConf.hxx"
 
-#include "TAVTactStdDaqRaw.hxx"
+#include "TAITactStdDaqRaw.hxx"
 
 /*!
- \class TAVTactStdDaqRaw
- \brief Get vertex raw data from re-synchronized sensors in single file (binary format)
+ \class TAITactStdDaqRaw
+ \brief Get ITR raw data from single file (binary format)
  */
 
 //! Class Imp
-ClassImp(TAVTactStdDaqRaw);
+ClassImp(TAITactStdDaqRaw);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -29,23 +29,23 @@ ClassImp(TAVTactStdDaqRaw);
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pParMap mapping parameter descriptor
-TAVTactStdDaqRaw::TAVTactStdDaqRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
+TAITactStdDaqRaw::TAITactStdDaqRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+: TAITactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
-   TAVTparGeo*  pGeoPar = (TAVTparGeo*)  fpGeoMap->Object();
+   TAITparGeo*  pGeoPar = (TAITparGeo*)  fpGeoMap->Object();
    Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*pGeoPar->GetSensorsN(); // 3 frame per event and 3 header word for each sensor
    fData.reserve(size);
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAVTactStdDaqRaw::~TAVTactStdDaqRaw()
+TAITactStdDaqRaw::~TAITactStdDaqRaw()
 {   
 }
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TAVTactStdDaqRaw::Action()
+Bool_t TAITactStdDaqRaw::Action()
 {
    if (GetEvent())
       DecodeEvent();
@@ -58,7 +58,7 @@ Bool_t TAVTactStdDaqRaw::Action()
 
 //------------------------------------------+-----------------------------------
 //! Get next event.
-Bool_t TAVTactStdDaqRaw::GetEvent()
+Bool_t TAITactStdDaqRaw::GetEvent()
 {
    fData.clear();
    
@@ -94,7 +94,7 @@ Bool_t TAVTactStdDaqRaw::GetEvent()
 //! \param[in] opt open file options
 //! \param[in] treeName name of tree in file
 //! \param[in] dscBranch flag for object descriptor 
-Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/,  Bool_t /*dscBranch*/)
+Int_t TAITactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/,  Bool_t /*dscBranch*/)
 {
    TString inputFileName;
    
@@ -115,7 +115,7 @@ Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /
       
       fDaqFile.open(inputFileName.Data(), ios::binary);
       if( fDaqFile.fail() ) { // end the reading if file opening failed
-         cout << endl << "TAVTactStdDaqRaw::Open(), cannot open file " << inputFileName.Data() << endl;
+         cout << endl << "TAITactStdDaqRaw::Open(), cannot open file " << inputFileName.Data() << endl;
          valid = false;
       } else {
          valid = true;
@@ -127,7 +127,7 @@ Int_t TAVTactStdDaqRaw::Open(const TString& name, Option_t* opt, const TString /
 
 //------------------------------------------+-----------------------------------
 //! Close input file.
-void TAVTactStdDaqRaw::Close()
+void TAITactStdDaqRaw::Close()
 {
       fDaqFile.close();
 }
@@ -136,7 +136,7 @@ void TAVTactStdDaqRaw::Close()
 //! Set run number from file
 //!
 //! \param[in] filename input daq file name
-void TAVTactStdDaqRaw::SetRunNumber(const TString& filename)
+void TAITactStdDaqRaw::SetRunNumber(const TString& filename)
 {
    TString name(filename);
    Int_t pos2 = name.First(".");

@@ -101,6 +101,7 @@ private:
 	void		CategorizeVT();
 	void		CategorizeIT();
 	void		CategorizeMSD();
+	void		SetTrackSeedNoMSD();
 	void		CategorizeTW();
 	
 	void		CategorizeMSD_Linear();

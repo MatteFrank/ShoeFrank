@@ -1,43 +1,36 @@
 /*!
- \file TAITactNtuHit.cxx
- \brief   Ntuplizer for ITR raw data
+ \file TAITactBaseNtuHit.cxx
+ \brief Base class to decode raw data from single file
  */
 
-#include "TH2F.h"
-
 #include "DEITREvent.hh"
-#include "DAQMarkers.hh"
 
 #include "TAGrecoManager.hxx"
 #include "TAGdaqEvent.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
-#include "TAITparMap.hxx"
 
-#include "TAITactNtuHit.hxx"
+#include "TAITactBaseNtuHit.hxx"
 
 /*!
- \class TAITactNtuHit
- \brief Ntuplizer for ITR raw data
+ \class TAITactBaseNtuHit
+ \brief Base class to decode raw data from single file
  */
 
-//! Class Imp
-ClassImp(TAITactNtuHit);
+//! Class imp
+ClassImp(TAITactBaseNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 //!
 //! \param[in] name action name
-//! \param[out] pNtuRaw hit container descriptor
-//! \param[in] pDatDaq daq event container descriptor
+//! \param[in] pNtuRaw hit container descriptor
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pParMap mapping parameter descriptor
-TAITactNtuHit::TAITactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pDatDaq, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TAITactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap),
-  fpDatDaq(pDatDaq)
+TAITactBaseNtuHit::TAITactBaseNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+: TAVTactBaseRaw(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
-   AddDataIn(pDatDaq, "TAGdaqEvent");
    AddDataOut(pNtuRaw, "TAITntuHit");
    AddPara(pGeoMap, "TAITparGeo");
    AddPara(pConfig, "TAITparConf");
@@ -57,68 +50,41 @@ TAITactNtuHit::TAITactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* 
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAITactNtuHit::~TAITactNtuHit()
+TAITactBaseNtuHit::~TAITactBaseNtuHit()
 {   
-}
-
-//------------------------------------------+-----------------------------------
-//! Action.
-Bool_t TAITactNtuHit::Action()
-{
-   
-   TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
-   
-   Int_t nFragments = datDaq->GetFragmentsN();
-   
-   for (Int_t i = 0; i < nFragments; ++i) {
-      
-       TString type = datDaq->GetClassType(i);
-       if (type.Contains("DEITREvent")) {
-          const DEITREvent* evt = static_cast<const DEITREvent*> (datDaq->GetFragment(i));
-          fData      = evt->values;
-          fEventSize = evt->evtSize;
-          fDataLink  = evt->channelID - (dataVTX | 0x30);
-          if (fEventSize == 0) continue;
-          DecodeEvent();
-       }
-   }
-   
-   SetBit(kValid);
-   fpNtuRaw->SetBit(kValid);
-   
-   return kTRUE;
 }
 
 // --------------------------------------------------------------------------------------
 //! Find vertex data
-Bool_t TAITactNtuHit::DecodeEvent()
+Bool_t TAITactBaseNtuHit::DecodeEvent()
 {
+   fIndex     = 0;
    MI26_FrameRaw* data = new MI26_FrameRaw;
-   TAITparMap* pParMap = (TAITparMap*)  fpParMap->Object();
-   TAITparGeo* pGeoMap = (TAITparGeo*)  fpGeoMap->Object();
-   fIndex = 0;
 
+   
+   TAITparGeo*  pGeoMap = (TAITparGeo*)  fpGeoMap->Object();
+   
    // Vertex header
-   if (!GetVtxHeader()) return false;
+   if (!GetItrHeader()) return false;
    
    // loop over boards
-   for (Int_t i = 0; i < pGeoMap->GetSensPerDataLink(); ++i) {
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       
       if (!GetSensorHeader(i)) return false;
-      fFirstFrame = true;
+      
+      ResetFrames();
+      
       // loop over frame (3 max)
       while (GetFrame(i, data)) {
          DecodeFrame(i, data);
       }
       
-      Int_t planeId = pParMap->GetPlaneId(i, fDataLink);
-
-      fPrevEventNumber[planeId]   = fEventNumber;
-      fPrevTriggerNumber[planeId] = fTriggerNumber;
-      fPrevTimeStamp[planeId]     = fTimeStamp;
+      fPrevEventNumber[i]   = fEventNumber;
+      fPrevTriggerNumber[i] = fTriggerNumber;
+      fPrevTimeStamp[i]     = fTimeStamp;
    }
    
-  if(FootDebugLevel(3)) {
+   if(FootDebugLevel(3)) {
       printf("%08x ", fEventSize);
       for (Int_t i = 0; i < (fEventSize)/2; ++i) {
          if (i == 9) {
@@ -129,9 +95,10 @@ Bool_t TAITactNtuHit::DecodeEvent()
          printf("%08x ", fData[i]);
       }
       printf("\n");
-  }
+   }
    
    delete data;
+
 
    return true;
 }
@@ -140,7 +107,7 @@ Bool_t TAITactNtuHit::DecodeEvent()
 // private method
 // --------------------------------------------------------------------------------------
 //! Find vertex header
-Bool_t TAITactNtuHit::GetVtxHeader()
+Bool_t TAITactBaseNtuHit::GetItrHeader()
 {
    do {
       if (fData[fIndex] == DEITREvent::GetItrHeader()) {
@@ -155,7 +122,7 @@ Bool_t TAITactNtuHit::GetVtxHeader()
 //! Find sensor header
 //!
 //! \param[in] iSensor sensor index
-Bool_t TAITactNtuHit::GetSensorHeader(Int_t iSensor)
+Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor)
 {
    do {
       if (fData[fIndex] == GetKeyHeader(iSensor)) {
@@ -163,11 +130,12 @@ Bool_t TAITactNtuHit::GetSensorHeader(Int_t iSensor)
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];
          
-         if (ValidHistogram()) {
-            TAITparMap* pParMap = (TAITparMap*) fpParMap->Object();
-            Int_t planeId = pParMap->GetPlaneId(iSensor, fDataLink);
-            FillHistoEvt(planeId);
-         }
+         if(FootDebugLevel(3))
+            printf("sensor %d: trig: %d evt: %d\n", iSensor, fTriggerNumber, fEventNumber);
+         
+         if(ValidHistogram())
+            FillHistoEvt(iSensor);
+
          return true;
       }
    } while (fIndex++ < fEventSize);
@@ -180,29 +148,34 @@ Bool_t TAITactNtuHit::GetSensorHeader(Int_t iSensor)
 //! Get Frame structure
 //!
 //! \param[in] iSensor sensor index
-//! \param[in] data Mimosa sensor data structure
-Bool_t TAITactNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
+//! \param[in] data Mimosa sensor data structure 
+Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
    // check frame header
-   if ((fData[++fIndex] & 0xFFF) ==  (GetFrameHeader() & 0xFFF)) { // protection against wrong header !!!
+   if (fData[++fIndex] ==  GetFrameHeader()) {
       memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
+      if (ValidHistogram())
+         FillHistoFrame(iSensor, data);
       
-      if (ValidHistogram()) {
-         TAITparMap* pParMap = (TAITparMap*) fpParMap->Object();
-         Int_t planeId = pParMap->GetPlaneId(iSensor, fDataLink);
-         FillHistoFrame(planeId, data);
-      }
    } else
       return false;
  
    // go to frame trailer
    do {
-      if ((fData[fIndex] & 0xFFF) == (GetFrameTail() & 0xFFF)) {
+      if (((fData[fIndex] & 0xFFF) == (GetFrameTail() & 0xFFF)) || ((fData[fIndex] >> 16 & 0xFFF) == (GetFrameTail() >>16  & 0xFFF)) ) {
          data->Trailer = fData[fIndex];
          break;
       }
+      
+      if (fData[fIndex] == GetKeyTail(iSensor)) {
+         fIndex--;
+         break;
+      }
+      
    } while (fIndex++ < fEventSize);
    
+   fDataSize = fIndex - fgkFrameHeaderSize;
+
    if(FootDebugLevel(3)) {
       printf("%08x\n", data->Header);
       printf("%08x\n", data->TriggerCnt);
