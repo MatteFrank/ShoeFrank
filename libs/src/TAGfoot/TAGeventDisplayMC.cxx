@@ -25,7 +25,8 @@ ClassImp(TAGeventDisplayMC)
  */
 /*------------------------------------------+---------------------------------*/
 
-TAGeventDisplayMC* TAGeventDisplayMC::fgInstance = 0x0;
+TAGeventDisplayMC* TAGeventDisplayMC::fgInstance    = 0x0;
+            Bool_t TAGeventDisplayMC::fgMcTrackFlag = false;
 
 //__________________________________________________________
 //! Instance
@@ -56,7 +57,7 @@ TAGeventDisplayMC::TAGeventDisplayMC(const TString expName, Int_t runNumber, Int
    fVtMcDisplay(0x0),
    fBmMcDisplay(0x0),
    fStMcDisplay(0x0),
-   fPartTrackDisplay(0x0)
+   fTrackMcDisplay(0x0)
 {
    // local reco
    SetLocalReco();
@@ -82,7 +83,8 @@ TAGeventDisplayMC::TAGeventDisplayMC(const TString expName, Int_t runNumber, Int
    if (TAGrecoManager::GetPar()->IncludeCA())
       fCaMcDisplay = new TAEDpoint("Cal MC hit");
    
-   fPartTrackDisplay = new TAEDglbTrack("MC tracks");
+   if (fgMcTrackFlag)
+      fTrackMcDisplay = new TAEDglbTrack("MC tracks");
 }
 
 //__________________________________________________________
@@ -103,8 +105,8 @@ TAGeventDisplayMC::~TAGeventDisplayMC()
       delete fTwMcDisplay;
    if(fCaMcDisplay)
       delete fCaMcDisplay;
-   if(fPartTrackDisplay)
-      delete fPartTrackDisplay;
+   if(fTrackMcDisplay)
+      delete fTrackMcDisplay;
 }
 
 //__________________________________________________________
@@ -180,8 +182,10 @@ void TAGeventDisplayMC::AddMcElements()
       gEve->AddElement(fStMcDisplay);
    }
 
-   fPartTrackDisplay->ResetTracklets();
-   gEve->AddElement(fPartTrackDisplay);
+   if (fgMcTrackFlag) {
+      fTrackMcDisplay->ResetTracklets();
+      gEve->AddElement(fTrackMcDisplay);
+   }
 }
 
 //__________________________________________________________
@@ -208,6 +212,10 @@ void TAGeventDisplayMC::ConnectMcElements()
    
    if (TAGrecoManager::GetPar()->IncludeCA())
       fCaMcDisplay->Connect("PointSelected(Int_t )", "TAGeventDisplayMC", this, "UpdateCaInfo(Int_t)");
+   
+   if (fgMcTrackFlag)
+      TQObject::Connect("TAEDglbTrack", "LineSecSelected(TEveStraightLineSet*, Int_t)", "TAGeventDisplayMC", this, "UpdateTrackInfo(TEveStraightLineSet*, Int_t)");
+
 }
 
 //__________________________________________________________
@@ -348,6 +356,33 @@ void TAGeventDisplayMC::UpdateMcInfo(TString prefix, Int_t idx)
 }
 
 //__________________________________________________________
+//! Update track line information output
+//!
+//! \param[in] ts track line set
+//! \param[in] idx associated object index
+void TAGeventDisplayMC::UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx)
+{
+   TAEDglbTrack* lineTracks = dynamic_cast<TAEDglbTrack*> (ts);
+   TObject* obj = lineTracks->GetTrackId();
+   
+   if (obj->InheritsFrom("TAMCpart")) {
+      
+      TAMCpart* track =  (TAMCpart*)obj;
+      if (track == 0x0) return;
+      
+      fInfoView->AddLine( Form("Track # %2d\n", track->GetFlukaID()) );
+      fInfoView->AddLine( Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), track->GetBaryon(), track->GetMass()) );
+      fInfoView->AddLine( Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetInitP().Mag(), track->GetTof()) );
+      
+      if (fConsoleButton->IsOn()) {
+         cout <<  Form("Track # %2d\n", track->GetFlukaID());
+         cout <<  Form("Charge: %d A: %d Mass: %.2f GeV/c2\n", track->GetCharge(), track->GetBaryon(), track->GetMass() );
+         cout <<  Form("Momentum: %.2f GeV/c ToF: %.2f ns\n", track->GetInitP().Mag(), track->GetTof() );
+      }
+   }
+}
+
+//__________________________________________________________
 //! Update MC elements in view
 void TAGeventDisplayMC::UpdateMcElements()
 {
@@ -371,14 +406,23 @@ void TAGeventDisplayMC::UpdateMcElements()
    
    if (TAGrecoManager::GetPar()->IncludeCA())
       UpdateMcElements("ca");
+   
+   if (fgMcTrackFlag)
+      UpdateTrackElements();
+}
 
-   // ----  Add MC tracks (this should be an option?)
+
+//__________________________________________________________
+//! Update MC elements in view
+void TAGeventDisplayMC::UpdateTrackElements()
+{
    if (!fgGUIFlag || (fgGUIFlag && fRefreshButton->IsOn())) {
-      fPartTrackDisplay->ResetTracklets();
+      fTrackMcDisplay->ResetTracklets();
    }
+   
    if (!fgDisplayFlag) // do not update event display
       return;
-
+   
    TAMCntuPart* pNtuHit = fReco->GetNtuMcTrk();
    if (!pNtuHit) return;
    int nTracks = pNtuHit->GetTracksN();
@@ -389,8 +433,8 @@ void TAGeventDisplayMC::UpdateMcElements()
       TVector3 length = posF - posI;
       // tracks that escape have very long path, let made it shorter for visual propose
       if (length.Mag() > 250) {  posF = posI + length.Unit()*35; }
-      fPartTrackDisplay->AddTracklet(track->GetCharge(), posI, posF);
-      fPartTrackDisplay->TrackId(track);
+      fTrackMcDisplay->AddTracklet(track->GetCharge()*100, posI, posF);
+      fTrackMcDisplay->TrackId(track);
    }
 }
 
