@@ -235,6 +235,23 @@ bool TAGFdetectorMap::IsFitPlaneInDet(int planeId, string detName)
 }
 
 
+//! \brief Get the detector name from the FitPlane Id
+//!
+//! \param[in] planeId Index of the FitPlane
+//! \return Name of the detector
+string TAGFdetectorMap::GetDetNameFromFitPlaneId(int planeId)
+{
+	for(auto it = m_detectorIndex.begin(); it != m_detectorIndex.end(); ++it)
+	{
+		if( IsFitPlaneInDet(planeId, it->first) )
+			return it->first;
+	}
+
+	Error("GetDetNameFromFitPlaneId()", "Detector not found for FitPlane %d!", planeId);
+	exit(0);
+}
+
+
 //! \brief Get the local sensor index of a FitPlane
 //!
 //! \param[in] planeId Index of the FitPlane

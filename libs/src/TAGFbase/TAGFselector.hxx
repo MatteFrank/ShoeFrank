@@ -87,6 +87,7 @@ public:
 
 private:
 
+	void		CheckPlaneOccupancy();
 	int			FillTrackRepVector();
 	bool		PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element ); 
 

@@ -376,7 +376,7 @@ int TAGFuploader::GetNumGenParticle_noFrag() {
 		if ( particle->GetCharge() > 0 && particle->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {
 
 			if ( particle->GetInitPos().z() > 1 ) continue;
-			if ( particle->GetFinalPos().z() < 120 ) continue;
+			if ( particle->GetFinalPos().z() < m_GeoTrafo->FromTWLocalToGlobal(TVector3(0,0,0) ).Z() ) continue;
 
 			count++;
 
@@ -597,9 +597,8 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	int detId = m_sensorIDmap->GetDetIDFromMeasID( iMeas );
 	// nullptr is a TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
-	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID ); 
-
 	if (isYView) hit->setStripV();
+	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID ); 
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 

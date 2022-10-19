@@ -48,6 +48,7 @@ public:
 	bool	GetSensorID(int planeId, int* sensorId);
 	int		GetDetIDFromName(string detName);
 	string	GetDetNameFromID(int detId);
+	string	GetDetNameFromFitPlaneId(int planeId);
 	bool	IsDetectorInMap(string detName);
 
 	void	AddFitPlane(int planeId, SharedPlanePtr genfitPlane);

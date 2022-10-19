@@ -487,11 +487,9 @@ void TAGactKFitter::CreateGeometry()  {
 			TVector3 V(0,1.,0);
 			TVector3 trafoU = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, U));
 			TVector3 trafoV = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, V));
-			// detectorplane->setU(trafoU);
-			// detectorplane->setV(trafoV);
 			// Some debug print-outs for geometry
-			// if(m_debug > 1)
-			// {
+			if(m_debug > 1)
+			{
 				cout << "VT sensor::" << i << endl;
 				cout << "origin::"; origin_.Print();
 				cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
@@ -500,7 +498,7 @@ void TAGactKFitter::CreateGeometry()  {
 				cout << "trafoU::"; trafoU.Print();
 				cout << "trafoV::"; trafoV.Print();
 				cout << "Z versor::"; trafoNorm.Print();
-			// }
+			}
 			detectorplane->setUV(trafoU, trafoV);
 			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
 			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "VT");
@@ -535,16 +533,15 @@ void TAGactKFitter::CreateGeometry()  {
 			// This make all the 32 IT sensors
 			genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
 			TVector3 normal_versor = TVector3(0,0,1);
-			TVector3 trafoNorm =  m_IT_geo->Detector2SensorVect(i, normal_versor);
+			TVector3 trafoNorm = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, normal_versor));
 			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, trafoNorm, activeArea));
 
 			// Set versors
 			TVector3 U(1.,0,0);
 			TVector3 V(0,1.,0);
-			TVector3 trafoU = m_IT_geo->Detector2SensorVect(i, U);
-			TVector3 trafoV = m_IT_geo->Detector2SensorVect(i, V);
-			detectorplane->setU(trafoU);
-			detectorplane->setV(trafoV);
+			TVector3 trafoU = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, U));
+			TVector3 trafoV = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, V));
+			detectorplane->setUV(trafoU, trafoV);
 
 			m_sensorIDmap->AddPlane_Zorder( origin_.Z(), indexOfPlane );
 
@@ -582,16 +579,18 @@ void TAGactKFitter::CreateGeometry()  {
 			float yMin = m_MSD_geo->GetEpiOffset().y() - m_MSD_geo->GetEpiSize().y()/2;
 			float yMax = m_MSD_geo->GetEpiOffset().y() + m_MSD_geo->GetEpiSize().y()/2;
 
+			TVector3 normal_versor = TVector3(0,0,1);
+			TVector3 trafoNorm = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i, normal_versor));
 			genfit::AbsFinitePlane* recta = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
-			genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, TVector3(0,0,1), recta) );
+			genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, trafoNorm, recta) );
 
 			// Set versors -> MSD still needs some fixes maybe
 			TVector3 U(1.,0,0);
 			TVector3 V(0,1.,0);
-			TVector3 trafoU = m_MSD_geo->Detector2SensorVect(i, U);
-			TVector3 trafoV = m_MSD_geo->Detector2SensorVect(i, V);
-			detectorplane->setU(U);
-			detectorplane->setV(V);
+			TVector3 trafoU = m_GeoTrafo->VecFromMSDLocalToGlobal(U);
+			TVector3 trafoV = m_GeoTrafo->VecFromMSDLocalToGlobal(V);
+			// detectorplane->setUV(U, V);
+			detectorplane->setUV(trafoU, trafoV);
 
 			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
 			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "MSD");
@@ -607,12 +606,13 @@ void TAGactKFitter::CreateGeometry()  {
 				cout << "V::"; V.Print();
 				cout << "trafoU::"; trafoU.Print();
 				cout << "trafoV::"; trafoV.Print();
+				cout << "trafoNorm::"; trafoNorm.Print();
 				cout << "SensorType::"<< m_MSD_geo->GetSensorPar(i).TypeIdx << endl;
 			}
 		}
 	}
 
-	// TW
+	// TW -> RZ: APPLY ROTATIONS TO TW AT SOME POINT
 	if (TAGrecoManager::GetPar()->IncludeTW()) {
 		TGeoVolume* twVol = m_TW_geo->BuildTofWall();
 		twVol->SetLineColor(kBlue);
@@ -660,10 +660,6 @@ void TAGactKFitter::CreateGeometry()  {
 	if(m_debug > 0)	cout << "TAGactKFitter::CreateGeometry() -- STOP\n";
 
 }
-
-
-
-
 
 
 
@@ -1042,7 +1038,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	TMatrixD recoMom_TW_cov(3,3);
 	GetRecoTrackInfo(-1, track, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
 
-	double length, tof;
+	float length, tof;
 	if( track->hasKalmanFitStatus(track->getCardinalRep()) )
 	{
 		length = track->getKalmanFitStatus( track->getCardinalRep() )->getTrackLen() + fabs(extL_Tgt); //Track length from Tgt to TW
