@@ -100,7 +100,7 @@ G4LogicalVolume* TCGtargetConstructor::Construct()
    G4Box* sTarget = new G4Box("sTargert", sizeX/2., sizeY/2., sizeZ/2.);
    
    fLogMother = new G4LogicalVolume(sTarget, vacMat, "Target");
-   fLogMother->SetVisAttributes(G4VisAttributes::Invisible);
+   fLogMother->SetVisAttributes(G4VisAttributes::GetInvisible());
 
    
    // construction
