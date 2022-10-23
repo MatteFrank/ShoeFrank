@@ -7,7 +7,7 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameters of the Sensors
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Sensors:              8
+Sensors:              5
 
 // M28
 TypeName:          "M28"
@@ -93,33 +93,6 @@ AlignementTilt:    0.000
 Inputs:            5
 Type:              0
 PositionsX:       -3.0534  PositionsY:   -0.8105  PositionsZ:   0.3845
-Tilt1:             0.0000  Tilt2:         0.0000   Tilt3:       0.00
-AlignementU:       0.000
-AlignementV:       0.000
-AlignementTilt:    0.000
-
-// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 6  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-Inputs:            6
-Type:              0
-PositionsX:       -1.0294  PositionsY:   -0.8105  PositionsZ:   0.3845
-Tilt1:             0.0000  Tilt2:         0.0000   Tilt3:       0.00
-AlignementU:       0.000
-AlignementV:       0.000
-AlignementTilt:    0.000
-
-// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 7  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-Inputs:            7
-Type:              0
-PositionsX:        0.9946  PositionsY:   -0.8105  PositionsZ:   0.3845
-Tilt1:             0.0000  Tilt2:         0.0000   Tilt3:       0.00
-AlignementU:       0.000
-AlignementV:       0.000
-AlignementTilt:    0.000
-
-// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 8  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-Inputs:            8
-Type:              0
-PositionsX:        3.0186  PositionsY:   -0.8105  PositionsZ:   0.3845
 Tilt1:             0.0000  Tilt2:         0.0000   Tilt3:       0.00
 AlignementU:       0.000
 AlignementV:       0.000
