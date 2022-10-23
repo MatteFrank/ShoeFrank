@@ -10,8 +10,5 @@ PlaneId   2:  2
 PlaneId   3:  3
 #
 DataLink: 1
-SensorsN: 4
-PlaneId   4:  0
-PlaneId   5:  1
+SensorsN: 1
 PlaneId   6:  2
-PlaneId   7:  3
