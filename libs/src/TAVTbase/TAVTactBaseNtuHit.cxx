@@ -125,7 +125,7 @@ Bool_t TAVTactBaseNtuHit::GetVtxHeader()
 Bool_t TAVTactBaseNtuHit::GetSensorHeader(Int_t iSensor)
 {
    do {
-      if (fData[fIndex] == GetKeyHeader(iSensor)) {
+      if (fData[fIndex] == GetSensorKey(iSensor)) {
          fEventNumber   = fData[++fIndex];
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];
@@ -167,7 +167,7 @@ Bool_t TAVTactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
          break;
       }
       
-      if (fData[fIndex] == GetKeyTail(iSensor)) {
+      if (fData[fIndex] == GetSensorTail(iSensor)) {
          fIndex--;
          break;
       }

@@ -20,9 +20,10 @@ ClassImp(TAVTbaseParMap);
 //! Default constructor.
 TAVTbaseParMap::TAVTbaseParMap() 
  : TAGparTools(),
-   fSensorsN(0),
    fkDefaultMapName("")
 {
+   memset(fSensorsN, 0, sizeof(fSensorsN));
+   fPlaneId.clear();
 }
 
 //------------------------------------------+-----------------------------------
@@ -55,9 +56,9 @@ Bool_t TAVTbaseParMap::FromFile(const TString& name)
       Int_t dataLink;
       ReadItem(dataLink);
 
-      ReadItem(fSensorsN);
+      ReadItem(fSensorsN[dataLink]);
       
-      for (Int_t i = 0; i < fSensorsN; ++i) { // Loop on each sensor
+      for (Int_t i = 0; i < fSensorsN[dataLink]; ++i) { // Loop on each sensor
       
          Int_t sensorId;
          Int_t planeId;

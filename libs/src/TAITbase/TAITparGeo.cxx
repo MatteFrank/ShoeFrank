@@ -30,7 +30,7 @@ ClassImp(TAITparGeo);
 const TString TAITparGeo::fgkBaseNameIt      = "IT";
 const TString TAITparGeo::fgkDefParaNameIt   = "itGeo";
 const Int_t   TAITparGeo::fgkDefSensPerLayer = 8;
-const Int_t   TAITparGeo::fgkDefSensPerPlume = 4;
+const Int_t   TAITparGeo::fgkDefSensPerBoard = 4;
 const Int_t   TAITparGeo::fgkDefLayersN      = 2;
 
 //_____________________________________________________________________________
@@ -42,7 +42,7 @@ TAITparGeo::TAITparGeo()
    fLayersN         = fgkDefLayersN;
    fSubLayersN      = fLayersN*2;
    fSensPerLayer    = fgkDefSensPerLayer;
-   fSensPerPlume    = fgkDefSensPerPlume;
+   fSensPerBoard    = fgkDefSensPerBoard;
    fkDefaultGeoName = "./geomaps/TAITdetector.geo";
 }
 

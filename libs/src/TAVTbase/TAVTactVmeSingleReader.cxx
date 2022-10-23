@@ -193,8 +193,8 @@ Bool_t TAVTactVmeSingleReader::GetSensorEvent(Int_t iSensor)
    UInt_t dataPrev = 0;
    
    // lokking for header
-   TString key  = Form("%x", GetKeyHeader(iSensor));
-   TString tail = Form("%x", GetKeyTail(iSensor));
+   TString key  = Form("%x", GetSensorKey(iSensor));
+   TString tail = Form("%x", GetSensorTail(iSensor));
 
    do {
       fRawFileAscii >> tmp;
@@ -214,7 +214,7 @@ Bool_t TAVTactVmeSingleReader::GetSensorEvent(Int_t iSensor)
          if(FootDebugLevel(1))
             printf("sensor header %s %d\n", tmp, (int) fRawFileAscii.tellg()/9+1);
          
-         fDataEvent[fIndex++] = GetKeyHeader(iSensor);
+         fDataEvent[fIndex++] = GetSensorKey(iSensor);
          
          // event number
          fRawFileAscii >> tmp;

@@ -24,9 +24,15 @@ public:
    
    // Read from file
    Bool_t       FromFile(const TString& name = "");
+   
+   //! return number of data links (i.e. terasic boards)
+   Int_t        GetDataLinksN()         const { return fDataLinksN;    }
+   
+   //! return number sensors per data link
+   Int_t        GetSensorsN(Int_t idx ) const { return fSensorsN[idx]; }
 
 protected:
-   Int_t                    fSensorsN;        ///< number of sensors
+   Int_t                    fSensorsN[32];    ///< number of sensors per datalink
    Int_t                    fDataLinksN;      ///< numver of data links
    map<pair<int, int>, int> fPlaneId;         ///< map of plane identification
    TString                  fkDefaultMapName; ///< default detector mapping file

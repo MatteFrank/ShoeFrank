@@ -158,7 +158,7 @@ Bool_t TAITactNtuHit::GetVtxHeader()
 Bool_t TAITactNtuHit::GetSensorHeader(Int_t iSensor)
 {
    do {
-      if (fData[fIndex] == GetKeyHeader(iSensor)) {
+      if (fData[fIndex] == GetSensorKey(iSensor)) {
          fEventNumber   = fData[++fIndex];
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];

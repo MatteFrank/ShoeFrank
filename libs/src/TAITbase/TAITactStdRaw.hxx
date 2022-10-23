@@ -30,12 +30,6 @@ public:
    // close files
    virtual void    Close();
    
-public:
-   //! Set default folder name
-   static void     SetDefaultFolderName(const Char_t* name) { fgDefaultFolderName = name; }
-   //! Get default folder name
-   static TString  GetDefaultFolderName()                   { return fgDefaultFolderName; }
-   
 private:
    ifstream          fRawFileAscii;     ///< file streamm
    Int_t             fRunNumber;        ///< run number
@@ -44,7 +38,6 @@ private:
    TString           fBaseName;         ///< base file name
    
 private:
-   static       TString fgDefaultFolderName; ///< default folder name
    static       TString fgDefaultExtName;    ///< default extension name
 
 private:
