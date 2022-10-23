@@ -75,10 +75,11 @@ Bool_t TAITactStdRaw::GetEvent()
    do {
       fRawFileAscii >> tmp;
       TString line = tmp;
+      line.ToLower();
       
       if (line.Contains(key)) {
          if(FootDebugLevel(1))
-            printf("sensor header %s %d\n", tmp, (int) fRawFileAscii.tellg()/9+1);
+            printf("sensor header %s\n", tmp);
          
          fData.push_back(DEITREvent::GetItrHeader());
          fIndex++;
@@ -94,11 +95,14 @@ Bool_t TAITactStdRaw::GetEvent()
    do {
       fRawFileAscii >> tmp;
       TString line = tmp;
-      sscanf(tmp, "%x", &data);
+      line.ToLower();
+      sscanf(line.Data(), "%x", &data);
       fData.push_back(data);
       fIndex++;
       
       if (line.Contains(tail)) {
+         if(FootDebugLevel(1))
+            printf("sensor tail   %s\n", tmp);
          break;
       }
       
@@ -151,7 +155,7 @@ Int_t TAITactStdRaw::Open(const TString& name, Option_t* opt, const TString /*tr
       valid = true;
    } else {
       fRawFileAscii.close();
-      inputFileName = Form("%s.%s", name.Data(),fgDefaultExtName.Data());
+      inputFileName = name;
       
       fRawFileAscii.open(inputFileName.Data());
       if( fRawFileAscii.fail() ) { // end the reading if file opening failed

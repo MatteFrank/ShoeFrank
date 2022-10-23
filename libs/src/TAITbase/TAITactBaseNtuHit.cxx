@@ -73,26 +73,30 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
    
    for (Int_t l = 0; l < pParMap->GetDataLinksN(); ++l) {
       
+      if(FootDebugLevel(3))
+         printf("\nlink# %d  sensors %d\n", l, pParMap->GetSensorsN(l));
+
       // IT header
       if (!GetBoardHeader(l)) return false;
       
       // loop over sensors
       for (Int_t i = 0; i < pParMap->GetSensorsN(l); ++i) {
+         Int_t idx = pParMap->GetSensorId(i, l);
          
-         if (!GetSensorHeader(i)) return false;
-         
+         if (!GetSensorHeader(idx)) return false;
+
          ResetFrames();
-         
+
          // loop over frame (3 max)
-         while (GetFrame(i, data)) {
-            DecodeFrame(i, data);
+         while (GetFrame(idx, data)) {
+            DecodeFrame(idx, data);
          }
-         
-         fPrevEventNumber[i]   = fEventNumber;
-         fPrevTriggerNumber[i] = fTriggerNumber;
-         fPrevTimeStamp[i]     = fTimeStamp;
+
+         fPrevEventNumber[idx]   = fEventNumber;
+         fPrevTriggerNumber[idx] = fTriggerNumber;
+         fPrevTimeStamp[idx]     = fTimeStamp;
       }
-      
+
       if(FootDebugLevel(3)) {
          printf("%08x ", fEventSize);
          for (Int_t i = 0; i < (fEventSize)/2; ++i) {
@@ -125,6 +129,7 @@ Bool_t TAITactBaseNtuHit::GetItrHeader()
       }
    } while (fIndex++ < fEventSize);
    
+
    return false;
 }
 
@@ -136,14 +141,11 @@ Bool_t TAITactBaseNtuHit::GetBoardHeader(Int_t iBoard)
 {
    do {
       if (fData[fIndex] == GetBoardKey(iBoard)) {
-         fBoardSize  = fData[++fIndex];
-         fTimeStamp  = fData[++fIndex];
+         fBoardTrigger = fData[++fIndex];
+         fTimeStamp    = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("Board %d: size: %d\n", iBoard, fBoardSize);
-         
-//         if(ValidHistogram())
-//            FillHistoEvt(iSensor);
+            printf("Board %d (0x%x): size: %d\n", iBoard, fData[fIndex-2], fBoardTrigger);
          
          return true;
       }
@@ -166,7 +168,7 @@ Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor)
          fTimeStamp     = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("sensor %d: trig: %d evt: %d\n", iSensor, fTriggerNumber, fEventNumber);
+            printf("sensor %d: trig#: %d evt#: %d\n", iSensor, fTriggerNumber, fEventNumber);
          
          if(ValidHistogram())
             FillHistoEvt(iSensor);
@@ -188,6 +190,7 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
    // check frame header
    if (fData[++fIndex] ==  GetFrameHeader()) {
+
       memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
       if (ValidHistogram())
          FillHistoFrame(iSensor, data);

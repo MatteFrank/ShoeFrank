@@ -26,7 +26,7 @@ public:
    static  UInt_t  GetBoardTail(Int_t idx)   { return fgkBoardTail[idx];   }
    
 protected:
-   Int_t             fBoardSize;             ///< Board size
+   Int_t  fBoardTrigger;             ///< Board size
 
 protected:
    // Find vertex data
