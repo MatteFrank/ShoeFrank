@@ -39,9 +39,9 @@ NumberFiles: 3
 
 DetectorName: "IT"
 NumberFiles: 3
-"./geomaps/testITR/TAITdetector.geo": -1
-"./config/testITR/TAITdetector.cfg": -1
-"./config/testITR/TAITdetector.map": -1
+"./geomaps/CNAO2022/TAITdetector.geo": -1
+"./config/CNAO2022/TAITdetector.cfg": -1
+"./config/CNAO2022/TAITdetector.map": -1
 
 DetectorName: "MSD"
 NumberFiles: 5
