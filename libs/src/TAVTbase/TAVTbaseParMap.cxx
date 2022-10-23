@@ -57,7 +57,6 @@ Bool_t TAVTbaseParMap::FromFile(const TString& name)
       ReadItem(dataLink);
 
       ReadItem(fSensorsN[dataLink]);
-      
       for (Int_t i = 0; i < fSensorsN[dataLink]; ++i) { // Loop on each sensor
       
          Int_t sensorId;
@@ -66,7 +65,8 @@ Bool_t TAVTbaseParMap::FromFile(const TString& name)
          ReadItem(planeId, sensorId);
 
          pair<int, int> idx(dataLink, sensorId);
-
+         fSensorIdxInLink[dataLink].push_back(sensorId);
+         
          fPlaneId[idx] = planeId;
       
          if(FootDebugLevel(1))
@@ -93,5 +93,14 @@ Int_t TAVTbaseParMap::GetPlaneId(Int_t sensorId, Int_t dataLink)
    }
    
    return fPlaneId[idx];
+}
+
+//------------------------------------------+-----------------------------------
+//! Get sensor numberfor a given index and  data link
+Int_t TAVTbaseParMap::GetSensorId(Int_t idx, Int_t dataLink)
+{
+   vector<int> vec = fSensorIdxInLink[dataLink];
+   
+   return vec[idx];
 }
 

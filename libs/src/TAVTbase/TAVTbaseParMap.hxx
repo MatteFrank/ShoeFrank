@@ -22,6 +22,9 @@ public:
    // return plane id
    Int_t        GetPlaneId(Int_t sensorId, Int_t dataLink = 0);
    
+   // return  sensors index for a given  data link
+   Int_t        GetSensorId(Int_t idx, Int_t dataLink = 0);
+   
    // Read from file
    Bool_t       FromFile(const TString& name = "");
    
@@ -31,10 +34,12 @@ public:
    //! return number sensors per data link
    Int_t        GetSensorsN(Int_t idx ) const { return fSensorsN[idx]; }
 
+ 
 protected:
    Int_t                    fSensorsN[32];    ///< number of sensors per datalink
    Int_t                    fDataLinksN;      ///< numver of data links
    map<pair<int, int>, int> fPlaneId;         ///< map of plane identification
+   map<int, vector<int>>    fSensorIdxInLink; ///< map of sensor index per data link
    TString                  fkDefaultMapName; ///< default detector mapping file
    
    ClassDef(TAVTbaseParMap,1)
