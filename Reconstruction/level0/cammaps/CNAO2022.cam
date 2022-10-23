@@ -1,41 +1,41 @@
 // Campaign file
-CamName: "GSI2021"
+CamName: "CNAO2022"
 RunNumber: 200; 400; 4100-4500;
 NumberDevices: 10
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/GSI2021/FOOT.geo": 4100; 4271; 4319;
+"./geomaps/CNAO2022/FOOT.geo": 4100; 4271; 4319;
 
 DetectorName: "DI"
 NumberFiles: 1
-"./geomaps/GSI2021/TADIdetector.geo": -1
+"./geomaps/CNAO2022/TADIdetector.geo": -1
 
 DetectorName: "ST"
 NumberFiles: 5
-"./geomaps/GSI2021/TASTdetector.geo": -1
-"./config/GSI2021/TASTdetector.cfg": -1
-"./config/GSI2021/WDChannelMap.map": -1
-"./calib/GSI2021/WDpar.cal": -1;
-"./calib/GSI2021/WDTimeCalibration/tcalib.dat": -1;
+"./geomaps/CNAO2022/TASTdetector.geo": -1
+"./config/CNAO2022/TASTdetector.cfg": -1
+"./config/CNAO2022/WDChannelMap.map": -1
+"./calib/CNAO2022/WDpar.cal": -1;
+"./calib/CNAO2022/WDTimeCalibration/tcalib.dat": -1;
 
 
 DetectorName: "BM"
 NumberFiles: 4
-"./geomaps/GSI2021/TABMdetector.geo": -1
-"./config/GSI2021/TABMdetector.cfg": -1
-"./config/GSI2021/TABMdetector.map": -1
-"./calib/GSI2021/TABM_T0_Calibration.cal": -1
+"./geomaps/CNAO2022/TABMdetector.geo": -1
+"./config/CNAO2022/TABMdetector.cfg": -1
+"./config/CNAO2022/TABMdetector.map": -1
+"./calib/CNAO2022/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI2021/TAGdetector.geo": 4100; 4271; 4319;
+"./geomaps/CNAO2022/TAGdetector.geo": 4100; 4271; 4319;
 
 DetectorName: "VT"
 NumberFiles: 3
-"./geomaps/GSI2021/TAVTdetector.geo": -1
-"./config/GSI2021/TAVTdetector.cfg": -1
-"./config/GSI2021/TAVTdetector.map": -1
+"./geomaps/CNAO2022/TAVTdetector.geo": -1
+"./config/CNAO2022/TAVTdetector.cfg": -1
+"./config/CNAO2022/TAVTdetector.map": -1
 
 DetectorName: "IT"
 NumberFiles: 3
@@ -45,23 +45,23 @@ NumberFiles: 3
 
 DetectorName: "MSD"
 NumberFiles: 5
-"./geomaps/GSI2021/TAMSDdetector.geo": -1
-"./config/GSI2021/TAMSDdetector.cfg": -1
-"./config/GSI2021/TAMSDdetector.map": 4000; 4234;
-"./calib/GSI2021/TAMSD_Pedestal.cal": 4000;
-"./calib/GSI2021/TAMSD_Energy_Calibration.cal": -1
+"./geomaps/CNAO2022/TAMSDdetector.geo": -1
+"./config/CNAO2022/TAMSDdetector.cfg": -1
+"./config/CNAO2022/TAMSDdetector.map": 4000; 4234;
+"./calib/CNAO2022/TAMSD_Pedestal.cal": 4000;
+"./calib/CNAO2022/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
 NumberFiles: 6
-"./geomaps/GSI2021/TATWdetector.geo": -1
-"./config/GSI2021/TATW_BBparameters.cfg": -1
-"./config/GSI2021/TATWChannelMapXML.map": -1
-"./calib/GSI2021/TATW_Energy_Calibration.cal": -1
-"./calib/GSI2021/TATW_Tof_Calibration.cal": -1;
+"./geomaps/CNAO2022/TATWdetector.geo": -1
+"./config/CNAO2022/TATW_BBparameters.cfg": -1
+"./config/CNAO2022/TATWChannelMapXML.map": -1
+"./calib/CNAO2022/TATW_Energy_Calibration.cal": -1
+"./calib/CNAO2022/TATW_Tof_Calibration.cal": -1;
 
 DetectorName: "CA"
 NumberFiles: 5
-"./geomaps/GSI2021/TACAdetector.geo": -1
-"./config/GSI2021/TACAdetector.map": -1
-"./calib/GSI2021/TACA_Energy_Calibration.cal": -1
-"./calib/GSI2021/TACA_Temperature_Calibration_perCry.cal": -1
+"./geomaps/CNAO2022/TACAdetector.geo": -1
+"./config/CNAO2022/TACAdetector.map": -1
+"./calib/CNAO2022/TACA_Energy_Calibration.cal": -1
+"./calib/CNAO2022/TACA_Temperature_Calibration_perCry.cal": -1
