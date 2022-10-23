@@ -433,6 +433,7 @@ void TAGeventDisplayMC::UpdateTrackElements()
       TVector3 length = posF - posI;
       // tracks that escape have very long path, let made it shorter for visual propose
       if (length.Mag() > 250) {  posF = posI + length.Unit()*35; }
+      if (track->GetCharge() <= 0) continue;
       fTrackMcDisplay->AddTracklet(track->GetCharge()*100, posI, posF);
       fTrackMcDisplay->TrackId(track);
    }
