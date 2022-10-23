@@ -21,9 +21,9 @@ public:
  
 public:
    //! Get board header
-   static  UInt_t  GetBoardKey(Int_t idx)    { return fgkBoardKey[idx]; }
+   static  UInt_t  GetBoardKey(Int_t idx)    { return fgkBoardKey[idx];  }
    //! Get board tail
-   static  UInt_t  GetBoardTail(Int_t idx)   { return fgkBoardTail[idx];   }
+   static  UInt_t  GetBoardTail(Int_t idx)   { return fgkBoardTail[idx]; }
    
 protected:
    Int_t  fBoardTrigger;             ///< Board size
