@@ -7,7 +7,7 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameters of the Sensors
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Sensors:              5
+Sensors:              4
 
 // M28
 TypeName:          "M28"
@@ -84,15 +84,6 @@ AlignementTilt:    0.000
 Inputs:            4
 Type:              0
 PositionsX:        3.0186  PositionsY:   -2.4314  PositionsZ:  -0.6155
-Tilt1:             0.0000  Tilt2:         0.0000   Tilt3:       0.00
-AlignementU:       0.000
-AlignementV:       0.000
-AlignementTilt:    0.000
-
-// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 5  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
-Inputs:            5
-Type:              0
-PositionsX:       -3.0534  PositionsY:   -0.8105  PositionsZ:   0.3845
 Tilt1:             0.0000  Tilt2:         0.0000   Tilt3:       0.00
 AlignementU:       0.000
 AlignementV:       0.000
