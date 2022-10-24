@@ -93,9 +93,9 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
             DecodeFrame(planeId, data);
          }
 
-         fPrevEventNumber[idx]   = fEventNumber;
-         fPrevTriggerNumber[idx] = fTriggerNumber;
-         fPrevTimeStamp[idx]     = fTimeStamp;
+         fPrevEventNumber[planeId]   = fEventNumber;
+         fPrevTriggerNumber[planeId] = fTriggerNumber;
+         fPrevTimeStamp[planeId]     = fTimeStamp;
       }
 
       if(FootDebugLevel(3)) {
@@ -194,6 +194,7 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
 {
    TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
 
+   Int_t startIdx = fIndex;
    // check frame header
    if (fData[++fIndex] ==  GetFrameHeader()) {
 
@@ -220,9 +221,10 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
       
    } while (fIndex++ < fEventSize);
    
-   fDataSize = fIndex - fgkFrameHeaderSize;
+   fDataSize = fIndex - fgkFrameHeaderSize - startIdx;
 
    if(FootDebugLevel(3)) {
+      printf("Sensor %d Board %d\n", iSensor, datalink);
       printf("%08x\n", data->Header);
       printf("%08x\n", data->TriggerCnt);
       printf("%08x\n", data->TimeStamp);

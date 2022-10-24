@@ -154,6 +154,8 @@ Bool_t TAVTactBaseNtuHit::GetSensorHeader(Int_t iSensor)
 //! \param[in] data Mimosa sensor data structure 
 Bool_t TAVTactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
+   Int_t startIdx = fIndex;
+
    // check frame header
    if (fData[++fIndex] ==  GetFrameHeader()) {
       memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
@@ -177,7 +179,7 @@ Bool_t TAVTactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
       
    } while (fIndex++ < fEventSize);
    
-   fDataSize = fIndex - fgkFrameHeaderSize;
+   fDataSize = fIndex - fgkFrameHeaderSize - startIdx;
 
    if(FootDebugLevel(3)) {
       printf("%08x\n", data->Header);
