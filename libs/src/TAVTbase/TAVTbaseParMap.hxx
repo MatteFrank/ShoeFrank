@@ -32,7 +32,7 @@ public:
    Int_t        GetDataLinksN()         const { return fDataLinksN;    }
    
    //! return number sensors per data link
-   Int_t        GetSensorsN(Int_t idx ) const { return fSensorsN[idx]; }
+   Int_t        GetSensorsN(Int_t idx = 0) const { return fSensorsN[idx]; }
 
  
 protected:

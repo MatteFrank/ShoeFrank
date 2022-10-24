@@ -9,6 +9,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
+#include "TAVTparMap.hxx"
 
 #include "TAVTactBaseNtuHit.hxx"
 
@@ -61,27 +62,29 @@ Bool_t TAVTactBaseNtuHit::DecodeEvent()
    fIndex     = 0;
    MI26_FrameRaw* data = new MI26_FrameRaw;
 
-   
-   TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
-   
+   TAVTparMap*  pParMap = (TAVTparMap*)  fpParMap->Object();
+
    // Vertex header
    if (!GetVtxHeader()) return false;
    
    // loop over boards
-   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < pParMap->GetSensorsN(); ++i) {
       
-      if (!GetSensorHeader(i)) return false;
+      Int_t idx     = pParMap->GetSensorId(i);
+      Int_t planeId = pParMap->GetPlaneId(idx);
+
+      if (!GetSensorHeader(idx)) return false;
       
       ResetFrames();
       
       // loop over frame (3 max)
-      while (GetFrame(i, data)) {
-         DecodeFrame(i, data);
+      while (GetFrame(idx, data)) {
+         DecodeFrame(planeId, data);
       }
       
-      fPrevEventNumber[i]   = fEventNumber;
-      fPrevTriggerNumber[i] = fTriggerNumber;
-      fPrevTimeStamp[i]     = fTimeStamp;
+      fPrevEventNumber[idx]   = fEventNumber;
+      fPrevTriggerNumber[idx] = fTriggerNumber;
+      fPrevTimeStamp[idx]     = fTimeStamp;
    }
    
    if(FootDebugLevel(3)) {

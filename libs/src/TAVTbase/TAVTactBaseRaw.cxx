@@ -362,13 +362,11 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    
    TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
    TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
-   TAVTparMap*  pParMap = (TAVTparMap*)  fpParMap->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
-   Int_t planeId = pParMap->GetPlaneId(iSensor);
-   if (pConfig->IsDeadPixel(planeId, aLine, aColumn)) return;
+   if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
      
-   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
+   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);
@@ -377,6 +375,6 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    pixel->SetValidFrames(fFrameOk);
    
    if (ValidHistogram())
-    FillHistoPixel(planeId, aLine, aColumn);
+    FillHistoPixel(iSensor, aLine, aColumn);
 }
 
