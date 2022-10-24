@@ -298,11 +298,7 @@ bool TAGgeoTrafo::FromFile(TString ifile)
       
       TGeoRotation rot;
       rot.RotateX(angle[0]); rot.RotateY(angle[1]); rot.RotateZ(angle[2]);
-      
-      Double_t loc[] = {center[0], center[1], center[2]};
-      Double_t glo[] = {0.,0.,0};
-      rot.LocalToMaster(loc, glo);
-      TGeoTranslation trans(glo[0], glo[1], glo[2]);
+      TGeoTranslation trans(center[0], center[1], center[2]);
       TGeoHMatrix  transfo;
       transfo  = trans;
       transfo *= rot;

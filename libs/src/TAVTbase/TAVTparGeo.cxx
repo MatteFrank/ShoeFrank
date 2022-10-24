@@ -231,7 +231,7 @@ string TAVTparGeo::PrintRotations()
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     
     TVector3  fCenter = fpFootGeo->GetVTCenter();
-    TVector3  fAngle = fpFootGeo->GetVTAngles();
+    TVector3  fAngle = fpFootGeo->GetVTAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
     
     for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 

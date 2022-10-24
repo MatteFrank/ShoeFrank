@@ -663,7 +663,7 @@ string TACAparGeo::PrintRotations()
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
       TVector3 center = fpFootGeo->GetCACenter();
-      TVector3  angle = fpFootGeo->GetCAAngles();
+      TVector3  angle = fpFootGeo->GetCAAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
 
       if ( angle.Mag()!=0 ) {
 
@@ -850,14 +850,14 @@ TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyN
    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    if (fpFootGeo) {
       center = fpFootGeo->GetCACenter();
-      angle  = fpFootGeo->GetCAAngles();
+      angle  = fpFootGeo->GetCAAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
    }
 
    TGeoTranslation detTrasl(center.X(), center.Y(), center.Z());
    TGeoRotation detRot;
-   detRot.RotateX(-angle.X());
-   detRot.RotateY(-angle.Y());
-   detRot.RotateZ(-angle.Z());
+   detRot.RotateX(angle.X());
+   detRot.RotateY(angle.Y());
+   detRot.RotateZ(angle.Z());
    TGeoCombiTrans detPos(detTrasl, detRot);
 
    TGeoHMatrix  matCurrent(detPos);
@@ -929,14 +929,14 @@ TString TACAparGeo::SPrintCrystalBody( int id, TGeoCombiTrans* hm, TString bodyN
    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    if (fpFootGeo) {
       center = fpFootGeo->GetCACenter();
-      angle  = fpFootGeo->GetCAAngles();
+      angle  = fpFootGeo->GetCAAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
    }
 
    TGeoTranslation detTrasl(center.X(), center.Y(), center.Z());
    TGeoRotation detRot;
-   detRot.RotateX(-angle.X());
-   detRot.RotateY(-angle.Y());
-   detRot.RotateZ(-angle.Z());
+   detRot.RotateX(angle.X());
+   detRot.RotateY(angle.Y());
+   detRot.RotateZ(angle.Z());
    TGeoCombiTrans detPos(detTrasl, detRot);
 
    TGeoHMatrix  matCurrent(detPos);

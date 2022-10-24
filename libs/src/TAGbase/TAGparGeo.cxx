@@ -430,7 +430,7 @@ string TAGparGeo::PrintTargRotations()
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
       TVector3 fCenter = fpFootGeo->GetTGCenter();
-      TVector3  fAngle = fpFootGeo->GetTGAngles();
+      TVector3  fAngle = fpFootGeo->GetTGAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
 
       if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
 
