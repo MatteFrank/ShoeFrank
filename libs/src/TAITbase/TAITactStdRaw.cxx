@@ -14,14 +14,13 @@
 #include "TAITactStdRaw.hxx"
 
 /*!
- \class TAITactStdRaw TAITactStdRaw.hxx "TAITactStdRaw.hxx"
+ \class TAITactStdRaw
  \brief    Read raw data from single ITR file (ascii format) from new firmware
  */
 
 //! Class Imp
 ClassImp(TAITactStdRaw);
 
-TString TAITactStdRaw::fgDefaultFolderName = "run_";
 TString TAITactStdRaw::fgDefaultExtName    = ".ZS";
 
 //------------------------------------------+-----------------------------------
@@ -37,7 +36,6 @@ TAITactStdRaw::TAITactStdRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* 
 {
    TAITparGeo*  pGeoPar = (TAITparGeo*)  fpGeoMap->Object();
 
-   fBaseName ="data_FPGA_Mouser993P0160_V1_ch";
 
    Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*pGeoPar->GetSensorsN(); // 3 frame per event and 3 header word for each sensor
    fData.reserve(size);
@@ -77,10 +75,11 @@ Bool_t TAITactStdRaw::GetEvent()
    do {
       fRawFileAscii >> tmp;
       TString line = tmp;
+      line.ToLower();
       
       if (line.Contains(key)) {
          if(FootDebugLevel(1))
-            printf("sensor header %s %d\n", tmp, (int) fRawFileAscii.tellg()/9+1);
+            printf("sensor header %s\n", tmp);
          
          fData.push_back(DEITREvent::GetItrHeader());
          fIndex++;
@@ -96,11 +95,14 @@ Bool_t TAITactStdRaw::GetEvent()
    do {
       fRawFileAscii >> tmp;
       TString line = tmp;
-      sscanf(tmp, "%x", &data);
+      line.ToLower();
+      sscanf(line.Data(), "%x", &data);
       fData.push_back(data);
       fIndex++;
       
       if (line.Contains(tail)) {
+         if(FootDebugLevel(1))
+            printf("sensor tail   %s\n", tmp);
          break;
       }
       
@@ -147,16 +149,13 @@ Int_t TAITactStdRaw::Open(const TString& name, Option_t* opt, const TString /*tr
       first = false;
    
    Bool_t valid = false;
-   TAITparGeo*  pGeoMap = (TAITparGeo*)  fpGeoMap->Object();
-   TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
    
-   Int_t i = 5;
    // Close any previous open file
    if( fRawFileAscii.is_open() && !fRawFileAscii.eof()) {
       valid = true;
    } else {
       fRawFileAscii.close();
-      inputFileName = Form("%s/%s%04d/800%d_%s%d%s", fPrefixName.Data(), fgDefaultFolderName.Data(), fRunNumber, i, fBaseName.Data(), i, fgDefaultExtName.Data());
+      inputFileName = name;
       
       fRawFileAscii.open(inputFileName.Data());
       if( fRawFileAscii.fail() ) { // end the reading if file opening failed

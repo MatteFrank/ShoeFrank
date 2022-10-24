@@ -24,12 +24,12 @@
 //! Class Imp
 ClassImp(TAVTactBaseRaw);
 
-const UInt_t TAVTactBaseRaw::fgkKeyHeader[]     = {0x80008000, 0x80018001, 0x80028002, 0x80038003};
+const UInt_t TAVTactBaseRaw::fgkSensorKey[]     = {0x80008000, 0x80018001, 0x80028002, 0x80038003};
 const Int_t  TAVTactBaseRaw::fgkFrameHeaderSize =  6;
 const Int_t  TAVTactBaseRaw::fgkLineWidth       =  9;
 const UInt_t TAVTactBaseRaw::fgkFrameHeader     =  0x80088007;
 const UInt_t TAVTactBaseRaw::fgkFrameTail       =  0xaaa8aaa7;
-const UInt_t TAVTactBaseRaw::fgkKeyTail[]       = {0x8bb08bb0, 0x8bb18bb1, 0x8bb28bb2, 0x8bb38bb3};
+const UInt_t TAVTactBaseRaw::fgkSensorTail[]    = {0x8bb08bb0, 0x8bb18bb1, 0x8bb28bb2, 0x8bb38bb3};
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -148,7 +148,7 @@ Int_t TAVTactBaseRaw::GetSensor(UInt_t key)
 
    key = (key >> 16) & 0xFFFF;
    for (Int_t i = 0; i <  pGeoMap->GetSensPerDataLink(); ++i) {
-      if (fgkKeyHeader[i] == key)
+      if (fgkSensorKey[i] == key)
          return i;
    }
    return -1;
@@ -362,13 +362,11 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    
    TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
    TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
-   TAVTparMap*  pParMap = (TAVTparMap*)  fpParMap->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
-   Int_t planeId = pParMap->GetPlaneId(iSensor);
-   if (pConfig->IsDeadPixel(planeId, aLine, aColumn)) return;
+   if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
      
-   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(planeId, value, aLine, aColumn);
+   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);
@@ -377,6 +375,6 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    pixel->SetValidFrames(fFrameOk);
    
    if (ValidHistogram())
-    FillHistoPixel(planeId, aLine, aColumn);
+    FillHistoPixel(iSensor, aLine, aColumn);
 }
 

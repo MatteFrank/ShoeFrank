@@ -9,6 +9,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
+#include "TAITparMap.hxx"
 
 #include "TAITactBaseNtuHit.hxx"
 
@@ -19,6 +20,10 @@
 
 //! Class imp
 ClassImp(TAITactBaseNtuHit);
+
+const UInt_t TAITactBaseNtuHit::fgkBoardKey[]  = {0xfafa0110, 0xfafa0111, 0xfafa0112, 0xfafa0113, 0xfafa0114, 0xfafa0115, 0xfafa0116, 0xfafa0117};
+const UInt_t TAITactBaseNtuHit::fgkBoardTail[] = {0xabcd0110, 0xabcd0111, 0xabcd0112, 0xabcd0113, 0xabcd0114, 0xabcd0115, 0xabcd0116, 0xabcd0117};
+
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -61,45 +66,55 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
    fIndex     = 0;
    MI26_FrameRaw* data = new MI26_FrameRaw;
 
+   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
    
-   TAITparGeo*  pGeoMap = (TAITparGeo*)  fpGeoMap->Object();
-   
-   // Vertex header
+   // IT header
    if (!GetItrHeader()) return false;
    
-   // loop over boards
-   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+   for (Int_t l = 0; l < pParMap->GetDataLinksN(); ++l) {
       
-      if (!GetSensorHeader(i)) return false;
+      if(FootDebugLevel(3))
+         printf("\nlink# %d  sensors %d\n", l, pParMap->GetSensorsN(l));
+
+      // IT header
+      if (!GetBoardHeader(l)) return false;
       
-      ResetFrames();
-      
-      // loop over frame (3 max)
-      while (GetFrame(i, data)) {
-         DecodeFrame(i, data);
-      }
-      
-      fPrevEventNumber[i]   = fEventNumber;
-      fPrevTriggerNumber[i] = fTriggerNumber;
-      fPrevTimeStamp[i]     = fTimeStamp;
-   }
-   
-   if(FootDebugLevel(3)) {
-      printf("%08x ", fEventSize);
-      for (Int_t i = 0; i < (fEventSize)/2; ++i) {
-         if (i == 9) {
-            printf("\n");
-         } else {
-            if ((i+1) % 10 == 0) printf("\n");
+      // loop over sensors
+      for (Int_t i = 0; i < pParMap->GetSensorsN(l); ++i) {
+         Int_t idx     = pParMap->GetSensorId(i, l);
+         Int_t planeId = pParMap->GetPlaneId(idx, l);
+
+         if (!GetSensorHeader(idx, l)) return false;
+
+         ResetFrames();
+
+         // loop over frame (3 max)
+         while (GetFrame(idx,l, data)) {
+            DecodeFrame(planeId, data);
          }
-         printf("%08x ", fData[i]);
+
+         fPrevEventNumber[planeId]   = fEventNumber;
+         fPrevTriggerNumber[planeId] = fTriggerNumber;
+         fPrevTimeStamp[planeId]     = fTimeStamp;
       }
-      printf("\n");
+
+      if(FootDebugLevel(3)) {
+         printf("%08x ", fEventSize);
+         for (Int_t i = 0; i < (fEventSize)/2; ++i) {
+            if (i == 9) {
+               printf("\n");
+            } else {
+               if ((i+1) % 10 == 0) printf("\n");
+            }
+            printf("%08x ", fData[i]);
+         }
+         printf("\n");
+      }
    }
    
    delete data;
-
-
+   
+   
    return true;
 }
 
@@ -115,6 +130,29 @@ Bool_t TAITactBaseNtuHit::GetItrHeader()
       }
    } while (fIndex++ < fEventSize);
    
+
+   return false;
+}
+
+// --------------------------------------------------------------------------------------
+//! Find sensor header
+//!
+//! \param[in] iBoard board index
+Bool_t TAITactBaseNtuHit::GetBoardHeader(Int_t iBoard)
+{
+   do {
+      if (fData[fIndex] == GetBoardKey(iBoard)) {
+         fBoardTrigger = fData[++fIndex];
+         fTimeStamp    = fData[++fIndex];
+         
+         if(FootDebugLevel(3))
+            printf("Board %d (0x%x): size: %d\n", iBoard, fData[fIndex-2], fBoardTrigger);
+         
+         return true;
+      }
+   } while (fIndex++ < fEventSize);
+   
+   
    return false;
 }
 
@@ -122,19 +160,23 @@ Bool_t TAITactBaseNtuHit::GetItrHeader()
 //! Find sensor header
 //!
 //! \param[in] iSensor sensor index
-Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor)
+//! \param[in] datalink board index
+Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
 {
+   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
    do {
-      if (fData[fIndex] == GetKeyHeader(iSensor)) {
+      if (fData[fIndex] == GetSensorKey(iSensor)) {
          fEventNumber   = fData[++fIndex];
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("sensor %d: trig: %d evt: %d\n", iSensor, fTriggerNumber, fEventNumber);
+            printf("sensor %d: trig#: %d evt#: %d\n", iSensor, fTriggerNumber, fEventNumber);
          
-         if(ValidHistogram())
-            FillHistoEvt(iSensor);
+         if(ValidHistogram()) {
+            Int_t planeId = pParMap->GetPlaneId(iSensor, datalink);
+            FillHistoEvt(planeId);
+         }
 
          return true;
       }
@@ -148,14 +190,21 @@ Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor)
 //! Get Frame structure
 //!
 //! \param[in] iSensor sensor index
-//! \param[in] data Mimosa sensor data structure 
-Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
+//! \param[in] datalink board index
+//! \param[in] data Mimosa sensor data structure
+Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data)
 {
+   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
+
+   Int_t startIdx = fIndex;
    // check frame header
    if (fData[++fIndex] ==  GetFrameHeader()) {
+
       memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
-      if (ValidHistogram())
-         FillHistoFrame(iSensor, data);
+      if (ValidHistogram()) {
+         Int_t planeId = pParMap->GetPlaneId(iSensor, datalink);
+         FillHistoFrame(planeId, data);
+      }
       
    } else
       return false;
@@ -167,16 +216,17 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
          break;
       }
       
-      if (fData[fIndex] == GetKeyTail(iSensor)) {
+      if (fData[fIndex] == GetSensorTail(iSensor)) {
          fIndex--;
          break;
       }
       
    } while (fIndex++ < fEventSize);
    
-   fDataSize = fIndex - fgkFrameHeaderSize;
+   fDataSize = fIndex - fgkFrameHeaderSize - startIdx;
 
    if(FootDebugLevel(3)) {
+      printf("Sensor %d Board %d\n", iSensor, datalink);
       printf("%08x\n", data->Header);
       printf("%08x\n", data->TriggerCnt);
       printf("%08x\n", data->TimeStamp);
