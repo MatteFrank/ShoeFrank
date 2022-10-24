@@ -160,6 +160,7 @@ Bool_t TAITactBaseNtuHit::GetBoardHeader(Int_t iBoard)
 //! Find sensor header
 //!
 //! \param[in] iSensor sensor index
+//! \param[in] datalink board index
 Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
 {
    TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
@@ -189,7 +190,8 @@ Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
 //! Get Frame structure
 //!
 //! \param[in] iSensor sensor index
-//! \param[in] data Mimosa sensor data structure 
+//! \param[in] datalink board index
+//! \param[in] data Mimosa sensor data structure
 Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data)
 {
    TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
