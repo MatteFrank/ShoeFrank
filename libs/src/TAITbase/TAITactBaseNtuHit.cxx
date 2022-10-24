@@ -81,15 +81,16 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
       
       // loop over sensors
       for (Int_t i = 0; i < pParMap->GetSensorsN(l); ++i) {
-         Int_t idx = pParMap->GetSensorId(i, l);
-         
-         if (!GetSensorHeader(idx)) return false;
+         Int_t idx     = pParMap->GetSensorId(i, l);
+         Int_t planeId = pParMap->GetPlaneId(idx, l);
+
+         if (!GetSensorHeader(idx, l)) return false;
 
          ResetFrames();
 
          // loop over frame (3 max)
-         while (GetFrame(idx, data)) {
-            DecodeFrame(idx, data);
+         while (GetFrame(idx,l, data)) {
+            DecodeFrame(planeId, data);
          }
 
          fPrevEventNumber[idx]   = fEventNumber;
@@ -159,8 +160,9 @@ Bool_t TAITactBaseNtuHit::GetBoardHeader(Int_t iBoard)
 //! Find sensor header
 //!
 //! \param[in] iSensor sensor index
-Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor)
+Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
 {
+   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
    do {
       if (fData[fIndex] == GetSensorKey(iSensor)) {
          fEventNumber   = fData[++fIndex];
@@ -170,8 +172,10 @@ Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor)
          if(FootDebugLevel(3))
             printf("sensor %d: trig#: %d evt#: %d\n", iSensor, fTriggerNumber, fEventNumber);
          
-         if(ValidHistogram())
-            FillHistoEvt(iSensor);
+         if(ValidHistogram()) {
+            Int_t planeId = pParMap->GetPlaneId(iSensor, datalink);
+            FillHistoEvt(planeId);
+         }
 
          return true;
       }
@@ -186,14 +190,18 @@ Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor)
 //!
 //! \param[in] iSensor sensor index
 //! \param[in] data Mimosa sensor data structure 
-Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
+Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data)
 {
+   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
+
    // check frame header
    if (fData[++fIndex] ==  GetFrameHeader()) {
 
       memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
-      if (ValidHistogram())
-         FillHistoFrame(iSensor, data);
+      if (ValidHistogram()) {
+         Int_t planeId = pParMap->GetPlaneId(iSensor, datalink);
+         FillHistoFrame(planeId, data);
+      }
       
    } else
       return false;

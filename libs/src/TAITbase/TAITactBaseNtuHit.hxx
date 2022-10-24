@@ -39,10 +39,10 @@ protected:
    Bool_t GetBoardHeader(Int_t iBoard);
 
    // Get the starting point of each frame
-   Bool_t GetSensorHeader(Int_t iSensor);
+   Bool_t GetSensorHeader(Int_t iSensor, Int_t datalink);
    
    // Get frame and returns frameRaw
-   Bool_t GetFrame(Int_t iSensor, MI26_FrameRaw* data);
+   Bool_t GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data);
    
 protected:
    //! Board key
