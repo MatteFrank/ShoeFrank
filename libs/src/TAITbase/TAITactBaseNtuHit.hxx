@@ -44,6 +44,9 @@ protected:
    // Get frame and returns frameRaw
    Bool_t GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data);
    
+   // Add pixel to list
+   void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
+   
 protected:
    //! Board key
    static const UInt_t fgkBoardKey[];     ///< Key header array per board

@@ -10,6 +10,8 @@
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
 #include "TAITparMap.hxx"
+#include "TAITntuHit.hxx"
+#include "TAIThit.hxx"
 
 #include "TAITactBaseNtuHit.hxx"
 
@@ -243,3 +245,35 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
    return true;
 }
 
+// --------------------------------------------------------------------------------------
+//! Add pixel to container
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] value pixel value
+//! \param[in] aLine line id
+//! \param[in] aColumn column id
+void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
+{
+   // Add a pixel to the vector of pixels
+   // require the following info
+   // - input = number of the sensors
+   // - value = analog value of this pixel
+   // - line & column = position of the pixel in the matrix
+   
+   TAITntuHit*  pNtuRaw = (TAITntuHit*)  fpNtuRaw->Object();
+   TAITparGeo*  pGeoMap = (TAITparGeo*)  fpGeoMap->Object();
+   TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
+   
+   if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
+   
+   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   
+   double v = pGeoMap->GetPositionV(aLine);
+   double u = pGeoMap->GetPositionU(aColumn);
+   TVector3 pos(u,v,0);
+   pixel->SetPosition(pos);
+   pixel->SetValidFrames(fFrameOk);
+   
+   if (ValidHistogram())
+      FillHistoPixel(iSensor, aLine, aColumn);
+}
