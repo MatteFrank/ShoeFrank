@@ -170,6 +170,8 @@ public:
    static const Char_t* GetBaseName()    { return fgkBaseNameIt.Data();    }
    //! Get default parameter name
    static const Char_t* GetDefParaName() { return fgkDefParaNameIt.Data(); }
+   //! Get default number of sensors per board
+   static Int_t GetDefSensPerBoard()     {return fgkDefSensPerBoard;       }
 
    ClassDef(TAITparGeo,1)
 };
