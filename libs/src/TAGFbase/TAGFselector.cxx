@@ -1494,7 +1494,7 @@ void TAGFselector::CategorizeVT_back()
 void TAGFselector::CheckPlaneOccupancy()
 {
 
-	for( auto itDet = m_detectors.begin(); itDet = m_detectors.end(); ++itDet)
+	for( auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
 	{
 		m_PlaneOccupancy[*itDet];
 		if( *itDet == "IT" )
