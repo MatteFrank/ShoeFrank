@@ -34,11 +34,7 @@ TString TAITactStdRaw::fgDefaultExtName    = ".ZS";
 TAITactStdRaw::TAITactStdRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
 : TAITactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
-   TAITparGeo*  pGeoPar = (TAITparGeo*)  fpGeoMap->Object();
 
-
-   Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*pGeoPar->GetSensorsN(); // 3 frame per event and 3 header word for each sensor
-   fData.reserve(size);
 }
 
 //------------------------------------------+-----------------------------------
