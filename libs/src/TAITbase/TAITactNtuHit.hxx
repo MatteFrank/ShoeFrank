@@ -11,7 +11,7 @@
 #include "TAITactBaseRaw.hxx"
 
 class TAGdataDsc;
-class DECardEvent;
+class DEITREvent;
 
 using namespace std;
 class TAITactNtuHit : public TAITactBaseRaw {

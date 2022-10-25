@@ -4,8 +4,6 @@
  \brief    Base class to get Ntuplize ITR raw data
  */
 
-#include "DECardEvent.hh"
-
 #include "TH2F.h"
 
 #include "TAGrecoManager.hxx"
