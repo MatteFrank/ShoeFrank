@@ -108,11 +108,6 @@ void DEITREvent::readData(unsigned int **p1)
       evtSize++;
       values.push_back(*p);
       
-      // event number
-      eventNumber = *(++p);
-      evtSize++;
-      values.push_back(*p);
-      
       // trigger number
       triggerCounter = *(++p);
       evtSize++;
