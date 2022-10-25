@@ -663,8 +663,9 @@ string TACAparGeo::PrintRotations()
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
       TVector3 center = fpFootGeo->GetCACenter();
-      TVector3  angle = fpFootGeo->GetCAAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
-
+      TVector3  angle = fpFootGeo->GetCAAngles(); //invert the angles to take into account the FLUKA convention;
+      angle *= -1;
+      
       if ( angle.Mag()!=0 ) {
 
          // put the detector in local coord before the rotation
