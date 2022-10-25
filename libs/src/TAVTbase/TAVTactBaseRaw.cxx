@@ -68,6 +68,16 @@ TAVTactBaseRaw::TAVTactBaseRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc
   fPrefix("vt"),
   fTitleDev("Vertex")
 {
+   TString tmp(name);
+   fPrefix = tmp(0,2);
+   
+   fTitleDev = fPrefix;
+   if (fPrefix.Contains("vt"))
+      fTitleDev = "Vertex";
+   else if (fPrefix.Contains("it"))
+      fTitleDev = "Inner Tracker";
+   else
+      printf("Wrong prefix for histograms !");
 }
 
 //------------------------------------------+-----------------------------------
@@ -207,11 +217,12 @@ void TAVTactBaseRaw::FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data)
 //! \param[in] iSensor sensor index
 void TAVTactBaseRaw::FillHistoEvt(Int_t iSensor)
 {
-   //if (fEventNumber - fPrevEventNumber > 1)printf("trig %d  prev %d\n", fTriggerNumber, fPrevTriggerNumber);
    fpHisEvtNumber[iSensor]->Fill(fEventNumber - fPrevEventNumber[iSensor]);
    fpHisTriggerEvt[iSensor]->Fill(fTriggerNumber - fPrevTriggerNumber[iSensor]);
+   
    if (fTriggerNumber - fPrevTriggerNumber[iSensor] != 1)
       fpHisFrameErrors[iSensor]->Fill(4);
+   
    fpHisTimeStampEvt[iSensor]->Fill(fTimeStamp - fPrevTimeStamp[iSensor]);
 }
 
