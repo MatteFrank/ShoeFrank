@@ -23,7 +23,7 @@ std::string FRAGnames[] =
    "VTX     fragment ",
    "WD      fragment ",
    "MSD     fragment ",
-   "VTX     fragment ",
+   "ITR     fragment ",
    "Arduino fragment "};
 
 unsigned int FRAGkeys[] =
