@@ -210,6 +210,7 @@ Bool_t TAGactKFitter::Action()	{
 
 		MakeFit(evNum, m_selector);
 	}
+	m_selector->FillPlaneOccupancy(h_PlaneOccupancy);
 	
 	chVect.clear();
 	
@@ -1655,6 +1656,9 @@ void TAGactKFitter::CreateHistogram()	{
 		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRadio%d",i), Form("Momentum Ratio %d",i), 150, 0, 2.5));
 		AddHistogram(h_ratio_reco_true[i]);
 	}
+
+	h_PlaneOccupancy = new TH2I("h_PlaneOccupancy", "h_PlaneOccupancy; FitPlane Id; # of clusters", m_sensorIDmap->GetFitPlanesN()+2, -1.5, m_sensorIDmap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
+	AddHistogram(h_PlaneOccupancy);
 
 	SetValidHistogram(kTRUE);
 

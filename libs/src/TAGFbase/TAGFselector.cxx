@@ -41,14 +41,26 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-	if(TAGrecoManager::GetPar()->IncludeVT()) 
+	if(TAGrecoManager::GetPar()->IncludeVT())
+	{
 		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+		m_detectors.push_back("VT");
+	}
 	if(TAGrecoManager::GetPar()->IncludeIT())
+	{
 		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
+		m_detectors.push_back("IT");
+	}
 	if(TAGrecoManager::GetPar()->IncludeMSD())
+	{
 		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+		m_detectors.push_back("MSD");
+	}
 	if(TAGrecoManager::GetPar()->IncludeTW())
+	{
 		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
+		m_detectors.push_back("TW");
+	}
 
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
@@ -1478,34 +1490,19 @@ void TAGFselector::CategorizeVT_back()
 
 
 //--------------------------------------------------------------------------------------------
-//! \brief Check the occupancy of all the FitPlanes in genFit geometry
+//! \brief Check the occupancy of all the FitPlanes in GenFit geometry
 void TAGFselector::CheckPlaneOccupancy()
 {
 
-	map<string, vector<int>> DetCounts;
-	if( TAGrecoManager::GetPar()->IncludeVT() )
+	for( auto itDet = m_detectors.begin(); itDet = m_detectors.end(); ++itDet)
 	{
-			DetCounts["VT"];
-			DetCounts["VT"].resize(m_SensorIDMap->GetFitPlanesN("VT"));
-			std::fill(DetCounts["VT"].begin(), DetCounts["VT"].end(), 0);
-	}
-	if( TAGrecoManager::GetPar()->IncludeIT() )
-	{
-			DetCounts["IT"];
-			DetCounts["IT"].resize(m_SensorIDMap->GetPossibleITz()->size());
-			std::fill(DetCounts["IT"].begin(), DetCounts["IT"].end(), 0);
-	}
-	if( TAGrecoManager::GetPar()->IncludeMSD() )
-	{
-			DetCounts["MSD"];
-			DetCounts["MSD"].resize(m_SensorIDMap->GetFitPlanesN("MSD"));
-			std::fill(DetCounts["MSD"].begin(), DetCounts["MSD"].end(), 0);
-	}
-	if( TAGrecoManager::GetPar()->IncludeTW() )
-	{
-			DetCounts["TW"];
-			DetCounts["TW"].resize(m_SensorIDMap->GetFitPlanesN("TW"));
-			std::fill(DetCounts["TW"].begin(), DetCounts["TW"].end(), 0);
+		m_PlaneOccupancy[*itDet];
+		if( *itDet == "IT" )
+			m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetPossibleITz()->size());
+		else
+			m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetFitPlanesN(*itDet));
+
+		std::fill(m_PlaneOccupancy[*itDet].begin(), m_PlaneOccupancy[*itDet].end(), 0);
 	}
 
 	//Cycle on FitPlanes
@@ -1527,7 +1524,7 @@ void TAGFselector::CheckPlaneOccupancy()
 				planesAtZ = m_SensorIDMap->GetPlanesAtZ(itZ);
 				if( std::find(planesAtZ->begin(), planesAtZ->end(), iPlane) != planesAtZ->end() )
 				{
-					DetCounts[det][id] += m_allHitMeas->at(iPlane).size();
+					m_PlaneOccupancy[det][id] += m_allHitMeas->at(iPlane).size();
 					break;
 				}
 				id++;
@@ -1537,19 +1534,42 @@ void TAGFselector::CheckPlaneOccupancy()
 		{
 			int sensorId;
 			if( m_SensorIDMap->GetSensorID(iPlane, &sensorId) )
-				DetCounts[det][sensorId] = m_allHitMeas->at(iPlane).size();
+				m_PlaneOccupancy[det][sensorId] = m_allHitMeas->at(iPlane).size();
 		} 
 	
 	} //End of loop on sensors
 
-	cout << "EVENT::" << gTAGroot->CurrentEventId().EventNumber() << endl;
-	for(auto it = DetCounts.begin(); it != DetCounts.end(); ++it)
+	if( m_debug > 1 )
 	{
-		for( int i=0; i < it->second.size(); ++i)
-			cout << it->first << "\tId::" << i << "\tNmeas::" << it->second.at(i) << endl;
+		cout << "EVENT::" << gTAGroot->CurrentEventId().EventNumber() << endl;
+		for(auto it = m_PlaneOccupancy.begin(); it != m_PlaneOccupancy.end(); ++it)
+		{
+			for( int i=0; i < it->second.size(); ++i)
+				cout << it->first << "\tId::" << i << "\tNmeas::" << it->second.at(i) << endl;
+		}
 	}
 }
 
+
+//! \brief Fill plane occupancy histogram
+void TAGFselector::FillPlaneOccupancy(TH2* h_PlaneOccupancy)
+{
+	int count = 0;
+	for( auto it = m_detectors.begin(); it != m_detectors.end(); ++it)
+	{
+		if( m_PlaneOccupancy.find(*it) == m_PlaneOccupancy.end() )
+			continue;
+		else
+		{
+			for(int i=0; i < m_PlaneOccupancy[*it].size(); ++i)
+			{
+				h_PlaneOccupancy->Fill( count, m_PlaneOccupancy[*it][i] );
+				++count;
+			}
+
+		}
+	}
+}
 
 
 //--------------------------------------------------------------------------------------------
