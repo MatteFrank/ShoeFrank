@@ -49,8 +49,8 @@ TAITactBaseNtuHit::TAITactBaseNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGp
       fPrevTimeStamp[i]     = 0;
    }
    
-   Int_t size = parGeo->GetSensorsN()*sizeof(MI26_FrameRaw)*4;
-   fData.resize(size);
+   Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*parGeo->GetSensorsN(); // 3 frame per event and 3 header word for each sensor
+   fData.reserve(size);
 }
 
 //------------------------------------------+-----------------------------------
@@ -73,7 +73,7 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
    
    for (Int_t l = 0; l < pParMap->GetDataLinksN(); ++l) {
       
-      if(FootDebugLevel(3))
+      if(FootDebugLevel(1))
          printf("\nlink# %d  sensors %d\n", l, pParMap->GetSensorsN(l));
 
       // IT header
@@ -81,18 +81,16 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
       
       // loop over sensors
       for (Int_t i = 0; i < pParMap->GetSensorsN(l); ++i) {
-         Int_t idx     = pParMap->GetSensorId(i, l);
-         Int_t planeId = pParMap->GetPlaneId(idx, l);
+         Int_t planeId = pParMap->GetPlaneId(i, l);
 
-         if (!GetSensorHeader(idx, l)) return false;
+         if (!GetSensorHeader(i, l)) continue;
 
          ResetFrames();
 
          // loop over frame (3 max)
-         while (GetFrame(idx,l, data)) {
+         while (GetFrame(i,l, data)) {
             DecodeFrame(planeId, data);
          }
-
          fPrevEventNumber[planeId]   = fEventNumber;
          fPrevTriggerNumber[planeId] = fTriggerNumber;
          fPrevTimeStamp[planeId]     = fTimeStamp;
@@ -146,7 +144,7 @@ Bool_t TAITactBaseNtuHit::GetBoardHeader(Int_t iBoard)
          fTimeStamp    = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("Board %d (0x%x): size: %d\n", iBoard, fData[fIndex-2], fBoardTrigger);
+            printf("Board %d (0x%x): trig#: %d\n", iBoard, fData[fIndex-2], fBoardTrigger);
          
          return true;
       }
@@ -165,6 +163,10 @@ Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
 {
    TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
    do {
+      for (Int_t i = iSensor+1; i < TAITparGeo::GetDefSensPerBoard(); ++i)
+         if (fData[fIndex] == GetSensorKey(i)) {
+            return false;
+         }
       if (fData[fIndex] == GetSensorKey(iSensor)) {
          fEventNumber   = fData[++fIndex];
          fTriggerNumber = fData[++fIndex];
