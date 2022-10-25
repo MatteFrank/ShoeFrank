@@ -478,20 +478,21 @@ string TAITparGeo::PrintRotations()
   if(TAGrecoManager::GetPar()->IncludeIT()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-    TVector3  fCenter = fpFootGeo->GetITCenter();
-    TVector3  fAngle = fpFootGeo->GetITAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
-
+    TVector3  center = fpFootGeo->GetITCenter();
+    TVector3  angle = fpFootGeo->GetITAngles(); //invert the angles to take into account the FLUKA convention;
+    angle *= -1;
+     
     for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
 
       //check if sensor or detector have a tilt
-      if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
+      if (fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0){
 
 	//put the sensor in local coord before the rotation
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",-fCenter.X()),
-			Form("%f",-fCenter.Y()),
-			Form("%f",-fCenter.Z()),
+			Form("%f",-center.X()),
+			Form("%f",-center.Y()),
+			Form("%f",-center.Z()),
 			Form("it_%d",iSens) ) << endl;
 
 	//check if sensor has a tilt
@@ -531,54 +532,54 @@ string TAITparGeo::PrintRotations()
 	}
 
 	//check if detector has a tilt and then apply rot
-	if(fAngle.Mag()!=0){
+	if(angle.Mag()!=0){
 
-	  if(fAngle.X()!=0){
-	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "",
+	  if(angle.X()!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "",
 			    "", Form("it_%d",iSens)) << endl;
 	  }
-	  if(fAngle.Y()!=0){
-	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "",
+	  if(angle.Y()!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "",
 			    "", Form("it_%d",iSens)) << endl;
 	  }
-	  if(fAngle.Z()!=0){
-	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "",
+	  if(angle.Z()!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "",
 			    "", Form("it_%d",iSens)) << endl;
 	  }
 	}
 
 	//put back the detector in global coord
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-			Form("%f",fCenter.Z()), Form("it_%d",iSens)) << endl;
+			Form("%f",center.X()), Form("%f",center.Y()),
+			Form("%f",center.Z()), Form("it_%d",iSens)) << endl;
 
       }
     }
     // Only global detector rotations for support
-    if(fAngle.Mag()!=0){
+    if(angle.Mag()!=0){
     //put the passive layers in local coord before the rotation
   	ss << PrintCard("ROT-DEFI", "", "", "",
-  			Form("%f",-fCenter.X()),
-  			Form("%f",-fCenter.Y()),
-  			Form("%f",-fCenter.Z()),
+  			Form("%f",-center.X()),
+  			Form("%f",-center.Y()),
+  			Form("%f",-center.Z()),
   			"itpass" ) << endl;
 
-    if(fAngle.X()!=0){
-      ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "",
+    if(angle.X()!=0){
+      ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "",
       "", "itpass") << endl;
     }
-    if(fAngle.Y()!=0){
-      ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "",
+    if(angle.Y()!=0){
+      ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "",
       "", "itpass") << endl;
     }
-    if(fAngle.Z()!=0){
-      ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "",
+    if(angle.Z()!=0){
+      ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "",
       "", "itpass") << endl;
     }
     //put back the detector in global coord
     ss << PrintCard("ROT-DEFI", "", "", "",
-  			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-  			Form("%f",fCenter.Z()), "itpass") << endl;
+  			Form("%f",center.X()), Form("%f",center.Y()),
+  			Form("%f",center.Z()), "itpass") << endl;
     }
   }
 
@@ -599,8 +600,8 @@ string TAITparGeo::PrintBodies()
 
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-      TVector3  fCenter = fpFootGeo->GetITCenter();
-      TVector3  fAngle = fpFootGeo->GetITAngles();
+      TVector3  center = fpFootGeo->GetITCenter();
+      TVector3  angle = fpFootGeo->GetITAngles();
 
       TVector3 posEpi, posPix, posMod;
       TVector3 posFoam, posKapton, posEpoxy, posAl;
@@ -611,15 +612,15 @@ string TAITparGeo::PrintBodies()
       for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
 
-         if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+         if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
             ss << "$start_transform " << Form("it_%d",iSens) << endl;
 
          //epitaxial layer
          bodyname = Form("itre%d",iSens);
          regionname = Form("ITRE%02d",iSens);
-         posEpi.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
-                       fCenter.Y() + GetSensorPosition(iSens).Y(),
-                       fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2.
+         posEpi.SetXYZ( center.X() + GetSensorPosition(iSens).X(),
+                       center.Y() + GetSensorPosition(iSens).Y(),
+                       center.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2.
                        + fPixThickness + fEpiSize.Z()/2. );
          ss <<  "RPP " << bodyname <<  "     "
          << posEpi.x() - fEpiSize.X()/2. << " "
@@ -636,7 +637,7 @@ string TAITparGeo::PrintBodies()
          regionname = Form("ITRM%d",iSens);
          posMod.SetXYZ( posEpi.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
                        posEpi.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
-                       fCenter.Z() + GetSensorPosition(iSens).Z() );
+                       center.Z() + GetSensorPosition(iSens).Z() );
          ss <<  "RPP " << bodyname <<  "     "
          << posMod.x() - fTotalSize.X()/2. << " "
          << posMod.x() + fTotalSize.X()/2. << " "
@@ -661,7 +662,7 @@ string TAITparGeo::PrintBodies()
          fvPixBody.push_back(bodyname);
          fvPixRegion.push_back(regionname);
 
-         if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+         if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
             ss << "$end_transform " << endl;
 
       }
@@ -669,7 +670,7 @@ string TAITparGeo::PrintBodies()
        if(FootDebugLevel(2))
           cout << ss.str() << endl;
       // support
-      if(fAngle.Mag()!=0)
+      if(angle.Mag()!=0)
         ss << "$start_transform " << "itpass" << endl;
       for(Int_t iSup = 0; iSup < GetSensorsN()/2; iSup+=4) {
 
@@ -680,9 +681,9 @@ string TAITparGeo::PrintBodies()
          // foam
          bodyname = Form("itrf%d",iSup);
          regionname = Form("ITRF%02d",iSup);
-         posFoam.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                        fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                        fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2.);
+         posFoam.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                        center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                        center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2.);
          ss <<  "RPP " << bodyname <<  "     "
          << posFoam.x() - fSupportSize.X()/2. << " "
          << posFoam.x() + fSupportSize.X()/2. << " "
@@ -698,9 +699,9 @@ string TAITparGeo::PrintBodies()
 
          bodyname = Form("itrk%d",iSup);
          regionname = Form("ITRK%02d",iSup);
-         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                        fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                        fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         posKapton.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                        center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                        center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posKapton.x() - fSupportSize.X()/2. << " "
          << posKapton.x() + fSupportSize.X()/2. << " "
@@ -714,9 +715,9 @@ string TAITparGeo::PrintBodies()
          // negative side
          bodyname = Form("itrk%d",iSup+100);
          regionname = Form("ITRK%02d",iSup+100);
-         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         posKapton.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                          center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posKapton.x() - fSupportSize.X()/2. << " "
          << posKapton.x() + fSupportSize.X()/2. << " "
@@ -731,9 +732,9 @@ string TAITparGeo::PrintBodies()
          posZ = Get1stAlLayer();
          bodyname = Form("itra%d",iSup);
          regionname = Form("ITRA%02d",iSup);
-         posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                        fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                        fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         posAl.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                        center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                        center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posAl.x() - fSupportSize.X()/2. << " "
          << posAl.x() + fSupportSize.X()/2. << " "
@@ -747,9 +748,9 @@ string TAITparGeo::PrintBodies()
          // negative side
          bodyname = Form("itra%d",iSup+100);
          regionname = Form("ITRA%02d",iSup+100);
-         posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                      fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         posAl.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                      center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                      center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posAl.x() - fSupportSize.X()/2. << " "
          << posAl.x() + fSupportSize.X()/2. << " "
@@ -764,9 +765,9 @@ string TAITparGeo::PrintBodies()
          posZ = Get2ndKaptonLayer();
          bodyname = Form("itrk%d",iSup+2);
          regionname = Form("ITRK%02d",iSup+2);
-         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         posKapton.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                          center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posKapton.x() - fSupportSize.X()/2. << " "
          << posKapton.x() + fSupportSize.X()/2. << " "
@@ -780,9 +781,9 @@ string TAITparGeo::PrintBodies()
          // negative side
          bodyname = Form("itrk%d",iSup+102);
          regionname = Form("ITRK%02d",iSup+102);
-         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         posKapton.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                          center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posKapton.x() - fSupportSize.X()/2. << " "
          << posKapton.x() + fSupportSize.X()/2. << " "
@@ -798,9 +799,9 @@ string TAITparGeo::PrintBodies()
          posZ = Get2ndAlLayer();
          bodyname = Form("itra%d",iSup+2);
          regionname = Form("ITRA%02d",iSup+2);
-         posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                      fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         posAl.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                      center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                      center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posAl.x() - fSupportSize.X()/2. << " "
          << posAl.x() + fSupportSize.X()/2. << " "
@@ -814,9 +815,9 @@ string TAITparGeo::PrintBodies()
          // negative side
          bodyname = Form("itra%d",iSup+102);
          regionname = Form("ITRA%02d",iSup+102);
-         posAl.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                      fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                      fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         posAl.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                      center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                      center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posAl.x() - fSupportSize.X()/2. << " "
          << posAl.x() + fSupportSize.X()/2. << " "
@@ -831,9 +832,9 @@ string TAITparGeo::PrintBodies()
          posZ = Get3rdKaptonLayer();
          bodyname = Form("itrk%d",iSup+3);
          regionname = Form("ITRK%02d",iSup+3);
-         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         posKapton.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                          center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posKapton.x() - fSupportSize.X()/2. << " "
          << posKapton.x() + fSupportSize.X()/2. << " "
@@ -847,9 +848,9 @@ string TAITparGeo::PrintBodies()
          // negative side
          bodyname = Form("itrk%d",iSup+103);
          regionname = Form("ITRK%02d",iSup+103);
-         posKapton.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         posKapton.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                          center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posKapton.x() - fSupportSize.X()/2. << " "
          << posKapton.x() + fSupportSize.X()/2. << " "
@@ -864,9 +865,9 @@ string TAITparGeo::PrintBodies()
          posZ = GetEpoxyLayer();
          bodyname = Form("itry%d",iSup);
          regionname = Form("ITRY%02d",iSup);
-         posEpoxy.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
+         posEpoxy.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                          center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. + posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posEpoxy.x() - fSupportSize.X()/2. << " "
          << posEpoxy.x() + fSupportSize.X()/2. << " "
@@ -880,9 +881,9 @@ string TAITparGeo::PrintBodies()
          // negative side
          bodyname = Form("itry%d",iSup+100);
          regionname = Form("ITRY%02d",iSup+100);
-         posEpoxy.SetXYZ(fCenter.X() + sign*fSupportOffset[0]/2.,
-                          fCenter.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
-                          fCenter.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
+         posEpoxy.SetXYZ(center.X() + sign*fSupportOffset[0]/2.,
+                          center.Y() + (GetSensorPosition(iSup).Y() + GetSensorPosition(iSup+16).Y())/2. + sign*fSupportOffset[1]/2.,
+                          center.Z() + (GetSensorPosition(iSup).Z() + GetSensorPosition(iSup+16).Z())/2. - posZ);
          ss <<  "RPP " << bodyname <<  "     "
          << posEpoxy.x() - fSupportSize.X()/2. << " "
          << posEpoxy.x() + fSupportSize.X()/2. << " "
@@ -893,7 +894,7 @@ string TAITparGeo::PrintBodies()
          fvEpoxyBody.push_back(bodyname);
          fvEpoxyRegion.push_back(regionname);
       }
-      if(fAngle.Mag()!=0)
+      if(angle.Mag()!=0)
         ss << "$end_transform " << endl;
       ss << "* End of IT Support bodies" << endl;
    }

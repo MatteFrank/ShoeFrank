@@ -139,23 +139,24 @@ string TASTparGeo::PrintRotations()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
-    TVector3 fCenter = fpFootGeo->GetSTCenter();
-    TVector3  fAngle = fpFootGeo->GetSTAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention
-    
-    if(fAngle.Mag()!=0){
+    TVector3 center = fpFootGeo->GetSTCenter();
+    TVector3  angle = fpFootGeo->GetSTAngles(); //invert the angles to take into account the FLUKA convention
+    angle *= -1;
+     
+    if(angle.Mag()!=0){
 	  
       ss << PrintCard("ROT-DEFI", "300.", "", "",
-		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
-		      Form("%f",-fCenter.Z()), "st") << endl;
-      if(fAngle.X()!=0)
-	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "st") << endl;
-      if(fAngle.Y()!=0)
-	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "st") << endl;
-      if(fAngle.Z()!=0)
-	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "st") << endl;
+		      Form("%f",-center.X()), Form("%f",-center.Y()),
+		      Form("%f",-center.Z()), "st") << endl;
+      if(angle.X()!=0)
+	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "", "", "st") << endl;
+      if(angle.Y()!=0)
+	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "", "", "st") << endl;
+      if(angle.Z()!=0)
+	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "", "", "st") << endl;
       ss << PrintCard("ROT-DEFI", "300.", "", "",
-		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-		      Form("%f",fCenter.Z()), "st") << endl;
+		      Form("%f",center.X()), Form("%f",center.Y()),
+		      Form("%f",center.Z()), "st") << endl;
       
     }
   }
@@ -177,24 +178,24 @@ string TASTparGeo::PrintBodies( )
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-    TVector3  fCenter = fpFootGeo->GetSTCenter();
-    TVector3  fAngle = fpFootGeo->GetSTAngles();
+    TVector3  center = fpFootGeo->GetSTCenter();
+    TVector3  angle = fpFootGeo->GetSTAngles();
 
     
-    if(fAngle.Mag()!=0)
+    if(angle.Mag()!=0)
       outstr << "$start_transform st" << endl;
 
     outstr << setiosflags(ios::fixed) << setprecision(6);
-    outstr << "RPP stc     "  << fCenter[0]-fSize[0]/2. << " " << fCenter[0]+fSize[0]/2 << " " <<
-      fCenter[1]-fSize[1]/2. << " " << fCenter[1]+fSize[1]/2 << " " <<
-      fCenter[2]-fSize[2]/2. - 0.001 << " " << fCenter[2]+fSize[2]/2 + 0.001 << " " <<  endl;
+    outstr << "RPP stc     "  << center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2 << " " <<
+      center[1]-fSize[1]/2. << " " << center[1]+fSize[1]/2 << " " <<
+      center[2]-fSize[2]/2. - 0.001 << " " << center[2]+fSize[2]/2 + 0.001 << " " <<  endl;
 
     //Mylar that is 10\mum thick
-    outstr << "XYP stcmyl1    "  << fCenter[2]-fSize[2]/2. <<  endl;
+    outstr << "XYP stcmyl1    "  << center[2]-fSize[2]/2. <<  endl;
     //Mylar that is 10\mum thick
-    outstr << "XYP stcmyl2    "  << fCenter[2]+fSize[2]/2. <<  endl;
+    outstr << "XYP stcmyl2    "  << center[2]+fSize[2]/2. <<  endl;
     
-    if(fAngle.Mag()!=0)
+    if(angle.Mag()!=0)
       outstr << "$end_transform" << endl;
   }
 

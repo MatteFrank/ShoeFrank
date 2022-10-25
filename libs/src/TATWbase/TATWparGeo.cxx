@@ -441,8 +441,10 @@ string TATWparGeo::PrintRotations()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
-    TVector3 fCenter = fpFootGeo->GetTWCenter();
-    TVector3  fAngle = fpFootGeo->GetTWAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
+    TVector3 center = fpFootGeo->GetTWCenter();
+    TVector3  angle = fpFootGeo->GetTWAngles(); //invert the angles to take into account the FLUKA convention;
+    angle *= -1;
+     
     TVector3 pos;
     
     for (int i=0; i<GetLayersN(); i++){
@@ -453,13 +455,13 @@ string TATWparGeo::PrintRotations()
 		     GetBarPosition(i,j).Z());
 	  
 	//check if bars or detector have a tilt
-	if(fvTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0){
+	if(fvTilt.at(i).at(j).Mag()!=0 || angle.Mag()!=0){
 
 	  //put the bars in local coord before the rotation
 	  ss << PrintCard("ROT-DEFI", "", "", "",
-			  Form("%f",-fCenter.X()),
-			  Form("%f",-fCenter.Y()),
-			  Form("%f",-fCenter.Z()),
+			  Form("%f",-center.X()),
+			  Form("%f",-center.Y()),
+			  Form("%f",-center.Z()),
 			  Form("tw_%d%02d",i,j) ) << endl;
 
 	  //check if bar has a tilt
@@ -495,26 +497,26 @@ string TATWparGeo::PrintRotations()
 	  }
 
 	  //check if detector has a tilt and then apply rot
-	  if(fAngle.Mag()!=0){
+	  if(angle.Mag()!=0){
 	  
-	    if(fAngle.X()!=0){
-	      ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+	    if(angle.X()!=0){
+	      ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "",
 			      "", Form("tw_%d%02d",i,j)) << endl;
 	    }
-	    if(fAngle.Y()!=0){
-	      ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+	    if(angle.Y()!=0){
+	      ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "",
 			      "", Form("tw_%d%02d",i,j)) << endl;
 	    }
-	    if(fAngle.Z()!=0){
-	      ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+	    if(angle.Z()!=0){
+	      ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "",
 			      "", Form("tw_%d%02d",i,j)) << endl;
 	    }
 	  }
       
 	  //put back the detector in global coord
 	  ss << PrintCard("ROT-DEFI", "", "", "",
-			  Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-			  Form("%f",fCenter.Z()), Form("tw_%d%02d",i,j)) << endl;
+			  Form("%f",center.X()), Form("%f",center.Y()),
+			  Form("%f",center.Z()), Form("tw_%d%02d",i,j)) << endl;
 	
 	}	
       }
@@ -536,8 +538,8 @@ string TATWparGeo::PrintBodies()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
-    TVector3  fCenter = fpFootGeo->GetTWCenter();
-    TVector3  fAngle = fpFootGeo->GetTWAngles();
+    TVector3  center = fpFootGeo->GetTWCenter();
+    TVector3  angle = fpFootGeo->GetTWAngles();
     TVector3 pos;
 
     string bodyname, regionname;
@@ -547,14 +549,14 @@ string TATWparGeo::PrintBodies()
     for (int i=0; i<GetLayersN(); i++){
       for (int j=0; j<GetNBars(); j++){
 	
- 	if (fvTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
+ 	if (fvTilt.at(i).at(j).Mag()!=0 || angle.Mag()!=0)
 	  ss << "$start_transform " << Form("tw_%d%02d",i,j) << endl;
       	
 	bodyname = Form("scn%d%02d",i,j);
 	regionname = Form("SCN%d%02d",i,j);
-	pos.SetXYZ( fCenter.X() + GetBarPosition(i,j).X(),
-		    fCenter.Y() + GetBarPosition(i,j).Y(),
-		    fCenter.Z() + GetBarPosition(i,j).Z());
+	pos.SetXYZ( center.X() + GetBarPosition(i,j).X(),
+		    center.Y() + GetBarPosition(i,j).Y(),
+		    center.Z() + GetBarPosition(i,j).Z());
 	ss <<  "RPP " << bodyname <<  "     "
 	   << pos.x() - fBarSize.X()/2. << " "
 	   << pos.x() + fBarSize.X()/2. << " "
@@ -565,7 +567,7 @@ string TATWparGeo::PrintBodies()
 	fvBody.push_back(bodyname);
 	fvRegion.push_back(regionname);
 
- 	if (fvTilt.at(i).at(j).Mag()!=0 || fAngle.Mag()!=0)
+ 	if (fvTilt.at(i).at(j).Mag()!=0 || angle.Mag()!=0)
 	  ss << "$end_transform " << endl;
 	
       } 

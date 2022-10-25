@@ -808,8 +808,8 @@ string TABMparGeo::PrintBodies(){
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
     //Reading the BM global position from global map file.
-    TVector3  fCenter = fpFootGeo->GetBMCenter();
-    TVector3  fAngle = fpFootGeo->GetBMAngles();
+    TVector3  center = fpFootGeo->GetBMCenter();
+    TVector3  angle = fpFootGeo->GetBMAngles();
 
     ss << "* ***Beam Monitor" << endl;
 
@@ -822,29 +822,29 @@ string TABMparGeo::PrintBodies(){
 
     ss << setiosflags(ios::fixed) << setprecision(6);
 
-    if(fAngle.Mag()!=0)
+    if(angle.Mag()!=0)
       ss << "$start_transform bm" << endl;
 
     ss << "RPP BmnShiOu    "
-       << fCenter[0]-fBmSideDch[0]/2.-fShieldThick << " "
-       << fCenter[0]+fBmSideDch[0]/2.+fShieldThick << " "
-       << fCenter[1]-fBmSideDch[1]/2.-fShieldThick << " "
-       << fCenter[1]+fBmSideDch[1]/2.+fShieldThick << " "
-       << fCenter[2]-fBmSideDch[2]/2.-1. << " "
-       << fCenter[2]+fBmSideDch[2]/2.+1. << endl;
+       << center[0]-fBmSideDch[0]/2.-fShieldThick << " "
+       << center[0]+fBmSideDch[0]/2.+fShieldThick << " "
+       << center[1]-fBmSideDch[1]/2.-fShieldThick << " "
+       << center[1]+fBmSideDch[1]/2.+fShieldThick << " "
+       << center[2]-fBmSideDch[2]/2.-1. << " "
+       << center[2]+fBmSideDch[2]/2.+1. << endl;
 
     ss << "RPP BmnShiIn    "
-       << fCenter[0]-fBmSideDch[0]/2. << " "
-       << fCenter[0]+fBmSideDch[0]/2. << " "
-       << fCenter[1]-fBmSideDch[1]/2. << " "
-       << fCenter[1]+fBmSideDch[1]/2. << " "
-       << fCenter[2]-fBmSideDch[2]/2.-1. << " "
-       << fCenter[2]+fBmSideDch[2]/2.+1. << endl;
+       << center[0]-fBmSideDch[0]/2. << " "
+       << center[0]+fBmSideDch[0]/2. << " "
+       << center[1]-fBmSideDch[1]/2. << " "
+       << center[1]+fBmSideDch[1]/2. << " "
+       << center[2]-fBmSideDch[2]/2.-1. << " "
+       << center[2]+fBmSideDch[2]/2.+1. << endl;
 
-    ss << "XYP BmnMyl0     " << fCenter[2]-fBmSideDch[2]/2.-fFoilThick << endl;
-    ss << "XYP BmnMyl1     " << fCenter[2]-fBmSideDch[2]/2. << endl;
-    ss << "XYP BmnMyl2     " << fCenter[2]+fBmSideDch[2]/2. << endl;
-    ss << "XYP BmnMyl3     " << fCenter[2]+fBmSideDch[2]/2.+fFoilThick << endl;
+    ss << "XYP BmnMyl0     " << center[2]-fBmSideDch[2]/2.-fFoilThick << endl;
+    ss << "XYP BmnMyl1     " << center[2]-fBmSideDch[2]/2. << endl;
+    ss << "XYP BmnMyl2     " << center[2]+fBmSideDch[2]/2. << endl;
+    ss << "XYP BmnMyl3     " << center[2]+fBmSideDch[2]/2.+fFoilThick << endl;
 
 
     // Cells
@@ -856,18 +856,18 @@ string TABMparGeo::PrintBodies(){
 	     (ic==fBmIdSense[2]) ){
 	  for (int iv =0; iv<2;iv++){      // loop on views
 	    if ( iv == 0 ){
-	      xmin = fCenter[0] - fBmSideDch[0]/2. + shift;
-	      xmax = fCenter[0] + fBmSideDch[0]/2. - shift;
-	      ymin = fCenter[1] + fPosY[ic][il][iv] - fBmCellWide + fFieldRadius + shift;
-	      ymax = fCenter[1] + fPosY[ic][il][iv] + fBmCellWide - fFieldRadius -shift;
+	      xmin = center[0] - fBmSideDch[0]/2. + shift;
+	      xmax = center[0] + fBmSideDch[0]/2. - shift;
+	      ymin = center[1] + fPosY[ic][il][iv] - fBmCellWide + fFieldRadius + shift;
+	      ymax = center[1] + fPosY[ic][il][iv] + fBmCellWide - fFieldRadius -shift;
 	    }else{
-	      xmin = fCenter[0] + fPosX[ic][il][iv] - fBmCellWide + fFieldRadius + shift;
-	      xmax = fCenter[0] + fPosX[ic][il][iv] + fBmCellWide - fFieldRadius - shift;
-	      ymin = fCenter[1] - fBmSideDch[1]/2. + shift;
-	      ymax = fCenter[1] + fBmSideDch[1]/2. - shift;
+	      xmin = center[0] + fPosX[ic][il][iv] - fBmCellWide + fFieldRadius + shift;
+	      xmax = center[0] + fPosX[ic][il][iv] + fBmCellWide - fFieldRadius - shift;
+	      ymin = center[1] - fBmSideDch[1]/2. + shift;
+	      ymax = center[1] + fBmSideDch[1]/2. - shift;
 	    }
-	    zmin = fCenter[2] + fPosZ[ic][il][iv] - fBmStep + fFieldRadius + shift;
-	    zmax = fCenter[2] + fPosZ[ic][il][iv] + fBmStep - fFieldRadius -shift;
+	    zmin = center[2] + fPosZ[ic][il][iv] - fBmStep + fFieldRadius + shift;
+	    zmax = center[2] + fPosZ[ic][il][iv] + fBmStep - fFieldRadius -shift;
 	    ss << "RPP BmnC" << iv << cella << "   "
 	       << xmin << " " << xmax << " " << ymin << " " << ymax
 	       << " " << zmin << " " << zmax << endl;
@@ -886,17 +886,17 @@ string TABMparGeo::PrintBodies(){
 	       (iw==fBmIdSense[2]) ){
 	    iSense[iv]++;
 	    ss << "RCC BmnS" << iv << iSense[iv] << "   "
-	       << fCenter[0] + fPosX[iw][il][iv] << " "
-	       << fCenter[1] + fPosY[iw][il][iv] << " "
-	       << fCenter[2] + fPosZ[iw][il][iv] << " "
+	       << center[0] + fPosX[iw][il][iv] << " "
+	       << center[1] + fPosY[iw][il][iv] << " "
+	       << center[2] + fPosZ[iw][il][iv] << " "
 	       << fPosCX[iw][il][iv] << " " << fPosCY[iw][il][iv] << " "
 	       << fPosCZ[iw][il][iv] << " " << fSenseRadius << endl;
 	  } else {
 	    iField[iv]++;     // loop on views
 	    ss << "RCC BmnF" << iv << iField[iv] << "   "
-	       << fCenter[0] + fPosX[iw][il][iv] << " "
-	       << fCenter[1] + fPosY[iw][il][iv] << " "
-	       << fCenter[2] + fPosZ[iw][il][iv] << " "
+	       << center[0] + fPosX[iw][il][iv] << " "
+	       << center[1] + fPosY[iw][il][iv] << " "
+	       << center[2] + fPosZ[iw][il][iv] << " "
 	       << fPosCX[iw][il][iv] << " " << fPosCY[iw][il][iv] << " "
 	       << fPosCZ[iw][il][iv] << " " << fFieldRadius << endl;
 	  }
@@ -905,7 +905,7 @@ string TABMparGeo::PrintBodies(){
     }
 
 
-    if(fAngle.Mag()!=0)
+    if(angle.Mag()!=0)
       ss << "$end_transform" << endl;
 
   }
@@ -924,23 +924,24 @@ string TABMparGeo::PrintRotations()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-    TVector3 fCenter = fpFootGeo->GetBMCenter();
-    TVector3  fAngle = fpFootGeo->GetBMAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
-
-    if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
+    TVector3 center = fpFootGeo->GetBMCenter();
+    TVector3  angle = fpFootGeo->GetBMAngles(); //invert the angles to take into account the FLUKA convention;
+    angle *= -1;
+     
+    if(angle.X()!=0 || angle.Y()!=0 || angle.Z()!=0){
 
       ss << PrintCard("ROT-DEFI", "300.", "", "",
-		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
-		      Form("%f",-fCenter.Z()), "bm") << endl;
-      if(fAngle.X()!=0)
-	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "bm") << endl;
-      if(fAngle.Y()!=0)
-	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "bm") << endl;
-      if(fAngle.Z()!=0)
-	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "bm") << endl;
+		      Form("%f",-center.X()), Form("%f",-center.Y()),
+		      Form("%f",-center.Z()), "bm") << endl;
+      if(angle.X()!=0)
+	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "", "", "bm") << endl;
+      if(angle.Y()!=0)
+	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "", "", "bm") << endl;
+      if(angle.Z()!=0)
+	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "", "", "bm") << endl;
       ss << PrintCard("ROT-DEFI", "300.", "", "",
-		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-		      Form("%f",fCenter.Z()), "bm") << endl;
+		      Form("%f",center.X()), Form("%f",center.Y()),
+		      Form("%f",center.Z()), "bm") << endl;
 
     }
   }

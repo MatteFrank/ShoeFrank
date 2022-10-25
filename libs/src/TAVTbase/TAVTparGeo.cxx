@@ -230,19 +230,20 @@ string TAVTparGeo::PrintRotations()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     
-    TVector3  fCenter = fpFootGeo->GetVTCenter();
-    TVector3  fAngle = fpFootGeo->GetVTAngles()*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
-    
+    TVector3  center = fpFootGeo->GetVTCenter();
+    TVector3  angle = fpFootGeo->GetVTAngles(); //invert the angles to take into account the FLUKA convention;
+    angle *= -1;
+     
     for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       //check if sensor or detector have a tilt
-      if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
+      if (fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0){
 
 	//put the sensor in local coord before the rotation
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",-fCenter.X()),
-			Form("%f",-fCenter.Y()),
-			Form("%f",-fCenter.Z()),
+			Form("%f",-center.X()),
+			Form("%f",-center.Y()),
+			Form("%f",-center.Z()),
 			Form("vt_%d",iSens) ) << endl;
 
 	//check if sensor has a tilt
@@ -282,26 +283,26 @@ string TAVTparGeo::PrintRotations()
 	}
 
 	//check if detector has a tilt and then apply rot
-	if(fAngle.Mag()!=0){
+	if(angle.Mag()!=0){
 	  
-	  if(fAngle.X()!=0){
-	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+	  if(angle.X()!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "",
 			    "", Form("vt_%d",iSens)) << endl;
 	  }
-	  if(fAngle.Y()!=0){
-	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+	  if(angle.Y()!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "",
 			    "", Form("vt_%d",iSens)) << endl;
 	  }
-	  if(fAngle.Z()!=0){
-	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+	  if(angle.Z()!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "",
 			    "", Form("vt_%d",iSens)) << endl;
 	  }
 	}
       
 	//put back the detector in global coord
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-			Form("%f",fCenter.Z()), Form("vt_%d",iSens)) << endl;
+			Form("%f",center.X()), Form("%f",center.Y()),
+			Form("%f",center.Z()), Form("vt_%d",iSens)) << endl;
        
       }
     }
@@ -322,8 +323,8 @@ string TAVTparGeo::PrintBodies()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
-    TVector3  fCenter = fpFootGeo->GetVTCenter();
-    TVector3  fAngle = fpFootGeo->GetVTAngles();
+    TVector3  center = fpFootGeo->GetVTCenter();
+    TVector3  angle = fpFootGeo->GetVTAngles();
     TVector3 posEpi, posPix, posMod;
 
     string bodyname, regionname;
@@ -332,15 +333,15 @@ string TAVTparGeo::PrintBodies()
     
     for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
-      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
 	ss << "$start_transform " << Form("vt_%d",iSens) << endl;  
                
       //epitaxial layer
       bodyname = Form("vtxe%d",iSens);
       regionname = Form("VTXE%d",iSens);
-      posEpi.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
-		     fCenter.Y() + GetSensorPosition(iSens).Y(),
-		     fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fPixThickness + fEpiSize.Z()/2. );
+      posEpi.SetXYZ( center.X() + GetSensorPosition(iSens).X(),
+		     center.Y() + GetSensorPosition(iSens).Y(),
+		     center.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fPixThickness + fEpiSize.Z()/2. );
       ss <<  "RPP " << bodyname <<  "     "
 	 << posEpi.x() - fEpiSize.X()/2. << " "
 	 << posEpi.x() + fEpiSize.X()/2. << " "
@@ -356,7 +357,7 @@ string TAVTparGeo::PrintBodies()
       regionname = Form("VTXM%d",iSens);
       posMod.SetXYZ( posEpi.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
 		     posEpi.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
-		     fCenter.Z() + GetSensorPosition(iSens).Z() );
+		     center.Z() + GetSensorPosition(iSens).Z() );
       ss <<  "RPP " << bodyname <<  "     "
 	 << posMod.x() - fTotalSize.X()/2. << " "
 	 << posMod.x() + fTotalSize.X()/2. << " "
@@ -381,7 +382,7 @@ string TAVTparGeo::PrintBodies()
       fvPixBody.push_back(bodyname);
       fvPixRegion.push_back(regionname);
     
-      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
 	ss << "$end_transform " << endl;
 	  
     }
