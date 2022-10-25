@@ -205,9 +205,6 @@ void TAVTactBaseRaw::FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data)
    }
    
    fFrameOk *= ok;
-   
- //  printf("frame %d framePrev %d ok %d\n",  frameCnt, fFrameCount, fFrameOk);
-
 }
 
 // --------------------------------------------------------------------------------------
