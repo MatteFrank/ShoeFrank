@@ -931,7 +931,7 @@ TString TACAparGeo::SPrintCrystalBody( int id, TGeoCombiTrans* hm, TString bodyN
    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    if (fpFootGeo) {
       center = fpFootGeo->GetCACenter();
-      angle  = fpFootGeo->GetCAAngles()*(-1.,-1.,-1.); 
+      angle  = fpFootGeo->GetCAAngles(); 
       angle  *= -1.; //invert the angles to take into account the FLUKA convention;
    }
 
