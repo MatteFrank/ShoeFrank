@@ -126,8 +126,6 @@ void DEITREvent::readData(unsigned int **p1)
       } while (*p != m_itrTail && p != p_max);
    }
    *p1 = (++p);
-   //   printf ("Evento : %d, p1 = %x \n",  eventNumber,*p1);
-
 }
 
 //------------------------------------------+-----------------------------------
