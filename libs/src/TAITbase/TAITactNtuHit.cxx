@@ -77,7 +77,7 @@ Bool_t TAITactNtuHit::Action()
           const DEITREvent* evt = static_cast<const DEITREvent*> (datDaq->GetFragment(i));
           fData      = evt->values;
           fEventSize = evt->evtSize;
-          fDataLink  = evt->channelID - (dataVTX | 0x30);
+          fDataLink  = evt->channelID - (dataITR | 0x30);
           if (fEventSize == 0) continue;
           DecodeEvent();
        }
