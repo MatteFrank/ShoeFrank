@@ -28,7 +28,7 @@ public:
    virtual  ~TAVTactBaseRaw();
    
    //! Get number of sensors
-   Int_t GetSensorsN() const { return fNSensors; }
+   Int_t GetSensorsN() const { return fSensorsN; }
    
    // Base creation of histogram
    virtual void CreateHistogram();
@@ -71,7 +71,7 @@ protected:
    Bool_t            fFrameOk;               ///< first frame flag
    
 
-   Int_t             fNSensors;              ///< Number of Sensors
+   Int_t             fSensorsN;              ///< Number of Sensors
    Int_t             fIndex;                 ///< Data index
    UInt_t            fCurrentTriggerCnt;     ///< Current trigger count
    Int_t             fEventSize;             ///< Event size

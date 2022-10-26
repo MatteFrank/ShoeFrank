@@ -43,15 +43,15 @@ TAITactBaseNtuHit::TAITactBaseNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGp
    AddPara(pConfig, "TAITparConf");
    
    TAITparGeo* parGeo = (TAITparGeo*) fpGeoMap->Object();
-   fNSensors = parGeo->GetSensorsN();
+   fSensorsN = parGeo->GetSensorsN();
    
-   for (Int_t i = 0; i < fNSensors; ++i) {
+   for (Int_t i = 0; i < fSensorsN; ++i) {
       fPrevEventNumber[i]   = 0;
       fPrevTriggerNumber[i] = 0;
       fPrevTimeStamp[i]     = 0;
    }
    
-   Int_t size = ((sizeof(MI26_FrameRaw)/4)*3 + 3)*parGeo->GetSensorsN(); // 3 frame per event and 3 header word for each sensor
+   Int_t size = (((sizeof(MI26_FrameRaw)/4)*3 + 4)*parGeo->GetSensorsN())+7; // 3 frame per event and 7 header/trailer words for each sensor/board
    fData.reserve(size);
 }
 
