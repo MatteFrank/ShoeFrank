@@ -70,21 +70,20 @@ Bool_t TAVTactBaseNtuHit::DecodeEvent()
    // loop over boards
    for (Int_t i = 0; i < pParMap->GetSensorsN(); ++i) {
       
-      Int_t idx     = pParMap->GetSensorId(i);
-      Int_t planeId = pParMap->GetPlaneId(idx);
+      Int_t planeId = pParMap->GetPlaneId(i);
 
-      if (!GetSensorHeader(idx)) return false;
+      if (!GetSensorHeader(i)) return false;
       
       ResetFrames();
       
       // loop over frame (3 max)
-      while (GetFrame(idx, data)) {
+      while (GetFrame(i, data)) {
          DecodeFrame(planeId, data);
       }
       
-      fPrevEventNumber[idx]   = fEventNumber;
-      fPrevTriggerNumber[idx] = fTriggerNumber;
-      fPrevTimeStamp[idx]     = fTimeStamp;
+      fPrevEventNumber[planeId]   = fEventNumber;
+      fPrevTriggerNumber[planeId] = fTriggerNumber;
+      fPrevTimeStamp[planeId]     = fTimeStamp;
    }
    
    if(FootDebugLevel(3)) {
