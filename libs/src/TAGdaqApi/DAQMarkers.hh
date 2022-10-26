@@ -26,7 +26,7 @@ const unsigned int dataVTX   = 0x00463300;
 // MSD
 const unsigned int dataMSD   = 0x00463400;
 // ITR
-const unsigned int dataITR   = 0x00463500; // dummy number
+const unsigned int dataITR   = 0x00463900; // to be checked with DAQ
 //Remote board with PC
 const unsigned int dataWD    = 0x00463200;
 // FADC
