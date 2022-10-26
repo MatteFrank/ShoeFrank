@@ -65,22 +65,16 @@ TAITactNtuHit::~TAITactNtuHit()
 //! Action.
 Bool_t TAITactNtuHit::Action()
 {
-   
    TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
-   
-   Int_t nFragments = datDaq->GetFragmentsN();
-   
-   for (Int_t i = 0; i < nFragments; ++i) {
-      
-       TString type = datDaq->GetClassType(i);
-       if (type.Contains("DEITREvent")) {
-          const DEITREvent* evt = static_cast<const DEITREvent*> (datDaq->GetFragment(i));
-          fData      = evt->values;
-          fEventSize = evt->evtSize;
-          fDataLink  = evt->channelID - (dataITR | 0x30);
-          if (fEventSize == 0) continue;
-          DecodeEvent();
-       }
+
+   const DEITREvent* evt = static_cast<const DEITREvent*> (datDaq->GetFragment("DEITREvent"));
+
+   if (evt) {
+      fData      = evt->values;
+      fEventSize = evt->evtSize;
+      fDataLink  = evt->channelID - (dataITR | 0x30);
+      if (fEventSize == 0) return true;;
+      DecodeEvent();
    }
    
    SetBit(kValid);

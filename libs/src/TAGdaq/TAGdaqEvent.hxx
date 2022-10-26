@@ -6,6 +6,7 @@
  \brief  Interface with DAQ fragment
 */
 
+#include <map>
 #include <vector>
 #include <string>
 using namespace std;
@@ -32,13 +33,10 @@ public:
    void                   SetInfoEvent(InfoEvent* info)  {  fInfoEvent = info;                   }
    //! Set trigger event
    void                   SetTrgEvent(TrgEvent* trg)     {  fTrgEvent = trg;                     }
-   
    //! return number of fragments
-   Int_t                  GetFragmentsN()         const  { return (int)fListOfFragments.size();  }
-   //! return fragment
-   const BaseFragment*    GetFragment(Int_t idx)         { return fListOfFragments[idx];         }
-   //! return class type
-   const Char_t*          GetClassType(Int_t idx) const  { return fListOfClassTypes[idx].data(); }
+   Int_t                  GetFragmentsN()         const  { return (int)fMapOfFragments.size();   }
+   // Get Fragment
+   const BaseFragment*    GetFragment(string type);
    // Add fragment
    void                   AddFragment(const BaseFragment* frag);
    // Clear
@@ -47,11 +45,10 @@ public:
    virtual void           ToStream(ostream& os = cout, Option_t* option = "") const;
    
 private:
-   InfoEvent*                   fInfoEvent;        ///< info event
-   TrgEvent*                    fTrgEvent;         ///< trigger event
-   vector<const BaseFragment*>  fListOfFragments;  ///< list of fragments
-   vector<string>               fListOfClassTypes; ///< list of class types
-   
+   InfoEvent*                        fInfoEvent;       ///< info event
+   TrgEvent*                         fTrgEvent;        ///< trigger event
+   map<string, const BaseFragment*>  fMapOfFragments;  ///< map of fragments
+
    ClassDef(TAGdaqEvent,0)
 };
 

@@ -155,17 +155,15 @@ Bool_t TAGactWDreader::Action()
    bool eof = false;
 
    if (!fgStdAloneFlag) {
-      Int_t nFragments = p_datdaq->GetFragmentsN();
+      
       //decoding fragment and filling the datRaw class
-      for (Int_t i = 0; i < nFragments; ++i) {
-         TString type = p_datdaq->GetClassType(i);
-         if (type.Contains("WDEvent")) {
-            const WDEvent* evt = static_cast<const WDEvent*> (p_datdaq->GetFragment(i));
-            nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
-            WaveformsTimeCalibration();
-            CreateHits(p_stwd, p_twwd, p_cawd);
-         }
+      const WDEvent* evt = static_cast<const WDEvent*> (p_datdaq->GetFragment("WDEvent"));
+      if (evt) {
+         nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
+         WaveformsTimeCalibration();
+         CreateHits(p_stwd, p_twwd, p_cawd);
       }
+   
    } else {
       nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap);
       WaveformsTimeCalibration();

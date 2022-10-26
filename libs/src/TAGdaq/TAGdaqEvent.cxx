@@ -20,8 +20,7 @@ TAGdaqEvent::TAGdaqEvent()
    fInfoEvent(0x0),
    fTrgEvent(0x0)
 {
-   fListOfFragments.clear();
-   fListOfClassTypes.clear();
+   fMapOfFragments.clear();
 }
 
 //------------------------------------------+-----------------------------------
@@ -36,10 +35,23 @@ TAGdaqEvent::~TAGdaqEvent()
 //! \param[in] frag add fragment to list
 void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 {
-   fListOfFragments.push_back(frag);
-   
    string type = frag->classType();
-   fListOfClassTypes.push_back(type);
+   fMapOfFragments[type] = frag;
+}
+
+//------------------------------------------+-----------------------------------
+//! Get fragment
+//!
+//! \param[in] sensorId a given sensor
+const BaseFragment* TAGdaqEvent::GetFragment(string type)
+{
+   auto itr = fMapOfFragments.find(type);
+   if (itr == fMapOfFragments.end()) {
+      Error("GetFragment()", "Wrong type for fragment");
+      return 0x0;
+   }
+   
+   return fMapOfFragments[type];
 }
 
 //------------------------------------------+-----------------------------------
@@ -47,8 +59,7 @@ void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 void TAGdaqEvent::Clear(Option_t*)
 {
    TAGdata::Clear();
-   fListOfFragments.clear();
-   fListOfClassTypes.clear();
+   fMapOfFragments.clear();
 }
 
 //______________________________________________________________________________
