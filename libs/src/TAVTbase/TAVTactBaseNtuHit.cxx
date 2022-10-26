@@ -45,7 +45,7 @@ TAVTactBaseNtuHit::TAVTactBaseNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGp
       fPrevTimeStamp[i]     = 0;
    }
    
-   Int_t size = parGeo->GetSensorsN()*sizeof(MI26_FrameRaw)*4;
+   Int_t size = parGeo->GetSensorsN()*(sizeof(MI26_FrameRaw)+4);
    fData.resize(size);
 }
 
