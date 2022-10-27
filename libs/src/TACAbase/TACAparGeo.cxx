@@ -294,7 +294,7 @@ void TACAparGeo::ComputeCrystalIndexes()
 
    Double_t width = 0;
    Float_t zdim = GetCrystalThick();
-   double xdim1 = GetCrystalWidthFront(); 
+   double xdim1 = GetCrystalWidthFront();
    double ydim1 = GetCrystalHeightFront();
    vector<double> xcry;
    vector<double> ycry;
@@ -311,7 +311,7 @@ void TACAparGeo::ComputeCrystalIndexes()
       double y = point[1];
       if (iCry == 0) {
          xcry.push_back( x );
-         ycry.push_back( y );      
+         ycry.push_back( y );
       } else {
          bool foundX = false;
          for(std::size_t i = 0; i < xcry.size(); ++i) {
@@ -351,18 +351,18 @@ void TACAparGeo::ComputeCrystalIndexes()
       for (Int_t i = 0; i<fNumCol; ++i) {
          for (Int_t j = 0; j<fNumLine; ++j) {
 
-            if ( (point[0] >= i*width + xcry[0] - widthHalf && point[0] <= (i+1)*width + xcry[0] - widthHalf) && 
+            if ( (point[0] >= i*width + xcry[0] - widthHalf && point[0] <= (i+1)*width + xcry[0] - widthHalf) &&
                  (point[1] >= j*width + ycry[0] - widthHalf && point[1] <= (j+1)*width + ycry[0] - widthHalf)) {
- 
+
                pair<int, int> idx(i, j);
                fMapIndexes[iCry] = idx;
                if (FootDebugLevel(1)) {
-                  cout  << "   iCry: "  << iCry 
+                  cout  << "   iCry: "  << iCry
                         //<< " " << i << " " << j
                         //<< " pos[0] " << point[0] << " pos[1] " << point[1]
                         << "   col "    << idx.first << " row " << idx.second << endl;
                }
-            } 
+            }
          }
       }
    }
@@ -370,7 +370,7 @@ void TACAparGeo::ComputeCrystalIndexes()
 }
 
 //_____________________________________________________________________________
-//! Get line (row) 
+//! Get line (row)
 //
 //! \param[in] iCry crystal ID
 //! \return line (row) position
@@ -382,7 +382,7 @@ Int_t TACAparGeo::GetCrystalLine(Int_t iCry)
 }
 
 //_____________________________________________________________________________
-//! Get column (row) 
+//! Get column (row)
 //
 //! \param[in] iCry crystal ID
 //! \return column position
@@ -663,9 +663,9 @@ string TACAparGeo::PrintRotations()
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
       TVector3 center = fpFootGeo->GetCACenter();
-      TVector3  angle = fpFootGeo->GetCAAngles(); //invert the angles to take into account the FLUKA convention;
-      angle *= -1;
-      
+      TVector3  angle = fpFootGeo->GetCAAngles();
+      angle *= -1;  //invert the angles to take into account the FLUKA convention;
+
       if ( angle.Mag()!=0 ) {
 
          // put the detector in local coord before the rotation
@@ -765,7 +765,7 @@ string TACAparGeo::PrintBodies()
        fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0) {
       TString plaName = "MP";
       int dir[2];
-      // Vertical 
+      // Vertical
       dir[0] = -1; dir[1] = 0; //dir[0] =-1 -> left plane
       int imod = 2;
       TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
@@ -775,7 +775,7 @@ string TACAparGeo::PrintBodies()
          imod = 0;
          hm = GetCombiTransfo(fCrystalsN + imod);
          outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
-      }     
+      }
    }
 
    // FULL Detector:
@@ -851,8 +851,7 @@ TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyN
    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    if (fpFootGeo) {
       center = fpFootGeo->GetCACenter();
-      angle  = fpFootGeo->GetCAAngles(); 
-      angle  *= -1.; //invert the angles to take into account the FLUKA convention;
+      angle  = fpFootGeo->GetCAAngles(); //no need to invert the sing since here the angle is used to build the root object
    }
 
    TGeoTranslation detTrasl(center.X(), center.Y(), center.Z());
@@ -931,8 +930,7 @@ TString TACAparGeo::SPrintCrystalBody( int id, TGeoCombiTrans* hm, TString bodyN
    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    if (fpFootGeo) {
       center = fpFootGeo->GetCACenter();
-      angle  = fpFootGeo->GetCAAngles(); 
-      angle  *= -1.; //invert the angles to take into account the FLUKA convention;
+      angle  = fpFootGeo->GetCAAngles(); //no need to invert the sing since here the angle is used to build the root object
    }
 
    TGeoTranslation detTrasl(center.X(), center.Y(), center.Z());
@@ -1480,7 +1478,7 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials* Material)
    } else if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL1",
                           "1.", Form("%d",magnetic), "", "") << endl;
-   } else if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 || 
+   } else if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 ||
               fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL2",
                           "1.", Form("%d",magnetic), "", "") << endl;
