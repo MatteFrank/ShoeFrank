@@ -1,11 +1,11 @@
 // Campaign file
 CamName: "CNAO2022"
-RunNumber: 200; 400; 4100-4500;
+RunNumber: 5100-5500;
 NumberDevices: 10
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/CNAO2022/FOOT.geo": 4100; 4271; 4319;
+"./geomaps/CNAO2022/FOOT.geo": 5100;
 
 DetectorName: "DI"
 NumberFiles: 1
@@ -29,7 +29,7 @@ NumberFiles: 4
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/CNAO2022/TAGdetector.geo": 4100; 4271; 4319;
+"./geomaps/CNAO2022/TAGdetector.geo": 5100;;
 
 DetectorName: "VT"
 NumberFiles: 3
@@ -47,8 +47,8 @@ DetectorName: "MSD"
 NumberFiles: 5
 "./geomaps/CNAO2022/TAMSDdetector.geo": -1
 "./config/CNAO2022/TAMSDdetector.cfg": -1
-"./config/CNAO2022/TAMSDdetector.map": 4000; 4234;
-"./calib/CNAO2022/TAMSD_Pedestal.cal": 4000;
+"./config/CNAO2022/TAMSDdetector.map": 5100;
+"./calib/CNAO2022/TAMSD_Pedestal.cal": 5100;
 "./calib/CNAO2022/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
