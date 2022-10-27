@@ -53,6 +53,7 @@ public:
 
 	void	AddFitPlane(int planeId, SharedPlanePtr genfitPlane);
 	void 	AddPlane_Zorder(float zPos, int indexOfPlane);
+	void 	AddPlane_ZorderLocal(float zPos, int indexOfPlane);
 	SharedPlanePtr	GetFitPlane(int planeId);
 
 	int		GetMeasID_eventLevel(string detName, int sensorId, int hitId);
@@ -66,6 +67,8 @@ public:
 
 	vector<int>* GetPlanesAtZ( float zPos );
 	vector<float>* GetPossibleITz();
+	vector<int>* GetPlanesAtZLocal( float zPos );
+	vector<float>* GetPossibleITzLocal();
 
 private:
 	map<string, vector<int>> m_DetToFitPlaneMap;	///< Map linking detector names to corresponding GenFit FitPlanes
@@ -74,6 +77,8 @@ private:
 
 	map<float, vector<int> > m_zOrderingPlanes;		///< Map linking possible Z coordinates of IT planes w/ vector of their indices
 	vector<float> m_itPossibleZ;					///< Vector with possible values for Z coordinate of IT planes
+	map<float, vector<int>> m_zOrderingPlanesLocal;	///< Map linking possible Z local coordinates of IT planes w/ vector of their indices
+	vector<float> m_itPossibleZLocal;				///< Vector with possible values for Z local coordinate of IT planes
 
 	int m_debug;									///< Global debug value
 };

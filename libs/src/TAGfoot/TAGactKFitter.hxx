@@ -173,7 +173,6 @@ private:
 
 	EventDisplay* display;								///< GenFit event display
 
-
 	shared_ptr<TASTparGeo> m_ST_geo;					///< Pointer to ST parGeo
 	shared_ptr<TABMparGeo> m_BM_geo;					///< Pointer to BM parGeo
 	shared_ptr<TAGparGeo> m_TG_geo;						///< Pointer to TG parGeo

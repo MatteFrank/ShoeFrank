@@ -210,7 +210,8 @@ Bool_t TAGactKFitter::Action()	{
 
 		MakeFit(evNum, m_selector);
 	}
-	m_selector->FillPlaneOccupancy(h_PlaneOccupancy);
+	if( TAGrecoManager::GetPar()->IsSaveHisto() )
+		m_selector->FillPlaneOccupancy(h_PlaneOccupancy);
 	
 	chVect.clear();
 	
@@ -524,7 +525,6 @@ void TAGactKFitter::CreateGeometry()  {
 
 		for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
 			TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)) );
-			cout << "ITsensor::" << i << "\tpos::"; m_IT_geo->GetSensorPosition(i).Print();
 			float xMin, xMax, yMin, yMax;
 			xMin = m_IT_geo->GetEpiOffset().X() - m_IT_geo->GetEpiSize().X()/2;
 			xMax = m_IT_geo->GetEpiOffset().X() + m_IT_geo->GetEpiSize().X()/2;
@@ -545,11 +545,13 @@ void TAGactKFitter::CreateGeometry()  {
 			detectorplane->setUV(trafoU, trafoV);
 
 			m_sensorIDmap->AddPlane_Zorder( origin_.Z(), indexOfPlane );
+			m_sensorIDmap->AddPlane_ZorderLocal( m_IT_geo->GetSensorPosition(i).Z(), indexOfPlane );
 
 			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
 			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "IT");
 			++indexOfPlane;
-			cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
+			if( m_debug > 1 )
+				cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 
 			// Some debug print-outs for geometry
 			if(m_debug > 1)
@@ -708,7 +710,6 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 		// tmp track to be used inside the loop
 		Track* fitTrack = trackIt->second;
 
-
 		trackCounter++;
 
 	    // check of fitTrack filling
@@ -834,7 +835,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 
 	}	// end  - loop over all hit category
 
-	h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
+	if( TAGrecoManager::GetPar()->IsSaveHisto() )
+		h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
 
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
