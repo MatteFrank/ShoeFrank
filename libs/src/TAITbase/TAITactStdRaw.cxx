@@ -21,8 +21,6 @@
 //! Class Imp
 ClassImp(TAITactStdRaw);
 
-TString TAITactStdRaw::fgDefaultExtName    = ".ZS";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 //!
@@ -137,13 +135,7 @@ Bool_t TAITactStdRaw::GetEvent()
 Int_t TAITactStdRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/, Bool_t /*dscBranch*/)
 {
    TString inputFileName;
-   
-   static Bool_t first = true;
-   if (first)
-      SetRunNumber(name);
-   else
-      first = false;
-   
+      
    Bool_t valid = false;
    
    // Close any previous open file
@@ -170,22 +162,4 @@ Int_t TAITactStdRaw::Open(const TString& name, Option_t* opt, const TString /*tr
 void TAITactStdRaw::Close()
 {
       fRawFileAscii.close();
-}
-
-// --------------------------------------------------------------------------------------
-//! Set run number from file
-//!
-//! \param[in] filename input daq file name
-void TAITactStdRaw::SetRunNumber(const TString& filename)
-{
-   TString name(filename);
-   Int_t pos1 = name.Last('/');
-   Int_t pos2 = name.First("_");
-   Int_t len  = name.Length();
-   
-   fPrefixName = name(0, pos1);
-   
-   TString tmp = name(pos2+1, len-pos2);
-   fRunNumber = tmp.Atoi();
-   gTAGroot->SetRunNumber(fRunNumber);
 }

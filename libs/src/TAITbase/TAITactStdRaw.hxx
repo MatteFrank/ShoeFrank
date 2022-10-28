@@ -31,21 +31,11 @@ public:
    virtual void    Close();
    
 private:
-   ifstream          fRawFileAscii;     ///< file streamm
-   Int_t             fRunNumber;        ///< run number
+   ifstream        fRawFileAscii;     ///< file streamm
    
-   TString           fPrefixName;       ///< prefix folder name
-   TString           fBaseName;         ///< base file name
-   
-private:
-   static       TString fgDefaultExtName;    ///< default extension name
-
 private:
    // Get Event
    Bool_t GetEvent();
-   
-   // Set run number
-   void   SetRunNumber(const TString& name);
 
    ClassDef(TAITactStdRaw,0)
 };
