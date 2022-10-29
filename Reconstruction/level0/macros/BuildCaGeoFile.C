@@ -38,7 +38,7 @@
 
    // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, SEVEN_MOD, SEVEN_MOD_HIT22, FULL_DET_V1)
    // TODO: FULL_DET_V1. for the new full setup it is need to create the FLUKA air regions
-   TString fConfig_typegeo = "SEVEN_MOD_HIT22";
+   TString fConfig_typegeo = "TWELVE_MOD_CNAO22";
 
    // half dimensions of BGO crystal
    double xdim1 = 1.05;
@@ -75,7 +75,7 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////
 // main
-void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
+void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022/TACAdetector.geo")
 {
 
    FILE* fp = fopen(fileOutName.Data(), "w");
@@ -274,11 +274,12 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
    ///////////////////////////////////////
    // Detector with 5 or 7 Modules in a row: geometry for the HIT test beam
    if ( fConfig_typegeo.CompareTo("FIVE_MOD") == 0 ||
-        fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ||
-        fConfig_typegeo.CompareTo("SEVEN_MOD_HIT22") == 0 ||
-        fConfig_typegeo.CompareTo("FULL_DET_V1") == 0
-        ) {
-
+       fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ||
+       fConfig_typegeo.CompareTo("SEVEN_MOD_HIT22") == 0 ||
+       fConfig_typegeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
+       fConfig_typegeo.CompareTo("FULL_DET_V1") == 0
+       ) {
+      
       //calculate the translation and rotation of the first two neighbors
       double deltaM  = 5 * delta;
       double deltaMx = deltaM * TMath::Cos(alfa*3);
@@ -373,11 +374,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
       TGeoRotation * rotDnDet = new TGeoRotation (); rotDnDet->RotateX(alfa_degree * 3);
       TGeoTranslation * trasUpDet = new TGeoTranslation(0, posModx, posModz - pyramid_base_c );
       TGeoTranslation * trasDnDet = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
-      detector->AddNode(mod7, 1); 
-      detector->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasUpDet, *rotUpDet) * TGeoHMatrix(*rotUpDet) ) );
-      detector->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasDnDet, *rotDnDet) * TGeoHMatrix(*rotDnDet)) );
-
-      // set rotations/translation (4 modules diagonal left/right/up/down)
+      
       TGeoRotation * rotUpDet1 = new TGeoRotation (); rotUpDet1->RotateX(-alfa_degree * 6);
       TGeoRotation * rotDnDet1 = new TGeoRotation (); rotDnDet1->RotateX(alfa_degree * 6);
       TGeoRotation * rotPDet1  = new TGeoRotation (); rotPDet1->RotateY(alfa_degree * 6);
@@ -386,6 +383,37 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/HIT2022/TACAdetector.geo")
       TGeoTranslation * trasDnDet1 = new TGeoTranslation(0, -posModx, posModz - pyramid_base_c );
       TGeoTranslation * trasPDet1  = new TGeoTranslation(posModx, 0, posModz - pyramid_base_c );
       TGeoTranslation * trasNDet1  = new TGeoTranslation(-posModx, 0, posModz - pyramid_base_c );
+      
+      TGeoVolumeAssembly * mod12 = new TGeoVolumeAssembly("CAL_12_MOD");
+      mod12->AddNode(mod5, 1);
+      // case of data taken on CNAO 2022
+      if ( fConfig_typegeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ) {
+         
+         mod12->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasPDet3, *rotPDet3) ) );
+         mod12->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasDnDet, *rotDnDet) * TGeoHMatrix(*rotDnDet)) );
+         mod12->AddNode(mod, 3, new TGeoHMatrix( TGeoCombiTrans(*trasNDet1, *rotNDet1) * TGeoCombiTrans(*trasDnDet1, *rotDnDet1) * TGeoHMatrix(*rotLeftZ) ) );
+         mod12->AddNode(mod, 4, new TGeoHMatrix( TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoCombiTrans(*trasDnDet1, *rotDnDet1) * TGeoHMatrix(*rotRightZ)) );
+         mod12->AddNode(mod, 5, new TGeoHMatrix( TGeoCombiTrans(*trasNDet2, *rotNDet2) * TGeoCombiTrans(*trasDnDet, *rotDnDet1) * TGeoHMatrix(*rotRightZ)) );
+         
+         rotLeftZ->RotateZ(-0.2);
+         rotRightZ->RotateZ(0.2);
+         mod12->AddNode(mod, 6, new TGeoHMatrix( TGeoCombiTrans(*trasPDet2, *rotPDet2) * TGeoCombiTrans(*trasDnDet, *rotDnDet1) * TGeoHMatrix(*rotRightZ)) );
+         mod12->AddNode(mod, 7, new TGeoHMatrix( TGeoCombiTrans(*trasPDet3, *rotPDet3) * TGeoCombiTrans(*trasDnDet, *rotDnDet1) * TGeoHMatrix(*rotRightZ)) );
+      }
+      
+      if ( fConfig_typegeo.CompareTo("TWELVE_MOD") == 0 || fConfig_typegeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ) {
+         detector->AddNode(mod12, 1);
+         EndGeometry(fp);
+         return;
+      }
+      
+      // 2 rows of 6 modules
+      // set rotations/translation (1 module up/down, 1rst level)
+      detector->AddNode(mod7, 1);
+      detector->AddNode(mod, 1, new TGeoHMatrix( TGeoCombiTrans(*trasUpDet, *rotUpDet) * TGeoHMatrix(*rotUpDet) ) );
+      detector->AddNode(mod, 2, new TGeoHMatrix( TGeoCombiTrans(*trasDnDet, *rotDnDet) * TGeoHMatrix(*rotDnDet)) );
+      
+      // set rotations/translation (4 modules diagonal left/right/up/down)
       rotLeftZ->RotateZ(-0.2);
       rotRightZ->RotateZ(0.2);
 
