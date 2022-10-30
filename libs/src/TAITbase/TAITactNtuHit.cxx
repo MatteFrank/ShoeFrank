@@ -43,16 +43,13 @@ TAITactNtuHit::TAITactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* 
    AddPara(pConfig, "TAITparConf");
    
    TAITparGeo* parGeo = (TAITparGeo*) fpGeoMap->Object();
-   fSensorsN = parGeo->GetSensorsN();
    
-   for (Int_t i = 0; i < fSensorsN; ++i) {
+   for (Int_t i = 0; i < parGeo->GetSensorsN(); ++i) {
       fPrevEventNumber[i]   = 0;
       fPrevTriggerNumber[i] = 0;
       fPrevTimeStamp[i]     = 0;
    }
    
-   Int_t size = parGeo->GetSensorsN()*sizeof(MI26_FrameRaw)*4;
-   fData.resize(size);
 }
 
 //------------------------------------------+-----------------------------------
