@@ -38,9 +38,6 @@ TAITactNtuHit::TAITactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* 
   fpDatDaq(pDatDaq)
 {
    AddDataIn(pDatDaq, "TAGdaqEvent");
-   AddDataOut(pNtuRaw, "TAITntuHit");
-   AddPara(pGeoMap, "TAITparGeo");
-   AddPara(pConfig, "TAITparConf");
    
    TAITparGeo* parGeo = (TAITparGeo*) fpGeoMap->Object();
    
