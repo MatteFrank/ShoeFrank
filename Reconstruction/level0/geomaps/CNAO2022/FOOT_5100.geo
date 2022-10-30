@@ -20,7 +20,7 @@ MagnetsPosX: 0. MagnetsPosY:   0. MagnetsPosZ: 14.
 MagnetsAngX: 0. MagnetsAngY:   0. MagnetsAngZ: 0.
 
 InnerTrackerBaseName: "IT"
-InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 5.5.
+InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 5.5
 InnerTrackerAngX: 0. InnerTrackerAngY: 0. InnerTrackerAngZ: 0.
 
 MicroStripBaseName: "MSD"
