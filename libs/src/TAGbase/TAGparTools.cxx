@@ -714,7 +714,7 @@ TGeoHMatrix* TAGparTools::GetTransfo(Int_t idx)
 TGeoCombiTrans* TAGparTools::GetCombiTransfo(Int_t idx)
 {
    if (idx < 0 || idx >= fMatrixList->Capacity()) {
-      Warning("GetTransfo()","Wrong detector id number: %d ", idx);
+      Warning("GetCombiTransfo()","Wrong detector id number: %d ", idx);
       return 0x0;
    }
    
