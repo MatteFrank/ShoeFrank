@@ -37,9 +37,8 @@ TAVTactBaseNtuHit::TAVTactBaseNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGp
    AddPara(pConfig, "TAVTparConf");
    
    TAVTparGeo* parGeo = (TAVTparGeo*) fpGeoMap->Object();
-   fSensorsN = parGeo->GetSensorsN();
    
-   for (Int_t i = 0; i < fSensorsN; ++i) {
+   for (Int_t i = 0; i < parGeo->GetSensorsN(); ++i) {
       fPrevEventNumber[i]   = 0;
       fPrevTriggerNumber[i] = 0;
       fPrevTimeStamp[i]     = 0;

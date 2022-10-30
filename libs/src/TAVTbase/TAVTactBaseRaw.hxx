@@ -27,9 +27,6 @@ public:
    explicit TAVTactBaseRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_geomap=0, TAGparaDsc* p_config=0, TAGparaDsc* pParMap=0);
    virtual  ~TAVTactBaseRaw();
    
-   //! Get number of sensors
-   Int_t GetSensorsN() const { return fSensorsN; }
-   
    // Base creation of histogram
    virtual void CreateHistogram();
    
@@ -70,8 +67,6 @@ protected:
    Int_t             fFirstFrame;            ///< first frame flag
    Bool_t            fFrameOk;               ///< first frame flag
    
-
-   Int_t             fSensorsN;              ///< Number of Sensors
    Int_t             fIndex;                 ///< Data index
    UInt_t            fCurrentTriggerCnt;     ///< Current trigger count
    Int_t             fEventSize;             ///< Event size
