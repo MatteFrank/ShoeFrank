@@ -540,7 +540,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for start counter
-   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW()|| TAGrecoManager::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA()) {
 
      fpParGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
@@ -563,10 +563,10 @@ void BaseReco::ReadParFiles()
          parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
          parMapWD->FromFile(parFileName.Data());
 
-	 fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
-	 TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
-	 TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
-	 parTimeWD->FromFileCFD(parFileName.Data());
+         fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+         TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+         TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+         parTimeWD->FromFileCFD(parFileName.Data());
       }
    }
 
