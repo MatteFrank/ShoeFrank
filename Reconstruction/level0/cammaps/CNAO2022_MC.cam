@@ -1,0 +1,56 @@
+// Campaign file
+CamName: "CNAO2022_MC"
+RunNumber: 400;
+NumberDevices: 10
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/CNAO2022/FOOT.geo": 400;
+
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/CNAO2022/TADIdetector.geo": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/CNAO2022/TASTdetector.geo": -1
+"./config/CNAO2022/TASTdetector.cfg": -1
+
+DetectorName: "BM"
+NumberFiles: 3
+"./geomaps/CNAO2022/TABMdetector.geo": -1
+"./config/CNAO2022/TABMdetector.cfg": -1
+"./calib/CNAO2022/TABM_T0_Calibration.cal": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/CNAO2022/TAGdetector.geo": 400;;
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/CNAO2022/TAVTdetector.geo": -1
+"./config/CNAO2022/TAVTdetector.cfg": -1
+
+DetectorName: "IT"
+NumberFiles: 2
+"./geomaps/CNAO2022/TAITdetector.geo": -1
+"./config/CNAO2022/TAITdetector.cfg": -1
+
+DetectorName: "MSD"
+NumberFiles: 2
+"./geomaps/CNAO2022/TAMSDdetector.geo": -1
+"./config/CNAO2022/TAMSDdetector.cfg": -1
+
+DetectorName: "TW"
+NumberFiles: 5
+"./geomaps/CNAO2022/TATWdetector.geo": -1
+"./config/CNAO2022/TATW_BBparameters.cfg": -1
+"./config/CNAO2022/TATWbarsMapStatus.map": -1
+"./calib/CNAO2022/TATW_Energy_Calibration.cal": -1
+"./calib/CNAO2022/TATW_Tof_Calibration.cal": -1;
+
+DetectorName: "CA"
+NumberFiles: 3
+"./geomaps/CNAO2022/TACAdetector.geo": -1
+"./config/CNAO2022/TACAdetector.map": -1
+"./config/CNAO2022/TACAcrystalMapStatus.map": -1
