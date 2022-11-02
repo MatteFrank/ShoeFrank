@@ -141,4 +141,10 @@ CamNumber:    23
 CamName:    "CNAO2022_MC"
 CamDataMC:    1
 CamDate: "December 2022"
-CamSum: "Simulation data for data taking at CNAO with ST+VT+IT+MSD+TW+CAL @ 200,400 MeV/u"
+CamSum: "Simulation data for data taking at CNAO with ST+VT+IT+MSD+TW+CAL @ 150,200,300,400 MeV/u"
+
+CamNumber:    24
+CamName:    "197Au_MC"
+CamDataMC:    1
+CamDate: "November 2022"
+CamSum: "Simulation of Au beam with ST+TW+CAL @ 200 MeV/u"
