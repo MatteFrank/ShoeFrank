@@ -1,0 +1,17 @@
+# Mapping planeId (SW) sensorId (HW)
+#
+DataLinksN: 2
+#
+DataLink: 0
+SensorsN: 4
+PlaneId   0:  0
+PlaneId   1:  1
+PlaneId   2:  2
+PlaneId   3:  3
+#
+DataLink: 1
+SensorsN: 4
+PlaneId   4:  0
+PlaneId   5:  1
+PlaneId   6:  2
+PlaneId   7:  3
