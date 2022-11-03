@@ -222,8 +222,9 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
       TGeoVolume* itSupoort = BuildPlumeSupport("Support", itName);
 
       for(Int_t iSup = 0; iSup < GetSensorsN()/2; iSup+=4) {
+         Int_t offset = GetSensorsN()/2;
          TGeoCombiTrans* hm1 = GetCombiTransfo(iSup);
-         TGeoCombiTrans* hm2 = GetCombiTransfo(iSup+16);
+         TGeoCombiTrans* hm2 = GetCombiTransfo(iSup+offset);
          TGeoRotation rot;
 
          Float_t sign = (iSup > 7) ? +1 : -1;
