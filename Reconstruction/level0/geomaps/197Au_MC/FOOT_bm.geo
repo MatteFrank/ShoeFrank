@@ -1,6 +1,6 @@
 // X,Y,Z and angles
 StartBaseName: "ST"
-StartPosX: 0. StartPosY: 0. StartPosZ: -1.
+StartPosX: 0. StartPosY: 0. StartPosZ: -33.65
 StartAngX: 0. StartAngY: 0. StartAngZ: 0.
 
 TargetBaseName: "TG"

@@ -14,7 +14,7 @@ BeamAtomicMass:      197    //! A Beam
 BeamAtomicNumber:     79    //! Z Beam
 BeamMaterial:        "Au"   //! Beam Material
 BeamPartNumber:       1    // particles in Beam
-BeamPosX:            0.0000   BeamPosY:     0.0000    BeamPosZ:      -2.00
+BeamPosX:            0.0000   BeamPosY:     0.0000    BeamPosZ:     -35.00
 BeamSpreadX:         0.4248   BeamSpreadY:  0.2596    BeamSpread:      0.0
 BeamDiv:             0.0000
 
