@@ -53,7 +53,7 @@ EnableRegionMc:      y
 
 IncludeDI:			   n
 IncludeST:			   y
-IncludeBM:			   n
+IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   n
 IncludeIT:	                   n
