@@ -1,7 +1,7 @@
 // Campaign file
 CamName: "197Au_MC"
 RunNumber: 1
-NumberDevices: 6
+NumberDevices: 5
 
 DetectorName: "FOOT"
 NumberFiles: 2
@@ -12,12 +12,6 @@ DetectorName: "ST"
 NumberFiles: 2
 "./geomaps/197Au_MC/TASTdetector.geo": -1
 "./config/197Au_MC/TASTdetector.cfg": -1
-
-DetectorName: "BM"
-NumberFiles: 3
-"./geomaps/197Au_MC/TABMdetector.geo": -1
-"./config/197Au_MC/TABMdetector.cfg": -1
-"./calib/197Au_MC/TABM_T0_Calibration.cal": -1
 
 DetectorName: "TG"
 NumberFiles: 1
