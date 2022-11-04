@@ -148,3 +148,9 @@ CamName:    "197Au_MC"
 CamDataMC:    1
 CamDate: "November 2022"
 CamSum: "Simulation of Au beam with ST+TW+CAL @ 200 MeV/u"
+
+CamNumber:    25
+CamName:    "TIIM2023"
+CamDataMC:    0
+CamDate: "2023"
+CamSum: "Test for TIIMM data"
