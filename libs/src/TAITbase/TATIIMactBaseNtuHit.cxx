@@ -166,50 +166,42 @@ Bool_t TATIIMactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
 //! \param[in] iSensor sensor index
 //! \param[in] datalink board index
 //! \param[in] data Mimosa sensor data structure
-Bool_t TATIIMactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data)
+Bool_t TATIIMactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* )
 {
-   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
+   TAITparGeo* parGeo = (TAITparGeo*) fpGeoMap->Object();
+   
+   
+   Int_t size = parGeo->GetPixelsNx()*parGeo->GetPixelsNy() + 6;
 
    Int_t startIdx = fIndex;
-   // check frame header
-   if (fData[++fIndex] ==  GetFrameHeader()) {
-
-      memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
-      if (ValidHistogram()) {
-         Int_t planeId = pParMap->GetPlaneId(iSensor, datalink);
-         FillHistoFrame(planeId, data);
-      }
-      
-   } else
-      return false;
- 
-   // go to frame trailer
-   do {
-      if (((fData[fIndex] & 0xFFF) == (GetFrameTail() & 0xFFF)) || ((fData[fIndex] >> 16 & 0xFFF) == (GetFrameTail() >>16  & 0xFFF)) ) {
-         data->Trailer = fData[fIndex];
-         break;
-      }
-      
-      if (fData[fIndex] == GetSensorTail(iSensor)) {
-         fIndex--;
-         break;
-      }
-      
-   } while (fIndex++ < fEventSize);
    
-   fDataSize = fIndex - fgkFrameHeaderSize - startIdx;
+   for (Int_t i = 0; i <  parGeo->GetPixelsNx(); ++i) {
+      for (Int_t j = 0; j < parGeo->GetPixelsNy() ; ++j) {
+         fIndex = startIdx + i* parGeo->GetPixelsNx() + j;
+         Int_t value = fData[fIndex];
+         if (value > 0)
+            AddPixel(iSensor, value, i, j);
+
+         if (fIndex >= fEventSize) break;
+      }
+   }
+   
+ 
+  
+   
+   fDataSize = fIndex - startIdx;
 
    if(FootDebugLevel(3)) {
-      printf("Sensor %d Board %d\n", iSensor, datalink);
-      printf("%08x\n", data->Header);
-      printf("%08x\n", data->TriggerCnt);
-      printf("%08x\n", data->TimeStamp);
-      printf("%08x\n", data->FrameCnt);
-      printf("%08x\n", data->DataLength);
-      Int_t dataLength    = ((data->DataLength & 0xFFFF0000)>>16);
-      for (Int_t i = 0; i < dataLength; ++i)
-         printf("%08x\n", data->ADataW16[i]);
-      printf("%08x\n", data->Trailer);
+//      printf("Sensor %d Board %d\n", iSensor, datalink);
+//      printf("%08x\n", data->Header);
+//      printf("%08x\n", data->TriggerCnt);
+//      printf("%08x\n", data->TimeStamp);
+//      printf("%08x\n", data->FrameCnt);
+//      printf("%08x\n", data->DataLength);
+//      Int_t dataLength    = ((data->DataLength & 0xFFFF0000)>>16);
+//      for (Int_t i = 0; i < dataLength; ++i)
+//         printf("%08x\n", data->ADataW16[i]);
+//      printf("%08x\n", data->Trailer);
    }
    
    return true;

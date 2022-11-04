@@ -118,10 +118,10 @@ protected:
    virtual  Int_t  GetSensor(UInt_t key);
 
    // decode frame
-   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame);
+   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame = 0x0);
 
    // Fill histogram frame
-   virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data);
+   virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data = 0x0);
    
    // Fill histogram frame
    virtual void FillHistoEvt(Int_t iSensor);
