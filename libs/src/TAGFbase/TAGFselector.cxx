@@ -41,14 +41,26 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-	if(TAGrecoManager::GetPar()->IncludeVT()) 
+	if(TAGrecoManager::GetPar()->IncludeVT())
+	{
 		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+		m_detectors.push_back("VT");
+	}
 	if(TAGrecoManager::GetPar()->IncludeIT())
+	{
 		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
+		m_detectors.push_back("IT");
+	}
 	if(TAGrecoManager::GetPar()->IncludeMSD())
+	{
 		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+		m_detectors.push_back("MSD");
+	}
 	if(TAGrecoManager::GetPar()->IncludeTW())
+	{
 		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
+		m_detectors.push_back("TW");
+	}
 
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
@@ -56,6 +68,7 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 
 	if ( m_IsMC )	m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
+	m_eventType = 0;
 }
 
 
@@ -101,9 +114,10 @@ TAGFselector::~TAGFselector()
 //! \return 0 if there were no errors
 int TAGFselector::Categorize( ) {
 
+	CheckPlaneOccupancy();
+
 	if ( FillTrackRepVector() != 0) 
 		return -1;
-
 
 	// fill m_mapTrack
 	if ( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" ){
@@ -516,7 +530,7 @@ void TAGFselector::CategorizeVT()
 {
 	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object();
 		//cluster test
-	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the riht clus Index -> TO BE CHANGED!
+	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
 
 	int vertexNumber = vertexContainer->GetVertexN();
 	TAVTvertex* vtxPD   = 0x0; //NEW
@@ -542,7 +556,7 @@ void TAGFselector::CategorizeVT()
 			continue;
 		}
 
-		if ( m_debug > 0 )		cout  << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<"\n";
+		if ( m_debug > 0 )	cout << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<"\n";
 
 		//loop over tracks for each Vertex
 		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
@@ -618,7 +632,8 @@ void TAGFselector::CategorizeVT()
 			int IdTrack = iVtx*1000 + iTrack;
 
 			m_trackTempMap[IdTrack] = new Track(*fitTrack_);
-			m_trackSlopeMap[IdTrack] = tracklet->GetSlopeZ();
+			m_trackSlopeMap[IdTrack] = m_GeoTrafo->VecFromVTLocalToGlobal(tracklet->GetSlopeZ());
+			m_trackSlopeMap[IdTrack] *= 1./m_trackSlopeMap[IdTrack].Z();
 		
 			delete fitTrack_;
 		}	// end track loop
@@ -626,7 +641,7 @@ void TAGFselector::CategorizeVT()
 	} //end loop on vertices
 
 	if(m_trackTempMap.size() == 0)
-		Warning("CategorizeVT()","No VT tracklet found in the event!");
+		Warning("CategorizeVT()","No valid VT tracklet found in the event!");
 }
 
 
@@ -1052,6 +1067,12 @@ void TAGFselector::CategorizeMSD_Linear()
 				Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", MSDnPlane);
 				throw -1;
 			}
+			//Skip if no measurement found
+			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
+				if(m_debug > 0) cout << "TAGFselector::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
+				continue;
+			}
+
 			TVector3 guessOnMSD = m_GeoTrafo->FromGlobalToMSDLocal(pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z()));
 			guessOnMSD = m_MSD_geo->Detector2Sensor( sensorId,  guessOnMSD );
 			
@@ -1063,10 +1084,6 @@ void TAGFselector::CategorizeMSD_Linear()
 			double distanceInY = 1;
 			int sensorMatch = MSDnPlane;
 
-			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
-				if(m_debug > 0) cout << "TAGFselector::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
-				continue;
-			}
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 
@@ -1186,6 +1203,13 @@ void TAGFselector::CategorizeTW()
 //! This step uses a linear extrapolation at the TW
 void TAGFselector::CategorizeTW_Linear()
 {
+	int planeTW = m_SensorIDMap->GetFitPlaneTW();
+	//RZ -> See if this check can be done outside this cycle... it seems a much more general skip
+	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
+		if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found in TW layer\n";
+		return;
+	}
+
 	// Extrapolate to TW
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++) 
 	{
@@ -1194,7 +1218,6 @@ void TAGFselector::CategorizeTW_Linear()
 		TVector3 pos = TVector3( firstTrackMeas->getRawHitCoords()(0), firstTrackMeas->getRawHitCoords()(1), 0);
 		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
 
-		int planeTW = m_SensorIDMap->GetFitPlaneTW();
 		TVector3 guessOnTW =  m_GeoTrafo->FromGlobalToTWLocal( pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z()) );
 		// guessOnTW = m_TW_geo->Detector2Sensor( 0, guessOnTW );
 
@@ -1205,11 +1228,6 @@ void TAGFselector::CategorizeTW_Linear()
 		int indexOfMin = -1;
 		int count = 0;
 
-		//RZ -> See if this check can be done outside this cycle... it seems a much more general skip
-		if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-			if(m_debug > 0) cout << "TAGFselector::CategorizeTW() -- no measurement found in TW layer\n";
-			continue;
-		}
 		double distInX, distInY;
 
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
@@ -1237,7 +1255,6 @@ void TAGFselector::CategorizeTW_Linear()
 			(itTrack->second)->insertMeasurement( hitToAdd );
 		}
 	}
-
 
 	return;
 }
@@ -1360,7 +1377,7 @@ void TAGFselector::BackTracklets()
 				{
 					TVector3 guessOnMSD = m_GeoTrafo->FromGlobalToMSDLocal( pos + mom*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z()));
 					
-					if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) ) //RZ: should be ok since X,Y local coordinates of MSD are currently in the detector fram
+					if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) ) //RZ: should be ok since X,Y local coordinates of MSD are currently in the detector frame
 						continue;
 
 					int indexOfMinY = -1;
@@ -1476,6 +1493,163 @@ void TAGFselector::CategorizeVT_back()
 
 
 
+//--------------------------------------------------------------------------------------------
+//! \brief Check the occupancy of all the FitPlanes in GenFit geometry
+void TAGFselector::CheckPlaneOccupancy()
+{
+
+	for( auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
+	{
+		m_PlaneOccupancy[*itDet];
+		if( *itDet == "IT" )
+			m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetPossibleITzLocal()->size());
+		else
+			m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetFitPlanesN(*itDet));
+
+		std::fill(m_PlaneOccupancy[*itDet].begin(), m_PlaneOccupancy[*itDet].end(), 0);
+	}
+
+	//Cycle on FitPlanes
+	if(m_debug > 0) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
+	{
+		if(m_debug > 0) cout << "Plane::" << iPlane << "\n";
+		
+		//Skip plane if no hit was found
+		if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()){continue;}
+
+		string det = m_SensorIDMap->GetDetNameFromFitPlaneId(iPlane);
+		if( det == "IT" )
+		{
+			vector<int>* planesAtZLocal;
+			int id=0;
+			for (auto itZ : *(m_SensorIDMap->GetPossibleITzLocal()) )
+			{
+				planesAtZLocal = m_SensorIDMap->GetPlanesAtZLocal(itZ);
+				if( std::find(planesAtZLocal->begin(), planesAtZLocal->end(), iPlane) != planesAtZLocal->end() )
+				{
+					m_PlaneOccupancy[det][id] += m_allHitMeas->at(iPlane).size();
+					break;
+				}
+				id++;
+			}
+		}
+		else
+		{
+			int sensorId;
+			if( m_SensorIDMap->GetSensorID(iPlane, &sensorId) )
+				m_PlaneOccupancy[det][sensorId] = m_allHitMeas->at(iPlane).size();
+		} 
+	
+	} //End of loop on sensors
+
+	//Classify the event
+	if( m_PlaneOccupancy.find("TW") == m_PlaneOccupancy.end() || m_PlaneOccupancy["TW"][0] < 1 )
+		m_eventType = 5; // No TW point in the event -> bad event
+	else
+	{
+		bool needsCheck = false;
+		bool needsCheckIT = false;
+		bool foundIncrease = false;
+		bool foundIncreaseBtwDets = false;
+		map<string, bool> detCountsChange;
+		map<string, bool> detCountsIncrease;
+		map<string, bool> detCountsIncreaseBtwDets;
+		int prev_counts, counts;
+		for(auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
+		{
+			detCountsChange[*itDet] = false;
+			detCountsIncrease[*itDet] = false;
+			if( itDet != m_detectors.begin() )
+				detCountsIncreaseBtwDets[*itDet] = false;
+			
+			if(*itDet != "IT")
+			{
+				counts = m_PlaneOccupancy[*itDet][0];
+				// Set flag for increase btw detectors
+				if( itDet != m_detectors.begin() && prev_counts != counts )
+				{
+					needsCheck = true;
+					if( prev_counts < counts)	detCountsIncreaseBtwDets[*itDet] = true;
+				}
+
+				for( int i = 1; i < m_PlaneOccupancy[*itDet].size(); ++i)
+				{
+					if( m_PlaneOccupancy[*itDet][i] != counts )
+					{
+						detCountsChange[*itDet] = true;
+
+						//Set flag for increase if it happens at ANY stage
+						if( m_PlaneOccupancy[*itDet][i] > counts )	detCountsIncrease[*itDet] = true;
+						counts = m_PlaneOccupancy[*itDet][i];
+					}
+				}
+				prev_counts = counts;
+			}
+			else
+			{
+				int counts1 = 0, counts2 = 0;
+				for( int i = 0; i < m_PlaneOccupancy[*itDet].size()/2; ++i )
+				{
+					// if( m_PlaneOccupancy[*itDet][2*i] != m_PlaneOccupancy[*itDet][2*i + 1] )
+
+					counts1 += m_PlaneOccupancy[*itDet][2*i];
+					counts2 += m_PlaneOccupancy[*itDet][2*i + 1];
+				}
+				if(counts1 != counts2) needsCheckIT = true;
+			}
+
+			foundIncrease = foundIncrease || detCountsIncrease[*itDet];
+			foundIncreaseBtwDets = foundIncreaseBtwDets || detCountsIncreaseBtwDets[*itDet];
+			needsCheck = needsCheck || needsCheckIT || detCountsChange[*itDet] || foundIncrease || foundIncreaseBtwDets;
+		}
+
+
+		if( !needsCheck )
+			m_eventType = 1; //Clean event, likely all fragments reconstructable
+		else
+		{
+			if( foundIncrease )
+				m_eventType = 3; //Likely fragmentation in a detector plane
+			else if ( foundIncreaseBtwDets )
+				m_eventType = 4; //Likely fragmentation in air
+			else
+				m_eventType = 2; //Good event, likely some tracks exiting the angular acceptance
+		}
+	}
+
+	//Print in debug mode
+	if( m_debug > 1 )
+	{
+		cout << "EVENT::" << gTAGroot->CurrentEventId().EventNumber() << "\tTYPE::" << m_eventType << endl;
+		for(auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
+		{
+			for( int i=0; i < m_PlaneOccupancy[*itDet].size(); ++i)
+				cout << *itDet << "\tId::" << i << "\tNmeas::" << m_PlaneOccupancy[*itDet][i] << endl;
+		}
+	}
+}
+
+
+//! \brief Fill plane occupancy histogram
+void TAGFselector::FillPlaneOccupancy(TH2* h_PlaneOccupancy)
+{
+	int count = 0;
+	for( auto it = m_detectors.begin(); it != m_detectors.end(); ++it)
+	{
+		if( m_PlaneOccupancy.find(*it) == m_PlaneOccupancy.end() )
+			continue;
+		else
+		{
+			for(int i=0; i < m_PlaneOccupancy[*it].size(); ++i)
+			{
+				h_PlaneOccupancy->Fill( count, m_PlaneOccupancy[*it][i] );
+				++count;
+			}
+
+		}
+	}
+}
 
 
 //--------------------------------------------------------------------------------------------
@@ -1495,6 +1669,8 @@ void TAGFselector::FillTrackCategoryMap()  {
 				Info("FillTrackCategoryMap()", "Found track candidate (%d) with no TW point! Skipping...", itTrack->first);
 			continue;
 		}
+
+		//Add possibility to have tracks ending before TW!!!!
 
 		int measCharge = itTrack->second->getCardinalRep()->getPDGCharge();
 		int measMass;
@@ -1548,16 +1724,18 @@ int TAGFselector::GetChargeFromTW(Track* trackToCheck){
 	// if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" ) //do not use MC!
 	// {
 	TATWpoint* twpoint = 0x0;
-	for (unsigned int jTracking = trackToCheck->getNumPointsWithMeasurement() - 1; jTracking >= 0; --jTracking){
+	if( trackToCheck->getNumPointsWithMeasurement() >= 0 )
+	{
+		for (int jTracking = trackToCheck->getNumPointsWithMeasurement() - 1; jTracking >= 0; --jTracking){
+			if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
+			
+			int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
 
-		if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
-		
-		int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
+			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
 
-		twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
-
-		charge = twpoint->GetChargeZ();
-		break;
+			charge = twpoint->GetChargeZ();
+			break;
+		}
 	}
 	// }	//end of charge calculation from data
 
@@ -1642,13 +1820,10 @@ TVector3 TAGFselector::ExtrapolateToOuterTracker( Track* trackToFit, int whichPl
 	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	KalmanFittedStateOnPlane kfTest;
-
 	kfTest = *(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep( repId )))->getForwardUpdate());
 	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
 
-
-	TVector3 posi;
-	posi.SetXYZ((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());
+	TVector3 posi((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());
 
 	return posi;
 

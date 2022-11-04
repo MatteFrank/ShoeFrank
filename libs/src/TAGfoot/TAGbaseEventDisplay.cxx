@@ -299,7 +299,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
    }
 
    // Magnet
-   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
+   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IncludeTOE()) {
       TADIparGeo* parGeo = fReco->GetParGeoDi();
       TGeoVolume* mgVol = parGeo->BuildMagnet();
       fVolumeNames[mgVol->GetName()] = kDIP;
