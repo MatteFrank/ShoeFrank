@@ -187,22 +187,15 @@ Bool_t TATIIMactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRa
    }
    
  
-  
+   // go to sensor trailer
+   do {
+      if (fData[fIndex] == GetSensorHeader(iSensor, datalink) ) {
+         break;
+      }
+      
+   } while (fIndex++ < fEventSize);
    
    fDataSize = fIndex - startIdx;
-
-   if(FootDebugLevel(3)) {
-//      printf("Sensor %d Board %d\n", iSensor, datalink);
-//      printf("%08x\n", data->Header);
-//      printf("%08x\n", data->TriggerCnt);
-//      printf("%08x\n", data->TimeStamp);
-//      printf("%08x\n", data->FrameCnt);
-//      printf("%08x\n", data->DataLength);
-//      Int_t dataLength    = ((data->DataLength & 0xFFFF0000)>>16);
-//      for (Int_t i = 0; i < dataLength; ++i)
-//         printf("%08x\n", data->ADataW16[i]);
-//      printf("%08x\n", data->Trailer);
-   }
    
    return true;
 }
