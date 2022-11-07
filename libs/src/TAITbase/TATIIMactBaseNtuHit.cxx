@@ -171,14 +171,14 @@ Bool_t TATIIMactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRa
    TAITparGeo* parGeo = (TAITparGeo*) fpGeoMap->Object();
    
    
-   Int_t size = parGeo->GetPixelsNx()*parGeo->GetPixelsNy() + 6;
+   Int_t size = parGeo->GetPixelsNx()*parGeo->GetPixelsNy();
 
    Int_t startIdx = fIndex;
    
    for (Int_t i = 0; i <  parGeo->GetPixelsNx(); ++i) {
       for (Int_t j = 0; j < parGeo->GetPixelsNy() ; ++j) {
          fIndex = startIdx + i* parGeo->GetPixelsNx() + j;
-         if (fIndex >= fEventSize) break;
+         if (fIndex >= size) break;
          Int_t value = fData[fIndex];
          if (value > 0)
             AddPixel(iSensor, value, i, j);
