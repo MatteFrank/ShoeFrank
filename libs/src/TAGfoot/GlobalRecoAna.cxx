@@ -20,7 +20,7 @@
 #include "GlobalRecoAna.hxx"
 
 using namespace std;
-ofstream myfile("example3.txt");
+
 
 GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t innTotEv) : LocalReco(expName, runNumber, fileNameIn, fileNameout)
 {
@@ -55,17 +55,6 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   Th_meas = -999.; //maybe we should use a config file?  //!theta mes     //questo viene ottenuto ispezionando il vtx
   Th_reco = -999.;        //questo lo otterrò dall'oggetto traccia
 
-  f = new TFile(fileNameIn.Data(),"READ");
-
-  /*    already done in BaseReco.cxx
-  TAGgeoTrafo *geoTrafo = (TAGgeoTrafo*) fpFootGeo->GenerateObject();
-    TAGcampaignManager* campManager = (TAGcampaignManager*) fCampManager ->GenerateObject(); ///< Campaign manager
-    TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
-     geoTrafo->FromFile(parFileName);
-  */
-  
-  //TFile *f_out = new TFile(fileNameout.Data());
-
 
 }
 
@@ -73,30 +62,25 @@ GlobalRecoAna::~GlobalRecoAna()
 {
 }
 
-void GlobalRecoAna::LoopEvent() {
-  bool debug_trackid = true;   // to check relation between tracking reconstruction and MC events
-  
-  
- 
-
+void GlobalRecoAna::LoopEvent() {  
   Int_t currEvent=0;
- 
-
-  TATWparGeo* TWparGeo = (TATWparGeo*)fpParGeoTw->Object();
-  
+  TATWparGeo* TWparGeo = (TATWparGeo*)fpParGeoTw->Object();  
   int count_event = 0;
+  if (fFlagMC == true) {
+  debug_trackid= true;
+  myfile.open("debug_trackid.txt");
+  }
 
+//*********************************************************************************** begin loop on every event **********************************************
   while(gTAGroot->NextEvent()) { //for every event
-    //fFlagMC = false;     //N.B.: for MC FAKE REAL
+    //fFlagMC = false;     //N.B.: for MC FAKE REAL   
     DiffApp_trkIdx = false;
     //cout <<"current event: "<< currEvent << endl << "fixed current event: " <<count_event <<endl;
-    if (currEvent % 100 == 0)
-      cout <<"current Event: " <<currEvent << "fixed current event:" <<count_event <<endl;
-   if (debug_trackid ) myfile <<endl<<endl<<"current Event: " <<currEvent << "fixed current event:" <<count_event <<endl;
+    
+    if (currEvent % 100 == 0) cout <<"current Event: " <<currEvent << "fixed current event:" <<count_event <<endl;
+    if (debug_trackid ) myfile <<endl<<endl<<"current Event: " <<currEvent << "fixed current event:" <<count_event <<endl;  
 
-   
-
-
+    //initialization of several objects needed for the analysis
     TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
     resetStatus();
     TATWntuPoint* myTWNtuPt = (TATWntuPoint*)fpNtuRecTw->GenerateObject();
@@ -109,58 +93,30 @@ void GlobalRecoAna::LoopEvent() {
     //static TAGgeoTrafo*  geoTrafo; //geometry
     //const double myangle = TMath::ATan(((TWparGeo->GetBarHeight()-2*TWparGeo->GetBarWidth())/2-TMath::Abs(geoTrafo->GetTWCenter().y())-0.7)/geoTrafo->GetTWCenter().z());  // in deg /TMath::Pi()*180 for rad
    
-    Int_t nt =  myGlb->GetTracksN();
+    Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
     if (nt != 0) ++count_event;
     //fFlagMC = true;     //N.B.: for MC FAKE REAL
     
-    
-    /*
-    if (fFlagMC == false){          // I accept only triggered events
-
-    TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
-    //cout << "value :"<< wdTrig -> GetTriggersStatus()[1] <<"trigger id: "<< wdTrig -> GetTriggerID() <<endl;
-
-    if (wdTrig -> GetTriggersStatus()[1] == 0) {
-      ++currEvent;
-      continue;
-    }
-
-
-
-
-    if (currEvent == nTotEv) {     //!temporaneo
-      break;
-    }  
-
-
-    
-    //cout << currEvent<<"* event: trigger event" << endl;
-    }*/
-
-    //fFlagMC = false;     //N.B.: for MC FAKE REAL
-
-
     //    if(myVtTr->GetTracksN()>1){
     fEvtGlbTrkVec.clear();
-    //*************  loop on global tracks *****************
-    bool isOxygenInEvent = false;
-    
 
+    //*********************************************************************************** begin loop on global tracks **********************************************
+    
+    
     if (debug_trackid )myfile<<endl<< "------- track reconstruction "<< endl;
-    for(int it=0;it<nt;it++){
-      if (debug_trackid )myfile<<endl<< "track n° "<< it << endl;
+    for(int it=0;it<nt;it++){ // for every track
+      isOxygenInEvent = false;
+
+      if (debug_trackid ) myfile<<endl<< "track n° "<< it << endl;
       fGlbTrack = myGlb->GetTrack(it);
       if(isnan(fGlbTrack->GetCalEnergy())){//check if tof + track arc_length + mass hyp are ok
       cout<<"TRK energy ISNAN! -> TOF value = "<<fGlbTrack->GetTwTof()<<endl;
       continue;
-      }
-      bool isOxygenInEvent = false;
-          
-     
-      Th_reco = fGlbTrack -> GetTgtTheta() *180./TMath::Pi();
-     
+      }          
+       
       int charge = -100;
+      //------------------------------------ begin study of PURITY OF GLOBAL TRACK
 
       //Assignment of a true track idx (TrkIdMC)  to global reco track
       Int_t tmp_size = 0;
@@ -172,8 +128,7 @@ void GlobalRecoAna::LoopEvent() {
       Int_t N_TrkIdMC_TW =-1;
       Int_t TrkIdMC_TW = -2;
 
-      //loop on meas points of a glb track
-     
+      //loop on meas points of a glb track     
       if(FootDebugLevel(1))
       cout<<"===NEW TRACK with "<<fGlbTrack->GetPointsN()<<" points =="<<endl;
       
@@ -182,7 +137,7 @@ void GlobalRecoAna::LoopEvent() {
       fGlbTrkVec.clear();
       vector<Int_t> vtxpoints, itpoints, msdpoints, twpoints, calpoints; // in principle twpoints and calpoints should be 0 or 1
 
-      for(int ic=0;ic<fGlbTrack->GetPointsN();ic++) {
+      for(int ic=0;ic<fGlbTrack->GetPointsN();ic++) {   //for every point of the track
 
       TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
       TString str = tmp_poi->GetDevName();
@@ -262,24 +217,14 @@ void GlobalRecoAna::LoopEvent() {
      
    // if(TrkIdMC != )//to do ::: check if our trk index is different than the true (MC) one assigned by toe/genfit
 
-     
+   //------------------------------------ end study of PURITY OF GLOBAL TRACK  
        
 
-      // ComputeMCtruth(TrkIdMC, Z_true, P_true, P_cross, Ek_true);
+   // ComputeMCtruth(TrkIdMC, Z_true, P_true, P_cross, Ek_true);
 
-      //debug check of TRackIdx
-      /*
-      if ((fGlbTrack->GetMcTrackIdx()).GetSize() > 1){
-      cout << "track size: "<< (fGlbTrack->GetMcTrackIdx()).GetSize() << endl;
-      for (int i =0; i< (fGlbTrack->GetMcTrackIdx()).GetSize(); i++){
-      cout <<"TRACK ID "<<i<<": "<< (fGlbTrack->GetMcTrackIdx())[i] <<endl;
-
-      }
-      cout <<"most probable id: "<< fGlbTrack->GetMcMainTrackId() << endl;
-      cout <<"track id: "<< fGlbTrack->GetTrackId() << endl;
-      }*/
+      
      
-      //------------TRUE MC VALUES-------------
+      //----------------------------------------------------------------------------------start TRUE MC VALUES-------------
       Int_t Z_true = -999;
       Int_t FlukaID= -999;
       Double_t Ek_true = -1., Ek_cross = -1., Ek_cross_calo = -1., Ek_true_tot;
@@ -296,40 +241,47 @@ void GlobalRecoAna::LoopEvent() {
      
 
       if(fFlagMC){
-      TrkIdMC = fGlbTrack->GetMcMainTrackId();   //associo l'IdMC alla particella più frequente della traccia
-      if (debug_trackid )myfile << "  TrkIdMC= "<< TrkIdMC << " --> ";
-     
 
-     
+      //----debug: check of TrackID: GetMcMainTrackId() vs GetTrackId() of fGlbTrack
+      /*
+      if ((fGlbTrack->GetMcTrackIdx()).GetSize() > 1){
+      cout << "track size: "<< (fGlbTrack->GetMcTrackIdx()).GetSize() << endl;
+      for (int i =0; i< (fGlbTrack->GetMcTrackIdx()).GetSize(); i++){
+      cout <<"TRACK ID "<<i<<": "<< (fGlbTrack->GetMcTrackIdx())[i] <<endl;
+      }
+      cout <<"most probable id: "<< fGlbTrack->GetMcMainTrackId() << endl;
+      cout <<"track id: "<< fGlbTrack->GetTrackId() << endl;
+      }*/    
+
+      TrkIdMC = fGlbTrack->GetMcMainTrackId();   //associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity)
+      if (debug_trackid )myfile << "  TrkIdMC= "<< TrkIdMC << " --> ";   
      
       if(TrkIdMC !=-1){
        TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);
-          if (debug_trackid )myfile <<" Fluka code: " << pNtuMcTrk->GetFlukaID()<<"("<<pNtuMcTrk->GetCharge()<<")"<< endl<< "  charge TW : "<< fGlbTrack->GetTwChargeZ()<<"  charge Fit : "<<fGlbTrack->GetFitChargeZ() <<endl<<"---------"<<endl;
-       if (debug_trackid ){
-            if (!(pNtuMcTrk->GetCharge() == fGlbTrack->GetTwChargeZ())) {
-                myfile << "wrong reconstructed charge by TW" <<endl;
 
-            }
-
-          }
-          //---- start study on TW ghost hits or pileup
-      if (debug_trackid ){      //check del punto del TW
+      //---- debug: study of wrong reconstructed charge in tracks
+       if (debug_trackid ) {         
+         myfile <<" Fluka code: " << pNtuMcTrk->GetFlukaID()<<"("<<pNtuMcTrk->GetCharge()<<")"<< endl<< "  charge TW : "<< fGlbTrack->GetTwChargeZ()<<"  charge Fit : "<<fGlbTrack->GetFitChargeZ() <<endl<<"---------"<<endl;
        
+        if (!(pNtuMcTrk->GetCharge() == fGlbTrack->GetTwChargeZ())) {  //if MCparticle Z is different from track Z
+            myfile << "wrong reconstructed charge by TW" <<endl;
+        }
+          
 
-        for(int ic=0;ic<fGlbTrack->GetPointsN();ic++) {
+      //---- debug: start study on TW multiple hits wrt track of TW   
+       
+        //check del punto del TW
+        for(int ic=0;ic<fGlbTrack->GetPointsN();ic++) { //from all the points of the track...
 
           TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
           TString str = tmp_poi->GetDevName();
           Int_t cluID = -1;
 
-          if(str.Contains(TATWparGeo::GetBaseName())){ // from all the points of the track, i just want the one of TW
+          if(str.Contains(TATWparGeo::GetBaseName())){ //...i just want the TAGPOINT of TW
            
-            N_TrkIdMC_TW = tmp_poi->GetMcTracksN();
+            N_TrkIdMC_TW = tmp_poi->GetMcTracksN();  // n° of tracks crossing the TW with same MC_ID
             TrkIdMC_TW = tmp_poi->GetMcTrackIdx(0);
-
-            myfile << "TW Point, MC tracks check: TrkIdMC= ";
-
-           
+            myfile << "TW Point, MC tracks check: TrkIdMC= ";           
 
             for( Int_t i = 0; i < tmp_poi->GetMcTracksN(); ++i) { //I check how many different MC tracks crosses the TW with same MCID
          
@@ -354,6 +306,8 @@ void GlobalRecoAna::LoopEvent() {
                 //continue;
             }
 
+            //---- debug: study on TW multiple hits wrt track  of TWPOINT and relative TATWHIT    
+
             myfile << "Inspect of TW Hits: ";
             TATWpoint *tw_point = GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx());
          
@@ -361,8 +315,7 @@ void GlobalRecoAna::LoopEvent() {
             TATWhit* rowHit = tw_point->GetRowHit();
             TATWhit* colHit = tw_point->GetColumnHit();
  
-            if  (indexSize > 1) {
-               
+            if  (indexSize > 1) {    
 
                 myfile <<"----------------------------"<<endl<<"TW GHOST CHECK - McTracks > 1"<<endl;
                 for (int iRow = 0; iRow < rowHit->GetMcTracksN(); ++iRow){
@@ -386,21 +339,23 @@ void GlobalRecoAna::LoopEvent() {
 
         }
       }
-      //---- stop study on TW ghost hits or pileup
+      //---- debug: stop study on TW multiple hits wrt track of TW 
          
          
          
          
          
-          Z_true = pNtuMcTrk->GetCharge();
-          FlukaID = pNtuMcTrk->GetFlukaID();
-       P_true = pNtuMcTrk->GetInitP();//also MS contribution in target!
-          M_true = pNtuMcTrk->GetMass();
-       Ek_true_tot = (sqrt(pow(pNtuMcTrk->GetMass(),2) + pow((pNtuMcTrk->GetInitP()).Mag(),2)) - pNtuMcTrk->GetMass());
-       Ek_true = Ek_true_tot/M_true;
+      Z_true = pNtuMcTrk->GetCharge();
+      FlukaID = pNtuMcTrk->GetFlukaID();
+      P_true = pNtuMcTrk->GetInitP();//also MS contribution in target!
+      M_true = pNtuMcTrk->GetMass();
+      Ek_true_tot = (sqrt(pow(pNtuMcTrk->GetMass(),2) + pow((pNtuMcTrk->GetInitP()).Mag(),2)) - pNtuMcTrk->GetMass());
+      Ek_true = Ek_true_tot/M_true;
+      
 
+      //study of crossing regions
        if(TAGrecoManager::GetPar()->IsRegionMc()){
-         for(int icr = 0;icr<GetNtuMcReg()->GetRegionsN();icr++){
+         for(int icr = 0;icr<GetNtuMcReg()->GetRegionsN();icr++){  // for every MC region
            TAMCregion *fpNtuMcReg = GetNtuMcReg()->GetRegion(icr);
            if((fpNtuMcReg->GetTrackIdx()-1)==TrkIdMC){
             if(fpNtuMcReg->GetCrossN()==GetParGeoG()->GetRegAirPreTW() && fpNtuMcReg->GetOldCrossN()==GetParGeoG()->GetRegTarget()){
@@ -443,12 +398,15 @@ void GlobalRecoAna::LoopEvent() {
         Th_true = P_true.Theta()*180./TMath::Pi();
         Th_cross = P_cross.Theta()*TMath::RadToDeg();
       }//close if MC
-      //------------END of TRUE MC VALUES-------------
+      //-----------------------------------------------------------------------------------------END of TRUE MC VALUES-------------
      
-      //-------------------------   SET TRACK VALUES     ----------------
+
+
+      //-----------------------------------------------------------------------------------------   SET TRACK VALUES     ----------------
       if(FootDebugLevel(1))
         cout<<"Reco analysis: retrieve measured quantities"<<endl;
-
+      
+      Th_reco = fGlbTrack -> GetTgtTheta() *180./TMath::Pi(); 
       Int_t trkid = fGlbTrack->GetTrackId();
       Int_t Z_meas = fGlbTrack->GetTwChargeZ();
      
@@ -460,7 +418,7 @@ void GlobalRecoAna::LoopEvent() {
 
       //set infos from tw      
      
-      if(twstatus!=0){
+      if(twstatus!=0){      //!
         if(FootDebugLevel(1))
           cout<<"twstatus="<<twstatus<<"  this track analysis will be skipped"<<endl;          
         continue;
@@ -473,7 +431,7 @@ void GlobalRecoAna::LoopEvent() {
        //TVector3 TWhitpos = fGlbTrack->GetTwPosition(); //not working in tatoe
      
       TVector3 TWhitpos(-999,-999,-999);
-      if(fGlbTrkVec.at(3).size()==1){
+      if(fGlbTrkVec.at(3).size()==1){    //!
         TAGpoint *tmp_poi = fGlbTrack->GetPoint(fGlbTrkVec.at(3).at(0));
         // TWhitpos=tmp_poi->GetPositionG();//not working in tatoe
         if(tmp_poi->GetClusterIdx()>=0)
@@ -495,7 +453,7 @@ void GlobalRecoAna::LoopEvent() {
       // Double_t Ek_meas_tot =  fGlbTrack->GetCalEnergy(); //not workiong in TATOE
       // Double_t Ek_meas_tot =  fGlbTrack->GetFitEnergy(); //not workiong in TATOE
       Double_t Ek_meas_tot;
-      if(fGlbTrkVec.at(4).size()==1){
+      if(fGlbTrkVec.at(4).size()==1){     //!
         if(fGlbTrkVec.at(4).at(0)>=0){
           TACAcluster *pCaClu=GetNtuClusterCa()->GetCluster(fGlbTrkVec.at(4).at(0));
           Ek_meas_tot=pCaClu->GetEnergy()*fpFootGeo->MevToGev();
@@ -546,17 +504,20 @@ void GlobalRecoAna::LoopEvent() {
       ((TH2D*)gDirectory->Get(Form("Ekin/Z%d/DE_vs_Ekin",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev(),DE*fpFootGeo->GevToMev());
       ((TH1D*)gDirectory->Get(Form("Ekin/Z%d/Ek_meas",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev());
 
-     
+
+
+      // booking of plots associated to TW debug studies
       if (debug_trackid ){
         if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {      //stampa solo se TW point ha id della traccia e non c'è gosh hits
       ((TH2D*)gDirectory->Get("Z_truevsZ_reco_TWFixed"))->Fill(Z_true,Z_meas);
-        }}
+        }
 
-      if (debug_trackid ){
+      
         if (N_TrkIdMC_TW == 1) {      //stampa solo se non c'è gosh hits
       ((TH2D*)gDirectory->Get("Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);
         }}
-     
+
+      //migration matrix plot
       ((TH2D*)gDirectory->Get("Z_truevsZ_reco"))->Fill(Z_true,Z_meas);
       ((TH2D*)gDirectory->Get("Z_TWvsZ_fit"))->Fill(fGlbTrack->GetTwChargeZ(),fGlbTrack->GetFitChargeZ());
 
@@ -585,7 +546,7 @@ void GlobalRecoAna::LoopEvent() {
 	((TH1D*)gDirectory->Get(Form("Unfolding/RecoDistribution")))->Fill(tmp_meas);
       }
       
-      //
+  //-----------------------------------------------------------------------------------------  END SET TRACK VALUES     ----------------
  
       if(fFlagMC){
       //-------------------------------------------------------------
@@ -779,7 +740,7 @@ void GlobalRecoAna::LoopEvent() {
       
      
       if (fFlagMC == false){
-      TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
+      TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
 
 
 
@@ -839,15 +800,10 @@ void GlobalRecoAna::LoopEvent() {
 
 
 
-      if (fFlagMC == true){
-      //TAGWDtrigInfo *wdTrig = new TAGWDtrigInfo();
-      //tree->SetBranchAddress(TAGWDtrigInfo::GetBranchName(), &wdTrig);
-      //printf("%s\n",TAGWDtrigInfo::GetBranchName());
-
-
+      if (fFlagMC == true){    
 
       //-------------------------------------------------------------
-      //--CROSS SECTION fragmentation for trigger efficiency
+      //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAGWDtrigInfo )
       if (
       Z_meas >0. && Z_meas <= primary_cha
       && TriggerCheck(fGlbTrack) == true  
@@ -907,12 +863,7 @@ void GlobalRecoAna::LoopEvent() {
       
 
 
-      // charge purity
-      if (Z_meas == Z_true){        
-        ((TH1D*)gDirectory->Get("Charge_purity")) -> Fill(Z_meas);
-       
-      }
-
+      
 
       ((TH1D*)gDirectory->Get("Mass"))->Fill(M_meas);
       ((TH1D*)gDirectory->Get("Mass_True"))->Fill(M_true);
@@ -930,10 +881,21 @@ void GlobalRecoAna::LoopEvent() {
 
       ((TH1D*)gDirectory->Get(Form("Zrec%d/Mass",Z_meas)))->Fill(M_meas);
 
-      //if(fFlagMC && Z_true>0 && Z_true<=primary_cha)
-        //((TH1D*)gDirectory->Get(Form("Zrec%d/Track_purity",Z_meas)))->Fill(((Double_t)mapclu.at(TrkIdMC))/fGlbTrack->GetPointsN());
 
-      /*
+      // charge purity
+      if (Z_meas == Z_true){        
+        ((TH1D*)gDirectory->Get("Charge_purity")) -> Fill(Z_meas);
+       
+      }
+
+
+
+      // plots concerning track purity
+      /*    
+      if(fFlagMC && Z_true>0 && Z_true<=primary_cha)
+        ((TH1D*)gDirectory->Get(Form("Zrec%d/Track_purity",Z_meas)))->Fill(((Double_t)mapclu.at(TrkIdMC))/fGlbTrack->GetPointsN());
+
+      
       if(Z_meas>0 && Z_meas<=primary_cha){
        
        
@@ -985,7 +947,7 @@ void GlobalRecoAna::LoopEvent() {
         pure_track_xcha.at(Z_meas).second++;
       } */
 
-      if (Z_meas==8) isOxygenInEvent = true;
+      
 
 
       if(fGlbTrkVec.at(4).size()!=fGlbTrkVec.at(3).size() || fGlbTrkVec.at(3).size()>1){
@@ -994,144 +956,19 @@ void GlobalRecoAna::LoopEvent() {
         cout<<"event number="<<nTotEv<<"  global track:"<<it<<endl;
       }
 
-      fEvtGlbTrkVec.push_back(fGlbTrkVec);
+      fEvtGlbTrkVec.push_back(fGlbTrkVec);  //!
       ntracks++;
 
+
+    if (Z_meas==8) isOxygenInEvent = true;
     }
-    //------------  end loop on ntracks
+    //*********************************************************************************** end loop on global tracks **********************************************
      
     
-    //-------------- STUDY OF VERTEX AND TW ALLIGNMENT / ROTATIONS
-    TAVTntuVertex *vertexContainer = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
-    int vertexNumber = vertexContainer->GetVertexN();
-    TAVTvertex* vtxPD   = 0x0; //NEW
-    
-    
-    int TWpointsNumber = myTWNtuPt->GetPointsN();
-    //cout << nTWpoints <<endl;
-    
-    
-
-    if (fFlagMC == false) {
-    TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
-
-    cout << "event: "<< currEvent << " -- n tracks: "<< nt <<" -- n tracklets of vertex: "<< vertexNumber << endl;
-
-    //study of VT tracklets
-    for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) {
-      vtxPD = vertexContainer->GetVertex(iVtx);
-      /*if (vtxPD == 0x0){
-			cout << "Vertex number " << iVtx << " seems to be empty\n";
-			continue;
-		}
-		else if( !m_IsMC && !vtxPD->IsBmMatched() )
-		{
-			if(m_debug > 0)
-			{
-				Info("CategorizeVT()", "In event %d: vertex %d found but not matched with BM tracks; Skipping...",gTAGroot->CurrentEventId().EventNumber(), iVtx);
-			}
-			continue;
-		}*/
-
-    //loop over tracks for each Vertex
-		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
-      
-      
-
-			TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
-      TVector3 direction = (tracklet->GetSlopeZ()).Unit();
-
-      double theta_vtx = direction.Theta()*TMath::RadToDeg();
-      double phi_vtx = direction.Phi()*TMath::RadToDeg();
-
-      //cout<< "theta vertex: " <<theta_vtx <<endl;      
-     
-
-       TVector3 direction_glb = fpFootGeo->FromVTLocalToGlobal(direction);
-       double phi_vtx_glb = direction_glb.Phi()*TMath::RadToDeg();
-       
-      //projection of a trackel on TW
-      
-      Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
-      posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
-      TVector3 A3 = tracklet->Intersection(posZtw);
-      TVector3 A4 = fpFootGeo->FromVTLocalToGlobal(A3);
-      Float_t VTTWX = A4.X();
-      Float_t VTTWY = A4.Y(); //questi sono in coordinate globali
-
-      
-
-      if (isOxygenInEvent == false /*&& nt>0*/ && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
-      ((TH2D*)gDirectory->Get("vt_twProjection_frag")) -> Fill(VTTWX,VTTWY);
-      ((TH1D*)gDirectory->Get("phi_VTX_global_frag")) -> Fill( phi_vtx_glb);
-      ((TH1D*)gDirectory->Get("theta_VTX_frag")) -> Fill( theta_vtx);
-      ((TH1D*)gDirectory->Get("phi_VTX_frag")) -> Fill( phi_vtx);          
-      vertex_direction_frag += direction_glb;
-      } else if (wdTrig -> GetTriggerID() == 40) {
-      ((TH2D*)gDirectory->Get("vt_twProjection")) -> Fill(VTTWX,VTTWY);
-      ((TH1D*)gDirectory->Get("phi_VTX_global")) -> Fill( phi_vtx_glb);
-      ((TH1D*)gDirectory->Get("theta_VTX")) -> Fill( theta_vtx);
-      ((TH1D*)gDirectory->Get("phi_VTX")) -> Fill( phi_vtx); 
-      vertex_direction += direction_glb;
-      }
-
-    }
-
-    
-
-    
-    
-
-
-    }
-    
-
-
-    //study of tw points
-    for(int ipoint=0; ipoint<TWpointsNumber; ipoint++) {
-      TATWpoint *twp = myTWNtuPt->GetPoint(ipoint);
-      //Float_t tw_x = fpFootGeo->FromTWLocalToGlobal((twp->GetRowHit())->GetPosition()); // global frame
-      //Float_t tw_y = fpFootGeo->FromTWLocalToGlobal((twp->GetColumnHit())->GetPosition());
-
-      if (isOxygenInEvent == false && nt>0 && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
-      ((TH2D*)gDirectory->Get("TWpointsDistribution_frag")) -> Fill(twp->GetPositionGlb().X(),twp->GetPositionGlb().Y()); //global frame
-      
-      } else if (wdTrig -> GetTriggerID() == 40) {
-        //int Z_tw_reco = twp-> GetChargeZ();
-        //TAMCpart *pNtuMcTrk_ = GetNtuMcTrk()->GetTrack(twp->GetPointMatchMCtrkID());
-        //int Z_tw_MC = pNtuMcTrk_ ->GetCharge(); 
-
-        //((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix"))->Fill(Z_tw_reco,Z_tw_MC);
-
-        ((TH2D*)gDirectory->Get("TWpointsDistribution")) -> Fill(twp->GetPositionGlb().X(),twp->GetPositionGlb().Y()); //global frame  
-
-
-
-
-      }
-    }
-
-
-    }
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if (debug_trackid ) myfile <<endl<< "-----------------  MC study "<< endl;
-   
+        
+  //------------------------------  STUDY OF MC PARTICLES  
     if (fFlagMC){
-     
+    if (debug_trackid ) myfile <<endl<< "-----------------  MC study "<< endl; 
          
           // Definisco la regione target all'inizializzazione
        
@@ -1149,10 +986,8 @@ void GlobalRecoAna::LoopEvent() {
           
           Int_t n_particles = m_trueParticleRep -> GetTracksN();        // n° of particles of an event
           ((TH1D*)gDirectory->Get("MC_check/TracksN_MC")) -> Fill(m_trueParticleRep -> GetTracksN());
-         
 
-
-          //----------------- loop on all the MCtracks
+  //************************************************************* begin Loop on all MCparticles *************************************************************
           for (Int_t i= 0 ; i < n_particles; i++) {                         // for every particle in an event
           if (debug_trackid )myfile << "traccia MC: " << i <<endl;
          
@@ -1199,6 +1034,8 @@ void GlobalRecoAna::LoopEvent() {
                     //! finalPos.Z() > 90 IN 16O_400
 
 
+
+            //-------------  MC TOTAL CROSS SECTION 
             if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
                   particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
                   && Ek_true>100   //enough energy/n to go beyond the target
@@ -1258,7 +1095,7 @@ void GlobalRecoAna::LoopEvent() {
                             }
                           }
                         }
-
+            //-------------  END MC TOTAL CROSS SECTION 
 
 
           //true detectable
@@ -1267,7 +1104,7 @@ void GlobalRecoAna::LoopEvent() {
                     //! finalPos.Z() > 189.15 IN GSI2021_MC
                     //! finalPos.Z() > 90 IN 16O_400
 
-
+          //-------------  MC FIDUCIAL CROSS SECTION (<8 deg)
           if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
                   particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
                   && Ek_true>100   //enough energy/n to go beyond the target
@@ -1322,10 +1159,10 @@ void GlobalRecoAna::LoopEvent() {
                           }
                         }
 
-          //--END CROSS SECTION - TRUE PARAMETERS
+          //----- END MC FIDUCIAL CROSS SECTION (<8 deg)
 
 
-          //XSEC THETA <2
+          //-------------  MC FIDUCIAL CROSS SECTION (<2 deg)
                     //! NB: 50 IN GSI2021_MC
                     //! NB: 59 IN 16O_400
                     //! finalPos.Z() > 189.15 IN GSI2021_MC
@@ -1386,21 +1223,20 @@ void GlobalRecoAna::LoopEvent() {
                           }
                         }
 
-                        //------------------------ end xsec theta<2
+            //------------- END MC FIDUCIAL CROSS SECTION (<2 deg)
 
 
           }
-          //------------------ end loop on all the MC particles
+  //************************************************************* end Loop on all MCparticles *************************************************************
 
 
 
-          //------------------ loop on all TWPoints
-          //----- check for TW Ghost Hits in MC particles
-          //TATWntuPoint *twpoint = new TATWntuPoint();   
+          //------------- STUDY OF TW CHARGE RECONSTRUCTION ALGORITHM 
+          //----- check for TW Ghost Hits in MC particles   (N.B.: it concerns all TW Points, different from the previous study of tw points in global tracks)  
           //i use myTWNtuPt 
           int nTWpoints = myTWNtuPt->GetPointsN();
           //cout << nTWpoints <<endl;
-          for(int ipoint=0; ipoint<nTWpoints; ipoint++) {
+          for(int ipoint=0; ipoint<nTWpoints; ipoint++) { // for every TWpoint in an event
             TATWpoint *twp = myTWNtuPt->GetPoint(ipoint);
             int charge = twp->GetChargeZ();
             int ID = twp->GetPointMatchMCtrkID();
@@ -1427,7 +1263,9 @@ void GlobalRecoAna::LoopEvent() {
             double Theta = TMath::ACos(CosTheta)*180./TMath::Pi();
             int indexSize = twp->GetMcTracksN();
 
-            ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix")) -> Fill(charge,Z_MC); //global frame 
+            ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix")) -> Fill(charge,Z_MC); //global frame
+            ((TH2D*)gDirectory->Get("devstofAll")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
+
 
 
 
@@ -1435,17 +1273,133 @@ void GlobalRecoAna::LoopEvent() {
                                                               //NB: 50 IN GSI2021
             if(charge > 0 && charge <9 && moth == 0 && reg == 50 && finalPos(2) > 190.) {   // i want only the particles generated in the target toward the TW
 
-            ((TH1D*)gDirectory->Get("MC_check/Mixing_matrix")) -> Fill(charge, Z_MC);
+            ((TH2D*)gDirectory->Get("MC_check/Mixing_matrix")) -> Fill(charge, Z_MC);
+            ((TH2D*)gDirectory->Get("devstof")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss()); 
             if (indexSize == 1){  // if there is not ghosdt hits
-	          ((TH1D*)gDirectory->Get("MC_check/Mixing_matrix_cut"))->Fill(charge, Z_MC);
+	          ((TH2D*)gDirectory->Get("MC_check/Mixing_matrix_cut"))->Fill(charge, Z_MC);
 	          }
             }
+
+            //----------- study of re-fragments
+            else if (moth != 0) {
+            ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix2frag")) -> Fill(charge, Z_MC);
+            ((TH2D*)gDirectory->Get("devstof2frag")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());    
+
+
+
+
+            }
+            else { 
+              ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix!")) -> Fill(charge, Z_MC);
+              ((TH2D*)gDirectory->Get("devstof!")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss()); 
+              //posizione d'origine
+              ((TH1D*)gDirectory->Get("originPosition")) -> Fill(reg);
+
+
+
+            }
+
+
+
+
           }
-          //------------------ end loop on all TWPoints
+          //------------- end STUDY OF TW CHARGE RECONSTRUCTION ALGORITHM 
 
 
     }
+    //------------------------------ END STUDY OF MC PARTICLES ------------------------------------------------
 
+    //-------------- STUDY OF VERTEX AND TW ALLIGNMENT / ROTATIONS
+    TAVTntuVertex *vertexContainer = (TAVTntuVertex*)fpNtuVtx->GenerateObject();    
+    int vertexNumber = vertexContainer->GetVertexN();
+    TAVTvertex* vtxPD   = 0x0; //NEW    
+    
+    int TWpointsNumber = myTWNtuPt->GetPointsN();
+    //cout << nTWpoints <<endl;    
+
+    if (fFlagMC == false) {
+    TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
+    cout << "event: "<< currEvent << " -- n tracks: "<< nt <<" -- n tracklets of vertex: "<< vertexNumber << endl;
+
+    //STUDY OF VERTEX
+    for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) { // for every vertexEvent
+        vtxPD = vertexContainer->GetVertex(iVtx);
+        /*if (vtxPD == 0x0){
+        cout << "Vertex number " << iVtx << " seems to be empty\n";
+        continue;
+      }
+      else if( !m_IsMC && !vtxPD->IsBmMatched() )
+      {
+        if(m_debug > 0)
+        {
+          Info("CategorizeVT()", "In event %d: vertex %d found but not matched with BM tracks; Skipping...",gTAGroot->CurrentEventId().EventNumber(), iVtx);
+        }
+        continue;
+      }*/
+
+            //study of vertex tracklets: phi, theta, projection to TW
+            for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {  //for every tracklet
+              
+
+                  TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
+                  TVector3 direction = (tracklet->GetSlopeZ()).Unit();
+
+                  double theta_vtx = direction.Theta()*TMath::RadToDeg();
+                  double phi_vtx = direction.Phi()*TMath::RadToDeg();
+
+                  //cout<< "theta vertex: " <<theta_vtx <<endl;   
+                
+                  TVector3 direction_glb = fpFootGeo->FromVTLocalToGlobal(direction);
+                  double phi_vtx_glb = direction_glb.Phi()*TMath::RadToDeg();
+                  
+                  //projection of a tracklet on TW
+                  
+                  Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+                  posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
+                  TVector3 A3 = tracklet->Intersection(posZtw);
+                  TVector3 A4 = fpFootGeo->FromVTLocalToGlobal(A3);
+                  Float_t VTTWX = A4.X();
+                  Float_t VTTWY = A4.Y(); //questi sono in coordinate globali
+
+                  
+
+                  if (isOxygenInEvent == false /*&& nt>0*/ && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
+                  ((TH2D*)gDirectory->Get("vt_twProjection_frag")) -> Fill(VTTWX,VTTWY);
+                  ((TH1D*)gDirectory->Get("phi_VTX_global_frag")) -> Fill( phi_vtx_glb);
+                  ((TH1D*)gDirectory->Get("theta_VTX_frag")) -> Fill( theta_vtx);
+                  ((TH1D*)gDirectory->Get("phi_VTX_frag")) -> Fill( phi_vtx);          
+                  vertex_direction_frag += direction_glb;
+                  } else if (wdTrig -> GetTriggerID() == 40) {
+                  ((TH2D*)gDirectory->Get("vt_twProjection")) -> Fill(VTTWX,VTTWY);
+                  ((TH1D*)gDirectory->Get("phi_VTX_global")) -> Fill( phi_vtx_glb);
+                  ((TH1D*)gDirectory->Get("theta_VTX")) -> Fill( theta_vtx);
+                  ((TH1D*)gDirectory->Get("phi_VTX")) -> Fill( phi_vtx); 
+                  vertex_direction += direction_glb;
+                  }
+            }
+    }
+    
+    //STUDY OF TW POINTS spatial distribution
+    for(int ipoint=0; ipoint<TWpointsNumber; ipoint++) { // for every twpoint
+      TATWpoint *twp = myTWNtuPt->GetPoint(ipoint);
+      //Float_t tw_x = fpFootGeo->FromTWLocalToGlobal((twp->GetRowHit())->GetPosition()); // global frame
+      //Float_t tw_y = fpFootGeo->FromTWLocalToGlobal((twp->GetColumnHit())->GetPosition());
+
+      if (isOxygenInEvent == false && nt>0 && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
+      ((TH2D*)gDirectory->Get("TWpointsDistribution_frag")) -> Fill(twp->GetPositionGlb().X(),twp->GetPositionGlb().Y()); //global frame
+      
+      } else if (wdTrig -> GetTriggerID() == 40) {
+        //int Z_tw_reco = twp-> GetChargeZ();
+        //TAMCpart *pNtuMcTrk_ = GetNtuMcTrk()->GetTrack(twp->GetPointMatchMCtrkID());
+        //int Z_tw_MC = pNtuMcTrk_ ->GetCharge(); 
+
+        //((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix"))->Fill(Z_tw_reco,Z_tw_MC);
+
+        ((TH2D*)gDirectory->Get("TWpointsDistribution")) -> Fill(twp->GetPositionGlb().X(),twp->GetPositionGlb().Y()); //global frame
+      }
+    }
+  }
+  //--------------END STUDY OF VERTEX AND TW ALLIGNMENT / ROTATIONS  
    
    if (debug_trackid ) myfile <<endl <<endl;
    
@@ -1475,8 +1429,8 @@ void GlobalRecoAna::LoopEvent() {
       
       break;
     }
-  }//end event loop
- 
+  }
+ //*********************************************************************************** end loop on every event **********************************************
   return;
 }
 
@@ -1495,8 +1449,16 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("Energy","",100, 0 ,800.);
   h = new TH1D("Charge_trk","",10, 0 ,10.);
   h = new TH1D("Charge_trk_True","",10, 0 ,10.);
-  h2 = new TH2D("Z_track_Mixing_matrix", "Mixing_matrix",8,0.5,9.,8,1.,8.5);
-  h2 = new TH2D("Z_tw_Mixing_matrix", "Mixing_matrix",8,0.5,9.,8,1.,8.5);
+  h2 = new TH2D("Z_track_Mixing_matrix", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
+  h2 = new TH2D("Z_tw_Mixing_matrix", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
+  h2 = new TH2D("Z_tw_Mixing_matrix2frag", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
+  h2 = new TH2D("Z_tw_Mixing_matrix!", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
+  h2 = new TH2D("devstof2frag","devstof2frag",500,0.,50.,480,0.,120. );
+  h2 = new TH2D("devstof","devstof",500,0.,50.,480,0.,120. );
+  h2 = new TH2D("devstof!","devstof",500,0.,50.,480,0.,120. );
+  h2 = new TH2D("devstofAll","devstof",500,0.,50.,480,0.,120. );
+  
+  h = new TH1D("originPosition","originPosition",200,-200,+200);
   
   //h = new TH1D("Charge_efficiency","Charge_trk_True / Charge_MC ",10, 0 ,10.);
  
@@ -2140,8 +2102,8 @@ for (int i = 0; i<mass_nbin; i++) {
     h = new TH1D("MotherID_MC","",40, 0., 40.);
     h = new TH1D("MotherID_MC_tg","",40, 0., 40.);
     h = new TH1D("MotherID_MC_tg_tw","",40, 0., 40.);
-    h2 = new TH2D("Mixing_matrix", "Mixing_matrix",8,0.,8.,8,0.,8.);
-    h2= new TH2D("Mixing_matrix_cut", "Mixing_matrix_cut",8,0.,8.,8,0.,8.);
+    h2 = new TH2D("Mixing_matrix", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
+    h2= new TH2D("Mixing_matrix_cut", "Mixing_matrix_cut",8,0.5,8.5,8,0.5,8.5);
     gDirectory->cd("..");
 
     gDirectory->mkdir("MC");
@@ -3327,18 +3289,6 @@ void GlobalRecoAna::BeforeEventLoop(){
   pure_track_xcha.clear();
   pure_track_xcha.resize(primary_cha+1,std::make_pair(0,0));
   Ntg=GetParGeoG()->GetTargetPar().Density*TMath::Na()*GetParGeoG()->GetTargetPar().Size.Z()/GetParGeoG()->GetTargetPar().AtomicMass;
-
-  
-  //lettura trigger
-  //wdTrig = new TAGWDtrigInfo();
-  //fpwdTrig = new TAGdataDsc(TAGWDtrigInfo::GetBranchName(), new TAGWDtrigInfo());
-
-  //myReader->SetupBranch(fpwdTrig, TAGWDtrigInfo::GetBranchName());
-  //myReader
-  //
-  //printf("TRIGGER: %s\n",TAGWDtrigInfo::GetBranchName());
-
- 
 
   if(FootDebugLevel(1)) {
     cout<<"primary_cha="<<primary_cha<<"  beam_mass_number="<<beam_mass_number<<"  beam_energy="<<beam_energy<<"  beam_speed="<<beam_speed<<"  primary_tof="<<primary_tof<<endl;

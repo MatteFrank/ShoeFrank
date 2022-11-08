@@ -143,18 +143,17 @@ class GlobalRecoAna : public LocalReco {
 
   //Unfolding
   Int_t theta_bin_meas, Ek_bin_meas, theta_bin_true, Ek_bin_true;
-
-  TFile *f;
-
-  //TAGWDtrigInfo * wdTrig;
-  //TAGdataDsc*           fpwdTrig;     ///< trigger
-
-  //! MC BM hit container Getter
-   //TAGWDtrigInfo*          GetTrigInfo()        const { return (TAGWDtrigInfo*)fpwdTrig->Object();         }
-
+  
+  // for beam direction studies in vertex
   TVector3 vertex_direction_frag;
   TVector3 vertex_direction;
 
+  //debug variable to check relation between tracking reconstruction and MC events
+  bool debug_trackid;
+  ofstream myfile;
+
+  //debug variable for plots of triggered events
+  bool isOxygenInEvent;
 };
 
 #endif
