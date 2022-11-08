@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "HIT2022_CA"
-RunNumber: 4537-4676
+RunNumber: 4537-4676;4921
 NumberDevices: 4
 
 DetectorName: "FOOT"
