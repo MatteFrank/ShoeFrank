@@ -247,13 +247,9 @@ void TACAactNtuHit::CreateHistogram(){
    // sprintf(histoname,"stTrigTime");
    // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
    // AddHistogram(fhTrigTime);
-
-   sprintf(histoname,"caTotCharge");
    
    fhTotCharge = new TH1F("caTotCharge", "caTotCharge", 400, -0.1, 3.9);
    AddHistogram(fhTotCharge);
-
-   sprintf(histoname,"caChMap");
 
    fhChannelMap = new TH1F("caChMap", "caChMap", 9, 0, 9);
    AddHistogram(fhChannelMap);
