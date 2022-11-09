@@ -1123,9 +1123,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
 		}
 
-		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
-
 		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
+
+		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
 
 		trackQuality = TrackQuality( &mcParticleID_track );
 		if(m_debug > 0) cout << "trackQuality::" << trackQuality << "\n";
@@ -1159,7 +1159,15 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	{
 		h_dR->Fill ( recoMom_target.DeltaR( TVector3(0,0,0) ) );
 		h_phi->Fill ( recoMom_target.Phi() );
-		h_theta->Fill ( recoMom_target.Theta() );
+		h_theta->Fill ( recoMom_target.Theta()*TMath::RadToDeg() );
+		
+		if( ((TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
+		{
+			TVector3 BMslope = ( (TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
+			BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope);
+
+			h_theta_BM->Fill ( BMslope.Angle( recoMom_target )*TMath::RadToDeg() );
+		}
 		h_eta->Fill ( recoMom_target.Eta() );
 		h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
 		h_dy_dz->Fill ( recoMom_target.y() / recoMom_target.z() );
@@ -1608,8 +1616,11 @@ void TAGactKFitter::CreateHistogram()	{
 	h_phi = new TH1F("h_phi", "h_phi", 80, -4, 4);
 	AddHistogram(h_phi);  
 
-	h_theta = new TH1F("h_theta", "h_theta", 100, 0, 0.3);
+	h_theta = new TH1F("h_theta", "h_theta", 200, 0, 15);
 	AddHistogram(h_theta);  
+
+	h_theta_BM = new TH1F("h_theta_BM", "h_theta_BM", 200, 0, 15);
+	AddHistogram(h_theta_BM);
 
 	h_eta = new TH1F("h_eta", "h_eta", 100, 0., 20.);
 	AddHistogram(h_eta);  
@@ -1871,6 +1882,7 @@ void TAGactKFitter::ClearHistos()
 	delete h_dR;
 	delete h_phi;
 	delete h_theta;
+	delete h_theta_BM;
 	delete h_eta;
 	delete h_dx_dz;
 	delete h_dy_dz;
