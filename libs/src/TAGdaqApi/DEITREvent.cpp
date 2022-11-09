@@ -97,27 +97,22 @@ void DEITREvent::readData(unsigned int **p1)
          printf("Error in the event reader %x instead of %x\n", *p, m_itrHeader);
       
       detectorHeader = *p;
-      evtSize++;
       values.push_back(*p);
       
       // 1st board header
       boardHeader = *(++p);
-      evtSize++;
       values.push_back(*p);
       
       // trigger number
       triggerCounter = *(++p);
-      evtSize++;
       values.push_back(*p);
       
       // timestamp
       BCOofTrigger = *(++p);
-      evtSize++;
       values.push_back(*p);
    
       do {
          p++;
-         evtSize++;
          if(*p != m_itrTail)values.push_back(*p);
          
       } while (*p != m_itrTail && p != p_max);
