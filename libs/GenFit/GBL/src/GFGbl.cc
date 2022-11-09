@@ -190,33 +190,20 @@ void GFGbl::beginRun()
   char name[20];
   
   for (int i = 0; i < 12; i++) {
-    sprintf(name, "res_u_%i", i + 1);
-    resHistosU[i] = new TH1F(name, "Residual (U)", 1000, -0.1, 0.1);
-    sprintf(name, "res_v_%i", i + 1);
-    resHistosV[i] = new TH1F(name, "Residual (V)", 1000, -0.1, 0.1);
-    sprintf(name, "meas_pull_u_%i", i + 1);
-    mhistosU[i] = new TH1F(name, "Res/Meas.Err. (U)", 1000, -20., 20.);
-    sprintf(name, "meas_pull_v_%i", i + 1);
-    mhistosV[i] = new TH1F(name, "Res/Meas.Err. (V)", 1000, -20., 20.);
-    sprintf(name, "pull_u_%i", i + 1);
-    ghistosU[i] = new TH1F(name, "Res/Res.Err. (U)", 1000, -20., 20.);
-    sprintf(name, "pull_v_%i", i + 1);
-    ghistosV[i] = new TH1F(name, "Res/Res.Err. (V)", 1000, -20., 20.);
-    sprintf(name, "downWeights_u_%i", i + 1);
-    downWeightsHistosU[i] = new TH1F(name, "Down-weights (U)", 1000, 0., 1.);
-    sprintf(name, "downWeights_v_%i", i + 1);
-    downWeightsHistosV[i] = new TH1F(name, "Down-weights (V)", 1000, 0., 1.);
-    sprintf(name, "localPar1_%i", i + 1);
-    
-    localPar1[i] = new TH1F(name, "Residual (U)", 1000, -0.1, 0.1);
-    sprintf(name, "localPar2_%i", i + 1);
-    localPar2[i] = new TH1F(name, "Residual (U)", 1000, -0.1, 0.1);
-    sprintf(name, "localPar3_%i", i + 1);
-    localPar3[i] = new TH1F(name, "Residual (U)", 1000, -0.1, 0.1);
-    sprintf(name, "localPar4_%i", i + 1);
-    localPar4[i] = new TH1F(name, "Residual (U)", 1000, -0.1, 0.1);
-    sprintf(name, "localPar5_%i", i + 1);
-    localPar5[i] = new TH1F(name, "Residual (U)", 1000, -0.1, 0.1);
+    resHistosU[i] = new TH1F(Form("res_u_%i", i + 1), "Residual (U)", 1000, -0.1, 0.1);
+    resHistosV[i] = new TH1F("res_v_%i", i + 1Form(), "Residual (V)", 1000, -0.1, 0.1);
+    mhistosU[i] = new TH1F(Form("meas_pull_u_%i", i + 1), "Res/Meas.Err. (U)", 1000, -20., 20.);
+    mhistosV[i] = new TH1F(Form("meas_pull_v_%i", i + 1), "Res/Meas.Err. (V)", 1000, -20., 20.);
+    ghistosU[i] = new TH1F(Form("pull_u_%i", i + 1), "Res/Res.Err. (U)", 1000, -20., 20.);
+    ghistosV[i] = new TH1F(Form("pull_v_%i", i + 1), "Res/Res.Err. (V)", 1000, -20., 20.);
+    downWeightsHistosU[i] = new TH1F(Form("downWeights_u_%i", i + 1), "Down-weights (U)", 1000, 0., 1.);
+    downWeightsHistosV[i] = new TH1F(Form("downWeights_v_%i", i + 1), "Down-weights (V)", 1000, 0., 1.);
+
+    localPar1[i] = new TH1F(Form("localPar1_%i", i + 1), "Residual (U)", 1000, -0.1, 0.1);
+    localPar2[i] = new TH1F(Form("localPar2_%i", i + 1), "Residual (U)", 1000, -0.1, 0.1);
+    localPar3[i] = new TH1F(Form("localPar3_%i", i + 1), "Residual (U)", 1000, -0.1, 0.1);
+    localPar4[i] = new TH1F(name,"localPar4_%i", i + 1 "Residual (U)", 1000, -0.1, 0.1);
+    localPar5[i] = new TH1F(Form("localPar5_%i", i + 1), "Residual (U)", 1000, -0.1, 0.1);
   }
   fitResHisto = new TH1I("fit_result", "GBL Fit Result", 21, -1, 20);
   ndfHisto = new TH1I("ndf", "GBL Track NDF", 41, -1, 40);
