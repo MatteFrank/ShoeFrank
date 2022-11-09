@@ -349,20 +349,30 @@ void TAGactKFitter::IncludeDetectors() {
 		}
 	}
 
-  // list of detectors used for kalman
-  m_systemsON = "";
-  for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
-    if (i != 0)		m_systemsON += " ";
-    m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
-  }
-  if (m_debug > 0)	cout << "TAGactKFitter::IncludeDetectors() -- Detector systems for Kalman:  " << m_systemsON << endl;
+	// list of detectors used for kalman
+	m_systemsON = "";
+	if( TAGrecoManager::GetPar()->KalSystems().at(0) == "all" )
+	{
+		if(TAGrecoManager::GetPar()->IncludeVT())	m_systemsON += "VT ";
+		if(TAGrecoManager::GetPar()->IncludeIT())	m_systemsON += "IT ";
+		if(TAGrecoManager::GetPar()->IncludeMSD())	m_systemsON += "MSD ";
+		if(TAGrecoManager::GetPar()->IncludeTW())	m_systemsON += "TW";
+	}
+	else
+	{
+		for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
+			if (i != 0)		m_systemsON += " ";
+			m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
+		}
+	}
+	if (m_debug > 0)	cout << "TAGactKFitter::IncludeDetectors() -- Detector systems for Kalman:  " << m_systemsON << endl;
 
-  // print-out of the particle hypothesis used for the fit
-  cout << "TAGactKFitter::IncludeDetectors() -- TAGrecoManager::GetPar()->MCParticles()";
-  for (unsigned int i=0; i<TAGrecoManager::GetPar()->MCParticles().size(); i++ ) {
-    cout << "   " << TAGrecoManager::GetPar()->MCParticles().at(i);
-  }
-  cout << endl;
+	// print-out of the particle hypothesis used for the fit
+	cout << "TAGactKFitter::IncludeDetectors() -- TAGrecoManager::GetPar()->MCParticles()";
+	for (unsigned int i=0; i<TAGrecoManager::GetPar()->MCParticles().size(); i++ ) {
+		cout << "   " << TAGrecoManager::GetPar()->MCParticles().at(i);
+	}
+	cout << endl;
 }
 
 
@@ -390,16 +400,16 @@ void TAGactKFitter::CreateGeometry()  {
 	if (TAGrecoManager::GetPar()->IncludeDI())
 		m_DI_geo = shared_ptr<TADIparGeo> ( (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
 
-	if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeVT() )
-		m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
+	if ( TAGrecoManager::GetPar()->IncludeVT() )
+		m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc("vtGeo", "TAVTparGeo")->Object() );
 
-	if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeIT() )
+	if ( TAGrecoManager::GetPar()->IncludeIT() )
 		m_IT_geo = shared_ptr<TAITparGeo> ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
 
-	if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && TAGrecoManager::GetPar()->IncludeMSD() )
+	if ( TAGrecoManager::GetPar()->IncludeMSD() )
 		m_MSD_geo = shared_ptr<TAMSDparGeo> ( (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
 
-	if ( ( m_systemsON.find( "TW" ) != string::npos) && TAGrecoManager::GetPar()->IncludeTW() )
+	if ( TAGrecoManager::GetPar()->IncludeTW() )
 		m_TW_geo = shared_ptr<TATWparGeo> ( (TATWparGeo*) gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeCA())
@@ -470,42 +480,44 @@ void TAGactKFitter::CreateGeometry()  {
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAVTparGeo::GetBaseName());
 		m_TopVolume->AddNode(vtVol, 4, transfo);
 
-		for ( int i = 0; i < m_VT_geo->GetSensorsN(); ++i ) {
-			TVector3 origin_(m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i)) );
+		if(m_systemsON.Contains("VT"))
+		{
+			for ( int i = 0; i < m_VT_geo->GetSensorsN(); ++i ) {
+				TVector3 origin_(m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i)) );
 
-			// RZ, note to self: Careful w/ coordinates here: the "IsInActive" functions uses exactly the coordinates give to define the active area, either they are local or global!! BE CONSISTENT AND RE-CHECK EVERYTHING
-			float xMin, xMax, yMin, yMax;
-			xMin = m_VT_geo->GetEpiOffset().X() - m_VT_geo->GetEpiSize().X()/2;
-			xMax = m_VT_geo->GetEpiOffset().X() + m_VT_geo->GetEpiSize().X()/2;
-			yMin = m_VT_geo->GetEpiOffset().Y() - m_VT_geo->GetEpiSize().Y()/2;
-			yMax = m_VT_geo->GetEpiOffset().Y() + m_VT_geo->GetEpiSize().Y()/2;
-			genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane(xMin, xMax, yMin, yMax);
-			TVector3 normal_versor = TVector3(0,0,1);
-			TVector3 trafoNorm = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, normal_versor));
-			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, trafoNorm, activeArea));
+				// RZ, note to self: Careful w/ coordinates here: the "IsInActive" functions uses exactly the coordinates give to define the active area, either they are local or global!! BE CONSISTENT AND RE-CHECK EVERYTHING
+				float xMin, xMax, yMin, yMax;
+				xMin = m_VT_geo->GetEpiOffset().X() - m_VT_geo->GetEpiSize().X()/2;
+				xMax = m_VT_geo->GetEpiOffset().X() + m_VT_geo->GetEpiSize().X()/2;
+				yMin = m_VT_geo->GetEpiOffset().Y() - m_VT_geo->GetEpiSize().Y()/2;
+				yMax = m_VT_geo->GetEpiOffset().Y() + m_VT_geo->GetEpiSize().Y()/2;
+				genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane(xMin, xMax, yMin, yMax);
+				TVector3 normal_versor = TVector3(0,0,1);
+				TVector3 trafoNorm = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, normal_versor));
+				genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, trafoNorm, activeArea));
 
-			//Set versors
-			TVector3 U(1.,0,0);
-			TVector3 V(0,1.,0);
-			TVector3 trafoU = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, U));
-			TVector3 trafoV = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, V));
-			// Some debug print-outs for geometry
-			if(m_debug > 1)
-			{
-				cout << "VT sensor::" << i << endl;
-				cout << "origin::"; origin_.Print();
-				cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
-				cout << "U::"; U.Print();
-				cout << "V::"; V.Print();
-				cout << "trafoU::"; trafoU.Print();
-				cout << "trafoV::"; trafoV.Print();
-				cout << "Z versor::"; trafoNorm.Print();
+				//Set versors
+				TVector3 U(1.,0,0);
+				TVector3 V(0,1.,0);
+				TVector3 trafoU = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, U));
+				TVector3 trafoV = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, V));
+				// Some debug print-outs for geometry
+				if(m_debug > 1)
+				{
+					cout << "VT sensor::" << i << endl;
+					cout << "origin::"; origin_.Print();
+					cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
+					cout << "U::"; U.Print();
+					cout << "V::"; V.Print();
+					cout << "trafoU::"; trafoU.Print();
+					cout << "trafoV::"; trafoV.Print();
+					cout << "Z versor::"; trafoNorm.Print();
+				}
+				detectorplane->setUV(trafoU, trafoV);
+				m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
+				m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "VT");
+				++indexOfPlane;
 			}
-			detectorplane->setUV(trafoU, trafoV);
-			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "VT");
-			++indexOfPlane;
-
 		}
 	}
 
@@ -523,46 +535,49 @@ void TAGactKFitter::CreateGeometry()  {
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetBaseName());
 		m_TopVolume->AddNode(itVol, 6, transfo);
 
-		for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
-			TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)) );
-			float xMin, xMax, yMin, yMax;
-			xMin = m_IT_geo->GetEpiOffset().X() - m_IT_geo->GetEpiSize().X()/2;
-			xMax = m_IT_geo->GetEpiOffset().X() + m_IT_geo->GetEpiSize().X()/2;
-			yMin = m_IT_geo->GetEpiOffset().Y() - m_IT_geo->GetEpiSize().Y()/2;
-			yMax = m_IT_geo->GetEpiOffset().Y() + m_IT_geo->GetEpiSize().Y()/2;
+		if( m_systemsON.Contains("IT") )
+		{
+			for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
+				TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)) );
+				float xMin, xMax, yMin, yMax;
+				xMin = m_IT_geo->GetEpiOffset().X() - m_IT_geo->GetEpiSize().X()/2;
+				xMax = m_IT_geo->GetEpiOffset().X() + m_IT_geo->GetEpiSize().X()/2;
+				yMin = m_IT_geo->GetEpiOffset().Y() - m_IT_geo->GetEpiSize().Y()/2;
+				yMax = m_IT_geo->GetEpiOffset().Y() + m_IT_geo->GetEpiSize().Y()/2;
 
-			// This make all the 32 IT sensors
-			genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
-			TVector3 normal_versor = TVector3(0,0,1);
-			TVector3 trafoNorm = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, normal_versor));
-			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, trafoNorm, activeArea));
+				// This make all the 32 IT sensors
+				genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
+				TVector3 normal_versor = TVector3(0,0,1);
+				TVector3 trafoNorm = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, normal_versor));
+				genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, trafoNorm, activeArea));
 
-			// Set versors
-			TVector3 U(1.,0,0);
-			TVector3 V(0,1.,0);
-			TVector3 trafoU = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, U));
-			TVector3 trafoV = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, V));
-			detectorplane->setUV(trafoU, trafoV);
+				// Set versors
+				TVector3 U(1.,0,0);
+				TVector3 V(0,1.,0);
+				TVector3 trafoU = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, U));
+				TVector3 trafoV = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, V));
+				detectorplane->setUV(trafoU, trafoV);
 
-			m_sensorIDmap->AddPlane_Zorder( origin_.Z(), indexOfPlane );
-			m_sensorIDmap->AddPlane_ZorderLocal( m_IT_geo->GetSensorPosition(i).Z(), indexOfPlane );
+				m_sensorIDmap->AddPlane_Zorder( origin_.Z(), indexOfPlane );
+				m_sensorIDmap->AddPlane_ZorderLocal( m_IT_geo->GetSensorPosition(i).Z(), indexOfPlane );
 
-			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "IT");
-			++indexOfPlane;
-			if( m_debug > 1 )
-				cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
+				m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
+				m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "IT");
+				++indexOfPlane;
+				if( m_debug > 1 )
+					cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 
-			// Some debug print-outs for geometry
-			if(m_debug > 1)
-			{
-				cout << "IT sensor::" << i << endl;
-				cout << "origin::"; origin_.Print();
-				cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
-				cout << "U::"; U.Print();
-				cout << "V::"; V.Print();
-				cout << "trafoU::"; trafoU.Print();
-				cout << "trafoV::"; trafoV.Print();
+				// Some debug print-outs for geometry
+				if(m_debug > 1)
+				{
+					cout << "IT sensor::" << i << endl;
+					cout << "origin::"; origin_.Print();
+					cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
+					cout << "U::"; U.Print();
+					cout << "V::"; V.Print();
+					cout << "trafoU::"; trafoU.Print();
+					cout << "trafoV::"; trafoV.Print();
+				}
 			}
 		}
 	}
@@ -574,43 +589,46 @@ void TAGactKFitter::CreateGeometry()  {
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
 		m_TopVolume->AddNode(msdVol, 7, transfo);
 
-		for ( int i = 0; i < m_MSD_geo->GetSensorsN(); i++ ) {
-			TVector3 origin_( m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)) );
+		if( m_systemsON.Contains("MSD") )
+		{
+			for ( int i = 0; i < m_MSD_geo->GetSensorsN(); i++ ) {
+				TVector3 origin_( m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)) );
 
-			float xMin = m_MSD_geo->GetEpiOffset().x() - m_MSD_geo->GetEpiSize().x()/2;
-			float xMax = m_MSD_geo->GetEpiOffset().x() + m_MSD_geo->GetEpiSize().x()/2;
-			float yMin = m_MSD_geo->GetEpiOffset().y() - m_MSD_geo->GetEpiSize().y()/2;
-			float yMax = m_MSD_geo->GetEpiOffset().y() + m_MSD_geo->GetEpiSize().y()/2;
+				float xMin = m_MSD_geo->GetEpiOffset().x() - m_MSD_geo->GetEpiSize().x()/2;
+				float xMax = m_MSD_geo->GetEpiOffset().x() + m_MSD_geo->GetEpiSize().x()/2;
+				float yMin = m_MSD_geo->GetEpiOffset().y() - m_MSD_geo->GetEpiSize().y()/2;
+				float yMax = m_MSD_geo->GetEpiOffset().y() + m_MSD_geo->GetEpiSize().y()/2;
 
-			TVector3 normal_versor = TVector3(0,0,1);
-			TVector3 trafoNorm = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i, normal_versor));
-			genfit::AbsFinitePlane* recta = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
-			genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, trafoNorm, recta) );
+				TVector3 normal_versor = TVector3(0,0,1);
+				TVector3 trafoNorm = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i, normal_versor));
+				genfit::AbsFinitePlane* recta = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
+				genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, trafoNorm, recta) );
 
-			// Set versors -> MSD still needs some fixes maybe
-			TVector3 U(1.,0,0);
-			TVector3 V(0,1.,0);
-			TVector3 trafoU = m_GeoTrafo->VecFromMSDLocalToGlobal(U);
-			TVector3 trafoV = m_GeoTrafo->VecFromMSDLocalToGlobal(V);
-			// detectorplane->setUV(U, V);
-			detectorplane->setUV(trafoU, trafoV);
+				// Set versors -> MSD still needs some fixes maybe
+				TVector3 U(1.,0,0);
+				TVector3 V(0,1.,0);
+				TVector3 trafoU = m_GeoTrafo->VecFromMSDLocalToGlobal(U);
+				TVector3 trafoV = m_GeoTrafo->VecFromMSDLocalToGlobal(V);
+				// detectorplane->setUV(U, V);
+				detectorplane->setUV(trafoU, trafoV);
 
-			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "MSD");
-			++indexOfPlane;
+				m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
+				m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "MSD");
+				++indexOfPlane;
 
-			// Some debug print-outs for geometry
-			if(m_debug > 0)
-			{
-				cout << "MSD sensor::" << i << endl;
-				cout << "origin::"; origin_.Print();
-				cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
-				cout << "U::"; U.Print();
-				cout << "V::"; V.Print();
-				cout << "trafoU::"; trafoU.Print();
-				cout << "trafoV::"; trafoV.Print();
-				cout << "trafoNorm::"; trafoNorm.Print();
-				cout << "SensorType::"<< m_MSD_geo->GetSensorPar(i).TypeIdx << endl;
+				// Some debug print-outs for geometry
+				if(m_debug > 0)
+				{
+					cout << "MSD sensor::" << i << endl;
+					cout << "origin::"; origin_.Print();
+					cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
+					cout << "U::"; U.Print();
+					cout << "V::"; V.Print();
+					cout << "trafoU::"; trafoU.Print();
+					cout << "trafoV::"; trafoV.Print();
+					cout << "trafoNorm::"; trafoNorm.Print();
+					cout << "SensorType::"<< m_MSD_geo->GetSensorPar(i).TypeIdx << endl;
+				}
 			}
 		}
 	}
@@ -622,33 +640,37 @@ void TAGactKFitter::CreateGeometry()  {
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TATWparGeo::GetBaseName());
 		m_TopVolume->AddNode(twVol, 8, transfo);
 
-		TVector3 origin_( m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)));
-		genfit::SharedPlanePtr detectorplane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
 
-		//RZ, note to self: Set the active area of the TW!!!
-
-		// Set versors -> maybe trafo versors not needed
-		TVector3 U(1.,0,0);
-		TVector3 V(0,1.,0);
-		// TVector3 trafoU = m_TW_geo->Detector2SensorVect(i, u);
-		// TVector3 trafoV = m_TW_geo->Detector2SensorVect(i, v);
-		// detectorplane->setU(trafoU);
-		// detectorplane->setV(trafoV);
-		detectorplane->setU(U);
-		detectorplane->setV(V);
-
-		m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-		m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "TW");
-		++indexOfPlane;
-
-		// Some debug print-outs for geometry
-		if(m_debug > 1)
+		if( m_systemsON.Contains("TW") )
 		{
-			cout << "TW geometry" << endl;
-			cout << "origin::"; origin_.Print();
-			// cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
-			cout << "U::"; U.Print();
-			cout << "V::"; V.Print();
+			TVector3 origin_( m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)));
+			genfit::SharedPlanePtr detectorplane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
+
+			//RZ, note to self: Set the active area of the TW!!!
+
+			// Set versors -> maybe trafo versors not needed
+			TVector3 U(1.,0,0);
+			TVector3 V(0,1.,0);
+			// TVector3 trafoU = m_TW_geo->Detector2SensorVect(i, u);
+			// TVector3 trafoV = m_TW_geo->Detector2SensorVect(i, v);
+			// detectorplane->setU(trafoU);
+			// detectorplane->setV(trafoV);
+			detectorplane->setU(U);
+			detectorplane->setV(V);
+
+			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
+			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "TW");
+			++indexOfPlane;
+
+			// Some debug print-outs for geometry
+			if(m_debug > 1)
+			{
+				cout << "TW geometry" << endl;
+				cout << "origin::"; origin_.Print();
+				// cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
+				cout << "U::"; U.Print();
+				cout << "V::"; V.Print();
+			}
 		}
 	}
 

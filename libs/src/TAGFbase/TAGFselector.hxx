@@ -143,7 +143,7 @@ private:
 
 	Bool_t m_IsMC; 											///< flag for MC variables
 	int m_debug;											///< Global debug value
-	string m_systemsON;										///< String w/ systems on in the campaign
+	TString m_systemsON;										///< String w/ systems on in the campaign
 	
 	double m_BeamEnergy;									///< Beam energy in GeV/u
 	double m_AMU = 0.9310986964;							///< Conversion betweem mass in GeV and atomic mass unit

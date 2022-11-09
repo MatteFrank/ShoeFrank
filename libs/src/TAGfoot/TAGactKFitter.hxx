@@ -189,7 +189,7 @@ private:
 
 	vector<Color_t> m_vecHistoColor;
 
-	string m_systemsON;									///< String w/ list of systems on in the campaign
+	TString m_systemsON;								///< String w/ list of systems on in the campaign
 	// string m_kalmanOutputDir;
 
 	double m_AMU;										///< Conversion between mass in GeV and atomic mass unit
