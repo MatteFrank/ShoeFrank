@@ -92,9 +92,6 @@ void DEITREvent::readData(unsigned int **p1)
    ++p;
    
    if(evtSize != 0) {
-      // skip 4 words ???
-      p += 4;
-      
       // check header
       if (*p != m_itrHeader)
          printf("Error in the event reader %x instead of %x\n", *p, m_itrHeader);
