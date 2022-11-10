@@ -34,3 +34,8 @@ if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/WC/config/  DESTINATION ${CMAKE_BINARY_DIR}/Ancillary/WC/config/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/WC/macros/  DESTINATION ${CMAKE_BINARY_DIR}/Ancillary/WC/  PATTERN "*.cmake" EXCLUDE)
  endif(FILECOPY)
+
+#----------------------------------------------------------------------------
+# Copy rootlogon
+#
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/WC/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Ancillary/WC/rootlogon.C"  @ONLY)
