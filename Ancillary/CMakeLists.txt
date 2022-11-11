@@ -25,8 +25,3 @@ set(TACE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${TACE}")
 #
 add_subdirectory(TAPLbase)
 add_subdirectory(TACEbase)
-
-#----------------------------------------------------------------------------
-# Copy rootlogon
-#
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/WC/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Ancillary/WC/rootlogon.C"  @ONLY)
