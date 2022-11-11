@@ -21,6 +21,8 @@ TAGdaqEvent::TAGdaqEvent()
    fTrgEvent(0x0)
 {
    fMapOfFragments.clear();
+   fListOfFragments.clear();
+   fListOfClassTypes.clear();
 }
 
 //------------------------------------------+-----------------------------------
@@ -37,6 +39,9 @@ void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 {
    string type = frag->classType();
    fMapOfFragments[type] = frag;
+   
+   fListOfFragments.push_back(frag);   
+   fListOfClassTypes.push_back(type);
 }
 
 //------------------------------------------+-----------------------------------
@@ -60,6 +65,8 @@ void TAGdaqEvent::Clear(Option_t*)
 {
    TAGdata::Clear();
    fMapOfFragments.clear();
+   fListOfFragments.clear();
+   fListOfClassTypes.clear();
 }
 
 //______________________________________________________________________________
