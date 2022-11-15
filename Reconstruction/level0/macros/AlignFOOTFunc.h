@@ -844,21 +844,11 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   cout<<"new "<<detname.Data()<<" rotation parameters:"<<endl;
   cout<<detname.Data()<<"AngX: "<<detnewangle.X()<<"  "<<detname.Data()<<"AngY: "<<detnewangle.Y()<<endl;
 
-  Double_t loc[] = {0.,0.,0};
-  Double_t glo[] = {0.,0.,0};
-
   //define the trasformation matrix
   TGeoRotation detrot;
   detrot.RotateX(detnewangle.X());
   detrot.RotateY(detnewangle.Y());
-  loc[0] = detcenter.X();
-  loc[1] = detcenter.Y();
-  loc[2] = detcenter.Z();
-  glo[0] = 0.;
-  glo[1] = 0.;
-  glo[2] = 0.;
-  detrot.LocalToMaster(loc, glo);
-  TGeoTranslation dettrans(glo[0], glo[1], glo[2]);
+  TGeoTranslation dettrans(detcenter.X(), detcenter.Y(), detcenter.Z());
   TGeoHMatrix  dettransfo;
   dettransfo=dettrans;
   dettransfo*=detrot;
@@ -901,29 +891,14 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   Double_t newresytra=gaus->GetParameter(1);
   cout<<"newresxtra="<<newresxtra<<"  newresytra="<<newresytra<<endl;
 
-  loc[0] = 0.;
-  loc[1] = 0.;
-  loc[2] = 0.;
-  glo[0] = -newresxtra;
-  glo[1] = -newresytra;
-  glo[2] = 0.;
-  detrot.MasterToLocal(glo,loc);
-
-  TVector3 detfinalpos(loc[0]+detcenter.X(),loc[1]+detcenter.Y(),loc[2]+detcenter.Z());
+  TVector3 detfinalpos(-newresxtra+detcenter.X(),-newresytra+detcenter.Y(),detcenter.Z());
   cout<<detname.Data()<<"new position estimate PosX: "<<detfinalpos.X()<<"  "<<detname.Data()<<"PosY= "<<detfinalpos.Y()<<"  "<<detname.Data()<<"PosZ= "<<detfinalpos.Z()<<endl;
 
   //define the trasformation matrix
   TGeoRotation detfinalrot;
   detfinalrot.RotateX(detnewangle.X());
   detfinalrot.RotateY(detnewangle.Y());
-  loc[0] = detfinalpos.X();
-  loc[1] = detfinalpos.Y();
-  loc[2] = detfinalpos.Z();
-  glo[0] = 0.;
-  glo[1] = 0.;
-  glo[2] = 0.;
-  detfinalrot.LocalToMaster(loc, glo);
-  TGeoTranslation detfinaltrans(glo[0], glo[1], glo[2]);
+  TGeoTranslation detfinaltrans(detfinalpos.X(), detfinalpos.Y(), detfinalpos.Z());
   TGeoHMatrix  detfinaltransfo;
   detfinaltransfo=detfinaltrans;
   detfinaltransfo*=detfinalrot;
@@ -1043,24 +1018,13 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
   cout<<"Detector A initial rotation parameters: detaangle.X()="<<detaangle.X()<<"  detaangle.Y()="<<detaangle.Y()<<"  detaangle.Z()="<<detaangle.Z()<<endl;
   cout<<"Detector A new rotation parameters: detanewangle.X()="<<detanewangle.X()<<"  detanewangle.Y()="<<detanewangle.Y()<<"  detanewangle.Z()="<<detanewangle.Z()<<endl;
 
-
-  Double_t loc[] = {0.,0.,0};
-  Double_t glo[] = {0.,0.,0};
-
   //define the trasformation matrix
   TGeoRotation detarot;
   detarot.RotateX(detanewangle.X());
   detarot.RotateY(detanewangle.Y());
-  loc[0] = detacenter.X();
-  loc[1] = detacenter.Y();
-  loc[2] = detacenter.Z();
-  glo[0] = 0.;
-  glo[1] = 0.;
-  glo[2] = 0.;
-  detarot.LocalToMaster(loc, glo);
   //      cout<<"NewAng :: "<<vtnewangle.X()<<" "<<vtnewangle.Y()<<" "<<vtnewangle.Z()<<endl;
   //      cout<<"GLO :: "<<glo[0]<<" "<<glo[1]<<" "<<glo[2]<<endl;
-  TGeoTranslation detatrans(glo[0], glo[1], glo[2]);
+  TGeoTranslation detatrans(detacenter.X(), detacenter.Y(), detacenter.Z());
   TGeoHMatrix  detatransfo;
   detatransfo=detatrans;
   detatransfo*=detarot;
@@ -1114,14 +1078,7 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
   ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
   Double_t newresytra=gaus->GetParameter(1);
 
-  loc[0] = 0.;
-  loc[1] = 0.;
-  loc[2] = 0.;
-  glo[0] = -newresxtra;
-  glo[1] = -newresytra;
-  glo[2] = 0.;
-  detarot.MasterToLocal(glo,loc);
-  detanewpos.SetXYZ(loc[0]+detacenter.X(),loc[1]+detacenter.Y(),loc[2]+detacenter.Z());
+  detanewpos.SetXYZ(-newresxtra+detacenter.X(),-newresytra+detacenter.Y(),detacenter.Z());
 
   cout<<"first rotation step done with "<<detname.Data()<<endl;
   cout<<"residual on traslations with the new rotation parameters: newresxtra="<<newresxtra<<" newresytra="<<newresytra<<endl;
@@ -1137,16 +1094,9 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
   TGeoRotation finaldetarot;
   finaldetarot.RotateX(detanewangle.X());
   finaldetarot.RotateY(detanewangle.Y());
-  loc[0] = detanewpos.X();
-  loc[1] = detanewpos.Y();
-  loc[2] = detanewpos.Z();
-  glo[0] = 0.;
-  glo[1] = 0.;
-  glo[2] = 0.;
-  finaldetarot.LocalToMaster(loc, glo);
   //      cout<<"NewAng :: "<<vtnewangle.X()<<" "<<vtnewangle.Y()<<" "<<vtnewangle.Z()<<endl;
   //      cout<<"GLO :: "<<glo[0]<<" "<<glo[1]<<" "<<glo[2]<<endl;
-  TGeoTranslation finaldetatrans(glo[0], glo[1], glo[2]);
+  TGeoTranslation finaldetatrans(detanewpos.X(), detanewpos.Y(), detanewpos.Z());
   TGeoHMatrix  finaldetatransfo;
   finaldetatransfo=finaldetatrans;
   finaldetatransfo*=finaldetarot;
