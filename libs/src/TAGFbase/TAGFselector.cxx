@@ -1649,7 +1649,7 @@ void TAGFselector::CheckPlaneOccupancy()
 	}
 
 	//Print in debug mode
-	if( m_debug > 1 || (m_eventType != 1 && m_eventType != 5))
+	if( m_debug > 1)// || (m_eventType != 1 && m_eventType != 5))
 	{
 		cout << "EVENT::" << gTAGroot->CurrentEventId().EventNumber() << "\tTYPE::" << m_eventType << endl;
 		for(auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
