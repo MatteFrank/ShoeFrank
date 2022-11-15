@@ -21,7 +21,8 @@ IncludeStraight: n
 EnableLocalReco: n
 
 Kalman Mode:       ref
-Tracking Systems Considered:      VT IT MSD TW
+Tracking Systems Considered:    all
+#Tracking Systems Considered:    VT IT MSD TW
 Reverse Tracking:       false
 
 Kalman preselection strategy: Sept2020
