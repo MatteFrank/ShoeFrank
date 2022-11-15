@@ -18,6 +18,7 @@
 #include "TDCEvent.hh"
 #include "DECardEvent.hh"
 #include "DEMSDEvent.hh"
+#include "DEITREvent.hh"
 #include "WDEvent.hh"
 #include "ArduinoEvent.hh"
 

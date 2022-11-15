@@ -196,7 +196,7 @@ Bool_t TAGactDaqReader::Process()
       datDaq->AddFragment(evMSD7);
 
    // ITR
-   const DECardEvent* evITR = static_cast<const DECardEvent*>(fDaqFileReader->getFragmentID(dataITR | 0x30));
+   const DEITREvent* evITR = static_cast<const DEITREvent*>(fDaqFileReader->getFragmentID(dataITR | 0x30));
    if (evITR)
       datDaq->AddFragment(evITR);
    

@@ -247,28 +247,21 @@ void TACAactNtuHit::CreateHistogram(){
    // sprintf(histoname,"stTrigTime");
    // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
    // AddHistogram(fhTrigTime);
-
-   sprintf(histoname,"caTotCharge");
    
-   fhTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
+   fhTotCharge = new TH1F("caTotCharge", "caTotCharge", 400, -0.1, 3.9);
    AddHistogram(fhTotCharge);
 
-   sprintf(histoname,"caChMap");
-
-   fhChannelMap = new TH1F(histoname, histoname, 9, 0, 9);
+   fhChannelMap = new TH1F("caChMap", "caChMap", 9, 0, 9);
    AddHistogram(fhChannelMap);
 
    for(int iCh=0; iCh<9; iCh++) {
-      sprintf(histoname,"caDeltaTime_ch%d", iCh);
-      fhArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
+      fhArrivalTime[iCh]= new TH1F(Form("caDeltaTime_ch%d", iCh), Form("caDeltaTime_ch%d", iCh), 100, -5., 5.);
       AddHistogram(fhArrivalTime[iCh]);
 
-      sprintf(histoname,"caCharge_ch%d", iCh);
-      fhCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 100);
+      fhCharge[iCh]= new TH1F(Form("caCharge_ch%d", iCh), Form("caCharge_ch%d", iCh), 200, -0.1, 100);
       AddHistogram(fhCharge[iCh]);
 
-      sprintf(histoname,"caMaxAmp_ch%d", iCh);
-      fhAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
+      fhAmplitude[iCh]= new TH1F(Form("caMaxAmp_ch%d", iCh), Form("caMaxAmp_ch%d", iCh), 120, -0.1, 1.1);
       AddHistogram(fhAmplitude[iCh]);
    }
 

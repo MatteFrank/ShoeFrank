@@ -92,35 +92,27 @@ void DEITREvent::readData(unsigned int **p1)
    ++p;
    
    if(evtSize != 0) {
-      // skip 4 words ???
-      p += 4;
-      
       // check header
       if (*p != m_itrHeader)
          printf("Error in the event reader %x instead of %x\n", *p, m_itrHeader);
       
       detectorHeader = *p;
-      evtSize++;
       values.push_back(*p);
       
       // 1st board header
       boardHeader = *(++p);
-      evtSize++;
       values.push_back(*p);
       
       // trigger number
       triggerCounter = *(++p);
-      evtSize++;
       values.push_back(*p);
       
       // timestamp
       BCOofTrigger = *(++p);
-      evtSize++;
       values.push_back(*p);
    
       do {
          p++;
-         evtSize++;
          if(*p != m_itrTail)values.push_back(*p);
          
       } while (*p != m_itrTail && p != p_max);

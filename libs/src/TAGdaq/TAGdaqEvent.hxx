@@ -37,6 +37,11 @@ public:
    Int_t                  GetFragmentsN()         const  { return (int)fMapOfFragments.size();   }
    // Get Fragment
    const BaseFragment*    GetFragment(string type);
+   
+   //! return fragment
+   const BaseFragment*    GetFragment(Int_t idx)         { return fListOfFragments[idx];         }
+   //! return class type
+   const Char_t*          GetClassType(Int_t idx) const  { return fListOfClassTypes[idx].data(); }
    // Add fragment
    void                   AddFragment(const BaseFragment* frag);
    // Clear
@@ -49,6 +54,8 @@ private:
    TrgEvent*                         fTrgEvent;        ///< trigger event
    map<string, const BaseFragment*>  fMapOfFragments;  ///< map of fragments
 
+   vector<const BaseFragment*>  fListOfFragments;  ///< list of fragments
+   vector<string>               fListOfClassTypes; ///< list of class types
    ClassDef(TAGdaqEvent,0)
 };
 

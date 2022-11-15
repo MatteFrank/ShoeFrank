@@ -1,15 +1,15 @@
 # Ch. Finck
 #
-project (TPGbase)
+project (TAPLbase)
 #
-MESSAGE("  ${PROJECT_NAME}:")
+MESSAGE("  Ancillary/${PROJECT_NAME}:")
 #
 #
 set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TATOE} ${TAGF} ${TOE_LIBRARIES} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -19,14 +19,15 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( with_dictionnaries
-   TPGpadManager
-   TPGbasePeak
-   TPGpeak1D
-   TPGpeakCreator
-   TPGspectrumPlayer
-   TPGSPlayer
-   TPGspectrumCalib
-   TPGspectrumCalibrator
+   TAGbaseWC
+   TAGbaseWCparMap
+   TAGwaveCatcher
+   TAPLactBaseNtuHit
+   TAPLactNtuHit
+   TAPLntuRaw
+   TAPLntuHit
+   TAPLdigitizer
+   TAPLparGeo
 )
 
 set( without_dictionnaries
@@ -36,23 +37,6 @@ set( without_dictionnaries
 #
 include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${TAG_INCLUDE_DIR})
-include_directories(${TADI_INCLUDE_DIR})
-include_directories(${TADAQ_INCLUDE_DIR})
-include_directories(${TAAPI_INCLUDE_DIR})
-include_directories(${TAST_INCLUDE_DIR})
-include_directories(${TAIR_INCLUDE_DIR})
-include_directories(${TABM_INCLUDE_DIR})
-include_directories(${TAVT_INCLUDE_DIR})
-include_directories(${TAIT_INCLUDE_DIR})
-include_directories(${TAMC_INCLUDE_DIR})
-include_directories(${TAMSD_INCLUDE_DIR})
-include_directories(${TATW_INCLUDE_DIR})
-include_directories(${TACA_INCLUDE_DIR})
-include_directories(${TAED_INCLUDE_DIR})
-include_directories(${TATOE_INCLUDE_DIR})
-include_directories(${TAGF_INCLUDE_DIR})
-include_directories(${TOE_INCLUDE_DIR})
-include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #
 link_directories(${ROOT_LIBRARY_DIR})
