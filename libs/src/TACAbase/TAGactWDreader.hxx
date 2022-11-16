@@ -1,8 +1,7 @@
 #ifndef _TAGactWDreader_HXX
 #define _TAGactWDreader_HXX
 /*!
-  \file
-  \version $Id: TAGactWDreader.hxx,v 1.3 2003/06/15 18:27:04 mueller Exp $
+  \file TAGactWDreader.hxx
   \brief   Declaration of TAGactWDreader.
 */
 /*------------------------------------------+---------------------------------*/
@@ -19,25 +18,23 @@
 #include "TAGbaseWDparMap.hxx"
 #include <TH2F.h>
 
+#define NSAMPLING 1024               ///< define sample
+#define GLB_EVT_HEADER 0xeadebaba    ///< global event header
+#define FILE_HEADER 0x30514457       ///< file header
+#define TIME_HEADER 0x454d4954       ///< time header
+#define BOARD_HEADER 0x00002342      ///< board header
+#define CH_HEADER 0x00003043         ///< channel header
+#define EVT_HEADER 0x52444845        ///< event header
+#define EVT_FOOTER 0xfafefafe        ///< event footer
+#define TRIG_HEADER 0x00002354       ///< trigger header
+#define TRGI_BANK_HEADER 0x49475254  ///< trigger bank header
+#define TGEN_BANK_HEADER 0x4e454754  ///< trigger number bank header
+#define TRGC_BANK_HEADER 0x43475254  ///< trigger counter bank header
+
+#define ARDUINO_HEADER 0x00463730    ///< Arduino event header
+
 class WDEvent;
 class ArduinoEvent;
-
-
-#define NSAMPLING 1024
-#define GLB_EVT_HEADER 0xeadebaba
-#define FILE_HEADER 0x30514457
-#define TIME_HEADER 0x454d4954
-#define BOARD_HEADER 0x00002342
-#define CH_HEADER 0x00003043
-#define EVT_HEADER 0x52444845
-#define EVT_FOOTER 0xfafefafe
-#define TRIG_HEADER 0x00002354
-#define TRGI_BANK_HEADER 0x49475254
-#define TGEN_BANK_HEADER 0x4e454754
-#define TRGC_BANK_HEADER 0x43475254
-
-#define ARDUINO_HEADER 0x00463730
-
 class TAGactWDreader : public TAGaction {
 
 public:
@@ -58,30 +55,36 @@ public:
    Int_t             Open(const TString &name);
    Int_t             Close();
    Int_t             UpdateFile();
-   inline void       SetMaxFiles(Int_t value) {fMaxFiles = value;}
-   inline void       SetInitName(TString name) {
-                        fInitName = name;
-                        fCurrName = name;
-                     }  
+   
+   //! Set maximum number of files
+   void              SetMaxFiles(Int_t value)  { fMaxFiles = value;}
+   //! Set initial names
+   void              SetInitName(TString name) { fInitName = name; fCurrName = name; }
   
 private:
-   TAGdataDsc*     fpDatDaq;          // input data dsc
-   TAGdataDsc*     fpStWd;            // output data dsc
-   TAGdataDsc*     fpTwWd;            // output data dsc
-   TAGdataDsc*     fpCaWd;            // output data dsc
-   TAGparaDsc*     fpWDTim;           // parameter dsc
-   TAGparaDsc*     fpWDMap;           // parameter dsc
-   TAGparaDsc*     fpCAMap;           // parameter dsc
-   TAGdataDsc*     fpWDtrigInfo;      // output data dsc
+   TAGdataDsc*     fpDatDaq;          ///< input data dsc
+   TAGdataDsc*     fpStWd;            ///< output data dsc
+   TAGdataDsc*     fpTwWd;            ///< output data dsc
+   TAGdataDsc*     fpCaWd;            ///< output data dsc
+   TAGparaDsc*     fpWDTim;           ///< parameter dsc
+   TAGparaDsc*     fpWDMap;           ///< parameter dsc
+   TAGparaDsc*     fpCAMap;           ///< parameter dsc
+   TAGdataDsc*     fpWDtrigInfo;      ///< output data dsc
 
-   TString         fInitName;
-   TString         fCurrName;
-   FILE            *fWDstream;
-   Int_t           fEventsN;
-   Bool_t          fgStdAloneFlag;
-   Int_t           fProcFiles;
-   Int_t           fMaxFiles;        
+   TString         fInitName;         ///< init file name
+   TString         fCurrName;         ///< current file name
+   FILE*           fWDstream;         ///< FILE descriptor
+   Int_t           fEventsN;          ///< number of events
+   Bool_t          fgStdAloneFlag;    ///< standalone DAQ flag
+   Int_t           fProcFiles;        ///< Process file
+   Int_t           fMaxFiles;         ///< maximum number of files
 
+private:
+   vector<TWaveformContainer*>             fSTwaves;  ///< wave form container vector for ST
+   vector<TWaveformContainer*>             fTWwaves;  ///< wave form container vector for TW
+   vector<TWaveformContainer*>             fCAwaves;  ///< wave form container vector for CA
+   map<pair<int,int>, TWaveformContainer*> fCLKwaves; ///< wave form container map for trigger
+   double*                                 fTempCA;   ///< temp container for CA
   
 private:
    Int_t          DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p_CAmap);
@@ -96,13 +99,6 @@ private:
    double         ComputeJitter(TWaveformContainer*);
    void           SavePlot(TWaveformContainer *w, string type);
  
-private:
-   double  *                   fTempCA;
-   vector<TWaveformContainer*> fSTwaves;
-   vector<TWaveformContainer*> fTWwaves;
-   vector<TWaveformContainer*> fCAwaves;
-   map<pair<int,int>, TWaveformContainer*> fCLKwaves;
-
    ClassDef(TAGactWDreader,0)
 };
 

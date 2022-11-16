@@ -16,7 +16,7 @@ const int MAXITR   = 300;    ///< Maximum hits in ITR
 const int MAXMSD   = 1000;   ///< Maximum hits in MSD
 const int MAXSCN   = 5000;   ///< Maximum hits in TW
 const int MAXCAL   = 6000;   ///< Maximum hits in CAL
-const int MAXCROSS = 10000;  ///< Maximum hits in crossing region
+const int MAXCROSS = 20000;  ///< Maximum hits in crossing region
 
 /*!
  \struct EVENT_STRUCT

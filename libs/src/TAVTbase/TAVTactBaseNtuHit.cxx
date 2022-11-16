@@ -9,6 +9,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
+#include "TAVTparMap.hxx"
 
 #include "TAVTactBaseNtuHit.hxx"
 
@@ -36,15 +37,14 @@ TAVTactBaseNtuHit::TAVTactBaseNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGp
    AddPara(pConfig, "TAVTparConf");
    
    TAVTparGeo* parGeo = (TAVTparGeo*) fpGeoMap->Object();
-   fNSensors = parGeo->GetSensorsN();
    
-   for (Int_t i = 0; i < fNSensors; ++i) {
+   for (Int_t i = 0; i < parGeo->GetSensorsN(); ++i) {
       fPrevEventNumber[i]   = 0;
       fPrevTriggerNumber[i] = 0;
       fPrevTimeStamp[i]     = 0;
    }
    
-   Int_t size = parGeo->GetSensorsN()*sizeof(MI26_FrameRaw)*4;
+   Int_t size = parGeo->GetSensorsN()*(sizeof(MI26_FrameRaw)+4);
    fData.resize(size);
 }
 
@@ -61,27 +61,28 @@ Bool_t TAVTactBaseNtuHit::DecodeEvent()
    fIndex     = 0;
    MI26_FrameRaw* data = new MI26_FrameRaw;
 
-   
-   TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
-   
+   TAVTparMap*  pParMap = (TAVTparMap*)  fpParMap->Object();
+
    // Vertex header
    if (!GetVtxHeader()) return false;
    
    // loop over boards
-   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < pParMap->GetSensorsN(); ++i) {
       
+      Int_t planeId = pParMap->GetPlaneId(i);
+
       if (!GetSensorHeader(i)) return false;
       
       ResetFrames();
       
       // loop over frame (3 max)
       while (GetFrame(i, data)) {
-         DecodeFrame(i, data);
+         DecodeFrame(planeId, data);
       }
       
-      fPrevEventNumber[i]   = fEventNumber;
-      fPrevTriggerNumber[i] = fTriggerNumber;
-      fPrevTimeStamp[i]     = fTimeStamp;
+      fPrevEventNumber[planeId]   = fEventNumber;
+      fPrevTriggerNumber[planeId] = fTriggerNumber;
+      fPrevTimeStamp[planeId]     = fTimeStamp;
    }
    
    if(FootDebugLevel(3)) {
@@ -125,7 +126,7 @@ Bool_t TAVTactBaseNtuHit::GetVtxHeader()
 Bool_t TAVTactBaseNtuHit::GetSensorHeader(Int_t iSensor)
 {
    do {
-      if (fData[fIndex] == GetKeyHeader(iSensor)) {
+      if (fData[fIndex] == GetSensorKey(iSensor)) {
          fEventNumber   = fData[++fIndex];
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];
@@ -151,6 +152,8 @@ Bool_t TAVTactBaseNtuHit::GetSensorHeader(Int_t iSensor)
 //! \param[in] data Mimosa sensor data structure 
 Bool_t TAVTactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
 {
+   Int_t startIdx = fIndex;
+
    // check frame header
    if (fData[++fIndex] ==  GetFrameHeader()) {
       memcpy(data, &fData[fIndex], sizeof(MI26_FrameRaw));
@@ -167,14 +170,14 @@ Bool_t TAVTactBaseNtuHit::GetFrame(Int_t iSensor, MI26_FrameRaw* data)
          break;
       }
       
-      if (fData[fIndex] == GetKeyTail(iSensor)) {
+      if (fData[fIndex] == GetSensorTail(iSensor)) {
          fIndex--;
          break;
       }
       
    } while (fIndex++ < fEventSize);
    
-   fDataSize = fIndex - fgkFrameHeaderSize;
+   fDataSize = fIndex - fgkFrameHeaderSize - startIdx;
 
    if(FootDebugLevel(3)) {
       printf("%08x\n", data->Header);

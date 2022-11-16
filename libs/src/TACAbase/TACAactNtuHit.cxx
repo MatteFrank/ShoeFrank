@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TACAactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \file TACAactNtuHit.cxx
   \brief   Implementation of TACAactNtuHit.
 */
 
@@ -9,15 +8,21 @@
 #include "TACAactNtuHit.hxx"
 
 /*!
-  \class TACAactNtuHit TACAactNtuHit.hxx "TACAactNtuHit.hxx"
+  \class TACAactNtuHit
   \brief Action to create CA hits from RAW data. **
 */
 
+//! Class Imp
 ClassImp(TACAactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] p_datraw raw data input container descriptor
+//! \param[out] p_nturaw data output container descriptor
+//! \param[in] p_parmap mapping parameter descriptor
+//! \param[in] p_parcal calibration parameter descriptor
 TACAactNtuHit::TACAactNtuHit(const char* name,
                              TAGdataDsc* p_datraw,
                              TAGdataDsc* p_nturaw,
@@ -28,7 +33,7 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
     fpNtuRaw(p_nturaw),
     fpParMap(p_parmap),
     fpParCal(p_parcal),
-    // this should be read from calibration file for each crystal ??
+    // this should be read from calib file for each crystal ??
     fTcorr1Par1(-0.0011),
     fTcorr1Par0(0.167),
     fTcorr2Par1(4.94583e-03),
@@ -56,20 +61,18 @@ TACAactNtuHit::~TACAactNtuHit()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-
-Bool_t TACAactNtuHit::Action() {
-
+Bool_t TACAactNtuHit::Action()
+{
    TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
 
    int nhit = p_datraw->GetHitsN();
 
-   Double_t totCharge = 0;
-
    int ch_num, bo_num;
 
    int nCry = p_parmap->GetCrystalsN();
+   Double_t totCharge = 0;
 
    for (int ih = 0; ih < nhit; ++ih) {
       TACArawHit *aHi = p_datraw->GetHit(ih);
@@ -80,43 +83,40 @@ Bool_t TACAactNtuHit::Action() {
       Double_t timeOth = aHi->GetTimeOth();
       Double_t charge  = aHi->GetCharge();
       Double_t amplitude  = aHi->GetAmplitude();
-      Double_t tempADC  = aHi->GetTemperature(); // in ADC count
+      // Double_t tempADC  = aHi->GetTemperature(); // in ADC count
+      //Double_t temp = ADC2Temp(tempADC);
 
       // here needed mapping file
       Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
-      if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation 
-         Error("Action", " --- Not well mapped WD vs crystal ID. board: %d  ch: %d -> crysId %d", bo_num, ch_num, crysId);
+       if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation 
+        Error("Action", " --- Not well mapped WD vs crystal ID. board: %d  ch: %d -> crysId %d", bo_num, ch_num, crysId);
          continue;
       }
-
-      double temp = ADC2Temp(tempADC);
 
       Double_t type = 0; // I define a fake type (I do not know what it really is...) (gtraini)
 
       // Temperature correction
-      Double_t charge_tcorr = GetTemperatureCorrection(charge, temp, crysId);
-
+      //Double_t charge_tcorr = GetTemperatureCorrection(charge, temp, crysId);
+      //AS:: we wait for a proper integration of T inside the DAQ
+      Double_t charge_tcorr = charge;
       Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
-
       totCharge += charge_equalis;
-
       Double_t energy = GetEnergy(charge_equalis, crysId);
+      Double_t tof    = GetTime(time, crysId);
 
-      //Double_t tof    = GetTime(time, crysId);
-
-      TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time, type);
+      TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time,type);
       createdhit->SetValid(true);
   
       if (ValidHistogram()) {
-         if (crysId < 9) {
+         if (crysId < 9) { // Only 9 histograms
             fhCharge[crysId]->Fill(energy);
             fhChannelMap->Fill(crysId);
             fhAmplitude[crysId]->Fill(amplitude);
-         } 
-
-         fhTotCharge->Fill(totCharge);
+         }
       }
    }
+   if (ValidHistogram()) fhTotCharge->Fill(totCharge);
+
 
    fpNtuRaw->SetBit(kValid);
 
@@ -124,7 +124,9 @@ Bool_t TACAactNtuHit::Action() {
 }
 
 // --------------------------------------------------------------------------------------
-Double_t TACAactNtuHit::ADC2Temp(Double_t adc) {
+//! Convert ADC counts from sensor to Temperature to Celsius
+Double_t TACAactNtuHit::ADC2Temp(Double_t adc) 
+{
 
    // the NTC (negative temperature coefficient) sensor
 
@@ -145,6 +147,7 @@ Double_t TACAactNtuHit::ADC2Temp(Double_t adc) {
 }
 
 // --------------------------------------------------------------------------------------
+//! Set functions
 void  TACAactNtuHit::SetTemperatureFunctions()
 {
    // Angular slope as function of amplitude/charge for temp fT1
@@ -155,6 +158,7 @@ void  TACAactNtuHit::SetTemperatureFunctions()
 }
 
 // --------------------------------------------------------------------------------------
+//! Set parameters functions
 void  TACAactNtuHit::SetParFunction(/* Int_t  crysId*/)
 {
    // if we manage to have a set of calibration for each crystal
@@ -169,6 +173,10 @@ void  TACAactNtuHit::SetParFunction(/* Int_t  crysId*/)
 }
 
 // --------------------------------------------------------------------------------------
+//! Correlation temperature function
+//!
+//! \param[in] x input vector
+//! \param[in] par parameter vector
 Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
 {
    // Angular slope as function of amplitude/charge
@@ -178,22 +186,16 @@ Double_t TACAactNtuHit::TemperatureCorrFunction(Double_t* x, Double_t* par)
    return m0;
 }
 
-
-
 //------------------------------------------+-----------------------------------
+//! Return temperature correlation
+//!
+//! \param[in] charge input charge
+//! \param[in] temp input temperature
+//! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp, Int_t  crysId)
 {
-
-   // Old. Each run temp was written on calib file
-   // TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
-   // Double_t T0 = parcal->GetTemperatureCry(crysId); 
-
    // Current temperature from sensor for crysId
    Double_t T0 = temp;
-
-   // Set temp parameter per crysID (for now, it is the same for all crystal)
-   // fTcorr1->SetParFunction(crysId);
-   // fTcorr2->SetParFunction(crysId);
 
    Double_t m1 = fTcorr1->Eval(charge);
    Double_t m2 = fTcorr2->Eval(charge);
@@ -203,13 +205,15 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp,
    Double_t delta = (fT1 - T0) * m0;
 
    Double_t charge_tcorr = charge + delta;
- 
-   return charge_tcorr;
 
+   return charge_tcorr;
 }
 
-
 //------------------------------------------+-----------------------------------
+//! Returns equalized correction
+//!
+//! \param[in] charge_tcorr input charge correlation
+//! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
    TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
@@ -221,6 +225,10 @@ Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  
 }
 
 //------------------------------------------+-----------------------------------
+//! Get calibrated energy
+//!
+//! \param[in] rawenergy raw energy
+//! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
 {
    TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
@@ -236,6 +244,10 @@ Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
 }
 
 //------------------------------------------+-----------------------------------
+//! Get calibrated time
+//!
+//! \param[in] RawTime raw time
+//! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 {
   // TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
@@ -254,8 +266,8 @@ Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 
 //------------------------------------------+-----------------------------------
 //! Histograms
-
-void TACAactNtuHit::CreateHistogram() {
+void TACAactNtuHit::CreateHistogram()
+{
 
    DeleteHistogram();
 
@@ -270,31 +282,23 @@ void TACAactNtuHit::CreateHistogram() {
    // sprintf(histoname,"stTrigTime");
    // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
    // AddHistogram(fhTrigTime);
-
-   sprintf(histoname,"caTotCharge");
    
-   fhTotCharge = new TH1F(histoname, histoname, 400, -0.1, 3.9);
+   fhTotCharge = new TH1F("caTotCharge", "caTotCharge", 400, -0.1, 3.9);
    AddHistogram(fhTotCharge);
 
-   sprintf(histoname,"caChMap");
-
-   fhChannelMap = new TH1F(histoname, histoname, 9, 0, 9);
+   fhChannelMap = new TH1F("caChMap", "caChMap", 9, 0, 9);
    AddHistogram(fhChannelMap);
 
    for(int iCh=0; iCh<9; iCh++) {
-      sprintf(histoname,"caDeltaTime_ch%d", iCh);
-      fhArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -5., 5.);
+      fhArrivalTime[iCh]= new TH1F(Form("caDeltaTime_ch%d", iCh), Form("caDeltaTime_ch%d", iCh), 100, -5., 5.);
       AddHistogram(fhArrivalTime[iCh]);
 
-      sprintf(histoname,"caCharge_ch%d", iCh);
-      fhCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 100);
+      fhCharge[iCh]= new TH1F(Form("caCharge_ch%d", iCh), Form("caCharge_ch%d", iCh), 200, -0.1, 100);
       AddHistogram(fhCharge[iCh]);
 
-      sprintf(histoname,"caMaxAmp_ch%d", iCh);
-      fhAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
+      fhAmplitude[iCh]= new TH1F(Form("caMaxAmp_ch%d", iCh), Form("caMaxAmp_ch%d", iCh), 120, -0.1, 1.1);
       AddHistogram(fhAmplitude[iCh]);
    }
 
    SetValidHistogram(kTRUE);
-
 }

@@ -14,12 +14,16 @@ MC Particle Types: H1 H2 H3 He3 He4 He6 He8  Li6 Li7 Li8 Li9  Be7 Be9 Be10 Be11 
 
 Genfit Event Display ON: n
 
-############	Kalman Filter Control Parameters	################
+
+############   Global Reconstruction Parameters   ################
 
 IncludeKalman:   n
 IncludeTOE:      n
 IncludeStraight: n
 EnableLocalReco: n
+
+
+############   Kalman Filter Control Parameters   ################
 
 Kalman Mode:       ref
 Tracking Systems Considered:      VT IT MSD TW
@@ -35,12 +39,24 @@ Kalman Particle Types:	C
 
 ############	END - Kalman Filter Control Parameters	################
 
+############   TOE Control Parameters   ################
+
+TGT Tag:        C
+VTX Tag Cuts:  15  21
+IT Tag Cuts:   73  51  77  61
+MSD Tag Cuts:   9   6   6   4  4  2
+MSD2 Tag Cuts: 25
+TOF Tag Cuts:  12  15
+
+############   END - TOE Control Parameters   ################
+
 ############   Options for reconstruction   ################
 
 EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
-
+EnableMsdTrack:      n
+EnableMsdPed:        n
 EnableSaveHits:      n
 EnableRootObject:    y
 EnableTWZmc:         n

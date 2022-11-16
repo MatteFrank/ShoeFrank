@@ -24,14 +24,6 @@ using namespace std;
 #include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
 
-#include "FieldManager.h"
-#include "MaterialEffects.h"
-#include "ConstField.h"
-#include "Track.h"
-#include "WireMeasurement.h"
-#include "EventDisplay.h"
-#include "TDatabasePDG.h"
-#include "DAF.h"
 #include <TDecompChol.h>
 
 #include "TF1.h"
@@ -39,7 +31,6 @@ using namespace std;
 #include "TH2.h"
 #include "TProfile.h"
 #include "TGeoManager.h"
-#include "TGeoMaterialInterface.h"
 
 #include "Math/Minimizer.h"
 #include "TFitter.h"

@@ -71,7 +71,7 @@ G4LogicalVolume* TCTWgeometryConstructor::Construct()
    G4Box* boxTw = new G4Box("boxMag", 0.5*fSizeBoxTw.X(), 0.5*fSizeBoxTw.Y(), 0.5*fSizeBoxTw.Z());
    
    fBoxLog = new G4LogicalVolume(boxTw, vacuum, "boxTwoLog");
-   fBoxLog->SetVisAttributes(G4VisAttributes::Invisible);
+   fBoxLog->SetVisAttributes(G4VisAttributes::GetInvisible());
    
    Float_t height = fpParGeo->GetBarHeight()*cm;
    Float_t width  = fpParGeo->GetBarWidth()*cm;

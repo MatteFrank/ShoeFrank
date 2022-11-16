@@ -4,6 +4,11 @@
 //                                                        //
 ////////////////////////////////////////////////////////////
 
+/*!
+ \file TAMSDcluster.cxx
+ \brief  Implementation of TAMSDcluster
+ */
+
 #include "TAMSDcluster.hxx"
 #include "TAMSDhit.hxx"
 #include "TAMSDparGeo.hxx"
@@ -12,10 +17,18 @@
 
 #include <math.h>
 
+/*!
+ \class TAMSDcluster
+ \brief simple container class for tracks with the associated clusters
+ 
+ \author Ch. Finck
+ */
+
+//! Class Imp
 ClassImp(TAMSDcluster) // Description of a cluster
 
 //______________________________________________________________________________
-//  
+//! Detector
 TAMSDcluster::TAMSDcluster()
 :  TAGcluster(),
    fPositionF(0.),
@@ -34,7 +47,7 @@ TAMSDcluster::TAMSDcluster()
 }
 
 //______________________________________________________________________________
-//
+//! Setup clones
 void TAMSDcluster::SetupClones()
 {
    fListOfStrips = new TClonesArray("TAMSDhit");
@@ -42,7 +55,9 @@ void TAMSDcluster::SetupClones()
 }
 
 //______________________________________________________________________________
-//  
+//! Copy constructor
+//!
+//! \param[in] cluster cluster to copy
 TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
 :  TAGcluster(cluster),
    fPositionF(cluster.fPositionF),
@@ -60,16 +75,17 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
 }
 
 //______________________________________________________________________________
-//  
+//! default destructor
 TAMSDcluster::~TAMSDcluster()
 { 
    // TAMSDcluster default destructor
    delete fListOfStrips;
 }
 
-
 //______________________________________________________________________________
-//  
+//! Add strip
+//!
+//! \param[in] strip strip to add
 void TAMSDcluster::AddStrip(TAMSDhit* strip)
 {
    for (Int_t k = 0; k < strip->GetMcTracksN(); ++k) {
@@ -84,7 +100,9 @@ void TAMSDcluster::AddStrip(TAMSDhit* strip)
 }
 
 //______________________________________________________________________________
-//
+//! Set global cluster positon
+//!
+//! \param[in] posGlo global position
 void TAMSDcluster::SetPositionG(TVector3& posGlo)
 {
    fPosition2.SetXYZ(posGlo.X(), posGlo.Y(), posGlo.Z());
@@ -96,7 +114,9 @@ void TAMSDcluster::SetPositionG(TVector3& posGlo)
 }
 
 //______________________________________________________________________________
-//
+//! Get cluster strip
+//!
+//! \param[in] idx index strip
 TAMSDhit* TAMSDcluster::GetStrip(Int_t idx)
 {
    if (idx >=0 && idx < fListOfStrips->GetEntries())
@@ -106,7 +126,9 @@ TAMSDhit* TAMSDcluster::GetStrip(Int_t idx)
 }
 
 //______________________________________________________________________________
-//
+//! Set cluster positon 1D
+//!
+//! \param[in] pos position
 void TAMSDcluster::SetPositionF(Float_t pos)
 {
    fPositionF = pos;
@@ -117,28 +139,36 @@ void TAMSDcluster::SetPositionF(Float_t pos)
 }
 
 //______________________________________________________________________________
-//
+//! Set cluster positon error 1D
+//!
+//! \param[in] pos position error
 void TAMSDcluster::SetPosErrorF(Float_t pos)
 {
    fPosErrorF = pos;
 }
 
 //______________________________________________________________________________
-//
+//! Set COG position
+//!
+//! \param[in] pos cog position
 void TAMSDcluster::SetCog(Float_t pos)
 {
    fCog = pos;
 }
 
 //______________________________________________________________________________
-//
+//! Set eta
+//!
+//! \param[in] eta eta value
 void TAMSDcluster::SetEta(Float_t eta)
 {
    fEtaValue = eta;
 }
 
 //______________________________________________________________________________
-//
+//! Set plane view
+//!
+//! \param[in] v view value
 void TAMSDcluster::SetPlaneView(Int_t v)
 {
    fPlaneView = v;
@@ -146,11 +176,11 @@ void TAMSDcluster::SetPlaneView(Int_t v)
 }
 
 //______________________________________________________________________________
-//
-Float_t TAMSDcluster::Distance(TAMSDcluster *aClus) {
-   // Return the distance between this clusters and the pointed cluster
-   // regardless of the plane
-   
+//! Return the distance between this clusters and the pointed cluster regardless of the plane
+//!
+//! \param[in] aClus a given cluster
+Float_t TAMSDcluster::Distance(TAMSDcluster* aClus)
+{
    TVector3 clusPosition( aClus->GetPositionG() );
    
    // Now compute the distance beetween the two hits
@@ -163,7 +193,7 @@ Float_t TAMSDcluster::Distance(TAMSDcluster *aClus) {
 }
 
 //______________________________________________________________________________
-//
+//! Get address (first strip position)
 Float_t TAMSDcluster::GetAddress() const
 {
    const TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(0);

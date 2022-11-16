@@ -6,10 +6,13 @@
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TAVTactBaseNtuClusterMT.hxx"
+#include <thread>
+#include <vector>
+
+#include "TAVTactBaseClusterMT.hxx"
 
 class TClonesArray;
-class TAITactNtuClusterMT : public TAVTactBaseNtuClusterMT {
+class TAITactNtuClusterMT : public TAVTactBaseClusterMT {
    
 public:
    explicit  TAITactNtuClusterMT(const char* name    = 0,
@@ -29,12 +32,21 @@ public:
    // Get list of pixels
    virtual TClonesArray* GetListOfPixels(Int_t sensorId);
 
+   // Thread start
+   Bool_t   ThreadStart(Int_t iSensor);
+
+   // Thread join
+   Bool_t   ThreadJoin();
+   
+   // Thread stop
+   Bool_t   ThreadStop();
+   
 private:
    TAGdataDsc*     fpNtuRaw;		  ///< input data dsc
    TAGdataDsc*     fpNtuClus;		  ///< output data dsc
    Bool_t          fOk;            ///< ok flag
 
-   pthread_t*      fThread[4];     ///< thread pointer
+   vector<thread>  fThreads;       ///< thread array
 
 private:
    // Create cluster

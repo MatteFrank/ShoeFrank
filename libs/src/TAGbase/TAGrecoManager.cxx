@@ -70,7 +70,7 @@ TAGrecoManager::TAGrecoManager( const TString expName )
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
   fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
   fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fEnableTWRateSmearMC(false),
-  fDoCalibTW(false),      fDoCalibBM(false),        fEnableRegionMc(false),
+  fDoCalibTW(false),       fDoCalibBM(false),    fEnableRegionMc(false), fEnableMsdTrack(false), fEnableItrTrack(false),
   fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
   fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
   fIncludeKalman(false),   fIncludeTOE(false),   fIncludeStraight(false)
@@ -338,6 +338,96 @@ void TAGrecoManager::FromFile()
         printf("\n");
     }
     
+     if (key.Contains("TGT Tag:")) {
+        string tgtstring = item.Data();
+        fTgtTag.push_back(tgtstring);
+
+        parTools->ReadItem(key, item);
+        fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
+
+        if (key.Contains("VTX Tag Cuts:")) {
+           istringstream formulasStream( item.Data() );
+           size_t tmp = 0;
+          if (fDebugLevel > 0)
+              printf("VTX Tag Cuts: ");
+           while ( formulasStream >> tmp ) {
+              fVtxTagCuts[tgtstring].push_back(tmp);
+              if (fDebugLevel > 0)
+                 printf(" %lu ", tmp);
+           }
+           if (fDebugLevel > 0)
+              printf("\n");
+        }
+        
+        parTools->ReadItem(key, item);
+        fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
+
+        if (key.Contains("IT Tag Cuts:")) {
+           istringstream formulasStream( item.Data() );
+           size_t tmp = 0;
+           if (fDebugLevel > 0)
+              printf("IT Tag Cuts: ");
+           while ( formulasStream >> tmp ) {
+              fItrTagCuts[tgtstring].push_back(tmp);
+              if (fDebugLevel > 0)
+                 printf(" %lu ", tmp);
+           }
+           if (fDebugLevel > 0)
+              printf("\n");
+        }
+        
+        parTools->ReadItem(key, item);
+        fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
+
+        if (key.Contains("MSD Tag Cuts:")) {
+           istringstream formulasStream( item.Data() );
+           size_t tmp = 0;
+           if (fDebugLevel > 0)
+              printf("MSD Tag Cuts: ");
+           while ( formulasStream >> tmp ) {
+              fMsdTagCuts[tgtstring].push_back(tmp);
+              if (fDebugLevel > 0)
+                 printf(" %lu ", tmp);
+           }
+           if (fDebugLevel > 0)
+              printf("\n");
+        }
+        
+        parTools->ReadItem(key, item);
+        fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
+
+        if (key.Contains("MSD2 Tag Cuts:")) {
+           istringstream formulasStream( item.Data() );
+           size_t tmp = 0;
+           if (fDebugLevel > 0)
+              printf("MSD2 Tag Cuts: ");
+           while ( formulasStream >> tmp ) {
+              fMsd2TagCuts[tgtstring].push_back(tmp);
+              if (fDebugLevel > 0)
+                 printf(" %lu ", tmp);
+           }
+           if (fDebugLevel > 0)
+              printf("\n");
+        }
+        
+        parTools->ReadItem(key, item);
+        fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
+
+        if (key.Contains("TOF Tag Cuts:")) {
+           istringstream formulasStream( item.Data() );
+           size_t tmp = 0;
+           if (fDebugLevel > 0)
+              printf("TOF Tag Cuts: ");
+           while ( formulasStream >> tmp ) {
+              fTwTagCuts[tgtstring].push_back(tmp);
+              if (fDebugLevel > 0)
+                 printf(" %lu ", tmp);
+           }
+           if (fDebugLevel > 0)
+              printf("\n");
+        }
+     }
+     
     if (key.Contains("EnableTree:") ) {
       if ( item.Contains("y"))  fEnableTree = true;
       else                      fEnableTree = false;
@@ -416,6 +506,27 @@ void TAGrecoManager::FromFile()
         printf("EnableRegionMc: %d\n", fEnableRegionMc);
     }
     
+    if (key.Contains("EnableMsdTrack:")  ) {
+       if ( item.Contains("y"))  fEnableMsdTrack = true;
+       else                      fEnableMsdTrack = false;
+       if (fDebugLevel > 0)
+          printf("EnableMsdTrack: %d\n", fEnableMsdTrack);
+    }
+     
+    if (key.Contains("EnableMsdPed:")  ) {
+       if ( item.Contains("y"))  fEnableMsdPed = true;
+       else                      fEnableMsdPed = false;
+       if (fDebugLevel > 0)
+          printf("EnableMsdPed: %d\n", fEnableMsdPed);
+    }
+     
+    if (key.Contains("EnableItrTrack:")  ) {
+       if ( item.Contains("y"))  fEnableItrTrack = true;
+       else                      fEnableItrTrack = false;
+       if (fDebugLevel > 0)
+          printf("EnableItrTrack: %d\n", fEnableItrTrack);
+    }
+     
     if (key.Contains("IncludeDI:") ) {
       if ( item.Contains("y"))  fIncludeDI = true;
       else                      fIncludeDI = false;

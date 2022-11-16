@@ -1,8 +1,7 @@
 #ifndef _TASTactNtuHitMC_HXX
 #define _TASTactNtuHitMC_HXX
 /*!
-  \file
-  \version $Id: TASTactNtuHitMC.hxx,v 1.4 2003/06/09 18:17:14 mueller Exp $
+  \file TASTactNtuHitMC.hxx
   \brief   Declaration of TASTactNtuHitMC.
 */
 /*------------------------------------------+---------------------------------*/

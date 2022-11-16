@@ -1,6 +1,12 @@
 #ifndef _TACAdigitizer_HXX
 #define _TACAdigitizer_HXX
 
+/*!
+ \file TACAdigitizer.hxx
+ \brief   Declaration of TACAdigitizer.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <map>
 #include "TAGbaseDigitizer.hxx"
 #include "TACAparCal.hxx"
@@ -27,31 +33,35 @@ public:
   
    Float_t        GetResEnergy(Float_t edep);
    Double_t       ResEnergy(Double_t* x, Double_t* par);
+   //! Get energy resolution function
    TF1*           GetFuncResE()    const  { return fDeResE;     }
- 
+   //! Get current hit
    TACAhit*       GetCurrentHit()         { return fCurrentHit; }
+   //! Clear map
    void           ClearMap()              { fMap.clear();       }
 
 public:
+   //! Get energy threshold
    static Float_t GetThreshold()          { return fgThreshold; }
+   //! Set energy threshold
    static void    SetThreshold(Float_t t) { fgThreshold = t;    }
 
 private:
-   TACAntuHit*   fpNtuRaw;
-   TF1*          fDeResE;
+   TACAntuHit*   fpNtuRaw;      ///< input raw data container
+   TF1*          fDeResE;       ///< histogram of resolution energy
    
-   Float_t       fResPar0;
-   Float_t       fResErrPar0;
-   Float_t       fResPar1;
-   Float_t       fResErrPar1;
-   Float_t       fResPar2;
-   Float_t       fResErrPar2;
+   Float_t       fResPar0;      ///< resolution energy parameter 0
+   Float_t       fResErrPar0;   ///< resolution energy parameter error 0
+   Float_t       fResPar1;      ///< resolution energy parameter 1
+   Float_t       fResErrPar1;   ///< resolution energy parameter error 1
+   Float_t       fResPar2;      ///< resolution energy parameter 2
+   Float_t       fResErrPar2;   ///< resolution energy parameter error 2
    
-   TACAhit*   fCurrentHit;
-   map<int, TACAhit*> fMap; //! map for pilepup
+   TACAhit*      fCurrentHit;   ///< current hit
+   map<int, TACAhit*> fMap;     //! map for pilepup
 
 private:
-   static Float_t fgThreshold;
+   static Float_t fgThreshold;  ///< default threshold value
 
 };
 #endif

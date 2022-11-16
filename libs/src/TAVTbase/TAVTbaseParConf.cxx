@@ -58,6 +58,8 @@ Bool_t TAVTbaseParConf::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
    
+   Info("FromFile()", "Open file %s for configuration\n", name.Data());
+
    // read position algorithme
    ReadItem(fAnalysisParameter.TracksMaximum);  
    if(FootDebugLevel(1))

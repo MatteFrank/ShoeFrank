@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TACAactNtuHitMC.cxx,v 1.9 2003/06/22 10:35:48 mueller Exp $
+  \file TACAactNtuHitMC.cxx
   \brief   Implementation of TACAactNtuHitMC.
 */
 #include "TVector3.h"
@@ -22,15 +21,24 @@
 #include "TAMCflukaParser.hxx"
 
 /*!
-  \class TACAactNtuHitMC TACAactNtuHitMC.hxx "TACAactNtuHitMC.hxx"
+  \class TACAactNtuHitMC
   \brief NTuplizer for Calo raw hits. **
 */
 
+//! Class Imp
 ClassImp(TACAactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
+//!
+//! \param[in] name action name
+//! \param[in] p_ntuMC MC input container descriptor
+//! \param[in] p_ntuEve MC particle input container descriptor
+//! \param[out] p_nturaw raw data output container descriptor
+//! \param[in] p_geomap geometry parameter descriptor
+//! \param[in] p_calmap calibration parameter descriptor
+//! \param[in] p_geomapG beam geometry parameter descriptor
+//! \param[in] evStr old Fluka container descriptor
 TACAactNtuHitMC::TACAactNtuHitMC(const char* name,  TAGdataDsc* p_ntuMC, TAGdataDsc* p_ntuEve,
                                  TAGdataDsc* p_nturaw, TAGparaDsc* p_geomap,  TAGparaDsc* p_calmap, TAGparaDsc* p_geomapG, EVENT_STRUCT* evStr)
   : TAGaction(name, "TACAactNtuHitMC - NTuplize CA raw data"),
@@ -63,7 +71,7 @@ void TACAactNtuHitMC::CreateHistogram()
    DeleteHistogram();
 
    TACAparGeo* parGeo   = (TACAparGeo*) fpGeoMap->Object();
-   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();;
+   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();
 
    TGeoElementTable table;
    table.BuildDefaultElements();
@@ -124,8 +132,8 @@ void TACAactNtuHitMC::CreateHistogram()
    AddHistogram(fpHisRange);
 
    // 7
-   fpHisNeutron_dE = new TH1F("caDeNeutron", "En Dep Neutron; En [GeV];",400, 0., 0.1);
-   AddHistogram(fpHisNeutron_dE);
+   fpHisNeutrondE = new TH1F("caDeNeutron", "En Dep Neutron; En [GeV];",400, 0., 0.1);
+   AddHistogram(fpHisNeutrondE);
 
    // 8
    // fpHisParticleVsRegion = new TH2I("caParticleVsRegion",
@@ -168,22 +176,22 @@ void TACAactNtuHitMC::CreateHistogram()
 
    // 12-20
    // for(int z=0; z<nNucleonBeam/2; z++) {
-   for(int z=0; z<nNucleonBeam; z++) {
+   for(int z=0; z<=nNucleonBeam; z++) {
       TGeoElement * elem = table.GetElement(z+1);
-      fpHisIon_Ek[z] = new TH1F(Form( "caDeIonSpectrum%d", z+1),
+      fpHisIonEk[z] = new TH1F(Form( "caDeIonSpectrum%d", z+1),
                                 Form( "^{%d}%s ; Ekin [GeV]; Events Norm", elem->N(), elem->GetName() ),
                                 600, 0, 6);
-      AddHistogram(fpHisIon_Ek[z]);
+      AddHistogram(fpHisIonEk[z]);
    }
 
    // 21-29
-   for(int z=0; z<nNucleonBeam; z++) {
+   for(int z=0; z<=nNucleonBeam; z++) {
       // for(int z=0; z<6; z++) {
       TGeoElement * elem = table.GetElement(z+1);
-      fpHisIon_dE[z] = new TH1F(Form( "caDeIon%d", z+1),
+      fpHisIondE[z] = new TH1F(Form( "caDeIon%d", z+1),
                                 Form( "^{%d}%s ; EDep [GeV]; Events Norm", elem->N(), elem->GetName() ),
                                 400, 0, energyBeam*nNucleonBeam);
-      AddHistogram(fpHisIon_dE[z]);
+      AddHistogram(fpHisIondE[z]);
    }
 
 
@@ -219,7 +227,6 @@ void TACAactNtuHitMC::CreateDigitizer()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TACAactNtuHitMC::~TACAactNtuHitMC()
 {
    delete fDigitizer;
@@ -227,12 +234,12 @@ TACAactNtuHitMC::~TACAactNtuHitMC()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-
 Bool_t TACAactNtuHitMC::Action()
 {
    TAMCntuHit* pNtuMC   = 0x0;
    TAMCntuPart* pNtuEve  = 0x0;
-
+   TAGparGeo* tagParGeo = (TAGparGeo*)  fpGeoMapG->Object();
+   
    if (fEventStruct == 0x0) {
      pNtuMC  = (TAMCntuHit*) fpNtuMC->Object();
      pNtuEve = (TAMCntuPart*) fpNtuEve->Object();
@@ -308,14 +315,14 @@ Bool_t TACAactNtuHitMC::Action()
       // Select Neutrons
       if (fluID == 8) {
          if (ValidHistogram())
-            fpHisNeutron_dE->Fill(edep);
+            fpHisNeutrondE->Fill(edep);
       }
 
       // Select Heavy-Ions
       if ( fluID <= -2 || fluID == 1 ) {
 
          // Select Heavy-Ions with charge from 2 to 8 and Protons (z=1)
-         if ( (z > 1 && z <= 8) || fluID == 1 ) {
+         if ( (z > 1 && z <= tagParGeo->GetBeamPar().AtomicMass) || fluID == 1 ) {
 
             double tof = 0.;
             double p = sqrt( px*px + py*py + pz*pz);
@@ -325,12 +332,12 @@ Bool_t TACAactNtuHitMC::Action()
             if (z == 2 && fluID == -5) continue; // skip He3
 
             if (ValidHistogram()) {
-               fpHisIon_dE[z-1]        ->Fill(edep);
-               fpHisIon_Ek[z-1]        ->Fill(ek);
+               fpHisIondE[z-1]->Fill(edep);
+               fpHisIonEk[z-1]->Fill(ek);
                // // fpHisTime              ->Fill(time);
-               fpHisEnDepVsZ          ->Fill(z,edep);
-               fpHisRange             ->Fill(z0_f-z0_i);
-               fpHisRangeVsMass       ->Fill(z0_f-z0_i,mass);
+               fpHisEnDepVsZ->Fill(z,edep);
+               fpHisRange->Fill(z0_f-z0_i);
+               fpHisRangeVsMass->Fill(z0_f-z0_i,mass);
             }
          }
 

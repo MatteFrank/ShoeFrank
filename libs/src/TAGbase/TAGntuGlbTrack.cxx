@@ -8,6 +8,11 @@
 
 #include "TAGntuGlbTrack.hxx"
 
+#include <fstream>
+#include <iostream>
+#include <ostream>
+#include <sstream>
+
 /*!
   \class TAGtrack
   \brief Global tracks **
@@ -426,47 +431,46 @@ TArrayI TAGtrack::GetMcTrackIdx()
    return fMcTrackIdx;
 }
 
+
 //------------------------------------------+-----------------------------------
 //! Get MC track index - most probable
 Int_t TAGtrack::GetMcMainTrackId()
 {  
 
-   //----- set the array: it takes all the possible mc particles of every point in progressive order
+   //----- set the array fMcTrackMap: it takes all the possible mc particles of every point in progressive order
    
+   fMcTrackMap.clear();
    fMcTrackIdx.Set(0);
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
-      const TAGpoint* point = GetPoint(iPoint);
+      const TAGpoint* point = GetPoint(iPoint);     
+      
+         
+
       for( Int_t i = 0; i < point->GetMcTracksN(); ++i) {
+         
          Int_t trackIdx = point->GetMcTrackIdx(i);         
             fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
-            fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;         
-      }
+            fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
+            fMcTrackMap[trackIdx]+=1;
+            
+            //cout << "track id :"<<trackIdx << endl;         
+      }  
    }
 
-   //find mode
+//----- according to the multiplicity of every id, it takes the most probable
+Int_t mode = -1;
+Int_t multiplicity = -1;
 
-   int number = fMcTrackIdx[0];
-int mode = number;
-int count = 1;
-int countMode = 1;
-
-for (int i=1; i<fMcTrackIdx.GetSize(); i++)
-{
-      if (fMcTrackIdx[i] == number) 
-      { // count occurrences of the current number
-         ++count;
-      }
-      else
-      { // now this is a different number
-            if (count > countMode) 
-            {
-                  countMode = count; // mode is the biggest ocurrences
-                  mode = number;
-            }
-           count = 1; // reset count for the new number
-           number = fMcTrackIdx[i];
+   //cout << "track size: "<< fMcTrackMap.size() << endl;
+   for ( auto it = fMcTrackMap.begin(); it != fMcTrackMap.end(); ++it  )
+{  
+  //cout << "track id:" << it->first << '\t' << "n°: " << it->second << endl;
+  if (multiplicity < it->second) {
+     multiplicity = it->second;
+     mode = it->first;
   }
-}
+} 
+   //cout <<"mode :"<<mode<<endl;
 
    return mode;
 }

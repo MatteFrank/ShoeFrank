@@ -1,34 +1,34 @@
 #ifndef _TAMSDcluster_HXX
 #define _TAMSDcluster_HXX
 
+/*!
+ \file TAMSDcluster.hxx
+ \brief   Declaration of TAMSDcluster.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <map>
 // ROOT classes
 #include "TVector3.h"
 #include "TClonesArray.h"
 #include "TAGcluster.hxx"
 
-
-/** TAMSDcluster class, simple container class for tracks with the associated clusters                    
- 
- \author Ch. Finck
- */
-
 class TAMSDhit;
 
 class TAMSDcluster : public TAGcluster {
    
 private:
-   Float_t            fPositionF;                // position of the cluster in plane frame
-   Float_t            fPosErrorF;                // position's errors of the cluster in plane frame
-   Float_t            fPositionCorr;             // position Eta corrected of the cluster in plane frame
-   Float_t            fCog;                      // center of gravity of the cluster in term of strip number
-   TVector3           fCurPosition;              // current position of the cluster in plane frame
-   TClonesArray*      fListOfStrips;             // list of strips attached to this cluster
-   Int_t              fPlaneView;                // plane view = 0 for X and = 1 for Y plane
-   Float_t            fEnergyLoss;               // loss of energy
-   Float_t            fEnergyLossCorr;           // loss of energy Eta corrected
-   Float_t            fEtaValue;                 // Eta value
-   Float_t            fEtaFastValue;             // Eta Fast value
+   Float_t            fPositionF;                ///< position of the cluster in plane frame
+   Float_t            fPosErrorF;                ///< position's errors of the cluster in plane frame
+   Float_t            fPositionCorr;             ///< position Eta corrected of the cluster in plane frame
+   Float_t            fCog;                      ///< center of gravity of the cluster in term of strip number
+   TVector3           fCurPosition;              ///< current position of the cluster in plane frame
+   TClonesArray*      fListOfStrips;             ///< list of strips attached to this cluster
+   Int_t              fPlaneView;                ///< plane view = 0 for X and = 1 for Y plane
+   Float_t            fEnergyLoss;               ///< loss of energy
+   Float_t            fEnergyLossCorr;           ///< loss of energy Eta corrected
+   Float_t            fEtaValue;                 ///< Eta value
+   Float_t            fEtaFastValue;             ///< Eta Fast value
 
 public:
    TAMSDcluster(); 

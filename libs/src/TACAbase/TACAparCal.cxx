@@ -1,12 +1,23 @@
-#include "TError.h"
+/*!
+ \file TACAparCal.cxx
+ \brief  Implementation of TACAparCal
+ */
 
+#include "TError.h"
 #include "TACAparCal.hxx"
+
+/*!
+ \class TACAparCal
+ \brief Calibration class
+ */
 
 TString TACAparCal::fgkCrysStatus = "./config/TACACrysMapStatus.map";
 
+//! Class Imp
 ClassImp(TACAparCal)
 
 //_____________________________________________________________________
+//! Constructor
 TACAparCal::TACAparCal()
 : TAGparTools()
 {
@@ -17,6 +28,7 @@ TACAparCal::TACAparCal()
 
 
 //------------------------------------------+-----------------------------------
+//! Destructor
 TACAparCal::~TACAparCal()
 {
   if (fMapCal!=nullptr)
@@ -25,10 +37,12 @@ TACAparCal::~TACAparCal()
   }
 }
 
-//------------------------------------------+-----------------------------------
+//_____________________________________________________________________
+//! Load crystal temperature calibration map file
+//!
+//! \param[in] name input file
 Bool_t TACAparCal::LoadCryTemperatureCalibrationMap(const TString& name)
 {
-
   Clear();
 
   TString name_calib_temp_cry = name;
@@ -44,8 +58,10 @@ Bool_t TACAparCal::LoadCryTemperatureCalibrationMap(const TString& name)
   return kFALSE;    
 }  
 
-
-//_________________________________________
+//_____________________________________________________________________
+//! Load crystal energy calibration map file
+//!
+//! \param[in] name input file
 Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
 {
    Clear();
@@ -62,33 +78,51 @@ Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
 }
 
 
-//_____________________________________________________________________
+//_______________________________________________
+//! Get temparture parameter
+//!
+//! \param[in] crysId crystal id
 Double_t TACAparCal::GetTemperatureCry(Int_t crysId)
 {
    return fMapCal->GetTemperatureCry(crysId);
 }
 
-//_____________________________________________________________________
+//_______________________________________________
+//! Get temparture equalized parameter
+//!
+//! \param[in] crysId crystal id
 Double_t TACAparCal::GetEqualiseCry(Int_t crysId)
 {
    return fMapCal->GetEqualiseCry(crysId);
 }
 
-//_____________________________________________________________________
+//_______________________________________________
+//! Get energy loss parameter
+//!
+//! \param[in] crysId crystal id
+//! \param[in] ParameterNumber paramenter id
 Double_t TACAparCal::GetElossParam(Int_t crysId, UInt_t ParameterNumber)
 {
-    return fMapCal->GetElossParam(crysId, ParameterNumber);
+   return fMapCal->GetElossParam(crysId, ParameterNumber);
 }
 
 //_____________________________________________________________________
+//! Get crystal map
+//!
+//! \param[in] crysId crystal id
+//! \param[in] crysBoard crystal board id
+//! \param[in] crysCh crystal channel id
 void TACAparCal::GetCrysMap(Int_t crysId, Int_t& crysBoard, Int_t& crysCh)
 {
-  pair<int, int> id = fStatusCrysHwId[crysId];
-  crysBoard = id.first;
-  crysCh = id.second;
+   pair<int, int> id = fStatusCrysHwId[crysId];
+   crysBoard = id.first;
+   crysCh = id.second;
 }
 
 //_____________________________________________________________________
+//! Load crystal status file
+//!
+//! \param[in] name input file
 Bool_t TACAparCal::FromCrysStatusFile(const TString& name)
 {
   TString nameExp;

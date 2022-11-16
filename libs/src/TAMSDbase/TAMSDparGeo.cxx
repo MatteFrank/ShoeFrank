@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAMSDparGeo.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
+  \file TAMSDparGeo.cxx
   \brief   Implementation of TAMSDparGeo.
 */
 
@@ -21,10 +20,16 @@
 const TString TAMSDparGeo::fgkBaseName      = "MSD";
 const TString TAMSDparGeo::fgkDefParaName   = "msdGeo";
 
+/*!
+ \class TAMSDparGeo
+ \brief Geometry parameters for MSD **
+ */
 
+//! Class imp
 ClassImp(TAMSDparGeo);
 
 //_____________________________________________________________________________
+//! Standard constructor
 TAMSDparGeo::TAMSDparGeo()
 : TAVTbaseParGeo()
 {
@@ -32,12 +37,14 @@ TAMSDparGeo::TAMSDparGeo()
 }
 
 //_____________________________________________________________________________
+//! Destructor
 TAMSDparGeo::~TAMSDparGeo()
 {
 }
 
 
 //_____________________________________________________________________________
+//! Define material
 void TAMSDparGeo::DefineMaterial()
 {
     TAVTbaseParGeo::DefineMaterial();
@@ -56,7 +63,10 @@ void TAMSDparGeo::DefineMaterial()
     }
 }
 
-//_____________________________________________________________________________
+//_____________________________________________________________________
+//! From file
+//!
+//! \param[in] name input file
 Bool_t TAMSDparGeo::FromFile(const TString& name)
 {
    cout << setiosflags(ios::fixed) << setprecision(5);
@@ -232,6 +242,9 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
 
 
 //_____________________________________________________________________________
+//! Get strip position
+//!
+//! \param[in] strip strip number
 Float_t TAMSDparGeo::GetPosition(Int_t strip) const
 {
   Float_t x = (Float_t(2*strip - fStripsN + 1) * fPitch)/2.;
@@ -239,7 +252,11 @@ Float_t TAMSDparGeo::GetPosition(Int_t strip) const
 }
 
 //_____________________________________________________________________________
-TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *vertexName)
+//! Add module in MSD for Root geometry
+//!
+//! \param[in] basemoduleName module volume base name
+//! \param[in] msdName MSD volume name
+TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *msdName)
 {
    // create MSD module
    const Char_t* matName = fEpiMat.Data();
@@ -256,6 +273,10 @@ TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *verte
 }
 
 //_____________________________________________________________________________
+//! Build MSD in Root geometry
+//!
+//! \param[in] basemoduleName  plsnr volume name
+//! \param[in] msdName MSD base name
 TGeoVolume* TAMSDparGeo::BuildMicroStripDetector(const char* basemoduleName, const char *msdName)
 {
    if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
@@ -285,6 +306,7 @@ TGeoVolume* TAMSDparGeo::BuildMicroStripDetector(const char* basemoduleName, con
 }
 
 //_____________________________________________________________________________
+//! Print Fluka parameters
 string TAMSDparGeo::PrintParameters()
 {
   stringstream outstr;
@@ -312,6 +334,7 @@ string TAMSDparGeo::PrintParameters()
 
 
 //_____________________________________________________________________________
+//! Print Fluka rotations
 string TAMSDparGeo::PrintRotations()
 {
   stringstream ss;
@@ -320,19 +343,20 @@ string TAMSDparGeo::PrintRotations()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
     
-    TVector3  fCenter = fpFootGeo->GetMSDCenter();
-    TVector3  fAngle = fpFootGeo->GetMSDAngles();
-    
+    TVector3  center = fpFootGeo->GetMSDCenter();
+    TVector3  angle = fpFootGeo->GetMSDAngles(); //invert the angles to take into account the FLUKA convention;
+    angle *= -1;
+     
     for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
       //check if sensor or detector have a tilt
-      if (fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0){
+      if (fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0){
 
 	//put the sensor in local coord before the rotation
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",-fCenter.X()),
-			Form("%f",-fCenter.Y()),
-			Form("%f",-fCenter.Z()),
+			Form("%f",-center.X()),
+			Form("%f",-center.Y()),
+			Form("%f",-center.Z()),
 			Form("msd_%d",iSens) ) << endl;
 
 	//check if sensor has a tilt
@@ -372,26 +396,26 @@ string TAMSDparGeo::PrintRotations()
 	}
 
 	//check if detector has a tilt and then apply rot
-	if(fAngle.Mag()!=0){
+	if(angle.Mag()!=0){
 	  
-	  if(fAngle.X()!=0){
-	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", 
+	  if(angle.X()!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "",
 			    "", Form("msd_%d",iSens)) << endl;
 	  }
-	  if(fAngle.Y()!=0){
-	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", 
+	  if(angle.Y()!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "",
 			    "", Form("msd_%d",iSens)) << endl;
 	  }
-	  if(fAngle.Z()!=0){
-	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", 
+	  if(angle.Z()!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "",
 			    "", Form("msd_%d",iSens)) << endl;
 	  }
 	}
       
 	//put back the detector in global coord
 	ss << PrintCard("ROT-DEFI", "", "", "",
-			Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-			Form("%f",fCenter.Z()), Form("msd_%d",iSens)) << endl;
+			Form("%f",center.X()), Form("%f",center.Y()),
+			Form("%f",center.Z()), Form("msd_%d",iSens)) << endl;
        
       }
     }
@@ -401,19 +425,18 @@ string TAMSDparGeo::PrintRotations()
 
 }
 
-
 //_____________________________________________________________________________
+//! Print Fluka bodies
 string TAMSDparGeo::PrintBodies()
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-    TVector3  fCenter = fpFootGeo->GetMSDCenter();
-    TVector3  fAngle = fpFootGeo->GetMSDAngles();
+    TVector3  center = fpFootGeo->GetMSDCenter();
+    TVector3  angle = fpFootGeo->GetMSDAngles();
     
     TVector3 posMet, posStrip, posMod;
     string bodyname, regionname;
@@ -422,16 +445,16 @@ string TAMSDparGeo::PrintBodies()
 
     for(int iSens=0; iSens<GetSensorsN(); iSens++) {
 
-      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
 	ss << "$start_transform " << Form("msd_%d",iSens) << endl;
       
       //strip layer
       bodyname = Form("msds%d",iSens);
       regionname = Form("MSDS%d",iSens);
       if (iSens%2==0) {
-	posStrip.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
-			 fCenter.Y() + GetSensorPosition(iSens).Y(),
-			 fCenter.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fMetalThickness + fEpiSize.Z()/2. );
+	posStrip.SetXYZ( center.X() + GetSensorPosition(iSens).X(),
+			 center.Y() + GetSensorPosition(iSens).Y(),
+			 center.Z() + GetSensorPosition(iSens).Z() - fTotalSize.Z()/2. + fMetalThickness + fEpiSize.Z()/2. );
 	ss <<  "RPP " << bodyname <<  "     "
 	   << posStrip.x() - fEpiSize.X()/2. << " "
 	   << posStrip.x() + fEpiSize.X()/2. << " "
@@ -447,7 +470,7 @@ string TAMSDparGeo::PrintBodies()
 	regionname = Form("MSDP%d",iSens);
 	posMod.SetXYZ( posStrip.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
 		       posStrip.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
-		       fCenter.Z() + GetSensorPosition(iSens).Z() );
+		       center.Z() + GetSensorPosition(iSens).Z() );
 	ss <<  "RPP " << bodyname <<  "     "
 	   << posMod.x() - fTotalSize.X()/2. << " "
 	   << posMod.x() + fTotalSize.X()/2. << " "
@@ -472,9 +495,9 @@ string TAMSDparGeo::PrintBodies()
 	fvMetalBody.push_back(bodyname);
 	fvMetalRegion.push_back(regionname);
       }	else {
-	posStrip.SetXYZ( fCenter.X() + GetSensorPosition(iSens).X(),
-			 fCenter.Y() + GetSensorPosition(iSens).Y(),
-			 fCenter.Z() + GetSensorPosition(iSens).Z() + fTotalSize.Z()/2. - fMetalThickness - fEpiSize.Z()/2. );
+	posStrip.SetXYZ( center.X() + GetSensorPosition(iSens).X(),
+			 center.Y() + GetSensorPosition(iSens).Y(),
+			 center.Z() + GetSensorPosition(iSens).Z() + fTotalSize.Z()/2. - fMetalThickness - fEpiSize.Z()/2. );
 	ss <<  "RPP " << bodyname <<  "     "
 	   << posStrip.x() - fEpiSize.X()/2. << " "
 	   << posStrip.x() + fEpiSize.X()/2. << " "
@@ -490,7 +513,7 @@ string TAMSDparGeo::PrintBodies()
 	regionname = Form("MSDP%d",iSens);
 	posMod.SetXYZ( posStrip.X() + fEpiSize.X()/2. + fEpiOffset.X() - fTotalSize.X()/2.,
 		       posStrip.Y() - fEpiSize.Y()/2. - fEpiOffset.Y() + fTotalSize.Y()/2.,
-		       fCenter.Z() + GetSensorPosition(iSens).Z() );
+		       center.Z() + GetSensorPosition(iSens).Z() );
 	ss <<  "RPP " << bodyname <<  "     "
 	   << posMod.x() - fTotalSize.X()/2. << " "
 	   << posMod.x() + fTotalSize.X()/2. << " "
@@ -516,7 +539,7 @@ string TAMSDparGeo::PrintBodies()
 	fvMetalRegion.push_back(regionname);
 	//
       }
-      if(fSensorParameter[iSens].Tilt.Mag()!=0 || fAngle.Mag()!=0)
+      if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
 	ss << "$end_transform " << endl;
 
     }
@@ -526,9 +549,9 @@ string TAMSDparGeo::PrintBodies()
 }
 
 //_____________________________________________________________________________
+//! Print Fluka regions
 string TAMSDparGeo::PrintRegions()
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
@@ -560,28 +583,42 @@ string TAMSDparGeo::PrintRegions()
 }
 
 //_____________________________________________________________________________
-Int_t TAMSDparGeo::GetRegStrip(Int_t n){
+//! Get strip regions
+//!
+//! \param[in] n region number
+Int_t TAMSDparGeo::GetRegStrip(Int_t n)
+{
   TString regname;
   regname.Form("MSDS%d",n);
   return GetCrossReg(regname);
 }
+
 //_____________________________________________________________________________
-Int_t TAMSDparGeo::GetRegModule(Int_t n){
+//! Get module regions
+//!
+//! \param[in] n region number
+Int_t TAMSDparGeo::GetRegModule(Int_t n)
+{
   TString regname;
   regname.Form("MSDP%d",n);
   return GetCrossReg(regname);
 }
+
 //_____________________________________________________________________________
-Int_t TAMSDparGeo::GetRegMetal(Int_t n){
+//! Get metal regions
+//!
+//! \param[in] n region number
+Int_t TAMSDparGeo::GetRegMetal(Int_t n)
+{
   TString regname;
   regname.Form("MSDM%d",n);
   return GetCrossReg(regname);
 }
 
 //_____________________________________________________________________________
+//! Print Fluka subtracted bodies from air
 string TAMSDparGeo::PrintSubtractBodiesFromAir()
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
@@ -597,9 +634,11 @@ string TAMSDparGeo::PrintSubtractBodiesFromAir()
 }
 
 //_____________________________________________________________________________
-string TAMSDparGeo::PrintAssignMaterial(TAGmaterials *Material)
+//! Print Fluka assigned material
+//!
+//! \param[in] Material a given material
+string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
 {
-
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){

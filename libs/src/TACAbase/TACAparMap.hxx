@@ -1,8 +1,7 @@
 #ifndef _TACAparMap_HXX
 #define _TACAparMap_HXX
 /*!
-  \file
-  \version $Id: TACAparMap.hxx,v 1.1 2001/11/05 23:13:57 mueller Exp $
+  \file TACAparMap.hxx
   \brief   Declaration of TACAparMap.
 */
 /*------------------------------------------+---------------------------------*/
@@ -20,34 +19,34 @@ using namespace std;
 class TACAparMap : public TAGparTools {
 public:
 
-                    TACAparMap();
+   TACAparMap();
    virtual         ~TACAparMap();
 
-   // void            FromFile(std::string FileName);
    Bool_t          FromFile(const TString& name);
 
    void            Clear(Option_t* opt="");
 
-   Int_t           GetArduinoCrystalId(Int_t boardID, Int_t muxnum, Int_t ch);
    Int_t           GetCrystalId(Int_t boardId, Int_t channelId);
-   // Int_t           GetCrystalsN() {return nCrystals;}
-   Int_t           GetCrystalsN() const {return fnCrys;}
-   Int_t           GetBoardId(Int_t cryId) {return fBoardId[cryId]; }
-   Int_t           GetChannelId(Int_t cryId) {return fChannelId[cryId]; }
-   Int_t           GetModuleId(Int_t cryId) {return fModuleId[cryId]; }
+   Int_t           GetArduinoCrystalId(Int_t boardID, Int_t muxnum, Int_t ch);
+   
+   //! Get number of crystals
+   Int_t           GetCrystalsN()            const { return fCrystalsN;        }
+   //! Get board id
+   Int_t           GetBoardId(Int_t cryId)         { return fBoardId[cryId];   }
+   //! Get channel id
+   Int_t           GetChannelId(Int_t cryId)       { return fChannelId[cryId]; }
+   //! Get module id
+   Int_t           GetModuleId(Int_t cryId)        { return fModuleId[cryId];  }
 
 private:
-   Int_t                       fnCrys;
-   map< pair<int, int>, int >  fCrysIdArduino[4]; // map crystal ID Arduino setup (maximum 4 boards)
-   map< pair<int, int>, int >  fCrysId;           // map crystal ID to WD boards
-
-   vector<Int_t>               fModuleId;
-   vector<Int_t>               fBoardId;
-   vector<Int_t>               fChannelId;
-
+   Int_t                      fCrystalsN;        ///< number of crystal
+   map< pair<int, int>, int > fCrysId;           ///< crystal map WD boards
+   map< pair<int, int>, int > fCrysIdArduino[4]; ///< crystal map Arduino setup (maximum 4 boards)
+   vector<Int_t>              fModuleId;         ///< module id vector
+   vector<Int_t>              fBoardId;          ///< board id vector
+   vector<Int_t>              fChannelId;        ///< channel id vector
    
-   ClassDef(TACAparMap, 2)
-
+   ClassDef(TACAparMap,1)
 };
 
 #endif

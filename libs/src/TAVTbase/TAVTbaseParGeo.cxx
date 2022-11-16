@@ -1,6 +1,6 @@
 
 /*!
- \file TAVTbaseParGeo.hxx
+ \file TAVTbaseParGeo.cxx
  \brief Base class of geometrical parameters for VTX
  */
 
@@ -35,7 +35,7 @@ using namespace std;
 //! Class Imp
 ClassImp(TAVTbaseParGeo);
 
-const Int_t TAVTbaseParGeo::fgkDefSensorsN   = 32;
+const Int_t TAVTbaseParGeo::fgkDefSensorsN = 32;
 
 //______________________________________________________________________________
 //! Standard constructor
@@ -45,6 +45,7 @@ TAVTbaseParGeo::TAVTbaseParGeo()
    fSensorsN(0),
    fkDefaultGeoName(""),
    fLayersN(fSensorsN),
+   fSubLayersN(fSensorsN),
    fFlagMC(false),
    fFlagIt(false),
    fSensPerLayer(0),
@@ -103,7 +104,7 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout << endl << "Sensors number "<< fSensorsN << endl;
    
-   fSensorArray = new UChar_t[fSensorsN];
+   fSensorArray = new size_t[fgkDefSensorsN];
    
    ReadStrings(fTypeName);
    if(FootDebugLevel(1))
@@ -210,7 +211,7 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
          cout << "   Position: " << fSensorParameter[p].Position[0] << " " << fSensorParameter[p].Position[1] << " " << fSensorParameter[p].Position[2] << endl;
       
       // fill map
-      fSensorMap[fSensorParameter[p].Position[2]].push_back(fSensorParameter[p].SensorIdx);
+      fSensorMap[fSensorParameter[p].Position[2]].push_back(fSensorParameter[p].SensorIdx-1);
       
       // read sensor angles
       ReadVector3(fSensorParameter[p].Tilt);
@@ -479,8 +480,8 @@ TVector3 TAVTbaseParGeo::Sensor2DetectorVect(Int_t detID, TVector3& loc) const
 //! Fill array of sensor number per layer and position layer
 void TAVTbaseParGeo::FillSensorMap()
 {
-   map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
-   vector<UChar_t> v;
+   map<float, vector<size_t> >::iterator itr = fSensorMap.begin();
+   vector<size_t> v;
    Int_t iLayer = 0;
    
    while (itr != fSensorMap.end()) {
@@ -497,7 +498,7 @@ void TAVTbaseParGeo::FillSensorMap()
 //! Get number of sensors for a given layer
 //!
 //! \param[in] iLayer a given layer
-UChar_t* TAVTbaseParGeo::GetSensorsPerLayer(Int_t iLayer)
+std::size_t* TAVTbaseParGeo::GetSensorsPerLayer(Int_t iLayer)
 {
    return &fSensorArray[iLayer*fSensPerLayer];
 }
@@ -508,7 +509,7 @@ UChar_t* TAVTbaseParGeo::GetSensorsPerLayer(Int_t iLayer)
 //! \param[in] layer a given layer
 Float_t TAVTbaseParGeo::GetLayerPosZ(Int_t layer)
 {
-   map<float, vector<UChar_t> >::iterator itr = fSensorMap.begin();
+   map<float, vector<size_t> >::iterator itr = fSensorMap.begin();
    Int_t iLayer = 0;
    
    while (itr != fSensorMap.end()) {

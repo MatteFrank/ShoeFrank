@@ -149,7 +149,7 @@ G4VPhysicalVolume* TCGbaseGeometryConstructor::Construct()
    G4Box* sWorld = new G4Box("World", fWorldSizeXY, fWorldSizeXY, fWorldSizeZ);	//dimensions
    
    fLogWorld = new G4LogicalVolume(sWorld, fWorldMaterial,"World");
-   fLogWorld->SetVisAttributes(G4VisAttributes::Invisible);
+   fLogWorld->SetVisAttributes(G4VisAttributes::GetInvisible());
    
    G4VPhysicalVolume* pWorld = new G4PVPlacement(0, G4ThreeVector(), fLogWorld, "World", 0, false, 0);
    

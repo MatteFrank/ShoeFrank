@@ -1,10 +1,8 @@
-// To be use on CA test-beams.
-// read daq from WD boards and Arduino 
-// write file with simple ntuple quantities
+// To be use on CA testbeams.
+// - read daq from WD boards and Arduino 
+// - write file with simple ntuple quantities
 // to used by standalone analysis/calibration software developed by Lorenzo
 // 2022, E. Lopez
-
-
 
 
 #include <Riostream.h>
@@ -41,7 +39,6 @@
 #include "TACAparMap.hxx"
 
 #include "TAGrecoManager.hxx"
-
 #include "DAQMarkers.hh"
 
 
@@ -49,7 +46,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //------------------------------------------+-----------------------------------
 //! CAactRaw2Ntu Action class
-//! WD read parts taken from TAGactWDreader
+// WD read parts taken from TAGactWDreader
 
 #define NSAMPLING 1024
 #define GLB_EVT_HEADER 0xeadebaba
@@ -88,14 +85,15 @@ public:
                         fCurrName = name;
                      } 
          void     DrawChAmp(int ch, Option_t* opt = NULL);
-        void      SetMaxFiles(Int_t value) {fMaxFiles = value;}
+         void     SetMaxFiles(Int_t value) {fMaxFiles = value;}
+
 
 private:
-         Int_t    ReadStdAloneEvent(bool &endoffile, 
+         Int_t    ReadStdAloneEvent(bool &endoffile,
                                     TAGbaseWDparMap *p_WDMap);
          Bool_t   WaveformsTimeCalibration();
   vector<double>  ADC2Volt(vector<int>, double);
-  double          ADC2Temp(double adc);
+         double   ADC2Temp(double adc);
  
 
 private:
@@ -114,7 +112,7 @@ private:
 
    TACAparGeo*    fGeometry;
 
-   // output 
+
    double  *       fTempCh;
    UShort_t **     fAmpCh;     // waveform for each channel/crystal
 
@@ -128,8 +126,8 @@ private:
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 //!
-//! \param[in]  pCAMap  CA map descriptor
-//! \param[in]  pWDMap  WD daq map descriptor
+//! \param[in]  pCAmap  CA map descriptor
+//! \param[in]  pWDmap  WD daq map descriptor
 CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap)
   : TAGaction("CAactRaw2Ntu", "CAactRaw2Ntu - Unpack CA raw data"),
   //fpNtuEvt(pNtuEvt),
@@ -174,6 +172,9 @@ CAactRaw2Ntu::~CAactRaw2Ntu() {
 
 
 //------------------------------------------+-----------------------------------
+//! Open input file
+//!
+//! \param[in]  fname  file name
 Int_t CAactRaw2Ntu::Open(const TString &fname) {
 
    fWDstream = fopen(fname.Data(),"r");
@@ -188,6 +189,9 @@ Int_t CAactRaw2Ntu::Open(const TString &fname) {
 }
 
 //------------------------------------------+-----------------------------------
+//! Open output file
+//!
+//! \param[in]  nameOut  file name
 Int_t CAactRaw2Ntu::OpenOut(const TString &nameOut) {
 
    fCAnutOut = TFile::Open( nameOut.Data(), "RECREATE");
@@ -244,12 +248,14 @@ Int_t CAactRaw2Ntu::CloseOut() {
 
 
 //------------------------------------------+-----------------------------------
+//! Clear waveform buffer variables
+//! temp values are not present on every event, so they are not cleared
 void CAactRaw2Ntu::Clear() {
 
    int nCry = fGeometry->GetCrystalsN();
 
    for (int cryID=0; cryID<nCry; ++cryID) {
-      //fTempCh[cryID] = 0;
+
       for(int i=0; i<NSAMPLING; ++i) {
          fAmpCh[cryID][i] = 0;
       }
@@ -259,21 +265,23 @@ void CAactRaw2Ntu::Clear() {
 }
 
 //------------------------------------------+-----------------------------------
+//! Set tree branches output
 void CAactRaw2Ntu::SetTreeBranches() {
 
    // Creating the TTree with a branch for each channel
    fTree = new TTree("tree", "Waveforms");
+   
+   // Branch setting
 
    // Get number of channels (crystals)
    int nCry = fGeometry->GetCrystalsN();
-   // Set Branch 
+
    for (int cryID=0; cryID<nCry; ++cryID) {
       fTree->Branch(Form("ch_%d", cryID), fAmpCh[cryID], Form("waveform[%d]/s", NSAMPLING));
       fTree->Branch(Form("temp_adc_%d", cryID), &fTempCh[cryID]);
    }
 
-   //  DEBUG
-   //  cross check WD map vs geo maps
+   // cross check WD map vs geo maps
    TAGbaseWDparMap* pWDmap = (TAGbaseWDparMap*)fpWDMap->Object();
    TACAparMap* pCAmap = (TACAparMap*)fpCAParMap->Object();
    vector<int> boards = pWDmap->GetBoards("CALO");
@@ -333,22 +341,21 @@ Bool_t CAactRaw2Ntu::Action() {
 //! \param[in]  opt histogram option 
 void CAactRaw2Ntu::DrawChAmp(int ch, Option_t *opt) {
 
-   int chPad[9] = {5, 6, 4, 2, 3, 1, 8, 9, 7};
+   // int chPad[9] = {5, 6, 4, 2, 3, 1, 8, 9, 7}; // old setup
+   int chPad[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
    TString option = opt;
-
    // Draw 
    TCanvas *c1 = (TCanvas *)gROOT->FindObject(Form("wd_ch%d", ch));
    if ( !c1 ) { 
-      c1 = new TCanvas( Form("wd_ch%d", ch), Form("Waveforms ch #%d",ch),  10, 10, 600, 600); 
+      c1 = new TCanvas( Form("wd_ch%d", ch), Form("Waveforms module #%d",ch/9),  10, 10, 600, 600); 
       TRootCanvas *rc = (TRootCanvas *)c1->GetCanvasImp();
       rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
       c1->Divide(3,3,0,0);
       gStyle->SetTitleFontSize(0.25);
       gStyle->SetTitleY(.35);
       gStyle->SetOptStat(0);
-      //gSystem->ProcessEvents();
    }
-   c1->cd(); 
+   c1->cd();
 
    
    TH1F *hCheck = (TH1F *)gROOT->FindObject(Form("ca_ch%d", ch));
@@ -383,6 +390,7 @@ void CAactRaw2Ntu::DrawChAmp(int ch, Option_t *opt) {
 
 
 //------------------------------------------+-----------------------------------
+//! Convert ADC count to Volt
 //! \param[in]  v_amp  vector with the ADC counts
 //! \param[in]  dynamic_range  ADC dynamic range
 vector<double> CAactRaw2Ntu::ADC2Volt(vector<int> v_amp, double dynamic_range) {
@@ -408,6 +416,8 @@ vector<double> CAactRaw2Ntu::ADC2Volt(vector<int> v_amp, double dynamic_range) {
 }
 
 //------------------------------------------+-----------------------------------
+//! Convert ADC count to Temp
+//! \param[in]  adc  ADC counts
 double CAactRaw2Ntu::ADC2Temp(double adc) {
 
    // the NTC (negative temperature coefficient) sensor
@@ -428,8 +438,8 @@ double CAactRaw2Ntu::ADC2Temp(double adc) {
 }
 
 //------------------------------------------+-----------------------------------
-//! Read block of CA WD waveform and Arduino temp from daq file
-Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap) {
+//! Read block of CA waveform and Arduino temp from daq file
+Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAGbaseWDparMap *p_WDMap) {
 
    u_int word;
 
@@ -574,7 +584,8 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
 
          ret = fread(&word, 4, 1, fWDstream); 
          int eventSize = word & 0xffff;
-         if (FootDebugLevel(1)) cout << "    event Size:" << eventSize << endl;
+         if (FootDebugLevel(1)) 
+            cout << "    event Size:" << eventSize << endl;
 
          int nWordRead=0;
          // if event no empty, read the boards (80 channel each),  5 mux x 16 channel
@@ -602,11 +613,11 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
                      ret = fread(&word, 4, 1, fWDstream); ++nWordRead;
                      double tempADC =  *((float*)&word); // average over 8 measurements
 
-                     // not connected channel will read 1023
+                     // not connected channels will read 1023 value
                      if (tempADC < 1023) {
                         int iCry = ((TACAparMap*)fpCAParMap->Object())->GetArduinoCrystalId(boardID, muxnum, ch);
                         if (iCry < 0 || iCry >= nCry) { 
-                           Error("CAactRaw2Ntu", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d -> iCry %d", boardID, muxnum, ch, iCry);
+                           Error("CAactRaw2Ntu", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d -> iCry %d ADC %f", boardID, muxnum, ch, iCry, tempADC);
                            continue;
                         }
                         double temp = ADC2Temp(tempADC);
@@ -614,8 +625,10 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile,  TAGbaseWDparMap *p_WDMap
                            cout << "      cryID:" << iCry << "  ADC:" << tempADC  << " T:" << temp  << endl;
 
                         fTempCh[iCry] = temp; 
-                        //fTempCh[nChRead]   = temp;               
-                        //nChRead++;
+                     //} else {  // DEBUG
+                     //   int iCry = ((TACAparMap*)fpCAParMap->Object())->GetArduinoCrystalId(boardID, muxnum, ch);
+                     //   Info("CAactRaw2Ntu", " +++Arduino not connected:   board: %d mux: %d  ch: %d -> iCry %d ADC %f", boardID, muxnum, ch, iCry, tempADC);
+                     //}
                      }
                   } // for ch
                }
@@ -700,18 +713,12 @@ int main (int argc, char *argv[])  {
    parFileName = campManager->GetCurMapFile(TASTparGeo::GetBaseName(), runNb);
    parMapWD->FromFile(parFileName.Data());
 
-   // WD time map
-   //TAGparaDsc *pParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
-   //TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) pParTimeWD->Object();
-   //parFileName = campManager->GetCurCalFile(TASTparGeo::GetBaseName(), runNb);
-   //parTimeWD->FromFileCFD(parFileName.Data());
-
    CAactRaw2Ntu * caDatReader = new CAactRaw2Ntu(pParMapCa, pParMapWD);
    if (!caDatReader->Open(in)) return -1;
    caDatReader->SetInitName(in);
    caDatReader->SetTreeBranches();
    if (nFiles > 1) caDatReader->SetMaxFiles(nFiles);
-   
+
    // Set output
    TString nameOut;
    if (out.IsNull()) {
@@ -733,7 +740,9 @@ int main (int argc, char *argv[])  {
    watch.Start();
 
    tagr.BeginEventLoop();
-   
+
+   // first crystal ID of the module with the beam spot
+   Int_t beamCrystal =  18; // CNAO2022 18, before 0
 
    Int_t ev = 0;
    while (tagr.NextEvent() ) {
@@ -743,9 +752,9 @@ int main (int argc, char *argv[])  {
 
          if (draw) {
             if (ev % frequency2 == 0 || ev == 1)
-               caDatReader->DrawChAmp(0, "L"); // clean pad
+               caDatReader->DrawChAmp(beamCrystal, "L"); // clean pad
             else
-               caDatReader->DrawChAmp(0, "LSAME");
+               caDatReader->DrawChAmp(beamCrystal, "LSAME");
          }
       }
       gSystem->ProcessEvents();
@@ -756,10 +765,8 @@ int main (int argc, char *argv[])  {
    tagr.EndEventLoop();
    watch.Print();
 
-
    caDatReader->CloseOut();
 
-   //theApp->Run();
 
    delete campManager;
 

@@ -11,7 +11,11 @@
 
 #pragma link C++ class TAITntuHit+;
 #pragma link C++ class TAIThit+;
-#pragma link C++ class TAITactBaseRaw+;
+#pragma link C++ class TATIIMactBaseNtuHit+;
+#pragma link C++ class TATIIMactStdRaw+;
+#pragma link C++ class TAITactBaseNtuHit+;
+#pragma link C++ class TAITactStdRaw+;
+#pragma link C++ class TAITactStdDaqRaw+;
 #pragma link C++ class TAITactNtuHit+;
 #pragma link C++ class TAITactNtuHitMC+;
 

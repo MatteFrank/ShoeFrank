@@ -1,8 +1,9 @@
-///////////////////////////////////////////////////////////
-//                                                        //
-// Class Description of TATOEmomentum                       //
-//                                                        //
-////////////////////////////////////////////////////////////
+
+/*!
+ \file TATOEmomentum.cxx
+ \brief TATOEmomentum class
+ */
+
 
 //
 //File      : TATOEmomentum.cpp
@@ -22,11 +23,14 @@
 #include "TAGroot.hxx"
 #include "TADIgeoField.hxx"
 
-
+//! Get momentum for a given position in Z
+//! \param[in] track_ph a global track
+//! \param[in] z a given position 
 TVector3 GetMomentumAtZ( TAGtrack* track_ph, double z ) {
     auto compute_y_l = [&track_ph]( double z ){
         auto parameters = track_ph->GetParameters();
         return parameters.parameter_y[1] * z + parameters.parameter_y[0];  };
+   
     auto compute_x_l = [&track_ph]( double z ){
         auto parameters = track_ph->GetParameters();
         return parameters.parameter_x[3] * z * z * z +

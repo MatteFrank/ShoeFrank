@@ -2,6 +2,14 @@
 #ifndef _TAMSDhit_HXX
 #define _TAMSDhit_HXX
 
+/*!
+ \file TAMSDhit.hxx
+ \brief   Declaration of TAMSDhit.
+ */
+/*------------------------------------------+---------------------------------*/
+
+
+
 // ROOT classes
 #include "TArrayI.h"
 #include "TObjArray.h"
@@ -21,16 +29,16 @@
 class TAMSDhit : public TAGobject {
   
 protected:
-  Int_t     fSensorId;
-  Float_t   fPosition;                 // strip position in the detector frame
-  Float_t   fEnergyLoss;
-  Int_t     fIndex;
-  Int_t     fView;
-  Int_t     fStrip;
-  Bool_t    fIsSeed;
+  Int_t     fSensorId;                 ///< sensor id
+  Float_t   fPosition;                 ///< strip position in the detector frame
+  Float_t   fEnergyLoss;               ///< energy loss
+  Int_t     fIndex;                    ///< index number
+  Int_t     fView;                     ///< view value
+  Int_t     fStrip;                    ///< strip number
+  Bool_t    fIsSeed;                   ///< seed flag
   
-  TArrayI   fMCindex;                  // Index of the hit created in the simulation
-  TArrayI   fMcTrackIdx;               // Index of the track created in the simulation
+  TArrayI   fMCindex;                  ///< Index of the hit created in the simulation
+  TArrayI   fMcTrackIdx;               ///< Index of the track created in the simulation
   
 public:
    TAMSDhit();
@@ -39,9 +47,9 @@ public:
 
   virtual ~TAMSDhit() {};
 
-  Bool_t	  IsEqual(const TObject* obj) const;
+  Bool_t	    IsEqual(const TObject* obj) const;
    
-  //! Comapre method
+  // Comapre method
   Int_t      Compare(const TObject* obj) const;
    
   // Clear
@@ -57,7 +65,7 @@ public:
   Int_t      GetStrip()         const    { return fStrip;      }
   //! Get index
   Int_t      GetIndex()         const    { return fIndex;      }
-  // Get position
+  //! Get position
   Float_t    GetPosition()      const    { return fPosition;   }
   //! Get seed flag
   Bool_t    IsSeed()            const    { return fIsSeed;     }
@@ -65,9 +73,11 @@ public:
   //! Is Sortable
   Bool_t     IsSortable()       const    { return kTRUE;     }
   
-  // MC track id
+  //! Get MC index
   Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
+  //! Get MC track index
   Int_t      GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+  //! Get MC track number
   Int_t      GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
   
   
@@ -81,20 +91,16 @@ public:
   void     SetStrip(Int_t strip)        { fStrip = strip;    }
   //! Set index
   void     SetIndex(Int_t index)        { fIndex = index;    }
-  // Set position
+  //! Set position
   void     SetPosition(Float_t pos)     { fPosition = pos;   }
-   //! Set seed flag
-   void     SetSeed(Bool_t s=true)      { fIsSeed = s;       }
+  //! Set seed flag
+  void     SetSeed(Bool_t s=true)      { fIsSeed = s;       }
   // Add MC track Id
   void     AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
   
   
   ClassDef(TAMSDhit,4)                            // Pixel or Pixel of a Detector Plane
 };
-
-//##############################################################################
-
-
 
 #endif
 

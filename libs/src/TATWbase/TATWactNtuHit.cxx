@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TATWactNtuHit.cxx,v 1.5 2003/06/22 10:35:47 mueller Exp $
+  \file TATWactNtuHit.cxx
   \brief   Implementation of TATWactNtuHit.
 */
 
@@ -14,15 +13,15 @@
 #include "TATWcalibrationMap.hxx"
 
 /*!
-  \class TATWactNtuHit TATWactNtuHit.hxx "TATWactNtuHit.hxx"
-  \brief Get Beam Monitor raw data from WD. **
+  \class TATWactNtuHit
+  \brief Get TW raw data from WD. **
 */
 
+//! Class Imp
 ClassImp(TATWactNtuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
 TATWactNtuHit::TATWactNtuHit(const char* name,
 			     TAGdataDsc* p_datraw, 
 			     TAGdataDsc* p_nturaw,
@@ -88,7 +87,6 @@ TATWactNtuHit::TATWactNtuHit(const char* name,
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TATWactNtuHit::~TATWactNtuHit()
 {}
 
@@ -168,7 +166,6 @@ void TATWactNtuHit::CreateHistogram()
 }
 //------------------------------------------+-----------------------------------
 //! Action.
-
 Bool_t TATWactNtuHit::Action()
 {
    TATWntuRaw*   p_datraw = (TATWntuRaw*) fpDatRaw->Object();
@@ -427,7 +424,6 @@ Double_t TATWactNtuHit::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId
   
 
   return Ecal;
-  
 }
 
 //________________________________________________________________
@@ -493,8 +489,7 @@ Double_t  TATWactNtuHit::GetTime(Double_t RawTime, Int_t layerId, Int_t posId, I
 Double_t  TATWactNtuHit::GetTimeOth(Double_t RawTimeOth, Int_t layerId, Int_t posId, Int_t barId)
 {
 
-    if ( posId<0 || posId>=nSlatCross || (layerId!=LayerX && layerId!=LayerY) )
-    {
+    if ( posId<0 || posId>=nSlatCross || (layerId!=LayerX && layerId!=LayerY) ) {
       return -1;
     }
 
@@ -566,9 +561,7 @@ Int_t TATWactNtuHit::GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos)
   
 
   return barCrossId;
-  
 }
-
 
 //_____________________________________________________________________________
 

@@ -114,7 +114,7 @@ void TCVTgeometryConstructor::BuildSensor()
    
    // Pixel
    fPixLog = new G4LogicalVolume(pix, Mixture, "pixLog");
-   fPixLog->SetVisAttributes(G4VisAttributes::Invisible);
+   fPixLog->SetVisAttributes(G4VisAttributes::GetInvisible());
    
    //Pixel placement
    G4double pix_tz = +0.5*(size_tot_epi_z - sizePix.Z()); //ok
@@ -157,7 +157,7 @@ G4LogicalVolume* TCVTgeometryConstructor::Construct()
    G4Material* vacuum = G4NistManager::Instance()->FindOrBuildMaterial("Vacuum");
    G4Box* boxVtx = new G4Box("boxVtx", fSizeBoxVtx.X()/2., fSizeBoxVtx.Y()/2., fSizeBoxVtx.Z()/2.);
    fBoxVtxLog = new G4LogicalVolume(boxVtx, vacuum, "boxVtxLog");
-   fBoxVtxLog->SetVisAttributes(G4VisAttributes::Invisible);
+   fBoxVtxLog->SetVisAttributes(G4VisAttributes::GetInvisible());
    
    // Build sensor
    BuildSensor();

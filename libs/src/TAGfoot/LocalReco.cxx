@@ -148,6 +148,10 @@ void LocalReco::CreateRawAction()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()  && !fgStdAloneFlag) {
+      
+      if (fFlagMsdPed) 
+         TAMSDactNtuRaw::EnablePedRun();
+      
       fpDatRawMsd   = new TAGdataDsc("msdDat", new TAMSDntuRaw());
       fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd, fpParConfMsd);
       if (fFlagHisto)
@@ -273,11 +277,11 @@ void LocalReco::SetRawHistogramDir()
    }
 
    // CA
-    if (TAGrecoManager::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
       //fActWdRaw->SetHistogramDir(subfolder);
-      fActNtuHitCa->SetHistogramDir(subfolder);
-    }
+      fActNtuHitCa ->SetHistogramDir(subfolder);
+   }
 }
 
 //__________________________________________________________

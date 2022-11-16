@@ -26,7 +26,11 @@ set( with_dictionnaries
    TAITparGeo
    TAITparConf
    TAITdigitizerE
-   TAITactBaseRaw
+   TATIIMactBaseNtuHit
+   TATIIMactStdRaw
+   TAITactBaseNtuHit
+   TAITactStdRaw
+   TAITactStdDaqRaw
    TAITactNtuHit
    TAITactNtuHitMC
    TAITntuCluster

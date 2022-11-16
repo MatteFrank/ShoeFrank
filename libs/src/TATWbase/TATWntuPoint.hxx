@@ -1,8 +1,7 @@
 #ifndef _TATWntuPoint_HXX
 #define _TATWntuPoint_HXX
 /*!
- \file
- \version $Id: TATWntuPoint.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+ \file TATWntuPoint.hxx
  \brief   Declaration of TATWntuPoint.
  */
 /*------------------------------------------+---------------------------------*/
@@ -16,12 +15,11 @@
 #include "TAGcluster.hxx"
 #include "TATWntuHit.hxx"
 
-
-/** TATWpoint class is the scintillator hit reconstructed by the intersection of 2 hits on a
-	column and a row bar respectively
- 
- */
-/*------------------------------------------+---------------------------------*/
+/*!
+ \class TATWpoint
+ \brief TATWpoint class is the scintillator hit reconstructed by the intersection of 2 hits on a
+column and a row bar respectively
+*/
 
 class TATWpoint : public TAGcluster {
    
@@ -101,6 +99,10 @@ public:
 };
 
 //##############################################################################
+/*!
+ \class TATWntuPoint
+ \brief point container class for TW
+ */
 
 class TATWntuPoint : public TAGdata {
    

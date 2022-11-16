@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TACAntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \file TACAntuRaw.cxx
   \brief   Implementation of TACAntuRaw.
 */
 
@@ -14,11 +13,8 @@ using namespace std;
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
-/*!
-  \class TACAntuRaw TACAntuRaw.hxx "TACAntuRaw.hxx"
-  \brief Container for dat raw ntu. **
-*/
 
+//! Class Imp
 ClassImp(TACArawHit);
 
 TString TACAntuRaw::fgkBranchName   = "cadat.";
@@ -54,37 +50,38 @@ TACArawHit::TACArawHit(TWaveformContainer *W, double temp = 25)
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TACArawHit::~TACArawHit(){
-
+TACArawHit::~TACArawHit()
+{
 }
 
-// do not need these interfaces, done by compiler
-double TACArawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
-  return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
-}
+//// do not need these interfaces, done by compiler
+//double TACArawHit::ComputeTime(TWaveformContainer *w, double frac, double del, double tleft, double tright){
+//  return  TAGbaseWD::ComputeTime(w, frac, del, tleft, tright);
+//}
+//
+//
+//double TACArawHit::ComputeCharge(TWaveformContainer *w, double thr){
+//  return TAGbaseWD::ComputeCharge(w,thr);
+//}
+//
+//
+//double TACArawHit::ComputeAmplitude(TWaveformContainer *w){
+//  return TAGbaseWD::ComputeAmplitude(w);
+//}
+//
+//
+//double TACArawHit::ComputeBaseline(TWaveformContainer *w){
+//  return TAGbaseWD::ComputeBaseline(w);
+//}
+//
+//
+//double TACArawHit::ComputePedestal(TWaveformContainer *w, double thr){
+//  return  TAGbaseWD::ComputePedestal(w,thr);
+//}
 
 
-double TACArawHit::ComputeCharge(TWaveformContainer *w, double thr){
-  return TAGbaseWD::ComputeCharge(w,thr);
-}
-
-
-double TACArawHit::ComputeAmplitude(TWaveformContainer *w){
-  return TAGbaseWD::ComputeAmplitude(w);
-}
-
-
-double TACArawHit::ComputeBaseline(TWaveformContainer *w){
-  return TAGbaseWD::ComputeBaseline(w);
-}
-
-
-double TACArawHit::ComputePedestal(TWaveformContainer *w, double thr){
-  return  TAGbaseWD::ComputePedestal(w,thr);
-}
-
-
-
+//------------------------------------------+-----------------------------------
+//! Get number of hits
 Int_t TACAntuRaw::GetHitsN() const
 {
   return fListOfHits->GetEntries();
@@ -92,6 +89,7 @@ Int_t TACAntuRaw::GetHitsN() const
 
 //##############################################################################
 
+//! Class Imp
 ClassImp(TACAntuRaw);
 
 //------------------------------------------+-----------------------------------
@@ -106,14 +104,13 @@ TACAntuRaw::TACAntuRaw()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
-TACAntuRaw::~TACAntuRaw() {
+TACAntuRaw::~TACAntuRaw()
+{
   if(fListOfHits)delete fListOfHits;
 }
 
 //------------------------------------------+-----------------------------------
 //! Setup clones.
-
 void TACAntuRaw::SetupClones()
 {
   if (!fListOfHits) fListOfHits = new TClonesArray("TACArawHit");
@@ -122,7 +119,6 @@ void TACAntuRaw::SetupClones()
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
-
 void TACAntuRaw::Clear(Option_t*){
   TAGdata::Clear();
   fHistN = 0;
@@ -131,30 +127,42 @@ void TACAntuRaw::Clear(Option_t*){
 }
 
 
-//-----------------------------------------------------------------------------
-//! access to the hit
-TACArawHit* TACAntuRaw::GetHit(Int_t i){
+//------------------------------------------+-----------------------------------
+//! return a hit
+//!
+//! \param[in] i hit index
+TACArawHit* TACAntuRaw::GetHit(Int_t i)
+{
   return (TACArawHit*) ((*fListOfHits)[i]);;
 }
 
 
 //------------------------------------------+-----------------------------------
-//! Read-only access \a i 'th hit
-const TACArawHit* TACAntuRaw::GetHit(Int_t i) const{
+//! return a hit (const)
+//!
+//! \param[in] i hit index
+const TACArawHit* TACAntuRaw::GetHit(Int_t i) const
+{
   return (const TACArawHit*) ((*fListOfHits)[i]);;
 }
 
 //------------------------------------------+-----------------------------------
-//! New hit
-void TACAntuRaw::NewHit(TWaveformContainer *W, double temp) {
-  
+//! New hit from wave form
+//!
+//! \param[in] W wave form container
+//! \param[in] temp temperature
+void TACAntuRaw::NewHit(TWaveformContainer *W, double temp)
+{  
   TClonesArray &pixelArray = *fListOfHits;
   TACArawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACArawHit(W, temp);
   fHistN++;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TACAntuRaw::ToStream(ostream& os, Option_t* option) const
 {
    os << "TACAntuRaw " << GetName()

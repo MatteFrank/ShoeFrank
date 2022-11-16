@@ -76,7 +76,7 @@ G4LogicalVolume* TCCAgeometryConstructor::Construct()
    G4Material* matAl  = G4NistManager::Instance()->FindOrBuildMaterial(fpParGeo->GetSupportMat().Data());
    G4Box* boxCal = new G4Box("boxCal", 0.5*fSizeBoxCal.X(), 0.5*fSizeBoxCal.Y(), fSizeBoxCal.Z());
    fBoxLog = new G4LogicalVolume(boxCal, air, "boxCaloLog");
-   fBoxLog->SetVisAttributes(G4VisAttributes::Invisible);
+   fBoxLog->SetVisAttributes(G4VisAttributes::GetInvisible());
 
     Double_t xdimCrys1 = fpParGeo->GetCrystalSize()[0]*cm;
     Double_t xdimCrys2 = fpParGeo->GetCrystalSize()[1]*cm;

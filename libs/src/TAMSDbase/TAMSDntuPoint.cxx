@@ -1,17 +1,20 @@
-#include "TAMSDntuPoint.hxx"
+/*!
+ \file TAMSDntuPoint.cxx
+ \brief   Implementation of TAMSDntuPoint.
+ */
 
+#include "TAMSDntuPoint.hxx"
 #include "TString.h"
 #include "TClonesArray.h"
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuPoint.hxx"
 #include "TAMSDtrack.hxx"
 
-
+//! Class Imp
 ClassImp(TAMSDpoint) // Description of Single Detector TAMSDpoint
 
-
 //______________________________________________________________________________
-//  default constructor
+//! Default constructor
 TAMSDpoint::TAMSDpoint()
 : TAGcluster(),
    fStation(0),
@@ -24,7 +27,9 @@ TAMSDpoint::TAMSDpoint()
 }
 
 //______________________________________________________________________________
-//  build a point
+//! New point for copy constructor
+//!
+//! \param[in] point point to copy
 TAMSDpoint::TAMSDpoint(const TAMSDpoint& point)
 :  TAGcluster(point),
    fStation(point.fStation),
@@ -37,7 +42,12 @@ TAMSDpoint::TAMSDpoint(const TAMSDpoint& point)
 }
 
 //______________________________________________________________________________
-//  build a point
+//! New point
+//!
+//! \param[in] layer station id
+//! \param[in] x x position
+//! \param[in] y y position
+//! \param[in] position position
 TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
  : TAGcluster(),
    fStation(layer),
@@ -48,16 +58,30 @@ TAMSDpoint::TAMSDpoint( int layer, double x, double y, TVector3 position )
 }
 
 //______________________________________________________________________________
-//  build a point
-TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY)
+//! New point
+//!
+//! \param[in] layer layer id
+//! \param[in] x position in x
+//! \param[in] dx error position in x
+//! \param[in] clusX cluster in X plane
+//! \param[in] y position in y
+//! \param[in] dy error position in y
+//! \param[in] clusY cluster in Y plane
+TAMSDpoint::TAMSDpoint(Int_t layer, TAMSDcluster* clusX, TAMSDcluster* clusY)
  : TAGcluster(),
    fStation(layer),
    fChargeZ(0),
    fChargeZProba(0.)
 {
-   fPosition1.SetXYZ(x,y,0);
-   fPosError1.SetXYZ(dx,dy,0);
+   Double_t y1  = clusY->GetPosition().X() + clusY->GetPosition().Y();
+   Double_t dy1 = clusY->GetPosError().X() + clusY->GetPosError().Y();
    
+   Double_t x1  = clusX->GetPosition().X() + clusX->GetPosition().Y();
+   Double_t dx1 = clusX->GetPosError().X() + clusX->GetPosError().Y();
+
+   fPosition1.SetXYZ(x1,y1,0);
+   fPosError1.SetXYZ(dx1,dy1,0);
+      
    fDe1 = clusX->GetEnergyLoss();
    fDe2 = clusY->GetEnergyLoss();
 
@@ -94,18 +118,12 @@ TAMSDpoint::TAMSDpoint(Int_t layer, Double_t x, Double_t dx, TAMSDcluster* clusX
 }
 
 //______________________________________________________________________________
-// Clear
+//! Clear
 void TAMSDpoint::Clear(Option_t*)
 {
 }
 
-
-/*!
-  \file
-  \version $Id: TAMSDntuPoint.cxx
-  \brief   Implementation of TAMSDntuPoint.
-*/
-
+//! Class imp
 ClassImp(TAMSDntuPoint);
 
 //##############################################################################
@@ -113,7 +131,7 @@ ClassImp(TAMSDntuPoint);
 TString TAMSDntuPoint::fgkBranchName   = "msdpt.";
 
 //------------------------------------------+-----------------------------------
-//!
+//! Default detector
 TAMSDntuPoint::TAMSDntuPoint()
 : TAGdata(),
   fGeometry(0x0),
@@ -130,7 +148,12 @@ TAMSDntuPoint::~TAMSDntuPoint()
 }
 
 //______________________________________________________________________________
-//  standard
+//! New point
+//!
+//! \param[in] iStation station id
+//! \param[in] x x position
+//! \param[in] y y position
+//! \param[in] position position
 TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 position )
 {
   if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
@@ -144,12 +167,20 @@ TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 
 }
 
 //______________________________________________________________________________
-//  standard
-TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAMSDcluster* clusX, Double_t y, Double_t dy, TAMSDcluster* clusY)
+//! New point
+//!
+//! \param[in] iStation station id
+//! \param[in] x position in x
+//! \param[in] dx error position in x
+//! \param[in] clusX cluster in X plane
+//! \param[in] y position in y
+//! \param[in] dy error position in y
+//! \param[in] clusY cluster in Y plane
+TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, TAMSDcluster* clusX, TAMSDcluster* clusY)
 {
    if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
       TClonesArray &pointArray = *GetListOfPoints(iStation);
-      TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, dx, clusX, y, dy, clusY);
+      TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, clusX, clusY);
       return point;
    } else {
       cout << Form("Wrong sensor number %d\n", iStation);
@@ -158,7 +189,10 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, Double_t x, Double_t dx, TAM
 }
 
 //______________________________________________________________________________
-//  build a point
+//! New point for copy constructor
+//!
+//! \param[in] point point to copy
+//! \param[in] iStation station id
 TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
 {
    if (iStation >= 0  || iStation < fGeometry->GetStationsN()) {
@@ -171,7 +205,11 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
       return 0x0;
    }
 }
+
 //------------------------------------------+-----------------------------------
+//! Get nunber of points
+//!
+//! \param[in] iStation station id
 int TAMSDntuPoint::GetPointsN(int iStation) const
 {
   if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
@@ -180,9 +218,11 @@ int TAMSDntuPoint::GetPointsN(int iStation) const
   } else return -1;
 }
 
-
 //------------------------------------------+-----------------------------------
-//! return a strip for a given sensor
+//! Get point
+//!
+//! \param[in] iStation station id
+//! \param[in] iPoint point index
 TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const
 {
 	if ( iPoint >= 0  && iPoint < GetPointsN( iStation ) ) {
@@ -193,7 +233,9 @@ TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const
 }
 
 //------------------------------------------+-----------------------------------
-//! return number of points
+//! Get list of point
+//!
+//! \param[in] iStation station id
 TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 {
    if (iStation >= 0  && iStation < fGeometry->GetStationsN()) {
@@ -232,6 +274,9 @@ void TAMSDntuPoint::Clear(Option_t*)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TAMSDntuPoint::ToStream(ostream& os, Option_t* option) const
 {
    // for (Int_t i = 0; i < m_vtxGeo->GetNSensors(); ++i) {

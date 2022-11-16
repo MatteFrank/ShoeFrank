@@ -149,7 +149,7 @@ public:
    void         HistoSelected(Int_t id);
    // Reset histogram
    void         ResetHisto();
-   // Save view
+   // Seve view
    void         SaveView();
 
    // Make gui

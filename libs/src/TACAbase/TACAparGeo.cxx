@@ -1,4 +1,9 @@
 
+/*!
+ \file TACAparGeo.cxx
+ \brief Implementation of TACAparGeo
+ */
+
 #include <iostream>
 #include <fstream>
 #include <Riostream.h>
@@ -28,7 +33,7 @@
 //##############################################################################
 
 /*!
-  \file TACAparGeo.cxx
+  \class TACAparGeo
   \brief Geometry parameters of the Calorimeter
 */
 
@@ -40,6 +45,8 @@ const Color_t TACAparGeo::fgkDefaultModCol   = kGray;
 const TString TACAparGeo::fgkDefaultCrysName = "caCrys";
 const Int_t   TACAparGeo::fgkCrystalsNperModule = 9;
 
+//! Class Imp
+ClassImp(TACAparGeo)
 
 //_____________________________________________________________________________
 //! Default constructor
@@ -287,7 +294,7 @@ void TACAparGeo::ComputeCrystalIndexes()
 
    Double_t width = 0;
    Float_t zdim = GetCrystalThick();
-   double xdim1 = GetCrystalWidthFront(); 
+   double xdim1 = GetCrystalWidthFront();
    double ydim1 = GetCrystalHeightFront();
    vector<double> xcry;
    vector<double> ycry;
@@ -304,7 +311,7 @@ void TACAparGeo::ComputeCrystalIndexes()
       double y = point[1];
       if (iCry == 0) {
          xcry.push_back( x );
-         ycry.push_back( y );      
+         ycry.push_back( y );
       } else {
          bool foundX = false;
          for(std::size_t i = 0; i < xcry.size(); ++i) {
@@ -344,18 +351,18 @@ void TACAparGeo::ComputeCrystalIndexes()
       for (Int_t i = 0; i<fNumCol; ++i) {
          for (Int_t j = 0; j<fNumLine; ++j) {
 
-            if ( (point[0] >= i*width + xcry[0] - widthHalf && point[0] <= (i+1)*width + xcry[0] - widthHalf) && 
+            if ( (point[0] >= i*width + xcry[0] - widthHalf && point[0] <= (i+1)*width + xcry[0] - widthHalf) &&
                  (point[1] >= j*width + ycry[0] - widthHalf && point[1] <= (j+1)*width + ycry[0] - widthHalf)) {
- 
+
                pair<int, int> idx(i, j);
                fMapIndexes[iCry] = idx;
                if (FootDebugLevel(1)) {
-                  cout  << "   iCry: "  << iCry 
+                  cout  << "   iCry: "  << iCry
                         //<< " " << i << " " << j
                         //<< " pos[0] " << point[0] << " pos[1] " << point[1]
                         << "   col "    << idx.first << " row " << idx.second << endl;
                }
-            } 
+            }
          }
       }
    }
@@ -363,7 +370,7 @@ void TACAparGeo::ComputeCrystalIndexes()
 }
 
 //_____________________________________________________________________________
-//! Get line (row) 
+//! Get line (row)
 //
 //! \param[in] iCry crystal ID
 //! \return line (row) position
@@ -375,7 +382,7 @@ Int_t TACAparGeo::GetCrystalLine(Int_t iCry)
 }
 
 //_____________________________________________________________________________
-//! Get column (row) 
+//! Get column (row)
 //
 //! \param[in] iCry crystal ID
 //! \return column position
@@ -610,6 +617,8 @@ void TACAparGeo::DefineMaterial()
 
 //_____________________________________________________________________________
 //! set color on for fired bars
+//!
+//! \param[in] idx crystal id
 void TACAparGeo::SetCrystalColorOn(Int_t idx)
 {
    if (!gGeoManager) {
@@ -626,6 +635,8 @@ void TACAparGeo::SetCrystalColorOn(Int_t idx)
 
 //_____________________________________________________________________________
 //! reset color for unfired bars
+//!
+//! \param[in] idx crystal id
 void TACAparGeo::SetCrystalColorOff(Int_t idx)
 {
    if (!gGeoManager) {
@@ -640,7 +651,6 @@ void TACAparGeo::SetCrystalColorOff(Int_t idx)
       vol->SetLineColor(GetDefaultCryCol());
 }
 
-
 //_____________________________________________________________________________
 //! Print the Calorimeter rotations for the FLUKA geometry file
 string TACAparGeo::PrintRotations()
@@ -654,6 +664,7 @@ string TACAparGeo::PrintRotations()
 
       TVector3 center = fpFootGeo->GetCACenter();
       TVector3  angle = fpFootGeo->GetCAAngles();
+      angle *= -1;  //invert the angles to take into account the FLUKA convention;
 
       if ( angle.Mag()!=0 ) {
 
@@ -754,7 +765,7 @@ string TACAparGeo::PrintBodies()
        fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0) {
       TString plaName = "MP";
       int dir[2];
-      // Vertical 
+      // Vertical
       dir[0] = -1; dir[1] = 0; //dir[0] =-1 -> left plane
       int imod = 2;
       TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
@@ -764,7 +775,106 @@ string TACAparGeo::PrintBodies()
          imod = 0;
          hm = GetCombiTransfo(fCrystalsN + imod);
          outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
-      }     
+      }
+   }
+
+   if (fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ) {
+      TString plaName = "MP";
+      int dir[2];
+      // Vertical
+      dir[0] = -1; dir[1] = 0; //dir[0] =-1 -> left plane
+      int imod = 3;
+      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 2;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+   }
+
+   if (fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0) {
+      // 
+      TString plaName = "MP";
+      int dir[2];
+
+      // horizontal planes
+      dir[0] = 0; dir[1] = 1; //dir[1] =1 -> top plane
+      int imod = 11;
+      TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 8;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 14;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 18;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 25;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod =  29;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod =  31;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod =  33;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod =  35;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+
+      dir[1] = -1; // bottom plane
+      imod = 1;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 3;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 5;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 7;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 22;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 28;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+
+      // Vertical planes
+      dir[0] = -1; dir[1] = 0; 
+      imod = 0;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 16;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 17;
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 20; 
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 21; 
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 34; 
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+
+      dir[0] = 1;
+      imod = 2; 
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+      imod = 36; 
+      hm = GetCombiTransfo(fCrystalsN + imod);
+      outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
+
    }
 
    // FULL Detector:
@@ -812,8 +922,14 @@ string TACAparGeo::PrintBodies()
 
 //-----------------------------------------------------------------------------
 //! Print the planes parallel to a module
+//!
+//! \param[in] id crystal id
+//! \param[in] hm transformation matrix
+//! \param[in] bodyName body name
+//! \param[in] trd2Size truncate shape vector
+//! \param[in] dir direction vector
 TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyName,
-                                       Double_t *trd2Size, int * dir )
+                                       Double_t* trd2Size, int* dir )
 {
    // dir[0] X direction could be (-1, 0, 1)
    // dir[1] Y direction could be (-1, 0, 1)
@@ -834,14 +950,14 @@ TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyN
    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    if (fpFootGeo) {
       center = fpFootGeo->GetCACenter();
-      angle  = fpFootGeo->GetCAAngles();
+      angle  = fpFootGeo->GetCAAngles(); //no need to invert the sing since here the angle is used to build the root object
    }
 
    TGeoTranslation detTrasl(center.X(), center.Y(), center.Z());
    TGeoRotation detRot;
-   detRot.RotateX(-angle.X());
-   detRot.RotateY(-angle.Y());
-   detRot.RotateZ(-angle.Z());
+   detRot.RotateX(angle.X());
+   detRot.RotateY(angle.Y());
+   detRot.RotateZ(angle.Z());
    TGeoCombiTrans detPos(detTrasl, detRot);
 
    TGeoHMatrix  matCurrent(detPos);
@@ -891,6 +1007,11 @@ TString TACAparGeo::SPrintParallelPla( int id, TGeoCombiTrans* hm, TString bodyN
 
 //-----------------------------------------------------------------------------
 //! Print the body definition in FLUKA FREE format
+//!
+//! \param[in] id crystal id
+//! \param[in] hm transformation matrix
+//! \param[in] bodyName body name
+//! \param[in] trd2Size truncate shape vector
 TString TACAparGeo::SPrintCrystalBody( int id, TGeoCombiTrans* hm, TString bodyName, Double_t *trd2Size )
 {
    // There is no truncate pyramid in FLUKA, so we need to define
@@ -908,14 +1029,14 @@ TString TACAparGeo::SPrintCrystalBody( int id, TGeoCombiTrans* hm, TString bodyN
    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    if (fpFootGeo) {
       center = fpFootGeo->GetCACenter();
-      angle  = fpFootGeo->GetCAAngles();
+      angle  = fpFootGeo->GetCAAngles(); //no need to invert the sing since here the angle is used to build the root object
    }
 
    TGeoTranslation detTrasl(center.X(), center.Y(), center.Z());
    TGeoRotation detRot;
-   detRot.RotateX(-angle.X());
-   detRot.RotateY(-angle.Y());
-   detRot.RotateZ(-angle.Z());
+   detRot.RotateX(angle.X());
+   detRot.RotateY(angle.Y());
+   detRot.RotateZ(angle.Z());
    TGeoCombiTrans detPos(detTrasl, detRot);
 
    TGeoHMatrix  matCurrent(detPos);
@@ -1058,86 +1179,176 @@ TString TACAparGeo::PrintModuleAirRegions()
       // create regions between crytals in a ROW
       Int_t nRows = 3;
       iCry = im * fgkCrystalsNperModule;
-      for (Int_t ir=0; ir<nRows; ir++) {
-         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_3 -P%03d_4 +P%03d_5 +P%03d_6\n",
-                  im, im, iCry, iCry+1, iCry+1, iCry+1);
-         modRegion += line.Data();
-         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_4 -P%03d_3 +P%03d_5 +P%03d_6\n",
-                  im, im, iCry, iCry+2, iCry+2, iCry+2);
-         modRegion += line.Data();
-         iCry += 3;
+
+      if (fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
+          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0  ) {
+         for (Int_t ir=0; ir<nRows; ir++) {
+            line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_3 -P%03d_4 +P%03d_5 +P%03d_6\n",
+                     im, im, iCry+1, iCry+2, iCry+2, iCry+2);
+            modRegion += line.Data();
+            line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_4 -P%03d_3 +P%03d_5 +P%03d_6\n",
+                     im, im, iCry+1, iCry, iCry, iCry);
+            modRegion += line.Data();
+            iCry += 3;
+         }
+      } else {
+         for (Int_t ir=0; ir<nRows; ir++) {
+            line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_3 -P%03d_4 +P%03d_5 +P%03d_6\n",
+                     im, im, iCry, iCry+1, iCry+1, iCry+1);
+            modRegion += line.Data();
+            line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_4 -P%03d_3 +P%03d_5 +P%03d_6\n",
+                     im, im, iCry, iCry+2, iCry+2, iCry+2);
+            modRegion += line.Data();
+            iCry += 3;
+         }
       }
 
       // create regions between ROWs in a module
-      iCry = im * fgkCrystalsNperModule;
-      // central
-      line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_4 +P%03d_3\n",
-               im, im, iCry+3, iCry, iCry+3, iCry+3);
-      modRegion += line.Data();
-      // left
-      line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_4 -P%03d_4 -(P%03d_4 +P%03d_5)\n",
-               im, im, iCry+5, iCry+2, iCry+5, iCry+3, iCry, iCry);
-      modRegion += line.Data();
-      // right
-      line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_3 -P%03d_3 -(P%03d_3 +P%03d_5)\n",
-               im, im, iCry+4, iCry+1, iCry+4, iCry+3, iCry, iCry);
-      modRegion += line.Data();
 
-      // central
-      line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_4 +P%03d_3\n",
-               im, im, iCry+6, iCry, iCry+6, iCry+6);
-      modRegion += line.Data();
-      // left
-      line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_4 -P%03d_4 -(P%03d_4 +P%03d_6)\n",
-               im, im, iCry+8, iCry+2, iCry+8, iCry+6, iCry, iCry);
-      modRegion += line.Data();
-      // right
-      line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_3 -P%03d_3 -(P%03d_3 +P%03d_6)\n",
-               im, im, iCry+7, iCry+1, iCry+7, iCry+6, iCry, iCry);
-      modRegion += line.Data();
+      iCry = im * fgkCrystalsNperModule;
+      if (fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
+          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0  ) {
+         // central
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_4 +P%03d_3\n",
+                  im, im, iCry+1, iCry+4, iCry+1, iCry+1);
+         modRegion += line.Data();
+         // left
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_4 -P%03d_4 -(P%03d_4 +P%03d_5)\n",
+                  im, im, iCry, iCry+3, iCry, iCry+1, iCry+4, iCry+4);
+         modRegion += line.Data();
+         // right
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_3 -P%03d_3 -(P%03d_3 +P%03d_5)\n",
+                  im, im, iCry+2, iCry+5, iCry+2, iCry+1, iCry+4, iCry+4);
+         modRegion += line.Data();
+
+         // central
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_4 +P%03d_3\n",
+                  im, im, iCry+7, iCry+4, iCry+7, iCry+7);
+         modRegion += line.Data();
+         // left
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_4 -P%03d_4 -(P%03d_4 +P%03d_6)\n",
+                  im, im, iCry+6, iCry+3, iCry+6, iCry+7, iCry+4, iCry+4);
+         modRegion += line.Data();
+         // right
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_3 -P%03d_3 -(P%03d_3 +P%03d_6)\n",
+                  im, im, iCry+8, iCry+5, iCry+8, iCry+7, iCry+4, iCry+4);
+         modRegion += line.Data();
+      } else {
+         // old setup of crystal in a module (5,3,4, 2,0,1, 8,6,7)
+         // central
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_4 +P%03d_3\n",
+                  im, im, iCry+3, iCry, iCry+3, iCry+3);
+         modRegion += line.Data();
+         // left
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_4 -P%03d_4 -(P%03d_4 +P%03d_5)\n",
+                  im, im, iCry+5, iCry+2, iCry+5, iCry+3, iCry, iCry);
+         modRegion += line.Data();
+         // right
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_3 -P%03d_3 -(P%03d_3 +P%03d_5)\n",
+                  im, im, iCry+4, iCry+1, iCry+4, iCry+3, iCry, iCry);
+         modRegion += line.Data();
+
+         // central
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_4 +P%03d_3\n",
+                  im, im, iCry+6, iCry, iCry+6, iCry+6);
+         modRegion += line.Data();
+         // left
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_4 -P%03d_4 -(P%03d_4 +P%03d_6)\n",
+                  im, im, iCry+8, iCry+2, iCry+8, iCry+6, iCry, iCry);
+         modRegion += line.Data();
+         // right
+         line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_5 -P%03d_6 +P%03d_3 -P%03d_3 -(P%03d_3 +P%03d_6)\n",
+                  im, im, iCry+7, iCry+1, iCry+7, iCry+6, iCry, iCry);
+         modRegion += line.Data();
+      }
 
 
       //////////////////////////////////////////////////////////
       // Fill everything outside crystals
       iCry = im * fgkCrystalsNperModule;
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 -P%03d_3 +P%03d_5 +P%03d_6\n",
-                 im, im, im, iCry+1, iCry+1, iCry+1);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 -P%03d_4 +P%03d_5 +P%03d_6\n",
-                 im, im, im, iCry+2, iCry+2, iCry+2);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_4 +P%03d_3\n",
-                 im, im, im, iCry+3, iCry+3, iCry+3);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_4 +P%03d_3\n",
-                 im, im, im, iCry+6, iCry+6, iCry+6);
-      modRegion += line.Data();
+      if (fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
+          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0  ) {
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 -P%03d_3 +P%03d_5 +P%03d_6\n",
+                  im, im, im, iCry+5, iCry+5, iCry+5);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 -P%03d_4 +P%03d_5 +P%03d_6\n",
+                  im, im, im, iCry+3, iCry+3, iCry+3);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_4 +P%03d_3\n",
+                  im, im, im, iCry+1, iCry+1, iCry+1);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_4 +P%03d_3\n",
+                  im, im, im, iCry+7, iCry+7, iCry+7);
+         modRegion += line.Data();
 
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 +AP%03d_5 -P%03d_3 -P%03d_5\n",
-                 im, im, im, im,  iCry+4, iCry+1);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 +AP%03d_6 -P%03d_3 -P%03d_6\n",
-                 im, im, im, im,  iCry+7, iCry+1);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 +AP%03d_5 -P%03d_4 -P%03d_5\n",
-                 im, im, im, im,  iCry+5, iCry+2);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 +AP%03d_6 -P%03d_4 -P%03d_6\n",
-                 im, im, im, im,  iCry+8, iCry+2);
-      modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 +AP%03d_5 -P%03d_3 -P%03d_5\n",
+                  im, im, im, im,  iCry+2, iCry+5);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 +AP%03d_6 -P%03d_3 -P%03d_6\n",
+                  im, im, im, im,  iCry+8, iCry+5);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 +AP%03d_5 -P%03d_4 -P%03d_5\n",
+                  im, im, im, im,  iCry, iCry+3);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 +AP%03d_6 -P%03d_4 -P%03d_6\n",
+                  im, im, im, im,  iCry+6, iCry+3);
+         modRegion += line.Data();
 
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_4 -P%03d_4\n",
-                 im, im, im, iCry+5, iCry+5, iCry+3);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_3 -P%03d_3\n",
-                 im, im, im, iCry+4, iCry+4, iCry+3);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_3 -P%03d_3\n",
-                 im, im, im, iCry+7, iCry+7, iCry+6);
-      modRegion += line.Data();
-      line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_4 -P%03d_4\n",
-                 im, im, im, iCry+8, iCry+8, iCry+6);
-      modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_4 -P%03d_4\n",
+                  im, im, im, iCry, iCry, iCry+1);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_3 -P%03d_3\n",
+                  im, im, im, iCry+2, iCry+2, iCry+1);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_3 -P%03d_3\n",
+                  im, im, im, iCry+8, iCry+8, iCry+7);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_4 -P%03d_4\n",
+                  im, im, im, iCry+6, iCry+6, iCry+7);
+         modRegion += line.Data();
+      } else {
+         // old setup of crystal in a module (5,3,4, 2,0,1, 8,6,7)
+
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 -P%03d_3 +P%03d_5 +P%03d_6\n",
+                  im, im, im, iCry+1, iCry+1, iCry+1);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 -P%03d_4 +P%03d_5 +P%03d_6\n",
+                  im, im, im, iCry+2, iCry+2, iCry+2);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_4 +P%03d_3\n",
+                  im, im, im, iCry+3, iCry+3, iCry+3);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_4 +P%03d_3\n",
+                  im, im, im, iCry+6, iCry+6, iCry+6);
+         modRegion += line.Data();
+
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 +AP%03d_5 -P%03d_3 -P%03d_5\n",
+                  im, im, im, im,  iCry+4, iCry+1);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 +AP%03d_6 -P%03d_3 -P%03d_6\n",
+                  im, im, im, im,  iCry+7, iCry+1);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 +AP%03d_5 -P%03d_4 -P%03d_5\n",
+                  im, im, im, im,  iCry+5, iCry+2);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_4 +AP%03d_6 -P%03d_4 -P%03d_6\n",
+                  im, im, im, im,  iCry+8, iCry+2);
+         modRegion += line.Data();
+
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_4 -P%03d_4\n",
+                  im, im, im, iCry+5, iCry+5, iCry+3);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_5 -P%03d_5 +P%03d_3 -P%03d_3\n",
+                  im, im, im, iCry+4, iCry+4, iCry+3);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_3 -P%03d_3\n",
+                  im, im, im, iCry+7, iCry+7, iCry+6);
+         modRegion += line.Data();
+         line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_6 -P%03d_6 +P%03d_4 -P%03d_4\n",
+                  im, im, im, iCry+8, iCry+8, iCry+6);
+         modRegion += line.Data();
+      }
+
    }
 
    return modRegion;
@@ -1166,7 +1377,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       return outstr.str();
 
    outstr << TString::Format(" - air_cal\n");
-   outstr << TString::Format("AIR_CAL0     5");
+   outstr << TString::Format("AIRCAL0     5");
 
    TString line;
 
@@ -1214,7 +1425,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
 
       // last 2 modules
       id = 2;
-      line.Form("AIR_CAL1    5 | +air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL1    5 | +air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 4;
@@ -1242,13 +1453,13 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
 
       // central module
       id = 0;
-      line.Form("AIR_CAL1    5 | +air_cal +MP000 -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL1    5 | +air_cal +MP000 -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
 
       // last 3 modules
       id = 2;
-      line.Form("AIR_CAL2    5 | +air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL2    5 | +air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 4;
@@ -1259,6 +1470,234 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       line.Form("+air_cal  +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
+   }
+
+   if (fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 )  {
+      // first 4 modules
+      int id = 7;
+      line.Form(" +air_cal -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 6;
+      line.Form(" +air_cal -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 0;
+      line.Form(" +air_cal -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 1;
+      line.Form(" +air_cal -MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      // central
+      id = 2;
+      line.Form("AIRCAL1    5 | +air_cal +MP002 -MP003 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 8;
+      line.Form("+air_cal +MP002 -MP003 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      // last 4 modules
+      id = 3;
+      line.Form("AIRCAL2    5 | +air_cal  +MP003 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 4;
+      line.Form("+air_cal  +MP003 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 5;
+      line.Form("+air_cal  +MP003 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 9;
+      line.Form("+air_cal  +MP003 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 10;
+      line.Form("+air_cal  +MP003 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 11;
+      line.Form("+air_cal  +MP003 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();   
+   }
+
+   // FULL Detector (New version)
+   if (fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0) {
+      // 
+      // Central rows of 3 modules
+      int id = 0;
+      line.Form(" +air_cal +MP001 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 1;
+      line.Form(" +air_cal +MP001 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 2;
+      line.Form(" +air_cal +MP001 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      id = 4;
+      line.Form("AIRCAL1    5 | +air_cal -MP001 +MP005 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 5;
+      line.Form(" +air_cal -MP001 +MP005 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+      id = 6;
+      line.Form(" +air_cal -MP001 +MP005 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      id = 10;
+      line.Form("AIRCAL2    5 | +air_cal -MP005 -MP018 +MP017 -MP020 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 11;
+      line.Form(" +air_cal -MP005 -MP018 +MP017 -MP020 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 12;
+      line.Form(" +air_cal -MP005 -MP018 +MP017 -MP020 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+
+      id = 17;
+      line.Form("AIRCAL3    5 | +air_cal +MP018 -MP025 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 18;
+      line.Form(" +air_cal +MP018 -MP025 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 19;
+      line.Form(" +air_cal +MP018 -MP025 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();  
+
+      id = 24;
+      line.Form("AIRCAL4    5 | +air_cal +MP025 -MP031 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 25;
+      line.Form(" +air_cal +MP025 -MP031 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 26;
+      line.Form(" +air_cal +MP025 -MP031 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data(); 
+
+      id = 30;
+      line.Form("AIRCAL5    5 | +air_cal -MP035 +MP031 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 31;
+      line.Form(" +air_cal -MP035 +MP031 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 32;
+      line.Form(" +air_cal -MP035 +MP031 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data(); 
+
+      id = 34;
+      line.Form("AIRCAL6    5 | +air_cal +MP035 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 35;
+      line.Form(" +air_cal +MP035 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 36;
+      line.Form(" +air_cal +MP035 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data(); 
+
+
+      // 4 block of 3 side modules
+      id = 8;
+      line.Form("AIRCAL7    5 | +air_cal -MP016 -(-MP008 +MP003) -(+MP029 -MP022) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 15;
+      line.Form(" +air_cal -MP016 -(-MP008 +MP003) -(+MP029 -MP022) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 22;
+      line.Form(" +air_cal -MP016 -(-MP008 +MP003) -(+MP029 -MP022) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();   
+
+      id = 9;
+      line.Form("AIRCAL8    5 | +air_cal +MP016 -MP017 -MP003 -MP029 -(+MP005 +MP000) -(+MP031 +MP034) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 16;
+      line.Form(" +air_cal +MP016 -MP017 -MP003 -MP029 -(+MP005 +MP000) -(+MP031 +MP034) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 23;
+      line.Form(" +air_cal +MP016 -MP017 -MP003 -MP029 -(+MP005 +MP000) -(+MP031 +MP034) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      id = 13;
+      line.Form("AIRCAL9    5 | +air_cal +MP020 -MP021 -MP007 -MP033 -(+MP005 +MP002) -(+MP031 +MP036) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 20;
+      line.Form(" +air_cal +MP020 -MP021 -MP007 -MP033 -(+MP005 +MP002) -(+MP031 +MP036) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 27;
+      line.Form(" +air_cal +MP020 -MP021 -MP007 -MP033 -(+MP005 +MP002) -(+MP031 +MP036) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      id = 14;
+      line.Form("AIRCAL10   5 | +air_cal +MP021 -(-MP014 +MP007) -(-MP028 +MP033)  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 21;
+      line.Form(" +air_cal +MP021 -(-MP014 +MP007) -(-MP028 +MP033) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();      
+      id = 28;
+      line.Form(" +air_cal +MP021 -(-MP014 +MP007) -(-MP028 +MP033) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data();
+
+      // 4 digonal modules
+      id = 3;
+      line.Form("AIRCAL11   5 |  +air_cal +MP003 -MP000 -MP008 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data(); 
+
+      id = 7;
+      line.Form("AIRCAL12   5 |  +air_cal +MP007 -MP002 -MP014 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data(); 
+
+      id = 29;
+      line.Form("AIRCAL13   5 |  +air_cal +MP029 -MP034 -MP022 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data(); 
+
+      id = 33;
+      line.Form("AIRCAL14   5 |  +air_cal +MP033 -MP036 -MP028 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+                id, id, id, id, id, id);
+      outstr << line.Data(); 
+
    }
 
    // FULL Detector
@@ -1273,7 +1712,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 23;
-      line.Form("AIR_CAL1    5 | +air_cal -MP011 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL1    5 | +air_cal -MP011 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 31;
@@ -1283,7 +1722,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
 
       // 4 botton modules
       id = 28;
-      line.Form("AIR_CAL2    5 | +air_cal -MP008 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL2    5 | +air_cal -MP008 +MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 20;
@@ -1291,7 +1730,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 22;
-      line.Form("AIR_CAL3    5 | +air_cal -MP010 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL3    5 | +air_cal -MP010 -MP000 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 30;
@@ -1301,7 +1740,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
 
       // 6 blocks of 4 modules from left to right
       id = 25;
-      line.Form("AIR_CAL4    5 | +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL4    5 | +air_cal +MP016 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 17;
@@ -1318,7 +1757,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       outstr << line.Data();
       //
       id = 13;
-      line.Form("AIR_CAL5    5 | +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL5    5 | +air_cal -MP016 +MP004 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 5;
@@ -1335,7 +1774,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       outstr << line.Data();
       //
       id = 9;
-      line.Form("AIR_CAL6    5 | +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL6    5 | +air_cal -MP004 +MP000 +MP008 +MP009 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 1;
@@ -1352,7 +1791,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       outstr << line.Data();
       //
       id = 11;
-      line.Form("AIR_CAL7    5 | +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL7    5 | +air_cal -MP000 -MP006 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 3;
@@ -1369,7 +1808,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       outstr << line.Data();
       //
       id = 15;
-      line.Form("AIR_CAL8    5 | +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL8    5 | +air_cal +MP006 -MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 7;
@@ -1386,7 +1825,7 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
       outstr << line.Data();
       //
       id = 27;
-      line.Form("AIR_CAL9    5 | +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
+      line.Form("AIRCAL9    5 | +air_cal +MP018 +MP010 +MP011 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
                 id, id, id, id, id, id);
       outstr << line.Data();
       id = 19;
@@ -1428,7 +1867,9 @@ string TACAparGeo::PrintParameters()
 
 //_____________________________________________________________________________
 //! Print the Calorimeter material for the FLUKA geometry file
-string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
+//!
+//! \param[in] Material input material
+string TACAparGeo::PrintAssignMaterial(TAGmaterials* Material)
 {
    stringstream outstr;
 
@@ -1448,18 +1889,22 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials *Material)
       magnetic = true;
 
 
-   if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
-      outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL9",
+   if (fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0) {
+      outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL14",
+                          "1.", Form("%d",magnetic), "", "") << endl;
+   } else if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
+      outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL9",
                           "1.", Form("%d",magnetic), "", "") << endl;
    } else if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
-      outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL1",
+      outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL1",
                           "1.", Form("%d",magnetic), "", "") << endl;
-   } else if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 || 
-              fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0) {
-      outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0", "AIR_CAL2",
+   } else if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 ||
+              fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0 ||
+              fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ) {
+      outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL2",
                           "1.", Form("%d",magnetic), "", "") << endl;
    } else
-      outstr << PrintCard("ASSIGNMA", "AIR", "AIR_CAL0",
+      outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0",
                           "", "", Form("%d",magnetic), "", "") << endl;
 
    outstr << PrintCard("ASSIGNMA", flkmat, "CAL000", Form("CAL%03d", fCrystalsN-1),
@@ -1484,8 +1929,11 @@ void TACAparGeo::Clear(Option_t*)
    return;
 }
 
-/*------------------------------------------+---------------------------------*/
+//______________________________________________________________________________
 //! ostream insertion.
+//!
+//! \param[in] os output stream
+//! \param[in] option option for printout
 void TACAparGeo::ToStream(ostream& os, Option_t*) const
 {
    os << "TACAparGeo " << GetName() << endl

@@ -8,6 +8,7 @@
 #include "EmptyEvent.hh"
 #include "DECardEvent.hh"
 #include "DEMSDEvent.hh"
+#include "DEITREvent.hh"
 #include "WDEvent.hh"
 #include "ArduinoEvent.hh"
 #include <stdio.h>
@@ -22,11 +23,12 @@ std::string FRAGnames[] =
    "VTX     fragment ",
    "WD      fragment ",
    "MSD     fragment ",
+   "ITR     fragment ",
    "Arduino fragment "};
 
 unsigned int FRAGkeys[] =
   {EventHeaderID, dataV2495, dataV1720, dataV1190,
-   dataEmpty, dataVTX, dataWD, dataMSD, dataArduino};
+   dataEmpty, dataVTX, dataWD, dataMSD, dataITR, dataArduino};
 
 
 std::map<unsigned int, std::string> BaseFragment::fragnames;
@@ -68,12 +70,11 @@ BaseFragment* BaseFragment::create(unsigned int **p){
     p_bf = new WDEvent;
   } else if( chID==dataMSD ){ // get MSD info
     p_bf = new DEMSDEvent;
+  } else if( chID==dataITR ){ // get MSD info
+     p_bf = new DEITREvent;
   } else if( chID==dataArduino ){ // get Arduino info
     p_bf = new ArduinoEvent;
-  } else {
-  //   printf("Unknown fragment chID %x\n", chID );
   }
-  
   u_int chID2= (*(*p));
   unsigned int *p2=*p;
   //  printf("\n Processing for %x  \n",chID2);

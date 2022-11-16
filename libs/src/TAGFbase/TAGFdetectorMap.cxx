@@ -100,12 +100,38 @@ void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 }
 
 
+//! \brief Add an IT plane to the map assigned to its local Z coordinate
+//!
+//! \param[in] zPos Local Z coordinate of the FitPlane to add
+//! \param[in] indexOfPlane Index of the plane to add
+void TAGFdetectorMap::AddPlane_ZorderLocal(float zPos, int indexOfPlane)	{
+
+	if ( m_zOrderingPlanesLocal.find(zPos) == m_zOrderingPlanesLocal.end())
+		m_zOrderingPlanesLocal[zPos];
+	
+	m_zOrderingPlanesLocal[zPos].push_back(indexOfPlane);
+	if(m_debug > 0)
+	{
+		cout << "Assigned IT plane::" << indexOfPlane << " to zPos::" << zPos << "\nzPos::" << zPos << " has now " << m_zOrderingPlanesLocal[zPos].size() << " planes!!\n";
+	}
+
+	if ( find(m_itPossibleZLocal.begin(), m_itPossibleZLocal.end(), zPos) == m_itPossibleZLocal.end() )
+	{
+		m_itPossibleZLocal.push_back(zPos);
+		std::sort(m_itPossibleZLocal.begin(), m_itPossibleZLocal.end());
+		
+		if(m_debug > 0)	cout << "Added " << zPos << " to possible local ITz\n";
+	}
+
+}
+
+
 //! \brief Get the vector of IT planes' indices at a given Z coordinate
 //!
 //! \param[in] zPos Z coordinate of the IT planes
 //! \return Pointer to the vector of plane indices
-vector<int>* TAGFdetectorMap::GetPlanesAtZ( float zPos ) {
-
+vector<int>* TAGFdetectorMap::GetPlanesAtZ( float zPos )
+{
 	return &m_zOrderingPlanes[zPos];
 }
 
@@ -113,9 +139,28 @@ vector<int>* TAGFdetectorMap::GetPlanesAtZ( float zPos ) {
 //! \brief Get the possible values for the Z coordinate of IT planes
 //!
 //! \return Pointer to vector of possible values for Z coordinate of IT planes
-vector<float>* TAGFdetectorMap::GetPossibleITz() {
-
+vector<float>* TAGFdetectorMap::GetPossibleITz()
+{
 	return &m_itPossibleZ;
+}
+
+
+//! \brief Get the vector of IT planes' indices at a given local Z coordinate
+//!
+//! \param[in] zPos Local Z coordinate of the IT planes
+//! \return Pointer to the vector of plane indices
+vector<int>* TAGFdetectorMap::GetPlanesAtZLocal( float zPos )
+{
+	return &m_zOrderingPlanesLocal[zPos];
+}
+
+
+//! \brief Get the possible values for the local Z coordinate of IT planes
+//!
+//! \return Pointer to vector of possible values for local Z coordinate of IT planes
+vector<float>* TAGFdetectorMap::GetPossibleITzLocal()
+{
+	return &m_itPossibleZLocal;
 }
 
 
@@ -232,6 +277,23 @@ bool TAGFdetectorMap::IsFitPlaneInDet(int planeId, string detName)
 		}
 	}
 	return check;
+}
+
+
+//! \brief Get the detector name from the FitPlane Id
+//!
+//! \param[in] planeId Index of the FitPlane
+//! \return Name of the detector
+string TAGFdetectorMap::GetDetNameFromFitPlaneId(int planeId)
+{
+	for(auto it = m_detectorIndex.begin(); it != m_detectorIndex.end(); ++it)
+	{
+		if( IsFitPlaneInDet(planeId, it->first) )
+			return it->first;
+	}
+
+	Error("GetDetNameFromFitPlaneId()", "Detector not found for FitPlane %d!", planeId);
+	exit(0);
 }
 
 

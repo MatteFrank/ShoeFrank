@@ -27,19 +27,16 @@ public:
    explicit TAVTactBaseRaw(const char* name=0, TAGdataDsc* p_datraw=0, TAGparaDsc* p_geomap=0, TAGparaDsc* p_config=0, TAGparaDsc* pParMap=0);
    virtual  ~TAVTactBaseRaw();
    
-   //! Get number of sensors
-   Int_t GetSensorsN() const { return fNSensors; }
-   
    // Base creation of histogram
    virtual void CreateHistogram();
    
 public:
-   //! Get key header
-   static  UInt_t  GetKeyHeader(Int_t idx)                  { return fgkKeyHeader[idx];   }
+   //! Get sensor header
+   static  UInt_t  GetSensorKey(Int_t idx)                  { return fgkSensorKey[idx];   }
    //! Get header size
    static  Int_t   GetHeaderSize()                          { return fgkFrameHeaderSize;  }
    //! Get key tail
-   static  UInt_t  GetKeyTail(Int_t idx)                    { return fgkKeyTail[idx];     }
+   static  UInt_t  GetSensorTail(Int_t idx)                 { return fgkSensorTail[idx];  }
    //! Get line width
    static  Int_t   GetLineWidth()                           { return fgkLineWidth;        }
    //! Get frame header
@@ -70,8 +67,6 @@ protected:
    Int_t             fFirstFrame;            ///< first frame flag
    Bool_t            fFrameOk;               ///< first frame flag
    
-
-   Int_t             fNSensors;              ///< Number of Sensors
    Int_t             fIndex;                 ///< Data index
    UInt_t            fCurrentTriggerCnt;     ///< Current trigger count
    Int_t             fEventSize;             ///< Event size
@@ -100,17 +95,17 @@ protected:
 
 protected:
    //! Header key
-   static const UInt_t  fgkKeyHeader[];     ///< key header array per sensor
+   static const UInt_t  fgkSensorKey[];      ///< key header array per sensor
    //! Frame size
-   static const Int_t   fgkFrameHeaderSize; ///< Frame header size
+   static const Int_t   fgkFrameHeaderSize;  ///< Frame header size
    //! Key tail
-   static const UInt_t  fgkKeyTail[];       ///< key tailer array per sensor
+   static const UInt_t  fgkSensorTail[];     ///< key tailer array per sensor
    //! Line width
-   static const Int_t   fgkLineWidth;       ///< Size of a line
+   static const Int_t   fgkLineWidth;        ///< Size of a line
    //! Frame header
-   static const UInt_t  fgkFrameHeader;     ///< Frame header word
+   static const UInt_t  fgkFrameHeader;      ///< Frame header word
    //! Frame tail
-   static const UInt_t  fgkFrameTail;       ///< Frame tailer word
+   static const UInt_t  fgkFrameTail;        ///< Frame tailer word
    
 protected:
    // Reset frame counters
@@ -123,10 +118,10 @@ protected:
    virtual  Int_t  GetSensor(UInt_t key);
 
    // decode frame
-   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame);
+   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame = 0x0);
 
    // Fill histogram frame
-   virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data);
+   virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data = 0x0);
    
    // Fill histogram frame
    virtual void FillHistoEvt(Int_t iSensor);

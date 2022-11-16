@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TASTparGeo.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
+  \file TASTparGeo.cxx
   \brief   Implementation of TASTparGeo.
 */
 
@@ -20,10 +19,11 @@
 //##############################################################################
 
 /*!
-  \class TASTparGeo TASTparGeo.hxx "TASTparGeo.hxx"
+  \class TASTparGeo 
   \brief Map and Geometry parameters for the start counter. **
 */
 
+//! Class Imp
 ClassImp(TASTparGeo);
 
 const TString TASTparGeo::fgkBaseName    = "ST";
@@ -42,7 +42,6 @@ TASTparGeo::TASTparGeo()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TASTparGeo::~TASTparGeo()
 {
 }
@@ -100,7 +99,6 @@ Bool_t TASTparGeo::FromFile(const TString& name)
 
 //------------------------------------------+-----------------------------------
 //! Clear geometry info.
-
 void TASTparGeo::Clear(Option_t*)
 {
    return;
@@ -108,15 +106,13 @@ void TASTparGeo::Clear(Option_t*)
 
 /*------------------------------------------+---------------------------------*/
 //! ostream insertion.
-
 void TASTparGeo::ToStream(ostream& os, Option_t*) const
 {
   os << "TASTparGeo " << GetName() << endl;
   os << "p 8p   ref_x   ref_y   ref_z   hor_x   hor_y   hor_z"
      << "   ver_x   ver_y   ver_z  width" << endl;
-
-  return;
 }
+
 //_____________________________________________________________________________
 TGeoVolume* TASTparGeo::BuildStartCounter(const char *stName )
 {
@@ -134,7 +130,6 @@ TGeoVolume* TASTparGeo::BuildStartCounter(const char *stName )
    return start;
 }
 
-
 //_____________________________________________________________________________
 string TASTparGeo::PrintRotations()
 {
@@ -144,35 +139,34 @@ string TASTparGeo::PrintRotations()
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
   
-    TVector3 fCenter = fpFootGeo->GetSTCenter();
-    TVector3  fAngle = fpFootGeo->GetSTAngles();
-    
-    if(fAngle.Mag()!=0){
+    TVector3 center = fpFootGeo->GetSTCenter();
+    TVector3  angle = fpFootGeo->GetSTAngles(); //invert the angles to take into account the FLUKA convention
+    angle *= -1;
+     
+    if(angle.Mag()!=0){
 	  
       ss << PrintCard("ROT-DEFI", "300.", "", "",
-		      Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
-		      Form("%f",-fCenter.Z()), "st") << endl;
-      if(fAngle.X()!=0)
-	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "st") << endl;
-      if(fAngle.Y()!=0)
-	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "st") << endl;
-      if(fAngle.Z()!=0)
-	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "st") << endl;
+		      Form("%f",-center.X()), Form("%f",-center.Y()),
+		      Form("%f",-center.Z()), "st") << endl;
+      if(angle.X()!=0)
+	ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "", "", "st") << endl;
+      if(angle.Y()!=0)
+	ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "", "", "st") << endl;
+      if(angle.Z()!=0)
+	ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "", "", "st") << endl;
       ss << PrintCard("ROT-DEFI", "300.", "", "",
-		      Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-		      Form("%f",fCenter.Z()), "st") << endl;
+		      Form("%f",center.X()), Form("%f",center.Y()),
+		      Form("%f",center.Z()), "st") << endl;
       
     }
   }
 
   return ss.str();
-
 }
 
-
 //_____________________________________________________________________________
-string TASTparGeo::PrintBodies( ) {
-  
+string TASTparGeo::PrintBodies( )
+{
   stringstream outstr;
   outstr << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
 
@@ -184,24 +178,24 @@ string TASTparGeo::PrintBodies( ) {
 
     TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-    TVector3  fCenter = fpFootGeo->GetSTCenter();
-    TVector3  fAngle = fpFootGeo->GetSTAngles();
+    TVector3  center = fpFootGeo->GetSTCenter();
+    TVector3  angle = fpFootGeo->GetSTAngles();
 
     
-    if(fAngle.Mag()!=0)
+    if(angle.Mag()!=0)
       outstr << "$start_transform st" << endl;
 
     outstr << setiosflags(ios::fixed) << setprecision(6);
-    outstr << "RPP stc     "  << fCenter[0]-fSize[0]/2. << " " << fCenter[0]+fSize[0]/2 << " " <<
-      fCenter[1]-fSize[1]/2. << " " << fCenter[1]+fSize[1]/2 << " " <<
-      fCenter[2]-fSize[2]/2. - 0.001 << " " << fCenter[2]+fSize[2]/2 + 0.001 << " " <<  endl;
+    outstr << "RPP stc     "  << center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2 << " " <<
+      center[1]-fSize[1]/2. << " " << center[1]+fSize[1]/2 << " " <<
+      center[2]-fSize[2]/2. - 0.001 << " " << center[2]+fSize[2]/2 + 0.001 << " " <<  endl;
 
     //Mylar that is 10\mum thick
-    outstr << "XYP stcmyl1    "  << fCenter[2]-fSize[2]/2. <<  endl;
+    outstr << "XYP stcmyl1    "  << center[2]-fSize[2]/2. <<  endl;
     //Mylar that is 10\mum thick
-    outstr << "XYP stcmyl2    "  << fCenter[2]+fSize[2]/2. <<  endl;
+    outstr << "XYP stcmyl2    "  << center[2]+fSize[2]/2. <<  endl;
     
-    if(fAngle.Mag()!=0)
+    if(angle.Mag()!=0)
       outstr << "$end_transform" << endl;
   }
 
@@ -210,8 +204,8 @@ string TASTparGeo::PrintBodies( ) {
 
 
 //_____________________________________________________________________________
-string TASTparGeo::PrintRegions() {
-  
+string TASTparGeo::PrintRegions()
+{
   stringstream outstr;
 
   if(TAGrecoManager::GetPar()->IncludeST()){
@@ -221,7 +215,6 @@ string TASTparGeo::PrintRegions() {
     outstr << "STC          5 +stc -stcmyl1 +stcmyl2" << endl;
     outstr << "STCMYL1      5 +stc +stcmyl1" << endl;
     outstr << "STCMYL2      5 +stc -stcmyl2" << endl;
-
   }
 
   return outstr.str();
@@ -229,23 +222,20 @@ string TASTparGeo::PrintRegions() {
 
 
 //_____________________________________________________________________________
-string TASTparGeo::PrintSubtractBodiesFromAir() {
-
+string TASTparGeo::PrintSubtractBodiesFromAir()
+{
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeST()){
-
     ss << "-stc " << endl;;
-
   }
   
   return ss.str();
-
 }
 
 //_____________________________________________________________________________
-string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material) {
-
+string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material)
+{
   stringstream outstr;
 
   if(TAGrecoManager::GetPar()->IncludeST()){

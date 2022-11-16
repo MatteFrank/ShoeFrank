@@ -734,7 +734,6 @@ void TAEDbaseInterface::ToggleGlbDisplay()
 //! Toggle MC hit display
 void TAEDbaseInterface::ToggleMcDisplay()
 {
-   if (fType != 1) return;
    ToggleDisplay(0);
 }
 

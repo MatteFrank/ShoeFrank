@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 
 #include "TVector3.h"
+#include "TH2.h"
 #include "TAGobject.hxx"
 #include "Track.h"
 #include "PlanarMeasurement.h"
@@ -84,9 +85,11 @@ public:
 	TString				GetRecoTrackName(Track* tr);
 	int					GetChargeFromTW(Track* trackToCheck);
 	map<string, int>	CountParticleGenaratedAndVisible();
+	void				FillPlaneOccupancy(TH2* h_PlaneOccupancy);
 
 private:
 
+	void		CheckPlaneOccupancy();
 	int			FillTrackRepVector();
 	bool		PrefitRequirements( map< string, vector<AbsMeasurement*> >::iterator element ); 
 
@@ -101,6 +104,7 @@ private:
 	void		CategorizeVT();
 	void		CategorizeIT();
 	void		CategorizeMSD();
+	void		SetTrackSeedNoMSD();
 	void		CategorizeTW();
 	
 	void		CategorizeMSD_Linear();
@@ -115,7 +119,7 @@ private:
 	void		ClearTrackTempMap();
 	TVector3	ExtrapolateToOuterTracker( Track* trackToFit, int whichPlane, int repId =-1);
 
-
+	int m_eventType;
 	vector<int>* m_chargeVect;								///< Vector with charge values seen by TW -> used for track representation declaration
 	map<int, vector<AbsMeasurement*> >* m_allHitMeas;		///< Map with all the Measurements in GenFit format
 	TAGFdetectorMap* m_SensorIDMap;							///< TAGFdetectorMap for index handling
@@ -125,7 +129,10 @@ private:
 	map<int, Track*> m_trackTempMap;						///< Temporary map where to store tracks during selection
 	map<int, TVector3> m_trackSlopeMap;						///< Map of track slopes @ VT
 	map< int, vector<int> >* m_measParticleMC_collection;	///< Map of MC particles associated w/ global measurement index
-	
+
+	map<string, vector<int>> m_PlaneOccupancy;
+	vector<string> m_detectors;
+
 	TAGgeoTrafo* m_GeoTrafo;								///< GeoTrafo object for reference frame transformations
 	TAVTparGeo* m_VT_geo;									///< Geometry transformations for VTX detector
 	TAITparGeo* m_IT_geo;									///< Geometry transformations for IT detector

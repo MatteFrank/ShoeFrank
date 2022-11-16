@@ -1,8 +1,7 @@
 #ifndef _TASTparGeo_HXX
 #define _TASTparGeo_HXX
 /*!
- \file
- \version $Id: TASTparGeo.hxx,v 1.2 2003/06/22 19:33:36 mueller Exp $
+ \file TASTparGeo.hxx
  \brief   Declaration of TASTparGeo.
  */
 /*------------------------------------------+---------------------------------*/

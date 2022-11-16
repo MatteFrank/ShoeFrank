@@ -1,11 +1,6 @@
 # CMake for FOOT_src
 # Ch. Finck
 
-#------------------------------------------------------------------------------
-# Check cmake version is compatible
-#
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-
 #----------------------------------------------------------------------------
 # Setup the project
 #
@@ -29,7 +24,11 @@ add_subdirectory(TAMCbase)
 add_subdirectory(TATWbase)
 add_subdirectory(TACAbase)
 add_subdirectory(TAEDbase)
-add_subdirectory(TATOEbase)
-add_subdirectory(TAGFbase)
+if (TOE_DIR)
+   add_subdirectory(TATOEbase)
+endif(TOE_DIR)
+if (GENFIT_DIR)
+   add_subdirectory(TAGFbase)
+endif(GENFIT_DIR)
 add_subdirectory(TAGfoot)
 

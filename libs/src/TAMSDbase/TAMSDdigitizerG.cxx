@@ -1,3 +1,8 @@
+/*!
+ \file TAMSDdigitizerG.cxx
+ \brief   Implementation of TAMSDdigitizerG.
+ */
+
 #include "TAMSDdigitizerG.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -14,8 +19,16 @@ Float_t TAMSDdigitizerG::fgkPairCreation  = 3.6e-3; // keV
 Float_t TAMSDdigitizerG::fgkFanoFactor    = 0.115;
 Float_t TAMSDdigitizerG::fgkNormFactor    = TMath::Sqrt(2*TMath::Pi());
 
+/*!
+ \class TAMSDdigitizerG
+ \brief digitizer for MSD based on Gaussian
+ */
+
 
 // --------------------------------------------------------------------------------------
+//! Constructor
+//!
+//! \param[in] parGeo geometry parameter
 TAMSDdigitizerG::TAMSDdigitizerG(TAMSDparGeo* parGeo)
  : TAGbaseDigitizer(),
    fDe0Par(-8.7),
@@ -44,17 +57,29 @@ TAMSDdigitizerG::TAMSDdigitizerG(TAMSDparGeo* parGeo)
    
    fPitch   = fpParGeo->GetPitchX()*TAGgeoTrafo::CmToMu();
    fStripsN = fpParGeo->GetStripsN();
-   
 }
 
 // --------------------------------------------------------------------------------------
+//! Destructor
 TAMSDdigitizerG::~TAMSDdigitizerG()
 {
    delete fFuncClusterDis;
 }
 
 //------------------------------------------+-----------------------------------
-//! fill strip signal
+//! Fill hit signal
+//!
+//! \param[in] edep energy loss
+//! \param[in] x0  impact position in X direction
+//! \param[in] y0  impact position in Y direction
+//! \param[in] zin impact position in z direction
+//! \param[in] zout outgoing position in z direction
+//! \param[in] time impact time
+//! \param[in] sensorId plane id
+//! \param[in] Z atomic charge of the particle
+//! \param[in] px0 momentum in X direction
+//! \param[in] py0 momentum in Y direction
+//! \param[in] pz0 momentum in z direction
 Bool_t TAMSDdigitizerG::Process( Double_t edep, Double_t x0, Double_t y0, Double_t zin, Double_t zout, Double_t /*time*/, Int_t sensorId, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
    x0 *= TAGgeoTrafo::CmToMu();
@@ -100,8 +125,14 @@ Bool_t TAMSDdigitizerG::Process( Double_t edep, Double_t x0, Double_t y0, Double
    return MakeCluster(x0, y0, zin, zout, sensorId);
 }
 
-
-// --------------------------------------------------------------------------------------
+//------------------------------------------+-----------------------------------
+//! Make cluster
+//!
+//! \param[in] x0  impact position in X direction
+//! \param[in] y0  impact position in Y direction
+//! \param[in] zin impact position in z direction
+//! \param[in] zout outgoing position in z direction
+//! \param[in] sensorId plane id
 Bool_t TAMSDdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Int_t sensorId)
 {
    // std array
@@ -153,6 +184,7 @@ Bool_t TAMSDdigitizerG::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, 
 }
 
 // --------------------------------------------------------------------------------------
+//! Set functions
 void TAMSDdigitizerG::SetFunctions()
 {
    fFuncClusterDis = new TF1("ClusterDis", "gaus");
@@ -163,12 +195,19 @@ void TAMSDdigitizerG::SetFunctions()
 }
 
 // --------------------------------------------------------------------------------------
+//! Set ADC value
+//!
+//! \param[in] charge charge value
 Int_t TAMSDdigitizerG::GetAdcValue(Float_t charge)
 {
    return int(fFuncToDigital->Eval(charge)+0.5);
 }
 
 // --------------------------------------------------------------------------------------
+//! Cluster height function
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
 Double_t TAMSDdigitizerG::FuncClusterHeight(Double_t* x, Double_t* par)
 {
    Float_t de = x[0];
@@ -180,6 +219,10 @@ Double_t TAMSDdigitizerG::FuncClusterHeight(Double_t* x, Double_t* par)
 }
 
 // --------------------------------------------------------------------------------------
+//! Cluster width function
+//!
+//! \param[in] x position vector
+//! \param[in] par parameters vector
 Double_t TAMSDdigitizerG::FuncClusterWidth(Double_t* x, Double_t* par)
 {
    Float_t xx = x[0];
@@ -188,7 +231,10 @@ Double_t TAMSDdigitizerG::FuncClusterWidth(Double_t* x, Double_t* par)
    return f;
 }
 
-//_____________________________________________________________________________
+// --------------------------------------------------------------------------------------
+//! Get strip number from position
+//!
+//! \param[in] pos a given position
 Int_t TAMSDdigitizerG::GetStrip(Float_t pos) const
 {
    Float_t posmin = -fStripsN*fPitch/2.;
@@ -204,7 +250,10 @@ Int_t TAMSDdigitizerG::GetStrip(Float_t pos) const
    return strip;
 }
 
-//_____________________________________________________________________________
+// --------------------------------------------------------------------------------------
+//! Get remainder from position
+//!
+//! \param[in] pos a given position
 Float_t TAMSDdigitizerG::GetRemainder(Float_t pos) const
 {
    Float_t posmin = -fStripsN*fPitch/2.;
@@ -220,7 +269,10 @@ Float_t TAMSDdigitizerG::GetRemainder(Float_t pos) const
    return line;
 }
 
-//_____________________________________________________________________________
+// --------------------------------------------------------------------------------------
+//! Get region from position
+//!
+//! \param[in] pos a given position
 Int_t TAMSDdigitizerG::GetRegion(Float_t pos) const
 {
    Float_t rem = GetRemainder(pos);

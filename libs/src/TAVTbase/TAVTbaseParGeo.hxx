@@ -29,7 +29,8 @@ protected:
    TAGionisMaterials* fIonisation; //! pointer for ionisation property
    Int_t      fSensorsN;         ///< Number of sensors
    TString    fkDefaultGeoName;  ///< default par geo file name
-   Int_t      fLayersN;          ///< Number of layer (planes)
+   Int_t      fLayersN;          ///< Number of layer (planes/stations)
+   Int_t      fSubLayersN;       ///< Number of sub layer (planes)
 
    TString    fTypeName;         ///< Type name
    Int_t      fTypeNumber;       ///< Type number
@@ -76,8 +77,8 @@ protected:
    TVector3   fMaxPosition;  ///< maximum position
    TVector3   fSizeBox;      ///< box size
    Int_t      fSensPerLayer; ///< number of sensor per layer
-   UChar_t*   fSensorArray;  ///< Array of sensor
-   std::map<float, std::vector<UChar_t>> fSensorMap; ///< map sensor
+   std::size_t*    fSensorArray;  ///< Array of sensor
+   std::map<float, std::vector<std::size_t>> fSensorMap; ///< map sensor
 
 protected:
    static const Int_t   fgkDefSensorsN;   ///< default number of sensors
@@ -115,6 +116,8 @@ public:
    Int_t GetSensPerDataLink()          const { return fSensorsN;       }
    //! Get number of layers
    Int_t GetLayersN()                  const { return fLayersN;        }
+   //! Get number of sub layers
+   Int_t GetSubLayersN()               const { return fSubLayersN;     }
 
    //! Get type name of sensor
    const Char_t* GetTypeName()         const { return fTypeName.Data();}
@@ -169,8 +172,8 @@ public:
    virtual Int_t   GetColumn(Float_t x) const;
    virtual Int_t   GetLine(Float_t y)   const;
 
-   // return aary of sensor id's for a given layer
-   virtual UChar_t* GetSensorsPerLayer(Int_t iLayer);
+   // return array of sensor id's for a given layer
+   virtual std::size_t* GetSensorsPerLayer(Int_t iLayer);
 
    // Get layer position in Z
    virtual Float_t GetLayerPosZ(Int_t layer);

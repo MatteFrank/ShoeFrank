@@ -10,6 +10,12 @@
 #ifndef _TATOEprocedure_HXX
 #define _TATOEprocedure_HXX
 
+/*!
+ \file TATOEprocedure.hxx
+ \brief   Declaration of TATOEprocedure.
+ */
+/*------------------------------------------+---------------------------------*/
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -44,9 +50,6 @@ struct find_among_impl<Found, Found, T, Ts...>{
 template<std::size_t Index, class ... Ts>
 using find_among = typename find_among_impl<0, Index, Ts...>::type;
 
-
-
-
 }// namespace details
 
 
@@ -63,8 +66,6 @@ struct baseline_procedure {
     
     template<class O>
     constexpr void call( O* o_ph ) {
-//        puts(__PRETTY_FUNCTION__) ;
-        
         o_ph->baseline = S{}.compute_first_score( o_ph );
         std::cout << "baseline: " << o_ph->baseline << "\n";
     }
@@ -93,6 +94,7 @@ struct baseline_scorer{
         double value;
         double efficiency;
         double purity;
+       
         friend std::ostream& operator<<(std::ostream& os_p, score_holder const& s_p){
             return os_p << "[efficiency, purity : score] -> [" << s_p.efficiency << ", " << s_p.purity << " : " << s_p.value << "]";
         }
@@ -262,14 +264,6 @@ struct global_only_finaliser{
             o_ph->sign = winner.modifier / o_ph->offset;
             o_ph->cut_index = winner.cut_index;
             o_ph->baseline = winner.score;
-            
-//            auto available_cut_c = o_ph->generate_available_cuts();
-//            available_cut_c.erase( std::remove_if(
-//                                        available_cut_c.begin(),
-//                                        available_cut_c.end(),
-//                                        [&winner](auto const& value_p){ return value_p == winner.cut_index; }
-//                                                  ) );
-//            o_ph->get_available_cuts() = available_cut_c;
         }
         else{ o_ph->is_optimization_done() = true; }
     }
@@ -422,8 +416,6 @@ struct rough_scan_finaliser{
         auto const& winner = derived.get_results().front();
         o_ph->offset = winner.modifier / o_ph->sign;
         o_ph->last_winner = winner.score;
-//        o_ph->last_winner.efficiency = winner.efficiency;
-//        o_ph->last_winner.purity = winner.purity;
     }
 };
 
@@ -449,8 +441,6 @@ struct fine_scan_finaliser{
         o_ph->reset_cuts();
         
         auto const& winner = derived.get_results().front();
-//        o_ph->baseline.efficiency = winner.efficiency;
-//        o_ph->baseline.purity = winner.purity;
         o_ph->baseline = winner.score;
         
         auto& available_cut_c = o_ph->get_available_cuts();
@@ -481,7 +471,8 @@ struct local_scan_procedure_impl : S, Ms< local_scan_procedure_impl<P, S, Ms... 
     }
     
     std::vector<procedure_result<score>>& get_results() { return result_mc; }
-    int& get_counter() { return counter_m; }
+    int&                                  get_counter() { return counter_m; }
+   
 private:
     std::vector<procedure_result<score>> result_mc;
     int counter_m;

@@ -23,6 +23,11 @@
 #include "TAGdata.hxx"
 #include "TAGntuPoint.hxx"
 
+#include <fstream>
+#include <iostream>
+#include <ostream>
+#include <sstream>
+
 using namespace std;
 
 //

@@ -28,10 +28,22 @@
   \brief Get ST, TW and CA raw data from WaveDAQ. **
 */
 
+//! Class Imp
 ClassImp(TAGactWDreader);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] p_datdaq daq event container descriptor
+//! \param[out] p_stwd ST wave form container descriptor
+//! \param[out] p_twwd TW wave form container descriptor
+//! \param[out] p_cawd CA wave form container descriptor
+//! \param[in] p_WDtrigInfo trigger wave form container descriptor
+//! \param[in] p_WDmap mapping parameter descriptor
+//! \param[in] p_WDtim time parameter descriptor
+//! \param[in] p_CAmap  mapping parameter descriptor
+//! \param[in] stdAlone standalone DAQ flag
 TAGactWDreader::TAGactWDreader(const char* name,
               TAGdataDsc* p_datdaq,
               TAGdataDsc* p_stwd, 
@@ -41,8 +53,8 @@ TAGactWDreader::TAGactWDreader(const char* name,
               TAGparaDsc* p_WDmap, 
               TAGparaDsc* p_WDtim,
               TAGparaDsc* p_CAmap,
-               Bool_t stdAlone)
-  : TAGaction(name, "TAGactWDreader - Unpack WaveDAQ raw data"),
+              Bool_t stdAlone)
+  : TAGaction(name, "TAGactWDreader - Unpack WaveDAQ and Arduino raw data"),
     fpDatDaq(p_datdaq),
     fpStWd(p_stwd),
     fpTwWd(p_twwd),
@@ -69,7 +81,6 @@ TAGactWDreader::TAGactWDreader(const char* name,
    fProcFiles=0;  
    fEventsN=0;
    fMaxFiles=1;
-   
    int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
    fTempCA = new double [nCry];
    for (int cryID=0; cryID<nCry; ++cryID) {
@@ -86,10 +97,10 @@ TAGactWDreader::~TAGactWDreader()
 }
 
 //------------------------------------------+-----------------------------------
-//! Action.
-
-
-Int_t TAGactWDreader::Open(const TString &fname) {
+//! Open
+//!
+//! \param[in] fname file name
+Int_t TAGactWDreader::Open(const TString& fname) {
 
    fWDstream = fopen(fname.Data(),"r");
    if (fWDstream==NULL) {
@@ -102,10 +113,10 @@ Int_t TAGactWDreader::Open(const TString &fname) {
 
 }
 
-
 //------------------------------------------+-----------------------------------
-Int_t TAGactWDreader::UpdateFile() {
-  
+//! Update file
+Int_t TAGactWDreader::UpdateFile()
+{
    do {
       Int_t pos1 = fInitName.Last('_');
       Int_t pos2 = fInitName.Last('.');
@@ -115,6 +126,7 @@ Int_t TAGactWDreader::UpdateFile() {
       Int_t locRunNum = atoi(slocRunNum.Data());
       //fCurrName = baseName+to_string(locRunNum+fProcFiles)+ext;
       fCurrName = baseName+TString(Form("%04d",locRunNum+fProcFiles))+ext;
+
       fProcFiles++;
       if (fProcFiles>=fMaxFiles) {
          return kFALSE;
@@ -124,10 +136,10 @@ Int_t TAGactWDreader::UpdateFile() {
    return kTRUE;
 }
 
-
 //------------------------------------------+-----------------------------------
-Int_t TAGactWDreader::Close() {
-
+//! Close file
+Int_t TAGactWDreader::Close()
+{
    if (fgStdAloneFlag && fWDstream!=NULL)
       fclose(fWDstream);
    fWDstream=NULL;
@@ -136,8 +148,9 @@ Int_t TAGactWDreader::Close() {
 }
 
 //------------------------------------------+-----------------------------------
-Bool_t TAGactWDreader::Action() {
-
+//! Action
+Bool_t TAGactWDreader::Action()
+{
    if (FootDebugLevel(1)) { cout << " Entering the TAGactWDreader action " << endl; }
 
    TAGdaqEvent*         p_datdaq;
@@ -158,21 +171,14 @@ Bool_t TAGactWDreader::Action() {
    bool eof = false;
 
    if (!fgStdAloneFlag) {
-      Int_t nFragments = p_datdaq->GetFragmentsN();
       //decoding fragment and filling the datRaw class
-      for (Int_t i = 0; i < nFragments; ++i) {
-         TString type = p_datdaq->GetClassType(i);
-         if (type.Contains("WDEvent")) {
-            const WDEvent* evt = static_cast<const WDEvent*> (p_datdaq->GetFragment(i));
-            nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
-         }
+      const WDEvent* evt = static_cast<const WDEvent*> (p_datdaq->GetFragment("WDEvent"));
+      if (evt) 
+         nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
 
-         if (type.Contains("ArduinoEvent")) {
-            const ArduinoEvent* evt = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment(i));
-            DecodeArduinoTempCA(evt, p_CAmap);
-         }
-
-      }
+      const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
+      if (evtA) 
+         DecodeArduinoTempCA(evtA, p_CAmap);
    } else {
       nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap, p_CAmap);
    }
@@ -208,11 +214,16 @@ Bool_t TAGactWDreader::Action() {
 }
 
 //------------------------------------------+-----------------------------------
-//! Decoding Arduino
+//! Decoding Arduino events (Calorimeter crystal temperature sensors)
+//!
+//! \param[in] evt     arduino event descriptor
+//! \param[in] p_CAmap  channel map parameter descriptor
 Int_t TAGactWDreader::DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p_CAmap)
 {
-   // empty event
-   if ( evt->evtSize == 0 ) return 0;
+   // Arduino events (Temp) are read only every few seconds
+   // so, the are a lot of empty events 
+   
+   if ( evt->evtSize == 0 ) return 0; // empty event
 
    int nCry = p_CAmap->GetCrystalsN();
 
@@ -232,14 +243,14 @@ Int_t TAGactWDreader::DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p
       for (int k=0; k<5; ++k) {
          u_int muxnum = evt->values[nRead++]; 
          if (FootDebugLevel(1)) cout << "    mux:" << muxnum << endl;
-         for (int ch=0; ch<16; ++ch) {
+         for (int ch=0; ch<16; ++ch) { // each multiplexer has 16 channels
             // Convert to float from u_int
             double tempADC = *((float*)(&(evt->values[nRead++]))); // average over 8 measurements
             // not connected channels will read 1023
             if (tempADC < 1023) {
                int iCry = p_CAmap->GetArduinoCrystalId(boardID, muxnum, ch);
                if (iCry < 0 || iCry >= nCry) { 
-                  Error("TAGactWDreader", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d -> criID %d", boardID, muxnum, ch, iCry);
+                  Error("TAGactWDreader", " --- Not well mapped Arduino vs crystal ID. Board: %d mux: %d  ch: %d -> criID %d", boardID, muxnum, ch, iCry);
                   continue;
                }
                fTempCA[iCry] = tempADC; 
@@ -253,10 +264,16 @@ Int_t TAGactWDreader::DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p
    return 1;
 }
 
+
 //------------------------------------------+-----------------------------------
 //! Decoding
-
-Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap) {
+//!
+//! \param[in] evt wave dream event descriptor
+//! \param[in] p_WDtrigInfo trigger wave form container descriptor
+//! \param[in] p_WDmap channel map parameter descriptor
+//! \param[in] p_WDtim time parameter descriptor
+Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime* p_WDTim, TAGbaseWDparMap* p_WDMap)
+{
   
    u_int word;
    
@@ -284,26 +301,26 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtr
    bool foundFooter = false;
    while (iW < evt->evtSize && !foundFooter) {
       
-     if (evt->values.at(iW) == GLB_EVT_HEADER) {
-       if (FootDebugLevel(1)) printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
+      if (evt->values.at(iW) == GLB_EVT_HEADER) {
+         if (FootDebugLevel(1)) printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
             
-       iW+=5;
-       nmicro = evt->values.at(iW);
-       nmicro = 1000;
+         iW+=5;
+         nmicro = evt->values.at(iW);
+         nmicro = 1000;
             
-       iW++; //
-       if (FootDebugLevel(1)) printf("word:%08x\n", evt->values.at(iW));
+         iW++; //
+         if (FootDebugLevel(1)) printf("word:%08x\n", evt->values.at(iW));
 
-       //found evt_header
-       if (evt->values.at(iW) == EVT_HEADER) {
-	 if (FootDebugLevel(1)) printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
-                  
-	 iW++;
-	 trig_type = (evt->values.at(iW)>>16) & 0xffff;
-	 ser_evt_number =  evt->values.at(iW)& 0xffff;
-                  
-	 iW++;
-	 bco_counter = (int)evt->values.at(iW);
+         //found evt_header
+         if (evt->values.at(iW) == EVT_HEADER) {
+            if (FootDebugLevel(1)) printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
+                     
+            iW++;
+            trig_type = (evt->values.at(iW)>>16) & 0xffff;
+            ser_evt_number =  evt->values.at(iW)& 0xffff;
+                           
+            iW++;
+            bco_counter = (int)evt->values.at(iW);
                   
             iW++;
             while ((evt->values.at(iW) & 0xffff)== BOARD_HEADER) {
@@ -311,76 +328,75 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtr
                if (FootDebugLevel(1)) printf("found board header::%08x num%d\n", evt->values.at(iW), board_id);
                iW++;
                temperature = *((float*)&evt->values.at(iW));
-               if (FootDebugLevel(1)) printf("temperature::%08x num%d\n", evt->values.at(iW), board_id);
-                                        
-	   iW++;
-	   range = *((float*)&evt->values.at(iW));
-                           
-	   if (FootDebugLevel(1))
-	     printf("range::%08x num%d\n", evt->values.at(iW), board_id);
-               
-	   iW++;
-               
-	   sampling_freq =  (evt->values.at(iW) >>16)& 0xffff;
-	   flags = evt->values.at(iW) & 0xffff;
-	   if (FootDebugLevel(1)) printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
+               if (FootDebugLevel(1)) printf("temperatrue::%08x num%d\n", evt->values.at(iW), board_id);
+                                                
+               iW++;
+               range = *((float*)&evt->values.at(iW));
+                                    
+               if (FootDebugLevel(1))
+               printf("range::%08x num%d\n", evt->values.at(iW), board_id);
+                        
+               iW++;
+                        
+               sampling_freq =  (evt->values.at(iW) >>16)& 0xffff;
+               flags = evt->values.at(iW) & 0xffff;
+               if (FootDebugLevel(1)) printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
+
+               iW++;
+
+               while((evt->values.at(iW) & 0xffff)== CH_HEADER) {
                      
-	   iW++;
-                           
-	   while((evt->values.at(iW) & 0xffff)== CH_HEADER) {
-            
-	     char tmp_chstr[3]={'0','0','\0'};
-	     tmp_chstr[1] = (evt->values.at(iW)>>24)  & 0xff;
-	     tmp_chstr[0] = (evt->values.at(iW)>>16)  & 0xff;
-	     ch_num = atoi(tmp_chstr);
-	     if (FootDebugLevel(1))
-	       printf("found channel header::%08x num%d\n", evt->values.at(iW), ch_num);
-                              
-	     iW++;
-	     trig_cell = (evt->values.at(iW)>>16) &0xffff;
-                              
-	     fe_settings = ((evt->values.at(iW))&0xffff);
-	     iW++;
-                              
-	     int adctmp=0;
-	     int delta=0,deltaold=0;
-	     bool jump_up=false;
-	     vector<int> w_adc;
-	     w_amp.clear();
-                              
-	     for(int iSa=0;iSa<512;iSa++) {
-	       adc_sa = evt->values.at(iW);
-	       adctmp  = (adc_sa & 0xffff);
-	       w_adc.push_back(adctmp);
-	       adctmp = ((adc_sa >> 16) & 0xffff);
-	       w_adc.push_back(adctmp);
-	       iW++;
-	     }
-                              
-	     if (ch_num != 16 && ch_num != 17) {
-	       w_amp = ADC2Volt(w_adc, range);
-	     } else {
-	       w_amp = ADC2Volt_CLK(w_adc);
-	     }
-                              
-                              
-	     w = new TWaveformContainer();
-	     w->SetChannelId(ch_num);
-	     w->SetBoardId(board_id);
-	     w->GetVectA() = w_amp;
-	     w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
-	     w->GetVectT() = w->GetVectRawT();
-	     w->SetNEvent(fEventsN);
-	     w->SetEmptyFlag(false);
-	     w->SetTrigType(trig_type);
-	     w->SetTriggerCellId(trig_cell);
-	     if (FootDebugLevel(1)) printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
-                              
-	     string ch_type;
-	     ch_type = p_WDMap->GetChannelType(board_id, ch_num);
-                              
-	     if (FootDebugLevel(1)) printf("type::%s\n", ch_type.data());
-                              
+                  char tmp_chstr[3]={'0','0','\0'};
+                  tmp_chstr[1] = (evt->values.at(iW)>>24)  & 0xff;
+                  tmp_chstr[0] = (evt->values.at(iW)>>16)  & 0xff;
+                  ch_num = atoi(tmp_chstr);
+                  if (FootDebugLevel(1))
+                     printf("found channel header::%08x num%d\n", evt->values.at(iW), ch_num);
+
+                  iW++;
+                  trig_cell = (evt->values.at(iW)>>16) &0xffff;
+                                          
+                  fe_settings = ((evt->values.at(iW))&0xffff);
+                  iW++;
+
+                  int adctmp=0;
+                  int delta=0,deltaold=0;
+                  bool jump_up=false;
+                  vector<int> w_adc;
+                  w_amp.clear();
+                                          
+                  for(int iSa=0;iSa<512;iSa++) {
+                     adc_sa = evt->values.at(iW);
+                     adctmp  = (adc_sa & 0xffff);
+                     w_adc.push_back(adctmp);
+                     adctmp = ((adc_sa >> 16) & 0xffff);
+                     w_adc.push_back(adctmp);
+                     iW++;
+                  }
+                                          
+                  if (ch_num != 16 && ch_num != 17) {
+                     w_amp = ADC2Volt(w_adc, range);
+                  } else {
+                     w_amp = ADC2Volt_CLK(w_adc);
+                  }
+
+                  w = new TWaveformContainer();
+                  w->SetChannelId(ch_num);
+                  w->SetBoardId(board_id);
+                  w->GetVectA() = w_amp;
+                  w->GetVectRawT() = p_WDTim->GetRawTimeArray(board_id, ch_num, trig_cell);
+                  w->GetVectT() = w->GetVectRawT();
+                  w->SetNEvent(fEventsN);
+                  w->SetEmptyFlag(false);
+                  w->SetTrigType(trig_type);
+                  w->SetTriggerCellId(trig_cell);
+                  if (FootDebugLevel(1)) printf("found waveform board:%d  channel:%d\n", board_id,ch_num);
+
+                  string ch_type;
+                  ch_type = p_WDMap->GetChannelType(board_id, ch_num);
+
+                  if (FootDebugLevel(1)) printf("type::%s\n", ch_type.data());
+
                   if (ch_type =="ST") {
                      fSTwaves.push_back(w);
                   } else if (ch_type == "TW") {
@@ -401,64 +417,64 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtr
                   w_amp.clear();
                }
             }
-         } else if (evt->values.at(iW) == EVT_FOOTER) {
-            if (FootDebugLevel(1)) printf("found footer\n");
-            return nmicro;
-         }
-              
-         vector<uint32_t> trigInfoWords;
-         int tbo,nbanks;
-         if ((evt->values.at(iW) &0xffff)== TRIG_HEADER) {
-            tbo =  (evt->values.at(iW) >> 16)& 0xffff;
-            iW++;
-            nbanks =  evt->values.at(iW) & 0xffff;
-            iW++;
-            if (FootDebugLevel(1)) printf("found trigger board %d header, nbanks::%d\n",tbo,nbanks);
-            for(int ibank=0;ibank<nbanks;ibank++) {
-               if (evt->values.at(iW) == TRGI_BANK_HEADER) {
-                  if (FootDebugLevel(1)) printf("TRGI header::%08x\n",evt->values.at(iW));
+      } else if (evt->values.at(iW) == EVT_FOOTER) {
+         if (FootDebugLevel(1)) printf("found footer\n");
+         return nmicro;
+      }
+
+      vector<uint32_t> trigInfoWords;
+      int tbo,nbanks;
+      if ((evt->values.at(iW) &0xffff)== TRIG_HEADER) {
+         tbo =  (evt->values.at(iW) >> 16)& 0xffff;
+         iW++;
+         nbanks =  evt->values.at(iW) & 0xffff;
+         iW++;
+         if (FootDebugLevel(1)) printf("found trigger board %d header, nbanks::%d\n",tbo,nbanks);
+         for(int ibank=0;ibank<nbanks;ibank++) {
+            if (evt->values.at(iW) == TRGI_BANK_HEADER) {
+               if (FootDebugLevel(1)) printf("TRGI header::%08x\n",evt->values.at(iW));
+               trigInfoWords.push_back(evt->values.at(iW));
+               iW++;
+               int size =  evt->values.at(iW);
+               trigInfoWords.push_back(evt->values.at(iW));
+               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+               iW++;
+               for(int i=0;i<size;i++) {
+                  int word= evt->values.at(iW);
+                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
                   trigInfoWords.push_back(evt->values.at(iW));
                   iW++;
-                  int size =  evt->values.at(iW);
-                  trigInfoWords.push_back(evt->values.at(iW));
-                  if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
-                  iW++;
-                  for(int i=0;i<size;i++) {
-                     int word= evt->values.at(iW);
-                     if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
-                     trigInfoWords.push_back(evt->values.at(iW));
-                     iW++;
-                  }
-               }else if (evt->values.at(iW) == TGEN_BANK_HEADER) {
-                  if (FootDebugLevel(1)) printf("TGEN header::%08x\n",evt->values.at(iW));
-                  trigInfoWords.push_back(evt->values.at(iW));
-                  iW++;
-                  int size = evt->values.at(iW);
-                  trigInfoWords.push_back(evt->values.at(iW));
-                  if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
-                  iW++;
-                  for(int i=0;i<size;i++) {
-                     if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
-                     trigInfoWords.push_back(evt->values.at(iW));
-                     iW++;
-                  }
-               }else if (evt->values.at(iW) == TRGC_BANK_HEADER) {
-                  trigInfoWords.push_back(evt->values.at(iW));
-                  if (FootDebugLevel(1)) printf("TRCG header::%08x\n",evt->values.at(iW));
-                  iW++;
-                  int size = evt->values.at(iW);
-                  if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+               }
+            } else if (evt->values.at(iW) == TGEN_BANK_HEADER) {
+               if (FootDebugLevel(1)) printf("TGEN header::%08x\n",evt->values.at(iW));
+               trigInfoWords.push_back(evt->values.at(iW));
+               iW++;
+               int size = evt->values.at(iW);
+               trigInfoWords.push_back(evt->values.at(iW));
+               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+               iW++;
+               for(int i=0;i<size;i++) {
+                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
                   trigInfoWords.push_back(evt->values.at(iW));
                   iW++;
-                  for(int i=0;i<size;i++) {
-                     if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
-                     trigInfoWords.push_back(evt->values.at(iW));
-                     iW++;
-                  }
+               }
+            } else if (evt->values.at(iW) == TRGC_BANK_HEADER) {
+               trigInfoWords.push_back(evt->values.at(iW));
+               if (FootDebugLevel(1)) printf("TRCG header::%08x\n",evt->values.at(iW));
+               iW++;
+               int size = evt->values.at(iW);
+               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+               trigInfoWords.push_back(evt->values.at(iW));
+               iW++;
+               for(int i=0;i<size;i++) {
+                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
+                  trigInfoWords.push_back(evt->values.at(iW));
+                  iW++;
                }
             }
-            p_WDtrigInfo->AddInfo(tbo, trig_type, nbanks, trigInfoWords);
          }
+         p_WDtrigInfo->AddInfo(tbo, trig_type, nbanks, trigInfoWords);
+      }
          
          
          if (evt->values.at(iW) == EVT_FOOTER) {
@@ -477,14 +493,19 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo *p_WDtr
     
 //------------------------------------------+-----------------------------------
 //! Setup all histograms.
-    
-void TAGactWDreader::CreateHistogram() {
-  DeleteHistogram();
-  SetValidHistogram(kTRUE);
+void TAGactWDreader::CreateHistogram()
+{
+   DeleteHistogram();
+   SetValidHistogram(kTRUE);
 }
 
 //------------------------------------------+-----------------------------------
-vector<double> TAGactWDreader::ADC2Volt(vector<int> v_amp, double dynamic_range) {
+//! Get volt vector
+//!
+//! \param[in] v_amp amplitude vector
+//! \param[in] dynamic_range dynamic range
+vector<double> TAGactWDreader::ADC2Volt(vector<int> v_amp, double dynamic_range)
+{
    vector<double> v_volt;
    double v_sa;
    
@@ -507,6 +528,9 @@ vector<double> TAGactWDreader::ADC2Volt(vector<int> v_amp, double dynamic_range)
 }
 
 //------------------------------------------+-----------------------------------
+//! Get volt vector clock
+//!
+//! \param[in] v_amp amplitude vector
 vector<double> TAGactWDreader::ADC2Volt_CLK(vector<int> v_amp) {
 
    vector<double> v_volt;
@@ -524,7 +548,9 @@ vector<double> TAGactWDreader::ADC2Volt_CLK(vector<int> v_amp) {
 }
 
 //------------------------------------------+-----------------------------------
-Bool_t TAGactWDreader::WaveformsTimeCalibration() {
+//! Wave form time calibration
+Bool_t TAGactWDreader::WaveformsTimeCalibration()
+{
 
    double dt, t_trig_ref, t_trig;
    TWaveformContainer *wclk_ref;
@@ -593,6 +619,8 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration() {
    }
    
 
+   
+   
    //tw time calibration
    for(int i=0; i<(int)fTWwaves.size();i++) {
       TWaveformContainer *wtw = fTWwaves.at(i);
@@ -639,6 +667,7 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration() {
 }
 
 //------------------------------------------+-----------------------------------
+//! Compute time jitter
 double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
 {
    vector<double> tzeros, nclock;
@@ -720,9 +749,15 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
    return phase;
 }
 
-
-Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw, TACAparMap *p_CAmap) {
-
+//------------------------------------------+-----------------------------------
+//! Create hits
+//!
+//! \param[in] p_straw ST raw data container
+//! \param[in] p_twraw TW raw data container
+//! \param[in] p_caraw CA raw data container
+//! \param[in] p_CAmap CA map descriptor
+Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACAntuRaw* p_caraw, TACAparMap *p_CAmap)
+{
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)fpWDTim->Object();
 
    string  algoST = p_WDtim->GetCFDalgo("ST");
@@ -747,7 +782,7 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
       p_twraw->NewHit(fTWwaves.at(i), algoTW, fracTW, delTW);
       if (FootDebugLevel(1)) printf("TW hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoTW.data(), fracTW, delTW);
    }
-   
+
    int nCry = p_CAmap->GetCrystalsN();
    for(int i=0; i<(int)fCAwaves.size(); i++) {
       int board_id = fCAwaves.at(i)->GetBoardId();
@@ -770,6 +805,7 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACA
 }
 
 //------------------------------------------+-----------------------------------
+//! Clear
 void TAGactWDreader::Clear()
 {
    for(int i=0; i<fSTwaves.size(); i++) {
@@ -797,10 +833,16 @@ void TAGactWDreader::Clear()
    return;
 }
 
-
-
 //------------------------------------------+-----------------------------------
-Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap, TACAparMap *p_CAmap) {
+//! Read stand alone
+//!
+//! \param[in] endoffile end of file flag
+//! \param[in] p_WDtrigInfo trigger wave form container descriptor
+//! \param[in] p_WDmap mapping parameter descriptor
+//! \param[in] p_WDtim time parameter descriptor
+//! \param[in] p_CAmap CA map descriptor
+Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap, TACAparMap *p_CAmap) 
+{
 
    u_int word;
    int board_id=0, ch_num=0;
@@ -928,7 +970,7 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrig
                   fSTwaves.push_back(w);
                } else if (ch_type == "TW") {
                   fTWwaves.push_back(w);
-               } else if (ch_type == "CALO") {                
+               } else if (ch_type == "CALO") {
                   fCAwaves.push_back(w);
                } else if (ch_type == "CLK") {
                   fCLKwaves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
@@ -1072,11 +1114,13 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrig
   return nmicro;
 }
 
-
-
 //------------------------------------------+-----------------------------------
-void  TAGactWDreader::SavePlot(TWaveformContainer *w, string type) {
-
+//! Save plots
+//!
+//! \param[in] w wave form container
+//! \param[in] type type of data
+void  TAGactWDreader::SavePlot(TWaveformContainer *w, string type)
+{
    TCanvas c("c","",600,600);
    c.cd();
 

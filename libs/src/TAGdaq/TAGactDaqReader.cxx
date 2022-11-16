@@ -195,6 +195,11 @@ Bool_t TAGactDaqReader::Process()
    if (evMSD7)
       datDaq->AddFragment(evMSD7);
 
+   // ITR
+   const DEITREvent* evITR = static_cast<const DEITREvent*>(fDaqFileReader->getFragmentID(dataITR | 0x30));
+   if (evITR)
+      datDaq->AddFragment(evITR);
+   
    // WD for ST, TW and CA
    const WDEvent* evWD = static_cast<const WDEvent*>(fDaqFileReader->getFragmentID(dataWD | 0x30));
    if (evWD)

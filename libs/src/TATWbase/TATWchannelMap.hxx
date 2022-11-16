@@ -1,6 +1,13 @@
 #ifndef CCHANNELMAP_H
 #define CCHANNELMAP_H
 
+/*!
+ \file TATWchannelMap.hxx
+ \brief   Declaration of TATWchannelMap.
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include <string>
 #include <map>
 #include <TSystem.h>
@@ -9,8 +16,8 @@
 
 //enum TLayer {NoLayer=-1,Front=0,Rear=1};
 
-typedef std::map<Int_t,TLayer> TMapBarIdLayerId;
-typedef std::tuple <Int_t,Int_t,Int_t> TChannelBoardTuple;
+typedef std::map<Int_t,TLayer>             TMapBarIdLayerId;
+typedef std::tuple <Int_t,Int_t,Int_t>     TChannelBoardTuple;
 typedef std::map<Int_t,TChannelBoardTuple> TChannelPairMapType;
 
 

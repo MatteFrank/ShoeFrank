@@ -70,13 +70,16 @@ public:
    static void EnableStdAlone()               { fgStdAloneFlag = true;     }
    //! Set max number of file to be processed for stand alone DAQ
    static void SetStdAloneFiles(Int_t value)  { fgNumFileStdAlone = value; }
+
+protected:
+   TAGdataDsc*           fpNtuWDtrigInfo; ///< contains the WD trigger info
    
 private:
    TAGdataDsc*           fpDaqEvent;      ///< DAQ event
    TAGdataDsc*           fpNtuEvt;        ///< input data event dsc
    TAGdataDsc*           fpDatRawMsd;     ///< input raw data dsc for MSD
    TAGactWDreader*       fActWdRaw;       ///< action for WD decoding
-   TAGdataDsc*           fpNtuWDtrigInfo; ///< contains the WD trigger info
+   
    TAGactNtuEvent*       fActNtuEvt;      ///< action for trigger event
 
    TASTactNtuHit*        fActNtuHitSt;    ///< action for STC hits

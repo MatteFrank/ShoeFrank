@@ -10,6 +10,8 @@
 #include "TAMCntuRegion.hxx"
 #include "GlobalReco.hxx"
 
+#include "TAMCntuPart.hxx"
+
 //! Class Imp
 ClassImp(GlobalReco)
 

@@ -1,6 +1,5 @@
 /*!
- \file
- \version $Id: TAMSDactNtuCluster.cxx $
+ \file TAMSDactNtuCluster.cxx
  \brief   Implementation of TAMSDactNtuCluster.
  */
 #include "TClonesArray.h"
@@ -18,13 +17,23 @@
 
 /*!
  \class TAMSDactNtuCluster 
- \brief NTuplizer for MSD cluster. **
+ \brief NTuplizer for MSD cluster.
  */
 
+//! Class imp
 ClassImp(TAMSDactNtuCluster);
+
+Bool_t TAMSDactNtuCluster::fgSeedAlgo = true;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] pNtuRaw hit input container descriptor
+//! \param[out] pNtuClus cluster output container descriptor
+//! \param[in] pConfig configuration parameter descriptor
+//! \param[in] pGeoMap geometry parameter descriptor
+//! \param[in] pCalib calibration parameter descriptor
 TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
   : TAGactNtuCluster1D(name, "TAMSDactNtuCluster - NTuplize cluster"),
     fpNtuRaw(pNtuRaw),
@@ -94,7 +103,7 @@ TAMSDactNtuCluster::~TAMSDactNtuCluster()
 }
 
 //______________________________________________________________________________
-//
+//! Action
 Bool_t TAMSDactNtuCluster::Action()
 {
   TAMSDntuHit* pNtuHit  = (TAMSDntuHit*) fpNtuRaw->Object();
@@ -115,11 +124,13 @@ Bool_t TAMSDactNtuCluster::Action()
 }
 
 //______________________________________________________________________________
-//  
+//! Find Clusters
+//!
+//! \param[in] iSensor plane id
 Bool_t TAMSDactNtuCluster::FindClusters(Int_t iSensor)
 {
   // Algo taking from Virgile BEKAERT (ImaBio @ IPHC-Strasbourg)
-  // Look in a iterative way to next neighbour
+  // Look in an iterative way to next neighbour
   
   FillMaps();
   SearchCluster();
@@ -128,14 +139,14 @@ Bool_t TAMSDactNtuCluster::FindClusters(Int_t iSensor)
 }
 
 //______________________________________________________________________________
-//
+//! Found all clusters.
 void TAMSDactNtuCluster::SearchCluster()
 {
   fClustersN = 0;
   // Search for cluster
   for (Int_t iStrip = 0; iStrip < fListOfStrips->GetEntries(); ++iStrip) { // loop over seed strips
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iStrip);
-    if (!strip->IsSeed()) continue;
+    if (!strip->IsSeed() && fgSeedAlgo) continue;
     if (strip->Found()) continue;
     
     Int_t stripId  = strip->GetStrip();
@@ -148,7 +159,9 @@ void TAMSDactNtuCluster::SearchCluster()
 }
 
 //______________________________________________________________________________
-// Get object in list
+//! Get Hit object in list
+//!
+//! \param[in] idx index on Hit list
 TAGobject*  TAMSDactNtuCluster::GetHitObject(Int_t idx) const
 {
   if (idx >= 0 && idx < GetListOfStrips()->GetEntries() )
@@ -161,7 +174,7 @@ TAGobject*  TAMSDactNtuCluster::GetHitObject(Int_t idx) const
 }
 
 //______________________________________________________________________________
-//
+//! Fill maps
 void TAMSDactNtuCluster::FillMaps()
 {
   
@@ -182,7 +195,9 @@ void TAMSDactNtuCluster::FillMaps()
 }
 
 //______________________________________________________________________________
-//
+//! Create clusters for a given plane
+//!
+//! \param[in] iSensor plane id
 Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
 {
    TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
@@ -211,7 +226,6 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     }
   }
 
-  
   // Compute position and fill clusters info
   for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
     cluster = pNtuClus->GetCluster(iSensor, i);
@@ -220,7 +234,6 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     cluster->SetPlaneView(pGeoMap->GetSensorPar(iSensor).TypeIdx);
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
-    ComputeCog(cluster);
     ComputeEta(cluster);
     if (fpCalib)
        ComputeCorrEnergy(cluster);
@@ -249,28 +262,33 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
    return false;
 }
   
-//______________________________________________________________________________
-//
+//_____________________________________________________________________________
+//! Compute the cluster centroid position
+//!
+//! \param[in] cluster a given cluster
 void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
 {
   if (!fCurListOfStrips) return;
     
-  Float_t tCorrection, tCorrection2, tCorTemp;
-  Float_t pos, posErr = 0;
-  tCorrection = 0.;
-  tCorrection2 = 0.;
+  Float_t tCorrection  = 0.;
+  Float_t tCorrection2 = 0;
+  Float_t pos          = 0.;
+  Float_t cog          = 0.;
+  Float_t posErr       = 0;
+  Float_t tStrip       = 0.;
 
   Float_t tClusterPulseSum = 0.;
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
-    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
-    tCorTemp = strip->GetPosition()*strip->GetEnergyLoss();
-    tCorrection  += tCorTemp;
-    tClusterPulseSum  += strip->GetEnergyLoss();
+    TAMSDhit* strip   = (TAMSDhit*)fCurListOfStrips->At(i);
+    tCorrection      += strip->GetPosition()*strip->GetEnergyLoss();
+    tStrip           += strip->GetStrip()*strip->GetEnergyLoss();
+    tClusterPulseSum += strip->GetEnergyLoss();
   }
   
-  pos = tCorrection*(1./tClusterPulseSum);
-  
+  pos = tCorrection/tClusterPulseSum;
+  cog = tStrip/tClusterPulseSum;
+   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
     TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
     tCorrection2 = strip->GetEnergyLoss()*(strip->GetPosition()-pos)*(strip->GetPosition()-pos);
@@ -285,94 +303,61 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
-  fCurrentEnergy = tClusterPulseSum;
-  
+  fCurrentCog      = cog;
+  fCurrentEnergy   = tClusterPulseSum;
   
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
+  cluster->SetCog(fCurrentCog);
   cluster->SetEnergyLoss(fCurrentEnergy);
 }
 
-//______________________________________________________________________________
-//
-void TAMSDactNtuCluster::ComputeCog(TAMSDcluster* cluster)
-{
-  if (!fCurListOfStrips) return;
-    
-  Float_t num = 0;
-  Float_t den = 0;
-  Float_t cog = 0;
-   
-  Float_t tClusterPulseSum = 0.;
-  
-  for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
-    TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
-    num += strip->GetStrip()*strip->GetEnergyLoss();
-    den += strip->GetEnergyLoss();
-  }
-  
-  cog = num / den;
-
-  fCurrentCog = cog;
-   
-  cluster->SetCog(fCurrentCog);
-}
-
-//______________________________________________________________________________
-//
+//_____________________________________________________________________________
+//! Compute the cluster eta
+//!
+//! \param[in] cluster a given cluster
 void TAMSDactNtuCluster::ComputeEta(TAMSDcluster* cluster)
 {
   if (!fCurListOfStrips) return;
   Int_t nstrips = fCurListOfStrips->GetEntries();
 
-  Float_t eta;
-  TAMSDhit* strip;
+  Float_t eta     = 0.;
+  TAMSDhit* strip = 0x0;
   Float_t max_adc = -1;
-  Int_t max_pos = 0;
+  Int_t max_pos   = 0;
 
-  if (nstrips == 1)
-  {
+  if (nstrips == 1) {
     eta = 1.0;
-  } 
-  else 
-  {
-    for (int i = 0; i < nstrips; i++)
-    {  
+  }  else {
+    for (int i = 0; i < nstrips; i++) {
       strip = (TAMSDhit*)fCurListOfStrips->At(i);
-      if(strip->GetEnergyLoss() > max_adc)
-      {
+      if(strip->GetEnergyLoss() > max_adc) {
          max_adc = strip->GetEnergyLoss();
          max_pos = i;
       }
     }
 
-    if (max_pos == 0)
-    {
+    if (max_pos == 0) {
       eta = ((TAMSDhit*)fCurListOfStrips->At(0))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(0))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(1))->GetEnergyLoss() );
-    } 
-    else if(max_pos == nstrips - 1)
-    {
+    } else if(max_pos == nstrips - 1) {
       eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() );
-    } 
-    else
-    {
-      if( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() >  ((TAMSDhit*)fCurListOfStrips->At(max_pos + 1))->GetEnergyLoss() )
-      {
+    } else {
+      if( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() >  ((TAMSDhit*)fCurListOfStrips->At(max_pos + 1))->GetEnergyLoss() ) {
          eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos - 1))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() );
-      }
-      else
-      {
+      } else {
          eta = ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() / ( ((TAMSDhit*)fCurListOfStrips->At(max_pos))->GetEnergyLoss() + ((TAMSDhit*)fCurListOfStrips->At(max_pos + 1))->GetEnergyLoss() );
       }
-   }
+    }
   }
 
-   fCurrentEta = eta;
-   cluster->SetEta(fCurrentEta);
+  fCurrentEta = eta;
+  cluster->SetEta(fCurrentEta);
 }
 
-//______________________________________________________________________________
-//
+//_____________________________________________________________________________
+//! Compute the cluster energy correction
+//!
+//! \param[in] cluster a given cluster
 void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
 {
   Float_t eCorrection = 1.;
@@ -384,8 +369,10 @@ void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
   cluster->SetEnergyLossCorr(fCurrentEnergy * eCorrection);
 }
 
-//______________________________________________________________________________
-//
+//_____________________________________________________________________________
+//! Apply cluster cuts
+//!
+//! \param[in] cluster a given cluster
 Bool_t TAMSDactNtuCluster::ApplyCuts(TAMSDcluster* cluster)
 {
    TAMSDparConf* pConfig = (TAMSDparConf*) fpConfig->Object();

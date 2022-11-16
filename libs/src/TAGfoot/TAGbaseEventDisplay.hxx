@@ -157,22 +157,6 @@ public:
    static void DisableM28ClusMT()   { fgM28ClusMtFlag = false; }
    //! Enable M28 MT clustering
    static void EnableM28lusMT()     { fgM28ClusMtFlag = true;  }
-   
-   //! ITR tracking flag
-   static Bool_t IsItrTracking()    { return BaseReco::IsItrTracking(); }
-
-   //! Disable ITR tracking
-   static void DisableItrTracking() { BaseReco::DisableItrTracking();   }
-   //! Enable ITR tracking
-   static void EnableItrTracking()  { BaseReco::EnableItrTracking();    }
-   
-   //! MSD tracking flag
-   static Bool_t IsMsdTracking()    { return BaseReco::IsMsdTracking(); }
-   
-   //! Disable MSD tracking
-   static void DisableMsdTracking() { BaseReco::DisableMsdTracking();   }
-   //! Enable MSD tracking
-   static void EnableMsdTracking()  { BaseReco::EnableMsdTracking();    }
 
 protected:
    BaseReco*       fReco;                   ///< Base reconstruction
@@ -202,6 +186,8 @@ protected:
    TAEDtrack*      fIrTrackDisplay;         ///< list of line to display tracks
    Bool_t          fIrFlag;                 ///< ITR flag
    Bool_t          fFlagTrack;              ///< flag for tracking
+   Bool_t          fFlagMsdTrack;           ///< flag for Msd tracking
+   Bool_t          fFlagItrTrack;           ///< flag for Itr tracking
 
    // TW
    map< pair<Int_t, Int_t>, Int_t > fFiredTofBar;       ///< list of fired bar per event
@@ -220,7 +206,6 @@ protected:
    static TString        fgItrTrackingAlgo;  ///< tracking algorithm ("std" with BM, "Full" combinatory)
    static TString        fgMsdTrackingAlgo;  ///< tracking algorithm ("std" with BM, "Full" combinatory)
    static Bool_t         fgBmSelectHit;      ///< flag BM selected hit
-   static Bool_t         fgMsdsTrackFlag;    ///< flag for MSD tracking
    static Bool_t         fgM28ClusMtFlag;    ///< flag for MT clustering
 
    ClassDef(TAGbaseEventDisplay, 1); ///< Base class for event display

@@ -25,6 +25,8 @@ const unsigned int dataV1190 = 0x00463100;
 const unsigned int dataVTX   = 0x00463300;
 // MSD
 const unsigned int dataMSD   = 0x00463400;
+// INNER TRACKER
+const unsigned int dataITR   = 0x00463600;
 //Remote board with PC
 const unsigned int dataWD    = 0x00463200;
 // FADC
@@ -34,7 +36,7 @@ const unsigned int dataArduino = 0x00463700;
 // Generic
 const unsigned int dataEmpty = 0x00463800;
 
-const unsigned int FRAGTYPES = 9;
+const unsigned int FRAGTYPES = 10;
 
 
 #endif

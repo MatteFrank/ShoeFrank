@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TAGbaseWDparMap.cxx,v 1.5 2003/06/09 18:41:04 mueller Exp $
+  \file TAGbaseWDparMap.cxx
   \brief   Implementation of TAGbaseWDparMap.
 */
 
@@ -13,30 +12,28 @@
 //##############################################################################
 
 /*!
-  \class TAGbaseWDparMap TAGbaseWDparMap.hxx "TAGbaseWDparMap.hxx"
+  \class TAGbaseWDparMap 
   \brief Map parameters for onion and daisy. **
 */
 
+//! Class Imp
 ClassImp(TAGbaseWDparMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-
-TAGbaseWDparMap::TAGbaseWDparMap() {
+TAGbaseWDparMap::TAGbaseWDparMap()
+{
   TAGbaseWDparMap::Clear();
-  
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-
 TAGbaseWDparMap::~TAGbaseWDparMap()
 {}
 
-
-
-Bool_t TAGbaseWDparMap::FromFile(const TString& name) {
-
+//------------------------------------------+-----------------------------------
+Bool_t TAGbaseWDparMap::FromFile(const TString& name)
+{
   Clear();
   
   TString name_exp = name;
@@ -68,52 +65,45 @@ Bool_t TAGbaseWDparMap::FromFile(const TString& name) {
         sscanf(bufConf, "%d\t%c\t%s", &channel, &isenabled, detector);
         //printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
         key = make_pair(board, iCh);
-        chmap[key] = detector;
-        if(bolist.count(detector)){
-          vector<int> tmplist = bolist.find(detector)->second;
+        fChmap[key] = detector;
+        if(fBolist.count(detector)){
+          vector<int> tmplist = fBolist.find(detector)->second;
           if(find(tmplist.begin(), tmplist.end(),board)==tmplist.end())
-            bolist[detector].push_back(board);
+            fBolist[detector].push_back(board);
         }else{
-          bolist[detector].push_back(board);
+          fBolist[detector].push_back(board);
         }
       }
     }
   }
 
-
-  
   return kFALSE;
 }
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
-
-void TAGbaseWDparMap::Clear(Option_t*){
+void TAGbaseWDparMap::Clear(Option_t*)
+{
   TAGpara::Clear();
-
-  
-  return;
 }
 
 //------------------------------------------+-----------------------------------
 //! Get channel type
-
 string TAGbaseWDparMap::GetChannelType(int board, int channel)
 {
   string res = "CORRUPTED";
-  if(chmap.count(make_pair(board, channel))) {
-    return chmap.find(make_pair(board, channel))->second;
+  if(fChmap.count(make_pair(board, channel))) {
+    return fChmap.find(make_pair(board, channel))->second;
   }  else {
     return res;
   }
-  
 }
 
-
-vector<int> TAGbaseWDparMap::GetBoards(string det){
-
-  if(bolist.count(det)){
-    return bolist.find(det)->second;
+//------------------------------------------+-----------------------------------
+vector<int> TAGbaseWDparMap::GetBoards(string det)
+{
+  if(fBolist.count(det)){
+    return fBolist.find(det)->second;
   }else{
     return vector<int>();
   }

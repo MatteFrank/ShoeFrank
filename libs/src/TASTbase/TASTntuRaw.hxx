@@ -1,8 +1,7 @@
 #ifndef _TASTntuRaw_HXX
 #define _TASTntuRaw_HXX
 /*!
-  \file
-  \version $Id: TASTntuRaw.hxx,v 1.0 2011/04/01 18:11:59 asarti Exp $
+  \file TASTntuRaw.hxx
   \brief   Declaration of TASTntuRaw.
 */
 /*------------------------------------------+---------------------------------*/
@@ -12,10 +11,10 @@ using namespace std;
 #include "TClonesArray.h"
 #include "TAGdata.hxx"
 #include "TAGbaseWD.hxx"
-//
 
-/**
- * This class stores the params of a single channel waveform
+/*!
+ \class TASThit
+ \brief This class stores the params of a single channel waveform
  */
 class TASTrawHit : public TAGbaseWD {
 
@@ -23,18 +22,17 @@ public:
   TASTrawHit();
   TASTrawHit(TWaveformContainer *w, string algo, double frac, double del);
   virtual         ~TASTrawHit();
-  
-  virtual double ComputeTime( TWaveformContainer *w, double frac, double del, double tleft, double tright);
-  virtual double ComputeCharge( TWaveformContainer *w, double thr);
-  virtual double ComputeAmplitude( TWaveformContainer *w);
-  virtual double ComputePedestal( TWaveformContainer *w,double thr);
-  virtual double ComputeBaseline( TWaveformContainer *w);
-  
+    
   ClassDef(TASTrawHit,2);
   //
 };
 
 //##############################################################################
+
+/*!
+ \class TASTntuRaw
+ \brief Raw hit container for ST
+ */
 
 class TASTntuRaw : public TAGdata {
 public:

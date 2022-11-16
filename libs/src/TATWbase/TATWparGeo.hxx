@@ -4,6 +4,14 @@
 
 #include "Riostream.h"
 
+
+/*!
+ \file TATWparGeo.hxx
+ \brief   Declaration of TATWparGeo.
+ */
+/*------------------------------------------+---------------------------------*/
+
+
 #include "TEveGeoShapeExtract.h"
 
 #include "TObject.h"
@@ -67,13 +75,10 @@ public:
    Float_t         GetZ_sensorFrame(Int_t iLayer, Int_t iBar);
    
     // Return Scintillator full dimension.
-    TVector3 GetDimension() { return fSize; };
-
-    TVector3 GetBarDimension() { return fBarSize; };   // ( shorter dim, longer dim, z dim )
-
-   
-    int GetNBars() { return fBarsN; };
-    int GetLayersN() { return fLayersN; };
+    TVector3 GetDimension()    { return fSize;    }
+    TVector3 GetBarDimension() { return fBarSize; }   // ( shorter dim, longer dim, z dim
+    int GetNBars()       const { return fBarsN;   }
+    int GetLayersN()     const { return fLayersN; }
 
    //crossing regions
    Int_t          GetRegStrip(Int_t lay, Int_t bar); //lay (0-1); bar(0-19)
@@ -106,10 +111,10 @@ private:
    Int_t     fLayersN;
    Int_t     fBarsN;
 
-   TString    fkDefaultGeoName;  // default par geo file name
+   TString   fkDefaultGeoName;  // default par geo file name
 
-   vector<string> fvBody;
-   vector<string> fvRegion;
+   vector<string>             fvBody;
+   vector<string>             fvRegion;
    vector< vector<TVector3> > fvTilt;
    
 private:

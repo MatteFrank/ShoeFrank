@@ -408,9 +408,9 @@ string TAGparGeo::PrintStandardBodies( )
 
    TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-   TVector3  fCenterTW = fpFootGeo->GetTWCenter();
-   TVector3  fCenterMSD = fpFootGeo->GetMSDCenter();
-   zplane =  fCenterMSD.Z() + ( fCenterTW.Z()-fCenterMSD.Z() ) /2.;
+   TVector3  centerTW = fpFootGeo->GetTWCenter();
+   TVector3  centerMSD = fpFootGeo->GetMSDCenter();
+   zplane =  centerMSD.Z() + ( centerTW.Z()-centerMSD.Z() ) /2.;
    //needed to subdivide air in two because when the calo is present too many bodies
    //are subtracted to air and fluka complains
    if(TAGrecoManager::GetPar()->IncludeCA())
@@ -429,23 +429,24 @@ string TAGparGeo::PrintTargRotations()
 
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-      TVector3 fCenter = fpFootGeo->GetTGCenter();
-      TVector3  fAngle = fpFootGeo->GetTGAngles();
+      TVector3 center = fpFootGeo->GetTGCenter();
+      TVector3  angle = fpFootGeo->GetTGAngles();//*(-1.,-1.,-1.); //invert the angles to take into account the FLUKA convention;
 
-      if(fAngle.X()!=0 || fAngle.Y()!=0 || fAngle.Z()!=0){
+      angle *= -1;
+      if(angle.X()!=0 || angle.Y()!=0 || angle.Z()!=0){
 
          ss << PrintCard("ROT-DEFI", "300.", "", "",
-               Form("%f",-fCenter.X()), Form("%f",-fCenter.Y()),
-               Form("%f",-fCenter.Z()), "tg") << endl;
-         if(fAngle.X()!=0)
-      ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",fAngle.X()),"", "", "", "tg") << endl;
-         if(fAngle.Y()!=0)
-      ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",fAngle.Y()),"", "", "", "tg") << endl;
-         if(fAngle.Z()!=0)
-      ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",fAngle.Z()),"", "", "", "tg") << endl;
+               Form("%f",-center.X()), Form("%f",-center.Y()),
+               Form("%f",-center.Z()), "tg") << endl;
+         if(angle.X()!=0)
+      ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "", "", "tg") << endl;
+         if(angle.Y()!=0)
+      ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "", "", "tg") << endl;
+         if(angle.Z()!=0)
+      ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "", "", "tg") << endl;
          ss << PrintCard("ROT-DEFI", "300.", "", "",
-               Form("%f",fCenter.X()), Form("%f",fCenter.Y()),
-               Form("%f",fCenter.Z()), "tg") << endl;
+               Form("%f",center.X()), Form("%f",center.Y()),
+               Form("%f",center.Z()), "tg") << endl;
 
       }
    }
@@ -466,20 +467,20 @@ string TAGparGeo::PrintTargBody( )
 
       TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-      TVector3  fCenter = fpFootGeo->GetTGCenter();
-      TVector3  fAngle = fpFootGeo->GetTGAngles();
+      TVector3  center = fpFootGeo->GetTGCenter();
+      TVector3  angle = fpFootGeo->GetTGAngles();
 
       TVector3 tgSize =  GetTargetPar().Size;
 
-      if(fAngle.Mag()!=0)
+      if(angle.Mag()!=0)
          ss << "$start_transform tg" << endl;
 
       ss << setiosflags(ios::fixed) << setprecision(6);
-      ss << "RPP tgt     "  << fCenter[0]-tgSize.X()/2. << " " << fCenter[0]+tgSize.X()/2 << " " <<
-         fCenter[1]-tgSize.Y()/2. << " " << fCenter[1]+tgSize.Y()/2. << " " <<
-         fCenter[2]-tgSize.Z()/2. << " " << fCenter[2]+tgSize.Z()/2. << " " <<  endl;
+      ss << "RPP tgt     "  << center[0]-tgSize.X()/2. << " " << center[0]+tgSize.X()/2 << " " <<
+         center[1]-tgSize.Y()/2. << " " << center[1]+tgSize.Y()/2. << " " <<
+         center[2]-tgSize.Z()/2. << " " << center[2]+tgSize.Z()/2. << " " <<  endl;
 
-      if(fAngle.Mag()!=0)
+      if(angle.Mag()!=0)
          ss << "$end_transform" << endl;
 
    }

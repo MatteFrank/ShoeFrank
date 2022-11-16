@@ -1,8 +1,7 @@
 #ifndef _TATWparCal_HXX
 #define _TATWparCal_HXX
 /*!
- \file
- \version $Id: TATWparCal.hxx,v 1.2 2003/06/22 19:33:36 mueller Exp $
+ \file TATWparCal.hxx
  \brief   Declaration of TATWparCal.
  */
 /*------------------------------------------+---------------------------------*/
@@ -69,19 +68,17 @@ private:
    Bool_t f_isPosCalibration; // default one from Pisa group
    Bool_t f_isBarCalibration;
    
-   TAGparGeo*      fParGeo;
-   TAGgeoTrafo*    fGeoTrafo;
-   
-   Int_t      fZbeam;
-   Double_t   fTof_beam;
-   Double_t   fTof_min;
-   Double_t   fTof_max;
-   int        fZraw;
-   float      f_dist_min_Z;
-   
+   TAGparGeo*    fParGeo;
+   TAGgeoTrafo*  fGeoTrafo;
+   Int_t         fZbeam;
+   Double_t      fTof_beam;
+   Double_t      fTof_min;
+   Double_t      fTof_max;
+   int           fZraw;
+   float         f_dist_min_Z;
    vector<float> f_dist_Z;
    
-   TH1D *fHisRate;
+   TH1D*         fHisRate;
   
 private:
    static TString fgkBBparamName;  // default BBparameters for Z identification with TW
@@ -129,10 +126,10 @@ public:
    void            SetDistBB(int ichg, float dist) {f_dist_Z[ichg-1] = dist;}
    //
    //! Clear
-   virtual void       Clear(Option_t* opt="");
+   virtual void    Clear(Option_t* opt="");
    
    //! Stream output
-   virtual void       ToStream(ostream& os = cout, Option_t* option = "") const;
+   virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
    
    ClassDef(TATWparCal,1)
 };

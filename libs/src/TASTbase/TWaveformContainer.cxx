@@ -1,3 +1,8 @@
+/*!
+ \file TWaveformContainer.cxx
+ \brief   Implementation of TWaveformContainer.
+ */
+
 #include "TWaveformContainer.hxx"
 #include "TAxis.h"
 #include "TLine.h"
@@ -8,7 +13,15 @@
 #include "TGraphErrors.h"
 #include <vector>
 
-TWaveformContainer::TWaveformContainer(){
+
+/*!
+ \class TASThit
+ \brief this class holds the waveform, channel id of the WD and the BoardId
+ */
+
+//------------------------------------------+-----------------------------------
+TWaveformContainer::TWaveformContainer()
+{
   fVectT.clear();
   fVectRawT.clear();
   fVectA.clear();
@@ -18,8 +31,9 @@ TWaveformContainer::TWaveformContainer(){
   fNEvent=0;
 }
 
-
-void TWaveformContainer::Clear(){
+//------------------------------------------+-----------------------------------
+void TWaveformContainer::Clear()
+{
   fChannelId=-1000;
   fBoardId=-1000;
   fTriggerCellId=-1000;
@@ -31,9 +45,9 @@ void TWaveformContainer::Clear(){
   fNEvent=0;
 }
 
-
-TWaveformContainer::TWaveformContainer(const TWaveformContainer &other){
-
+//------------------------------------------+-----------------------------------
+TWaveformContainer::TWaveformContainer(const TWaveformContainer &other)
+{
   fChannelId=other.fChannelId;
   fBoardId=other.fBoardId;
   fTriggerCellId = other.fTriggerCellId;
@@ -44,11 +58,10 @@ TWaveformContainer::TWaveformContainer(const TWaveformContainer &other){
   fIsEmptyFlag = false;
 }
 
-
-
 // DEBUG ONLY
-void TWaveformContainer::PlotWaveForm(int i){
-
+//------------------------------------------+-----------------------------------
+void TWaveformContainer::PlotWaveForm(int i)
+{
   Double_t max=fVectA.at(0);
   Double_t min=fVectA.at(0);;
   for(int bin=0;bin<WAVEFORMBINS;++bin){
@@ -75,7 +88,9 @@ void TWaveformContainer::PlotWaveForm(int i){
 
 
 // DEBUG ONLY
-void TWaveformContainer::GraphWaveForm(TH1F *wv0){
+//------------------------------------------+-----------------------------------
+void TWaveformContainer::GraphWaveForm(TH1F *wv0)
+{
   double min = TMath::MinElement(WAVEFORMBINS,&fVectT[0]);
   double max = TMath::MaxElement(WAVEFORMBINS,&fVectT[0]);
   wv0->SetBins(WAVEFORMBINS,min,max);
@@ -88,10 +103,9 @@ void TWaveformContainer::GraphWaveForm(TH1F *wv0){
   return ; 
 }
 
-
-
-
-void TWaveformContainer::SanitizeWaveform(){
+//------------------------------------------+-----------------------------------
+void TWaveformContainer::SanitizeWaveform()
+{
   Double_t old=fVectA.at(WAVEFORMBINS-1);
   if (old<-0.8){
     old+=1;
@@ -106,17 +120,18 @@ void TWaveformContainer::SanitizeWaveform(){
   }
 }
 
-
-
-bool TWaveformContainer::IsAClock(){
+//------------------------------------------+-----------------------------------
+bool TWaveformContainer::IsAClock()
+{
   if (fChannelId==16 || fChannelId==17){
     return true;
   }
   return false;
 }
 
-
-TWaveformContainer::~TWaveformContainer(){
+//------------------------------------------+-----------------------------------
+TWaveformContainer::~TWaveformContainer()
+{
   fVectT.clear();
   fVectRawT.clear();
   fVectA.clear();

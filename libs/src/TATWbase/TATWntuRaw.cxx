@@ -1,6 +1,5 @@
 /*!
-  \file
-  \version $Id: TATWntuRaw.cxx,v 1.12 2003/06/09 18:41:17 mueller Exp $
+  \file TATWntuRaw.cxx
   \brief   Implementation of TATWntuRaw.
 */
 
@@ -13,20 +12,17 @@ using namespace std;
 #include "TATWntuRaw.hxx"
 #include "TGraph.h"
 #include "TF1.h"
-/*!
-  \class TATWntuRaw TATWntuRaw.hxx "TATWntuRaw.hxx"
-  \brief Mapping and Geometry parameters for IR detectors. **
-*/
 
+//! Class Imp
 ClassImp(TATWrawHit);
 
 TString TATWntuRaw::fgkBranchName   = "twdat.";
 
+//______________________________________________________________________________
+//
 TATWrawHit::TATWrawHit(TWaveformContainer *W, string algo, double frac, double del)
-  : TAGbaseWD(W){
-
-
-
+  : TAGbaseWD(W)
+{
   fBaseline = ComputeBaseline(W);
   fPedestal = ComputePedestal(W,0.0);
   fChg = ComputeCharge(W, 0.0);
@@ -40,9 +36,6 @@ TATWrawHit::TATWrawHit(TWaveformContainer *W, string algo, double frac, double d
   }else{
     fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
   }
-  
- 
-
 }
 
 //______________________________________________________________________________
@@ -89,16 +82,16 @@ double TATWrawHit::ComputePedestal(TWaveformContainer *w, double thr){
 
 //##############################################################################
 
+//Class Imp
 ClassImp(TATWntuRaw);
 
-
+//------------------------------------------+-----------------------------------
 //! Default constructor.
 TATWntuRaw::TATWntuRaw() :
   fHitsN(0), fListOfHits(0), fRunTime(0x0)
 {
    SetupClones();
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
@@ -107,7 +100,6 @@ TATWntuRaw::~TATWntuRaw()
 {
   delete fListOfHits;
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Setup clones.

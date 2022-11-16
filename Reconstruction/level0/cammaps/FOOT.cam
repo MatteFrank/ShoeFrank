@@ -132,7 +132,25 @@ CamDate: "July 2022"
 CamSum: "Simulation data for data taking at HIT with BM+ST+(MSD)+TW+CA 4He 100-200 MeV/u"
 
 CamNumber:    22
-CamName:    "HIT2022_CA"
+CamName:    "CNAO2022"
 CamDataMC:    0
-CamDate: "July 2022"
-CamSum: "CA beam test at HIT"
+CamDate: "December 2022"
+CamSum: "Test experiment at CNAO with ST+VT+IT+MSD+TW+CAL @ 200,400 MeV/u"
+
+CamNumber:    23
+CamName:    "CNAO2022_MC"
+CamDataMC:    1
+CamDate: "December 2022"
+CamSum: "Simulation data for data taking at CNAO with ST+VT+IT+MSD+TW+CAL @ 150,200,300,400 MeV/u"
+
+CamNumber:    24
+CamName:    "197Au_MC"
+CamDataMC:    1
+CamDate: "November 2022"
+CamSum: "Simulation of Au beam with ST+TW+CAL @ 200 MeV/u"
+
+CamNumber:    25
+CamName:    "TIIM2023"
+CamDataMC:    0
+CamDate: "2023"
+CamSum: "Test for TIIMM data"

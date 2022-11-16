@@ -23,13 +23,15 @@
 #include "TAGdataDsc.hxx"
 
 #include "BaseReco.hxx"
+#include "LocalReco.hxx"
 #include "TAGrunInfo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "GlobalRecoMassAna.hxx"
+#include "TAGWDtrigInfo.hxx"
 
 using namespace std;
 
-class GlobalRecoAna : public BaseReco {
+class GlobalRecoAna : public LocalReco {
 
   public:
   GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t nTotEv);
@@ -56,6 +58,8 @@ class GlobalRecoAna : public BaseReco {
   void ComputeMCtruth( Int_t trkid, int &cha, TVector3 &mom, TVector3 &mom_cross, double &ek);
   Double_t ComputeTrkEkin(TAGtrack *track);//from calo infos
   void resetStatus(); //to reset the subdetectors status flags
+  bool TriggerCheck(TAGtrack * fGlbTrack);
+  bool TriggerCheckMC(TAGtrack * fGlbTrack);
 
   //fill plots
   void FillGlbTrackPlots();
@@ -109,6 +113,7 @@ class GlobalRecoAna : public BaseReco {
 
   //setting variables maybe we should use a config file?
   Double_t Th_meas;
+  Double_t Th_reco;
   Double_t purity_cut;      //minumum purity value for a track to be defined as pure
   Double_t clean_cut;       //is a 100% pure track
 
@@ -136,8 +141,19 @@ class GlobalRecoAna : public BaseReco {
   Int_t mass_nbin;
   Double_t **mass_binning;
 
-  TFile *f;
+  //Unfolding
+  Int_t theta_bin_meas, Ek_bin_meas, theta_bin_true, Ek_bin_true;
+  
+  // for beam direction studies in vertex
+  TVector3 vertex_direction_frag;
+  TVector3 vertex_direction;
 
+  //debug variable to check relation between tracking reconstruction and MC events
+  bool debug_trackid;
+  ofstream myfile;
+
+  //debug variable for plots of triggered events
+  bool isOxygenInEvent;
 };
 
 #endif

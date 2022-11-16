@@ -103,8 +103,7 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    fpMsdGeoMap(p_geoMsd),
    fpTofGeoMap(p_geoTof),
    fField(field),
-   fActEvtReader(nullptr),
-   fActTOE( SetupAction() )
+   fActEvtReader(nullptr)
 {
    AddDataOut(p_glbtrack, "TAGntuGlbTrack");
    
@@ -125,6 +124,19 @@ TAGactNtuGlbTrack::TAGactNtuGlbTrack( const char* name,
    AddDataIn(p_twpoint, "TATWntuPoint");
    
    fpFootGeo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   
+   TAGparGeo* pGGeoMap = static_cast<TAGparGeo*>( fpGGeoMap->Object());
+   
+   
+   TString tgtName = pGGeoMap->GetTargetPar().Material;//"C";
+   fCutVtx  = TAGrecoManager::GetPar()->GetVtxTagCuts(tgtName.Data());
+   fCutItr  = TAGrecoManager::GetPar()->GetItrTagCuts(tgtName.Data());
+   fCutMsd  = TAGrecoManager::GetPar()->GetMsdTagCuts(tgtName.Data());
+   fCutMsd2 = TAGrecoManager::GetPar()->GetMsd2TagCuts(tgtName.Data());
+   fCutTw   = TAGrecoManager::GetPar()->GetTwTagCuts(tgtName.Data());
+   
+   fActTOE = SetupAction();
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -138,33 +150,33 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
 //! Setup action.
  TATOEbaseAct* TAGactNtuGlbTrack::SetupAction() const
 {
-    using state_vector =  matrix<4,1> ;
+    using state_vector     =  matrix<4,1> ;
     using state_covariance =  matrix<4, 4> ;
-    using state = state_impl< state_vector, state_covariance  >;
+    using state            = state_impl< state_vector, state_covariance  >;
     
-    auto * clusterTW_hc = static_cast<TATWntuPoint*>( fpTwPoint->Object() );
-    auto * geoTW_h = static_cast<TATWparGeo*>( fpTofGeoMap->Object() );
+    auto * clusterTW_hc    = static_cast<TATWntuPoint*>( fpTwPoint->Object() );
+    auto * geoTW_h         = static_cast<TATWparGeo*>( fpTofGeoMap->Object() );
     
-    auto ode = make_ode< matrix<2,1>, 2>( model{ GetFootField() } );
-    auto stepper = make_stepper<data_grkn56>( std::move(ode) );
-    auto ukf = make_ukf<state>( std::move(stepper) );
+    auto ode               = make_ode< matrix<2,1>, 2>( model{ GetFootField() } );
+    auto stepper           = make_stepper<data_grkn56>( std::move(ode) );
+    auto ukf               = make_ukf<state>( std::move(stepper) );
     
     uint8_t opcode{ flag_set<details::tof_tag>{} };
-    if( fpVtxClus && fpVtxVertex && fpVtxGeoMap ){ opcode |= flag_set<details::vertex_tag>{};  }
-    if( fpItrClus && fpItrGeoMap ){ opcode |= flag_set<details::it_tag>{}; }
-    if( fpMsdClus && fpMsdGeoMap ){ opcode |= flag_set<details::msd_tag>{}; }
-    if( fpMsdPoint && fpMsdGeoMap && !fpVtxClus ){ opcode &= ~flag_set<details::msd_tag>{}; opcode |= flag_set<details::ms2d_tag>{}; }
+    if( fpVtxClus  && fpVtxVertex && fpVtxGeoMap ){ opcode |= flag_set<details::vertex_tag>{};  }
+    if( fpItrClus  && fpItrGeoMap )               { opcode |= flag_set<details::it_tag>{}; }
+    if( fpMsdClus  && fpMsdGeoMap )               { opcode |= flag_set<details::msd_tag>{}; }
+    if( fpMsdPoint && fpMsdGeoMap && !fpVtxClus ) { opcode &= ~flag_set<details::msd_tag>{}; opcode |= flag_set<details::ms2d_tag>{}; }
     
 #include<bitset>
-  //  std::cout << "opcode: " << std::bitset<8>(opcode) << '\n';
+
     switch( opcode ){
         case flag_set<details::vertex_tag, details::it_tag, details::tof_tag>{}: {
             auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
-            auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
-            auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
+            auto * vertex_hc     = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
+            auto * geoVTX_h      = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
             
-            auto * clusterIT_hc = static_cast<TAITntuCluster*>( fpItrClus->Object() );
-            auto * geoIT_h = static_cast<TAITparGeo*>( fpItrGeoMap->Object() );
+            auto * clusterIT_hc  = static_cast<TAITntuCluster*>( fpItrClus->Object() );
+            auto * geoIT_h       = static_cast<TAITparGeo*>( fpItrGeoMap->Object() );
             
             auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
                                                                              geoVTX_h) )
@@ -172,14 +184,29 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
 
-            auto* action_h =  new_TATOEactGlb(
-                        std::move(ukf),
-                        std::move(list),
-                        static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
-                        static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                        GetFootField(), true
-                                       );
-            
+            auto* action_h =  new_TATOEactGlb(std::move(ukf),
+                                              std::move(list),
+                                              static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                                              static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
+                                              GetFootField(), true
+                                              );
+           
+           if (fCutVtx.size() != 0) {
+              details::vertex_tag vtx_tag;
+              action_h->set_cuts(vtx_tag, fCutVtx);
+           }
+           
+           if (fCutItr.size() != 0) {
+              details::it_tag it_tag;
+              action_h->set_cuts(it_tag, fCutItr);
+           }
+           
+           if (fCutTw.size() != 0) {
+              details::tof_tag tof_tag;
+              action_h->set_cuts(tof_tag, fCutTw);
+           }
+
+
             auto& computation_checker_c = action_h->get_computation_checker();
             using namespace checker;
             computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
@@ -192,8 +219,8 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                                                            beta_ratio<computation> >{} );
             
             return action_h;
-            
         }
+          
         case flag_set<details::vertex_tag, details::msd_tag, details::tof_tag>{}: {
             auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
             auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
@@ -208,14 +235,27 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
 
-            auto* action_h =  new_TATOEactGlb(
-                        std::move(ukf),
-                        std::move(list),
-                        static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
-                        static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                        GetFootField(), true
-                                       );
-            
+            auto* action_h =  new_TATOEactGlb(std::move(ukf),
+                                              std::move(list),
+                                              static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                                              static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
+                                              GetFootField(), true
+                                              );
+            if (fCutVtx.size() != 0) {
+              details::vertex_tag vtx_tag;
+              action_h->set_cuts(vtx_tag, fCutVtx);
+            }
+           
+            if (fCutMsd.size() != 0) {
+              details::msd_tag msd_tag;
+              action_h->set_cuts(msd_tag, fCutMsd);
+            }
+           
+            if (fCutTw.size() != 0) {
+              details::tof_tag tof_tag;
+              action_h->set_cuts(tof_tag, fCutTw);
+            }
+
             auto& computation_checker_c = action_h->get_computation_checker();
             using namespace checker;
             computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
@@ -229,16 +269,17 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
             
             return action_h;
         }
+          
         case flag_set<details::vertex_tag, details::it_tag, details::msd_tag, details::tof_tag>{}: {
             auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
-            auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
-            auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
+            auto * vertex_hc     = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
+            auto * geoVTX_h      = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
             
-            auto * clusterIT_hc = static_cast<TAITntuCluster*>( fpItrClus->Object() );
-            auto * geoIT_h = static_cast<TAITparGeo*>( fpItrGeoMap->Object() );
+            auto * clusterIT_hc  = static_cast<TAITntuCluster*>( fpItrClus->Object() );
+            auto * geoIT_h       = static_cast<TAITparGeo*>( fpItrGeoMap->Object() );
             
             auto * clusterMSD_hc = static_cast<TAMSDntuCluster*>( fpMsdClus->Object() );
-            auto * geoMSD_h = static_cast<TAMSDparGeo*>( fpMsdGeoMap->Object() );
+            auto * geoMSD_h      = static_cast<TAMSDparGeo*>( fpMsdGeoMap->Object() );
             
             auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
                                                                              geoVTX_h) )
@@ -246,15 +287,34 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                             .add( detector_properties<details::msd_tag>(clusterMSD_hc, geoMSD_h) )
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
-           // std::cout << "full_config\n";
-            auto* action_h =  new_TATOEactGlb(
-                        std::move(ukf),
-                        std::move(list),
-                        static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
-                        static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                        GetFootField(), true
-                                       );
-            
+
+           auto* action_h =  new_TATOEactGlb(std::move(ukf),
+                                             std::move(list),
+                                             static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                                             static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
+                                             GetFootField(), true
+                                             );
+           
+           if (fCutVtx.size() != 0) {
+              details::vertex_tag vtx_tag;
+              action_h->set_cuts(vtx_tag, fCutVtx);
+           }
+           
+           if (fCutItr.size() != 0) {
+              details::it_tag it_tag;
+              action_h->set_cuts(it_tag, fCutItr);
+           }
+           
+           if (fCutMsd.size() != 0) {
+              details::msd_tag msd_tag;
+              action_h->set_cuts(msd_tag, fCutMsd);
+           }
+           
+           if (fCutTw.size() != 0) {
+              details::tof_tag tof_tag;
+              action_h->set_cuts(tof_tag, fCutTw);
+           }
+           
             auto& computation_checker_c = action_h->get_computation_checker();
             using namespace checker;
             computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
@@ -265,50 +325,35 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                                                            mass_identification<computation> ,
                                                            momentum_resolution<computation>,
                                                            beta_ratio<computation> >{} );
-//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<1>>,
-//                                                           purity<computation, isolate_charge<1>>,
-//                                                           beta_ratio<computation, isolate_charge<1>>  >{} );
-//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<2>>,
-//                                                           purity<computation, isolate_charge<2>>,
-//                                                           beta_ratio<computation, isolate_charge<2>>  >{} );
-//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<3>>,
-//                                                           purity<computation, isolate_charge<3>>,
-//                                                           beta_ratio<computation, isolate_charge<3>>  >{} );
-//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<4>>,
-//                                                           purity<computation, isolate_charge<4>>,
-//                                                           beta_ratio<computation, isolate_charge<4>>  >{} );
-//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<5>>,
-//                                                           purity<computation, isolate_charge<5>>,
-//                                                           beta_ratio<computation, isolate_charge<5>>  >{} );
-//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<6>>,
-//                                                           purity<computation, isolate_charge<6>>,
-//                                                           beta_ratio<computation, isolate_charge<6>>  >{} );
-//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<7>>,
-//                                                           purity<computation, isolate_charge<7>>,
-//                                                           beta_ratio<computation, isolate_charge<7>>  >{} );
-//            computation_checker_c.push_back( TATOEchecker< efficiency<computation, isolate_charge<8>>,
-//                                                           purity<computation, isolate_charge<8>>,
-//                                                           beta_ratio<computation, isolate_charge<8>>  >{} );
-            //purity + efficiency for several charge + clone histo
             return action_h;
-            
         }
+          
         case flag_set<details::ms2d_tag, details::tof_tag>{}: {
             auto * pointMSD_hc = static_cast<TAMSDntuPoint*>( fpMsdPoint->Object() );
-            auto * geoMSD_h = static_cast<TAMSDparGeo*>( fpMsdGeoMap->Object() );
+            auto * geoMSD_h    = static_cast<TAMSDparGeo*>( fpMsdGeoMap->Object() );
             
             auto list = start_list( detector_properties<details::ms2d_tag>(pointMSD_hc, geoMSD_h) )
                             .add( detector_properties<details::tof_tag>(clusterTW_hc, geoTW_h) )
                             .finish();
 
-            auto* action_h =  new_TATOEactGlb(
-                        std::move(ukf),
-                        std::move(list),
-                        static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
-                        static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                        GetFootField(), true
-                                       );
-            
+            auto* action_h =  new_TATOEactGlb(std::move(ukf),
+                                              std::move(list),
+                                              static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                                              static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
+                                              GetFootField(), true
+                                              );
+           
+           
+           if (fCutMsd2.size() != 0) {
+              details::ms2d_tag msd_tag;
+              action_h->set_cuts(msd_tag, fCutMsd2);
+           }
+           
+           if (fCutTw.size() != 0) {
+              details::tof_tag tof_tag;
+              action_h->set_cuts(tof_tag, fCutTw);
+           }
+
             auto& computation_checker_c = action_h->get_computation_checker();
             using namespace checker;
             computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
@@ -325,8 +370,8 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
     }
     
     auto * clusterVTX_hc = static_cast<TAVTntuCluster*>( fpVtxClus->Object() );
-    auto * vertex_hc = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
-    auto * geoVTX_h = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
+    auto * vertex_hc     = static_cast<TAVTntuVertex*>( fpVtxVertex->Object() );
+    auto * geoVTX_h      = static_cast<TAVTparGeo*>( fpVtxGeoMap->Object() );
     
     auto list = start_list( detector_properties<details::vertex_tag>(vertex_hc, clusterVTX_hc,
                                                                      geoVTX_h) )
@@ -334,14 +379,18 @@ TAGactNtuGlbTrack::~TAGactNtuGlbTrack()
                     .finish();
     
     
-    auto* action_h = new_TATOEactGlb(
-                std::move(ukf),
-                std::move(list),
-                static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
-                static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
-                GetFootField(), true
-                               );
-    
+    auto* action_h = new_TATOEactGlb(std::move(ukf),
+                                     std::move(list),
+                                     static_cast<TAGntuGlbTrack*>( fpGlbTrack->Object() ),
+                                     static_cast<TAGparGeo*>( fpGGeoMap->Object() ),
+                                     GetFootField(), true
+                                     );
+   
+    if (fCutVtx.size() != 0) {
+       details::vertex_tag vtx_tag;
+       action_h->set_cuts(vtx_tag, fCutVtx);
+    }
+   
     auto& computation_checker_c = action_h->get_computation_checker();
     using namespace checker;
     computation_checker_c.push_back( TATOEchecker< efficiency<computation >,
