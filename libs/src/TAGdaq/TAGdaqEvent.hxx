@@ -36,12 +36,11 @@ public:
    //! return number of fragments
    Int_t                  GetFragmentsN()         const  { return (int)fMapOfFragments.size();   }
    // Get Fragment
-   const BaseFragment*    GetFragment(string type);
-   
-   //! return fragment
-   const BaseFragment*    GetFragment(Int_t idx)         { return fListOfFragments[idx];         }
-   //! return class type
-   const Char_t*          GetClassType(Int_t idx) const  { return fListOfClassTypes[idx].data(); }
+   const BaseFragment*    GetFragment(string type, Int_t idx=0);
+
+   // Get fragment size
+   size_t GetFragmentSize(string type);
+
    // Add fragment
    void                   AddFragment(const BaseFragment* frag);
    // Clear
@@ -52,10 +51,8 @@ public:
 private:
    InfoEvent*                        fInfoEvent;       ///< info event
    TrgEvent*                         fTrgEvent;        ///< trigger event
-   map<string, const BaseFragment*>  fMapOfFragments;  ///< map of fragments
+   map<string, vector<const BaseFragment*>>  fMapOfFragments;  ///< map of fragments
 
-   vector<const BaseFragment*>  fListOfFragments;  ///< list of fragments
-   vector<string>               fListOfClassTypes; ///< list of class types
    ClassDef(TAGdaqEvent,0)
 };
 

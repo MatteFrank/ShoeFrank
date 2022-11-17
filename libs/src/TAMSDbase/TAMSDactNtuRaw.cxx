@@ -170,11 +170,11 @@ Bool_t TAMSDactNtuRaw::Action()
    if(FootDebugLevel(1))
       cout<<"TAMSDactNtuRaw::Action():: I'm going to charge "<<nFragments<<" number of fragments"<<endl;
    
-   for (Int_t i = 0; i < nFragments; ++i) {
-      TString type = p_datdaq->GetClassType(i);
-      if (type.Contains("DEMSDEvent")) {
-         const DEMSDEvent* evt = static_cast<const DEMSDEvent*> (p_datdaq->GetFragment(i));
-         
+   Int_t size = (int)p_datdaq->GetFragmentSize("DEMSDEvent");
+   for (Int_t i = 0; i < size; ++i) {
+      const DEMSDEvent* evt = static_cast<const DEMSDEvent*> (p_datdaq->GetFragment("DEMSDEvent", i));
+      
+      if (evt) {
          if (FootDebugLevel(1))
             evt->printData();
          
