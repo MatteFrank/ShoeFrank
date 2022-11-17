@@ -62,6 +62,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParMapIt(0x0),
    fpParMapMsd(0x0),
    fpParMapTw(0x0),
+   fpParMapCa(0x0),
    fpParGeoSt(0x0),
    fpParGeoG(0x0),
    fpParGeoDi(0x0),

@@ -76,15 +76,19 @@ TAGactWDreader::TAGactWDreader(const char* name,
    AddDataOut(p_WDtrigInfo, "TAGWDtrigInfo");
    AddPara(p_WDmap, "TAGbaseWDparMap");
    AddPara(p_WDtim, "TAGbaseWDparTime");
-   AddPara(p_CAmap, "TACAparMap");
+   if (p_CAmap)
+      AddPara(p_CAmap, "TACAparMap");
 
    fProcFiles=0;  
    fEventsN=0;
    fMaxFiles=1;
-   int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
-   fTempCA = new double [nCry];
-   for (int cryID=0; cryID<nCry; ++cryID) {
-      fTempCA[cryID] = 0;
+   
+   if (p_CAmap) {
+      int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
+      fTempCA = new double [nCry];
+      for (int cryID=0; cryID<nCry; ++cryID) {
+         fTempCA[cryID] = 0;
+      }
    }
 }
 
@@ -93,7 +97,8 @@ TAGactWDreader::TAGactWDreader(const char* name,
 //! Destructor.
 TAGactWDreader::~TAGactWDreader()
 {
-   if (fTempCA) delete [] fTempCA;
+   if (fpCAMap)
+      if (fTempCA) delete [] fTempCA;
 }
 
 //------------------------------------------+-----------------------------------
@@ -158,12 +163,16 @@ Bool_t TAGactWDreader::Action()
 
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)   fpWDTim->Object();
    TAGbaseWDparMap*     p_WDmap = (TAGbaseWDparMap*)   fpWDMap->Object();
-   TACAparMap*          p_CAmap = (TACAparMap*)  fpCAMap->Object();
    TASTntuRaw*          p_stwd = (TASTntuRaw*)   fpStWd->Object();
    TATWntuRaw*          p_twwd = (TATWntuRaw*)   fpTwWd->Object();
    TACAntuRaw*          p_cawd = (TACAntuRaw*)   fpCaWd->Object();
    TAGWDtrigInfo*       p_WDtrigInfo = (TAGWDtrigInfo*)   fpWDtrigInfo->Object();
     
+   TACAparMap*          p_CAmap = 0x0;
+   
+   if (p_CAmap)
+      p_CAmap = (TACAparMap*)  fpCAMap->Object();
+
    Int_t nmicro;
 
    Clear();
@@ -176,9 +185,11 @@ Bool_t TAGactWDreader::Action()
       if (evt) 
          nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
 
-      const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
-      if (evtA) 
-         DecodeArduinoTempCA(evtA, p_CAmap);
+      if (p_CAmap) {
+         const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
+         if (evtA)
+            DecodeArduinoTempCA(evtA, p_CAmap);
+      }
    } else {
       nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap, p_CAmap);
    }
@@ -783,19 +794,20 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACA
       if (FootDebugLevel(1)) printf("TW hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoTW.data(), fracTW, delTW);
    }
 
-   int nCry = p_CAmap->GetCrystalsN();
-   for(int i=0; i<(int)fCAwaves.size(); i++) {
-      int board_id = fCAwaves.at(i)->GetBoardId();
-      int ch_num = fCAwaves.at(i)->GetChannelId();
-      int criID = p_CAmap->GetCrystalId(board_id, ch_num);
-      if (criID < 0 || criID >= nCry) { 
-         Error("CreateHits", " CALO Hit skipped --- Not well mapped WD vs crystal ID. board: %d ch: %d -> iCry %d", board_id, ch_num, criID);
-         continue;
+   if (p_CAmap){
+      int nCry = p_CAmap->GetCrystalsN();
+      for(int i=0; i<(int)fCAwaves.size(); i++) {
+         int board_id = fCAwaves.at(i)->GetBoardId();
+         int ch_num = fCAwaves.at(i)->GetChannelId();
+         int criID = p_CAmap->GetCrystalId(board_id, ch_num);
+         if (criID < 0 || criID >= nCry) { 
+            Error("CreateHits", " CALO Hit skipped --- Not well mapped WD vs crystal ID. board: %d ch: %d -> iCry %d", board_id, ch_num, criID);
+            continue;
+         }
+         p_caraw->NewHit(fCAwaves.at(i), fTempCA[criID]);
+         if (FootDebugLevel(1)) printf("CA hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoCA.data(), fracCA, delCA);
       }
-      p_caraw->NewHit(fCAwaves.at(i), fTempCA[criID]);
-      if (FootDebugLevel(1)) printf("CA hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoCA.data(), fracCA, delCA);
    }
-
    p_straw->NewSuperHit(fSTwaves, algoST, fracST, delST);
    if (FootDebugLevel(1)) printf("ST superhit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoST.data(), fracST, delST);
 

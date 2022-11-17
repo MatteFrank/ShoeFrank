@@ -38,16 +38,16 @@ class ArduinoEvent;
 class TAGactWDreader : public TAGaction {
 
 public:
-  explicit           TAGactWDreader(const char* name,
-                                 TAGdataDsc* p_datdaq,
-                                 TAGdataDsc* p_stwd, 
-                                 TAGdataDsc* p_twwd,
-                                 TAGdataDsc* p_cawd,
-                                 TAGdataDsc* p_WDtrigInfo,
-                                 TAGparaDsc* p_WDmap,
-                                 TAGparaDsc* p_WDtim,
-                                 TAGparaDsc* p_CAmap,
-                                 Bool_t standAlone);
+  explicit           TAGactWDreader(const char* name = 0,
+                                 TAGdataDsc* p_datdaq = 0,
+                                 TAGdataDsc* p_stwd = 0,
+                                 TAGdataDsc* p_twwd = 0,
+                                 TAGdataDsc* p_cawd = 0,
+                                 TAGdataDsc* p_WDtrigInfo = 0,
+                                 TAGparaDsc* p_WDmap = 0,
+                                 TAGparaDsc* p_WDtim = 0,
+                                 TAGparaDsc* p_CAmap = 0,
+                                 Bool_t standAlone = false);
 
    virtual          ~TAGactWDreader();
    void              CreateHistogram();
