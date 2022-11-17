@@ -755,14 +755,29 @@ void BaseReco::ReadParFiles()
       fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
 
-     if(fFlagMC) { // set in MC threshold and active crystals from data informations
-        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->FromCrysStatusFile(parFileName.Data());
+      if(fFlagMC) { // set in MC threshold and active crystals from data informations
+         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parCal->FromCrysStatusFile(parFileName.Data());
 
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->LoadEnergyCalibrationMap(parFileName.Data());
+         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parCal->LoadEnergyCalibrationMap(parFileName.Data());
 
-     } else {
+      } else {
+         // Allow WD map, if only CA is activated (reconstruction beam test)
+         if(!fpParMapWD) {
+            fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
+            TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)fpParMapWD->Object();
+            parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
+            parMapWD->FromFile(parFileName.Data());
+         }
+
+         if(!fpParTimeWD) {
+            fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+            TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+            TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+            parTimeWD->FromFileCFD(parFileName.Data());
+         }
+
         fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
         TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
@@ -773,7 +788,7 @@ void BaseReco::ReadParFiles()
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
         parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
-     }
+      }
    }
 }
 

@@ -103,7 +103,7 @@ Double_t TACAparCal::GetEqualiseCry(Int_t crysId)
 //! \param[in] ParameterNumber paramenter id
 Double_t TACAparCal::GetElossParam(Int_t crysId, UInt_t ParameterNumber)
 {
-    return fMapCal->GetElossParam(crysId, ParameterNumber);
+   return fMapCal->GetElossParam(crysId, ParameterNumber);
 }
 
 //_____________________________________________________________________
@@ -114,9 +114,9 @@ Double_t TACAparCal::GetElossParam(Int_t crysId, UInt_t ParameterNumber)
 //! \param[in] crysCh crystal channel id
 void TACAparCal::GetCrysMap(Int_t crysId, Int_t& crysBoard, Int_t& crysCh)
 {
-  pair<int, int> id = fStatusCrysHwId[crysId];
-  crysBoard = id.first;
-  crysCh = id.second;
+   pair<int, int> id = fStatusCrysHwId[crysId];
+   crysBoard = id.first;
+   crysCh = id.second;
 }
 
 //_____________________________________________________________________
