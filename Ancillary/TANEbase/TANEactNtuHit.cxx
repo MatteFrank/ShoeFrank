@@ -7,7 +7,7 @@
 
 /*!
   \class TANEactNtuHit
-  \brief Action to create CA hits from RAW data. **
+  \brief Action to create neutrons hits from RAW data. **
 */
 
 //! Class Imp
@@ -55,16 +55,13 @@ Bool_t TANEactNtuHit::Action()
       Double_t time    = aHi->GetTime();
       Double_t timeOth = aHi->GetTimeOth();
       Double_t charge  = aHi->GetCharge();
-      Double_t amplitude  = aHi->GetAmplitude();
 
       TANEhit* createdhit = p_nturaw->NewHit(ch_num, charge, time);
-      createdhit->SetValid(true);
   
       if (ValidHistogram()) {
 
       }
    }
-
 
    fpNtuRaw->SetBit(kValid);
 
@@ -88,7 +85,7 @@ void TANEactNtuHit::CreateHistogram()
    fhChannelMap = new TH1F("caChMap", "caChMap", 9, 0, 9);
    AddHistogram(fhChannelMap);
 
-   for(int iCh=0; iCh<9; iCh++) {
+   for(int iCh=0; iCh<4; iCh++) {
       fhArrivalTime[iCh]= new TH1F(Form("caDeltaTime_ch%d", iCh), Form("caDeltaTime_ch%d", iCh), 100, -5., 5.);
       AddHistogram(fhArrivalTime[iCh]);
 

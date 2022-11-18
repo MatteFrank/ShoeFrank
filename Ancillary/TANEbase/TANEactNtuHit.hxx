@@ -32,9 +32,8 @@ private:
    TAGdataDsc*     fpDatRaw;		    ///< input raw data
    TAGdataDsc*     fpNtuRaw;		    ///< output calibrated data
 
-   TH1F*           fhArrivalTime[9];  ///< histograms for arrival time
-   TH1F*           fhCharge[9];       ///< histograms for charge
-   TH1F*           fhAmplitude[9];    ///< histograms for amplitude
+   TH1F*           fhArrivalTime[4];  ///< histograms for arrival time
+   TH1F*           fhCharge[4];       ///< histograms for charge
    TH1F*           fhTrigTime;        ///< histogram for trigger time
    TH1F*           fhTotCharge;       ///< histogram for total charge
    TH1F*           fhEventTime;       ///< histogram for event type
