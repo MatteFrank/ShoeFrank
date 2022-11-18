@@ -32,6 +32,7 @@ set( with_dictionnaries
    TACAcalibrationMap
    TAGWDtrigInfo
    TAGactWDreader
+   TANEntuRaw
 )
 
 set( without_dictionnaries
