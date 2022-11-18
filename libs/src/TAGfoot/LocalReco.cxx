@@ -90,6 +90,10 @@ void LocalReco::CreateRawAction()
          TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber, true);
          parTimeWD->FromFileTcal(parFileName.Data());
       }
+      
+      if (fCampManager->GetCurrentCamNumber() >=20) // tmp solution
+         TAGactWDreader::EnableArduinoTempCA();
+
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
                                       fpParTimeWD, fpParMapCa, fgStdAloneFlag);
       if (fgStdAloneFlag)
