@@ -100,14 +100,14 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
 
 	for(int iPoi=0; iPoi<msdNtuPoint->GetPointsN(iL); iPoi++) {
 	  TAMSDpoint* aPoi = msdNtuPoint->GetPoint(iL,iPoi);
-	  sprintf(hname,"Sensor_%d",iL);
+	  snprintf(hname,sizeof(hname),"Sensor_%d",iL);
 	  ((TH2D*)gDirectory->Get(hname))->Fill(aPoi->GetPosition().X(),aPoi->GetPosition().Y());
 	}
-	
+
       }
     }
-    
-    
+
+
     if(msdNtuCluster->GetClustersN(msdplane) == 1 && bmNtuTrack->GetTracksN()==1){
       TABMtrack* bmtrack = bmNtuTrack->GetTrack(0);
       TAMSDcluster* msdclus=msdNtuCluster->GetCluster(msdplane,0);

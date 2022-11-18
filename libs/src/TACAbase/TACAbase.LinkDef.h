@@ -21,4 +21,6 @@
 #pragma link C++ class TAGWDtrigInfo+;
 #pragma link C++ class TAGactWDreader+;
 
+
+
 #endif

@@ -1,7 +1,6 @@
 #---------------------------------------------------------------------------------------------------
 #  RootNewMacros.cmake
 #---------------------------------------------------------------------------------------------------
-cmake_minimum_required(VERSION 2.4.6)
 cmake_policy(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more details
 cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details

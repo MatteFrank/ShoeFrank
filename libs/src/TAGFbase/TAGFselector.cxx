@@ -42,25 +42,34 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
 	if(TAGrecoManager::GetPar()->IncludeVT())
-	{
 		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
-		m_detectors.push_back("VT");
-	}
+
 	if(TAGrecoManager::GetPar()->IncludeIT())
-	{
 		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
-		m_detectors.push_back("IT");
-	}
+
 	if(TAGrecoManager::GetPar()->IncludeMSD())
-	{
 		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
-		m_detectors.push_back("MSD");
-	}
+
 	if(TAGrecoManager::GetPar()->IncludeTW())
-	{
 		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
-		m_detectors.push_back("TW");
+
+	m_systemsON = "";
+	if( TAGrecoManager::GetPar()->KalSystems().at(0) == "all" )
+	{
+		if(TAGrecoManager::GetPar()->IncludeVT())	m_systemsON += "VT ";
+		if(TAGrecoManager::GetPar()->IncludeIT())	m_systemsON += "IT ";
+		if(TAGrecoManager::GetPar()->IncludeMSD())	m_systemsON += "MSD ";
+		if(TAGrecoManager::GetPar()->IncludeTW())	m_systemsON += "TW";
 	}
+	else
+	{
+		for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
+			if (i != 0)		m_systemsON += " ";
+			m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
+		}
+	}
+
+	m_detectors = TAGparTools::Tokenize( m_systemsON.Data() , " " );
 
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
@@ -403,9 +412,9 @@ int TAGFselector::Categorize_dataLike( ) {
 
 	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
 
-	if(!TAGrecoManager::GetPar()->IncludeVT())
+	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
 	{
-		Error("Categorize_dataLike()", "Vertex is needed for data-like selection!");
+		Error("Categorize_dataLike()", "Sept2020 selection algorithm currently not supported without Vertex!");
 		exit(0);
 	}
 	else
@@ -415,14 +424,14 @@ int TAGFselector::Categorize_dataLike( ) {
 
 	if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
 	
-	if(TAGrecoManager::GetPar()->IncludeIT())
+	if( m_systemsON.Contains("IT") )
 		CategorizeIT();
 	
 	if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
 
 	if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
 	
-	if(TAGrecoManager::GetPar()->IncludeMSD())
+	if( m_systemsON.Contains("MSD") )
 		CategorizeMSD();
 	else
 		SetTrackSeedNoMSD();
@@ -431,7 +440,7 @@ int TAGFselector::Categorize_dataLike( ) {
 
 	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
 	
-	if(TAGrecoManager::GetPar()->IncludeTW())
+	if( m_systemsON.Contains("TW") )
 		CategorizeTW();
 	
 	if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
@@ -449,9 +458,9 @@ int TAGFselector::Categorize_Linear()
 {
 	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
 
-	if(!TAGrecoManager::GetPar()->IncludeVT())
+	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
 	{
-		Error("Categorize_dataLike()", "Vertex is needed for linear selection!");
+		Error("Categorize_dataLike()", "Linear selection algorithm currently not supported without Vertex!");
 		throw -1;
 	}
 	else
@@ -461,21 +470,21 @@ int TAGFselector::Categorize_Linear()
 
 	if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
 	
-	if(TAGrecoManager::GetPar()->IncludeIT())
+	if( m_systemsON.Contains("IT") )
 		CategorizeIT();
 	
 	if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
 
 	if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
 	
-	if(TAGrecoManager::GetPar()->IncludeMSD())
+	if( m_systemsON.Contains("MSD") )
 		CategorizeMSD_Linear();
 	
 	if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
 
 	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
 	
-	if(TAGrecoManager::GetPar()->IncludeTW())
+	if( m_systemsON.Contains("TW") )
 		CategorizeTW_Linear();
 	
 	if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
@@ -1500,11 +1509,17 @@ void TAGFselector::CheckPlaneOccupancy()
 
 	for( auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
 	{
+		//RZ: Uncomment when we have an idea or the IT
+		// m_PlaneOccupancy[*itDet];
+		// if( *itDet == "IT" )
+		// 	m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetPossibleITzLocal()->size());
+		// else
+		// 	m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetFitPlanesN(*itDet));
+		if(*itDet == "IT")
+			continue;
+		
 		m_PlaneOccupancy[*itDet];
-		if( *itDet == "IT" )
-			m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetPossibleITzLocal()->size());
-		else
-			m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetFitPlanesN(*itDet));
+		m_PlaneOccupancy[*itDet].resize(m_SensorIDMap->GetFitPlanesN(*itDet));
 
 		std::fill(m_PlaneOccupancy[*itDet].begin(), m_PlaneOccupancy[*itDet].end(), 0);
 	}
@@ -1521,18 +1536,19 @@ void TAGFselector::CheckPlaneOccupancy()
 		string det = m_SensorIDMap->GetDetNameFromFitPlaneId(iPlane);
 		if( det == "IT" )
 		{
-			vector<int>* planesAtZLocal;
-			int id=0;
-			for (auto itZ : *(m_SensorIDMap->GetPossibleITzLocal()) )
-			{
-				planesAtZLocal = m_SensorIDMap->GetPlanesAtZLocal(itZ);
-				if( std::find(planesAtZLocal->begin(), planesAtZLocal->end(), iPlane) != planesAtZLocal->end() )
-				{
-					m_PlaneOccupancy[det][id] += m_allHitMeas->at(iPlane).size();
-					break;
-				}
-				id++;
-			}
+			continue; //RZ: IT to be studied better!
+			// vector<int>* planesAtZLocal;
+			// int id=0;
+			// for (auto itZ : *(m_SensorIDMap->GetPossibleITzLocal()) )
+			// {
+			// 	planesAtZLocal = m_SensorIDMap->GetPlanesAtZLocal(itZ);
+			// 	if( std::find(planesAtZLocal->begin(), planesAtZLocal->end(), iPlane) != planesAtZLocal->end() )
+			// 	{
+			// 		m_PlaneOccupancy[det][id] += m_allHitMeas->at(iPlane).size();
+			// 		break;
+			// 	}
+			// 	id++;
+			// }
 		}
 		else
 		{
@@ -1556,15 +1572,28 @@ void TAGFselector::CheckPlaneOccupancy()
 		map<string, bool> detCountsIncrease;
 		map<string, bool> detCountsIncreaseBtwDets;
 		int prev_counts, counts;
+		
+		//Modify when IT is included!!!
+		if( m_detectors[0] == "IT" && m_detectors.size() > 1 )
+			prev_counts = m_PlaneOccupancy[m_detectors[1]][0];
+		else if( m_detectors[0] != "IT" )
+			prev_counts = m_PlaneOccupancy[m_detectors[0]][0];
+		else
+		{
+			Error("CheckPlaneOccupancy()", "Error in handling plane occupancy maps! Exiting...");
+			exit(-1);
+		}
+
 		for(auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
 		{
-			detCountsChange[*itDet] = false;
-			detCountsIncrease[*itDet] = false;
-			if( itDet != m_detectors.begin() )
-				detCountsIncreaseBtwDets[*itDet] = false;
 			
 			if(*itDet != "IT")
 			{
+				detCountsChange[*itDet] = false;
+				detCountsIncrease[*itDet] = false;
+				if( itDet != m_detectors.begin() )
+					detCountsIncreaseBtwDets[*itDet] = false;
+
 				counts = m_PlaneOccupancy[*itDet][0];
 				// Set flag for increase btw detectors
 				if( itDet != m_detectors.begin() && prev_counts != counts )
@@ -1588,15 +1617,16 @@ void TAGFselector::CheckPlaneOccupancy()
 			}
 			else
 			{
-				int counts1 = 0, counts2 = 0;
-				for( int i = 0; i < m_PlaneOccupancy[*itDet].size()/2; ++i )
-				{
-					// if( m_PlaneOccupancy[*itDet][2*i] != m_PlaneOccupancy[*itDet][2*i + 1] )
+				continue;
+				// int counts1 = 0, counts2 = 0;
+				// for( int i = 0; i < m_PlaneOccupancy[*itDet].size()/2; ++i )
+				// {
+				// 	// if( m_PlaneOccupancy[*itDet][2*i] != m_PlaneOccupancy[*itDet][2*i + 1] )
 
-					counts1 += m_PlaneOccupancy[*itDet][2*i];
-					counts2 += m_PlaneOccupancy[*itDet][2*i + 1];
-				}
-				if(counts1 != counts2) needsCheckIT = true;
+				// 	counts1 += m_PlaneOccupancy[*itDet][2*i];
+				// 	counts2 += m_PlaneOccupancy[*itDet][2*i + 1];
+				// }
+				// if(counts1 != counts2) needsCheckIT = true;
 			}
 
 			foundIncrease = foundIncrease || detCountsIncrease[*itDet];
@@ -1619,7 +1649,7 @@ void TAGFselector::CheckPlaneOccupancy()
 	}
 
 	//Print in debug mode
-	if( m_debug > 1 )
+	if( m_debug > 1)// || (m_eventType != 1 && m_eventType != 5))
 	{
 		cout << "EVENT::" << gTAGroot->CurrentEventId().EventNumber() << "\tTYPE::" << m_eventType << endl;
 		for(auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
@@ -1859,10 +1889,10 @@ bool TAGFselector::PrefitRequirements( map< string, vector<AbsMeasurement*> >::i
 	}
 
   	else {
-	    if ( m_systemsON.find( "VT" ) != string::npos )			testHit_VT = m_SensorIDMap->GetFitPlanesN("VT");
-	    if ( m_systemsON.find( "IT" ) != string::npos )			testHit_IT = m_SensorIDMap->GetFitPlanesN("IT")/16;
-	    if ( m_systemsON.find( "MSD" ) != string::npos )		testHit_MSD = m_SensorIDMap->GetFitPlanesN("MSD");
-	    if ( m_systemsON.find( "TW" ) != string::npos )			testHit_TW = 1;
+	    if ( m_systemsON.Contains("VT") )	testHit_VT = m_SensorIDMap->GetFitPlanesN("VT");
+	    if ( m_systemsON.Contains("IT") )	testHit_IT = m_SensorIDMap->GetFitPlanesN("IT")/16;
+	    if ( m_systemsON.Contains("MSD") )	testHit_MSD = m_SensorIDMap->GetFitPlanesN("MSD");
+	    if ( m_systemsON.Contains("TW") )	testHit_TW = 1;
   	}
 
 	// num of total hits

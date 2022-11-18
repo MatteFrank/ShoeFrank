@@ -26,6 +26,10 @@ option(TOE_DIR "Include TOE reconstruction" ON)
 option(GENFIT_DIR "Include GENFIT_DIR reconstruction" ON)
 
 #------------------------------------------------------------------------------
+# option Ancillary
+option(ANC_DIR "Include ancillary" OFF)
+
+#------------------------------------------------------------------------------
 # option copying files into build directory
 option(FILECOPY "Files copying" OFF)
 
@@ -182,4 +186,7 @@ if (Geant4_DIR)
   add_subdirectory(G4Simulation)
 endif(Geant4_DIR)
 add_subdirectory(Analysis)
+if (ANC_DIR)
+   add_subdirectory(Ancillary)
+endif(ANC_DIR)
 

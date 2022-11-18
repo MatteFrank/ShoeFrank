@@ -1,11 +1,6 @@
 # CMake for FOOT_src
 # Ch. Finck
 
-#------------------------------------------------------------------------------
-# Check cmake version is compatible
-#
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-
 #----------------------------------------------------------------------------
 # Setup the project
 #

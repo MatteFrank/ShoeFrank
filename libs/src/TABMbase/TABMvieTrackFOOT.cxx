@@ -109,7 +109,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
   attfill_box.Modify();
   //~ atttext_small_hcvb.Modify();
   gPad->PaintBox(-p_bmgeo->GetWidth(), -0.5*p_bmgeo->GetLength(), 0., +0.5*p_bmgeo->GetLength());
-  sprintf(text,"V (XZ)     Evnum=%d     U (YZ)",fEventNumber);
+  snprintf(text,sizeof(text),"V (XZ)     Evnum=%d     U (YZ)",fEventNumber);
   gPad->PaintText(-p_bmgeo->GetWidth()+0.2, p_bmgeo->GetLength()/2.-0.8,text);
 
   /* Drawing the cells */
@@ -133,7 +133,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
 
     for (Int_t i_t = 0; i_t < p_ntutrk->GetTracksN(); i_t++) {
       p_trk = p_ntutrk->GetTrack(i_t);
-      sprintf(text,"MyChi2Red: %lf",p_trk->GetChiSquare());
+      snprintf(text,sizeof(text),"MyChi2Red: %lf",p_trk->GetChiSquare());
       gPad->PaintText(-0.6*p_bmgeo->GetWidth(), +0.40*p_bmgeo->GetLength(),text);
       attline_trk.Modify();
       mylar1posTrack=p_trk->PointAtLocalZ(p_bmgeo->GetMylar1().Z());
@@ -159,7 +159,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
           gPad->PaintBox(-(h_x-hit->GetRdrift())-0.5*p_bmgeo->GetWidth(),h_z-hit->GetRdrift(),-(h_x+hit->GetRdrift())-0.5*p_bmgeo->GetWidth(),h_z+hit->GetRdrift());
           //~ gPad->PaintEllipse(-h_x,h_z,hit->GetRdrift());
           atttext_small_hlvc.Modify();
-          sprintf(text,"chi2 :: %lf",hit->GetChi2());
+          snprintf(text,sizeof(text),"chi2 :: %lf",hit->GetChi2());
           gPad->PaintText(-0.95*p_bmgeo->GetWidth(), h_z, text);
         }
         else if(hit->GetView()==1 && !hit->GetIsSelected()) {
@@ -241,7 +241,7 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
           gPad->PaintBox(-(h_y-hit->GetRdrift())+0.5*p_bmgeo->GetWidth(),h_z-hit->GetRdrift(),-(h_y+hit->GetRdrift())+0.5*p_bmgeo->GetWidth(),h_z+hit->GetRdrift());
           //~ gPad->PaintEllipse(h_y,h_z,hit->GetRdrift());
           atttext_small_hlvc.Modify();
-          sprintf(text,"chi2 :: %lf",hit->GetChi2());
+          snprintf(text,sizeof(text),"chi2 :: %lf",hit->GetChi2());
           gPad->PaintText(0.05*p_bmgeo->GetWidth(), h_z, text);
 
         }

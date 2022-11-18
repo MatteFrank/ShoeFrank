@@ -53,6 +53,7 @@
 
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"
+#include "TABMntuTrack.hxx"
 #include "TACAparGeo.hxx"
 
 #include "TADIparGeo.hxx"
@@ -188,7 +189,7 @@ private:
 
 	vector<Color_t> m_vecHistoColor;
 
-	string m_systemsON;									///< String w/ list of systems on in the campaign
+	TString m_systemsON;								///< String w/ list of systems on in the campaign
 	// string m_kalmanOutputDir;
 
 	double m_AMU;										///< Conversion between mass in GeV and atomic mass unit
@@ -226,6 +227,7 @@ private:
 	TH1F* h_dR;											///< Fitted track dR =  at the target -- histo
 	TH1F* h_phi;										///< Fitted track azimuthal angle at the TG -- histo
 	TH1F* h_theta;										///< Fitted track polar angle at the TG -- histo
+	TH1F* h_theta_BM;									///< Fitted track polar angle at the TG wrt to BM track -- histo
 	TH1F* h_eta;										///< Fitted track eta =  at the TG -- histo
 	TH1F* h_dx_dz;										///< Fitted track slope at the TG in the X direction -- histo
 	TH1F* h_dy_dz;										///< Fitted track slope at the TG in the Y direction -- histo

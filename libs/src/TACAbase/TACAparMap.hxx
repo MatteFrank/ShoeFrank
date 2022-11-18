@@ -19,32 +19,34 @@ using namespace std;
 class TACAparMap : public TAGparTools {
 public:
 
-  TACAparMap();
-    virtual         ~TACAparMap();
+   TACAparMap();
+   virtual         ~TACAparMap();
 
-    Bool_t          FromFile(const TString& name);
+   Bool_t          FromFile(const TString& name);
 
-    void            Clear(Option_t* opt="");
+   void            Clear(Option_t* opt="");
 
-    Int_t           GetCrystalId(Int_t boardId, Int_t channelId);
+   Int_t           GetCrystalId(Int_t boardId, Int_t channelId);
+   Int_t           GetArduinoCrystalId(Int_t boardID, Int_t muxnum, Int_t ch);
    
    //! Get number of crystals
-    Int_t           GetCrystalsN()            const { return fCrystalsN;        }
+   Int_t           GetCrystalsN()            const { return fCrystalsN;        }
    //! Get board id
-    Int_t           GetBoardId(Int_t cryId)         { return fBoardId[cryId];   }
+   Int_t           GetBoardId(Int_t cryId)         { return fBoardId[cryId];   }
    //! Get channel id
-    Int_t           GetChannelId(Int_t cryId)       { return fChannelId[cryId]; }
+   Int_t           GetChannelId(Int_t cryId)       { return fChannelId[cryId]; }
    //! Get module id
-    Int_t           GetModuleId(Int_t cryId)        { return fModuleId[cryId];  }
+   Int_t           GetModuleId(Int_t cryId)        { return fModuleId[cryId];  }
 
 private:
-  Int_t                      fCrystalsN;  ///< number of crystal
-  map< pair<int, int>, int > fCrysId;     ///< crystal map
-  vector<Int_t>              fModuleId;   ///< module id vector
-  vector<Int_t>              fBoardId;    ///< board id vector
-  vector<Int_t>              fChannelId;  ///< channel id vector
-  
-  ClassDef(TACAparMap,1)
+   Int_t                      fCrystalsN;        ///< number of crystal
+   map< pair<int, int>, int > fCrysId;           ///< crystal map WD boards
+   map< pair<int, int>, int > fCrysIdArduino[4]; ///< crystal map Arduino setup (maximum 4 boards)
+   vector<Int_t>              fModuleId;         ///< module id vector
+   vector<Int_t>              fBoardId;          ///< board id vector
+   vector<Int_t>              fChannelId;        ///< channel id vector
+   
+   ClassDef(TACAparMap,1)
 };
 
 #endif

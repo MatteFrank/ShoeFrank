@@ -90,8 +90,12 @@ void LocalReco::CreateRawAction()
          TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber, true);
          parTimeWD->FromFileTcal(parFileName.Data());
       }
+      
+      if (fCampManager->GetCurrentCamNumber() >=20) // tmp solution
+         TAGactWDreader::EnableArduinoTempCA();
+
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
-                                      fpParTimeWD, fgStdAloneFlag);
+                                      fpParTimeWD, fpParMapCa, fgStdAloneFlag);
       if (fgStdAloneFlag)
          fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
@@ -277,11 +281,11 @@ void LocalReco::SetRawHistogramDir()
    }
 
    // CA
-    if (TAGrecoManager::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
       //fActWdRaw->SetHistogramDir(subfolder);
       fActNtuHitCa ->SetHistogramDir(subfolder);
-    }
+   }
 }
 
 //__________________________________________________________

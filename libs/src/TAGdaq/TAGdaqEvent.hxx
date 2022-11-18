@@ -35,8 +35,12 @@ public:
    void                   SetTrgEvent(TrgEvent* trg)     {  fTrgEvent = trg;                     }
    //! return number of fragments
    Int_t                  GetFragmentsN()         const  { return (int)fMapOfFragments.size();   }
+   
    // Get Fragment
-   const BaseFragment*    GetFragment(string type);
+   const BaseFragment*    GetFragment(string type, Int_t idx=0);
+   // Get fragment size
+   size_t                 GetFragmentSize(string type);
+
    // Add fragment
    void                   AddFragment(const BaseFragment* frag);
    // Clear
@@ -45,9 +49,9 @@ public:
    virtual void           ToStream(ostream& os = cout, Option_t* option = "") const;
    
 private:
-   InfoEvent*                        fInfoEvent;       ///< info event
-   TrgEvent*                         fTrgEvent;        ///< trigger event
-   map<string, const BaseFragment*>  fMapOfFragments;  ///< map of fragments
+   InfoEvent*                                fInfoEvent;       ///< info event
+   TrgEvent*                                 fTrgEvent;        ///< trigger event
+   map<string, vector<const BaseFragment*>>  fMapOfFragments;  ///< map of fragments
 
    ClassDef(TAGdaqEvent,0)
 };

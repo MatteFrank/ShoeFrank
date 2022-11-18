@@ -18,4 +18,7 @@
 #pragma link C++ class  TASTparGeo+;
 #pragma link C++ class  TASTparMap+;
 
+#pragma link C++ class TANEntuRaw+;
+#pragma link C++ class TANErawHit+;
+
 #endif

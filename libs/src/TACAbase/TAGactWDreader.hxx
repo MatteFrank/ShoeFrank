@@ -12,6 +12,7 @@
 #include "TASTntuRaw.hxx"
 #include "TATWntuRaw.hxx"
 #include "TACAntuRaw.hxx"
+#include "TACAparMap.hxx"
 #include "TAGWDtrigInfo.hxx"
 #include "TAGbaseWDparTime.hxx"
 #include "TAGbaseWDparMap.hxx"
@@ -20,7 +21,7 @@
 #define NSAMPLING 1024               ///< define sample
 #define GLB_EVT_HEADER 0xeadebaba    ///< global event header
 #define FILE_HEADER 0x30514457       ///< file header
-#define TIME_HEADER 0x454d4954       ///< time haeder
+#define TIME_HEADER 0x454d4954       ///< time header
 #define BOARD_HEADER 0x00002342      ///< board header
 #define CH_HEADER 0x00003043         ///< channel header
 #define EVT_HEADER 0x52444845        ///< event header
@@ -30,19 +31,23 @@
 #define TGEN_BANK_HEADER 0x4e454754  ///< trigger number bank header
 #define TRGC_BANK_HEADER 0x43475254  ///< trigger counter bank header
 
+#define ARDUINO_HEADER 0x00463730    ///< Arduino event header
+
 class WDEvent;
+class ArduinoEvent;
 class TAGactWDreader : public TAGaction {
 
 public:
-  explicit           TAGactWDreader(const char* name,
-                                 TAGdataDsc* p_datdaq,
-                                 TAGdataDsc* p_stwd, 
-                                 TAGdataDsc* p_twwd,
-                                 TAGdataDsc* p_cawd,
-                                 TAGdataDsc* p_WDtrigInfo,
-                                 TAGparaDsc* p_WDmap,
-                                 TAGparaDsc* p_WDtim,
-                                 Bool_t standAlone);
+  explicit           TAGactWDreader(const char* name = 0,
+                                 TAGdataDsc* p_datdaq = 0,
+                                 TAGdataDsc* p_stwd = 0,
+                                 TAGdataDsc* p_twwd = 0,
+                                 TAGdataDsc* p_cawd = 0,
+                                 TAGdataDsc* p_WDtrigInfo = 0,
+                                 TAGparaDsc* p_WDmap = 0,
+                                 TAGparaDsc* p_WDtim = 0,
+                                 TAGparaDsc* p_CAmap = 0,
+                                 Bool_t standAlone = false);
 
    virtual          ~TAGactWDreader();
    void              CreateHistogram();
@@ -55,7 +60,11 @@ public:
    void              SetMaxFiles(Int_t value)  { fMaxFiles = value;}
    //! Set initial names
    void              SetInitName(TString name) { fInitName = name; fCurrName = name; }
-  
+   
+public:
+   static void EnableArduinoTempCA()  { fgArduinoTempCA = true;}
+   static void DisableArduinoTempCA() { fgArduinoTempCA = false;}
+
 private:
    TAGdataDsc*     fpDatDaq;          ///< input data dsc
    TAGdataDsc*     fpStWd;            ///< output data dsc
@@ -63,6 +72,7 @@ private:
    TAGdataDsc*     fpCaWd;            ///< output data dsc
    TAGparaDsc*     fpWDTim;           ///< parameter dsc
    TAGparaDsc*     fpWDMap;           ///< parameter dsc
+   TAGparaDsc*     fpCAMap;           ///< parameter dsc
    TAGdataDsc*     fpWDtrigInfo;      ///< output data dsc
 
    TString         fInitName;         ///< init file name
@@ -78,12 +88,17 @@ private:
    vector<TWaveformContainer*>             fTWwaves;  ///< wave form container vector for TW
    vector<TWaveformContainer*>             fCAwaves;  ///< wave form container vector for CA
    map<pair<int,int>, TWaveformContainer*> fCLKwaves; ///< wave form container map for trigger
+   double*                                 fTempCA;   ///< temp container for CA
   
 private:
+   static Bool_t fgArduinoTempCA; ///< flag for reading back Arduino Tempetrature for CA
+   ///<
+private:
+   Int_t          DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p_CAmap);
    Int_t          DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
-   Int_t          ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
+   Int_t          ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap, TACAparMap *p_CAmap);
    Bool_t         WaveformsTimeCalibration();
-   Bool_t         CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
+   Bool_t         CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw, TACAparMap *p_CAmap);
    void           Clear();
 
    vector<double> ADC2Volt(vector<int>, double);

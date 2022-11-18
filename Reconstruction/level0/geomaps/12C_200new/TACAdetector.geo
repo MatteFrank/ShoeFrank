@@ -7,9 +7,10 @@
 //
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of Geometry 
-// type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD)
+// type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, 
+//                   SEVEN_MOD, SEVEN_MOD_HIT22, FULL_DET_V1) 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-TypeGeo:        "FULL_DET"
+TypeGeo:        "FULL_DET_V1"
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameters of the Crystals
@@ -20,9 +21,9 @@ Excitation:    4.341e-4
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Crystals (cm)
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Widthfront:   1.000000   Heightfront:  1.000000    DummyLength:       0.
+Widthfront:   1.050000   Heightfront:  1.050000    DummyLength:       0.
 Widthback :   1.450000	 Heightback :  1.450000	   Length:           12.000000
-Delta:        0.100000
+Delta:        0.095000
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Support (temporally AIR)
@@ -32,990 +33,1140 @@ Density:       1.2e-3
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Support (cm)
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Widthfront:   3.868873   Heightfront:  3.868873    DummyLength:       0.
-Widthback :   4.514654	 Heightback :  4.514654	   Length:           5.764053
-PositionZ:     5.754939
+Widthfront:   3.935077   Heightfront:  3.935077    DummyLength:       0.
+Widthback :   4.509309	 Heightback :  4.509309	   Length:           5.762494
+PositionZ:     5.755293
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Air around each module. It is need ONLY by FLUKA geometry (cm)
-// it will be removed if a truncate piramid body is implemented in FLUKA 
+// it will be removed if a truncate pyramid body is implemented in FLUKA 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Widthfront:   3.114221   Heightfront:  3.114221    DummyLength:    0.
-Widthback :   4.468810	 Heightback :  4.468810	   Length:         12.150000
+Widthfront:   3.258752   Heightfront:  3.258752    DummyLength:    0.
+Widthback :   4.462378	 Heightback :  4.462378	   Length:         12.150000
 PositionZ:    -0.082500
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Calorimeter bounding box (cm)
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Width:          55.241361     Height:      55.175392      Thick:     26.411979, 
-PositionZ:      0.460181
+Width:          64.148998     Height:      64.185098      Thick:     30.316929, 
+PositionZ:      -2.408465
 
-CrystalN:  288
-ModulesN:  32
+CrystalN:  333
+ModulesN:  37
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the crystals used in the run
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 CrystalId:  0
-PositionX:  -3.865876853086   PositionY:   -3.872316177238   PositionZ:   -0.228920210837
-TiltX:      3.233733009436   TiltY:       -3.211247674512   TiltZ:       -0.199997790452
+PositionX:  -10.474377479066   PositionY:   26.017001523419   PositionZ:   -5.099737876727
+TiltX:      -19.128841790109   TiltY:       -7.661656962576   TiltZ:       1.079126472909
 CrystalId:  1
-PositionX:  -1.318038528351   PositionY:   -3.878407878024   PositionZ:   -0.135640819601
-TiltX:      3.229209790049   TiltY:       -1.066322841445   TiltZ:       -0.078818690679
+PositionX:  -7.898184963775   PositionY:   26.051875543163   PositionZ:   -4.792861044578
+TiltX:      -19.054802614511   TiltY:       -5.856997134390   TiltZ:       0.450155739584
 CrystalId:  2
-PositionX:  -6.408139728589   PositionY:   -3.860640197114   PositionZ:   -0.421225764479
-TiltX:      3.242824209331   TiltY:       -5.356158112993   TiltZ:       -0.321687240244
+PositionX:  -5.313116434134   PositionY:   26.057552836435   PositionZ:   -4.570271897032
+TiltX:      -19.000826607828   TiltY:       -4.051640921916   TiltZ:       -0.174761596714
 CrystalId:  3
-PositionX:  -3.862260262843   PositionY:   -1.324501554730   PositionZ:   -0.134867819863
-TiltX:      1.085393012690   TiltY:       -3.211247674512   TiltZ:       -0.199997790452
+PositionX:  -10.537378185225   PositionY:   23.552095854543   PositionZ:   -4.296818958158
+TiltX:      -17.212075459441   TiltY:       -7.681501370597   TiltZ:       1.018118269794
 CrystalId:  4
-PositionX:  -1.314424502984   PositionY:   -1.332454234313   PositionZ:   -0.041658494635
-TiltX:      1.083875169673   TiltY:       -1.063292516992   TiltZ:       -0.159305279928
+PositionX:  -7.961221871788   PositionY:   23.585549644429   PositionZ:   -3.989480454407
+TiltX:      -17.145120106767   TiltY:       -5.856997134390   TiltZ:       0.450155739584
 CrystalId:  5
-PositionX:  -6.404525703222   PositionY:   -1.314686553404   PositionZ:   -0.327243439514
-TiltX:      1.088446981333   TiltY:       -5.359201208820   TiltZ:       -0.240861922394
+PositionX:  -5.376117140293   PositionY:   23.592647167559   PositionZ:   -3.767352978464
+TiltX:      -17.096479751192   TiltY:       -4.031925095543   TiltZ:       -0.114106540155
 CrystalId:  6
-PositionX:  -3.863917994098   PositionY:   -6.414546520407   PositionZ:   -0.421998764217
-TiltX:      5.382073006181   TiltY:       -3.211247674512   TiltZ:       -0.199997790452
+PositionX:  -10.591435443288   PositionY:   21.060848557215   PositionZ:   -3.579063741084
+TiltX:      -15.295203836108   TiltY:       -7.699312302288   TiltZ:       0.956471710828
 CrystalId:  7
-PositionX:  -1.316081023347   PositionY:   -6.418781167462   PositionZ:   -0.328579703673
-TiltX:      5.374541208299   TiltY:       -1.072363487369   TiltZ:       0.001498145077
+PositionX:  -8.015310361743   PositionY:   21.092867478938   PositionZ:   -3.271310892044
+TiltX:      -15.235437599022   TiltY:       -5.856997134390   TiltZ:       0.450155739584
 CrystalId:  8
-PositionX:  -6.406182223584   PositionY:   -6.401013486552   PositionZ:   -0.614164648551
-TiltX:      5.397178935241   TiltY:       -5.350092062775   TiltZ:       -0.402339929855
+PositionX:  -5.430174398355   PositionY:   21.101399870231   PositionZ:   -3.049597761390
+TiltX:      -15.192156772981   TiltY:       -4.014230761053   TiltZ:       -0.052829587254
 CrystalId:  9
-PositionX:  -3.865876853086   PositionY:   3.872316177238   PositionZ:   -0.228920210837
-TiltX:      -3.233733009436   TiltY:       -3.211247674512   TiltZ:       0.199997790452
+PositionX:  -2.594252985282   PositionY:   26.013646726631   PositionZ:   -4.460671967697
+TiltX:      -19.106668115313   TiltY:       -1.804551254619   TiltZ:       0.624988972712
 CrystalId:  10
-PositionX:  -1.318038528351   PositionY:   3.878407878024   PositionZ:   -0.135640819601
-TiltX:      -3.229209790049   TiltY:       -1.066322841445   TiltZ:       0.078818690679
+PositionX:  0.000000000000   PositionY:   26.028310574878   PositionZ:   -4.418317710350
+TiltX:      -19.096825077444   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  11
-PositionX:  -6.408139728589   PositionY:   3.860640197114   PositionZ:   -0.421225764479
-TiltX:      -3.242824209331   TiltY:       -5.356158112993   TiltZ:       0.321687240244
+PositionX:  2.594252985282   PositionY:   26.013646726631   PositionZ:   -4.460671967697
+TiltX:      -19.106668115313   TiltY:       1.804551254619   TiltZ:       -0.624988972712
 CrystalId:  12
-PositionX:  -3.863917994098   PositionY:   6.414546520407   PositionZ:   -0.421998764217
-TiltX:      -5.382073006181   TiltY:       -3.211247674512   TiltZ:       0.199997790452
+PositionX:  -2.594252985282   PositionY:   23.549904744570   PositionZ:   -3.651732364847
+TiltX:      -17.196130464691   TiltY:       -1.824375548871   TiltZ:       0.564489888993
 CrystalId:  13
-PositionX:  -1.316081023347   PositionY:   6.418781167462   PositionZ:   -0.328579703673
-TiltX:      -5.374541208299   TiltY:       -1.072363487369   TiltZ:       -0.001498145077
+PositionX:  0.000000000000   PositionY:   23.563149031979   PositionZ:   -3.608912971906
+TiltX:      -17.187142569699   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  14
-PositionX:  -6.406182223584   PositionY:   6.401013486552   PositionZ:   -0.614164648551
-TiltX:      -5.397178935241   TiltY:       -5.350092062775   TiltZ:       0.402339929855
+PositionX:  2.594252985282   PositionY:   23.549904744570   PositionZ:   -3.651732364847
+TiltX:      -17.196130464691   TiltY:       1.824375548871   TiltZ:       -0.564489888993
 CrystalId:  15
-PositionX:  -3.862260262843   PositionY:   1.324501554730   PositionZ:   -0.134867819863
-TiltX:      -1.085393012690   TiltY:       -3.211247674512   TiltZ:       0.199997790452
+PositionX:  -2.594252985282   PositionY:   21.059688899480   PositionZ:   -2.928383983988
+TiltX:      -15.285552862625   TiltY:       -1.842172834120   TiltZ:       0.503362537817
 CrystalId:  16
-PositionX:  -1.314424502984   PositionY:   1.332454234313   PositionZ:   -0.041658494635
-TiltX:      -1.083875169673   TiltY:       -1.063292516992   TiltZ:       0.159305279928
+PositionX:  0.000000000000   PositionY:   21.071498914262   PositionZ:   -2.885147019344
+TiltX:      -15.277460061955   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  17
-PositionX:  -6.404525703222   PositionY:   1.314686553404   PositionZ:   -0.327243439514
-TiltX:      -1.088446981333   TiltY:       -5.359201208820   TiltZ:       0.240861922394
+PositionX:  2.594252985282   PositionY:   21.059688899480   PositionZ:   -2.928383983988
+TiltX:      -15.285552862625   TiltY:       1.842172834120   TiltZ:       -0.503362537817
 CrystalId:  18
-PositionX:  3.865876853086   PositionY:   -3.872316177238   PositionZ:   -0.228920210837
-TiltX:      3.233733009436   TiltY:       3.211247674512   TiltZ:       0.199997790452
+PositionX:  5.313116434134   PositionY:   26.057552836435   PositionZ:   -4.570271897032
+TiltX:      -19.000826607828   TiltY:       4.051640921916   TiltZ:       0.174761596714
 CrystalId:  19
-PositionX:  6.408139728589   PositionY:   -3.860640197114   PositionZ:   -0.421225764479
-TiltX:      3.242824209331   TiltY:       5.356158112993   TiltZ:       0.321687240244
+PositionX:  7.898184963775   PositionY:   26.051875543163   PositionZ:   -4.792861044578
+TiltX:      -19.054802614511   TiltY:       5.856997134390   TiltZ:       -0.450155739584
 CrystalId:  20
-PositionX:  1.318038528351   PositionY:   -3.878407878024   PositionZ:   -0.135640819601
-TiltX:      3.229209790049   TiltY:       1.066322841445   TiltZ:       0.078818690679
+PositionX:  10.474377479066   PositionY:   26.017001523419   PositionZ:   -5.099737876727
+TiltX:      -19.128841790109   TiltY:       7.661656962576   TiltZ:       -1.079126472909
 CrystalId:  21
-PositionX:  3.862260262843   PositionY:   -1.324501554730   PositionZ:   -0.134867819863
-TiltX:      1.085393012690   TiltY:       3.211247674512   TiltZ:       0.199997790452
+PositionX:  5.376117140293   PositionY:   23.592647167559   PositionZ:   -3.767352978464
+TiltX:      -17.096479751192   TiltY:       4.031925095543   TiltZ:       0.114106540155
 CrystalId:  22
-PositionX:  6.404525703222   PositionY:   -1.314686553404   PositionZ:   -0.327243439514
-TiltX:      1.088446981333   TiltY:       5.359201208820   TiltZ:       0.240861922394
+PositionX:  7.961221871788   PositionY:   23.585549644429   PositionZ:   -3.989480454407
+TiltX:      -17.145120106767   TiltY:       5.856997134390   TiltZ:       -0.450155739584
 CrystalId:  23
-PositionX:  1.314424502984   PositionY:   -1.332454234313   PositionZ:   -0.041658494635
-TiltX:      1.083875169673   TiltY:       1.063292516992   TiltZ:       0.159305279928
+PositionX:  10.537378185225   PositionY:   23.552095854543   PositionZ:   -4.296818958158
+TiltX:      -17.212075459441   TiltY:       7.681501370597   TiltZ:       -1.018118269794
 CrystalId:  24
-PositionX:  3.863917994098   PositionY:   -6.414546520407   PositionZ:   -0.421998764217
-TiltX:      5.382073006181   TiltY:       3.211247674512   TiltZ:       0.199997790452
+PositionX:  5.430174398355   PositionY:   21.101399870231   PositionZ:   -3.049597761390
+TiltX:      -15.192156772981   TiltY:       4.014230761053   TiltZ:       0.052829587254
 CrystalId:  25
-PositionX:  6.406182223584   PositionY:   -6.401013486552   PositionZ:   -0.614164648551
-TiltX:      5.397178935241   TiltY:       5.350092062775   TiltZ:       0.402339929855
+PositionX:  8.015310361743   PositionY:   21.092867478938   PositionZ:   -3.271310892044
+TiltX:      -15.235437599022   TiltY:       5.856997134390   TiltZ:       -0.450155739584
 CrystalId:  26
-PositionX:  1.316081023347   PositionY:   -6.418781167462   PositionZ:   -0.328579703673
-TiltX:      5.374541208299   TiltY:       1.072363487369   TiltZ:       -0.001498145077
+PositionX:  10.591435443288   PositionY:   21.060848557215   PositionZ:   -3.579063741084
+TiltX:      -15.295203836108   TiltY:       7.699312302288   TiltZ:       -0.956471710828
 CrystalId:  27
-PositionX:  3.865876853086   PositionY:   3.872316177238   PositionZ:   -0.228920210837
-TiltX:      -3.233733009436   TiltY:       3.211247674512   TiltZ:       -0.199997790452
+PositionX:  -18.329680461155   PositionY:   18.338901553430   PositionZ:   -4.385431378214
+TiltX:      -13.589830454564   TiltY:       -13.529088569433   TiltZ:       1.058572335785
 CrystalId:  28
-PositionX:  6.408139728589   PositionY:   3.860640197114   PositionZ:   -0.421225764479
-TiltX:      -3.242824209331   TiltY:       5.356158112993   TiltZ:       -0.321687240244
+PositionX:  -15.798142733756   PositionY:   18.375889133399   PositionZ:   -3.817887444328
+TiltX:      -13.489876545294   TiltY:       -11.672471155582   TiltZ:       0.600459596177
 CrystalId:  29
-PositionX:  1.318038528351   PositionY:   3.878407878024   PositionZ:   -0.135640819601
-TiltX:      -3.229209790049   TiltY:       1.066322841445   TiltZ:       -0.078818690679
+PositionX:  -13.248751149328   PositionY:   18.392151626772   PositionZ:   -3.335709527206
+TiltX:      -13.405601078907   TiltY:       -9.815137665631   TiltZ:       0.148442808118
 CrystalId:  30
-PositionX:  3.863917994098   PositionY:   6.414546520407   PositionZ:   -0.421998764217
-TiltX:      -5.382073006181   TiltY:       3.211247674512   TiltZ:       -0.199997790452
+PositionX:  -18.417327952726   PositionY:   15.806853318638   PositionZ:   -3.832749291356
+TiltX:      -11.666259108911   TiltY:       -13.543000613359   TiltZ:       0.994702089800
 CrystalId:  31
-PositionX:  6.406182223584   PositionY:   6.401013486552   PositionZ:   -0.614164648551
-TiltX:      -5.397178935241   TiltY:       5.350092062775   TiltZ:       -0.402339929855
+PositionX:  -15.885840533853   PositionY:   15.842382076820   PositionZ:   -3.264887848190
+TiltX:      -11.580194037549   TiltY:       -11.672471155582   TiltZ:       0.600459596177
 CrystalId:  32
-PositionX:  1.316081023347   PositionY:   6.418781167462   PositionZ:   -0.328579703673
-TiltX:      -5.374541208299   TiltY:       1.072363487369   TiltZ:       0.001498145077
+PositionX:  -13.336398640899   PositionY:   15.860103391979   PositionZ:   -2.783027440348
+TiltX:      -11.507721259156   TiltY:       -9.801411426153   TiltZ:       0.211501974222
 CrystalId:  33
-PositionX:  3.862260262843   PositionY:   1.324501554730   PositionZ:   -0.134867819863
-TiltX:      -1.085393012690   TiltY:       3.211247674512   TiltZ:       -0.199997790452
+PositionX:  -18.487030942154   PositionY:   13.257007531099   PositionZ:   -3.366020474736
+TiltX:      -9.742568907027   TiltY:       -13.554820412970   TiltZ:       0.930384025642
 CrystalId:  34
-PositionX:  6.404525703222   PositionY:   1.314686553404   PositionZ:   -0.327243439514
-TiltX:      -1.088446981333   TiltY:       5.359201208820   TiltZ:       -0.240861922394
+PositionX:  -15.955583859868   PositionY:   13.291067577218   PositionZ:   -2.797889287375
+TiltX:      -9.670511529805   TiltY:       -11.672471155582   TiltZ:       0.600459596177
 CrystalId:  35
-PositionX:  1.314424502984   PositionY:   1.332454234313   PositionZ:   -0.041658494635
-TiltX:      -1.083875169673   TiltY:       1.063292516992   TiltZ:       -0.159305279928
+PositionX:  -13.406101630327   PositionY:   13.310257604440   PositionZ:   -2.316298623727
+TiltX:      -9.609899861251   TiltY:       -9.789750564761   TiltZ:       0.274985444219
 CrystalId:  36
-PositionX:  -11.745234987481   PositionY:   -3.872316177238   PositionZ:   0.041464145089
-TiltX:      3.222509995118   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+PositionX:  -10.515497641549   PositionY:   18.347579163310   PositionZ:   -2.864840009562
+TiltX:      -13.436386871549   TiltY:       -7.551829566597   TiltZ:       1.193712263132
 CrystalId:  37
-PositionX:  -9.224038210031   PositionY:   -3.869524037569   PositionZ:   0.420643912435
-TiltX:      3.204305859188   TiltY:       -7.522567062977   TiltZ:       0.121786235966
+PositionX:  -7.938726970990   PositionY:   18.391590597737   PositionZ:   -2.564052097249
+TiltX:      -13.384955231809   TiltY:       -5.694209508692   TiltZ:       0.747845260727
 CrystalId:  38
-PositionX:  -14.249775890625   PositionY:   -3.869524037569   PositionZ:   -0.435490099122
-TiltX:      3.245500647788   TiltY:       -11.812449503303   TiltZ:       -0.123350266769
+PositionX:  -5.353033602792   PositionY:   18.414965340020   PositionZ:   -2.350040671657
+TiltX:      -13.348149474652   TiltY:       -3.836249102035   TiltZ:       0.304853000306
 CrystalId:  39
-PositionX:  -11.760970306949   PositionY:   -1.324486049488   PositionZ:   0.133834716632
-TiltX:      1.074169998373   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+PositionX:  -10.537979682137   PositionY:   15.815050134035   PositionZ:   -2.307884796856
+TiltX:      -11.519520156702   TiltY:       -7.565578896718   TiltZ:       1.131035293934
 CrystalId:  40
-PositionX:  -9.239761805972   PositionY:   -1.323554899942   PositionZ:   0.512945663715
-TiltX:      1.068100205532   TiltY:       -7.519565305733   TiltZ:       0.040614135210
+PositionX:  -7.961221871788   PositionY:   15.857602470609   PositionZ:   -2.006776928040
+TiltX:      -11.475272724065   TiltY:       -5.694209508692   TiltZ:       0.747845260727
 CrystalId:  41
-PositionX:  -14.265499486567   PositionY:   -1.323554899942   PositionZ:   -0.343188347841
-TiltX:      1.081838295575   TiltY:       -11.815489837722   TiltZ:       -0.041136459661
+PositionX:  -5.375515643380   PositionY:   15.882436310745   PositionZ:   -1.793085458951
+TiltX:      -11.443687594562   TiltY:       -3.822588745890   TiltZ:       0.367144043644
 CrystalId:  42
-PositionX:  -11.712843793707   PositionY:   -6.414562025649   PositionZ:   -0.148680903319
-TiltX:      5.370849991863   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+PositionX:  -10.551518274629   PositionY:   13.264812449197   PositionZ:   -1.838297432699
+TiltX:      -9.602582909298   TiltY:       -7.577242204868   TiltZ:       1.067927593992
 CrystalId:  43
-PositionX:  -9.191670446829   PositionY:   -6.409912820924   PositionZ:   0.230636407808
-TiltX:      5.340527251265   TiltY:       -7.528566419966   TiltZ:       0.202789902701
+PositionX:  -7.974768354527   PositionY:   13.305895847043   PositionZ:   -1.536918158558
+TiltX:      -9.565590216321   TiltY:       -5.694209508692   TiltZ:       0.747845260727
 CrystalId:  44
-PositionX:  -14.217408127423   PositionY:   -6.409912820924   PositionZ:   -0.625497603749
-TiltX:      5.409120323365   TiltY:       -11.806373209523   TiltZ:       -0.205386828889
+PositionX:  -5.389054235872   PositionY:   13.332198625907   PositionZ:   -1.323498094794
+TiltX:      -9.539239955707   TiltY:       -3.811001424645   TiltZ:       0.429854745176
 CrystalId:  45
-PositionX:  -11.745234987481   PositionY:   3.872316177238   PositionZ:   0.041464145089
-TiltX:      -3.222509995118   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+PositionX:  -2.594252985282   PositionY:   18.363692290233   PositionZ:   -2.223896411136
+TiltX:      -13.374939286763   TiltY:       -1.857923282113   TiltZ:       0.441674923206
 CrystalId:  46
-PositionX:  -9.224038210031   PositionY:   3.869524037569   PositionZ:   0.420643912435
-TiltX:      -3.204305859188   TiltY:       -7.522567062977   TiltZ:       -0.121786235966
+PositionX:  0.000000000000   PositionY:   18.374054913794   PositionZ:   -2.180289902519
+TiltX:      -13.367777554211   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  47
-PositionX:  -14.249775890625   PositionY:   3.869524037569   PositionZ:   -0.435490099122
-TiltX:      -3.245500647788   TiltY:       -11.812449503303   TiltZ:       0.123350266769
+PositionX:  2.594252985282   PositionY:   18.363692290233   PositionZ:   -2.223896411136
+TiltX:      -13.374939286763   TiltY:       1.857923282113   TiltZ:       -0.441674923206
 CrystalId:  48
-PositionX:  -11.712843793707   PositionY:   6.414562025649   PositionZ:   -0.148680903319
-TiltX:      -5.370849991863   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+PositionX:  -2.594252985282   PositionY:   15.831504726064   PositionZ:   -1.664938474349
+TiltX:      -11.464293875005   TiltY:       -1.871609343693   TiltZ:       0.379495682798
 CrystalId:  49
-PositionX:  -9.191670446829   PositionY:   6.409912820924   PositionZ:   0.230636407808
-TiltX:      -5.340527251265   TiltY:       -7.528566419966   TiltZ:       -0.202789902701
+PositionX:  0.000000000000   PositionY:   15.840408447575   PositionZ:   -1.621010859981
+TiltX:      -11.458095046466   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  50
-PositionX:  -14.217408127423   PositionY:   6.409912820924   PositionZ:   -0.625497603749
-TiltX:      -5.409120323365   TiltY:       -11.806373209523   TiltZ:       0.205386828889
+PositionX:  2.594252985282   PositionY:   15.831504726064   PositionZ:   -1.664938474349
+TiltX:      -11.464293875005   TiltY:       1.871609343693   TiltZ:       -0.379495682798
 CrystalId:  51
-PositionX:  -11.760970306949   PositionY:   1.324486049488   PositionZ:   0.133834716632
-TiltX:      -1.074169998373   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+PositionX:  -2.594252985282   PositionY:   13.281519609148   PositionZ:   -1.193786971391
+TiltX:      -9.553620907086   TiltY:       -1.883215768831   TiltZ:       0.316894010451
 CrystalId:  52
-PositionX:  -9.239761805972   PositionY:   1.323554899942   PositionZ:   0.512945663715
-TiltX:      -1.068100205532   TiltY:       -7.519565305733   TiltZ:       -0.040614135210
+PositionX:  0.000000000000   PositionY:   13.288954538334   PositionZ:   -1.149587046178
+TiltX:      -9.548412538722   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  53
-PositionX:  -14.265499486567   PositionY:   1.323554899942   PositionZ:   -0.343188347841
-TiltX:      -1.081838295575   TiltY:       -11.815489837722   TiltZ:       0.041136459661
+PositionX:  2.594252985282   PositionY:   13.281519609148   PositionZ:   -1.193786971391
+TiltX:      -9.553620907086   TiltY:       1.883215768831   TiltZ:       -0.316894010451
 CrystalId:  54
-PositionX:  11.745234987481   PositionY:   -3.872316177238   PositionZ:   0.041464145089
-TiltX:      3.222509995118   TiltY:       9.667529985354   TiltZ:       0.000000000000
+PositionX:  5.353033602792   PositionY:   18.414965340020   PositionZ:   -2.350040671657
+TiltX:      -13.348149474652   TiltY:       3.836249102035   TiltZ:       -0.304853000306
 CrystalId:  55
-PositionX:  14.249775890625   PositionY:   -3.869524037569   PositionZ:   -0.435490099122
-TiltX:      3.245500647788   TiltY:       11.812449503303   TiltZ:       0.123350266769
+PositionX:  7.938726970990   PositionY:   18.391590597737   PositionZ:   -2.564052097249
+TiltX:      -13.384955231809   TiltY:       5.694209508692   TiltZ:       -0.747845260727
 CrystalId:  56
-PositionX:  9.224038210031   PositionY:   -3.869524037569   PositionZ:   0.420643912435
-TiltX:      3.204305859188   TiltY:       7.522567062977   TiltZ:       -0.121786235966
+PositionX:  10.515497641549   PositionY:   18.347579163310   PositionZ:   -2.864840009562
+TiltX:      -13.436386871549   TiltY:       7.551829566597   TiltZ:       -1.193712263132
 CrystalId:  57
-PositionX:  11.760970306949   PositionY:   -1.324486049488   PositionZ:   0.133834716632
-TiltX:      1.074169998373   TiltY:       9.667529985354   TiltZ:       0.000000000000
+PositionX:  5.375515643380   PositionY:   15.882436310745   PositionZ:   -1.793085458951
+TiltX:      -11.443687594562   TiltY:       3.822588745890   TiltZ:       -0.367144043644
 CrystalId:  58
-PositionX:  14.265499486567   PositionY:   -1.323554899942   PositionZ:   -0.343188347841
-TiltX:      1.081838295575   TiltY:       11.815489837722   TiltZ:       0.041136459661
+PositionX:  7.961221871788   PositionY:   15.857602470609   PositionZ:   -2.006776928040
+TiltX:      -11.475272724065   TiltY:       5.694209508692   TiltZ:       -0.747845260727
 CrystalId:  59
-PositionX:  9.239761805972   PositionY:   -1.323554899942   PositionZ:   0.512945663715
-TiltX:      1.068100205532   TiltY:       7.519565305733   TiltZ:       -0.040614135210
+PositionX:  10.537979682137   PositionY:   15.815050134035   PositionZ:   -2.307884796856
+TiltX:      -11.519520156702   TiltY:       7.565578896718   TiltZ:       -1.131035293934
 CrystalId:  60
-PositionX:  11.712843793707   PositionY:   -6.414562025649   PositionZ:   -0.148680903319
-TiltX:      5.370849991863   TiltY:       9.667529985354   TiltZ:       0.000000000000
+PositionX:  5.389054235872   PositionY:   13.332198625907   PositionZ:   -1.323498094794
+TiltX:      -9.539239955707   TiltY:       3.811001424645   TiltZ:       -0.429854745176
 CrystalId:  61
-PositionX:  14.217408127423   PositionY:   -6.409912820924   PositionZ:   -0.625497603749
-TiltX:      5.409120323365   TiltY:       11.806373209523   TiltZ:       0.205386828889
+PositionX:  7.974768354527   PositionY:   13.305895847043   PositionZ:   -1.536918158558
+TiltX:      -9.565590216321   TiltY:       5.694209508692   TiltZ:       -0.747845260727
 CrystalId:  62
-PositionX:  9.191670446829   PositionY:   -6.409912820924   PositionZ:   0.230636407808
-TiltX:      5.340527251265   TiltY:       7.528566419966   TiltZ:       -0.202789902701
+PositionX:  10.551518274629   PositionY:   13.264812449197   PositionZ:   -1.838297432699
+TiltX:      -9.602582909298   TiltY:       7.577242204868   TiltZ:       -1.067927593992
 CrystalId:  63
-PositionX:  11.745234987481   PositionY:   3.872316177238   PositionZ:   0.041464145089
-TiltX:      -3.222509995118   TiltY:       9.667529985354   TiltZ:       0.000000000000
+PositionX:  13.248751149328   PositionY:   18.392151626772   PositionZ:   -3.335709527206
+TiltX:      -13.405601078907   TiltY:       9.815137665631   TiltZ:       -0.148442808118
 CrystalId:  64
-PositionX:  14.249775890625   PositionY:   3.869524037569   PositionZ:   -0.435490099122
-TiltX:      -3.245500647788   TiltY:       11.812449503303   TiltZ:       -0.123350266769
+PositionX:  15.798142733756   PositionY:   18.375889133399   PositionZ:   -3.817887444328
+TiltX:      -13.489876545294   TiltY:       11.672471155582   TiltZ:       -0.600459596177
 CrystalId:  65
-PositionX:  9.224038210031   PositionY:   3.869524037569   PositionZ:   0.420643912435
-TiltX:      -3.204305859188   TiltY:       7.522567062977   TiltZ:       0.121786235966
+PositionX:  18.329680461155   PositionY:   18.338901553430   PositionZ:   -4.385431378214
+TiltX:      -13.589830454564   TiltY:       13.529088569433   TiltZ:       -1.058572335785
 CrystalId:  66
-PositionX:  11.712843793707   PositionY:   6.414562025649   PositionZ:   -0.148680903319
-TiltX:      -5.370849991863   TiltY:       9.667529985354   TiltZ:       0.000000000000
+PositionX:  13.336398640899   PositionY:   15.860103391979   PositionZ:   -2.783027440348
+TiltX:      -11.507721259156   TiltY:       9.801411426153   TiltZ:       -0.211501974222
 CrystalId:  67
-PositionX:  14.217408127423   PositionY:   6.409912820924   PositionZ:   -0.625497603749
-TiltX:      -5.409120323365   TiltY:       11.806373209523   TiltZ:       -0.205386828889
+PositionX:  15.885840533853   PositionY:   15.842382076820   PositionZ:   -3.264887848190
+TiltX:      -11.580194037549   TiltY:       11.672471155582   TiltZ:       -0.600459596177
 CrystalId:  68
-PositionX:  9.191670446829   PositionY:   6.409912820924   PositionZ:   0.230636407808
-TiltX:      -5.340527251265   TiltY:       7.528566419966   TiltZ:       0.202789902701
+PositionX:  18.417327952726   PositionY:   15.806853318638   PositionZ:   -3.832749291356
+TiltX:      -11.666259108911   TiltY:       13.543000613359   TiltZ:       -0.994702089800
 CrystalId:  69
-PositionX:  11.760970306949   PositionY:   1.324486049488   PositionZ:   0.133834716632
-TiltX:      -1.074169998373   TiltY:       9.667529985354   TiltZ:       0.000000000000
+PositionX:  13.406101630327   PositionY:   13.310257604440   PositionZ:   -2.316298623727
+TiltX:      -9.609899861251   TiltY:       9.789750564761   TiltZ:       -0.274985444219
 CrystalId:  70
-PositionX:  14.265499486567   PositionY:   1.323554899942   PositionZ:   -0.343188347841
-TiltX:      -1.081838295575   TiltY:       11.815489837722   TiltZ:       -0.041136459661
+PositionX:  15.955583859868   PositionY:   13.291067577218   PositionZ:   -2.797889287375
+TiltX:      -9.670511529805   TiltY:       11.672471155582   TiltZ:       -0.600459596177
 CrystalId:  71
-PositionX:  9.239761805972   PositionY:   1.323554899942   PositionZ:   0.512945663715
-TiltX:      -1.068100205532   TiltY:       7.519565305733   TiltZ:       0.040614135210
+PositionX:  18.487030942154   PositionY:   13.257007531099   PositionZ:   -3.366020474736
+TiltX:      -9.742568907027   TiltY:       13.554820412970   TiltZ:       -0.930384025642
 CrystalId:  72
-PositionX:  -3.880994910796   PositionY:   -11.764471567213   PositionZ:   0.039593262399
-TiltX:      9.686777919761   TiltY:       -3.163676101701   TiltZ:       -0.345556168089
+PositionX:  -25.836688636932   PositionY:   10.518863478935   PositionZ:   -5.083662021993
+TiltX:      -7.815409397264   TiltY:       -19.049093593042   TiltZ:       0.584130699229
 CrystalId:  73
-PositionX:  -1.333104926343   PositionY:   -11.771480587466   PositionZ:   0.131385328479
-TiltX:      9.673500069598   TiltY:       -1.045917538339   TiltZ:       0.015905537649
+PositionX:  -23.371050332628   PositionY:   10.538336903543   PositionZ:   -4.275945486759
+TiltX:      -7.730964880028   TiltY:       -17.156954975678   TiltZ:       0.312403520096
 CrystalId:  74
-PositionX:  -6.423379919405   PositionY:   -11.740780293947   PositionZ:   -0.149973280546
-TiltX:      9.713505903614   TiltY:       -5.281308493326   TiltZ:       -0.708498439585
+PositionX:  -20.879143571651   PositionY:   10.545894612653   PositionZ:   -3.553103153444
+TiltX:      -7.656628286558   TiltY:       -15.264460463492   TiltZ:       0.046163658504
 CrystalId:  75
-PositionX:  -3.886758574850   PositionY:   -9.243308484911   PositionZ:   0.418963497453
-TiltX:      7.538437923016   TiltY:       -3.163676101701   TiltZ:       -0.345556168089
+PositionX:  -25.913368745827   PositionY:   7.943561796721   PositionZ:   -4.789809607141
+TiltX:      -5.884967043705   TiltY:       -19.056683631853   TiltZ:       0.517287684812
 CrystalId:  76
-PositionX:  -1.338864304422   PositionY:   -9.252158863288   PositionZ:   0.510477103848
-TiltX:      7.528115045477   TiltY:       -1.033874373900   TiltZ:       -0.063731689131
+PositionX:  -23.447774346565   PositionY:   7.961551572609   PositionZ:   -3.981924658963
+TiltX:      -5.821282372283   TiltY:       -17.156954975678   TiltZ:       0.312403520096
 CrystalId:  77
-PositionX:  -6.429139297484   PositionY:   -9.221458569768   PositionZ:   0.229118494823
-TiltX:      7.559307485321   TiltY:       -5.293401127693   TiltZ:       -0.628541615549
+PositionX:  -20.955823680546   PositionY:   7.970592930439   PositionZ:   -3.259250738593
+TiltX:      -5.765249104464   TiltY:       -15.257024000237   TiltZ:       0.111673109924
 CrystalId:  78
-PositionX:  -3.869726270898   PositionY:   -14.268952396503   PositionZ:   -0.437551449520
-TiltX:      11.835117916507   TiltY:       -3.163676101701   TiltZ:       -0.345556168089
+PositionX:  -25.963707226271   PositionY:   5.359316666411   PositionZ:   -4.581120893784
+TiltX:      -3.954440690886   TiltY:       -19.062140981804   TiltZ:       0.450209466099
 CrystalId:  79
-PositionX:  -1.321844441747   PositionY:   -14.274131784218   PositionZ:   -0.345412200237
-TiltX:      11.818875601899   TiltY:       -1.060933006204   TiltZ:       0.095036372116
+PositionX:  -23.498142093746   PositionY:   5.375817823617   PositionZ:   -3.773114858975
+TiltX:      -3.911599864539   TiltY:       -17.156954975678   TiltZ:       0.312403520096
 CrystalId:  80
-PositionX:  -6.412119434809   PositionY:   -14.243431490699   PositionZ:   -0.626770809261
-TiltX:      11.867638133397   TiltY:       -5.266231741583   TiltZ:       -0.787940532338
+PositionX:  -21.006162160990   PositionY:   5.386347800128   PositionZ:   -3.050562025235
+TiltX:      -3.873919891546   TiltY:       -15.251677446359   TiltZ:       0.177399278927
 CrystalId:  81
-PositionX:  -3.880994910796   PositionY:   11.764471567213   PositionZ:   0.039593262399
-TiltX:      -9.686777919761   TiltY:       -3.163676101701   TiltZ:       0.345556168089
+PositionX:  -18.236267327271   PositionY:   10.532414409174   PositionZ:   -2.860082049839
+TiltX:      -7.694771179972   TiltY:       -13.350709839262   TiltZ:       0.260850595632
 CrystalId:  82
-PositionX:  -1.333104926343   PositionY:   11.771480587466   PositionZ:   0.131385328479
-TiltX:      -9.673500069598   TiltY:       -1.045917538339   TiltZ:       -0.015905537649
+PositionX:  -15.702541848652   PositionY:   10.538372287295   PositionZ:   -2.301192824776
+TiltX:      -7.638730030978   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  83
-PositionX:  -6.423379919405   PositionY:   11.740780293947   PositionZ:   -0.149973280546
-TiltX:      -9.713505903614   TiltY:       -5.281308493326   TiltZ:       0.708498439585
+PositionX:  -13.151166951811   PositionY:   10.532414409174   PositionZ:   -1.829379193498
+TiltX:      -7.591768317379   TiltY:       -9.565252119262   TiltZ:       -0.257379402264
 CrystalId:  84
-PositionX:  -3.869726270898   PositionY:   14.268952396503   PositionZ:   -0.437551449520
-TiltX:      -11.835117916507   TiltY:       -3.163676101701   TiltZ:       0.345556168089
+PositionX:  -18.296536583086   PositionY:   7.957077363580   PositionZ:   -2.562736201336
+TiltX:      -5.771146656188   TiltY:       -13.358170591105   TiltZ:       0.195897664723
 CrystalId:  85
-PositionX:  -1.321844441747   PositionY:   14.274131784218   PositionZ:   -0.345412200237
-TiltX:      -11.818875601899   TiltY:       -1.060933006204   TiltZ:       -0.095036372117
+PositionX:  -15.762845643575   PositionY:   7.961551572609   PositionZ:   -2.003676573302
+TiltX:      -5.729047523233   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  86
-PositionX:  -6.412119434809   PositionY:   14.243431490699   PositionZ:   -0.626770809261
-TiltX:      -11.867638133397   TiltY:       -5.266231741583   TiltZ:       0.787940532338
+PositionX:  -13.211436207626   PositionY:   7.957077363580   PositionZ:   -1.532033344995
+TiltX:      -5.693793529355   TiltY:       -9.557890841965   TiltZ:       -0.193280663294
 CrystalId:  87
-PositionX:  -3.886758574850   PositionY:   9.243308484911   PositionZ:   0.418963497453
-TiltX:      -7.538437923016   TiltY:       -3.163676101701   TiltZ:       0.345556168089
+PositionX:  -18.339097183338   PositionY:   5.372796869889   PositionZ:   -2.352758201381
+TiltX:      -3.847463653990   TiltY:       -13.363505768513   TiltZ:       0.130722209293
 CrystalId:  88
-PositionX:  -1.338864304422   PositionY:   9.252158863288   PositionZ:   0.510477103848
-TiltX:      -7.528115045477   TiltY:       -1.033874373900   TiltZ:       0.063731689131
+PositionX:  -15.805430942059   PositionY:   5.375782439865   PositionZ:   -1.793576721555
+TiltX:      -3.819365015489   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  89
-PositionX:  -6.429139297484   PositionY:   9.221458569768   PositionZ:   0.229118494823
-TiltX:      -7.559307485321   TiltY:       -5.293401127693   TiltZ:       0.628541615549
+PositionX:  -13.253996807878   PositionY:   5.372796869889   PositionZ:   -1.322055345040
+TiltX:      -3.795846783025   TiltY:       -9.552627035954   TiltZ:       -0.128971044993
 CrystalId:  90
-PositionX:  3.880994910796   PositionY:   -11.764471567213   PositionZ:   0.039593262399
-TiltX:      9.686777919761   TiltY:       3.163676101701   TiltZ:       0.345556168089
+PositionX:  -10.469132648231   PositionY:   10.532414409174   PositionZ:   -1.384164658281
+TiltX:      -7.668499968183   TiltY:       -7.621720502450   TiltZ:       0.256063280705
 CrystalId:  91
-PositionX:  6.423379919405   PositionY:   -11.740780293947   PositionZ:   -0.149973280546
-TiltX:      9.713505903614   TiltY:       5.281308493326   TiltZ:       0.708498439585
+PositionX:  -7.892272229025   PositionY:   10.538372287295   PositionZ:   -1.080994166935
+TiltX:      -7.638730030978   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  92
-PositionX:  1.333104926343   PositionY:   -11.771480587466   PositionZ:   0.131385328479
-TiltX:      9.673500069598   TiltY:       1.045917538339   TiltZ:       -0.015905537649
+PositionX:  -5.306542800801   PositionY:   10.532414409174   PositionZ:   -0.866226173717
+TiltX:      -7.617518624170   TiltY:       -3.836261628726   TiltZ:       -0.254370998153
 CrystalId:  93
-PositionX:  3.886758574850   PositionY:   -9.243308484911   PositionZ:   0.418963497453
-TiltX:      7.538437923016   TiltY:       3.163676101701   TiltZ:       0.345556168089
+PositionX:  -10.499418551516   PositionY:   7.957077363580   PositionZ:   -1.082287695131
+TiltX:      -5.751416718004   TiltY:       -7.629155884274   TiltZ:       0.192299819112
 CrystalId:  94
-PositionX:  6.429139297484   PositionY:   -9.221458569768   PositionZ:   0.229118494823
-TiltX:      7.559307485321   TiltY:       5.293401127693   TiltZ:       0.628541615549
+PositionX:  -7.922575488556   PositionY:   7.961551572609   PositionZ:   -0.778944204122
+TiltX:      -5.729047523233   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  95
-PositionX:  1.338864304422   PositionY:   -9.252158863288   PositionZ:   0.510477103848
-TiltX:      7.528115045477   TiltY:       1.033874373900   TiltZ:       0.063731689131
+PositionX:  -5.336828704086   PositionY:   7.957077363580   PositionZ:   -0.564349210568
+TiltX:      -5.713130743513   TiltY:       -3.828875481922   TiltZ:       -0.191023974458
 CrystalId:  96
-PositionX:  3.869726270898   PositionY:   -14.268952396503   PositionZ:   -0.437551449520
-TiltX:      11.835117916507   TiltY:       3.163676101701   TiltZ:       0.345556168089
+PositionX:  -10.520805678427   PositionY:   5.372796869889   PositionZ:   -0.869109938408
+TiltX:      -3.834297718900   TiltY:       -7.634472857871   TiltZ:       0.128320135143
 CrystalId:  97
-PositionX:  6.412119434809   PositionY:   -14.243431490699   PositionZ:   -0.626770809261
-TiltX:      11.867638133397   TiltY:       5.266231741583   TiltZ:       0.787940532338
+PositionX:  -7.943975026577   PositionY:   5.375782439865   PositionZ:   -0.565642738764
+TiltX:      -3.819365015489   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  98
-PositionX:  1.321844441747   PositionY:   -14.274131784218   PositionZ:   -0.345412200237
-TiltX:      11.818875601899   TiltY:       1.060933006204   TiltZ:       -0.095036372117
+PositionX:  -5.358215830997   PositionY:   5.372796869889   PositionZ:   -0.351171453845
+TiltX:      -3.808749925517   TiltY:       -3.823593833643   TiltZ:       -0.127466405094
 CrystalId:  99
-PositionX:  3.880994910796   PositionY:   11.764471567213   PositionZ:   0.039593262399
-TiltX:      -9.686777919761   TiltY:       3.163676101701   TiltZ:       -0.345556168089
+PositionX:  -2.594252985282   PositionY:   10.532414409174   PositionZ:   -0.738436614280
+TiltX:      -7.642924785518   TiltY:       -1.892729624041   TiltZ:       0.253939578138
 CrystalId:  100
-PositionX:  6.423379919405   PositionY:   11.740780293947   PositionZ:   -0.149973280546
-TiltX:      -9.713505903614   TiltY:       5.281308493326   TiltZ:       -0.708498439585
+PositionX:  0.000000000000   PositionY:   10.538372287295   PositionZ:   -0.694013475612
+TiltX:      -7.638730030978   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  101
-PositionX:  1.333104926343   PositionY:   11.771480587466   PositionZ:   0.131385328479
-TiltX:      -9.673500069598   TiltY:       1.045917538339   TiltZ:       0.015905537649
+PositionX:  2.594252985282   PositionY:   10.532414409174   PositionZ:   -0.738436614280
+TiltX:      -7.642924785518   TiltY:       1.892729624041   TiltZ:       -0.253939578138
 CrystalId:  102
-PositionX:  3.869726270898   PositionY:   14.268952396503   PositionZ:   -0.437551449520
-TiltX:      -11.835117916507   TiltY:       3.163676101701   TiltZ:       -0.345556168089
+PositionX:  -2.594252985282   PositionY:   7.957077363580   PositionZ:   -0.435044233330
+TiltX:      -5.732210015987   TiltY:       -1.900140307152   TiltZ:       0.190702457215
 CrystalId:  103
-PositionX:  6.412119434809   PositionY:   14.243431490699   PositionZ:   -0.626770809261
-TiltX:      -11.867638133397   TiltY:       5.266231741583   TiltZ:       -0.787940532338
+PositionX:  0.000000000000   PositionY:   7.961551572609   PositionZ:   -0.390447226543
+TiltX:      -5.729047523233   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  104
-PositionX:  1.321844441747   PositionY:   14.274131784218   PositionZ:   -0.345412200237
-TiltX:      -11.818875601899   TiltY:       1.060933006204   TiltZ:       0.095036372116
+PositionX:  2.594252985282   PositionY:   7.957077363580   PositionZ:   -0.435044233330
+TiltX:      -5.732210015987   TiltY:       1.900140307152   TiltZ:       -0.190702457215
 CrystalId:  105
-PositionX:  3.886758574850   PositionY:   9.243308484911   PositionZ:   0.418963497453
-TiltX:      -7.538437923016   TiltY:       3.163676101701   TiltZ:       -0.345556168089
+PositionX:  -2.594252985282   PositionY:   5.372796869889   PositionZ:   -0.220796327486
+TiltX:      -3.821481187277   TiltY:       -1.905439559434   TiltZ:       0.127253039168
 CrystalId:  106
-PositionX:  6.429139297484   PositionY:   9.221458569768   PositionZ:   0.229118494823
-TiltX:      -7.559307485321   TiltY:       5.293401127693   TiltZ:       -0.628541615549
+PositionX:  0.000000000000   PositionY:   5.375782439865   PositionZ:   -0.176074991049
+TiltX:      -3.819365015489   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  107
-PositionX:  1.338864304422   PositionY:   9.252158863288   PositionZ:   0.510477103848
-TiltX:      -7.528115045477   TiltY:       1.033874373900   TiltZ:       -0.063731689131
+PositionX:  2.594252985282   PositionY:   5.372796869889   PositionZ:   -0.220796327486
+TiltX:      -3.821481187277   TiltY:       1.905439559434   TiltZ:       -0.127253039168
 CrystalId:  108
-PositionX:  -11.790398069147   PositionY:   -11.764471567213   PositionZ:   0.306583621991
-TiltX:      9.784329971522   TiltY:       -9.549273675971   TiltZ:       -0.699755447422
+PositionX:  5.306542800801   PositionY:   10.532414409174   PositionZ:   -0.866226173717
+TiltX:      -7.617518624170   TiltY:       3.836261628726   TiltZ:       0.254370998153
 CrystalId:  109
-PositionX:  -9.268615866068   PositionY:   -11.786830161427   PositionZ:   0.681193947703
-TiltX:      9.729971616739   TiltY:       -7.432002236126   TiltZ:       -0.331657233008
+PositionX:  7.892272229025   PositionY:   10.538372287295   PositionZ:   -1.080994166935
+TiltX:      -7.638730030978   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  110
-PositionX:  -14.295734927305   PositionY:   -11.725430719986   PositionZ:   -0.164565316285
-TiltX:      9.852950837661   TiltY:       -11.666153391620   TiltZ:       -1.072460537896
+PositionX:  10.469132648231   PositionY:   10.532414409174   PositionZ:   -1.384164658281
+TiltX:      -7.668499968183   TiltY:       7.621720502450   TiltZ:       -0.256063280705
 CrystalId:  111
-PositionX:  -11.823355922669   PositionY:   -9.243449136664   PositionZ:   0.685500456130
-TiltX:      7.635989974776   TiltY:       -9.549273675971   TiltZ:       -0.699755447422
+PositionX:  5.336828704086   PositionY:   7.957077363580   PositionZ:   -0.564349210568
+TiltX:      -5.713130743513   TiltY:       3.828875481922   TiltZ:       0.191023974458
 CrystalId:  112
-PositionX:  -9.301549418735   PositionY:   -9.267648986263   PositionZ:   1.059832670384
-TiltX:      7.593517636824   TiltY:       -7.419874394031   TiltZ:       -0.411941857010
+PositionX:  7.922575488556   PositionY:   7.961551572609   PositionZ:   -0.778944204122
+TiltX:      -5.729047523233   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  113
-PositionX:  -14.328668479972   PositionY:   -9.206249544822   PositionZ:   0.214073406395
-TiltX:      7.689678772711   TiltY:       -11.678433456959   TiltZ:       -0.991192048248
+PositionX:  10.499418551516   PositionY:   7.957077363580   PositionZ:   -1.082287695131
+TiltX:      -5.751416718004   TiltY:       7.629155884274   TiltZ:       -0.192299819112
 CrystalId:  114
-PositionX:  -11.740994870704   PositionY:   -14.268811744749   PositionZ:   -0.168871824712
-TiltX:      11.932669968267   TiltY:       -9.549273675971   TiltZ:       -0.699755447422
+PositionX:  5.358215830997   PositionY:   5.372796869889   PositionZ:   -0.351171453845
+TiltX:      -3.808749925517   TiltY:       3.823593833643   TiltZ:       0.127466405094
 CrystalId:  115
-PositionX:  -9.219248527548   PositionY:   -14.289340809165   PositionZ:   0.206084467315
-TiltX:      11.866472631927   TiltY:       -7.447089549937   TiltZ:       -0.251881895444
+PositionX:  7.943975026577   PositionY:   5.375782439865   PositionZ:   -0.565642738764
+TiltX:      -3.819365015489   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  116
-PositionX:  -14.246367588786   PositionY:   -14.227941367723   PositionZ:   -0.639674796673
-TiltX:      12.016095604247   TiltY:       -11.650877940316   TiltZ:       -1.153193791321
+PositionX:  10.520805678427   PositionY:   5.372796869889   PositionZ:   -0.869109938408
+TiltX:      -3.834297718900   TiltY:       7.634472857871   TiltZ:       -0.128320135143
 CrystalId:  117
-PositionX:  -11.790398069147   PositionY:   11.764471567213   PositionZ:   0.306583621991
-TiltX:      -9.784329971522   TiltY:       -9.549273675971   TiltZ:       0.699755447422
+PositionX:  13.151166951811   PositionY:   10.532414409174   PositionZ:   -1.829379193498
+TiltX:      -7.591768317379   TiltY:       9.565252119262   TiltZ:       0.257379402264
 CrystalId:  118
-PositionX:  -9.268615866068   PositionY:   11.786830161427   PositionZ:   0.681193947703
-TiltX:      -9.729971616739   TiltY:       -7.432002236126   TiltZ:       0.331657233008
+PositionX:  15.702541848652   PositionY:   10.538372287295   PositionZ:   -2.301192824776
+TiltX:      -7.638730030978   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  119
-PositionX:  -14.295734927305   PositionY:   11.725430719986   PositionZ:   -0.164565316285
-TiltX:      -9.852950837661   TiltY:       -11.666153391620   TiltZ:       1.072460537896
+PositionX:  18.236267327271   PositionY:   10.532414409174   PositionZ:   -2.860082049839
+TiltX:      -7.694771179972   TiltY:       13.350709839262   TiltZ:       -0.260850595632
 CrystalId:  120
-PositionX:  -11.740994870704   PositionY:   14.268811744749   PositionZ:   -0.168871824712
-TiltX:      -11.932669968267   TiltY:       -9.549273675971   TiltZ:       0.699755447422
+PositionX:  13.211436207626   PositionY:   7.957077363580   PositionZ:   -1.532033344995
+TiltX:      -5.693793529355   TiltY:       9.557890841965   TiltZ:       0.193280663294
 CrystalId:  121
-PositionX:  -9.219248527548   PositionY:   14.289340809165   PositionZ:   0.206084467315
-TiltX:      -11.866472631927   TiltY:       -7.447089549937   TiltZ:       0.251881895444
+PositionX:  15.762845643575   PositionY:   7.961551572609   PositionZ:   -2.003676573302
+TiltX:      -5.729047523233   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  122
-PositionX:  -14.246367588786   PositionY:   14.227941367723   PositionZ:   -0.639674796673
-TiltX:      -12.016095604247   TiltY:       -11.650877940316   TiltZ:       1.153193791321
+PositionX:  18.296536583086   PositionY:   7.957077363580   PositionZ:   -2.562736201336
+TiltX:      -5.771146656188   TiltY:       13.358170591105   TiltZ:       -0.195897664723
 CrystalId:  123
-PositionX:  -11.823355922669   PositionY:   9.243449136664   PositionZ:   0.685500456130
-TiltX:      -7.635989974776   TiltY:       -9.549273675971   TiltZ:       0.699755447422
+PositionX:  13.253996807878   PositionY:   5.372796869889   PositionZ:   -1.322055345040
+TiltX:      -3.795846783025   TiltY:       9.552627035954   TiltZ:       0.128971044992
 CrystalId:  124
-PositionX:  -9.301549418735   PositionY:   9.267648986263   PositionZ:   1.059832670384
-TiltX:      -7.593517636824   TiltY:       -7.419874394031   TiltZ:       0.411941857010
+PositionX:  15.805430942059   PositionY:   5.375782439865   PositionZ:   -1.793576721555
+TiltX:      -3.819365015489   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  125
-PositionX:  -14.328668479972   PositionY:   9.206249544822   PositionZ:   0.214073406395
-TiltX:      -7.689678772711   TiltY:       -11.678433456959   TiltZ:       0.991192048248
+PositionX:  18.339097183338   PositionY:   5.372796869889   PositionZ:   -2.352758201381
+TiltX:      -3.847463653990   TiltY:       13.363505768513   TiltZ:       -0.130722209293
 CrystalId:  126
-PositionX:  11.790398069147   PositionY:   -11.764471567213   PositionZ:   0.306583621991
-TiltX:      9.784329971522   TiltY:       9.549273675971   TiltZ:       0.699755447422
+PositionX:  20.879143571651   PositionY:   10.545894612653   PositionZ:   -3.553103153444
+TiltX:      -7.656628286558   TiltY:       15.264460463492   TiltZ:       -0.046163658504
 CrystalId:  127
-PositionX:  14.295734927305   PositionY:   -11.725430719986   PositionZ:   -0.164565316285
-TiltX:      9.852950837661   TiltY:       11.666153391620   TiltZ:       1.072460537896
+PositionX:  23.371050332628   PositionY:   10.538336903543   PositionZ:   -4.275945486759
+TiltX:      -7.730964880028   TiltY:       17.156954975678   TiltZ:       -0.312403520096
 CrystalId:  128
-PositionX:  9.268615866068   PositionY:   -11.786830161427   PositionZ:   0.681193947703
-TiltX:      9.729971616739   TiltY:       7.432002236126   TiltZ:       0.331657233008
+PositionX:  25.836688636932   PositionY:   10.518863478935   PositionZ:   -5.083662021993
+TiltX:      -7.815409397264   TiltY:       19.049093593042   TiltZ:       -0.584130699229
 CrystalId:  129
-PositionX:  11.823355922669   PositionY:   -9.243449136664   PositionZ:   0.685500456130
-TiltX:      7.635989974776   TiltY:       9.549273675971   TiltZ:       0.699755447422
+PositionX:  20.955823680546   PositionY:   7.970592930439   PositionZ:   -3.259250738593
+TiltX:      -5.765249104464   TiltY:       15.257024000237   TiltZ:       -0.111673109924
 CrystalId:  130
-PositionX:  14.328668479972   PositionY:   -9.206249544822   PositionZ:   0.214073406395
-TiltX:      7.689678772711   TiltY:       11.678433456959   TiltZ:       0.991192048248
+PositionX:  23.447774346565   PositionY:   7.961551572609   PositionZ:   -3.981924658963
+TiltX:      -5.821282372283   TiltY:       17.156954975678   TiltZ:       -0.312403520096
 CrystalId:  131
-PositionX:  9.301549418735   PositionY:   -9.267648986263   PositionZ:   1.059832670384
-TiltX:      7.593517636824   TiltY:       7.419874394031   TiltZ:       0.411941857010
+PositionX:  25.913368745827   PositionY:   7.943561796721   PositionZ:   -4.789809607141
+TiltX:      -5.884967043705   TiltY:       19.056683631853   TiltZ:       -0.517287684812
 CrystalId:  132
-PositionX:  11.740994870704   PositionY:   -14.268811744749   PositionZ:   -0.168871824712
-TiltX:      11.932669968267   TiltY:       9.549273675971   TiltZ:       0.699755447422
+PositionX:  21.006162160990   PositionY:   5.386347800128   PositionZ:   -3.050562025235
+TiltX:      -3.873919891546   TiltY:       15.251677446359   TiltZ:       -0.177399278927
 CrystalId:  133
-PositionX:  14.246367588786   PositionY:   -14.227941367723   PositionZ:   -0.639674796673
-TiltX:      12.016095604247   TiltY:       11.650877940316   TiltZ:       1.153193791321
+PositionX:  23.498142093746   PositionY:   5.375817823617   PositionZ:   -3.773114858975
+TiltX:      -3.911599864539   TiltY:       17.156954975678   TiltZ:       -0.312403520096
 CrystalId:  134
-PositionX:  9.219248527548   PositionY:   -14.289340809165   PositionZ:   0.206084467315
-TiltX:      11.866472631927   TiltY:       7.447089549937   TiltZ:       0.251881895444
+PositionX:  25.963707226271   PositionY:   5.359316666411   PositionZ:   -4.581120893784
+TiltX:      -3.954440690886   TiltY:       19.062140981804   TiltZ:       -0.450209466099
 CrystalId:  135
-PositionX:  11.790398069147   PositionY:   11.764471567213   PositionZ:   0.306583621991
-TiltX:      -9.784329971522   TiltY:       9.549273675971   TiltZ:       -0.699755447422
+PositionX:  -26.015073643363   PositionY:   2.592759370739   PositionZ:   -4.461113321346
+TiltX:      -1.930650078844   TiltY:       -19.095752991358   TiltZ:       0.067331688610
 CrystalId:  136
-PositionX:  14.295734927305   PositionY:   11.725430719986   PositionZ:   -0.164565316285
-TiltX:      -9.852950837661   TiltY:       11.666153391620   TiltZ:       -1.072460537896
+PositionX:  -23.549904744570   PositionY:   2.594252985282   PositionZ:   -3.651732364847
+TiltX:      -1.909682507744   TiltY:       -17.187142569699   TiltZ:       0.000000000000
 CrystalId:  137
-PositionX:  9.268615866068   PositionY:   11.786830161427   PositionZ:   0.681193947703
-TiltX:      -9.729971616739   TiltY:       7.432002236126   TiltZ:       -0.331657233008
+PositionX:  -21.058261982748   PositionY:   2.592759370739   PositionZ:   -2.927942630339
+TiltX:      -1.891242014235   TiltY:       -15.278510266823   TiltZ:       -0.065957830679
 CrystalId:  138
-PositionX:  11.740994870704   PositionY:   14.268811744749   PositionZ:   -0.168871824712
-TiltX:      -11.932669968267   TiltY:       9.549273675971   TiltZ:       -0.699755447422
+PositionX:  -26.028310574878   PositionY:   0.000000000000   PositionZ:   -4.418317710350
+TiltX:      0.000000000000   TiltY:       -19.096825077444   TiltZ:       0.000000000000
 CrystalId:  139
-PositionX:  14.246367588786   PositionY:   14.227941367723   PositionZ:   -0.639674796673
-TiltX:      -12.016095604247   TiltY:       11.650877940316   TiltZ:       -1.153193791321
+PositionX:  -23.563149031979   PositionY:   0.000000000000   PositionZ:   -3.608912971906
+TiltX:      0.000000000000   TiltY:       -17.187142569699   TiltZ:       0.000000000000
 CrystalId:  140
-PositionX:  9.219248527548   PositionY:   14.289340809165   PositionZ:   0.206084467315
-TiltX:      -11.866472631927   TiltY:       7.447089549937   TiltZ:       -0.251881895444
+PositionX:  -21.071498914262   PositionY:   0.000000000000   PositionZ:   -2.885147019344
+TiltX:      0.000000000000   TiltY:       -15.277460061955   TiltZ:       0.000000000000
 CrystalId:  141
-PositionX:  11.823355922669   PositionY:   9.243449136664   PositionZ:   0.685500456130
-TiltX:      -7.635989974776   TiltY:       9.549273675971   TiltZ:       -0.699755447422
+PositionX:  -26.015073643363   PositionY:   -2.592759370739   PositionZ:   -4.461113321346
+TiltX:      1.930650078844   TiltY:       -19.095752991358   TiltZ:       -0.067331688610
 CrystalId:  142
-PositionX:  14.328668479972   PositionY:   9.206249544822   PositionZ:   0.214073406395
-TiltX:      -7.689678772711   TiltY:       11.678433456959   TiltZ:       -0.991192048248
+PositionX:  -23.549904744570   PositionY:   -2.594252985282   PositionZ:   -3.651732364847
+TiltX:      1.909682507744   TiltY:       -17.187142569699   TiltZ:       0.000000000000
 CrystalId:  143
-PositionX:  9.301549418735   PositionY:   9.267648986263   PositionZ:   1.059832670384
-TiltX:      -7.593517636824   TiltY:       7.419874394031   TiltZ:       -0.411941857010
+PositionX:  -21.058261982748   PositionY:   -2.592759370739   PositionZ:   -2.927942630339
+TiltX:      1.891242014235   TiltY:       -15.278510266823   TiltZ:       0.065957830679
 CrystalId:  144
-PositionX:  -19.880328160436   PositionY:   -3.872316177238   PositionZ:   0.244148546259
-TiltX:      3.222509995118   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+PositionX:  -18.365156137421   PositionY:   2.592759370739   PositionZ:   -2.224193119434
+TiltX:      -1.923741599917   TiltY:       -13.366709304039   TiltZ:       0.065398252682
 CrystalId:  145
-PositionX:  -17.417628114353   PositionY:   -3.869524037569   PositionZ:   0.903935610101
-TiltX:      3.190218878127   TiltY:       -13.967572210623   TiltZ:       0.124416765094
+PositionX:  -15.831504726064   PositionY:   2.594252985282   PositionZ:   -1.664938474349
+TiltX:      -1.909682507744   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  146
-PositionX:  -22.315502436522   PositionY:   -3.869524037569   PositionZ:   -0.510925444605
-TiltX:      3.260080654829   TiltY:       -18.257454131476   TiltZ:       -0.127138430665
+PositionX:  -13.280055761960   PositionY:   2.592759370739   PositionZ:   -1.193490263093
+TiltX:      -1.897918721691   TiltY:       -9.549466450813   TiltZ:       -0.064520718033
 CrystalId:  147
-PositionX:  -19.906332606466   PositionY:   -1.324486049488   PositionZ:   0.334169052548
-TiltX:      1.074169998373   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+PositionX:  -18.374054913794   PositionY:   0.000000000000   PositionZ:   -2.180289902519
+TiltX:      0.000000000000   TiltY:       -13.367777554211   TiltZ:       0.000000000000
 CrystalId:  148
-PositionX:  -17.443613185892   PositionY:   -1.323554899942   PositionZ:   0.993889047032
-TiltX:      1.063402437307   TiltY:       -13.964583645280   TiltZ:       0.041491130212
+PositionX:  -15.840408447575   PositionY:   0.000000000000   PositionZ:   -1.621010859981
+TiltX:      0.000000000000   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  149
-PositionX:  -22.341487508061   PositionY:   -1.323554899942   PositionZ:   -0.420972007673
-TiltX:      1.086700715744   TiltY:       -18.260508119414   TiltZ:       -0.042400059298
+PositionX:  -13.288954538334   PositionY:   0.000000000000   PositionZ:   -1.149587046178
+TiltX:      0.000000000000   TiltY:       -9.548412538722   TiltZ:       0.000000000000
 CrystalId:  150
-PositionX:  -19.826797944409   PositionY:   -6.414562025649   PositionZ:   0.058841112947
-TiltX:      5.370849991863   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+PositionX:  -18.365156137421   PositionY:   -2.592759370739   PositionZ:   -2.224193119434
+TiltX:      1.923741599917   TiltY:       -13.366709304039   TiltZ:       -0.065398252682
 CrystalId:  151
-PositionX:  -17.364136620072   PositionY:   -6.409912820924   PositionZ:   0.718762221222
-TiltX:      5.317070020452   TiltY:       -13.973545256309   TiltZ:       0.207172594820
+PositionX:  -15.831504726064   PositionY:   -2.594252985282   PositionZ:   -1.664938474349
+TiltX:      1.909682507744   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  152
-PositionX:  -22.262010942241   PositionY:   -6.409912820924   PositionZ:   -0.696098833484
-TiltX:      5.433396169961   TiltY:       -18.251350609663   TiltZ:       -0.211691660881
+PositionX:  -13.280055761960   PositionY:   -2.592759370739   PositionZ:   -1.193490263093
+TiltX:      1.897918721691   TiltY:       -9.549466450813   TiltZ:       0.064520718033
 CrystalId:  153
-PositionX:  -19.880328160436   PositionY:   3.872316177238   PositionZ:   0.244148546259
-TiltX:      -3.222509995118   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+PositionX:  -10.533900563246   PositionY:   2.592759370739   PositionZ:   -0.738585713164
+TiltX:      -1.917154837490   TiltY:       -7.637665438087   TiltZ:       0.064196161297
 CrystalId:  154
-PositionX:  -17.417628114353   PositionY:   3.869524037569   PositionZ:   0.903935610101
-TiltX:      -3.190218878127   TiltY:       -13.967572210623   TiltZ:       -0.124416765094
+PositionX:  -7.957077363580   PositionY:   2.594252985282   PositionZ:   -0.435044233330
+TiltX:      -1.909682507744   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  155
-PositionX:  -22.315502436522   PositionY:   3.869524037569   PositionZ:   -0.510925444605
-TiltX:      -3.260080654829   TiltY:       -18.257454131476   TiltZ:       0.127138430665
+PositionX:  -5.371310715817   PositionY:   2.592759370739   PositionZ:   -0.220647228601
+TiltX:      -1.904373794316   TiltY:       -3.820422511741   TiltZ:       -0.063768344486
 CrystalId:  156
-PositionX:  -19.826797944409   PositionY:   6.414562025649   PositionZ:   0.058841112947
-TiltX:      -5.370849991863   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+PositionX:  -10.538372287295   PositionY:   0.000000000000   PositionZ:   -0.694013475612
+TiltX:      0.000000000000   TiltY:       -7.638730030978   TiltZ:       0.000000000000
 CrystalId:  157
-PositionX:  -17.364136620072   PositionY:   6.409912820924   PositionZ:   0.718762221222
-TiltX:      -5.317070020452   TiltY:       -13.973545256309   TiltZ:       -0.207172594820
+PositionX:  -7.961551572609   PositionY:   0.000000000000   PositionZ:   -0.390447226543
+TiltX:      0.000000000000   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  158
-PositionX:  -22.262010942241   PositionY:   6.409912820924   PositionZ:   -0.696098833484
-TiltX:      -5.433396169961   TiltY:       -18.251350609663   TiltZ:       0.211691660881
+PositionX:  -5.375782439865   PositionY:   0.000000000000   PositionZ:   -0.176074991049
+TiltX:      0.000000000000   TiltY:       -3.819365015489   TiltZ:       0.000000000000
 CrystalId:  159
-PositionX:  -19.906332606466   PositionY:   1.324486049488   PositionZ:   0.334169052548
-TiltX:      -1.074169998373   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+PositionX:  -10.533900563246   PositionY:   -2.592759370739   PositionZ:   -0.738585713164
+TiltX:      1.917154837490   TiltY:       -7.637665438087   TiltZ:       -0.064196161297
 CrystalId:  160
-PositionX:  -17.443613185892   PositionY:   1.323554899942   PositionZ:   0.993889047032
-TiltX:      -1.063402437307   TiltY:       -13.964583645280   TiltZ:       -0.041491130212
+PositionX:  -7.957077363580   PositionY:   -2.594252985282   PositionZ:   -0.435044233330
+TiltX:      1.909682507744   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  161
-PositionX:  -22.341487508061   PositionY:   1.323554899942   PositionZ:   -0.420972007673
-TiltX:      -1.086700715744   TiltY:       -18.260508119414   TiltZ:       0.042400059298
+PositionX:  -5.371310715817   PositionY:   -2.592759370739   PositionZ:   -0.220647228601
+TiltX:      1.904373794316   TiltY:       -3.820422511741   TiltZ:       0.063768344486
 CrystalId:  162
-PositionX:  19.880328160436   PositionY:   -3.872316177238   PositionZ:   0.244148546259
-TiltX:      3.222509995118   TiltY:       16.112549975589   TiltZ:       0.000000000000
+PositionX:  -2.594252985282   PositionY:   2.592759370739   PositionZ:   -0.089616872600
+TiltX:      -1.910742950827   TiltY:       -1.908621475036   TiltZ:       0.063661955951
 CrystalId:  163
-PositionX:  22.315502436522   PositionY:   -3.869524037569   PositionZ:   -0.510925444605
-TiltX:      3.260080654829   TiltY:       18.257454131476   TiltZ:       0.127138430665
+PositionX:  0.000000000000   PositionY:   2.594252985282   PositionZ:   -0.044820883088
+TiltX:      -1.909682507744   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  164
-PositionX:  17.417628114353   PositionY:   -3.869524037569   PositionZ:   0.903935610101
-TiltX:      3.190218878127   TiltY:       13.967572210623   TiltZ:       -0.124416765094
+PositionX:  2.594252985282   PositionY:   2.592759370739   PositionZ:   -0.089616872600
+TiltX:      -1.910742950827   TiltY:       1.908621475036   TiltZ:       -0.063661955951
 CrystalId:  165
-PositionX:  19.906332606466   PositionY:   -1.324486049488   PositionZ:   0.334169052548
-TiltX:      1.074169998373   TiltY:       16.112549975589   TiltZ:       0.000000000000
+PositionX:  -2.594252985282   PositionY:   0.000000000000   PositionZ:   -0.044820883088
+TiltX:      0.000000000000   TiltY:       -1.909682507744   TiltZ:       0.000000000000
 CrystalId:  166
-PositionX:  22.341487508061   PositionY:   -1.323554899942   PositionZ:   -0.420972007673
-TiltX:      1.086700715744   TiltY:       18.260508119414   TiltZ:       0.042400059298
+PositionX:  0.000000000000   PositionY:   0.000000000000   PositionZ:   0.000000000000
+TiltX:      0.000000000000   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  167
-PositionX:  17.443613185892   PositionY:   -1.323554899942   PositionZ:   0.993889047032
-TiltX:      1.063402437307   TiltY:       13.964583645280   TiltZ:       -0.041491130212
+PositionX:  2.594252985282   PositionY:   0.000000000000   PositionZ:   -0.044820883088
+TiltX:      0.000000000000   TiltY:       1.909682507744   TiltZ:       0.000000000000
 CrystalId:  168
-PositionX:  19.826797944409   PositionY:   -6.414562025649   PositionZ:   0.058841112947
-TiltX:      5.370849991863   TiltY:       16.112549975589   TiltZ:       0.000000000000
+PositionX:  -2.594252985282   PositionY:   -2.592759370739   PositionZ:   -0.089616872600
+TiltX:      1.910742950827   TiltY:       -1.908621475036   TiltZ:       -0.063661955951
 CrystalId:  169
-PositionX:  22.262010942241   PositionY:   -6.409912820924   PositionZ:   -0.696098833484
-TiltX:      5.433396169961   TiltY:       18.251350609663   TiltZ:       0.211691660881
+PositionX:  0.000000000000   PositionY:   -2.594252985282   PositionZ:   -0.044820883088
+TiltX:      1.909682507744   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  170
-PositionX:  17.364136620072   PositionY:   -6.409912820924   PositionZ:   0.718762221222
-TiltX:      5.317070020452   TiltY:       13.973545256309   TiltZ:       -0.207172594820
+PositionX:  2.594252985282   PositionY:   -2.592759370739   PositionZ:   -0.089616872600
+TiltX:      1.910742950827   TiltY:       1.908621475036   TiltZ:       0.063661955951
 CrystalId:  171
-PositionX:  19.880328160436   PositionY:   3.872316177238   PositionZ:   0.244148546259
-TiltX:      -3.222509995118   TiltY:       16.112549975589   TiltZ:       0.000000000000
+PositionX:  5.371310715817   PositionY:   2.592759370739   PositionZ:   -0.220647228601
+TiltX:      -1.904373794316   TiltY:       3.820422511741   TiltZ:       0.063768344486
 CrystalId:  172
-PositionX:  22.315502436522   PositionY:   3.869524037569   PositionZ:   -0.510925444605
-TiltX:      -3.260080654829   TiltY:       18.257454131476   TiltZ:       -0.127138430665
+PositionX:  7.957077363580   PositionY:   2.594252985282   PositionZ:   -0.435044233330
+TiltX:      -1.909682507744   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  173
-PositionX:  17.417628114353   PositionY:   3.869524037569   PositionZ:   0.903935610101
-TiltX:      -3.190218878127   TiltY:       13.967572210623   TiltZ:       0.124416765094
+PositionX:  10.533900563246   PositionY:   2.592759370739   PositionZ:   -0.738585713164
+TiltX:      -1.917154837490   TiltY:       7.637665438087   TiltZ:       -0.064196161297
 CrystalId:  174
-PositionX:  19.826797944409   PositionY:   6.414562025649   PositionZ:   0.058841112947
-TiltX:      -5.370849991863   TiltY:       16.112549975589   TiltZ:       0.000000000000
+PositionX:  5.375782439865   PositionY:   0.000000000000   PositionZ:   -0.176074991049
+TiltX:      0.000000000000   TiltY:       3.819365015489   TiltZ:       0.000000000000
 CrystalId:  175
-PositionX:  22.262010942241   PositionY:   6.409912820924   PositionZ:   -0.696098833484
-TiltX:      -5.433396169961   TiltY:       18.251350609663   TiltZ:       -0.211691660881
+PositionX:  7.961551572609   PositionY:   0.000000000000   PositionZ:   -0.390447226543
+TiltX:      0.000000000000   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  176
-PositionX:  17.364136620072   PositionY:   6.409912820924   PositionZ:   0.718762221222
-TiltX:      -5.317070020452   TiltY:       13.973545256309   TiltZ:       0.207172594820
+PositionX:  10.538372287295   PositionY:   0.000000000000   PositionZ:   -0.694013475612
+TiltX:      0.000000000000   TiltY:       7.638730030978   TiltZ:       0.000000000000
 CrystalId:  177
-PositionX:  19.906332606466   PositionY:   1.324486049488   PositionZ:   0.334169052548
-TiltX:      -1.074169998373   TiltY:       16.112549975589   TiltZ:       0.000000000000
+PositionX:  5.371310715817   PositionY:   -2.592759370739   PositionZ:   -0.220647228601
+TiltX:      1.904373794316   TiltY:       3.820422511741   TiltZ:       -0.063768344486
 CrystalId:  178
-PositionX:  22.341487508061   PositionY:   1.323554899942   PositionZ:   -0.420972007673
-TiltX:      -1.086700715744   TiltY:       18.260508119414   TiltZ:       -0.042400059298
+PositionX:  7.957077363580   PositionY:   -2.594252985282   PositionZ:   -0.435044233330
+TiltX:      1.909682507744   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  179
-PositionX:  17.443613185892   PositionY:   1.323554899942   PositionZ:   0.993889047032
-TiltX:      -1.063402437307   TiltY:       13.964583645280   TiltZ:       0.041491130212
+PositionX:  10.533900563246   PositionY:   -2.592759370739   PositionZ:   -0.738585713164
+TiltX:      1.917154837490   TiltY:       7.637665438087   TiltZ:       0.064196161297
 CrystalId:  180
-PositionX:  -3.919979571957   PositionY:   -19.912118846381   PositionZ:   0.239088735595
-TiltX:      16.159334327042   TiltY:       -2.972379654807   TiltZ:       -0.865808716723
+PositionX:  13.280055761960   PositionY:   2.592759370739   PositionZ:   -1.193490263093
+TiltX:      -1.897918721691   TiltY:       9.549466450813   TiltZ:       0.064520718033
 CrystalId:  181
-PositionX:  -1.371948460886   PositionY:   -19.936800397508   PositionZ:   0.323626068682
-TiltX:      16.139085801372   TiltY:       -0.908793086609   TiltZ:       -0.267959396464
+PositionX:  15.831504726064   PositionY:   2.594252985282   PositionZ:   -1.664938474349
+TiltX:      -1.909682507744   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  182
-PositionX:  -6.462645763180   PositionY:   -19.859867931376   PositionZ:   0.059264475486
-TiltX:      16.201243594830   TiltY:       -5.035641969984   TiltZ:       -1.465899090851
+PositionX:  18.365156137421   PositionY:   2.592759370739   PositionZ:   -2.224193119434
+TiltX:      -1.923741599917   TiltY:       13.366709304039   TiltZ:       -0.065398252682
 CrystalId:  183
-PositionX:  -3.917083817816   PositionY:   -17.449699122657   PositionZ:   0.899920787979
-TiltX:      14.010994330297   TiltY:       -2.972379654807   TiltZ:       -0.865808716723
+PositionX:  13.288954538334   PositionY:   0.000000000000   PositionZ:   -1.149587046178
+TiltX:      0.000000000000   TiltY:       9.548412538722   TiltZ:       0.000000000000
 CrystalId:  184
-PositionX:  -1.369054747988   PositionY:   -17.476178972616   PositionZ:   0.983974101385
-TiltX:      13.993474777154   TiltY:       -0.887860487309   TiltZ:       -0.345730533959
+PositionX:  15.840408447575   PositionY:   0.000000000000   PositionZ:   -1.621010859981
+TiltX:      0.000000000000   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  185
-PositionX:  -6.459752050282   PositionY:   -17.399246506484   PositionZ:   0.719612508188
-TiltX:      14.047548770610   TiltY:       -5.056653433184   TiltZ:       -1.387856304310
+PositionX:  18.374054913794   PositionY:   0.000000000000   PositionZ:   -2.180289902519
+TiltX:      0.000000000000   TiltY:       13.367777554211   TiltZ:       0.000000000000
 CrystalId:  186
-PositionX:  -3.917510406251   PositionY:   -22.346969206227   PositionZ:   -0.517030243811
-TiltX:      18.307674323787   TiltY:       -2.972379654807   TiltZ:       -0.865808716723
+PositionX:  13.280055761960   PositionY:   -2.592759370739   PositionZ:   -1.193490263093
+TiltX:      1.897918721691   TiltY:       9.549466450813   TiltZ:       -0.064520718033
 CrystalId:  187
-PositionX:  -1.369481024821   PositionY:   -22.369871836417   PositionZ:   -0.431941915967
-TiltX:      18.284679913393   TiltY:       -0.932622332466   TiltZ:       -0.191026099843
+PositionX:  15.831504726064   PositionY:   -2.594252985282   PositionZ:   -1.664938474349
+TiltX:      1.909682507744   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  188
-PositionX:  -6.460178327115   PositionY:   -22.292939370286   PositionZ:   -0.696303509164
-TiltX:      18.354833465086   TiltY:       -5.011723921625   TiltZ:       -1.543091416905
+PositionX:  18.365156137421   PositionY:   -2.592759370739   PositionZ:   -2.224193119434
+TiltX:      1.923741599917   TiltY:       13.366709304039   TiltZ:       0.065398252682
 CrystalId:  189
-PositionX:  -3.919979571957   PositionY:   19.912118846381   PositionZ:   0.239088735595
-TiltX:      -16.159334327042   TiltY:       -2.972379654807   TiltZ:       0.865808716723
+PositionX:  21.058261982748   PositionY:   2.592759370739   PositionZ:   -2.927942630339
+TiltX:      -1.891242014235   TiltY:       15.278510266823   TiltZ:       0.065957830679
 CrystalId:  190
-PositionX:  -1.371948460886   PositionY:   19.936800397508   PositionZ:   0.323626068682
-TiltX:      -16.139085801372   TiltY:       -0.908793086609   TiltZ:       0.267959396464
+PositionX:  23.549904744570   PositionY:   2.594252985282   PositionZ:   -3.651732364847
+TiltX:      -1.909682507744   TiltY:       17.187142569699   TiltZ:       0.000000000000
 CrystalId:  191
-PositionX:  -6.462645763180   PositionY:   19.859867931376   PositionZ:   0.059264475486
-TiltX:      -16.201243594830   TiltY:       -5.035641969984   TiltZ:       1.465899090851
+PositionX:  26.015073643363   PositionY:   2.592759370739   PositionZ:   -4.461113321346
+TiltX:      -1.930650078844   TiltY:       19.095752991358   TiltZ:       -0.067331688610
 CrystalId:  192
-PositionX:  -3.917510406251   PositionY:   22.346969206227   PositionZ:   -0.517030243811
-TiltX:      -18.307674323787   TiltY:       -2.972379654807   TiltZ:       0.865808716723
+PositionX:  21.071498914262   PositionY:   0.000000000000   PositionZ:   -2.885147019344
+TiltX:      0.000000000000   TiltY:       15.277460061955   TiltZ:       0.000000000000
 CrystalId:  193
-PositionX:  -1.369481024821   PositionY:   22.369871836417   PositionZ:   -0.431941915967
-TiltX:      -18.284679913393   TiltY:       -0.932622332466   TiltZ:       0.191026099843
+PositionX:  23.563149031979   PositionY:   0.000000000000   PositionZ:   -3.608912971906
+TiltX:      0.000000000000   TiltY:       17.187142569699   TiltZ:       0.000000000000
 CrystalId:  194
-PositionX:  -6.460178327115   PositionY:   22.292939370286   PositionZ:   -0.696303509164
-TiltX:      -18.354833465086   TiltY:       -5.011723921625   TiltZ:       1.543091416904
+PositionX:  26.028310574878   PositionY:   0.000000000000   PositionZ:   -4.418317710350
+TiltX:      0.000000000000   TiltY:       19.096825077444   TiltZ:       0.000000000000
 CrystalId:  195
-PositionX:  -3.917083817816   PositionY:   17.449699122657   PositionZ:   0.899920787979
-TiltX:      -14.010994330297   TiltY:       -2.972379654807   TiltZ:       0.865808716723
+PositionX:  21.058261982748   PositionY:   -2.592759370739   PositionZ:   -2.927942630339
+TiltX:      1.891242014235   TiltY:       15.278510266823   TiltZ:       -0.065957830679
 CrystalId:  196
-PositionX:  -1.369054747988   PositionY:   17.476178972616   PositionZ:   0.983974101385
-TiltX:      -13.993474777154   TiltY:       -0.887860487309   TiltZ:       0.345730533959
+PositionX:  23.549904744570   PositionY:   -2.594252985282   PositionZ:   -3.651732364847
+TiltX:      1.909682507744   TiltY:       17.187142569699   TiltZ:       0.000000000000
 CrystalId:  197
-PositionX:  -6.459752050282   PositionY:   17.399246506484   PositionZ:   0.719612508188
-TiltX:      -14.047548770610   TiltY:       -5.056653433184   TiltZ:       1.387856304310
+PositionX:  26.015073643363   PositionY:   -2.592759370739   PositionZ:   -4.461113321346
+TiltX:      1.930650078844   TiltY:       19.095752991358   TiltZ:       0.067331688610
 CrystalId:  198
-PositionX:  3.919979571957   PositionY:   -19.912118846381   PositionZ:   0.239088735595
-TiltX:      16.159334327042   TiltY:       2.972379654807   TiltZ:       0.865808716723
+PositionX:  -25.963707226271   PositionY:   -5.359316666411   PositionZ:   -4.581120893784
+TiltX:      3.954440690886   TiltY:       -19.062140981804   TiltZ:       -0.450209466099
 CrystalId:  199
-PositionX:  6.462645763180   PositionY:   -19.859867931376   PositionZ:   0.059264475486
-TiltX:      16.201243594830   TiltY:       5.035641969984   TiltZ:       1.465899090851
+PositionX:  -23.498142093746   PositionY:   -5.375817823617   PositionZ:   -3.773114858975
+TiltX:      3.911599864539   TiltY:       -17.156954975678   TiltZ:       -0.312403520096
 CrystalId:  200
-PositionX:  1.371948460886   PositionY:   -19.936800397508   PositionZ:   0.323626068682
-TiltX:      16.139085801372   TiltY:       0.908793086609   TiltZ:       0.267959396464
+PositionX:  -21.006162160990   PositionY:   -5.386347800128   PositionZ:   -3.050562025235
+TiltX:      3.873919891546   TiltY:       -15.251677446359   TiltZ:       -0.177399278927
 CrystalId:  201
-PositionX:  3.917083817816   PositionY:   -17.449699122657   PositionZ:   0.899920787979
-TiltX:      14.010994330297   TiltY:       2.972379654807   TiltZ:       0.865808716723
+PositionX:  -25.913368745827   PositionY:   -7.943561796721   PositionZ:   -4.789809607141
+TiltX:      5.884967043705   TiltY:       -19.056683631853   TiltZ:       -0.517287684812
 CrystalId:  202
-PositionX:  6.459752050282   PositionY:   -17.399246506484   PositionZ:   0.719612508188
-TiltX:      14.047548770610   TiltY:       5.056653433184   TiltZ:       1.387856304310
+PositionX:  -23.447774346565   PositionY:   -7.961551572609   PositionZ:   -3.981924658963
+TiltX:      5.821282372283   TiltY:       -17.156954975678   TiltZ:       -0.312403520096
 CrystalId:  203
-PositionX:  1.369054747988   PositionY:   -17.476178972616   PositionZ:   0.983974101385
-TiltX:      13.993474777154   TiltY:       0.887860487309   TiltZ:       0.345730533959
+PositionX:  -20.955823680546   PositionY:   -7.970592930439   PositionZ:   -3.259250738593
+TiltX:      5.765249104464   TiltY:       -15.257024000237   TiltZ:       -0.111673109924
 CrystalId:  204
-PositionX:  3.917510406251   PositionY:   -22.346969206227   PositionZ:   -0.517030243811
-TiltX:      18.307674323787   TiltY:       2.972379654807   TiltZ:       0.865808716723
+PositionX:  -25.836688636932   PositionY:   -10.518863478935   PositionZ:   -5.083662021993
+TiltX:      7.815409397264   TiltY:       -19.049093593042   TiltZ:       -0.584130699229
 CrystalId:  205
-PositionX:  6.460178327115   PositionY:   -22.292939370286   PositionZ:   -0.696303509164
-TiltX:      18.354833465086   TiltY:       5.011723921625   TiltZ:       1.543091416904
+PositionX:  -23.371050332628   PositionY:   -10.538336903543   PositionZ:   -4.275945486759
+TiltX:      7.730964880028   TiltY:       -17.156954975678   TiltZ:       -0.312403520096
 CrystalId:  206
-PositionX:  1.369481024821   PositionY:   -22.369871836417   PositionZ:   -0.431941915967
-TiltX:      18.284679913393   TiltY:       0.932622332466   TiltZ:       0.191026099843
+PositionX:  -20.879143571651   PositionY:   -10.545894612653   PositionZ:   -3.553103153444
+TiltX:      7.656628286558   TiltY:       -15.264460463492   TiltZ:       -0.046163658504
 CrystalId:  207
-PositionX:  3.919979571957   PositionY:   19.912118846381   PositionZ:   0.239088735595
-TiltX:      -16.159334327042   TiltY:       2.972379654807   TiltZ:       -0.865808716723
+PositionX:  -18.339097183338   PositionY:   -5.372796869889   PositionZ:   -2.352758201381
+TiltX:      3.847463653990   TiltY:       -13.363505768513   TiltZ:       -0.130722209293
 CrystalId:  208
-PositionX:  6.462645763180   PositionY:   19.859867931376   PositionZ:   0.059264475486
-TiltX:      -16.201243594830   TiltY:       5.035641969984   TiltZ:       -1.465899090851
+PositionX:  -15.805430942059   PositionY:   -5.375782439865   PositionZ:   -1.793576721555
+TiltX:      3.819365015489   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  209
-PositionX:  1.371948460886   PositionY:   19.936800397508   PositionZ:   0.323626068682
-TiltX:      -16.139085801372   TiltY:       0.908793086609   TiltZ:       -0.267959396464
+PositionX:  -13.253996807878   PositionY:   -5.372796869889   PositionZ:   -1.322055345040
+TiltX:      3.795846783025   TiltY:       -9.552627035954   TiltZ:       0.128971044992
 CrystalId:  210
-PositionX:  3.917510406251   PositionY:   22.346969206227   PositionZ:   -0.517030243811
-TiltX:      -18.307674323787   TiltY:       2.972379654807   TiltZ:       -0.865808716723
+PositionX:  -18.296536583086   PositionY:   -7.957077363580   PositionZ:   -2.562736201336
+TiltX:      5.771146656188   TiltY:       -13.358170591105   TiltZ:       -0.195897664723
 CrystalId:  211
-PositionX:  6.460178327115   PositionY:   22.292939370286   PositionZ:   -0.696303509164
-TiltX:      -18.354833465086   TiltY:       5.011723921625   TiltZ:       -1.543091416905
+PositionX:  -15.762845643575   PositionY:   -7.961551572609   PositionZ:   -2.003676573302
+TiltX:      5.729047523233   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  212
-PositionX:  1.369481024821   PositionY:   22.369871836417   PositionZ:   -0.431941915967
-TiltX:      -18.284679913393   TiltY:       0.932622332466   TiltZ:       -0.191026099843
+PositionX:  -13.211436207626   PositionY:   -7.957077363580   PositionZ:   -1.532033344995
+TiltX:      5.693793529355   TiltY:       -9.557890841965   TiltZ:       0.193280663294
 CrystalId:  213
-PositionX:  3.917083817816   PositionY:   17.449699122657   PositionZ:   0.899920787979
-TiltX:      -14.010994330297   TiltY:       2.972379654807   TiltZ:       -0.865808716723
+PositionX:  -18.236267327271   PositionY:   -10.532414409174   PositionZ:   -2.860082049839
+TiltX:      7.694771179972   TiltY:       -13.350709839262   TiltZ:       -0.260850595632
 CrystalId:  214
-PositionX:  6.459752050282   PositionY:   17.399246506484   PositionZ:   0.719612508188
-TiltX:      -14.047548770610   TiltY:       5.056653433184   TiltZ:       -1.387856304310
+PositionX:  -15.702541848652   PositionY:   -10.538372287295   PositionZ:   -2.301192824776
+TiltX:      7.638730030978   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 CrystalId:  215
-PositionX:  1.369054747988   PositionY:   17.476178972616   PositionZ:   0.983974101385
-TiltX:      -13.993474777154   TiltY:       0.887860487309   TiltZ:       -0.345730533959
+PositionX:  -13.151166951811   PositionY:   -10.532414409174   PositionZ:   -1.829379193498
+TiltX:      7.591768317379   TiltY:       -9.565252119262   TiltZ:       0.257379402264
 CrystalId:  216
-PositionX:  -19.954965407055   PositionY:   -11.764471567213   PositionZ:   0.502522930429
-TiltX:      10.006802379881   TiltY:       -15.907523397074   TiltZ:       -1.230067992729
+PositionX:  -10.520805678427   PositionY:   -5.372796869889   PositionZ:   -0.869109938408
+TiltX:      3.834297718900   TiltY:       -7.634472857871   TiltZ:       -0.128320135143
 CrystalId:  217
-PositionX:  -17.490488469933   PositionY:   -11.808755995072   PositionZ:   1.154144445171
-TiltX:      9.908295910139   TiltY:       -13.791537499709   TiltZ:       -0.845766551554
+PositionX:  -7.943975026577   PositionY:   -5.375782439865   PositionZ:   -0.565642738764
+TiltX:      3.819365015489   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  218
-PositionX:  -22.392264498482   PositionY:   -11.703504886341   PositionZ:   -0.243181089535
-TiltX:      10.121344046972   TiltY:       -18.022815399622   TiltZ:       -1.622547595657
+PositionX:  -5.358215830997   PositionY:   -5.372796869889   PositionZ:   -0.351171453845
+TiltX:      3.808749925517   TiltY:       -3.823593833643   TiltZ:       0.127466405094
 CrystalId:  219
-PositionX:  -20.008863095345   PositionY:   -9.243812714072   PositionZ:   0.881458634619
-TiltX:      7.858462383136   TiltY:       -15.907523397074   TiltZ:       -1.230067992729
+PositionX:  -10.499418551516   PositionY:   -7.957077363580   PositionZ:   -1.082287695131
+TiltX:      5.751416718004   TiltY:       -7.629155884274   TiltZ:       -0.192299819112
 CrystalId:  220
-PositionX:  -17.544346413859   PositionY:   -9.289938131739   PositionZ:   1.532802057982
-TiltX:      7.780988798452   TiltY:       -13.779155587196   TiltZ:       -0.927698724767
+PositionX:  -7.922575488556   PositionY:   -7.961551572609   PositionZ:   -0.778944204122
+TiltX:      5.729047523233   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  221
-PositionX:  -22.446122442408   PositionY:   -9.184687023009   PositionZ:   0.135476523275
-TiltX:      7.948627942537   TiltY:       -18.035461591952   TiltZ:       -1.538910379952
+PositionX:  -5.336828704086   PositionY:   -7.957077363580   PositionZ:   -0.564349210568
+TiltX:      5.713130743513   TiltY:       -3.828875481922   TiltZ:       0.191023974458
 CrystalId:  222
-PositionX:  -19.873889873070   PositionY:   -14.268448167342   PositionZ:   0.029504721018
-TiltX:      12.155142376627   TiltY:       -15.907523397074   TiltZ:       -1.230067992729
+PositionX:  -10.469132648231   PositionY:   -10.532414409174   PositionZ:   -1.384164658281
+TiltX:      7.668499968183   TiltY:       -7.621720502450   TiltZ:       -0.256063280705
 CrystalId:  223
-PositionX:  -17.409471783018   PositionY:   -14.310903330978   PositionZ:   0.681470455653
-TiltX:      12.035708979660   TiltY:       -13.806864668815   TiltZ:       -0.764359275359
+PositionX:  -7.892272229025   PositionY:   -10.538372287295   PositionZ:   -1.080994166935
+TiltX:      7.638730030978   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 CrystalId:  224
-PositionX:  -22.311247811567   PositionY:   -14.205652222247   PositionZ:   -0.715855079053
-TiltX:      12.293863928277   TiltY:       -18.007163273874   TiltZ:       -1.705613838711
+PositionX:  -5.306542800801   PositionY:   -10.532414409174   PositionZ:   -0.866226173717
+TiltX:      7.617518624170   TiltY:       -3.836261628726   TiltZ:       0.254370998153
 CrystalId:  225
-PositionX:  -19.954965407055   PositionY:   11.764471567213   PositionZ:   0.502522930429
-TiltX:      -10.006802379881   TiltY:       -15.907523397074   TiltZ:       1.230067992729
+PositionX:  -2.594252985282   PositionY:   -5.372796869889   PositionZ:   -0.220796327486
+TiltX:      3.821481187277   TiltY:       -1.905439559434   TiltZ:       -0.127253039168
 CrystalId:  226
-PositionX:  -17.490488469933   PositionY:   11.808755995072   PositionZ:   1.154144445171
-TiltX:      -9.908295910139   TiltY:       -13.791537499709   TiltZ:       0.845766551554
+PositionX:  0.000000000000   PositionY:   -5.375782439865   PositionZ:   -0.176074991049
+TiltX:      3.819365015489   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  227
-PositionX:  -22.392264498482   PositionY:   11.703504886341   PositionZ:   -0.243181089535
-TiltX:      -10.121344046972   TiltY:       -18.022815399622   TiltZ:       1.622547595657
+PositionX:  2.594252985282   PositionY:   -5.372796869889   PositionZ:   -0.220796327486
+TiltX:      3.821481187277   TiltY:       1.905439559434   TiltZ:       0.127253039168
 CrystalId:  228
-PositionX:  -19.873889873070   PositionY:   14.268448167342   PositionZ:   0.029504721018
-TiltX:      -12.155142376627   TiltY:       -15.907523397074   TiltZ:       1.230067992729
+PositionX:  -2.594252985282   PositionY:   -7.957077363580   PositionZ:   -0.435044233330
+TiltX:      5.732210015987   TiltY:       -1.900140307152   TiltZ:       -0.190702457215
 CrystalId:  229
-PositionX:  -17.409471783018   PositionY:   14.310903330978   PositionZ:   0.681470455653
-TiltX:      -12.035708979660   TiltY:       -13.806864668815   TiltZ:       0.764359275359
+PositionX:  0.000000000000   PositionY:   -7.961551572609   PositionZ:   -0.390447226543
+TiltX:      5.729047523233   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  230
-PositionX:  -22.311247811567   PositionY:   14.205652222247   PositionZ:   -0.715855079053
-TiltX:      -12.293863928277   TiltY:       -18.007163273874   TiltZ:       1.705613838711
+PositionX:  2.594252985282   PositionY:   -7.957077363580   PositionZ:   -0.435044233330
+TiltX:      5.732210015987   TiltY:       1.900140307152   TiltZ:       0.190702457215
 CrystalId:  231
-PositionX:  -20.008863095345   PositionY:   9.243812714072   PositionZ:   0.881458634619
-TiltX:      -7.858462383136   TiltY:       -15.907523397074   TiltZ:       1.230067992729
+PositionX:  -2.594252985282   PositionY:   -10.532414409174   PositionZ:   -0.738436614280
+TiltX:      7.642924785518   TiltY:       -1.892729624041   TiltZ:       -0.253939578138
 CrystalId:  232
-PositionX:  -17.544346413859   PositionY:   9.289938131739   PositionZ:   1.532802057982
-TiltX:      -7.780988798452   TiltY:       -13.779155587196   TiltZ:       0.927698724767
+PositionX:  0.000000000000   PositionY:   -10.538372287295   PositionZ:   -0.694013475612
+TiltX:      7.638730030978   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  233
-PositionX:  -22.446122442408   PositionY:   9.184687023009   PositionZ:   0.135476523275
-TiltX:      -7.948627942537   TiltY:       -18.035461591952   TiltZ:       1.538910379952
+PositionX:  2.594252985282   PositionY:   -10.532414409174   PositionZ:   -0.738436614280
+TiltX:      7.642924785518   TiltY:       1.892729624041   TiltZ:       0.253939578138
 CrystalId:  234
-PositionX:  19.954965407055   PositionY:   -11.764471567213   PositionZ:   0.502522930429
-TiltX:      10.006802379881   TiltY:       15.907523397074   TiltZ:       1.230067992729
+PositionX:  5.358215830997   PositionY:   -5.372796869889   PositionZ:   -0.351171453845
+TiltX:      3.808749925517   TiltY:       3.823593833643   TiltZ:       -0.127466405094
 CrystalId:  235
-PositionX:  22.392264498482   PositionY:   -11.703504886341   PositionZ:   -0.243181089535
-TiltX:      10.121344046972   TiltY:       18.022815399622   TiltZ:       1.622547595657
+PositionX:  7.943975026577   PositionY:   -5.375782439865   PositionZ:   -0.565642738764
+TiltX:      3.819365015489   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  236
-PositionX:  17.490488469933   PositionY:   -11.808755995072   PositionZ:   1.154144445171
-TiltX:      9.908295910139   TiltY:       13.791537499709   TiltZ:       0.845766551554
+PositionX:  10.520805678427   PositionY:   -5.372796869889   PositionZ:   -0.869109938408
+TiltX:      3.834297718900   TiltY:       7.634472857871   TiltZ:       0.128320135143
 CrystalId:  237
-PositionX:  20.008863095345   PositionY:   -9.243812714072   PositionZ:   0.881458634619
-TiltX:      7.858462383136   TiltY:       15.907523397074   TiltZ:       1.230067992729
+PositionX:  5.336828704086   PositionY:   -7.957077363580   PositionZ:   -0.564349210568
+TiltX:      5.713130743513   TiltY:       3.828875481922   TiltZ:       -0.191023974458
 CrystalId:  238
-PositionX:  22.446122442408   PositionY:   -9.184687023009   PositionZ:   0.135476523275
-TiltX:      7.948627942537   TiltY:       18.035461591952   TiltZ:       1.538910379952
+PositionX:  7.922575488556   PositionY:   -7.961551572609   PositionZ:   -0.778944204122
+TiltX:      5.729047523233   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  239
-PositionX:  17.544346413859   PositionY:   -9.289938131739   PositionZ:   1.532802057982
-TiltX:      7.780988798452   TiltY:       13.779155587196   TiltZ:       0.927698724767
+PositionX:  10.499418551516   PositionY:   -7.957077363580   PositionZ:   -1.082287695131
+TiltX:      5.751416718004   TiltY:       7.629155884274   TiltZ:       0.192299819112
 CrystalId:  240
-PositionX:  19.873889873070   PositionY:   -14.268448167342   PositionZ:   0.029504721018
-TiltX:      12.155142376627   TiltY:       15.907523397074   TiltZ:       1.230067992729
+PositionX:  5.306542800801   PositionY:   -10.532414409174   PositionZ:   -0.866226173717
+TiltX:      7.617518624170   TiltY:       3.836261628726   TiltZ:       -0.254370998153
 CrystalId:  241
-PositionX:  22.311247811567   PositionY:   -14.205652222247   PositionZ:   -0.715855079053
-TiltX:      12.293863928277   TiltY:       18.007163273874   TiltZ:       1.705613838711
+PositionX:  7.892272229025   PositionY:   -10.538372287295   PositionZ:   -1.080994166935
+TiltX:      7.638730030978   TiltY:       5.729047523233   TiltZ:       0.000000000000
 CrystalId:  242
-PositionX:  17.409471783018   PositionY:   -14.310903330978   PositionZ:   0.681470455653
-TiltX:      12.035708979660   TiltY:       13.806864668815   TiltZ:       0.764359275359
+PositionX:  10.469132648231   PositionY:   -10.532414409174   PositionZ:   -1.384164658281
+TiltX:      7.668499968183   TiltY:       7.621720502450   TiltZ:       0.256063280705
 CrystalId:  243
-PositionX:  19.954965407055   PositionY:   11.764471567213   PositionZ:   0.502522930429
-TiltX:      -10.006802379881   TiltY:       15.907523397074   TiltZ:       -1.230067992729
+PositionX:  13.253996807878   PositionY:   -5.372796869889   PositionZ:   -1.322055345040
+TiltX:      3.795846783025   TiltY:       9.552627035954   TiltZ:       -0.128971044993
 CrystalId:  244
-PositionX:  22.392264498482   PositionY:   11.703504886341   PositionZ:   -0.243181089535
-TiltX:      -10.121344046972   TiltY:       18.022815399622   TiltZ:       -1.622547595657
+PositionX:  15.805430942059   PositionY:   -5.375782439865   PositionZ:   -1.793576721555
+TiltX:      3.819365015489   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  245
-PositionX:  17.490488469933   PositionY:   11.808755995072   PositionZ:   1.154144445171
-TiltX:      -9.908295910139   TiltY:       13.791537499709   TiltZ:       -0.845766551554
+PositionX:  18.339097183338   PositionY:   -5.372796869889   PositionZ:   -2.352758201381
+TiltX:      3.847463653990   TiltY:       13.363505768513   TiltZ:       0.130722209293
 CrystalId:  246
-PositionX:  19.873889873070   PositionY:   14.268448167342   PositionZ:   0.029504721018
-TiltX:      -12.155142376627   TiltY:       15.907523397074   TiltZ:       -1.230067992729
+PositionX:  13.211436207626   PositionY:   -7.957077363580   PositionZ:   -1.532033344995
+TiltX:      5.693793529355   TiltY:       9.557890841965   TiltZ:       -0.193280663294
 CrystalId:  247
-PositionX:  22.311247811567   PositionY:   14.205652222247   PositionZ:   -0.715855079053
-TiltX:      -12.293863928277   TiltY:       18.007163273874   TiltZ:       -1.705613838711
+PositionX:  15.762845643575   PositionY:   -7.961551572609   PositionZ:   -2.003676573302
+TiltX:      5.729047523233   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  248
-PositionX:  17.409471783018   PositionY:   14.310903330978   PositionZ:   0.681470455653
-TiltX:      -12.035708979660   TiltY:       13.806864668815   TiltZ:       -0.764359275359
+PositionX:  18.296536583086   PositionY:   -7.957077363580   PositionZ:   -2.562736201336
+TiltX:      5.771146656188   TiltY:       13.358170591105   TiltZ:       0.195897664723
 CrystalId:  249
-PositionX:  20.008863095345   PositionY:   9.243812714072   PositionZ:   0.881458634619
-TiltX:      -7.858462383136   TiltY:       15.907523397074   TiltZ:       -1.230067992729
+PositionX:  13.151166951811   PositionY:   -10.532414409174   PositionZ:   -1.829379193498
+TiltX:      7.591768317379   TiltY:       9.565252119262   TiltZ:       -0.257379402264
 CrystalId:  250
-PositionX:  22.446122442408   PositionY:   9.184687023009   PositionZ:   0.135476523275
-TiltX:      -7.948627942537   TiltY:       18.035461591952   TiltZ:       -1.538910379952
+PositionX:  15.702541848652   PositionY:   -10.538372287295   PositionZ:   -2.301192824776
+TiltX:      7.638730030978   TiltY:       11.458095046466   TiltZ:       0.000000000000
 CrystalId:  251
-PositionX:  17.544346413859   PositionY:   9.289938131739   PositionZ:   1.532802057982
-TiltX:      -7.780988798452   TiltY:       13.779155587196   TiltZ:       -0.927698724767
+PositionX:  18.236267327271   PositionY:   -10.532414409174   PositionZ:   -2.860082049839
+TiltX:      7.694771179972   TiltY:       13.350709839262   TiltZ:       0.260850595632
 CrystalId:  252
-PositionX:  -11.990467607068   PositionY:   -19.912118846381   PositionZ:   0.503557482782
-TiltX:      16.305386816423   TiltY:       -9.332548521574   TiltZ:       -1.168321871295
+PositionX:  21.006162160990   PositionY:   -5.386347800128   PositionZ:   -3.050562025235
+TiltX:      3.873919891546   TiltY:       15.251677446359   TiltZ:       0.177399278927
 CrystalId:  253
-PositionX:  -9.467648461238   PositionY:   -19.949620834737   PositionZ:   0.869884441851
-TiltX:      16.217600864159   TiltY:       -7.270136108765   TiltZ:       -0.560403162525
+PositionX:  23.498142093746   PositionY:   -5.375817823617   PositionZ:   -3.773114858975
+TiltX:      3.911599864539   TiltY:       17.156954975678   TiltZ:       0.312403520096
 CrystalId:  254
-PositionX:  -14.497259805665   PositionY:   -19.847047494147   PositionZ:   0.043148018493
-TiltX:      16.416064719393   TiltY:       -11.393916520340   TiltZ:       -1.783476890321
+PositionX:  25.963707226271   PositionY:   -5.359316666411   PositionZ:   -4.581120893784
+TiltX:      3.954440690886   TiltY:       19.062140981804   TiltZ:       0.450209466099
 CrystalId:  255
-PositionX:  -12.048601860519   PositionY:   -17.449934095746   PositionZ:   1.162712202820
-TiltX:      14.157046819677   TiltY:       -9.332548521574   TiltZ:       -1.168321871295
+PositionX:  20.955823680546   PositionY:   -7.970592930439   PositionZ:   -3.259250738593
+TiltX:      5.765249104464   TiltY:       15.257024000237   TiltZ:       0.111673109924
 CrystalId:  256
-PositionX:  -9.525740029457   PositionY:   -17.489234211297   PositionZ:   1.528556384022
-TiltX:      14.080672451157   TiltY:       -7.249091079002   TiltZ:       -0.638762536525
+PositionX:  23.447774346565   PositionY:   -7.961551572609   PositionZ:   -3.981924658963
+TiltX:      5.821282372283   TiltY:       17.156954975678   TiltZ:       0.312403520096
 CrystalId:  257
-PositionX:  -14.555351373883   PositionY:   -17.386660870706   PositionZ:   0.701819960665
-TiltX:      14.253568417394   TiltY:       -11.415213344897   TiltZ:       -1.704249970912
+PositionX:  25.913368745827   PositionY:   -7.943561796721   PositionZ:   -4.789809607141
+TiltX:      5.884967043705   TiltY:       19.056683631853   TiltZ:       0.517287684812
 CrystalId:  258
-PositionX:  -11.916306406384   PositionY:   -22.346734233138   PositionZ:   -0.249679742476
-TiltX:      18.453726813168   TiltY:       -9.332548521574   TiltZ:       -1.168321871295
+PositionX:  20.879143571651   PositionY:   -10.545894612653   PositionZ:   -3.553103153444
+TiltX:      7.656628286558   TiltY:       15.264460463492   TiltZ:       0.046163658504
 CrystalId:  259
-PositionX:  -9.393541210774   PositionY:   -22.382457472195   PositionZ:   0.117196122971
-TiltX:      18.354605459101   TiltY:       -7.294064980355   TiltZ:       -0.482885480649
+PositionX:  23.371050332628   PositionY:   -10.538336903543   PositionZ:   -4.275945486759
+TiltX:      7.730964880028   TiltY:       17.156954975678   TiltZ:       0.312403520096
 CrystalId:  260
-PositionX:  -14.423152555201   PositionY:   -22.279884131604   PositionZ:   -0.709540300387
-TiltX:      18.578356030376   TiltY:       -11.369704500259   TiltZ:       -1.861821365895
+PositionX:  25.836688636932   PositionY:   -10.518863478935   PositionZ:   -5.083662021993
+TiltX:      7.815409397264   TiltY:       19.049093593042   TiltZ:       0.584130699229
 CrystalId:  261
-PositionX:  -11.990467607068   PositionY:   19.912118846381   PositionZ:   0.503557482782
-TiltX:      -16.305386816423   TiltY:       -9.332548521574   TiltZ:       1.168321871295
+PositionX:  -18.487030942154   PositionY:   -13.257007531099   PositionZ:   -3.366020474736
+TiltX:      9.742568907027   TiltY:       -13.554820412970   TiltZ:       -0.930384025642
 CrystalId:  262
-PositionX:  -9.467648461238   PositionY:   19.949620834737   PositionZ:   0.869884441851
-TiltX:      -16.217600864159   TiltY:       -7.270136108765   TiltZ:       0.560403162525
+PositionX:  -15.955583859868   PositionY:   -13.291067577218   PositionZ:   -2.797889287375
+TiltX:      9.670511529805   TiltY:       -11.672471155582   TiltZ:       -0.600459596177
 CrystalId:  263
-PositionX:  -14.497259805665   PositionY:   19.847047494147   PositionZ:   0.043148018493
-TiltX:      -16.416064719393   TiltY:       -11.393916520340   TiltZ:       1.783476890321
+PositionX:  -13.406101630327   PositionY:   -13.310257604440   PositionZ:   -2.316298623727
+TiltX:      9.609899861251   TiltY:       -9.789750564761   TiltZ:       -0.274985444219
 CrystalId:  264
-PositionX:  -11.916306406384   PositionY:   22.346734233138   PositionZ:   -0.249679742476
-TiltX:      -18.453726813168   TiltY:       -9.332548521574   TiltZ:       1.168321871295
+PositionX:  -18.417327952726   PositionY:   -15.806853318638   PositionZ:   -3.832749291356
+TiltX:      11.666259108911   TiltY:       -13.543000613359   TiltZ:       -0.994702089800
 CrystalId:  265
-PositionX:  -9.393541210774   PositionY:   22.382457472195   PositionZ:   0.117196122971
-TiltX:      -18.354605459101   TiltY:       -7.294064980355   TiltZ:       0.482885480649
+PositionX:  -15.885840533853   PositionY:   -15.842382076820   PositionZ:   -3.264887848190
+TiltX:      11.580194037549   TiltY:       -11.672471155582   TiltZ:       -0.600459596177
 CrystalId:  266
-PositionX:  -14.423152555201   PositionY:   22.279884131604   PositionZ:   -0.709540300387
-TiltX:      -18.578356030376   TiltY:       -11.369704500259   TiltZ:       1.861821365895
+PositionX:  -13.336398640899   PositionY:   -15.860103391979   PositionZ:   -2.783027440348
+TiltX:      11.507721259156   TiltY:       -9.801411426153   TiltZ:       -0.211501974222
 CrystalId:  267
-PositionX:  -12.048601860519   PositionY:   17.449934095746   PositionZ:   1.162712202820
-TiltX:      -14.157046819677   TiltY:       -9.332548521574   TiltZ:       1.168321871295
+PositionX:  -18.329680461155   PositionY:   -18.338901553430   PositionZ:   -4.385431378214
+TiltX:      13.589830454564   TiltY:       -13.529088569433   TiltZ:       -1.058572335785
 CrystalId:  268
-PositionX:  -9.525740029457   PositionY:   17.489234211297   PositionZ:   1.528556384022
-TiltX:      -14.080672451157   TiltY:       -7.249091079002   TiltZ:       0.638762536525
+PositionX:  -15.798142733756   PositionY:   -18.375889133399   PositionZ:   -3.817887444328
+TiltX:      13.489876545294   TiltY:       -11.672471155582   TiltZ:       -0.600459596177
 CrystalId:  269
-PositionX:  -14.555351373883   PositionY:   17.386660870706   PositionZ:   0.701819960665
-TiltX:      -14.253568417394   TiltY:       -11.415213344897   TiltZ:       1.704249970912
+PositionX:  -13.248751149328   PositionY:   -18.392151626772   PositionZ:   -3.335709527206
+TiltX:      13.405601078907   TiltY:       -9.815137665631   TiltZ:       -0.148442808118
 CrystalId:  270
-PositionX:  11.990467607068   PositionY:   -19.912118846381   PositionZ:   0.503557482782
-TiltX:      16.305386816423   TiltY:       9.332548521574   TiltZ:       1.168321871295
+PositionX:  -10.551518274629   PositionY:   -13.264812449197   PositionZ:   -1.838297432699
+TiltX:      9.602582909298   TiltY:       -7.577242204868   TiltZ:       -1.067927593992
 CrystalId:  271
-PositionX:  14.497259805665   PositionY:   -19.847047494147   PositionZ:   0.043148018493
-TiltX:      16.416064719393   TiltY:       11.393916520340   TiltZ:       1.783476890321
+PositionX:  -7.974768354527   PositionY:   -13.305895847043   PositionZ:   -1.536918158558
+TiltX:      9.565590216321   TiltY:       -5.694209508692   TiltZ:       -0.747845260727
 CrystalId:  272
-PositionX:  9.467648461238   PositionY:   -19.949620834737   PositionZ:   0.869884441851
-TiltX:      16.217600864159   TiltY:       7.270136108765   TiltZ:       0.560403162525
+PositionX:  -5.389054235872   PositionY:   -13.332198625907   PositionZ:   -1.323498094794
+TiltX:      9.539239955707   TiltY:       -3.811001424645   TiltZ:       -0.429854745176
 CrystalId:  273
-PositionX:  12.048601860519   PositionY:   -17.449934095746   PositionZ:   1.162712202820
-TiltX:      14.157046819677   TiltY:       9.332548521574   TiltZ:       1.168321871295
+PositionX:  -10.537979682137   PositionY:   -15.815050134035   PositionZ:   -2.307884796856
+TiltX:      11.519520156702   TiltY:       -7.565578896718   TiltZ:       -1.131035293934
 CrystalId:  274
-PositionX:  14.555351373883   PositionY:   -17.386660870706   PositionZ:   0.701819960665
-TiltX:      14.253568417394   TiltY:       11.415213344897   TiltZ:       1.704249970912
+PositionX:  -7.961221871788   PositionY:   -15.857602470609   PositionZ:   -2.006776928040
+TiltX:      11.475272724065   TiltY:       -5.694209508692   TiltZ:       -0.747845260727
 CrystalId:  275
-PositionX:  9.525740029457   PositionY:   -17.489234211297   PositionZ:   1.528556384022
-TiltX:      14.080672451157   TiltY:       7.249091079002   TiltZ:       0.638762536525
+PositionX:  -5.375515643380   PositionY:   -15.882436310745   PositionZ:   -1.793085458951
+TiltX:      11.443687594562   TiltY:       -3.822588745890   TiltZ:       -0.367144043644
 CrystalId:  276
-PositionX:  11.916306406384   PositionY:   -22.346734233138   PositionZ:   -0.249679742476
-TiltX:      18.453726813168   TiltY:       9.332548521574   TiltZ:       1.168321871295
+PositionX:  -10.515497641549   PositionY:   -18.347579163310   PositionZ:   -2.864840009562
+TiltX:      13.436386871549   TiltY:       -7.551829566597   TiltZ:       -1.193712263132
 CrystalId:  277
-PositionX:  14.423152555201   PositionY:   -22.279884131604   PositionZ:   -0.709540300387
-TiltX:      18.578356030376   TiltY:       11.369704500259   TiltZ:       1.861821365895
+PositionX:  -7.938726970990   PositionY:   -18.391590597737   PositionZ:   -2.564052097249
+TiltX:      13.384955231809   TiltY:       -5.694209508692   TiltZ:       -0.747845260727
 CrystalId:  278
-PositionX:  9.393541210774   PositionY:   -22.382457472195   PositionZ:   0.117196122971
-TiltX:      18.354605459101   TiltY:       7.294064980355   TiltZ:       0.482885480649
+PositionX:  -5.353033602792   PositionY:   -18.414965340020   PositionZ:   -2.350040671657
+TiltX:      13.348149474652   TiltY:       -3.836249102035   TiltZ:       -0.304853000306
 CrystalId:  279
-PositionX:  11.990467607068   PositionY:   19.912118846381   PositionZ:   0.503557482782
-TiltX:      -16.305386816423   TiltY:       9.332548521574   TiltZ:       -1.168321871295
+PositionX:  -2.594252985282   PositionY:   -13.281519609148   PositionZ:   -1.193786971391
+TiltX:      9.553620907086   TiltY:       -1.883215768831   TiltZ:       -0.316894010451
 CrystalId:  280
-PositionX:  14.497259805665   PositionY:   19.847047494147   PositionZ:   0.043148018493
-TiltX:      -16.416064719393   TiltY:       11.393916520340   TiltZ:       -1.783476890321
+PositionX:  0.000000000000   PositionY:   -13.288954538334   PositionZ:   -1.149587046178
+TiltX:      9.548412538722   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  281
-PositionX:  9.467648461238   PositionY:   19.949620834737   PositionZ:   0.869884441851
-TiltX:      -16.217600864159   TiltY:       7.270136108765   TiltZ:       -0.560403162525
+PositionX:  2.594252985282   PositionY:   -13.281519609148   PositionZ:   -1.193786971391
+TiltX:      9.553620907086   TiltY:       1.883215768831   TiltZ:       0.316894010451
 CrystalId:  282
-PositionX:  11.916306406384   PositionY:   22.346734233138   PositionZ:   -0.249679742476
-TiltX:      -18.453726813168   TiltY:       9.332548521574   TiltZ:       -1.168321871295
+PositionX:  -2.594252985282   PositionY:   -15.831504726064   PositionZ:   -1.664938474349
+TiltX:      11.464293875005   TiltY:       -1.871609343693   TiltZ:       -0.379495682798
 CrystalId:  283
-PositionX:  14.423152555201   PositionY:   22.279884131604   PositionZ:   -0.709540300387
-TiltX:      -18.578356030376   TiltY:       11.369704500259   TiltZ:       -1.861821365895
+PositionX:  0.000000000000   PositionY:   -15.840408447575   PositionZ:   -1.621010859981
+TiltX:      11.458095046466   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  284
-PositionX:  9.393541210774   PositionY:   22.382457472195   PositionZ:   0.117196122971
-TiltX:      -18.354605459101   TiltY:       7.294064980355   TiltZ:       -0.482885480649
+PositionX:  2.594252985282   PositionY:   -15.831504726064   PositionZ:   -1.664938474349
+TiltX:      11.464293875005   TiltY:       1.871609343693   TiltZ:       0.379495682798
 CrystalId:  285
-PositionX:  12.048601860519   PositionY:   17.449934095746   PositionZ:   1.162712202820
-TiltX:      -14.157046819677   TiltY:       9.332548521574   TiltZ:       -1.168321871295
+PositionX:  -2.594252985282   PositionY:   -18.363692290233   PositionZ:   -2.223896411136
+TiltX:      13.374939286763   TiltY:       -1.857923282113   TiltZ:       -0.441674923206
 CrystalId:  286
-PositionX:  14.555351373883   PositionY:   17.386660870706   PositionZ:   0.701819960665
-TiltX:      -14.253568417394   TiltY:       11.415213344897   TiltZ:       -1.704249970912
+PositionX:  0.000000000000   PositionY:   -18.374054913794   PositionZ:   -2.180289902519
+TiltX:      13.367777554211   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 CrystalId:  287
-PositionX:  9.525740029457   PositionY:   17.489234211297   PositionZ:   1.528556384022
-TiltX:      -14.080672451157   TiltY:       7.249091079002   TiltZ:       -0.638762536525
+PositionX:  2.594252985282   PositionY:   -18.363692290233   PositionZ:   -2.223896411136
+TiltX:      13.374939286763   TiltY:       1.857923282113   TiltZ:       0.441674923206
+CrystalId:  288
+PositionX:  5.389054235872   PositionY:   -13.332198625907   PositionZ:   -1.323498094794
+TiltX:      9.539239955707   TiltY:       3.811001424645   TiltZ:       0.429854745176
+CrystalId:  289
+PositionX:  7.974768354527   PositionY:   -13.305895847043   PositionZ:   -1.536918158558
+TiltX:      9.565590216321   TiltY:       5.694209508692   TiltZ:       0.747845260727
+CrystalId:  290
+PositionX:  10.551518274629   PositionY:   -13.264812449197   PositionZ:   -1.838297432699
+TiltX:      9.602582909298   TiltY:       7.577242204868   TiltZ:       1.067927593992
+CrystalId:  291
+PositionX:  5.375515643380   PositionY:   -15.882436310745   PositionZ:   -1.793085458951
+TiltX:      11.443687594562   TiltY:       3.822588745890   TiltZ:       0.367144043644
+CrystalId:  292
+PositionX:  7.961221871788   PositionY:   -15.857602470609   PositionZ:   -2.006776928040
+TiltX:      11.475272724065   TiltY:       5.694209508692   TiltZ:       0.747845260727
+CrystalId:  293
+PositionX:  10.537979682137   PositionY:   -15.815050134035   PositionZ:   -2.307884796856
+TiltX:      11.519520156702   TiltY:       7.565578896718   TiltZ:       1.131035293934
+CrystalId:  294
+PositionX:  5.353033602792   PositionY:   -18.414965340020   PositionZ:   -2.350040671657
+TiltX:      13.348149474652   TiltY:       3.836249102035   TiltZ:       0.304853000306
+CrystalId:  295
+PositionX:  7.938726970990   PositionY:   -18.391590597737   PositionZ:   -2.564052097249
+TiltX:      13.384955231809   TiltY:       5.694209508692   TiltZ:       0.747845260727
+CrystalId:  296
+PositionX:  10.515497641549   PositionY:   -18.347579163310   PositionZ:   -2.864840009562
+TiltX:      13.436386871549   TiltY:       7.551829566597   TiltZ:       1.193712263132
+CrystalId:  297
+PositionX:  13.406101630327   PositionY:   -13.310257604440   PositionZ:   -2.316298623727
+TiltX:      9.609899861251   TiltY:       9.789750564761   TiltZ:       0.274985444219
+CrystalId:  298
+PositionX:  15.955583859868   PositionY:   -13.291067577218   PositionZ:   -2.797889287375
+TiltX:      9.670511529805   TiltY:       11.672471155582   TiltZ:       0.600459596177
+CrystalId:  299
+PositionX:  18.487030942154   PositionY:   -13.257007531099   PositionZ:   -3.366020474736
+TiltX:      9.742568907027   TiltY:       13.554820412970   TiltZ:       0.930384025642
+CrystalId:  300
+PositionX:  13.336398640899   PositionY:   -15.860103391979   PositionZ:   -2.783027440348
+TiltX:      11.507721259156   TiltY:       9.801411426153   TiltZ:       0.211501974222
+CrystalId:  301
+PositionX:  15.885840533853   PositionY:   -15.842382076820   PositionZ:   -3.264887848190
+TiltX:      11.580194037549   TiltY:       11.672471155582   TiltZ:       0.600459596177
+CrystalId:  302
+PositionX:  18.417327952726   PositionY:   -15.806853318638   PositionZ:   -3.832749291356
+TiltX:      11.666259108911   TiltY:       13.543000613359   TiltZ:       0.994702089800
+CrystalId:  303
+PositionX:  13.248751149328   PositionY:   -18.392151626772   PositionZ:   -3.335709527206
+TiltX:      13.405601078907   TiltY:       9.815137665631   TiltZ:       0.148442808118
+CrystalId:  304
+PositionX:  15.798142733756   PositionY:   -18.375889133399   PositionZ:   -3.817887444328
+TiltX:      13.489876545294   TiltY:       11.672471155582   TiltZ:       0.600459596177
+CrystalId:  305
+PositionX:  18.329680461155   PositionY:   -18.338901553430   PositionZ:   -4.385431378214
+TiltX:      13.589830454564   TiltY:       13.529088569433   TiltZ:       1.058572335785
+CrystalId:  306
+PositionX:  -10.591435443288   PositionY:   -21.060848557215   PositionZ:   -3.579063741084
+TiltX:      15.295203836108   TiltY:       -7.699312302288   TiltZ:       -0.956471710828
+CrystalId:  307
+PositionX:  -8.015310361743   PositionY:   -21.092867478938   PositionZ:   -3.271310892044
+TiltX:      15.235437599022   TiltY:       -5.856997134390   TiltZ:       -0.450155739584
+CrystalId:  308
+PositionX:  -5.430174398355   PositionY:   -21.101399870231   PositionZ:   -3.049597761390
+TiltX:      15.192156772981   TiltY:       -4.014230761053   TiltZ:       0.052829587254
+CrystalId:  309
+PositionX:  -10.537378185225   PositionY:   -23.552095854543   PositionZ:   -4.296818958158
+TiltX:      17.212075459441   TiltY:       -7.681501370597   TiltZ:       -1.018118269794
+CrystalId:  310
+PositionX:  -7.961221871788   PositionY:   -23.585549644429   PositionZ:   -3.989480454407
+TiltX:      17.145120106767   TiltY:       -5.856997134390   TiltZ:       -0.450155739584
+CrystalId:  311
+PositionX:  -5.376117140293   PositionY:   -23.592647167559   PositionZ:   -3.767352978464
+TiltX:      17.096479751192   TiltY:       -4.031925095543   TiltZ:       0.114106540155
+CrystalId:  312
+PositionX:  -10.474377479066   PositionY:   -26.017001523419   PositionZ:   -5.099737876727
+TiltX:      19.128841790109   TiltY:       -7.661656962576   TiltZ:       -1.079126472909
+CrystalId:  313
+PositionX:  -7.898184963775   PositionY:   -26.051875543163   PositionZ:   -4.792861044578
+TiltX:      19.054802614511   TiltY:       -5.856997134390   TiltZ:       -0.450155739584
+CrystalId:  314
+PositionX:  -5.313116434134   PositionY:   -26.057552836435   PositionZ:   -4.570271897032
+TiltX:      19.000826607828   TiltY:       -4.051640921916   TiltZ:       0.174761596714
+CrystalId:  315
+PositionX:  -2.594252985282   PositionY:   -21.059688899480   PositionZ:   -2.928383983988
+TiltX:      15.285552862625   TiltY:       -1.842172834120   TiltZ:       -0.503362537817
+CrystalId:  316
+PositionX:  0.000000000000   PositionY:   -21.071498914262   PositionZ:   -2.885147019344
+TiltX:      15.277460061955   TiltY:       -0.000000000000   TiltZ:       0.000000000000
+CrystalId:  317
+PositionX:  2.594252985282   PositionY:   -21.059688899480   PositionZ:   -2.928383983988
+TiltX:      15.285552862625   TiltY:       1.842172834120   TiltZ:       0.503362537817
+CrystalId:  318
+PositionX:  -2.594252985282   PositionY:   -23.549904744570   PositionZ:   -3.651732364847
+TiltX:      17.196130464691   TiltY:       -1.824375548871   TiltZ:       -0.564489888993
+CrystalId:  319
+PositionX:  0.000000000000   PositionY:   -23.563149031979   PositionZ:   -3.608912971906
+TiltX:      17.187142569699   TiltY:       -0.000000000000   TiltZ:       0.000000000000
+CrystalId:  320
+PositionX:  2.594252985282   PositionY:   -23.549904744570   PositionZ:   -3.651732364847
+TiltX:      17.196130464691   TiltY:       1.824375548871   TiltZ:       0.564489888993
+CrystalId:  321
+PositionX:  -2.594252985282   PositionY:   -26.013646726631   PositionZ:   -4.460671967697
+TiltX:      19.106668115313   TiltY:       -1.804551254619   TiltZ:       -0.624988972712
+CrystalId:  322
+PositionX:  0.000000000000   PositionY:   -26.028310574878   PositionZ:   -4.418317710350
+TiltX:      19.096825077444   TiltY:       -0.000000000000   TiltZ:       0.000000000000
+CrystalId:  323
+PositionX:  2.594252985282   PositionY:   -26.013646726631   PositionZ:   -4.460671967697
+TiltX:      19.106668115313   TiltY:       1.804551254619   TiltZ:       0.624988972712
+CrystalId:  324
+PositionX:  5.430174398355   PositionY:   -21.101399870231   PositionZ:   -3.049597761390
+TiltX:      15.192156772981   TiltY:       4.014230761053   TiltZ:       -0.052829587254
+CrystalId:  325
+PositionX:  8.015310361743   PositionY:   -21.092867478938   PositionZ:   -3.271310892044
+TiltX:      15.235437599022   TiltY:       5.856997134390   TiltZ:       0.450155739584
+CrystalId:  326
+PositionX:  10.591435443288   PositionY:   -21.060848557215   PositionZ:   -3.579063741084
+TiltX:      15.295203836108   TiltY:       7.699312302288   TiltZ:       0.956471710828
+CrystalId:  327
+PositionX:  5.376117140293   PositionY:   -23.592647167559   PositionZ:   -3.767352978464
+TiltX:      17.096479751192   TiltY:       4.031925095543   TiltZ:       -0.114106540155
+CrystalId:  328
+PositionX:  7.961221871788   PositionY:   -23.585549644429   PositionZ:   -3.989480454407
+TiltX:      17.145120106767   TiltY:       5.856997134390   TiltZ:       0.450155739584
+CrystalId:  329
+PositionX:  10.537378185225   PositionY:   -23.552095854543   PositionZ:   -4.296818958158
+TiltX:      17.212075459441   TiltY:       7.681501370597   TiltZ:       1.018118269794
+CrystalId:  330
+PositionX:  5.313116434134   PositionY:   -26.057552836435   PositionZ:   -4.570271897032
+TiltX:      19.000826607828   TiltY:       4.051640921916   TiltZ:       -0.174761596714
+CrystalId:  331
+PositionX:  7.898184963775   PositionY:   -26.051875543163   PositionZ:   -4.792861044578
+TiltX:      19.054802614511   TiltY:       5.856997134390   TiltZ:       0.450155739584
+CrystalId:  332
+PositionX:  10.474377479066   PositionY:   -26.017001523419   PositionZ:   -5.099737876727
+TiltX:      19.128841790109   TiltY:       7.661656962576   TiltZ:       1.079126472909
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the modules used in the run
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 ModuleId:   0
-PositionX:  -3.865876853086   PositionY:   -3.872316177238   PositionZ:   -0.228920210837
-TiltX:      3.233733009436   TiltY:       -3.211247674512   TiltZ:       -0.199997790452
+PositionX:  -7.961221871788   PositionY:   23.585549644429   PositionZ:   -3.989480454407
+TiltX:      -17.145120106767   TiltY:       -5.856997134390   TiltZ:       0.450155739584
 ModuleId:   1
-PositionX:  -3.865876853086   PositionY:   3.872316177238   PositionZ:   -0.228920210837
-TiltX:      -3.233733009436   TiltY:       -3.211247674512   TiltZ:       0.199997790452
+PositionX:  0.000000000000   PositionY:   23.563149031979   PositionZ:   -3.608912971906
+TiltX:      -17.187142569699   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 ModuleId:   2
-PositionX:  3.865876853086   PositionY:   -3.872316177238   PositionZ:   -0.228920210837
-TiltX:      3.233733009436   TiltY:       3.211247674512   TiltZ:       0.199997790452
+PositionX:  7.961221871788   PositionY:   23.585549644429   PositionZ:   -3.989480454407
+TiltX:      -17.145120106767   TiltY:       5.856997134390   TiltZ:       -0.450155739584
 ModuleId:   3
-PositionX:  3.865876853086   PositionY:   3.872316177238   PositionZ:   -0.228920210837
-TiltX:      -3.233733009436   TiltY:       3.211247674512   TiltZ:       -0.199997790452
+PositionX:  -15.885840533853   PositionY:   15.842382076820   PositionZ:   -3.264887848190
+TiltX:      -11.580194037549   TiltY:       -11.672471155582   TiltZ:       0.600459596177
 ModuleId:   4
-PositionX:  -11.745234987481   PositionY:   -3.872316177238   PositionZ:   0.041464145089
-TiltX:      3.222509995118   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+PositionX:  -7.961221871788   PositionY:   15.857602470609   PositionZ:   -2.006776928040
+TiltX:      -11.475272724065   TiltY:       -5.694209508692   TiltZ:       0.747845260727
 ModuleId:   5
-PositionX:  -11.745234987481   PositionY:   3.872316177238   PositionZ:   0.041464145089
-TiltX:      -3.222509995118   TiltY:       -9.667529985354   TiltZ:       0.000000000000
+PositionX:  0.000000000000   PositionY:   15.840408447575   PositionZ:   -1.621010859981
+TiltX:      -11.458095046466   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 ModuleId:   6
-PositionX:  11.745234987481   PositionY:   -3.872316177238   PositionZ:   0.041464145089
-TiltX:      3.222509995118   TiltY:       9.667529985354   TiltZ:       0.000000000000
+PositionX:  7.961221871788   PositionY:   15.857602470609   PositionZ:   -2.006776928040
+TiltX:      -11.475272724065   TiltY:       5.694209508692   TiltZ:       -0.747845260727
 ModuleId:   7
-PositionX:  11.745234987481   PositionY:   3.872316177238   PositionZ:   0.041464145089
-TiltX:      -3.222509995118   TiltY:       9.667529985354   TiltZ:       0.000000000000
+PositionX:  15.885840533853   PositionY:   15.842382076820   PositionZ:   -3.264887848190
+TiltX:      -11.580194037549   TiltY:       11.672471155582   TiltZ:       -0.600459596177
 ModuleId:   8
-PositionX:  -3.880994910796   PositionY:   -11.764471567213   PositionZ:   0.039593262399
-TiltX:      9.686777919761   TiltY:       -3.163676101701   TiltZ:       -0.345556168089
+PositionX:  -23.447774346565   PositionY:   7.961551572609   PositionZ:   -3.981924658963
+TiltX:      -5.821282372283   TiltY:       -17.156954975678   TiltZ:       0.312403520096
 ModuleId:   9
-PositionX:  -3.880994910796   PositionY:   11.764471567213   PositionZ:   0.039593262399
-TiltX:      -9.686777919761   TiltY:       -3.163676101701   TiltZ:       0.345556168089
+PositionX:  -15.762845643575   PositionY:   7.961551572609   PositionZ:   -2.003676573302
+TiltX:      -5.729047523233   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 ModuleId:   10
-PositionX:  3.880994910796   PositionY:   -11.764471567213   PositionZ:   0.039593262399
-TiltX:      9.686777919761   TiltY:       3.163676101701   TiltZ:       0.345556168089
+PositionX:  -7.922575488556   PositionY:   7.961551572609   PositionZ:   -0.778944204122
+TiltX:      -5.729047523233   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 ModuleId:   11
-PositionX:  3.880994910796   PositionY:   11.764471567213   PositionZ:   0.039593262399
-TiltX:      -9.686777919761   TiltY:       3.163676101701   TiltZ:       -0.345556168089
+PositionX:  0.000000000000   PositionY:   7.961551572609   PositionZ:   -0.390447226543
+TiltX:      -5.729047523233   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 ModuleId:   12
-PositionX:  -11.790398069147   PositionY:   -11.764471567213   PositionZ:   0.306583621991
-TiltX:      9.784329971522   TiltY:       -9.549273675971   TiltZ:       -0.699755447422
+PositionX:  7.922575488556   PositionY:   7.961551572609   PositionZ:   -0.778944204122
+TiltX:      -5.729047523233   TiltY:       5.729047523233   TiltZ:       0.000000000000
 ModuleId:   13
-PositionX:  -11.790398069147   PositionY:   11.764471567213   PositionZ:   0.306583621991
-TiltX:      -9.784329971522   TiltY:       -9.549273675971   TiltZ:       0.699755447422
+PositionX:  15.762845643575   PositionY:   7.961551572609   PositionZ:   -2.003676573302
+TiltX:      -5.729047523233   TiltY:       11.458095046466   TiltZ:       0.000000000000
 ModuleId:   14
-PositionX:  11.790398069147   PositionY:   -11.764471567213   PositionZ:   0.306583621991
-TiltX:      9.784329971522   TiltY:       9.549273675971   TiltZ:       0.699755447422
+PositionX:  23.447774346565   PositionY:   7.961551572609   PositionZ:   -3.981924658963
+TiltX:      -5.821282372283   TiltY:       17.156954975678   TiltZ:       -0.312403520096
 ModuleId:   15
-PositionX:  11.790398069147   PositionY:   11.764471567213   PositionZ:   0.306583621991
-TiltX:      -9.784329971522   TiltY:       9.549273675971   TiltZ:       -0.699755447422
+PositionX:  -23.563149031979   PositionY:   0.000000000000   PositionZ:   -3.608912971906
+TiltX:      0.000000000000   TiltY:       -17.187142569699   TiltZ:       0.000000000000
 ModuleId:   16
-PositionX:  -19.880328160436   PositionY:   -3.872316177238   PositionZ:   0.244148546259
-TiltX:      3.222509995118   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+PositionX:  -15.840408447575   PositionY:   0.000000000000   PositionZ:   -1.621010859981
+TiltX:      0.000000000000   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 ModuleId:   17
-PositionX:  -19.880328160436   PositionY:   3.872316177238   PositionZ:   0.244148546259
-TiltX:      -3.222509995118   TiltY:       -16.112549975589   TiltZ:       0.000000000000
+PositionX:  -7.961551572609   PositionY:   0.000000000000   PositionZ:   -0.390447226543
+TiltX:      0.000000000000   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 ModuleId:   18
-PositionX:  19.880328160436   PositionY:   -3.872316177238   PositionZ:   0.244148546259
-TiltX:      3.222509995118   TiltY:       16.112549975589   TiltZ:       0.000000000000
+PositionX:  0.000000000000   PositionY:   0.000000000000   PositionZ:   0.000000000000
+TiltX:      0.000000000000   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 ModuleId:   19
-PositionX:  19.880328160436   PositionY:   3.872316177238   PositionZ:   0.244148546259
-TiltX:      -3.222509995118   TiltY:       16.112549975589   TiltZ:       0.000000000000
+PositionX:  7.961551572609   PositionY:   0.000000000000   PositionZ:   -0.390447226543
+TiltX:      0.000000000000   TiltY:       5.729047523233   TiltZ:       0.000000000000
 ModuleId:   20
-PositionX:  -3.919979571957   PositionY:   -19.912118846381   PositionZ:   0.239088735595
-TiltX:      16.159334327042   TiltY:       -2.972379654807   TiltZ:       -0.865808716723
+PositionX:  15.840408447575   PositionY:   0.000000000000   PositionZ:   -1.621010859981
+TiltX:      0.000000000000   TiltY:       11.458095046466   TiltZ:       0.000000000000
 ModuleId:   21
-PositionX:  -3.919979571957   PositionY:   19.912118846381   PositionZ:   0.239088735595
-TiltX:      -16.159334327042   TiltY:       -2.972379654807   TiltZ:       0.865808716723
+PositionX:  23.563149031979   PositionY:   0.000000000000   PositionZ:   -3.608912971906
+TiltX:      0.000000000000   TiltY:       17.187142569699   TiltZ:       0.000000000000
 ModuleId:   22
-PositionX:  3.919979571957   PositionY:   -19.912118846381   PositionZ:   0.239088735595
-TiltX:      16.159334327042   TiltY:       2.972379654807   TiltZ:       0.865808716723
+PositionX:  -23.447774346565   PositionY:   -7.961551572609   PositionZ:   -3.981924658963
+TiltX:      5.821282372283   TiltY:       -17.156954975678   TiltZ:       -0.312403520096
 ModuleId:   23
-PositionX:  3.919979571957   PositionY:   19.912118846381   PositionZ:   0.239088735595
-TiltX:      -16.159334327042   TiltY:       2.972379654807   TiltZ:       -0.865808716723
+PositionX:  -15.762845643575   PositionY:   -7.961551572609   PositionZ:   -2.003676573302
+TiltX:      5.729047523233   TiltY:       -11.458095046466   TiltZ:       0.000000000000
 ModuleId:   24
-PositionX:  -19.954965407055   PositionY:   -11.764471567213   PositionZ:   0.502522930429
-TiltX:      10.006802379881   TiltY:       -15.907523397074   TiltZ:       -1.230067992729
+PositionX:  -7.922575488556   PositionY:   -7.961551572609   PositionZ:   -0.778944204122
+TiltX:      5.729047523233   TiltY:       -5.729047523233   TiltZ:       0.000000000000
 ModuleId:   25
-PositionX:  -19.954965407055   PositionY:   11.764471567213   PositionZ:   0.502522930429
-TiltX:      -10.006802379881   TiltY:       -15.907523397074   TiltZ:       1.230067992729
+PositionX:  0.000000000000   PositionY:   -7.961551572609   PositionZ:   -0.390447226543
+TiltX:      5.729047523233   TiltY:       -0.000000000000   TiltZ:       0.000000000000
 ModuleId:   26
-PositionX:  19.954965407055   PositionY:   -11.764471567213   PositionZ:   0.502522930429
-TiltX:      10.006802379881   TiltY:       15.907523397074   TiltZ:       1.230067992729
+PositionX:  7.922575488556   PositionY:   -7.961551572609   PositionZ:   -0.778944204122
+TiltX:      5.729047523233   TiltY:       5.729047523233   TiltZ:       0.000000000000
 ModuleId:   27
-PositionX:  19.954965407055   PositionY:   11.764471567213   PositionZ:   0.502522930429
-TiltX:      -10.006802379881   TiltY:       15.907523397074   TiltZ:       -1.230067992729
+PositionX:  15.762845643575   PositionY:   -7.961551572609   PositionZ:   -2.003676573302
+TiltX:      5.729047523233   TiltY:       11.458095046466   TiltZ:       0.000000000000
 ModuleId:   28
-PositionX:  -11.990467607068   PositionY:   -19.912118846381   PositionZ:   0.503557482782
-TiltX:      16.305386816423   TiltY:       -9.332548521574   TiltZ:       -1.168321871295
+PositionX:  23.447774346565   PositionY:   -7.961551572609   PositionZ:   -3.981924658963
+TiltX:      5.821282372283   TiltY:       17.156954975678   TiltZ:       0.312403520096
 ModuleId:   29
-PositionX:  -11.990467607068   PositionY:   19.912118846381   PositionZ:   0.503557482782
-TiltX:      -16.305386816423   TiltY:       -9.332548521574   TiltZ:       1.168321871295
+PositionX:  -15.885840533853   PositionY:   -15.842382076820   PositionZ:   -3.264887848190
+TiltX:      11.580194037549   TiltY:       -11.672471155582   TiltZ:       -0.600459596177
 ModuleId:   30
-PositionX:  11.990467607068   PositionY:   -19.912118846381   PositionZ:   0.503557482782
-TiltX:      16.305386816423   TiltY:       9.332548521574   TiltZ:       1.168321871295
+PositionX:  -7.961221871788   PositionY:   -15.857602470609   PositionZ:   -2.006776928040
+TiltX:      11.475272724065   TiltY:       -5.694209508692   TiltZ:       -0.747845260727
 ModuleId:   31
-PositionX:  11.990467607068   PositionY:   19.912118846381   PositionZ:   0.503557482782
-TiltX:      -16.305386816423   TiltY:       9.332548521574   TiltZ:       -1.168321871295
+PositionX:  0.000000000000   PositionY:   -15.840408447575   PositionZ:   -1.621010859981
+TiltX:      11.458095046466   TiltY:       -0.000000000000   TiltZ:       0.000000000000
+ModuleId:   32
+PositionX:  7.961221871788   PositionY:   -15.857602470609   PositionZ:   -2.006776928040
+TiltX:      11.475272724065   TiltY:       5.694209508692   TiltZ:       0.747845260727
+ModuleId:   33
+PositionX:  15.885840533853   PositionY:   -15.842382076820   PositionZ:   -3.264887848190
+TiltX:      11.580194037549   TiltY:       11.672471155582   TiltZ:       0.600459596177
+ModuleId:   34
+PositionX:  -7.961221871788   PositionY:   -23.585549644429   PositionZ:   -3.989480454407
+TiltX:      17.145120106767   TiltY:       -5.856997134390   TiltZ:       -0.450155739584
+ModuleId:   35
+PositionX:  0.000000000000   PositionY:   -23.563149031979   PositionZ:   -3.608912971906
+TiltX:      17.187142569699   TiltY:       -0.000000000000   TiltZ:       0.000000000000
+ModuleId:   36
+PositionX:  7.961221871788   PositionY:   -23.585549644429   PositionZ:   -3.989480454407
+TiltX:      17.145120106767   TiltY:       5.856997134390   TiltZ:       0.450155739584

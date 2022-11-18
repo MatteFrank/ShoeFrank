@@ -146,39 +146,36 @@ void TASTactNtuHit::CreateHistogram()
      cout<<"I have created the ST histo. "<<endl;
 
   
-  sprintf(histoname,"stTime");
+  strcpy(histoname,"stTime");
   hTime = new TH1F(histoname, histoname, 256, 0., 256.);
   AddHistogram(hTime);
 
-  sprintf(histoname,"stTotCharge");
+  strcpy(histoname,"stTotCharge");
   hTotCharge = new TH1F(histoname, histoname, 1100, -0.1, 10.9);
   AddHistogram(hTotCharge);
 
-  sprintf(histoname,"stTotAmplitude"); 
+  strcpy(histoname,"stTotAmplitude");
   hTotAmplitude = new TH1F(histoname, histoname, 100, -0.1, 10.9);
   AddHistogram(hTotAmplitude);
 
-  sprintf(histoname,"stTotPedestal"); 
+  strcpy (histoname,"stTotPedestal");
   hPedestal = new TH1F(histoname, histoname, 200, -5, 5);
   AddHistogram(hPedestal);
 
 
-  sprintf(histoname,"stEff"); 
+  strcpy(histoname,"stEff");
   hEff = new TH1F(histoname, histoname, 11, -0.5, 10.5);
   AddHistogram(hEff);
 
 
   for(int iCh=0;iCh<8;iCh++){
-    sprintf(histoname,"stTime_ch%d", iCh);
-    hArrivalTime[iCh]= new TH1F(histoname, histoname, 100, -2., 2.);
+    hArrivalTime[iCh]= new TH1F(Form("stTime_ch%d", iCh), Form("stTime_ch%d", iCh), 100, -2., 2.);
     AddHistogram(hArrivalTime[iCh]);
 
-    sprintf(histoname,"stCharge_ch%d", iCh);
-    hCharge[iCh]= new TH1F(histoname, histoname, 200, -0.1, 4.9);
+    hCharge[iCh]= new TH1F(Form("stCharge_ch%d", iCh), Form("stCharge_ch%d", iCh), 200, -0.1, 4.9);
     AddHistogram(hCharge[iCh]);
 
-    sprintf(histoname,"stAmp_ch%d", iCh);
-    hAmplitude[iCh]= new TH1F(histoname, histoname, 120, -0.1, 1.1);
+    hAmplitude[iCh]= new TH1F(Form("stAmp_ch%d", iCh), Form("stAmp_ch%d", iCh), 120, -0.1, 1.1);
     AddHistogram(hAmplitude[iCh]);
   }
    

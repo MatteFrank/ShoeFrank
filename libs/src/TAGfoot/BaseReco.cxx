@@ -62,6 +62,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParMapIt(0x0),
    fpParMapMsd(0x0),
    fpParMapTw(0x0),
+   fpParMapCa(0x0),
    fpParGeoSt(0x0),
    fpParGeoG(0x0),
    fpParGeoDi(0x0),
@@ -755,25 +756,24 @@ void BaseReco::ReadParFiles()
       fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
 
-     if(fFlagMC) { // set in MC threshold and active crystals from data informations
-        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->FromCrysStatusFile(parFileName.Data());
+      if(fFlagMC) { // set in MC threshold and active crystals from data informations
+         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parCal->FromCrysStatusFile(parFileName.Data());
 
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->LoadEnergyCalibrationMap(parFileName.Data());
+         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parCal->LoadEnergyCalibrationMap(parFileName.Data());
 
-     } else {
+      } else {
         fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
         TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
         parMap->FromFile(parFileName.Data());
         
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
         parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
-     }
+      }
    }
 }
 
