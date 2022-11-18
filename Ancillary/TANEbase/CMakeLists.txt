@@ -22,6 +22,7 @@ set( with_dictionnaries
    TANEactNtuHit
    TANEntuHit
    TANEparGeo
+   TANEparMap
 )
 
 set( without_dictionnaries

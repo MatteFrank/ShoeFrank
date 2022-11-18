@@ -91,9 +91,6 @@ void TANEactNtuHit::CreateHistogram()
 
       fhCharge[iCh]= new TH1F(Form("caCharge_ch%d", iCh), Form("caCharge_ch%d", iCh), 200, -0.1, 100);
       AddHistogram(fhCharge[iCh]);
-
-      fhAmplitude[iCh]= new TH1F(Form("caMaxAmp_ch%d", iCh), Form("caMaxAmp_ch%d", iCh), 120, -0.1, 1.1);
-      AddHistogram(fhAmplitude[iCh]);
    }
 
    SetValidHistogram(kTRUE);
