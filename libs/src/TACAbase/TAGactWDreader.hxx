@@ -60,7 +60,11 @@ public:
    void              SetMaxFiles(Int_t value)  { fMaxFiles = value;}
    //! Set initial names
    void              SetInitName(TString name) { fInitName = name; fCurrName = name; }
-  
+   
+public:
+   static void EnableArduinoTempCA()  { fgArduinoTempCA = true;}
+   static void DisableArduinoTempCA() { fgArduinoTempCA = false;}
+
 private:
    TAGdataDsc*     fpDatDaq;          ///< input data dsc
    TAGdataDsc*     fpStWd;            ///< output data dsc
@@ -86,6 +90,9 @@ private:
    map<pair<int,int>, TWaveformContainer*> fCLKwaves; ///< wave form container map for trigger
    double*                                 fTempCA;   ///< temp container for CA
   
+private:
+   static Bool_t fgArduinoTempCA; ///< flag for reading back Arduino Tempetrature for CA
+   ///<
 private:
    Int_t          DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p_CAmap);
    Int_t          DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
