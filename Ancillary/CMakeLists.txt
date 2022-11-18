@@ -25,3 +25,4 @@ set(TACE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${TACE}")
 #
 add_subdirectory(TAPLbase)
 add_subdirectory(TACEbase)
+add_subdirectory(TANEbase)
