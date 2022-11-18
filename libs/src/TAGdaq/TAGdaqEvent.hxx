@@ -35,11 +35,11 @@ public:
    void                   SetTrgEvent(TrgEvent* trg)     {  fTrgEvent = trg;                     }
    //! return number of fragments
    Int_t                  GetFragmentsN()         const  { return (int)fMapOfFragments.size();   }
+   
    // Get Fragment
    const BaseFragment*    GetFragment(string type, Int_t idx=0);
-
    // Get fragment size
-   size_t GetFragmentSize(string type);
+   size_t                 GetFragmentSize(string type);
 
    // Add fragment
    void                   AddFragment(const BaseFragment* frag);
