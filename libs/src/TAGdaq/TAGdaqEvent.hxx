@@ -49,8 +49,8 @@ public:
    virtual void           ToStream(ostream& os = cout, Option_t* option = "") const;
    
 private:
-   InfoEvent*                        fInfoEvent;       ///< info event
-   TrgEvent*                         fTrgEvent;        ///< trigger event
+   InfoEvent*                                fInfoEvent;       ///< info event
+   TrgEvent*                                 fTrgEvent;        ///< trigger event
    map<string, vector<const BaseFragment*>>  fMapOfFragments;  ///< map of fragments
 
    ClassDef(TAGdaqEvent,0)
