@@ -162,11 +162,11 @@ Bool_t TAGactWDreader::Action()
 
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)   fpWDTim->Object();
    TAGbaseWDparMap*     p_WDmap = (TAGbaseWDparMap*)   fpWDMap->Object();
-   TASTntuRaw*          p_stwd = (TASTntuRaw*)   fpStWd->Object();
-   TATWntuRaw*          p_twwd = (TATWntuRaw*)   fpTwWd->Object();
-   TACAntuRaw*          p_cawd = (TACAntuRaw*)   fpCaWd->Object();
+   TASTntuRaw*          p_stwd  = (TASTntuRaw*)   fpStWd->Object();
+   TATWntuRaw*          p_twwd  = (TATWntuRaw*)   fpTwWd->Object();
+   TACAntuRaw*          p_cawd  = (TACAntuRaw*)   fpCaWd->Object();
+   TACAparMap*          p_CAmap = (TACAparMap*)   fpCAMap->Object();
    TAGWDtrigInfo*       p_WDtrigInfo = (TAGWDtrigInfo*)   fpWDtrigInfo->Object();
-   TACAparMap*          p_CAmap = (TACAparMap*)  fpCAMap->Object();
 
    Int_t nmicro;
 
@@ -183,14 +183,14 @@ Bool_t TAGactWDreader::Action()
       if (fgArduinoTempCA) {
          const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
          if (evtA)
-            DecodeArduinoTempCA(evtA, p_CAmap);
+            DecodeArduinoTempCA(evtA);
       }
    } else {
-      nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap, p_CAmap);
+      nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap);
    }
 
    WaveformsTimeCalibration();
-   CreateHits(p_stwd, p_twwd, p_cawd, p_CAmap);
+   CreateHits(p_stwd, p_twwd, p_cawd);
 
    p_stwd->UpdateRunTime(nmicro);
    p_twwd->UpdateRunTime(nmicro);
@@ -224,11 +224,13 @@ Bool_t TAGactWDreader::Action()
 //!
 //! \param[in] evt     arduino event descriptor
 //! \param[in] p_CAmap  channel map parameter descriptor
-Int_t TAGactWDreader::DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p_CAmap)
+Int_t TAGactWDreader::DecodeArduinoTempCA(const ArduinoEvent* evt)
 {
    // Arduino events (Temp) are read only every few seconds
    // so, the are a lot of empty events 
    
+   TACAparMap* p_CAmap = (TACAparMap*)  fpCAMap->Object();
+
    if ( evt->evtSize == 0 ) return 0; // empty event
 
    int nCry = p_CAmap->GetCrystalsN();
@@ -762,9 +764,10 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
 //! \param[in] p_twraw TW raw data container
 //! \param[in] p_caraw CA raw data container
 //! \param[in] p_CAmap CA map descriptor
-Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACAntuRaw* p_caraw, TACAparMap *p_CAmap)
+Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACAntuRaw* p_caraw)
 {
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)fpWDTim->Object();
+   TACAparMap*          p_CAmap = (TACAparMap*)  fpCAMap->Object();
 
    string  algoST = p_WDtim->GetCFDalgo("ST");
    string  algoTW = p_WDtim->GetCFDalgo("TW");
@@ -847,8 +850,9 @@ void TAGactWDreader::Clear()
 //! \param[in] p_WDmap mapping parameter descriptor
 //! \param[in] p_WDtim time parameter descriptor
 //! \param[in] p_CAmap CA map descriptor
-Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap, TACAparMap *p_CAmap) 
+Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap) 
 {
+   TACAparMap* p_CAmap = (TACAparMap*)   fpCAMap->Object();
 
    u_int word;
    int board_id=0, ch_num=0;

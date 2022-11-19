@@ -94,11 +94,11 @@ private:
    static Bool_t fgArduinoTempCA; ///< flag for reading back Arduino Tempetrature for CA
    ///<
 private:
-   Int_t          DecodeArduinoTempCA(const ArduinoEvent* evt, TACAparMap *p_CAmap);
+   Int_t          DecodeArduinoTempCA(const ArduinoEvent* evt);
    Int_t          DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
-   Int_t          ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap, TACAparMap *p_CAmap);
+   Int_t          ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
    Bool_t         WaveformsTimeCalibration();
-   Bool_t         CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw, TACAparMap *p_CAmap);
+   Bool_t         CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
    void           Clear();
 
    vector<double> ADC2Volt(vector<int>, double);
