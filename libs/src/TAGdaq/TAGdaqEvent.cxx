@@ -48,7 +48,7 @@ const BaseFragment* TAGdaqEvent::GetFragment(string type, Int_t idx)
 {
    auto itr = fMapOfFragments.find(type);
    if (itr == fMapOfFragments.end()) {
-      Error("GetFragment()", "Wrong type for fragment");
+      Error("GetFragment()", "Wrong type for fragment %s", type.data());
       return 0x0;
    }
    
