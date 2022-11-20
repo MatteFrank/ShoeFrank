@@ -12,6 +12,7 @@
 #include "TASTntuRaw.hxx"
 #include "TATWntuRaw.hxx"
 #include "TACAntuRaw.hxx"
+#include "TANEntuRaw.hxx"
 #include "TACAparMap.hxx"
 #include "TAGWDtrigInfo.hxx"
 #include "TAGbaseWDparTime.hxx"
@@ -39,15 +40,17 @@ class TAGactWDreader : public TAGaction {
 
 public:
   explicit           TAGactWDreader(const char* name = 0,
-                                 TAGdataDsc* p_datdaq = 0,
-                                 TAGdataDsc* p_stwd = 0,
-                                 TAGdataDsc* p_twwd = 0,
-                                 TAGdataDsc* p_cawd = 0,
-                                 TAGdataDsc* p_WDtrigInfo = 0,
-                                 TAGparaDsc* p_WDmap = 0,
-                                 TAGparaDsc* p_WDtim = 0,
-                                 TAGparaDsc* p_CAmap = 0,
-                                 Bool_t standAlone = false);
+                                    TAGdataDsc* p_datdaq = 0,
+                                    TAGdataDsc* p_stwd = 0,
+                                    TAGdataDsc* p_twwd = 0,
+                                    TAGdataDsc* p_cawd = 0,
+                                    TAGdataDsc* p_WDtrigInfo = 0,
+                                    TAGparaDsc* p_WDmap = 0,
+                                    TAGparaDsc* p_WDtim = 0,
+                                    TAGparaDsc* p_CAmap = 0,
+                                    Bool_t standAlone = false,
+                                    TAGdataDsc* p_newd = 0,
+                                    TAGparaDsc* p_NEmap = 0);
 
    virtual          ~TAGactWDreader();
    void              CreateHistogram();
@@ -70,9 +73,11 @@ private:
    TAGdataDsc*     fpStWd;            ///< output data dsc
    TAGdataDsc*     fpTwWd;            ///< output data dsc
    TAGdataDsc*     fpCaWd;            ///< output data dsc
+   TAGdataDsc*     fpNeWd;            ///< output data dsc
    TAGparaDsc*     fpWDTim;           ///< parameter dsc
    TAGparaDsc*     fpWDMap;           ///< parameter dsc
    TAGparaDsc*     fpCAMap;           ///< parameter dsc
+   TAGparaDsc*     fpNEMap;           ///< parameter dsc
    TAGdataDsc*     fpWDtrigInfo;      ///< output data dsc
 
    TString         fInitName;         ///< init file name
@@ -87,6 +92,7 @@ private:
    vector<TWaveformContainer*>             fSTwaves;  ///< wave form container vector for ST
    vector<TWaveformContainer*>             fTWwaves;  ///< wave form container vector for TW
    vector<TWaveformContainer*>             fCAwaves;  ///< wave form container vector for CA
+   vector<TWaveformContainer*>             fNEwaves;  ///< wave form container vector for Neutrons
    map<pair<int,int>, TWaveformContainer*> fCLKwaves; ///< wave form container map for trigger
    double*                                 fTempCA;   ///< temp container for CA
   
@@ -98,7 +104,7 @@ private:
    Int_t          DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
    Int_t          ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap);
    Bool_t         WaveformsTimeCalibration();
-   Bool_t         CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw);
+   Bool_t         CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw, TANEntuRaw *p_neraw);
    void           Clear();
 
    vector<double> ADC2Volt(vector<int>, double);

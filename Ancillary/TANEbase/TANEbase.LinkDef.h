@@ -9,6 +9,5 @@
 #pragma link C++ class TANEhit;
 #pragma link C++ class TANEntuHit;
 #pragma link C++ class TANEparGeo;
-#pragma link C++ class TANEparMap;
 
 #endif

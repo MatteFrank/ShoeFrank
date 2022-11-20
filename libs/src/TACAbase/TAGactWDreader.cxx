@@ -6,6 +6,7 @@
 #include "TAGrecoManager.hxx"
 #include "TASTparMap.hxx"
 #include "TATWparMap.hxx"
+#include "TANEparMap.hxx"
 #include "TAGbaseWDparTime.hxx"
 #include "TAGbaseWDparMap.hxx"
 
@@ -46,25 +47,31 @@ ClassImp(TAGactWDreader);
 //! \param[in] p_WDtim time parameter descriptor
 //! \param[in] p_CAmap  mapping parameter descriptor
 //! \param[in] stdAlone standalone DAQ flag
+//! \param[in] p_newd  wave form container descriptor
+//! \param[in] p_NEmap  mapping parameter descriptor
 TAGactWDreader::TAGactWDreader(const char* name,
-              TAGdataDsc* p_datdaq,
-              TAGdataDsc* p_stwd, 
-              TAGdataDsc* p_twwd,
-              TAGdataDsc* p_cawd,
-              TAGdataDsc* p_WDtrigInfo,
-              TAGparaDsc* p_WDmap, 
-              TAGparaDsc* p_WDtim,
-              TAGparaDsc* p_CAmap,
-              Bool_t stdAlone)
+                               TAGdataDsc* p_datdaq,
+                               TAGdataDsc* p_stwd,
+                               TAGdataDsc* p_twwd,
+                               TAGdataDsc* p_cawd,
+                               TAGdataDsc* p_WDtrigInfo,
+                               TAGparaDsc* p_WDmap,
+                               TAGparaDsc* p_WDtim,
+                               TAGparaDsc* p_CAmap,
+                               Bool_t stdAlone,
+                               TAGdataDsc* p_newd,
+                               TAGparaDsc* p_NEmap)
   : TAGaction(name, "TAGactWDreader - Unpack WaveDAQ and Arduino raw data"),
     fpDatDaq(p_datdaq),
     fpStWd(p_stwd),
     fpTwWd(p_twwd),
     fpCaWd(p_cawd),
+    fpNeWd(p_newd),
     fpWDtrigInfo(p_WDtrigInfo),
     fpWDMap(p_WDmap),
     fpWDTim(p_WDtim),
-    fpCAMap(p_CAmap)
+    fpCAMap(p_CAmap),
+    fpNEMap(p_NEmap)
 {
 
    fgStdAloneFlag = stdAlone;
@@ -75,6 +82,8 @@ TAGactWDreader::TAGactWDreader(const char* name,
    AddDataOut(p_stwd, "TASTntuRaw");
    AddDataOut(p_twwd, "TATWntuRaw");
    AddDataOut(p_cawd, "TACAntuRaw");
+   if (p_newd)
+      AddDataOut(p_newd, "TANEntuRaw");
    AddDataOut(p_WDtrigInfo, "TAGWDtrigInfo");
    AddPara(p_WDmap, "TAGbaseWDparMap");
    AddPara(p_WDtim, "TAGbaseWDparTime");
@@ -168,6 +177,10 @@ Bool_t TAGactWDreader::Action()
    TACAparMap*          p_CAmap = (TACAparMap*)   fpCAMap->Object();
    TAGWDtrigInfo*       p_WDtrigInfo = (TAGWDtrigInfo*)   fpWDtrigInfo->Object();
 
+   TANEntuRaw*          p_newd  = 0x0;
+   if (fpNeWd)
+      p_newd = (TANEntuRaw*)   fpNeWd->Object();
+
    Int_t nmicro;
 
    Clear();
@@ -190,7 +203,7 @@ Bool_t TAGactWDreader::Action()
    }
 
    WaveformsTimeCalibration();
-   CreateHits(p_stwd, p_twwd, p_cawd);
+   CreateHits(p_stwd, p_twwd, p_cawd, p_newd);
 
    p_stwd->UpdateRunTime(nmicro);
    p_twwd->UpdateRunTime(nmicro);
@@ -411,6 +424,8 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtr
                      fTWwaves.push_back(w);
                   } else if (ch_type == "CALO") {
                      fCAwaves.push_back(w);
+                  } else if (ch_type == "NEU") {
+                     fNEwaves.push_back(w);
                   } else if (ch_type == "CLK") {
                      fCLKwaves.insert(std::pair<std::pair<int,int>, TWaveformContainer*>(make_pair(board_id, ch_num),w));
                   } else {
@@ -668,6 +683,22 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
       }
       fCAwaves.at(i)->GetVectT() = calib_time;
    }
+   
+   //Neutrons time calibration
+   for(int i=0; i<(int)fNEwaves.size();i++) {
+      TWaveformContainer *wnu = fNEwaves.at(i);
+      int ch_clk = (wnu->GetChannelId()<8) ? 16 : 17;
+      double jitter = clk_jitter.find(make_pair(wnu->GetBoardId(),ch_clk))->second;
+      t_trig = wnu->GetVectRawT().at((1024-wnu->GetTriggerCellId())%1024);
+      dt = t_trig_ref - t_trig - jitter;
+      vector<double> calib_time;
+      for(int i=0;i<wnu->GetVectRawT().size();i++) {
+         calib_time.push_back(wnu->GetVectRawT().at(i)+dt);
+         if (wnu->GetChannelId()==0) {
+         }
+      }
+      fNEwaves.at(i)->GetVectT() = calib_time;
+   }
 
    if (FootDebugLevel(1)) printf("WD calibration performed\n");
 
@@ -764,10 +795,14 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
 //! \param[in] p_twraw TW raw data container
 //! \param[in] p_caraw CA raw data container
 //! \param[in] p_CAmap CA map descriptor
-Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACAntuRaw* p_caraw)
+Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACAntuRaw* p_caraw, TANEntuRaw* p_neraw)
 {
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)fpWDTim->Object();
    TACAparMap*          p_CAmap = (TACAparMap*)  fpCAMap->Object();
+   TANEparMap*          p_NEmap = 0x0;
+   
+   if (fpNEMap)
+      p_NEmap = (TANEparMap*)  fpNEMap->Object();
 
    string  algoST = p_WDtim->GetCFDalgo("ST");
    string  algoTW = p_WDtim->GetCFDalgo("TW");
@@ -805,6 +840,21 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACA
          if (FootDebugLevel(1)) printf("CA hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoCA.data(), fracCA, delCA);
       }
    
+   if (fpNEMap) {
+      int nMod = p_NEmap->GetModulesN();
+      for(int i=0; i<(int)fNEwaves.size(); i++) {
+         int board_id = fNEwaves.at(i)->GetBoardId();
+         int ch_num = fNEwaves.at(i)->GetChannelId();
+         int modID = p_NEmap->GetModuleId(board_id, ch_num);
+         if (modID < 0 || modID >= nMod) {
+            Error("CreateHits", " Neutron Hit skipped --- Not well mapped WD vs module ID. board: %d ch: %d -> iMod %d", board_id, ch_num, modID);
+            continue;
+         }
+         p_neraw->NewHit(fNEwaves.at(i));
+         if (FootDebugLevel(1)) printf("NE hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoCA.data(), fracCA, delCA);
+      }
+   }
+   
    p_straw->NewSuperHit(fSTwaves, algoST, fracST, delST);
    if (FootDebugLevel(1)) printf("ST superhit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoST.data(), fracST, delST);
 
@@ -826,6 +876,9 @@ void TAGactWDreader::Clear()
    for(int i=0; i<fCAwaves.size(); i++) {
       delete fCAwaves.at(i);
    }
+   for(int i=0; i<fNEwaves.size(); i++) {
+      delete fNEwaves.at(i);
+   }
    map<pair<int,int>, TWaveformContainer*>::iterator it;
    for(it=fCLKwaves.begin(); it != fCLKwaves.end(); it++) {
       delete it->second;
@@ -834,6 +887,7 @@ void TAGactWDreader::Clear()
    fSTwaves.clear();
    fTWwaves.clear();
    fCAwaves.clear();
+   fNEwaves.clear();
    fCLKwaves.clear();
 
    TAGWDtrigInfo* p_WDtrigInfo = (TAGWDtrigInfo*)   fpWDtrigInfo->Object();

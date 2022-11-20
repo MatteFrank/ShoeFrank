@@ -29,7 +29,8 @@ set( with_dictionnaries
    TAGbaseWDparTime
    TAGbaseWDparMap
    TWaveformContainer
-   TANEntuRaw  
+   TANEntuRaw
+   TANEparMap
 )
 
 set( without_dictionnaries
