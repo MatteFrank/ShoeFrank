@@ -20,7 +20,7 @@
 #include "TAGactTreeReader.hxx"
 #include "TAGactTreeWriter.hxx"
 
-#include "TASTdatRaw.hxx"
+#include "TAPLntuRaw.hxx"
 
 #endif
 
@@ -37,11 +37,11 @@ void ProjOscillo(Int_t evt = 6, TString fileNameIn = "Run_cible3mm_coinc_2.root"
    TAGroot tagr;
    
    // Branch setting
-   TASTdatRaw *stRaw    = new TASTdatRaw();
+   TAPLntuRaw *stRaw    = new TAPLntuRaw();
    TAGdataDsc* dscStRaw = new TAGdataDsc("stRaw", stRaw);
    
    TAGactTreeReader* vtActReader = new TAGactTreeReader("vtActEvtReader");
-   vtActReader->SetupBranch(dscStRaw, TASTdatRaw::GetBranchName());
+   vtActReader->SetupBranch(dscStRaw, TAPLntuRaw::GetBranchName());
    vtActReader->Open(fileNameIn);
    
    tagr.AddRequiredItem(vtActReader);

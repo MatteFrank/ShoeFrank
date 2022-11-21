@@ -20,8 +20,8 @@
 #include "TAGactTreeReader.hxx"
 #include "TAGactTreeWriter.hxx"
 
-#include "TASTntuHit.hxx"
-#include "TATWntuHit.hxx"
+#include "TAPLntuHit.hxx"
+#include "TACEntuHit.hxx"
 
 #endif
 
@@ -38,17 +38,17 @@ void ProjSpec(TString fileNameIn = "Run_400cebr3_1200pla_2GS_24.6MeV.root", Bool
    TAGroot tagr;
    
    // Branch setting
-   TASTntuHit *stRaw    = new TASTntuHit();
+   TAPLntuHit *stRaw    = new TAPLntuHit();
    TAGdataDsc* dscStRaw = new TAGdataDsc("stRaw", stRaw);
 
-   TATWntuHit *twRaw    = new TATWntuHit();
+   TACEntuHit *twRaw    = new TACEntuHit();
    TAGdataDsc* dsctwRaw = new TAGdataDsc("twRaw", twRaw);
 
    TAGactTreeReader* vtActReader = new TAGactTreeReader("vtActEvtReader");
 
-   vtActReader->SetupBranch(dscStRaw, TASTntuHit::GetBranchName());
+   vtActReader->SetupBranch(dscStRaw, TAPLntuHit::GetBranchName());
    if (twflag)
-      vtActReader->SetupBranch(dsctwRaw, TATWntuHit::GetBranchName());
+      vtActReader->SetupBranch(dsctwRaw, TACEntuHit::GetBranchName());
    
    vtActReader->Open(fileNameIn);
    
