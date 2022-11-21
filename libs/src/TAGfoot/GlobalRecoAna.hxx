@@ -58,8 +58,13 @@ class GlobalRecoAna : public LocalReco {
   void ComputeMCtruth( Int_t trkid, int &cha, TVector3 &mom, TVector3 &mom_cross, double &ek);
   Double_t ComputeTrkEkin(TAGtrack *track);//from calo infos
   void resetStatus(); //to reset the subdetectors status flags
-  bool TriggerCheck(TAGtrack * fGlbTrack);
-  bool TriggerCheckMC(TAGtrack * fGlbTrack);
+  bool TriggerCheck();
+  bool TriggerCheckMC();
+  void GlbTrackPurityStudy();
+  void AlignmentStudy(int currEvent,int nt, bool isOxygenInEvent);
+  void TWAlgoStudy();
+  void TrackVsMCStudy();
+  void TrackVsMCStudy(int currEvent, int nt);
 
   //fill plots
   void FillGlbTrackPlots();
