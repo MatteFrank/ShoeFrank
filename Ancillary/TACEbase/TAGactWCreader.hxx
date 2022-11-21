@@ -27,8 +27,8 @@ public:
    
    virtual        ~TAGactWCreader();
    void            CreateHistogram();
-   Bool_t          Process(Bool_t check = true);
-   Int_t           Open(const TString& inputDataFile, Option_t* option="");
+   Bool_t          Process();
+   Int_t           Open(const TString& inputDataFile, Option_t* option="", const TString treeName="tree", Bool_t dscBranch = true);
    void            Clear(Option_t* option ="");
 
 private:

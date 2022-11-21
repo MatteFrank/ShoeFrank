@@ -56,7 +56,7 @@ TAGactWCreader::~TAGactWCreader()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TAGactWCreader::Process(Bool_t /*check*/)
+Bool_t TAGactWCreader::Process()
 {
    if(! DecodeWaveForms()){
       
@@ -84,7 +84,7 @@ void TAGactWCreader::CreateHistogram()
 }
 
 // --------------------------------------------------------------------------------------
-Int_t TAGactWCreader::Open(const TString& inputDataFile, Option_t* /*option*/)
+Int_t TAGactWCreader::Open(const TString& inputDataFile, Option_t* /*option*/, const TString /*treeName*/, Bool_t /*dscBranch*/)
 {
    fInputFile.open(inputDataFile.Data(), ios::binary|ios::in);
    
