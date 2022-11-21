@@ -3,7 +3,7 @@
   \version $Id: TANEparGeo.cxx,v 1.2 2003/06/22 19:34:21 mueller Exp $
   \brief   Implementation of TANEparGeo.
 */
-
+#include "TGeoMatrix.h"
 #include <string.h>
 
 #include <fstream>
@@ -13,6 +13,7 @@
 
 #include "TANEparGeo.hxx"
 #include "TAGroot.hxx"
+
 
 //##############################################################################
 
@@ -57,34 +58,73 @@ Bool_t TANEparGeo::FromFile(const TString& name)
 
    Info("FromFile()", "Open file %s for geometry\n", name.Data());
 
-   //The center is taken from the global setup of the experiment.
-   ReadVector3(fSize);
+   ReadItem(fModulesN);
    if(fDebugLevel)
-      cout  << "  Size: "
-      << fSize[0] << " " << fSize[1]  << " " <<  fSize[2] << endl;
+      cout << endl << "Modules number "<< fModulesN << endl;
    
+   //The center is taken from the global setup of the experiment.
    ReadStrings(fMaterial);
    if(fDebugLevel)
-      cout  << "   TW material: " <<  fMaterial << endl;
+      cout  << "   Module material: " <<  fMaterial << endl;
    
    ReadItem(fDensity);
    if(fDebugLevel)
-      cout  << "   TW density: " <<  fDensity << endl;
+      cout  << "   Module density: " <<  fDensity << endl;
+   
+   ReadItem(fIonisMat);
+   if (fDebugLevel)
+      cout << "   Module Mean excitation energy : " <<  fIonisMat << endl;
 
-   // window entrance
-   ReadVector3(fSizeWindow);
+   ReadVector3(fSize);
    if(fDebugLevel)
-      cout  << "  Size of entrance window: "
-      << fSizeWindow[0] << " " << fSizeWindow[1]  << " " <<  fSizeWindow[2] << endl;
+      cout  << "  Size of module:     "<< fSize.X() << " " <<  fSize.Y() << " " <<  fSize.Z()  << endl;
    
-   ReadStrings(fMatWindow);
-   if(fDebugLevel)
-      cout  << "   TW entrance window material: " <<  fMatWindow << endl;
-   
-   ReadItem(fDensityWindow);
-   if(fDebugLevel)
-      cout  << "   TW entrance window density: " <<  fDensityWindow << endl;
+   for (Int_t p = 0; p < fModulesN; p++) { // Loop on each plane
       
+      // read Module index
+      ReadItem(fModuleParameter[p].ModuleIdx);
+      if(fDebugLevel)
+         cout << endl << " - Parameters of Module " <<  fModuleParameter[p].ModuleIdx << endl;
+      
+      // read Module position
+      ReadVector3(fModuleParameter[p].Position);
+      if(fDebugLevel)
+         cout << "   Position: " << fModuleParameter[p].Position[0] << " " << fModuleParameter[p].Position[1] << " " << fModuleParameter[p].Position[2] << endl;
+      
+      // read Module angles
+      ReadVector3(fModuleParameter[p].Tilt);
+      if(fDebugLevel)
+         cout  << "   Tilt: "
+         << fModuleParameter[p].Tilt[0] << " " <<  fModuleParameter[p].Tilt[1] << " " << fModuleParameter[p].Tilt[2] << endl;
+      
+      Float_t thetaX = fModuleParameter[p].Tilt[0];
+      Float_t thetaY = fModuleParameter[p].Tilt[1];
+      Float_t thetaZ = fModuleParameter[p].Tilt[2];
+      TGeoRotation rot;
+      rot.RotateX(thetaX);
+      rot.RotateY(thetaY);
+      rot.RotateZ(thetaZ);
+      
+      Float_t transX = fModuleParameter[p].Position[0];
+      Float_t transY = fModuleParameter[p].Position[1];
+      Float_t transZ = fModuleParameter[p].Position[2];
+      
+      TGeoTranslation trans(transX, transY, transZ);
+      
+      TGeoHMatrix  transfo;
+      transfo  = trans;
+      transfo *= rot;
+      AddTransMatrix(new TGeoHMatrix(transfo), fModuleParameter[p].ModuleIdx-1);
+      
+      // change to rad
+      fModuleParameter[p].Tilt[0] = fModuleParameter[p].Tilt[0]*TMath::DegToRad();
+      fModuleParameter[p].Tilt[1] = fModuleParameter[p].Tilt[1]*TMath::DegToRad();
+      fModuleParameter[p].Tilt[2] = fModuleParameter[p].Tilt[2]*TMath::DegToRad();
+   }
+      
+   // Close file
+   Close();
+   
    return true;
 }
 
