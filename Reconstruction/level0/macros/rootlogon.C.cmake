@@ -100,12 +100,12 @@
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
 
-   tmp = "@TOE_INCLUDE_DIR@";
+   tmp = "@TAFO_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
 
-   tmp = "@TAFO_INCLUDE_DIR@";
+  tmp = "@TOE_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
@@ -113,4 +113,19 @@
    tmp = "@GENFIT_INCLUDE_ROOT@";
    printf("- Add GenFit to the include path \n");
    gSystem->AddIncludePath(tmp.Data());
+   
+   tmp = "@TAPL_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+   
+   tmp = "@TACE_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
+   
+   tmp = "@TANE_INCLUDE_DIR@";
+   printf("- Add %s to the include path \n",tmp.Data());
+   tmp.Prepend(" .include ");
+   gROOT->ProcessLine(tmp.Data());
 }

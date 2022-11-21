@@ -107,6 +107,10 @@ Set(TAED  "TAEDbase")
 Set(TATOE "TATOEbase")
 Set(TAGF  "TAGFbase")
 Set(TAFO  "TAGfoot")
+
+Set(TAPL "TAPLbase")
+Set(TACE "TACEbase")
+Set(TANE "TANEbase")
 add_definitions(-std=c++14)
 
 #----------------------------------------------------------------------------
@@ -130,6 +134,10 @@ set(TAED_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAED}")
 set(TATOE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATOE}")
 set(TAGF_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAGF}")
 set(TAFO_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAFO}")
+
+set(TAPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TAPL}")
+set(TACE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TACE}")
+set(TANE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TANE}")
 
 #----------------------------------------------------------------------------
 #  Print Geant4 directory and find REC part of FOOT
