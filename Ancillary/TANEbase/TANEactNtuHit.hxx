@@ -19,18 +19,18 @@ public:
 
   explicit  TANEactNtuHit(const char* name=0,
                                 TAGdataDsc* p_datraw=0,
-                                TAGdataDsc* p_datdaq=0);
+                                TAGdataDsc* p_datdaq=0,
+                                TAGparaDsc* p_parmap=0);
    virtual  ~TANEactNtuHit();
 
    Bool_t   Action();
 
    void     CreateHistogram();
  
-
-   
 private:
    TAGdataDsc*     fpDatRaw;		    ///< input raw data
-   TAGdataDsc*     fpNtuRaw;		    ///< output calibrated data
+   TAGdataDsc*     fpNtuRaw;         ///< output calibrated data
+   TAGparaDsc*     fpParMap;         ///< mapping pointer
 
    TH1F*           fhArrivalTime[4];  ///< histograms for arrival time
    TH1F*           fhCharge[4];       ///< histograms for charge

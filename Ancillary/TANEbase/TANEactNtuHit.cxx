@@ -3,6 +3,7 @@
   \brief   Implementation of TANEactNtuHit.
 */
 
+#include "TANEparMap.hxx"
 #include "TANEactNtuHit.hxx"
 
 /*!
@@ -23,13 +24,15 @@ ClassImp(TANEactNtuHit);
 //! \param[in] p_parcal calibration parameter descriptor
 TANEactNtuHit::TANEactNtuHit(const char* name,
                              TAGdataDsc* p_datraw,
-                             TAGdataDsc* p_nturaw)
+                             TAGdataDsc* p_nturaw,
+                             TAGparaDsc* p_parmap)
   : TAGaction(name, "TANEactNtuHit - Unpack neutron raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw)
 {
    AddDataIn(p_datraw, "TANEntuRaw");
    AddDataOut(p_nturaw, "TANEntuHit");
+   AddPara(p_parmap, "TANEparMap");
 }
 
 //------------------------------------------+-----------------------------------
@@ -44,17 +47,26 @@ Bool_t TANEactNtuHit::Action()
 {
    TANEntuRaw*   p_datraw = (TANEntuRaw*) fpDatRaw->Object();
    TANEntuHit*   p_nturaw = (TANEntuHit*) fpNtuRaw->Object();
+   TANEparMap*   p_parmap = (TANEparMap*) fpParMap->Object();
 
    int nhit = p_datraw->GetHitsN();
-
+   int nMod = p_parmap->GetModulesN();
+   
    for (int ih = 0; ih < nhit; ++ih) {
       TANErawHit *aHi = p_datraw->GetHit(ih);
-
+      
       Int_t ch_num     = aHi->GetChID();
       Int_t bo_num     = aHi->GetBoardId();
       Double_t time    = aHi->GetTime();
       Double_t timeOth = aHi->GetTimeOth();
       Double_t charge  = aHi->GetCharge();
+
+      // here needed mapping file
+      Int_t modId = p_parmap->GetModuleId(bo_num, ch_num);
+      if (modId < 0 || modId >= nMod) {  // should not happen, already check on Raw hit creation
+         Error("Action", " --- Not well mapped WD vs modstal ID. board: %d  ch: %d -> modId %d", bo_num, ch_num, modId);
+         continue;
+      }
 
       TANEhit* createdhit = p_nturaw->NewHit(ch_num, charge, time);
   
@@ -91,9 +103,6 @@ void TANEactNtuHit::CreateHistogram()
 
       fhCharge[iCh]= new TH1F(Form("caCharge_ch%d", iCh), Form("caCharge_ch%d", iCh), 200, -0.1, 100);
       AddHistogram(fhCharge[iCh]);
-
-      fhAmplitude[iCh]= new TH1F(Form("caMaxAmp_ch%d", iCh), Form("caMaxAmp_ch%d", iCh), 120, -0.1, 1.1);
-      AddHistogram(fhAmplitude[iCh]);
    }
 
    SetValidHistogram(kTRUE);
