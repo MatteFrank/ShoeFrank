@@ -62,13 +62,13 @@ void ProjSpec(TString fileNameIn = "Run_400cebr3_1200pla_2GS_24.6MeV.root", Bool
       
       if (!tagr.NextEvent() ) break;
       
-      TASThit* hit = stRaw->GetHit();
+      TAPLhit* hit = stRaw->GetHit();
       Float_t amp = hit->GetAmplitude();
       hSt->Fill(amp);
       
       
       if (twflag) {
-         TATWhit* hit = twRaw->GetHit();
+         TACEhit* hit = twRaw->GetHit();
          Float_t amp = hit->GetAmplitude();
          hTw->Fill(amp);
       }

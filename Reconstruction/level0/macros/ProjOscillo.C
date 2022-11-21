@@ -56,7 +56,7 @@ void ProjOscillo(Int_t evt = 6, TString fileNameIn = "Run_cible3mm_coinc_2.root"
       
       if (i == evt) {
          Int_t samples = stRaw->GetSamplesN();
-         TASTrawHit* hit = stRaw->GetHit();
+         TAPLrawHit* hit = stRaw->GetHit();
          if (hit) {
             for (Int_t s = 0; s < samples; ++s)
                h->SetBinContent(s+1, hit->GetVectA(s));

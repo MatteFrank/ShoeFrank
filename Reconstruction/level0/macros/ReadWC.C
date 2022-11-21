@@ -28,8 +28,8 @@
 #include "TACEntuHit.hxx"
 
 #include "TAGactWCreader.hxx"
-#include "TAPLactNtuRaw.hxx"
-#include "TACEactNtuRaw.hxx"
+#include "TAPLactNtuHit.hxx"
+#include "TACEactNtuHit.hxx"
 
 #endif
 
@@ -37,8 +37,8 @@
 TAGgeoTrafo*      pGeoTrafo = 0x0;
 TAGactTreeWriter* outFile   = 0x0;
 TAGactWCreader*   wcFile    = 0x0;
-TAPLactNtuRaw*    stActNtu  = 0x0;
-TACEactNtuRaw*    twActNtu  = 0x0;
+TAPLactNtuHit*    stActNtu  = 0x0;
+TACEactNtuHit*    twActNtu  = 0x0;
 
 // tree flag
 Bool_t treeFlag = true;
@@ -62,7 +62,7 @@ void FillClinm()
       stRaw    = new TAGdataDsc("stRaw", new TAPLntuRaw());
       stNtu    = new TAGdataDsc("stNtu", new TAPLntuHit());
       
-      stActNtu = new TAPLactNtuRaw("stActNtu", stNtu, stRaw);
+      stActNtu = new TAPLactNtuHit("stActNtu", stNtu, stRaw);
       stActNtu->CreateHistogram();
    }
    
@@ -70,7 +70,7 @@ void FillClinm()
       twRaw    = new TAGdataDsc("twRaw", new TACEntuRaw());
       twNtu    = new TAGdataDsc("twNtu", new TACEntuHit());
       
-      twActNtu = new TACEactNtuRaw("twActNtu", twNtu, twRaw);
+      twActNtu = new TACEactNtuHit("twActNtu", twNtu, twRaw);
       twActNtu->CreateHistogram();
    }
    
@@ -78,16 +78,16 @@ void FillClinm()
    
    if (treeFlag) {
       if (oscFlag) {
-         if (pGeoTrafo->GetDeviceStatus(TAPLparGeo::GetBaseName()))
+         if (TAGrecoManager::GetPar()->IncludeST())
             outFile->SetupElementBranch(stRaw, TAPLntuRaw::GetBranchName());
          
-         if (pGeoTrafo->GetDeviceStatus(TACEparGeo::GetBaseName()))
+         if (TAGrecoManager::GetPar()->IncludeTW())
             outFile->SetupElementBranch(twRaw, TACEntuRaw::GetBranchName());
       }
-      if (pGeoTrafo->GetDeviceStatus(TAPLparGeo::GetBaseName()))
+      if (TAGrecoManager::GetPar()->IncludeST())
          outFile->SetupElementBranch(stNtu, TAPLntuHit::GetBranchName());
       
-      if (pGeoTrafo->GetDeviceStatus(TACEparGeo::GetBaseName()))
+      if (TAGrecoManager::GetPar()->IncludeTW())
          outFile->SetupElementBranch(twNtu, TACEntuHit::GetBranchName());
    }
 }
@@ -97,8 +97,6 @@ void ReadWC(TString name = "/work/desis/STIVI/dataWC/calbutcyrce/jour2/cyrce_122
 {
 
    TAGroot tagr;
-   tagr.SetCampaignNumber(100);
-   tagr.SetRunNumber(1);
    
    // Par instance
    TAGrecoManager::Instance(expName);
@@ -112,9 +110,9 @@ void ReadWC(TString name = "/work/desis/STIVI/dataWC/calbutcyrce/jour2/cyrce_122
    wcFile->Open(path);
    
    tagr.AddRequiredItem(wcFile);
-   if (pGeoTrafo->GetDeviceStatus(TAPLparGeo::GetBaseName()))
+   if (TAGrecoManager::GetPar()->IncludeST())
       tagr.AddRequiredItem(stActNtu);
-   if (pGeoTrafo->GetDeviceStatus(TACEparGeo::GetBaseName()))
+      if (TAGrecoManager::GetPar()->IncludeTW())
       tagr.AddRequiredItem(twActNtu);
    
    tagr.AddRequiredItem(outFile);
@@ -128,9 +126,9 @@ void ReadWC(TString name = "/work/desis/STIVI/dataWC/calbutcyrce/jour2/cyrce_122
 
    if (outFile->Open(outputRootFile.Data(), "RECREATE")) return;
    
-   if (TAGrecoManager::GetPar()->IncludeST()) {
+   if (TAGrecoManager::GetPar()->IncludeST())
       stActNtu->SetHistogramDir(outFile->File());
-      if (TAGrecoManager::GetPar()->IncludeTW()) {
+      if (TAGrecoManager::GetPar()->IncludeTW())
       twActNtu->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;

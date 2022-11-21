@@ -61,13 +61,13 @@ void ProjToF(TString fileNameIn = "Run_400cebr3_1200pla_2GS_24.6MeV.root")
       
       if (!tagr.NextEvent() ) break;
       
-      TASThit* hitS = stRaw->GetHit();
+      TAPLhit* hitS = stRaw->GetHit();
       if (hitS == 0x0) continue;
-      TATWhit* hitW = twRaw->GetHit();
+      TACEhit* hitW = twRaw->GetHit();
       if (hitW == 0x0) continue;
       
-      Float_t timeS = hitS->GetTime();
-      Float_t timeW = hitW->GetTime();
+      Float_t timeS = hitS->GetTimeLE();
+      Float_t timeW = hitW->GetTimeLE();
       
       Float_t amplS = hitS->GetAmplitude();
     //  if (amplS < 20 || amplS > 40) continue;
