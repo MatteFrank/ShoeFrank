@@ -20,8 +20,8 @@
 #include "TAGactTreeReader.hxx"
 #include "TAGactTreeWriter.hxx"
 
-#include "TASTntuHit.hxx"
-#include "TATWntuHit.hxx"
+#include "TAPLntuHit.hxx"
+#include "TACEntuHit.hxx"
 
 #endif
 
@@ -38,16 +38,16 @@ void ProjToF(TString fileNameIn = "Run_400cebr3_1200pla_2GS_24.6MeV.root")
    TAGroot tagr;
    
    // Branch setting
-   TASTntuHit *stRaw    = new TASTntuHit();
+   TAPLntuHit *stRaw    = new TAPLntuHit();
    TAGdataDsc* dscStRaw = new TAGdataDsc("stRaw", stRaw);
 
-   TATWntuHit *twRaw    = new TATWntuHit();
+   TACEntuHit *twRaw    = new TACEntuHit();
    TAGdataDsc* dsctwRaw = new TAGdataDsc("twRaw", twRaw);
 
    TAGactTreeReader* vtActReader = new TAGactTreeReader("vtActEvtReader");
 
-   vtActReader->SetupBranch(dscStRaw, TASTntuHit::GetBranchName());
-   vtActReader->SetupBranch(dsctwRaw, TATWntuHit::GetBranchName());
+   vtActReader->SetupBranch(dscStRaw, TAPLntuHit::GetBranchName());
+   vtActReader->SetupBranch(dsctwRaw, TACEntuHit::GetBranchName());
    
    vtActReader->Open(fileNameIn);
    
@@ -61,13 +61,13 @@ void ProjToF(TString fileNameIn = "Run_400cebr3_1200pla_2GS_24.6MeV.root")
       
       if (!tagr.NextEvent() ) break;
       
-      TASThit* hitS = stRaw->GetHit();
+      TAPLhit* hitS = stRaw->GetHit();
       if (hitS == 0x0) continue;
-      TATWhit* hitW = twRaw->GetHit();
+      TACEhit* hitW = twRaw->GetHit();
       if (hitW == 0x0) continue;
       
-      Float_t timeS = hitS->GetTime();
-      Float_t timeW = hitW->GetTime();
+      Float_t timeS = hitS->GetTimeLE();
+      Float_t timeW = hitW->GetTimeLE();
       
       Float_t amplS = hitS->GetAmplitude();
     //  if (amplS < 20 || amplS > 40) continue;

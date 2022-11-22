@@ -78,11 +78,13 @@ void LocalReco::CreateRawAction()
        fActNtuEvt->CreateHistogram();
    }
 
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      fpDatRawCa      = new TAGdataDsc("caDat", new TACAntuRaw());
+
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || (TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag) || TAGrecoManager::GetPar()->IncludeCA()) {
 
       fpDatRawSt      = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw      = new TAGdataDsc("twdDat", new TATWntuRaw());
-      fpDatRawCa      = new TAGdataDsc("caDat", new TACAntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
       
       if (!fgStdAloneFlag){

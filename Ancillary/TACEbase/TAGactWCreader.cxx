@@ -56,7 +56,7 @@ TAGactWCreader::~TAGactWCreader()
 
 //------------------------------------------+-----------------------------------
 //! Action.
-Bool_t TAGactWCreader::Process(Bool_t /*check*/)
+Bool_t TAGactWCreader::Process()
 {
    if(! DecodeWaveForms()){
       
@@ -84,7 +84,7 @@ void TAGactWCreader::CreateHistogram()
 }
 
 // --------------------------------------------------------------------------------------
-Int_t TAGactWCreader::Open(const TString& inputDataFile, Option_t* /*option*/)
+Int_t TAGactWCreader::Open(const TString& inputDataFile, Option_t* /*option*/, const TString /*treeName*/, Bool_t /*dscBranch*/)
 {
    fInputFile.open(inputDataFile.Data(), ios::binary|ios::in);
    
@@ -275,12 +275,12 @@ Bool_t TAGactWCreader::DecodeWaveForms()
          fWaves.GetVectT(s) = (fPeriod * s)*TAGgeoTrafo::PsToNs(); // ns
       }
       
-      if (parMapWC->GetChannelType(ch) == "ST") {
+      if (parMapWC->GetChannelType(ch) == "PL") {
          TAPLrawHit* hit = datRawSt->NewHit(fWaves);
          hit->SetSamplesN(fSamplesN);
       }
       
-      if (parMapWC->GetChannelType(ch) == "TW") {
+      if (parMapWC->GetChannelType(ch) == "CE") {
          TACErawHit* hit =  datRawTw->NewHit(fWaves);
          hit->SetSamplesN(fSamplesN);
       }
