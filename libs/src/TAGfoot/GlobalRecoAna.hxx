@@ -63,12 +63,13 @@ class GlobalRecoAna : public LocalReco {
   void GlbTrackPurityStudy();
   void AlignmentStudy(int currEvent,int nt, bool isOxygenInEvent);
   void TWAlgoStudy();
-  void TrackVsMCStudy();
   void TrackVsMCStudy(int currEvent, int nt);
+  
 
   //fill plots
   void FillGlbTrackPlots();
   void FillMassPlots();
+  void FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek=0.);
 
   //useful formulas
   Double_t GetGamma(Double_t beta){return 1./sqrt(1.-beta*beta);};
@@ -159,6 +160,15 @@ class GlobalRecoAna : public LocalReco {
 
   //debug variable for plots of triggered events
   bool isOxygenInEvent;
+
+  // for TW multiple hits studies
+  Int_t TrkIdMC;
+  Int_t N_TrkIdMC_TW;   
+  Int_t TrkIdMC_TW;
+
+  // outfile string
+  TString outfile;
+
 };
 
 #endif

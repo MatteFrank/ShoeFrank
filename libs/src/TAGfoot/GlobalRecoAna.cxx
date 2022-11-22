@@ -49,7 +49,8 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   purity_cut=0.51;
   clean_cut=1.;
   nTotEv=innTotEv;
- 
+  
+  outfile = fileNameout;
 
 
   Th_meas = -999.; //from TWpoint
@@ -95,6 +96,15 @@ void GlobalRecoAna::LoopEvent() {
     wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
     }
 
+    if (fFlagMC ==false && nt >0){
+           //initialize Trk Id to 0
+    TrkIdMC = -1;
+    N_TrkIdMC_TW =-1;   
+    TrkIdMC_TW = -1;
+    }
+
+    //TW ghost hits studies, needed for the following yield measurements
+    if (fFlagMC == true ) TrackVsMCStudy(currEvent,nt);
 
     //*********************************************************************************** begin loop on global tracks **********************************************
     
@@ -102,7 +112,6 @@ void GlobalRecoAna::LoopEvent() {
     
     for(int it=0;it<nt;it++){ // for every track
       isOxygenInEvent = false;
-
       
       fGlbTrack = myGlb->GetTrack(it);
       if(isnan(fGlbTrack->GetCalEnergy())){//check if tof + track arc_length + mass hyp are ok      //! GetCalEnergy() is 0 up to now!
@@ -111,9 +120,7 @@ void GlobalRecoAna::LoopEvent() {
       }          
        
       int charge = -100;      
-      Int_t TrkIdMC = -1;
-      Int_t N_TrkIdMC_TW =-1;   
-      Int_t TrkIdMC_TW = -2;
+      
 
       //fEvtGlbTrkVec.clear(); //!
       //GlbTrackPurityStudy();      
@@ -128,7 +135,7 @@ void GlobalRecoAna::LoopEvent() {
       Double_t Tof_startmc = -1.;
       Double_t Beta_true = -1.;
       TVector3 P_true, P_cross, P_cross_calo;
-      double Th_true, Th_cross;
+      Double_t Th_true, Th_cross;
       P_true.SetXYZ(-999.,-999.,-999.);
       P_cross.SetXYZ(-999.,-999.,-999.);
       P_cross_calo.SetXYZ(-999.,-999.,-999.);
@@ -289,300 +296,48 @@ void GlobalRecoAna::LoopEvent() {
   
       
   //-----------------------------------------------------------------------------------------  END SET TRACK VALUES     ----------------
- 
+
       if(fFlagMC){
       //-------------------------------------------------------------
-      //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA 
-      if (
-      Z_true >0. && Z_true <= primary_cha
-      && TriggerCheckMC() == true  
-      ) {  
-        ((TH1D*)gDirectory->Get("xsecrec-trkMC/charge"))->Fill(Z_true);
-      //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
-      //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-      //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
-
-
-       
-        for (int i = 0; i<th_nbin; i++) {
-         if(Th_true>=theta_binning[i][0] && Th_true<theta_binning[i][1]){
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
-
-            //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
-            //string pathmigz = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/migMatrix";
-            //((TH2D*)gDirectory->Get(pathmigz.c_str()))->Fill(Z_true,Z_meas);
-            string path = "xsecrec-trkMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
-            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_true);
-
-            string path_matrix = "xsecrec-trkMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
-            ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z_true,Z_meas);
-
-
-           /*for (int j=0; j < ek_nbin; j++) {
-             if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
-             
-                //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/Mass_bin_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]))))->Fill(M_meas);
-             
-                  for (int k=0; k < mass_nbin; k++) {
-                   if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
-             
-                     ((TH1D*)gDirectory->Get(Form("xsecrec-trkMC/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
-                     
-                                         
-
-                    }
-                  }
-
-
-              }
-
-            }*/
-          }
-        //}
-        }
-      }
-      }
-      //--END CROSS SECTION - RECO PARAMETERS FROM MC DATA
-
-
-      if(fFlagMC){
+      //--Yield for CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA 
+      if ( Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+      FillYieldReco("xsecrec-trkMC",Z_true,Z_meas,Th_true );
+      
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + ALLTW FIX : i don't want not fragmented primary
-     
       if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {
-      if (
-      Z_true >0. && Z_true <= primary_cha
-      && TriggerCheckMC() == true  
-      ) {  
-        ((TH1D*)gDirectory->Get("xsecrec-trkTWfixMC/charge"))->Fill(Z_true);
-      //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
-      //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-      //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
-
-
-       
-        for (int i = 0; i<th_nbin; i++) {  
-         
-         //if ( Z_true>0 && Z_true<primary_cha){
-
-
-         if(Th_true>=theta_binning[i][0] && Th_true<theta_binning[i][1]){
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
-
-            //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
-            //string pathmigz = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/migMatrix";
-            //((TH2D*)gDirectory->Get(pathmigz.c_str()))->Fill(Z_true,Z_meas);
-
-          string path = "xsecrec-trkTWfixMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
-          ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_true);
-          
-
-          string path_matrix = "xsecrec-trkTWfixMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
-          ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z_true,Z_meas);
-          //if ((theta_binning[i][1] <=1) && Z_true == 6) cout <<"TRk : " << FlukaID << endl;
-                   
-           /*for (int j=0; j < ek_nbin; j++) {
-             if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
-             
-                //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/Mass_bin_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]))))->Fill(M_meas);
-             
-                  for (int k=0; k < mass_nbin; k++) {
-                   if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
-             
-                     ((TH1D*)gDirectory->Get(Form("xsecrec-trkTWfixMC/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
-                     
-                                         
-
-                    }
-                  }
-
-
-              }
-
-            }*/
-          }
-       // }
-        }
-      }}
+        if (Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+          FillYieldReco("xsecrec-trkTWfixMC",Z_true,Z_meas,Th_true );
       }
-      //--END CROSS SECTION - RECO PARAMETERS FROM MC DATA + ALL TW HITS FIX
 
-      if(fFlagMC){
+
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + GHOST HITS FIX : i don't want not fragmented primary
-     
       if (N_TrkIdMC_TW == 1) {
-      if (
-      Z_true >0. && Z_true <= primary_cha
-      && TriggerCheckMC() == true  
-      ){  
-        ((TH1D*)gDirectory->Get("xsecrec-trkGHfixMC/charge"))->Fill(Z_true);
-      //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
-      //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-      //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
-
-
-       
-        for (int i = 0; i<th_nbin; i++) {  
-         
-         //if ( Z_true>0 && Z_true<primary_cha){
-
-
-         if(Th_true>=theta_binning[i][0] && Th_true<theta_binning[i][1]){
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
-
-            //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
-
-            //string pathmigz = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/migMatrix";
-            //((TH2D*)gDirectory->Get(pathmigz.c_str()))->Fill(Z_true,Z_meas);
-
-          string path = "xsecrec-trkGHfixMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
-          ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_true);    
-
-          string path_matrix = "xsecrec-trkGHfixMC/Z_" + to_string(Z_true) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
-          ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z_true,Z_meas);
-                   
-           /*for (int j=0; j < ek_nbin; j++) {
-             if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
-             
-                //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/Mass_bin_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]))))->Fill(M_meas);
-             
-                  for (int k=0; k < mass_nbin; k++) {
-                   if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
-             
-                     ((TH1D*)gDirectory->Get(Form("xsecrec-trkGHfixMC/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
-                     
-                                         
-
-                    }
-                  }
-
-
-              }
-
-            }*/
-          }
-        //}
-        }
-      }}
+      if (Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+        FillYieldReco("xsecrec-trkGHfixMC",Z_true,Z_meas,Th_true );
       }
-      //--END CROSS SECTION - RECO PARAMETERS FROM MC DATA + GHOST HITS FIX
-
-      
-     
-      if (fFlagMC == false){
-      //-------------------------------------------------------------
-      //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
-      if (
-      Z_meas >0. && Z_meas <= primary_cha
-      && wdTrig -> GetTriggersStatus()[1] == 1     //fragmentation hardware trigger ON
-      //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
-      ) {  
-        ((TH1D*)gDirectory->Get("ThReco_frag"))->Fill(Th_reco);
-        ((TH1D*)gDirectory->Get("xsecrec-trkREAL/charge"))->Fill(Z_meas);
-      //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
-      //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-      //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
-
-
-           
-        for (int i = 0; i<th_nbin; i++) {  
-         
-         //if ( Z_meas>0 && Z_meas<primary_cha){
-
-
-         if(Th_reco>=theta_binning[i][0] && Th_reco<theta_binning[i][1]){
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
-
-            string path = "xsecrec-trkREAL/Z_" + to_string(Z_meas) +"#"+to_string(Z_meas-0.5)+"_"+to_string(Z_meas+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
-            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_reco);    
-
-           /*for (int j=0; j < ek_nbin; j++) {
-             if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
-             
-                //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/Mass_bin_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]))))->Fill(M_meas);
-             
-                  for (int k=0; k < mass_nbin; k++) {
-                   if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
-             
-                     ((TH1D*)gDirectory->Get(Form("xsecrec-trkREAL/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
-                     
-                                         
-
-                    }
-                  }
-
-
-              }
-
-            } */
-          }
-         //}
-        }
-      }
-      }
-     
-      //--END CROSS SECTION - RECO PARAMETERS FROM  REAL DATA
-
-
-
-      if (fFlagMC == true){    
 
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAGWDtrigInfo )
-      if (
-      Z_meas >0. && Z_meas <= primary_cha
-      && TriggerCheck() == true  
-      ) {  
-        ((TH1D*)gDirectory->Get("xsecrec-trkTrigger/charge"))->Fill(Z_meas);
-      //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
-      //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-      //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
-
-
-           
-        for (int i = 0; i<th_nbin; i++) {  
-         
-         //if ( Z_meas>0 && Z_meas<primary_cha){
-
-
-         if(Th_reco>=theta_binning[i][0] && Th_reco<theta_binning[i][1]){
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
-            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
-
-            string path = "xsecrec-trkTrigger/Z_" + to_string(Z_meas) +"#"+to_string(Z_meas-0.5)+"_"+to_string(Z_meas+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
-            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th_reco);    
-
-           /*for (int j=0; j < ek_nbin; j++) {
-             if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
-             
-                //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/Mass_bin_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]))))->Fill(M_meas);
-             
-                  for (int k=0; k < mass_nbin; k++) {
-                   if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
-             
-                     ((TH1D*)gDirectory->Get(Form("xsecrec-trkREAL/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
-                     
-                                         
-
-                    }
-                  }
-
-
-              }
-
-            } */
-          }
-         //}
-        }
+      if (Z_meas >0. && Z_meas <= primary_cha && TriggerCheck() == true  
+      ) {
+        FillYieldReco("xsecrec-trkTrigger",Z_meas,0,Th_reco );
       }
+
       }
-     
-      //--END CROSS SECTION  fragmentation for trigger efficiency
+
+      if (fFlagMC == false){
+      //-------------------------------------------------------------
+      //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
+      if ( Z_meas >0. && Z_meas <= primary_cha && wdTrig -> GetTriggersStatus()[1] == 1     //fragmentation hardware trigger ON
+      //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
+      )
+        FillYieldReco("xsecrec-trkREAL",Z_meas,0,Th_reco );
+      } 
+      
+
+    
 
     
 
@@ -611,7 +366,16 @@ void GlobalRecoAna::LoopEvent() {
       ntracks++;
 
     if (Z_meas==8) isOxygenInEvent = true;
+
+    if(fFlagMC){ //re-initialize trk ID to 0
+    TrkIdMC = -1;
+    N_TrkIdMC_TW =-1;   
+    TrkIdMC_TW = -1;
     }
+
+    }
+
+    
     //*********************************************************************************** end loop on global tracks **********************************************
      
     
@@ -866,7 +630,7 @@ void GlobalRecoAna::LoopEvent() {
     }
     //------------------------------ END STUDY OF MC PARTICLES ------------------------------------------------
   
-  if (fFlagMC == true ) TrackVsMCStudy(currEvent,nt);
+  
   if (fFlagMC == false) AlignmentStudy(currEvent,nt,isOxygenInEvent);
     
 
@@ -949,10 +713,13 @@ void GlobalRecoAna:: Booking(){
   h2  = new TH2D("TWpointsDistribution_frag","",40, -20. ,20., 40, -20 ,20.);
   h2  = new TH2D("TWpointsDistribution","",40, -20. ,20., 40, -20 ,20.);
   
-  
-
-  h2  = new TH2D("TrkVsMC/Z_truevsZ_reco_TWFixed","",10, 0 ,10., 10, 0 ,10.);
-  h2  = new TH2D("TrkVsMC/Z_truevsZ_reco_TWGhostHitsRemoved","",10, 0 ,10., 10, 0 ,10.);
+  if (fFlagMC == true) {
+  gDirectory->mkdir("TrkVsMC");
+  gDirectory->cd("TrkVsMC");
+  h2  = new TH2D("Z_truevsZ_reco_TWFixed","",10, 0 ,10., 10, 0 ,10.);
+  h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","",10, 0 ,10., 10, 0 ,10.);
+  gDirectory->cd("..");
+  }
  
   h2  = new TH2D("Z_truevsZ_reco","",10, 0 ,10., 10, 0 ,10.);
   h2  = new TH2D("Z_TWvsZ_fit","",10, 0 ,10., 10, 0 ,10.);
@@ -1116,6 +883,11 @@ for (int i = 0; i<mass_nbin; i++) {
   gDirectory->cd("..");
  }
 //----------- end cross section recostruction
+
+
+
+
+
 // Cross section recostruction histos MC + GHOST HITS FIXED
  if(fFlagMC){
   gDirectory->mkdir("xsecrec-trkGHfixMC");
@@ -2746,6 +2518,11 @@ void GlobalRecoAna::BeforeEventLoop(){
     cout << "target z=" << GetParGeoG()->GetTargetPar().Size.Z() << endl;
     cout << "target A=" << GetParGeoG()->GetTargetPar().AtomicMass << endl;
   }
+
+   //test file for TrackVsMCStudy()
+   TString file_name = "/home/FOOT-T3/gubaldifoott3/SHOE/foot0y_anal/results_400/check.txt";
+   //cout << "opening... " << file_name << endl;
+   myfile.open(file_name);
   return;
 }
 
@@ -3210,12 +2987,12 @@ void GlobalRecoAna::TWAlgoStudy(){
           }
 
 void GlobalRecoAna::TrackVsMCStudy(int currEvent, int nt){
-Int_t N_TrkIdMC_TW =-1;   
-Int_t TrkIdMC_TW = -1;
-Int_t TrkIdMC = -1;
+N_TrkIdMC_TW =-1;   
+TrkIdMC_TW = -1;
+TrkIdMC = -1;
 Int_t Z_meas = -1;
 Int_t Z_true = -1;
-myfile.open("debug_trackidBIS.txt");
+
 myfile <<endl<<endl<<"current Event: " <<currEvent ;
 myfile<<endl<< "------- track reconstruction "<< endl;
 TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
@@ -3306,11 +3083,11 @@ for(int it=0;it<nt;it++){ // for every track
         
   }
   if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {      //stampa solo se TW point ha id della traccia e non c'è gosh hits
-      //((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWFixed"))->Fill(Z_true,Z_meas);        //! se attivati crasha
+      ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWFixed"))->Fill(Z_true,Z_meas);        //! se attivati crasha
   }
 
   if (N_TrkIdMC_TW == 1) {      //stampa solo se non c'è gosh hits
-      //((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);      //! 
+      ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);      //! 
   }
 }
 
@@ -3320,7 +3097,7 @@ myfile <<endl<< "-----------------  MC study "<< endl;
 TAMCntuPart* m_trueParticleRep = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
 Int_t n_particles = m_trueParticleRep -> GetTracksN();        // n° of particles of an event
 for (Int_t i= 0 ; i < n_particles; i++) {                         // for every particle in an event
-myfile << "traccia MC: " << i <<endl;
+myfile << endl << "traccia MC: " << i ;
 
 TAMCpart* particle = m_trueParticleRep->GetTrack(i);
 auto  Mid = particle->GetMotherID(); 
@@ -3334,7 +3111,7 @@ auto  Mid = particle->GetMotherID();
             Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
             Float_t Ek_true = Ek_tr_tot / (double)baryon;
             Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());   // in deg
-myfile << "  fluka ID: " << particle->GetFlukaID() << "("<<particle->GetCharge()<<")"<<endl;
+myfile <<endl <<"  fluka ID: " << particle->GetFlukaID() << "("<<particle->GetCharge()<<")";
 
 //true detectable
 //! NB: 50 IN GSI2021_MC
@@ -3346,11 +3123,61 @@ if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the ta
                   && Ek_true>100   //enough energy/n to go beyond the target
                   && theta_tr <= 8.  //  myangle // angular aperture < 8 deg
                   )  {                            
-                      myfile << "  fluka ID - particle from TG to TW: " << particle->GetFlukaID() << endl << "   real charge: "<< particle-> GetCharge()<<endl;
+                      myfile << "  (particle from TG to TW)";
                   }
 
 
                   
 }
 myfile <<endl <<endl;
+}
+
+
+void GlobalRecoAna::FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek){  
+        string path = folderName+"/charge";
+        ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Z);
+      //((TH1D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Th_meas);
+      //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/Ek_meas",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev());
+      //((TH2D*)gDirectory->Get(Form("xsec_rec/Z_%d-%d_%d/Theta_vs_Ekin",Z_meas,Z_meas,(Z_meas+1))))->Fill(Ek_meas*fpFootGeo->GevToMev(),Th_meas);
+
+
+       
+        for (int i = 0; i<th_nbin; i++) {
+         if(Th>=theta_binning[i][0] && Th<theta_binning[i][1]){
+            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(Ek_meas*fpFootGeo->GevToMev());
+            //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Mass_bin",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(M_meas);
+
+            //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
+            //string pathmigz = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/migMatrix";
+            //((TH2D*)gDirectory->Get(pathmigz.c_str()))->Fill(Z_true,Z_meas);
+            path = folderName+"/Z_" + to_string(Z) +"#"+to_string(Z-0.5)+"_"+to_string(Z+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
+            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th);
+
+            string path_matrix = folderName+"/Z_" + to_string(Z) +"#"+to_string(Z-0.5)+"_"+to_string(Z+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
+            if (!(Z_meas==0))
+            ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z,Z_meas);  //!TO ADD
+
+
+           /*for (int j=0; j < ek_nbin; j++) {
+             if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {
+             
+                //((TH1D*)gDirectory->Get(Form("xsecrec-/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/Mass_bin_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]))))->Fill(M_meas);
+             
+                  for (int k=0; k < mass_nbin; k++) {
+                   if(M_meas>=mass_binning[k][0] && M_meas <mass_binning[k][1]) {
+             
+                     ((TH1D*)gDirectory->Get(Form("xsecrec-trkMC/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",Z_meas,Z_meas,(Z_meas+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(M_meas);
+                     
+                                         
+
+                    }
+                  }
+
+
+              }
+
+            }*/
+          }
+        //}
+        }
 }
