@@ -112,6 +112,7 @@ Set(TAPL "TAPLbase")
 Set(TACE "TACEbase")
 Set(TANE "TANEbase")
 add_definitions(-std=c++14)
+add_definitions(-Wno-shadow)
 
 #----------------------------------------------------------------------------
 # Set src includes
