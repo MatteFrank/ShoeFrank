@@ -22,10 +22,8 @@ private:
    TString   fMaterial;
    Float_t   fDensity;
    Float_t   fIonisMat;
-   
-   
+      
    TString   fkDefaultGeoName;  // default par geo file name
-   Int_t     fDebugLevel;
    
    struct ModuleParameter_t : public  TObject {
       Int_t     ModuleIdx;   ///< Module index

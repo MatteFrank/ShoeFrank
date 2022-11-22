@@ -10,6 +10,7 @@
 #include <sstream>
 #include "TSystem.h"
 #include "TString.h"
+#include "TAGrecoManager.hxx"
 
 #include "TANEparGeo.hxx"
 #include "TAGroot.hxx"
@@ -31,8 +32,11 @@ const TString TANEparGeo::fgkDefParaName = "neGeo";
 //! Default constructor.
 TANEparGeo::TANEparGeo()
  : TAGparTools(),
-   fSize(),
-   fDebugLevel(0)
+   fModulesN(0),
+   fSize(0,0,0),
+   fMaterial(""),
+   fDensity(0.),
+   fIonisMat(0.)
 {
   fkDefaultGeoName = "./geomaps/TANEdetector.map";
 }
@@ -59,41 +63,43 @@ Bool_t TANEparGeo::FromFile(const TString& name)
    Info("FromFile()", "Open file %s for geometry\n", name.Data());
 
    ReadItem(fModulesN);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout << endl << "Modules number "<< fModulesN << endl;
    
    //The center is taken from the global setup of the experiment.
    ReadStrings(fMaterial);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   Module material: " <<  fMaterial << endl;
    
    ReadItem(fDensity);
-   if(fDebugLevel)
+   if(FootDebugLevel(1))
       cout  << "   Module density: " <<  fDensity << endl;
    
    ReadItem(fIonisMat);
-   if (fDebugLevel)
+   if(FootDebugLevel(1))
       cout << "   Module Mean excitation energy : " <<  fIonisMat << endl;
 
    ReadVector3(fSize);
-   if(fDebugLevel)
-      cout  << "  Size of module:     "<< fSize.X() << " " <<  fSize.Y() << " " <<  fSize.Z()  << endl;
+   if(FootDebugLevel(1))
+      cout  << "   Size of module:     "<< fSize.X() << " " <<  fSize.Y() << " " <<  fSize.Z()  << endl;
    
+   SetupMatrices(fModulesN);
+
    for (Int_t p = 0; p < fModulesN; p++) { // Loop on each plane
       
       // read Module index
       ReadItem(fModuleParameter[p].ModuleIdx);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout << endl << " - Parameters of Module " <<  fModuleParameter[p].ModuleIdx << endl;
       
       // read Module position
       ReadVector3(fModuleParameter[p].Position);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout << "   Position: " << fModuleParameter[p].Position[0] << " " << fModuleParameter[p].Position[1] << " " << fModuleParameter[p].Position[2] << endl;
       
       // read Module angles
       ReadVector3(fModuleParameter[p].Tilt);
-      if(fDebugLevel)
+      if(FootDebugLevel(1))
          cout  << "   Tilt: "
          << fModuleParameter[p].Tilt[0] << " " <<  fModuleParameter[p].Tilt[1] << " " << fModuleParameter[p].Tilt[2] << endl;
       
