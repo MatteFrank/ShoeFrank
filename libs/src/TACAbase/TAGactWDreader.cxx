@@ -72,8 +72,7 @@ TAGactWDreader::TAGactWDreader(const char* name,
     fpWDTim(p_WDtim),
     fpCAMap(p_CAmap),
     fpNEMap(p_NEmap)
-{
-
+{   
    fgStdAloneFlag = stdAlone;
    
    if (!fgStdAloneFlag) {
@@ -81,24 +80,26 @@ TAGactWDreader::TAGactWDreader(const char* name,
    }
    AddDataOut(p_stwd, "TASTntuRaw");
    AddDataOut(p_twwd, "TATWntuRaw");
-   AddDataOut(p_cawd, "TACAntuRaw");
+   if (p_cawd)
+      AddDataOut(p_cawd, "TACAntuRaw");
    if (p_newd)
       AddDataOut(p_newd, "TANEntuRaw");
    AddDataOut(p_WDtrigInfo, "TAGWDtrigInfo");
    AddPara(p_WDmap, "TAGbaseWDparMap");
    AddPara(p_WDtim, "TAGbaseWDparTime");
-   AddPara(p_CAmap, "TACAparMap");
+   if (p_CAmap)
+      AddPara(p_CAmap, "TACAparMap");
 
    fProcFiles=0;  
    fEventsN=0;
    fMaxFiles=1;
-   
-   int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
-   fTempCA = new double [nCry];
-   for (int cryID=0; cryID<nCry; ++cryID) {
-      fTempCA[cryID] = 0;
+   if (fpCAMap) {
+      int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
+      fTempCA = new double [nCry];
+      for (int cryID=0; cryID<nCry; ++cryID) {
+         fTempCA[cryID] = 0;
+      }
    }
-   
 }
 
 
@@ -106,7 +107,7 @@ TAGactWDreader::TAGactWDreader(const char* name,
 //! Destructor.
 TAGactWDreader::~TAGactWDreader()
 {
-   if (fTempCA) delete [] fTempCA;
+   if (fTempCA && fpCAMap) delete [] fTempCA;
 }
 
 //------------------------------------------+-----------------------------------
@@ -173,9 +174,14 @@ Bool_t TAGactWDreader::Action()
    TAGbaseWDparMap*     p_WDmap = (TAGbaseWDparMap*)   fpWDMap->Object();
    TASTntuRaw*          p_stwd  = (TASTntuRaw*)   fpStWd->Object();
    TATWntuRaw*          p_twwd  = (TATWntuRaw*)   fpTwWd->Object();
-   TACAntuRaw*          p_cawd  = (TACAntuRaw*)   fpCaWd->Object();
-   TACAparMap*          p_CAmap = (TACAparMap*)   fpCAMap->Object();
    TAGWDtrigInfo*       p_WDtrigInfo = (TAGWDtrigInfo*)   fpWDtrigInfo->Object();
+
+   TACAntuRaw*          p_cawd  = 0x0;
+   if (fpCaWd)
+      p_cawd = (TACAntuRaw*)   fpCaWd->Object();
+   TACAparMap*          p_CAmap = 0x0;
+   if (fpCAMap)
+      p_CAmap =  (TACAparMap*)   fpCAMap->Object();
 
    TANEntuRaw*          p_newd  = 0x0;
    if (fpNeWd)
@@ -193,7 +199,7 @@ Bool_t TAGactWDreader::Action()
       if (evt) 
          nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
 
-      if (fgArduinoTempCA) {
+      if (fgArduinoTempCA && fpCaWd) {
          const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
          if (evtA)
             DecodeArduinoTempCA(evtA);
@@ -213,7 +219,8 @@ Bool_t TAGactWDreader::Action()
 
    fpStWd->SetBit(kValid);
    fpTwWd->SetBit(kValid);
-   fpCaWd->SetBit(kValid);
+   if (fpCaWd)
+      fpCaWd->SetBit(kValid);
    fpWDtrigInfo->SetBit(kValid);
 
    if (fgStdAloneFlag) {
@@ -798,9 +805,12 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
 Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACAntuRaw* p_caraw, TANEntuRaw* p_neraw)
 {
    TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)fpWDTim->Object();
-   TACAparMap*          p_CAmap = (TACAparMap*)  fpCAMap->Object();
+  
+   TACAparMap*          p_CAmap = 0x0;
+   if (fpCAMap)
+      p_CAmap = (TACAparMap*)  fpCAMap->Object();
+ 
    TANEparMap*          p_NEmap = 0x0;
-   
    if (fpNEMap)
       p_NEmap = (TANEparMap*)  fpNEMap->Object();
 
@@ -826,7 +836,7 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACA
       p_twraw->NewHit(fTWwaves.at(i), algoTW, fracTW, delTW);
       if (FootDebugLevel(1)) printf("TW hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoTW.data(), fracTW, delTW);
    }
-
+   if (p_CAmap) {
       int nCry = p_CAmap->GetCrystalsN();
       for(int i=0; i<(int)fCAwaves.size(); i++) {
          int board_id = fCAwaves.at(i)->GetBoardId();
@@ -839,7 +849,7 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACA
          p_caraw->NewHit(fCAwaves.at(i), fTempCA[criID]);
          if (FootDebugLevel(1)) printf("CA hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoCA.data(), fracCA, delCA);
       }
-   
+   }
    if (fpNEMap) {
       int nMod = p_NEmap->GetModulesN();
       for(int i=0; i<(int)fNEwaves.size(); i++) {
