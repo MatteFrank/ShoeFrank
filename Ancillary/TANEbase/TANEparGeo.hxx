@@ -37,9 +37,8 @@ private:
    static const TString fgkDefParaName;
    
 public:
-   
    TANEparGeo();
-   virtual         ~TANEparGeo();
+   virtual       ~TANEparGeo();
    
    TVector3        GetSize()            const { return fSize;          }
    TString         GetMaterial()        const { return fMaterial;      }
@@ -55,12 +54,9 @@ public:
    //! Get Sensor parameter
    ModuleParameter_t& GetModulePar(Int_t idx) { return fModuleParameter[idx]; }
 
-   
 public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
    static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
-   
-
    
    ClassDef(TANEparGeo,1)
 };
