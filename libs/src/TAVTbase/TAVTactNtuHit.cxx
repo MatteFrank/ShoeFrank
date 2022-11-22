@@ -24,7 +24,7 @@
 //! Class Imp
 ClassImp(TAVTactNtuHit);
 
-UInt_t TAVTactNtuHit::fgTStolerance = 40;
+UInt_t TAVTactNtuHit::fgTStolerance = 70;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
