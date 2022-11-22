@@ -275,12 +275,12 @@ Bool_t TAGactWCreader::DecodeWaveForms()
          fWaves.GetVectT(s) = (fPeriod * s)*TAGgeoTrafo::PsToNs(); // ns
       }
       
-      if (parMapWC->GetChannelType(ch) == "ST") {
+      if (parMapWC->GetChannelType(ch) == "PL") {
          TAPLrawHit* hit = datRawSt->NewHit(fWaves);
          hit->SetSamplesN(fSamplesN);
       }
       
-      if (parMapWC->GetChannelType(ch) == "TW") {
+      if (parMapWC->GetChannelType(ch) == "CE") {
          TACErawHit* hit =  datRawTw->NewHit(fWaves);
          hit->SetSamplesN(fSamplesN);
       }
