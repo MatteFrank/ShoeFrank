@@ -57,10 +57,7 @@ Bool_t TACAparMap::FromFile(const TString& name)
       printf("CrystalsN: %d\n", fCrystalsN);
       printf("CrystalId ModuleId ChannelId BoardId ActiveCrystal \n");
    }
-
-   //To read header
-   ReadItem(para, 5, ' ', false);
-
+   
    for (Int_t i = 0; i < fCrystalsN; ++i) { // Loop over crystal
 
       // read parameters (boardId chId, crysId)
@@ -81,16 +78,18 @@ Bool_t TACAparMap::FromFile(const TString& name)
       fChannelId.push_back(channelId);
 
       if (FootDebugLevel(1))
-         printf("%2d %2d %2d B%2d %d\n", crysId, moduleId, channelId, boardId, activeCrys);
-
+         printf("%2d\t %2d\t %2d\t B%3d\t %d\n", crysId, moduleId, channelId, boardId, activeCrys);
    }
 
    // Read Arduino/temp parameters
    if ( !Eof()) {
-
-      ReadItem(para, 5, ' ', false);  // To read header
-      ReadItem(para, 4, ' ', false);  // To read header
+      if (FootDebugLevel(1)) {
+         printf("CrystalsN: %d\n", fCrystalsN);
+         printf("CrystalIdA BoardIdA Muxmum ChannelidA\n");
+      }
+      
       for (Int_t i = 0; i < fCrystalsN && !Eof(); ++i) { // Loop over crystal
+         
          // read parameters (cryId, boardId, mux, chId)
          ReadItem(para, 4, ' ', false);
 
@@ -99,6 +98,9 @@ Bool_t TACAparMap::FromFile(const TString& name)
          Int_t muxnum       = TMath::Nint(para[2]);
          Int_t channelIdA   = TMath::Nint(para[3]);
 
+         if (FootDebugLevel(1))
+            printf("%2d\t B%3d\t %2d\t %2d\n", crysIdA, boardIdA, muxnum, channelIdA);
+         
          if (boardIdA < 1 || boardIdA > 4 
             || muxnum < 0 || muxnum > 4
             || channelIdA < 0 || channelIdA > 15) {
