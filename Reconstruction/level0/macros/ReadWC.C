@@ -31,6 +31,8 @@
 #include "TAPLactNtuHit.hxx"
 #include "TACEactNtuHit.hxx"
 
+#include "TAGcampaignManager.hxx"
+
 #endif
 
 // main
@@ -45,7 +47,7 @@ Bool_t treeFlag = true;
 // saving oscillogram in tree
 Bool_t oscFlag = false;
 
-void FillClinm()
+void FillClinm(Int_t runNumber)
 {
    TAGdataDsc* stRaw = 0x0;
    TAGdataDsc* stNtu = 0x0;
@@ -55,8 +57,9 @@ void FillClinm()
       
    TAGparaDsc* wcMap = new TAGparaDsc("wcMap", new TAGbaseWCparMap());
    TAGbaseWCparMap* map = (TAGbaseWCparMap*) wcMap->Object();
-   map->FromFile("./config/WCdetector_CLINM.map");
-   
+   TString parFileName = campManager->GetCurMapFile(TANEparGeo::GetBaseName(), runNumber);
+   map->FromFile(parFileName.Data());
+
    
    if (TAGrecoManager::GetPar()->IncludeST()) {
       stRaw    = new TAGdataDsc("stRaw", new TAPLntuRaw());
@@ -92,8 +95,8 @@ void FillClinm()
    }
 }
 
-void ReadWC(TString name = "/work/desis/STIVI/dataWC/calbutcyrce/jour2/cyrce_1221/Run_1200plas_1500plasnew_backTipex_2plas_coinc_24.6MeV_Data_12_10_2021_Binary.bin",
-            TString expName = "CLINM")
+void ReadWC(TString name = "Run_1200plas_1500plasnew_backTipex_2plas_coinc_24.6MeV_Data_12_10_2021_Binary.bin",
+            TString expName = "TIIM2023", Int_t runNumber = 1)
 {
 
    TAGroot tagr;
@@ -102,6 +105,9 @@ void ReadWC(TString name = "/work/desis/STIVI/dataWC/calbutcyrce/jour2/cyrce_122
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
    
+   campManager = new TAGcampaignManager(expName);
+   campManager->FromFile();
+
    outFile = new TAGactTreeWriter("outFile");
    
    FillClinm();
