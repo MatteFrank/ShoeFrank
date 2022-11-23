@@ -136,17 +136,7 @@ void GlobalRecoAna::LoopEvent() {
       P_cross.SetXYZ(-999.,-999.,-999.);
       P_cross_calo.SetXYZ(-999.,-999.,-999.);
 
-      if(fFlagMC){
-      //----debug: check of TrackID: GetMcMainTrackId() vs GetTrackId() of fGlbTrack
-      /*
-      if ((fGlbTrack->GetMcTrackIdx()).GetSize() > 1){
-      cout << "track size: "<< (fGlbTrack->GetMcTrackIdx()).GetSize() << endl;
-      for (int i =0; i< (fGlbTrack->GetMcTrackIdx()).GetSize(); i++){
-      cout <<"TRACK ID "<<i<<": "<< (fGlbTrack->GetMcTrackIdx())[i] <<endl;
-      }
-      cout <<"most probable id: "<< fGlbTrack->GetMcMainTrackId() << endl;
-      cout <<"track id: "<< fGlbTrack->GetTrackId() << endl;
-      }*/    
+      if(fFlagMC){  
       TrkIdMC = fGlbTrack->GetMcMainTrackId();   //associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity) 
       if(TrkIdMC !=-1){
        TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);
@@ -328,11 +318,6 @@ void GlobalRecoAna::LoopEvent() {
         FillYieldReco("xsecrec-trkREAL",Z_meas,0,Th_reco );
       } 
       
-
-    
-
-    
-
       ((TH1D*)gDirectory->Get("Energy"))->Fill(Ek_meas*fpFootGeo->GevToMev());
       ((TH1D*)gDirectory->Get("Charge_trk"))->Fill(Z_meas);
       ((TH1D*)gDirectory->Get("Charge_trk_True"))->Fill(Z_true);
@@ -357,9 +342,9 @@ void GlobalRecoAna::LoopEvent() {
       //fEvtGlbTrkVec.push_back(fGlbTrkVec);  //!
       ntracks++;
 
-    if (Z_meas==8) isOxygenInEvent = true;
+    if (Z_meas==8) isOxygenInEvent = true;  // needed in AlignmentStudy()
 
-    if(fFlagMC){ //re-initialize trk ID to 0
+    if(fFlagMC){ //re-initialize trk ID to 0 ; needed in TWStudy
     TrkIdMC = -1;
     N_TrkIdMC_TW =-1;   
     TrkIdMC_TW = -1;
@@ -373,12 +358,7 @@ void GlobalRecoAna::LoopEvent() {
     
         
   //------------------------------  STUDY OF MC PARTICLES  
-    if (fFlagMC){
-          // Definisco la regione target all'inizializzazione
-          //! da riguardare gli oggetti
-          //TAGrunInfo* runinfo=(TAGrunInfo*)(f->Get("runinfo"))         
-          //TString regnameTg="TARGET";
-          //auto RegTarg = runinfo->GetRegion(regnameTg);
+    if (fFlagMC){    
          
           TAMCntuPart* m_trueParticleRep = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
           Int_t n_particles = m_trueParticleRep -> GetTracksN();        // n° of particles of an event
@@ -418,27 +398,35 @@ void GlobalRecoAna::LoopEvent() {
             ((TH1D*)gDirectory->Get("MC_check/Baryon_MC")) -> Fill(particle->  GetBaryon());   //
             ((TH1D*)gDirectory->Get("MC_check/Theta_MC")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi());   //
 
-          //! NB: 50 IN GSI2021_MC
-          //! NB: 59 IN 16O_400
+
           //! finalPos.Z() > 189.15 IN GSI2021_MC
-          //! finalPos.Z() > 90 IN 16O_400
+          //! finalPos.Z() > 90 IN 16O_400      
+          Int_t TG_region = -1;
+          if(fExpName.IsNull())
+          TG_region = 59; // true in newgeom setup                                                                                                                                        
+          else if(!fExpName.CompareTo("GSI/") || !GlobalRecoAna::fExpName.CompareTo("GSI_MC/"))
+          TG_region = 48;  //  GSI-2019                                                                                                                                                   
+          else if(!fExpName.CompareTo("CNAO2020/"))
+          TG_region = 50;  //  CNAO-2020
+          else if(!fExpName.CompareTo("GSI2021_MC/"))
+          TG_region = 50; //   GSI2021_MC
 
           //-------------  MC TOTAL CROSS SECTION 
-          if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
-                particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
+          if (  Mid==0 && Reg == TG_region &&           // if the particle is generated in the target and it is the fragment of a primary
+                particle->GetCharge()>0 && particle->GetCharge()<=primary_cha //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
                 && Ek_true>100   //enough energy/n to go beyond the target
                 //particle->GetMass()>0.8 && particle->GetMass()<30
                 )
                   FillYieldMC("xsecrec-true_cut",charge_tr,theta_tr,Ek_tr_tot);
 
           //-------------  MC FIDUCIAL CROSS SECTION (<8 deg)
-          if (  Mid==0 && Reg == 50 && particle->GetCharge()>0 && particle->GetCharge()<=8 && Ek_true>100
+          if (  Mid==0 && Reg == TG_region && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100
                   && theta_tr <= 8.  //  angular aperture < 8 deg
                   ) 
                   FillYieldMC("xsecrec-true_DET",charge_tr,theta_tr,Ek_tr_tot);
                                       
           //-------------  MC FIDUCIAL CROSS SECTION (<2 deg)
-          if (  Mid==0 && Reg == 50 && particle->GetCharge()>0 && particle->GetCharge()<=8 && Ek_true>100
+          if (  Mid==0 && Reg == TG_region && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100
                   && theta_tr <= 2.  //  myangle // angular aperture < 8 deg
                   )
                   FillYieldMC("xsecrec-true_DET2",charge_tr,theta_tr,Ek_tr_tot);                            
@@ -454,6 +442,7 @@ void GlobalRecoAna::LoopEvent() {
 
   //FullCALOanal();
 
+  
     Int_t exitfragnum=0;    //number of fragmengs exit from the target
     Int_t exitfrag10anglenum=0;    //number of fragmengs exit from the target
     if(TAGrecoManager::GetPar()->IsRegionMc() && fFlagMC){
@@ -465,10 +454,11 @@ void GlobalRecoAna::LoopEvent() {
             exitfrag10anglenum++;
         }
       }
+      ((TH2D*)gDirectory->Get("MC/MCpartVsGlbtrackNum"))->Fill(exitfragnum,nt);
+      ((TH2D*)gDirectory->Get("MC/MCpartVsGlbtrackNum_angle10"))->Fill(exitfrag10anglenum,nt);
     }
-    //((TH2D*)gDirectory->Get("MC/MCpartVsGlbtrackNum"))->Fill(exitfragnum,myGlb->GetTracksN());
-    //((TH2D*)gDirectory->Get("MC/MCpartVsGlbtrackNum_angle10"))->Fill(exitfrag10anglenum,myGlb->GetTracksN());
-   
+    
+
     ++currEvent;
     if (currEvent == nTotEv) {
     
@@ -1879,7 +1869,6 @@ void GlobalRecoAna::BeforeEventLoop(){
 
    //test file for TrackVsMCStudy()
    TString file_name = "/home/FOOT-T3/gubaldifoott3/SHOE/foot0y_anal/results_400/check.txt";
-   //cout << "opening... " << file_name << endl;
    myfile.open(file_name);
   return;
 }
@@ -2358,9 +2347,20 @@ for(int it=0;it<nt;it++){ // for every track
   fGlbTrack = myGlb->GetTrack(it);
   Z_meas = fGlbTrack->GetTwChargeZ();
   myfile<<endl<< "track n° "<< it << endl;
+  
+
+  //----debug: check of TrackID: GetMcMainTrackId() vs GetTrackId() of fGlbTrack
+      if ((fGlbTrack->GetMcTrackIdx()).GetSize() > 1){
+      myfile<< "track size: "<< (fGlbTrack->GetMcTrackIdx()).GetSize() << endl;
+      for (int i =0; i< (fGlbTrack->GetMcTrackIdx()).GetSize(); i++){
+      myfile<<"TRACK ID "<<i<<": "<< (fGlbTrack->GetMcTrackIdx())[i] <<endl;
+      }
+      myfile<<"most probable id: "<< fGlbTrack->GetMcMainTrackId() << endl;
+      myfile<<"track id: "<< fGlbTrack->GetTrackId() << endl;
+      } 
+
   TrkIdMC = fGlbTrack->GetMcMainTrackId();
   myfile << "  TrkIdMC= "<< TrkIdMC << " --> ";
-
   
   if(TrkIdMC !=-1){
   TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);
