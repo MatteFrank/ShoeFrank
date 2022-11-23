@@ -70,7 +70,8 @@ class GlobalRecoAna : public LocalReco {
   void FillGlbTrackPlots();
   void FillMassPlots();
   void FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek=0.);
-
+  void FillYieldMC(string folderName, Int_t charge_tr, Double_t theta_tr, Double_t Ek=0.);
+  void BookYield(string path, bool enableMigMatr= false);
   //useful formulas
   Double_t GetGamma(Double_t beta){return 1./sqrt(1.-beta*beta);};
   Double_t GetMassPB(Double_t mom, Double_t beta) {return (1./atomassu)*mom*sqrt(1.-beta*beta)/beta;};

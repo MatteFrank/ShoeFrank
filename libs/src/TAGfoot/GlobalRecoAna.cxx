@@ -73,7 +73,7 @@ void GlobalRecoAna::LoopEvent() {
     //fFlagMC = false;     //N.B.: for MC FAKE REAL   
     DiffApp_trkIdx = false;
     
-    if (currEvent % 100 == 0) cout <<"current Event: " <<currEvent << "fixed current event:" <<count_event <<endl;
+    if (currEvent % 100 == 0) cout <<"current Event: " <<currEvent /*<< "fixed current event:" <<count_event */<<endl;
     
     //initialization of several objects needed for the analysis
     TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
@@ -97,7 +97,7 @@ void GlobalRecoAna::LoopEvent() {
     }
 
     if (fFlagMC ==false && nt >0){
-           //initialize Trk Id to 0
+    //initialize Trk Id to 0
     TrkIdMC = -1;
     N_TrkIdMC_TW =-1;   
     TrkIdMC_TW = -1;
@@ -107,9 +107,6 @@ void GlobalRecoAna::LoopEvent() {
     if (fFlagMC == true ) TrackVsMCStudy(currEvent,nt);
 
     //*********************************************************************************** begin loop on global tracks **********************************************
-    
-    
-    
     for(int it=0;it<nt;it++){ // for every track
       isOxygenInEvent = false;
       
@@ -121,7 +118,6 @@ void GlobalRecoAna::LoopEvent() {
        
       int charge = -100;      
       
-
       //fEvtGlbTrkVec.clear(); //!
       //GlbTrackPurityStudy();      
       //ComputeMCtruth(TrkIdMC, Z_true, P_true, P_cross, Ek_true);
@@ -151,9 +147,7 @@ void GlobalRecoAna::LoopEvent() {
       cout <<"most probable id: "<< fGlbTrack->GetMcMainTrackId() << endl;
       cout <<"track id: "<< fGlbTrack->GetTrackId() << endl;
       }*/    
-      TrkIdMC = fGlbTrack->GetMcMainTrackId();   //associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity)
-      
-     
+      TrkIdMC = fGlbTrack->GetMcMainTrackId();   //associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity) 
       if(TrkIdMC !=-1){
        TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);
            
@@ -268,8 +262,6 @@ void GlobalRecoAna::LoopEvent() {
       ((TH2D*)gDirectory->Get(Form("Ekin/Z%d/DE_vs_Ekin",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev(),DE*fpFootGeo->GevToMev());
       ((TH1D*)gDirectory->Get(Form("Ekin/Z%d/Ek_meas",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev());
 
-
-
       //migration matrix plot
       ((TH2D*)gDirectory->Get("Z_truevsZ_reco"))->Fill(Z_true,Z_meas);
       ((TH2D*)gDirectory->Get("Z_TWvsZ_fit"))->Fill(fGlbTrack->GetTwChargeZ(),fGlbTrack->GetFitChargeZ());
@@ -382,8 +374,6 @@ void GlobalRecoAna::LoopEvent() {
         
   //------------------------------  STUDY OF MC PARTICLES  
     if (fFlagMC){
-
-         
           // Definisco la regione target all'inizializzazione
           //! da riguardare gli oggetti
           //TAGrunInfo* runinfo=(TAGrunInfo*)(f->Get("runinfo"))         
@@ -397,8 +387,6 @@ void GlobalRecoAna::LoopEvent() {
   //************************************************************* begin Loop on all MCparticles *************************************************************
           for (Int_t i= 0 ; i < n_particles; i++) {                         // for every particle in an event
 
-         
-
             TAMCpart* particle = m_trueParticleRep->GetTrack(i);
             auto  Mid = particle->GetMotherID(); 
             double mass = particle->GetMass();             // Get TRpaid-1
@@ -411,7 +399,7 @@ void GlobalRecoAna::LoopEvent() {
             Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
             Float_t Ek_true = Ek_tr_tot / (double)baryon;
             Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());   // in deg
-            
+            Float_t charge_tr = particle-> GetCharge();
            
             //Fill histos for MC variables checks
             ((TH1D*)gDirectory->Get("MC_check/Charge_MC")) -> Fill(particle-> GetCharge());
@@ -429,213 +417,42 @@ void GlobalRecoAna::LoopEvent() {
             ((TH1D*)gDirectory->Get("MC_check/Region_MC")) -> Fill(particle->  GetRegion());   //
             ((TH1D*)gDirectory->Get("MC_check/Baryon_MC")) -> Fill(particle->  GetBaryon());   //
             ((TH1D*)gDirectory->Get("MC_check/Theta_MC")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi());   //
-           
-            //((TH1D*)gDirectory->Get("MC/MotherID_MC")) -> Fill(particle->  GetMotherID());
 
+          //! NB: 50 IN GSI2021_MC
+          //! NB: 59 IN 16O_400
+          //! finalPos.Z() > 189.15 IN GSI2021_MC
+          //! finalPos.Z() > 90 IN 16O_400
 
-
-             //! NB: 50 IN GSI2021_MC
-                    //! NB: 59 IN 16O_400
-                    //! finalPos.Z() > 189.15 IN GSI2021_MC
-                    //! finalPos.Z() > 90 IN 16O_400
-
-            //-------------  MC TOTAL CROSS SECTION 
-            if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
-                  particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
-                  && Ek_true>100   //enough energy/n to go beyond the target
-                  
-                  //particle->GetMass()>0.8 && particle->GetMass()<30
-                  )  {                            
-                          
-                          Float_t charge_tr = particle-> GetCharge();
-                         
-                          //cout <<"charge: "<< charge_tr <<endl;
-                         
-                          ((TH1D*)gDirectory->Get("MC_check/Charge_MC_tg")) -> Fill(particle-> GetCharge());
-                          ((TH1D*)gDirectory->Get("MC_check/Mass_MC_tg")) -> Fill(particle-> GetMass());
-                          ((TH1D*)gDirectory->Get("MC_check/Ek_tot_MC_tg")) -> Fill(Ek_tr_tot);
-                          ((TH1D*)gDirectory->Get("MC_check/InitPosZ_MC_tg")) -> Fill(particle-> GetInitPos().Z() );      
-                          ((TH1D*)gDirectory->Get("MC_check/FinalPosZ_MC_tg")) -> Fill(particle-> GetFinalPos().Z() );
-                          ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC_tg")) -> Fill(particle-> GetTrkLength());            
-                          ((TH1D*)gDirectory->Get("MC_check/Type_MC_tg")) -> Fill(particle-> GetType());            
-                          ((TH1D*)gDirectory->Get("MC_check/FlukaID_MC_tg")) -> Fill(particle->  GetFlukaID());
-                          ((TH1D*)gDirectory->Get("MC_check/MotherID_MC_tg")) -> Fill(particle->  GetMotherID());
-                          ((TH1D*)gDirectory->Get("MC_check/Theta_MC_tg")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi());
-                         
-                          ((TH1D*)gDirectory->Get(Form("xsecrec-true_cut/Z_true")))->Fill(charge_tr);
-
-                          for (int i = 0; i<th_nbin; i++) {
-                                       
-                          if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
-
-                            string path = "xsecrec-true_cut/Z_" + to_string(int(charge_tr)) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
-                            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(theta_tr);
-                            //if ((theta_binning[i][1] <=1) && charge_tr == 6) cout <<"MC : " <<particle->GetFlukaID() << endl;
-
-                            //((TH1D*)gDirectory->Get(Form("xsecrec-true_cut/Z_%d-%d_%d/theta_%d-%d_%d/theta_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(theta_tr);                    
-                            /*for (int j=0; j < ek_nbin; j++) {
-                             
-                             
-                              if(Ek_tr_tot >=ek_binning[j][0] && Ek_tr_tot<ek_binning[j][1]) {
-                                           
-                                    for (int k=0; k < mass_nbin; k++) {
-                                      Float_t mass_tr = particle -> GetMass();
-                                    if(mass_tr>=mass_binning[k][0] && mass_tr <mass_binning[k][1]) {
-                                     
-                                      ((TH1D*)gDirectory->Get(Form("xsecrec-true_cut/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
-                                     
-                                                           
-
-                                      }
-                                    }
-
-
-                                }
-
-                              }*/
-                            }
-                          }
-                        }
-            //-------------  END MC TOTAL CROSS SECTION 
-
-
-          //true detectable
-                    //! NB: 50 IN GSI2021_MC
-                    //! NB: 59 IN 16O_400
-                    //! finalPos.Z() > 189.15 IN GSI2021_MC
-                    //! finalPos.Z() > 90 IN 16O_400
+          //-------------  MC TOTAL CROSS SECTION 
+          if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
+                particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
+                && Ek_true>100   //enough energy/n to go beyond the target
+                //particle->GetMass()>0.8 && particle->GetMass()<30
+                )
+                  FillYieldMC("xsecrec-true_cut",charge_tr,theta_tr,Ek_tr_tot);
 
           //-------------  MC FIDUCIAL CROSS SECTION (<8 deg)
-          if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
-                  particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
-                  && Ek_true>100   //enough energy/n to go beyond the target
-                  && theta_tr <= 8.  //  myangle // angular aperture < 8 deg
-                  )  {                            
-
-                          Float_t charge_tr = particle-> GetCharge();
-                          ((TH1D*)gDirectory->Get("MC_check/Charge_MC_tg_tw")) -> Fill(charge_tr);                          
-                          ((TH1D*)gDirectory->Get("MC_check/Mass_MC_tg_tw")) -> Fill(particle-> GetMass());
-                          ((TH1D*)gDirectory->Get("MC_check/Ek_tot_MC_tg_tw")) -> Fill(Ek_tr_tot);
-                          ((TH1D*)gDirectory->Get("MC_check/InitPosZ_MC_tg_tw")) -> Fill(particle-> GetInitPos().Z() );      
-                          ((TH1D*)gDirectory->Get("MC_check/FinalPosZ_MC_tg_tw")) -> Fill(particle-> GetFinalPos().Z() );
-                          ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC_tg_tw")) -> Fill(particle-> GetTrkLength());            
-                          ((TH1D*)gDirectory->Get("MC_check/Type_MC_tg_tw")) -> Fill(particle-> GetType());            
-                          ((TH1D*)gDirectory->Get("MC_check/FlukaID_MC_tg_tw")) -> Fill(particle->  GetFlukaID());
-                          ((TH1D*)gDirectory->Get("MC_check/MotherID_MC_tg_tw")) -> Fill(particle->  GetMotherID());
-                          ((TH1D*)gDirectory->Get("MC_check/Theta_MC_tg_tw")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi());
-
-                          ((TH1D*)gDirectory->Get(Form("xsecrec-true_DET/Z_true_DET")))->Fill(charge_tr);
-
-                         for (int i = 0; i<th_nbin; i++) {
-                          Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());          
-                          if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
-                           
-                            string path = "xsecrec-true_DET/Z_" + to_string(int(charge_tr)) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
-                            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(theta_tr);
-                           
-                            /*for (int j=0; j < ek_nbin; j++) {
-                             
-                             
-                              if(Ek_tr_tot >=ek_binning[j][0] && Ek_tr_tot<ek_binning[j][1]) {
-                                           
-                                    for (int k=0; k < mass_nbin; k++) {
-                                      Float_t mass_tr = particle -> GetMass();
-                                    if(mass_tr>=mass_binning[k][0] && mass_tr <mass_binning[k][1]) {
-                               
-                                      ((TH1D*)gDirectory->Get(Form("xsecrec-true_DET/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
-                                     
-                                                           
-
-                                      }
-                                    }
-
-
-                                }
-
-                              }*/
-                            }
-                          }
-                        }
-
-          //----- END MC FIDUCIAL CROSS SECTION (<8 deg)
-
-
+          if (  Mid==0 && Reg == 50 && particle->GetCharge()>0 && particle->GetCharge()<=8 && Ek_true>100
+                  && theta_tr <= 8.  //  angular aperture < 8 deg
+                  ) 
+                  FillYieldMC("xsecrec-true_DET",charge_tr,theta_tr,Ek_tr_tot);
+                                      
           //-------------  MC FIDUCIAL CROSS SECTION (<2 deg)
-                    //! NB: 50 IN GSI2021_MC
-                    //! NB: 59 IN 16O_400
-                    //! finalPos.Z() > 189.15 IN GSI2021_MC
-                    //! finalPos.Z() > 90 IN 16O_400
-
-
-          if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the target and it is the fragment of a primary
-                  particle->GetCharge()>0 && particle->GetCharge()<=8 //&&                       //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
-                  && Ek_true>100   //enough energy/n to go beyond the target
+          if (  Mid==0 && Reg == 50 && particle->GetCharge()>0 && particle->GetCharge()<=8 && Ek_true>100
                   && theta_tr <= 2.  //  myangle // angular aperture < 8 deg
-                  )  {                            
-                         
-                          Float_t charge_tr = particle-> GetCharge();
-                          ((TH1D*)gDirectory->Get("MC_check/Charge_MC_tg_tw")) -> Fill(charge_tr);                          
-                          ((TH1D*)gDirectory->Get("MC_check/Mass_MC_tg_tw")) -> Fill(particle-> GetMass());
-                          ((TH1D*)gDirectory->Get("MC_check/Ek_tot_MC_tg_tw")) -> Fill(Ek_tr_tot);
-                          ((TH1D*)gDirectory->Get("MC_check/InitPosZ_MC_tg_tw")) -> Fill(particle-> GetInitPos().Z() );      
-                          ((TH1D*)gDirectory->Get("MC_check/FinalPosZ_MC_tg_tw")) -> Fill(particle-> GetFinalPos().Z() );
-                          ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC_tg_tw")) -> Fill(particle-> GetTrkLength());            
-                          ((TH1D*)gDirectory->Get("MC_check/Type_MC_tg_tw")) -> Fill(particle-> GetType());            
-                          ((TH1D*)gDirectory->Get("MC_check/FlukaID_MC_tg_tw")) -> Fill(particle->  GetFlukaID());
-                          ((TH1D*)gDirectory->Get("MC_check/MotherID_MC_tg_tw")) -> Fill(particle->  GetMotherID());
-                          ((TH1D*)gDirectory->Get("MC_check/Theta_MC_tg_tw")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi());
+                  )
+                  FillYieldMC("xsecrec-true_DET2",charge_tr,theta_tr,Ek_tr_tot);                            
 
-                          ((TH1D*)gDirectory->Get(Form("xsecrec-true_DET2/Z_true_DET")))->Fill(charge_tr);
-
-                         for (int i = 0; i<th_nbin; i++) {
-                         
-                         
-                          Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());          
-                          if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
-                           
-                            string path = "xsecrec-true_DET2/Z_" + to_string(int(charge_tr)) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
-                            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(theta_tr);
-                           
-                            /*for (int j=0; j < ek_nbin; j++) {
-                             
-                             
-                              if(Ek_tr_tot >=ek_binning[j][0] && Ek_tr_tot<ek_binning[j][1]) {
-                                           
-                                    for (int k=0; k < mass_nbin; k++) {
-                                      Float_t mass_tr = particle -> GetMass();
-                                    if(mass_tr>=mass_binning[k][0] && mass_tr <mass_binning[k][1]) {
-                               
-                                      ((TH1D*)gDirectory->Get(Form("xsecrec-true_DET/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
-                                     
-                                                           
-
-                                      }
-                                    }
-
-
-                                }
-
-                              }*/
-                            }
-                          }
-                        }
-
-            //------------- END MC FIDUCIAL CROSS SECTION (<2 deg)
-
-
-          }
-  
     TWAlgoStudy();
+    }
     //************************************************************* end Loop on all MCparticles ************************************************************    
     }
     //------------------------------ END STUDY OF MC PARTICLES ------------------------------------------------
   
   
   if (fFlagMC == false) AlignmentStudy(currEvent,nt,isOxygenInEvent);
-    
 
-   
-    //FullCALOanal();
+  //FullCALOanal();
 
     Int_t exitfragnum=0;    //number of fragmengs exit from the target
     Int_t exitfrag10anglenum=0;    //number of fragmengs exit from the target
@@ -768,29 +585,6 @@ void GlobalRecoAna:: Booking(){
 
 
 
-//prova binning = 1
-/*
-th_nbin = 1;
-theta_binning = new double *[th_nbin];
-theta_binning[0] = new double [2];
-theta_binning[0][0] = 0.;
-theta_binning[0][1] = 90.;
-
-ek_nbin = 1;
-ek_binning = new double *[ek_nbin];
-ek_binning[0] = new double [2];
-ek_binning[0][0] = 0.;
-ek_binning[0][1] = 2000.;
-
-mass_nbin = 1;
-mass_binning = new double *[mass_nbin];
-mass_binning[0] = new double [2];
-mass_binning[0][0] = 0.;
-mass_binning[0][1] = 50.;
-*/
-
-
-
 //binning of theta, ekin, A
 th_nbin = 61;
 theta_binning = new double *[th_nbin];
@@ -832,469 +626,33 @@ for (int i = 0; i<mass_nbin; i++) {
  h2 = new TH2D("Unfolding_trk_vs_true","Unfolding;trk;true", tot_bin, 0, tot_bin, tot_bin, 0, tot_bin);
  h = new TH1D("RecoDistribution","", tot_bin, 0., tot_bin);
  gDirectory->cd("..");
- 
 
 // Cross section recostruction histos MC
- if(fFlagMC){
-  gDirectory->mkdir("xsecrec-trkMC");
-  gDirectory->cd("xsecrec-trkMC");
-  h = new TH1D("charge","",10, -0.5 ,9.5);
-
-  for(int iz=0; iz<=primary_cha; iz++){
-    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
-    gDirectory->mkdir(name.c_str());
-    gDirectory->cd(name.c_str());
-    name = "";
-   
-    //h = new TH1D("Theta_meas","",200, 0 ,20.);
-    //h = new TH1D("Ek_meas","",100, 0 ,2000.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-      //h2 = new TH2D("migMatrix","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
-      gDirectory->mkdir(path.c_str());
-      gDirectory->cd(path.c_str());
-     // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
-     // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
-      h = new TH1D("theta_","",200, 0 ,90.);
-      h2 = new TH2D("migMatrix_Z","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
-      /*for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,90.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D("A_","",200, 0 ,90.);
-
-       
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }*/
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
- }
-//----------- end cross section recostruction
-
-
-
-
+if(fFlagMC){ 
+BookYield ("xsecrec-trkMC", true);
 
 // Cross section recostruction histos MC + GHOST HITS FIXED
- if(fFlagMC){
-  gDirectory->mkdir("xsecrec-trkGHfixMC");
-  gDirectory->cd("xsecrec-trkGHfixMC");
-  h = new TH1D("charge","",10, 0. ,10.);
-
-  for(int iz=0; iz<=primary_cha; iz++){
-    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
-    gDirectory->mkdir(name.c_str());
-    gDirectory->cd(name.c_str());
-    name = "";
-    //h2 = new TH2D("migMatrix","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
-
-   
-    //h = new TH1D("Theta_meas","",200, 0 ,20.);
-    //h = new TH1D("Ek_meas","",100, 0 ,2000.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
-      gDirectory->mkdir(path.c_str());
-      gDirectory->cd(path.c_str());
-     // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
-     // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
-      h = new TH1D("theta_","",200, 0 ,90.);
-      h2 = new TH2D("migMatrix_Z","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
-      /*for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,90.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D("A_","",200, 0 ,90.);
-
-       
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }*/
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
- }
-//----------- end cross section recostruction + GHOST HITS FIXED
+BookYield ("xsecrec-trkGHfixMC", true);
 
 // Cross section recostruction histos MC + ALL TW HITS FIXED
- if(fFlagMC){
-  gDirectory->mkdir("xsecrec-trkTWfixMC");
-  gDirectory->cd("xsecrec-trkTWfixMC");
-  h = new TH1D("charge","",10, 0. ,10.);
-
-  for(int iz=0; iz<=primary_cha; iz++){
-    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
-    gDirectory->mkdir(name.c_str());
-    gDirectory->cd(name.c_str());
-    name = "";
-
-    //h2 = new TH2D("migMatrix","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
-
-   
-    //h = new TH1D("Theta_meas","",200, 0 ,20.);
-    //h = new TH1D("Ek_meas","",100, 0 ,2000.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
-      gDirectory->mkdir(path.c_str());
-      gDirectory->cd(path.c_str());
-     // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
-     // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
-      h = new TH1D("theta_","",200, 0 ,90.);
-      h2 = new TH2D("migMatrix_Z","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
-      /*for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,90.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D("A_","",200, 0 ,90.);
-
-       
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }*/
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
- }
-//----------- end cross section recostruction + GHOST HITS FIXED
-
-
-
+BookYield ("xsecrec-trkTWfixMC", true);
 
 // Cross section recostruction histos from REAL DATA
- 
-  if(fFlagMC == false){
-  gDirectory->mkdir("xsecrec-trkREAL");
-  gDirectory->cd("xsecrec-trkREAL");
-  h = new TH1D("charge","",10, 0. ,10.);
+BookYield ("xsecrec-trkTrigger");
 
-  for(int iz=0; iz<=primary_cha; iz++){
-    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
-    gDirectory->mkdir(name.c_str());
-    gDirectory->cd(name.c_str());
-    name = "";
-
-   
-    //h = new TH1D("Theta_meas","",200, 0 ,20.);
-    //h = new TH1D("Ek_meas","",100, 0 ,2000.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
-      gDirectory->mkdir(path.c_str());
-      gDirectory->cd(path.c_str());
-     // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
-     // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
-      h = new TH1D("theta_","",200, 0 ,90.);
-      /*for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,90.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D("A_","",200, 0 ,90.);
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }*/
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
-  }
-//----------- end cross section recostruction from REAL DATA
-
-
-// Cross section recostruction histos from REAL DATA
- 
-  if(fFlagMC == true){
-  gDirectory->mkdir("xsecrec-trkTrigger");
-  gDirectory->cd("xsecrec-trkTrigger");
-  h = new TH1D("charge","",10, 0. ,10.);
-
-  for(int iz=0; iz<=primary_cha; iz++){
-    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
-    gDirectory->mkdir(name.c_str());
-    gDirectory->cd(name.c_str());
-    name = "";
-
-   
-    //h = new TH1D("Theta_meas","",200, 0 ,20.);
-    //h = new TH1D("Ek_meas","",100, 0 ,2000.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
-      gDirectory->mkdir(path.c_str());
-      gDirectory->cd(path.c_str());
-     // h = new TH1D(Form("Ek_bin"),"",100, 0 ,2000.);
-     // h = new TH1D(Form("Mass_bin"),"",200, 0 ,90.);
-      h = new TH1D("theta_","",200, 0 ,90.);
-      /*for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,90.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D("A_","",200, 0 ,90.);
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }*/
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
-  }
-//----------- end cross section recostruction from REAL DATA
-
-
-
-  // Cross section TRUE histos
-  if(fFlagMC){
-  gDirectory->mkdir("xsecrec-true_cut");
-  gDirectory->cd("xsecrec-true_cut");
-
-  h = new TH1D("Z_true","",10, 0 ,10.);
-
-
-
-  for(int iz=0; iz<=primary_cha; iz++){
-    string pathZ = "Z_"+to_string(iz)+"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5); 
-    gDirectory->mkdir(pathZ.c_str());
-    gDirectory->cd(pathZ.c_str());
-
-   
-   // h = new TH1D("Theta_meas","",200, 0 ,20.);
-   // h = new TH1D("Ek_meas","",100, 0 ,800.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
-      gDirectory->mkdir(path.c_str());
-      gDirectory->cd(path.c_str());
-      //h = new TH1D(Form("Ek_bin"),"",100, 0 ,800.);
-      //h = new TH1D(Form("Mass_bin"),"",200, 0 ,30.);
-      h = new TH1D("theta_","",200, 0 ,90.);
-
-      /*for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,30.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D("A_","",200, 0 ,30.);
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }*/
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
-  }
-//----------- end cross section TRUE
-
- // Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
-  if(fFlagMC){
-  gDirectory->mkdir("xsecrec-true_DET");
-  gDirectory->cd("xsecrec-true_DET");
-  h = new TH1D("Z_true_DET","",10, 0 ,10.);
-
-  for(int iz=0; iz<=primary_cha; iz++){
-    string pathZ = "Z_"+to_string(iz)+"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5); 
-    gDirectory->mkdir(pathZ.c_str());
-    gDirectory->cd(pathZ.c_str());
-
-   
-   // h = new TH1D("Theta_meas","",200, 0 ,20.);
-   // h = new TH1D("Ek_meas","",100, 0 ,800.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
-      gDirectory->mkdir(path.c_str());
-      gDirectory->cd(path.c_str());
-      //h = new TH1D(Form("Ek_bin"),"",100, 0 ,800.);
-      //h = new TH1D(Form("Mass_bin"),"",200, 0 ,30.);
-      h = new TH1D("theta_","",200, 0 ,90.);
-
-      /*for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,30.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D("A_","",200, 0 ,30.);
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }*/
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
-  }
-//----------- end cross section TRUE
-
+// Cross section TRUE histos
+BookYield ("xsecrec-true_cut");
 
 // Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
-  if(fFlagMC){
-  gDirectory->mkdir("xsecrec-true_DET2");
-  gDirectory->cd("xsecrec-true_DET2");
-  h = new TH1D("Z_true_DET","",10, 0 ,10.);
+BookYield ("xsecrec-true_DET");
 
-  for(int iz=0; iz<=primary_cha; iz++){
-    string pathZ = "Z_"+to_string(iz)+"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5); 
-    gDirectory->mkdir(pathZ.c_str());
-    gDirectory->cd(pathZ.c_str());
+// Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
+BookYield ("xsecrec-true_DET2");
+} else {
 
-   
-   // h = new TH1D("Theta_meas","",200, 0 ,20.);
-   // h = new TH1D("Ek_meas","",100, 0 ,800.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
-      gDirectory->mkdir(path.c_str());
-      gDirectory->cd(path.c_str());
-      //h = new TH1D(Form("Ek_bin"),"",100, 0 ,800.);
-      //h = new TH1D(Form("Mass_bin"),"",200, 0 ,30.);
-      h = new TH1D("theta_","",200, 0 ,90.);
-
-      /*for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,30.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D("A_","",200, 0 ,30.);
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }*/
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
-  }
-//----------- end cross section theta<2
-
-
-  /*
-
-
-
-  // Cross section Z_eff
- 
-  gDirectory->mkdir("xsecrec-Z_eff");
-  gDirectory->cd("xsecrec-Z_eff");
-
-  for(int iz=0; iz<=primary_cha; iz++){
-    gDirectory->mkdir(Form("Z_%d-%d_%d",iz, iz , iz+1));
-    gDirectory->cd(Form("Z_%d-%d_%d",iz, iz , iz+1));
-
-   
-   // h = new TH1D("Theta_meas","",200, 0 ,20.);
-   // h = new TH1D("Ek_meas","",100, 0 ,800.);
-   // h2 = new TH2D("Theta_vs_Ekin","", 200, 0.,600., 200,0.,20.);
-
-
-    for (int i = 0; i<th_nbin; i++) {
-      gDirectory->mkdir(Form("theta_%d-%d_%d",i,int(theta_binning[i][0]),int(theta_binning[i][1])));
-      gDirectory->cd(Form("theta_%d-%d_%d",i,int(theta_binning[i][0]),int(theta_binning[i][1])));
-      //h = new TH1D(Form("Ek_bin"),"",100, 0 ,800.);
-      //h = new TH1D(Form("Mass_bin"),"",200, 0 ,30.);
-
-      for (int j=0; j <ek_nbin; j++) {
-        gDirectory->mkdir(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        gDirectory->cd(Form("Ek_%d-%d_%d",j,int(ek_binning[j][0]),int(ek_binning[j][1])));
-        //h = new TH1D(Form("Mass_bin_"),"",200, 0 ,30.);
-
-          for (int k=0; k<mass_nbin; k++) {
-            gDirectory->mkdir(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            gDirectory->cd(Form("A_%d-%d_%d",k,int(mass_binning[k][0]),int(mass_binning[k][1])));
-            h = new TH1D(Form("A_"),"",200, 0 ,30.);
-
-          gDirectory->cd("..");
-          }
-      gDirectory->cd("..");
-      }
-      gDirectory->cd("..");
-    }
-    gDirectory->cd("..");
-  }
-  gDirectory->cd("..");
-
-  //----------- end cross section Z_eff
-  */
-
-
-  //  int NB_ek = 10;
-  //  double binV[NB_ek];
-  //  for(int ib=0;ib<NB_ek;ib++){
-    //    binV[ib] = 1.;
-  //  }
-
- 
+// Cross section recostruction histos from REAL DATA
+BookYield ("xsecrec-trkREAL");
+}
 
   if(fFlagMC){
     gDirectory->mkdir("MC_check");
@@ -3132,7 +2490,6 @@ if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the ta
 myfile <<endl <<endl;
 }
 
-
 void GlobalRecoAna::FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek){  
         string path = folderName+"/charge";
         ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Z);
@@ -3180,4 +2537,84 @@ void GlobalRecoAna::FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Doubl
           }
         //}
         }
+}
+
+void GlobalRecoAna::FillYieldMC(string folderName, Int_t charge_tr, Double_t theta_tr, Double_t Ek){  
+                          
+                          /*
+                          ((TH1D*)gDirectory->Get("MC_check/Charge_MC_tg")) -> Fill(particle-> GetCharge());
+                          ((TH1D*)gDirectory->Get("MC_check/Mass_MC_tg")) -> Fill(particle-> GetMass());
+                          ((TH1D*)gDirectory->Get("MC_check/Ek_tot_MC_tg")) -> Fill(Ek_tr_tot);
+                          ((TH1D*)gDirectory->Get("MC_check/InitPosZ_MC_tg")) -> Fill(particle-> GetInitPos().Z() );      
+                          ((TH1D*)gDirectory->Get("MC_check/FinalPosZ_MC_tg")) -> Fill(particle-> GetFinalPos().Z() );
+                          ((TH1D*)gDirectory->Get("MC_check/TrkLength_MC_tg")) -> Fill(particle-> GetTrkLength());            
+                          ((TH1D*)gDirectory->Get("MC_check/Type_MC_tg")) -> Fill(particle-> GetType());            
+                          ((TH1D*)gDirectory->Get("MC_check/FlukaID_MC_tg")) -> Fill(particle->  GetFlukaID());
+                          ((TH1D*)gDirectory->Get("MC_check/MotherID_MC_tg")) -> Fill(particle->  GetMotherID());
+                          ((TH1D*)gDirectory->Get("MC_check/Theta_MC_tg")) -> Fill(particle->  GetInitP().Theta()*180./TMath::Pi());
+
+                          */
+                          string path = folderName + "/charge";
+                          ((TH1D*)gDirectory->Get(path.c_str()))->Fill(charge_tr);
+
+                          for (int i = 0; i<th_nbin; i++) {
+                                       
+                          if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
+
+                             path = folderName+"/Z_" + to_string(int(charge_tr)) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
+                            ((TH1D*)gDirectory->Get(path.c_str()))->Fill(theta_tr);
+                            //if ((theta_binning[i][1] <=1) && charge_tr == 6) cout <<"MC : " <<particle->GetFlukaID() << endl;
+
+                            //((TH1D*)gDirectory->Get(Form("xsecrec-true_cut/Z_%d-%d_%d/theta_%d-%d_%d/theta_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]))))->Fill(theta_tr);                    
+                            /*for (int j=0; j < ek_nbin; j++) {
+                             
+                             
+                              if(Ek_tr_tot >=ek_binning[j][0] && Ek_tr_tot<ek_binning[j][1]) {
+                                           
+                                    for (int k=0; k < mass_nbin; k++) {
+                                      Float_t mass_tr = particle -> GetMass();
+                                    if(mass_tr>=mass_binning[k][0] && mass_tr <mass_binning[k][1]) {
+                                     
+                                      ((TH1D*)gDirectory->Get(Form("xsecrec-true_cut/Z_%d-%d_%d/theta_%d-%d_%d/Ek_%d-%d_%d/A_%d-%d_%d/A_",int(charge_tr),int(charge_tr),int(charge_tr+1),i,int(theta_binning[i][0]),int(theta_binning[i][1]),j,int(ek_binning[j][0]),int(ek_binning[j][1]),k,int(mass_binning[k][0]),int(mass_binning[k][1]))))->Fill(mass_tr);
+                                     
+                                                           
+
+                                      }
+                                    }
+
+
+                                }
+
+                              }*/
+                            }
+                          }
+                        
+
+}
+
+void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
+  gDirectory->mkdir(path.c_str());
+  gDirectory->cd(path.c_str());
+  h = new TH1D("charge","",10, -0.5 ,9.5);
+
+  for(int iz=0; iz<=primary_cha; iz++){
+    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+    gDirectory->mkdir(name.c_str());
+    gDirectory->cd(name.c_str());
+    name = "";
+  
+    for (int i = 0; i<th_nbin; i++) {
+      string path = "theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1]);      
+      gDirectory->mkdir(path.c_str());
+      gDirectory->cd(path.c_str());
+
+      h = new TH1D("theta_","",200, 0 ,90.);
+      if (enableMigMatr)
+      h2 = new TH2D("migMatrix_Z","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
+     
+      gDirectory->cd("..");
+    }
+    gDirectory->cd("..");
+  }
+  gDirectory->cd("..");
 }
