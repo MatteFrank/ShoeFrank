@@ -283,13 +283,13 @@ void GlobalRecoAna::LoopEvent() {
       //-------------------------------------------------------------
       //--Yield for CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA 
       if ( Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
-      FillYieldReco("xsecrec-trkMC",Z_true,Z_meas,Th_true );
+      FillYieldReco("yield-trkMC",Z_true,Z_meas,Th_true );
       
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + ALLTW FIX : i don't want not fragmented primary
       if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {
         if (Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
-          FillYieldReco("xsecrec-trkTWfixMC",Z_true,Z_meas,Th_true );
+          FillYieldReco("yield-trkTWfixMC",Z_true,Z_meas,Th_true );
       }
 
 
@@ -297,14 +297,14 @@ void GlobalRecoAna::LoopEvent() {
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + GHOST HITS FIX : i don't want not fragmented primary
       if (N_TrkIdMC_TW == 1) {
       if (Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
-        FillYieldReco("xsecrec-trkGHfixMC",Z_true,Z_meas,Th_true );
+        FillYieldReco("yield-trkGHfixMC",Z_true,Z_meas,Th_true );
       }
 
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAGWDtrigInfo )
       if (Z_meas >0. && Z_meas <= primary_cha && TriggerCheck() == true  
       ) {
-        FillYieldReco("xsecrec-trkTrigger",Z_meas,0,Th_reco );
+        FillYieldReco("yield-trkTrigger",Z_meas,0,Th_reco );
       }
 
       }
@@ -315,7 +315,7 @@ void GlobalRecoAna::LoopEvent() {
       if ( Z_meas >0. && Z_meas <= primary_cha && wdTrig -> GetTriggersStatus()[1] == 1     //fragmentation hardware trigger ON
       //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
       )
-        FillYieldReco("xsecrec-trkREAL",Z_meas,0,Th_reco );
+        FillYieldReco("yield-trkREAL",Z_meas,0,Th_reco );
       } 
       
       ((TH1D*)gDirectory->Get("Energy"))->Fill(Ek_meas*fpFootGeo->GevToMev());
@@ -401,7 +401,7 @@ void GlobalRecoAna::LoopEvent() {
 
           //! finalPos.Z() > 189.15 IN GSI2021_MC
           //! finalPos.Z() > 90 IN 16O_400      
-          Int_t TG_region = -1;
+          Int_t TG_region = -1;         //! hard coded
           if(fExpName.IsNull())
           TG_region = 59; // true in newgeom setup                                                                                                                                        
           else if(!fExpName.CompareTo("GSI/") || !GlobalRecoAna::fExpName.CompareTo("GSI_MC/"))
@@ -417,19 +417,21 @@ void GlobalRecoAna::LoopEvent() {
                 && Ek_true>100   //enough energy/n to go beyond the target
                 //particle->GetMass()>0.8 && particle->GetMass()<30
                 )
-                  FillYieldMC("xsecrec-true_cut",charge_tr,theta_tr,Ek_tr_tot);
+                  FillYieldMC("yield-true_cut",charge_tr,theta_tr,Ek_tr_tot);
 
           //-------------  MC FIDUCIAL CROSS SECTION (<8 deg)
           if (  Mid==0 && Reg == TG_region && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100
                   && theta_tr <= 8.  //  angular aperture < 8 deg
                   ) 
-                  FillYieldMC("xsecrec-true_DET",charge_tr,theta_tr,Ek_tr_tot);
+                  FillYieldMC("yield-true_DET",charge_tr,theta_tr,Ek_tr_tot);
                                       
           //-------------  MC FIDUCIAL CROSS SECTION (<2 deg)
+          /*
           if (  Mid==0 && Reg == TG_region && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100
                   && theta_tr <= 2.  //  myangle // angular aperture < 8 deg
                   )
-                  FillYieldMC("xsecrec-true_DET2",charge_tr,theta_tr,Ek_tr_tot);                            
+                  FillYieldMC("yield-true_DET2",charge_tr,theta_tr,Ek_tr_tot);   
+                  */                         
 
     TWAlgoStudy();
     }
@@ -576,17 +578,17 @@ void GlobalRecoAna:: Booking(){
 
 
 //binning of theta, ekin, A
-th_nbin = 61;
+th_nbin = 20;
 theta_binning = new double *[th_nbin];
-for (int i = 0; i<th_nbin-1; i++) {
+for (int i = 0; i<th_nbin; i++) {
   theta_binning[i] = new double [2];
   theta_binning[i][0] = double (i)*0.5;
   theta_binning[i][1] = double (i+1)*0.5;
   //cout << " theta binning "<< i << " "<< theta_binning[i][0] << " "<< theta_binning[i][1];
 }
-theta_binning[60] = new double [2];
-theta_binning[60][0] = double(30);
-theta_binning[60][1] =  double(90);
+//theta_binning[60] = new double [2];    //!hard coded
+//theta_binning[60][0] = double(30);
+//theta_binning[60][1] =  double(90);
 //cout << " theta binning "<< 10 << " "<< theta_binning[10][0] << " "<< theta_binning[10][1];
 
 ek_nbin = 1;
@@ -619,29 +621,29 @@ for (int i = 0; i<mass_nbin; i++) {
 
 // Cross section recostruction histos MC
 if(fFlagMC){ 
-BookYield ("xsecrec-trkMC", true);
+BookYield ("yield-trkMC", true);
 
 // Cross section recostruction histos MC + GHOST HITS FIXED
-BookYield ("xsecrec-trkGHfixMC", true);
+BookYield ("yield-trkGHfixMC", true);
 
 // Cross section recostruction histos MC + ALL TW HITS FIXED
-BookYield ("xsecrec-trkTWfixMC", true);
+BookYield ("yield-trkTWfixMC", true);
 
 // Cross section recostruction histos from REAL DATA
-BookYield ("xsecrec-trkTrigger");
+BookYield ("yield-trkTrigger");
 
 // Cross section TRUE histos
-BookYield ("xsecrec-true_cut");
+BookYield ("yield-true_cut");
 
 // Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
-BookYield ("xsecrec-true_DET");
+BookYield ("yield-true_DET");
 
 // Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
-BookYield ("xsecrec-true_DET2");
+//BookYield ("yield-true_DET2");
 } else {
 
 // Cross section recostruction histos from REAL DATA
-BookYield ("xsecrec-trkREAL");
+BookYield ("yield-trkREAL");
 }
 
   if(fFlagMC){
@@ -2441,11 +2443,11 @@ for(int it=0;it<nt;it++){ // for every track
         
   }
   if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {      //stampa solo se TW point ha id della traccia e non c'è gosh hits
-      ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWFixed"))->Fill(Z_true,Z_meas);        //! se attivati crasha
+      ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWFixed"))->Fill(Z_true,Z_meas);        
   }
 
   if (N_TrkIdMC_TW == 1) {      //stampa solo se non c'è gosh hits
-      ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);      //! 
+      ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);     
   }
 }
 
@@ -2507,12 +2509,12 @@ void GlobalRecoAna::FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Doubl
             //if (M_meas <0) cout <<" M MEAS NEGATIVE" << endl;
             //string pathmigz = "xsecrec-trkMC/Z_" + to_string(Z_true) +"-"+to_string(Z_true)+"_"+to_string(Z_true+1)+"/migMatrix";
             //((TH2D*)gDirectory->Get(pathmigz.c_str()))->Fill(Z_true,Z_meas);
-            path = folderName+"/Z_" + to_string(Z) +"#"+to_string(Z-0.5)+"_"+to_string(Z+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
+            path = folderName+"/Z_" + to_string(Z-1) +"#"+to_string(Z-0.5)+"_"+to_string(Z+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";            
             ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th);
 
-            string path_matrix = folderName+"/Z_" + to_string(Z) +"#"+to_string(Z-0.5)+"_"+to_string(Z+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
+            string path_matrix = folderName+"/Z_" + to_string(Z-1) +"#"+to_string(Z-0.5)+"_"+to_string(Z+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
             if (!(Z_meas==0))
-            ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z,Z_meas);  //!TO ADD
+            ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z,Z_meas);
 
 
            /*for (int j=0; j < ek_nbin; j++) {
@@ -2561,7 +2563,7 @@ void GlobalRecoAna::FillYieldMC(string folderName, Int_t charge_tr, Double_t the
                                        
                           if(theta_tr>=theta_binning[i][0] && theta_tr<theta_binning[i][1]){
 
-                             path = folderName+"/Z_" + to_string(int(charge_tr)) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
+                             path = folderName+"/Z_" + to_string(int(charge_tr)-1) +"#"+to_string(int(charge_tr)-0.5)+"_"+to_string(int(charge_tr)+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/theta_";
                             ((TH1D*)gDirectory->Get(path.c_str()))->Fill(theta_tr);
                             //if ((theta_binning[i][1] <=1) && charge_tr == 6) cout <<"MC : " <<particle->GetFlukaID() << endl;
 
@@ -2595,10 +2597,10 @@ void GlobalRecoAna::FillYieldMC(string folderName, Int_t charge_tr, Double_t the
 void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
   gDirectory->mkdir(path.c_str());
   gDirectory->cd(path.c_str());
-  h = new TH1D("charge","",10, -0.5 ,9.5);
+  h = new TH1D("charge","",8, 0.5 ,8.5);
 
-  for(int iz=0; iz<=primary_cha; iz++){
-    string name = "Z_" + to_string(iz) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+  for(int iz=1; iz<=primary_cha; iz++){
+    string name = "Z_" + to_string(iz-1) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
     gDirectory->mkdir(name.c_str());
     gDirectory->cd(name.c_str());
     name = "";
@@ -2610,7 +2612,7 @@ void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
 
       h = new TH1D("theta_","",200, 0 ,90.);
       if (enableMigMatr)
-      h2 = new TH2D("migMatrix_Z","Bkg Z_true vs Z_reco", 10, 0. ,10., 10, 0. ,10.);
+      h2 = new TH2D("migMatrix_Z", "Bkg Z_true vs Z_reco",8,0.5,8.5,8,0.5,8.5);
      
       gDirectory->cd("..");
     }
