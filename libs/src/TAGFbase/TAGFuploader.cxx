@@ -27,9 +27,19 @@ TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 	m_debug = TAGrecoManager::GetPar()->Debug();
 	// list of detectors used for kalman
 	m_systemsON = "";
-	for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
-		if (i != 0)		m_systemsON += " ";
-		m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
+	if( TAGrecoManager::GetPar()->KalSystems().at(0) == "all" )
+	{
+		if(TAGrecoManager::GetPar()->IncludeVT())	m_systemsON += "VT ";
+		if(TAGrecoManager::GetPar()->IncludeIT())	m_systemsON += "IT ";
+		if(TAGrecoManager::GetPar()->IncludeMSD())	m_systemsON += "MSD ";
+		if(TAGrecoManager::GetPar()->IncludeTW())	m_systemsON += "TW";
+	}
+	else
+	{
+		for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
+			if (i != 0)		m_systemsON += " ";
+			m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
+		}
 	}
 
 	switchOff_HHe = true;
@@ -67,25 +77,25 @@ int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHit
 	if ( m_debug > 0 )		cout << "\n\n*******\tUploaderKalmanGF::PrepareData4Fit\t*******\n" << endl;
 
 	// Vertex -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "VT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeVT() ) {
+	if ( m_systemsON.Contains("VT") && TAGrecoManager::GetPar()->IncludeVT() ) {
 		UploadClusVT();
 		if ( m_debug > 0 )		Info( "TakeMeasHits4Fit", "Filling vertex hit collection " );
 	}
 
 	// Inner Tracker -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "IT" ) != string::npos) && TAGrecoManager::GetPar()->IncludeIT() ) {
+	if ( m_systemsON.Contains("IT") && TAGrecoManager::GetPar()->IncludeIT() ) {
 		UploadClusIT();
 		if ( m_debug > 0 )		Info( "TakeMeasHits4Fit", "Filling Inner Tracker hit collection ");
 	}
 
 	// MSD -  fill fitter collections
-	if ( (m_systemsON == "all" || m_systemsON.find( "MSD" ) != string::npos) && TAGrecoManager::GetPar()->IncludeMSD() ) {
+	if ( m_systemsON.Contains("MSD") && TAGrecoManager::GetPar()->IncludeMSD() ) {
 		UploadClusMSD();
 		if ( m_debug > 0 )		cout << endl<<endl << "Filling Strip hit collection"<<endl;
 	}
 
 	// Tof Wall-  fill fitter collections
-	if ( ( m_systemsON.find( "TW" ) != string::npos) && TAGrecoManager::GetPar()->IncludeTW() ) {
+	if ( m_systemsON.Contains("TW") && TAGrecoManager::GetPar()->IncludeTW() ) {
 		UploadHitsTW();
 		if ( m_debug > 0 )		cout <<endl<<endl << "Filling scintillator hit collection " << endl;
 	}
@@ -128,7 +138,7 @@ int TAGFuploader::UploadClusVT(){
 			if (m_debug > 1)	      Info( "UploadClusVT()", "entered cycle clusVT of sensor %d", iSensor );
 
 			TAVTcluster* clus = vtclus->GetCluster(iSensor, iClus);
-			if(iClus != clus->GetClusterIdx())
+			if(m_debug > 1 && iClus != clus->GetClusterIdx())
 			{
 				Warning("UploadClusVT()","VT INDEX MISMATCH!! Index::%d  Idx::%d", iClus, clus->GetClusterIdx());
 			}
@@ -285,8 +295,6 @@ map< int, vector<int> >* TAGFuploader::TakeMeasParticleMC_Collection() {
 
 
 
-
-
 // to be checked
 int TAGFuploader::GetTWTrackFixed ( TATWpoint* point ) {
 
@@ -320,31 +328,6 @@ int TAGFuploader::GetTWTrackFixed ( TATWpoint* point ) {
 //! \param[out] chVect Pointer to vector where to store the possible charge values
 void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 
-	// // -------- TW CHARGE RETRIEVE NOT WORKING with Sept2020 but only with TruthParticles -----------------
-
-	// TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-	// int tmp_ch;
-
-	// // save hits in the collection
-	// for (int iPoint = 0; iPoint < twPoint->GetPointsN(); iPoint++) {
-
-	// 	TATWpoint* point = twPoint->GetPoint( iPoint );
-
-	// 	tmp_ch = point->GetChargeZ();
-	// 	// if ( m_debug > 1 ) 
-	// 		cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
-	// 	if ( tmp_ch > -1) {
-
-	// 		if ( find( chVect->begin(), chVect->end(), tmp_ch ) == chVect->end() )
-	// 			chVect->push_back( tmp_ch );	
-
-	// 	}
-
-	// // // 	// check if correct MC charge... for cross check only
-		
-	// }
-
-
 	if( IsMC )
 	{	
 		TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
@@ -361,12 +344,27 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 			}
 		}
 	}
-	else
+	else //data-like: get all possible charges from TW
 	{
-		for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
+		// for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
+		TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
+		int tmp_ch;
+
+		// save hits in the collection
+		for (int iPoint = 0; iPoint < twPoint->GetPointsN(); iPoint++) {
+
+			TATWpoint* point = twPoint->GetPoint( iPoint );
+			tmp_ch = point->GetChargeZ();
+
+			if ( m_debug > 1 ) cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
+			
+			if ( tmp_ch > -1)
+			{
+				if ( find( chVect->begin(), chVect->end(), tmp_ch ) == chVect->end() )
+					chVect->push_back( tmp_ch );	
+			}
+		}
 	}
-
-
 }
 
 
@@ -388,7 +386,7 @@ int TAGFuploader::GetNumGenParticle_noFrag() {
 		if ( particle->GetCharge() > 0 && particle->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {
 
 			if ( particle->GetInitPos().z() > 1 ) continue;
-			if ( particle->GetFinalPos().z() < 120 ) continue;
+			if ( particle->GetFinalPos().z() < m_GeoTrafo->FromTWLocalToGlobal(TVector3(0,0,0) ).Z() ) continue;
 
 			count++;
 
@@ -609,9 +607,8 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	int detId = m_sensorIDmap->GetDetIDFromMeasID( iMeas );
 	// nullptr is a TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
-	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID ); 
-
 	if (isYView) hit->setStripV();
+	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID ); 
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 

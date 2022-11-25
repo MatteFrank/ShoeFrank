@@ -24,7 +24,7 @@
 //! Class Imp
 ClassImp(TAVTactNtuHit);
 
-UInt_t TAVTactNtuHit::fgTStolerance = 40;
+UInt_t TAVTactNtuHit::fgTStolerance = 70;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -64,25 +64,22 @@ Bool_t TAVTactNtuHit::Action()
    const DECardEvent* evt  = 0x0;
    const DECardEvent* evt0 = 0x0;
    const DECardEvent* evtp = 0x0;
+   
+   evt0  = static_cast<const DECardEvent*> (datDaq->GetFragment("DECardEvent"));
 
-   for (Int_t i = 0; i < nFragments; ++i) {
-      
-       TString type = datDaq->GetClassType(i);
-       if (type.Contains("DECardEvent")) {
-          evt0  = static_cast<const DECardEvent*> (datDaq->GetFragment(i));
-          
-          if (fQueueEvtsN == 0)
-             evt = evt0;
-          else
-             evt = fQueueEvt.front();
-          bcoTrig    = evt->BCOofTrigger;
-          fData      = evt->values;
-          fEventSize = evt->evtSize;
-          fDataLink  = evt->channelID - (dataVTX | 0x30);
-          if (fEventSize == 0) continue;
-          DecodeEvent();
-       }
+   if (evt0) {
+      if (fQueueEvtsN == 0)
+         evt = evt0;
+      else
+         evt = fQueueEvt.front();
+      bcoTrig    = evt->BCOofTrigger;
+      fData      = evt->values;
+      fEventSize = evt->evtSize;
+      fDataLink  = evt->channelID - (dataVTX | 0x30);
+      if (fEventSize == 0) return true;
+      DecodeEvent();
    }
+
    
    SetBit(kValid);
    fpNtuRaw->SetBit(kValid);

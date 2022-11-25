@@ -76,7 +76,7 @@ G4LogicalVolume* TCEMgeometryConstructor::Construct()
    G4Box* boxMag = new G4Box("boxMag", 0.5*fSizeBoxMg.X(), 0.5*fSizeBoxMg.Y(), 0.5*fSizeBoxMg.Z());
    
    fBoxLog = new G4LogicalVolume(boxMag, vacuum, "boxMagLog");
-   fBoxLog->SetVisAttributes(G4VisAttributes::Invisible);
+   fBoxLog->SetVisAttributes(G4VisAttributes::GetInvisible());
    
    Int_t nMagnets = fpParGeo->GetMagnetsN();
    

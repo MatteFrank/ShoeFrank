@@ -642,9 +642,9 @@ void TAIRalignM::UpdateGeoMaps()
    Char_t configFileName[1000];
    
    TAITparGeo* pGeoMap  = (TAITparGeo*)fpGeoMapItr->Object();
-   sprintf(configFileName,"%s", pGeoMap->GetFileName().Data());
+   snprintf(configFileName, pGeoMap->GetFileName().Length(), "%s", pGeoMap->GetFileName().Data());
    configFileOld.open(configFileName, ios::in);
-   sprintf(configFileName,"%s_new", pGeoMap->GetFileName().Data());
+   snprintf(configFileName, pGeoMap->GetFileName().Length()+4, "%s_new", pGeoMap->GetFileName().Data());
    configFileNew.open(configFileName, ios::out);
    
    

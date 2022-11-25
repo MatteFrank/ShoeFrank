@@ -115,32 +115,22 @@ Bool_t TAMSDactNtuPoint::FindPoints()
       TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iClus);
       if (colHit == 0) continue;
 
-      for (int iClus_ = 0; iClus_ < pNtuCluster->GetClustersN(iLayer+1); iClus_++) {
+      for (int iClus2 = 0; iClus2 < pNtuCluster->GetClustersN(iLayer+1); iClus2++) {
 
-         TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iClus);
+         TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iClus2);
          if (rowHit == 0) continue;
          
-         TAMSDpoint* point = pNtuPoint->NewPoint(iLayer/2,
-                                                 colHit->GetPosition().Y(), colHit->GetPosError().Y(), colHit,
-                                                 rowHit->GetPosition().X(), rowHit->GetPosError().X(), rowHit);
+         TAMSDpoint* point = pNtuPoint->NewPoint(iLayer/2, colHit, rowHit);
        
-         auto posx = 0.;
-         auto posy = 0.;
+         auto posx =  rowHit->GetPositionG().X() + colHit->GetPositionG().X();
+         auto posy =  rowHit->GetPositionG().Y() + colHit->GetPositionG().Y();
          auto posz = (colHit->GetPositionG().Z() + rowHit->GetPositionG().Z())/2.;
-
-         if (pGeoMap->GetSensorPar(iLayer).TypeIdx == 1) {
-            posx = rowHit->GetPositionG().X();
-            posy = colHit->GetPositionG().Y();
-         } else {
-            posx = colHit->GetPositionG().X();
-            posy = rowHit->GetPositionG().Y();
-         }
+         
          TVector3 pos(posx, posy, posz);
-         
-         
          point->SetPositionG(pos);
          point->SetValid();
          point->SetSensorIdx(iLayer);
+         
          if (ValidHistogram()) {
             fpHisPointMap[iLayer/2]->Fill(pos[0], pos[1]);
             fpHisPointCharge[iLayer/2]->Fill(point->GetEnergyLoss());
@@ -150,5 +140,6 @@ Bool_t TAMSDactNtuPoint::FindPoints()
     } 
     plane++;
   }
+   
   return true;
 }

@@ -85,7 +85,7 @@ private:
 	map< int, vector<AbsMeasurement*> >* m_allHitMeas;		///< Container for GenFit AbsMeasurements, FitPlane index to vector of respective measurements
 	map< int, vector<int> >* m_measParticleMC_collection;	///< Maps global measurement index to MC particles in the cluster/point
 
-	string m_systemsON;										///< String containing all systems on in the campaign
+	TString m_systemsON;										///< String containing all systems on in the campaign
 	int m_debug;											///< Global debug value
 	bool switchOff_HHe;										///< Boolean flag to switch off light fragments
 

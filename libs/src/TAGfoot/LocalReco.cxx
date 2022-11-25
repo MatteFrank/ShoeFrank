@@ -78,11 +78,13 @@ void LocalReco::CreateRawAction()
        fActNtuEvt->CreateHistogram();
    }
 
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      fpDatRawCa      = new TAGdataDsc("caDat", new TACAntuRaw());
+
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || (TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag) || TAGrecoManager::GetPar()->IncludeCA()) {
 
       fpDatRawSt      = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw      = new TAGdataDsc("twdDat", new TATWntuRaw());
-      fpDatRawCa      = new TAGdataDsc("caDat", new TACAntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
       
       if (!fgStdAloneFlag){
@@ -90,8 +92,12 @@ void LocalReco::CreateRawAction()
          TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber, true);
          parTimeWD->FromFileTcal(parFileName.Data());
       }
+      
+      if (fCampManager->GetCurrentCamNumber() >=20) // tmp solution
+         TAGactWDreader::EnableArduinoTempCA();
+
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
-                                      fpParTimeWD, fgStdAloneFlag);
+                                      fpParTimeWD, fpParMapCa, fgStdAloneFlag);
       if (fgStdAloneFlag)
          fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
@@ -148,6 +154,10 @@ void LocalReco::CreateRawAction()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()  && !fgStdAloneFlag) {
+      
+      if (fFlagMsdPed) 
+         TAMSDactNtuRaw::EnablePedRun();
+      
       fpDatRawMsd   = new TAGdataDsc("msdDat", new TAMSDntuRaw());
       fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd, fpParConfMsd);
       if (fFlagHisto)
@@ -273,11 +283,11 @@ void LocalReco::SetRawHistogramDir()
    }
 
    // CA
-    if (TAGrecoManager::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
       //fActWdRaw->SetHistogramDir(subfolder);
       fActNtuHitCa ->SetHistogramDir(subfolder);
-    }
+   }
 }
 
 //__________________________________________________________

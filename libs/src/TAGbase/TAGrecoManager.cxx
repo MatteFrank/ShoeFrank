@@ -513,6 +513,13 @@ void TAGrecoManager::FromFile()
           printf("EnableMsdTrack: %d\n", fEnableMsdTrack);
     }
      
+    if (key.Contains("EnableMsdPed:")  ) {
+       if ( item.Contains("y"))  fEnableMsdPed = true;
+       else                      fEnableMsdPed = false;
+       if (fDebugLevel > 0)
+          printf("EnableMsdPed: %d\n", fEnableMsdPed);
+    }
+     
     if (key.Contains("EnableItrTrack:")  ) {
        if ( item.Contains("y"))  fEnableItrTrack = true;
        else                      fEnableItrTrack = false;

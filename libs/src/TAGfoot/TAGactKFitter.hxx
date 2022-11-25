@@ -53,6 +53,7 @@
 
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"
+#include "TABMntuTrack.hxx"
 #include "TACAparGeo.hxx"
 
 #include "TADIparGeo.hxx"
@@ -173,7 +174,6 @@ private:
 
 	EventDisplay* display;								///< GenFit event display
 
-
 	shared_ptr<TASTparGeo> m_ST_geo;					///< Pointer to ST parGeo
 	shared_ptr<TABMparGeo> m_BM_geo;					///< Pointer to BM parGeo
 	shared_ptr<TAGparGeo> m_TG_geo;						///< Pointer to TG parGeo
@@ -189,7 +189,7 @@ private:
 
 	vector<Color_t> m_vecHistoColor;
 
-	string m_systemsON;									///< String w/ list of systems on in the campaign
+	TString m_systemsON;								///< String w/ list of systems on in the campaign
 	// string m_kalmanOutputDir;
 
 	double m_AMU;										///< Conversion between mass in GeV and atomic mass unit
@@ -227,6 +227,7 @@ private:
 	TH1F* h_dR;											///< Fitted track dR =  at the target -- histo
 	TH1F* h_phi;										///< Fitted track azimuthal angle at the TG -- histo
 	TH1F* h_theta;										///< Fitted track polar angle at the TG -- histo
+	TH1F* h_theta_BM;									///< Fitted track polar angle at the TG wrt to BM track -- histo
 	TH1F* h_eta;										///< Fitted track eta =  at the TG -- histo
 	TH1F* h_dx_dz;										///< Fitted track slope at the TG in the X direction -- histo
 	TH1F* h_dy_dz;										///< Fitted track slope at the TG in the Y direction -- histo
@@ -235,7 +236,8 @@ private:
 	TH1F* h_mcPosX;										///< MC X position at the TG -- histo
 	TH1F* h_mcPosY;										///< MC Y position at the TG -- histo
 	TH1F* h_mcPosZ;										///< MC Z position at the TG -- histo
-	
+	TH2I* h_PlaneOccupancy;
+
 	map<string, map<float, TH1F*> > h_dPOverP_x_bin;	///< Map of the histograms for dP/P; the key of the external map is the name of the particle ("H", "He", "Li", ...), while the key for the internal map is the central P_MC value of the histogram
 	map<string, TH1F*> h_deltaP;						/// Map of total dP histograms; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_sigmaP;						///< Map of histograms for total sigma of dP distributions; the key is the particle name ("H", "He", "Li", ...)

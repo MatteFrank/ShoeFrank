@@ -62,6 +62,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParMapIt(0x0),
    fpParMapMsd(0x0),
    fpParMapTw(0x0),
+   fpParMapCa(0x0),
    fpParGeoSt(0x0),
    fpParGeoG(0x0),
    fpParGeoDi(0x0),
@@ -122,6 +123,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagHits(false),
    fFlagHisto(false),
    fFlagTrack(false),
+   fFlagMsdPed(false),
    fFlagMsdTrack(false),
    fFlagTWbarCalib(false),
    fFlagRateSmearTw(false),
@@ -269,6 +271,7 @@ void BaseReco::GlobalSettings()
    Bool_t hit    = TAGrecoManager::GetPar()->IsSaveHits();
    Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
    Bool_t trkMsd = TAGrecoManager::GetPar()->IsMsdTracking();
+   Bool_t pedMsd = TAGrecoManager::GetPar()->IsMsdPedestal();
    Bool_t trkItr = TAGrecoManager::GetPar()->IsItrTracking();
    Bool_t obj    = TAGrecoManager::GetPar()->IsReadRootObj();
    Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
@@ -293,6 +296,9 @@ void BaseReco::GlobalSettings()
  
    if (trkMsd)
       EnableMsdTracking();
+   
+   if (pedMsd)
+      EnableMsdPedestal();
 
    if (trkItr)
       EnableItrTracking();
@@ -535,7 +541,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for start counter
-   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW()|| TAGrecoManager::GetPar()->IncludeBM()) {
+   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA()) {
 
      fpParGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
@@ -558,10 +564,10 @@ void BaseReco::ReadParFiles()
          parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
          parMapWD->FromFile(parFileName.Data());
 
-	 fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
-	 TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
-	 TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
-	 parTimeWD->FromFileCFD(parFileName.Data());
+         fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
+         TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+         TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+         parTimeWD->FromFileCFD(parFileName.Data());
       }
    }
 
@@ -750,25 +756,24 @@ void BaseReco::ReadParFiles()
       fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
 
-     if(fFlagMC) { // set in MC threshold and active crystals from data informations
-        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->FromCrysStatusFile(parFileName.Data());
+      if(fFlagMC) { // set in MC threshold and active crystals from data informations
+         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parCal->FromCrysStatusFile(parFileName.Data());
 
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-        parCal->LoadEnergyCalibrationMap(parFileName.Data());
+         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parCal->LoadEnergyCalibrationMap(parFileName.Data());
 
-     } else {
+      } else {
         fpParMapCa = new TAGparaDsc("caMap", new TACAparMap());
         TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
         parMap->FromFile(parFileName.Data());
         
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
-
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
         parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
-     }
+      }
    }
 }
 

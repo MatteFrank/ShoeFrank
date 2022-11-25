@@ -22,8 +22,13 @@ protected:
    TAGeventDisplayMC(const TString expName, Int_t runNumber, Int_t type);
    
 protected:
-   static TAGeventDisplayMC* fgInstance; ///< static instance of class
-   
+   static TAGeventDisplayMC* fgInstance;    ///< static instance of class
+   static Bool_t             fgMcTrackFlag; ///< MC track display flag
+
+public:
+   static void DisablDisplayeMcTrack() { fgMcTrackFlag = false; }
+   static void EnableDisplayMcTrack()  { fgMcTrackFlag = true;  }
+
 public:
    // Instance of class
    static TAGeventDisplayMC* Instance(const TString name = "", Int_t runNumber = -1, Int_t type = 2);
@@ -59,7 +64,9 @@ public:
    void UpdateTwInfo(Int_t idx);
    // Update CAL MC info
    void UpdateCaInfo(Int_t idx);
-   
+   // Update tracks MC info
+   void UpdateTrackInfo(TEveStraightLineSet* ts, Int_t idx);
+
 private:
    //Display
    TAEDpoint*      fStMcDisplay;        ///< STC MC hits display
@@ -69,15 +76,15 @@ private:
    TAEDpoint*      fMsdMcDisplay;       ///< MSD MC hits display
    TAEDpoint*      fTwMcDisplay;        ///< TW MC hits display
    TAEDpoint*      fCaMcDisplay;        ///< CAL MC hits display
-
-   TAEDglbTrack*   fPartTrackDisplay;   ///< list of line to display MC particle track
-
+   TAEDglbTrack*   fTrackMcDisplay;     ///< MC particle tracks display
 
 private:
    // Update MC elements
    void  UpdateMcElements(const TString prefix);
    // Update MC info
    void  UpdateMcInfo(TString prefix, Int_t idx);
+   // Update track MC elements
+   void  UpdateTrackElements();
    
    // Add required MC item for STC
    void AddRequiredMcItemSt();

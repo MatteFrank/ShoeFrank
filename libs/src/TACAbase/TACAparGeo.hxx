@@ -84,7 +84,7 @@ public:
    // 2D positions and dimensions fro clustering
    //! Get maximum of line number
    Int_t           GetMaxNumLines()          const  { return fNumLine;         }
-   //! Get maximum of colomn number
+   //! Get maximum of column number
    Int_t           GetMaxNumColumns()        const  { return fNumCol;          }
 
    //!Get dimension of truncate pyramid of air around the module

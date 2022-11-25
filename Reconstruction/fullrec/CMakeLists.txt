@@ -7,7 +7,7 @@ MESSAGE("  ${PROJECT_NAME}:")
 #----------------------------------------------------------------------------
 # Copy rootlogon
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/fullrec/rootlogon.C"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../level0/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/fullrec/rootlogon.C"  @ONLY)
 
 #----------------------------------------------------------------------------
 # Copy geomaps + config + calib + cammaps (tmp solution)
@@ -109,7 +109,7 @@ install(TARGETS DecodeGlbAna DESTINATION bin)
 if (TOE_DIR)
 add_executable(DecodeGlbToe DecodeGlbToe.cc)
 #
-target_compile_options( DecodeGlbToe PUBLIC -march=native )
+target_compile_options( DecodeGlbToe PUBLIC )
 target_link_libraries(DecodeGlbToe ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
 #----------------------------------------------------------------------------
@@ -124,7 +124,7 @@ install(TARGETS DecodeGlbToe DESTINATION bin)
 if(DEFINED OTC )
     if( "${OTC}" STREQUAL ON )
     add_executable(OptimizeToeCuts OptimizeToeCuts.cc)
-    target_compile_options( OptimizeToeCuts PUBLIC -march=native -ffast-math  )
+    target_compile_options( OptimizeToeCuts PUBLIC -ffast-math  )
     target_link_libraries(OptimizeToeCuts ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
 

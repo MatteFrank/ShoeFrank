@@ -146,15 +146,12 @@ Bool_t TABMactNtuRaw::Action() {
     return kTRUE;
   }
 
-   for (Int_t i = 0; i < nFragments; ++i) {
-       TString type = p_datdaq->GetClassType(i);
-       if (type.Contains("TDCEvent")) {
-         const TDCEvent* evt = static_cast<const TDCEvent*> (p_datdaq->GetFragment(i));
-         DecodeHits(evt, p_timraw->GetTriggerTime());
-         break;
-       }
-   }
+   const TDCEvent* evt = static_cast<const TDCEvent*> (p_datdaq->GetFragment("TDCEvent"));
 
+   if (evt) {
+      DecodeHits(evt, p_timraw->GetTriggerTime());
+   }
+   
    fpDatRaw->SetBit(kValid);
 
   if(FootDebugLevel(2))

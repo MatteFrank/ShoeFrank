@@ -20,8 +20,7 @@ TAGdaqEvent::TAGdaqEvent()
    fInfoEvent(0x0),
    fTrgEvent(0x0)
 {
-   fListOfFragments.clear();
-   fListOfClassTypes.clear();
+   fMapOfFragments.clear();
 }
 
 //------------------------------------------+-----------------------------------
@@ -36,10 +35,39 @@ TAGdaqEvent::~TAGdaqEvent()
 //! \param[in] frag add fragment to list
 void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 {
-   fListOfFragments.push_back(frag);
-   
    string type = frag->classType();
-   fListOfClassTypes.push_back(type);
+   fMapOfFragments[type].push_back(frag);
+}
+
+//------------------------------------------+-----------------------------------
+//! Get fragment
+//!
+//! \param[in] type  frgament type
+//! \param[in] idx index in the multi-fragement vector
+const BaseFragment* TAGdaqEvent::GetFragment(string type, Int_t idx)
+{
+   auto itr = fMapOfFragments.find(type);
+   if (itr == fMapOfFragments.end()) {
+      Error("GetFragment()", "Wrong type for fragment %s", type.data());
+      return 0x0;
+   }
+   
+   return fMapOfFragments[type].at(idx);
+}
+
+//------------------------------------------+-----------------------------------
+//! Get fragment size
+//!
+//! \param[in] type  frgament type
+size_t TAGdaqEvent::GetFragmentSize(string type)
+{
+   auto itr = fMapOfFragments.find(type);
+   if (itr == fMapOfFragments.end()) {
+      Error("GetFragment()", "Wrong type for fragment");
+      return 0x0;
+   }
+   
+   return fMapOfFragments[type].size();
 }
 
 //------------------------------------------+-----------------------------------
@@ -47,8 +75,7 @@ void TAGdaqEvent::AddFragment(const BaseFragment* frag)
 void TAGdaqEvent::Clear(Option_t*)
 {
    TAGdata::Clear();
-   fListOfFragments.clear();
-   fListOfClassTypes.clear();
+   fMapOfFragments.clear();
 }
 
 //______________________________________________________________________________

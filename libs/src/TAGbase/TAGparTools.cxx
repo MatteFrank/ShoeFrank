@@ -326,7 +326,7 @@ void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter,
        fFileStream.getline(buf, 255);
        if (fFileStream.eof()) return;
        key = buf;
-     } while (buf[0] == '/' || buf[0] == '\0');
+     } while (buf[0] == '/' || buf[0] == '\0' || buf[0] == '#');
    }
   
    if (key.IsNull()) return;
@@ -714,7 +714,7 @@ TGeoHMatrix* TAGparTools::GetTransfo(Int_t idx)
 TGeoCombiTrans* TAGparTools::GetCombiTransfo(Int_t idx)
 {
    if (idx < 0 || idx >= fMatrixList->Capacity()) {
-      Warning("GetTransfo()","Wrong detector id number: %d ", idx);
+      Warning("GetCombiTransfo()","Wrong detector id number: %d ", idx);
       return 0x0;
    }
    

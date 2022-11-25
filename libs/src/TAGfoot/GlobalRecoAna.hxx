@@ -23,13 +23,15 @@
 #include "TAGdataDsc.hxx"
 
 #include "BaseReco.hxx"
+#include "LocalReco.hxx"
 #include "TAGrunInfo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "GlobalRecoMassAna.hxx"
+#include "TAGWDtrigInfo.hxx"
 
 using namespace std;
 
-class GlobalRecoAna : public BaseReco {
+class GlobalRecoAna : public LocalReco {
 
   public:
   GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t nTotEv);
@@ -56,13 +58,20 @@ class GlobalRecoAna : public BaseReco {
   void ComputeMCtruth( Int_t trkid, int &cha, TVector3 &mom, TVector3 &mom_cross, double &ek);
   Double_t ComputeTrkEkin(TAGtrack *track);//from calo infos
   void resetStatus(); //to reset the subdetectors status flags
-  bool TriggerCheck(TAGtrack * fGlbTrack);
-  bool TriggerCheckMC(TAGtrack * fGlbTrack);
+  bool TriggerCheck();
+  bool TriggerCheckMC();
+  void GlbTrackPurityStudy();
+  void AlignmentStudy(int currEvent,int nt, bool isOxygenInEvent);
+  void TWAlgoStudy();
+  void TrackVsMCStudy(int currEvent, int nt);
+  
 
   //fill plots
   void FillGlbTrackPlots();
   void FillMassPlots();
-
+  void FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek=0.);
+  void FillYieldMC(string folderName, Int_t charge_tr, Double_t theta_tr, Double_t Ek=0.);
+  void BookYield(string path, bool enableMigMatr= false);
   //useful formulas
   Double_t GetGamma(Double_t beta){return 1./sqrt(1.-beta*beta);};
   Double_t GetMassPB(Double_t mom, Double_t beta) {return (1./atomassu)*mom*sqrt(1.-beta*beta)/beta;};
@@ -139,7 +148,27 @@ class GlobalRecoAna : public BaseReco {
   Int_t mass_nbin;
   Double_t **mass_binning;
 
-  TFile *f;
+  //Unfolding
+  Int_t theta_bin_meas, Ek_bin_meas, theta_bin_true, Ek_bin_true;
+  
+  // for beam direction studies in vertex
+  TVector3 vertex_direction_frag;
+  TVector3 vertex_direction;
+
+  //debug variable to check relation between tracking reconstruction and MC events
+  bool debug_trackid;
+  ofstream myfile;
+
+  //debug variable for plots of triggered events
+  bool isOxygenInEvent;
+
+  // for TW multiple hits studies
+  Int_t TrkIdMC;
+  Int_t N_TrkIdMC_TW;   
+  Int_t TrkIdMC_TW;
+
+  // outfile string
+  TString outfile;
 
 };
 

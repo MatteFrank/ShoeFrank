@@ -71,7 +71,7 @@ G4LogicalVolume* TCSTgeometryConstructor::Construct()
    G4Box* boxIr = new G4Box("boxIr", 0.5*fSizeBoxSt.X(), 0.5*fSizeBoxSt.Y(), 0.5*fSizeBoxSt.Z());
    
    fBoxLog = new G4LogicalVolume(boxIr, vacuum, "boxIrLog");
-   fBoxLog->SetVisAttributes(G4VisAttributes::Invisible);
+   fBoxLog->SetVisAttributes(G4VisAttributes::GetInvisible());
    
    TVector3 size  = fpParGeo->GetSize()*cm;
    
