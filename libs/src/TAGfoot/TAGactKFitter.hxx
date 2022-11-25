@@ -228,6 +228,9 @@ private:
 	TH1F* h_phi;										///< Fitted track azimuthal angle at the TG -- histo
 	TH1F* h_theta;										///< Fitted track polar angle at the TG -- histo
 	TH1F* h_theta_BM;									///< Fitted track polar angle at the TG wrt to BM track -- histo
+	TH1F* h_phi_BM;										///< Fitted track azimuthal angle at the TG wrt to BM track -- histo
+	// TH1F* h_phi_BMtrack;
+	// TH1F* h_theta_BMtrack;
 	TH1F* h_eta;										///< Fitted track eta =  at the TG -- histo
 	TH1F* h_dx_dz;										///< Fitted track slope at the TG in the X direction -- histo
 	TH1F* h_dy_dz;										///< Fitted track slope at the TG in the Y direction -- histo
@@ -236,7 +239,9 @@ private:
 	TH1F* h_mcPosX;										///< MC X position at the TG -- histo
 	TH1F* h_mcPosY;										///< MC Y position at the TG -- histo
 	TH1F* h_mcPosZ;										///< MC Z position at the TG -- histo
-	TH2I* h_PlaneOccupancy;
+	TH2I* h_PlaneOccupancy[6];
+
+	TH1I* h_GFeventType;								///< Event categorization seen by the GF selector
 
 	map<string, map<float, TH1F*> > h_dPOverP_x_bin;	///< Map of the histograms for dP/P; the key of the external map is the name of the particle ("H", "He", "Li", ...), while the key for the internal map is the central P_MC value of the histogram
 	map<string, TH1F*> h_deltaP;						/// Map of total dP histograms; the key is the particle name ("H", "He", "Li", ...)

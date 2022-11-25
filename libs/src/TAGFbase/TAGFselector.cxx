@@ -1660,9 +1660,12 @@ void TAGFselector::CheckPlaneOccupancy()
 	}
 }
 
+//! \brief Get the event type seen by the Genfit selector
+int TAGFselector::GetEventType() { return m_eventType; }
+
 
 //! \brief Fill plane occupancy histogram
-void TAGFselector::FillPlaneOccupancy(TH2* h_PlaneOccupancy)
+void TAGFselector::FillPlaneOccupancy(TH2I** h_PlaneOccupancy)
 {
 	int count = 0;
 	for( auto it = m_detectors.begin(); it != m_detectors.end(); ++it)
@@ -1673,7 +1676,8 @@ void TAGFselector::FillPlaneOccupancy(TH2* h_PlaneOccupancy)
 		{
 			for(int i=0; i < m_PlaneOccupancy[*it].size(); ++i)
 			{
-				h_PlaneOccupancy->Fill( count, m_PlaneOccupancy[*it][i] );
+				h_PlaneOccupancy[0]->Fill( count, m_PlaneOccupancy[*it][i] );
+				h_PlaneOccupancy[m_eventType]->Fill( count, m_PlaneOccupancy[*it][i] );
 				++count;
 			}
 

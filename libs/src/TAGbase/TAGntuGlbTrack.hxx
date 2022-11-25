@@ -221,7 +221,19 @@ public:
    
    // Get phi angle at target
    Double_t         GetTgtPhi()             const;
+
+   // Set theta angle at target wrt to BM track [rad]
+   void            SetTgtThetaBm(Double32_t theta) { fBmTheta = theta; };
+
+   // Get theta angle at target wrt to BM track [rad]
+   Double32_t       GetTgtThetaBm()          const { return fBmTheta; };
    
+   // Set phi angle at target wrt to BM track [rad]
+   void            SetTgtPhiBm(Double32_t phi)    { fBmPhi = phi; };
+   
+   // Get phi angle at target wrt to BM track [rad]
+   Double32_t       GetTgtPhiBm()            const { return fBmPhi; };
+
    // Intersection near target
    TVector3         Intersection(Double_t posZ) const;
    
@@ -281,6 +293,9 @@ private:
    Double32_t       fFitTof;          ///< fitted time of flight
    Double32_t       fFitEnergyLoss;   ///< fitted energy loss
    Double32_t       fFitEnergy;       ///< fitted energy
+
+   Double32_t       fBmTheta;         ///< Track theta emission angle wrt to BM track
+   Double32_t       fBmPhi;           ///< Track phi emission angle wrt to BM track
 
    //Particle momentum and positions computed on target middle
    TVector3         fTgtDir;          ///< Direction of particle at target

@@ -82,10 +82,11 @@ public:
 
 	int					Categorize();
 
+	int					GetEventType();
 	TString				GetRecoTrackName(Track* tr);
 	int					GetChargeFromTW(Track* trackToCheck);
 	map<string, int>	CountParticleGenaratedAndVisible();
-	void				FillPlaneOccupancy(TH2* h_PlaneOccupancy);
+	void				FillPlaneOccupancy(TH2I** h_PlaneOccupancy);
 
 private:
 
