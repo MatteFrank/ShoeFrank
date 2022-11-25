@@ -590,14 +590,14 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
    int STbo=27;
    
    if (!vSTbo.size()) {
-      printf("ST board not defined, I can not apply time calibration!!\n");
+      if (FootDebugLevel(1)) printf("ST board not defined, I can not apply time calibration!!\n");
       return false;
    } else {
       STbo = vSTbo.at(0);
    }
 
    if (!fCLKwaves.count(make_pair(STbo,16))) {
-      printf("reference clock not found!!\n");
+      if (FootDebugLevel(1)) printf("reference clock not found!!\n");
       return false;
    }
    
