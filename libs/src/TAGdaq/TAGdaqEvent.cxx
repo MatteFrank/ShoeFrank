@@ -63,7 +63,7 @@ size_t TAGdaqEvent::GetFragmentSize(string type)
 {
    auto itr = fMapOfFragments.find(type);
    if (itr == fMapOfFragments.end()) {
-      Error("GetFragment()", "Wrong type for fragment");
+      Error("GetFragmentSize()", "Wrong type for fragment %s", type.data());
       return 0x0;
    }
    

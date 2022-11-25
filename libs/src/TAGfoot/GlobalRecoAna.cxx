@@ -1583,7 +1583,7 @@ Double_t GlobalRecoAna::ComputeTrkEkin(TAGtrack *fGlbTrack){
   if(FootDebugLevel(1))
     cout<<"Zcalo = "<<ZCalo<<" "<<fpFootGeo->GetCACenter().Z()<<" "<<GetParGeoCa()->GetCrystalThick()<<endl;
 
-  TAGtrack::polynomial_fit_parameters trk_param = fGlbTrack->GetParameters();
+  TAGtrack::PolynomialFit_t trk_param = fGlbTrack->GetParameters();
 
   Double_t Yint_Calo = trk_param.parameter_y[1] * ZCalo + trk_param.parameter_y[0];
   Double_t Xint_Calo = trk_param.parameter_x[3] * pow(ZCalo,3) + trk_param.parameter_x[2] * pow(ZCalo,2) + trk_param.parameter_x[1] * ZCalo + trk_param.parameter_x[0];

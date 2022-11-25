@@ -81,10 +81,10 @@ struct particle_properties{
 };
 
 /*!
- \struct polynomial_fit_parameters
+ \struct PolynomialFit_t
  \brief polynomial fit parameters for trajectory
  */
-struct polynomial_fit_parameters{
+struct PolynomialFit_t{
     std::array<double, 4> x; ///< coefficient for x
     double                determination_coefficient_x; ///< I don't know in x
     std::array<double, 2> y;  ///< coefficient for y
@@ -168,7 +168,7 @@ struct reconstructed_track{
     std::vector<cluster>      cluster_c;        ///< cluster vector
     particle_properties       properties;       ///< particle properties
     double                    shearing_factor;  ///< shearing factor
-    polynomial_fit_parameters parameters;       ///< polynomial fit parameters of the track length
+    PolynomialFit_t parameters;       ///< polynomial fit parameters of the track length
     std::size_t               clone_number{0};  ///< clone number
     double                    length;           ///< length of track
     double                    tof;              ///< time of flight of the particle

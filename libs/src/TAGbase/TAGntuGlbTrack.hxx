@@ -34,10 +34,10 @@ using namespace std;
 class TAGtrack : public TAGnamed {
 public:
    /*!
-    \struct polynomial_fit_parameters
+    \struct PolynomialFit_t
     \brief  polynonial fit  parameters
     */
-    struct polynomial_fit_parameters{
+    struct PolynomialFit_t{
         std::array<double, 4> parameter_x; ///< parameter x
         std::array<double, 2> parameter_y; ///< parameter y
     };
@@ -254,9 +254,9 @@ public:
    void             SetupClones();
    
    //! Set paramters of polynom fit
-   void             SetParameters( polynomial_fit_parameters parameters ){ fParameters = std::move( parameters ); }
+   void             SetParameters( PolynomialFit_t parameters ){ fParameters = std::move( parameters ); }
    //! Get paramters of polynom fit
-   polynomial_fit_parameters const&    GetParameters( ) const{ return fParameters; }
+   PolynomialFit_t const&    GetParameters( ) const{ return fParameters; }
    // Get position in z from polynom fit
    TVector3         GetPosition( double z );
    
@@ -301,7 +301,7 @@ private:
    map<int, int>     fMcTrackMap;     //! Map of MC track Id
 
 
-   polynomial_fit_parameters fParameters; ///< polynomial parameter
+   PolynomialFit_t fParameters; ///< polynomial parameter
     
    ClassDef(TAGtrack,3)
    
