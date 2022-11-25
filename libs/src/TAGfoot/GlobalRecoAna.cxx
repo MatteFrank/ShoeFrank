@@ -55,6 +55,7 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
 
   Th_meas = -999.; //from TWpoint
   Th_reco = -999.; //from global tracking
+  Th_recoBM = -999.; //from global tracking wrt BM direction
 
 
 }
@@ -80,6 +81,7 @@ void GlobalRecoAna::LoopEvent() {
     resetStatus();
     TATWntuPoint* myTWNtuPt = (TATWntuPoint*)fpNtuRecTw->GenerateObject();
     TACAntuCluster* pCaNtuClu = (TACAntuCluster*)fpNtuClusCa->GenerateObject();
+    TABMntuTrack* myBMNtuTrk = (TABMntuTrack*) fpNtuTrackBm->GenerateObject();
 
     if(fFlagMC){
       TAMCntuEvent* myMcNtuEvent = (TAMCntuEvent*)fpNtuMcEvt->GenerateObject();
@@ -199,7 +201,31 @@ void GlobalRecoAna::LoopEvent() {
       //-----------------------------------------------------------------------------------------   SET TRACK VALUES     ----------------
       if(FootDebugLevel(1)) cout<<"Reco analysis: retrieve measured quantities"<<endl;
       
-      Th_reco = fGlbTrack -> GetTgtTheta() *180./TMath::Pi(); 
+      Th_reco = fGlbTrack-> GetTgtTheta() *TMath::RadToDeg();
+      //cout << "TH_RECO: " << Th_reco << endl;
+
+      if (myBMNtuTrk->GetTracksN() > 0) {
+      //get theta_reco wrt to the beam direction, not the global conventional z
+      //take the vector direction of the fragment in global SdR
+      TVector3 TgtMomentum = fGlbTrack->GetTgtMomentum().Unit();
+      // take the direction of the beam in global SdR
+      TVector3 BMslope = myBMNtuTrk->GetTrack(0)->GetSlope();
+      BMslope  = fpFootGeo->VecFromBMLocalToGlobal(BMslope);
+      //BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope);
+      //take the angle between these 2 vectors
+      Th_recoBM = BMslope.Angle( TgtMomentum )*TMath::RadToDeg();
+      
+      cout << "momX: " << TgtMomentum.X() << " momY: " << TgtMomentum.Y() << " momZ: " << TgtMomentum.Z() << endl;
+      cout << "BMX: " << BMslope.X() << " BMY: " << BMslope.Y() << " BMZ: " << BMslope.Z() << endl;
+      cout << "TH_mom: " << TgtMomentum.Theta() *TMath::RadToDeg()  <<  " thBM: "<< BMslope.Theta() *TMath::RadToDeg() << " th_recoBM: "<<Th_recoBM <<endl;
+      cout << endl;
+      }
+
+      
+
+
+
+
       Int_t trkid = fGlbTrack->GetTrackId();
       Int_t Z_meas = fGlbTrack->GetTwChargeZ();     
       Double_t P_meas = fGlbTrack->GetMomentum();  // Wrong method of TOE!! but it does not crash
@@ -835,6 +861,13 @@ void GlobalRecoAna::SetupTree(){
   fpNtuGlbTrack = new TAGdataDsc("glbTrack",new TAGntuGlbTrack());
   gTAGroot->AddRequiredItem("glbTrack");
   myReader->SetupBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+
+  if(TAGrecoManager::GetPar()->IncludeBM()){
+  fpNtuTrackBm = new TAGdataDsc("bmtrack" , new TABMntuTrack());
+  gTAGroot->AddRequiredItem("bmtrack");
+  myReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+
+  }
 
   if(TAGrecoManager::GetPar()->IncludeVT()){
     fpNtuClusVtx = new TAGdataDsc("vtclus",new TAVTntuCluster());
