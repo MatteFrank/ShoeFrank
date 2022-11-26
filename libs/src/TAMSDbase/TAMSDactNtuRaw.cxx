@@ -252,7 +252,10 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
          
          view = 0;
          sensorId = p_parmap->GetSensorId(boardId, view);
-         if (sensorId < 0) continue;
+         if (sensorId < 0) {
+            Warning("DecodeHits()", "Bad sensorId %d BoardId %d View %d", sensorId, boardId, view);
+            continue;
+         }
          if (p_parconf->GetSensorPar(sensorId).DeadStripMap[i] == 1) continue;
          
          auto pedestal = p_parcal->GetPedestal( sensorId, i );
@@ -297,7 +300,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
          
          view = 1;
          sensorId = p_parmap->GetSensorId(boardId, view);
-         if (sensorId < 0) continue;
+         if (sensorId < 0) {
+            Warning("DecodeHits()", "Bad sensorId %d BoardId %d View %d", sensorId, boardId, view);
+            continue;
+         }
+         
          pedestal = p_parcal->GetPedestal( sensorId, i );
          
          if( pedestal.status ) {

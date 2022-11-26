@@ -26,7 +26,7 @@
 #pragma link C++ class TAGpoint;
 #pragma link C++ class TAGntuPoint;
 #pragma link C++ class TAGtrack;
-#pragma link C++ class TAGtrack::polynomial_fit_parameters;
+#pragma link C++ class TAGtrack::PolynomialFit_t;
 #pragma link C++ class TAGntuGlbTrack;
 
 #pragma link C++ class TAGdataDsc+;

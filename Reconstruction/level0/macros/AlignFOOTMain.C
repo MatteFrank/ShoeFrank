@@ -214,6 +214,9 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
 
     if(IncludeTW && (IncludeVT || IncludeMSD))
       FillTWalign(); //Align the TW with the VT or MSD tracks
+    
+    if((IncludeBM && IncludeVT) || (IncludeBM && IncludeMSD) || (IncludeVT && IncludeMSD))
+      FillCorr();
 
     FillTrackVect(bmtrk, vttrk, msdtrk); //fill the tracks in GLOBAL FRAME adopted for alignment
   }//Loop on events

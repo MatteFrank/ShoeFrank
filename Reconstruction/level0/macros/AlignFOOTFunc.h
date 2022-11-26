@@ -238,26 +238,24 @@ void Booking(TFile* file_out) {
     h = new TH1D("msd_cls_num_total","Total number of msd clusters x event;Total number clusters;Events",21,-0.5,20.5);
     for(int i=0;i<msdparGeo->GetSensorsN();i++){
       h = new TH1D(Form("msd_cls_num_%d",i),"Number of msd clusters;Number clusters;Events",21,-0.5,20.5);
-      if(i%2==0){
-        h = new TH1D(Form("msd_clspos_msdsys_%d",i),"msd cluster position in the msd system;pos [cm];Events",1000,-5.,5.);
-        h = new TH1D(Form("msd_clspos_glbsys_%d",i),"msd cluster position in the glb system;pos [cm];Events",1000,-5.,5.);
-        //check the msd internal alignment
-        h = new TH1D(Form("msd_AllXmeas_%d",i),"MSD point for all the MSD tracks on X view;(poipos).X[cm];Events",250,-5.,5.);
-        h = new TH1D(Form("msd_AllYmeas_%d",i),"MSD point for all the MSD tracks on Y view;(poipos).Y[cm];Events",250,-5.,5.);
-        h = new TH1D(Form("msd_AllXfit_%d",i),"MSD trk for all the MSD tracks on X view;(poipos).X[cm];Events",250,-5.,5.);
-        h = new TH1D(Form("msd_AllYfit_%d",i),"MSD trk for all the MSD tracks on Y view;(poipos).Y[cm];Events",250,-5.,5.);
+      h = new TH1D(Form("msd_clspos_msdsys_%d",i),"msd cluster position in the msd system;pos [cm];Events",1000,-5.,5.);
+      h = new TH1D(Form("msd_clspos_glbsys_%d",i),"msd cluster position in the glb system;pos [cm];Events",1000,-5.,5.);
+      //check the msd internal alignment
+      h = new TH1D(Form("msd_AllXmeas_%d",i),"MSD point for all the MSD tracks on X view;(poipos).X[cm];Events",250,-5.,5.);
+      h = new TH1D(Form("msd_AllYmeas_%d",i),"MSD point for all the MSD tracks on Y view;(poipos).Y[cm];Events",250,-5.,5.);
+      h = new TH1D(Form("msd_AllXfit_%d",i),"MSD trk for all the MSD tracks on X view;(poipos).X[cm];Events",250,-5.,5.);
+      h = new TH1D(Form("msd_AllYfit_%d",i),"MSD trk for all the MSD tracks on Y view;(poipos).Y[cm];Events",250,-5.,5.);
 
-        h = new TH1D(Form("msd_residualAllX_%d",i),"Residual of MSD tracks with MSD clusters for all the MSD tracks on X view;(Trackpos-cluspos).X[cm];Events",400,-0.02,0.02);
-        h = new TH1D(Form("msd_residualAllY_%d",i),"Residual of MSD tracks with MSD clusters for all the MSD tracks on Y view;(Trackpos-cluspos).Y[cm];Events",400,-0.02,0.02);
+      h = new TH1D(Form("msd_residualAllX_%d",i),"Residual of MSD tracks with MSD clusters for all the MSD tracks on X view;(Trackpos-cluspos).X[cm];Events",400,-0.02,0.02);
+      h = new TH1D(Form("msd_residualAllY_%d",i),"Residual of MSD tracks with MSD clusters for all the MSD tracks on Y view;(Trackpos-cluspos).Y[cm];Events",400,-0.02,0.02);
 
-	h = new TH1D(Form("msd_1TrkXmeas_%d",i),"MSD point for events with 1 MSD track on X view;(trkpos).X[cm];Events",250,-5.,5.);
-        h = new TH1D(Form("msd_1TrkYmeas_%d",i),"MSD point for events with 1 MSD track on Y view;(trkpos).Y[cm];Events",250,-5.,5.);
-        h = new TH1D(Form("msd_1TrkXfit_%d",i),"MSD point for events with 1 MSD track on X view;(trkpos).X[cm];Events",250,-5.,5.);
-        h = new TH1D(Form("msd_1TrkYfit_%d",i),"MSD point for events with 1 MSD track on Y view;(trkpos).Y[cm];Events",250,-5.,5.);
+h = new TH1D(Form("msd_1TrkXmeas_%d",i),"MSD point for events with 1 MSD track on X view;(trkpos).X[cm];Events",250,-5.,5.);
+      h = new TH1D(Form("msd_1TrkYmeas_%d",i),"MSD point for events with 1 MSD track on Y view;(trkpos).Y[cm];Events",250,-5.,5.);
+      h = new TH1D(Form("msd_1TrkXfit_%d",i),"MSD point for events with 1 MSD track on X view;(trkpos).X[cm];Events",250,-5.,5.);
+      h = new TH1D(Form("msd_1TrkYfit_%d",i),"MSD point for events with 1 MSD track on Y view;(trkpos).Y[cm];Events",250,-5.,5.);
 
-	h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on X view;(Trackpos-cluspos).X[cm];Events",400,-0.02,0.02);
-        h = new TH1D(Form("msd_residual1TrkY_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on Y view;(Trackpos-cluspos).Y[cm];Events",400,-0.02,0.02);
-      }
+h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on X view;(Trackpos-cluspos).X[cm];Events",400,-0.02,0.02);
+      h = new TH1D(Form("msd_residual1TrkY_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on Y view;(Trackpos-cluspos).Y[cm];Events",400,-0.02,0.02);
     }
 
     h = new TH1D("msd_trk_num","Number of msd tracks per event;Number of msd tracks;Events",21,-0.5,20.5);
@@ -332,52 +330,69 @@ void Booking(TFile* file_out) {
   }
 
   //check the vtx syncronization
-  file_out->mkdir("VTXSYNC");
-  file_out->cd("VTXSYNC");
-  h2 = new TH2D("origin_xx_bmvtx_all","BM originX vs VTX originX for all the evts;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
-  h2 = new TH2D("origin_xx_bmvtx_synch","BM originX vs VTX originX when they are synch;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
-  h2 = new TH2D("origin_xx_bmvtx_unsynch","BM originX vs VTX originX current bunch of events;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
-  h2 = new TH2D("origin_xx_bmvtx_lost","BM originX vs VTX originX after the unsync;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
-  for(Int_t i=0;i<maxentries/checkrate;i++)
-    h2 = new TH2D(Form("origin_xx_bmvtx_%d",i),"BM originX vs VTX originX current bunch of events;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+  if(IncludeBM && IncludeVT){
+    file_out->mkdir("VTXSYNC");
+    file_out->cd("VTXSYNC");
+    h2 = new TH2D("origin_xx_bmvtx_all","BM originX vs VTX originX for all the evts;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("origin_xx_bmvtx_synch","BM originX vs VTX originX when they are synch;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("origin_xx_bmvtx_unsynch","BM originX vs VTX originX current bunch of events;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("origin_xx_bmvtx_lost","BM originX vs VTX originX after the unsync;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+    for(Int_t i=0;i<=maxentries/checkrate;i++)
+      h2 = new TH2D(Form("origin_xx_bmvtx_%d",i),"BM originX vs VTX originX current bunch of events;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+    
+    gDirectory->cd("..");
+    file_out->cd("..");
   
+    file_out->mkdir("BMVT");
+    file_out->cd("BMVT");
+    h = new TH1D("slopeX_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_start","target projection residuals Xpos;resX [cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_start","target projection residuals Ypos;resY [cm];Events",1000,-5.,5.);
+    h = new TH1D("slopeX_diff_afterrot","angle difference in glb frame after rotation;AngleX[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_afterrot","angle difference in glb frame after rotation;AngleY[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_afterrot","target projection residualX after rotation;resX[cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_afterrot","target projection residualY after rotation;resY[cm];Events",1000,-5.,5.);
+    h = new TH1D("slopeX_diff_final","angle difference in glb frame with new geo pars;AngleX[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_final","angle difference in glb frame with new geo pars;AngleY[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_final","target projection residualX with new geo pars;resX[cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_final","target projection residualY with new geo pars;resY[cm];Events",1000,-5.,5.);
+    gDirectory->cd("..");
+    file_out->cd("..");
+  }
+
+  if(IncludeMSD && IncludeVT){
+    file_out->mkdir("MSDVT");
+    file_out->cd("MSDVT");
+    h = new TH1D("slopeX_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_start","target projection residuals Xpos;resX [cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_start","target projection residuals Ypos;resY [cm];Events",1000,-5.,5.);
+    h = new TH1D("slopeX_diff_afterrot","angle difference in glb frame after rotation;AngleX[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_afterrot","angle difference in glb frame after rotation;AngleY[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_afterrot","target projection residualX after rotation;resX[cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_afterrot","target projection residualY after rotation;resY[cm];Events",1000,-5.,5.);
+    h = new TH1D("slopeX_diff_final","angle difference in glb frame with new geo pars;AngleX[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_final","angle difference in glb frame with new geo pars;AngleY[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_final","target projection residualX with new geo pars;resX[cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_final","target projection residualY with new geo pars;resY[cm];Events",1000,-5.,5.);
+    gDirectory->cd("..");
+    file_out->cd("..");
+  }
+  
+  file_out->mkdir("CORR");
+  file_out->cd("CORR");
+    h2 = new TH2D("bmvtx_xx","BM originX vs VTX originX for all the evts;BM originX;VTX originX",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("bmvtx_yy","BM originY vs VTX originY for all the evts;BM originY;VTX originY",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("bmvtx_xy","BM originX vs VTX originY for all the evts;BM originX;VTX originY",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("bmmsd_xx","BM originX vs MSD originX for all the evts;BM originX;MSD originX",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("bmmsd_yy","BM originY vs MSD originY for all the evts;BM originY;MSD originY",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("bmmsd_xy","BM originX vs MSD originY for all the evts;BM originX;MSD originY",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("vtxmsd_xx","VTX originX vs MSD originX for all the evts;VTX originX;MSD originX",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("vtxmsd_yy","VTX originY vs MSD originY for all the evts;VTX originY;MSD originY",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("vtxmsd_xy","VTX originX vs MSD originY for all the evts;VTX originX;MSD originY",600,-3.,3.,600,-3.,3.);
   gDirectory->cd("..");
   file_out->cd("..");
-
-  file_out->mkdir("BMVT");
-  file_out->cd("BMVT");
-  h = new TH1D("slopeX_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("slopeY_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("tgprojX_diff_start","target projection residuals Xpos;resX [cm];Events",1000,-5.,5.);
-  h = new TH1D("tgprojY_diff_start","target projection residuals Ypos;resY [cm];Events",1000,-5.,5.);
-  h = new TH1D("slopeX_diff_afterrot","angle difference in glb frame after rotation;AngleX[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("slopeY_diff_afterrot","angle difference in glb frame after rotation;AngleY[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("tgprojX_diff_afterrot","target projection residualX after rotation;resX[cm];Events",1000,-5.,5.);
-  h = new TH1D("tgprojY_diff_afterrot","target projection residualY after rotation;resY[cm];Events",1000,-5.,5.);
-  h = new TH1D("slopeX_diff_final","angle difference in glb frame with new geo pars;AngleX[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("slopeY_diff_final","angle difference in glb frame with new geo pars;AngleY[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("tgprojX_diff_final","target projection residualX with new geo pars;resX[cm];Events",1000,-5.,5.);
-  h = new TH1D("tgprojY_diff_final","target projection residualY with new geo pars;resY[cm];Events",1000,-5.,5.);
-  gDirectory->cd("..");
-  file_out->cd("..");
-
-  file_out->mkdir("MSDVT");
-  file_out->cd("MSDVT");
-  h = new TH1D("slopeX_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("slopeY_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("tgprojX_diff_start","target projection residuals Xpos;resX [cm];Events",1000,-5.,5.);
-  h = new TH1D("tgprojY_diff_start","target projection residuals Ypos;resY [cm];Events",1000,-5.,5.);
-  h = new TH1D("slopeX_diff_afterrot","angle difference in glb frame after rotation;AngleX[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("slopeY_diff_afterrot","angle difference in glb frame after rotation;AngleY[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("tgprojX_diff_afterrot","target projection residualX after rotation;resX[cm];Events",1000,-5.,5.);
-  h = new TH1D("tgprojY_diff_afterrot","target projection residualY after rotation;resY[cm];Events",1000,-5.,5.);
-  h = new TH1D("slopeX_diff_final","angle difference in glb frame with new geo pars;AngleX[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("slopeY_diff_final","angle difference in glb frame with new geo pars;AngleY[rad];Events",2000,-0.3,0.3);
-  h = new TH1D("tgprojX_diff_final","target projection residualX with new geo pars;resX[cm];Events",1000,-5.,5.);
-  h = new TH1D("tgprojY_diff_final","target projection residualY with new geo pars;resY[cm];Events",1000,-5.,5.);
-  gDirectory->cd("..");
-  file_out->cd("..");
-
 
   if(debug>0)
     cout<<"Booking done"<<endl;
@@ -470,13 +485,11 @@ void MSD(){
   for (int i = 0; i < msdparGeo->GetSensorsN(); i++) {
     totalmsdnclus+=msdntuclus->GetClustersN(i);
     myfill(Form("MSD/msd_cls_num_%d",i),msdntuclus->GetClustersN(i));
-    if(i%2==0){
-      for(int k=0;k<msdntuclus->GetClustersN(i);k++){
-        TAMSDcluster *msdclus=msdntuclus->GetCluster(i,k);
-	//see forward comment
-        myfill(Form("MSD/msd_clspos_msdsys_%d",i), msdclus->GetPosition().Y());
-        myfill(Form("MSD/msd_clspos_glbsys_%d",i), msdclus->GetPositionG().Y());
-      }
+    for(int k=0;k<msdntuclus->GetClustersN(i);k++){
+      TAMSDcluster *msdclus=msdntuclus->GetCluster(i,k);
+//see forward comment
+      myfill(Form("MSD/msd_clspos_msdsys_%d",i), msdclus->GetPosition().Y());
+      myfill(Form("MSD/msd_clspos_glbsys_%d",i), msdclus->GetPositionG().Y());
     }
   }
   myfill("MSD/msd_cls_num_total",totalmsdnclus);
@@ -1162,6 +1175,58 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
   return;
 }
 
+
+//FIll the control plots to check the correlation between trackers
+void FillCorr(){
+
+  Bool_t bmcheck=false, vtcheck=false, msdcheck=false;
+  TAVTtrack *vttrack;
+  TABMtrack* bmtrack;
+  TAMSDtrack* msdtrack;
+  
+  //select events with only one track per detector
+  if(IncludeBM){
+    if(bmNtuTrack->GetTracksN()==1){
+      bmtrack = bmNtuTrack->GetTrack(0);
+      bmcheck=true;
+    }
+  }
+  
+  if(IncludeVT){
+    if(vtxNtuVertex->GetVertexN()==1){
+      TAVTvertex *vtxvertex = vtxNtuVertex->GetVertex(0);
+      if(vtxvertex->GetTracksN()==1){
+        vttrack=vtxvertex->GetTrack(0);
+        vtcheck=true;
+      }
+    }
+  }
+
+  if(IncludeMSD){
+    if(msdntutrack->GetTracksN()==1){
+      msdtrack = msdntutrack->GetTrack(0);
+      msdcheck=true;
+    }
+  }
+
+  if(bmcheck && vtcheck){
+    myfill("CORR/bmvtx_xx",bmtrack->GetOrigin().X(),vttrack->GetOrigin().X());
+    myfill("CORR/bmvtx_yy",bmtrack->GetOrigin().Y(),vttrack->GetOrigin().Y());
+    myfill("CORR/bmvtx_xy",bmtrack->GetOrigin().X(),vttrack->GetOrigin().Y());
+  }
+  if(bmcheck && msdcheck){
+    myfill("CORR/bmmsd_xx",bmtrack->GetOrigin().X(),msdtrack->GetOrigin().X());
+    myfill("CORR/bmmsd_yy",bmtrack->GetOrigin().Y(),msdtrack->GetOrigin().Y());
+    myfill("CORR/bmmsd_xy",bmtrack->GetOrigin().X(),msdtrack->GetOrigin().Y());
+  }
+  if(vtcheck && msdcheck){
+    myfill("CORR/vtxmsd_xx",vttrack->GetOrigin().X(),msdtrack->GetOrigin().X());
+    myfill("CORR/vtxmsd_yy",vttrack->GetOrigin().Y(),msdtrack->GetOrigin().Y());
+    myfill("CORR/vtxmsd_xy",vttrack->GetOrigin().X(),msdtrack->GetOrigin().Y());
+  }
+
+return;
+}
 
 //Here the detector plots will be checked and the overall run status will be printed
 void CheckUp(TFile *inputFile, TFile *file_out){

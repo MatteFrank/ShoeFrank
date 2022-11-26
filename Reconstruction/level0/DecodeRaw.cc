@@ -12,6 +12,7 @@ int main (int argc, char *argv[])  {
    TString exp("");
    
    Bool_t mth = false;
+   Bool_t IsSubFile = false;
 
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
@@ -25,6 +26,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
 
+      if(strcmp(argv[i],"-subfile") == 0)   { IsSubFile = true;   } // Disable the processing of the chain of all the sub file related to a given run: only the subfile related to the input file is processed
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
       if(strcmp(argv[i],"-help") == 0)  {
@@ -37,6 +39,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -nsk value     : [def=0] Skip number of events"<<endl;
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
+         cout<<"      -subfile       : [def=false] when true disable the processing of the chain of all the sub file related to a given run: only the subfile related to the input file is processed"<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
@@ -70,7 +73,10 @@ int main (int argc, char *argv[])  {
    
    if (nSkipEv > 0)
       locRec->GoEvent(nSkipEv);
-   
+
+   if(IsSubFile)
+     locRec->EnableSubFileNumber();
+
    TStopwatch watch;
    watch.Start();
    
