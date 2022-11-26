@@ -220,9 +220,19 @@ void LocalReco::OpenFileIn()
       }
 
    } else {
-      fActEvtReader->Open(GetName());
-      if (fSkipEventsN > 0)
-         fActEvtReader->SkipEvents(fSkipEventsN);
+
+     if(IsSubFileEnabled()) {
+
+       Option_t* option = "subFileNumber";
+       fActEvtReader->Open(GetName(),option);
+
+     }
+
+     else
+       fActEvtReader->Open(GetName());
+     
+     if (fSkipEventsN > 0)
+       fActEvtReader->SkipEvents(fSkipEventsN);
    }
 }
 

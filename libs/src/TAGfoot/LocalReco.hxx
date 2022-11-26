@@ -63,7 +63,15 @@ public:
    // Goto Event
    virtual Bool_t GoEvent(Int_t iEvent);
 
-public:
+   //! Disable SubFile processing
+   virtual void DisableSubFileNumber()  { fSubFileFlag = false; }
+   //! Enable SubFile processing
+   virtual void EnableSubFileNumber()  { fSubFileFlag = true; }
+   //! Check if subfile processing is enable
+   virtual Bool_t IsSubFileEnabled()        { return fSubFileFlag;   }  
+   //! Set the number sub file for a given run number to be processed
+   virtual void SetSubFileNumber(Int_t nsubfile)  { fSubFileNumber = nsubfile; }
+
    //! Disable stand alone DAQ
    static void DisableStdAlone()              { fgStdAloneFlag = false;    }
    //! Enable stand alone DAQ
@@ -97,7 +105,9 @@ private:
 
    TAGactDaqReader*      fActEvtReader;    ///< reader for real data (DAQ)
   
-private:
+   Int_t                 fSubFileNumber; ///< number of subfile to process
+   Bool_t                fSubFileFlag;  ///< flag for subfile processing
+
    static Bool_t         fgStdAloneFlag;   ///< flag for standalone DAQ
    static Int_t          fgNumFileStdAlone; ///< number of standalone file for WD
 
