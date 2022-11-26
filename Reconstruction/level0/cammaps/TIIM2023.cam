@@ -4,7 +4,7 @@ RunNumber: 0-1; 10-11
 NumberDevices: 4
 
 DetectorName: "FOOT"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/TIIM2023/FOOT.geo": -1
 
 DetectorName: "IT"
