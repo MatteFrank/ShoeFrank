@@ -56,6 +56,7 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fpDatRawMsd(0x0),
    fActEvtReader(0x0)
 {
+   SetRunNumberFromFile();
 }
 
 //__________________________________________________________
@@ -417,4 +418,33 @@ void LocalReco::SetTreeBranches()
         fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
       }
    }
+}
+
+// --------------------------------------------------------------------------------------
+void LocalReco::SetRunNumberFromFile()
+{
+   if (fRunNumber != -1)  { // if set from outside return, else take from name
+      gTAGroot->SetRunNumber(fRunNumber);
+      return;
+   }
+   
+   // Done by hand shoud be given by DAQ header
+   TString name = GetName();
+   if (name.IsNull()) return;
+   
+   // protection about file name starting with .
+   if (name[0] == '.')
+      name.Remove(0,1);
+   
+   Int_t pos1   = name.First(".");
+   Int_t len    = name.Length();
+   
+   TString tmp1 = name(pos1+1, len);
+   Int_t pos2   = tmp1.First(".");
+   TString tmp  = tmp1(0, pos2);
+   fRunNumber = tmp.Atoi();
+   
+   Warning("SetRunNumber()", "Run number not set!, taking number from file: %d", fRunNumber);
+   
+   gTAGroot->SetRunNumber(fRunNumber);
 }
