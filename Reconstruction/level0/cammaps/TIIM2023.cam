@@ -14,5 +14,10 @@ NumberFiles: 3
 "./config/TIIM2023/TATIIMdetector.map": -1
 
 DetectorName: "PL"
-NumberFiles: 1
+NumberFiles: 2
+"./geomaps/TIIM2023/TAPLdetector.geo": -1
 "./config/TIIM2023/WCdetector.map": -1
+
+DetectorName: "CE"
+NumberFiles: 1
+"./geomaps/TIIM2023/TACEdetector.geo": -1
