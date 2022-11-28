@@ -1117,24 +1117,47 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//Energy in GeV
 	shoeOutTrack->SetFitEnergy( energyAtTgt);
 	shoeOutTrack->SetFitEnergyLoss( energyAtTgt - energyOutTw );
+	TVector3 TrackDir(-100,-100,-100);
 
+	//Calculate emission angles wrt BM track
 	if( ((TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
 	{
 		TVector3 BMslope = ( (TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
-		BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope);
+		BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope).Unit();
 		shoeOutTrack->SetTgtThetaBm(BMslope.Angle( recoMom_target ));
 
 		TRotation rotY, rotZ, rot;
-		rotY.RotateY( -BMslope.Theta() );
-		rotZ.RotateZ( -BMslope.Phi() );
+		// rotY.RotateY( -BMslope.Theta() );
+		// rotZ.RotateZ( -BMslope.Phi() );
 		// h_theta_BMtrack->Fill(BMslope.Theta()*TMath::RadToDeg());
 		// h_phi_BMtrack->Fill(BMslope.Phi()*TMath::RadToDeg());
-		rot = rotY*rotZ;
+		// rot = rotY*rotZ;
+
+		TVector3 perp = BMslope.Cross(TVector3(0,0,1));
+		rot.Rotate(BMslope.Theta(), perp);
+
+
 		// std::cout << "HERE!!!!!!" << std::endl;
-		// rot.Print();
+		// std::cout << "BMslope::";
+		// BMslope.Print();
+		// std::cout << "BMslope_rot::";
 		// (rot*BMslope).Print();
+		// // TMatrix rotprint(rotY);
+		// // std::cout << "rotMatrixYtheta::";
+		// // rotprint.Print();
+		// // rotprint = rotZ;
+		// // std::cout << "rotMatrixZphi::";
+		// // rotprint.Print();
+		// // rotprint = rot;
+		// // std::cout << "rotMatrix::";
+		// // rotprint.Print();
+		// std::cout << "trackDir::";
+		// recoMom_target.Print();
+		// std::cout << "trackDir_rot::";
+		// (rot*recoMom_target).Print();
 		// std::cout << "AFTER!!!!!!" << std::endl;
 		shoeOutTrack->SetTgtPhiBm( (rot*recoMom_target).Phi() );
+		TrackDir = (rot*recoMom_target).Unit();
 	}
 
 	//MC additional variables if running on simulations
@@ -1206,8 +1229,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_phi->Fill ( recoMom_target.Phi() );
 		h_theta->Fill ( recoMom_target.Theta()*TMath::RadToDeg() );
 		
+		// histos wrt BM track
 		h_theta_BM->Fill ( shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg() );
 		h_phi_BM->Fill ( shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg() );
+		h_trackDirBM->Fill(TrackDir.X(), TrackDir.Y());
+
 		h_eta->Fill ( recoMom_target.Eta() );
 		h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
 		h_dy_dz->Fill ( recoMom_target.y() / recoMom_target.z() );
@@ -1665,14 +1691,11 @@ void TAGactKFitter::CreateHistogram()	{
 	h_theta_BM = new TH1F("h_theta_BM", "h_theta_BM;Track #theta wrt BM [deg]; Entries", 200, 0, 15);
 	AddHistogram(h_theta_BM);
 
-	h_phi_BM = new TH1F("h_phi_BM", "h_phi_BM;Track #phi wrt BM [deg]; Entries", 200, -180, 180);
+	h_phi_BM = new TH1F("h_phi_BM", "h_phi_BM;Track #phi wrt BM [deg]; Entries", 100, -190, 190);
 	AddHistogram(h_phi_BM);
 
-	// h_theta_BMtrack = new TH1F("h_theta_BMtrack", "h_theta_BMtrack;Track #theta wrt BM [deg]; Entries", 200, 0, 15);
-	// AddHistogram(h_theta_BMtrack);
-
-	// h_phi_BMtrack = new TH1F("h_phi_BMtrack", "h_phi_BMtrack;Track #phi wrt BM [deg]; Entries", 200, -180, 180);
-	// AddHistogram(h_phi_BMtrack);
+	h_trackDirBM = new TH2F("h_trackDirBM", "h_trackDirBM;X;Y", 1001,-1,1,1001,-1,1);
+	AddHistogram(h_trackDirBM);
 
 	h_eta = new TH1F("h_eta", "h_eta", 100, 0., 20.);
 	AddHistogram(h_eta);  
@@ -1941,6 +1964,7 @@ void TAGactKFitter::ClearHistos()
 	delete h_phi;
 	delete h_theta;
 	delete h_theta_BM;
+	delete h_phi_BM;
 	delete h_eta;
 	delete h_dx_dz;
 	delete h_dy_dz;
@@ -1948,6 +1972,7 @@ void TAGactKFitter::ClearHistos()
 	delete h_mcPosX;
 	delete h_mcPosY;
 	delete h_mcPosZ;
+	delete h_GFeventType;
 
 	for(auto it = h_deltaP.begin(); it != h_deltaP.end(); ++it)
 		delete it->second;
