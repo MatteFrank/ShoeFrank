@@ -57,7 +57,8 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActEvtReader(0x0),
    fSubFileFlag(false)
   {
-   SetRunNumberFromFile();
+     if (fRunNumber == -1)  // if not set from outside, take from name
+        SetRunNumberFromFile();
 }
 
 //__________________________________________________________
@@ -424,11 +425,6 @@ void LocalReco::SetTreeBranches()
 // --------------------------------------------------------------------------------------
 void LocalReco::SetRunNumberFromFile()
 {
-   if (fRunNumber != -1)  { // if set from outside return, else take from name
-      gTAGroot->SetRunNumber(fRunNumber);
-      return;
-   }
-   
    // Done by hand shoud be given by DAQ header
    TString name = GetName();
    if (name.IsNull()) return;
