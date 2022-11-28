@@ -52,7 +52,7 @@ NumberFiles: 5
 "./calib/CNAO2022/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
-NumberFiles: 6
+NumberFiles: 5
 "./geomaps/CNAO2022/TATWdetector.geo": -1
 "./config/CNAO2022/TATW_BBparameters.cfg": -1
 "./config/CNAO2022/TATWChannelMapXML.map": -1
