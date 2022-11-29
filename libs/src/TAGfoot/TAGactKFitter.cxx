@@ -1126,36 +1126,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope).Unit();
 		shoeOutTrack->SetTgtThetaBm(BMslope.Angle( recoMom_target ));
 
-		TRotation rotY, rotZ, rot;
-		// rotY.RotateY( -BMslope.Theta() );
-		// rotZ.RotateZ( -BMslope.Phi() );
-		// h_theta_BMtrack->Fill(BMslope.Theta()*TMath::RadToDeg());
-		// h_phi_BMtrack->Fill(BMslope.Phi()*TMath::RadToDeg());
-		// rot = rotY*rotZ;
-
+		//Find vector perpendicular to BMslope and Z-axis and rotate around it of Theta
+		TRotation rot;
 		TVector3 perp = BMslope.Cross(TVector3(0,0,1));
 		rot.Rotate(BMslope.Theta(), perp);
-
-
-		// std::cout << "HERE!!!!!!" << std::endl;
-		// std::cout << "BMslope::";
-		// BMslope.Print();
-		// std::cout << "BMslope_rot::";
-		// (rot*BMslope).Print();
-		// // TMatrix rotprint(rotY);
-		// // std::cout << "rotMatrixYtheta::";
-		// // rotprint.Print();
-		// // rotprint = rotZ;
-		// // std::cout << "rotMatrixZphi::";
-		// // rotprint.Print();
-		// // rotprint = rot;
-		// // std::cout << "rotMatrix::";
-		// // rotprint.Print();
-		// std::cout << "trackDir::";
-		// recoMom_target.Print();
-		// std::cout << "trackDir_rot::";
-		// (rot*recoMom_target).Print();
-		// std::cout << "AFTER!!!!!!" << std::endl;
 		shoeOutTrack->SetTgtPhiBm( (rot*recoMom_target).Phi() );
 		TrackDir = (rot*recoMom_target).Unit();
 	}
