@@ -52,7 +52,7 @@ NumberFiles: 5
 "./calib/CNAO2022/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
-NumberFiles: 6
+NumberFiles: 5
 "./geomaps/CNAO2022/TATWdetector.geo": -1
 "./config/CNAO2022/TATW_BBparameters.cfg": -1
 "./config/CNAO2022/TATWChannelMapXML.map": -1
@@ -62,6 +62,6 @@ NumberFiles: 6
 DetectorName: "CA"
 NumberFiles: 5
 "./geomaps/CNAO2022/TACAdetector.geo": -1
-"./config/CNAO2022/TACAdetector.map": -1
+"./config/CNAO2022/TACAdetector.map": 5100; 5162; 5225
 "./calib/CNAO2022/TACA_Energy_Calibration.cal": -1
 "./calib/CNAO2022/TACA_Temperature_Calibration_perCry.cal": -1

@@ -62,7 +62,6 @@ void FillInnerTracker(Int_t runNumber)
    parFileName = campManager->GetCurConfFile(TAITparGeo::GetBaseName(), runNumber);
    parconf->FromFile(parFileName.Data());
 
-   TAITparConf::SetHistoMap();
    TAGdataDsc* itEve  = new TAGdataDsc("itEve", new TAMCntuPart());
    TAGdataDsc* itMc   = new TAGdataDsc("itMc", new TAMCntuHit());
    TAGdataDsc* itNtu  = new TAGdataDsc("itNtu", new TAITntuHit());

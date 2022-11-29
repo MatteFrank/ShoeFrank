@@ -58,7 +58,6 @@ Bool_t TAMSDparMap::FromFile(const TString& name)
   }
 
   //To read header
-  ReadItem(para, 3, ' ', false);  
   for (Int_t i = 0; i < fSensorsN; ++i) { // Loop over sensors
 
     // read parameters (sensId, boardId, view)

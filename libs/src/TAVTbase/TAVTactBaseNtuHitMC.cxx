@@ -3,6 +3,9 @@
   \brief   Base class to NTuplize MC hits
 */
 
+#include <algorithm>
+#include <random>
+
 #include "TH2F.h"
 #include <map>
 #include "TF1.h"
@@ -166,7 +169,7 @@ void  TAVTactBaseNtuHitMC::GeneratePileup()
 		  rarray.push_back(1);
 	}
 	
-	std::random_shuffle (rarray.begin(), rarray.end(), TAVTbaseDigitizer::GetRandom);
+   shuffle (rarray.begin(), rarray.end(), std::default_random_engine(0));
 
 	std::vector<RawMcHit_t> mcInfo;
 

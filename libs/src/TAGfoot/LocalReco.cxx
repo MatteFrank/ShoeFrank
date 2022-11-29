@@ -54,8 +54,11 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActNtuHitCa(0x0),
    fActNtuHitMsd(0x0),
    fpDatRawMsd(0x0),
-   fActEvtReader(0x0)
-{
+   fActEvtReader(0x0),
+   fSubFileFlag(false)
+  {
+     if (fRunNumber == -1)  // if not set from outside, take from name
+        SetRunNumberFromFile();
 }
 
 //__________________________________________________________
@@ -78,11 +81,13 @@ void LocalReco::CreateRawAction()
        fActNtuEvt->CreateHistogram();
    }
 
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      fpDatRawCa      = new TAGdataDsc("caDat", new TACAntuRaw());
+
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || (TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag) || TAGrecoManager::GetPar()->IncludeCA()) {
 
       fpDatRawSt      = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw      = new TAGdataDsc("twdDat", new TATWntuRaw());
-      fpDatRawCa      = new TAGdataDsc("caDat", new TACAntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
       
       if (!fgStdAloneFlag){
@@ -90,8 +95,12 @@ void LocalReco::CreateRawAction()
          TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber, true);
          parTimeWD->FromFileTcal(parFileName.Data());
       }
+      
+      if (fCampManager->GetCurrentCamNumber() >=20) // tmp solution
+         TAGactWDreader::EnableArduinoTempCA();
+
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
-                                      fpParTimeWD, fgStdAloneFlag);
+                                      fpParTimeWD, fpParMapCa, fgStdAloneFlag);
       if (fgStdAloneFlag)
          fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
@@ -214,9 +223,19 @@ void LocalReco::OpenFileIn()
       }
 
    } else {
-      fActEvtReader->Open(GetName());
-      if (fSkipEventsN > 0)
-         fActEvtReader->SkipEvents(fSkipEventsN);
+
+     if(IsSubFileEnabled()) {
+
+       Option_t* option = "subFileNumber";
+       fActEvtReader->Open(GetName(),option);
+
+     }
+
+     else
+       fActEvtReader->Open(GetName());
+     
+     if (fSkipEventsN > 0)
+       fActEvtReader->SkipEvents(fSkipEventsN);
    }
 }
 
@@ -277,11 +296,11 @@ void LocalReco::SetRawHistogramDir()
    }
 
    // CA
-    if (TAGrecoManager::GetPar()->IncludeCA()) {
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
       //fActWdRaw->SetHistogramDir(subfolder);
       fActNtuHitCa ->SetHistogramDir(subfolder);
-    }
+   }
 }
 
 //__________________________________________________________
@@ -401,4 +420,28 @@ void LocalReco::SetTreeBranches()
         fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
       }
    }
+}
+
+// --------------------------------------------------------------------------------------
+void LocalReco::SetRunNumberFromFile()
+{
+   // Done by hand shoud be given by DAQ header
+   TString name = GetName();
+   if (name.IsNull()) return;
+   
+   // protection about file name starting with .
+   if (name[0] == '.')
+      name.Remove(0,1);
+   
+   Int_t pos1   = name.First(".");
+   Int_t len    = name.Length();
+   
+   TString tmp1 = name(pos1+1, len);
+   Int_t pos2   = tmp1.First(".");
+   TString tmp  = tmp1(0, pos2);
+   fRunNumber = tmp.Atoi();
+   
+   Warning("SetRunNumber()", "Run number not set!, taking number from file: %d", fRunNumber);
+   
+   gTAGroot->SetRunNumber(fRunNumber);
 }

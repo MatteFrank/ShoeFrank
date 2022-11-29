@@ -121,10 +121,8 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     vtxNtuTrack = new TAVTntuTrack();
     tree->SetBranchAddress(TAVTntuTrack::GetBranchName(), &vtxNtuTrack);
     vtxNtuCluster = new TAVTntuCluster();
+    vtxNtuCluster->SetParGeo(vtparGeo);
     tree->SetBranchAddress(TAVTntuCluster::GetBranchName(), &vtxNtuCluster);
-    vtClus = new TAVTntuCluster();
-    vtClus->SetParGeo(vtparGeo);
-    tree->SetBranchAddress(TAVTntuCluster::GetBranchName(), &vtClus);
     if(IncludeMC){
       vtMc = new TAMCntuHit();
       tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
@@ -141,6 +139,10 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), &msdntuclus);
     msdntutrack= new TAMSDntuTrack();
     tree->SetBranchAddress(TAMSDntuTrack::GetBranchName(), &msdntutrack);
+    msdNtuPoint= new TAMSDntuPoint();
+    tree->SetBranchAddress(TAMSDntuPoint::GetBranchName(), &msdNtuPoint);
+    msdNtuHit= new TAMSDntuHit();
+    tree->SetBranchAddress(TAMSDntuHit::GetBranchName(), &msdNtuHit);
   }
 
   if(IncludeTW){
@@ -214,6 +216,9 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
 
     if(IncludeTW && (IncludeVT || IncludeMSD))
       FillTWalign(); //Align the TW with the VT or MSD tracks
+    
+    if((IncludeBM && IncludeVT) || (IncludeBM && IncludeMSD) || (IncludeVT && IncludeMSD))
+      FillCorr();
 
     FillTrackVect(bmtrk, vttrk, msdtrk); //fill the tracks in GLOBAL FRAME adopted for alignment
   }//Loop on events

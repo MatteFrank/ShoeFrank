@@ -2,6 +2,8 @@
  \file TAVTdigitizerE.cxx
  \brief VTX elipsoidal digitizer
  */
+#include <algorithm>
+#include <random>
 
 #include "TAVTdigitizerE.hxx"
 #include "TAVTparGeo.hxx"
@@ -152,8 +154,8 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    Int_t r = 0;
    if (rpixels != 1) {
       
-      std::random_shuffle(rarray.begin(), rarray.end(), GetRandom);
-      
+      shuffle (rarray.begin(), rarray.end(), std::default_random_engine(0));
+
       for (std::vector<int>::iterator it=rarray.begin(); it!=rarray.end(); ++it) {
          
          if (r > rpixels-1)

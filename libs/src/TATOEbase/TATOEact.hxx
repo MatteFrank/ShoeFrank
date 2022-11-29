@@ -100,7 +100,7 @@ DetectorProperties...  >   >
       double beta{0};
       std::size_t nucleon_number;
       
-      polynomial_fit_parameters parameters;
+      PolynomialFit_t parameters;
       double determination_coefficient_scan{0};
       
       std::size_t clone{0};
@@ -1630,7 +1630,7 @@ public:
    }
    
    template<std::size_t N, std::size_t Order>
-   void compute_polynomial_parameters_x( std::vector<full_state> const& cluster_pc, polynomial_fit_parameters& result_p ) const {
+   void compute_polynomial_parameters_x( std::vector<full_state> const& cluster_pc, PolynomialFit_t& result_p ) const {
       //fit in x/y
       //retrieve fit parameters
       
@@ -1671,7 +1671,7 @@ public:
    }
    
    template<std::size_t N, std::size_t Order>
-   void compute_polynomial_parameters_y( std::vector<full_state> const& cluster_pc, polynomial_fit_parameters& result_p ) const {
+   void compute_polynomial_parameters_y( std::vector<full_state> const& cluster_pc, PolynomialFit_t& result_p ) const {
       
       //fit in x/y
       //retrieve fit parameters
@@ -1709,7 +1709,7 @@ public:
    }
    
    template<std::size_t N>
-   polynomial_fit_parameters compute_polynomial_parameters( std::vector<full_state> const& cluster_pc ) const {
+   PolynomialFit_t compute_polynomial_parameters( std::vector<full_state> const& cluster_pc ) const {
       
       //fit in x/y
       //retrieve fit parameters
@@ -1805,7 +1805,7 @@ public:
                else{ ++msd_cluster_x_counter; }
             }
          }
-         polynomial_fit_parameters result;
+         PolynomialFit_t result;
          std::size_t const x_cluster_count = cluster_c.size() -1 - msd_cluster_y_counter; //-tof/-vertex
          switch( x_cluster_count ){
             case 4:{compute_polynomial_parameters_x<4, 4>( cluster_c, result ); break;}
@@ -2031,7 +2031,7 @@ public:
                                                             static_cast<double>(track.hypothesis.properties.charge),
                                                             track.tof
                                                             );
-         TAGtrack::polynomial_fit_parameters parameters;
+         TAGtrack::PolynomialFit_t parameters;
          parameters.parameter_x = track.parameters.x;
          parameters.parameter_y = track.parameters.y;
          track_h->SetParameters( parameters );

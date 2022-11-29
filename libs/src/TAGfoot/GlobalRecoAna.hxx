@@ -58,13 +58,20 @@ class GlobalRecoAna : public LocalReco {
   void ComputeMCtruth( Int_t trkid, int &cha, TVector3 &mom, TVector3 &mom_cross, double &ek);
   Double_t ComputeTrkEkin(TAGtrack *track);//from calo infos
   void resetStatus(); //to reset the subdetectors status flags
-  bool TriggerCheck(TAGtrack * fGlbTrack);
-  bool TriggerCheckMC(TAGtrack * fGlbTrack);
+  bool TriggerCheck();
+  bool TriggerCheckMC();
+  void GlbTrackPurityStudy();
+  void AlignmentStudy(int currEvent,int nt, bool isOxygenInEvent);
+  void TWAlgoStudy();
+  void TrackVsMCStudy(int currEvent, int nt);
+  
 
   //fill plots
   void FillGlbTrackPlots();
   void FillMassPlots();
-
+  void FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek=0.);
+  void FillYieldMC(string folderName, Int_t charge_tr, Double_t theta_tr, Double_t Ek=0.);
+  void BookYield(string path, bool enableMigMatr= false);
   //useful formulas
   Double_t GetGamma(Double_t beta){return 1./sqrt(1.-beta*beta);};
   Double_t GetMassPB(Double_t mom, Double_t beta) {return (1./atomassu)*mom*sqrt(1.-beta*beta)/beta;};
@@ -114,6 +121,7 @@ class GlobalRecoAna : public LocalReco {
   //setting variables maybe we should use a config file?
   Double_t Th_meas;
   Double_t Th_reco;
+  Double_t Th_recoBM;
   Double_t purity_cut;      //minumum purity value for a track to be defined as pure
   Double_t clean_cut;       //is a 100% pure track
 
@@ -154,6 +162,15 @@ class GlobalRecoAna : public LocalReco {
 
   //debug variable for plots of triggered events
   bool isOxygenInEvent;
+
+  // for TW multiple hits studies
+  Int_t TrkIdMC;
+  Int_t N_TrkIdMC_TW;   
+  Int_t TrkIdMC_TW;
+
+  // outfile string
+  TString outfile;
+
 };
 
 #endif
