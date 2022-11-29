@@ -1,6 +1,7 @@
 #include <TString.h>
 #include <TStopwatch.h>
 #include <TApplication.h>
+#include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
 #include "LocalReco.hxx"
@@ -63,9 +64,10 @@ int main (int argc, char *argv[])  {
 	BaseReco* glbRec = 0x0;
 
 	// check input file exists 
-   if ( gSystem->AccessPathName(in,kFileExists) ) {
-      cout << "ERROR -- input file not exists " << in << ". Cheers!"<< endl;
-      exit(0);
+   if(in.IsNull() || gSystem->AccessPathName(in.Data()))
+   {
+      Error("main()", "Input file does not exist or is null");
+      exit(-1);
    }
    
    if (lrc)

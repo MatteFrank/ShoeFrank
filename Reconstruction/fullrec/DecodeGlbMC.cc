@@ -1,6 +1,7 @@
 #include <TString.h>
 #include <TStopwatch.h>
 #include <TApplication.h>
+#include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
 #include "GlobalRecoMC.hxx"
@@ -35,7 +36,13 @@ int main (int argc, char *argv[])  {
          return 1;
       }
    }
-   
+
+   if(in.IsNull() || gSystem->AccessPathName(in.Data()))
+   {
+      Error("main()", "Input file does not exist or is null");
+      exit(-1);
+   }
+
    if (out.IsNull()) {
       Int_t pos = in.Last('.');
       out = in(0, pos);

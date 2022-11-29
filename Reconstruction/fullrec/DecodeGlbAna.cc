@@ -5,6 +5,7 @@
 #include <math.h>
 #include <sys/time.h>
 #include <TApplication.h>
+#include <TSystem.h>
 
 #include <TROOT.h>
 #include <TTree.h>
@@ -79,11 +80,17 @@ int main(int argc, char *argv[]) {
       }
    }
 
+   if(in.IsNull() || gSystem->AccessPathName(in.Data()))
+   {
+      Error("main()", "Input file does not exist or is null");
+      exit(-1);
+   }
 
   TApplication::CreateApplication();
   TAGrecoManager::Instance(exp);
   TAGrecoManager::GetPar()->FromFile();
   TAGrecoManager::GetPar()->Print();
+
   TStopwatch watch;
   watch.Start();
 
