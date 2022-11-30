@@ -309,7 +309,7 @@ Double_t TAGtrack::GetTgtTheta() const
 
 //______________________________________________________________________________
 //! Get phi angle at target
-Double_t TAGtrack::GetTgtPhi() const
+Double_t TAGtrack::GetTgtPhi() const 
 {
    TVector3 origin = fTgtDir.Unit();
    Double_t phi     = origin.Phi();

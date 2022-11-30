@@ -211,7 +211,10 @@ Bool_t TAGactKFitter::Action()	{
 		MakeFit(evNum, m_selector);
 	}
 	if( TAGrecoManager::GetPar()->IsSaveHisto() )
+	{
 		m_selector->FillPlaneOccupancy(h_PlaneOccupancy);
+		h_GFeventType->Fill(m_selector->GetEventType());
+	}
 	
 	chVect.clear();
 	
@@ -1108,11 +1111,28 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 										&recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov,
 										&recoMom_TW_cov, &shoeTrackPointRepo);
 	//Set additional variables
+	shoeOutTrack->SetTrackId(std::atoi(tok.at(2).c_str()));
 	shoeOutTrack->SetTwChargeZ(TwChargeZ);
 	shoeOutTrack->SetTwTof(TwTof);
 	//Energy in GeV
 	shoeOutTrack->SetFitEnergy( energyAtTgt);
 	shoeOutTrack->SetFitEnergyLoss( energyAtTgt - energyOutTw );
+	TVector3 TrackDir(-100,-100,-100);
+
+	//Calculate emission angles wrt BM track
+	if( ((TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
+	{
+		TVector3 BMslope = ( (TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
+		BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope).Unit();
+		shoeOutTrack->SetTgtThetaBm(BMslope.Angle( recoMom_target ));
+
+		//Find vector perpendicular to BMslope and Z-axis and rotate around it of Theta
+		TRotation rot;
+		TVector3 perp = BMslope.Cross(TVector3(0,0,1));
+		rot.Rotate(BMslope.Theta(), perp);
+		shoeOutTrack->SetTgtPhiBm( (rot*recoMom_target).Phi() );
+		TrackDir = (rot*recoMom_target).Unit();
+	}
 
 	//MC additional variables if running on simulations
 	int trackMC_id = -1;
@@ -1183,13 +1203,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_phi->Fill ( recoMom_target.Phi() );
 		h_theta->Fill ( recoMom_target.Theta()*TMath::RadToDeg() );
 		
-		if( ((TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
-		{
-			TVector3 BMslope = ( (TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
-			BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope);
+		// histos wrt BM track
+		h_theta_BM->Fill ( shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg() );
+		h_phi_BM->Fill ( shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg() );
+		h_trackDirBM->Fill(TrackDir.X(), TrackDir.Y());
 
-			h_theta_BM->Fill ( BMslope.Angle( recoMom_target )*TMath::RadToDeg() );
-		}
 		h_eta->Fill ( recoMom_target.Eta() );
 		h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
 		h_dy_dz->Fill ( recoMom_target.y() / recoMom_target.z() );
@@ -1599,6 +1617,9 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 //! \brief Declare the GenFit histograms
 void TAGactKFitter::CreateHistogram()	{
 
+	h_GFeventType = new TH1I("h_GFeventType", "h_GFeventType", 5, 0.5, 5.5);
+	AddHistogram(h_GFeventType);
+
 	h_trackMC_true_id = new TH1F("h_trackMC_true_id", "h_trackMC_true_id", 45, 0., 45);
 	AddHistogram(h_trackMC_true_id);
 
@@ -1641,8 +1662,14 @@ void TAGactKFitter::CreateHistogram()	{
 	h_theta = new TH1F("h_theta", "h_theta", 200, 0, 15);
 	AddHistogram(h_theta);  
 
-	h_theta_BM = new TH1F("h_theta_BM", "h_theta_BM", 200, 0, 15);
+	h_theta_BM = new TH1F("h_theta_BM", "h_theta_BM;Track #theta wrt BM [deg]; Entries", 200, 0, 15);
 	AddHistogram(h_theta_BM);
+
+	h_phi_BM = new TH1F("h_phi_BM", "h_phi_BM;Track #phi wrt BM [deg]; Entries", 100, -190, 190);
+	AddHistogram(h_phi_BM);
+
+	h_trackDirBM = new TH2F("h_trackDirBM", "h_trackDirBM;X;Y", 1001,-1,1,1001,-1,1);
+	AddHistogram(h_trackDirBM);
 
 	h_eta = new TH1F("h_eta", "h_eta", 100, 0., 20.);
 	AddHistogram(h_eta);  
@@ -1692,8 +1719,14 @@ void TAGactKFitter::CreateHistogram()	{
 		AddHistogram(h_ratio_reco_true[i]);
 	}
 
-	h_PlaneOccupancy = new TH2I("h_PlaneOccupancy", "h_PlaneOccupancy; FitPlane Id; # of clusters", m_sensorIDmap->GetFitPlanesN()+2, -1.5, m_sensorIDmap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
-	AddHistogram(h_PlaneOccupancy);
+	h_PlaneOccupancy[0] = new TH2I("h_PlaneOccupancy", "h_PlaneOccupancy; FitPlane Id; # of clusters", m_sensorIDmap->GetFitPlanesN()+2, -1.5, m_sensorIDmap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
+	AddHistogram(h_PlaneOccupancy[0]);
+
+	for(int iEv=1; iEv<=5; iEv++)
+	{
+		h_PlaneOccupancy[iEv] = new TH2I(Form("h_PlaneOccupancyType%d", iEv), Form("h_PlaneOccupancyType%d; FitPlane Id; # of clusters", iEv), m_sensorIDmap->GetFitPlanesN()+2, -1.5, m_sensorIDmap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
+		AddHistogram(h_PlaneOccupancy[iEv]);
+	}
 
 	SetValidHistogram(kTRUE);
 
@@ -1905,6 +1938,7 @@ void TAGactKFitter::ClearHistos()
 	delete h_phi;
 	delete h_theta;
 	delete h_theta_BM;
+	delete h_phi_BM;
 	delete h_eta;
 	delete h_dx_dz;
 	delete h_dy_dz;
@@ -1912,6 +1946,7 @@ void TAGactKFitter::ClearHistos()
 	delete h_mcPosX;
 	delete h_mcPosY;
 	delete h_mcPosZ;
+	delete h_GFeventType;
 
 	for(auto it = h_deltaP.begin(); it != h_deltaP.end(); ++it)
 		delete it->second;

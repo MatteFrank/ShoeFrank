@@ -1,4 +1,5 @@
 #include <TString.h>
+#include <TSystem.h>
 #include <TStopwatch.h>
 #include <TApplication.h>
 
@@ -64,6 +65,12 @@ int main (int argc, char *argv[])  {
       }
    }
    
+   if(in.IsNull() || gSystem->AccessPathName(in.Data()))
+   {
+      Error("main()", "Input file does not exist or is null");
+      exit(-1);
+   }
+
    TApplication::CreateApplication();
    
    TAGrecoManager::Instance(exp);

@@ -60,7 +60,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
    geoTrafo->FromFile(parFileName);
 
-   //###################### FILLING MSD #################################
+   // ###################### FILLING MSD #################################
    TAGparaDsc *msdMap = new TAGparaDsc("msdMap", new TAMSDparMap());
    TAMSDparMap *map = (TAMSDparMap *)msdMap->Object();
    parFileName = campManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), runNumber);
@@ -116,19 +116,18 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    TAxis *ped_axis[sensors];
    TAxis *sig_axis[sensors];
 
-
    for (int sen = 0; sen < sensors; sen++)
    {
       ped_graph[sen] = new TGraph(NChannels);
       ped_graph[sen]->SetTitle(Form("Pedestals for detector %i RUN %i", sen, runNumber));
       ped_graph[sen]->GetXaxis()->SetTitle("channel");
       ped_graph[sen]->GetYaxis()->SetTitle("Pedestal");
- 
+
       sig_graph[sen] = new TGraph(NChannels);
       sig_graph[sen]->SetTitle(Form("Sigmas for detector %i RUN %i", sen, runNumber));
       sig_graph[sen]->GetXaxis()->SetTitle("channel");
       sig_graph[sen]->GetYaxis()->SetTitle("Sigma");
-   
+
       for (int ch = 0; ch < NChannels; ch++)
       {
          hADC[sen][ch] = new TH1D(Form("pedestal_channel_%d_sensor_%d", ch, sen), Form("Pedestal %d", ch), 50, 4096, -1);
@@ -185,29 +184,32 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    {
 
       rawevent = (TAGdaqEvent *)(tagr.FindDataDsc("msdDaq", "TAGdaqEvent")->Object());
-      Int_t nFragments = rawevent->GetFragmentsN();
+      Int_t nFragments = rawevent->GetFragmentSize("DEMSDEvent");
+      
+      if(nFragments == 0)
+      {
+         std::cout << "No fragments found for MSD, exiting ..." << std::endl;
+         return;
+      }
+
       for (Int_t i = 0; i < nFragments; ++i)
       {
-         TString type = rawevent->GetClassType(i);
-         if (type.Contains("DEMSDEvent"))
+         const DEMSDEvent *evt = static_cast<const DEMSDEvent *>(rawevent->GetFragment("DEMSDEvent", i));
+         if (evt->boardHeader == 0x0000dead)
+            continue;
+
+         boardId = (evt->boardHeader & 0xF) - 1;
+
+         sensorId = map->GetSensorId(boardId, 0);
+         for (int ch = 0; ch < NChannels; ch++)
          {
-            const DEMSDEvent *evt = static_cast<const DEMSDEvent *>(rawevent->GetFragment(i));
-            if (evt->boardHeader == 0x0000dead)
-               continue;
+            hADC[sensorId][ch]->Fill(evt->Xplane[ch]);
+         }
 
-            boardId = (evt->boardHeader & 0xF) - 1;
-
-            sensorId = map->GetSensorId(boardId, 0);
-            for (int ch = 0; ch < NChannels; ch++)
-            {
-               hADC[sensorId][ch]->Fill(evt->Xplane[ch]);
-            }
-
-            sensorId = map->GetSensorId(boardId, 1);
-            for (int ch = 0; ch < NChannels; ch++)
-            {
-               hADC[sensorId][ch]->Fill(evt->Yplane[ch]);
-            }
+         sensorId = map->GetSensorId(boardId, 1);
+         for (int ch = 0; ch < NChannels; ch++)
+         {
+            hADC[sensorId][ch]->Fill(evt->Yplane[ch]);
          }
       }
       // printf("\n");
@@ -249,44 +251,41 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    {
 
       rawevent = (TAGdaqEvent *)(tagr.FindDataDsc("msdDaq", "TAGdaqEvent")->Object());
-      Int_t nFragments = rawevent->GetFragmentsN();
+      Int_t nFragments = rawevent->GetFragmentSize("DEMSDEvent");
       cn = 0;
 
       for (Int_t i = 0; i < nFragments; ++i)
       {
-         TString type = rawevent->GetClassType(i);
-         if (type.Contains("DEMSDEvent"))
+
+         const DEMSDEvent *evt = static_cast<const DEMSDEvent *>(rawevent->GetFragment("DEMSDEvent", i));
+         boardId = (evt->boardHeader & 0xF) - 1;
+
+         sensorId = map->GetSensorId(boardId, 0);
+         for (int ch = 0; ch < NChannels; ch++)
          {
-            const DEMSDEvent *evt = static_cast<const DEMSDEvent *>(rawevent->GetFragment(i));
-            boardId = (evt->boardHeader & 0xF) - 1;
+            signals[sensorId][ch] = (evt->Xplane[ch] - pedestals[sensorId][ch]);
+         }
+         for (int ch = 0; ch < NChannels; ch++)
+         {
+            if (!(ch % 64))
+            {
+               cn = TMath::Mean(signals[sensorId].begin() + ch, signals[sensorId].begin() + ch + 64);
+            }
+            hSignal[sensorId][ch]->Fill(signals[sensorId][ch] - cn);
+         }
 
-            sensorId = map->GetSensorId(boardId, 0);
-            for (int ch = 0; ch < NChannels; ch++)
+         sensorId = map->GetSensorId(boardId, 1);
+         for (int ch = 0; ch < NChannels; ch++)
+         {
+            signals[sensorId][ch] = (evt->Yplane[ch] - pedestals[sensorId][ch]);
+         }
+         for (int ch = 0; ch < NChannels; ch++)
+         {
+            if (!(ch % 64))
             {
-               signals[sensorId][ch] = (evt->Xplane[ch] - pedestals[sensorId][ch]);
+               cn = TMath::Mean(signals[sensorId].begin() + ch, signals[sensorId].begin() + ch + 64);
             }
-            for (int ch = 0; ch < NChannels; ch++)
-            {
-               if (!(ch % 64))
-               {
-                  cn = TMath::Mean(signals[sensorId].begin() + ch, signals[sensorId].begin() + ch + 64);
-               }
-               hSignal[sensorId][ch]->Fill(signals[sensorId][ch] - cn);
-            }
-
-            sensorId = map->GetSensorId(boardId, 1);
-            for (int ch = 0; ch < NChannels; ch++)
-            {
-               signals[sensorId][ch] = (evt->Yplane[ch] - pedestals[sensorId][ch]);
-            }
-            for (int ch = 0; ch < NChannels; ch++)
-            {
-               if (!(ch % 64))
-               {
-                  cn = TMath::Mean(signals[sensorId].begin() + ch, signals[sensorId].begin() + ch + 64);
-               }
-               hSignal[sensorId][ch]->Fill(signals[sensorId][ch] - cn);
-            }
+            hSignal[sensorId][ch]->Fill(signals[sensorId][ch] - cn);
          }
       }
 
@@ -339,37 +338,38 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
    // plot correlation in telescope planes
    TCanvas *calibrations = new TCanvas("calib", "calibrations", 1920, 1080);
-   ped_graph[0]->GetXaxis()->SetRangeUser(0,NChannels);
-   ped_graph[0]->GetXaxis()->SetRangeUser(0,NChannels);
+   ped_graph[0]->GetXaxis()->SetRangeUser(0, NChannels);
+   ped_graph[0]->GetXaxis()->SetRangeUser(0, NChannels);
    ped_graph[0]->GetXaxis()->SetNdivisions(NChannels / 64, false);
    ped_graph[0]->Draw("AL*");
    calibrations->Print(calfile_name + ".pdf(", "pdf");
-   sig_graph[0]->GetXaxis()->SetRangeUser(0,NChannels);
+   sig_graph[0]->GetXaxis()->SetRangeUser(0, NChannels);
    sig_graph[0]->GetXaxis()->SetNdivisions(NChannels / 64, false);
    sig_graph[0]->Draw("AL*");
    calibrations->Print(calfile_name + ".pdf", "pdf");
 
    for (int i = 2; i < 2 * sensors; i += 2)
    {
-      ped_graph[i / 2]->GetXaxis()->SetRangeUser(0,NChannels);
-      ped_graph[i / 2]->GetXaxis()->SetNdivisions(NChannels / 64, false);     
+      ped_graph[i / 2]->GetXaxis()->SetRangeUser(0, NChannels);
+      ped_graph[i / 2]->GetXaxis()->SetNdivisions(NChannels / 64, false);
       ped_graph[i / 2]->Draw("AL*");
       calibrations->Print(calfile_name + ".pdf", "pdf");
-      sig_graph[i / 2]->GetXaxis()->SetRangeUser(0,NChannels);
+      sig_graph[i / 2]->GetXaxis()->SetRangeUser(0, NChannels);
       sig_graph[i / 2]->GetXaxis()->SetNdivisions(NChannels / 64, false);
       sig_graph[i / 2]->Draw("AL*");
       calibrations->Print(calfile_name + ".pdf", "pdf");
    }
    calibrations->Print(calfile_name + ".pdf)", "pdf");
 
-   pedestals.clear();
-   pedestals.shrink_to_fit();
-   rsigma.clear();
-   rsigma.shrink_to_fit();
-   signals.clear();
-   signals.shrink_to_fit();
-   sigma.clear();
-   sigma.shrink_to_fit();
-
    return;
+
+   //Delete all histograms
+   for (int i = 0; i < sensors; i++)
+   {
+      for (int j = 0; j < NChannels; j++)
+      {
+         hADC[i][j]->Delete();
+         hSignal[i][j]->Delete();
+      }
+   }
 }

@@ -8,8 +8,8 @@ TargetPosX: 0. TargetPosY: 0. TargetPosZ: 0.
 TargetAngX: 0. TargetAngX: 0. TargetAngX: 0.
 
 BmBaseName: "BM"
-BMVTPosX: -0.013510  BMVTPosY: 0.008902  BMVTPosZ: -19.899961
-BMVTAngX: -0.238439  BMVTAngY: 1.055140  BMVTAngZ: 0.
+BMVTPosX: -0.379968  BMVTPosY: -0.073567  BMVTPosZ: -19.9
+BMVTAngX: -0.238010  BMVTAngY: 1.055330  BMVTAngZ: 0.
 
 VertexBaseName: "VT"
 VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.1
@@ -24,11 +24,11 @@ InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 14.
 InnerTrackerAngX: 0. InnerTrackerAngY: 0. InnerTrackerAngZ: 0.
 
 MicroStripBaseName: "MSD"
-MSDVTPosX:  0.792020  MSDVTPosY: -0.041001  MSDVTPosZ: 44.649804
-MSDVTAngX: -0.277888  MSDVTAngY: -0.020346  MSDVTAngZ: 0.
+MSDVTPosX: 0.776168  MSDVTPosY: 0.175432  MSDVTPosZ: 44.65
+MSDVTAngX: -0.277661  MSDVTAngY: -0.020385  MSDVTAngZ: 0.
 
 TofWallBaseName: "TW"
-TofWallPosX: 2.5  TofWallPosY: 0.15  TofWallPosZ: 193.50
+TofWallPosX: 3.050000  TofWallPosY: 0.850000  TofWallPosZ: 193.5
 TofWallAngX: 0.   TofWallAngY: 0.    TofWallAngZ: 0.
 
 CaloBaseName: "CA"

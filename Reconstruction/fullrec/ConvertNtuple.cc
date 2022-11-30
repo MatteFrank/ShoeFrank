@@ -1,6 +1,7 @@
 #include <TString.h>
 #include <TStopwatch.h>
 #include <TApplication.h>
+#include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
 #include "ConvertNtuple.hxx"
@@ -54,6 +55,12 @@ int main (int argc, char *argv[])  {
    TAGrecoManager::Instance(exp);
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
+
+   if(in.IsNull() || gSystem->AccessPathName(in.Data()))
+   {
+      Error("main()", "Input file does not exist or is null");
+      exit(-1);
+   }
    
    ConvertNtuple* conv = new ConvertNtuple(exp, runNb, in, out, mc, inMc);
    

@@ -2,6 +2,7 @@
 #include <TString.h>
 #include <TStopwatch.h>
 #include <TApplication.h>
+#include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
 #include "LocalReco.hxx"
@@ -46,6 +47,13 @@ int main (int argc, char *argv[])  {
         return 1;
      }
   }
+
+   if(infile.IsNull() || gSystem->AccessPathName(infile.Data()))
+   {
+      Error("main()", "Input file does not exist or is null");
+      exit(-1);
+   }
+
 
   //few checks
   if (preout.IsNull()){
