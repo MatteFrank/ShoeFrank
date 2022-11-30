@@ -12,6 +12,7 @@
 */
 
 #define MIP_ADC 18  ///< MIP ADC value
+#define CN_CH   64  ///< Number of channels for CN computing
 
 //! Class imp
 ClassImp(TAMSDactNtuRaw);
@@ -97,14 +98,15 @@ void TAMSDactNtuRaw::CreateHistogram()
 //! \param[in] type type
 Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t* VaContent, Int_t type)
 {
-   Float_t cn = 0;
-   Int_t cnt = 0;
-   Float_t mean = TMath::Mean(64, VaContent);
-   Float_t rms = TMath::RMS(64, VaContent);
+   Float_t cn   = 0;
+   Int_t cnt    = 0;
+
+   Float_t mean = TMath::Mean(CN_CH, VaContent);
+   Float_t rms  = TMath::RMS(CN_CH, VaContent);
 
    if (type == 0) { //simple common noise wrt VA mean ADC value
    
-      for (size_t i = 0; i < 64; i++) {
+      for (size_t i = 0; i < CN_CH; i++) {
          if (VaContent[i] > mean - 2 * rms && VaContent[i] < mean + 2 * rms) {
             cn += VaContent[i];
             cnt++;
@@ -118,7 +120,7 @@ Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t* VaContent, Int_t type)
       
    } else if (type == 1) { //Common noise with fixed threshold to exclude potential real signal strips
    
-      for (size_t i = 0; i < 64; i++) {
+      for (size_t i = 0; i < CN_CH; i++) {
          if (VaContent[i] < MIP_ADC / 2) { //very conservative cut: half the value expected for a Minimum Ionizing Particle
             cn += VaContent[i];
             cnt++;
@@ -234,7 +236,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Double_t meanX  = 0;
       Double_t meanY  = 0;
       
-      Double_t VaContent[64] = {0};
+      Double_t VaContent[CN_CH] = {0};
       
       TAMSDrawHit* hit;
 
@@ -268,8 +270,8 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                valueX = adcX - valueX;
                
                if (fgCommonModeSub) {
-                  if (i % 64 == 0) {
-                     for (int VaChan = 0; VaChan < 64; VaChan++)
+                  if (i % CN_CH == 0) {
+                     for (int VaChan = 0; VaChan < CN_CH; VaChan++)
                         VaContent[VaChan] = evt->Xplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
                      
                      cnX = ComputeCN(i, VaContent, 0);
@@ -294,7 +296,6 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                   if (ValidHistogram())
                      fpHisStripMap[sensorId]->Fill(i, adcX-meanX-cnX);
                }
-               
             }
          }
          
@@ -315,8 +316,8 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                valueY = adcY - valueY;
                
                if (fgCommonModeSub) {
-                  if (i % 64 == 0) {
-                     for (int VaChan = 0; VaChan < 64; VaChan++)
+                  if (i % CN_CH == 0) {
+                     for (int VaChan = 0; VaChan < CN_CH; VaChan++)
                         VaContent[VaChan] = evt->Yplane[i + VaChan] - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
                      
                      cnY = ComputeCN(i, VaContent, 0);
