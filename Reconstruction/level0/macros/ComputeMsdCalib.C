@@ -185,8 +185,8 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
       rawevent = (TAGdaqEvent *)(tagr.FindDataDsc("msdDaq", "TAGdaqEvent")->Object());
       Int_t nFragments = rawevent->GetFragmentSize("DEMSDEvent");
-      
-      if(nFragments == 0)
+
+      if (nFragments == 0)
       {
          std::cout << "No fragments found for MSD, exiting ..." << std::endl;
          return;
@@ -321,14 +321,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          ped_graph[sen]->SetPoint(ch, ch, pedestals[sen][ch]);
          sig_graph[sen]->SetPoint(ch, ch, sigma[sen][ch]);
 
-         if (ch % 64)
-         {
-            fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], (sigma[sen][ch] < 1.8 || sigma[sen][ch] > 5));
-         }
-         else
-         {
-            fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], 1);
-         }
+         fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], (sigma[sen][ch] < 1.8 || sigma[sen][ch] > 5));
       }
    }
 
@@ -363,7 +356,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
    return;
 
-   //Delete all histograms
+   // Delete all histograms
    for (int i = 0; i < sensors; i++)
    {
       for (int j = 0; j < NChannels; j++)
