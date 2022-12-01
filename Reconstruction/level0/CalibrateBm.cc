@@ -48,7 +48,7 @@ int main (int argc, char *argv[])  {
      }
   }
 
-   if(in.IsNull() || gSystem->AccessPathName(in.Data()))
+   if(infile.IsNull() || gSystem->AccessPathName(infile.Data()))
    {
       Error("main()", "Input file does not exist or is null");
       exit(-1);
