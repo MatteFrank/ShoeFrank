@@ -38,7 +38,7 @@ protected:
    
 
 public:
-   explicit TAVTactBaseNtuHitMC(const char* name=0, TAGparaDsc* p_geomap = 0);
+   explicit TAVTactBaseNtuHitMC(const char* name=0, TAGparaDsc* p_geomap = 0, TAGparaDsc* pConfig=0);
    //! Destructor 
    virtual ~TAVTactBaseNtuHitMC() {};
    
@@ -81,7 +81,8 @@ public:
    static void    SetMcNoiseId(Int_t id)            { fgMcNoiseId = id;          }
       
 protected:
-   TAGparaDsc*     fpGeoMap;		      ///< geometry para dsc
+   TAGparaDsc*     fpGeoMap;           ///< geometry para dsc
+   TAGparaDsc*     fpConfig;           ///< config para dsc
    TAGgeoTrafo*    fpGeoTrafo;         ///< Gobal transformation
    TAVTbaseDigitizer*  fDigitizer;     ///< cluster size digitizer
    Int_t           fNoisyPixelsN;      ///< number of noisy pixels
