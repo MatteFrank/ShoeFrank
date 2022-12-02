@@ -55,8 +55,6 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
 //! Destructor.
 TACAactNtuHit::~TACAactNtuHit()
 {
-   delete fTcorr1;
-   delete fTcorr2;
 }
 
 //------------------------------------------+-----------------------------------
@@ -108,11 +106,10 @@ Bool_t TACAactNtuHit::Action()
       createdhit->SetValid(true);
   
       if (ValidHistogram()) {
-         if (crysId < 9) { // Only 9 histograms
-            fhCharge[crysId]->Fill(energy);
-            fhChannelMap->Fill(crysId);
-            fhAmplitude[crysId]->Fill(amplitude);
-         }
+         fhCharge[crysId]->Fill(energy);
+         fhChannelMap->Fill(crysId);
+         fhAmplitude[crysId]->Fill(amplitude);
+         fhArrivalTime[crysId]->Fill(tof);
       }
    }
    if (ValidHistogram()) fhTotCharge->Fill(totCharge);
@@ -268,28 +265,22 @@ Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 //! Histograms
 void TACAactNtuHit::CreateHistogram()
 {
-
    DeleteHistogram();
 
    char histoname[100]="";
    if (FootDebugLevel(1))
       cout << "Calorimeter Histograms created. "<<endl;
 
-   // sprintf(histoname,"stEvtTime");
-   // fhEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
-   // AddHistogram(fhEventTime);
+   TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
+   int nCry = p_parmap->GetCrystalsN();
 
-   // sprintf(histoname,"stTrigTime");
-   // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
-   // AddHistogram(fhTrigTime);
-   
    fhTotCharge = new TH1F("caTotCharge", "caTotCharge", 400, -0.1, 3.9);
    AddHistogram(fhTotCharge);
 
    fhChannelMap = new TH1F("caChMap", "caChMap", 9, 0, 9);
    AddHistogram(fhChannelMap);
 
-   for(int iCh=0; iCh<9; iCh++) {
+   for(int iCh = 0; iCh < nCry; ++iCh) {
       fhArrivalTime[iCh]= new TH1F(Form("caDeltaTime_ch%d", iCh), Form("caDeltaTime_ch%d", iCh), 100, -5., 5.);
       AddHistogram(fhArrivalTime[iCh]);
 
