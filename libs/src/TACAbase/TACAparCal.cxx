@@ -31,10 +31,8 @@ TACAparCal::TACAparCal()
 //! Destructor
 TACAparCal::~TACAparCal()
 {
-  if (fMapCal!=nullptr)
-  {
-    free (fMapCal);
-  }
+  if (fMapCal)
+    delete fMapCal;
 }
 
 //_____________________________________________________________________
