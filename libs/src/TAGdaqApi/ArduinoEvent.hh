@@ -12,6 +12,12 @@ class ArduinoEvent : public RemoteEvent {
   u_int mux2[16];
   u_int mux3[16];
   u_int mux4[16];
+  u_int mux5[16];
+  u_int mux6[16];
+  u_int mux7[16];
+  u_int mux8[16];
+  u_int mux9[16];
+  
 
 
   virtual ~ArduinoEvent();
