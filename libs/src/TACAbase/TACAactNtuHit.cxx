@@ -3,6 +3,7 @@
   \brief   Implementation of TACAactNtuHit.
 */
 
+#include "TACAparGeo.hxx"
 #include "TACAparMap.hxx"
 #include "TACAparCal.hxx"
 #include "TACAactNtuHit.hxx"
@@ -26,14 +27,15 @@ ClassImp(TACAactNtuHit);
 TACAactNtuHit::TACAactNtuHit(const char* name,
                              TAGdataDsc* p_datraw,
                              TAGdataDsc* p_nturaw,
+                             TAGparaDsc* p_pargeo,
                              TAGparaDsc* p_parmap,
                              TAGparaDsc* p_parcal)
   : TAGaction(name, "TACAactNtuHit - Unpack CA raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
+    fpParGeo(p_pargeo),
     fpParMap(p_parmap),
     fpParCal(p_parcal),
-    // this should be read from calib file for each crystal ??
     fTcorr1Par1(-0.0011),
     fTcorr1Par0(0.167),
     fTcorr2Par1(4.94583e-03),
@@ -44,6 +46,7 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
    AddDataIn(p_datraw, "TACAntuRaw");
    AddDataOut(p_nturaw, "TACAntuHit");
 
+   AddPara(p_pargeo, "TACAparGeo");
    AddPara(p_parmap, "TACAparMap");
    AddPara(p_parcal, "TACAparCal");
 
@@ -64,6 +67,7 @@ Bool_t TACAactNtuHit::Action()
    TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
+   TACAparGeo*   p_pargeo = (TACAparGeo*) fpParGeo->Object();
 
    int nhit = p_datraw->GetHitsN();
 
@@ -103,6 +107,8 @@ Bool_t TACAactNtuHit::Action()
       Double_t tof    = GetTime(time, crysId);
 
       TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time,type);
+      createdhit->SetPosition(p_pargeo->GetCrystalPosition(crysId));
+      
       createdhit->SetValid(true);
   
       if (ValidHistogram()) {

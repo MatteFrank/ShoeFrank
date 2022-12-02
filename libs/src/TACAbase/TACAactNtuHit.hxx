@@ -20,10 +20,11 @@ class TACAactNtuHit : public TAGaction {
 public:
 
   explicit  TACAactNtuHit(const char* name=0,
-                                TAGdataDsc* p_datraw=0,
-                                TAGdataDsc* p_datdaq=0,
-                                TAGparaDsc* p_parmap=0,
-                                TAGparaDsc* p_parcal=0);
+                          TAGdataDsc* p_datraw=0,
+                          TAGdataDsc* p_datdaq=0,
+                          TAGparaDsc* p_pargeo=0,
+                          TAGparaDsc* p_parmap=0,
+                          TAGparaDsc* p_parcal=0);
    virtual  ~TACAactNtuHit();
 
    Bool_t   Action();
@@ -44,6 +45,7 @@ public:
 private:
    TAGdataDsc*     fpDatRaw;		    ///< input raw data
    TAGdataDsc*     fpNtuRaw;		    ///< output calibrated data
+   TAGparaDsc*     fpParGeo;         ///< geometry pointer
    TAGparaDsc*     fpParMap;         ///< mapping pointer
    TAGparaDsc*     fpParCal;         ///< calibration pointer
 
