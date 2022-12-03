@@ -58,6 +58,8 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
 //! Destructor.
 TACAactNtuHit::~TACAactNtuHit()
 {
+   delete fTcorr1;
+   delete fTcorr2;
 }
 
 //------------------------------------------+-----------------------------------
