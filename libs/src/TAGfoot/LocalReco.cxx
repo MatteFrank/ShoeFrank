@@ -188,7 +188,7 @@ void LocalReco::CreateRawAction()
 
    if(TAGrecoManager::GetPar()->IncludeCA()) {
       fpNtuHitCa   = new TAGdataDsc("caRaw", new TACAntuHit());
-      fActNtuHitCa = new TACAactNtuHit("caActNtu", fpDatRawCa, fpNtuHitCa, fpParMapCa, fpParCalCa);
+      fActNtuHitCa = new TACAactNtuHit("caActNtu", fpDatRawCa, fpNtuHitCa, fpParGeoCa, fpParMapCa, fpParCalCa);
       if (fFlagHisto){
          fActNtuHitCa->CreateHistogram();
       }

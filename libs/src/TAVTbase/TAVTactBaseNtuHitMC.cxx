@@ -48,9 +48,10 @@ Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 //!
 //! \param[in] name action name
 //! \param[in] pGeoMap geometry parameter descriptor
-TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap)
+TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap, TAGparaDsc* pConfig)
  : TAGaction(name, "TAVTactBaseNtuHitMC - NTuplize hit MC data"),
    fpGeoMap(pGeoMap),
+   fpConfig(pConfig),
 	fNoisyPixelsN(0)
 {   
 	fpHisPoisson = (TH1F*)gDirectory->FindObject("vtPoisson");

@@ -20,10 +20,11 @@ class TACAactNtuHit : public TAGaction {
 public:
 
   explicit  TACAactNtuHit(const char* name=0,
-                                TAGdataDsc* p_datraw=0,
-                                TAGdataDsc* p_datdaq=0,
-                                TAGparaDsc* p_parmap=0,
-                                TAGparaDsc* p_parcal=0);
+                          TAGdataDsc* p_datraw=0,
+                          TAGdataDsc* p_datdaq=0,
+                          TAGparaDsc* p_pargeo=0,
+                          TAGparaDsc* p_parmap=0,
+                          TAGparaDsc* p_parcal=0);
    virtual  ~TACAactNtuHit();
 
    Bool_t   Action();
@@ -44,6 +45,7 @@ public:
 private:
    TAGdataDsc*     fpDatRaw;		    ///< input raw data
    TAGdataDsc*     fpNtuRaw;		    ///< output calibrated data
+   TAGparaDsc*     fpParGeo;         ///< geometry pointer
    TAGparaDsc*     fpParMap;         ///< mapping pointer
    TAGparaDsc*     fpParCal;         ///< calibration pointer
 
@@ -55,9 +57,9 @@ private:
    Double_t        fT2;              ///< Temperature  parameter 2
 
 
-   TH1F*           fhArrivalTime[9];  ///< histograms for arrival time
-   TH1F*           fhCharge[9];       ///< histograms for charge
-   TH1F*           fhAmplitude[9];    ///< histograms for amplitude
+   TH1F*           fhArrivalTime[333];  ///< histograms for arrival time
+   TH1F*           fhCharge[333];       ///< histograms for charge
+   TH1F*           fhAmplitude[333];    ///< histograms for amplitude
    TH1F*           fhTrigTime;        ///< histogram for trigger time
    TH1F*           fhTotCharge;       ///< histogram for total charge
    TH1F*           fhEventTime;       ///< histogram for event type
