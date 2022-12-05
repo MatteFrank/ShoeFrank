@@ -67,10 +67,11 @@ Bool_t TAGactNtuEvent::Action()
      pNtuEvt->SetPMTsAndBusy(trgEvent->PMTsAndBusy);
 
 
-     hDeltaTimeEvents->Fill(trgEvent->timeSinceLastTrigger*1E-3);
-     Double_t tottime = trgEvent->time_sec+1E-6*trgEvent->time_usec;
-     hDAQEventsVsTime->Fill(tottime);
-     
+     if(ValidHistogram()) {
+       hDeltaTimeEvents->Fill(trgEvent->timeSinceLastTrigger*1E-3);
+       Double_t tottime = trgEvent->time_sec+1E-6*trgEvent->time_usec;
+       hDAQEventsVsTime->Fill(tottime);
+     }
      
      
   }
