@@ -65,9 +65,41 @@ Bool_t TAGactNtuEvent::Action()
      pNtuEvt->SetBCOofTrigger(trgEvent->BCOofTrigger);
      pNtuEvt->SetSpillNrAndTrgFineDelay(trgEvent->spillNrAndTrgFineDelay);
      pNtuEvt->SetPMTsAndBusy(trgEvent->PMTsAndBusy);
+
+
+     hDeltaTimeEvents->Fill(trgEvent->timeSinceLastTrigger*1E-3);
+     Double_t tottime = trgEvent->time_sec+1E-6*trgEvent->time_usec;
+     hDAQEventsVsTime->Fill(tottime);
+     
+     
+     
   }
   SetBit(kValid);
   fpNtuEvt->SetBit(kValid);
   
   return kTRUE;
+}
+
+
+void TAGactNtuEvent::CreateHistogram(){
+
+  DeleteHistogram();
+  
+  char histoname[100]="";
+  if(FootDebugLevel(1))
+     cout<<"I have created the DAQ histo "<<endl;
+
+  
+  strcpy(histoname,"DeltaTimeEvents");
+  hDeltaTimeEvents = new TH1F(histoname, histoname, 20000, 0., 200.);
+  AddHistogram(hDeltaTimeEvents);
+
+  strcpy(histoname,"DAQEventsVsTime");
+  hDAQEventsVsTime = new TH1F(histoname, histoname, 300000, 0., 300.);
+  AddHistogram(hDAQEventsVsTime);
+
+ 
+
+  SetValidHistogram(kTRUE);
+
 }

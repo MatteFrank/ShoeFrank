@@ -18,6 +18,7 @@
 #include "TAGbaseWDparTime.hxx"
 #include "TAGbaseWDparMap.hxx"
 #include <TH2F.h>
+#include <TH1F.h>
 
 #define NSAMPLING 1024               ///< define sample
 #define GLB_EVT_HEADER 0xeadebaba    ///< global event header
@@ -53,7 +54,7 @@ public:
                                     TAGparaDsc* p_NEmap = 0);
 
    virtual          ~TAGactWDreader();
-   void              CreateHistogram();
+   virtual void      CreateHistogram();
    virtual Bool_t    Action();
    Int_t             Open(const TString &name);
    Int_t             Close();
@@ -88,8 +89,37 @@ private:
    Int_t           fProcFiles;        ///< Process file
    Int_t           fMaxFiles;         ///< maximum number of files
 
+  Double_t time,runtime,time_prev;
+  Double_t deltatimeev,deltatimerate;
+  Int_t nAcqEventsRate;
+  Int_t nSTcounts, nSTcounts_prev;
+  Int_t nTWcounts, nTWcounts_prev;
+  Int_t nCAcounts, nCAcounts_prev;
+  Int_t nSTcountsrate, nSTcountsrate_prev;
+  Int_t nTWcountsrate, nTWcountsrate_prev;
+  Int_t nCAcountsrate, nCAcountsrate_prev;
+
+  
+
+  TH1F *hTriggerID;
+  TH1F *hDAQRate;
+  TH1F *hSTRate;
+  TH1F *hSTRate100;
+  TH1F *hTWRate;
+  TH1F *hTWRate100;
+  TH1F *hCARate;
+  TH1F *hCARate100;
+
+  TH1F *hDAQRateVsTime;
+  TH1F *hSTRateVsTime;
+  TH1F *hTWRateVsTime;
+  TH1F *hCARateVsTime;
+  TH2F *hDAQVsST;
+  TH1F *hRatioDAQ_ST;
+  
+  
 private:
-   vector<TWaveformContainer*>             fSTwaves;  ///< wave form container vector for ST
+  vector<TWaveformContainer*>             fSTwaves;  ///< wave form container vector for ST
    vector<TWaveformContainer*>             fTWwaves;  ///< wave form container vector for TW
    vector<TWaveformContainer*>             fCAwaves;  ///< wave form container vector for CA
    vector<TWaveformContainer*>             fNEwaves;  ///< wave form container vector for Neutrons
