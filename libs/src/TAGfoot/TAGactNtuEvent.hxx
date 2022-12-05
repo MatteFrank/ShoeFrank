@@ -3,6 +3,7 @@
 
 #include "TAGWDtrigInfo.hxx"
 #include "TAGaction.hxx"
+#include <TH1F.h>
 
 /*!
  \file TAGactNtuEvent.hxx
@@ -21,10 +22,19 @@ public:
   
    // Action
   virtual Bool_t  Action();
-  
+
+
+  //create histograms
+  virtual void      CreateHistogram();
+
+
 protected:
   TAGdataDsc*     fpDatDaq;	///< input data dsc
   TAGdataDsc*     fpNtuEvt;   ///< output data dsc
+
+  TH1F *hDeltaTimeEvents;
+  TH1F *hDAQEventsVsTime;
+
   
   ClassDef(TAGactNtuEvent,1)
 };

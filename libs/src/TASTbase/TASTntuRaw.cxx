@@ -14,6 +14,8 @@ using namespace std;
 #include "TCanvas.h"
 #include "TF1.h"
 
+#include "TAGrecoManager.hxx"
+
 #define ST_AMP_THR 0.008
 
 //! Class Imp
@@ -130,7 +132,8 @@ void TASTntuRaw::NewHit(TWaveformContainer *W, string algo, double frac, double 
 void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double frac, double del)
 {
   if(!vW.size()){
-    printf("Warning, ST waveforms not found!!\n");
+     if(FootDebugLevel(1))
+        printf("Warning, ST waveforms not found!!\n");
     fSuperHit = new TASTrawHit();
     return;
   }
