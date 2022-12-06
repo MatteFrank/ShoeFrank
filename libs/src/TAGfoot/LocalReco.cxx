@@ -74,7 +74,7 @@ void LocalReco::CreateRawAction()
    if (!fgStdAloneFlag) {
       fpDaqEvent = new TAGdataDsc("daqEvt", new TAGdaqEvent());
       fActEvtReader = new TAGactDaqReader("daqActReader", fpDaqEvent);
-
+          
       fpNtuEvt = new TAGdataDsc("evtNtu", new TAGntuEvent());
       fActNtuEvt = new TAGactNtuEvent("evtActNtu", fpNtuEvt, fpDaqEvent);
      if (fFlagHisto)
@@ -102,10 +102,10 @@ void LocalReco::CreateRawAction()
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
                                       fpParTimeWD, fpParMapCa, fgStdAloneFlag);
       if (fgStdAloneFlag)
-         fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
+	fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
-      if (fFlagHisto)
-         fActWdRaw->CreateHistogram();
+      if(fFlagHisto)
+	fActWdRaw->CreateHistogram();
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() ||(TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
@@ -243,14 +243,15 @@ void LocalReco::OpenFileIn()
 //! Set raw data histogram directory
 void LocalReco::SetRawHistogramDir()
 {
-   // ST
-   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW()) {
-      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
-      fActWdRaw->SetHistogramDir(subfolder);
-   }
+  // WD
+  if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA()) {
+    TDirectory* subfolder = fActEvtWriter->File()->mkdir("WD");
+    fActWdRaw->SetHistogramDir(subfolder);
+  }
 
+  //ST
    if (TAGrecoManager::GetPar()->IncludeST()) {
-      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TASTparGeo::GetBaseName());
+     TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
       fActNtuHitSt->SetHistogramDir(subfolder);
    }
 
@@ -298,9 +299,16 @@ void LocalReco::SetRawHistogramDir()
    // CA
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
-      //fActWdRaw->SetHistogramDir(subfolder);
       fActNtuHitCa ->SetHistogramDir(subfolder);
    }
+
+   //DAQ
+   TDirectory* subfolder = fActEvtWriter->File()->mkdir("Event");
+   fActNtuEvt ->SetHistogramDir(subfolder);
+
+
+
+   
 }
 
 //__________________________________________________________
