@@ -10,7 +10,6 @@
 #include "TH1F.h"
 
 #include "TATWactCalibTW.hxx"
-#include "Parameters.h"
 
 /*!
   \class TATWactCalibTW

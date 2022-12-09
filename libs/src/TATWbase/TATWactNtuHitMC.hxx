@@ -21,7 +21,7 @@
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 
-#include "Parameters.h"
+#include "TATWparameters.hxx"
 
 class TAMCflukaParser;
 class TATWdigitizer;

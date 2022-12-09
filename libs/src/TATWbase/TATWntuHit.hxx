@@ -20,7 +20,7 @@
 #include "TATWntuRaw.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdata.hxx"
-#include "Parameters.h"
+#include "TATWparameters.hxx"
 
 /*!
  \class TAThHit

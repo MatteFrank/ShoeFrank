@@ -14,7 +14,7 @@
 
 #include "TATWactNtuPoint.hxx"
 
-#include "Parameters.h"
+#include "TATWparameters.hxx"
 /*!
  \class TATWactNtuPoint 
  \brief NTuplizer for TW reconstructed points. **
