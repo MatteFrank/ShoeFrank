@@ -103,13 +103,13 @@ Bool_t TAVTactNtuHit::Action()
    if (ValidHistogram())
       fpHisBCOofTrigger->Fill(evtNumber, diff);
    
-   if (TMath::Abs(float(diff)) > fgTStolerance) {
+   if (TMath::Abs(float(diff)) > fgTStolerance && diff > 0) {
       Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);
       if (diff > 0) // to avoid corrupted timestamp number
          fQueueEvtsN++;
-      else
-          Warning("Action()", "BCOofTrigger difference negative value, do not resynchronize");
    }
+   if (diff < 0)
+      Warning("Action()", "BCOofTrigger difference negative (%d)", diff);
    
    if (fQueueEvtsN > 0) {
       if (fQueueEvtsN - fQueueEvt.size() == 0)
