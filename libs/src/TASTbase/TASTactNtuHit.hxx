@@ -13,10 +13,6 @@
 #include "TASTntuRaw.hxx"
 #include "TASTntuHit.hxx"
 
-#define REF_CLK make_pair(16,27)
-#define CHISQUARE_THRESHOLD 1.0
-#define AMPLITUDE_THRESHOLD 0.04
-
 class TASTactNtuHit : public TAGaction {
 
 public:

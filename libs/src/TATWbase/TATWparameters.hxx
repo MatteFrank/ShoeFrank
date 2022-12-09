@@ -6,6 +6,9 @@
 #include <map>
 #include <tuple>
 
+#define NMAX_BO_ID 200
+#define NMAX_CH_ID 18
+
 #define WAVEFORMBINS 1024
 #define NUMBEROFCHANNELS 18
 #define MAXNUMBEROFBOARDS 16
