@@ -13,6 +13,8 @@
 
 #include "DEMSDEvent.hh"
 
+#include "TAMSDparameters.hxx"
+
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparConf.hxx"
 #include "TAMSDparMap.hxx"
@@ -62,9 +64,9 @@ private:
     TAGparaDsc*     fpParGeo;            ///< geometry parameter dsc
     TAGparaDsc*     fpParConf;           ///< configuration parameter dsc
 
-    TH1F*           fpHisSeedMap[16];    ///< seed map
-    TH1F*           fpHisStripMap[16];   ///< strip map
-    TH1F*           fpHisCommonMode[16]; ///< commom mode
+    TH1F*           fpHisSeedMap[MaxPlane];    ///< seed map
+    TH1F*           fpHisStripMap[MaxPlane];   ///< strip map
+    TH1F*           fpHisCommonMode[MaxPlane]; ///< commom mode
    
 private:
     Bool_t   DecodeHits(const DEMSDEvent* evt);
