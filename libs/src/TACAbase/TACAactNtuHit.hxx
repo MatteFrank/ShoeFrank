@@ -5,7 +5,7 @@
   \brief   Declaration of TACAactNtuHit.
 */
 /*------------------------------------------+---------------------------------*/
-
+#include "TACAparameters.hxx"
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGdataDsc.hxx"
@@ -57,13 +57,13 @@ private:
    Double_t        fT2;              ///< Temperature  parameter 2
 
 
-   TH1F*           fhArrivalTime[333];  ///< histograms for arrival time
-   TH1F*           fhCharge[333];       ///< histograms for charge
-   TH1F*           fhAmplitude[333];    ///< histograms for amplitude
-   TH1F*           fhTrigTime;        ///< histogram for trigger time
-   TH1F*           fhTotCharge;       ///< histogram for total charge
-   TH1F*           fhEventTime;       ///< histogram for event type
-   TH1F*           fhChannelMap;      ///< histogram for channel map
+   TH1F*           fhArrivalTime[MaxCry];  ///< histograms for arrival time
+   TH1F*           fhCharge[MaxCry];       ///< histograms for charge
+   TH1F*           fhAmplitude[MaxCry];    ///< histograms for amplitude
+   TH1F*           fhTrigTime;             ///< histogram for trigger time
+   TH1F*           fhTotCharge;            ///< histogram for total charge
+   TH1F*           fhEventTime;            ///< histogram for event type
+   TH1F*           fhChannelMap;           ///< histogram for channel map
 
    TF1*            fTcorr1;           ///< histogram for correlation tempetarure 1
    TF1*            fTcorr2;           ///< histogram for correlation tempetarure 2
