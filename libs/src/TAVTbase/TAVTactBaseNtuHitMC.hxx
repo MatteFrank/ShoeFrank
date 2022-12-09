@@ -14,6 +14,7 @@
 #include "TAVTbaseDigitizer.hxx"
 #include "TAVTdigitizerE.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAVTparameters.hxx"
 
 #include "TAVThit.hxx"
 
@@ -90,13 +91,13 @@ protected:
    TString         fPrefix;            ///< prefix of histogram
    TString         fTitleDev;          ///< device name for histogram title
 
-   TH2F*           fpHisPixelMap[32];  ///< pixel map per sensor
-   TH2F*           fpHisPosMap[32];    ///< pixel map per sensor
-   TH1F*           fpHisPixel[32];     ///< number pixels per cluster MC
-   TH1F*           fpHisPixelTot;      ///< total number pixels per cluster MC
-   TH1F*           fpHisDeTot;         ///< Total energy loss
-   TH1F*           fpHisDeSensor[32];  ///< Energy loss per sensor
-   TH1F*           fpHisPoisson;       ///< Poisson distribution for pileup
+   TH2F*           fpHisPixelMap[MaxSens];  ///< pixel map per sensor
+   TH2F*           fpHisPosMap[MaxSens];    ///< pixel map per sensor
+   TH1F*           fpHisPixel[MaxSens];     ///< number pixels per cluster MC
+   TH1F*           fpHisPixelTot;           ///< total number pixels per cluster MC
+   TH1F*           fpHisDeTot;              ///< Total energy loss
+   TH1F*           fpHisDeSensor[MaxSens];  ///< Energy loss per sensor
+   TH1F*           fpHisPoisson;            ///< Poisson distribution for pileup
 
    std::vector<std::vector<RawMcHit_t>> fStoredEvents; ///< list of hits used for pilepup
 

@@ -15,6 +15,7 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
+#include "TAVTparameters.hxx"
 #include "TAGactNtuCluster2D.hxx"
 
 class TAVTbaseCluster;
@@ -77,9 +78,9 @@ protected:
    
    Int_t          fClustersN;         ///< number of cluster
 
-   TH1F*          fpHisPixelTot;	     ///< Total number of pixels per cluster
-   TH1F*          fpHisPixel[32];	  ///< number of pixels per cluster per sensor
-   TH2F*          fpHisClusMap[32];   ///< cluster map per sensor
+   TH1F*          fpHisPixelTot;	        ///< Total number of pixels per cluster
+   TH1F*          fpHisPixel[MaxSens];	  ///< number of pixels per cluster per sensor
+   TH2F*          fpHisClusMap[MaxSens]; ///< cluster map per sensor
    
    TString        fPrefix;            ///< prefix of histogram
    TString        fTitleDev;          ///< device name for histogram title
