@@ -11,9 +11,6 @@
   \brief Get MSD raw data from DAQ. **
 */
 
-#define MIP_ADC 18  ///< MIP ADC value
-#define CN_CH   64  ///< Number of channels for CN computing
-
 //! Class imp
 ClassImp(TAMSDactNtuRaw);
 
