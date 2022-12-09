@@ -73,7 +73,7 @@ IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:			   y
+IncludeIT:			   n
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y

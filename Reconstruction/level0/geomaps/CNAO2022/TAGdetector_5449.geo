@@ -7,15 +7,15 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Beam info
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-BeamSize:            0.45
+BeamSize:            0.48
 BeamShape:         "Gaussian"
-BeamEnergy:          0.39884 //! GeV/u
+BeamEnergy:          0.2006   //! GeV/u
 BeamAtomicMass:       12   //! A Beam
 BeamAtomicNumber:     6    //! Z Beam
-BeamMaterial:        "C"   //! Beam Material
+BeamMaterial:        "O"   //! Beam Material
 BeamPartNumber:       1    // particles in Beam
-BeamPosX:            0.0      BeamPosY:     0.0000    BeamPosZ:      -63.4
-BeamSpreadX:         0.45      BeamSpreadY:  0.45       BeamSpread:      0.0
+BeamPosX:            0.0000   BeamPosY:     0.0000    BeamPosZ:      -92.75
+BeamSpreadX:         0.1800   BeamSpreadY:  0.7    BeamSpread:      0.0
 BeamDiv:             0.0000
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-

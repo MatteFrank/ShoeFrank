@@ -236,37 +236,39 @@ Bool_t TAGactWDreader::Action()
 	runtime+=deltatimeev;
 	deltatimerate+=deltatimeev;
 
-	hTriggerID->Fill(trigID);
-	hDAQRateVsTime->Fill(runtime);
-	hSTRateVsTime->Fill(runtime,nSTcounts-nSTcounts_prev);
-	hTWRateVsTime->Fill(runtime,nTWcounts-nTWcounts_prev);
-	hCARateVsTime->Fill(runtime,nCAcounts-nCAcounts_prev);
-
-	if(deltatimeev>0){
-	  hSTRate->Fill((nSTcounts-nSTcounts_prev)/deltatimeev);
-	  hTWRate->Fill((nTWcounts-nTWcounts_prev)/deltatimeev);
-	  hCARate->Fill((nCAcounts-nCAcounts_prev)/deltatimeev);
-	}
-
+	if(ValidHistogram()) {
+	  hTriggerID->Fill(trigID);
+	  hDAQRateVsTime->Fill(runtime);
+	  hSTRateVsTime->Fill(runtime,nSTcounts-nSTcounts_prev);
+	  hTWRateVsTime->Fill(runtime,nTWcounts-nTWcounts_prev);
+	  hCARateVsTime->Fill(runtime,nCAcounts-nCAcounts_prev);
+	  
+	  if(deltatimeev>0){
+	    hSTRate->Fill((nSTcounts-nSTcounts_prev)/deltatimeev);
+	    hTWRate->Fill((nTWcounts-nTWcounts_prev)/deltatimeev);
+	    hCARate->Fill((nCAcounts-nCAcounts_prev)/deltatimeev);
+	  }
+	  
+	  
+	  if(deltatimerate>0.1){
+	    hDAQRate->Fill(nAcqEventsRate/deltatimerate);
+	    hDAQVsST->Fill(nSTcountsrate/deltatimerate, nAcqEventsRate/deltatimerate);
+	    hRatioDAQ_ST->Fill(nAcqEventsRate/(Double_t)nSTcountsrate);
+	    hSTRate100->Fill(nSTcountsrate/deltatimerate);
+	    hTWRate100->Fill(nTWcountsrate/deltatimerate);
+	    hCARate100->Fill(nCAcountsrate/deltatimerate);
+	    deltatimerate=0;
+	    nAcqEventsRate=0;
+	    nSTcountsrate=0;
+	    nTWcountsrate=0;
+	    nCAcountsrate=0;
+	  }
 	
-	if(deltatimerate>0.1){
-	  hDAQRate->Fill(nAcqEventsRate/deltatimerate);
-	  hDAQVsST->Fill(nSTcountsrate/deltatimerate, nAcqEventsRate/deltatimerate);
-	  hRatioDAQ_ST->Fill(nAcqEventsRate/(Double_t)nSTcountsrate);
-	  hSTRate100->Fill(nSTcountsrate/deltatimerate);
-	  hTWRate100->Fill(nTWcountsrate/deltatimerate);
-	  hCARate100->Fill(nCAcountsrate/deltatimerate);
-	  deltatimerate=0;
-	  nAcqEventsRate=0;
-	  nSTcountsrate=0;
-	  nTWcountsrate=0;
-	  nCAcountsrate=0;
+	  time_prev = time;
+	  nSTcounts_prev = nSTcounts;
+	  nTWcounts_prev = nTWcounts;
+	  nCAcounts_prev = nTWcounts;
 	}
-	
-	time_prev = time;
-	nSTcounts_prev = nSTcounts;
-	nTWcounts_prev = nTWcounts;
-	nCAcounts_prev = nTWcounts;
       }
 
       

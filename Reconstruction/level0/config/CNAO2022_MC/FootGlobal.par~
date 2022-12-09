@@ -1,7 +1,7 @@
 
 
 ################################################################
-######################  Campaign CNAO 2022  #####################
+######################  Campaign CNAO 2022 MC ##################
 ################################################################
 
 
@@ -58,7 +58,7 @@ EnableHisto:         y
 EnableTracking:      y
 EnableMsdTrack:      n
 EnableMsdPed:        n
-EnableSaveHits:      y
+EnableSaveHits:      n
 EnableRootObject:    y
 EnableTWZmc:         n
 EnableTWnoPU:        n
@@ -73,7 +73,7 @@ IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:			   n
+IncludeIT:			   y
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y

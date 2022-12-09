@@ -96,16 +96,18 @@ Bool_t TASTactNtuHit::Action()
    }else{
       if(FootDebugLevel(1))printf("super hit missing\n");
    }
-   
-   hEff->Fill(8);
-   if(vampot.size()==7)hEff->Fill(9);
-   if(vampot.size()==8)hEff->Fill(10);
-   if(vampot.size()>=neff){
-      for(int ich=0;ich<8;ich++){
+
+   if(ValidHistogram()) {
+     hEff->Fill(8);
+     if(vampot.size()==7)hEff->Fill(9);
+     if(vampot.size()==8)hEff->Fill(10);
+     if(vampot.size()>=neff){
+       for(int ich=0;ich<8;ich++){
          if(find(vampot.begin(), vampot.end(), ich) != vampot.end()){
-            hEff->Fill(ich);
+	   hEff->Fill(ich);
          }
-      }
+       }
+     }
    }
    
    fpNtuRaw->SetBit(kValid);

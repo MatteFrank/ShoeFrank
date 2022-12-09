@@ -690,8 +690,10 @@ BookYield ("yield-trkREAL");
   if(fFlagMC == false ){
     gDirectory->mkdir("fragTriggerStudies");
     gDirectory->cd("fragTriggerStudies");
-    h = new TH1D("chargeMB","",8, 0.5 ,8.5);
-    h = new TH1D("chargeMBFrag","",8, 0.5 ,8.5);
+    h = new TH1D("chargeMB","chargeMB",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag","chargeMBFrag",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag_efficiency","chargeMBFrag",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag_RejectPower","",1, 0. ,1.);
     gDirectory->cd("..");
   }
 
@@ -1949,6 +1951,24 @@ void GlobalRecoAna::AfterEventLoop(){
     }
       h = new TH1D(luminosity_name.c_str(),"",1, 0. ,1.);
       ((TH1D*)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1,Ntg*nTotEv  );
+
+
+  //study efficiency of MB trigger
+  if (fFlagMC == false) {
+     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))
+     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))
+//TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
+
+  
+  ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency")) -> Divide(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB")));
+  ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_RejectPower")) ->SetBinContent(1,(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->GetEntries() /((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))->GetEntries() )  );
+  
+  
+
+  
+
+  }
+
  
   gTAGroot->EndEventLoop();
 
@@ -2700,6 +2720,7 @@ void GlobalRecoAna::FragTriggerStudies(){
 
     if (wdTrig -> GetTriggersStatus()[1] == 1) { // if MB trigger with fragmentation
       ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->Fill(Z_meas);
+      ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency"))->Fill(Z_meas);
 
     }
 

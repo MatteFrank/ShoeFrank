@@ -5,7 +5,7 @@ NumberDevices: 10
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/CNAO2022/FOOT.geo": 5100;
+"./geomaps/CNAO2022/FOOT.geo": 5100; 5449;
 
 DetectorName: "DI"
 NumberFiles: 1
@@ -29,7 +29,7 @@ NumberFiles: 4
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/CNAO2022/TAGdetector.geo": 5100;;
+"./geomaps/CNAO2022/TAGdetector.geo": 5100; 5449;
 
 DetectorName: "VT"
 NumberFiles: 3
