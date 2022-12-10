@@ -45,7 +45,7 @@ ClassImp(TAVTactNtuHitMC);
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] evStr Fluka structure pointer
 TAVTactNtuHitMC::TAVTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, EVENT_STRUCT* evStr)
-: TAVTactBaseNtuHitMC(name, pGeoMap),
+: TAVTactBaseNtuHitMC(name, pGeoMap, pConfig),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
    fpNtuRaw(pNtuRaw),
