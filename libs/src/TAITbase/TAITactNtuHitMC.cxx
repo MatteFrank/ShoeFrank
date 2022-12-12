@@ -11,6 +11,7 @@
 
 #include "TAITparGeo.hxx"
 #include "TAVTparConf.hxx"
+#include "TAITparConf.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TAITntuHit.hxx"
@@ -46,8 +47,8 @@ ClassImp(TAITactNtuHitMC);
 //! \param[out] pNtuRaw hit container descriptor
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] evStr Fluka structure pointer
-TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
-: TAVTactBaseNtuHitMC(name, pGeoMap),
+TAITactNtuHitMC::TAITactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, EVENT_STRUCT* evStr)
+: TAVTactBaseNtuHitMC(name, pGeoMap, pConfig),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
    fpNtuRaw(pNtuRaw),
@@ -211,9 +212,10 @@ void TAITactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, T
 //! \param[in] trackIdx MC event index
 void TAITactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx, Bool_t pileup)
 {
-	TAITparGeo* pGeoMap = (TAITparGeo*) fpGeoMap->Object();
-	TAITntuHit* pNtuRaw = (TAITntuHit*) fpNtuRaw->Object();
- 
+	TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMap->Object();
+	TAITntuHit* pNtuRaw  = (TAITntuHit*) fpNtuRaw->Object();
+   TAITparConf* pConfig = (TAITparConf*) fpConfig->Object();
+
 	map<int, double> digiMap = fDigitizer->GetMap();
 	int nPixelX = fDigitizer->GetPixelsNx();
  
@@ -231,6 +233,7 @@ void TAITactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx, Bo
          pair<int, int> p(sensorId, it->first);
 
          if (fMap[p] == 0x0) {
+            if (pConfig->IsDeadPixel(sensorId, line, col)) continue;
             pixel = (TAIThit*)pNtuRaw->NewPixel(sensorId, value, line, col);
             fMap[p] = pixel;
          } else

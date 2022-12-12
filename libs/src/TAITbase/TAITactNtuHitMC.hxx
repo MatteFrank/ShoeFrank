@@ -20,7 +20,7 @@ class TAITntuHit;
 class TAITactNtuHitMC : public TAVTactBaseNtuHitMC {
 
 public:
-   explicit TAITactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0, EVENT_STRUCT* evStr = 0);
+   explicit TAITactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, TAGparaDsc* p_geomap=0, TAGparaDsc* p_config= 0,EVENT_STRUCT* evStr = 0);
 
    virtual ~TAITactNtuHitMC() {};
    
