@@ -109,7 +109,7 @@ Bool_t TAVTactNtuHit::Action()
          fQueueEvtsN++;
    }
    if (diff < 0)
-      Warning("Action()", "BCOofTrigger difference negative (%d)", diff);
+      Warning("Action()", "BCOofTrigger negative difference (%d)", diff);
    
    if (fQueueEvtsN > 0) {
       if (fQueueEvtsN - fQueueEvt.size() == 0)
