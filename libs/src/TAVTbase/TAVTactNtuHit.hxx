@@ -37,6 +37,7 @@ protected:
    
 private:
    static UInt_t       fgTStolerance;    ///< Tolerance for time stamp
+   static Int_t        fgTSnegTolerance; ///< Negative tolerance for time stamp
    
    ClassDef(TAVTactNtuHit,0)
 };
