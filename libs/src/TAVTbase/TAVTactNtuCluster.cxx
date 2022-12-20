@@ -58,12 +58,13 @@ Bool_t TAVTactNtuCluster::Action()
    
    Bool_t ok = true;
    
-   for (Int_t i = 0; i < pConfig->GetSensorsN(); ++i) {
-      fListOfPixels = pNtuHit->GetListOfPixels(i);
-      if (fListOfPixels->GetEntries() == 0) continue;
-      ok += FindClusters(i);
+   if (pNtuHit->IsValid()) {
+      for (Int_t i = 0; i < pConfig->GetSensorsN(); ++i) {
+         fListOfPixels = pNtuHit->GetListOfPixels(i);
+         if (fListOfPixels->GetEntries() == 0) continue;
+         ok += FindClusters(i);
+      }
    }
-   
    if(ok)
       fpNtuClus->SetBit(kValid);
    

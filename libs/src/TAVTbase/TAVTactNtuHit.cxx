@@ -7,6 +7,7 @@
 #include "TMath.h"
 
 #include "DECardEvent.hh"
+#include "TAVTntuHit.hxx"
 #include "DAQMarkers.hh"
 
 #include "TAGrecoManager.hxx"
@@ -24,7 +25,7 @@
 //! Class Imp
 ClassImp(TAVTactNtuHit);
 
-UInt_t TAVTactNtuHit::fgTStolerance    =  260;
+UInt_t TAVTactNtuHit::fgTStolerance    =  800;
  Int_t TAVTactNtuHit::fgTSnegTolerance = -200;
 
 //------------------------------------------+-----------------------------------
@@ -56,8 +57,9 @@ TAVTactNtuHit::~TAVTactNtuHit()
 //! Action.
 Bool_t TAVTactNtuHit::Action()
 {
-   TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
-   
+   TAGdaqEvent* datDaq  = (TAGdaqEvent*) fpDatDaq->Object();
+   TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
+
    Int_t nFragments = datDaq->GetFragmentsN();
    UInt_t bcoTrig = 0;
    UInt_t evtNumber = 0;
@@ -80,6 +82,7 @@ Bool_t TAVTactNtuHit::Action()
       fDataLink  = evt->channelID - (dataVTX | 0x30);
       if (fEventSize == 0) return true;
       DecodeEvent();
+      pNtuRaw->SetValid(true);
    }
 
    
@@ -111,12 +114,14 @@ Bool_t TAVTactNtuHit::Action()
    if (TMath::Abs(float(diff)) > fgTStolerance && diff > 0) {
       Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);
       fQueueEvtsN++;
+      pNtuRaw->SetValid(false);
    }
    
    if (diff < fgTSnegTolerance) {
       Warning("Action()", "BCOofTrigger difference lower than %d (%d) for %d time(s), resynchronizing", fgTSnegTolerance, diff, fQueueEvtsN+1);
       fQueueEvtsN++;
       first = false;
+      pNtuRaw->SetValid(false);
    }
    
    if (diff < -1)
