@@ -40,6 +40,7 @@ TAVTactNtuHit::TAVTactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* 
 : TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq),
   fFirstBcoTrig(0),
+  fPrevBcoTrig(0),
   fQueueEvtsN(0)
 {
    AddDataIn(pDatDaq, "TAGdaqEvent");
@@ -94,6 +95,9 @@ Bool_t TAVTactNtuHit::Action()
    if (!evtInfo) return true;
 
    evtNumber = evtInfo->eventNumber;
+      
+   if (bcoTrig < fPrevBcoTrig)
+      first = false;
    
    if (!first) {
       fFirstBcoTrig = bcoTrig-trig->BCOofTrigger;
@@ -124,6 +128,8 @@ Bool_t TAVTactNtuHit::Action()
       evtp = new DECardEvent(*evt0);
       fQueueEvt.push(evtp);
    }
+      
+   fPrevBcoTrig = bcoTrig;
    
    return kTRUE;
 }
