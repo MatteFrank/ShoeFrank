@@ -13,13 +13,6 @@
  \brief Container class for VTX ntu hit
  */
 
-////////////////////////////////////////////////////////////
-// Class Description of TAVThit                        //
-//                                                        //
-//                                                        //
-////////////////////////////////////////////////////////////
-
-
 #include "TAGroot.hxx"
 #include "TAVTparGeo.hxx"
 
@@ -35,7 +28,8 @@ TString TAVTntuHit::fgkBranchName   = "vtrh.";
 TAVTntuHit::TAVTntuHit()
 : TAGdata(),
   fListOfPixels(0x0),
-  fpGeoMap(0x0)
+  fpGeoMap(0x0),
+  fValid(true)
 {
    fpGeoMap = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
    if (!fpGeoMap) {

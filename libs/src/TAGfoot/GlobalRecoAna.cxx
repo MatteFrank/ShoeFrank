@@ -96,6 +96,7 @@ void GlobalRecoAna::LoopEvent() {
     TAGWDtrigInfo* wdTrig = 0x0;
     if (fFlagMC ==false){
     wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
+    FragTriggerStudies(); 
     }
 
     if (fFlagMC ==false && nt >0){
@@ -204,23 +205,24 @@ void GlobalRecoAna::LoopEvent() {
       Th_reco = fGlbTrack-> GetTgtTheta() *TMath::RadToDeg();
       //cout << "TH_RECO: " << Th_reco << endl;
 
+      //get theta_reco wrt to the beam direction, not to the global conventional z
       if (myBMNtuTrk->GetTracksN() > 0) {
-      //get theta_reco wrt to the beam direction, not the global conventional z
-      //take the vector direction of the fragment in global SdR
+        //cout << "bm tracks anal :"<< myBMNtuTrk->GetTracksN() << endl;
+     //take the vector direction of the fragment in global SdR wrt target       
       TVector3 TgtMomentum = fGlbTrack->GetTgtMomentum().Unit();
       // take the direction of the beam in global SdR
       TVector3 BMslope = myBMNtuTrk->GetTrack(0)->GetSlope();
       BMslope  = fpFootGeo->VecFromBMLocalToGlobal(BMslope);
-      //BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope);
       //take the angle between these 2 vectors
       Th_recoBM = BMslope.Angle( TgtMomentum )*TMath::RadToDeg();
       
-      cout << "momX: " << TgtMomentum.X() << " momY: " << TgtMomentum.Y() << " momZ: " << TgtMomentum.Z() << endl;
-      cout << "BMX: " << BMslope.X() << " BMY: " << BMslope.Y() << " BMZ: " << BMslope.Z() << endl;
-      cout << "TH_mom: " << TgtMomentum.Theta() *TMath::RadToDeg()  <<  " thBM: "<< BMslope.Theta() *TMath::RadToDeg() << " th_recoBM: "<<Th_recoBM <<endl;
-      cout << endl;
+      //cout << "Th_recoBM " << Th_recoBM<<endl;
+      
+      
+      //cout << "momX: " << TgtMomentum.X() << " momY: " << TgtMomentum.Y() << " momZ: " << TgtMomentum.Z() << endl << "BMX: " << BMslope.X() << " BMY: " << BMslope.Y() << " BMZ: " << BMslope.Z() << endl << "TH_mom: " << TgtMomentum.Theta() *TMath::RadToDeg()  <<  " thBM: "<< BMslope.Theta() *TMath::RadToDeg() << " th_recoBM: "<<Th_recoBM <<endl << endl;
       }
-
+      Float_t Th_recoBM2 =  fGlbTrack->GetTgtThetaBm() *TMath::RadToDeg();
+      //cout << "Th_recoBM2 " << Th_recoBM2<<endl;
       
 
 
@@ -314,8 +316,10 @@ void GlobalRecoAna::LoopEvent() {
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + ALLTW FIX : i don't want not fragmented primary
       if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {
-        if (Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+        if (Z_true >0. && Z_true < primary_cha && TriggerCheckMC() == true){
           FillYieldReco("yield-trkTWfixMC",Z_true,Z_meas,Th_true );
+          ((TH1D*)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
+        }
       }
 
 
@@ -338,10 +342,15 @@ void GlobalRecoAna::LoopEvent() {
       if (fFlagMC == false){
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
-      if ( Z_meas >0. && Z_meas <= primary_cha && wdTrig -> GetTriggersStatus()[1] == 1     //fragmentation hardware trigger ON
+      if ( Z_meas >0. && Z_meas < primary_cha && wdTrig -> GetTriggersStatus()[1] == 1     //fragmentation hardware trigger ON
       //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
-      )
+      ) {
+        //cout << "inside " <<endl;
         FillYieldReco("yield-trkREAL",Z_meas,0,Th_reco );
+        //cout << "thBM: "<< Th_recoBM <<endl;
+        ((TH1D*)gDirectory->Get("ThReco_frag"))->Fill(Th_recoBM);
+        ((TH1D*)gDirectory->Get("Charge_trk_frag"))->Fill(Z_meas);
+      }
       } 
       
       ((TH1D*)gDirectory->Get("Energy"))->Fill(Ek_meas*fpFootGeo->GevToMev());
@@ -350,7 +359,7 @@ void GlobalRecoAna::LoopEvent() {
       ((TH2D*)gDirectory->Get("Z_track_Mixing_matrix"))->Fill(Z_meas,Z_true);
       ((TH1D*)gDirectory->Get("Mass"))->Fill(M_meas);
       ((TH1D*)gDirectory->Get("Mass_True"))->Fill(M_true);
-      ((TH1D*)gDirectory->Get("ThReco"))->Fill(Th_reco);
+      ((TH1D*)gDirectory->Get("ThReco"))->Fill(Th_recoBM);
       ((TH1D*)gDirectory->Get("ThTrue"))->Fill(Th_true);
       ((TH1D*)gDirectory->Get("Tof_tw"))->Fill(Tof_tw);
       ((TH1D*)gDirectory->Get("Beta"))->Fill(beta);
@@ -510,6 +519,7 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("ntrk","",10, 0 ,10.);
   h = new TH1D("Energy","",100, 0 ,800.);
   h = new TH1D("Charge_trk","",10, 0 ,10.);
+  h = new TH1D("Charge_trk_frag","",10, 0 ,10.);
   h = new TH1D("Charge_trk_True","",10, 0 ,10.);
   h2 = new TH2D("Z_track_Mixing_matrix", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
   h2 = new TH2D("Z_tw_Mixing_matrix", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
@@ -529,6 +539,8 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("Mass_True","Mass_True [amu]",200, 0 ,20.);
   h = new TH1D("ThReco","",200, 0 ,50.);
   h = new TH1D("ThReco_frag","",200, 0 ,50.);
+  h = new TH1D("ThReco_fragMC","",200, 0 ,50.);
+  
   //h = new TH1D("ThReco","",200, 0 ,50.);
   h = new TH1D("theta_VTX_frag","",100, 0 ,50.);
   h = new TH1D("theta_VTX","",100, 0 ,50.);
@@ -671,6 +683,23 @@ BookYield ("yield-true_DET");
 // Cross section recostruction histos from REAL DATA
 BookYield ("yield-trkREAL");
 }
+  
+
+
+
+  if(fFlagMC == false ){
+    gDirectory->mkdir("fragTriggerStudies");
+    gDirectory->cd("fragTriggerStudies");
+    h = new TH1D("chargeMB","chargeMB",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag","chargeMBFrag",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag_efficiency","chargeMBFrag",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag_RejectPower","",1, 0. ,1.);
+    gDirectory->cd("..");
+  }
+
+
+
+
 
   if(fFlagMC){
     gDirectory->mkdir("MC_check");
@@ -717,6 +746,8 @@ BookYield ("yield-trkREAL");
     h2= new TH2D("Mixing_matrix_cut", "Mixing_matrix_cut",8,0.5,8.5,8,0.5,8.5);
     gDirectory->cd("..");
 
+
+    
     gDirectory->mkdir("MC");
     gDirectory->cd("MC");
     h2 = new TH2D("ChargePoi_vs_ChargeVT","",11, -1. ,10.,11, -1. ,10.);
@@ -1920,6 +1951,24 @@ void GlobalRecoAna::AfterEventLoop(){
     }
       h = new TH1D(luminosity_name.c_str(),"",1, 0. ,1.);
       ((TH1D*)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1,Ntg*nTotEv  );
+
+
+  //study efficiency of MB trigger
+  if (fFlagMC == false) {
+     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))
+     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))
+//TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
+
+  
+  ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency")) -> Divide(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB")));
+  ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_RejectPower")) ->SetBinContent(1,(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->GetEntries() /((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))->GetEntries() )  );
+  
+  
+
+  
+
+  }
+
  
   gTAGroot->EndEventLoop();
 
@@ -2203,7 +2252,7 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt, bool isOxygenInEvent){
 
     if (fFlagMC == false) {
     TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
-    cout << "event: "<< currEvent << " -- n tracks: "<< nt <<" -- n tracklets of vertex: "<< vertexNumber << endl;
+    //cout << "event: "<< currEvent << " -- n tracks: "<< nt <<" -- n tracklets of vertex: "<< vertexNumber << endl;
 
     //STUDY OF VERTEX
     for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) { // for every vertexEvent
@@ -2233,7 +2282,7 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt, bool isOxygenInEvent){
 
                   //cout<< "theta vertex: " <<theta_vtx <<endl;   
                 
-                  TVector3 direction_glb = fpFootGeo->FromVTLocalToGlobal(direction);
+                  TVector3 direction_glb = fpFootGeo->VecFromVTLocalToGlobal(direction);
                   double phi_vtx_glb = direction_glb.Phi()*TMath::RadToDeg();
                   
                   //projection of a tracklet on TW
@@ -2287,10 +2336,10 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt, bool isOxygenInEvent){
    
     //stamp direction of every vertex object    
     ((TH2D*)gDirectory->Get("trackletdirection_frag")) -> Fill(vertex_direction_frag.X(),vertex_direction_frag.Y());
-    cout << "fragment vtx direction: X= " << vertex_direction_frag.X() << " Y= " << vertex_direction_frag.Y() << " theta = " << vertex_direction_frag.Theta()*180/TMath::Pi() << " phi = " << vertex_direction_frag.Phi()*180/TMath::Pi() << endl;
+    //cout << "fragment vtx direction: X= " << vertex_direction_frag.X() << " Y= " << vertex_direction_frag.Y() << " theta = " << vertex_direction_frag.Theta()*180/TMath::Pi() << " phi = " << vertex_direction_frag.Phi()*180/TMath::Pi() << endl;
 
     ((TH2D*)gDirectory->Get("trackletdirection")) -> Fill(vertex_direction.X(),vertex_direction.Y());
-    cout << "beam vtx direction: X= " << vertex_direction.X() << " Y= " << vertex_direction.Y() << " theta = " << vertex_direction.Theta()*180/TMath::Pi() << " phi = " << vertex_direction.Phi()*180/TMath::Pi() << endl;
+    //cout << "beam vtx direction: X= " << vertex_direction.X() << " Y= " << vertex_direction.Y() << " theta = " << vertex_direction.Theta()*180/TMath::Pi() << " phi = " << vertex_direction.Phi()*180/TMath::Pi() << endl;
   
   }
   //--------------END STUDY OF VERTEX AND TW ALLIGNMENT / ROTATIONS  
@@ -2652,4 +2701,35 @@ void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
     gDirectory->cd("..");
   }
   gDirectory->cd("..");
+}
+
+
+void GlobalRecoAna::FragTriggerStudies(){
+
+  TAGWDtrigInfo* wdTrig = 0x0;
+  wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware WD
+  //wdTrig -> GetTriggerID() == 40              //MB trigger    ==1 for frag trigger
+  //wdTrig -> GetTriggersStatus()[1] == 1      //in MB trigger, even frag
+
+  TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
+  for(int it=0;it<myGlb->GetTracksN();it++){ // for every track
+    fGlbTrack = myGlb->GetTrack(it);
+    Int_t Z_meas = fGlbTrack->GetTwChargeZ();
+    if (wdTrig -> GetTriggerID() == 40) {  //if MB trigger
+    ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))->Fill(Z_meas);
+
+    if (wdTrig -> GetTriggersStatus()[1] == 1) { // if MB trigger with fragmentation
+      ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->Fill(Z_meas);
+      ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency"))->Fill(Z_meas);
+
+    }
+
+    }
+
+
+    // Rejection power
+
+
+  }
+
 }

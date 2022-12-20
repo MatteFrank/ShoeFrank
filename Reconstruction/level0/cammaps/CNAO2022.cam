@@ -5,7 +5,7 @@ NumberDevices: 10
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/CNAO2022/FOOT.geo": 5100;
+"./geomaps/CNAO2022/FOOT.geo": 5100; 5449;
 
 DetectorName: "DI"
 NumberFiles: 1
@@ -17,7 +17,7 @@ NumberFiles: 5
 "./config/CNAO2022/TASTdetector.cfg": -1
 "./config/CNAO2022/WDChannelMap.map": -1
 "./calib/CNAO2022/WDpar.cal": -1;
-"./calib/CNAO2022/WDTimeCalibration/tcalib.dat": -1;
+"./calib/CNAO2022/WDTimeCalibration/tcalib.dat": 5100 ;
 
 
 DetectorName: "BM"
@@ -25,11 +25,11 @@ NumberFiles: 4
 "./geomaps/CNAO2022/TABMdetector.geo": -1
 "./config/CNAO2022/TABMdetector.cfg": -1
 "./config/CNAO2022/TABMdetector.map": -1
-"./calib/CNAO2022/TABM_T0_Calibration.cal": -1
+"./calib/CNAO2022/TABM_T0_Calibration.cal": 5100; 5449;
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/CNAO2022/TAGdetector.geo": 5100;;
+"./geomaps/CNAO2022/TAGdetector.geo": 5100; 5449;
 
 DetectorName: "VT"
 NumberFiles: 3

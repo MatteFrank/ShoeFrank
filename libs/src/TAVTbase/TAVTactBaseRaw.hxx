@@ -2,6 +2,7 @@
 #define _TAVTactBaseRaw_HXX
 
 #include "TAVTmi26Type.hxx"
+#include "TAVTparameters.hxx"
 
 #include "TAGactionFile.hxx"
 #include "TAGparaDsc.hxx"
@@ -56,11 +57,11 @@ protected:
    UInt_t            fDataLink;              ///< data link
 
    Int_t             fEventNumber;           ///< number of the event
-   Int_t             fPrevEventNumber[32];   ///< previous number of the event
+   Int_t             fPrevEventNumber[MaxSens];   ///< previous number of the event
    Int_t             fTriggerNumber;         ///< number of the trigger
-   Int_t             fPrevTriggerNumber[32]; ///< previous number of the trigger
+   Int_t             fPrevTriggerNumber[MaxSens]; ///< previous number of the trigger
    Int_t             fTimeStamp;             ///< time stamp per frame
-   Int_t             fPrevTimeStamp[32];     ///< time stamp per frame
+   Int_t             fPrevTimeStamp[MaxSens];     ///< time stamp per frame
    Int_t             fFrameCount;            ///< number of frame
    Int_t             fTriggerNumberFrame;    ///< number of the trigger
    Int_t             fTimeStampFrame;        ///< time stamp per frame
@@ -80,18 +81,18 @@ protected:
    TString           fPrefix;                ///< prefix of histogram
    TString           fTitleDev;              ///< device name for histogram title
    
-   TH2F*             fpHisPixelMap[32];      ///< pixel map per sensor histogram
-   TH1F*             fpHisRateMap[32];       ///< pixel rate per sensor histogram
-   TH1F*             fpHisRateMapQ[32];      ///< pixel rate per sensor quadrant histogram
-   TH1F*             fpHisEvtLength[32];     ///< event data length for each sensor (all 3 frames) histogram
-   TH1F*             fpHisEvtNumber[32];     ///< event number for each sensor (all 3 frames) histogram
-   TH1F*             fpHisTriggerEvt[32];    ///< trigger number for each sensor (all 3 frames) histogram
-   TH1F*             fpHisTimeStampEvt[32];  ///< time stamp for each sensor (all 3 frames) histogram
-   TH1F*             fpHisTriggerFrame[32];  ///< trigger number for each frame histogram
-   TH1F*             fpHisTimeStampFrame[32];///< time stamp number for each frame histogram
-   TH1F*             fpHisFrameCnt[32];      ///< frame counter histogram
-   TH1F*             fpHisFrameErrors[32];   ///< frame error counter histogram
-   TH1F*             fpHisBCOofTrigger;      ///< Bunch crossing trigger histogram
+   TH2F*             fpHisPixelMap[MaxSens];      ///< pixel map per sensor histogram
+   TH1F*             fpHisRateMap[MaxSens];       ///< pixel rate per sensor histogram
+   TH1F*             fpHisRateMapQ[MaxSens];      ///< pixel rate per sensor quadrant histogram
+   TH1F*             fpHisEvtLength[MaxSens];     ///< event data length for each sensor (all 3 frames) histogram
+   TH1F*             fpHisEvtNumber[MaxSens];     ///< event number for each sensor (all 3 frames) histogram
+   TH1F*             fpHisTriggerEvt[MaxSens];    ///< trigger number for each sensor (all 3 frames) histogram
+   TH1F*             fpHisTimeStampEvt[MaxSens];  ///< time stamp for each sensor (all 3 frames) histogram
+   TH1F*             fpHisTriggerFrame[MaxSens];  ///< trigger number for each frame histogram
+   TH1F*             fpHisTimeStampFrame[MaxSens];///< time stamp number for each frame histogram
+   TH1F*             fpHisFrameCnt[MaxSens];      ///< frame counter histogram
+   TH1F*             fpHisFrameErrors[MaxSens];   ///< frame error counter histogram
+   TH1F*             fpHisBCOofTrigger;           ///< Bunch crossing trigger histogram
 
 protected:
    //! Header key

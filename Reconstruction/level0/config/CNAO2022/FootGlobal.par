@@ -58,7 +58,7 @@ EnableHisto:         y
 EnableTracking:      y
 EnableMsdTrack:      n
 EnableMsdPed:        n
-EnableSaveHits:      n
+EnableSaveHits:      y
 EnableRootObject:    y
 EnableTWZmc:         n
 EnableTWnoPU:        n
@@ -73,7 +73,7 @@ IncludeST:			   y
 IncludeBM:			   y
 IncludeTG:			   y
 IncludeVT:			   y
-IncludeIT:			   y
+IncludeIT:			   n
 IncludeMSD:			   y
 IncludeTW:			   y
 IncludeCA:			   y

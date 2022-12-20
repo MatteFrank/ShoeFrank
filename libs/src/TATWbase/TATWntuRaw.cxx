@@ -11,7 +11,6 @@ using namespace std;
 #include "TString.h"
 #include "TATWntuRaw.hxx"
 #include "TGraph.h"
-#include "TF1.h"
 
 //! Class Imp
 ClassImp(TATWrawHit);

@@ -165,7 +165,7 @@ void TAGbaseWDparTime::InitMap()
   for(int iBo=0;iBo<NMAX_BO_ID;iBo++){
     for(int iCh=0;iCh<NMAX_CH_ID;iCh++){
       key = make_pair(iBo,iCh);
-      for(int i=0;i<1024;i++){
+      for(int i=0;i<WAVEFORMBINS;i++){
          fTimeParCal[key].push_back(0.2);
       }
     }

@@ -7,6 +7,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TAGactNtuCluster1D.hxx"
+#include "TAMSDparameters.hxx"
 
 class TAMSDntuCluster;
 class TAMSDcluster;
@@ -74,11 +75,11 @@ private:
    TClonesArray*   fCurListOfStrips;   ///< list of strips in current cluster
    Int_t           fClustersN;         ///< number of clusters
    
-   TH1F*          fpHisStripTot;	      ///< Total number of strips per cluster
-   TH1F*          fpHisStrip[16];	   ///< number of strips per cluster per sensor
-   TH1F*          fpHisClusMap[16];    ///< cluster map per sensor
-   TH1F*          fpHisClusCharge[16]; ///< cluster charge per sensor
-   TH1F*          fpHisClusChargeTot;  ///< Total cluster charge for all sensors
+   TH1F*          fpHisStripTot;	            ///< Total number of strips per cluster
+   TH1F*          fpHisStrip[MaxPlane];	   ///< number of strips per cluster per sensor
+   TH1F*          fpHisClusMap[MaxPlane];    ///< cluster map per sensor
+   TH1F*          fpHisClusCharge[MaxPlane]; ///< cluster charge per sensor
+   TH1F*          fpHisClusChargeTot;        ///< Total cluster charge for all sensors
 
 private:
    // Compute position

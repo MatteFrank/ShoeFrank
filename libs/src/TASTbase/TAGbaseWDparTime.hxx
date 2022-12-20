@@ -12,11 +12,8 @@ using namespace std;
 
 #include "TString.h"
 #include "TAGpara.hxx"
+#include "TATWparameters.hxx"
 #include "TWaveformContainer.hxx"
-
-
-#define NMAX_BO_ID 200
-#define NMAX_CH_ID 18
 
 //##############################################################################
 

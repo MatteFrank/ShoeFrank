@@ -82,7 +82,7 @@ void TATWchannelMap::LoadChannelMap(std::string FileName)
 		}
 		ChannelOccurrenceMap[pair2]=1;
 	}
-	// check if the number of bar found is bigger than nSlats found in Parameters.h
+	// check if the number of bar found is bigger than nSlats found in TATWparameters.hxx
 	Int_t ActualNumberOfBars=fChannelBarMap.size();
 	if (ActualNumberOfBars>nSlats)
 	{

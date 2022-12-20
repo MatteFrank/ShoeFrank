@@ -10,6 +10,7 @@
 #include "TH1F.h"
 
 #include "TAMCflukaStruct.hxx"
+#include "TAMSDparameters.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
@@ -68,13 +69,13 @@ private:
 
    map<pair<int, int>, TAMSDhit*> fMap; //! map for pilepup
 
-   TH1F*           fpHisStripMap[32];  ///< strip map per sensor
-   TH1F*           fpHisPosMap[32];    ///< strip map per sensor
-   TH1F*           fpHisStrip[32];     ///< number strips per cluster MC
-   TH1F*           fpHisStripTot;      ///< total number strips per cluster MC
-   TH1F*           fpHisDeTot;         ///< Total energy loss
-   TH1F*           fpHisDeSensor[32];  ///< Energy loss per sensor
-   TH1F*           fpHisAdc[32];       ///< charge per strip
+   TH1F*           fpHisStripMap[MaxPlane];  ///< strip map per sensor
+   TH1F*           fpHisPosMap[MaxPlane];    ///< strip map per sensor
+   TH1F*           fpHisStrip[MaxPlane];     ///< number strips per cluster MC
+   TH1F*           fpHisStripTot;            ///< total number strips per cluster MC
+   TH1F*           fpHisDeTot;               ///< Total energy loss
+   TH1F*           fpHisDeSensor[MaxPlane];  ///< Energy loss per sensor
+   TH1F*           fpHisAdc[MaxPlane];       ///< charge per strip
    
 private:
    static Float_t  fgSigmaNoiseLevel;  ///< sigma noise level

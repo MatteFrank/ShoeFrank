@@ -64,6 +64,7 @@ class GlobalRecoAna : public LocalReco {
   void AlignmentStudy(int currEvent,int nt, bool isOxygenInEvent);
   void TWAlgoStudy();
   void TrackVsMCStudy(int currEvent, int nt);
+  void FragTriggerStudies();
   
 
   //fill plots

@@ -3,6 +3,7 @@
   \brief   Implementation of TACAactNtuHit.
 */
 
+#include "TACAparGeo.hxx"
 #include "TACAparMap.hxx"
 #include "TACAparCal.hxx"
 #include "TACAactNtuHit.hxx"
@@ -26,14 +27,15 @@ ClassImp(TACAactNtuHit);
 TACAactNtuHit::TACAactNtuHit(const char* name,
                              TAGdataDsc* p_datraw,
                              TAGdataDsc* p_nturaw,
+                             TAGparaDsc* p_pargeo,
                              TAGparaDsc* p_parmap,
                              TAGparaDsc* p_parcal)
   : TAGaction(name, "TACAactNtuHit - Unpack CA raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
+    fpParGeo(p_pargeo),
     fpParMap(p_parmap),
     fpParCal(p_parcal),
-    // this should be read from calib file for each crystal ??
     fTcorr1Par1(-0.0011),
     fTcorr1Par0(0.167),
     fTcorr2Par1(4.94583e-03),
@@ -44,6 +46,7 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
    AddDataIn(p_datraw, "TACAntuRaw");
    AddDataOut(p_nturaw, "TACAntuHit");
 
+   AddPara(p_pargeo, "TACAparGeo");
    AddPara(p_parmap, "TACAparMap");
    AddPara(p_parcal, "TACAparCal");
 
@@ -66,6 +69,7 @@ Bool_t TACAactNtuHit::Action()
    TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
+   TACAparGeo*   p_pargeo = (TACAparGeo*) fpParGeo->Object();
 
    int nhit = p_datraw->GetHitsN();
 
@@ -105,14 +109,15 @@ Bool_t TACAactNtuHit::Action()
       Double_t tof    = GetTime(time, crysId);
 
       TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time,type);
+      createdhit->SetPosition(p_pargeo->GetCrystalPosition(crysId));
+      
       createdhit->SetValid(true);
   
       if (ValidHistogram()) {
-         if (crysId < 9) { // Only 9 histograms
-            fhCharge[crysId]->Fill(energy);
-            fhChannelMap->Fill(crysId);
-            fhAmplitude[crysId]->Fill(amplitude);
-         }
+         fhCharge[crysId]->Fill(energy);
+         fhChannelMap->Fill(crysId);
+         fhAmplitude[crysId]->Fill(amplitude);
+         fhArrivalTime[crysId]->Fill(tof);
       }
    }
    if (ValidHistogram()) fhTotCharge->Fill(totCharge);
@@ -268,28 +273,22 @@ Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 //! Histograms
 void TACAactNtuHit::CreateHistogram()
 {
-
    DeleteHistogram();
 
    char histoname[100]="";
    if (FootDebugLevel(1))
       cout << "Calorimeter Histograms created. "<<endl;
 
-   // sprintf(histoname,"stEvtTime");
-   // fhEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
-   // AddHistogram(fhEventTime);
+   TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
+   int nCry = p_parmap->GetCrystalsN();
 
-   // sprintf(histoname,"stTrigTime");
-   // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
-   // AddHistogram(fhTrigTime);
-   
    fhTotCharge = new TH1F("caTotCharge", "caTotCharge", 400, -0.1, 3.9);
    AddHistogram(fhTotCharge);
 
    fhChannelMap = new TH1F("caChMap", "caChMap", 9, 0, 9);
    AddHistogram(fhChannelMap);
 
-   for(int iCh=0; iCh<9; iCh++) {
+   for(int iCh = 0; iCh < nCry; ++iCh) {
       fhArrivalTime[iCh]= new TH1F(Form("caDeltaTime_ch%d", iCh), Form("caDeltaTime_ch%d", iCh), 100, -5., 5.);
       AddHistogram(fhArrivalTime[iCh]);
 
