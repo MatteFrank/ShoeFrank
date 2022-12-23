@@ -83,6 +83,7 @@ Bool_t TACAactNtuHit::Action()
       Double_t timeOth = aHi->GetTimeOth();
       Double_t charge  = aHi->GetCharge();
       Double_t amplitude  = aHi->GetAmplitude();
+      Int_t z = 1; //N.B. only for testing pourposes!!!!
       // Double_t tempADC  = aHi->GetTemperature(); // in ADC count
       //Double_t temp = ADC2Temp(tempADC);
 
@@ -101,7 +102,7 @@ Bool_t TACAactNtuHit::Action()
       Double_t charge_tcorr = charge;
       Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
       totCharge += charge_equalis;
-      Double_t energy = GetEnergy(charge_equalis, crysId);
+      Double_t energy = GetEnergy(charge_equalis, crysId, z);
       Double_t tof    = GetTime(time, crysId);
 
       TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time,type);
@@ -125,9 +126,15 @@ Bool_t TACAactNtuHit::Action()
 
 // --------------------------------------------------------------------------------------
 //! Convert ADC counts from sensor to Temperature to Celsius
-Double_t TACAactNtuHit::ADC2Temp(Double_t adc) 
+Double_t TACAactNtuHit::ADC2Temp(Double_t adc, Int_t crysId) 
 {
 
+   TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
+
+   Double_t p0_SH = p_parcal->GetADC2TempParam(crysId, 0);
+   Double_t p1_SH = p_parcal->GetADC2TempParam(crysId, 1);
+   Double_t p2_SH = p_parcal->GetADC2TempParam(crysId, 2);
+   
    // the NTC (negative temperature coefficient) sensor
 
    const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate 
@@ -139,9 +146,8 @@ Double_t TACAactNtuHit::ADC2Temp(Double_t adc)
 
    // The Steinhart-Hart formula is given below with the nominal coefficients a, b and c, 
    // which after calibration could be replaced by three constants for each crystal:
-   double a = 0.00138867, b = 0.000204491, c = 1.05E-07;
 
-   Double_t temp = 1./ (a + b * log(Rt) + c * pow(log(Rt), 3)) - 273.15;
+   Double_t temp = 1./ (p0_SH + p1_SH * log(Rt) + p2_SH * pow(log(Rt), 3)) - 273.15;
    
    return temp;
 }
@@ -216,12 +222,31 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp,
 //! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
-   TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
+   TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
-   Double_t Equalis0 = parcal->getCalibrationMap()->GetEqualiseCry(crysId);
+   Double_t Equalis0 = p_parcal->GetADC2EnergyParam(crysId, 12);
+
    Double_t charge_equalis = charge_tcorr * Equalis0;
 
    return charge_equalis;
+}
+
+
+//------------------------------------------+-----------------------------------
+//! Get curve for fragments of different Z obtained as a ratio between the parameter curve for protons and the parameter curve for other He, C, O
+//!
+//! \param[in] p0 of exponential slope
+//! \param[in] p1 of exponential slope
+//! \param[in] p2 of exponential slope
+//! \param[in] z particle charge (atomic number)
+Double_t TACAactNtuHit::GetZCurve(Double_t p0, Double_t  p1, Double_t p2, Int_t z)
+{
+
+   return p0 + p1*exp(-(z/p2));
+
+
+  //calibration AValetti's analysis 22.12.22
+  //return energy from ADC  
 }
 
 //------------------------------------------+-----------------------------------
@@ -229,18 +254,38 @@ Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  
 //!
 //! \param[in] rawenergy raw energy
 //! \param[in] crysId crystal id
-Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
+//! \param[in] z particle charge (atomic number)
+Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId, Int_t z)
 {
    TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
-   Double_t p0 = p_parcal->GetElossParam(crysId, 0);
-   Double_t p1 = p_parcal->GetElossParam(crysId, 1);
+   Double_t p0 = p_parcal->GetADC2EnergyParam(crysId, 0);
+   Double_t p1 = p_parcal->GetADC2EnergyParam(crysId, 1);
+   Double_t p2 = p_parcal->GetADC2EnergyParam(crysId, 2);
 
-   return p0 + p1 * rawenergy;
+   Double_t p3 = p_parcal->GetADC2EnergyParam(crysId, 3);
+   Double_t p4 = p_parcal->GetADC2EnergyParam(crysId, 4);
+   Double_t p5 = p_parcal->GetADC2EnergyParam(crysId, 5);
+
+   Double_t p6 = p_parcal->GetADC2EnergyParam(crysId, 6);
+   Double_t p7 = p_parcal->GetADC2EnergyParam(crysId, 7);
+   Double_t p8 = p_parcal->GetADC2EnergyParam(crysId, 8);
+
+   Double_t p9 = p_parcal->GetADC2EnergyParam(crysId, 9);
+   Double_t p10 = p_parcal->GetADC2EnergyParam(crysId, 10);
+   Double_t p11 = p_parcal->GetADC2EnergyParam(crysId, 11);
+
+   p0 = p0*GetZCurve(p3,p4,p5,z);
+   p1 = p1*GetZCurve(p6,p7,p8,z);
+   p2 = p2*GetZCurve(p9,p10,p11,z);
+
+   Double_t ac = p0-p2*rawenergy;
+
+   return (p1 * rawenergy + sqrt( p1 * p1 * rawenergy * rawenergy + 4 * ac ))/(2 * ac);
 
 
-  //fake calibration (gtraini)  return raw value meanwhile
- // return rawenergy;
+  //calibration AValetti's analysis 22.12.22
+  //return energy from ADC  
 }
 
 //------------------------------------------+-----------------------------------

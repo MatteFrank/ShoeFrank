@@ -24,15 +24,31 @@ class TACAcalibrationMap : public TAGobject
 {
 private:
    //! \struct ElossParameter_t
-   struct ElossParameter_t {
-      double offset;  ///< offset
-      double slope;   ///< slope
+   struct ADC2EnergyParam_t {
+      double p0; 
+      double p1;
+      double p2; 
+      double p3;
+      double p4;
+      double p5;
+      double p6;
+      double p7;
+      double p8;
+      double p9;
+      double p10;
+      double p11;
+   };
+  
+   struct ADC2TempParam_t {
+      double p0; 
+      double p1;
+      double p2; 
    };
    
+
   TCalibrationMapType       fCalibrationMap;       ///< Calibration map
-  vector<Double_t>          fCalibTemperatureCry;  ///< map for temperature calibration per cry ID
-  vector<Double_t>          fEqualisFactorCry;     ///< map for equalisation factor per cry ID
-  vector<ElossParameter_t>  fCalibElossMapCry;     ///< map for energy calibration per crystal
+  vector<ADC2TempParam_t>   fCalibTempMapCry;         ///< map for temperature calibration per crystal
+  vector<ADC2EnergyParam_t>  fCalibEnergyMapCry;     ///< map for energy calibration per crystal
   TACAparMap*               fParpMap;              ///< mapping file
    
 public:
@@ -51,12 +67,10 @@ public:
 
   //! Get cystal number
   Int_t    GetCrystalsN()                      const { return fCalibrationMap.size();          }
-  //! Get temperature parameter per crystal
-  Double_t GetTemperatureCry(Int_t cryId)            { return fCalibTemperatureCry[cryId];     }
-  //! Get equilized temperature per crystal
-  Double_t GetEqualiseCry(Int_t cryId)               { return fEqualisFactorCry[cryId];        }
-   
-  Double_t GetElossParam(Int_t cryId, UInt_t parId);
+    
+  Double_t GetADC2EnergyParam(Int_t cryId, UInt_t parId);
+
+  Double_t GetADC2TempParam(Int_t cryId, UInt_t parId);
  
   ClassDef(TACAcalibrationMap, 0)
 };

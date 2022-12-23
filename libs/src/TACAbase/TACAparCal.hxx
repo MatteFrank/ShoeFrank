@@ -42,9 +42,8 @@ public:
   Bool_t   LoadEnergyCalibrationMap(TString Filename);
   Bool_t   LoadCryTemperatureCalibrationMap(const TString& Filename);
   
-  Double_t GetElossParam(Int_t crystalId, UInt_t ParameterNumber);
-  Double_t GetTemperatureCry(Int_t crystalId);
-  Double_t GetEqualiseCry(Int_t crystalId);
+  Double_t GetADC2EnergyParam(Int_t crystalId, UInt_t ParameterNumber);
+  Double_t GetADC2TempParam(Int_t crystalId, UInt_t ParameterNumber);
    
   Bool_t  FromCrysStatusFile(const TString& name);
   void    GetCrysMap(Int_t crysId, Int_t& crysBoard, Int_t& crysCh);

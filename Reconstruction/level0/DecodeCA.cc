@@ -40,6 +40,7 @@
 
 #include "TAGrecoManager.hxx"
 #include "DAQMarkers.hh"
+#include "TACAactNtuHit.hxx"
 
 
 
@@ -418,7 +419,7 @@ vector<double> CAactRaw2Ntu::ADC2Volt(vector<int> v_amp, double dynamic_range) {
 //------------------------------------------+-----------------------------------
 //! Convert ADC count to Temp
 //! \param[in]  adc  ADC counts
-double CAactRaw2Ntu::ADC2Temp(double adc) {
+/*double CAactRaw2Ntu::ADC2Temp(double adc) {
 
    // the NTC (negative temperature coefficient) sensor
 
@@ -435,11 +436,17 @@ double CAactRaw2Ntu::ADC2Temp(double adc) {
    double temp = 1./ (a + b * log(Rt) + c * pow(log(Rt), 3)) - 273.15;
    
    return temp;
-}
+}*/
 
 //------------------------------------------+-----------------------------------
 //! Read block of CA waveform and Arduino temp from daq file
 Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAGbaseWDparMap *p_WDMap) {
+
+   cout<<"eccomi 0"<<endl;
+
+  // TACAactNtuHit *hit = new TACAactNtuHit();
+
+   cout<<"eccomi 1"<<endl;
 
    u_int word;
 
@@ -620,7 +627,11 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAGbaseWDparMap *p_WDMap)
                            Error("CAactRaw2Ntu", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d -> iCry %d ADC %f", boardID, muxnum, ch, iCry, tempADC);
                            continue;
                         }
-                        double temp = ADC2Temp(tempADC);
+                        //double temp = ADC2Temp(tempADC);
+                        cout<<"eccomi 2"<<endl;
+                        //double temp = hit->ADC2Temp(tempADC,iCry);
+                        double temp= 1;
+                        cout<<"temp "<<temp<<endl;
                         if (FootDebugLevel(1)) 
                            cout << "      cryID:" << iCry << "  ADC:" << tempADC  << " T:" << temp  << endl;
 
@@ -706,6 +717,7 @@ int main (int argc, char *argv[])  {
    TACAparMap* parMapCA = (TACAparMap*)pParMapCa->Object();
    parFileName = campManager->GetCurMapFile(TACAparGeo::GetBaseName(), runNb);
    parMapCA->FromFile(parFileName.Data());
+   TACAactNtuHit *hit = new TACAactNtuHit();
 
    // WD map
    TAGparaDsc *pParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
