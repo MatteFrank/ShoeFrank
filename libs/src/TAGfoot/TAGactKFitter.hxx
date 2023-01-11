@@ -158,7 +158,7 @@ private:
 	// TAGFselector* m_selector;							///< GenFit Selector
 	TAGntuGlbTrack* m_outTrackRepo;						///< CHECK WITH MATTEO HOW TO DO THIS
 
-	TAGFdetectorMap* m_sensorIDmap;						///< GenFit detector Map for index handling
+	TAGFdetectorMap* m_SensorIDMap;						///< GenFit detector Map for index handling
 	TAGF_KalmanStudies* m_trackAnalysis;				///< GenFit custom output class
 
 	map< int, vector<AbsMeasurement*> > m_allHitMeasGF;	///< Map of GenFit measurements; the key is the FitPlane index

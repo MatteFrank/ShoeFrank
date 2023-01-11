@@ -660,7 +660,7 @@ void TAGFselector::CategorizeVT()
 
 	if(m_trackTempMap.size() == 0)
 	{
-		Warning("CategorizeVT()","No valid VT tracklet found in the event!");
+		// Warning("CategorizeVT()","No valid VT tracklet found in the event!");
 		(*m_noVTtrackletEvents)++;
 	}
 }
@@ -915,7 +915,7 @@ void TAGFselector::CategorizeMSD()	{
 				}
 				else
 				{
-					distanceFromHit = fabs(guessOnMSD.Y() - (*it)->getRawHitCoords()(0));
+					distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
 					strip = "Y";
 				}
 
@@ -1186,7 +1186,7 @@ void TAGFselector::CategorizeTW()
 		if( m_debug > 0) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
 
 		//calculate distance TW point
-		double TWdistance = 4.;
+		double TWdistance = 4s.;
 		int indexOfMin = -1;
 		int count = 0;
 
@@ -1348,28 +1348,28 @@ void TAGFselector::BackTracklets()
 		//Cycle on the first 2 planes of MSD
 		for(vector<AbsMeasurement*>::iterator itMSD1 = m_allHitMeas->at(MSDPlane1).begin(); itMSD1 != m_allHitMeas->at(MSDPlane1).end(); ++itMSD1)
 		{
-			isMSD1y = static_cast<PlanarMeasurement*>(*itMSD1)->getStripV();
+			isMSD1y = static_cast<PlanarMeasurement*>(*itMSD1)->getYview();
 
 			if( isMSD1y )
-				yMSD = (*itMSD1)->getRawHitCoords()(0);
-				// yMSD = m_GeoTrafo->FromMSDLocalToGlobal(TVector3(0, (*itMSD1)->getRawHitCoords()(0), 0)).Y(); //RZ: Check for local coordinates!!!!
+				yMSD = (m_SensorIDMap->GetFitPlane(MSDPlane1)->toLab(TVector2((*itMSD1)->getRawHitCoords()(0), 0))).Y();
+			// yMSD = m_GeoTrafo->FromMSDLocalToGlobal(TVector3(0, (*itMSD1)->getRawHitCoords()(0), 0)).Y(); //RZ: Check for local coordinates!!!!
 			else
-				xMSD = (*itMSD1)->getRawHitCoords()(0);
+				xMSD = (m_SensorIDMap->GetFitPlane(MSDPlane1)->toLab(TVector2((*itMSD1)->getRawHitCoords()(0), 0))).X();
 				// xMSD = m_GeoTrafo->FromMSDLocalToGlobal(TVector3((*itMSD1)->getRawHitCoords()(0), 0, 0)).X();
 
 			for(vector<AbsMeasurement*>::iterator itMSD2 = m_allHitMeas->at(MSDPlane2).begin(); itMSD2 != m_allHitMeas->at(MSDPlane2).end(); ++itMSD2)
 			{
-				isMSD2y = static_cast<PlanarMeasurement*>(*itMSD2)->getStripV();
+				isMSD2y = static_cast<PlanarMeasurement*>(*itMSD2)->getYview();
 
-				if( (isMSD1y && isMSD2y) || (!isMSD1y && !isMSD2y))
+				if( isMSD1y == isMSD2y )
 					Warning("BackTracklets()", "MSD clusters have the same strip direction!!");
 
 
 				if( isMSD2y )
-					yMSD = (*itMSD2)->getRawHitCoords()(0);
+					yMSD = (m_SensorIDMap->GetFitPlane(MSDPlane2)->toLab(TVector2((*itMSD2)->getRawHitCoords()(0), 0))).Y();
 				else
-					xMSD = (*itMSD2)->getRawHitCoords()(0);
-				
+					xMSD = (m_SensorIDMap->GetFitPlane(MSDPlane2)->toLab(TVector2((*itMSD2)->getRawHitCoords()(0), 0))).X();
+
 				Track* testTrack = new Track();
 				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itMSD1)->clone() );
 				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itMSD2)->clone() );
@@ -1382,13 +1382,13 @@ void TAGFselector::BackTracklets()
 				
 				TVector3 pos(xMSD, yMSD, zMSD*0.98);
 				TVector3 mom((globPosTW.x() - xMSD)/(globPosTW.z() - zMSD), (globPosTW.y() - yMSD)/(globPosTW.z() -zMSD) ,1);
-				// if(m_debug > 1)
-				// {
+				if(m_debug > 1)
+				{
 					cout << "BACKTRACKLET CANDIDATE::" << (*itTW)->getHitId() << "\t" << (*itMSD1)->getHitId() << "\t" << (*itMSD2)->getHitId() << endl;
 					cout << Z_Hypo << "\t" << A_Hypo << endl;
 					cout << "Pos::"; pos.Print();
 					cout << "Mom::"; mom.Print();
-				// }
+				}
 
 				// if(mom.Theta() > angularCoverage)
 				// if(mom.Phi() !compatible w/ x,y coordinates quadrant)
@@ -1426,7 +1426,7 @@ void TAGFselector::BackTracklets()
 						if ( ! static_cast<PlanarMeasurement*>(*it)->getStripV() )
 							distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
 						else
-							distanceFromHit = fabs(guessOnMSD.Y() - (*it)->getRawHitCoords()(0));
+							distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
 
 						// find hit at minimum distance
 						if ( distanceFromHit < distanceInY ){
@@ -1445,7 +1445,7 @@ void TAGFselector::BackTracklets()
 
 				} // end loop MSD planes
 
-				cout << "Found testTrack with " << testTrack->getNumPointsWithMeasurement() << " points" << endl;
+				// cout << "Found testTrack with " << testTrack->getNumPointsWithMeasurement() << " points" << endl;
 
 				if( testTrack->getNumPointsWithMeasurement() < 5 )
 				{
@@ -1462,15 +1462,15 @@ void TAGFselector::BackTracklets()
 
 					StateOnPlane tempState = testTrack->getFittedState(-1);
 
-					cout << "TW::"; tempState.getPos().Print();
+					// cout << "TW::"; tempState.getPos().Print();
 
 					TVector2 TWcoords(xTW, yTW);
 
-					cout << "dist::" << (tempState.getPos().XYvector() - TWcoords).Mod() << endl;
+					// cout << "dist::" << (tempState.getPos().XYvector() - TWcoords).Mod() << endl;
 
 					if( (tempState.getPos().XYvector() - TWcoords).Mod() > 3 )
 					{
-						Info("""BackTracklets()", "Found wrong MSD-TW point association! Removing track...");
+						Info("BackTracklets()", "Found wrong MSD-TW point association! Removing track...");
 						delete testTrack;
 						continue;
 					}
@@ -1502,13 +1502,13 @@ void TAGFselector::BackTracklets()
 
 void TAGFselector::CategorizeIT_back()
 {
-	cout << "IT back" << endl;
+	// cout << "IT back" << endl;
 	return;
 }
 
 void TAGFselector::CategorizeVT_back()
 {
-	cout << "VT back" << endl;
+	// cout << "VT back" << endl;
 	return;
 }
 
@@ -1713,7 +1713,7 @@ void TAGFselector::FillTrackCategoryMap()  {
 		{
 			if(m_debug > 0)
 				Info("FillTrackCategoryMap()", "Found track candidate (%d) with no TW point! Skipping...", itTrack->first);
-			continue;
+			// continue;
 		}
 
 		//Add possibility to have tracks ending before TW!!!!

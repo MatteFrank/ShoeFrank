@@ -29,7 +29,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 
 	gGeoManager->ClearPhysicalNodes();
 
-	m_sensorIDmap = new TAGFdetectorMap();
+	m_SensorIDMap = new TAGFdetectorMap();
 	genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
 	genfit::MaterialEffects::getInstance()->setNoEffects(false);
 
@@ -78,11 +78,11 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 
 	TAGrecoManager::GetPar()->Print("all");
 	cout << "TAGactKFitter::TAGactKFitter -- 1" << endl;
-	// m_uploader = new TAGFuploader( m_sensorIDmap );
+	// m_uploader = new TAGFuploader( m_SensorIDMap );
 	cout << "TAGactKFitter::TAGactKFitter -- 2" << endl;
 	m_trackAnalysis = new TAGF_KalmanStudies();
 
-	for(int i=0; i<m_sensorIDmap->GetFitPlanesN(); ++i)
+	for(int i=0; i<m_SensorIDMap->GetFitPlanesN(); ++i)
 	{
 		m_NClusTrack.push_back(0);
 		m_NClusGood.push_back(0);
@@ -118,7 +118,7 @@ TAGactKFitter::~TAGactKFitter() {
 
 	delete m_trueParticleRep;
 	// delete m_outTrackRepo;
-	delete m_sensorIDmap;
+	delete m_SensorIDMap;
 	delete m_trackAnalysis;
 
 	m_Particles.clear();
@@ -183,7 +183,7 @@ Bool_t TAGactKFitter::Action()	{
 
 	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
 
-	TAGFuploader* m_uploader = new TAGFuploader( m_sensorIDmap );
+	TAGFuploader* m_uploader = new TAGFuploader( m_SensorIDMap );
 
 	m_uploader->TakeMeasHits4Fit( m_allHitMeasGF );
 	vector<int> chVect;
@@ -201,7 +201,7 @@ Bool_t TAGactKFitter::Action()	{
 			cout << it->first << "\t" << it->second.size() << endl;
 	}
 
-	TAGFselector* m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
+	TAGFselector* m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
 
 	if ( m_selector->Categorize() >= 0 ) {
 
@@ -350,7 +350,7 @@ void TAGactKFitter::IncludeDetectors() {
 	{
 		for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) 
 		{
-			if ( !m_sensorIDmap->IsDetectorInMap( TAGrecoManager::GetPar()->KalSystems().at(i) ) )
+			if ( !m_SensorIDMap->IsDetectorInMap( TAGrecoManager::GetPar()->KalSystems().at(i) ) )
 			{
 				Error("IncludeDetectors()", "KalSystems parameter not set properly! Detector '%s' not found in global map.", TAGrecoManager::GetPar()->KalSystems().at(i).c_str());
 				throw -1;
@@ -478,8 +478,8 @@ void TAGactKFitter::CreateGeometry()  {
 			targetPlane = new genfit::DetPlane(origin_, TVector3(0,0,1));
 		
 		genfit::SharedPlanePtr detectorplane(targetPlane);
-		m_sensorIDmap->AddFitPlane(-42, detectorplane);
-		m_sensorIDmap->AddFitPlaneIDToDet(-42, "TG");
+		m_SensorIDMap->AddFitPlane(-42, detectorplane);
+		m_SensorIDMap->AddFitPlaneIDToDet(-42, "TG");
 	}
 
 	// Vertex
@@ -523,8 +523,8 @@ void TAGactKFitter::CreateGeometry()  {
 					cout << "Z versor::"; trafoNorm.Print();
 				}
 				detectorplane->setUV(trafoU, trafoV);
-				m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-				m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "VT");
+				m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
+				m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "VT");
 				++indexOfPlane;
 			}
 		}
@@ -567,11 +567,11 @@ void TAGactKFitter::CreateGeometry()  {
 				TVector3 trafoV = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, V));
 				detectorplane->setUV(trafoU, trafoV);
 
-				m_sensorIDmap->AddPlane_Zorder( origin_.Z(), indexOfPlane );
-				m_sensorIDmap->AddPlane_ZorderLocal( m_IT_geo->GetSensorPosition(i).Z(), indexOfPlane );
+				m_SensorIDMap->AddPlane_Zorder( origin_.Z(), indexOfPlane );
+				m_SensorIDMap->AddPlane_ZorderLocal( m_IT_geo->GetSensorPosition(i).Z(), indexOfPlane );
 
-				m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-				m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "IT");
+				m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
+				m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "IT");
 				++indexOfPlane;
 				if( m_debug > 1 )
 					cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
@@ -610,8 +610,8 @@ void TAGactKFitter::CreateGeometry()  {
 
 				TVector3 normal_versor = TVector3(0,0,1);
 				TVector3 trafoNorm = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i, normal_versor));
-				genfit::AbsFinitePlane* recta = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
-				genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, trafoNorm, recta) );
+				genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
+				genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, trafoNorm, activeArea) );
 
 				// Set versors -> MSD still needs some fixes maybe
 				TVector3 U(1.,0,0);
@@ -621,8 +621,8 @@ void TAGactKFitter::CreateGeometry()  {
 				// detectorplane->setUV(U, V);
 				detectorplane->setUV(trafoU, trafoV);
 
-				m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-				m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "MSD");
+				m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
+				m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "MSD");
 				++indexOfPlane;
 
 				// Some debug print-outs for geometry
@@ -667,8 +667,8 @@ void TAGactKFitter::CreateGeometry()  {
 			detectorplane->setU(U);
 			detectorplane->setV(V);
 
-			m_sensorIDmap->AddFitPlane(indexOfPlane, detectorplane);
-			m_sensorIDmap->AddFitPlaneIDToDet(indexOfPlane, "TW");
+			m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
+			m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "TW");
 			++indexOfPlane;
 
 			// Some debug print-outs for geometry
@@ -873,8 +873,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
 		if (m_vectorConvergedTrack.size() > 1)
 			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << "display->addEvent size " << m_vectorConvergedTrack.size() << " at position " << m_eventDisplayCounter << "\n";
-		display->addEvent(m_vectorConvergedTrack);
 		m_eventDisplayCounter++;
+		display->addEvent(m_vectorConvergedTrack);
 	}
 	m_vectorConvergedTrack.clear();
 
@@ -955,7 +955,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		int iSensor, iClus;
 		vector<int> iPart;
 		GetMeasInfo( trackDetID, trackHitID, &iSensor, &iClus, &iPart );
-		string detName = m_sensorIDmap->GetDetNameFromMeasID( trackHitID );
+		string detName = m_SensorIDMap->GetDetNameFromMeasID( trackHitID );
 		
 
 
@@ -1328,14 +1328,14 @@ double TAGactKFitter::TrackQuality( vector<vector<int>>* mcParticleID_track ) {
 void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus, vector<int>* iPart ) {
 
 	// check
-	if ( detID != m_sensorIDmap->GetDetIDFromMeasID( hitID ) )
+	if ( detID != m_SensorIDMap->GetDetIDFromMeasID( hitID ) )
 	{
-		Error("GetMeasInfo()", "Detector ID not matching between GENFIT (%d) and SensorIDmap (%d)", detID, m_sensorIDmap->GetDetIDFromMeasID( hitID ));
+		Error("GetMeasInfo()", "Detector ID not matching between GENFIT (%d) and SensorIDmap (%d)", detID, m_SensorIDMap->GetDetIDFromMeasID( hitID ));
 		exit(0);
 	}
 
-	*iSensor = m_sensorIDmap->GetSensorIDFromMeasID( hitID );
-	*iClus = m_sensorIDmap->GetHitIDFromMeasID( hitID );
+	*iSensor = m_SensorIDMap->GetSensorIDFromMeasID( hitID );
+	*iClus = m_SensorIDMap->GetHitIDFromMeasID( hitID );
 
 	if ( m_IsMC )
 		*iPart = m_measParticleMC_collection.at( hitID );
@@ -1356,10 +1356,10 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 //! \param[out] posErr Pointer to vector where to store the position error
 void TAGactKFitter::GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr ) {
 
-	string det = m_sensorIDmap->GetDetNameFromMeasID( hitID );
+	string det = m_SensorIDMap->GetDetNameFromMeasID( hitID );
 
-	int iSensor = m_sensorIDmap->GetSensorIDFromMeasID( hitID );
-	int iClus = m_sensorIDmap->GetHitIDFromMeasID( hitID );
+	int iSensor = m_SensorIDMap->GetSensorIDFromMeasID( hitID );
+	int iClus = m_SensorIDMap->GetHitIDFromMeasID( hitID );
 
 	if ( det == "VT" ) {
 		TAVTcluster* clus = ( (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object() )->GetCluster( iSensor, iClus );
@@ -1726,12 +1726,12 @@ void TAGactKFitter::CreateHistogram()	{
 		AddHistogram(h_ratio_reco_true[i]);
 	}
 
-	h_PlaneOccupancy[0] = new TH2I("h_PlaneOccupancy", "h_PlaneOccupancy; FitPlane Id; # of clusters", m_sensorIDmap->GetFitPlanesN()+2, -1.5, m_sensorIDmap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
+	h_PlaneOccupancy[0] = new TH2I("h_PlaneOccupancy", "h_PlaneOccupancy; FitPlane Id; # of clusters", m_SensorIDMap->GetFitPlanesN()+2, -1.5, m_SensorIDMap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
 	AddHistogram(h_PlaneOccupancy[0]);
 
 	for(int iEv=1; iEv<=5; iEv++)
 	{
-		h_PlaneOccupancy[iEv] = new TH2I(Form("h_PlaneOccupancyType%d", iEv), Form("h_PlaneOccupancyType%d; FitPlane Id; # of clusters", iEv), m_sensorIDmap->GetFitPlanesN()+2, -1.5, m_sensorIDmap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
+		h_PlaneOccupancy[iEv] = new TH2I(Form("h_PlaneOccupancyType%d", iEv), Form("h_PlaneOccupancyType%d; FitPlane Id; # of clusters", iEv), m_SensorIDMap->GetFitPlanesN()+2, -1.5, m_SensorIDMap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
 		AddHistogram(h_PlaneOccupancy[iEv]);
 	}
 
@@ -1801,7 +1801,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 	for(int i=0; i<fitTrack->getNumPointsWithMeasurement(); ++i)
 	{
 		MeasId = fitTrack->getPointWithMeasurement(i)->getRawMeasurement()->getHitId();
-		PlaneId = m_sensorIDmap->GetFitPlaneIDFromMeasID( MeasId );
+		PlaneId = m_SensorIDMap->GetFitPlaneIDFromMeasID( MeasId );
 		chargeHypo = fitTrack->getCardinalRep()->getPDGCharge();
 		
 		m_NClusTrack.at( PlaneId )++;
@@ -1867,6 +1867,12 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 		if(m_debug > 1)	mom.Print();
 
 		mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
+
+		// int pointID = m_SensorIDMap->GetHitIDFromMeasID(fitTrack->getRawMeasurement(-1)->getHitId());
+		// float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( pointID )->GetMeanToF();
+		// float beam_speed = 
+		// TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
+		// float beta = (m_GeoTrafo->GetTWCenter().Z() - m_GeoTrafo->GetTGCenter().Z())/(TOF*TAGgeoTrafo::GetLightVelocity());
 		if(m_debug > 1)	mom.Print();
 
 		fitTrack->setStateSeed(pos,mom);
