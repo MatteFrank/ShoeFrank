@@ -22,7 +22,7 @@
  */
 
 Bool_t   TAVTbaseDigitizer::fgSmearFlag     = true;
-Float_t  TAVTbaseDigitizer::fgDefSmearPos   = 10.35;  // in micron
+Float_t  TAVTbaseDigitizer::fgDefSmearPos   = 10.35/3.;  // in micron
 Float_t  TAVTbaseDigitizer::fgkPairCreation = 3.6e-3; // keV
 Float_t  TAVTbaseDigitizer::fgkFanoFactor   = 0.115;
 Float_t  TAVTbaseDigitizer::fgkNormFactor   = TMath::Sqrt(2*TMath::Pi());
@@ -37,8 +37,8 @@ TAVTbaseDigitizer::TAVTbaseDigitizer(TAVTbaseParGeo* parGeo)
  : TAGbaseDigitizer(),
    fpParGeo(parGeo),
    fPixelsN(-1),
-   fDe0Par(-8.7),
-   fDe0ParErr(0.2),
+   fDe0Par(-9.5),
+   fDe0ParErr(0.8),
    fRsPar(1.39),
    fRsParErr(0.03),
    fThresPar(503),
@@ -117,7 +117,7 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
    smear = gRandom->Gaus(0, fLinParErr);
    fFuncClusterSize->SetParameter(3, fLinPar+smear);
    
-   fPixelsN = TMath::Nint(fFuncClusterSize->Eval(deltaE));
+   fPixelsN = TMath::Nint(fFuncClusterSize->Eval(deltaE*0.28));
    if (fPixelsN <= 0) fPixelsN = 1;
    
    if (fpParGeo->GetType() == 1) {
