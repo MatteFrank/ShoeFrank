@@ -76,13 +76,16 @@ protected:
    // Search cluster
    void           SearchCluster();
    // Shape cluster
-   Bool_t         ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, double seedCharge);
+   Bool_t         ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY);
    // Fill maps
    void           FillMaps();
    // Fill cluster information
    void           FillClusterInfo(TACAcluster* cluster);
    // Compute minimum distance to a cluster
    void           ComputeMinDist(TACAcluster* cluster);
+   
+private:
+   static Float_t  fgChargeThreshold;
 
    ClassDef(TACAactNtuCluster,0)
 };
