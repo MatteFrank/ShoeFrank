@@ -27,6 +27,7 @@ Float_t  TAVTbaseDigitizer::fgkPairCreation = 3.6e-3; // keV
 Float_t  TAVTbaseDigitizer::fgkFanoFactor   = 0.115;
 Float_t  TAVTbaseDigitizer::fgkNormFactor   = TMath::Sqrt(2*TMath::Pi());
 Float_t  TAVTbaseDigitizer::fgTotMaxValue   = 100;
+Float_t  TAVTbaseDigitizer::fgDEfactor      = 0.28;
 Int_t    TAVTbaseDigitizer::fgTotAdcDepth   = 7;
 
 //------------------------------------------+-----------------------------------
@@ -117,7 +118,7 @@ Bool_t TAVTbaseDigitizer::Process( Double_t edep, Double_t x0, Double_t y0, Doub
    smear = gRandom->Gaus(0, fLinParErr);
    fFuncClusterSize->SetParameter(3, fLinPar+smear);
    
-   fPixelsN = TMath::Nint(fFuncClusterSize->Eval(deltaE*0.28));
+   fPixelsN = TMath::Nint(fFuncClusterSize->Eval(deltaE*fgDEfactor));
    if (fPixelsN <= 0) fPixelsN = 1;
    
    if (fpParGeo->GetType() == 1) {
