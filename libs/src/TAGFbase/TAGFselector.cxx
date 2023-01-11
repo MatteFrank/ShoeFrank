@@ -28,7 +28,7 @@
 //! \param[in] measParticleMC_collection Pointer to the map containing the MC particles found in the event for each measurement; the key is the global index of the measurement
 TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vector<int>* chargeVect, 
 								TAGFdetectorMap* SensorIDmap , map<TString, Track*>* trackCategoryMap, 
-								map< int, vector<int> >* measParticleMC_collection, bool IsMC) {
+								map< int, vector<int> >* measParticleMC_collection, bool IsMC, uint* singleVertexCounter, uint* noVTtrackletEvents) {
 
 	m_allHitMeas = allHitMeas;
 	m_chargeVect = chargeVect;
@@ -36,6 +36,8 @@ TAGFselector::TAGFselector( map< int, vector<AbsMeasurement*> >* allHitMeas, vec
 	m_trackCategoryMap = trackCategoryMap;
 	m_measParticleMC_collection = measParticleMC_collection;
 	m_IsMC = IsMC;
+	m_singleVertexCounter = singleVertexCounter;
+	m_noVTtrackletEvents = noVTtrackletEvents;
 
 	m_debug = TAGrecoManager::GetPar()->Debug();
 
@@ -542,6 +544,13 @@ void TAGFselector::CategorizeVT()
 	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
 
 	int vertexNumber = vertexContainer->GetVertexN();
+	// if( vertexNumber != 1 )
+	// {
+	// 	Info("CategorizeVT()", "Too many vertices in event. skipping ...");
+	// 	return;
+	// }
+	if( vertexNumber == 1)
+		(*m_singleVertexCounter)++;
 	TAVTvertex* vtxPD   = 0x0; //NEW
 
 	TVector3 pos_(0, 0, 0);		//global coord [cm]
@@ -650,7 +659,10 @@ void TAGFselector::CategorizeVT()
 	} //end loop on vertices
 
 	if(m_trackTempMap.size() == 0)
+	{
 		Warning("CategorizeVT()","No valid VT tracklet found in the event!");
+		(*m_noVTtrackletEvents)++;
+	}
 }
 
 
@@ -896,7 +908,7 @@ void TAGFselector::CategorizeMSD()	{
 				double distanceFromHit;
 				string strip;
 
-				if ( ! static_cast<PlanarMeasurement*>(*it)->getStripV() )
+				if ( ! static_cast<PlanarMeasurement*>(*it)->getYview() )
 				{
 					distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
 					strip = "X";

@@ -92,6 +92,8 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 	m_NTWTracksGoodHypo = 0;
 	m_numGenParticle_noFrag = 0;
 
+	m_singleVertexCounter = 0;
+	m_noVTtrackletEvents = 0;
 }
 
 
@@ -199,7 +201,7 @@ Bool_t TAGactKFitter::Action()	{
 			cout << it->first << "\t" << it->second.size() << endl;
 	}
 
-	TAGFselector* m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC);
+	TAGFselector* m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_sensorIDmap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
 
 	if ( m_selector->Categorize() >= 0 ) {
 
@@ -308,6 +310,9 @@ void TAGactKFitter::Finalize() {
 		SetHistogramDir(fDirectory);
 	}
 
+	cout << "Single vertex events::" << m_singleVertexCounter << endl;
+	cout << "Events w/out valid VT tracklets::" << m_noVTtrackletEvents << endl;
+
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();
 
@@ -322,6 +327,7 @@ void TAGactKFitter::Finalize() {
 		cout << "TWtracks\t\tTWtracksGoodHypo\n" << m_NTWTracks << "\t\t" << m_NTWTracksGoodHypo << endl;
 
 	}
+
 
 }
 
@@ -610,8 +616,8 @@ void TAGactKFitter::CreateGeometry()  {
 				// Set versors -> MSD still needs some fixes maybe
 				TVector3 U(1.,0,0);
 				TVector3 V(0,1.,0);
-				TVector3 trafoU = m_GeoTrafo->VecFromMSDLocalToGlobal(U);
-				TVector3 trafoV = m_GeoTrafo->VecFromMSDLocalToGlobal(V);
+				TVector3 trafoU = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i,U));
+				TVector3 trafoV = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i,V));
 				// detectorplane->setUV(U, V);
 				detectorplane->setUV(trafoU, trafoV);
 
@@ -850,9 +856,9 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 				RecordTrackInfo( fitTrack, newTrackName );
 				if(m_debug > 0) cout << "DONE\n";
 
-				m_vectorConvergedTrack.push_back( fitTrack );
 			}
 		}
+		m_vectorConvergedTrack.push_back( fitTrack );
 		
 		// // fill a vector with the categories fitted at least onece
 		// if ( find( m_categoryFitted.begin(), m_categoryFitted.end(), (*hitSample).first ) == m_categoryFitted.end() )
@@ -866,8 +872,9 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
 		if (m_vectorConvergedTrack.size() > 1)
-			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << "display->addEvent size " << m_vectorConvergedTrack.size() << "\n";
+			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << "display->addEvent size " << m_vectorConvergedTrack.size() << " at position " << m_eventDisplayCounter << "\n";
 		display->addEvent(m_vectorConvergedTrack);
+		m_eventDisplayCounter++;
 	}
 	m_vectorConvergedTrack.clear();
 

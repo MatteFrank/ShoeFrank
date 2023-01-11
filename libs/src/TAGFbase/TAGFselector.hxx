@@ -77,7 +77,7 @@ public:
 
 	TAGFselector(map< int, vector<AbsMeasurement*> >* allHitMeas, vector<int>* chVect, 
 						TAGFdetectorMap* SensorIDmap, map<TString, Track*>* trackCategoryMap, 
-						map< int, vector<int> >* measParticleMC_collection, bool isMC);
+						map< int, vector<int> >* measParticleMC_collection, bool isMC, uint* singleVertexCounter, uint* noVTtrackletEvents);
 	virtual ~TAGFselector();
 
 	int					Categorize();
@@ -144,10 +144,12 @@ private:
 
 	Bool_t m_IsMC; 											///< flag for MC variables
 	int m_debug;											///< Global debug value
-	TString m_systemsON;										///< String w/ systems on in the campaign
+	TString m_systemsON;									///< String w/ systems on in the campaign
 	
 	double m_BeamEnergy;									///< Beam energy in GeV/u
 	double m_AMU = 0.9310986964;							///< Conversion betweem mass in GeV and atomic mass unit
+	uint *m_singleVertexCounter;							///< Counter for single vertex events
+	uint *m_noVTtrackletEvents;								///< Counter for events w/ no valid tracklet
 };
 
 #endif

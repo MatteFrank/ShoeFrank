@@ -71,10 +71,15 @@ class PlanarMeasurement : public AbsMeasurement {
 
   bool getStripV() {return stripV_;}
 
- protected:
+  void setYview(bool v = true) { isYview_ = v; }
+
+  bool getYview() { return isYview_; }
+
+protected:
   SharedPlanePtr physicalPlane_;   //! This is persistent, but '!' makes ROOT shut up.
   int planeId_; // planeId id is -1 per default
   bool stripV_;
+  bool isYview_ = false;
 
  public:
 

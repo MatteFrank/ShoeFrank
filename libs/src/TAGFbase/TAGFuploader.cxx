@@ -5,6 +5,8 @@
 */
 
 #include "TAGFuploader.hxx"
+#include "SpacepointMeasurement.h"
+#include "TrackPoint.h"
 
 /*!
  \class TAGFuploader
@@ -562,15 +564,18 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	if ( m_debug > 1 )
 	{
 		TAMSDparGeo* m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
-		cout << "MSD Meas::" << iMeas << endl;
+		cout << "MSD Meas::" << iMeas << "\t View::" << clus->GetPlaneView() <<  endl;
 		cout << "Sensor pos::";
 		m_MSD_geo->GetSensorPosition(m_sensorIDmap->GetSensorIDFromMeasID(iMeas)).Print();
 		cout << "MSD hit loc coords::";
 		hitPos.Print();
+		cout << "MSD hit loc frame hit coord::" << clus->GetPositionF() << endl;
 		cout << "MSD hit det coords::";
 		m_MSD_geo->Sensor2Detector(m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
+		cout << "MSD PositionG::";
+		clus->GetPositionG().Print();
 		cout << "MSD hit glb coords::";
-		m_GeoTrafo->FromMSDLocalToGlobal( m_MSD_geo->Sensor2Detector( m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos) ).Print();
+		m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() ).Print();
 	}
 
 	//check the view, 0 ->X, 1->Y
@@ -581,11 +586,13 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	//MSD detector coordinates are all in the X value of the position vector!!!! So, an X strip will give the local pos in the X value. A Y strip will rotate the Y measurement in local coords and return it in the X when looking at detector coordinates.
 
 	if ( clus->GetPlaneView() == 0 ){
-		planarCoords(0) = hitPos.x();
+		// planarCoords(0) = hitPos.x();
+		planarCoords(0) = clus->GetPositionF();
 		pixReso = 0.003; //hardcoded!!!!!
 	}
 	else{
-		planarCoords(0) = hitPos.y();
+		// planarCoords(0) = hitPos.y();
+		planarCoords(0) = clus->GetPositionF();
 		pixReso = 0.003; //hardcoded!!!!!
 		isYView = true;
 	}
@@ -607,8 +614,14 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	int detId = m_sensorIDmap->GetDetIDFromMeasID( iMeas );
 	// nullptr is a TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
-	if (isYView) hit->setStripV();
-	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID ); 
+	// if (isYView) hit->setStripV();
+	if (isYView) hit->setYview();
+	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID );
+	// cout << "HEREEEEEEEEE" << endl;
+	cout << "toLab::";
+	(m_sensorIDmap->GetFitPlane(sensorID)->toLab(TVector2(clus->GetPositionF(),0))).Print(); 
+	// cout << "HEREEEEEEEEE" << endl;
+	// hit->Print();
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 

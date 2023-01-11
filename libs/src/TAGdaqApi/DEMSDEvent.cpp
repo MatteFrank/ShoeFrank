@@ -88,20 +88,20 @@ void DEMSDEvent::fillStrip(){
             data = values[wordOfData];
             wordOfData += 1;
             if (ADC < 2){
-               Yplane[ADC*256+k] = ((data >> 16) & 0xFFFF) >> 2;
-               Yplane[ADC*256+128+k] = (data & 0xFFFF) >> 2;
+               FirstPlane[ADC*256+k] = ((data >> 16) & 0xFFFF) >> 2;
+               FirstPlane[ADC*256+128+k] = (data & 0xFFFF) >> 2;
             }
             else if (ADC == 2){
-               Yplane[ADC*256+k] = ((data >> 16) & 0xFFFF) >> 2;
-               Xplane[(ADC-2)*256+k] = (data & 0xFFFF) >> 2;
+               FirstPlane[ADC*256+k] = ((data >> 16) & 0xFFFF) >> 2;
+               SecondPlane[(ADC-2)*256+k] = (data & 0xFFFF) >> 2;
             }
             else if(ADC == 3){
-               Xplane[128+k] = ((data >> 16) & 0xFFFF) >> 2;
-               Xplane[256+k] = (data & 0xFFFF) >> 2;
+               SecondPlane[128+k] = ((data >> 16) & 0xFFFF) >> 2;
+               SecondPlane[256+k] = (data & 0xFFFF) >> 2;
             }
             else if(ADC==4){
-               Xplane[384+k] = ((data >> 16) & 0xFFFF) >> 2;
-               Xplane[512+k] = (data & 0xFFFF) >> 2;
+               SecondPlane[384+k] = ((data >> 16) & 0xFFFF) >> 2;
+               SecondPlane[512+k] = (data & 0xFFFF) >> 2;
             }
             
          }

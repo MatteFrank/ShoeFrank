@@ -265,6 +265,10 @@ private:
 	int m_NTWTracksGoodHypo;							///< Total number of track candidates reaching the TW that have the correct charge hypo
 	bool m_IsMC;
 
+	uint m_singleVertexCounter;							///< Counter for events w/ only one vertex
+	uint m_noVTtrackletEvents;							///< Counter for events w/ no valid VT tracklets
+	uint m_eventDisplayCounter=0;						///< Aux counter for event display event counter
+
 	ClassDef(TAGactKFitter,0);
 };
 
