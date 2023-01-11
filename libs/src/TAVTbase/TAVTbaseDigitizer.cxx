@@ -222,7 +222,7 @@ Double_t TAVTbaseDigitizer::FuncClusterSize(Double_t* x, Double_t* par)
 {
    Float_t xx = x[0]-par[2];
    
-   Float_t f = 2*TMath::Pi()*par[0]*TMath::Log(xx/(2*TMath::Pi()*3.6e-3*par[1])) + par[3]*xx;
+   Float_t f = 2*TMath::Pi()*par[0]*TMath::Log(xx/(2*TMath::Pi()*fgkPairCreation*par[1])) + par[3]*xx;
    
    return f;
 }
