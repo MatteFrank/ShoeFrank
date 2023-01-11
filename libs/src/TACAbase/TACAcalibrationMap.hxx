@@ -25,14 +25,23 @@ class TACAcalibrationMap : public TAGobject
 private:
    //! \struct ElossParameter_t
    struct ElossParameter_t {
-      double offset;  ///< offset
-      double slope;   ///< slope
+      double p0;   ///< offset
+      double p1;   ///< slope
+      double p2;   ///< quad
+   };
+   
+   //! \struct EqParameter_t
+   struct EqParameter_t {
+      double p0;   ///< offset
+      double p1;   ///< slope
+      double p2;   ///< quad
    };
    
   TCalibrationMapType       fCalibrationMap;       ///< Calibration map
   vector<Double_t>          fCalibTemperatureCry;  ///< map for temperature calibration per cry ID
   vector<Double_t>          fEqualisFactorCry;     ///< map for equalisation factor per cry ID
   vector<ElossParameter_t>  fCalibElossMapCry;     ///< map for energy calibration per crystal
+  vector<EqParameter_t>     fCalibEqMapZ;          ///< map for energy equilisation  per Zl
   TACAparMap*               fParpMap;              ///< mapping file
    
 public:
@@ -56,8 +65,9 @@ public:
   //! Get equilized temperature per crystal
   Double_t GetEqualiseCry(Int_t cryId)               { return fEqualisFactorCry[cryId];        }
    
-  Double_t GetElossParam(Int_t cryId, UInt_t parId);
- 
+   Double_t GetElossParam(Int_t cryId, UInt_t parId);
+   Double_t GetEqParam(Int_t cryId, UInt_t parId);
+
   ClassDef(TACAcalibrationMap, 0)
 };
 
