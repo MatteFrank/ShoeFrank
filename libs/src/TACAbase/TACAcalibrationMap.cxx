@@ -110,7 +110,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
    int crysId;  // Id of the crystal
    int  ZId;    // atomic number Z
    double Q_corrp0 =0., Q_corrp1 = 0., Q_corrp2 = 0.;
-   Int_t maxZ = 8;
+   Int_t maxZ = 9;
    
    // parameters for energy equilisation with Z
    fCalibEqMapZ.reserve(maxZ);
