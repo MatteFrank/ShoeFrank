@@ -108,13 +108,9 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
    
    char line[200];
    int crysId;  // Id of the crystal
-   int  ZId;    // atomic number Z
    double Q_corrp0 =0., Q_corrp1 = 0., Q_corrp2 = 0.;
-   Int_t maxZ = 9;
    
    // parameters for energy equilisation with Z
-   fCalibEqMapZ.reserve(maxZ);
-
    fin_Q.getline(line, 200, '\n');
    
    while (fin_Q.getline(line, 200, '\n')) {
@@ -128,11 +124,11 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
          continue;
       }
       
-     sscanf(line, "%d %lf %lf %lf",&ZId, &Q_corrp0, &Q_corrp1, &Q_corrp2);
+     sscanf(line, "%lf %lf %lf",&Q_corrp0, &Q_corrp1, &Q_corrp2);
      if(FootDebugLevel(1))
-         Info("LoadEnergyCalibrationMap()","Zid %d %.3f %.3f %.3f\n",ZId, Q_corrp0, Q_corrp1, Q_corrp2);
+         Info("LoadEnergyCalibrationMap()","Zid %.3f %.3f %.3f\n", Q_corrp0, Q_corrp1, Q_corrp2);
       
-      fCalibEqMapZ[ZId] = EqParameter_t{Q_corrp0, Q_corrp1, Q_corrp2};
+      fCalibEqMapZ = EqParameter_t{Q_corrp0, Q_corrp1, Q_corrp2};
    }
    
    // parameters for energy calibration p0, p1 and p2
@@ -220,14 +216,14 @@ Double_t TACAcalibrationMap::GetElossParam(Int_t cryId, UInt_t parId)
 //!
 //! \param[in] cryId crystal id
 //! \param[in] parId parameter id
-Double_t TACAcalibrationMap::GetEqParam(Int_t ZId, UInt_t parId)
+Double_t TACAcalibrationMap::GetEqParam(UInt_t parId)
 {
    if (parId == 0)
-      return fCalibEqMapZ[ZId].p0;
+      return fCalibEqMapZ.p0;
    else if (parId == 1)
-      return fCalibEqMapZ[ZId].p1;
+      return fCalibEqMapZ.p1;
    else if (parId == 2)
-      return fCalibEqMapZ[ZId].p2;
+      return fCalibEqMapZ.p2;
    else {
       Error("GetElossParam()", "No parameter %d found", parId);
       return -99999;

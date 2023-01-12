@@ -41,7 +41,7 @@ private:
   vector<Double_t>          fCalibTemperatureCry;  ///< map for temperature calibration per cry ID
   vector<Double_t>          fEqualisFactorCry;     ///< map for equalisation factor per cry ID
   vector<ElossParameter_t>  fCalibElossMapCry;     ///< map for energy calibration per crystal
-  vector<EqParameter_t>     fCalibEqMapZ;          ///< map for energy equilisation  per Zl
+  EqParameter_t             fCalibEqMapZ;          ///< map for energy equilisation  per Zl
   TACAparMap*               fParpMap;              ///< mapping file
    
 public:
@@ -66,7 +66,7 @@ public:
   Double_t GetEqualiseCry(Int_t cryId)               { return fEqualisFactorCry[cryId];        }
    
    Double_t GetElossParam(Int_t cryId, UInt_t parId);
-   Double_t GetEqParam(Int_t cryId, UInt_t parId);
+   Double_t GetEqParam(UInt_t parId);
 
   ClassDef(TACAcalibrationMap, 0)
 };
