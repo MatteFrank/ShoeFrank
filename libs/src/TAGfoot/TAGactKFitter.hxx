@@ -75,7 +75,10 @@
 
 
 #include "TAGFuploader.hxx"
-#include "TAGFselector.hxx"
+#include "TAGFselectorTrue.hxx"
+#include "TAGFselectorStandard.hxx"
+#include "TAGFselectorLinear.hxx"
+#include "TAGFselectorBack.hxx"
 #include "TAGFdetectorMap.hxx"
 #include "TAGntuGlbTrack.hxx"
 #include "TAGF_KalmanStudies.hxx"
@@ -104,7 +107,7 @@ public:
 	virtual	void   CreateHistogram();
 
 
-	int MakeFit(long evNum, TAGFselector* selector);
+	int MakeFit(long evNum, TAGFselectorBase* selector);
 	void MakePrefit();
 
 	void RecordTrackInfo( Track* track, string hitSampleName );
@@ -139,7 +142,7 @@ public:
 private:
 
 	void	EvaluateProjectionEfficiency(Track* fitTrack);
-	void	CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselector* selector);
+	void	CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselectorBase* selector);
 	void	ClearData();
 	void	ClearHistos();
 
@@ -155,7 +158,7 @@ private:
 	TAMCntuPart*  m_trueParticleRep=0x0;				///< Ptr to TAMCntuPart object
 
 	// TAGFuploader* m_uploader;							///< GenFit Uploader
-	// TAGFselector* m_selector;							///< GenFit Selector
+	// TAGFselectorBase* m_selector;							///< GenFit Selector
 	TAGntuGlbTrack* m_outTrackRepo;						///< CHECK WITH MATTEO HOW TO DO THIS
 
 	TAGFdetectorMap* m_SensorIDMap;						///< GenFit detector Map for index handling

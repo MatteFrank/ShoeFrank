@@ -8,7 +8,11 @@
 #pragma link C++ class TAGFtrackingStudies+;
 
 #pragma link C++ class TAGFuploader+;
-#pragma link C++ class TAGFselector+;
+#pragma link C++ class TAGFselectorBase + ;
+#pragma link C++ class TAGFselectorTrue + ;
+#pragma link C++ class TAGFselectorStandard + ;
+#pragma link C++ class TAGFselectorLinear + ;
+#pragma link C++ class TAGFselectorBack + ;
 #pragma link C++ class TAGFdetectorMap+;
 
 #pragma link C++ class UpdatePDG+;

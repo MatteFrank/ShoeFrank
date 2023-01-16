@@ -201,9 +201,27 @@ Bool_t TAGactKFitter::Action()	{
 			cout << it->first << "\t" << it->second.size() << endl;
 	}
 
-	TAGFselector* m_selector = new TAGFselector(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
+	// TAGFselectorBase* m_selector = new TAGFselectorBase(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
+	TAGFselectorBase* m_selector;
+	if (TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle")
+	{
+		if (!m_IsMC)
+			Error("TAGactKFitter::Action()", "Asked TrueParticle tracking but running not on MC."), exit(0);
+		m_selector = new TAGFselectorTrue();
+	}
+	else if (TAGrecoManager::GetPar()->PreselectStrategy() == "Standard")
+		m_selector = new TAGFselectorStandard();
+	else if (TAGrecoManager::GetPar()->PreselectStrategy() == "Linear")
+		m_selector = new TAGFselectorLinear();
+	else if (TAGrecoManager::GetPar()->PreselectStrategy() == "Backtracking")
+		m_selector = new TAGFselectorBack();
+	else
+		Error("TAGactKFitter::Action()", "TAGrecoManager::GetPar()->PreselectStrategy() not defined"), exit(0);
 
-	if ( m_selector->Categorize() >= 0 ) {
+	m_selector->SetVariables(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
+
+	if (m_selector->FindTrackCandidates() >= 0)
+	{
 
 		if ( m_IsMC ) {
 			//RZ: Check selection efficiency counts --> better define the "visible" particles, right now is not really compatible with TrueParticle selection
@@ -709,7 +727,7 @@ void TAGactKFitter::CreateGeometry()  {
 //!
 //! \param[in] evNum Event number
 //! \return Number of fitted tracks in the event
-int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
+int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 
 	if ( m_debug > 0 )		cout << "Starting MakeFit " << endl;
 
@@ -1833,7 +1851,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 //! In case of mismatch, the function corrects the intial hypothesis and reset the seed for the track fit
 //! \param[in,out] PartName Pointer to the name of the particle ("H,"He","Li"...). If the particle hypothesis changes, this variable is updated with the new name
 //! \param[in] fitTrack Pointer to the track under study
-void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselector* m_selector)
+void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselectorBase* m_selector)
 {
 	int chargeFromTW = m_selector->GetChargeFromTW( fitTrack );
 	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;

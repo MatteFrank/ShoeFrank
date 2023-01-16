@@ -25,7 +25,7 @@ Tracking Systems Considered:    all
 #Tracking Systems Considered:    VT IT MSD TW
 Reverse Tracking:   false
 
-Kalman preselection strategy: Sept2020
+Kalman preselection strategy: Standard
 
 Kalman Particle Types:	C
 

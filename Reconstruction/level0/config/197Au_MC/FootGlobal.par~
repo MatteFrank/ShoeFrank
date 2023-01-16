@@ -25,7 +25,7 @@ Kalman Mode:       ref
 Tracking Systems Considered:      BM MSD TW
 Reverse Tracking:       false
 
-Kalman preselection strategy: Sept2020
+Kalman preselection strategy: Standard
 #Kalman preselection strategy: TrueParticle
 
 Chi2 cut: -1
