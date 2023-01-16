@@ -314,7 +314,11 @@ void TAGactKFitter::Finalize() {
 	cout << "Events w/out valid VT tracklets::" << m_noVTtrackletEvents << endl;
 
 	//show event display
-	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )		display->open();
+	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )
+	{
+		display->setOptions("BDEFHGMPT");
+		display->open();
+	}
 
 	if(m_debug > 0)
 	{
@@ -502,14 +506,14 @@ void TAGactKFitter::CreateGeometry()  {
 				yMax = m_VT_geo->GetEpiOffset().Y() + m_VT_geo->GetEpiSize().Y()/2;
 				genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane(xMin, xMax, yMin, yMax);
 				TVector3 normal_versor = TVector3(0,0,1);
-				TVector3 trafoNorm = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, normal_versor));
+				TVector3 trafoNorm = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Sensor2DetectorVect(i, normal_versor));
 				genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, trafoNorm, activeArea));
 
 				//Set versors
 				TVector3 U(1.,0,0);
 				TVector3 V(0,1.,0);
-				TVector3 trafoU = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, U));
-				TVector3 trafoV = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Detector2SensorVect(i, V));
+				TVector3 trafoU = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Sensor2DetectorVect(i, U));
+				TVector3 trafoV = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Sensor2DetectorVect(i, V));
 				// Some debug print-outs for geometry
 				if(m_debug > 1)
 				{
@@ -557,14 +561,14 @@ void TAGactKFitter::CreateGeometry()  {
 				// This make all the 32 IT sensors
 				genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
 				TVector3 normal_versor = TVector3(0,0,1);
-				TVector3 trafoNorm = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, normal_versor));
+				TVector3 trafoNorm = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Sensor2DetectorVect(i, normal_versor));
 				genfit::SharedPlanePtr detectorplane (new genfit::DetPlane( origin_, trafoNorm, activeArea));
 
 				// Set versors
 				TVector3 U(1.,0,0);
 				TVector3 V(0,1.,0);
-				TVector3 trafoU = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, U));
-				TVector3 trafoV = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Detector2SensorVect(i, V));
+				TVector3 trafoU = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Sensor2DetectorVect(i, U));
+				TVector3 trafoV = m_GeoTrafo->VecFromITLocalToGlobal(m_IT_geo->Sensor2DetectorVect(i, V));
 				detectorplane->setUV(trafoU, trafoV);
 
 				m_SensorIDMap->AddPlane_Zorder( origin_.Z(), indexOfPlane );
@@ -609,15 +613,15 @@ void TAGactKFitter::CreateGeometry()  {
 				float yMax = m_MSD_geo->GetEpiOffset().y() + m_MSD_geo->GetEpiSize().y()/2;
 
 				TVector3 normal_versor = TVector3(0,0,1);
-				TVector3 trafoNorm = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i, normal_versor));
+				TVector3 trafoNorm = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Sensor2DetectorVect(i, normal_versor));
 				genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
 				genfit::SharedPlanePtr detectorplane ( new genfit::DetPlane( origin_, trafoNorm, activeArea) );
 
 				// Set versors -> MSD still needs some fixes maybe
 				TVector3 U(1.,0,0);
 				TVector3 V(0,1.,0);
-				TVector3 trafoU = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i,U));
-				TVector3 trafoV = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Detector2SensorVect(i,V));
+				TVector3 trafoU = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Sensor2DetectorVect(i,U));
+				TVector3 trafoV = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Sensor2DetectorVect(i,V));
 				// detectorplane->setUV(U, V);
 				detectorplane->setUV(trafoU, trafoV);
 
@@ -857,8 +861,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselector* m_selector) {
 				if(m_debug > 0) cout << "DONE\n";
 
 			}
+			m_vectorConvergedTrack.push_back( fitTrack );
 		}
-		m_vectorConvergedTrack.push_back( fitTrack );
 		
 		// // fill a vector with the categories fitted at least onece
 		// if ( find( m_categoryFitted.begin(), m_categoryFitted.end(), (*hitSample).first ) == m_categoryFitted.end() )

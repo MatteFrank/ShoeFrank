@@ -145,7 +145,12 @@ private:
 	Bool_t m_IsMC; 											///< flag for MC variables
 	int m_debug;											///< Global debug value
 	TString m_systemsON;									///< String w/ systems on in the campaign
-	
+
+	float m_VTtolerance;									///< VT selector extrapolation tolerance 
+	float m_ITtolerance;									///< IT selector extrapolation tolerance 
+	float m_MSDtolerance;									///< MSD selector extrapolation tolerance 
+	float m_TWtolerance;									///< TW selector extrapolation tolerance 
+
 	double m_BeamEnergy;									///< Beam energy in GeV/u
 	double m_AMU = 0.9310986964;							///< Conversion betweem mass in GeV and atomic mass unit
 	uint *m_singleVertexCounter;							///< Counter for single vertex events
