@@ -23,10 +23,7 @@ TAGFselectorBack::TAGFselectorBack() : TAGFselectorBase()
 
 //----------------------------------------------------------------------------------------------------
 
-//! \brief Base function for track finding/selection/categorization
-//!
-//! This function gets called from the TAGactKFitter class
-//! \return 0 if there were no errors
+//! \brief Main function of backtracking algorithm
 void TAGFselectorBack::Categorize( ) {
 
 	if (!TAGrecoManager::GetPar()->IncludeTW() || !TAGrecoManager::GetPar()->IncludeMSD())
@@ -65,12 +62,9 @@ void TAGFselectorBack::Categorize( ) {
 }
 
 
-
-
-
 //! \brief Find and categorize the possible back-tracklets in the event from TW-MSD point association
 //!
-//! This step uses a combinatorial approach to determine the possible track candiadtes of the veents from TW and MSD points
+//! This step uses a combinatorial approach to determine the possible track candiadtes of the events from TW and MSD points
 void TAGFselectorBack::BackTracklets()
 {
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
@@ -253,12 +247,18 @@ void TAGFselectorBack::BackTracklets()
 	return;
 }
 
+
+//! \brief Track selection at the IT level
+//!
+//! Set-up but currently not implemented
 void TAGFselectorBack::CategorizeIT_back()
 {
 	// cout << "IT back" << endl;
 	return;
 }
 
+
+//! \brief Track selection at the VT level
 void TAGFselectorBack::CategorizeVT_back()
 {
 	// cout << "VT back start" << endl;

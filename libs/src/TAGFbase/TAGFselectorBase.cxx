@@ -1,6 +1,6 @@
 /*!
  \file TAGFselectorBase.cxx
- \brief  Class for track finding/selection in GenFit Global Reconstruction
+ \brief Base class for track finding/selection in GenFit Global Reconstruction
  \author R. Zarrella and M. Franchini
 */
 
@@ -8,12 +8,12 @@
 
 /*!
  \class TAGFselectorBase
- \brief Class for track finding/selection in GenFit Global Reconstruction
+ \brief Base class for track finding/selection in GenFit Global Reconstruction
 
  There are already different algorithms implemented for track finding:
  - "TrueParticle": MC truth particle tracking
  - "Standard": Data-like base algorithm, no MC used
- - "Linear": First implementation of track finding w/out magnetic field
+ - "Linear": Data-like algorithm for track finding w/out magnetic field -> linear track extrapolation btw detectors
  - "Backtracking": Data-like base algorithm starting from TW and going back to VT
 */
 
@@ -73,8 +73,6 @@ TAGFselectorBase::TAGFselectorBase()
 
 
 //! \brief Default destructor
-//!
-//! NEED TO CHECK IF SOMETHING IS MISSING HERE
 TAGFselectorBase::~TAGFselectorBase()
 {
 	//Clear TrackTempMap
@@ -277,7 +275,7 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 
 
 //--------------------------------------------------------------------------------------------
-//! \brief Check the occupancy of all the FitPlanes in GenFit geometry
+//! \brief Check the occupancy of all the FitPlanes in GenFit geometry and categorize the events to identify out of target fragmentations
 void TAGFselectorBase::CheckPlaneOccupancy()
 {
 

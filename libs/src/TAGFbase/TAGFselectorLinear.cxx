@@ -21,7 +21,7 @@ TAGFselectorLinear::TAGFselectorLinear() : TAGFselectorStandard()
 
 //----------------------------------------------------------------------------------------------------
 
-//! \brief Base function for track finding/selection/categorization 
+//! \brief Base function for track finding/selection/categorization for linear data-like selection
 void TAGFselectorLinear::Categorize( ) {
 
 	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";

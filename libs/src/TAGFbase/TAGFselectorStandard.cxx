@@ -1,6 +1,6 @@
 /*!
  \file TAGFselectorStandard.cxx
- \brief  Class for track finding/selection in GenFit Global Reconstruction
+ \brief  Class for standard track finding/selection in GenFit Global Reconstruction
  \author R. Zarrella and M. Franchini
 */
 
@@ -8,7 +8,7 @@
 
 /*!
  \class TAGFselectorStandard
- \brief Class for track finding/selection in GenFit Global Reconstruction
+ \brief Class for standard data-like track finding/selection in GenFit Global Reconstruction
 */
 
 
@@ -63,7 +63,7 @@ void TAGFselectorStandard::Categorize( ) {
 }
 
 
-//! \brief Track selection in the VT for forward tracking
+//! \brief Track selection in the VT for forward data-like tracking
 //!
 //! The algorithm currently starts from VT tracklets and checks the number of points in them
 void TAGFselectorStandard::CategorizeVT()
@@ -476,7 +476,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 }
 
 
-//! \brief Set the Track seed and perform first level fit of the track
+//! \brief Set the Track seed and perform first level fit of the track if there is no MSD in the global reconstruction
 //!
 //! Auxiliary function to have a functioning VT tracklet extrapolation up to the TW when MSD is not included
 void TAGFselectorStandard::SetTrackSeedNoMSD()
