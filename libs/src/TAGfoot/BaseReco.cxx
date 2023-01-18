@@ -959,6 +959,9 @@ void BaseReco::CreateRecActionCa()
    fpNtuClusCa = new TAGdataDsc("caClus", new TACAntuCluster());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
+   if (fFlagMC)
+      TACAactNtuCluster::DisableChargeThres();
+   
    fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
    if (fFlagHisto)
       fActClusCa->CreateHistogram();

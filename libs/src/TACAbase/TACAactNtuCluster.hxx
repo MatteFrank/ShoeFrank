@@ -45,7 +45,12 @@ public:
    
    //! Get object in list
    TAGobject*      GetHitObject(Int_t idx) const;
-   
+
+public:
+   static void DisableChargeThres()         { fgThresholdFlag = false;   }
+   static void EnableChargeThres()          { fgThresholdFlag = true;    }
+   static void SetChargeThreshold(Bool_t f) { fgChargeThreshold = true;  }
+
 protected:
    TAGdataDsc*     fpNtuRaw;         ///< input data dsc
    TAGdataDsc*     fpNtuClus;        ///< output data dsc
@@ -76,13 +81,17 @@ protected:
    // Search cluster
    void           SearchCluster();
    // Shape cluster
-   Bool_t         ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, double seedCharge);
+   Bool_t         ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY);
    // Fill maps
    void           FillMaps();
    // Fill cluster information
    void           FillClusterInfo(TACAcluster* cluster);
    // Compute minimum distance to a cluster
    void           ComputeMinDist(TACAcluster* cluster);
+   
+private:
+   static Float_t  fgChargeThreshold;
+   static Bool_t   fgThresholdFlag;
 
    ClassDef(TACAactNtuCluster,0)
 };

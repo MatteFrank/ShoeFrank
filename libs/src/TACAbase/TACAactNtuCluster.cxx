@@ -17,6 +17,10 @@
 
 #include "TATWntuPoint.hxx"
 
+
+Float_t TACAactNtuCluster::fgChargeThreshold = 1;
+Bool_t  TACAactNtuCluster::fgThresholdFlag   = true;
+
 /*!
  \class TACAactNtuCluster
  \brief NTuplizer for calorimeter clusters. **
@@ -48,8 +52,9 @@ TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGd
    AddPara(pGeoMap,     "TACAparGeo");
    //AddPara(pConfig, "TACAparConf");
 
-   fDimY = 18;
-   fDimX = 18;
+   TACAparGeo* parGeo  = (TACAparGeo*) fpGeoMap->Object();
+   fDimY = parGeo->GetMaxNumLines();
+   fDimX = parGeo->GetMaxNumColumns();
    SetupMaps(fDimY*fDimX);
    
    fpNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
@@ -69,7 +74,7 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisHitTot = new TH1F("caClusHitsTot", "Calorimeter - Total # hits per cluster", 25, 0., 25);
    AddHistogram(fpHisHitTot);
 
-   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 1000, 0., 4000);
+   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 2000, 0., 1000);
    AddHistogram(fpHisChargeTot);
 
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
@@ -147,7 +152,7 @@ void TACAactNtuCluster::FillMaps()
 //! \param[in] IndX index in X
 //! \param[in] IndY index in Y
 //! \param[in] seedCharge charge of previous seed
-Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, double seedCharge)
+Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY)
 {
    Int_t idx = IndY*fDimX+IndX;
    if ( fPixelMap.count(idx) == 0 ) return false; // empty place
@@ -158,7 +163,7 @@ Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, do
    TACAhit* hit = (TACAhit*)pixel;
    double charge = hit->GetCharge();
 
-   if( charge > seedCharge ) return false;
+   if( charge < fgChargeThreshold && fgThresholdFlag) return false;
 
    fFlagMap[idx] = numClus;
    pixel->SetFound(true);
@@ -166,12 +171,12 @@ Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, do
    
    for(Int_t i = -1; i <= 1 ; ++i)
       if (CheckLine(IndX+i)) {
-         ShapeCluster(numClus, IndX+i, IndY, charge);
+         ShapeCluster(numClus, IndX+i, IndY);
       }
    
    for(Int_t j = -1; j <= 1 ; ++j)
       if (CheckCol(IndY+j)) {
-         ShapeCluster(numClus, IndX, IndY+j, charge);
+         ShapeCluster(numClus, IndX, IndY+j);
       }
    
    return true;
@@ -182,51 +187,28 @@ Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, do
 void TACAactNtuCluster::SearchCluster()
 {
    fClustersN = 0;
-
+   
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-
-   int nCry = pGeoMap->GetCrystalsN();
-
+   TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
+   
    // Search for cluster
-   int loopCounter = 0;
-   while (true) {
-      double maxCharge = 0;
-      int indexSeed = -1;
-      for (Int_t i = 0; i < fpNtuHit->GetHitsN(); ++i) { // loop over hit crystals
-         TACAhit* hit = fpNtuHit->GetHit(i);
-         if (!hit->IsValid()) continue;
-         if (hit->Found()) continue;
-         double charge = hit->GetCharge();
-         if (charge > maxCharge) {
-            maxCharge = charge;
-            indexSeed = i;
-         }
-      }
-
-      if (indexSeed == -1) break; // maximum not found, not more clusters
-
-      TACAhit* hit = fpNtuHit->GetHit(indexSeed);
-
+   for (Int_t i = 0; i < pNtuHit->GetHitsN(); ++i) { // loop over hit crystals
+      TACAhit* hit = pNtuHit->GetHit(i);
+      
+      if (hit->Found()) continue;
+      if (!hit->IsValid()) continue;
+            
       Int_t id   = hit->GetCrystalId();
       Int_t line = pGeoMap->GetCrystalLine(id);
       Int_t col  = pGeoMap->GetCrystalCol(id);
       if (!CheckLine(line)) continue;
       if (!CheckCol(col)) continue;
-
-      // Find cluster by region growing
-      if ( ShapeCluster(fClustersN, col, line, hit->GetCharge() + 0.1) ) // +0.1 to meet condition on the seed
-         fClustersN++;   
-      else 
-         break;   
-
-      if ( ++loopCounter > nCry ) { // this should not happen (we can not have more clusters than crystals)
-         Error("TACAactNtuCluster::SearchCluster", 
-               "We got infinite loop!! Getting out.. num. cluster: %d, Event: %d",
-               fClustersN, gTAGroot->CurrentEventId().EventNumber());
-         break;
-      }
+      
+      // loop over lines & columns
+      if ( ShapeCluster(fClustersN, line, col) )
+         fClustersN++;
    }
-
+   
    if(FootDebugLevel(2))
      cout << "CA - Found : " << fClustersN << " clusters on event: " << gTAGroot->CurrentEventId().EventNumber() << endl;
 
