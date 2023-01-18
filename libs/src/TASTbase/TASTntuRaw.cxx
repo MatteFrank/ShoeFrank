@@ -145,16 +145,24 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double
   int TriggerCellId = vW.at(0)->GetTriggerCellId();
 
  
-  vector<double> time(vW.at(0)->GetVectT());
-  vector<double> amp(vW.at(0)->GetVectA());
+  vector<double> time(&vW.at(0)->GetVectT()[5], &vW.at(0)->GetVectT()[1018]);
+  vector<double> amp(&vW.at(0)->GetVectA()[5], &vW.at(0)->GetVectA()[1018]);
  
   //I sum the signals
     for(int i=1;i<vW.size();i++){
-    vector<double> tmpamp = vW.at(i)->GetVectA();
-    vector<double> tmptime = vW.at(i)->GetVectT();
-    TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
+    // vector<double> tmpamp = vW.at(i)->GetVectA();
+    // vector<double> tmptime = vW.at(i)->GetVectT();
+    double* time_up = &vW.at(i)->GetVectT()[0];
+    double* amp_up = &vW.at(i)->GetVectA()[0];
+    // TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
     for(int isa=0;isa<time.size();isa++){
-      amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
+      while(time[isa] >= *time_up)
+      {
+        time_up++;
+        amp_up++;
+      }
+      amp[isa] += *(amp_up-1) + ( time[isa] - *(time_up-1))*(*amp_up - *(amp_up-1))/(*time_up - *(time_up-1));
+      // amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
     }
   }
    
