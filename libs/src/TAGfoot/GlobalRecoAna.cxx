@@ -94,7 +94,7 @@ void GlobalRecoAna::LoopEvent() {
 
 
     //..... study of bm tracks: to be moved
-    if (fFlagMC ==false && myBMNtuTrk->GetTrack(0)>0 ){
+    if (fFlagMC ==false && myBMNtuTrk->GetTrack(0)!=0 ){
     TVector3 BMslope = myBMNtuTrk->GetTrack(0)->GetSlope();
 
      //projection of a BM tracklet on Target
