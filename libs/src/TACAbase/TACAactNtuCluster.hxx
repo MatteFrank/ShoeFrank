@@ -45,7 +45,12 @@ public:
    
    //! Get object in list
    TAGobject*      GetHitObject(Int_t idx) const;
-   
+
+public:
+   static void DisableChargeThres()         { fgThresholdFlag = false;   }
+   static void EnableChargeThres()          { fgThresholdFlag = true;    }
+   static void SetChargeThreshold(Bool_t f) { fgChargeThreshold = true;  }
+
 protected:
    TAGdataDsc*     fpNtuRaw;         ///< input data dsc
    TAGdataDsc*     fpNtuClus;        ///< output data dsc
@@ -86,6 +91,7 @@ protected:
    
 private:
    static Float_t  fgChargeThreshold;
+   static Bool_t   fgThresholdFlag;
 
    ClassDef(TACAactNtuCluster,0)
 };

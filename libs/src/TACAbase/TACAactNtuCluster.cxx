@@ -18,7 +18,8 @@
 #include "TATWntuPoint.hxx"
 
 
-Float_t  TACAactNtuCluster::fgChargeThreshold = 1;
+Float_t TACAactNtuCluster::fgChargeThreshold = 1;
+Bool_t  TACAactNtuCluster::fgThresholdFlag   = true;
 
 /*!
  \class TACAactNtuCluster
@@ -162,7 +163,7 @@ Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY)
    TACAhit* hit = (TACAhit*)pixel;
    double charge = hit->GetCharge();
 
-   if( charge < fgChargeThreshold ) return false;
+   if( charge < fgChargeThreshold && fgThresholdFlag) return false;
 
    fFlagMap[idx] = numClus;
    pixel->SetFound(true);
