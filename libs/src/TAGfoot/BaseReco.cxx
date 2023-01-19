@@ -962,7 +962,11 @@ void BaseReco::CreateRecActionCa()
    if (fFlagMC)
       TACAactNtuCluster::DisableChargeThres();
    
-   fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
+   if (fFlagMC)
+      fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+   else
+      fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
+
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
 }
