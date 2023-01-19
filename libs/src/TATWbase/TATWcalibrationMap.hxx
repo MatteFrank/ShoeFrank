@@ -4,7 +4,7 @@
 #include <map>
 #include <TSystem.h>
 #include "TAGobject.hxx"
-#include "Parameters.h"
+#include "TATWparameters.hxx"
 /*!
  \file TATWcalibrationMap.hxx
  \brief   Declaration of TATWcalibrationMap.

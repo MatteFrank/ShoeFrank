@@ -25,7 +25,7 @@
 
 #include "TASTntuHit.hxx"
 
-#include "Parameters.h"
+#include "TATWparameters.hxx"
 
 class TATWactNtuHit : public TAGaction {
 

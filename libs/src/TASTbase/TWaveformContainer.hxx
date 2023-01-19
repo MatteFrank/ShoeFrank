@@ -11,7 +11,7 @@
 #include "TH1D.h"
 #include "TGraph.h"
 #include <vector>
-#include "Parameters.h"
+#include "TATWparameters.hxx"
 
 using namespace std;
 

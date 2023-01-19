@@ -7,6 +7,7 @@
 #include "TMath.h"
 
 #include "DECardEvent.hh"
+#include "TAVTntuHit.hxx"
 #include "DAQMarkers.hh"
 
 #include "TAGrecoManager.hxx"
@@ -24,7 +25,8 @@
 //! Class Imp
 ClassImp(TAVTactNtuHit);
 
-UInt_t TAVTactNtuHit::fgTStolerance = 70;
+UInt_t TAVTactNtuHit::fgTStolerance    =  800;
+ Int_t TAVTactNtuHit::fgTSnegTolerance = -200;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -39,6 +41,7 @@ TAVTactNtuHit::TAVTactNtuHit(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* 
 : TAVTactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap),
   fpDatDaq(pDatDaq),
   fFirstBcoTrig(0),
+  fPrevBcoTrig(0),
   fQueueEvtsN(0)
 {
    AddDataIn(pDatDaq, "TAGdaqEvent");
@@ -54,8 +57,9 @@ TAVTactNtuHit::~TAVTactNtuHit()
 //! Action.
 Bool_t TAVTactNtuHit::Action()
 {
-   TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
-   
+   TAGdaqEvent* datDaq  = (TAGdaqEvent*) fpDatDaq->Object();
+   TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
+
    Int_t nFragments = datDaq->GetFragmentsN();
    UInt_t bcoTrig = 0;
    UInt_t evtNumber = 0;
@@ -78,6 +82,7 @@ Bool_t TAVTactNtuHit::Action()
       fDataLink  = evt->channelID - (dataVTX | 0x30);
       if (fEventSize == 0) return true;
       DecodeEvent();
+      pNtuRaw->SetValid(true);
    }
 
    
@@ -93,6 +98,9 @@ Bool_t TAVTactNtuHit::Action()
    if (!evtInfo) return true;
 
    evtNumber = evtInfo->eventNumber;
+      
+   if (bcoTrig < fPrevBcoTrig)
+      first = false;
    
    if (!first) {
       fFirstBcoTrig = bcoTrig-trig->BCOofTrigger;
@@ -103,20 +111,30 @@ Bool_t TAVTactNtuHit::Action()
    if (ValidHistogram())
       fpHisBCOofTrigger->Fill(evtNumber, diff);
    
-   if (TMath::Abs(float(diff)) > fgTStolerance) {
+   if (TMath::Abs(float(diff)) > fgTStolerance && diff > 0) {
       Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);
-      if (diff > 0) // to avoid corrupted timestamp number
-         fQueueEvtsN++;
-      else
-          Warning("Action()", "BCOofTrigger difference negative value, do not resynchronize");
+      fQueueEvtsN++;
+      pNtuRaw->SetValid(false);
    }
    
+   if (diff < fgTSnegTolerance) {
+      Warning("Action()", "BCOofTrigger difference lower than %d (%d) for %d time(s), resynchronizing", fgTSnegTolerance, diff, fQueueEvtsN+1);
+      fQueueEvtsN++;
+      first = false;
+      pNtuRaw->SetValid(false);
+   }
+   
+   if (diff < -1)
+      Warning("Action()", "BCOofTrigger negative difference (%d)", diff);
+
    if (fQueueEvtsN > 0) {
       if (fQueueEvtsN - fQueueEvt.size() == 0)
          fQueueEvt.pop();
       evtp = new DECardEvent(*evt0);
       fQueueEvt.push(evtp);
    }
+      
+   fPrevBcoTrig = bcoTrig;
    
    return kTRUE;
 }

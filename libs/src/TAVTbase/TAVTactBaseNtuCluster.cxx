@@ -257,8 +257,7 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
          if (cluster->GetPixelsN() > 0) {
             fpHisPixelTot->Fill(cluster->GetPixelsN());
             fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
-            // printf("sensor %d %d\n", iSensor, cluster->GetPixelsN());
-            fpHisClusMap[iSensor]->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
+            fpHisClusMap[iSensor]->Fill(cluster->GetPositionG()[0], cluster->GetPositionG()[1]);
          }
       }
       cluster->SetValid(true);

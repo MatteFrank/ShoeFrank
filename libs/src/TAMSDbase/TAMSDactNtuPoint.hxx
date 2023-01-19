@@ -7,6 +7,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TAGaction.hxx"
+#include "TAMSDparameters.hxx"
 
 class TAMSDntuCluster;
 class TAMSDhit;
@@ -38,9 +39,9 @@ private:
    TAGdataDsc*     fpNtuPoint;	 	    ///< output data dsc
    TAGparaDsc*     fpGeoMap;		       ///< geometry para dsc
 
-   TH2F*           fpHisPointMap[8];    ///< cluster map per station
-   TH1F*           fpHisPointCharge[8]; ///< cluster charge per station
-   TH1F*           fpHisPointChargeTot; ///< Total cluster charge for all stations
+   TH2F*           fpHisPointMap[MaxRpPlane];    ///< cluster map per station
+   TH1F*           fpHisPointCharge[MaxRpPlane]; ///< cluster charge per station
+   TH1F*           fpHisPointChargeTot;          ///< Total cluster charge for all stations
 
    ClassDef(TAMSDactNtuPoint,0)
 };

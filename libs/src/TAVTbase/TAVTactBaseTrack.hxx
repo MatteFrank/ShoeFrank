@@ -11,6 +11,7 @@
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
+#include "TAVTparameters.hxx"
 
 
 class TAGgeoTrafo;
@@ -106,11 +107,11 @@ protected:
    TGraphErrors*   fGraphU;             ///< pointer to graph for fit in U
    TGraphErrors*   fGraphV;             ///< pointer to graph for fit in V
       
-   TH1F*           fpHisResX[36];       ///< Residual in X histogram
-   TH1F*           fpHisResY[36];       ///< Residual in Y histogram
+   TH1F*           fpHisResX[MaxTrkSens];  ///< Residual in X histogram
+   TH1F*           fpHisResY[MaxTrkSens];  ///< Residual in Y histogram
    TH1F*           fpHisResTotX;        ///< Total Residual in X histogram
    TH1F*           fpHisResTotY;        ///< Total Residual in Y histogram
-   TH2F*           fpHisTrackMap[36];   ///< track map per sensor histogram
+   TH2F*           fpHisTrackMap[MaxTrkSens];  ///< track map per sensor histogram
    TH1F*           fpHisMeanCharge;     ///< Mwean Charge per tracked cluster histogram
    TH1F*           fpHisMeanPixel;      ///< Mean number of pixels per tracked cluster histogram
    TH2F*           fpHisBeamProf;       ///< VTX Beam profile extrapolated to target histogram

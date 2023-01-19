@@ -10,12 +10,16 @@
 
 #include "TAGgeoTrafo.hxx"
 #include "TACAparGeo.hxx"
-#include "TACAparGeo.hxx"
+#include "TACAparCal.hxx"
 #include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TACAactNtuCluster.hxx"
 
 #include "TATWntuPoint.hxx"
+
+
+Float_t TACAactNtuCluster::fgChargeThreshold = 1;
+Bool_t  TACAactNtuCluster::fgThresholdFlag   = true;
 
 /*!
  \class TACAactNtuCluster
@@ -34,11 +38,12 @@ ClassImp(TACAactNtuCluster);
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pTwPoint TW point input container descriptor
-TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGdataDsc* pTwPoint)
+TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap,  TAGparaDsc*  pCalib, TAGparaDsc* pConfig, TAGdataDsc* pTwPoint)
  : TAGactNtuCluster2D(name, "TACAactNtuCluster - NTuplize cluster"),
    fpNtuRaw(pNtuRaw),
    fpNtuClus(pNtuClus),
    fpConfig(pConfig),
+   fpParCal(pCalib),
    fpGeoMap(pGeoMap),
    fpNtuTwPoint(pTwPoint),
    fClustersN(0)
@@ -46,10 +51,13 @@ TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGd
    AddDataIn(pNtuRaw,   "TACAntuHit");
    AddDataOut(pNtuClus, "TACAntuCluster");
    AddPara(pGeoMap,     "TACAparGeo");
+   if (pCalib)
+      AddPara(pCalib,     "TACAparCal");
    //AddPara(pConfig, "TACAparConf");
 
-   fDimY = 18;
-   fDimX = 18;
+   TACAparGeo* parGeo  = (TACAparGeo*) fpGeoMap->Object();
+   fDimY = parGeo->GetMaxNumLines();
+   fDimX = parGeo->GetMaxNumColumns();
    SetupMaps(fDimY*fDimX);
    
    fpNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
@@ -69,7 +77,7 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisHitTot = new TH1F("caClusHitsTot", "Calorimeter - Total # hits per cluster", 25, 0., 25);
    AddHistogram(fpHisHitTot);
 
-   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 1000, 0., 4000);
+   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 400, 0., 200);
    AddHistogram(fpHisChargeTot);
 
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
@@ -147,7 +155,7 @@ void TACAactNtuCluster::FillMaps()
 //! \param[in] IndX index in X
 //! \param[in] IndY index in Y
 //! \param[in] seedCharge charge of previous seed
-Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, double seedCharge)
+Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY)
 {
    Int_t idx = IndY*fDimX+IndX;
    if ( fPixelMap.count(idx) == 0 ) return false; // empty place
@@ -158,7 +166,7 @@ Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, do
    TACAhit* hit = (TACAhit*)pixel;
    double charge = hit->GetCharge();
 
-   if( charge > seedCharge ) return false;
+   if( charge < fgChargeThreshold && fgThresholdFlag) return false;
 
    fFlagMap[idx] = numClus;
    pixel->SetFound(true);
@@ -166,12 +174,12 @@ Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, do
    
    for(Int_t i = -1; i <= 1 ; ++i)
       if (CheckLine(IndX+i)) {
-         ShapeCluster(numClus, IndX+i, IndY, charge);
+         ShapeCluster(numClus, IndX+i, IndY);
       }
    
    for(Int_t j = -1; j <= 1 ; ++j)
       if (CheckCol(IndY+j)) {
-         ShapeCluster(numClus, IndX, IndY+j, charge);
+         ShapeCluster(numClus, IndX, IndY+j);
       }
    
    return true;
@@ -182,51 +190,28 @@ Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, do
 void TACAactNtuCluster::SearchCluster()
 {
    fClustersN = 0;
-
+   
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-
-   int nCry = pGeoMap->GetCrystalsN();
-
+   TACAntuHit* pNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
+   
    // Search for cluster
-   int loopCounter = 0;
-   while (true) {
-      double maxCharge = 0;
-      int indexSeed = -1;
-      for (Int_t i = 0; i < fpNtuHit->GetHitsN(); ++i) { // loop over hit crystals
-         TACAhit* hit = fpNtuHit->GetHit(i);
-         if (!hit->IsValid()) continue;
-         if (hit->Found()) continue;
-         double charge = hit->GetCharge();
-         if (charge > maxCharge) {
-            maxCharge = charge;
-            indexSeed = i;
-         }
-      }
-
-      if (indexSeed == -1) break; // maximum not found, not more clusters
-
-      TACAhit* hit = fpNtuHit->GetHit(indexSeed);
-
+   for (Int_t i = 0; i < pNtuHit->GetHitsN(); ++i) { // loop over hit crystals
+      TACAhit* hit = pNtuHit->GetHit(i);
+      
+      if (hit->Found()) continue;
+      if (!hit->IsValid()) continue;
+            
       Int_t id   = hit->GetCrystalId();
       Int_t line = pGeoMap->GetCrystalLine(id);
       Int_t col  = pGeoMap->GetCrystalCol(id);
       if (!CheckLine(line)) continue;
       if (!CheckCol(col)) continue;
-
-      // Find cluster by region growing
-      if ( ShapeCluster(fClustersN, col, line, hit->GetCharge() + 0.1) ) // +0.1 to meet condition on the seed
-         fClustersN++;   
-      else 
-         break;   
-
-      if ( ++loopCounter > nCry ) { // this should not happen (we can not have more clusters than crystals)
-         Error("TACAactNtuCluster::SearchCluster", 
-               "We got infinite loop!! Getting out.. num. cluster: %d, Event: %d",
-               fClustersN, gTAGroot->CurrentEventId().EventNumber());
-         break;
-      }
+      
+      // loop over lines & columns
+      if ( ShapeCluster(fClustersN, line, col) )
+         fClustersN++;
    }
-
+   
    if(FootDebugLevel(2))
      cout << "CA - Found : " << fClustersN << " clusters on event: " << gTAGroot->CurrentEventId().EventNumber() << endl;
 
@@ -376,11 +361,14 @@ void TACAactNtuCluster::ComputePosition(TACAcluster* cluster)
 //! \param[in] cluster a given cluster
 void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
 {
-   ComputePosition(cluster);
-
    if (ApplyCuts(cluster)) {
-      if (fpNtuTwPoint)
+      if (fpNtuTwPoint) {
          ComputeMinDist(cluster);
+         if (fpParCal)
+            CalibrateEnergy(cluster);
+      }
+
+      ComputePosition(cluster);
 
       // histograms
       if (ValidHistogram()) {
@@ -411,6 +399,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
    TVector3 posG = cluster->GetPositionG();
    Float_t min   = width;
    Int_t imin    = -1;
+   fTwPointZ     = -1;
    TVector3 resMin;
 
    TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
@@ -439,6 +428,7 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
       resMin[1]  += gRandom->Uniform(-1, 1);
       TATWpoint *point = pNtuPoint->GetPoint(imin);
       point->SetMatchCalIdx(cluster->GetClusterIdx());
+      fTwPointZ = point->GetChargeZ();
 
       if (ValidHistogram()) {
          fpHisResTwMag->Fill(resMin.Mag());
@@ -448,5 +438,82 @@ void TACAactNtuCluster::ComputeMinDist(TACAcluster* cluster)
    } else
       if (ValidHistogram())
          fpHisHitTwMatch->Fill(0);
+}
 
+///_____________________________________________________________________________
+//! Compute minimum distance to a cluster
+//!
+//! \param[in] cluster a given cluster
+void TACAactNtuCluster::CalibrateEnergy(TACAcluster* cluster)
+{
+   Int_t nhits = cluster->GetHitsN();
+   
+   for (Int_t i = 0; i < nhits; ++i) {
+      TACAhit* hit = cluster->GetHit(i);
+      Int_t crysId = hit->GetCrystalId();
+      Float_t charge = hit->GetCharge();
+      Double_t energy = 0;
+      if (fTwPointZ != -1)
+         energy = GetEnergy(charge, fTwPointZ);
+      else
+         energy = charge;
+      
+      hit->SetCharge(energy);
+   }
+}
+
+//------------------------------------------+-----------------------------------
+//! Get curve for fragments of different Z obtained as a ratio between the parameter curve for protons and the parameter curve for other He, C, O
+//!
+//! \param[in] p0 of exponential slope
+//! \param[in] p1 of exponential slope
+//! \param[in] p2 of exponential slope
+//! \param[in] z particle charge (atomic number)
+Double_t TACAactNtuCluster::GetZCurve(Double_t p0, Double_t  p1, Double_t p2, Int_t z)
+{
+   
+   return p0 + p1*exp(-(z/p2));
+   
+   
+   //calibration AValetti's analysis 22.12.22
+   //return energy from ADC
+}
+
+//------------------------------------------+-----------------------------------
+//! Get calibrated energy
+//!
+//! \param[in] rawenergy raw energy
+//! \param[in] crysId crystal id
+//! \param[in] z particle charge (atomic number)
+Double_t TACAactNtuCluster::GetEnergy(Double_t rawenergy, Int_t z)
+{
+   TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
+   
+   Double_t p0 = p_parcal->GetADC2EnergyParam(0);
+   Double_t p1 = p_parcal->GetADC2EnergyParam(1);
+   Double_t p2 = p_parcal->GetADC2EnergyParam(2);
+   
+   Double_t p3 = p_parcal->GetADC2EnergyParam(3);
+   Double_t p4 = p_parcal->GetADC2EnergyParam(4);
+   Double_t p5 = p_parcal->GetADC2EnergyParam(5);
+   
+   Double_t p6 = p_parcal->GetADC2EnergyParam(6);
+   Double_t p7 = p_parcal->GetADC2EnergyParam(7);
+   Double_t p8 = p_parcal->GetADC2EnergyParam(8);
+   
+   Double_t p9 = p_parcal->GetADC2EnergyParam(9);
+   Double_t p10 = p_parcal->GetADC2EnergyParam(10);
+   Double_t p11 = p_parcal->GetADC2EnergyParam(11);
+   
+   p0 = p0*GetZCurve(p3,p4,p5,z);
+   p1 = p1*GetZCurve(p6,p7,p8,z);
+   p2 = p2*GetZCurve(p9,p10,p11,z);
+   
+   Double_t ac = p0-p2*rawenergy;
+   
+   return (p1 * rawenergy + sqrt( p1 * p1 * rawenergy * rawenergy + 4 * ac ))/(2 * ac);
+   
+   
+   //calibration AValetti's analysis 22.12.22
+   //return energy from ADC
 }

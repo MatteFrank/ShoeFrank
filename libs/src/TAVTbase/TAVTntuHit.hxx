@@ -18,6 +18,8 @@ protected:
    TObjArray*        fListOfPixels;    ///< list of pixels
    //! geometry parameter
    TAVTparGeo*       fpGeoMap;         //! do not store
+   //! Valididty flag
+   Bool_t            fValid;           /// validity flag
    
     std::map<pair<int, int>, int > fMap; //! pixel map
     
@@ -27,6 +29,12 @@ private:
 public:
    TAVTntuHit();
    virtual          ~TAVTntuHit();
+   
+   //! Check validity
+   Bool_t            IsValid() const    { return fValid; }
+   
+   //! Set validity
+   void              SetValid(Bool_t v) { fValid = v;    }
    
    // Get hit for a given sensor
    TAVThit*          GetPixel(Int_t iSensor, Int_t iPixel);
@@ -55,7 +63,7 @@ public:
    //! Get branch
    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
-   ClassDef(TAVTntuHit,1)
+   ClassDef(TAVTntuHit,2)
 };
 
 #endif

@@ -56,7 +56,7 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   Th_meas = -999.; //from TWpoint
   Th_reco = -999.; //from global tracking
   Th_recoBM = -999.; //from global tracking wrt BM direction
-
+  Phi_reco = -999.;
 
 }
 
@@ -67,6 +67,7 @@ GlobalRecoAna::~GlobalRecoAna()
 void GlobalRecoAna::LoopEvent() {  
   Int_t currEvent=0;    
   int count_event = 0;
+  novtmatch =0;
   
 
 //*********************************************************************************** begin loop on every event **********************************************
@@ -75,7 +76,7 @@ void GlobalRecoAna::LoopEvent() {
     DiffApp_trkIdx = false;
     
     if (currEvent % 100 == 0) cout <<"current Event: " <<currEvent /*<< "fixed current event:" <<count_event */<<endl;
-    
+    ClustersPositionStudy(currEvent);
     //initialization of several objects needed for the analysis
     TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
     resetStatus();
@@ -89,13 +90,53 @@ void GlobalRecoAna::LoopEvent() {
     }
     
     Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
+
+
+
+    //..... study of bm tracks: to be moved
+    if (fFlagMC ==false && myBMNtuTrk->GetTrack(0)!=0 ){
+    TVector3 BMslope = myBMNtuTrk->GetTrack(0)->GetSlope();
+
+     //projection of a BM tracklet on Target
+                  
+    Float_t posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0,0,0)).Z();
+    //posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
+    TVector3 A3 = myBMNtuTrk->GetTrack(0)->Intersection(posZtg);
+    TVector3 A4 = fpFootGeo->FromBMLocalToGlobal(A3);
+    Float_t BMX = A4.X();
+    Float_t BMY = A4.Y(); //questi sono in coordinate globali
+
+
+    //BMslope  = fpFootGeo->VecFromBMLocalToGlobal(BMslope);
+    if (nt == 0) {
+    ((TH2D*)gDirectory->Get("BMTrackXvsEvent_ifnoglbtrack"))->Fill(currEvent,BMX);  //Checksss
+    ((TH2D*)gDirectory->Get("BMTrackYvsEvent_ifnoglbtrack"))->Fill(currEvent,BMY);
+    ((TH2D*)gDirectory->Get("BMTrackXY_ifnoglbtrack"))->Fill(BMX,BMY);
+
+
+
+    } else {
+      ((TH2D*)gDirectory->Get("BMTrackXvsEvent_ifglbtrack"))->Fill(currEvent,BMX);  
+    ((TH2D*)gDirectory->Get("BMTrackYvsEvent_ifglbtrack"))->Fill(currEvent,BMY);
+    ((TH2D*)gDirectory->Get("BMTrackXY_ifglbtrack"))->Fill(BMX,BMY);
+
+
+    }
+    //..... end study of bm tracks: to be moved
+
+    AlignmentStudy(currEvent, nt, 0);
+
+    }
+
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
     if (nt != 0) ++count_event;
+    if (nt >1) cout << "event " << currEvent << " (reco even: " << count_event << ") with more than 1 track" <<endl;
     //fFlagMC = true;     //N.B.: for MC FAKE REAL
     
     TAGWDtrigInfo* wdTrig = 0x0;
     if (fFlagMC ==false){
     wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
+    FragTriggerStudies(); 
     }
 
     if (fFlagMC ==false && nt >0){
@@ -204,23 +245,35 @@ void GlobalRecoAna::LoopEvent() {
       Th_reco = fGlbTrack-> GetTgtTheta() *TMath::RadToDeg();
       //cout << "TH_RECO: " << Th_reco << endl;
 
+      //get theta_reco wrt to the beam direction, not to the global conventional z
       if (myBMNtuTrk->GetTracksN() > 0) {
-      //get theta_reco wrt to the beam direction, not the global conventional z
-      //take the vector direction of the fragment in global SdR
+        //cout << "bm tracks anal :"<< myBMNtuTrk->GetTracksN() << endl;
+     //take the vector direction of the fragment in global SdR wrt target       
       TVector3 TgtMomentum = fGlbTrack->GetTgtMomentum().Unit();
+      Double_t glbTrackXpos = fGlbTrack->GetTgtPosition().X();
+      Double_t glbTrackYpos = fGlbTrack->GetTgtPosition().Y();
+
+      if(fFlagMC == false ) {
+      ((TH2D*)gDirectory->Get("GlbTrackXvsEvent"))->Fill(currEvent,glbTrackXpos);
+      ((TH2D*)gDirectory->Get("GlbTrackYvsEvent"))->Fill(currEvent,glbTrackYpos);
+      ((TH2D*)gDirectory->Get("GlbTrackXY"))->Fill(glbTrackXpos,glbTrackYpos);
+      
+
+      }
+
       // take the direction of the beam in global SdR
       TVector3 BMslope = myBMNtuTrk->GetTrack(0)->GetSlope();
       BMslope  = fpFootGeo->VecFromBMLocalToGlobal(BMslope);
-      //BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope);
       //take the angle between these 2 vectors
       Th_recoBM = BMslope.Angle( TgtMomentum )*TMath::RadToDeg();
+      //cout << "Th_recoBM " << Th_recoBM<<endl;
       
-      cout << "momX: " << TgtMomentum.X() << " momY: " << TgtMomentum.Y() << " momZ: " << TgtMomentum.Z() << endl;
-      cout << "BMX: " << BMslope.X() << " BMY: " << BMslope.Y() << " BMZ: " << BMslope.Z() << endl;
-      cout << "TH_mom: " << TgtMomentum.Theta() *TMath::RadToDeg()  <<  " thBM: "<< BMslope.Theta() *TMath::RadToDeg() << " th_recoBM: "<<Th_recoBM <<endl;
-      cout << endl;
+      
+      //cout << "momX: " << TgtMomentum.X() << " momY: " << TgtMomentum.Y() << " momZ: " << TgtMomentum.Z() << endl << "BMX: " << BMslope.X() << " BMY: " << BMslope.Y() << " BMZ: " << BMslope.Z() << endl << "TH_mom: " << TgtMomentum.Theta() *TMath::RadToDeg()  <<  " thBM: "<< BMslope.Theta() *TMath::RadToDeg() << " th_recoBM: "<<Th_recoBM <<endl << endl;
       }
-
+      Float_t Th_recoBM2 =  fGlbTrack->GetTgtThetaBm() *TMath::RadToDeg();
+      //cout << "Th_recoBM2 " << Th_recoBM2<<endl;
+      Phi_reco = fGlbTrack->GetTgtPhiBm()*TMath::RadToDeg();
       
 
 
@@ -314,8 +367,10 @@ void GlobalRecoAna::LoopEvent() {
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + ALLTW FIX : i don't want not fragmented primary
       if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {
-        if (Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+        if (Z_true >0. && Z_true < primary_cha && TriggerCheckMC() == true){
           FillYieldReco("yield-trkTWfixMC",Z_true,Z_meas,Th_true );
+          ((TH1D*)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
+        }
       }
 
 
@@ -330,7 +385,7 @@ void GlobalRecoAna::LoopEvent() {
       //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAGWDtrigInfo )
       if (Z_meas >0. && Z_meas <= primary_cha && TriggerCheck() == true  
       ) {
-        FillYieldReco("yield-trkTrigger",Z_meas,0,Th_reco );
+        FillYieldReco("yield-trkTrigger",Z_meas,0,Th_recoBM );
       }
 
       }
@@ -338,10 +393,15 @@ void GlobalRecoAna::LoopEvent() {
       if (fFlagMC == false){
       //-------------------------------------------------------------
       //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
-      if ( Z_meas >0. && Z_meas <= primary_cha && wdTrig -> GetTriggersStatus()[1] == 1     //fragmentation hardware trigger ON
+      if ( Z_meas >0. && Z_meas < primary_cha && wdTrig -> GetTriggersStatus()[1] == 1     //fragmentation hardware trigger ON
       //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
-      )
-        FillYieldReco("yield-trkREAL",Z_meas,0,Th_reco );
+      ) {
+        //cout << "inside " <<endl;
+        FillYieldReco("yield-trkREAL",Z_meas,0,Th_recoBM );
+        //cout << "thBM: "<< Th_recoBM <<endl;
+        ((TH1D*)gDirectory->Get("ThReco_frag"))->Fill(Th_recoBM);
+        ((TH1D*)gDirectory->Get("Charge_trk_frag"))->Fill(Z_meas);
+      }
       } 
       
       ((TH1D*)gDirectory->Get("Energy"))->Fill(Ek_meas*fpFootGeo->GevToMev());
@@ -350,7 +410,8 @@ void GlobalRecoAna::LoopEvent() {
       ((TH2D*)gDirectory->Get("Z_track_Mixing_matrix"))->Fill(Z_meas,Z_true);
       ((TH1D*)gDirectory->Get("Mass"))->Fill(M_meas);
       ((TH1D*)gDirectory->Get("Mass_True"))->Fill(M_true);
-      ((TH1D*)gDirectory->Get("ThReco"))->Fill(Th_reco);
+      ((TH1D*)gDirectory->Get("ThReco"))->Fill(Th_recoBM);
+      ((TH1D*)gDirectory->Get("PhiReco"))->Fill(Phi_reco);
       ((TH1D*)gDirectory->Get("ThTrue"))->Fill(Th_true);
       ((TH1D*)gDirectory->Get("Tof_tw"))->Fill(Tof_tw);
       ((TH1D*)gDirectory->Get("Beta"))->Fill(beta);
@@ -510,6 +571,7 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("ntrk","",10, 0 ,10.);
   h = new TH1D("Energy","",100, 0 ,800.);
   h = new TH1D("Charge_trk","",10, 0 ,10.);
+  h = new TH1D("Charge_trk_frag","",10, 0 ,10.);
   h = new TH1D("Charge_trk_True","",10, 0 ,10.);
   h2 = new TH2D("Z_track_Mixing_matrix", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
   h2 = new TH2D("Z_tw_Mixing_matrix", "Mixing_matrix",8,0.5,8.5,8,0.5,8.5);
@@ -529,6 +591,9 @@ void GlobalRecoAna:: Booking(){
   h = new TH1D("Mass_True","Mass_True [amu]",200, 0 ,20.);
   h = new TH1D("ThReco","",200, 0 ,50.);
   h = new TH1D("ThReco_frag","",200, 0 ,50.);
+  h = new TH1D("ThReco_fragMC","",200, 0 ,50.);
+  h = new TH1D("PhiReco","",360, -180 ,180.);
+  
   //h = new TH1D("ThReco","",200, 0 ,50.);
   h = new TH1D("theta_VTX_frag","",100, 0 ,50.);
   h = new TH1D("theta_VTX","",100, 0 ,50.);
@@ -547,6 +612,31 @@ void GlobalRecoAna:: Booking(){
   h2  = new TH2D("vt_twProjection","",20, -10 ,10., 20, -10 ,10.);
   h2  = new TH2D("TWpointsDistribution_frag","",40, -20. ,20., 40, -20 ,20.);
   h2  = new TH2D("TWpointsDistribution","",40, -20. ,20., 40, -20 ,20.);
+
+  if (fFlagMC == false) {
+  h2  = new TH2D("GlbTrackXvsEvent","track X position vs events ; event; X position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("GlbTrackYvsEvent","track Y position vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("GlbTrackXY","track X position vs Y position ; X position [cm]; Y position [cm]",100, -3. ,3., 100, -3. ,3.);
+
+  h2  = new TH2D("BMTrackXvsEvent_ifglbtrack","BM track X position vs events ; event; X position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("BMTrackYvsEvent_ifglbtrack","BM track Y position vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("BMTrackXY_ifglbtrack","BM track X position vs Y position ; X position [cm]; Y position [cm]",100, -3. ,3., 100, -3. ,3.);
+
+  h2  = new TH2D("BMTrackXvsEvent_ifnoglbtrack","BM track X position vs events ; event; X position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("BMTrackYvsEvent_ifnoglbtrack","BM track Y position vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("BMTrackXY_ifnoglbtrack","BM track X position vs Y position ; X position [cm]; Y position [cm]",100, -3. ,3., 100, -3. ,3.);
+  
+  h2  = new TH2D("VTXTrackXvsEvent_ifglbtrack","VT track X position vs events ; event; X position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("VTXTrackYvsEvent_ifglbtrack","VT track Y position vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("VTXTrackXY_ifglbtrack","VT track X position vs Y position ; X position [cm]; Y position [cm]",100, -3. ,3., 100, -3. ,3.);
+
+  h2  = new TH2D("VTXTrackXvsEvent_ifnoglbtrack","VT track X position vs events ; event; X position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("VTXTrackYvsEvent_ifnoglbtrack","VT track Y position vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -3. ,3.);
+  h2  = new TH2D("VTXTrackXY_ifnoglbtrack","VT track X position vs Y position ; X position [cm]; Y position [cm]",100, -3. ,3., 100, -3. ,3.);
+  
+  
+  
+  }
   
   if (fFlagMC == true) {
   gDirectory->mkdir("TrkVsMC");
@@ -671,6 +761,23 @@ BookYield ("yield-true_DET");
 // Cross section recostruction histos from REAL DATA
 BookYield ("yield-trkREAL");
 }
+  
+
+
+
+  if(fFlagMC == false ){
+    gDirectory->mkdir("fragTriggerStudies");
+    gDirectory->cd("fragTriggerStudies");
+    h = new TH1D("chargeMB","chargeMB",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag","chargeMBFrag",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag_efficiency","chargeMBFrag",8, 0.5 ,8.5);
+    h = new TH1D("chargeMBFrag_RejectPower","",1, 0. ,1.);
+    gDirectory->cd("..");
+  }
+
+
+
+
 
   if(fFlagMC){
     gDirectory->mkdir("MC_check");
@@ -717,6 +824,8 @@ BookYield ("yield-trkREAL");
     h2= new TH2D("Mixing_matrix_cut", "Mixing_matrix_cut",8,0.5,8.5,8,0.5,8.5);
     gDirectory->cd("..");
 
+
+    
     gDirectory->mkdir("MC");
     gDirectory->cd("MC");
     h2 = new TH2D("ChargePoi_vs_ChargeVT","",11, -1. ,10.,11, -1. ,10.);
@@ -849,6 +958,275 @@ BookYield ("yield-trkREAL");
   h = new TH1D("Mass","Fitted Mass - Measured Mass [MeV]",600, -100., 100.);
   gDirectory->cd("..");
 
+
+  gDirectory->mkdir("clusPosition");
+  gDirectory->cd("clusPosition");
+  gDirectory->mkdir("BM");
+  gDirectory->cd("BM");
+
+  
+  h = new TH1D("bm_n_tracks","Number of BM tracks per event; Number of bm tracks; Events",21,-0.5,20.5);
+  
+  
+  gDirectory->mkdir("all-events");
+  gDirectory->cd("all-events");
+  h2 = new TH2D("bm_target_bmsys","BM tracks on target  projections in BM sys ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("bm_target_glbsys","BM tracks on target projections in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  //h2 = new TH2D("bm_target_bmsys_2","BM tracks on target projections in BM sys (other method);X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  //h2 = new TH2D("bm_target_glbsys_2","BM tracks on target projections in GLB sys (other method);X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h = new TH1D("bm_target_Xpos_glbsys","BM tracks X pos on target projections in GLB sys (other method);X[cm]",600,-3.,3.);
+  h = new TH1D("bm_target_Ypos_glbsys","BM tracks Y pos on target projections in GLB sys (other method);Y[cm]",600,-3.,3.);
+  h = new TH1D("bm_target_bmsys_theta","theta of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_glbsys_theta","theta of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_bmsys_phi","phi of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_glbsys_phi","phi of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
+  gDirectory->mkdir("spill");
+  gDirectory->cd("spill");
+  h2  = new TH2D("bm_posX_vsEvent","bm track X position in target vs events ; event; X position [cm]",65000, 0 ,64999., 100, -2. ,2.);
+  h2  = new TH2D("bm_posY_vsEvent","bm track Y position in target vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -2. ,2.);
+  gDirectory->cd("..");
+  gDirectory->cd("..");
+
+  gDirectory->mkdir("reco-events");
+  gDirectory->cd("reco-events");
+  h2 = new TH2D("bm_target_bmsys","BM tracks on target  projections in BM sys ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("bm_target_glbsys","BM tracks on target projections in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  //h2 = new TH2D("bm_target_bmsys_2","BM tracks on target projections in BM sys (other method);X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  //h2 = new TH2D("bm_target_glbsys_2","BM tracks on target projections in GLB sys (other method);X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h = new TH1D("bm_target_Xpos_glbsys","BM tracks X pos on target projections in GLB sys (other method);X[cm]",600,-3.,3.);
+  h = new TH1D("bm_target_Ypos_glbsys","BM tracks Y pos on target projections in GLB sys (other method);Y[cm]",600,-3.,3.);
+  h = new TH1D("bm_target_bmsys_theta","theta of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_glbsys_theta","theta of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_bmsys_phi","phi of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_glbsys_phi","phi of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
+  gDirectory->mkdir("spill");
+  gDirectory->cd("spill");
+  h2  = new TH2D("bm_posX_vsEvent","bm track X position in target vs events ; event; X position [cm]",65000, 0 ,64999., 100, -2. ,2.);
+  h2  = new TH2D("bm_posY_vsEvent","bm track Y position in target vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -2. ,2.);
+  gDirectory->cd("..");
+  gDirectory->cd("..");
+
+  gDirectory->mkdir("no-reco-events");
+  gDirectory->cd("no-reco-events");
+  h2 = new TH2D("bm_target_bmsys","BM tracks on target  projections in BM sys ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("bm_target_glbsys","BM tracks on target projections in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  //h2 = new TH2D("bm_target_bmsys_2","BM tracks on target projections in BM sys (other method);X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  //h2 = new TH2D("bm_target_glbsys_2","BM tracks on target projections in GLB sys (other method);X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h = new TH1D("bm_target_Xpos_glbsys","BM tracks X pos on target projections in GLB sys (other method);X[cm]",600,-3.,3.);
+  h = new TH1D("bm_target_Ypos_glbsys","BM tracks Y pos on target projections in GLB sys (other method);Y[cm]",600,-3.,3.);
+  h = new TH1D("bm_target_bmsys_theta","theta of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_glbsys_theta","theta of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_bmsys_phi","phi of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
+  h = new TH1D("bm_target_glbsys_phi","phi of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
+  gDirectory->mkdir("spill");
+  gDirectory->cd("spill");
+  h2  = new TH2D("bm_posX_vsEvent","bm track X position in target vs events ; event; X position [cm]",65000, 0 ,64999., 100, -2. ,2.);
+  h2  = new TH2D("bm_posY_vsEvent","bm track Y position in target vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -2. ,2.);
+  gDirectory->cd("..");
+  gDirectory->cd("..");
+
+  gDirectory->cd("..");
+
+
+  gDirectory->mkdir("VT");
+  gDirectory->cd("VT");
+  gDirectory->mkdir("vtxpoints");
+  gDirectory->cd("vtxpoints");
+  h = new TH1D("vtx_num","Number of evtx per event; Number of evtx; Events",21,-0.5,20.5);
+  h2 = new TH2D("vtx_vtx_profile_vtxsys","VTX profile on target in VTX system;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("vtx_vtx_profile_glbsys","VTX profile on target in global system ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h = new TH1D("vtx_vtx_trknum","Number of vtx tracks associated per vertex;Number of tracks;Events",11,-0.5,10.5);
+  h = new TH1D("vtx_vtx_BMmatched","Is matched with the BM flag;0=not matched 1=matched;Events",2,-0.5,1.5);
+  h = new TH1D("ev_no_vtxmatched", "n of events with any vertx matched with BM",1,-0.5,1.5);
+  gDirectory->cd("..");
+
+  gDirectory->mkdir("vtxmatched");
+  gDirectory->cd("vtxmatched");
+  gDirectory->mkdir("all_events");
+  gDirectory->cd("all_events");
+
+  h = new TH1D("vtx_n_cluster","n of clusters in every track; n of cluster; counts",10, 0 ,10.);
+  h = new TH1D("vtx_trk_num","Number of vtx tracks for the BM matched vertex per event;Number of vtx tracks;Events",21,-0.5,20.5);
+  h2 = new TH2D("clust0_position_vtxsys","vtx cluster0 position in vtx sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("clust0_position_glbsys","vtx cluster0 position in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("vtx_tw_proj_glbsys","vtx tracks on tw  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tw_proj_Xpos_proj_glbsys","vtx tracks on X tw  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tw_proj_Ypos_proj_glbsys","vtx tracks on Y tw  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h2 = new TH2D("vtx_tw_proj_twsys","vtx tracks on tw  projections in tw sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_theta_glbsys","theta of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_glbsys","phi of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_theta_vtxsys","theta of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_vtxsys","phi of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h2 = new TH2D("vtx_tg_proj_glbsys","vtx tracks on target  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tg_proj_Xpos_proj_glbsys","vtx tracks on X target  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tg_proj_Ypos_proj_glbsys","vtx tracks on Y target  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h2 = new TH2D("vtx_theta_vs_globtrack_theta","theta of vtx tracklet vs theta of global track; vtx angle [deg]; glb track angle [deg]",100, 0 ,10.,100, 0 ,10.);
+  h2 = new TH2D("n_tracklets_vs_n_globaltracks","n of tracklets of vtx vs n of global reco tracks per event; vtx tracklets ; glb tracks [deg]",10, -0.5 ,9.5,10, -0.5 ,9.5);
+
+
+
+  gDirectory->mkdir("gltrackcandidate");
+  gDirectory->cd("gltrackcandidate");
+  h2 = new TH2D("vtx_tw_proj_glbsys_gltrackcandidate","vtx tracks on tw  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tw_proj_Xpos_glbsys_gltrackcandidate","vtx tracks on X tw  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tw_proj_Ypos_glbsys_gltrackcandidate","vtx tracks on Y tw  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h = new TH1D("vtx_theta_glbsys_gltrackcandidate","theta of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_glbsys_gltrackcandidate","phi of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_theta_vtxsys_gltrackcandidate","theta of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_vtxsys_gltrackcandidate","phi of tracks in vtx system; deg; counts",100, 0 ,50.);
+  gDirectory->cd("..");
+
+  gDirectory->mkdir("spill");
+  gDirectory->cd("spill");
+  h2  = new TH2D("vtx_posX_vsEvent","vtx track X position in target vs events ; event; X position [cm]",65000, 0 ,64999., 100, -2. ,2.);
+  h2  = new TH2D("vtx_posY_vsEvent","vtx track Y position in target vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -2. ,2.);
+  gDirectory->cd("..");
+  gDirectory->cd("..");
+
+
+  gDirectory->mkdir("reco-events");
+  gDirectory->cd("reco-events");
+
+  h = new TH1D("vtx_n_cluster","n of clusters in every track; n of cluster; counts",10, 0 ,10.);
+  h = new TH1D("vtx_trk_num","Number of vtx tracks for the BM matched vertex per event;Number of vtx tracks;Events",21,-0.5,20.5);
+  h2 = new TH2D("clust0_position_vtxsys","vtx cluster0 position in vtx sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("clust0_position_glbsys","vtx cluster0 position in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("vtx_tw_proj_glbsys","vtx tracks on tw  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tw_proj_Xpos_proj_glbsys","vtx tracks on X tw  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tw_proj_Ypos_proj_glbsys","vtx tracks on Y tw  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h2 = new TH2D("vtx_tw_proj_twsys","vtx tracks on tw  projections in tw sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_theta_glbsys","theta of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_glbsys","phi of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_theta_vtxsys","theta of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_vtxsys","phi of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h2 = new TH2D("vtx_tg_proj_glbsys","vtx tracks on target  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tg_proj_Xpos_proj_glbsys","vtx tracks on X target  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tg_proj_Ypos_proj_glbsys","vtx tracks on Y target  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h2 = new TH2D("vtx_theta_vs_globtrack_theta","theta of vtx tracklet vs theta of global track; vtx angle [deg]; glb track angle [deg]",100, 0 ,10.,100, 0 ,10.);
+  h2 = new TH2D("n_tracklets_vs_n_globaltracks","n of tracklets of vtx vs n of global reco tracks per event; vtx tracklets ; glb tracks [deg]",10, -0.5 ,9.5,10, -0.5 ,9.5);
+
+
+
+  gDirectory->mkdir("gltrackcandidate");
+  gDirectory->cd("gltrackcandidate");
+  h2 = new TH2D("vtx_tw_proj_glbsys_gltrackcandidate","vtx tracks on tw  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tw_proj_Xpos_glbsys_gltrackcandidate","vtx tracks on X tw  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tw_proj_Ypos_glbsys_gltrackcandidate","vtx tracks on Y tw  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h = new TH1D("vtx_theta_glbsys_gltrackcandidate","theta of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_glbsys_gltrackcandidate","phi of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_theta_vtxsys_gltrackcandidate","theta of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_vtxsys_gltrackcandidate","phi of tracks in vtx system; deg; counts",100, 0 ,50.);
+  gDirectory->cd("..");
+  gDirectory->mkdir("spill");
+  gDirectory->cd("spill");
+  h2  = new TH2D("vtx_posX_vsEvent","vtx track X position in target vs events ; event; X position [cm]",65000, 0 ,64999., 100, -10. ,10.);
+  h2  = new TH2D("vtx_posY_vsEvent","vtx track Y position in target vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -10. ,10.);
+  h2  = new TH2D("BM_matched_posX_vsEvent","bm matched track X position in target vs events ; event; X position [cm]",65000, 0 ,64999., 100, -10. ,10.);
+  gDirectory->cd("..");
+  gDirectory->cd("..");
+
+
+  gDirectory->mkdir("no-reco-events");
+  gDirectory->cd("no-reco-events");
+
+  h = new TH1D("vtx_n_cluster","n of clusters in every track; n of cluster; counts",10, 0 ,10.);
+  h = new TH1D("vtx_trk_num","Number of vtx tracks for the BM matched vertex per event;Number of vtx tracks;Events",21,-0.5,20.5);
+  h2 = new TH2D("clust0_position_vtxsys","vtx cluster0 position in vtx sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("clust0_position_glbsys","vtx cluster0 position in glb sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("vtx_tw_proj_glbsys","vtx tracks on tw  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tw_proj_Xpos_proj_glbsys","vtx tracks on X tw  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tw_proj_Ypos_proj_glbsys","vtx tracks on Y tw  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h2 = new TH2D("vtx_tw_proj_twsys","vtx tracks on tw  projections in tw sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_theta_glbsys","theta of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_glbsys","phi of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_theta_vtxsys","theta of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_vtxsys","phi of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h2 = new TH2D("vtx_tg_proj_glbsys","vtx tracks on target  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tg_proj_Xpos_proj_glbsys","vtx tracks on X target  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tg_proj_Ypos_proj_glbsys","vtx tracks on Y target  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h2 = new TH2D("vtx_theta_vs_globtrack_theta","theta of vtx tracklet vs theta of global track; vtx angle [deg]; glb track angle [deg]",100, 0 ,10.,100, 0 ,10.);
+  h2 = new TH2D("n_tracklets_vs_n_globaltracks","n of tracklets of vtx vs n of global reco tracks per event; vtx tracklets ; glb tracks [deg]",10, -0.5 ,9.5,10, -0.5 ,9.5);
+
+
+
+  gDirectory->mkdir("gltrackcandidate");
+  gDirectory->cd("gltrackcandidate");
+  h2 = new TH2D("vtx_tw_proj_glbsys_gltrackcandidate","vtx tracks on tw  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_tw_proj_Xpos_glbsys_gltrackcandidate","vtx tracks on X tw  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_tw_proj_Ypos_glbsys_gltrackcandidate","vtx tracks on Y tw  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h = new TH1D("vtx_theta_glbsys_gltrackcandidate","theta of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_glbsys_gltrackcandidate","phi of tracks in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_theta_vtxsys_gltrackcandidate","theta of tracks in vtx system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_phi_vtxsys_gltrackcandidate","phi of tracks in vtx system; deg; counts",100, 0 ,50.);
+  gDirectory->cd("..");
+  gDirectory->mkdir("spill");
+  gDirectory->cd("spill");
+  h2  = new TH2D("vtx_posX_vsEvent","vtx track X position in target vs events ; event; X position [cm]",65000, 0 ,64999., 100, -10. ,10.);
+  h2  = new TH2D("vtx_posY_vsEvent","vtx track Y position in target vs events ; event; Y position [cm]",65000, 0 ,64999., 100, -10. ,10.);
+  h2  = new TH2D("BM_matched_posX_vsEvent","bm matched track X position in target vs events ; event; X position [cm]",65000, 0 ,64999., 100, -10. ,10.);
+  gDirectory->cd("..");
+  gDirectory->cd("..");
+
+
+
+
+
+
+  gDirectory->cd("..");
+  
+  h = new TH1D("vtx_target_vtsys_theta","theta of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_target_glbsys_theta","theta of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_target_glbsys_theta_gltrackcandidate","theta of tracks on target  projections in global system; deg; counts",100, 0 ,50.);  
+  h = new TH1D("vtx_target_vtsys_phi","phi of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
+  h = new TH1D("vtx_target_glbsys_phi","phi of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
+  h2 = new TH2D("vtx_target_vtsys","vtx tracks on target  projections in vt sys ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2 = new TH2D("vtx_tw_glbsys","vtx tracks on tw  projections in global sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_Xpos_tw_glbsys","vtx tracks on X tw  projections in global sys ;X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_Ypos_tw_glbsys","vtx tracks on Y tw  projections in global sys ;Y[cm]",100,-30.5,30.5);
+  h2 = new TH2D("vtx_tw_glbsys_gltrackcandidate","vtx tracks on tw  projections in global sys (vt track projection inside tw);X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  h = new TH1D("vtx_Xpos_tw_glbsys_gltrackcandidate","vtx tracks on X tw  projections in global sys (vt track projection inside tw);X[cm]",100,-30.5,30.5 );
+  h = new TH1D("vtx_Ypos_tw_glbsys_gltrackcandidate","vtx tracks on Y tw  projections in global sys (vt track projection inside tw);Y[cm]",100,-30.5,30.5);
+  
+  h2 = new TH2D("vtx_tw_twsys","vtx tracks on tw  projections in tw sys ;X[cm];Y[cm]",100,-30.5,30.5, 100,-30.5,30.5);
+  
+  h2 = new TH2D("vtx_target_glbsys","vtx tracks on target projections in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h = new TH1D("vtx_Ypos_target_glbsys","vtx tracks Ypos on target projections in GLB sys;Y[cm]",600,-3.,3.);
+  h = new TH1D("vtx_Xpos_target_glbsys","vtx tracks Xpos on target projections in GLB sys;X[cm]",600,-3.,3.);
+ 
+
+  h = new TH1D("vtx_n_cluster","n of clusters in every track; n of cluster; counts",10, 0 ,10.);
+  h = new TH1D("vtx_n_tracks","n of tracks in every event; n of tracks; counts",100, 0 ,100.);
+  h2 = new TH2D("vtx_theta_vs_globtrack_theta","theta of vtx tracklet vs theta of global track; vtx angle [deg]; glb track angle [deg]",100, 0 ,10.,100, 0 ,10.);
+  gDirectory->cd("..");
+
+  gDirectory->mkdir("TW");
+  gDirectory->cd("TW");
+  h = new TH1D("tw_points_num","Number of tw points per event;Number of points;Events",21,-0.5,20.5);
+    h = new TH1D("tw_GetChargeZ","TW points reco charge;Z reco;Events",11,-0.5,10.5);
+    h = new TH1D("tw_Xpos_twsys","TW points X position in tw sys;X [cm];Events",61,-30.5,30.5);
+    h = new TH1D("tw_Ypos_twsys","TW points Y position in tw sys;Y [cm];Events",61,-30.5,30.5);
+    h2 = new TH2D("tw_XYpos_twsys","TW points XY position in tw sys;X[cm];Y[cm]",61,-30.5,30.5,61,-30.5,30.5);
+    h = new TH1D("tw_Xpos_glbsys","TW points X position in glb sys;X [cm];Events",61,-30.5,30.5);
+    h = new TH1D("tw_Ypos_glbsys","TW points Y position in glb sys;Y [cm];Events",61,-30.5,30.5);
+    h2 = new TH2D("tw_XYpos_glbsysAll","TW points XY position in glb sys;X[cm];Y[cm]",61,-30.5,30.5,61,-30.5,30.5);
+    h2 = new TH2D("tw_barmultAll","TW bar map all;FrontBar X;RearBar Y",20,-0.5,19.5,20,0.,19.5);
+    //h2 = new TH2D("tw_XYpos_glbsysMag","TW points XY position in glb sys for minimum bias;X[cm];Y[cm]",61,-30.5,30.5,61,-30.5,30.5);
+  gDirectory->cd("..");
+
+
+
+  gDirectory->mkdir("VTXSYNC");
+  gDirectory->cd("VTXSYNC");
+  h2 = new TH2D("origin_xx_bmvtx_all","BM originX vs VTX originX for all the evts;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
+  gDirectory->cd("..");
+
+  gDirectory->cd("..");
+
+
+
+
+
+
   if(FootDebugLevel(1))
     cout<<"GlboalRecoAna::Booking done"<<endl;
 
@@ -863,9 +1241,17 @@ void GlobalRecoAna::SetupTree(){
   myReader->SetupBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
 
   if(TAGrecoManager::GetPar()->IncludeBM()){
+  /*
+  fpNtuHitBm = new TAGdataDsc("bmhit" , new TABMntuTrack());
+  gTAGroot->AddRequiredItem("bmhit");
+  myReader->SetupBranch(fpNtuHitBm, TABMntuTrack::GetBranchName());
+  */
+
   fpNtuTrackBm = new TAGdataDsc("bmtrack" , new TABMntuTrack());
   gTAGroot->AddRequiredItem("bmtrack");
   myReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+
+
 
   }
 
@@ -1920,6 +2306,24 @@ void GlobalRecoAna::AfterEventLoop(){
     }
       h = new TH1D(luminosity_name.c_str(),"",1, 0. ,1.);
       ((TH1D*)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1,Ntg*nTotEv  );
+
+
+  //study efficiency of MB trigger
+  if (fFlagMC == false) {
+     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))
+     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))
+//TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
+
+  
+  ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency")) -> Divide(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB")));
+  ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_RejectPower")) ->SetBinContent(1,(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->GetEntries() /((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))->GetEntries() )  );
+  
+  
+
+  
+
+  }
+
  
   gTAGroot->EndEventLoop();
 
@@ -2203,7 +2607,7 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt, bool isOxygenInEvent){
 
     if (fFlagMC == false) {
     TAGWDtrigInfo* wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
-    cout << "event: "<< currEvent << " -- n tracks: "<< nt <<" -- n tracklets of vertex: "<< vertexNumber << endl;
+    //cout << "event: "<< currEvent << " -- n tracks: "<< nt <<" -- n tracklets of vertex: "<< vertexNumber << endl;
 
     //STUDY OF VERTEX
     for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) { // for every vertexEvent
@@ -2233,7 +2637,7 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt, bool isOxygenInEvent){
 
                   //cout<< "theta vertex: " <<theta_vtx <<endl;   
                 
-                  TVector3 direction_glb = fpFootGeo->FromVTLocalToGlobal(direction);
+                  TVector3 direction_glb = fpFootGeo->VecFromVTLocalToGlobal(direction);
                   double phi_vtx_glb = direction_glb.Phi()*TMath::RadToDeg();
                   
                   //projection of a tracklet on TW
@@ -2245,7 +2649,30 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt, bool isOxygenInEvent){
                   Float_t VTTWX = A4.X();
                   Float_t VTTWY = A4.Y(); //questi sono in coordinate globali
 
+                  //projection of a tracklet on Tg
                   
+                  //Float_t posZtg = fpFootGeo->FromGlobalToVTLocal(TVector3(0,0,0)).Z();
+                  Float_t posZtg = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
+                  TVector3 A3tg = tracklet->Intersection(posZtg);
+                  TVector3 A4tg = fpFootGeo->FromVTLocalToGlobal(A3);
+                  Float_t VTTgX = A4tg.X();
+                  Float_t VTTgY = A4tg.Y(); //questi sono in coordinate globali
+
+
+                  if (nt == 0) {
+    ((TH2D*)gDirectory->Get("VTXTrackXvsEvent_ifnoglbtrack"))->Fill(currEvent,VTTgX);  //Checksss
+    ((TH2D*)gDirectory->Get("VTXTrackYvsEvent_ifnoglbtrack"))->Fill(currEvent,VTTgY);
+    ((TH2D*)gDirectory->Get("VTXTrackXY_ifnoglbtrack"))->Fill(VTTgX,VTTgY);
+
+
+
+    } else {
+      ((TH2D*)gDirectory->Get("VTXTrackXvsEvent_ifglbtrack"))->Fill(currEvent,VTTgX);  
+    ((TH2D*)gDirectory->Get("VTXTrackYvsEvent_ifglbtrack"))->Fill(currEvent,VTTgY);
+    ((TH2D*)gDirectory->Get("VTXTrackXY_ifglbtrack"))->Fill(VTTgX,VTTgY);
+
+
+    }
 
                   if (isOxygenInEvent == false /*&& nt>0*/ && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
                   ((TH2D*)gDirectory->Get("vt_twProjection_frag")) -> Fill(VTTWX,VTTWY);
@@ -2284,14 +2711,14 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt, bool isOxygenInEvent){
 
     }
   
-   
-    //stamp direction of every vertex object    
+    if (currEvent == nTotEv-1) {    //stamp direction of every vertex object    
     ((TH2D*)gDirectory->Get("trackletdirection_frag")) -> Fill(vertex_direction_frag.X(),vertex_direction_frag.Y());
-    cout << "fragment vtx direction: X= " << vertex_direction_frag.X() << " Y= " << vertex_direction_frag.Y() << " theta = " << vertex_direction_frag.Theta()*180/TMath::Pi() << " phi = " << vertex_direction_frag.Phi()*180/TMath::Pi() << endl;
+    //cout << "fragment vtx direction: X= " << vertex_direction_frag.X() << " Y= " << vertex_direction_frag.Y() << " theta = " << vertex_direction_frag.Theta()*180/TMath::Pi() << " phi = " << vertex_direction_frag.Phi()*180/TMath::Pi() << endl;
 
     ((TH2D*)gDirectory->Get("trackletdirection")) -> Fill(vertex_direction.X(),vertex_direction.Y());
-    cout << "beam vtx direction: X= " << vertex_direction.X() << " Y= " << vertex_direction.Y() << " theta = " << vertex_direction.Theta()*180/TMath::Pi() << " phi = " << vertex_direction.Phi()*180/TMath::Pi() << endl;
+    //cout << "beam vtx direction: X= " << vertex_direction.X() << " Y= " << vertex_direction.Y() << " theta = " << vertex_direction.Theta()*180/TMath::Pi() << " phi = " << vertex_direction.Phi()*180/TMath::Pi() << endl;
   
+    }
   }
   //--------------END STUDY OF VERTEX AND TW ALLIGNMENT / ROTATIONS  
 }
@@ -2652,4 +3079,539 @@ void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
     gDirectory->cd("..");
   }
   gDirectory->cd("..");
+}
+
+
+void GlobalRecoAna::FragTriggerStudies(){
+
+  TAGWDtrigInfo* wdTrig = 0x0;
+  wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware WD
+  //wdTrig -> GetTriggerID() == 40              //MB trigger    ==1 for frag trigger
+  //wdTrig -> GetTriggersStatus()[1] == 1      //in MB trigger, even frag
+
+  TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
+  for(int it=0;it<myGlb->GetTracksN();it++){ // for every track
+    fGlbTrack = myGlb->GetTrack(it);
+    Int_t Z_meas = fGlbTrack->GetTwChargeZ();
+    if (wdTrig -> GetTriggerID() == 40) {  //if MB trigger
+    ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))->Fill(Z_meas);
+
+    if (wdTrig -> GetTriggersStatus()[1] == 1) { // if MB trigger with fragmentation
+      ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->Fill(Z_meas);
+      ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency"))->Fill(Z_meas);
+
+    }
+
+    }
+
+
+    // Rejection power
+
+
+  }
+
+}
+
+
+
+
+
+TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ) {
+  return TVector3(Slope.X()/Slope.Z()*(FinalZ-Pos0.Z())+Pos0.X() ,Slope.Y()/Slope.Z()*(FinalZ-Pos0.Z())+Pos0.Y(), FinalZ);
+}
+
+
+void GlobalRecoAna::ClustersPositionStudy(int currEvent){
+TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
+
+
+//BM track position study
+TABMntuTrack* bmNtuTrack = (TABMntuTrack*) fpNtuTrackBm->GenerateObject();
+int  Nbmtrack = bmNtuTrack->GetTracksN();
+((TH1D*)gDirectory->Get("clusPosition/BM/bm_n_tracks"))->Fill(Nbmtrack);
+
+if (Nbmtrack == 1){  // i want only events with 1 bm track
+
+//**** all events
+for( Int_t iTrack = 0; iTrack < bmNtuTrack->GetTracksN(); ++iTrack ) {
+  TABMtrack* track = bmNtuTrack->GetTrack(iTrack);
+  //project to the target in the BM ref., then move to the global ref.
+  TVector3 bmlocalproj=ProjectToZ(track->GetSlope(), track->GetOrigin(),fpFootGeo->FromGlobalToBMLocal(fpFootGeo->GetTGCenter()).Z());
+  TVector3 bmgloproj=ProjectToZ(fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope()), fpFootGeo->FromBMLocalToGlobal(track->GetOrigin()),fpFootGeo->GetTGCenter().Z());
+  ((TH2D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_bmsys"))->Fill(bmlocalproj.X(),bmlocalproj.Y());
+  ((TH2D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_glbsys"))->Fill(bmgloproj.X(),bmgloproj.Y());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_Xpos_glbsys"))->Fill(bmgloproj.X());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_Ypos_glbsys"))->Fill(bmgloproj.Y());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_bmsys_theta")) -> Fill( track->GetSlope().Theta()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_bmsys_phi")) -> Fill( track->GetSlope().Phi()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_glbsys_theta")) -> Fill( (fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope())).Theta()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_glbsys_phi")) -> Fill( (fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope())).Phi()*TMath::RadToDeg());
+  
+  //study pattern of several quantities wrt events: Spill studies
+    ((TH2D*)gDirectory->Get("clusPosition/BM/all-events/spill/bm_posX_vsEvent"))->Fill(currEvent,bmgloproj.X());
+    ((TH2D*)gDirectory->Get("clusPosition/BM/all-events/spill/bm_posY_vsEvent"))->Fill(currEvent,bmgloproj.Y());
+
+
+
+}
+
+
+/*
+Float_t posZtg = fpFootGeo->FromGlobalToBMLocal(TVector3(0,0,0)).Z();
+for( Int_t iTrack = 0; iTrack < bmNtuTrack->GetTracksN(); ++iTrack ) {
+
+  //bm tracklet projected toward target
+  TVector3 A3 = bmNtuTrack->GetTrack(iTrack)->Intersection(posZtg);    // bm coord in local frame
+  TVector3 A4 = fpFootGeo->FromBMLocalToGlobal(A3); //bm coord in global frame
+  //BMslope  = fpFootGeo->VecFromBMLocalToGlobal(BMslope);
+  ((TH2D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_bmsys_2"))->Fill(A3.X(),A3.Y());
+  ((TH2D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_glbsys_2"))->Fill(A4.X(),A4.Y());
+}
+*/
+//**** stop all events
+
+//**** reco events
+if (myGlb->GetTracksN() >0){
+for( Int_t iTrack = 0; iTrack < bmNtuTrack->GetTracksN(); ++iTrack ) {
+  TABMtrack* track = bmNtuTrack->GetTrack(iTrack);
+  //project to the target in the BM ref., then move to the global ref.
+  TVector3 bmlocalproj=ProjectToZ(track->GetSlope(), track->GetOrigin(),fpFootGeo->FromGlobalToBMLocal(fpFootGeo->GetTGCenter()).Z());
+  TVector3 bmgloproj=ProjectToZ(fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope()), fpFootGeo->FromBMLocalToGlobal(track->GetOrigin()),fpFootGeo->GetTGCenter().Z());
+  ((TH2D*)gDirectory->Get("clusPosition/BM/reco-events/bm_target_bmsys"))->Fill(bmlocalproj.X(),bmlocalproj.Y());
+  ((TH2D*)gDirectory->Get("clusPosition/BM/reco-events/bm_target_glbsys"))->Fill(bmgloproj.X(),bmgloproj.Y());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/reco-events/bm_target_Xpos_glbsys"))->Fill(bmgloproj.X());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/reco-events/bm_target_Ypos_glbsys"))->Fill(bmgloproj.Y());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/reco-events/bm_target_bmsys_theta")) -> Fill( track->GetSlope().Theta()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/reco-events/bm_target_bmsys_phi")) -> Fill( track->GetSlope().Phi()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/reco-events/bm_target_glbsys_theta")) -> Fill( (fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope())).Theta()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/reco-events/bm_target_glbsys_phi")) -> Fill( (fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope())).Phi()*TMath::RadToDeg());
+  
+  //study pattern of several quantities wrt events: Spill studies
+    ((TH2D*)gDirectory->Get("clusPosition/BM/reco-events/spill/bm_posX_vsEvent"))->Fill(currEvent,bmgloproj.X());
+    ((TH2D*)gDirectory->Get("clusPosition/BM/reco-events/spill/bm_posY_vsEvent"))->Fill(currEvent,bmgloproj.Y());
+
+
+
+}
+}
+//**** stop reco events
+
+
+
+//**** no-reco events
+if (myGlb->GetTracksN() ==0){
+for( Int_t iTrack = 0; iTrack < bmNtuTrack->GetTracksN(); ++iTrack ) {
+  TABMtrack* track = bmNtuTrack->GetTrack(iTrack);
+  //project to the target in the BM ref., then move to the global ref.
+  TVector3 bmlocalproj=ProjectToZ(track->GetSlope(), track->GetOrigin(),fpFootGeo->FromGlobalToBMLocal(fpFootGeo->GetTGCenter()).Z());
+  TVector3 bmgloproj=ProjectToZ(fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope()), fpFootGeo->FromBMLocalToGlobal(track->GetOrigin()),fpFootGeo->GetTGCenter().Z());
+  ((TH2D*)gDirectory->Get("clusPosition/BM/no-reco-events/bm_target_bmsys"))->Fill(bmlocalproj.X(),bmlocalproj.Y());
+  ((TH2D*)gDirectory->Get("clusPosition/BM/no-reco-events/bm_target_glbsys"))->Fill(bmgloproj.X(),bmgloproj.Y());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/no-reco-events/bm_target_Xpos_glbsys"))->Fill(bmgloproj.X());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/no-reco-events/bm_target_Ypos_glbsys"))->Fill(bmgloproj.Y());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/no-reco-events/bm_target_bmsys_theta")) -> Fill( track->GetSlope().Theta()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/no-reco-events/bm_target_bmsys_phi")) -> Fill( track->GetSlope().Phi()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/no-reco-events/bm_target_glbsys_theta")) -> Fill( (fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope())).Theta()*TMath::RadToDeg());
+  ((TH1D*)gDirectory->Get("clusPosition/BM/no-reco-events/bm_target_glbsys_phi")) -> Fill( (fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope())).Phi()*TMath::RadToDeg());
+  
+  //study pattern of several quantities wrt events: Spill studies
+    ((TH2D*)gDirectory->Get("clusPosition/BM/no-reco-events/spill/bm_posX_vsEvent"))->Fill(currEvent,bmgloproj.X());
+    ((TH2D*)gDirectory->Get("clusPosition/BM/no-reco-events/spill/bm_posY_vsEvent"))->Fill(currEvent,bmgloproj.Y());
+}
+}
+//**** stop no-reco events
+
+
+}
+
+//VT tracklet position study
+//! richieste su vtbm match?
+TAVTntuVertex *vtxNtuVertex = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
+((TH1D*)gDirectory->Get("clusPosition/VT/vtxpoints/vtx_num")) -> Fill(vtxNtuVertex->GetVertexN());
+
+TAVTvertex* vtxvertex   = 0x0;
+TVector3 vtxvertposloc,vtxvertposglob;
+TAVTvertex* vtxmatchvertex=nullptr;
+
+
+
+for (Int_t iVtx = 0; iVtx < vtxNtuVertex->GetVertexN(); ++iVtx) {  // for every vertex in an event
+    vtxvertex = vtxNtuVertex->GetVertex(iVtx);
+    if (vtxvertex == 0x0)
+      continue;
+    vtxvertposloc = vtxvertex->GetVertexPosition();
+    vtxvertposglob = fpFootGeo->FromVTLocalToGlobal(vtxvertposloc);
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxpoints/vtx_vtx_profile_vtxsys")) -> Fill(vtxvertposloc.X(),vtxvertposloc.Y());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxpoints/vtx_vtx_profile_glbsys")) -> Fill(vtxvertposglob.X(),vtxvertposglob.Y());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxpoints/vtx_vtx_trknum")) -> Fill(vtxvertex->GetTracksN());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxpoints/vtx_vtx_BMmatched")) -> Fill(vtxvertex->IsBmMatched());
+    
+    if (vtxvertex->IsBmMatched() == true) {
+    vtxmatchvertex = vtxNtuVertex->GetVertex(iVtx);
+    }
+    
+    //vtxmatchvertex=(vtxvertex->IsBmMatched()) ? vtxNtuVertex->GetVertex(iVtx) : nullptr;  //matched vertex of an event with BM
+  
+  }
+
+// if no one of the vertex points of an event matches with BM...
+if (vtxmatchvertex == nullptr) {((TH1D*)gDirectory->Get("clusPosition/VT/vtxpoints/ev_no_vtxmatched")) -> Fill(1);}
+else {
+  // ---------------------- tracks of the BM-matched vertex
+
+//***** start all-events study despite glb tracking
+((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_trk_num"))->Fill(vtxmatchvertex->GetTracksN());
+for( Int_t iTrack = 0; iTrack < vtxmatchvertex->GetTracksN(); ++iTrack ) { //loop on vertex tracks
+    TAVTtrack* track = vtxmatchvertex->GetTrack(iTrack);
+
+    //cluster study
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_n_cluster")) ->Fill( track->GetClustersN());
+    TAVTbaseCluster* clust = track->GetCluster(0);
+    TVector3 clPos = clust->GetPosition();
+    TVector3 GlbclPos = fpFootGeo->FromVTLocalToGlobal(clPos);
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/clust0_position_vtxsys"))->Fill(clPos.X(),clPos.Y());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/clust0_position_glbsys"))->Fill(GlbclPos.X(),GlbclPos.Y());
+      
+    
+    //projection of vtx tracks on TW
+    Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+    posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();  
+    TVector3 A3 = track->Intersection(posZtw);         //local frame
+    TVector3 A4 = fpFootGeo->FromVTLocalToGlobal(A3);  //global frame
+    TVector3 A5 = fpFootGeo->FromGlobalToTWLocal(A4);
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_tw_proj_glbsys"))->Fill(A4.X(),A4.Y());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_tw_proj_Xpos_proj_glbsys"))->Fill(A4.X());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_tw_proj_Ypos_proj_glbsys"))->Fill(A4.Y());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_tw_proj_twsys"))->Fill(A5.X(),A5.Y());
+    
+    // vt track whose projection is inside the TW
+    if (A4.X() > -20. && A4.X() < 20. && A4.Y() > -20. && A4.Y() < 20. ) { 
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/gltrackcandidate/vtx_tw_proj_glbsys_gltrackcandidate"))->Fill(A4.X(),A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/gltrackcandidate/vtx_tw_proj_Xpos_glbsys_gltrackcandidate"))->Fill(A4.X());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/gltrackcandidate/vtx_tw_proj_Ypos_glbsys_gltrackcandidate"))->Fill(A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/gltrackcandidate/vtx_theta_glbsys_gltrackcandidate")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/gltrackcandidate/vtx_phi_glbsys_gltrackcandidate")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Phi()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/gltrackcandidate/vtx_theta_vtxsys_gltrackcandidate")) -> Fill(( track->GetSlopeZ()).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/gltrackcandidate/vtx_phi_vtxsys_gltrackcandidate")) -> Fill( (track->GetSlopeZ()).Phi()*TMath::RadToDeg());
+      
+      }
+
+    //projection of vtx tracks on TARGET
+    Float_t posZtg = fpFootGeo->FromGlobalToVTLocal(fpFootGeo->GetTGCenter()).Z();
+    TVector3 A3_tg = track->Intersection(posZtg);         //local frame
+    TVector3 A4_tg = fpFootGeo->FromVTLocalToGlobal(A3_tg);  //global frame
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_tg_proj_glbsys"))->Fill(A4_tg.X(),A4_tg.Y());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_tg_proj_Xpos_proj_glbsys"))->Fill(A4_tg.X());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_tg_proj_Ypos_proj_glbsys"))->Fill(A4_tg.Y());
+    
+    //track angle
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_theta_glbsys")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_phi_glbsys")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Phi()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_theta_vtxsys")) -> Fill(( track->GetSlopeZ()).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_phi_vtxsys")) -> Fill( (track->GetSlopeZ()).Phi()*TMath::RadToDeg());
+
+    //compare n° of tracklets vs n° of global tracks
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/n_tracklets_vs_n_globaltracks"))->Fill(vtxmatchvertex->GetTracksN(),myGlb->GetTracksN() );  
+    
+    if (myGlb->GetTracksN() ==1 && vtxmatchvertex->GetTracksN() == 1){
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/vtx_theta_vs_globtrack_theta"))->Fill((fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg(),myGlb->GetTrack(0)->GetTgtThetaBm() *TMath::RadToDeg());  
+    }
+}
+    //study pattern of several quantities wrt events: Spill studies
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/spill/vtx_posX_vsEvent"))->Fill(currEvent,fpFootGeo->FromVTLocalToGlobal(vtxmatchvertex->GetVertexPosition()).X());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/all_events/spill/vtx_posY_vsEvent"))->Fill(currEvent,fpFootGeo->FromVTLocalToGlobal(vtxmatchvertex->GetVertexPosition()).Y());
+    
+//***** stop all-events study despite glb tracking 
+
+
+
+//***** start reco-events study despite glb tracking
+if (myGlb->GetTracksN() >0){
+((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_trk_num"))->Fill(vtxmatchvertex->GetTracksN());
+for( Int_t iTrack = 0; iTrack < vtxmatchvertex->GetTracksN(); ++iTrack ) { //loop on vertex tracks
+    TAVTtrack* track = vtxmatchvertex->GetTrack(iTrack);
+
+    //cluster study
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_n_cluster")) ->Fill( track->GetClustersN());
+    TAVTbaseCluster* clust = track->GetCluster(0);
+    TVector3 clPos = clust->GetPosition();
+    TVector3 GlbclPos = fpFootGeo->FromVTLocalToGlobal(clPos);
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/clust0_position_vtxsys"))->Fill(clPos.X(),clPos.Y());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/clust0_position_glbsys"))->Fill(GlbclPos.X(),GlbclPos.Y());
+      
+    
+    //projection of vtx tracks on TW
+    Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+    posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();  
+    TVector3 A3 = track->Intersection(posZtw);         //local frame
+    TVector3 A4 = fpFootGeo->FromVTLocalToGlobal(A3);  //global frame
+    TVector3 A5 = fpFootGeo->FromGlobalToTWLocal(A4);
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_tw_proj_glbsys"))->Fill(A4.X(),A4.Y());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_tw_proj_Xpos_proj_glbsys"))->Fill(A4.X());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_tw_proj_Ypos_proj_glbsys"))->Fill(A4.Y());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_tw_proj_twsys"))->Fill(A5.X(),A5.Y());
+    
+    // vt track whose projection is inside the TW
+    if (A4.X() > -20. && A4.X() < 20. && A4.Y() > -20. && A4.Y() < 20. ) { 
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/gltrackcandidate/vtx_tw_proj_glbsys_gltrackcandidate"))->Fill(A4.X(),A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/gltrackcandidate/vtx_tw_proj_Xpos_glbsys_gltrackcandidate"))->Fill(A4.X());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/gltrackcandidate/vtx_tw_proj_Ypos_glbsys_gltrackcandidate"))->Fill(A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/gltrackcandidate/vtx_theta_glbsys_gltrackcandidate")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/gltrackcandidate/vtx_phi_glbsys_gltrackcandidate")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Phi()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/gltrackcandidate/vtx_theta_vtxsys_gltrackcandidate")) -> Fill(( track->GetSlopeZ()).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/gltrackcandidate/vtx_phi_vtxsys_gltrackcandidate")) -> Fill( (track->GetSlopeZ()).Phi()*TMath::RadToDeg());
+      
+      }
+
+    //projection of vtx tracks on TARGET
+    Float_t posZtg = fpFootGeo->FromGlobalToVTLocal(fpFootGeo->GetTGCenter()).Z();
+    TVector3 A3_tg = track->Intersection(posZtg);         //local frame
+    TVector3 A4_tg = fpFootGeo->FromVTLocalToGlobal(A3_tg);  //global frame
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_tg_proj_glbsys"))->Fill(A4_tg.X(),A4_tg.Y());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_tg_proj_Xpos_proj_glbsys"))->Fill(A4_tg.X());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_tg_proj_Ypos_proj_glbsys"))->Fill(A4_tg.Y());
+    
+    //track angle
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_theta_glbsys")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_phi_glbsys")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Phi()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_theta_vtxsys")) -> Fill(( track->GetSlopeZ()).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_phi_vtxsys")) -> Fill( (track->GetSlopeZ()).Phi()*TMath::RadToDeg());
+
+    //compare n° of tracklets vs n° of global tracks
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/n_tracklets_vs_n_globaltracks"))->Fill(vtxmatchvertex->GetTracksN(),myGlb->GetTracksN() );  
+    
+    if (myGlb->GetTracksN() ==1 && vtxmatchvertex->GetTracksN() == 1){
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/vtx_theta_vs_globtrack_theta"))->Fill((fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg(),myGlb->GetTrack(0)->GetTgtThetaBm() *TMath::RadToDeg());  
+    }
+
+
+
+
+    /*
+      
+      TVector3 vtxlocalproj=ProjectToZ(track->GetSlopeZ(), track->GetOrigin(),geoTrafo->FromGlobalToVTLocal(geoTrafo->GetTGCenter()).Z());
+      myfill("VT/vtx_target_vtxsys",vtxlocalproj.X(),vtxlocalproj.Y());
+      TVector3 glbslope = geoTrafo->VecFromVTLocalToGlobal(track->GetSlopeZ());
+      TVector3 glborigin = geoTrafo->FromVTLocalToGlobal(track->GetOrigin());
+      TVector3 vtxprojglo=geoTrafo->FromVTLocalToGlobal(vtxlocalproj);
+      myfill("VT/vtx_target_glbsys",vtxprojglo.X(),vtxprojglo.Y());
+    */
+    
+}
+    //study pattern of several quantities wrt events: Spill studies
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/spill/vtx_posX_vsEvent"))->Fill(currEvent,fpFootGeo->FromVTLocalToGlobal(vtxmatchvertex->GetVertexPosition()).X());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/spill/vtx_posY_vsEvent"))->Fill(currEvent,fpFootGeo->FromVTLocalToGlobal(vtxmatchvertex->GetVertexPosition()).Y());
+    if (Nbmtrack == 1){  // i want only events with 1 bm track
+      TVector3 bmgloproj=ProjectToZ(fpFootGeo->VecFromBMLocalToGlobal(bmNtuTrack->GetTrack(0)->GetSlope()), fpFootGeo->FromBMLocalToGlobal(bmNtuTrack->GetTrack(0)->GetOrigin()),fpFootGeo->GetTGCenter().Z());
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/reco-events/spill/BM_matched_posX_vsEvent"))->Fill(currEvent,bmgloproj.X());
+    }
+
+
+}
+//***** stop reco-events study 
+
+
+//***** start no-reco-events study 
+if (myGlb->GetTracksN() ==0){
+((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_trk_num"))->Fill(vtxmatchvertex->GetTracksN());
+for( Int_t iTrack = 0; iTrack < vtxmatchvertex->GetTracksN(); ++iTrack ) { //loop on vertex tracks
+    TAVTtrack* track = vtxmatchvertex->GetTrack(iTrack);
+
+    //cluster study
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_n_cluster")) ->Fill( track->GetClustersN());
+    TAVTbaseCluster* clust = track->GetCluster(0);
+    TVector3 clPos = clust->GetPosition();
+    TVector3 GlbclPos = fpFootGeo->FromVTLocalToGlobal(clPos);
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/clust0_position_vtxsys"))->Fill(clPos.X(),clPos.Y());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/clust0_position_glbsys"))->Fill(GlbclPos.X(),GlbclPos.Y());
+      
+    
+    //projection of vtx tracks on TW
+    Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+    posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();  
+    TVector3 A3 = track->Intersection(posZtw);         //local frame
+    TVector3 A4 = fpFootGeo->FromVTLocalToGlobal(A3);  //global frame
+    TVector3 A5 = fpFootGeo->FromGlobalToTWLocal(A4);
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_tw_proj_glbsys"))->Fill(A4.X(),A4.Y());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_tw_proj_Xpos_proj_glbsys"))->Fill(A4.X());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_tw_proj_Ypos_proj_glbsys"))->Fill(A4.Y());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_tw_proj_twsys"))->Fill(A5.X(),A5.Y());
+    
+    // vt track whose projection is inside the TW
+    if (A4.X() > -20. && A4.X() < 20. && A4.Y() > -20. && A4.Y() < 20. ) { 
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/gltrackcandidate/vtx_tw_proj_glbsys_gltrackcandidate"))->Fill(A4.X(),A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/gltrackcandidate/vtx_tw_proj_Xpos_glbsys_gltrackcandidate"))->Fill(A4.X());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/gltrackcandidate/vtx_tw_proj_Ypos_glbsys_gltrackcandidate"))->Fill(A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/gltrackcandidate/vtx_theta_glbsys_gltrackcandidate")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/gltrackcandidate/vtx_phi_glbsys_gltrackcandidate")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Phi()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/gltrackcandidate/vtx_theta_vtxsys_gltrackcandidate")) -> Fill(( track->GetSlopeZ()).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/gltrackcandidate/vtx_phi_vtxsys_gltrackcandidate")) -> Fill( (track->GetSlopeZ()).Phi()*TMath::RadToDeg());
+      
+      }
+
+    //projection of vtx tracks on TARGET
+    Float_t posZtg = fpFootGeo->FromGlobalToVTLocal(fpFootGeo->GetTGCenter()).Z();
+    TVector3 A3_tg = track->Intersection(posZtg);         //local frame
+    TVector3 A4_tg = fpFootGeo->FromVTLocalToGlobal(A3_tg);  //global frame
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_tg_proj_glbsys"))->Fill(A4_tg.X(),A4_tg.Y());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_tg_proj_Xpos_proj_glbsys"))->Fill(A4_tg.X());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_tg_proj_Ypos_proj_glbsys"))->Fill(A4_tg.Y());
+    
+    //track angle
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_theta_glbsys")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_phi_glbsys")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Phi()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_theta_vtxsys")) -> Fill(( track->GetSlopeZ()).Theta()*TMath::RadToDeg());
+    ((TH1D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_phi_vtxsys")) -> Fill( (track->GetSlopeZ()).Phi()*TMath::RadToDeg());
+
+    //compare n° of tracklets vs n° of global tracks
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/n_tracklets_vs_n_globaltracks"))->Fill(vtxmatchvertex->GetTracksN(),myGlb->GetTracksN() );  
+    
+    if (myGlb->GetTracksN() ==1 && vtxmatchvertex->GetTracksN() == 1){
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/vtx_theta_vs_globtrack_theta"))->Fill((fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg(),myGlb->GetTrack(0)->GetTgtThetaBm() *TMath::RadToDeg());  
+    }
+
+
+
+
+    /*
+      
+      TVector3 vtxlocalproj=ProjectToZ(track->GetSlopeZ(), track->GetOrigin(),geoTrafo->FromGlobalToVTLocal(geoTrafo->GetTGCenter()).Z());
+      myfill("VT/vtx_target_vtxsys",vtxlocalproj.X(),vtxlocalproj.Y());
+      TVector3 glbslope = geoTrafo->VecFromVTLocalToGlobal(track->GetSlopeZ());
+      TVector3 glborigin = geoTrafo->FromVTLocalToGlobal(track->GetOrigin());
+      TVector3 vtxprojglo=geoTrafo->FromVTLocalToGlobal(vtxlocalproj);
+      myfill("VT/vtx_target_glbsys",vtxprojglo.X(),vtxprojglo.Y());
+    */
+    
+}
+    //study pattern of several quantities wrt events: Spill studies
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/spill/vtx_posX_vsEvent"))->Fill(currEvent,fpFootGeo->FromVTLocalToGlobal(vtxmatchvertex->GetVertexPosition()).X());
+    ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/spill/vtx_posY_vsEvent"))->Fill(currEvent,fpFootGeo->FromVTLocalToGlobal(vtxmatchvertex->GetVertexPosition()).Y());
+    if (Nbmtrack == 1){  // i want only events with 1 bm track
+      TVector3 bmgloproj=ProjectToZ(fpFootGeo->VecFromBMLocalToGlobal(bmNtuTrack->GetTrack(0)->GetSlope()), fpFootGeo->FromBMLocalToGlobal(bmNtuTrack->GetTrack(0)->GetOrigin()),fpFootGeo->GetTGCenter().Z());
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtxmatched/no-reco-events/spill/BM_matched_posX_vsEvent"))->Fill(currEvent,bmgloproj.X());
+    }
+}
+//***** stop no-reco-events study 
+
+
+}
+
+
+TAVTntuTrack *myVtTr = (TAVTntuTrack*)fpNtuTrackVtx->GenerateObject();
+Float_t posZtw = fpFootGeo->FromTWLocalToGlobal(TVector3(0,0,0)).Z();
+posZtw = fpFootGeo->FromGlobalToVTLocal(TVector3(0, 0, posZtw)).Z();
+
+
+
+for( Int_t iTrack = 0; iTrack < myVtTr->GetTracksN(); ++iTrack ) { //loop on vertex tracks
+      TAVTtrack* track = myVtTr->GetTrack(iTrack);
+      
+      //projection of vt track on target
+      TVector3 vtxlocalproj=ProjectToZ(track->GetSlopeZ(), track->GetOrigin(),fpFootGeo->FromGlobalToVTLocal(fpFootGeo->GetTGCenter()).Z());
+      TVector3 vtxgloprojglo=ProjectToZ(fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ()), fpFootGeo->VecFromVTLocalToGlobal(track->GetOrigin()),fpFootGeo->GetTGCenter().Z());
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtx_target_vtsys"))->Fill(vtxlocalproj.X(),vtxlocalproj.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_target_vtsys_theta")) -> Fill( track->GetSlopeZ().Theta()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_target_vtsys_phi")) -> Fill( track->GetSlopeZ().Phi()*TMath::RadToDeg());
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtx_target_glbsys"))->Fill(vtxgloprojglo.X(),vtxgloprojglo.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_Xpos_target_glbsys"))->Fill(vtxgloprojglo.X());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_Ypos_target_glbsys"))->Fill(vtxgloprojglo.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_target_glbsys_theta")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_target_glbsys_phi")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Phi()*TMath::RadToDeg());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_n_cluster")) ->Fill( track->GetClustersN());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_n_tracks")) ->Fill( myVtTr->GetTracksN());
+
+      //projection of vt track on tw
+      TVector3 A3 = track->Intersection(posZtw);         //local frame
+      TVector3 A4 = fpFootGeo->FromVTLocalToGlobal(A3);  //global frame
+      TVector3 A5 = fpFootGeo->FromGlobalToTWLocal(A4);
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtx_tw_glbsys"))->Fill(A4.X(),A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_Xpos_tw_glbsys"))->Fill(A4.X());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_Ypos_tw_glbsys"))->Fill(A4.Y());
+
+      if (A4.X() > -20. && A4.X() < 20. && A4.Y() > -20. && A4.Y() < 20. ) {    // vt track whose projection is inside the vertex
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtx_tw_glbsys_gltrackcandidate"))->Fill(A4.X(),A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_Xpos_tw_glbsys_gltrackcandidate"))->Fill(A4.X());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_Ypos_tw_glbsys_gltrackcandidate"))->Fill(A4.Y());
+      ((TH1D*)gDirectory->Get("clusPosition/VT/vtx_target_glbsys_theta_gltrackcandidate")) -> Fill( (fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ())).Theta()*TMath::RadToDeg());
+      }
+
+
+      ((TH2D*)gDirectory->Get("clusPosition/VT/vtx_tw_twsys"))->Fill(A5.X(),A5.Y());
+
+
+      
+
+
+
+}
+
+
+//vt tracklet vs global tracking studies
+//TAGntuGlbTrack *myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->Object();
+if (myGlb->GetTracksN() ==1 && myVtTr->GetTracksN() == 1){
+((TH2D*)gDirectory->Get("clusPosition/VT/vtx_theta_vs_globtrack_theta"))->Fill((fpFootGeo->VecFromVTLocalToGlobal(myVtTr->GetTrack(0)->GetSlopeZ())).Theta()*TMath::RadToDeg(),myGlb->GetTrack(0)->GetTgtThetaBm() *TMath::RadToDeg());  
+}
+
+//VTX CORRELATION WITH BM
+//select events with only one BM track and one vtx track
+  if(bmNtuTrack->GetTracksN() ==1 && vtxNtuVertex->GetVertexN()==1) {
+
+  
+  TAVTvertex *vtxvertex = vtxNtuVertex->GetVertex(0);
+  if(vtxvertex->GetTracksN()==1) {
+  
+
+  TAVTtrack *vttrack=vtxvertex->GetTrack(0);
+  TABMtrack* bmtrack = bmNtuTrack->GetTrack(0);
+  //cout << "asasd "<< bmtrack->GetOrigin().X() << " "<< vttrack->GetOrigin().X() <<endl;
+  ((TH2D*)gDirectory->Get("clusPosition/VTXSYNC/origin_xx_bmvtx_all")) ->Fill(bmtrack->GetOrigin().X(),vttrack->GetOrigin().X());
+  }
+  }
+
+
+//TW study
+TATWntuPoint* myTWNtuPt = (TATWntuPoint*)fpNtuRecTw->GenerateObject();
+((TH1D*)gDirectory->Get("clusPosition/TW/tw_points_num")) -> Fill(myTWNtuPt->GetPointsN());
+for (int i = 0; i < myTWNtuPt->GetPointsN(); i++) {
+    TATWpoint *point = myTWNtuPt->GetPoint(i);
+    ((TH1D*)gDirectory->Get("clusPosition/TW/tw_Xpos_twsys")) -> Fill(point->GetPosition().X());
+    ((TH1D*)gDirectory->Get("clusPosition/TW/tw_Ypos_twsys")) -> Fill(point->GetPosition().Y());
+    ((TH2D*)gDirectory->Get("clusPosition/TW/tw_XYpos_twsys")) -> Fill(point->GetPosition().X(),point->GetPosition().Y());
+    ((TH1D*)gDirectory->Get("clusPosition/TW/tw_Xpos_glbsys")) -> Fill(point->GetPositionGlb().X());
+    ((TH1D*)gDirectory->Get("clusPosition/TW/tw_Ypos_glbsys")) -> Fill(point->GetPositionGlb().Y());
+    ((TH2D*)gDirectory->Get("clusPosition/TW/tw_XYpos_glbsysAll")) -> Fill(point->GetPositionGlb().X(),point->GetPositionGlb().Y());
+    ((TH1D*)gDirectory->Get("clusPosition/TW/tw_barmultAll")) -> Fill(point->GetRowID(),point->GetColumnID());
+    ((TH1D*)gDirectory->Get("clusPosition/TW/tw_GetChargeZ")) -> Fill(point->GetChargeZ());
+}
+
+
+
+;
+
+
+
+
+
+
+
+/*
+ for(int it=0;it<nt;it++){ // for every track
+      fGlbTrack = myGlb->GetTrack(it);
+      Float_t Th_recoBM2 =  fGlbTrack->GetTgtThetaBm() *TMath::RadToDeg();
+*/
+
+
+
+
+//TABMntuHit* bmNtuHit = (TABMntuHit*) fpNtuHitBm->GenerateObject();
+//Int_t nbmHits  = bmNtuHit->GetHitsN();
+//cout <<nbmHits << endl;
+
+
+
+
+
+
+  
 }

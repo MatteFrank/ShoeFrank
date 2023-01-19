@@ -26,14 +26,15 @@ ClassImp(TACAactNtuHit);
 TACAactNtuHit::TACAactNtuHit(const char* name,
                              TAGdataDsc* p_datraw,
                              TAGdataDsc* p_nturaw,
+                             TAGparaDsc* p_pargeo,
                              TAGparaDsc* p_parmap,
                              TAGparaDsc* p_parcal)
   : TAGaction(name, "TACAactNtuHit - Unpack CA raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
+    fpParGeo(p_pargeo),
     fpParMap(p_parmap),
     fpParCal(p_parcal),
-    // this should be read from calib file for each crystal ??
     fTcorr1Par1(-0.0011),
     fTcorr1Par0(0.167),
     fTcorr2Par1(4.94583e-03),
@@ -44,6 +45,7 @@ TACAactNtuHit::TACAactNtuHit(const char* name,
    AddDataIn(p_datraw, "TACAntuRaw");
    AddDataOut(p_nturaw, "TACAntuHit");
 
+   AddPara(p_pargeo, "TACAparGeo");
    AddPara(p_parmap, "TACAparMap");
    AddPara(p_parcal, "TACAparCal");
 
@@ -66,6 +68,7 @@ Bool_t TACAactNtuHit::Action()
    TACAntuRaw*   p_datraw = (TACAntuRaw*) fpDatRaw->Object();
    TACAntuHit*   p_nturaw = (TACAntuHit*) fpNtuRaw->Object();
    TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
+   TACAparGeo*   p_pargeo = (TACAparGeo*) fpParGeo->Object();
 
    int nhit = p_datraw->GetHitsN();
 
@@ -83,6 +86,7 @@ Bool_t TACAactNtuHit::Action()
       Double_t timeOth = aHi->GetTimeOth();
       Double_t charge  = aHi->GetCharge();
       Double_t amplitude  = aHi->GetAmplitude();
+      Int_t z = 1; //N.B. only for testing pourposes!!!!
       // Double_t tempADC  = aHi->GetTemperature(); // in ADC count
       //Double_t temp = ADC2Temp(tempADC);
 
@@ -101,18 +105,19 @@ Bool_t TACAactNtuHit::Action()
       Double_t charge_tcorr = charge;
       Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
       totCharge += charge_equalis;
-      Double_t energy = GetEnergy(charge_equalis, crysId);
+      Double_t energy = charge_equalis;
       Double_t tof    = GetTime(time, crysId);
 
       TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time,type);
+      createdhit->SetPosition(p_pargeo->GetCrystalPosition(crysId));
+      
       createdhit->SetValid(true);
   
       if (ValidHistogram()) {
-         if (crysId < 9) { // Only 9 histograms
-            fhCharge[crysId]->Fill(energy);
-            fhChannelMap->Fill(crysId);
-            fhAmplitude[crysId]->Fill(amplitude);
-         }
+         fhCharge[crysId]->Fill(energy);
+         fhChannelMap->Fill(crysId);
+         fhAmplitude[crysId]->Fill(amplitude);
+         fhArrivalTime[crysId]->Fill(tof);
       }
    }
    if (ValidHistogram()) fhTotCharge->Fill(totCharge);
@@ -125,9 +130,15 @@ Bool_t TACAactNtuHit::Action()
 
 // --------------------------------------------------------------------------------------
 //! Convert ADC counts from sensor to Temperature to Celsius
-Double_t TACAactNtuHit::ADC2Temp(Double_t adc) 
+Double_t TACAactNtuHit::ADC2Temp(Double_t adc, Int_t crysId) 
 {
 
+   TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
+
+   Double_t p0_SH = p_parcal->GetADC2TempParam(crysId, 0);
+   Double_t p1_SH = p_parcal->GetADC2TempParam(crysId, 1);
+   Double_t p2_SH = p_parcal->GetADC2TempParam(crysId, 2);
+   
    // the NTC (negative temperature coefficient) sensor
 
    const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate 
@@ -139,9 +150,8 @@ Double_t TACAactNtuHit::ADC2Temp(Double_t adc)
 
    // The Steinhart-Hart formula is given below with the nominal coefficients a, b and c, 
    // which after calibration could be replaced by three constants for each crystal:
-   double a = 0.00138867, b = 0.000204491, c = 1.05E-07;
 
-   Double_t temp = 1./ (a + b * log(Rt) + c * pow(log(Rt), 3)) - 273.15;
+   Double_t temp = 1./ (p0_SH + p1_SH * log(Rt) + p2_SH * pow(log(Rt), 3)) - 273.15;
    
    return temp;
 }
@@ -216,31 +226,13 @@ Double_t TACAactNtuHit::GetTemperatureCorrection(Double_t charge, Double_t temp,
 //! \param[in] crysId crystal id
 Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  crysId)
 {
-   TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
+   TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
-   Double_t Equalis0 = parcal->getCalibrationMap()->GetEqualiseCry(crysId);
+   Double_t Equalis0 = p_parcal->GetChargeEqParam(crysId);
+
    Double_t charge_equalis = charge_tcorr * Equalis0;
 
    return charge_equalis;
-}
-
-//------------------------------------------+-----------------------------------
-//! Get calibrated energy
-//!
-//! \param[in] rawenergy raw energy
-//! \param[in] crysId crystal id
-Double_t TACAactNtuHit::GetEnergy(Double_t rawenergy, Int_t  crysId)
-{
-   TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
-
-   Double_t p0 = p_parcal->GetElossParam(crysId, 0);
-   Double_t p1 = p_parcal->GetElossParam(crysId, 1);
-
-   return p0 + p1 * rawenergy;
-
-
-  //fake calibration (gtraini)  return raw value meanwhile
- // return rawenergy;
 }
 
 //------------------------------------------+-----------------------------------
@@ -268,28 +260,22 @@ Double_t TACAactNtuHit::GetTime(Double_t RawTime, Int_t  crysId)
 //! Histograms
 void TACAactNtuHit::CreateHistogram()
 {
-
    DeleteHistogram();
 
    char histoname[100]="";
    if (FootDebugLevel(1))
       cout << "Calorimeter Histograms created. "<<endl;
 
-   // sprintf(histoname,"stEvtTime");
-   // fhEventTime = new TH1F(histoname, histoname, 6000, 0., 60.);
-   // AddHistogram(fhEventTime);
+   TACAparMap*   p_parmap = (TACAparMap*) fpParMap->Object();
+   int nCry = p_parmap->GetCrystalsN();
 
-   // sprintf(histoname,"stTrigTime");
-   // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
-   // AddHistogram(fhTrigTime);
-   
    fhTotCharge = new TH1F("caTotCharge", "caTotCharge", 400, -0.1, 3.9);
    AddHistogram(fhTotCharge);
 
    fhChannelMap = new TH1F("caChMap", "caChMap", 9, 0, 9);
    AddHistogram(fhChannelMap);
 
-   for(int iCh=0; iCh<9; iCh++) {
+   for(int iCh = 0; iCh < nCry; ++iCh) {
       fhArrivalTime[iCh]= new TH1F(Form("caDeltaTime_ch%d", iCh), Form("caDeltaTime_ch%d", iCh), 100, -5., 5.);
       AddHistogram(fhArrivalTime[iCh]);
 

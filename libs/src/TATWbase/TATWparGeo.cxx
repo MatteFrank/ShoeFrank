@@ -26,7 +26,7 @@
 
 #include "TATWparGeo.hxx"
 #include "TAGroot.hxx"
-#include "Parameters.h"
+#include "TATWparameters.hxx"
 
       TString TATWparGeo::fgkDefParaName     = "twGeo";
 const TString TATWparGeo::fgkBaseName        = "TW";

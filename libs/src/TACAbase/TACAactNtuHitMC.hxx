@@ -8,6 +8,7 @@
 
 #include "TAMCflukaStruct.hxx"
 
+#include "TACAparameters.hxx"
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGgeoTrafo.hxx"
@@ -16,10 +17,6 @@
 #include "TH2I.h"
 #include "TH1F.h"
 #include "TH2F.h"
-
-
-#define MAX_NCRY 300       ///< max number of the crystals in the calorimeter
-#define MAX_ANUMBER 18     ///< max atomic number
 
 class TACAdigitizer;
 class TACAactNtuHitMC : public TAGaction {
@@ -59,8 +56,8 @@ class TACAactNtuHitMC : public TAGaction {
    TH1F*           fpHisRange;                         ///< MC range histogram
    TH1F*           fpHisIonEk[MAX_ANUMBER];            ///< MC kenetic energy histogram
    TH1F*           fpHisIondE[MAX_ANUMBER];            ///< MC energy loss histogram
-   TH1F*           fpHisEnPerCry[MAX_NCRY];            ///< energy loss per crystal histogram
-   TH1F*           fpHisEnVsPositionPerCry[MAX_NCRY];  ///< energy loss per positon crystal histogram
+   TH1F*           fpHisEnPerCry[MaxCry];            ///< energy loss per crystal histogram
+   TH1F*           fpHisEnVsPositionPerCry[MaxCry];  ///< energy loss per positon crystal histogram
 
    TH2F*           fpHisCryHitVsEnDep;                 ///< hit vs energy loss histogram
    TH2F*           fpHisRangeVsMass;                   ///< range vs mass histogram

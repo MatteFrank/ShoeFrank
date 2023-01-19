@@ -117,7 +117,7 @@ void LocalRecoMC::CreateRawAction()
         fActEvtReader->SetupBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
       
       fpNtuHitVtx = new TAGdataDsc("vtRaw", new TAVTntuHit());
-      fActNtuHitVtx = new TAVTactNtuHitMC("vtActNtu", fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fEvtStruct);
+      fActNtuHitVtx = new TAVTactNtuHitMC("vtActNtu", fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fEvtStruct);
       if (fFlagHisto)
          fActNtuHitVtx->CreateHistogram();
    }
@@ -128,7 +128,7 @@ void LocalRecoMC::CreateRawAction()
         fActEvtReader->SetupBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
       
       fpNtuHitIt = new TAGdataDsc("itRaw", new TAITntuHit());
-      fActNtuHitIt = new TAITactNtuHitMC("itActNtu", fpNtuMcIt, fpNtuMcTrk, fpNtuHitIt, fpParGeoIt, fEvtStruct);
+      fActNtuHitIt = new TAITactNtuHitMC("itActNtu", fpNtuMcIt, fpNtuMcTrk, fpNtuHitIt, fpParGeoIt, fpParConfIt, fEvtStruct);
       if (fFlagHisto)
          fActNtuHitIt->CreateHistogram();
    }

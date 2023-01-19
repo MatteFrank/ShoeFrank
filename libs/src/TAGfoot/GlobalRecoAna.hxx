@@ -64,6 +64,7 @@ class GlobalRecoAna : public LocalReco {
   void AlignmentStudy(int currEvent,int nt, bool isOxygenInEvent);
   void TWAlgoStudy();
   void TrackVsMCStudy(int currEvent, int nt);
+  void FragTriggerStudies();
   
 
   //fill plots
@@ -72,6 +73,11 @@ class GlobalRecoAna : public LocalReco {
   void FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek=0.);
   void FillYieldMC(string folderName, Int_t charge_tr, Double_t theta_tr, Double_t Ek=0.);
   void BookYield(string path, bool enableMigMatr= false);
+  void ClustersPositionStudy(int currEvent);
+  
+
+
+
   //useful formulas
   Double_t GetGamma(Double_t beta){return 1./sqrt(1.-beta*beta);};
   Double_t GetMassPB(Double_t mom, Double_t beta) {return (1./atomassu)*mom*sqrt(1.-beta*beta)/beta;};
@@ -122,6 +128,7 @@ class GlobalRecoAna : public LocalReco {
   Double_t Th_meas;
   Double_t Th_reco;
   Double_t Th_recoBM;
+  Double_t Phi_reco;
   Double_t purity_cut;      //minumum purity value for a track to be defined as pure
   Double_t clean_cut;       //is a 100% pure track
 
@@ -171,6 +178,8 @@ class GlobalRecoAna : public LocalReco {
   // outfile string
   TString outfile;
 
+
+  int novtmatch;
 };
 
 #endif

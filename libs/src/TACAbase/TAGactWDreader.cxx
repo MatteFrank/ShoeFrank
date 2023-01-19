@@ -76,33 +76,49 @@ TAGactWDreader::TAGactWDreader(const char* name,
    fgStdAloneFlag = stdAlone;
    
    if (!fgStdAloneFlag) {
-      AddDataIn(p_datdaq, "TAGdaqEvent");
+     AddDataIn(p_datdaq, "TAGdaqEvent");
    }
    AddDataOut(p_stwd, "TASTntuRaw");
    AddDataOut(p_twwd, "TATWntuRaw");
    if (p_cawd)
-      AddDataOut(p_cawd, "TACAntuRaw");
+     AddDataOut(p_cawd, "TACAntuRaw");
    if (p_newd)
-      AddDataOut(p_newd, "TANEntuRaw");
+     AddDataOut(p_newd, "TANEntuRaw");
    AddDataOut(p_WDtrigInfo, "TAGWDtrigInfo");
    AddPara(p_WDmap, "TAGbaseWDparMap");
    AddPara(p_WDtim, "TAGbaseWDparTime");
    if (p_CAmap)
-      AddPara(p_CAmap, "TACAparMap");
+     AddPara(p_CAmap, "TACAparMap");
 
    fProcFiles=0;  
    fEventsN=0;
    fMaxFiles=1;
+ 
+
+   nAcqEventsRate=0;
+   nSTcounts=0; nSTcounts_prev=0;
+   nTWcounts=0; nTWcounts_prev=0;
+   nCAcounts=0; nCAcounts_prev=0;
+   nSTcountsrate=0; nSTcountsrate_prev=0;
+   nTWcountsrate=0; nTWcountsrate_prev=0;
+   nCAcountsrate=0; nCAcountsrate_prev=0;
+
+
+   time=0.;
+   time_prev=0.;
+   runtime=0.;
+   deltatimeev=0.;
+   deltatimerate=0.;
+   
    if (fpCAMap) {
-      int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
-      fTempCA = new double [nCry];
-      for (int cryID=0; cryID<nCry; ++cryID) {
-         fTempCA[cryID] = 0;
-      }
+     int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
+     fTempCA = new double [nCry];
+     for (int cryID=0; cryID<nCry; ++cryID) {
+       fTempCA[cryID] = 0;
+     }
    }
 }
-
-
+   
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAGactWDreader::~TAGactWDreader()
@@ -187,8 +203,12 @@ Bool_t TAGactWDreader::Action()
    if (fpNeWd)
       p_newd = (TANEntuRaw*)   fpNeWd->Object();
 
-   Int_t nmicro;
 
+ 
+
+  
+  Int_t nmicro;
+  
    Clear();
 
    bool eof = false;
@@ -197,15 +217,71 @@ Bool_t TAGactWDreader::Action()
       //decoding fragment and filling the datRaw class
       const WDEvent* evt = static_cast<const WDEvent*> (p_datdaq->GetFragment("WDEvent"));
       if (evt) 
-         nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
+	nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
+      
+      TrgEvent*  trgEvent  = p_datdaq->GetTrgEvent();
+      if (trgEvent) {
+
+	nAcqEventsRate++;
+	Double_t trigID = p_WDtrigInfo->GetTriggerID();
+	nSTcounts = (p_WDtrigInfo->GetTriggersCounter())[42];
+	nTWcounts = (p_WDtrigInfo->GetTriggersCounter())[20];
+	nCAcounts = (p_WDtrigInfo->GetTriggersCounter())[30];
+	nSTcountsrate += nSTcounts-nSTcounts_prev;
+	nTWcountsrate += nTWcounts-nTWcounts_prev;
+	nCAcountsrate += nCAcounts-nCAcounts_prev;
+	
+	time = trgEvent->time_sec+trgEvent->time_usec*1E-6;
+	deltatimeev = (trgEvent->eventNumber==0) ? 0 : time-time_prev;
+	runtime+=deltatimeev;
+	deltatimerate+=deltatimeev;
+
+	if(ValidHistogram()) {
+	  hTriggerID->Fill(trigID);
+	  hDAQRateVsTime->Fill(runtime);
+	  hSTRateVsTime->Fill(runtime,nSTcounts-nSTcounts_prev);
+	  hTWRateVsTime->Fill(runtime,nTWcounts-nTWcounts_prev);
+	  hCARateVsTime->Fill(runtime,nCAcounts-nCAcounts_prev);
+	  
+	  if(deltatimeev>0){
+	    hSTRate->Fill((nSTcounts-nSTcounts_prev)/deltatimeev);
+	    hTWRate->Fill((nTWcounts-nTWcounts_prev)/deltatimeev);
+	    hCARate->Fill((nCAcounts-nCAcounts_prev)/deltatimeev);
+	  }
+	  
+	  
+	  if(deltatimerate>0.1){
+	    hDAQRate->Fill(nAcqEventsRate/deltatimerate);
+	    hDAQVsST->Fill(nSTcountsrate/deltatimerate, nAcqEventsRate/deltatimerate);
+	    hRatioDAQ_ST->Fill(nAcqEventsRate/(Double_t)nSTcountsrate);
+	    hSTRate100->Fill(nSTcountsrate/deltatimerate);
+	    hTWRate100->Fill(nTWcountsrate/deltatimerate);
+	    hCARate100->Fill(nCAcountsrate/deltatimerate);
+	    deltatimerate=0;
+	    nAcqEventsRate=0;
+	    nSTcountsrate=0;
+	    nTWcountsrate=0;
+	    nCAcountsrate=0;
+	  }
+	
+	  time_prev = time;
+	  nSTcounts_prev = nSTcounts;
+	  nTWcounts_prev = nTWcounts;
+	  nCAcounts_prev = nTWcounts;
+	}
+      }
+
+      
 
       if (fgArduinoTempCA && fpCaWd) {
-         const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
-         if (evtA)
-            DecodeArduinoTempCA(evtA);
+	const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
+	if (evtA)
+	  DecodeArduinoTempCA(evtA);
       }
+
+      
    } else {
-      nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap);
+     nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap);
    }
 
    WaveformsTimeCalibration();
@@ -526,6 +602,68 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtr
 void TAGactWDreader::CreateHistogram()
 {
    DeleteHistogram();
+
+   char histoname[100]="";
+   if(FootDebugLevel(1))
+     cout<<"I have created the WD histo. "<<endl;
+   
+   
+   strcpy(histoname,"TriggerID");
+   hTriggerID = new TH1F(histoname, histoname, 64, -0.5, 63.5);
+   AddHistogram(hTriggerID);
+
+   strcpy(histoname,"DAQRate");
+   hDAQRate = new TH1F(histoname, histoname, 1000,0,2000);
+   AddHistogram(hDAQRate);
+   
+   strcpy(histoname,"STRate");
+   hSTRate = new TH1F(histoname, histoname, 10000,0,100000);
+   AddHistogram(hSTRate);
+
+   strcpy(histoname,"STRate100");
+   hSTRate100 = new TH1F(histoname, histoname, 10000,0,100000);
+   AddHistogram(hSTRate100);
+
+   strcpy(histoname,"TWRate");
+   hTWRate = new TH1F(histoname, histoname, 10000,0,100000);
+   AddHistogram(hTWRate);
+
+   strcpy(histoname,"TWRate100");
+   hTWRate100 = new TH1F(histoname, histoname, 10000,0,100000);
+   AddHistogram(hTWRate100);
+
+   strcpy(histoname,"CARate");
+   hCARate = new TH1F(histoname, histoname, 10000,0,100000);
+   AddHistogram(hCARate);
+
+   strcpy(histoname,"CARate100");
+   hCARate100 = new TH1F(histoname, histoname, 10000,0,100000);
+   AddHistogram(hCARate100);
+
+   strcpy(histoname,"DAQRateVsTime");
+   hDAQRateVsTime = new TH1F(histoname, histoname, 12000,0,1200);
+   AddHistogram(hDAQRateVsTime);
+   
+   strcpy(histoname,"STRateVsTime");
+   hSTRateVsTime = new TH1F(histoname, histoname, 12000,0,1200);
+   AddHistogram(hSTRateVsTime);
+   
+   strcpy(histoname,"TWRateVsTime");
+   hTWRateVsTime = new TH1F(histoname, histoname, 12000,0,1200);
+   AddHistogram(hTWRateVsTime);
+   
+   strcpy(histoname,"CARateVsTime");
+   hCARateVsTime = new TH1F(histoname, histoname, 12000,0,1200);
+   AddHistogram(hCARateVsTime);
+
+   strcpy(histoname,"DAQVsST");
+   hDAQVsST = new TH2F(histoname, histoname, 5000,0,50000,100,0,1000);
+   AddHistogram(hDAQVsST);
+
+   strcpy(histoname,"RatioDAQ_ST");
+   hRatioDAQ_ST = new TH1F(histoname, histoname, 1000,0,1);
+   AddHistogram(hRatioDAQ_ST);
+
    SetValidHistogram(kTRUE);
 }
 

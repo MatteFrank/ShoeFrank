@@ -194,6 +194,11 @@ public:
    //! Set time over threshold maximum value
    static void    SetTotMaxValue(Float_t value)     { fgTotMaxValue = value;     }
    
+   //! Get energy deposition factor
+   static Float_t GetDEfactor()                     { return fgDEfactor;         }
+   //! Set energy deposition factor
+   static void    SetDEfactor(Float_t value)        { fgDEfactor = value;        }
+   
 protected:
    static Float_t  fgDefSmearPos;   ///< default smear parameter
    static Bool_t   fgSmearFlag;     ///< smearing flag
@@ -202,6 +207,8 @@ protected:
    static Float_t  fgkNormFactor;   ///< normalization factor
    static Float_t  fgTotMaxValue;   ///< Time over threshold maximum value
    static Int_t    fgTotAdcDepth;   ///< Time over threshold adc depth
+   static Float_t  fgDEfactor;      ///< Energy deposition factor (ratio epitaxial vs total thickness)
+
 };
 
 #endif
