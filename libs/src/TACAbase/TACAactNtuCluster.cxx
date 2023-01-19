@@ -74,7 +74,7 @@ void TACAactNtuCluster::CreateHistogram()
    fpHisHitTot = new TH1F("caClusHitsTot", "Calorimeter - Total # hits per cluster", 25, 0., 25);
    AddHistogram(fpHisHitTot);
 
-   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 2000, 0., 1000);
+   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 400, 0., 200);
    AddHistogram(fpHisChargeTot);
 
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
