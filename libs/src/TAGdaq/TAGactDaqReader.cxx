@@ -111,8 +111,25 @@ Bool_t TAGactDaqReader::IsOpen() const
 //! \param[in] nEvents events to skip
 void TAGactDaqReader::SkipEvents(Int_t nEvents)
 {
-   for (Int_t i = 0; i < nEvents; ++i)
+   std::cout << "void TAGactDaqReader::SkipEvents() " << nEvents << std::endl;
+   for (Int_t i = 0; i < nEvents; ++i){
       fDaqFileReader->skipEvent();
+
+
+       if (fDaqFileReader->endOfFileReached()) {
+      if (fDaqFileChain) {
+         Close();
+        if(Open(fCurFileName, "chain") ==  -1) return;
+      } 
+   }
+
+
+   }
+
+
+  
+
+
 }
 
 //------------------------------------------+-----------------------------------
