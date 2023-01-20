@@ -153,7 +153,7 @@ void TACAactNtuClusterP::FillMaps()
 //! \param[in] seedCharge charge of previous seed
 Bool_t TACAactNtuClusterP::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, double seedCharge)
 {
-   Int_t idx = IndX*fDimX+IndY;
+   Int_t idx = IndY*fDimX+IndX;
    if ( fPixelMap.count(idx) == 0 ) return false; // empty place
    if ( fFlagMap[idx] != -1 ) return false; // already flagged
 
@@ -231,7 +231,7 @@ void TACAactNtuClusterP::SearchCluster()
       }
    }
 
-   if(FootDebugLevel(2))
+   //if(FootDebugLevel(2))
      cout << "CA - Found : " << fClustersN << " clusters on event: " << gTAGroot->CurrentEventId().EventNumber() << endl;
 
 }
