@@ -968,7 +968,7 @@ void BaseReco::CreateRecActionCa()
          fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
       else
          fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
-   } else if (fgCalClusterAlgo.Contains("Std") ) {
+   } else if (fgCalClusterAlgo.Contains("Padme") ) {
       if (fFlagMC)
          fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
       else
