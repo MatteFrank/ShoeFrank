@@ -130,6 +130,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fgVtxTrackingAlgo("Full"),
    fgItrTrackingAlgo("Full"),
    fgMsdTrackingAlgo("Full"),
+   fgCalClusterAlgo("Std"),
    fFlagZtrueMC(false),
    fFlagZrecPUoff(false),
    fFlagZmatchTw(false),
@@ -962,11 +963,18 @@ void BaseReco::CreateRecActionCa()
    if (fFlagMC)
       TACAactNtuCluster::DisableChargeThres();
    
-   if (fFlagMC)
-      fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
-   else
-      fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
-
+   if (fgCalClusterAlgo.Contains("Std") ) {
+      if (fFlagMC)
+         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+      else
+         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
+   } else if (fgCalClusterAlgo.Contains("Std") ) {
+      if (fFlagMC)
+         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+      else
+         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
+   }
+   
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
 }
@@ -1331,5 +1339,23 @@ void BaseReco::SetMsdTrackingAlgo(char c)
          break;
       default:
          printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
+   }
+}
+
+//__________________________________________________________
+//! Set CAL clustering  algorithm
+//!
+//! \param[in] c toggle btw standard and padme algorithm
+void BaseReco::SetCalClusterAlgo(char c)
+{
+   switch (c) {
+      case 'S':
+         fgMsdTrackingAlgo = "Std";
+         break;
+      case 'P':
+         fgMsdTrackingAlgo = "Padme";
+         break;
+      default:
+         printf("SetCalClusterAlgo: Wrongly set clustering algorithm");
    }
 }

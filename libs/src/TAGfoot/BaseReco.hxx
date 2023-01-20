@@ -78,6 +78,7 @@
 #include "TAMSDactNtuCluster.hxx"
 #include "TAMSDactNtuPoint.hxx"
 #include "TACAactNtuCluster.hxx"
+#include "TACAactNtuClusterP.hxx"
 #include "TATWactNtuPoint.hxx"
 #include "TATWactCalibTW.hxx"
 
@@ -276,6 +277,9 @@ public:
    // Set Msd Tracking algorithm
    void SetMsdTrackingAlgo(char c);
   
+   // Set Cal clusteing algorithm
+   void SetCalClusterAlgo(char c);
+   
    // Campaign checks
    void CampaignChecks();
    
@@ -480,7 +484,7 @@ protected:
    TATWactNtuPoint*      fActPointTw;    ///< action for TW points
    TATWactCalibTW*       fActCalibTw;    ///< action for TW calibration
 
-   TACAactNtuCluster*    fActClusCa;     ///< action for clusters
+   TAGactNtuCluster2D*   fActClusCa;     ///< action for clusters
    TACAactNtuHit*        fActNtuHitCa;   ///< action for hit
 
 #ifdef TOE_FLAG
@@ -505,6 +509,7 @@ protected:
    TString               fgVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fgCalClusterAlgo;  ///< cal tracking clustering ("std" for standard, "Padme" for PADME one)
    Bool_t                fFlagZtrueMC;      ///< Z true MC flag
    Bool_t                fFlagZrecPUoff;    ///< Z rec TW PU off flag
    Bool_t                fFlagZmatchTw;     ///< TW Z match
