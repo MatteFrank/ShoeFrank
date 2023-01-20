@@ -83,8 +83,6 @@ protected:
    Bool_t         CreateClusters();
    // Search cluster
    void           SearchCluster();
-   // Shape cluster
-   Bool_t         ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY);
    // Fill maps
    void           FillMaps();
    // Fill cluster information

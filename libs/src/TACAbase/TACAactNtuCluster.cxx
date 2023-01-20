@@ -138,52 +138,19 @@ void TACAactNtuCluster::FillMaps()
       TACAhit* hit = fpNtuHit->GetHit(i);
       if(!hit->IsValid()) continue;
       Int_t id   = hit->GetCrystalId();
+      double charge = hit->GetCharge();
       Int_t line = pGeoMap->GetCrystalLine(id);
       Int_t col  = pGeoMap->GetCrystalCol(id);
+
       if (!CheckLine(line)) continue;
       if (!CheckCol(col)) continue;
+
+      if( charge < fgChargeThreshold && fgThresholdFlag) continue;
 
       TAGactNtuCluster2D::FillMaps(line, col, i);
    }
 }
 
-//______________________________________________________________________________
-//! Shape cluster by region growing algorithm
-//! Condition to grow: hit charge should be less than seed charge
-//!
-//! \param[in] numClus cluster number
-//! \param[in] IndX index in X
-//! \param[in] IndY index in Y
-//! \param[in] seedCharge charge of previous seed
-Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY)
-{
-   Int_t idx = IndX*fDimX+IndY;
-   if ( fPixelMap.count(idx) == 0 ) return false; // empty place
-   if ( fFlagMap[idx] != -1 ) return false; // already flagged
-
-   int index = fIndexMap[idx];
-   TAGobject* pixel = GetHitObject(index);
-   TACAhit* hit = (TACAhit*)pixel;
-   double charge = hit->GetCharge();
-
-   if( charge < fgChargeThreshold && fgThresholdFlag) return false;
-
-   fFlagMap[idx] = numClus;
-   pixel->SetFound(true);
-
-   
-   for(Int_t i = -1; i <= 1 ; ++i)
-      if (CheckLine(IndX+i)) {
-         ShapeCluster(numClus, IndX+i, IndY);
-      }
-   
-   for(Int_t j = -1; j <= 1 ; ++j)
-      if (CheckCol(IndY+j)) {
-         ShapeCluster(numClus, IndX, IndY+j);
-      }
-   
-   return true;
-}
 
 //______________________________________________________________________________
 //! Found all clusters. Starting seed from local maximum 
