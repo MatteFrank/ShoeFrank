@@ -60,6 +60,7 @@ protected:
    TAGparaDsc*     fpGeoMap;		    ///< geometry para dsc
    
    Int_t          fClustersN;        ///< number of cluster
+   Int_t          fTwPointZ;         ///< Atomic number from TW rec point
 
    TH1F*          fpHisHitTot;       ///< Total number of hits per cluster
    TH1F*          fpHisChargeTot;    ///< Total charge per cluster
