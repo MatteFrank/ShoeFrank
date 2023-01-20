@@ -459,7 +459,7 @@ void TACAactNtuCluster::CalibrateEnergy(TACAcluster* cluster)
          energy = charge;
       
       hit->SetCharge(energy);
-   //   if(FootDebugLevel(1))
+      if(FootDebugLevel(1))
          printf("%d %f\n", fTwPointZ, energy);
    }
 }
