@@ -231,7 +231,7 @@ void TACAactNtuClusterP::SearchCluster()
       }
    }
 
-   //if(FootDebugLevel(2))
+   if(FootDebugLevel(2))
      cout << "CA - Found : " << fClustersN << " clusters on event: " << gTAGroot->CurrentEventId().EventNumber() << endl;
 
 }
