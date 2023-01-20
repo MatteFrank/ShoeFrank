@@ -56,8 +56,8 @@ TACAactNtuCluster::TACAactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGd
    //AddPara(pConfig, "TACAparConf");
 
    TACAparGeo* parGeo  = (TACAparGeo*) fpGeoMap->Object();
-   fDimY = parGeo->GetMaxNumLines();
-   fDimX = parGeo->GetMaxNumColumns();
+   fDimX = max(parGeo->GetMaxNumLines(), parGeo->GetMaxNumColumns());
+   fDimY = max(parGeo->GetMaxNumLines(), parGeo->GetMaxNumColumns());
    SetupMaps(fDimY*fDimX);
    
    fpNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
@@ -157,7 +157,7 @@ void TACAactNtuCluster::FillMaps()
 //! \param[in] seedCharge charge of previous seed
 Bool_t TACAactNtuCluster::ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY)
 {
-   Int_t idx = IndY*fDimX+IndX;
+   Int_t idx = IndX*fDimX+IndY;
    if ( fPixelMap.count(idx) == 0 ) return false; // empty place
    if ( fFlagMap[idx] != -1 ) return false; // already flagged
 
@@ -459,6 +459,8 @@ void TACAactNtuCluster::CalibrateEnergy(TACAcluster* cluster)
          energy = charge;
       
       hit->SetCharge(energy);
+   //   if(FootDebugLevel(1))
+         printf("%d %f\n", fTwPointZ, energy);
    }
 }
 
