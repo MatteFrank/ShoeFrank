@@ -330,6 +330,7 @@ void TACAactNtuCluster::FillClusterInfo(TACAcluster* cluster)
 {
    if (ApplyCuts(cluster)) {
       if (fpNtuTwPoint) {
+         ComputePosition(cluster);
          ComputeMinDist(cluster);
          if (fpParCal)
             CalibrateEnergy(cluster);

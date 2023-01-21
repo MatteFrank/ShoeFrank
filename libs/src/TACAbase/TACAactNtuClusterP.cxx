@@ -380,15 +380,17 @@ void TACAactNtuClusterP::ComputePosition(TACAcluster* cluster)
 //! \param[in] cluster a given cluster
 void TACAactNtuClusterP::FillClusterInfo(TACAcluster* cluster)
 {
-   ComputePosition(cluster);
 
    if (ApplyCuts(cluster)) {
       if (fpNtuTwPoint) {
+         ComputePosition(cluster);  
          ComputeMinDist(cluster);
          if (fpParCal)
             CalibrateEnergy(cluster);
       }
       
+      ComputePosition(cluster);
+
       // histograms
       if (ValidHistogram()) {
          if (cluster->GetHitsN() > 0) {
