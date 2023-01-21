@@ -73,7 +73,7 @@ void TACAactNtuClusterP::CreateHistogram()
    fpHisHitTot = new TH1F("caClusHitsTot", "Calorimeter - Total # hits per cluster", 25, 0., 25);
    AddHistogram(fpHisHitTot);
 
-   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 2000, 0., 1000);
+   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per TW matched cluster", 400, 0., 200);
    AddHistogram(fpHisChargeTot);
 
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
@@ -393,7 +393,7 @@ void TACAactNtuClusterP::FillClusterInfo(TACAcluster* cluster)
 
       // histograms
       if (ValidHistogram()) {
-         if (cluster->GetHitsN() > 0) {
+         if (cluster->GetHitsN() > 0 && cluster->IsTwMatched()) {
             fpHisHitTot->Fill(cluster->GetHitsN());
             fpHisChargeTot->Fill(cluster->GetEnergy());
             fpHisClusMap->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
@@ -456,10 +456,12 @@ void TACAactNtuClusterP::ComputeMinDist(TACAcluster* cluster)
          fpHisHitTwMatch->Fill(1);
          fpHisTwDeCaE->Fill(cluster->GetEnergy(), point->GetEnergyLoss());
       }
-   } else
+      cluster->SetTwMatched(true);
+   } else {
       if (ValidHistogram())
          fpHisHitTwMatch->Fill(0);
-
+      cluster->SetTwMatched(false);
+   }
 }
 
 ///_____________________________________________________________________________

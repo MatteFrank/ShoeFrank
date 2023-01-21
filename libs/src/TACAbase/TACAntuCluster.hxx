@@ -31,7 +31,8 @@ protected:
    TVector3           fPosErrorG;                ///< position's errors of the cluster in tracker frame
    TClonesArray*      fListOfHits;               ///< list of hits attached to this cluster
    Int_t              fIndexSeed;                ///< index of seed crystal
-   Float_t            fEnergy;                   ///<  sum of energy
+   Bool_t             fTwMatched;                ///< matched with a rec point of TW
+   Float_t            fEnergy;                   ///< sum of energy
    
 public:
    TACAcluster();
@@ -49,6 +50,8 @@ public:
    void               SetIndexSeed(Int_t index)              { fIndexSeed = index;     }
    //! Set sum of pulse height
    void               SetEnergy(Float_t chg)                 { fEnergy = chg;          }
+   //! Set match flag with TW point
+   void               SetTwMatched(Bool_t m)                 { fTwMatched = m;         }
    
    //! Get position in local frame
    const TVector3&     GetPosition()                   const { return fPosition;       }
@@ -63,6 +66,8 @@ public:
    Int_t              GetIndexSeed()                   const { return fIndexSeed;      }
    //! Get sum of pulse height
    Float_t            GetEnergy()                      const { return fEnergy;         }
+   //! Get  match flag with TW point
+   Bool_t             IsTwMatched()                   const { return fTwMatched;      }
    //! Get pixel
    TACAhit*           GetHit(Int_t idx);
    
@@ -81,7 +86,7 @@ public:
    // Add pixel to the list
    void              AddHit(TACAhit* hit);
    
-   ClassDef(TACAcluster,6)                          // Describes TACAcluster
+   ClassDef(TACAcluster,7)                          // Describes TACAcluster
 };
 
 
