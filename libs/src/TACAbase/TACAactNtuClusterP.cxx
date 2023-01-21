@@ -383,7 +383,7 @@ void TACAactNtuClusterP::FillClusterInfo(TACAcluster* cluster)
 
    if (ApplyCuts(cluster)) {
       if (fpNtuTwPoint) {
-         ComputePosition(cluster);  
+         ComputePosition(cluster);
          ComputeMinDist(cluster);
          if (fpParCal)
             CalibrateEnergy(cluster);
@@ -420,6 +420,7 @@ void TACAactNtuClusterP::ComputeMinDist(TACAcluster* cluster)
    TVector3 posG = cluster->GetPositionG();
    Float_t min   = width;
    Int_t imin    = -1;
+   fTwPointZ     = -1;
    TVector3 resMin;
 
    TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
