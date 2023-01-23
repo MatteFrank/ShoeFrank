@@ -40,7 +40,7 @@ $FLUPRO/flutil/fff  mgdraw_lib.f
 $FLUPRO/flutil/fff  source.f
 $FLUPRO/flutil/fff  UpdateCurrentParticle.f
 
-$FLUPRO/flutil/ldpmqmdnw -m fluka PRO/usrini.o usrout.o PRO/usreou.o usrein.o mgdraw.o mgdraw_lib.o source.o UpdateCurrentParticle.o -o fluka_FOOT_mag.exe
+$FLUPRO/flutil/ldpmqmdnw -m fluka PRO/usrini.o usrout.o PRO/usreou.o usrein.o mgdraw.o mgdraw_lib.o source.o UpdateCurrentParticle.o -o fluka_FOOT.exe
 
 rm *.o  PRO/*.o
 if [ "$TARGET_MACHINE" = "Darwin" ] ; then
@@ -48,7 +48,7 @@ if [ "$TARGET_MACHINE" = "Darwin" ] ; then
 elif [ "$TARGET_MACHINE" = "Linux" ] ; then
     mv *.map ../
 fi
-mv fluka_FOOT_mag.exe ../
+mv fluka_FOOT.exe ../
 cd ../
 echo "Build of FLUKA executable is complete"
 if [ "$TARGET_MACHINE" = "Darwin" ] ; then
