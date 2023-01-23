@@ -1,8 +1,8 @@
-#ifndef _TACAactNtuCluster_HXX
-#define _TACAactNtuCluster_HXX
+#ifndef _TACAactNtuClusterP_HXX
+#define _TACAactNtuClusterP_HXX
 /*!
- \file TACAactNtuCluster.hxx
- \brief   Declaration of TACAactNtuCluster.
+ \file TACAactNtuClusterP.hxx
+ \brief   Declaration of TACAactNtuClusterP.
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -22,15 +22,15 @@ class TACAparGeo;
 class TACAntuHit;
 class TH1F;
 class TH2F;
-class TACAactNtuCluster : public TAGactNtuCluster2D {
+class TACAactNtuClusterP : public TAGactNtuCluster2D {
    
 public:
-   explicit  TACAactNtuCluster(const char* name      = 0,  TAGdataDsc* p_nturaw  = 0,
+   explicit  TACAactNtuClusterP(const char* name     = 0,  TAGdataDsc* p_nturaw  = 0,
                                TAGdataDsc* p_ntuclus = 0, TAGparaDsc* p_geomap = 0,
                                TAGparaDsc*  p_calib  = 0,
                                TAGparaDsc*  p_config = 0, TAGdataDsc* p_twpt = 0);
    
-   virtual ~TACAactNtuCluster();
+   virtual ~TACAactNtuClusterP();
    
    //! Action
    virtual  Bool_t Action();
@@ -46,12 +46,7 @@ public:
    
    //! Get object in list
    TAGobject*      GetHitObject(Int_t idx) const;
-
-public:
-   static void DisableChargeThres()         { fgThresholdFlag = false;   }
-   static void EnableChargeThres()          { fgThresholdFlag = true;    }
-   static void SetChargeThreshold(Bool_t f) { fgChargeThreshold = true;  }
-
+   
 protected:
    TAGdataDsc*     fpNtuRaw;         ///< input data dsc
    TAGdataDsc*     fpNtuClus;        ///< output data dsc
@@ -60,7 +55,7 @@ protected:
    TACAntuHit*     fpNtuHit;         ///< list of Hits
 
 
-   TAGparaDsc*     fpConfig;         ///< config para dsc
+   TAGparaDsc*     fpConfig;		    ///< config para dsc
    TAGparaDsc*     fpParCal;         ///< calibration para dsc
    TAGparaDsc*     fpGeoMap;		    ///< geometry para dsc
    
@@ -83,6 +78,8 @@ protected:
    Bool_t         CreateClusters();
    // Search cluster
    void           SearchCluster();
+   // Shape cluster
+   Bool_t         ShapeCluster(Int_t numClus, Int_t IndX, Int_t IndY, double seedCharge);
    // Fill maps
    void           FillMaps();
    // Fill cluster information
@@ -95,12 +92,8 @@ protected:
    Double_t       GetZCurve(Double_t p0, Double_t  p1, Double_t p2, Int_t z);
    // Get energy calibration as function of z
    Double_t       GetEnergy(Double_t rawEnergy, Int_t z);
-
-private:
-   static Float_t  fgChargeThreshold;
-   static Bool_t   fgThresholdFlag;
-
-   ClassDef(TACAactNtuCluster,0)
+   
+   ClassDef(TACAactNtuClusterP,0)
 };
 
 #endif

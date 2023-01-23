@@ -27,6 +27,7 @@ set( with_dictionnaries
    TACAactNtuHitMC
    TACAactNtuHit
    TACAactNtuCluster
+   TACAactNtuClusterP
    TACAparGeo
    TACAparCal
    TACAcalibrationMap
