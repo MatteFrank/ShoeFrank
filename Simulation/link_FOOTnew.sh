@@ -3,7 +3,7 @@ TARGET_MACHINE=`uname`
 if [ -z "$FLUPRO" ]; then
     echo "$FLUPRO is not defined"
     if [ "$TARGET_MACHINE" = "Darwin" ] ; then
-	say "FLUKA directory is not defined!"
+	say "fluka directory is not defined!"
     fi
     exit
 else
@@ -25,7 +25,7 @@ FLUVER21=`echo $FLUPRO | grep 2021`
 if [ -z "$FLUVER20" ] && [ -z "$FLUVER21" ]; then
     echo "Unrecognized FLUKA version"
     if [ "$TARGET_MACHINE" = "Darwin" ] ; then
-	say "FLUKA version is unrecognizable"
+	say "fluka version is unrecognizable"
     fi
     exit
 fi
@@ -52,6 +52,6 @@ mv fluka_FOOT.exe ../
 cd ../
 echo "Build of FLUKA executable is complete"
 if [ "$TARGET_MACHINE" = "Darwin" ] ; then
-    say "Build of FLUKA executable is complete!"
+    say "Build of fluka executable is complete!"
 fi
 exit
