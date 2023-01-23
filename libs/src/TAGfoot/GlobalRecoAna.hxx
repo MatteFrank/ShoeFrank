@@ -68,9 +68,9 @@ class GlobalRecoAna : public LocalReco {
   bool TriggerCheck();
   bool TriggerCheckMC();
   void GlbTrackPurityStudy();
-  void AlignmentStudy(int currEvent,int nt);
+  void AlignmentStudy();
   void TWAlgoStudy();
-  void TrackVsMCStudy(int currEvent, int nt);
+  void TrackVsMCStudy();
   void FragTriggerStudies();//study the hardware trigger performances, to be completed
 
 
@@ -129,6 +129,7 @@ class GlobalRecoAna : public LocalReco {
   Int_t nclean ;
   Int_t ntracks;
   Int_t nTotEv;  //total number of events (-nev flag)
+  Int_t currEvent;
 
   vector<pair<Int_t,Int_t>> pure_track_xcha;    //vector index = particle charge; first=npure; second=ntracks
 

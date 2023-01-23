@@ -65,16 +65,15 @@ GlobalRecoAna::~GlobalRecoAna()
 }
 
 void GlobalRecoAna::LoopEvent() {
-  Int_t currEvent=0;
-  int count_event = 0;
-
+  currEvent=0;
 
 //*********************************************************************************** begin loop on every event **********************************************
   while(gTAGroot->NextEvent()) { //for every event
     //fFlagMC = false;     //N.B.: for MC FAKE REAL
     DiffApp_trkIdx = false;
 
-    if (currEvent % 100 == 0) cout <<"current Event: " <<currEvent /*<< "fixed current event:" <<count_event */<<endl;
+    if (currEvent % 100 == 0 || FootDebugLevel(1))
+      cout <<"current Event: " <<currEvent<<endl;
 
     int evtcutstatus=ApplyEvtCuts();
     ((TH1D*)gDirectory->Get("Evtcutstatus"))->Fill(evtcutstatus);
@@ -83,7 +82,6 @@ void GlobalRecoAna::LoopEvent() {
 
     Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
-    if (nt != 0) ++count_event;
 
     TAGWDtrigInfo* wdTrig = 0x0;
     if (fFlagMC ==false){
@@ -99,7 +97,8 @@ void GlobalRecoAna::LoopEvent() {
     }
 
     //TW ghost hits studies, needed for the following yield measurements
-    if (fFlagMC == true ) TrackVsMCStudy(currEvent,nt);
+    if (fFlagMC == true )
+      TrackVsMCStudy();
 
     //*********************************************************************************** begin loop on global tracks **********************************************
     for(int it=0;it<nt;it++) { // for every track
@@ -161,7 +160,7 @@ void GlobalRecoAna::LoopEvent() {
 
     //studies dedicated to alignment
     if (fFlagMC == false)
-      AlignmentStudy(currEvent,nt);
+      AlignmentStudy();
 
     // FullCALOanal();
 
@@ -559,6 +558,8 @@ BookYield ("yield-trkREAL");
 
 
 int GlobalRecoAna::ApplyEvtCuts(){
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::ApplyEvtCuts start"<<endl;
 
   if (myBMNtuTrk->GetTracksN() !=1)
     return 1;
@@ -567,6 +568,10 @@ int GlobalRecoAna::ApplyEvtCuts(){
 }
 
 int GlobalRecoAna::ApplyTrkCuts(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::ApplyTrkCuts start"<<endl;
+
   if(isnan(fGlbTrack->GetCalEnergy())){//check if tof + track arc_length + mass hyp are ok      //! GetCalEnergy() is 0 up to now!
     cout<<"TRK energy ISNAN! -> TOF value = "<<fGlbTrack->GetTwTof()<<endl;
     return 1;
@@ -576,6 +581,9 @@ int GlobalRecoAna::ApplyTrkCuts(){
 
 
 void GlobalRecoAna::MCGlbTrkLoopSetVariables(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::MCGlbTrkLoopSetVariables start"<<endl;
 
   Tof_true = -1.;
   Tof_startmc = -1.;
@@ -635,6 +643,10 @@ void GlobalRecoAna::MCGlbTrkLoopSetVariables(){
 }
 
 void GlobalRecoAna::RecoGlbTrkLoopSetVariables(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::RecoGlbTrkLoopSetVariables start"<<endl;
+
   Th_reco = fGlbTrack-> GetTgtTheta() *TMath::RadToDeg();
   Z_meas = fGlbTrack->GetTwChargeZ();
   P_meas = fGlbTrack->GetMomentum();  // Wrong method of TOE!! but it does not crash
@@ -658,8 +670,10 @@ void GlobalRecoAna::RecoGlbTrkLoopSetVariables(){
 }
 
 void GlobalRecoAna::EvaluateMass(){
+
   if(FootDebugLevel(1))
-    cout<<"Reco analysis: Mass analysis"<<endl;
+    cout<<"GlobalRecoAna::EvaluateMass start"<<endl;
+
   mass_ana->NewMass(P_meas, fGlbTrack->GetLength(), Tof_meas,Ek_meas*M_meas, 0.07, P_meas*0.05, Ek_meas*M_meas*0.015);// sigma values should be defined in a better way.
   M_meas=mass_ana->GetMassWavg()/TAGgeoTrafo::AmuToGev();
   if(mass_ana->GetInputStatus()==30){
@@ -672,6 +686,9 @@ void GlobalRecoAna::EvaluateMass(){
 }
 
 void GlobalRecoAna::EkBinningStudies(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::EkBinningStudies start"<<endl;
 
   double Dtwpos = 0.01;//m
   double vlight = fpFootGeo->GetLightVelocity()/100.;//m/ns
@@ -693,6 +710,10 @@ void GlobalRecoAna::EkBinningStudies(){
 }
 
 void GlobalRecoAna::FillUnfoldingPlots(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::FillUnfoldingPlots start"<<endl;
+
   for (int i = 0; i<th_nbin; i++){
     if(Th_reco>theta_binning[i][0] && Th_reco<theta_binning[i][1])
       theta_bin_meas=i+1;
@@ -715,6 +736,9 @@ return;
 }
 
 void GlobalRecoAna::FillMCGlbTrkYields(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::FillMCGlbTrkYields start"<<endl;
 
   //-------------------------------------------------------------
   //--Yield for CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA
@@ -745,6 +769,10 @@ return;
 }
 
 void GlobalRecoAna::FillDataGlbTrkYields(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::FillDataGlbTrkYields start"<<endl;
+
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
   if ( Z_meas >0. && Z_meas < primary_cha && wdTrig -> GetTriggersStatus()[1] == 1)     //fragmentation hardware trigger ON
@@ -760,6 +788,9 @@ void GlobalRecoAna::FillDataGlbTrkYields(){
 }
 
 void GlobalRecoAna::FillTrkPlots(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::FillTrkPlots start"<<endl;
 
   ((TH1D*)gDirectory->Get("FIT_vs_Meas/Ekin"))->Fill(fGlbTrack->GetFitEnergy()-fGlbTrack->GetCalEnergy());
   ((TH1D*)gDirectory->Get("FIT_vs_Meas/Tof"))->Fill(fGlbTrack->GetFitTof()-(fGlbTrack->GetTwTof()));
@@ -791,6 +822,9 @@ void GlobalRecoAna::FillTrkPlots(){
 }
 
 void GlobalRecoAna::MCParticleStudies() {
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::MCParticleStudies start"<<endl;
 
   Int_t n_particles = myMcNtuPart -> GetTracksN();        // n° of particles of an event
   ((TH1D*)gDirectory->Get("MC_check/TracksN_MC")) -> Fill(myMcNtuPart -> GetTracksN());
@@ -832,30 +866,32 @@ void GlobalRecoAna::MCParticleStudies() {
 
   //! finalPos.Z() > 189.15 IN GSI2021_MC
   //! finalPos.Z() > 90 IN 16O_400
-  Int_t TG_region = -1;         //! hard coded
-  if(fExpName.IsNull())
-  TG_region = 59; // true in newgeom setup
-  else if(!fExpName.CompareTo("GSI/") || !GlobalRecoAna::fExpName.CompareTo("GSI_MC/"))
-  TG_region = 48;  //  GSI-2019
-  else if(!fExpName.CompareTo("CNAO2020/"))
-  TG_region = 50;  //  CNAO-2020
-  else if(!fExpName.CompareTo("GSI2021_MC/"))
-  TG_region = 50; //   GSI2021_MC
+
+  //TO BE CHECKED
+  // Int_t TG_region = -1;         //! hard coded
+  // if(fExpName.IsNull())
+  // TG_region = 59; // true in newgeom setup
+  // else if(!fExpName.CompareTo("GSI/") || !GlobalRecoAna::fExpName.CompareTo("GSI_MC/"))
+  // TG_region = 48;  //  GSI-2019
+  // else if(!fExpName.CompareTo("CNAO2020/"))
+  // TG_region = 50;  //  CNAO-2020
+  // else if(!fExpName.CompareTo("GSI2021_MC/"))
+  // TG_region = 50; //   GSI2021_MC
 
   //-------------  MC TOTAL CROSS SECTION
   // if the particle is generated in the target and it is the fragment of a primary
   //if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
   // ifenough energy/n to go beyond the target
-  if (  Mid==0 && Reg == TG_region && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100)
+  if (  Mid==0 && Reg == GetParGeoG()->GetRegTarget() && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100)
   FillYieldMC("yield-true_cut",charge_tr,theta_tr,Ek_tr_tot);
 
   //-------------  MC FIDUCIAL CROSS SECTION (<8 deg)
-  if (  Mid==0 && Reg == TG_region && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100 && theta_tr <= 8.)
+  if (  Mid==0 && Reg == GetParGeoG()->GetRegTarget() && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100 && theta_tr <= 8.)
     FillYieldMC("yield-true_DET",charge_tr,theta_tr,Ek_tr_tot);
 
   //-------------  MC FIDUCIAL CROSS SECTION (<2 deg)
   /*
-  if (  Mid==0 && Reg == TG_region && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100
+  if (  Mid==0 && Reg == GetParGeoG()->GetRegTarget() && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100
   && theta_tr <= 2.  //  myangle // angular aperture < 8 deg
   )
   FillYieldMC("yield-true_DET2",charge_tr,theta_tr,Ek_tr_tot);
@@ -885,6 +921,9 @@ void GlobalRecoAna::MCParticleStudies() {
 }
 
 void GlobalRecoAna::SetupTree(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::SetupTree start"<<endl;
 
   myReader = new TAGactTreeReader("myReader");
   fpNtuGlbTrack = new TAGdataDsc("glbTrack",new TAGntuGlbTrack());
@@ -986,7 +1025,7 @@ void GlobalRecoAna::SetupTree(){
 void GlobalRecoAna::VTanal(TAGpoint *tmp_poi, Int_t &idxCLU){
 
   if(FootDebugLevel(1))
-    cout<<"VTanal start"<<endl;
+    cout<<"GlobalRecoAna::VTanal start"<<endl;
 
   Double_t xp = (tmp_poi->GetPosition()).X();
   Double_t yp = (tmp_poi->GetPosition()).Y();
@@ -1101,7 +1140,7 @@ DiffApp_trkIdx = true;
 void GlobalRecoAna::ITanal(TAGpoint *tmp_poi, Int_t &idxCLU){
 
   if(FootDebugLevel(1))
-    cout<<"ITanal start"<<endl;
+    cout<<"GlobalRecoAna::ITanal start"<<endl;
 
   Double_t xp = (tmp_poi->GetPosition()).X();
   Double_t yp = (tmp_poi->GetPosition()).Y();
@@ -1204,7 +1243,7 @@ DiffApp_trkIdx = true;
 void GlobalRecoAna::MSDanal(TAGpoint *tmp_poi, Int_t &idxCLU) {
 
     if(FootDebugLevel(1))
-      cout<<"MSDanal start"<<endl;
+      cout<<"GlobalRecoAna::MSDanal start"<<endl;
 
     Double_t xp = (tmp_poi->GetPosition()).X();
     Double_t yp = (tmp_poi->GetPosition()).Y();
@@ -1307,7 +1346,7 @@ void GlobalRecoAna::MSDanal(TAGpoint *tmp_poi, Int_t &idxCLU) {
 void GlobalRecoAna::TWanal(TAGpoint *tmp_poi, Int_t &idxCLU){
 
   if(FootDebugLevel(1))
-    cout<<"TWanal start"<<endl;
+    cout<<"GlobalRecoAna::TWanal start"<<endl;
 
   Double_t xp = (tmp_poi->GetPosition()).X();
   Double_t yp = (tmp_poi->GetPosition()).Y();
@@ -1353,7 +1392,7 @@ void GlobalRecoAna::TWanal(TAGpoint *tmp_poi, Int_t &idxCLU){
 void GlobalRecoAna::CALOanal(Int_t clusidx){
 
   if(FootDebugLevel(1))
-    cout<<"CALOanal start"<<endl;
+    cout<<"GlobalRecoAna::CALOanal start"<<endl;
 
     // Bool_t  VtOneTrack = (myVtTr->GetTracksN()==1);
     Int_t Zreco=fGlbTrack->GetTwChargeZ();
@@ -1375,7 +1414,7 @@ void GlobalRecoAna::CALOanal(Int_t clusidx){
 void GlobalRecoAna::FullCALOanal(){
 
   if(FootDebugLevel(1))
-    cout<<"FullCALOanal start"<<endl;
+    cout<<"GlobalRecoAna::FullCALOanal start"<<endl;
 
 
   TAVTntuTrack *myVtTr = (TAVTntuTrack*)fpNtuTrackVtx->GenerateObject();
@@ -1489,6 +1528,9 @@ void GlobalRecoAna::FullCALOanal(){
 
 void GlobalRecoAna::SetMCtruth(map<int, map<int, map<int,vector<int>>>> mapall, int &idx, int &charge){
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::SetMCtruth start"<<endl;
+
   Int_t my_mult(-1);
   Int_t my_charge(-999);
   Int_t my_idx(-999);
@@ -1541,6 +1583,9 @@ if(tmp_size > my_mult) {
 
 void GlobalRecoAna::SetMCtruthBIS(map<int, map<int, map<int,vector<int>>>> mapall, int &idx, int &charge){
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::SetMCtruthBIS start"<<endl;
+
   Int_t my_mult(-1);
   Int_t my_charge(-999);
   Int_t my_idx(-999);
@@ -1569,6 +1614,9 @@ tmp_size = it3->second.size();
 }
 
 void GlobalRecoAna::ComputeMCtruth(Int_t trkid, int &cha, TVector3 &mom, TVector3 &mom_cross, double &ek){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::ComputeMCtruth start"<<endl;
 
   cha = -999, mom.SetXYZ(-999.,-999.,-999.), ek = -999.,  mom_cross.SetXYZ(-999.,-999.,-999.);
 
@@ -1600,6 +1648,9 @@ void GlobalRecoAna::ComputeMCtruth(Int_t trkid, int &cha, TVector3 &mom, TVector
 }
 
 Double_t GlobalRecoAna::ComputeTrkEkin(TAGtrack *fGlbTrack){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::ComputeTrkEkin start"<<endl;
 
   //Double_t Ek_meas = fGlbTrack->GetCalEnergy()/atomassu;
   //Double_t Ek_meas = -1.;
@@ -1672,6 +1723,9 @@ TVector3 caclu_epos = myCAclu->GetPosError();
 
 void GlobalRecoAna::PrintNCharge(){
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::PrintNCharge start"<<endl;
+
   cout<<"-----------NchargeOK/NchargeALL-----------"<<endl;
   if(nchargeall_vt)
     cout<<"VT pix:: "<<((double)nchargeok_vt/(double)nchargeall_vt)*100.<<endl;
@@ -1709,6 +1763,9 @@ void GlobalRecoAna::PrintNCharge(){
 }
 
 void GlobalRecoAna::FillMassPlots(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::FillMassPlots start"<<endl;
 
   Int_t Z_meas=fGlbTrack->GetTwChargeZ();
   ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/chi2min",Z_meas)))->Fill(mass_ana->GetChiValue());
@@ -1750,7 +1807,7 @@ void GlobalRecoAna::FillMassPlots(){
 void GlobalRecoAna::StudyThetaReso(){
 
   if(FootDebugLevel(1))
-    cout<<"StudyThetaReso start"<<endl;
+    cout<<"GlobalRecoAna::StudyThetaReso start"<<endl;
 
   TH1D *hres, *mhres;
   TF1 *fgaus = new TF1("fgaus","gaus(0)",-1,1);
@@ -1889,6 +1946,9 @@ void GlobalRecoAna::StudyThetaReso(){
 
 void GlobalRecoAna::BeforeEventLoop(){
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::BeforeEventLoop start"<<endl;
+
   CampaignChecks();
   ReadParFiles();
   SetupTree();
@@ -1942,6 +2002,9 @@ void GlobalRecoAna::BeforeEventLoop(){
 
 void GlobalRecoAna::AfterEventLoop(){
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::AfterEventLoop start"<<endl;
+
   //stamp luminosity
   string luminosity_name="";
     if (fFlagMC == true){
@@ -1983,6 +2046,9 @@ void GlobalRecoAna::AfterEventLoop(){
 
 bool GlobalRecoAna::TriggerCheck() {
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::TriggerCheck start"<<endl;
+
   //cout <<"TRACK CHARGE: " << fGlbTrack->GetTwChargeZ()<< endl;
 
   for(int ic=0;ic<fGlbTrack->GetPointsN();ic++) {     // from all the points of the track...
@@ -2023,6 +2089,9 @@ bool GlobalRecoAna::TriggerCheck() {
 
 bool GlobalRecoAna::TriggerCheckMC() {
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::TriggerCheckMC start"<<endl;
+
   //cout <<"TRACK CHARGE: " << fGlbTrack->GetTwChargeZ()<< endl;
   int TrkIdMC = fGlbTrack->GetMcMainTrackId();
 
@@ -2062,104 +2131,108 @@ bool GlobalRecoAna::TriggerCheckMC() {
 }
 
 void GlobalRecoAna::GlbTrackPurityStudy(){
-      Int_t tmp_size = 0;
-      Int_t TrkIdMC(-1);
-      Int_t my_mult(-1);
-      bool pure_trk = false;
-      bool clean_trk = false;
-      //loop on meas points of a glb track
 
-      if(FootDebugLevel(1))
-      cout<<"===NEW TRACK with "<<fGlbTrack->GetPointsN()<<" points =="<<endl;
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::GlbTrackPurityStudy start"<<endl;
 
-      map<int, int> mapclu;
-      mapclu.clear();
-      fGlbTrkVec.clear();
+  Int_t tmp_size = 0;
+  Int_t TrkIdMC(-1);
+  Int_t my_mult(-1);
+  bool pure_trk = false;
+  bool clean_trk = false;
+  //loop on meas points of a glb track
 
-      vector<Int_t> vtxpoints, itpoints, msdpoints, twpoints, calpoints; // in principle twpoints and calpoints should be 0 or 1
+  if(FootDebugLevel(1))
+  cout<<"===NEW TRACK with "<<fGlbTrack->GetPointsN()<<" points =="<<endl;
 
-      for(int ic=0;ic<fGlbTrack->GetPointsN();ic++) {   //for every point of the track
+  map<int, int> mapclu;
+  mapclu.clear();
+  fGlbTrkVec.clear();
 
-      TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
-      TString str = tmp_poi->GetDevName();
-      Int_t cluID = -1;
+  vector<Int_t> vtxpoints, itpoints, msdpoints, twpoints, calpoints; // in principle twpoints and calpoints should be 0 or 1
 
-      if(str.Contains(TAVTparGeo::GetBaseName())){//vtx
-       VTanal(tmp_poi, cluID);
-          if(tmp_poi->GetClusterIdx()>=0)
-            vtxpoints.push_back(ic);
-       if(cluID!=-1)
-         mapclu[cluID]++;
-      }
-      if(str.Contains(TAITparGeo::GetBaseName())){//it
-       ITanal(tmp_poi, cluID);
-          if(tmp_poi->GetClusterIdx()>=0)
-            itpoints.push_back(ic);
-       if(cluID!=-1)
-         mapclu[cluID]++;
-      }
+  for(int ic=0;ic<fGlbTrack->GetPointsN();ic++) {   //for every point of the track
 
+  TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
+  TString str = tmp_poi->GetDevName();
+  Int_t cluID = -1;
 
-
-      if(str.Contains(TAMSDparGeo::GetBaseName())){//msd
-       MSDanal(tmp_poi, cluID);
-          if(tmp_poi->GetClusterIdx()>=0)
-            msdpoints.push_back(ic);
-       if(cluID!=-1)
-         mapclu[cluID]++;
-      }
+  if(str.Contains(TAVTparGeo::GetBaseName())){//vtx
+   VTanal(tmp_poi, cluID);
+      if(tmp_poi->GetClusterIdx()>=0)
+        vtxpoints.push_back(ic);
+   if(cluID!=-1)
+     mapclu[cluID]++;
+  }
+  if(str.Contains(TAITparGeo::GetBaseName())){//it
+   ITanal(tmp_poi, cluID);
+      if(tmp_poi->GetClusterIdx()>=0)
+        itpoints.push_back(ic);
+   if(cluID!=-1)
+     mapclu[cluID]++;
+  }
 
 
-      if(str.Contains(TATWparGeo::GetBaseName())){//tw
-          TWanal(tmp_poi, cluID);
-          if(tmp_poi->GetClusterIdx()>=0){
-            twpoints.push_back(ic);
-            calpoints.push_back(max(GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx())->GetMatchCalIdx(),-1));
-            if(GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx())->GetMatchCalIdx()>=0){
-              CALOanal(GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx())->GetMatchCalIdx());
-            }
-          }
 
-       if(cluID!=-1)
-         mapclu[cluID]++;
-      }
-        // if(str.Contains(TACAparGeo::GetBaseName()))// actually the calorimeter is not used by the trackers!
-        //   CALOanal(tmp_poi,cluID);
-      }//end loop on meas points
-      fGlbTrkVec.push_back(vtxpoints); //!
-      fGlbTrkVec.push_back(itpoints);
-      fGlbTrkVec.push_back(msdpoints);
-      fGlbTrkVec.push_back(twpoints);
-      fGlbTrkVec.push_back(calpoints);
-
-      if(FootDebugLevel(1))
-        cout<<"loop on global track hit done"<<endl;
+  if(str.Contains(TAMSDparGeo::GetBaseName())){//msd
+   MSDanal(tmp_poi, cluID);
+      if(tmp_poi->GetClusterIdx()>=0)
+        msdpoints.push_back(ic);
+   if(cluID!=-1)
+     mapclu[cluID]++;
+  }
 
 
-      for(map<int,int>::iterator it=mapclu.begin(); it!=mapclu.end(); it++){
-      if(FootDebugLevel(1))
-       cout<<mapclu.size()<<" :: MAPtrk ["<<it->first<<"]["<<it->second<<"]"<<endl;
-      tmp_size = it->second;
-      if(tmp_size > my_mult){    // track id is the mcId of the most frequent TAGpoint in the track
-       TrkIdMC = it->first;
-       my_mult = tmp_size;
-      }
-      }//close loop on mapclu
-
-
-      if(fFlagMC && TrkIdMC>=0){
-        if(((Double_t)mapclu.at(TrkIdMC))/fGlbTrack->GetPointsN()>=purity_cut){
-   pure_trk = true;
-   npure++;
+  if(str.Contains(TATWparGeo::GetBaseName())){//tw
+      TWanal(tmp_poi, cluID);
+      if(tmp_poi->GetClusterIdx()>=0){
+        twpoints.push_back(ic);
+        calpoints.push_back(max(GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx())->GetMatchCalIdx(),-1));
+        if(GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx())->GetMatchCalIdx()>=0){
+          CALOanal(GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx())->GetMatchCalIdx());
         }
+      }
 
-      if(((Double_t)mapclu.at(TrkIdMC))/fGlbTrack->GetPointsN()==clean_cut){//100% pure track
-        clean_trk = true;
-        nclean++;
-      }
-      }
-      if(FootDebugLevel(1) && fFlagMC)
-      cout<<"IDX TRK = "<<TrkIdMC<<" "<<endl;
+   if(cluID!=-1)
+     mapclu[cluID]++;
+  }
+    // if(str.Contains(TACAparGeo::GetBaseName()))// actually the calorimeter is not used by the trackers!
+    //   CALOanal(tmp_poi,cluID);
+  }//end loop on meas points
+  fGlbTrkVec.push_back(vtxpoints); //!
+  fGlbTrkVec.push_back(itpoints);
+  fGlbTrkVec.push_back(msdpoints);
+  fGlbTrkVec.push_back(twpoints);
+  fGlbTrkVec.push_back(calpoints);
+
+  if(FootDebugLevel(1))
+    cout<<"loop on global track hit done"<<endl;
+
+
+  for(map<int,int>::iterator it=mapclu.begin(); it!=mapclu.end(); it++){
+  if(FootDebugLevel(1))
+   cout<<mapclu.size()<<" :: MAPtrk ["<<it->first<<"]["<<it->second<<"]"<<endl;
+  tmp_size = it->second;
+  if(tmp_size > my_mult){    // track id is the mcId of the most frequent TAGpoint in the track
+   TrkIdMC = it->first;
+   my_mult = tmp_size;
+  }
+  }//close loop on mapclu
+
+
+  if(fFlagMC && TrkIdMC>=0){
+    if(((Double_t)mapclu.at(TrkIdMC))/fGlbTrack->GetPointsN()>=purity_cut){
+     pure_trk = true;
+     npure++;
+    }
+
+    if(((Double_t)mapclu.at(TrkIdMC))/fGlbTrack->GetPointsN()==clean_cut){//100% pure track
+      clean_trk = true;
+      nclean++;
+    }
+  }
+  if(FootDebugLevel(1) && fFlagMC)
+    cout<<"IDX TRK = "<<TrkIdMC<<" "<<endl;
 
    // if(TrkIdMC != )//to do ::: check if our trk index is different than the true (MC) one assigned by toe/genfit
 
@@ -2231,7 +2304,11 @@ void GlobalRecoAna::GlbTrackPurityStudy(){
 
 }
 
-void GlobalRecoAna::AlignmentStudy(int currEvent, int nt){
+void GlobalRecoAna::AlignmentStudy(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::AlignmentStudy start"<<endl;
+
   //-------------- STUDY OF VERTEX AND TW ALLIGNMENT / ROTATIONS
     TAVTntuVertex *vertexContainer = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
     int vertexNumber = vertexContainer->GetVertexN();
@@ -2306,7 +2383,7 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt){
       //Float_t tw_x = fpFootGeo->FromTWLocalToGlobal((twp->GetRowHit())->GetPosition()); // global frame
       //Float_t tw_y = fpFootGeo->FromTWLocalToGlobal((twp->GetColumnHit())->GetPosition());
 
-      if (isPrimaryInEvent == false && nt>0 && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
+      if (isPrimaryInEvent == false && myGlb->GetTracksN()>0 && wdTrig -> GetTriggersStatus()[1] == 1  ) { // if it is a fragment not oxygen
       ((TH2D*)gDirectory->Get("TWpointsDistribution_frag")) -> Fill(twp->GetPositionGlb().X(),twp->GetPositionGlb().Y()); //global frame
 
       } else if (wdTrig -> GetTriggerID() == 40) {
@@ -2334,77 +2411,85 @@ void GlobalRecoAna::AlignmentStudy(int currEvent, int nt){
 }
 
 void GlobalRecoAna::TWAlgoStudy(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::TWAlgoStudy start"<<endl;
+
 //------------- STUDY OF TW CHARGE RECONSTRUCTION ALGORITHM
-          //----- check for TW Ghost Hits in MC particles   (N.B.: it concerns all TW Points, different from the previous study of points in global tracks)
-          int nTWpoints = myTWNtuPt->GetPointsN();
-          //cout << nTWpoints <<endl;
-          for(int ipoint=0; ipoint<nTWpoints; ipoint++) { // for every TWpoint in an event
-            TATWpoint *twp = myTWNtuPt->GetPoint(ipoint);
-            int charge = twp->GetChargeZ();
-            int ID = twp->GetPointMatchMCtrkID();
+  //----- check for TW Ghost Hits in MC particles   (N.B.: it concerns all TW Points, different from the previous study of points in global tracks)
+  int nTWpoints = myTWNtuPt->GetPointsN();
+  //cout << nTWpoints <<endl;
+  for(int ipoint=0; ipoint<nTWpoints; ipoint++) { // for every TWpoint in an event
+    TATWpoint *twp = myTWNtuPt->GetPoint(ipoint);
+    int charge = twp->GetChargeZ();
+    int ID = twp->GetPointMatchMCtrkID();
 
-            if (ID<0) continue;
-            TAMCntuPart* myMcNtuPart = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
-            TAMCpart *mctrk1 = myMcNtuPart->GetTrack(ID);
-            double mass = mctrk1->GetMass();
-            int moth = mctrk1->GetMotherID();
-            TVector3 initPos = mctrk1->GetInitPos();
-            TVector3 initMom = mctrk1->GetInitP();
-            TVector3 finalPos = mctrk1->GetFinalPos();
-            TVector3 finalMom = mctrk1->GetFinalP();
-            int reg = mctrk1->GetRegion();
-            int Z_MC = mctrk1->GetCharge();
-            double time = mctrk1->GetTime();
-            double tof = mctrk1->GetTof();
-            int type = mctrk1->GetType();
-            int baryon = mctrk1->GetBaryon();
-            int dead = mctrk1->GetDead();
-            double InitPmod = pow( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2), 0.5 );
-            double Ekin_point = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass )/(double)baryon*1000.;
-            double CosTheta = initMom(2)/InitPmod;
-            double Theta = TMath::ACos(CosTheta)*180./TMath::Pi();
-            int indexSize = twp->GetMcTracksN();
+    if (ID<0) continue;
+    TAMCntuPart* myMcNtuPart = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
+    TAMCpart *mctrk1 = myMcNtuPart->GetTrack(ID);
+    double mass = mctrk1->GetMass();
+    int moth = mctrk1->GetMotherID();
+    TVector3 initPos = mctrk1->GetInitPos();
+    TVector3 initMom = mctrk1->GetInitP();
+    TVector3 finalPos = mctrk1->GetFinalPos();
+    TVector3 finalMom = mctrk1->GetFinalP();
+    int reg = mctrk1->GetRegion();
+    int Z_MC = mctrk1->GetCharge();
+    double time = mctrk1->GetTime();
+    double tof = mctrk1->GetTof();
+    int type = mctrk1->GetType();
+    int baryon = mctrk1->GetBaryon();
+    int dead = mctrk1->GetDead();
+    double InitPmod = pow( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2), 0.5 );
+    double Ekin_point = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass )/(double)baryon*1000.;
+    double CosTheta = initMom(2)/InitPmod;
+    double Theta = TMath::ACos(CosTheta)*180./TMath::Pi();
+    int indexSize = twp->GetMcTracksN();
 
-            ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix")) -> Fill(charge,Z_MC); //global frame
-            ((TH2D*)gDirectory->Get("devstofAll")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
-
-
-
-
-            //if(charge > 0 && charge < kCharges+1 && moth == primaryID && reg == TG_region && Ekin_point > 100. && finalPos(2) > 190. && momang <= myangle && initPos.x()<sigma_beamTG && initPos.x()>-sigma_beamTG && initPos.y()<sigma_beamTG && initPos.y()>-sigma_beamTG && Ekin_point <= Ekin_max){
-                                                              //NB: 50 IN GSI2021
-            if(charge > 0 && charge <9 && moth == 0 && reg == 50 && finalPos(2) > 190.) {   // i want only the particles generated in the target toward the TW
-
-            ((TH2D*)gDirectory->Get("MC_check/Mixing_matrix")) -> Fill(charge, Z_MC);
-            ((TH2D*)gDirectory->Get("devstof")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
-            if (indexSize == 1){  // if there is not ghosdt hits
-	          ((TH2D*)gDirectory->Get("MC_check/Mixing_matrix_cut"))->Fill(charge, Z_MC);
-	          }
-            }
-
-            //----------- study of re-fragments
-            else if (moth != 0) {
-            ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix2frag")) -> Fill(charge, Z_MC);
-            ((TH2D*)gDirectory->Get("devstof2frag")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
+    ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix")) -> Fill(charge,Z_MC); //global frame
+    ((TH2D*)gDirectory->Get("devstofAll")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
 
 
 
 
-            }
-            else {
-              ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix!")) -> Fill(charge, Z_MC);
-              ((TH2D*)gDirectory->Get("devstof!")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
-              //posizione d'origine
-              ((TH1D*)gDirectory->Get("originPosition")) -> Fill(reg);
+    //if(charge > 0 && charge < kCharges+1 && moth == primaryID && reg == TG_region && Ekin_point > 100. && finalPos(2) > 190. && momang <= myangle && initPos.x()<sigma_beamTG && initPos.x()>-sigma_beamTG && initPos.y()<sigma_beamTG && initPos.y()>-sigma_beamTG && Ekin_point <= Ekin_max){
+                                                      //NB: 50 IN GSI2021
+    if(charge > 0 && charge <9 && moth == 0 && reg == 50 && finalPos(2) > 190.) {   // i want only the particles generated in the target toward the TW
+
+    ((TH2D*)gDirectory->Get("MC_check/Mixing_matrix")) -> Fill(charge, Z_MC);
+    ((TH2D*)gDirectory->Get("devstof")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
+    if (indexSize == 1){  // if there is not ghosdt hits
+    ((TH2D*)gDirectory->Get("MC_check/Mixing_matrix_cut"))->Fill(charge, Z_MC);
+    }
+    }
+
+    //----------- study of re-fragments
+    else if (moth != 0) {
+    ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix2frag")) -> Fill(charge, Z_MC);
+    ((TH2D*)gDirectory->Get("devstof2frag")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
 
 
 
-            }
-          }
-          //------------- end STUDY OF TW CHARGE RECONSTRUCTION ALGORITHM
-          }
 
-void GlobalRecoAna::TrackVsMCStudy(int currEvent, int nt){
+    }
+    else {
+      ((TH2D*)gDirectory->Get("Z_tw_Mixing_matrix!")) -> Fill(charge, Z_MC);
+      ((TH2D*)gDirectory->Get("devstof!")) -> Fill(twp->GetMeanTof(),twp->GetEnergyLoss());
+      //posizione d'origine
+      ((TH1D*)gDirectory->Get("originPosition")) -> Fill(reg);
+
+
+
+    }
+  }
+return;
+}
+
+void GlobalRecoAna::TrackVsMCStudy(){
+
+if(FootDebugLevel(1))
+  cout<<"GlobalRecoAna::TrackVsMCStudy start"<<endl;
+
 N_TrkIdMC_TW =-1;
 TrkIdMC_TW = -1;
 TrkIdMC = -1;
@@ -2413,7 +2498,7 @@ Int_t Z_true = -1;
 
 myfile <<endl<<endl<<"current Event: " <<currEvent ;
 myfile<<endl<< "------- track reconstruction "<< endl;
-for(int it=0;it<nt;it++){ // for every track
+for(int it=0;it<myGlb->GetTracksN();it++){ // for every track
   fGlbTrack = myGlb->GetTrack(it);
   Z_meas = fGlbTrack->GetTwChargeZ();
   myfile<<endl<< "track n° "<< it << endl;
@@ -2557,6 +2642,7 @@ if (  Mid==0 && Reg == 50 &&           // if the particle is generated in the ta
 
 }
 myfile <<endl <<endl;
+return;
 }
 
 void GlobalRecoAna::FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek){
@@ -2663,6 +2749,10 @@ void GlobalRecoAna::FillYieldMC(string folderName, Int_t charge_tr, Double_t the
 
 
 void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::BookYield start"<<endl;
+
   gDirectory->mkdir(path.c_str());
   gDirectory->cd(path.c_str());
   h = new TH1D("charge","",8, 0.5 ,8.5);
@@ -2692,6 +2782,9 @@ void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
 
 void GlobalRecoAna::FragTriggerStudies(){
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::FragTriggerStudies start"<<endl;
+
   TAGWDtrigInfo* wdTrig = 0x0;
   wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware WD
   //wdTrig -> GetTriggerID() == 40              //MB trigger    ==1 for frag trigger
@@ -2717,4 +2810,8 @@ void GlobalRecoAna::FragTriggerStudies(){
 
   }
 
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::FragTriggerStudies done"<<endl;
+
+return;
 }
