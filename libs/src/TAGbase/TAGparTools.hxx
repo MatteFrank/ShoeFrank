@@ -46,6 +46,8 @@ public:
    Bool_t  Eof();
    // Close file
    Bool_t  Close();
+   // Read line item
+   void    ReadLine(TString& line);
    // Read string item
    void    ReadItem(TString& item);
    // Read string item with a key
