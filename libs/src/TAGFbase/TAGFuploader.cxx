@@ -210,7 +210,6 @@ int TAGFuploader::UploadClusIT(){
 int TAGFuploader::UploadClusMSD() {
 
 	TAMSDntuCluster* msdclus = (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object();
-	TAMSDntuPoint* msdpoint = (TAMSDntuPoint*) gTAGroot->FindDataDsc("msdPoint","TAMSDntuPoint")->Object();
 
 	int totClus = 0;
 	int nSensors = ( (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() )->GetSensorsN();
@@ -239,8 +238,13 @@ int TAGFuploader::UploadClusMSD() {
 			Prepare4Strip( clus, m_SensorIDMap->GetMeasID_eventLevel( "MSD", iSensor, iClus ) );
 
 		}
+	}
 
-		if(m_debug > 1)
+	//Print out MSDpoint coordinates if in debug mode
+	if(m_debug > 1)
+	{
+		TAMSDntuPoint* msdpoint = (TAMSDntuPoint*) gTAGroot->FindDataDsc("msdPoint","TAMSDntuPoint")->Object();
+		for( int iSensor = 0; iSensor < nSensors; iSensor++)
 		{
 			if(iSensor%2==1)
 			{
@@ -260,6 +264,7 @@ int TAGFuploader::UploadClusMSD() {
 			}
 		}
 	}
+
 	return totClus;
 }
 
@@ -638,11 +643,11 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	// if (isYView) hit->setStripV();
 	if (isYView) hit->setYview();
 	hit->setPlane( m_SensorIDMap->GetFitPlane(sensorID), sensorID );
-	// cout << "HEREEEEEEEEE" << endl;
-	// cout << "toLab::";
-	// (m_SensorIDMap->GetFitPlane(sensorID)->toLab(TVector2(clus->GetPositionF(),0))).Print(); 
-	// cout << "HEREEEEEEEEE" << endl;
-	// hit->Print();
+	if( m_debug > 1 )
+	{
+		cout << "toLab::";
+		(m_SensorIDMap->GetFitPlane(sensorID)->toLab(TVector2(clus->GetPositionF(),0))).Print(); 
+	}
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 
@@ -679,23 +684,22 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 		cout << "TW glob hit coords::";
 		// TATWparGeo *m_TW_geo = (TATWparGeo *)gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
 		m_GeoTrafo->FromTWLocalToGlobal(point->GetPosition()).Print();
+	}
 
-		}
+	// set point position vector
+	planarCoords(0) = hitPos.x();
+	planarCoords(1) = hitPos.y();
+	TVector3 pixReso = point->GetPosErrorG();
 
-		// set point position vector
-		planarCoords(0) = hitPos.x();
-		planarCoords(1) = hitPos.y();
-		TVector3 pixReso = point->GetPosErrorG();
+	if (m_debug > 1)
+	pixReso.Print();
 
-		if (m_debug > 1)
-		pixReso.Print();
-
-		planarCov.UnitMatrix();
-		for (int k = 0; k < 2; k++)
-		{
-		planarCov[k][k] = pixReso(k)*pixReso(k);
-		if(m_debug > 1) 
-			cout << pixReso(k)*pixReso(k) << endl;
+	planarCov.UnitMatrix();
+	for (int k = 0; k < 2; k++)
+	{
+	planarCov[k][k] = pixReso(k)*pixReso(k);
+	if(m_debug > 1) 
+		cout << pixReso(k)*pixReso(k) << endl;
 	}
 
 	vector<int> mcParticlesInMeasuerement;

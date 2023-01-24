@@ -79,7 +79,7 @@ public:
 
 	void SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, vector<int> *chVect,
 					  TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap,
-					  map<int, vector<int>> *measParticleMC_collection, bool isMC, uint *singleVertexCounter, uint *noVTtrackletEvents);
+					  map<int, vector<int>> *measParticleMC_collection, bool isMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents);
 
 	int FindTrackCandidates();
 	virtual void Categorize() { return; }
@@ -94,6 +94,7 @@ protected:
 	void		CheckPlaneOccupancy();
 	int			FillTrackRepVector();
 	bool		PrefitRequirements(map<string, vector<AbsMeasurement*>>::iterator element);
+	void		CreateDummyTrack();
 
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV);
 
@@ -135,6 +136,7 @@ protected:
 	double m_AMU = 0.9310986964;							///< Conversion betweem mass in GeV and atomic mass unit
 	uint *m_singleVertexCounter;							///< Counter for single vertex events
 	uint *m_noVTtrackletEvents;								///< Counter for events w/ no valid tracklet
+	uint *m_noTWpointEvents;								///< Counter for events w/ no valid TW point
 };
 
 #endif

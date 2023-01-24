@@ -67,7 +67,7 @@ TAGFselectorBase::TAGFselectorBase()
 	//Set default extrapolation tolerances for each detector
 	m_VTtolerance = .5;
 	m_ITtolerance = .5;
-	m_MSDtolerance = 0.5;
+	m_MSDtolerance = .5;
 	m_TWtolerance = 4.;
 }
 
@@ -112,7 +112,8 @@ TAGFselectorBase::~TAGFselectorBase()
 //! \param[in] IsMC boolean flag indicating if the input file is from MC or real data
 //! \param[in] singleVertexCounter Pointer to variable counting events with exactly one vertex
 //! \param[in] noVTtrackletEvents Pointer to variable counting events with no valid VT tracklet for track extrapolation
-void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, vector<int> *chargeVect, TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool IsMC, uint *singleVertexCounter, uint *noVTtrackletEvents)
+//! \param[in] noVTtrackletEvents Pointer to variable counting events with no valid TW point for track extrapolation
+void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, vector<int> *chargeVect, TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool IsMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents)
 {
 	m_allHitMeas = allHitMeas;
 	m_chargeVect = chargeVect;
@@ -122,6 +123,7 @@ void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMe
 	m_IsMC = IsMC;
 	m_singleVertexCounter = singleVertexCounter;
 	m_noVTtrackletEvents = noVTtrackletEvents;
+	m_noTWpointEvents = noTWpointEvents;
 
 	if (m_IsMC)
 		m_McNtuEve = (TAMCntuPart *)gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
@@ -140,6 +142,9 @@ int TAGFselectorBase::FindTrackCandidates()
 
 	if (FillTrackRepVector() != 0)
 		return -1;
+
+	if( TAGrecoManager::GetPar()->EnableEventDisplay() )
+		CreateDummyTrack();
 
 	// fill m_mapTrack
 	Categorize();
@@ -161,7 +166,8 @@ int TAGFselectorBase::FillTrackRepVector()
 
 	if(m_chargeVect->size() < 1)
 	{
-		Error("FillTrackRepVector()", "TW charge vector has non positive length! Vec size::%ld", m_chargeVect->size());
+		// Error("FillTrackRepVector()", "TW charge vector has non positive length! Vec size::%ld", m_chargeVect->size());
+		(*m_noTWpointEvents)++;
 		return -1;
 	}
 	for(int i = 0; i < m_chargeVect->size(); ++i)
@@ -466,6 +472,12 @@ void TAGFselectorBase::FillTrackCategoryMap()
 
 	for(map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
 	{
+		// Handle the dummy track showing all the TW points -> present only when the genfit event display is on
+		if(itTrack->first == -7)
+		{
+			(*m_trackCategoryMap)["dummy"] = new Track(*(itTrack->second));
+			continue;
+		}
 		TString outName;
 		int MeasId = itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
 		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" && m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
@@ -511,6 +523,25 @@ void TAGFselectorBase::FillTrackCategoryMap()
 	}
 }
 
+
+
+void TAGFselectorBase::CreateDummyTrack()
+{
+	int planeTW = m_SensorIDMap->GetFitPlaneTW();
+	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() )	return;
+
+	//If the genfit event display is switched on, create a dummy track to show all the TW points
+	if( TAGrecoManager::GetPar()->EnableEventDisplay() )
+	{
+		Track* dummy = new Track();
+		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
+			AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (*it))->clone();
+				dummy->insertMeasurement( hitToAdd );
+		}
+		if(dummy->getNumPointsWithMeasurement()>0) m_trackTempMap[-7] = new Track(*dummy);
+		delete dummy;
+	}
+}
 
 
 //----------------------------------------------------------------------------------------------------

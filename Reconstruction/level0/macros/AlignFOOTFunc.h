@@ -260,6 +260,8 @@ h = new TH1D(Form("msd_1TrkXmeas_%d",i),"MSD point for events with 1 MSD track o
 
 h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on X view;(Trackpos-cluspos).X[cm];Events",400,-0.02,0.02);
       h = new TH1D(Form("msd_residual1TrkY_%d",i),"Residual of MSD tracks with MSD clusters for the events with 1 MSD track on Y view;(Trackpos-cluspos).Y[cm];Events",400,-0.02,0.02);
+
+      h2 = new TH2D(Form("msd_stripvscluspos_%d",i), Form("msd_stripvscluspos_%d;hit strip;clus local position",i), 640, 0, 640, 200, -5, 5);
     }
 
     h = new TH1D("msd_trk_num","Number of msd tracks per event;Number of msd tracks;Events",21,-0.5,20.5);
@@ -392,18 +394,22 @@ h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clu
     h2 = new TH2D("bmmsd_xx","BM originX vs MSD originX for all the evts;BM originX;MSD originX",600,-3.,3.,600,-3.,3.);
     h2 = new TH2D("bmmsd_yy","BM originY vs MSD originY for all the evts;BM originY;MSD originY",600,-3.,3.,600,-3.,3.);
     h2 = new TH2D("bmmsd_xy","BM originX vs MSD originY for all the evts;BM originX;MSD originY",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("bmmsd_yx","BM originY vs MSD originX for all the evts;BM originY;MSD originX",600,-3.,3.,600,-3.,3.);
     h2 = new TH2D("vtxmsd_xx","VTX originX vs MSD originX for all the evts;VTX originX;MSD originX",600,-3.,3.,600,-3.,3.);
     h2 = new TH2D("vtxmsd_yy","VTX originY vs MSD originY for all the evts;VTX originY;MSD originY",600,-3.,3.,600,-3.,3.);
     h2 = new TH2D("vtxmsd_xy","VTX originX vs MSD originY for all the evts;VTX originX;MSD originY",600,-3.,3.,600,-3.,3.);
+    h2 = new TH2D("vtxmsd_yx","VTX originY vs MSD originX for all the evts;VTX originY;MSD originX",600,-3.,3.,600,-3.,3.);
     
     //msd layers correlations
     for(int i=0;i<msdparGeo->GetStationsN();i++){
       h2 = new TH2D(Form("bmmsd_xx_msdpt_%d",i),"BM originX vs MSD originX for all the evts;BM originX;MSD originX",600,-3.,3.,600,-3.,3.);
       h2 = new TH2D(Form("bmmsd_yy_msdpt_%d",i),"BM originY vs MSD originY for all the evts;BM originY;MSD originY",600,-3.,3.,600,-3.,3.);
       h2 = new TH2D(Form("bmmsd_xy_msdpt_%d",i),"BM originX vs MSD originY for all the evts;BM originX;MSD originY",600,-3.,3.,600,-3.,3.);
+      h2 = new TH2D(Form("bmmsd_yx_msdpt_%d",i),"BM originY vs MSD originX for all the evts;BM originY;MSD originX",600,-3.,3.,600,-3.,3.);
       h2 = new TH2D(Form("vtmsd_xx_msdpt_%d",i),"VT originX vs MSD originX for all the evts;VT originX;MSD originX",600,-3.,3.,600,-3.,3.);
       h2 = new TH2D(Form("vtmsd_yy_msdpt_%d",i),"VT originY vs MSD originY for all the evts;VT originY;MSD originY",600,-3.,3.,600,-3.,3.);
       h2 = new TH2D(Form("vtmsd_xy_msdpt_%d",i),"VT originX vs MSD originY for all the evts;VT originX;MSD originY",600,-3.,3.,600,-3.,3.);
+      h2 = new TH2D(Form("vtmsd_yx_msdpt_%d",i),"VT originY vs MSD originX for all the evts;VT originY;MSD originX",600,-3.,3.,600,-3.,3.);
       
       h2 = new TH2D(Form("bmmsd_x_msdhitstrip_%d",i),"BM originX vs MSD Strip for all the evts;BM originX;MSD Strip",600,-3.,3.,msdparGeo->GetStripsN(),0.,msdparGeo->GetStripsN());
       h2 = new TH2D(Form("bmmsd_y_msdhitstrip_%d",i),"BM originY vs MSD Strip for all the evts;BM originY;MSD Strip",600,-3.,3.,msdparGeo->GetStripsN(),0.,msdparGeo->GetStripsN());
@@ -414,6 +420,26 @@ h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clu
       h2 = new TH2D(Form("vtmsd_x_msdhitpos_%d",i),"VT originX vs MSD pos for all the evts;VT originX;MSD Pos[cm]",600,-3.,3.,600,-3.,3.);
       h2 = new TH2D(Form("vtmsd_y_msdhitpos_%d",i),"VT originY vs MSD pos for all the evts;VT originY;MSD Pos[cm]",600,-3.,3.,600,-3.,3.);
     }
+      h2 = new TH2D("bmtw_xx","BM originX vs TW pt X for all the evts;BM originX;TW pt X[cm]",600,-3.,3.,100,-25.,25.);
+      h2 = new TH2D("bmtw_yy","BM originY vs TW pt Y for all the evts;BM originY;TW pt Y[cm]",600,-3.,3.,100,-25.,25.);
+      h2 = new TH2D("vttw_xx","VT originX vs TW pt X for all the evts;VT originX;TW pt X[cm]",600,-3.,3.,100,-25.,25.);
+      h2 = new TH2D("vttw_yy","VT originY vs TW pt Y for all the evts;VT originY;TW pt Y[cm]",600,-3.,3.,100,-25.,25.);
+      h2 = new TH2D("msd0tw_yy","MSD0 pt Y vs TW pt Y for all the evts;MSD0 pt Y;TW pt Y[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("msd0tw_xx","MSD0 pt X vs TW pt X for all the evts;MSD0 pt X;TW pt X[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("msd1tw_xx","MSD1 pt X vs TW pt X for all the evts;MSD1 pt X;TW pt X[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("msd1tw_yy","MSD1 pt Y vs TW pt Y for all the evts;MSD1 pt Y;TW pt Y[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("msd2tw_xx","MSD2 pt X vs TW pt X for all the evts;MSD2 pt X;TW pt X[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("msd2tw_yy","MSD2 pt Y vs TW pt Y for all the evts;MSD2 pt Y;TW pt Y[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("glbbmtw_xx","BM originX vs TW pt X for all the evts;BM originX;TW pt X[cm]",600,-3.,3.,100,-25.,25.);
+      h2 = new TH2D("glbbmtw_yy","BM originY vs TW pt Y for all the evts;BM originY;TW pt Y[cm]",600,-3.,3.,100,-25.,25.);
+      h2 = new TH2D("glbvttw_xx","VT originX vs TW pt X for all the evts;VT originX;TW pt X[cm]",600,-3.,3.,100,-25.,25.);
+      h2 = new TH2D("glbvttw_yy","VT originY vs TW pt Y for all the evts;VT originY;TW pt Y[cm]",600,-3.,3.,100,-25.,25.);
+      h2 = new TH2D("glbmsd0tw_yy","MSD0 pt Y vs TW pt Y for all the evts;MSD0 pt Y;TW pt Y[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("glbmsd0tw_xx","MSD0 pt X vs TW pt X for all the evts;MSD0 pt X;TW pt X[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("glbmsd1tw_xx","MSD1 pt X vs TW pt X for all the evts;MSD1 pt X;TW pt X[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("glbmsd1tw_yy","MSD1 pt Y vs TW pt Y for all the evts;MSD1 pt Y;TW pt Y[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("glbmsd2tw_xx","MSD2 pt X vs TW pt X for all the evts;MSD2 pt X;TW pt X[cm]",600,-5.,5.,100,-25.,25.);
+      h2 = new TH2D("glbmsd2tw_yy","MSD2 pt Y vs TW pt Y for all the evts;MSD2 pt Y;TW pt Y[cm]",600,-5.,5.,100,-25.,25.);
   gDirectory->cd("..");
   file_out->cd("..");
 
@@ -513,6 +539,13 @@ void MSD(){
 //see forward comment
       myfill(Form("MSD/msd_clspos_msdsys_%d",i), msdclus->GetPosition().Y());
       myfill(Form("MSD/msd_clspos_glbsys_%d",i), msdclus->GetPositionG().Y());
+      float coord;
+      if(msdclus->GetPlaneView() == 0)
+        coord = msdclus->GetPositionG().X();
+      else
+        coord = msdclus->GetPositionG().Y();
+      for(auto it = msdclus->GetListOfStrips()->begin(); it != msdclus->GetListOfStrips()->end(); ++it)
+        myfill(Form("MSD/msd_stripvscluspos_%d",i), ((TAMSDhit*)(*it))->GetStrip(), coord);
     }
   }
   myfill("MSD/msd_cls_num_total",totalmsdnclus);
@@ -740,6 +773,16 @@ void AlignTW(Int_t layer){
 
   TString trkname="TWalign/track_projXTW";
   TString twname="TWalign/tw_Xbar";
+
+  // for(int layer=0; layer<=1; ++layer)
+  // {
+  //   for(int bar=0;bar<20;++bar)
+  //   {
+  //     cout << layer << "\t" << bar << "\t";
+  //     (twparGeo->GetBarPosition(layer,bar)).Print();
+  //   }
+  // }
+
 
   TH1D *trkplt=((TH1D*)gDirectory->Get((layer==0 ? "TWalign/track_projXTW":"TWalign/track_projYTW")));
   TH1D *twplt=((TH1D*)gDirectory->Get((layer==0 ? "TWalign/tw_Xbar":"TWalign/tw_Ybar")));
@@ -1202,10 +1245,11 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
 //FIll the control plots to check the correlation between trackers
 void FillCorr(){
 
-  Bool_t bmcheck=false, vtcheck=false, msdcheck=false;
+  Bool_t bmcheck=false, vtcheck=false, msdcheck=false, twcheck = false;
   TAVTtrack *vttrack;
   TABMtrack* bmtrack;
   TAMSDtrack* msdtrack;
+  TATWpoint* twpoint;
   
   //select events with only one track per detector
   if(IncludeBM){
@@ -1232,6 +1276,15 @@ void FillCorr(){
     }
   }
 
+  if(IncludeTW)
+  {
+    if(twNtuPoint->GetPointsN() == 1)
+    {
+      twpoint = twNtuPoint->GetPoint(0);
+      twcheck = true;
+    }
+  }
+
   if(bmcheck && vtcheck){
     myfill("CORR/bmvtx_xx",bmtrack->GetOrigin().X(),vttrack->GetOrigin().X());
     myfill("CORR/bmvtx_yy",bmtrack->GetOrigin().Y(),vttrack->GetOrigin().Y());
@@ -1241,11 +1294,27 @@ void FillCorr(){
     myfill("CORR/bmmsd_xx",bmtrack->GetOrigin().X(),msdtrack->GetOrigin().X());
     myfill("CORR/bmmsd_yy",bmtrack->GetOrigin().Y(),msdtrack->GetOrigin().Y());
     myfill("CORR/bmmsd_xy",bmtrack->GetOrigin().X(),msdtrack->GetOrigin().Y());
+    myfill("CORR/bmmsd_yx",bmtrack->GetOrigin().Y(),msdtrack->GetOrigin().X());
+  }
+  if(bmcheck && twcheck)
+  {
+    myfill("CORR/bmtw_xx",bmtrack->GetOrigin().X(),twpoint->GetPositionG().X());
+    myfill("CORR/bmtw_yy",bmtrack->GetOrigin().Y(),twpoint->GetPositionG().Y());
+    myfill("CORR/glbbmtw_xx",bmtrack->GetOrigin().X(),twpoint->GetPositionGlb().X());
+    myfill("CORR/glbbmtw_yy",bmtrack->GetOrigin().Y(),twpoint->GetPositionGlb().Y());
   }
   if(vtcheck && msdcheck){
     myfill("CORR/vtxmsd_xx",vttrack->GetOrigin().X(),msdtrack->GetOrigin().X());
     myfill("CORR/vtxmsd_yy",vttrack->GetOrigin().Y(),msdtrack->GetOrigin().Y());
     myfill("CORR/vtxmsd_xy",vttrack->GetOrigin().X(),msdtrack->GetOrigin().Y());
+    myfill("CORR/vtxmsd_yx",vttrack->GetOrigin().Y(),msdtrack->GetOrigin().X());
+  }
+  if(vtcheck && twcheck)
+  {
+    myfill("CORR/vttw_xx",vttrack->GetOrigin().X(),twpoint->GetPositionG().X());
+    myfill("CORR/vttw_yy",vttrack->GetOrigin().Y(),twpoint->GetPositionG().Y());
+    myfill("CORR/glbvttw_xx",vttrack->GetOrigin().X(),twpoint->GetPositionGlb().X());
+    myfill("CORR/glbvttw_yy",vttrack->GetOrigin().Y(),twpoint->GetPositionGlb().Y());
   }
 
 //Check correlation on msd sensors:
@@ -1254,14 +1323,23 @@ for(int i=0;i<msdparGeo->GetStationsN();i++){
   for(int k=0;k<msdNtuPoint->GetPointsN(i);k++){
     TAMSDpoint* msdpoint=msdNtuPoint->GetPoint(i,k);
     if(bmcheck){
-      myfill(Form("CORR/bmmsd_xx_msdpt_%d",i),bmtrack->GetOrigin().X(),msdpoint->GetPosition().X());
-      myfill(Form("CORR/bmmsd_yy_msdpt_%d",i),bmtrack->GetOrigin().Y(),msdpoint->GetPosition().Y());
-      myfill(Form("CORR/bmmsd_xy_msdpt_%d",i),bmtrack->GetOrigin().X(),msdpoint->GetPosition().Y());
+      myfill(Form("CORR/bmmsd_xx_msdpt_%d",i),bmtrack->GetOrigin().X(),msdpoint->GetPositionG().X());
+      myfill(Form("CORR/bmmsd_yy_msdpt_%d",i),bmtrack->GetOrigin().Y(),msdpoint->GetPositionG().Y());
+      myfill(Form("CORR/bmmsd_xy_msdpt_%d",i),bmtrack->GetOrigin().X(),msdpoint->GetPositionG().Y());
+      myfill(Form("CORR/bmmsd_yx_msdpt_%d",i),bmtrack->GetOrigin().Y(),msdpoint->GetPositionG().X());
     }
     if(vtcheck){
-      myfill(Form("CORR/vtmsd_xx_msdpt_%d",i),vttrack->GetOrigin().X(),msdpoint->GetPosition().X());
-      myfill(Form("CORR/vtmsd_yy_msdpt_%d",i),vttrack->GetOrigin().Y(),msdpoint->GetPosition().Y());
-      myfill(Form("CORR/vtmsd_xy_msdpt_%d",i),vttrack->GetOrigin().X(),msdpoint->GetPosition().Y());
+      myfill(Form("CORR/vtmsd_xx_msdpt_%d",i),vttrack->GetOrigin().X(),msdpoint->GetPositionG().X());
+      myfill(Form("CORR/vtmsd_yy_msdpt_%d",i),vttrack->GetOrigin().Y(),msdpoint->GetPositionG().Y());
+      myfill(Form("CORR/vtmsd_xy_msdpt_%d",i),vttrack->GetOrigin().X(),msdpoint->GetPositionG().Y());
+      myfill(Form("CORR/vtmsd_yx_msdpt_%d",i),vttrack->GetOrigin().Y(),msdpoint->GetPositionG().X());
+    }
+    if(twcheck)
+    {
+      myfill(Form("CORR/msd%itw_xx",i),msdpoint->GetPositionG().X(),twpoint->GetPositionG().X());
+      myfill(Form("CORR/msd%itw_yy",i),msdpoint->GetPositionG().Y(),twpoint->GetPositionG().Y());
+      myfill(Form("CORR/glbmsd%itw_xx",i),msdpoint->GetPositionG().X(),twpoint->GetPositionG().X());
+      myfill(Form("CORR/glbmsd%itw_yy",i),msdpoint->GetPositionG().Y(),twpoint->GetPositionG().Y());
     }
   }
   

@@ -448,6 +448,11 @@ void TAGFselectorStandard::CategorizeMSD()	{
 					distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
 					strip = "Y";
 				}
+				if( m_debug > 1 )
+				{
+					cout << "CHECK MATCH! strip" << strip << " meas::" << (*it)->getRawHitCoords()(0) << " guess::";
+					guessOnMSD.Print();
+				}
 
 				// find hit at minimum distance
 				if ( distanceFromHit < distanceInY ){

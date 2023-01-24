@@ -94,6 +94,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 
 	m_singleVertexCounter = 0;
 	m_noVTtrackletEvents = 0;
+	m_noTWpointEvents = 0;
 }
 
 
@@ -218,7 +219,7 @@ Bool_t TAGactKFitter::Action()	{
 	else
 		Error("TAGactKFitter::Action()", "TAGrecoManager::GetPar()->PreselectStrategy() not defined"), exit(0);
 
-	m_selector->SetVariables(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
+	m_selector->SetVariables(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents, &m_noTWpointEvents);
 
 	if (m_selector->FindTrackCandidates() >= 0)
 	{
@@ -330,6 +331,7 @@ void TAGactKFitter::Finalize() {
 
 	cout << "Single vertex events::" << m_singleVertexCounter << endl;
 	cout << "Events w/out valid VT tracklets::" << m_noVTtrackletEvents << endl;
+	cout << "Events w/out valid TW point::" << m_noTWpointEvents << endl;
 
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )
@@ -741,7 +743,16 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 	
 	// loop over all hit category
 	for ( map<TString,Track*>::iterator trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt) {
-
+		if(trackIt->first == "dummy")
+		{
+			trackIt->second->setStateSeed(TVector3(0,0,0), TVector3(0,0,10));
+			trackIt->second->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( 8 )));
+			KalmanFitter* preFitter = new KalmanFitter(1, 1e-3);
+	    	preFitter->processTrackWithRep( trackIt->second, trackIt->second->getCardinalRep() );
+			m_vectorConvergedTrack.push_back(trackIt->second);
+			delete preFitter;
+			continue;
+		}
 		
 		
 		vector<string> tok = TAGparTools::Tokenize( trackIt->first.Data() , "_" );
@@ -893,8 +904,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
-		if (m_vectorConvergedTrack.size() > 1)
-			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << "display->addEvent size " << m_vectorConvergedTrack.size() << " at position " << m_eventDisplayCounter << "\n";
+		if (m_vectorConvergedTrack.size() > 2)
+			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << " display->addEvent size " << m_vectorConvergedTrack.size() - 1 << " at position " << m_eventDisplayCounter << "\n";
 		m_eventDisplayCounter++;
 		display->addEvent(m_vectorConvergedTrack);
 	}
@@ -1857,7 +1868,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;
 	if( chargeFromTW < 1 || chargeFromTW > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber )
 	{
-		Info("CheckChargeHypothesis()", "Wrong evaluation of TW charge for track candidate %s. No check performed...", PartName->c_str());
+		// Info("CheckChargeHypothesis()", "Wrong evaluation of TW charge for track candidate %s. No check performed...", PartName->c_str());
 		return;
 	}
 
