@@ -350,15 +350,20 @@ void TAGrunManager::Print(Option_t* opt) const
 
    } else {
       Int_t i = fRunNumber;
-      cout  << "Current run number:     " << fRunNumber << endl;
-      cout  << "  Daq events:           " << fRunParameter.at(i).DaqEvts << endl;
-      cout  << "  Duration:             " << fRunParameter.at(i).Duration << " s" << endl;
-      cout  << "  Daq Rate:             " << fRunParameter.at(i).DaqRate << " Hz" << endl;
+      Int_t duration = fRunParameter.at(i).Duration;
+      Int_t minutes  = duration / 60;
+      Int_t seconds  = duration % 60;
+      Int_t hours    = minutes  / 60;
+      minutes        = minutes  % 60;
+      
+      printf("\nCurrent run number:     %d\n", fRunNumber);
+      printf("  Daq events:           %d %03d\n", fRunParameter.at(i).DaqEvts/1000, fRunParameter.at(i).DaqEvts % 1000);
+      printf("  Duration:             %d s [%02dh:%02dmin:%02ds]\n", duration, hours, minutes, seconds);
+      printf("  Daq Rate:             %d Hz\n", fRunParameter.at(i).DaqRate);
 
       Int_t type = fRunParameter.at(i).RunType;
-      cout  << "  Run Beam:             " << fTypeParameter.at(type).Beam.Data() << endl;
-      cout  << "  Run Beam Energy:      " << fTypeParameter.at(type).BeamEnergy << " MeV/u" << endl;
-      cout  << "  Run Target:           " << fTypeParameter.at(type).Target.Data() << endl;
-      cout  << endl;
+      printf("  Run Beam:             %s\n",         fTypeParameter.at(type).Beam.Data());
+      printf("  Run Beam Energy:      %.1f MeV/u\n", fTypeParameter.at(type).BeamEnergy);
+      printf("  Run Target:           %s\n\n",         fTypeParameter.at(type).Target.Data());
    }
 }
