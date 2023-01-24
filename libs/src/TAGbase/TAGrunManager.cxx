@@ -37,10 +37,6 @@ TAGrunManager::TAGrunManager(const TString exp, Int_t runNumber)
    if (fCampaignName.IsNull()) {
       Error("TAGrunManager()", "No campaign name set, please set the campaign");
    }
-   
-   if (runNumber == -1) {
-      Error("TAGrunManager()", "No run number set, please set the run number");
-   }
 }
 
 //_____________________________________________________________________________

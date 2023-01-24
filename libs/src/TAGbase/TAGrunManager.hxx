@@ -70,6 +70,13 @@ public:
    //! Get run array of campaign
    const TArrayI&       GetRunArray()            const { return fRunArray;           }
    
+   //! Get run number
+   Int_t                GetRunNumber()           const { return fRunNumber;          }
+
+   //! Set run number
+   void                 SetRunNumber(Int_t run)        { fRunNumber = run ;          }
+
+   
    //! Get parameter for a given run type
    TypeParameter_t&     GetTypePar(Int_t idx)          { return fTypeParameter[idx]; }
    //! Get parameter for a given run
