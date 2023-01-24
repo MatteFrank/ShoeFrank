@@ -158,6 +158,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fCampManager = new TAGcampaignManager(expName);
    fCampManager->FromFile();
 
+   // load run file
+   fRunManager = new TAGrunManager(expName);
+   
    // Save run info
    gTAGroot->SetRunNumber(fRunNumber);
    gTAGroot->SetCampaignName(fExpName);
@@ -223,6 +226,12 @@ void BaseReco::CampaignChecks()
     Error("CampaignChecks()", "Trying to read back raw data file while referenced as MC data in campaign file");
     exit(0);
   }
+   
+   // print information of run
+   if (fRunManager->FromFile()) {
+      fRunManager->SetRunNumber(fRunNumber);
+      fRunManager->Print();
+   }
 }
 
 //__________________________________________________________

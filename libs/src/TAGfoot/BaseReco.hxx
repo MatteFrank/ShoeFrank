@@ -17,6 +17,7 @@
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TAGcampaignManager.hxx"
+#include "TAGrunManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAGbaseWDparTime.hxx"
@@ -387,6 +388,7 @@ protected:
 
    TString               fExpName;        ///< Experiment name
    TAGcampaignManager*   fCampManager;    ///< Campaign manager
+   TAGrunManager*        fRunManager;     ///< Run manager
    Int_t                 fRunNumber;      ///< Run number
    TAGroot*              fTAGroot;        ///< pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;       ///< trafo prointer
