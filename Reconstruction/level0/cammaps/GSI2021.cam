@@ -29,7 +29,7 @@ NumberFiles: 4
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI2021/TAGdetector.geo": 4100; 4271; 4319;
+"./geomaps/GSI2021/TAGdetector.geo": 4100; 4221; 4244; 4271; 4288; 4305; 4311; 4314; 4319;
 
 DetectorName: "VT"
 NumberFiles: 3
