@@ -24,8 +24,12 @@ CALCIUM      20           40.078           1.550
 TIN          50          118.710           7.310           
 TUNGSTEN     74          183.84           19.30           
 TITANIUM     22           47.867           4.540
-COBALT	     27	   	  58.9332	   8.9
+COBALT       27           58.9332          8.9
 NICKEL       28           58.6934          8.902
-GERMANIU     32	     	  72.61            5.323
-SAMARIUM     62	    	 150.36	      	   7.46
-BISMUTH	     83	    	 208.98	       	   9.747
+GERMANIU     32          72.61            5.323
+SAMARIUM     62          150.36            7.46
+BISMUTH      83          208.98            9.747
+NEODYMIU     60          144.2             6.9
+BORON         5          10.81             2.37
+DYSPROSI     66          162.5             8.55
+NIOBIUM      41           92.91            8.57
