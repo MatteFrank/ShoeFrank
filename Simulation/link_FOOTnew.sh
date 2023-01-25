@@ -40,7 +40,7 @@ $FLUPRO/flutil/fff  mgdraw_lib.f
 $FLUPRO/flutil/fff  source.f
 $FLUPRO/flutil/fff  UpdateCurrentParticle.f
 
-$FLUPRO/flutil/ldpmqmdnw -m fluka PRO/usrini.o usrout.o PRO/usreou.o usrein.o mgdraw.o mgdraw_lib.o source.o UpdateCurrentParticle.o -o fluka_FOOT.exe
+$FLUPRO/flutil/ldpmqmd -m fluka PRO/usrini.o usrout.o PRO/usreou.o usrein.o mgdraw.o mgdraw_lib.o source.o UpdateCurrentParticle.o -o fluka_FOOT.exe
 
 rm *.o  PRO/*.o
 if [ "$TARGET_MACHINE" = "Darwin" ] ; then
