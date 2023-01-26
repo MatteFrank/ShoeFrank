@@ -108,6 +108,9 @@ Bool_t TAGrunManager::FromFile(TString ifile)
    
    fFileStream->Close();
 
+   Int_t type = fRunParameter.at(fRunNumber).RunType;
+   fCurType   = fTypeParameter.at(type);
+   
    return true;
 }
 
@@ -215,7 +218,7 @@ void TAGrunManager::DecodeTypeLine(TString& line)
    if(FootDebugLevel(1))
       printf("Target: %s\n", target.Data());
 
-   // Total number of events
+   // Target size & total number of events
    i++;
    p = 0;
    while (line[i] != '\"') {
@@ -224,12 +227,18 @@ void TAGrunManager::DecodeTypeLine(TString& line)
    }
    buf[p-1] = '\0';
    
-   TString evtTot = buf;
-   typeParameter.TotalEvts = evtTot.Atoi();
+   Float_t size;
+   Int_t evtTot;
+   sscanf(buf, "%f %d", &size, &evtTot);
+   
+   typeParameter.TargetSize = size;
+   typeParameter.TotalEvts = evtTot;
 
-   if(FootDebugLevel(1))
-      printf("Total Events: %d\n", evtTot.Atoi());
-
+   if(FootDebugLevel(1)) {
+      printf("Target size: %.1f\n", size);
+      printf("Total Events: %d\n", evtTot);
+   }
+   
    // Comments
    i++;
    p = 0;
@@ -340,6 +349,7 @@ void TAGrunManager::Print(Option_t* opt) const
          cout  << "  Type Beam:     " << fTypeParameter.at(i).Beam.Data() << endl;
          cout  << "  Beam Energy:   " << fTypeParameter.at(i).BeamEnergy << endl;
          cout  << "  Type Target:   " << fTypeParameter.at(i).Target.Data() << endl;
+         cout  << "  Target Size:   " << fTypeParameter.at(i).TargetSize << endl;
          cout  << "  Total Events:  " << fTypeParameter.at(i).TotalEvts << endl;
          cout  << "  Comments:      " << fTypeParameter.at(i).Comments.Data() << endl;
 
@@ -364,6 +374,7 @@ void TAGrunManager::Print(Option_t* opt) const
       Int_t type = fRunParameter.at(i).RunType;
       printf("  Run Beam:             %s\n",         fTypeParameter.at(type).Beam.Data());
       printf("  Run Beam Energy:      %.1f MeV/u\n", fTypeParameter.at(type).BeamEnergy);
-      printf("  Run Target:           %s\n\n",         fTypeParameter.at(type).Target.Data());
+      printf("  Run Target:           %s\n",         fTypeParameter.at(type).Target.Data());
+      printf("  Run Target:           %.1f cm\n\n",       fTypeParameter.at(type).TargetSize);
    }
 }

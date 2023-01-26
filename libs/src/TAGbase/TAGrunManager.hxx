@@ -30,6 +30,7 @@ public:
       TString   Beam;        ///< Beam element
       Float_t   BeamEnergy;  ///< Beam energy per nucleon
       TString   Target;      ///< Target element
+      Float_t   TargetSize;  ///< Target size
       Int_t     TotalEvts;   ///< Total event niumber
       TString   Comments;    ///< Comments
    };
@@ -49,11 +50,12 @@ public:
    };
 
 private:
-   TAGparTools*   fFileStream;     ///< File stream
-   TString        fCampaignName;   ///< Current campaign name
-   Int_t          fRunNumber;      ///< Current campaign number
-   TString        fName;           ///< Campaign name
-   TArrayI        fRunArray;       ///< Run array
+   TAGparTools*    fFileStream;     ///< File stream
+   TString         fCampaignName;   ///< Current campaign name
+   Int_t           fRunNumber;      ///< Current campaign number
+   TString         fName;           ///< Campaign name
+   TArrayI         fRunArray;       ///< Run array
+   TypeParameter_t fCurType;        ///< Current type parameter
 
    map<int, TypeParameter_t> fTypeParameter; ///< Run type parameter
    map<int, RunParameter_t>  fRunParameter; ///< Run type parameter
@@ -76,6 +78,8 @@ public:
    //! Set run number
    void                 SetRunNumber(Int_t run)        { fRunNumber = run ;          }
 
+   //! Get Current type
+   TypeParameter_t      GetCurrentType()         const { return fCurType ;           }
    
    //! Get parameter for a given run type
    TypeParameter_t&     GetTypePar(Int_t idx)          { return fTypeParameter[idx]; }
