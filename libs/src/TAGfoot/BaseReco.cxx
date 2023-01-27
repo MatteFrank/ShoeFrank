@@ -233,10 +233,10 @@ void BaseReco::CampaignChecks()
       fRunManager->Print();
       
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-      Int_t A_beam      = parGeo->GetBeamPar().AtomicMass;
-      TString ion_name  = parGeo->GetBeamPar().Material;
-      Int_t kinE_beam   = int(parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev());
-      TString beam      = Form("%d%s", A_beam, ion_name.Data());
+      Int_t Abeam       = parGeo->GetBeamPar().AtomicMass;
+      TString beamName  = parGeo->GetBeamPar().Material;
+      TString beam      = Form("%d%s", Abeam, beamName.Data());
+      Int_t energyBeam  = int(parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev());
       TString target    = parGeo->GetTargetPar().Material;
       Float_t tgtSize   = parGeo->GetTargetPar().Size[2];
 
@@ -245,8 +245,8 @@ void BaseReco::CampaignChecks()
       TString targetType  = fRunManager->GetCurrentType().Target;
       Float_t tgtSizeType = fRunManager->GetCurrentType().TargetSize;
 
-      if (kinE_beam != energyType)
-         Error("CampaignChecks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", kinE_beam, energyType);
+      if (energyBeam != energyType)
+         Error("CampaignChecks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
       
       if (beam != beamType)
          Error("CampaignChecks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
