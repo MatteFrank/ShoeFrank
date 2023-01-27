@@ -251,7 +251,6 @@ void BaseReco::CampaignChecks()
       if (beam != beamType)
          Error("CampaignChecks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
       
-<<<<<<< HEAD
       if (target[0] != targetType[0])
          Error("CampaignChecks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
       
