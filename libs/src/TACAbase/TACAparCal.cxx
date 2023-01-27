@@ -31,8 +31,10 @@ TACAparCal::TACAparCal()
 //! Destructor
 TACAparCal::~TACAparCal()
 {
-  if (fMapCal)
-    delete fMapCal;
+  if (fMapCal!=nullptr)
+  {
+    free (fMapCal);
+  }
 }
 
 //_____________________________________________________________________
@@ -77,31 +79,31 @@ Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
 
 
 //_______________________________________________
-//! Get temparture parameter
+//! Get charge equalisation parameter
 //!
 //! \param[in] crysId crystal id
-Double_t TACAparCal::GetTemperatureCry(Int_t crysId)
+Double_t TACAparCal::GetChargeEqParam(Int_t crysId)
 {
-   return fMapCal->GetTemperatureCry(crysId);
+   return fMapCal->GetChargeEqParam(crysId);
 }
 
 //_______________________________________________
-//! Get temparture equalized parameter
+//! Get energy calibration parameter
 //!
-//! \param[in] crysId crystal id
-Double_t TACAparCal::GetEqualiseCry(Int_t crysId)
+//! \param[in] ParameterNumber paramenter id
+Double_t TACAparCal::GetADC2EnergyParam(UInt_t ParameterNumber)
 {
-   return fMapCal->GetEqualiseCry(crysId);
+   return fMapCal->GetADC2EnergyParam(ParameterNumber);
 }
 
 //_______________________________________________
-//! Get energy loss parameter
+//! Get temperature parameter
 //!
 //! \param[in] crysId crystal id
 //! \param[in] ParameterNumber paramenter id
-Double_t TACAparCal::GetElossParam(Int_t crysId, UInt_t ParameterNumber)
+Double_t TACAparCal::GetADC2TempParam(Int_t crysId, UInt_t ParameterNumber)
 {
-   return fMapCal->GetElossParam(crysId, ParameterNumber);
+   return fMapCal->GetADC2TempParam(crysId, ParameterNumber);
 }
 
 //_____________________________________________________________________

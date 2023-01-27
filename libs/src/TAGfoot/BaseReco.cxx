@@ -130,6 +130,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fgVtxTrackingAlgo("Full"),
    fgItrTrackingAlgo("Full"),
    fgMsdTrackingAlgo("Full"),
+   fgCalClusterAlgo("Padme"),
    fFlagZtrueMC(false),
    fFlagZrecPUoff(false),
    fFlagZmatchTw(false),
@@ -157,6 +158,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fCampManager = new TAGcampaignManager(expName);
    fCampManager->FromFile();
 
+   // load run file
+   fRunManager = new TAGrunManager(expName);
+   
    // Save run info
    gTAGroot->SetRunNumber(fRunNumber);
    gTAGroot->SetCampaignName(fExpName);
@@ -222,6 +226,37 @@ void BaseReco::CampaignChecks()
     Error("CampaignChecks()", "Trying to read back raw data file while referenced as MC data in campaign file");
     exit(0);
   }
+   
+   // print information of run
+   fRunManager->SetRunNumber(fRunNumber);
+   if (fRunManager->FromFile()) {
+      fRunManager->Print();
+      
+      TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
+      Int_t A_beam      = parGeo->GetBeamPar().AtomicMass;
+      TString ion_name  = parGeo->GetBeamPar().Material;
+      Int_t kinE_beam   = int(parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev());
+      TString beam      = Form("%d%s", A_beam, ion_name.Data());
+      TString target    = parGeo->GetTargetPar().Material;
+      Float_t tgtSize   = parGeo->GetTargetPar().Size[2];
+
+      TString beamType    = fRunManager->GetCurrentType().Beam;
+      Int_t energyType    = (int)fRunManager->GetCurrentType().BeamEnergy;
+      TString targetType  = fRunManager->GetCurrentType().Target;
+      Float_t tgtSizeType = fRunManager->GetCurrentType().TargetSize;
+
+      if (kinE_beam != energyType)
+         Error("CampaignChecks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", kinE_beam, energyType);
+      
+      if (beam != beamType)
+         Error("CampaignChecks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
+      
+      if (target[0] != targetType[0])
+         Error("CampaignChecks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
+      
+      if (tgtSize != tgtSizeType)
+         Error("CampaignChecks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
+   }
 }
 
 //__________________________________________________________
@@ -962,7 +997,18 @@ void BaseReco::CreateRecActionCa()
    if (fFlagMC)
       TACAactNtuCluster::DisableChargeThres();
    
-   fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpNtuRecTw);
+   if (fgCalClusterAlgo.Contains("Std") ) {
+      if (fFlagMC)
+         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+      else
+         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
+   } else if (fgCalClusterAlgo.Contains("Padme") ) {
+      if (fFlagMC)
+         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+      else
+         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
+   }
+   
    if (fFlagHisto)
       fActClusCa->CreateHistogram();
 }
@@ -1327,5 +1373,23 @@ void BaseReco::SetMsdTrackingAlgo(char c)
          break;
       default:
          printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
+   }
+}
+
+//__________________________________________________________
+//! Set CAL clustering  algorithm
+//!
+//! \param[in] c toggle btw standard and padme algorithm
+void BaseReco::SetCalClusterAlgo(char c)
+{
+   switch (c) {
+      case 'S':
+         fgMsdTrackingAlgo = "Std";
+         break;
+      case 'P':
+         fgMsdTrackingAlgo = "Padme";
+         break;
+      default:
+         printf("SetCalClusterAlgo: Wrongly set clustering algorithm");
    }
 }

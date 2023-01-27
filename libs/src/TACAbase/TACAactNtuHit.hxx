@@ -36,10 +36,9 @@ public:
    Double_t TemperatureCorrFunction(Double_t* x, Double_t* par);
 
    Double_t GetTime(Double_t RawTime, Int_t  crysId);
-   Double_t GetEnergy(Double_t rawEnergy, Int_t  crysId);
    Double_t GetTemperatureCorrection(Double_t rawEnergy, Double_t temp, Int_t  crysId);
    Double_t GetEqualisationCorrection(Double_t rawEnergy, Int_t  crysId);
-   Double_t ADC2Temp(Double_t adc);
+   Double_t ADC2Temp(Double_t adc, Int_t crysId);
 
    
 private:

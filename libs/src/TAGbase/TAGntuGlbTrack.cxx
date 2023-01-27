@@ -51,6 +51,7 @@ TAGtrack::TAGtrack()
    fTwPosError(0,0,0),
    fTwMom(0,0,0),
    fTwMomError(0,0,0),
+   fHasTwPoint(false),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -90,6 +91,7 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
    fTwPosError(0,0,0),
    fTwMom(0,0,0),
    fTwMomError(0,0,0),
+   fHasTwPoint(false),
    fListOfPoints(0x0)
 {
    SetupClones();

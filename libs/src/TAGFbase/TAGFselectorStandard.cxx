@@ -520,7 +520,7 @@ void TAGFselectorStandard::SetTrackSeedNoMSD()
 		m_fitter_extrapolation->setMaxIterations(1);
 		float chi2 = 10000;
 		int idCardRep = -1;
-		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<"\n";
+		if(m_debug > 0)	cout << "\nSelectorKalmanGF::SetTrackSeedNoMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<"\n";
 
 		for(int repId = 0; repId < itTrack->second->getNumReps(); ++repId)
 		{

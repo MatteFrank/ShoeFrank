@@ -309,6 +309,20 @@ void TAGparTools::ReadItem(map<pair<int, int>, int>& map, const Char_t delimiter
 }
 
 //_____________________________________________________________________________
+//! Read a line in string
+//!
+//! \param[in] line line to read
+void TAGparTools::ReadLine(TString& line)
+{
+   Char_t buf[255];
+   do {
+      fFileStream.getline(buf, 255);
+      if (fFileStream.eof()) return;
+      line = buf;
+   } while (buf[0] == '/' || buf[0] == '\0');
+}
+
+//_____________________________________________________________________________
 //! Read a double vector from a string for a given size with delimiter
 //!
 //! \param[out] coeff double vector

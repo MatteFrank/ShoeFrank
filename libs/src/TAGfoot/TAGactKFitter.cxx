@@ -966,6 +966,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	if(m_debug > 0)		cout << "RECORD START" << endl;
 	TAGtrack* shoeOutTrack;
+	bool hasTwPoint = false;
 	vector<TAGpoint*> shoeTrackPointRepo;
 	Int_t TwChargeZ = -1;
 	Float_t TwTof = -1;
@@ -1008,6 +1009,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			TwChargeZ = point->GetChargeZ();
 			TwTof = point->GetToF();
 			shoeTrackPoint->SetEnergyLoss(point->GetEnergyLoss());
+			hasTwPoint = true;
 		}
 		else if(detName == "MSD")
 		{
@@ -1069,27 +1071,38 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		cout << "Extrapolation length::" << extL_Tgt << endl;
 		cout << "Track length after vertexing::" << fabs(extL_Tgt) + track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
 	}
+	//End VTX; 
 
-	//End VTX; start TW: extrap some mm after TW for fitted total energy loss
-
-	StateOnPlane state_TW = track->getFittedState(-1);
-
-	TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)).z() + 0.5 );
-	genfit::SharedPlanePtr TWextrapPlane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
-	TWextrapPlane->setU(1.,0.,0.);
-	TWextrapPlane->setV(0.,1.,0.);
-
+	// start TW: extrap some mm after TW for fitted total energy loss
+	TVector3 recoPos_TW, recoMom_TW;
+	TMatrixD recoPos_TW_cov(3,3);
+	TMatrixD recoMom_TW_cov(3,3);
 	double energyOutTw = -1;
-	try
+	if( hasTwPoint )
 	{
-		double extL_TW = track->getCardinalRep()->extrapolateToPlane( state_TW, TWextrapPlane );
-	}
-	catch (genfit::Exception& e)
-	{
-		std::cerr << e.what();
-		std::cerr << "Exception, particle is too slow to escape TW. Setting final energy to 0\n";
-		state_TW = track->getFittedState(-1);
-		energyOutTw = 0;
+		// getRecoInfo
+		GetRecoTrackInfo(-1, track, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
+		
+		StateOnPlane state_TW = track->getFittedState(-1);
+
+		TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_TW_geo->GetLayerPosition(1)).z() + 0.5 );
+		genfit::SharedPlanePtr TWextrapPlane (new genfit::DetPlane(origin_, TVector3(0,0,1)));
+		TWextrapPlane->setU(1.,0.,0.);
+		TWextrapPlane->setV(0.,1.,0.);
+
+		//Try to extrapolate to the TW plane and get the energy of the fragment at the exit of the TW
+		try
+		{
+			double extL_TW = track->getCardinalRep()->extrapolateToPlane( state_TW, TWextrapPlane );
+			energyOutTw = TMath::Sqrt( pow(track->getCardinalRep()->getMomMag(state_TW), 2) + pow(fitMass, 2) ) - fitMass; //Energy after TW
+		}
+		catch (genfit::Exception& e)
+		{
+			std::cerr << e.what();
+			std::cerr << "Exception, particle is too slow to escape TW. Setting final energy to 0\n";
+			state_TW = track->getFittedState(-1);
+			energyOutTw = 0;
+		}
 	}
 
 	//End TW
@@ -1101,12 +1114,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	GetRecoTrackInfo(0, track, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov ); //This might be unnecessary...
 
-	// // getRecoInfo
-	TVector3 recoPos_TW, recoMom_TW;
-	TMatrixD recoPos_TW_cov(3,3);
-	TMatrixD recoMom_TW_cov(3,3);
-	GetRecoTrackInfo(-1, track, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
 
+	//Get length and Time-Of-Flight of the track -> Both from the first to the last point of the track!
 	float length, tof;
 	if( track->hasKalmanFitStatus(track->getCardinalRep()) )
 	{
@@ -1115,7 +1124,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 	double energyAtTgt = TMath::Sqrt( pow(track->getCardinalRep()->getMomMag(state_target_point), 2) + pow(fitMass, 2) ) - fitMass; //Energy at Tgt
 
-	if(energyOutTw != 0)	energyOutTw = TMath::Sqrt( pow(track->getCardinalRep()->getMomMag(state_TW), 2) + pow(fitMass, 2) ) - fitMass; //Energy after TW
 
 	if(m_debug > 1)
 	{
@@ -1153,14 +1161,16 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 										&recoMom_TW_cov, &shoeTrackPointRepo);
 	//Set additional variables
 	shoeOutTrack->SetTrackId(std::atoi(tok.at(2).c_str()));
+	shoeOutTrack->SetHasTwPoint(hasTwPoint);
 	shoeOutTrack->SetTwChargeZ(TwChargeZ);
 	shoeOutTrack->SetTwTof(TwTof);
 	//Energy in GeV
 	shoeOutTrack->SetFitEnergy( energyAtTgt);
-	shoeOutTrack->SetFitEnergyLoss( energyAtTgt - energyOutTw );
-	TVector3 TrackDir(-100,-100,-100);
-
+	if(energyOutTw >= 0)
+		shoeOutTrack->SetFitEnergyLoss( energyAtTgt - energyOutTw );
+	
 	//Calculate emission angles wrt BM track
+	TVector3 TrackDir(-100,-100,-100);
 	if( ((TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
 	{
 		TVector3 BMslope = ( (TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
@@ -1248,6 +1258,17 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_theta_BM->Fill ( shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg() );
 		h_phi_BM->Fill ( shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg() );
 		h_trackDirBM->Fill(TrackDir.X(), TrackDir.Y());
+
+		if( shoeOutTrack->HasTwPoint() )
+		{
+			h_theta_BMyesTw->Fill ( shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg() );
+			h_phi_BMyesTw->Fill ( shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg() );
+		}
+		else
+		{
+			h_theta_BMnoTw->Fill ( shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg() );
+			h_phi_BMnoTw->Fill ( shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg() );
+		}
 
 		h_eta->Fill ( recoMom_target.Eta() );
 		h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
@@ -1717,6 +1738,18 @@ void TAGactKFitter::CreateHistogram()	{
 
 	h_trackDirBM = new TH2F("h_trackDirBM", "h_trackDirBM;X;Y", 1001,-1,1,1001,-1,1);
 	AddHistogram(h_trackDirBM);
+
+	h_theta_BMnoTw = new TH1F("h_theta_BMnoTw", "h_theta_BMnoTw (global track has no TW point);Track #theta wrt BM [deg]; Entries", 200, 0, 15);
+	AddHistogram(h_theta_BMnoTw);
+
+	h_phi_BMnoTw = new TH1F("h_phi_BMnoTw", "h_phi_BMnoTw (global track has no TW point);Track #phi wrt BM [deg]; Entries", 100, -190, 190);
+	AddHistogram(h_phi_BMnoTw);
+
+	h_theta_BMyesTw = new TH1F("h_theta_BMyesTw", "h_theta_BMyesTw (global track has a TW point);Track #theta wrt BM [deg]; Entries", 200, 0, 15);
+	AddHistogram(h_theta_BMyesTw);
+
+	h_phi_BMyesTw = new TH1F("h_phi_BMyesTw", "h_phi_BMyesTw (global track has a TW point);Track #phi wrt BM [deg]; Entries", 100, -190, 190);
+	AddHistogram(h_phi_BMyesTw);
 
 	h_eta = new TH1F("h_eta", "h_eta", 100, 0., 20.);
 	AddHistogram(h_eta);
