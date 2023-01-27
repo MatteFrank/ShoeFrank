@@ -24,9 +24,16 @@ endif(FILECOPY)
 #----------------------------------------------------------------------------
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI}  ${TADAQ}  ${TAAPI} ${TAVT} ${TAIT} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAST} ${TAMC} ${TAED} ${TATOE} ${TAGF} ${TAFO})
-set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI}  ${TADAQ}  ${TAAPI} ${TAVT} ${TAIT} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAST} ${TAMC} ${TAED} ${TAFO})
+set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
+if (GENFIT_DIR)
+ set(EXTRA_INTERNAL_LIBRARIES ${EXTRA_INTERNAL_LIBRARIES} ${GENFIT_LIBRARIES} ${TAGF})
+endif(GENFIT_DIR)
+
+if (TOE_DIR)
+   set(EXTRA_INTERNAL_LIBRARIES ${EXTRA_INTERNAL_LIBRARIES} ${TOE_LIBRARIES} ${TATOE})
+endif(TOE_DIR)
 # add includes : root + current + dependencies
 #
 include_directories(${ROOT_INCLUDE_DIR})
