@@ -417,7 +417,7 @@ h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clu
       h2 = new TH2D(Form("vtmsd_xx_msdpt_%d",i),"VT originX vs MSD originX for all the evts;VT originX;MSD originX",600,-3.,3.,600,-3.,3.);
       h2 = new TH2D(Form("vtmsd_yy_msdpt_%d",i),"VT originY vs MSD originY for all the evts;VT originY;MSD originY",600,-3.,3.,600,-3.,3.);
       h2 = new TH2D(Form("vtmsd_xy_msdpt_%d",i),"VT originX vs MSD originY for all the evts;VT originX;MSD originY",600,-3.,3.,600,-3.,3.);
-      
+
       h2 = new TH2D(Form("bmmsd_x_msdhitstrip_%d",i),"BM originX vs MSD Strip for all the evts;BM originX;MSD Strip",600,-3.,3.,msdparGeo->GetStripsN(),0.,msdparGeo->GetStripsN());
       h2 = new TH2D(Form("bmmsd_y_msdhitstrip_%d",i),"BM originY vs MSD Strip for all the evts;BM originY;MSD Strip",600,-3.,3.,msdparGeo->GetStripsN(),0.,msdparGeo->GetStripsN());
       h2 = new TH2D(Form("vtmsd_x_msdhitstrip_%d",i),"VT originX vs MSD Strip for all the evts;VT originX;MSD Strip",600,-3.,3.,msdparGeo->GetStripsN(),0.,msdparGeo->GetStripsN());
@@ -1252,11 +1252,12 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
 //FIll the control plots to check the correlation between trackers
 void FillCorr(){
 
-  Bool_t bmcheck=false, vtcheck=false, msdcheck=false;
+  Bool_t bmcheck=false, vtcheck=false, msdcheck=false, twcheck=false;
   TAVTtrack *vttrack;
   TABMtrack* bmtrack;
   TAMSDtrack* msdtrack;
-  
+  TATWpoint* twpoint;
+
   //select events with only one track per detector
   if(IncludeBM){
     if(bmNtuTrack->GetTracksN()==1){
@@ -1279,6 +1280,13 @@ void FillCorr(){
     if(msdntutrack->GetTracksN()==1){
       msdtrack = msdntutrack->GetTrack(0);
       msdcheck=true;
+    }
+  }
+
+  if(IncludeTW){
+    if(twNtuPoint->GetPointsN()==1){
+      twpoint = twNtuPoint->GetPoint(0);
+      twcheck=true;
     }
   }
 
@@ -1312,6 +1320,21 @@ void FillCorr(){
     myfill("CORR/vttw_yy",vttrack->GetOrigin().Y(),twpoint->GetPositionG().Y());
     myfill("CORR/glbvttw_xx",vttrack->GetOrigin().X(),twpoint->GetPositionGlb().X());
     myfill("CORR/glbvttw_yy",vttrack->GetOrigin().Y(),twpoint->GetPositionGlb().Y());
+  }
+  if(bmcheck && twcheck){
+    myfill("CORR/bmtw_xx",bmtrack->GetOrigin().X(),twpoint->GetColumnID());
+    myfill("CORR/bmtw_yy",bmtrack->GetOrigin().Y(),-twpoint->GetRowID());
+    myfill("CORR/bmtw_xy",bmtrack->GetOrigin().X(),-twpoint->GetRowID());
+  }
+  if(msdcheck && twcheck){
+    myfill("CORR/msdtw_xx",msdtrack->GetOrigin().X(),twpoint->GetColumnID());
+    myfill("CORR/msdtw_yy",msdtrack->GetOrigin().Y(),-twpoint->GetRowID());
+    myfill("CORR/msdtw_xy",msdtrack->GetOrigin().X(),-twpoint->GetRowID());
+  }
+  if(vtcheck && twcheck){
+    myfill("CORR/vtxtw_xx",vttrack->GetOrigin().X(),twpoint->GetColumnID());
+    myfill("CORR/vtxtw_yy",vttrack->GetOrigin().Y(),-twpoint->GetRowID());
+    myfill("CORR/vtxtw_xy",vttrack->GetOrigin().X(),-twpoint->GetRowID());
   }
   if(bmcheck && twcheck){
     myfill("CORR/bmtw_xx",bmtrack->GetOrigin().X(),twpoint->GetColumnID());
