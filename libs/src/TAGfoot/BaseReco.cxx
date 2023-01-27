@@ -251,15 +251,14 @@ void BaseReco::CampaignChecks()
       if (beam != beamType)
          Error("CampaignChecks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
       
-      if (strncmp(target.Data(), targetType.Data(), min(targetType.Length(), target.Length()))  && targetType != "None")
+      if (target[0] != targetType[0])
          Error("CampaignChecks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
       
-      if (tgtSize != tgtSizeType && targetType != "None")
+      if (tgtSize != tgtSizeType)
          Error("CampaignChecks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
    }
 }
 
-//__________________________________________________________
 //! Global reconstruction information checks
 void BaseReco::GlobalChecks()
 {

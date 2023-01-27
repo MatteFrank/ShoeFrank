@@ -143,7 +143,7 @@ Bool_t TAVTactBaseNtuTrack::Action()
 	  FindTiltedTracks();
    
    if(FootDebugLevel(1)) {
-	  printf(" %d tracks found\n", pNtuTrack->GetTracksN());
+	  printf("%s %d tracks found\n", this->GetName(), pNtuTrack->GetTracksN()); //print name of action since it's used for all trackers
 	  for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
 		 TAVTtrack* track = pNtuTrack->GetTrack(i);
 		 printf("   with # clusters %d\n", track->GetClustersN());

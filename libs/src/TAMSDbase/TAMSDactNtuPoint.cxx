@@ -107,18 +107,34 @@ Bool_t TAMSDactNtuPoint::FindPoints()
   }
   
   int plane(0);
-  for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
+  TAMSDcluster* rowHit;
+  TAMSDcluster* colHit;
 
+  for ( int iLayer = 0; iLayer< pGeoMap->GetSensorsN(); iLayer+=2 ){
+   rowHit = nullptr;
+   colHit = nullptr;
     // fill points
     for (int iClus = 0; iClus < pNtuCluster->GetClustersN(iLayer); iClus++) {
 
-      TAMSDcluster* colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iClus);
-      if (colHit == 0) continue;
+      if( ((TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iClus))->GetPlaneView() == 0) //Plane X -> colHit
+         colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iClus);
+      else
+         rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer,iClus);
+
+      if (colHit == 0 && rowHit == 0) continue;
 
       for (int iClus2 = 0; iClus2 < pNtuCluster->GetClustersN(iLayer+1); iClus2++) {
 
-         TAMSDcluster* rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iClus2);
-         if (rowHit == 0) continue;
+         if( ((TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iClus2))->GetPlaneView() == 0) //Plane X -> colHit
+            colHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iClus2);
+         else
+            rowHit = (TAMSDcluster*) pNtuCluster->GetCluster(iLayer+1,iClus2);
+         
+         if (rowHit == 0 || colHit == 0)
+         {
+            Warning("FindPoints()", "Found two consecutive MSD layers w/ the same plane view!");
+            continue;
+         }
          
          TAMSDpoint* point = pNtuPoint->NewPoint(iLayer/2, colHit, rowHit);
        

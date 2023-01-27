@@ -235,7 +235,7 @@ int TAGFdetectorMap::GetFitPlaneTW()
 	}
 	else
 	{
-		Error("GetFitPlneTW()", "No TW plane found in TAGFdetectorMap");
+		Error("GetFitPlaneTW()", "No TW plane found in TAGFdetectorMap");
 		throw -1;
 	}
 }

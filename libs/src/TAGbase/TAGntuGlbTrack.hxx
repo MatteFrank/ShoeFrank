@@ -70,9 +70,9 @@ public:
    //! Set PDG Id
    Int_t            GetPdgID()              const { return fPdgId;     }
 
-   //! Set track length
+   //! Set track length from the first to the last point of the track
    void             SetLength(Int_t len)          { fLength = len;     }
-   //! Get track length
+   //! Get track length from the first to the last point of the track
    Double32_t       GetLength()             const { return fLength;    }
    
    //! Set Chi2 of fit
@@ -120,29 +120,29 @@ public:
    //! Get Track id
    Int_t            GetTrackId()            const { return fTrkId;      }
    
-   //! Set fiited mass
+   //! Set fitted mass
    void             SetFitMass(Double_t amass)    { fFitMass = amass;   }
-   //! Get fiited mass
+   //! Get fitted mass
    Double_t         GetFitMass()            const { return fFitMass;    }
    
-   //! Set fiited charge Z
+   //! Set fitted charge Z
    void             SetFitChargeZ(Int_t chg)      { fFitChargeZ = chg;  }
-   //! Get fiited charge Z
+   //! Get fitted charge Z
    Int_t            GetFitChargeZ()         const { return fFitChargeZ; }
    
-   //! Set fiited time of flight
+   //! Set fitted time of flight from first to last point of the track
    void             SetFitTof(Double_t atoff)     { fFitTof = atoff;    }
-   //! Get fiited time of flight
+   //! Get fitted time of flight from first to last point of the track
    Double_t         GetFitTof()             const { return fFitTof;     }
    
-   //! Set fiited energy loss
+   //! Set fitted energy loss
    void             SetFitEnergyLoss(Double_t e)  { fFitEnergyLoss = e;    }
-   //! Get fiited energy loss
+   //! Get fitted energy loss
    Double_t         GetFitEnergyLoss()      const { return fFitEnergyLoss; }
 
-   //! Set fiited energy
+   //! Set fitted energy
    void             SetFitEnergy(Double_t e)      { fFitEnergy = e;     }
-   //! Get fiited energy
+   //! Get fitted energy
    Double_t         GetFitEnergy()          const { return fFitEnergy;  }
 
    //! Set CAL energy
@@ -246,6 +246,10 @@ public:
    // Get Total Energy Loss (MSD+TW+CAL)
    Double_t         GetTwEnergyLoss()       const;
    
+   // Check if the global track contains a TW point
+   Bool_t           HasTwPoint()            const {return fHasTwPoint;}
+   // Flag the track as containing a TW point or not
+   void             SetHasTwPoint(bool dummy=true) {fHasTwPoint = dummy;}
 
    // Add measured point
    // with copy cstr
@@ -309,6 +313,7 @@ private:
    TVector3         fTwPosError;      ///< Position error of particle at TW
    TVector3         fTwMom;           ///< Momentum of particle at TW
    TVector3         fTwMomError;      ///< Momentum error of particle at TW
+   Bool_t           fHasTwPoint;      ///< Flag that tells if the track has a TW point or not
 
    TClonesArray*    fListOfPoints;    ///< Attached measured points
    

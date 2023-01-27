@@ -13,19 +13,22 @@ set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${T
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
-# headers / sources 
-# 
+# headers / sources
+#
 # so far no automatic methods for computing which class has a dictionnary or not
 # manual method : base file name separated in two lists with different treatment.
 #
-
-set( with_dictionnaries
-   TAGF_KalmanStudies
-   TAGFtrackingStudies
-   TAGFuploader
-   TAGFselector
-   TAGFdetectorMap
-   UpdatePDG
+set(with_dictionnaries
+  TAGF_KalmanStudies
+  TAGFtrackingStudies
+  TAGFuploader
+  TAGFselectorBase
+  TAGFselectorTrue
+  TAGFselectorStandard
+  TAGFselectorLinear
+  TAGFselectorBack
+  TAGFdetectorMap
+  UpdatePDG
 )
 
 set( without_dictionnaries
@@ -97,7 +100,7 @@ if (!ROOT6_USED)
   ROOT_GENERATE_ROOTMAP(${LIBNAME} LINKDEF ${linkdefs} DEPENDENCIES ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 endif()
 #
-# Install lib and headers 
+# Install lib and headers
 #
 install(TARGETS ${LIBNAME}  RUNTIME DESTINATION bin
 							LIBRARY DESTINATION lib
