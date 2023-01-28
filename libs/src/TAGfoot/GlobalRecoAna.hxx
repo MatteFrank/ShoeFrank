@@ -83,16 +83,12 @@ class GlobalRecoAna : public LocalReco {
   void FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek=0.);
   void FillYieldMC(string folderName, Int_t charge_tr, Double_t theta_tr, Double_t Ek=0.);
   void BookYield(string path, bool enableMigMatr= false);
-  void ClustersPositionStudy(int currEvent);
-
-
-
+  void ClustersPositionStudy();
 
   //useful formulas
-  Double_t GetGamma(Double_t beta){return 1./sqrt(1.-beta*beta);};
-  Double_t GetMassPB(Double_t mom, Double_t beta) {return (1./atomassu)*mom*sqrt(1.-beta*beta)/beta;};
-  Double_t GetMassBE(Double_t beta, Double_t ekin){return (1./atomassu)*ekin/(GetGamma(beta)-1);};
-  Double_t GetMassPE(Double_t mom, Double_t ekin) {return (1./atomassu)*(mom*mom-ekin*ekin)/2./ekin;};
+  TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ){
+    return TVector3(Slope.X()/Slope.Z()*(FinalZ-Pos0.Z())+Pos0.X() ,Slope.Y()/Slope.Z()*(FinalZ-Pos0.Z())+Pos0.Y(), FinalZ);
+  }
 
   //after event loop
   void StudyThetaReso();
@@ -146,7 +142,7 @@ class GlobalRecoAna : public LocalReco {
   Double_t Ek_meas; //Energy per mass (GeV/u)
   Double_t Beta_meas;
 
-  //MC quantities:
+  //MC quantities: true=production, cross=target, cross_calo=at calo enterance
   Int_t Z_true;
   Double_t Ek_true;
   Double_t M_true;
@@ -155,8 +151,10 @@ class GlobalRecoAna : public LocalReco {
   Double_t Beta_true;
   TVector3 P_true;
   Double_t Th_true;
-  Double_t Th_cross;
-  TVector3 P_cross;
+  Double_t Th_cross; //target exit angle
+  TVector3 P_cross;  //target exit momentum
+  Double_t Ek_cross_calo;  //crossing out from TW
+
   Int_t TrkIdMC;
   // for TW multiple hits studies
   Int_t N_TrkIdMC_TW;
@@ -175,6 +173,7 @@ class GlobalRecoAna : public LocalReco {
   TAGtrack *fGlbTrack;
   TAGntuGlbTrack *myGlb;
   TATWntuPoint* myTWNtuPt;
+  TAMSDntuHit* myMSDNtuHit;
   TACAntuCluster* pCaNtuClu;
   TABMntuTrack* myBMNtuTrk ;
   TAMCntuEvent* myMcNtuEvent;
