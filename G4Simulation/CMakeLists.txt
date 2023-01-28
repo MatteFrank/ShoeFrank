@@ -89,7 +89,7 @@ file(COPY ${CMAKE_BINARY_DIR}/Reconstruction/level0/rootlogon.C DESTINATION ${CM
 # internal and external dependencies
 #
 set( EXTRA_INTERNAL_LIBRARIES ${REC_LIBRARIES} ${TCG} ${TCST} ${TCBM} ${TCEM} ${TCVT} ${TCIT} ${TCCA} ${TCTW} ${TCMSD} ${TCFO})
-set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${Geant4_LIBRARIES} ${GENFIT_LIBRARIES})
+set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${Geant4_LIBRARIES})
 
 # add includes : root + current + dependencies
 #
