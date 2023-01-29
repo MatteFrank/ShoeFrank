@@ -64,13 +64,15 @@ Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
       factor = 1.991445766;
    } else if (material == "PMMA"){
       factor = 1.1635;
+   } else if (material == "POLYETHY"){ // first guess
+      factor = 1.1635;
    } else if (material.Contains("EJ")){
       factor = 1.0259;
    } else if (material == "H2O" || material == "WATER"){
       factor = 1.;
    } else if (material == "TI"){
       factor = 3.136600294;
-   } else Warning("GetWEPL()","Material is not in the list.... Candidates: Air, Si, C, PMMA, H2O, Ti");
+   } else Warning("GetWEPL()","Material (%s) is not in the list.... Candidates: Air, Si, C, PMMA, H2O, Ti", material.Data());
    
 
    return factor;
