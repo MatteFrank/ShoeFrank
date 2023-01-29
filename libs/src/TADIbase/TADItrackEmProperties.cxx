@@ -65,7 +65,7 @@ Float_t TADItrackEmProperties::GetFacWEPL(const TString& mat)
    } else if (material == "PMMA"){
       factor = 1.1635;
    } else if (material == "POLYETHY"){ // first guess
-      factor = 1.1635;
+      factor = 0.8702;
    } else if (material.Contains("EJ")){
       factor = 1.0259;
    } else if (material == "H2O" || material == "WATER"){
