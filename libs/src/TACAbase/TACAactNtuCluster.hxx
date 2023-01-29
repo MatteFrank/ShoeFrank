@@ -48,9 +48,9 @@ public:
    TAGobject*      GetHitObject(Int_t idx) const;
 
 public:
-   static void DisableChargeThres()         { fgThresholdFlag = false;   }
-   static void EnableChargeThres()          { fgThresholdFlag = true;    }
-   static void SetChargeThreshold(Bool_t f) { fgChargeThreshold = true;  }
+   static void DisableChargeThres()          { fgThresholdFlag = false;   }
+   static void EnableChargeThres()           { fgThresholdFlag = true;    }
+   static void SetChargeThreshold(Float_t f) { fgChargeThreshold = f;     }
 
 protected:
    TAGdataDsc*     fpNtuRaw;         ///< input data dsc
