@@ -367,8 +367,6 @@ BookYield ("yield-true_DET");
 BookYield ("yield-trkREAL");
 }
 
-<<<<<<< Updated upstream
-=======
 //cuts selection
 h = new TH1D("h_eventSelected", "Event cuts in selector; cut; Events", 5, 0., 5.);
 std::string name_h[5] = {"All events","At least 1 TW point","1 BM Track",">0 vtx points","vtx - BM matching"};
@@ -377,7 +375,6 @@ for(int i=1; i<=5; i++){
 	((TH1D*)gDirectory->Get("h_eventSelected"))->GetXaxis()->SetBinLabel(i, name_h[i-1].c_str());
 }
 
->>>>>>> Stashed changes
   if(fFlagMC == false ){
     gDirectory->mkdir("fragTriggerStudies");
     gDirectory->cd("fragTriggerStudies");
