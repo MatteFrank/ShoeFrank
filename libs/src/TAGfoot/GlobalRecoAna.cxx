@@ -65,6 +65,10 @@ GlobalRecoAna::~GlobalRecoAna()
 }
 
 void GlobalRecoAna::LoopEvent() {
+
+  if(FootDebugLevel(1))
+    cout<<"GlboalRecoAna::LoopEvent start"<<endl;
+
   currEvent=0;
 
 //*********************************************************************************** begin loop on every event **********************************************
@@ -233,11 +237,11 @@ void GlobalRecoAna:: Booking(){
   h2  = new TH2D("TWpointsDistribution","",40, -20. ,20., 40, -20 ,20.);
 
   if (fFlagMC == true) {
-  gDirectory->mkdir("TrkVsMC");
-  gDirectory->cd("TrkVsMC");
-  h2  = new TH2D("Z_truevsZ_reco_TWFixed","",10, 0 ,10., 10, 0 ,10.);
-  h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","",10, 0 ,10., 10, 0 ,10.);
-  gDirectory->cd("..");
+    gDirectory->mkdir("TrkVsMC");
+    gDirectory->cd("TrkVsMC");
+    h2  = new TH2D("Z_truevsZ_reco_TWFixed","",10, 0 ,10., 10, 0 ,10.);
+    h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","",10, 0 ,10., 10, 0 ,10.);
+    gDirectory->cd("..");
   }
 
   h2  = new TH2D("Z_truevsZ_reco","",10, 0 ,10., 10, 0 ,10.);
@@ -263,8 +267,8 @@ void GlobalRecoAna:: Booking(){
         gDirectory->mkdir(Form("Zmc%d",kz));
         gDirectory->cd(Form("Zmc%d",kz));
           h = new TH1D("Mass_clean","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
- h = new TH1D("Mass_pure","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
- h = new TH1D("Mass_impure","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
+          h = new TH1D("Mass_pure","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
+          h = new TH1D("Mass_impure","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
         gDirectory->cd("..");
       }
     gDirectory->cd("..");
@@ -356,22 +360,15 @@ BookYield ("yield-true_DET");
 BookYield ("yield-trkREAL");
 }
 
-
-
-
   if(fFlagMC == false ){
     gDirectory->mkdir("fragTriggerStudies");
     gDirectory->cd("fragTriggerStudies");
-    h = new TH1D("chargeMB","chargeMB",8, 0.5 ,8.5);
-    h = new TH1D("chargeMBFrag","chargeMBFrag",8, 0.5 ,8.5);
-    h = new TH1D("chargeMBFrag_efficiency","chargeMBFrag",8, 0.5 ,8.5);
-    h = new TH1D("chargeMBFrag_RejectPower","",1, 0. ,1.);
+      h = new TH1D("chargeMB","chargeMB",8, 0.5 ,8.5);
+      h = new TH1D("chargeMBFrag","chargeMBFrag",8, 0.5 ,8.5);
+      h = new TH1D("chargeMBFrag_efficiency","chargeMBFrag",8, 0.5 ,8.5);
+      h = new TH1D("chargeMBFrag_RejectPower","",1, 0. ,1.);
     gDirectory->cd("..");
   }
-
-
-
-
 
   if(fFlagMC){
     gDirectory->mkdir("MC_check");
@@ -418,8 +415,6 @@ BookYield ("yield-trkREAL");
     h2= new TH2D("Mixing_matrix_cut", "Mixing_matrix_cut",8,0.5,8.5,8,0.5,8.5);
     gDirectory->cd("..");
 
-
-
     gDirectory->mkdir("MC");
     gDirectory->cd("MC");
     h2 = new TH2D("ChargePoi_vs_ChargeVT","",11, -1. ,10.,11, -1. ,10.);
@@ -430,9 +425,6 @@ BookYield ("yield-trkREAL");
       h2 = new TH2D("MCpartVsGlbtrackNum","Number of MC particles exit from target Vs number of reconstructed tracks;",11, -0.5, 10.5,11, -0.5, 10.5);
       h2 = new TH2D("MCpartVsGlbtrackNum_angle10","Number of MC particles exit from target with angle <10 Vs number of reconstructed tracks;",11, -0.5, 10.5,11, -0.5, 10.5);
     }
-
-
-
 
     for(int iz=0; iz<=primary_cha; iz++){
       gDirectory->mkdir(Form("Z%d",iz));
@@ -933,10 +925,12 @@ void GlobalRecoAna::EkBinningStudies(){
   double DE=M_meas*Dg; //delta mass
   //----------
 
-  ((TH2D*)gDirectory->Get(Form("Ekin/Z%d/DE_vs_Ekin",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev(),DE*fpFootGeo->GevToMev());
-  ((TH1D*)gDirectory->Get(Form("Ekin/Z%d/Ek_meas",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev());
-  //migration matrix plot
   ((TH2D*)gDirectory->Get("Z_TWvsZ_fit"))->Fill(fGlbTrack->GetTwChargeZ(),fGlbTrack->GetFitChargeZ());
+  if(Z_meas<=primary_cha && Z_meas>0){
+    ((TH2D*)gDirectory->Get(Form("Ekin/Z%d/DE_vs_Ekin",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev(),DE*fpFootGeo->GevToMev());
+    ((TH1D*)gDirectory->Get(Form("Ekin/Z%d/Ek_meas",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev());
+  }
+  //migration matrix plot
   if(fFlagMC)
     ((TH2D*)gDirectory->Get("Z_truevsZ_reco"))->Fill(Z_true,Z_meas);
 
@@ -1039,7 +1033,8 @@ void GlobalRecoAna::FillTrkPlots(){
   ((TH1D*)gDirectory->Get("Tof_tw"))->Fill(fGlbTrack->GetTwTof());
   ((TH1D*)gDirectory->Get("Tof_meas"))->Fill(Tof_meas);
   ((TH1D*)gDirectory->Get("Beta_meas"))->Fill(Beta_meas);
-  ((TH1D*)gDirectory->Get(Form("Zrec%d/Mass",Z_meas)))->Fill(M_meas);
+  if(Z_meas<=primary_cha && Z_meas>0)
+    ((TH1D*)gDirectory->Get(Form("Zrec%d/Mass",Z_meas)))->Fill(M_meas);
 
   if(fFlagMC && Beta_true>=0){
     ((TH1D*)gDirectory->Get("Charge_trk_True"))->Fill(Z_true);
@@ -1505,30 +1500,23 @@ void GlobalRecoAna::MSDanal(TAGpoint *tmp_poi, Int_t &idxCLU) {
           cout<<"tmp_msdclu->GetStripsN()="<<tmp_msdclu->GetStripsN()<<endl;
         }
 
-        for(int istri=0;istri<tmp_msdclu->GetStripsN();istri++){
-
-          TAMSDhit* strip = tmp_msdclu->GetStrip(istri);
-          if(FootDebugLevel(1))
-            cout<<"strip->GetMcTracksN()="<<strip->GetMcTracksN()<<endl;
-          if(strip->GetMcTracksN()>0){
-            for(int imcpa = 0; imcpa<strip->GetMcTracksN();imcpa++){
-            int ipa = strip->GetMcTrackIdx(imcpa);
+        if(tmp_msdclu->GetMcTracksN()>0){
+          for(int imcpa = 0; imcpa<tmp_msdclu->GetMcTracksN();imcpa++){
+            int ipa = tmp_msdclu->GetMcTrackIdx(imcpa);
             if(ipa>=0){
              TAMCpart *tmp_mctrack = GetNtuMcTrk()->GetTrack(ipa);
              Int_t charge_msd = tmp_mctrack->GetCharge();
              if(FootDebugLevel(1))
-               cout<<"sen "<<tmp_poi->GetSensorIdx()<<" : msdcl "<<tmp_poi->GetClusterIdx()<<" : stri "<<istri<<" ::: "<<"Poi MC "<<imcpa<<" = "<<charge<<" - "<<charge_msd<<" "<<strip->GetMcTrackIdx(imcpa)<<" "<<tmp_mctrack->GetFlukaID()<<" "<<tmp_mctrack->GetMotherID()<<" "<<tmp_mctrack->GetInitPos().X()<<" "<<tmp_mctrack->GetFinalPos().X()<<endl;
+               cout<<"sen "<<tmp_poi->GetSensorIdx()<<" : msdcl "<<tmp_poi->GetClusterIdx()<<" ::: "<<"Poi MC "<<imcpa<<" = "<<charge<<" - "<<charge_msd<<" "<<tmp_msdclu->GetMcTrackIdx(imcpa)<<" "<<tmp_mctrack->GetFlukaID()<<" "<<tmp_mctrack->GetMotherID()<<" "<<tmp_mctrack->GetInitPos().X()<<" "<<tmp_mctrack->GetFinalPos().X()<<endl;
 
-             ((TH2D*)gDirectory->Get("MC/ChargePoi_vs_ChargeMSD"))->Fill(charge_msd,charge);
-             mapall[strip->GetMcTrackIdx(imcpa)][charge_msd][tmp_mctrack->GetMotherID()+1].push_back(1);
-             if(charge_msd==charge)
-               nchargeok_msd++;
-             nchargeall_msd++;
-            }
-            }
-          }//close if MCtracks
-
-        }//close loop on strips
+               ((TH2D*)gDirectory->Get("MC/ChargePoi_vs_ChargeMSD"))->Fill(charge_msd,charge);
+               mapall[tmp_msdclu->GetMcTrackIdx(imcpa)][charge_msd][tmp_mctrack->GetMotherID()+1].push_back(1);
+               if(charge_msd==charge)
+                 nchargeok_msd++;
+               nchargeall_msd++;
+             }
+          }
+        }//close if MCtracks
 
         if(mapall.size()>1){
           if(FootDebugLevel(1))
@@ -2008,38 +1996,40 @@ void GlobalRecoAna::FillMassPlots(){
     cout<<"GlobalRecoAna::FillMassPlots start"<<endl;
 
   Int_t Z_meas=fGlbTrack->GetTwChargeZ();
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/chi2min",Z_meas)))->Fill(mass_ana->GetChiValue());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/almmin",Z_meas)))->Fill(mass_ana->GetAlmValue());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/mom_bestvsmeas",Z_meas)))->Fill((mass_ana->GetMomBest()-mass_ana->GetMomMeas())*TAGgeoTrafo::GevToMev());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/ekin_bestvsmeas",Z_meas)))->Fill((mass_ana->GetEkinBest()-mass_ana->GetEkinMeas())*TAGgeoTrafo::GevToMev());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/tof_bestvsmeas",Z_meas)))->Fill(mass_ana->GetTofBest()-mass_ana->GetTofMeas());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pb",Z_meas)))->Fill(mass_ana->GetMassPb());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pberr",Z_meas)))->Fill(mass_ana->GetMassErrPb());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_be",Z_meas)))->Fill(mass_ana->GetMassBe());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_beerr",Z_meas)))->Fill(mass_ana->GetMassErrBe());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pe",Z_meas)))->Fill(mass_ana->GetMassPe());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_peerr",Z_meas)))->Fill(mass_ana->GetMassErrPe());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_wavg",Z_meas)))->Fill(mass_ana->GetMassWavg());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_wavgerr",Z_meas)))->Fill(mass_ana->GetMassErrWavg());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_chi",Z_meas)))->Fill(mass_ana->GetMassChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_chierr",Z_meas)))->Fill(mass_ana->GetMassErrChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_chi",Z_meas)))->Fill(mass_ana->GetMomChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_chierr",Z_meas)))->Fill(mass_ana->GetMomErrChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_chi",Z_meas)))->Fill(mass_ana->GetEkinChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_chierr",Z_meas)))->Fill(mass_ana->GetEkinErrChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_chi",Z_meas)))->Fill(mass_ana->GetTofChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_chierr",Z_meas)))->Fill(mass_ana->GetTofErrChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_alm",Z_meas)))->Fill(mass_ana->GetMassAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_almerr",Z_meas)))->Fill(mass_ana->GetMassErrAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_alm",Z_meas)))->Fill(mass_ana->GetMomAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_almerr",Z_meas)))->Fill(mass_ana->GetMomErrAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_alm",Z_meas)))->Fill(mass_ana->GetEkinChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_almerr",Z_meas)))->Fill(mass_ana->GetEkinErrAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_alm",Z_meas)))->Fill(mass_ana->GetTofAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_almerr",Z_meas)))->Fill(mass_ana->GetTofErrAlm());
-  ((TH1D*)gDirectory->Get("MassReco/InputStatus"))->Fill(mass_ana->GetInputStatus());
-  ((TH1D*)gDirectory->Get("MassReco/ChiMassStatus"))->Fill(mass_ana->GetChiFitStatus());
-  ((TH1D*)gDirectory->Get("MassReco/AlmMassStatus"))->Fill(mass_ana->GetAlmFitStatus());
+  if(Z_meas<=primary_cha && Z_meas>0){
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/chi2min",Z_meas)))->Fill(mass_ana->GetChiValue());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/almmin",Z_meas)))->Fill(mass_ana->GetAlmValue());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/mom_bestvsmeas",Z_meas)))->Fill((mass_ana->GetMomBest()-mass_ana->GetMomMeas())*TAGgeoTrafo::GevToMev());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/ekin_bestvsmeas",Z_meas)))->Fill((mass_ana->GetEkinBest()-mass_ana->GetEkinMeas())*TAGgeoTrafo::GevToMev());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/tof_bestvsmeas",Z_meas)))->Fill(mass_ana->GetTofBest()-mass_ana->GetTofMeas());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pb",Z_meas)))->Fill(mass_ana->GetMassPb());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pberr",Z_meas)))->Fill(mass_ana->GetMassErrPb());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_be",Z_meas)))->Fill(mass_ana->GetMassBe());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_beerr",Z_meas)))->Fill(mass_ana->GetMassErrBe());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pe",Z_meas)))->Fill(mass_ana->GetMassPe());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_peerr",Z_meas)))->Fill(mass_ana->GetMassErrPe());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_wavg",Z_meas)))->Fill(mass_ana->GetMassWavg());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_wavgerr",Z_meas)))->Fill(mass_ana->GetMassErrWavg());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_chi",Z_meas)))->Fill(mass_ana->GetMassChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_chierr",Z_meas)))->Fill(mass_ana->GetMassErrChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_chi",Z_meas)))->Fill(mass_ana->GetMomChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_chierr",Z_meas)))->Fill(mass_ana->GetMomErrChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_chi",Z_meas)))->Fill(mass_ana->GetEkinChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_chierr",Z_meas)))->Fill(mass_ana->GetEkinErrChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_chi",Z_meas)))->Fill(mass_ana->GetTofChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_chierr",Z_meas)))->Fill(mass_ana->GetTofErrChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_alm",Z_meas)))->Fill(mass_ana->GetMassAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_almerr",Z_meas)))->Fill(mass_ana->GetMassErrAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_alm",Z_meas)))->Fill(mass_ana->GetMomAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_almerr",Z_meas)))->Fill(mass_ana->GetMomErrAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_alm",Z_meas)))->Fill(mass_ana->GetEkinChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_almerr",Z_meas)))->Fill(mass_ana->GetEkinErrAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_alm",Z_meas)))->Fill(mass_ana->GetTofAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_almerr",Z_meas)))->Fill(mass_ana->GetTofErrAlm());
+    ((TH1D*)gDirectory->Get("MassReco/InputStatus"))->Fill(mass_ana->GetInputStatus());
+    ((TH1D*)gDirectory->Get("MassReco/ChiMassStatus"))->Fill(mass_ana->GetChiFitStatus());
+    ((TH1D*)gDirectory->Get("MassReco/AlmMassStatus"))->Fill(mass_ana->GetAlmFitStatus());
+  }
 
   return;
 }
