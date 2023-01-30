@@ -72,7 +72,7 @@ class GlobalRecoAna : public LocalReco {
   void TWAlgoStudy();
   void TrackVsMCStudy();
   void FragTriggerStudies();//study the hardware trigger performances, to be completed
-
+  bool SelectionCuts(); // study the cuts of selected (candidate) events for global tracking
 
   //fill plots
   void FillGlbTrackPlots();
@@ -172,6 +172,7 @@ class GlobalRecoAna : public LocalReco {
   GlobalRecoMassAna *mass_ana;
   TAGtrack *fGlbTrack;
   TAGntuGlbTrack *myGlb;
+  TAVTntuVertex *myVtNtuVtx;
   TATWntuPoint* myTWNtuPt;
   TAMSDntuHit* myMSDNtuHit;
   TACAntuCluster* pCaNtuClu;

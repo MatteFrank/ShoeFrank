@@ -116,7 +116,7 @@ static TAGntuEvent* tgevent;
 int Zbeam;
 TString tobeprint;
 Int_t vtxsynch=0; //=0 is still synch, !=0 is the number of events where the synch is lost
-Int_t checkrate=5000; //rate to check the correlation between BM and VTX synch
+Int_t checkrate=1000; //rate to check the correlation between BM and VTX synch
 
 //use the detector GLOBAL frame!
 struct beamtrk {

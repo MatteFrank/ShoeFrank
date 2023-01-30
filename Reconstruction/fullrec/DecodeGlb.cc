@@ -87,9 +87,16 @@ int main (int argc, char *argv[])  {
    
    TStopwatch watch;
    watch.Start();
-
-   if(nSkipEv > 0) glbRec->GoEvent(nSkipEv);
-   glbRec->BeforeEventLoop();
+   
+   if (mc){
+      glbRec->BeforeEventLoop();
+      if(nSkipEv > 0) glbRec->GoEvent(nSkipEv);
+   } else {
+      if(nSkipEv > 0) glbRec->GoEvent(nSkipEv);       
+      glbRec->BeforeEventLoop();
+   }
+   
+   
    
    glbRec->LoopEvent(nTotEv);
    glbRec->AfterEventLoop();

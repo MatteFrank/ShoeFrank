@@ -234,8 +234,10 @@ void LocalReco::OpenFileIn()
      else
        fActEvtReader->Open(GetName());
      
-     if (fSkipEventsN > 0)
+     if (fSkipEventsN > 0){
+      
        fActEvtReader->SkipEvents(fSkipEventsN);
+     }
    }
 }
 

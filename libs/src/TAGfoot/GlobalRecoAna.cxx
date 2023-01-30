@@ -75,6 +75,8 @@ void GlobalRecoAna::LoopEvent() {
   while(gTAGroot->NextEvent()) { //for every event
     //fFlagMC = false;     //N.B.: for MC FAKE REAL
     DiffApp_trkIdx = false;
+    SelectionCuts();
+
 
     if (currEvent % 100 == 0 || FootDebugLevel(1))
       cout <<"current Event: " <<currEvent<<endl;
@@ -82,8 +84,11 @@ void GlobalRecoAna::LoopEvent() {
 
     int evtcutstatus=ApplyEvtCuts();
     ((TH1D*)gDirectory->Get("Evtcutstatus"))->Fill(evtcutstatus);
-    if(evtcutstatus)
+    if(evtcutstatus){
+      ++currEvent;
       continue;
+    }
+      
 
     Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
@@ -110,8 +115,10 @@ void GlobalRecoAna::LoopEvent() {
 
       int trkstatus=ApplyTrkCuts();
       ((TH1D*)gDirectory->Get("Trkcutstatus"))->Fill(trkstatus);
-      if(trkstatus)
+      if(trkstatus){
+        ntracks++;
         continue;
+      }
 
       isPrimaryInEvent = false;
       fGlbTrack = myGlb->GetTrack(it);
@@ -360,6 +367,17 @@ BookYield ("yield-true_DET");
 BookYield ("yield-trkREAL");
 }
 
+<<<<<<< Updated upstream
+=======
+//cuts selection
+h = new TH1D("h_eventSelected", "Event cuts in selector; cut; Events", 5, 0., 5.);
+std::string name_h[5] = {"All events","At least 1 TW point","1 BM Track",">0 vtx points","vtx - BM matching"};
+for(int i=1; i<=5; i++){
+	//int bin2 = h_eventSelected->GetXaxis()->FindBin(i);
+	((TH1D*)gDirectory->Get("h_eventSelected"))->GetXaxis()->SetBinLabel(i, name_h[i-1].c_str());
+}
+
+>>>>>>> Stashed changes
   if(fFlagMC == false ){
     gDirectory->mkdir("fragTriggerStudies");
     gDirectory->cd("fragTriggerStudies");
@@ -2193,6 +2211,9 @@ void GlobalRecoAna::BeforeEventLoop(){
   gTAGroot->BeginEventLoop();
   mass_ana=new GlobalRecoMassAna();
   myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->GenerateObject();
+  //myVtNtuClus = (TAVTntuCluster*)fpNtuClusVtx->GenerateObject();
+  myVtNtuVtx = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
+
   myTWNtuPt = (TATWntuPoint*)fpNtuRecTw->GenerateObject();
   myMSDNtuHit = (TAMSDntuHit*)fpNtuRecTw->GenerateObject();
   pCaNtuClu = (TACAntuCluster*)fpNtuClusCa->GenerateObject();
@@ -3498,4 +3519,64 @@ for (int i = 0; i < myTWNtuPt->GetPointsN(); i++) {
 //TABMntuHit* bmNtuHit = (TABMntuHit*) fpNtuHitBm->GenerateObject();
 //Int_t nbmHits  = bmNtuHit->GetHitsN();
 //cout <<nbmHits << endl;
+}
+
+bool GlobalRecoAna::SelectionCuts(){
+  bool categorize_TWpoint = false;
+	bool categorize_BMtrack = false;
+	bool categorize_VTvtx = false;
+  bool categorize_VTBMmatching = false;
+	bool categorize_TWdist = false;
+  TAVTvertex* vtxPD   = 0x0; //NEW
+  
+//1) The event has at least one TWpoint
+if (myTWNtuPt->GetPointsN()==0){
+  categorize_TWpoint = false;
+} 
+  else {
+  categorize_TWpoint = true;
+  }
+
+//2) There is only one BM track
+if (myBMNtuTrk->GetTracksN() !=1) {
+  categorize_BMtrack = false;
+} else {categorize_BMtrack = true;
+}
+
+//3) There is at least one vtx point
+if (myVtNtuVtx -> GetVertexN()  == 0 ) {
+categorize_VTvtx = false;
+} else {categorize_VTvtx = true;
+}
+
+//4) there is vtx - bm matching with at least one vtx point
+if (categorize_BMtrack == true && categorize_VTvtx == true ){
+  categorize_VTBMmatching = false;
+  for (Int_t iVtx = 0; iVtx < myVtNtuVtx -> GetVertexN(); ++iVtx) {
+		vtxPD = myVtNtuVtx->GetVertex(iVtx);
+		if (vtxPD == 0x0){
+			continue;
+		}
+		else if(!vtxPD->IsBmMatched() ){
+			  continue;
+		} 
+    else {
+      categorize_VTBMmatching = true;
+    }
+  }
+} else {
+categorize_VTBMmatching = false;
+}
+
+
+
+	
+
+((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(1,1);   // all events
+if (categorize_TWpoint) ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(2,1);
+if (categorize_TWpoint && categorize_BMtrack)     ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(3,1);
+if (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx) ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(4,1);
+if (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx && categorize_VTBMmatching== 1) ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(5,1);
+
+return (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx && categorize_VTBMmatching );
 }

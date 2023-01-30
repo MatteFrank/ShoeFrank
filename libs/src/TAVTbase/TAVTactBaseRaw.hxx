@@ -93,6 +93,8 @@ protected:
    TH1F*             fpHisFrameCnt[MaxSens];      ///< frame counter histogram
    TH1F*             fpHisFrameErrors[MaxSens];   ///< frame error counter histogram
    TH1F*             fpHisBCOofTrigger;           ///< Bunch crossing trigger histogram
+   TH1F*             fpHisBCOofTriggerNegative;           ///< Bunch crossing trigger histogram
+   TH1F*             fpHisBCOofTriggerQueue;      ///< study of queue for event
 
 protected:
    //! Header key

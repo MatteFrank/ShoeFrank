@@ -54,6 +54,7 @@ int main(int argc, char *argv[]) {
 
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
+   Int_t nSkipEv = 0;
 
    for (int i = 0; i < argc; i++){
       if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  }   // Raw file name for output
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]) {
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
-
+      if(strcmp(argv[i],"-skipEv") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
@@ -96,6 +97,7 @@ int main(int argc, char *argv[]) {
 
   GlobalRecoAna* glbAna = new GlobalRecoAna(exp, runNb, in, out, mc, nTotEv);
   glbAna->BeforeEventLoop();
+  if(nSkipEv > 0 /*&& (lrc || mc)*/)  glbAna->GoEvent(nSkipEv);
   glbAna->LoopEvent();
   glbAna->AfterEventLoop();
   watch.Print();
