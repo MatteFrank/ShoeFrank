@@ -2194,8 +2194,8 @@ void GlobalRecoAna::BeforeEventLoop(){
   if(FootDebugLevel(1))
     cout<<"GlobalRecoAna::BeforeEventLoop start"<<endl;
 
-  CampaignChecks();
   ReadParFiles();
+  CampaignChecks();
   SetupTree();
   myReader->Open(GetName(), "READ", "tree");
 
