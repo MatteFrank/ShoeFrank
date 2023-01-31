@@ -107,13 +107,9 @@ Bool_t TAVTactNtuHit::Action()
       first = true;
    }
    
-   Int_t diff = bcoTrig-  trig->BCOofTrigger - fFirstBcoTrig;
+   Int_t diff = bcoTrig - trig->BCOofTrigger - fFirstBcoTrig;
    if (ValidHistogram())
       fpHisBCOofTrigger->Fill(evtNumber, diff);
-      fpHisBCOofTriggerQueue->Fill(evtNumber, fQueueEvt.size());
-
-      if (diff < 0)
-      fpHisBCOofTriggerNegative->Fill(evtNumber, diff);
    
    if (TMath::Abs(float(diff)) > fgTStolerance && diff > 0) {
       Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);
