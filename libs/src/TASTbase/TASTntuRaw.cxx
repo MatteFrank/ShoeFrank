@@ -79,9 +79,6 @@ Bool_t TASTrawHit::CheckForPileUp(TWaveformContainer *w, Int_t event)
   std::vector<double>* w_ptr = &(w->GetVectA());
   std::vector<double>* t_ptr = &(w->GetVectT());
 
-  cout << "sizes::" << w_ptr->size() << "  " << t_ptr->size() << endl;
-
-
 	std::vector<Double_t> Der_W, Der_T;
 
 	Double_t* x_down = &t_ptr->at(0);
