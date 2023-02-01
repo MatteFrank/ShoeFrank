@@ -23,7 +23,7 @@ class TASThit : public TAGobject {
 public:
    
   TASThit();
-  TASThit(Double_t charge, Double_t de, Double_t time);
+  TASThit(Double_t charge, Double_t de, Double_t time, bool pileup = false);
   virtual         ~TASThit();
   
   
@@ -34,11 +34,13 @@ public:
   inline void SetTime(double value)                 { fTime = value;                }
   inline void SetCharge(double value)               { fCharge = value;              }
   inline void SetDe(double value)                   { fDe = value;                  }
+  inline void SetPileUp(bool value)                 { fPileUp = value;              }
 
   Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
   Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
   Int_t          GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
-   
+
+  bool           GetPileUp()                const   {return fPileUp; }
   void           Clear(Option_t* option = "C");
   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
@@ -47,6 +49,7 @@ private:
   Double32_t      fCharge;
   Double32_t      fDe;
   Double32_t      fTime;
+  bool            fPileUp;
   
   TArrayI         fMCindex;                  // Id of the hit created in the simulation
   TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
@@ -70,7 +73,7 @@ public:
    
    TASThit*          GetHit(Int_t i_ind);
    const TASThit*    GetHit(Int_t i_ind) const;
-   TASThit*          NewHit(double charge, double de, double time);
+   TASThit*          NewHit(double charge, double de, double time, bool pileup = false );
    virtual void      Clear(Option_t* opt="");
    void              SetupClones();
    

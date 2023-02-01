@@ -23,11 +23,12 @@ TASThit::TASThit()
 
 //------------------------------------------+-----------------------------------
 //! Constructor
-TASThit::TASThit(Double_t charge, Double_t De, Double_t time)
+TASThit::TASThit(Double_t charge, Double_t De, Double_t time, bool pileup)
  : TAGobject(),
    fCharge(charge),
    fTime(time),
-   fDe(De)
+   fDe(De),
+   fPileUp(pileup)
 {
    
 }
@@ -90,11 +91,14 @@ Int_t TASTntuHit::GetHitsN() const
 
 //______________________________________________________________________________
 //
-TASThit* TASTntuHit::NewHit(double charge, double de, double time)
+TASThit* TASTntuHit::NewHit(double charge, double de, double time, bool pileup)
 {
    TClonesArray &pixelArray = *fListOfHits;
-   TASThit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASThit(charge, de, time);
+   //cout <<" sono in new hit: "<< pileup << endl;
+   TASThit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASThit(charge, de, time, pileup);
+   //cout << "sono hit: " << hit -> GetPileUp() << endl;
    
+
    return hit;
 }
 
