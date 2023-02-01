@@ -223,8 +223,8 @@ Bool_t TAGactKFitter::Action()	{
 	m_selector->SetVariables(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents, &m_noTWpointEvents);
 
 	if (m_selector->FindTrackCandidates() >= 0)
-	{
-
+	{	
+		
 		if ( m_IsMC ) {
 			//RZ: Check selection efficiency counts --> better define the "visible" particles, right now is not really compatible with TrueParticle selection
 			FillGenCounter( m_selector->CountParticleGenaratedAndVisible() );
@@ -234,8 +234,13 @@ Bool_t TAGactKFitter::Action()	{
 	}
 	if( TAGrecoManager::GetPar()->IsSaveHisto() )
 	{
+		
 		m_selector->FillPlaneOccupancy(h_PlaneOccupancy);
+		
+		h_mcOot->Fill(m_selector->GetMCEventType());
 		h_GFeventType->Fill(m_selector->GetEventType());
+		h_eventMatrix->Fill(m_selector->GetEventType(),m_selector->GetMCEventType());
+
 	}
 
 	chVect.clear();
@@ -1719,7 +1724,11 @@ void TAGactKFitter::CreateHistogram()	{
 	h_mcPosZ = new TH1F("h_mcPosZ", "h_mcPosZ", 500, -0.25, 0.25);
 	AddHistogram(h_mcPosZ);
 
+	h_mcOot = new TH1I("h_mcOot", "h_mcOot", 7, -0.5, 6.5);
+	AddHistogram(h_mcOot);
 
+	h_eventMatrix = new TH2I("h_eventMatrix", "h_eventMatrix", 7, -0.5, 6.5, 7, -0.5, 6.5);
+	AddHistogram(h_eventMatrix );
 
 	h_dR = new TH1F("h_dR", "h_dR", 100, 0., 20.);
 	AddHistogram(h_dR);
@@ -2066,6 +2075,8 @@ void TAGactKFitter::ClearHistos()
 	delete h_mcPosY;
 	delete h_mcPosZ;
 	delete h_GFeventType;
+	delete h_mcOot;
+	delete h_eventMatrix;
 
 	for(auto it = h_deltaP.begin(); it != h_deltaP.end(); ++it)
 		delete it->second;

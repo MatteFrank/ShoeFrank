@@ -245,6 +245,9 @@ private:
 	TH1F* h_mcPosX;										///< MC X position at the TG -- histo
 	TH1F* h_mcPosY;										///< MC Y position at the TG -- histo
 	TH1F* h_mcPosZ;										///< MC Z position at the TG -- histo
+
+	TH1I* h_mcOot;										///< FV: MC out of target classification
+	TH2I* h_eventMatrix;									///< FV: MC vs GF event type matrix
 	TH2I* h_PlaneOccupancy[6];
 
 	TH1I* h_GFeventType;								///< Event categorization seen by the GF selector

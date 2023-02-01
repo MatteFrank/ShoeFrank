@@ -45,6 +45,7 @@
 #include "TATWntuPoint.hxx"
 
 #include "TAMCntuPart.hxx"
+#include "TAMCntuRegion.hxx"
 
 #include <KalmanFitterRefTrack.h>
 #include <KalmanFitter.h>
@@ -85,6 +86,7 @@ public:
 	virtual void Categorize() { return; }
 
 	int					GetEventType();
+	int 				GetMCEventType(); 
 	TString				GetRecoTrackName(Track* tr);
 	int					GetChargeFromTW(Track* trackToCheck);
 	map<string, int>	CountParticleGenaratedAndVisible();
@@ -102,6 +104,7 @@ protected:
 	TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId = -1);
 
 	int m_eventType;
+	int mc_eventType;
 	vector<int>* m_chargeVect;								///< Vector with charge values seen by TW -> used for track representation declaration
 	map<int, vector<AbsMeasurement*> >* m_allHitMeas;		///< Map with all the Measurements in GenFit format
 	TAGFdetectorMap* m_SensorIDMap;							///< TAGFdetectorMap for index handling

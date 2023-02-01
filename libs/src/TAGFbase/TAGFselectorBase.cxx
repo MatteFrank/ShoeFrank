@@ -64,6 +64,8 @@ TAGFselectorBase::TAGFselectorBase()
 
 	m_eventType = 0;
 
+	mc_eventType = 0;
+
 	//Set default extrapolation tolerances for each detector
 	m_VTtolerance = .5;
 	m_ITtolerance = .5;
@@ -436,7 +438,77 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 				cout << *itDet << "\tId::" << i << "\tNmeas::" << m_PlaneOccupancy[*itDet][i] << endl;
 		}
 	}
+
+	///// Francesco Vascelli /////////////
+	////////////////////////////////////////////////////////////////////
+
+
+	if (m_IsMC){
+
+		//creare oggetto MCpart, con get, prendere info necessarie su particelle,
+		//
+		TAMCntuRegion* mcNtuReg;
+		Int_t nCross  = mcNtuReg->GetRegionsN();
+		mc_eventType=1;
+		bool air_fragm = false;
+		bool det_fragm = false;
+		bool lost_fragm = false;
+		TAMCntuPart* mcNtu = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc","TAMCntuPart")->Object();
+		
+		
+		for(int it=0; it<mcNtu->GetTracksN(); ++it){
+			TAMCpart* MCpart = mcNtu->GetTrack(it);
+			
+			int region=MCpart->GetRegion(); //get region where fragment originates 
+
+			TVector3 finalPos = MCpart->GetFinalPos();
+			TVector3 initPos = MCpart->GetInitPos();
+
+
+			double finalZpos = finalPos[2];
+			double initZpos = initPos[2];
+			bool is_inside = (initZpos>0. && initZpos < 189.15);
+			bool is_air = (region==2 || region==3 || region==4);
+			if (region>120){ //exclude fragmentation in calorimeter 
+				continue;
+			}
+			if ( is_air && is_inside) { //fragmentation in air
+				air_fragm=true;
+				break;
+				
+			} 
+
+			if (region!=50 && is_inside && !is_air){ //fragmentation not in target (so in detector)
+					det_fragm=true;
+					break;
+					
+			}
+			/*if (){
+				lost_fragm=true;
+				break;
+			}
+			*/
+		}
+
+		if (air_fragm){
+			mc_eventType=4;
+		}
+		else if (det_fragm){
+			mc_eventType=3;
+		}
+		else if(lost_fragm){
+			mc_eventType=2;
+		}
+
+	}
 }
+
+int TAGFselectorBase::GetMCEventType() { return mc_eventType; }
+
+
+
+///////////////////////////////////////////////////////////////////////////
+
 
 //! \brief Get the event type seen by the Genfit selector
 int TAGFselectorBase::GetEventType() { return m_eventType; }
