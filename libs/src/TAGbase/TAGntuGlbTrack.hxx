@@ -251,6 +251,12 @@ public:
    // Flag the track as containing a TW point or not
    void             SetHasTwPoint(bool dummy=true) {fHasTwPoint = dummy;}
 
+   // Get the index of the CALO cluster matched w/ the global track
+   Int_t            GetCALOmatchedClusterId() const {return fCALOmatched;}
+
+   // Set the index of the CALO cluster matched w/ the global track
+   void             SetCALOmatchedClusterId(int c) {fCALOmatched = c;}
+
    // Add measured point
    // with copy cstr
    TAGpoint*        AddPoint(TAGpoint* point);
@@ -314,6 +320,7 @@ private:
    TVector3         fTwMom;           ///< Momentum of particle at TW
    TVector3         fTwMomError;      ///< Momentum error of particle at TW
    Bool_t           fHasTwPoint;      ///< Flag that tells if the track has a TW point or not
+   Int_t            fCALOmatched;     ///< Index of the CALO cluster matched w/ global track extrapolation (no matching = -1)
 
    TClonesArray*    fListOfPoints;    ///< Attached measured points
    

@@ -62,6 +62,7 @@
 #include "TAIThit.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TAMCntuPart.hxx"
+#include "TACAntuCluster.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -106,41 +107,43 @@ public:
 
 	virtual	void   CreateHistogram();
 
-
-	int MakeFit(long evNum, TAGFselectorBase* selector);
-	void MakePrefit();
-
-	void RecordTrackInfo( Track* track, string hitSampleName );
-
-	void IncludeDetectors();
-	void CreateGeometry();
-
 	void Finalize();
 
-	void PrintEfficiency();
-	void PrintPurity();
-	void PrintSelectionEfficiency();
-
-	void InitEventDisplay();
-
-	void MatrixToZero( TMatrixD *matrix );
-
-	int FindMostFrequent( vector<vector<int>>* mcParticleID_track );
-	double TrackQuality( vector<vector<int>>* mcParticleID_track );
-
-	void GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart );
-	void GetRecoTrackInfo ( int i, Track* track, TVector3* KalmanPos, TVector3* KalmanMom,
-											TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
-	// void GetRecoTrackInfo ( StateOnPlane* state,
-	// 										TVector3* KalmanPos, TVector3* KalmanMom,
-	// 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
-	void GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
-
-	void FillGenCounter( map<string, int> mappa );
-	void SetMcSample();
+	void	SetMcSample();
 
 private:
 
+	int		MakeFit(long evNum, TAGFselectorBase* selector);
+	void	MakePrefit();
+
+	void	RecordTrackInfo( Track* track, string hitSampleName );
+
+	void	IncludeDetectors();
+	void	CreateGeometry();
+
+	void	PrintEfficiency();
+	void	PrintPurity();
+	void	PrintSelectionEfficiency();
+
+	void	InitEventDisplay();
+
+	void	MatrixToZero( TMatrixD *matrix );
+
+	int		FindMostFrequent( vector<vector<int>>* mcParticleID_track );
+	double	TrackQuality( vector<vector<int>>* mcParticleID_track );
+
+	void	GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart );
+	void	GetRecoTrackInfo ( int i, Track* track, TVector3* KalmanPos, TVector3* KalmanMom, TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
+
+	void 	MatchCALOclusters();
+	
+	// void GetRecoTrackInfo ( StateOnPlane* state,
+	// 										TVector3* KalmanPos, TVector3* KalmanMom,
+	// 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
+	void	GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
+
+	void	FillGenCounter( map<string, int> mappa );
+	
 	void	EvaluateProjectionEfficiency(Track* fitTrack);
 	void	CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselectorBase* selector);
 	void	ClearData();

@@ -171,7 +171,7 @@ void TAGFselectorStandard::CategorizeVT()
 
 			for ( int nRep=0; nRep < m_trackRepVec.size(); nRep++) {
 				fitTrack_->addTrackRep( m_trackRepVec.at( nRep )->clone() );
-				if ( m_debug > 1 ) {
+				if ( m_debug > 0 ) {
 					cout << "TAGFselectorStandard::CategorizeVT() -- rep charge = " << m_trackRepVec.at( nRep )->getPDGCharge() << "\n";
 				}
 			}
@@ -346,7 +346,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 		m_fitter_extrapolation->setMaxIterations(1);
 		float chi2 = 10000;
 		int idCardRep = -1;
-		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<"\n";
+		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  -- track " << itTrack->first << "has this number of Reps = "<< itTrack->second->getNumReps() <<"\n";
 
 		for(int repId = 0; repId < itTrack->second->getNumReps(); ++repId)
 		{

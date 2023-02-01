@@ -183,7 +183,7 @@ Bool_t TAGactKFitter::Action()	{
 
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
 
-	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
+	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  start!" << endl;
 
 	TAGFuploader* m_uploader = new TAGFuploader( m_SensorIDMap );
 
@@ -232,6 +232,10 @@ Bool_t TAGactKFitter::Action()	{
 
 		MakeFit(evNum, m_selector);
 	}
+
+	if( TAGrecoManager::GetPar()->IncludeCA() )
+		MatchCALOclusters();
+
 	if( TAGrecoManager::GetPar()->IsSaveHisto() )
 	{
 		m_selector->FillPlaneOccupancy(h_PlaneOccupancy);
@@ -244,13 +248,10 @@ Bool_t TAGactKFitter::Action()	{
 	delete m_uploader;
 
 	fpGlobTrackRepo->SetBit(kValid);
+	if(m_debug > 0) cout << "TAGactKFitter::Action()  -> end! " << endl;
 	return true;
 
 }
-
-
-
-
 
 
 
@@ -1304,6 +1305,88 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		delete it;
 	shoeTrackPointRepo.clear();
 
+}
+
+
+
+//! \brief Find possible matching CALO clusters for global tracks w/ a converged Kalman Filter fit
+void TAGactKFitter::MatchCALOclusters()
+{
+	TACAntuCluster* caNtuCluster = (TACAntuCluster*) gTAGroot->FindDataDsc("caClus","TACAntuCluster")->Object() ;
+	if( caNtuCluster->GetClustersN() < 1 )
+	{
+		if( m_debug > 1)
+			Info("MatchCALOClusters()", "No CALO clusters to match in event %ld", (long)gTAGroot->CurrentEventId().EventNumber());
+		return;
+	}
+
+	double extrapDistZ, extrapDistZmatch;
+	double posDist,posDistMatch;
+	bool found;
+	TVector3 twPos, twDir;
+	TVector3 caPos, extrapPos;
+	TACAcluster* clus;
+	int matchIndex;
+
+	TAGtrack* track;
+	for(int iTrack = 0; iTrack < m_outTrackRepo->GetTracksN(); ++iTrack)
+	{
+		found = false;
+		track = m_outTrackRepo->GetTrack(iTrack);
+		if( !track->HasTwPoint() ) continue;
+
+		twPos = track->GetTwPosition();
+		twDir = track->GetTwMomentum();
+		twDir *= 1/twDir.Z();
+		posDistMatch = 5;
+
+		if( m_debug > 1 )
+		{
+			cout << "TW_POS::"; twPos.Print();
+			cout << "TW_DIR::"; twDir.Print();
+		}
+
+		for( int i=0; i<caNtuCluster->GetClustersN(); ++i )
+		{
+			clus = caNtuCluster->GetCluster(i);
+			if(m_debug > 1)
+			{
+				cout << "CLUS_ID::" << i << endl;
+				cout << "POS::"; clus->GetPosition().Print();
+				cout << "POSG::"; clus->GetPositionG().Print();
+				cout << "GLOB::"; m_GeoTrafo->FromCALocalToGlobal(clus->GetPositionG()).Print();
+			}
+			caPos = m_GeoTrafo->FromCALocalToGlobal( clus->GetPositionG() );
+
+			extrapDistZ =   ( twDir.X()*(caPos.X() - twPos.X())
+							+ twDir.Y()*(caPos.Y() - twPos.Y())
+							+ twDir.Z()*(caPos.Z() - twPos.Z()) )/(twDir.Mag2());
+			
+			extrapPos = twPos + extrapDistZ*twDir;
+			posDist = (extrapPos - caPos).Mag();
+
+			if( m_debug > 1 )
+			{
+				cout << "Extrap length::" << extrapDistZ << endl;
+				cout << "Extrap pos::"; extrapPos.Print();
+				cout << "Dist from cluster::" << posDist << endl;
+			}
+
+			if( posDist < posDistMatch)
+			{
+				if(m_debug > 1)
+					cout << "MATCHED ID::" << i << endl;
+
+				posDistMatch = posDist;
+				extrapDistZmatch = extrapDistZ;
+				found = true;
+				matchIndex = i;
+			}
+		}
+
+		if(found)
+			track->SetCALOmatchedClusterId(matchIndex);
+	}
 }
 
 

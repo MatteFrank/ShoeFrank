@@ -52,6 +52,7 @@ TAGtrack::TAGtrack()
    fTwMom(0,0,0),
    fTwMomError(0,0,0),
    fHasTwPoint(false),
+   fCALOmatched(-1),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -92,6 +93,7 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
    fTwMom(0,0,0),
    fTwMomError(0,0,0),
    fHasTwPoint(false),
+   fCALOmatched(-1),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -129,7 +131,9 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
    fTwPos(aTrack.fTwPos),
    fTwPosError(aTrack.fTwPosError),
    fTwMom(aTrack.fTwMom),
-   fTwMomError(aTrack.fTwMomError)
+   fTwMomError(aTrack.fTwMomError),
+   fHasTwPoint(aTrack.fHasTwPoint),
+   fCALOmatched(aTrack.fCALOmatched)
 {
    fListOfPoints = (TClonesArray*)aTrack.fListOfPoints->Clone();
 }
@@ -167,6 +171,7 @@ TAGtrack::TAGtrack(string name, long evNum,
                    TMatrixD* TwPos_cov, TMatrixD* TwMom_cov,
                    vector<TAGpoint*>* shoeTrackPointRepo)
 	: TAGnamed(),
+   fCALOmatched(-1),
 	fListOfPoints(0x0)
 {
 	SetupClones();
