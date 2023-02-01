@@ -244,6 +244,7 @@ void BaseReco::CampaignChecks()
       Int_t energyType    = (int)fRunManager->GetCurrentType().BeamEnergy;
       TString targetType  = fRunManager->GetCurrentType().Target;
       Float_t tgtSizeType = fRunManager->GetCurrentType().TargetSize;
+      TString comType     = fRunManager->GetCurrentType().Comments;
 
       if (energyBeam != energyType)
          Error("CampaignChecks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
@@ -256,6 +257,14 @@ void BaseReco::CampaignChecks()
       
       if (tgtSize != tgtSizeType && targetType != "None")
          Error("CampaignChecks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
+      
+      // Check if VTX is in
+      if (fCampManager->IsDetectorOn(TAVTparGeo::GetBaseName())) {
+         if (comType.Contains("not") && comType.Contains("VTX")) {
+            Error("CampaignChecks()", "VTX not included in this run");
+            exit(0);
+         }
+      }
    }
 }
 
