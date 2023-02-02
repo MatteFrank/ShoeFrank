@@ -182,7 +182,7 @@ TATWpoint* TATWntuPoint::NewPoint(Double_t x, Double_t dx, TATWhit* rowHit, Doub
 //------------------------------------------+-----------------------------------
 Int_t TATWntuPoint::GetPointsN() const
 {
-	return fListOfPoints->GetEntries();
+	return fListOfPoints->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

@@ -36,7 +36,7 @@ TAIRntuTrack::~TAIRntuTrack()
 //! return number of tracks
 Int_t TAIRntuTrack::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

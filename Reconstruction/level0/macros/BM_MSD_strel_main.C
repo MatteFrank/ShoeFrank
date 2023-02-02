@@ -82,8 +82,8 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
   //****************************************** Event Loop ****************************************
 
   //read BM and Vertex loop
-  if (nentries == 0 || nentries>tree->GetEntries())
-    nentries = tree->GetEntries();
+  if (nentries == 0 || nentries>tree->GetEntriesFast())
+    nentries = tree->GetEntriesFast();
   for (evnum = 0; evnum < nentries; ++evnum) {
     if(debug)
       cout<<"processing evnum="<<evnum<<endl;

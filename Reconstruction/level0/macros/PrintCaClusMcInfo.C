@@ -86,7 +86,7 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
    tree->SetBranchAddress("mctrack.", &eve);
    
    if (nentries == 0)
-      nentries = tree->GetEntries();
+      nentries = tree->GetEntriesFast();
    printf("nentries %d\n", nentries);
    Int_t wrong_events[10000];
    Int_t count_cluster=0;
@@ -230,21 +230,21 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
    } //end loop events
 
    printf("\n-------- OUTPUT ---------\n");
-   printf("p arrived: %f\n", hChargeIon_D[1]->GetEntries());
-   printf("He arrived: %f\n", hChargeIon_D[2]->GetEntries());
-   printf("Li arrived: %f\n", hChargeIon_D[3]->GetEntries());
-   printf("Be arrived: %f\n", hChargeIon_D[4]->GetEntries());
-   printf("B arrived: %f\n", hChargeIon_D[5]->GetEntries());
-   printf("C arrived: %f\n", hChargeIon_D[6]->GetEntries());
-   printf("N arrived: %f\n", hChargeIon_D[0]->GetEntries());
+   printf("p arrived: %f\n", hChargeIon_D[1]->GetEntriesFast());
+   printf("He arrived: %f\n", hChargeIon_D[2]->GetEntriesFast());
+   printf("Li arrived: %f\n", hChargeIon_D[3]->GetEntriesFast());
+   printf("Be arrived: %f\n", hChargeIon_D[4]->GetEntriesFast());
+   printf("B arrived: %f\n", hChargeIon_D[5]->GetEntriesFast());
+   printf("C arrived: %f\n", hChargeIon_D[6]->GetEntriesFast());
+   printf("N arrived: %f\n", hChargeIon_D[0]->GetEntriesFast());
 
-   printf("p seen by Calo: %f\n", hChargeIon_N[1]->GetEntries());
-   printf("He seen by Calo: %f\n", hChargeIon_N[2]->GetEntries());
-   printf("Li seen by Calo: %f\n", hChargeIon_N[3]->GetEntries());
-   printf("Be seen by Calo: %f\n", hChargeIon_N[4]->GetEntries());
-   printf("B seen by Calo: %f\n", hChargeIon_N[5]->GetEntries());
-   printf("C seen by Calo: %f\n", hChargeIon_N[6]->GetEntries());
-   printf("N seen by Calo: %f\n", hChargeIon_N[0]->GetEntries());
+   printf("p seen by Calo: %f\n", hChargeIon_N[1]->GetEntriesFast());
+   printf("He seen by Calo: %f\n", hChargeIon_N[2]->GetEntriesFast());
+   printf("Li seen by Calo: %f\n", hChargeIon_N[3]->GetEntriesFast());
+   printf("Be seen by Calo: %f\n", hChargeIon_N[4]->GetEntriesFast());
+   printf("B seen by Calo: %f\n", hChargeIon_N[5]->GetEntriesFast());
+   printf("C seen by Calo: %f\n", hChargeIon_N[6]->GetEntriesFast());
+   printf("N seen by Calo: %f\n", hChargeIon_N[0]->GetEntriesFast());
 
    cHitPerClus->cd();
    hHitPerClus->Draw("hist");

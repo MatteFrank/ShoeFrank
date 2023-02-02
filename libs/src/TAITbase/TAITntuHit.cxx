@@ -61,7 +61,7 @@ Int_t TAITntuHit::GetPixelsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray*list = GetListOfPixels(iSensor);
-      return list->GetEntries();
+      return list->GetEntriesFast();
    } else  {
       Error("GetPixelsN()", "Wrong sensor number %d\n", iSensor);
       return -1;

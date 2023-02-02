@@ -122,7 +122,7 @@ TAMSDntuRaw::~TAMSDntuRaw()
 Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 {
    if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
-	  return GetStrips(iSensor)->GetEntries();
+	  return GetStrips(iSensor)->GetEntriesFast();
    else {
 	  Error("GetStripsN()","Wrong sensor number %d\n", iSensor);
 	  return -1;

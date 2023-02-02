@@ -96,7 +96,7 @@ void TAMSDcluster::AddStrip(TAMSDhit* strip)
    TClonesArray &StripArray = *fListOfStrips;
    new(StripArray[StripArray.GetEntriesFast()]) TAMSDhit(*strip);
    
-   fElementsN = fListOfStrips->GetEntries();
+   fElementsN = fListOfStrips->GetEntriesFast();
 }
 
 //______________________________________________________________________________
@@ -119,7 +119,7 @@ void TAMSDcluster::SetPositionG(TVector3& posGlo)
 //! \param[in] idx index strip
 TAMSDhit* TAMSDcluster::GetStrip(Int_t idx)
 {
-   if (idx >=0 && idx < fListOfStrips->GetEntries())
+   if (idx >=0 && idx < fListOfStrips->GetEntriesFast())
       return (TAMSDhit*)fListOfStrips->At(idx);
    else
       return 0x0;

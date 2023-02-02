@@ -101,7 +101,7 @@ void TANEntuHit::SetupClones()
 //! return number of hits
 Int_t TANEntuHit::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

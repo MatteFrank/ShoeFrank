@@ -117,7 +117,7 @@ public:
     //! Get list of clusters
    TClonesArray*  GetListOfClusters()        const { return   fListOfClusters;   }
    //! Get number of clusters
-   Int_t          GetClustersN()             const { return   fListOfClusters->GetEntries(); }
+   Int_t          GetClustersN()             const { return   fListOfClusters->GetEntriesFast(); }
    //! Get valid flag
    Bool_t         IsPileUp()                 const { return   fPileup;                }
    //! Get track type
@@ -177,10 +177,10 @@ public:
    Float_t       GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm;     }
 
    //! Get mean number of pixels per tracks
-   Double32_t    GetMeanEltsN()              const { return fMeanEltsN/(float) fListOfClusters->GetEntries(); }
+   Double32_t    GetMeanEltsN()              const { return fMeanEltsN/(float) fListOfClusters->GetEntriesFast(); }
    
    //! Get mean charge per tracks
-   Double32_t    GetMeanCharge()             const { return fMeanCharge/(float) fListOfClusters->GetEntries(); }
+   Double32_t    GetMeanCharge()             const { return fMeanCharge/(float) fListOfClusters->GetEntriesFast(); }
    
    // Add MC track Idx
    void          AddMcTrackIdx(Int_t trackIdx);

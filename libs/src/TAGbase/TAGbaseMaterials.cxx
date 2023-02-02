@@ -74,7 +74,7 @@ vector<TString> TAGbaseMaterials::GetStrings(TString key, const Char_t delimiter
    vector<TString> coeff;
    TObjArray* list = key.Tokenize(delimiter);
    
-   for (Int_t k = 0; k < list->GetEntries(); k++) {
+   for (Int_t k = 0; k < list->GetEntriesFast(); k++) {
       TObjString* obj = (TObjString*)list->At(k);
       TString item = obj->GetString();
       Int_t pos = item.Length();
@@ -83,7 +83,7 @@ vector<TString> TAGbaseMaterials::GetStrings(TString key, const Char_t delimiter
    }
    
    if(FootDebugLevel(1)) {
-      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      for (Int_t i = 0; i < list->GetEntriesFast(); ++i) {
          cout << coeff[i] << " ";
       }
       cout << endl;
@@ -103,10 +103,10 @@ vector<TString> TAGbaseMaterials::GetStrings(TString key, const Char_t delimiter
 void TAGbaseMaterials::GetCoeff(TString key, Float_t* coeff, Int_t size,  const Char_t delimiter)
 {
    TObjArray* list = key.Tokenize(delimiter);
-   if (list->GetEntries() != size)
+   if (list->GetEntriesFast() != size)
       Error("ReadItem()","wrong tokenize for [%s] with size %d", key.Data(), size);
    
-   for (Int_t k = 0; k < list->GetEntries(); k++) {
+   for (Int_t k = 0; k < list->GetEntriesFast(); k++) {
       TObjString* obj = (TObjString*)list->At(k);
       TString item = obj->GetString();
       Int_t pos = item.Length();
@@ -115,7 +115,7 @@ void TAGbaseMaterials::GetCoeff(TString key, Float_t* coeff, Int_t size,  const 
    }
    
    if(FootDebugLevel(1)) {
-      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      for (Int_t i = 0; i < list->GetEntriesFast(); ++i) {
          cout << coeff[i] << " " ;
       }
       cout << endl;

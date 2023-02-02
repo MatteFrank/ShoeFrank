@@ -58,7 +58,7 @@ TABMrawHit* TABMntuRaw::NewHit(Int_t id, Int_t lay, Int_t view, Int_t cell, Doub
 // ! Get number of hits
 Int_t TABMntuRaw::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

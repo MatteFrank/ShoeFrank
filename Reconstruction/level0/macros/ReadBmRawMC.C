@@ -122,7 +122,7 @@ void ReadBmRawMC(TString name = "./dataRaw/flukasim/footC200_C2H4.root")
    TStopwatch watch;
    watch.Start();
    
-   Long64_t nentries = tree->GetEntries();
+   Long64_t nentries = tree->GetEntriesFast();
    
    Long64_t nbytes = 0, nb = 0, maxevents=min(nentries, nev);
    cout<<"Running against ntuple with:: "<<nentries<<" entries, maxevents="<<maxevents<<endl;

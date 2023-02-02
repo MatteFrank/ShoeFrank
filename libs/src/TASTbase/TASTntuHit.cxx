@@ -86,7 +86,7 @@ TASTntuHit::~TASTntuHit()
 //------------------------------------------+-----------------------------------
 Int_t TASTntuHit::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //______________________________________________________________________________

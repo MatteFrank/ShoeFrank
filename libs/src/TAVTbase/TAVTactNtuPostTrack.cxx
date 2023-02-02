@@ -197,7 +197,7 @@ Bool_t TAVTactNtuPostTrack::FindTiltedTracks()
 			delete track;
 			
 		 } else { // reset clusters
-			for (Int_t i = 0; i < array.GetEntries(); ++i) {
+			for (Int_t i = 0; i < array.GetEntriesFast(); ++i) {
 			   TAVTcluster*  cluster1 = (TAVTcluster*)array.At(i);
 			   cluster1->SetFound(false);
 			}

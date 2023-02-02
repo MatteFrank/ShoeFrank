@@ -853,8 +853,10 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
    if(FootDebugLevel(1))
       printf("Charge %.0f Mass %f\n", Z, mass);
    
-   fpHisMass->Fill(mass);
-   fpHisZ->Fill(Z);
+   if (ValidHistogram()) {
+      fpHisMass->Fill(mass);
+      fpHisZ->Fill(Z);
+   }
 }
 
 //------------------------------------------+-----------------------------------

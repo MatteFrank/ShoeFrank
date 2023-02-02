@@ -101,7 +101,7 @@ void TAMCntuRegion::SetupClones()
 //! Get number of regions
 Int_t TAMCntuRegion::GetRegionsN() const
 {
-   return fListOfRegions->GetEntries();
+   return fListOfRegions->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

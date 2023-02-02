@@ -103,7 +103,7 @@ void TACAntuHit::SetupClones()
 //! return number of hits
 Int_t TACAntuHit::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
