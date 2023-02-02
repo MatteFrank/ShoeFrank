@@ -203,13 +203,13 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          sensorId = map->GetSensorId(boardId, 0);
          for (int ch = 0; ch < NChannels; ch++)
          {
-            hADC[sensorId][ch]->Fill(evt->Xplane[ch]);
+            hADC[sensorId][ch]->Fill(evt->FirstPlane[ch]);
          }
 
          sensorId = map->GetSensorId(boardId, 1);
          for (int ch = 0; ch < NChannels; ch++)
          {
-            hADC[sensorId][ch]->Fill(evt->Yplane[ch]);
+            hADC[sensorId][ch]->Fill(evt->SecondPlane[ch]);
          }
       }
       // printf("\n");
@@ -263,7 +263,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          sensorId = map->GetSensorId(boardId, 0);
          for (int ch = 0; ch < NChannels; ch++)
          {
-            signals[sensorId][ch] = (evt->Xplane[ch] - pedestals[sensorId][ch]);
+            signals[sensorId][ch] = (evt->FirstPlane[ch] - pedestals[sensorId][ch]);
          }
          for (int ch = 0; ch < NChannels; ch++)
          {
@@ -277,7 +277,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          sensorId = map->GetSensorId(boardId, 1);
          for (int ch = 0; ch < NChannels; ch++)
          {
-            signals[sensorId][ch] = (evt->Yplane[ch] - pedestals[sensorId][ch]);
+            signals[sensorId][ch] = (evt->SecondPlane[ch] - pedestals[sensorId][ch]);
          }
          for (int ch = 0; ch < NChannels; ch++)
          {
