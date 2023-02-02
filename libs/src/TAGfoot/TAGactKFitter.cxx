@@ -95,6 +95,7 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 	m_singleVertexCounter = 0;
 	m_noVTtrackletEvents = 0;
 	m_noTWpointEvents = 0;
+	m_SCpileUpEvts = 0;
 }
 
 
@@ -182,6 +183,17 @@ Bool_t TAGactKFitter::Action()	{
 	ClearData();
 
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
+
+	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc("stDat", "TASTntuRaw")->Object())->GetSuperHit()->GetPileUp() )
+	{
+		if( m_debug > 0 )
+			Info("Action()", "Event %ld flagged as pile-up from the SC! Skipping...", evNum);
+
+		m_SCpileUpEvts++;
+		fpGlobTrackRepo->SetBit(kValid);
+		return true;
+	}
+
 
 	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  start!" << endl;
 
@@ -331,9 +343,10 @@ void TAGactKFitter::Finalize() {
 		SetHistogramDir(fDirectory);
 	}
 
-	cout << "Single vertex events::" << m_singleVertexCounter << endl;
-	cout << "Events w/out valid VT tracklets::" << m_noVTtrackletEvents << endl;
-	cout << "Events w/out valid TW point::" << m_noTWpointEvents << endl;
+	cout << "Single vertex events::" << m_singleVertexCounter << "\n";
+	cout << "Events w/ pile-up in the SC::" << m_SCpileUpEvts << "\n";
+	cout << "Events w/out valid VT tracklets::" << m_noVTtrackletEvents << "\n";
+	cout << "Events w/out valid TW point::" << m_noTWpointEvents << "\n";
 
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )
@@ -902,7 +915,12 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 	}	// end  - loop over all hit category
 
 	if( TAGrecoManager::GetPar()->IsSaveHisto() )
-		h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
+	{
+		if( m_mapTrack.find("dummy") == m_mapTrack.end() )
+			h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
+		else
+			h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() - 1);
+	}
 
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
@@ -1338,7 +1356,7 @@ void TAGactKFitter::MatchCALOclusters()
 		twPos = track->GetTwPosition();
 		twDir = track->GetTwMomentum();
 		twDir *= 1/twDir.Z();
-		posDistMatch = 5;
+		posDistMatch = m_CALOextrapTolerance;
 
 		if( m_debug > 1 )
 		{

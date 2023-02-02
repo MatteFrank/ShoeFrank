@@ -123,7 +123,6 @@ Bool_t TASTrawHit::CheckForPileUp(TWaveformContainer *w, Int_t event)
     
     w -> PlotWaveForm(event);       //stamp waveform
 
-         
     // -------------- Stamp derivative and threshold
     TCanvas c1("c1","",1200,1000);
     c1.cd();
@@ -134,15 +133,10 @@ Bool_t TASTrawHit::CheckForPileUp(TWaveformContainer *w, Int_t event)
 		//Save some other graphs if in debug mode
 		TGraph* WaveGraphDer = new TGraph(Der_T.size(), &Der_T[0], &Der_W[0]);
       
-
     WaveGraphDer->Draw("APL");
 		WaveGraphDer->SetTitle("SC WF der; Time [ns]; Derivative [V/ns]");
 		WaveGraphDer->SetLineWidth(2);
 		WaveGraphDer->SetLineColor(kBlue);
-    //WaveGraphDer->GetXaxis()->SetRange(50,150);
-    //WaveGraph->Draw("pl same");
-		//WaveGraph->Write(Form("SC_WAVE_DER_Cross%d_ev_%i.pdf",Ncross,event));
-    
   
     TGraph* lineUp = new TGraph(2);
     lineUp->Draw("PL SAME");
@@ -152,9 +146,6 @@ Bool_t TASTrawHit::CheckForPileUp(TWaveformContainer *w, Int_t event)
 		lineUp->SetLineColor(kRed);
 		lineUp->SetLineStyle(kDashed);
 		lineUp->SetLineWidth(2);
-    //lineUp->Draw("pl same");
-		//lineUp->Write("Der_Th_Up");
-    
 
 		TGraph* lineDown = new TGraph(2);
     lineDown->Draw("PL SAME");
@@ -164,17 +155,12 @@ Bool_t TASTrawHit::CheckForPileUp(TWaveformContainer *w, Int_t event)
 		lineDown->SetLineColor(kRed);
 		lineDown->SetLineStyle(kDashed);
 		lineDown->SetLineWidth(2);
-    //lineUp->Draw("pl same");
-	  //lineDown->Write("Der_Th_Down");
-   
 
     c1.Print(Form("SC_WAVE_derivative_Cross%d_ev_%i.png",Ncross,event));
 
-   
-
 		delete WaveGraphDer;
-		//delete lineUp;
-		//delete lineDown;
+		delete lineUp;
+		delete lineDown;
 
     //------------end stamp derivative
     

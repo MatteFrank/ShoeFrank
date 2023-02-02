@@ -94,7 +94,7 @@ void TAGFselectorStandard::CategorizeVT()
 			cout << "Vertex number " << iVtx << " seems to be empty\n";
 			continue;
 		}
-		else if( !m_IsMC && !vtxPD->IsBmMatched() )
+		else if( !vtxPD->IsBmMatched() )
 		{
 			if(m_debug > 0)
 			{

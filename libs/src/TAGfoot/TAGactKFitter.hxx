@@ -58,6 +58,7 @@
 
 #include "TADIparGeo.hxx"
 
+#include "TASTntuRaw.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAIThit.hxx"
 #include "TAMSDntuRaw.hxx"
@@ -278,8 +279,11 @@ private:
 
 	uint m_singleVertexCounter;							///< Counter for events w/ only one vertex
 	uint m_noVTtrackletEvents;							///< Counter for events w/ no valid VT tracklets
+	uint m_SCpileUpEvts;								///< Counter for events flagged as pile-up in the SC
 	uint m_noTWpointEvents;								///< Counter for events w/ no valid TW point
 	uint m_eventDisplayCounter=0;						///< Aux counter for event display event counter
+
+	float m_CALOextrapTolerance = 5;					///< Maximum tolerance for CALO cluster matching in global tracks extrapolation
 
 	ClassDef(TAGactKFitter,0);
 };
