@@ -109,7 +109,7 @@ void TAMCntuHit::SetupClones()
 //! Get number of hits
 Int_t TAMCntuHit::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

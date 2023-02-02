@@ -72,20 +72,20 @@ void GlobalRecoMC::BeforeEventLoop()
 //! \param[in] skipEvent events to skip
 void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)
 {
-	if(skipEvent >= fTree->GetEntries())
+	if(skipEvent >= fTree->GetEntriesFast())
 	{
-		Error("LoopEvent()", "Skip Event (%d) higher than input tree entries (%lld)", skipEvent, fTree->GetEntries());
+		Error("LoopEvent()", "Skip Event (%d) higher than input tree entries (%lld)", skipEvent, fTree->GetEntriesFast());
 		throw -1;
 	}
 	cout << "SkipEv::" << skipEvent << endl;
    	if (nEvents < 0)
-    	nEvents = fTree->GetEntries();
+    	nEvents = fTree->GetEntriesFast();
    
-    if ( skipEvent >= fTree->GetEntries() )	
+    if ( skipEvent >= fTree->GetEntriesFast() )	
     	Error("GlobalRecoMC::LoopEvent", "GlobalRecoMC::LoopEvent::skip event grater then event in file"), exit(0);
 
-   	if ( (nEvents + skipEvent) > fTree->GetEntries())
-    	nEvents = fTree->GetEntries() - skipEvent;
+   	if ( (nEvents + skipEvent) > fTree->GetEntriesFast())
+    	nEvents = fTree->GetEntriesFast() - skipEvent;
     
 	Int_t frequency = 1;
 	if (nEvents > 100000)      frequency = 100000;

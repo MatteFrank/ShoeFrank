@@ -222,21 +222,21 @@ void Allign_estimate(){
   TF1 *gaus=new TF1("gaus","gaus", -3., 3.);
 
   //BM initial parameters
-  gaus->SetParameters(((TH1D*)gDirectory->Get("bm_originX_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("bm_originX_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_originX_glbsys"))->GetStdDev());
+  gaus->SetParameters(((TH1D*)gDirectory->Get("bm_originX_glbsys"))->GetEntriesFast(),((TH1D*)gDirectory->Get("bm_originX_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_originX_glbsys"))->GetStdDev());
   ((TH1D*)gDirectory->Get("bm_originX_glbsys"))->Fit("gaus","QB+");
   Double_t BMxtra=gaus->GetParameter(1);
 
-  gaus->SetParameters(((TH1D*)gDirectory->Get("bm_originY_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("bm_originY_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_originY_glbsys"))->GetStdDev());
+  gaus->SetParameters(((TH1D*)gDirectory->Get("bm_originY_glbsys"))->GetEntriesFast(),((TH1D*)gDirectory->Get("bm_originY_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_originY_glbsys"))->GetStdDev());
   ((TH1D*)gDirectory->Get("bm_originY_glbsys"))->Fit("gaus","QB+");
   Double_t BMytra=gaus->GetParameter(1);
 
   //N.B.: here slope X represents the track on the XZ plane, meaning a rotation around Y axis (in FOOT.geo AngY is the rotation around Y axis)
-  gaus->SetParameters(((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetStdDev());
+  gaus->SetParameters(((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetEntriesFast(),((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->GetStdDev());
   ((TH1D*)gDirectory->Get("bm_slopeX_glbsys"))->Fit("gaus","QB+");
   Double_t BMyrot=atan(gaus->GetParameter(1))*RAD2DEG;
 
   //N.B.: here is the same thing before, but for the rotations around X axis a minus sign is needed
-  gaus->SetParameters(((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetStdDev());
+  gaus->SetParameters(((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetEntriesFast(),((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->GetStdDev());
   ((TH1D*)gDirectory->Get("bm_slopeY_glbsys"))->Fit("gaus","QB+");
   Double_t BMxrot=-atan(gaus->GetParameter(1))*RAD2DEG;
 
@@ -245,11 +245,11 @@ void Allign_estimate(){
   cout<<"BM rotation around X axys BMxrot="<<BMxrot<<"  rotation around Y axis BMyrot="<<BMyrot<<endl;
 
   //VTX initial parameters:
-  gaus->SetParameters(((TH1D*)gDirectory->Get("vtx_originX_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("vtx_originX_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("vtx_originX_glbsys"))->GetStdDev());
+  gaus->SetParameters(((TH1D*)gDirectory->Get("vtx_originX_glbsys"))->GetEntriesFast(),((TH1D*)gDirectory->Get("vtx_originX_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("vtx_originX_glbsys"))->GetStdDev());
   ((TH1D*)gDirectory->Get("vtx_originX_glbsys"))->Fit("gaus","QB+");
   Double_t VTXxtra=gaus->GetParameter(1);
 
-  gaus->SetParameters(((TH1D*)gDirectory->Get("vtx_originY_glbsys"))->GetEntries(),((TH1D*)gDirectory->Get("vtx_originY_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("vtx_originY_glbsys"))->GetStdDev());
+  gaus->SetParameters(((TH1D*)gDirectory->Get("vtx_originY_glbsys"))->GetEntriesFast(),((TH1D*)gDirectory->Get("vtx_originY_glbsys"))->GetMean(), ((TH1D*)gDirectory->Get("vtx_originY_glbsys"))->GetStdDev());
   ((TH1D*)gDirectory->Get("vtx_originY_glbsys"))->Fit("gaus","QB+");
   Double_t VTXytra=gaus->GetParameter(1);
 

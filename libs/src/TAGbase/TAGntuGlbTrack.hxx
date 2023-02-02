@@ -202,7 +202,7 @@ public:
    TClonesArray*    GetListOfPoints()       const { return fListOfPoints;                       }
    
    //! Get number of points
-   Int_t            GetPointsN()            const { return fListOfPoints->GetEntries();         }
+   Int_t            GetPointsN()            const { return fListOfPoints->GetEntriesFast();         }
    
    //! Get  point
    const TAGpoint*  GetPoint(Int_t index)   const { return (TAGpoint*)fListOfPoints->At(index); }

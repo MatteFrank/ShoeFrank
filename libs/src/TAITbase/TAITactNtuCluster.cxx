@@ -61,7 +61,7 @@ Bool_t TAITactNtuCluster::Action()
    
    for (Int_t i = 0; i < pConfig->GetSensorsN(); ++i) {
       fListOfPixels = pNtuHit->GetListOfPixels(i);
-      if (fListOfPixels->GetEntries() == 0) continue;
+      if (fListOfPixels->GetEntriesFast() == 0) continue;
       ok += FindClusters(i);
    }
    
@@ -98,7 +98,7 @@ Bool_t TAITactNtuCluster::CreateClusters(Int_t iSensor)
    for (Int_t i = 0; i< fClustersN; ++i)
       pNtuClus->NewCluster(iSensor);
    
-   for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) {
+   for (Int_t iPix = 0; iPix < fListOfPixels->GetEntriesFast(); ++iPix) {
       TAIThit* pixel = (TAIThit*)fListOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();

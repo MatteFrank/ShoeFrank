@@ -58,7 +58,7 @@ TACArawHit::~TACArawHit()
 //! Get number of hits
 Int_t TACAntuRaw::GetHitsN() const
 {
-  return fListOfHits->GetEntries();
+  return fListOfHits->GetEntriesFast();
 }
 
 //##############################################################################

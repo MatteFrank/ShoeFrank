@@ -55,7 +55,7 @@ TVector2 TAVTbaseCluster::ComputeSize()
    Int_t minCol = 99999;
    Int_t maxCol = 0;
    
-   for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) {
+   for (Int_t iPix = 0; iPix < fListOfPixels->GetEntriesFast(); ++iPix) {
       TAVThit* pixel = (TAVThit*)fListOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();
@@ -89,7 +89,7 @@ void TAVTbaseCluster::SetPositionG(TVector3& posGlo)
 //! \param[in] idx pixel index
 TAVThit* TAVTbaseCluster::GetPixel(Int_t idx)                    
 { 
-   if (idx >=0 && idx < fListOfPixels->GetEntries())
+   if (idx >=0 && idx < fListOfPixels->GetEntriesFast())
 	  return (TAVThit*)fListOfPixels->At(idx); 
    else
 	  return 0x0;
@@ -102,7 +102,7 @@ TAVThit* TAVTbaseCluster::GetPixel(Int_t idx)
 Float_t TAVTbaseCluster::GetPixelDistanceU(Int_t index) const
 {
    TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
-   if (index >= 0 && index < fListOfPixels->GetEntries()) {
+   if (index >= 0 && index < fListOfPixels->GetEntriesFast()) {
 	  TAVTbaseHit* aNeighbour = (TAVTbaseHit*)fListOfPixels->At(index);
 	  return pixelSeed->DistanceU(aNeighbour->GetPosition());
    } else {
@@ -117,7 +117,7 @@ Float_t TAVTbaseCluster::GetPixelDistanceU(Int_t index) const
 Float_t TAVTbaseCluster::GetPixelDistanceV(Int_t index) const
 {
    TAVTbaseHit* pixelSeed = (TAVTbaseHit*)fListOfPixels->At(0);
-   if (index >= 0 && index < fListOfPixels->GetEntries()) {
+   if (index >= 0 && index < fListOfPixels->GetEntriesFast()) {
 	  TAVTbaseHit* aNeighbour = (TAVTbaseHit*)fListOfPixels->At(index);
 	  return pixelSeed->DistanceV(aNeighbour->GetPosition());
    } else {

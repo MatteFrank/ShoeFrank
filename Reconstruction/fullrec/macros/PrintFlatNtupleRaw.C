@@ -143,7 +143,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   //    tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
   
   if (nentries == 0)
-    nentries = tree->GetEntries();
+    nentries = tree->GetEntriesFast();
   // printf("Processed Events: %d\n", ev);
   
   // KFitter* m_kFitter = new KFitter();

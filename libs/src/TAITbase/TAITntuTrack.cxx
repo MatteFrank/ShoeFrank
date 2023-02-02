@@ -40,7 +40,7 @@ TAITntuTrack::~TAITntuTrack()
 //! return number of tracks
 Int_t TAITntuTrack::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

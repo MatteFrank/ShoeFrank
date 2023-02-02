@@ -40,7 +40,7 @@ TAMSDntuTrack::~TAMSDntuTrack()
 //! return number of tracks
 Int_t TAMSDntuTrack::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

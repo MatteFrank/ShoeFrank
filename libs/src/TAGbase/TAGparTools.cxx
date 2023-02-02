@@ -346,10 +346,10 @@ void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter,
    if (key.IsNull()) return;
    
    TObjArray* list = key.Tokenize(delimiter);
-   if (list->GetEntries() != size)
+   if (list->GetEntriesFast() != size)
 	  Error("ReadItem()","wrong tokenize for [%s] with size %d", key.Data(), size);
    
-   for (Int_t k = 0; k < list->GetEntries(); k++) {
+   for (Int_t k = 0; k < list->GetEntriesFast(); k++) {
 	  TObjString* obj = (TObjString*)list->At(k);
 	  TString item = obj->GetString();
      item =  Normalize(item);
@@ -361,7 +361,7 @@ void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter,
    }
    
    if(FootDebugLevel(3)) {
-	  for (Int_t i = 0; i < list->GetEntries(); ++i) {
+	  for (Int_t i = 0; i < list->GetEntriesFast(); ++i) {
 		 cout << coeff[i] << " " ;      
 	  }
 	  cout << endl;

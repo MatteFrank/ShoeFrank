@@ -64,7 +64,7 @@ void TAVTcluster::AddPixel(TAVThit* pixel)
    if (pixel->IsPileUp())
       fPileUp = true;
       
-   fElementsN = fListOfPixels->GetEntries();
+   fElementsN = fListOfPixels->GetEntriesFast();
 }
 
 

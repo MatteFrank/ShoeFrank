@@ -112,7 +112,7 @@ void TATWntuRaw::SetupClones()
 
 Int_t TATWntuRaw::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

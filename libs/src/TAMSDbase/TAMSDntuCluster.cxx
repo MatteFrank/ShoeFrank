@@ -47,7 +47,7 @@ Int_t TAMSDntuCluster::GetClustersN(Int_t iSensor) const
 {
   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
     TClonesArray*list = GetListOfClusters(iSensor);
-    return list->GetEntries();   
+    return list->GetEntriesFast();   
   } else 
     return -1;   
 }
