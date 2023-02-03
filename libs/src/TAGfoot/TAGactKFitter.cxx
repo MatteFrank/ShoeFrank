@@ -437,31 +437,31 @@ void TAGactKFitter::CreateGeometry()  {
 
 	// take geometry objects
 	if (TAGrecoManager::GetPar()->IncludeST())
-		m_ST_geo = shared_ptr<TASTparGeo> ( (TASTparGeo*) gTAGroot->FindParaDsc("stGeo", "TASTparGeo")->Object() );
+		m_ST_geo = (TASTparGeo*) gTAGroot->FindParaDsc("stGeo", "TASTparGeo")->Object();
 
 	if (TAGrecoManager::GetPar()->IncludeBM())
-		m_BM_geo = shared_ptr<TABMparGeo> ( (TABMparGeo*) gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object() );
+		m_BM_geo = (TABMparGeo*) gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object();
 
 	if (TAGrecoManager::GetPar()->IncludeTG())
-		m_TG_geo = shared_ptr<TAGparGeo> ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() );
+		m_TG_geo = (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object();
 
 	if (TAGrecoManager::GetPar()->IncludeDI())
-		m_DI_geo = shared_ptr<TADIparGeo> ( (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
+		m_DI_geo = (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object();
 
 	if ( TAGrecoManager::GetPar()->IncludeVT() )
-		m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc("vtGeo", "TAVTparGeo")->Object() );
+		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc("vtGeo", "TAVTparGeo")->Object();
 
 	if ( TAGrecoManager::GetPar()->IncludeIT() )
-		m_IT_geo = shared_ptr<TAITparGeo> ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
+		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object();
 
 	if ( TAGrecoManager::GetPar()->IncludeMSD() )
-		m_MSD_geo = shared_ptr<TAMSDparGeo> ( (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
+		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object();
 
 	if ( TAGrecoManager::GetPar()->IncludeTW() )
-		m_TW_geo = shared_ptr<TATWparGeo> ( (TATWparGeo*) gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
+		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object();
 
 	if (TAGrecoManager::GetPar()->IncludeCA())
-		m_CA_geo = shared_ptr<TACAparGeo> ( (TACAparGeo*) gTAGroot->FindParaDsc("caGeo", "TACAparGeo")->Object() );
+		m_CA_geo = (TACAparGeo*) gTAGroot->FindParaDsc("caGeo", "TACAparGeo")->Object();
 
 
   m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
@@ -519,6 +519,7 @@ void TAGactKFitter::CreateGeometry()  {
 		genfit::SharedPlanePtr detectorplane(targetPlane);
 		m_SensorIDMap->AddFitPlane(-42, detectorplane);
 		m_SensorIDMap->AddFitPlaneIDToDet(-42, "TG");
+		delete targetPlane;
 	}
 
 	// Vertex

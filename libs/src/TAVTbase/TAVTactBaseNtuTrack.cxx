@@ -178,6 +178,7 @@ void TAVTactBaseNtuTrack::CheckBM()
    }
    
    TABMntuTrack* pBMtrack = 0x0;
+   fBmTrack = 0x0;
    fBmTrackOk    = false;
    pBMtrack = (TABMntuTrack*) fpBMntuTrack->Object();
    if (pBMtrack->GetTracksN() > 0)
