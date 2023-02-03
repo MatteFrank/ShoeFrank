@@ -52,7 +52,7 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
 
   outfile = fileNameout;
 
-
+  Th_true = -999.; //from TAMCparticle
   Th_meas = -999.; //from TWpoint
   Th_reco = -999.; //from global tracking
   Th_recoBM = -999.; //from global tracking wrt BM direction
@@ -68,18 +68,23 @@ void GlobalRecoAna::LoopEvent() {
 
   if(FootDebugLevel(1))
     cout<<"GlboalRecoAna::LoopEvent start"<<endl;
-
-  currEvent=0;
+  if (fSkipEventsN>0) 
+  {
+  currEvent=fSkipEventsN;
+  nTotEv+=  fSkipEventsN;
+  }
+  else currEvent=0;
 
 //*********************************************************************************** begin loop on every event **********************************************
   while(gTAGroot->NextEvent()) { //for every event
     //fFlagMC = false;     //N.B.: for MC FAKE REAL
+    if (currEvent % 100 == 0 || FootDebugLevel(1))
+      cout <<"current Event: " <<currEvent<<endl;
     DiffApp_trkIdx = false;
     SelectionCuts();
 
 
-    if (currEvent % 100 == 0 || FootDebugLevel(1))
-      cout <<"current Event: " <<currEvent<<endl;
+    
     ClustersPositionStudy();
 
     int evtcutstatus=ApplyEvtCuts();
@@ -99,7 +104,7 @@ void GlobalRecoAna::LoopEvent() {
       FragTriggerStudies();
     }
 
-    if (fFlagMC ==false && nt >0){
+    if (fFlagMC ==true && nt >0){
     //initialize Trk Id to 0
       TrkIdMC = -1;
       N_TrkIdMC_TW =-1;
@@ -112,7 +117,6 @@ void GlobalRecoAna::LoopEvent() {
 
     //*********************************************************************************** begin loop on global tracks **********************************************
     for(int it=0;it<nt;it++) { // for every track
-
       int trkstatus=ApplyTrkCuts();
       ((TH1D*)gDirectory->Get("Trkcutstatus"))->Fill(trkstatus);
       if(trkstatus){
@@ -128,12 +132,16 @@ void GlobalRecoAna::LoopEvent() {
 
       if(fFlagMC){
         MCGlbTrkLoopSetVariables();
-        GlbTrackPurityStudy();
+        //GlbTrackPurityStudy();
       }
 
       //Set the reconstructed quantities
       RecoGlbTrkLoopSetVariables();
       //Evaluate the measured mass
+      if(fFlagMC){
+      ThetaTrueVSThetaRecoPlots();
+      }
+
       EvaluateMass();
 
       if(FootDebugLevel(1)){
@@ -246,8 +254,12 @@ void GlobalRecoAna:: Booking(){
   if (fFlagMC == true) {
     gDirectory->mkdir("TrkVsMC");
     gDirectory->cd("TrkVsMC");
-    h2  = new TH2D("Z_truevsZ_reco_TWFixed","",10, 0 ,10., 10, 0 ,10.);
-    h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","",10, 0 ,10., 10, 0 ,10.);
+    h2  = new TH2D("Z_truevsZ_reco_TWFixed","Z_truevsZ_reco_TWFixed;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
+    h2  = new TH2D("Z_truevsZ_reco_TrackFixed","Z_truevsZ_reco_TrackFixed;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
+    h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","Z_truevsZ_reco_TWGhostHitsRemoved;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
+    h2  = new TH2D("Z_truevsZ_reco_All","Z_truevsZ_reco_All;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
+
+    
     gDirectory->cd("..");
   }
 
@@ -348,10 +360,10 @@ BookYield ("yield-trkMC", true);
 BookYield ("yield-trkGHfixMC", true);
 
 // Cross section recostruction histos MC + ALL TW HITS FIXED
-BookYield ("yield-trkTWfixMC", true);
+BookYield ("yield-trkcutsMC", true);
 
 // Cross section recostruction histos from REAL DATA
-BookYield ("yield-trkTrigger");
+BookYield ("yield-trkREAL");
 
 // Cross section TRUE histos
 BookYield ("yield-true_cut");
@@ -789,6 +801,29 @@ for(int i=1; i<=5; i++){
     gDirectory->cd("..");
   gDirectory->cd("..");
 
+
+  //theta Mig Matrix
+
+    gDirectory->mkdir("theta_MigMat");
+    gDirectory->cd("theta_MigMat"); 
+    for(int iz=1; iz<=primary_cha; iz++){
+    string name = "Z_" + to_string(iz-1) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+    gDirectory->mkdir(name.c_str());
+    gDirectory->cd(name.c_str());
+    string name_h2 = "migMatrix_theta_Z"+to_string(iz);
+    h2 = new TH2D(name_h2.c_str(), "Theta Migration Matrix; theta_true; theta_reco",10,0.,10.,10,0.,10.);
+    gDirectory->cd("..");
+    }
+    gDirectory->cd(".."); 
+
+
+
+
+
+
+
+
+
   if(FootDebugLevel(1))
     cout<<"GlboalRecoAna::Booking done"<<endl;
 
@@ -876,6 +911,7 @@ void GlobalRecoAna::MCGlbTrkLoopSetVariables(){
       }
 
       Th_true = P_true.Theta()*180./TMath::Pi();
+      //cout << "theta true: "<< Th_true <<endl;
       Th_cross = P_cross.Theta()*TMath::RadToDeg();
     }
   }
@@ -901,8 +937,8 @@ void GlobalRecoAna::RecoGlbTrkLoopSetVariables(){
    // take the direction of the beam in global SdR
    TVector3 BMslope = fpFootGeo->VecFromBMLocalToGlobal(myBMNtuTrk->GetTrack(0)->GetSlope());
    //take the angle between these 2 vectors
-   Th_recoBM = BMslope.Angle( TgtMomentum )*TMath::RadToDeg();
-
+   //Th_recoBM = BMslope.Angle( TgtMomentum )*TMath::RadToDeg();
+  Th_recoBM =  fGlbTrack->GetTgtThetaBm() *TMath::RadToDeg();
    if(FootDebugLevel(1))
      cout << "momX: " << TgtMomentum.X() << " momY: " << TgtMomentum.Y() << " momZ: " << TgtMomentum.Z() << endl << "BMX: " << BMslope.X() << " BMY: " << BMslope.Y() << " BMZ: " << BMslope.Z() << endl << "TH_mom: " << TgtMomentum.Theta() *TMath::RadToDeg()  <<  " thBM: "<< BMslope.Theta() *TMath::RadToDeg() << " th_recoBM: "<<Th_recoBM <<endl << endl;
 
@@ -985,14 +1021,14 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
 
   //-------------------------------------------------------------
   //--Yield for CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA
-  if ( Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+  if ( Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
     FillYieldReco("yield-trkMC",Z_true,Z_meas,Th_true );
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + ALLTW FIX : i don't want not fragmented primary
   if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {
-    if (Z_true >0. && Z_true < primary_cha && TriggerCheckMC() == true){
-      FillYieldReco("yield-trkTWfixMC",Z_true,Z_meas,Th_true );
+    if (Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/){
+      FillYieldReco("yield-trkcutsMC",Z_true,Z_meas,Th_true );
       ((TH1D*)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
     }
   }
@@ -1000,13 +1036,13 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + GHOST HITS FIX : i don't want not fragmented primary
   if (N_TrkIdMC_TW == 1)
-    if (Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+    if (Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
       FillYieldReco("yield-trkGHfixMC",Z_true,Z_meas,Th_true );
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAGWDtrigInfo )
-  if (Z_meas >0. && Z_meas <= primary_cha && TriggerCheck() == true)
-    FillYieldReco("yield-trkTrigger",Z_meas,0,Th_reco );
+  if (Z_meas >0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/)
+    FillYieldReco("yield-trkREAL",Z_meas,0,Th_recoBM );
 
 return;
 }
@@ -1018,11 +1054,11 @@ void GlobalRecoAna::FillDataGlbTrkYields(){
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
-  if ( Z_meas >0. && Z_meas < primary_cha && wdTrig -> GetTriggersStatus()[1] == 1)     //fragmentation hardware trigger ON
+  if ( Z_meas >0. && Z_meas <= primary_cha /*&& wdTrig -> GetTriggersStatus()[1] == 1*/)     //fragmentation hardware trigger ON
   //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
    {
     //cout << "inside " <<endl;
-    FillYieldReco("yield-trkREAL",Z_meas,0,Th_reco );
+    FillYieldReco("yield-trkREAL",Z_meas,0,Th_recoBM );
     //cout << "thBM: "<< Th_recoBM <<endl;
     ((TH1D*)gDirectory->Get("ThReco_frag"))->Fill(Th_recoBM);
     ((TH1D*)gDirectory->Get("Charge_trk_frag"))->Fill(Z_meas);
@@ -2193,13 +2229,19 @@ void GlobalRecoAna::BeforeEventLoop(){
 
   if(FootDebugLevel(1))
     cout<<"GlobalRecoAna::BeforeEventLoop start"<<endl;
-
+  
+  
   ReadParFiles();
   CampaignChecks();
   SetupTree();
+  cout <<"fSkipEventsN :" << fSkipEventsN <<endl;
   myReader->Open(GetName(), "READ", "tree");
+  if (fSkipEventsN > 0){
+       myReader->Reset(fSkipEventsN);
+     }
 
   file_out = new TFile(GetTitle(),"RECREATE");
+  
   cout<<"Going to create "<<GetTitle()<<" outfile "<<endl;
 //  SetRunNumber(runNb); //serve veramente?
   //  myReader->GetTree()->Print();
@@ -2278,7 +2320,7 @@ void GlobalRecoAna::AfterEventLoop(){
   gTAGroot->EndEventLoop();
 
   if(fFlagMC)
-    StudyThetaReso(); //to be fixed!!!
+    //StudyThetaReso(); //to be fixed!!!
   //PrintNCharge();
 
   cout <<"Writing..." << endl;
@@ -2833,9 +2875,16 @@ for(int it=0;it<myGlb->GetTracksN();it++){ // for every track
       ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWFixed"))->Fill(Z_true,Z_meas);
   }
 
+  if (TrkIdMC_TW == TrkIdMC) {      //stampa solo se TW point ha id della traccia
+      ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TrackFixed"))->Fill(Z_true,Z_meas);
+  }
+
   if (N_TrkIdMC_TW == 1) {      //stampa solo se non c'è gosh hits
       ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);
   }
+  
+  ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_All"))->Fill(Z_true,Z_meas); //stampa senza misreco-cuts
+
 }
 
 //------------------------------  STUDY OF MC PARTICLES
@@ -3004,7 +3053,7 @@ void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
 
       h = new TH1D("theta_","",200, 0 ,90.);
       if (enableMigMatr)
-      h2 = new TH2D("migMatrix_Z", "Bkg Z_true vs Z_reco",8,0.5,8.5,8,0.5,8.5);
+      h2 = new TH2D("migMatrix_Z", "migMatrix_Z; Z_{true}; Z_{reco}",8,0.5,8.5,8,0.5,8.5);
 
       gDirectory->cd("..");
     }
@@ -3576,4 +3625,15 @@ if (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx) ((TH1D*)gDirec
 if (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx && categorize_VTBMmatching== 1) ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(5,1);
 
 return (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx && categorize_VTBMmatching );
+}
+
+
+void GlobalRecoAna::ThetaTrueVSThetaRecoPlots(){
+    if(Z_true>0 && Z_true<=primary_cha){
+
+    string name = "theta_MigMat/Z_" + to_string(Z_true-1) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/migMatrix_theta_Z"+to_string(Z_true);
+    //cout << name << endl;
+    ((TH2D*)gDirectory->Get(name.c_str()))->Fill(Th_true, Th_recoBM);
+
+    }
 }
