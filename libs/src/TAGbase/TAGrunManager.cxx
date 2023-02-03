@@ -239,7 +239,29 @@ void TAGrunManager::DecodeTypeLine(TString& line)
       printf("Total Events: %d\n", evtTot);
    }
    
+   // detector out
+   i++;
+   p = 0;
+   while (line[i] != '\"') {
+      buf[p++] = line[i];
+      i++;
+   }
+   buf[p] = '\0';
+   
+   TString detectorOut = buf;
+   typeParameter.DetectorOut =  TAGparTools::Tokenize(detectorOut.Data(), " " );
+
+   if(FootDebugLevel(1))
+      printf("DetectorOut: %s\n", detectorOut.Data());
+      
    // Comments
+   
+   i++;
+   p = 0;
+   while (line[i] != '\"') {
+      i++;
+   }
+   
    i++;
    p = 0;
    while (line[i] != '\"') {
@@ -331,6 +353,23 @@ void TAGrunManager::DecodeRunLine(TString& line)
    fRunParameter[idx] = runParameter;
 }
 
+
+//_____________________________________________________________________________
+//! Check if detector present
+//!
+//! \param[in] detName detector name
+Bool_t TAGrunManager::IsDetectorOff(const TString& detName)
+{
+   for ( vector<string>::iterator it = fCurType.DetectorOut.begin(); it != fCurType.DetectorOut.end(); ++it) {
+      string tmp = *it;
+      TString name = tmp.data();
+      if (name.Contains(detName.Data()))
+         return true;
+   }
+   
+   return false;
+}
+
 //------------------------------------------+-----------------------------------
 //! Print
 //!
@@ -351,6 +390,11 @@ void TAGrunManager::Print(Option_t* opt) const
          cout  << "  Type Target:   " << fTypeParameter.at(i).Target.Data() << endl;
          cout  << "  Target Size:   " << fTypeParameter.at(i).TargetSize << endl;
          cout  << "  Total Events:  " << fTypeParameter.at(i).TotalEvts << endl;
+         cout  << "  DetectorOut:  ";
+         for (Int_t j = 0; j < (int) fTypeParameter.at(i).DetectorOut.size(); ++j)
+            cout  << " " << fTypeParameter.at(i).DetectorOut[j].data();
+         
+         cout << endl;
          cout  << "  Comments:      " << fTypeParameter.at(i).Comments.Data() << endl;
 
          cout  << endl;
