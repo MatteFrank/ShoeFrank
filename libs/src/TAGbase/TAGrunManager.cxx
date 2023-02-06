@@ -403,22 +403,52 @@ void TAGrunManager::Print(Option_t* opt) const
       cout  << endl;
 
    } else {
-      Int_t i = fRunNumber;
-      Int_t duration = fRunParameter.at(i).Duration;
+      RunParameter_t runPar = GetRunPar(fRunNumber);
+      Int_t duration = runPar.Duration;
       Int_t minutes  = duration / 60;
       Int_t seconds  = duration % 60;
       Int_t hours    = minutes  / 60;
       minutes        = minutes  % 60;
       
       printf("\nCurrent run number:     %d\n", fRunNumber);
-      printf("  Daq events:           %d %03d\n", fRunParameter.at(i).DaqEvts/1000, fRunParameter.at(i).DaqEvts % 1000);
+      printf("  Daq events:           %d %03d\n", runPar.DaqEvts/1000, runPar.DaqEvts % 1000);
       printf("  Duration:             %d s [%02dh:%02dmin:%02ds]\n", duration, hours, minutes, seconds);
-      printf("  Daq Rate:             %d Hz\n", fRunParameter.at(i).DaqRate);
+      printf("  Daq Rate:             %d Hz\n", runPar.DaqRate);
 
-      Int_t type = fRunParameter.at(i).RunType;
+      Int_t type = runPar.RunType;
       printf("  Run Beam:             %s\n",         fTypeParameter.at(type).Beam.Data());
       printf("  Run Beam Energy:      %.1f MeV/u\n", fTypeParameter.at(type).BeamEnergy);
       printf("  Run Target:           %s\n",         fTypeParameter.at(type).Target.Data());
-      printf("  Run Target Size:      %.1f cm\n\n",       fTypeParameter.at(type).TargetSize);
+      printf("  Run Target Size:      %.1f cm\n\n",  fTypeParameter.at(type).TargetSize);
    }
+}
+
+//------------------------------------------+-----------------------------------
+//! Get current run parameter
+//!
+//! \param[in] idx index in the run array
+TAGrunManager::RunParameter_t& TAGrunManager::GetRunPar(Int_t idx)
+{
+   auto itr = fRunParameter.find(idx);
+   if (itr == fRunParameter.end()) {
+      Error("GetRunPar()", "Wrong run number %d taking %d instead", idx, fRunArray[0]);
+      return fRunParameter.at(fRunArray[0]);
+   }
+   
+   return fRunParameter.at(idx);
+}
+
+//------------------------------------------+-----------------------------------
+//! Get current run parameter
+//!
+//! \param[in] idx index in the run array
+const TAGrunManager::RunParameter_t& TAGrunManager::GetRunPar(Int_t idx) const
+{
+   auto itr = fRunParameter.find(idx);
+   if (itr == fRunParameter.end()) {
+      Error("GetRunPar()", "Wrong run number %d taking %d instead", idx, fRunArray[0]);
+      return fRunParameter.at(fRunArray[0]);
+   }
+   
+   return fRunParameter.at(idx);
 }

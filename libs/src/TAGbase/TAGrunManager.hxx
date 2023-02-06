@@ -85,7 +85,9 @@ public:
    //! Get parameter for a given run type
    TypeParameter_t&     GetTypePar(Int_t idx)          { return fTypeParameter[idx]; }
    //! Get parameter for a given run
-   RunParameter_t&      GetRunPar(Int_t idx)           { return fRunParameter[idx];  }
+   RunParameter_t&      GetRunPar(Int_t idx);
+   //! Get parameter for a given run
+   const RunParameter_t&      GetRunPar(Int_t idx) const;
 
    //! Check detector off
    Bool_t               IsDetectorOff(const TString& detName);
