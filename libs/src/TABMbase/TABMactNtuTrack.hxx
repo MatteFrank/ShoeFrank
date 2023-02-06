@@ -122,7 +122,7 @@ public:
   TH1I*            fpNYtrack;
   TH1F*            fpTrackAngles;
   TH1F*            fpTrackSep;
-  TH1F*            fpParRes;
+  TH1D*            fpParRes;
   TH1F*            fpParSTrel;
 
   //for bm calibration

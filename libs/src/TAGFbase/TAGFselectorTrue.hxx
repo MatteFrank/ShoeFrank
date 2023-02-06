@@ -19,7 +19,7 @@ public:
 
 	TAGFselectorTrue();
 
-	virtual void		Categorize();
+	virtual void		Categorize() override;
 
 };
 

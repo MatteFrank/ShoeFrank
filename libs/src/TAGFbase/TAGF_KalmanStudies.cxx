@@ -116,8 +116,11 @@ void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected
 	double dP = meas.Mag() - expected.Mag();
 	double err = EvalError( meas, cov );
 
-	if ( m_debug > 0 )		cout << "dp= " <<meas.Mag() << "-"<<expected.Mag() << "   err= " << err<< endl;
-	if ( m_debug > 0 )		cout << " residuo= "<< dP / err <<endl;
+	if ( m_debug > 0 )
+	{
+		cout << "dp= " <<meas.Mag() << "-"<<expected.Mag() << "   err= " << err<< endl;
+		cout << " residuo= "<< dP / err <<endl;
+	}
 
 	// histos for momentum reso
 	if ( meas.Mag() == 0 || expected.Mag() == 0 )
@@ -174,7 +177,7 @@ void TAGF_KalmanStudies::EvaluateAndFill_MomentumResolution( map<string, map<flo
 
 
 	//problem on iterator it not resolved
-	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin->begin(); collIt != h_dPOverP_x_bin->end(); collIt++ ) {
+	for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin->begin(); collIt != h_dPOverP_x_bin->end(); ++collIt ) {
 		//  initialize output resolution histos
 		float resoP_min = (*(*collIt).second.begin()).first - m_resoP_step*0.5;
 		float resoP_max = (*(*collIt).second.rbegin()).first + m_resoP_step*0.5;
@@ -196,7 +199,7 @@ void TAGF_KalmanStudies::EvaluateAndFill_MomentumResolution( map<string, map<flo
 		(*h_biasP_over_Pkf)[ (*collIt).first ] = new TH1F( histoName.c_str(), histoName.c_str(), nbin, resoP_min, resoP_max );
 
 		int k=0;
-		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+		for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); ++it ) {
 			k++; //jump the underflow
 			if ( k > (*h_resoP_over_Pkf)[ (*collIt).first ]->GetNbinsX() )	{
 				cout<<"ERROR :: TAGF_KalmanStudies::EvaluateMomentumResolution  --> "<<(*collIt).first<< "  binning problem! do not fill all the reso plot. " << endl, exit(0);
@@ -213,7 +216,7 @@ void TAGF_KalmanStudies::EvaluateAndFill_MomentumResolution( map<string, map<flo
 				<<(*collIt).first<<": " << (*h_resoP_over_Pkf)[ (*collIt).first ]->GetXaxis()->GetBinLowEdge(k) << " + "
 				<< (*h_resoP_over_Pkf)[ (*collIt).first ]->GetXaxis()->GetBinUpEdge(k) <<" = " << a << " instead of " << b
 				<< ".\n\t\t Worry not too much, can be caused by bins not filled." << endl;
-				it--;
+				--it;
 				continue;
 			}
 

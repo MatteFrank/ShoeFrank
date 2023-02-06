@@ -21,7 +21,16 @@
 //----------------------------------------------------------------------------------------------------
 
 //! \brief Default constructor
-TAGFselectorBase::TAGFselectorBase()
+TAGFselectorBase::TAGFselectorBase() :
+m_chargeVect(0x0),
+m_allHitMeas(0x0),
+m_SensorIDMap(0x0),
+m_trackCategoryMap(0x0),
+m_measParticleMC_collection(0x0),
+m_McNtuEve(0x0),
+m_singleVertexCounter(0x0),
+m_noVTtrackletEvents(0x0),
+m_noTWpointEvents(0x0)
 {
 
 	m_debug = TAGrecoManager::GetPar()->Debug();
@@ -191,8 +200,6 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 
 	if(m_debug > 0) cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 
-	int particleCh;
-	float mass;
 	map<string, int> genCount_vector;
 	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
@@ -200,8 +207,8 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 
 		TAMCpart* particle = m_McNtuEve->GetTrack(iPart);
 
-		particleCh = particle->GetCharge();
-		mass = particle->GetMass();
+		int particleCh = particle->GetCharge();
+		float mass = particle->GetMass();
 
 
 		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)	continue;
@@ -234,7 +241,7 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 
 		}
 
-		if ( genCount_vector.find( outName ) == genCount_vector.end() ) 
+		if ( genCount_vector.size() < 1 || genCount_vector.find( outName ) == genCount_vector.end() ) 
 			genCount_vector[ outName ] = 0;
 
 		int foundHit = 0;
@@ -711,7 +718,7 @@ bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::
 	int nHitTW = 0;
 
 	// count the hits per each detector
-	for ( vector<AbsMeasurement*>::iterator it=(*element).second.begin(); it != (*element).second.end(); it++ ) {
+	for ( vector<AbsMeasurement*>::iterator it=(*element).second.begin(); it != (*element).second.end(); ++it ) {
 		int planeId = (*it)->getDetId();
 			if ( m_SensorIDMap->IsFitPlaneInDet(planeId, "VT") )	nHitVT++;
 			if ( m_SensorIDMap->IsFitPlaneInDet(planeId, "IT") )	nHitIT++;

@@ -56,7 +56,7 @@ class TAGFuploader {
 
 public:
 	
-	TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
+	explicit TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
 	virtual ~TAGFuploader();
 	
 	int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );

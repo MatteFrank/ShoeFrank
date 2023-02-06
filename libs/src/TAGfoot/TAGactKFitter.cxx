@@ -17,8 +17,28 @@
 
 //! \brief Default constructor for GenFit Kalman fitter
 TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"),
-		fpGlobTrackRepo(outTrackRepo),
-		m_IsMC(false) {
+fpGlobTrackRepo(outTrackRepo),
+m_fitter(0x0),
+m_fitter_extrapolation(0x0),
+m_dafRefFitter(0x0),
+m_dafSimpleFitter(0x0),
+m_trueParticleRep(0x0),
+m_outTrackRepo(0x0),
+m_SensorIDMap(0x0),
+m_trackAnalysis(0x0),
+m_ST_geo(0x0),
+m_BM_geo(0x0),
+m_TG_geo(0x0),
+m_DI_geo(0x0),
+m_VT_geo(0x0),
+m_IT_geo(0x0),
+m_MSD_geo(0x0),
+m_TW_geo(0x0),
+m_CA_geo(0x0),
+m_TopVolume(0x0),
+m_GeoTrafo(0x0),
+m_IsMC(false)
+{
 
 	AddDataOut(outTrackRepo, "TAGntuGlbTrack");
 
@@ -96,6 +116,9 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 	m_noVTtrackletEvents = 0;
 	m_noTWpointEvents = 0;
 	m_SCpileUpEvts = 0;
+
+	m_eventDisplayCounter = 0;
+	m_CALOextrapTolerance = 5;
 }
 
 
@@ -149,7 +172,7 @@ TAGactKFitter::~TAGactKFitter() {
 void TAGactKFitter::SetMcSample()
 {
 	m_IsMC = true;
-	m_trueParticleRep = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
 }
 
 
@@ -162,7 +185,7 @@ void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
 
 	for( map<string, int>::iterator it = mappa.begin(); it != mappa.end(); ++it )	{
 
-		if ( m_genCount_vector.find( (*it).first ) == m_genCount_vector.end() )
+		if ( m_genCount_vector.size() < 1 || m_genCount_vector.find( (*it).first ) == m_genCount_vector.end() )
 			m_genCount_vector[ (*it).first ] = 0;
 
 		m_genCount_vector.at( (*it).first ) += (*it).second;
@@ -216,7 +239,7 @@ Bool_t TAGactKFitter::Action()	{
 	}
 
 	// TAGFselectorBase* m_selector = new TAGFselectorBase(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
-	TAGFselectorBase* m_selector;
+	TAGFselectorBase* m_selector = 0x0;
 	if (TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle")
 	{
 		if (!m_IsMC)
@@ -232,6 +255,9 @@ Bool_t TAGactKFitter::Action()	{
 	else
 		Error("TAGactKFitter::Action()", "TAGrecoManager::GetPar()->PreselectStrategy() not defined"), exit(0);
 
+	if( !m_selector )
+		Error("TAGactKFitter::Action()", "Error in TAGFselector construction, aborting..."), exit(0);
+	
 	m_selector->SetVariables(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents, &m_noTWpointEvents);
 
 	if (m_selector->FindTrackCandidates() >= 0)
@@ -292,18 +318,18 @@ void TAGactKFitter::Finalize() {
 	if( ValidHistogram() )
 	{
 		// map<string, map<float, TH1F*> > h_dPOverP_x_bin
-		for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ )
-			for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+		for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); ++collIt )
+			for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); ++it ) {
 				AddHistogram( (*it).second );
 				cout << "TAGactKFitter::Finalize() -- " << (*it).second->GetTitle()<< endl;
 			}
 
 		// map<string, TH1F*>* h_resoP_over_Pkf
-		for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); it++ )
+		for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); ++it )
 			AddHistogram( (*it).second );
 
 		// map<string, TH1F*>* h_biasP_over_Pkf
-		for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); it++ )
+		for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it )
 			AddHistogram( (*it).second );
 
 		TH1F* h_deltaP_tot = new TH1F();
@@ -311,7 +337,7 @@ void TAGactKFitter::Finalize() {
 
 		// map<string, TH1F*>* h_deltaP
 		int count = 0;
-		for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); it++ ) {
+		for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); ++it ) {
 			if ( count == 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
 			else 				h_deltaP_tot->Add( (*it).second, 1 );
 			AddHistogram( (*it).second );
@@ -322,7 +348,7 @@ void TAGactKFitter::Finalize() {
 
 		// map<string, TH1F*>* h_sigmaP
 		count=0;
-		for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); it++ ) {
+		for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); ++it ) {
 			if ( count == 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
 			else 				h_sigmaP_tot->Add( (*it).second, 1 );
 			AddHistogram( (*it).second );
@@ -437,34 +463,34 @@ void TAGactKFitter::CreateGeometry()  {
 
 	// take geometry objects
 	if (TAGrecoManager::GetPar()->IncludeST())
-		m_ST_geo = (TASTparGeo*) gTAGroot->FindParaDsc("stGeo", "TASTparGeo")->Object();
+		m_ST_geo = static_cast<TASTparGeo*> ( gTAGroot->FindParaDsc("stGeo", "TASTparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeBM())
-		m_BM_geo = (TABMparGeo*) gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object();
+		m_BM_geo = static_cast<TABMparGeo*> ( gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeTG())
-		m_TG_geo = (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object();
+		m_TG_geo = static_cast<TAGparGeo*> ( gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeDI())
-		m_DI_geo = (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object();
+		m_DI_geo = static_cast<TADIparGeo*> ( gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeVT() )
-		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc("vtGeo", "TAVTparGeo")->Object();
+		m_VT_geo = static_cast<TAVTparGeo*> ( gTAGroot->FindParaDsc("vtGeo", "TAVTparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeIT() )
-		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object();
+		m_IT_geo = static_cast<TAITparGeo*> ( gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeMSD() )
-		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object();
+		m_MSD_geo = static_cast<TAMSDparGeo*> ( gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeTW() )
-		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object();
+		m_TW_geo = static_cast<TATWparGeo*> ( gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeCA())
-		m_CA_geo = (TACAparGeo*) gTAGroot->FindParaDsc("caGeo", "TACAparGeo")->Object();
+		m_CA_geo = static_cast<TACAparGeo*> ( gTAGroot->FindParaDsc("caGeo", "TACAparGeo")->Object() );
 
 
-  m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  m_GeoTrafo = static_cast<TAGgeoTrafo*> ( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()) );
 
 
   //set the stage for TGeoManagerInterface class of GenFit
@@ -613,12 +639,11 @@ void TAGactKFitter::CreateGeometry()  {
 				m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
 				m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "IT");
 				++indexOfPlane;
-				if( m_debug > 1 )
-					cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 
 				// Some debug print-outs for geometry
 				if(m_debug > 1)
 				{
+					cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 					cout << "IT sensor::" << i << endl;
 					cout << "origin::"; origin_.Print();
 					cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
@@ -832,7 +857,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 		}
 
 		// map of the number of converged tracks for each track hypothesis
-		if ( m_nSelectedTrackCandidates.find( PartName ) == m_nSelectedTrackCandidates.end() )	m_nSelectedTrackCandidates[ PartName ] = 0;
+		if ( m_nSelectedTrackCandidates.size() <1 || m_nSelectedTrackCandidates.find( PartName ) == m_nSelectedTrackCandidates.end() )
+			m_nSelectedTrackCandidates[ PartName ] = 0;
 		m_nSelectedTrackCandidates[ PartName ]++;
 
 		if(m_debug > 0)	{
@@ -899,7 +925,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 			if ( (TAGrecoManager::GetPar()->Chi2Cut() < 0) || ( m_refFitter->getRedChiSqu(fitTrack, fitTrack->getCardinalRep()) <= TAGrecoManager::GetPar()->Chi2Cut() ) ) {
 				NconvTracks++;
 
-				if ( m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )	m_nConvergedTracks_all[ PartName ] = 0;
+				if ( m_nConvergedTracks_all.size() < 1 || m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )
+					m_nConvergedTracks_all[ PartName ] = 0;
 				m_nConvergedTracks_all[ PartName ]++;
 
 				RecordTrackInfo( fitTrack, newTrackName );
@@ -1191,9 +1218,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	
 	//Calculate emission angles wrt BM track
 	TVector3 TrackDir(-100,-100,-100);
-	if( ((TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
+	if( static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
 	{
-		TVector3 BMslope = ( (TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
+		TVector3 BMslope = static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
 		BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope).Unit();
 		shoeOutTrack->SetTgtThetaBm(BMslope.Angle( recoMom_target ));
 
@@ -1245,7 +1272,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 
 		if ( mcCharge == fitCh && trackQuality > 0.7 ) {
-			if ( m_nConvergedTracks_matched.find( PartName ) == m_nConvergedTracks_matched.end() )	m_nConvergedTracks_matched[ PartName ] = 0;
+			if ( m_nConvergedTracks_matched.size() < 1 || m_nConvergedTracks_matched.find( PartName ) == m_nConvergedTracks_matched.end() )
+				m_nConvergedTracks_matched[ PartName ] = 0;
+			
 			m_nConvergedTracks_matched[ PartName ]++;
 		}
 		else
@@ -2128,7 +2157,7 @@ void TAGactKFitter::ClearData()
 		m_measParticleMC_collection.clear();
 	}
 
-	for ( auto trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); trackIt++)
+	for ( auto trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt)
 		delete trackIt->second;
 	m_mapTrack.clear();
 

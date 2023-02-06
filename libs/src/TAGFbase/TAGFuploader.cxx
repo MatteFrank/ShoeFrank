@@ -18,7 +18,9 @@
 //! 
 //! The class converts clusters/points in GenFit format
 //! \param[in] aSensorIDmap Pointer to the TAGFdetectorMap object that handles the GenFit geometry
-TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
+TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) :
+m_allHitMeas(0x0)
+{
 
 	m_SensorIDMap = aSensorIDmap;
 
@@ -53,16 +55,24 @@ TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 //! CURRENTLY NOT USED -> CHECK. Added to have a complete documentation of the class
 TAGFuploader::~TAGFuploader()
 {
-	for(auto it = m_allHitMeas->begin(); it != m_allHitMeas->end(); ++it)
+	if(m_allHitMeas)
 	{
-		for(auto itvec : it->second)
-			delete itvec;
-		it->second.clear();
+		for(auto it = m_allHitMeas->begin(); it != m_allHitMeas->end(); ++it)
+		{
+			for(auto itvec : it->second)
+				delete itvec;
+			it->second.clear();
+		}
+		m_allHitMeas->clear();
 	}
-	m_allHitMeas->clear();
 
-	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
-		it->second.clear();
+	if( m_measParticleMC_collection->size() > 0 )
+	{
+		for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
+			it->second.clear();
+	}
+	m_measParticleMC_collection->clear();
+	delete m_measParticleMC_collection;
 }
 
 
@@ -376,13 +386,12 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 	{
 		// for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
 		TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-		int tmp_ch;
 
 		// save hits in the collection
 		for (int iPoint = 0; iPoint < twPoint->GetPointsN(); iPoint++) {
 
 			TATWpoint* point = twPoint->GetPoint( iPoint );
-			tmp_ch = point->GetChargeZ();
+			int tmp_ch = point->GetChargeZ();
 
 			if ( m_debug > 1 ) cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
 			
@@ -467,11 +476,11 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 	TVector3 pixReso = clus->GetPosError();    // z???
 
 	// to be tested for SpasePoints
-	hitCov.UnitMatrix();
-	for (int j = 0; j < 3; j++){
-	  hitCov[j][j] = pixReso(j)*pixReso(j);
-	}
-	hitCov[2][2] = 0.000005;		//hardcoded
+	// hitCov.UnitMatrix();
+	// for (int j = 0; j < 3; j++){
+	//   hitCov[j][j] = pixReso(j)*pixReso(j);
+	// }
+	// hitCov[2][2] = 0.000005;		//hardcoded
 
 	// planar points
 	planarCov.UnitMatrix();

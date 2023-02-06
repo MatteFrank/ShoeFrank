@@ -159,7 +159,7 @@ private:
 	AbsKalmanFitter*  m_dafRefFitter;					///< DAF (Deterministic annealing filter) with kalman ref
 	AbsKalmanFitter*  m_dafSimpleFitter;				///< DAF (Deterministic annealing filter) with simple kalman
 
-	TAMCntuPart*  m_trueParticleRep=0x0;				///< Ptr to TAMCntuPart object
+	TAMCntuPart*  m_trueParticleRep;					///< Ptr to TAMCntuPart object
 
 	// TAGFuploader* m_uploader;							///< GenFit Uploader
 	// TAGFselectorBase* m_selector;							///< GenFit Selector
@@ -281,9 +281,9 @@ private:
 	uint m_noVTtrackletEvents;							///< Counter for events w/ no valid VT tracklets
 	uint m_SCpileUpEvts;								///< Counter for events flagged as pile-up in the SC
 	uint m_noTWpointEvents;								///< Counter for events w/ no valid TW point
-	uint m_eventDisplayCounter=0;						///< Aux counter for event display event counter
+	uint m_eventDisplayCounter;							///< Aux counter for event display event counter
 
-	float m_CALOextrapTolerance = 5;					///< Maximum tolerance for CALO cluster matching in global tracks extrapolation
+	float m_CALOextrapTolerance;						///< Maximum tolerance for CALO cluster matching in global tracks extrapolation
 
 	ClassDef(TAGactKFitter,0);
 };

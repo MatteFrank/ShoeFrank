@@ -167,7 +167,7 @@ int UpdatePDG::GetPdgCode( string partName ) {
 //!
 //! \param partName Name of the particle to check (e.g. "He4", "Li9"...)
 //! \return Mass in GeV of the particle
-float UpdatePDG::GetPdgMass( string partName ) {
+float UpdatePDG::GetPdgMass( const string &partName ) {
   
   if ( !IsParticleDefined( partName ) ) return -1;
   

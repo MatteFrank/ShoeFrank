@@ -24,40 +24,40 @@ TAGFselectorStandard::TAGFselectorStandard() : TAGFselectorBase()
 //! \brief Base function for standard track finding/selection/categorization
 void TAGFselectorStandard::Categorize( ) {
 
-	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
-
 	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
 	{
 		Error("Categorize_dataLike()", "Standard selection algorithm currently not supported without Vertex!");
 		exit(0);
 	}
 	else
+	{
+		if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
 		CategorizeVT();
+		if( m_debug > 1 ) cout << "******** END OF VT CYCLE **********\n";
+	}
 
-	if( m_debug > 1 ) cout << "******** END OF VT CYCLE **********\n";
-
-	if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
-	
 	if( m_systemsON.Contains("IT") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
 		CategorizeIT();
-	
-	if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
+		if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
+	}
 
-	if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
-	
 	if( m_systemsON.Contains("MSD") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
 		CategorizeMSD();
+		if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
+	}
 	else
 		SetTrackSeedNoMSD();
 
-	if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
-
-	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
-	
 	if( m_systemsON.Contains("TW") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
 		CategorizeTW();
-	
-	if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
+		if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
+	}
 
 	FillTrackCategoryMap();
 }
@@ -80,7 +80,6 @@ void TAGFselectorStandard::CategorizeVT()
 	// }
 	if( vertexNumber == 1)
 		(*m_singleVertexCounter)++;
-	TAVTvertex* vtxPD   = 0x0; //NEW
 
 	TVector3 pos_(0, 0, 0);		//global coord [cm]
     TVector3 mom_(0, 0, 7.);	//GeV //considering that fragments have same velocity of beam this should be changed accordingly
@@ -89,7 +88,7 @@ void TAGFselectorStandard::CategorizeVT()
 
 	//loop over all vertices
 	for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) {
-		vtxPD = vertexContainer->GetVertex(iVtx);
+		TAVTvertex* vtxPD = vertexContainer->GetVertex(iVtx);
 		if (vtxPD == 0x0){
 			cout << "Vertex number " << iVtx << " seems to be empty\n";
 			continue;
@@ -216,13 +215,12 @@ void TAGFselectorStandard::CategorizeIT()	{
 		//Get some parameters for IT FitPlanes
 		int maxITdetPlane = m_SensorIDMap->GetMaxFitPlane("IT");
 		int minITdetPlane = m_SensorIDMap->GetMinFitPlane("IT");
-		double tmpITz;
 		vector<float>* allZinIT = m_SensorIDMap->GetPossibleITz();
 
 
 		for ( int iz = 0; iz < allZinIT->size(); iz++ ) {
 			
-			tmpITz = allZinIT->at(iz);
+			double tmpITz = allZinIT->at(iz);
 			tmpExtrap = tmpVTX + m_trackSlopeMap[itTrack->first]*( tmpITz - tmpVTX.Z() );
 
 			vector<int>* planesAtZ  = m_SensorIDMap->GetPlanesAtZ( tmpITz );
@@ -231,7 +229,7 @@ void TAGFselectorStandard::CategorizeIT()	{
 			// RZ: there is a potentially bad issue here with the bending plane!!! the intersection might be in another sensor since it is done with a linear extrapolation. Would it be better to only check the y? how much do we risk of f-ing this up?
 
 			Int_t sensorId;
-			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); iPlane++ ) {
+			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); ++iPlane ) {
 				// cout << "Found plane::" << *iPlane << " at z::" << tmpITz << "\n";
 				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
 				{
@@ -303,16 +301,13 @@ void TAGFselectorStandard::CategorizeIT()	{
 //! This step uses a Kalman Filter extrapolation to find the MSD measurements of the track
 void TAGFselectorStandard::CategorizeMSD()	{
 
-	//RZ: CHECK!!! ADDED TO AVOID ERRORS
-	int findMSD;
-
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 
 	// Extrapolate to MSD
 	// same index if VTX_tracklets (for one vertex..)
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
 
-		findMSD=0;
+		int findMSD=0;
 
 		int maxMSDdetPlane = m_SensorIDMap->GetMaxFitPlane("MSD");
 		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
@@ -602,7 +597,7 @@ void TAGFselectorStandard::CategorizeTW()
 	// Extrapolate to TW
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 	m_fitter_extrapolation->setMaxIterations(1);
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++) 
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) 
 	{
 		m_fitter_extrapolation->processTrackWithRep(itTrack->second, itTrack->second->getCardinalRep() );
 
