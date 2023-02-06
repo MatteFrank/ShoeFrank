@@ -108,8 +108,9 @@ Bool_t TAGrunManager::FromFile(TString ifile)
    
    fFileStream->Close();
 
-   Int_t type = fRunParameter.at(fRunNumber).RunType;
-   fCurType   = fTypeParameter.at(type);
+   RunParameter_t runPar = GetRunPar(fRunNumber);
+   Int_t type            = runPar.RunType;
+   fCurType              = fTypeParameter.at(type);
    
    return true;
 }
@@ -415,11 +416,10 @@ void TAGrunManager::Print(Option_t* opt) const
       printf("  Duration:             %d s [%02dh:%02dmin:%02ds]\n", duration, hours, minutes, seconds);
       printf("  Daq Rate:             %d Hz\n", runPar.DaqRate);
 
-      Int_t type = runPar.RunType;
-      printf("  Run Beam:             %s\n",         fTypeParameter.at(type).Beam.Data());
-      printf("  Run Beam Energy:      %.1f MeV/u\n", fTypeParameter.at(type).BeamEnergy);
-      printf("  Run Target:           %s\n",         fTypeParameter.at(type).Target.Data());
-      printf("  Run Target Size:      %.1f cm\n\n",  fTypeParameter.at(type).TargetSize);
+      printf("  Run Beam:             %s\n",         fCurType.Beam.Data());
+      printf("  Run Beam Energy:      %.1f MeV/u\n", fCurType.BeamEnergy);
+      printf("  Run Target:           %s\n",         fCurType.Target.Data());
+      printf("  Run Target Size:      %.1f cm\n\n",  fCurType.TargetSize);
    }
 }
 
