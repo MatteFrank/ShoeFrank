@@ -363,7 +363,7 @@ BookYield ("yield-trkGHfixMC", true);
 BookYield ("yield-trkcutsMC", true);
 
 // Cross section recostruction histos from REAL DATA
-BookYield ("yield-trkREAL");
+BookYield ("yield-trkReco");
 
 // Cross section TRUE histos
 BookYield ("yield-true_cut");
@@ -371,8 +371,16 @@ BookYield ("yield-true_cut");
 // Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
 BookYield ("yield-true_DET");
 
-// Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
-//BookYield ("yield-true_DET2");
+// Cross section TRUE histos reco real
+TString name = GetTitle();
+Int_t pos = name.Last('.');
+string name_ = "yield-trkREAL";
+name_ += name[pos-1];
+BookYield (name_.c_str());
+
+
+
+
 } else {
 
 // Cross section recostruction histos from REAL DATA
@@ -1042,7 +1050,32 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAGWDtrigInfo )
   if (Z_meas >0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/)
-    FillYieldReco("yield-trkREAL",Z_meas,0,Th_recoBM );
+    FillYieldReco("yield-trkReco",Z_meas,0,Th_recoBM );
+
+  //-------------------------------------------------------------
+  //--CROSS SECTION reco
+  if (Z_meas >0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/){
+
+    TString name = GetTitle();
+    Int_t pos = name.Last('.');
+    string name_ = "yield-trkREAL";
+    name_ += name[pos-1];
+    FillYieldReco(name_.c_str(),Z_meas,0,Th_recoBM );
+    
+    
+
+
+
+
+
+
+
+
+
+
+  }
+
+
 
 return;
 }
