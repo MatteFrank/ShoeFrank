@@ -458,8 +458,38 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 		TAMCntuPart* mcNtu = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc","TAMCntuPart")->Object();
 		int goodId;
 		vector<int> frag{-1};
-		//std::map<key, value> map;
-		int count;
+		vector<int> counts (21,0);
+
+		int maxcount=-1;
+
+
+		/*
+		map<string, int> map;
+		map["outTG"] = 0;
+
+		map["inVTX0"] = 0;
+		map["outVTX0"] = 0;
+		map["inVTX1"] = 0;
+		map["outVTX1"] = 0;
+		map["inVTX2"] = 0;
+		map["outVTX2"] = 0;
+		map["inVTX3"] = 0;
+		map["outVTX3"] = 0;
+
+		map["inMSD0"] = 0;
+		map["outMSD0"] = 0;
+		map["inMSD1"] = 0;
+		map["outMSD1"] = 0;
+		map["inMSD2"] = 0;
+		map["outMSD2"] = 0;
+		map["inMSD3"] = 0;
+		map["outMSD3"] = 0;
+		map["inMSD4"] = 0;
+		map["outMSD4"] = 0;
+		map["inMSD5"] = 0;
+		map["outMSD5"] = 0;
+		*/
+		
 		for(int itt=0; itt<nCross; ++itt){
 
 			
@@ -473,41 +503,99 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 			//TAMCpart* MCpart = mcNtu->GetTrack(trackIdx);
 
 			if (NewReg>=81 && NewReg<=120)  //crosses TW
-			{
-				//mc_eventType=1;
 				has_tof=true;
-				//goodId=cross->GetTrackIdx()-1;
-				//TAMCpart* Mcpart=mcNtuPart->GetTrack(cross->GetTrackIdx()-1); //retrievs TrackID
-			}
+				
 
-			if (NewReg>50 && NewReg<81)
-			{
-				count++;
-			}
 
-			//}
-			//for(int it=0; it<mcNtu->GetTracksN(); ++it){
-			//	if(it==goodId){
-			//		has_tof==true;
-			//	}
-			
+			//if (NewReg>50 && NewReg<81)
+				//count++;
+	
+			//fragm crosses target
+			if(OldReg==50 && NewReg==2)
+				counts[0]++;
+
+			//fragm crosses VTX 
+			if(OldReg==2 && (NewReg==51 || NewReg==55 || NewReg==59))
+				counts[1]++;
+			if((OldReg==51 || OldReg==55 || OldReg==59) && NewReg==2)
+				counts[2]++;
+			if(OldReg==2 && (NewReg==52 || NewReg==56 || NewReg==60))
+				counts[3]++;
+			if((OldReg==52 || OldReg==56 || OldReg==60) && NewReg==2)
+				counts[4]++;
+			if(OldReg==2 && (NewReg==53 || NewReg==57 || NewReg==61))
+				counts[5]++;
+			if((OldReg==53 || OldReg==57 || OldReg==61) && NewReg==2)
+				counts[6]++;
+			if(OldReg==2 && (NewReg==54 || NewReg==58 || NewReg==62))
+				counts[7]++;
+			if((OldReg==54 || OldReg==58 || OldReg==62) && NewReg==2)
+				counts[8]++;
+
+			//fragm crosses MSD
+			if(OldReg==2 && (NewReg==63 || NewReg==69 || NewReg==75))
+				counts[9]++;
+			if((OldReg==63 || OldReg==69 || OldReg==75) && NewReg==2)
+				counts[10]++;
+			if(OldReg==2 && (NewReg==64 || NewReg==70 || NewReg==76))
+				counts[11]++;
+			if((OldReg==64 || OldReg==70 || OldReg==76) && NewReg==2)
+				counts[12]++;
+			if(OldReg==2 && (NewReg==65 || NewReg==71 || NewReg==77))
+				counts[13]++;
+			if((OldReg==65 || OldReg==71 || OldReg==77) && NewReg==2)
+				counts[14]++;
+			if(OldReg==2 && (NewReg==66 || NewReg==72 || NewReg==78))
+				counts[15]++;
+			if((OldReg==66 || OldReg==72 || OldReg==78) && NewReg==2)
+				counts[16]++;
+			if(OldReg==2 && (NewReg==67 || NewReg==73 || NewReg==79))
+				counts[17]++;
+			if((OldReg==67 || OldReg==73 || OldReg==79) && NewReg==2)
+				counts[18]++;
+			if(OldReg==2 && (NewReg==68 || NewReg==74 || NewReg==80))
+				counts[19]++;
+			if((OldReg==68 || OldReg==74 || OldReg==80) && NewReg==2)
+				counts[20]++;
+
+			//crosses air1->air2
+			//if(OldReg==2 && NewReg==3)
+			//	counts[21]++;
+
+			//crosses air3->SCN
+			//if(OldReg==3 && (NewReg>=81 && NewReg<=100))
+			//	counts[22]++;
 			
 			if (std::find(frag.begin(), frag.end(), trackIdx) == frag.end()) 
 			{
 				frag.push_back(trackIdx);
 				
 			}
-			
-					
-			//int region=MCpart->GetRegion(); //get region where fragment originates 
-	
-			
-						
+				
 		}
+
+		for(int j=0; j<counts.size()-1; ++j){
+			if(counts[j+1]<counts[j])
+			{
+				lost_fragm=true;
+				
+			}
+			//if (counts[2*j+1]>counts[2*j])
+			//{
+			//	air_fragm=true;
+			//}
+			//if (counts[2*j+2]>counts[2*j+1])
+			//{
+			//	det_fragm=true;
+			//}
+			//cout << counts[j] << endl;
+		}
+
+
 
 		for(int i=1; i<frag.size(); ++i){
 			TAMCpart* MCpart = mcNtu->GetTrack(frag.at(i));
-			int region = MCpart->GetRegion();
+			int region = MCpart->GetRegion(); //get region where fragment originates 
 			TVector3 finalPos = MCpart->GetFinalPos();
 			TVector3 initPos = MCpart->GetInitPos();
 	
@@ -531,24 +619,28 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 					
 			}
 		}	
-
+	
 
 
 		if (has_tof)
 		{	
-			mc_eventType=1;
-			if (count%(frag.size()-1)!=0)
+			
+			if (lost_fragm)
 			{
-				mc_eventType=2;
+				
+				if (det_fragm)
+				{
+					mc_eventType=3;
+				}
+				else if (air_fragm)
+				{
+					mc_eventType=4;
+				}
+				else 
+					mc_eventType=2;
 			}
-			if (air_fragm)
-			{
-				mc_eventType=4;
-			}
-			if (det_fragm)
-			{
-				mc_eventType=3;
-			}
+			else
+				mc_eventType=1;
 		}
 		
 		
