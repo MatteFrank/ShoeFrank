@@ -419,27 +419,26 @@ void TAGrunManager::Print(Option_t* opt) const
    if (option.Contains("all")) {
       cout << "Number of types: " << fTypeParameter.size() << endl;
       
-      for (  map<int, TAGrunManager::TypeParameter_t>::const_iterator it = fTypeParameter.begin(); it != fTypeParameter.end(); ++it) {
-         
-         cout  << "  Type index:    " << it->second.TypeId << endl;
-         cout  << "  Type name:     " << it->second.TypeName.Data() << endl;
-         cout  << "  Main Trigger:  " << it->second.Trigger.Data() << endl;
-         cout  << "  Type Beam:     " << it->second.Beam.Data() << endl;
-         cout  << "  Beam Energy:   " << it->second.BeamEnergy ;
-         if (it->second.BeamEnergy2 > 0)
-            cout  << " - " << it->second.BeamEnergy2 << endl;
+      for (const auto &it : fTypeParameter) {
+         cout  << "  Type index:    " << it.second.TypeId << endl;
+         cout  << "  Type name:     " << it.second.TypeName.Data() << endl;
+         cout  << "  Main Trigger:  " << it.second.Trigger.Data() << endl;
+         cout  << "  Type Beam:     " << it.second.Beam.Data() << endl;
+         cout  << "  Beam Energy:   " << it.second.BeamEnergy ;
+         if (it.second.BeamEnergy2 > 0)
+            cout  << " - " << it.second.BeamEnergy2 << endl;
          else
             cout << endl;
          
-         cout  << "  Type Target:   " << it->second.Target.Data() << endl;
-         cout  << "  Target Size:   " << it->second.TargetSize << endl;
-         cout  << "  Total Events:  " << it->second.TotalEvts << endl;
+         cout  << "  Type Target:   " << it.second.Target.Data() << endl;
+         cout  << "  Target Size:   " << it.second.TargetSize << endl;
+         cout  << "  Total Events:  " << it.second.TotalEvts << endl;
          cout  << "  DetectorOut:  ";
-         for (Int_t j = 0; j < (int) it->second.DetectorOut.size(); ++j)
-            cout  << " " << it->second.DetectorOut[j].data();
+         for (Int_t j = 0; j < (int) it.second.DetectorOut.size(); ++j)
+            cout  << " " << it.second.DetectorOut[j].data();
          
          cout << endl;
-         cout  << "  Comments:      " << it->second.Comments.Data() << endl;
+         cout  << "  Comments:      " << it.second.Comments.Data() << endl;
          
          cout  << endl;
       }
@@ -448,9 +447,9 @@ void TAGrunManager::Print(Option_t* opt) const
       
    } else if (option.Contains("count")) {
       Int_t sum = 0;
-      for (  map<int, int>::const_iterator it = fEvtCounter.begin(); it != fEvtCounter.end(); ++it) {
-         cout << "  Type index:    " << setw(2) << it->first << "  Total Events:  " << setw(11) << SmartPrint(it->second).Data() << '\n';
-         sum += it->second;
+      for (const auto &it : fEvtCounter) {
+         cout << "  Type index:    " << setw(2) << it.first << "  Total Events:  " << setw(11) << SmartPrint(it.second).Data() << '\n';
+         sum += it.second;
       }
       cout << "                     Total Events:  " << setw(11) <<  SmartPrint(sum).Data() << endl;
    }  else {
