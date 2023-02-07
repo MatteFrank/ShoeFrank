@@ -3,15 +3,13 @@ CamName: "HIT2022"
 RunNumber: 4553-5005;
 
 #Idx	Type	                           Main trigger	           Beam        Energy   Target      Size(cm)  Total events   Detector Out   Comments
-1	   "Alignment"                      "MargaritaMajority"	     "None"	      0	      "None"      0.       0              ""             ""
 2  	"Pedestal"                       "Pedestal/V2495"          "None"	      0	      "None"      0.       6255128        ""             ""
-31	   "Calo studies"                   "MargMaj/CALOalone"	     "16O"	  205-430	   "None"      0.	      8237323		   ""             "Majority 6"
-32	   "Calo studies"                   "MargMaj/CALOalone"	     "12C"	   88-420	   "None"      0.	      8237323		   ""             "Majority 6"
-33	   "Calo studies"                   "MargMaj/CALOalone"	     "4He"	   50-220	   "None"      0.	      8237323		   ""             "Majority 6"
-34	   "Calo studies"                   "MargMaj/CALOalone"	     "p"	      50-220	   "None"      0.	      8237323		   ""             "Majority 6"
+31	   "Calo studies"                   "MargMaj/CALOalone"	     "16O"	  205-430	   "None"      0.	      2084062		   ""             "Majority 6"
+32	   "Calo studies"                   "MargMaj/CALOalone"	     "12C"	   88-420	   "None"      0.	      2057723		   ""             "Majority 6"
+33	   "Calo studies"                   "MargMaj/CALOalone"	     "4He"	   50-220	   "None"      0.	      2498960		   ""             "Majority 6"
+34	   "Calo studies"                   "MargMaj/CALOalone"	     "p"	      50-220	   "None"      0.	      1596578		   ""             "Majority 6"
 4	   "MSD studies"                    "MargaritaMajority"	     "4He"	   55-220      "None"      0.	      6500150        ""             ""
 5	   "MB He 100 No target"            "MargaritaMajority"	     "4He"	      100	   "None"      0.       1034836        ""             ""
-6	   "Frag He 100 No target"          "Fragmentation"           "4He"	      100	   "None"      0.       0              ""             ""
 7	   "MB He 100 carbon target"        "MargaritaMajority"	     "4He"	      100	   "Carbon"	   0.5      12322519       ""             ""
 8	   "Frag 1x1 He 100 carbon target"	"Fragmentation"           "4He"	      100	   "Carbon"	   0.5      1825382        ""             ""
 9	   "Frag 3x3 He 100 carbon target"	"Fragmentation"           "4He"	      100	   "Carbon"	   0.5      4461954        ""             ""
@@ -19,17 +17,13 @@ RunNumber: 4553-5005;
 11	   "Frag He 140 No target"          "Fragmentation"           "4He"	      140	   "None"      0.	      1024511        ""             ""
 12	   "MB He 140 carbon target"        "MargaritaMajority"	     "4He"	      140	   "Carbon"	   0.5	   11650772       ""             ""
 13	   "Frag 1x1 He 140 carbon target"	"Fragmentation"           "4He"	      140	   "Carbon"	   0.5      7890952        ""             ""
-14	   "Frag 3x3 He 140 carbon target"	"Fragmentation"           "4He"	      140	   "Carbon"	   0.5	   0              ""             ""
 15	   "MB He 200 No target"            "MargaritaMajority"	     "4He"	      200	   "None"      0.	      1409093        ""             ""
-16	   "Frag He 200 No target"          "Fragmentation"           "4He"	      200	   "None"      0.	      0              ""             ""
 17	   "MB He 200 carbon target"        "MargaritaMajority"	     "4He"	      200	   "Carbon"	   0.5	   9857751        ""             ""
 18	   "Frag 1x1 He 200 carbon target"	"Fragmentation"           "4He"	      200	   "Carbon"	   0.5	   3486210        ""             ""
-19	   "Frag 3x3 He 200 carbon target"	"Fragmentation"           "4He"	      200	   "Carbon"	   0.5      0              ""             ""
 20	   "MB He 220 No target"            "MargaritaMajority"	     "4He"	      220	   "None"      0.       1876708        ""             ""
 21	   "Frag He 220 No target"          "Fragmentation"           "4He"	      220	   "None"      0.       1244605        ""             ""
 22	   "MB He 220 carbon target"        "MargaritaMajority"	     "4He"	      220	   "Carbon"	   0.5      10962735       ""             ""
 23	   "Frag 1x1 He 220 carbon target"	"Fragmentation"           "4He"	      220	   "Carbon"	   0.5      3465240        ""             ""
-24	   "Frag 3x3 He 220 carbon target"	"Fragmentation"           "4He"	      220	   "Carbon"	   0.5	   0              ""             ""
 25	   "Proton runs"                    "MargaritaMajority"	     "p"		   50-220      "None"      0.	      1250572        ""             ""
 26	   "Proton runs 2"                  "MargaritaMajority"       "p"		   50-220      "None"      0.       3144193        ""             ""
 
@@ -396,7 +390,7 @@ RunNumber: 4553-5005;
 4994  "2022-07-25 01:58:38"	"2022-07-25 01:59:59"	69860	   81	      862	   34
 4995  "2022-07-25 02:00:22"	"2022-07-25 02:01:32"	56090	   70	      801	   34
 4996  "2022-07-25 02:02:14"	"2022-07-25 02:03:15"	61179	   61	      1003     34
-4997  "2022-07-25 02:03:38"	"2022-07-25 02:04:27"	58396	   49	      1 192    34
+4997  "2022-07-25 02:03:38"	"2022-07-25 02:04:27"	58396	   49	      1192     34
 4998  "2022-07-25 02:06:24"	"2022-07-25 02:07:54"	30995	   90	      344	   34
 4999  "2022-07-25 02:08:20"	"2022-07-25 02:09:12"	60596	   52	      1165     34
 5000  "2022-07-25 02:09:36"	"2022-07-25 02:10:35"	56855	   59	      964	   34
