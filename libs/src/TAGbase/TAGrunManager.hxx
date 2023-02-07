@@ -61,7 +61,8 @@ private:
 
    map<int, TypeParameter_t> fTypeParameter; ///< Run type parameter
    map<int, RunParameter_t>  fRunParameter; ///< Run type parameter
-   
+   map<int, int>             fEvtCounter; ///< Run type parameter
+
 public:
    TAGrunManager(const TString exp = "", Int_t runNumber = -1);
    virtual ~TAGrunManager();

@@ -37,6 +37,8 @@ TAGrunManager::TAGrunManager(const TString exp, Int_t runNumber)
    if (fCampaignName.IsNull()) {
       Error("TAGrunManager()", "No campaign name set, please set the campaign");
    }
+   
+   fEvtCounter.clear();
 }
 
 //_____________________________________________________________________________
@@ -353,10 +355,11 @@ void TAGrunManager::DecodeRunLine(TString& line)
    
    sscanf(tmp.Data(), "%d %d %d %d", &daqEvts, &duration, &daqRate, &runType);
 
+   fEvtCounter[runType] += daqEvts;
    runParameter.DaqEvts  = daqEvts;
    runParameter.Duration = duration;
-   runParameter.DaqRate = daqRate;
-   runParameter.RunType = runType;
+   runParameter.DaqRate  = daqRate;
+   runParameter.RunType  = runType;
    
    if(FootDebugLevel(1))
       printf("daqEvts: %d duration: %d daqRate: %d runType: %d\n", daqEvts, duration, daqRate, runType);
@@ -391,9 +394,9 @@ void TAGrunManager::Print(Option_t* opt) const
    
    if (option.Contains("all")) {
       cout << "Number of types: " << fTypeParameter.size() << endl;
-
+      
       for (  map<int, TAGrunManager::TypeParameter_t>::const_iterator it = fTypeParameter.begin(); it != fTypeParameter.end(); ++it) {
-
+         
          cout  << "  Type index:    " << it->second.TypeId << endl;
          cout  << "  Type name:     " << it->second.TypeName.Data() << endl;
          cout  << "  Main Trigger:  " << it->second.Trigger.Data() << endl;
@@ -403,7 +406,7 @@ void TAGrunManager::Print(Option_t* opt) const
             cout  << " - " << it->second.BeamEnergy2 << endl;
          else
             cout << endl;
-
+         
          cout  << "  Type Target:   " << it->second.Target.Data() << endl;
          cout  << "  Target Size:   " << it->second.TargetSize << endl;
          cout  << "  Total Events:  " << it->second.TotalEvts << endl;
@@ -413,13 +416,17 @@ void TAGrunManager::Print(Option_t* opt) const
          
          cout << endl;
          cout  << "  Comments:      " << it->second.Comments.Data() << endl;
-
+         
          cout  << endl;
       }
       cout << "  Current campaign number: " << fRunNumber << endl;
       cout  << endl;
-
-   } else {
+      
+   } else if (option.Contains("count")) {
+      for (  map<int, int>::const_iterator it = fEvtCounter.begin(); it != fEvtCounter.end(); ++it)
+         cout << "  Type index:    " << it->first << "  Total Events:  " << it->second << '\n';
+      
+   }  else {
       RunParameter_t runPar = GetRunPar(fRunNumber);
       Int_t duration = runPar.Duration;
       Int_t minutes  = duration / 60;
