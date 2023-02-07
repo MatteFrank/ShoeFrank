@@ -425,10 +425,10 @@ void TAGrunManager::Print(Option_t* opt) const
    } else if (option.Contains("count")) {
       Int_t sum = 0;
       for (  map<int, int>::const_iterator it = fEvtCounter.begin(); it != fEvtCounter.end(); ++it) {
-         cout << "  Type index:    " << it->first << "  Total Events:  " << it->second << '\n';
+         cout << "  Type index:    " << setw(2) << it->first << "  Total Events:  " << setw(9) << it->second << '\n';
          sum += it->second;
       }
-      cout << "                     Total Events:  " << sum << endl;
+      cout << "                     Total Events:  " << setw(9) << sum << endl;
    }  else {
       RunParameter_t runPar = GetRunPar(fRunNumber);
       Int_t duration = runPar.Duration;
