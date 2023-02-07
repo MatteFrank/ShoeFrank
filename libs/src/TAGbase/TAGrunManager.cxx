@@ -368,6 +368,30 @@ void TAGrunManager::DecodeRunLine(TString& line)
 }
 
 
+//------------------------------------------+-----------------------------------
+//! Decode type line
+//!
+//! \param[in] nb number to print
+TString TAGrunManager::SmartPrint(Int_t nb, Int_t sep) const
+{
+   vector<int> separated;
+   
+   do {
+      separated.push_back(nb % sep);
+      nb /= sep;
+   } while(nb > 0);
+   
+   TString tmp;
+   for (Int_t i = (int)separated.size()-1; i >=0; --i) {
+      if (i == (int)separated.size()-1)
+         tmp +=  Form("%d ",separated[i]);
+      else
+         tmp +=  Form("%03d ",separated[i]);
+   }
+
+   return tmp;
+}
+
 //_____________________________________________________________________________
 //! Check if detector present
 //!
@@ -425,10 +449,10 @@ void TAGrunManager::Print(Option_t* opt) const
    } else if (option.Contains("count")) {
       Int_t sum = 0;
       for (  map<int, int>::const_iterator it = fEvtCounter.begin(); it != fEvtCounter.end(); ++it) {
-         cout << "  Type index:    " << setw(2) << it->first << "  Total Events:  " << setw(9) << it->second << '\n';
+         cout << "  Type index:    " << setw(2) << it->first << "  Total Events:  " << setw(11) << SmartPrint(it->second).Data() << '\n';
          sum += it->second;
       }
-      cout << "                     Total Events:  " << setw(9) << sum << endl;
+      cout << "                     Total Events:  " << setw(11) <<  SmartPrint(sum).Data() << endl;
    }  else {
       RunParameter_t runPar = GetRunPar(fRunNumber);
       Int_t duration = runPar.Duration;
@@ -438,11 +462,11 @@ void TAGrunManager::Print(Option_t* opt) const
       minutes        = minutes  % 60;
       
       printf("\nCurrent run number:     %d\n", fRunNumber);
-      printf("  Daq events:           %d %03d\n", runPar.DaqEvts/1000, runPar.DaqEvts % 1000);
+      printf("  Daq events:           %s\n", SmartPrint(runPar.DaqEvts).Data());
       printf("  Duration:             %d s [%02dh:%02dmin:%02ds]\n", duration, hours, minutes, seconds);
       printf("  Daq Rate:             %d Hz\n", runPar.DaqRate);
 
-      printf("  Run Beam:             %s\n",         fCurType.Beam.Data());
+      printf("  Run Beam:             %s\n", fCurType.Beam.Data());
       printf("  Run Beam Energy:      %.1f", fCurType.BeamEnergy);
       if (fCurType.BeamEnergy2 > 0)
          printf(" - %.1f MeV/u\n", fCurType.BeamEnergy2);

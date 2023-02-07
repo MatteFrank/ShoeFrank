@@ -102,6 +102,8 @@ private:
    void DecodeTypeLine(TString& line);
    // Decode run info
    void DecodeRunLine(TString& line);
+   // Smart print
+   TString SmartPrint(Int_t nb, Int_t sep = 1000) const;
 
 private:
    static const TString fgkDefaultActName;  ///< Default action name
