@@ -1690,7 +1690,7 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 //! \brief Declare the GenFit histograms
 void TAGactKFitter::CreateHistogram()	{
 
-	h_GFeventType = new TH1I("h_GFeventType", "h_GFeventType", 5, 0.5, 5.5);
+	h_GFeventType = new TH1I("h_GFeventType", "h_GFeventType", 7, -0.5, 6.5);
 	AddHistogram(h_GFeventType);
 
 	h_trackMC_true_id = new TH1F("h_trackMC_true_id", "h_trackMC_true_id", 45, 0., 45);
