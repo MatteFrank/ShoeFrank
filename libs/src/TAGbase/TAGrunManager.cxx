@@ -133,7 +133,7 @@ void TAGrunManager::DecodeTypeLine(TString& line)
       printf("Index: %d\n", idx);
 
       
-   // TYpe name
+   // Type name
    Int_t i = pos+1;
    Int_t p = 0;
    char buf[255];
@@ -199,11 +199,21 @@ void TAGrunManager::DecodeTypeLine(TString& line)
    buf[p] = '\0';
    
    TString energy = buf;
-   typeParameter.BeamEnergy = energy.Atof();
+   if (!energy.Contains("-")) {
+      typeParameter.BeamEnergy = energy.Atof();
+      typeParameter.BeamEnergy2 = 0.;
+      if(FootDebugLevel(1))
+         printf("Energy: %.0f\n", energy.Atof());
+   } else {
+      pos = energy.First("-");
+      TString energy1(energy(0, pos));
+      typeParameter.BeamEnergy = energy1.Atof();
+      TString energy2(energy(pos+1, energy.Length()-pos));
+      typeParameter.BeamEnergy2 = energy2.Atof();
+      if(FootDebugLevel(1))
+         printf("Energy: %.0f %.0f\n",  energy1.Atof(), energy2.Atof());
+   }
 
-   if(FootDebugLevel(1))
-      printf("Energy: %.0f\n", energy.Atof());
-   
    // Target
    i++;
    p = 0;
@@ -382,21 +392,27 @@ void TAGrunManager::Print(Option_t* opt) const
    if (option.Contains("all")) {
       cout << "Number of types: " << fTypeParameter.size() << endl;
 
-      for (Int_t i = 1; i < (int)fTypeParameter.size()+1; ++i) {
-         cout  << "  Type index:    " << fTypeParameter.at(i).TypeId << endl;
-         cout  << "  Type name:     " << fTypeParameter.at(i).TypeName.Data() << endl;
-         cout  << "  Main Trigger:  " << fTypeParameter.at(i).Trigger.Data() << endl;
-         cout  << "  Type Beam:     " << fTypeParameter.at(i).Beam.Data() << endl;
-         cout  << "  Beam Energy:   " << fTypeParameter.at(i).BeamEnergy << endl;
-         cout  << "  Type Target:   " << fTypeParameter.at(i).Target.Data() << endl;
-         cout  << "  Target Size:   " << fTypeParameter.at(i).TargetSize << endl;
-         cout  << "  Total Events:  " << fTypeParameter.at(i).TotalEvts << endl;
+      for (  map<int, TAGrunManager::TypeParameter_t>::const_iterator it = fTypeParameter.begin(); it != fTypeParameter.end(); ++it) {
+
+         cout  << "  Type index:    " << it->second.TypeId << endl;
+         cout  << "  Type name:     " << it->second.TypeName.Data() << endl;
+         cout  << "  Main Trigger:  " << it->second.Trigger.Data() << endl;
+         cout  << "  Type Beam:     " << it->second.Beam.Data() << endl;
+         cout  << "  Beam Energy:   " << it->second.BeamEnergy ;
+         if (it->second.BeamEnergy2 > 0)
+            cout  << " - " << it->second.BeamEnergy2 << endl;
+         else
+            cout << endl;
+
+         cout  << "  Type Target:   " << it->second.Target.Data() << endl;
+         cout  << "  Target Size:   " << it->second.TargetSize << endl;
+         cout  << "  Total Events:  " << it->second.TotalEvts << endl;
          cout  << "  DetectorOut:  ";
-         for (Int_t j = 0; j < (int) fTypeParameter.at(i).DetectorOut.size(); ++j)
-            cout  << " " << fTypeParameter.at(i).DetectorOut[j].data();
+         for (Int_t j = 0; j < (int) it->second.DetectorOut.size(); ++j)
+            cout  << " " << it->second.DetectorOut[j].data();
          
          cout << endl;
-         cout  << "  Comments:      " << fTypeParameter.at(i).Comments.Data() << endl;
+         cout  << "  Comments:      " << it->second.Comments.Data() << endl;
 
          cout  << endl;
       }
@@ -417,7 +433,11 @@ void TAGrunManager::Print(Option_t* opt) const
       printf("  Daq Rate:             %d Hz\n", runPar.DaqRate);
 
       printf("  Run Beam:             %s\n",         fCurType.Beam.Data());
-      printf("  Run Beam Energy:      %.1f MeV/u\n", fCurType.BeamEnergy);
+      printf("  Run Beam Energy:      %.1f", fCurType.BeamEnergy);
+      if (fCurType.BeamEnergy2 > 0)
+         printf(" - %.1f MeV/u\n", fCurType.BeamEnergy2);
+      else
+         printf(" MeV/u\n");
       printf("  Run Target:           %s\n",         fCurType.Target.Data());
       printf("  Run Target Size:      %.1f cm\n\n",  fCurType.TargetSize);
    }

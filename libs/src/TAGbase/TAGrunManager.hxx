@@ -29,6 +29,7 @@ public:
       TString        Trigger;      ///< Trigger type
       TString        Beam;        ///< Beam element
       Float_t        BeamEnergy;  ///< Beam energy per nucleon
+      Float_t        BeamEnergy2; ///< Upper beam energy per nucleon
       TString        Target;      ///< Target element
       Float_t        TargetSize;  ///< Target size
       vector<string> DetectorOut; ///< Dectector not present
