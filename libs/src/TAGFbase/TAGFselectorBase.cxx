@@ -447,59 +447,111 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 
 		//creare oggetto MCpart, con get, prendere info necessarie su particelle,
 		//
-		TAMCntuRegion* mcNtuReg;
+
+		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*) gTAGroot->FindDataDsc("regMc","TAMCntuRegion")->Object();
 		Int_t nCross  = mcNtuReg->GetRegionsN();
-		mc_eventType=1;
+		mc_eventType=5;
 		bool air_fragm = false;
 		bool det_fragm = false;
 		bool lost_fragm = false;
+		bool has_tof = false;
 		TAMCntuPart* mcNtu = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc","TAMCntuPart")->Object();
-		
-		
-		for(int it=0; it<mcNtu->GetTracksN(); ++it){
-			TAMCpart* MCpart = mcNtu->GetTrack(it);
-			
-			int region=MCpart->GetRegion(); //get region where fragment originates 
+		int goodId;
+		vector<int> frag{-1};
+		//std::map<key, value> map;
+		int count;
+		for(int itt=0; itt<nCross; ++itt){
 
+			
+
+			TAMCregion* cross=mcNtuReg->GetRegion(itt); //get the itt-th crossing
+			
+			Int_t NewReg = cross->GetCrossN();
+			Int_t OldReg = cross->GetOldCrossN();
+
+			int trackIdx = cross->GetTrackIdx()-1;
+			//TAMCpart* MCpart = mcNtu->GetTrack(trackIdx);
+
+			if (NewReg>=81 && NewReg<=120)  //crosses TW
+			{
+				//mc_eventType=1;
+				has_tof=true;
+				//goodId=cross->GetTrackIdx()-1;
+				//TAMCpart* Mcpart=mcNtuPart->GetTrack(cross->GetTrackIdx()-1); //retrievs TrackID
+			}
+
+			if (NewReg>50 && NewReg<81)
+			{
+				count++;
+			}
+
+			//}
+			//for(int it=0; it<mcNtu->GetTracksN(); ++it){
+			//	if(it==goodId){
+			//		has_tof==true;
+			//	}
+			
+			
+			if (std::find(frag.begin(), frag.end(), trackIdx) == frag.end()) 
+			{
+				frag.push_back(trackIdx);
+				
+			}
+			
+					
+			//int region=MCpart->GetRegion(); //get region where fragment originates 
+	
+			
+						
+		}
+
+		for(int i=1; i<frag.size(); ++i){
+			TAMCpart* MCpart = mcNtu->GetTrack(frag.at(i));
+			int region = MCpart->GetRegion();
 			TVector3 finalPos = MCpart->GetFinalPos();
 			TVector3 initPos = MCpart->GetInitPos();
-
-
+	
+		
 			double finalZpos = finalPos[2];
 			double initZpos = initPos[2];
 			bool is_inside = (initZpos>0. && initZpos < 189.15);
 			bool is_air = (region==2 || region==3 || region==4);
 			if (region>120){ //exclude fragmentation in calorimeter 
-				continue;
+					continue;	
 			}
-			if ( is_air && is_inside) { //fragmentation in air
-				air_fragm=true;
-				break;
-				
+			if ( is_air && is_inside) //fragmentation in air	
+			{
+			 
+				air_fragm=true;	
+							
 			} 
-
-			if (region!=50 && is_inside && !is_air){ //fragmentation not in target (so in detector)
-					det_fragm=true;
-					break;
+			if (region!=50 && is_inside && !is_air)//fragmentation not in target (so in detector)
+			{ 
+				det_fragm=true;
 					
 			}
-			/*if (){
-				lost_fragm=true;
-				break;
+		}	
+
+
+
+		if (has_tof)
+		{	
+			mc_eventType=1;
+			if (count%(frag.size()-1)!=0)
+			{
+				mc_eventType=2;
 			}
-			*/
+			if (air_fragm)
+			{
+				mc_eventType=4;
+			}
+			if (det_fragm)
+			{
+				mc_eventType=3;
+			}
 		}
-
-		if (air_fragm){
-			mc_eventType=4;
-		}
-		else if (det_fragm){
-			mc_eventType=3;
-		}
-		else if(lost_fragm){
-			mc_eventType=2;
-		}
-
+		
+		
 	}
 }
 

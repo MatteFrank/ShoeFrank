@@ -18,6 +18,7 @@
 #include <math.h>
 #include <array>
 #include <sys/stat.h>
+#include <algorithm>
 
 #include "TVector3.h"
 #include "TH2.h"
@@ -45,7 +46,7 @@
 #include "TATWntuPoint.hxx"
 
 #include "TAMCntuPart.hxx"
-#include "TAMCntuRegion.hxx"
+#include "TAMCntuRegion.hxx" 
 
 #include <KalmanFitterRefTrack.h>
 #include <KalmanFitter.h>
