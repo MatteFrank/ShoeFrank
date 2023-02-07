@@ -201,7 +201,7 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 	if(m_debug > 0) cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 
 	map<string, int> genCount_vector;
-	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
 	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 

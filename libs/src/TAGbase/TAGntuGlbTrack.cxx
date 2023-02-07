@@ -34,7 +34,7 @@ TAGtrack::TAGtrack()
    fQuality(-99),
    fMass(0.),
    fMomModule(0.),
-   fTwChargeZ(0.),
+   fTwChargeZ(0),
    fTwTof(0.),
    fTrkId(-1),
    fFitMass(-99.),
@@ -171,6 +171,25 @@ TAGtrack::TAGtrack(string name, long evNum,
                    TMatrixD* TwPos_cov, TMatrixD* TwMom_cov,
                    vector<TAGpoint*>* shoeTrackPointRepo)
 	: TAGnamed(),
+   fQuality(-1),
+   fTwChargeZ(0),
+   fTwTof(0.),
+   fCalEnergy(0.),
+   fTrkId(0),
+   fFitEnergyLoss(0.),
+   fFitEnergy(0.),
+   fBmTheta(-1),
+   fBmPhi(-100),
+   fTgtDir(0,0,0),
+   fTgtPos(0,0,0),
+   fTgtPosError(0,0,0),
+   fTgtMom(0,0,0),
+   fTgtMomError(0,0,0),
+   fTwPos(0,0,0),
+   fTwPosError(0,0,0),
+   fTwMom(0,0,0),
+   fTwMomError(0,0,0),
+   fHasTwPoint(false),
    fCALOmatched(-1),
 	fListOfPoints(0x0)
 {
@@ -524,7 +543,7 @@ Int_t TAGntuGlbTrack::GetTracksN() const
 //! \param[in] iTrack track index
 TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack)
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
       return (TAGtrack*)fListOfTracks->At(iTrack);
    else
       return 0x0;
@@ -536,7 +555,7 @@ TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack)
 //! \param[in] iTrack track index
 const TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack) const
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
       return (TAGtrack*)fListOfTracks->At(iTrack);
    else
       return 0x0;
@@ -558,7 +577,7 @@ void TAGntuGlbTrack::SetupClones()
 //! \param[in] opt clear option
 void TAGntuGlbTrack::Clear(Option_t*)
 {
-   fListOfTracks->Delete();
+   fListOfTracks->Clear();
 }
 
 //______________________________________________________________________________

@@ -142,8 +142,7 @@ TAGactKFitter::~TAGactKFitter() {
 	delete m_dafRefFitter;
 	delete m_dafSimpleFitter;
 
-	delete m_trueParticleRep;
-	// delete m_outTrackRepo;
+	// delete m_trueParticleRep;
 	delete m_SensorIDMap;
 	delete m_trackAnalysis;
 
@@ -206,6 +205,8 @@ Bool_t TAGactKFitter::Action()	{
 	ClearData();
 
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
+
+	m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
 
 	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc("stDat", "TASTntuRaw")->Object())->GetSuperHit()->GetPileUp() )
 	{
@@ -278,6 +279,52 @@ Bool_t TAGactKFitter::Action()	{
 	{
 		m_selector->FillPlaneOccupancy(h_PlaneOccupancy);
 		h_GFeventType->Fill(m_selector->GetEventType());
+	}
+
+	cout << "TRACKSN::" << m_outTrackRepo->GetTracksN() << endl;
+	for(int i=0; i<m_outTrackRepo->GetTracksN(); ++i)
+	{
+		TAGtrack* trk = (TAGtrack*)m_outTrackRepo->GetTrack(i);
+		cout << "TRACK!!!!  " << trk << endl;
+		cout << i << endl;
+		cout << "GetEvtNumber::" << trk->GetEvtNumber() << endl;
+		cout << "GetPdgID::" << trk->GetPdgID() << endl;
+		cout << "GetLength::" << trk->GetLength() << endl;
+		cout << "GetChi2::" << trk->GetChi2() << endl;
+		cout << "GetNdof::" << trk->GetNdof() << endl;
+		cout << "GetPval::" << trk->GetPval() << endl;
+		cout << "GetQuality::" << trk->GetQuality() << endl;
+		cout << "GetMass::" << trk->GetMass() << endl;
+		cout << "GetMomentum::" << trk->GetMomentum() << endl;
+		cout << "GetTwChargeZ::" << trk->GetTwChargeZ() << endl;
+		cout << "GetTwTof::" << trk->GetTwTof() << endl;
+		cout << "GetTrackId::" << trk->GetTrackId() << endl;
+		cout << "GetFitMass::" << trk->GetFitMass() << endl;
+		cout << "GetFitChargeZ::" << trk->GetFitChargeZ() << endl;
+		cout << "GetFitTof::" << trk->GetFitTof() << endl;
+		cout << "GetFitEnergyLoss::" << trk->GetFitEnergyLoss() << endl;
+		cout << "GetFitEnergy::" << trk->GetFitEnergy() << endl;
+		cout << "GetCalEnergy::" << trk->GetCalEnergy() << endl;
+		cout << "GetPointsN::" << trk->GetPointsN() << endl;
+		cout << "GetMcMainTrackId::" << trk->GetMcMainTrackId() << endl;
+		cout << "GetTgtTheta::" << trk->GetTgtTheta() << endl;
+		cout << "GetTgtPhi::" << trk->GetTgtPhi() << endl;
+		cout << "GetTgtThetaBm::" << trk->GetTgtThetaBm() << endl;
+		cout << "GetTgtPhiBm::" << trk->GetTgtPhiBm() << endl;
+		cout << "GetTotEnergyLoss::" << trk->GetTotEnergyLoss() << endl;
+		cout << "GetMsdEnergyLoss::" << trk->GetMsdEnergyLoss() << endl;
+		cout << "GetTwEnergyLoss::" << trk->GetTwEnergyLoss() << endl;
+		cout << "HasTwPoint::" << trk->HasTwPoint() << endl;
+		cout << "GetCALOmatchedClusterId::" << trk->GetCALOmatchedClusterId() << endl;
+		cout << "GetTgtDirection::"; trk->GetTgtDirection().Print();
+		cout << "GetTgtPosError::"; trk->GetTgtPosError().Print();
+		cout << "GetTgtPosition::"; trk->GetTgtPosition().Print();
+		cout << "GetTgtMomentum::"; trk->GetTgtMomentum().Print();
+		cout << "GetTgtMomError::"; trk->GetTgtMomError().Print();
+		cout << "GetTwPosition::"; trk->GetTwPosition().Print();
+		cout << "GetTwPosError::"; trk->GetTwPosError().Print();
+		cout << "GetTwMomentum::"; trk->GetTwMomentum().Print();
+		cout << "GetTwMomError::"; trk->GetTwMomError().Print();
 	}
 
 	chVect.clear();
@@ -1012,7 +1059,7 @@ void TAGactKFitter::MakePrefit() {
 void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	if(m_debug > 0)		cout << "RECORD START" << endl;
-	TAGtrack* shoeOutTrack;
+	TAGtrack* shoeOutTrack(0x0);
 	bool hasTwPoint = false;
 	vector<TAGpoint*> shoeTrackPointRepo;
 	Int_t TwChargeZ = -1;
@@ -1121,7 +1168,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//End VTX; 
 
 	// start TW: extrap some mm after TW for fitted total energy loss
-	TVector3 recoPos_TW, recoMom_TW;
+	TVector3 recoPos_TW(0,0,0), recoMom_TW(0,0,0);
 	TMatrixD recoPos_TW_cov(3,3);
 	TMatrixD recoMom_TW_cov(3,3);
 	double energyOutTw = -1;
@@ -1209,8 +1256,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//Set additional variables
 	shoeOutTrack->SetTrackId(std::atoi(tok.at(2).c_str()));
 	shoeOutTrack->SetHasTwPoint(hasTwPoint);
-	shoeOutTrack->SetTwChargeZ(TwChargeZ);
-	shoeOutTrack->SetTwTof(TwTof);
+	if( hasTwPoint )
+	{
+		shoeOutTrack->SetTwChargeZ(TwChargeZ);
+		shoeOutTrack->SetTwTof(TwTof);
+	}
 	//Energy in GeV
 	shoeOutTrack->SetFitEnergy( energyAtTgt);
 	if(energyOutTw >= 0)
@@ -1241,7 +1291,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 		trackMC_id = FindMostFrequent( &mcParticleID_track );
 		// trackMC_id = track->getMcTrackId();     //???????
-
+		m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
 		TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
 		mcMom = particle->GetInitP();
 		mcPos = particle->GetInitPos();
@@ -2044,6 +2094,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 		bool good = false;
 		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection.at(MeasId).begin(); itTrackMC != m_measParticleMC_collection.at(MeasId).end(); ++itTrackMC)
 		{
+			m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
 			TAMCpart* particle = m_trueParticleRep->GetTrack(*itTrackMC);
 			chargeMC = particle->GetCharge();
 
@@ -2138,6 +2189,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 
 void TAGactKFitter::ClearData()
 {
+	m_outTrackRepo->Clear();
 	for(auto it = m_allHitMeasGF.begin(); it != m_allHitMeasGF.end(); ++it)
 	{
 		for(auto itvec : it->second)

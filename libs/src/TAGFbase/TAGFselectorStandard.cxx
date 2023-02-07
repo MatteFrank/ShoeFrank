@@ -105,7 +105,7 @@ void TAGFselectorStandard::CategorizeVT()
 		if ( m_debug > 0 )	cout << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<"\n";
 
 		//loop over tracks for each Vertex
-		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
+		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); ++iTrack) {
 
 			TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
 
@@ -203,7 +203,7 @@ void TAGFselectorStandard::CategorizeIT()	{
 	TVector3 tmpExtrap, tmpVTX;
 
 	// same index if VTX_tracklets (for one vertex..)
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) {
 		int addedMeas = 0;
 		
 		//Get last VT measurement for extrapolation
@@ -286,9 +286,6 @@ void TAGFselectorStandard::CategorizeIT()	{
 				}
 			}	// end loop on IT planes
 		} // end loop over z
-
-		++itTrack;
-
 	}	// end loop on GF Track candidates
 }
 
@@ -305,7 +302,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 
 	// Extrapolate to MSD
 	// same index if VTX_tracklets (for one vertex..)
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();++itTrack) {
 
 		int findMSD=0;
 
@@ -467,8 +464,6 @@ void TAGFselectorStandard::CategorizeMSD()	{
 			}
 
 		} // end loop MSD planes
-		
-		++itTrack;
 
 	}// end loop on GF Track candidates
 	delete m_fitter_extrapolation;
@@ -484,7 +479,7 @@ void TAGFselectorStandard::SetTrackSeedNoMSD()
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 
 	//Set the seed of the track fit when MSD is not included
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) {
 
 		//RZ: SET STATE SEED
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
@@ -576,7 +571,7 @@ void TAGFselectorStandard::SetTrackSeedNoMSD()
 			cout << "CardRep charge::" << itTrack->second->getCardinalRep()->getPDGCharge() << "\n";
 		}
 		
-		++itTrack;
+
 
 	}// end loop on GF Track candidates
 	delete m_fitter_extrapolation;
