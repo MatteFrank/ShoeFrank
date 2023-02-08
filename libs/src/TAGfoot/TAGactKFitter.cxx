@@ -1690,8 +1690,14 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 //! \brief Declare the GenFit histograms
 void TAGactKFitter::CreateHistogram()	{
 
-	h_GFeventType = new TH1I("h_GFeventType", "h_GFeventType", 7, -0.5, 6.5);
+	h_GFeventType = new TH1I("h_GFeventType", "h_GFeventType", 11, -0.5, 10.5);
 	AddHistogram(h_GFeventType);
+
+	h_mcOot = new TH1I("h_mcOot", "h_mcOot", 11, -0.5, 10.5);
+	AddHistogram(h_mcOot);
+
+	h_eventMatrix = new TH2I("h_eventMatrix", "h_eventMatrix", 11, -0.5, 10.5, 11, -0.5, 10.5);
+	AddHistogram(h_eventMatrix );
 
 	h_trackMC_true_id = new TH1F("h_trackMC_true_id", "h_trackMC_true_id", 45, 0., 45);
 	AddHistogram(h_trackMC_true_id);
@@ -1724,11 +1730,7 @@ void TAGactKFitter::CreateHistogram()	{
 	h_mcPosZ = new TH1F("h_mcPosZ", "h_mcPosZ", 500, -0.25, 0.25);
 	AddHistogram(h_mcPosZ);
 
-	h_mcOot = new TH1I("h_mcOot", "h_mcOot", 7, -0.5, 6.5);
-	AddHistogram(h_mcOot);
-
-	h_eventMatrix = new TH2I("h_eventMatrix", "h_eventMatrix", 7, -0.5, 6.5, 7, -0.5, 6.5);
-	AddHistogram(h_eventMatrix );
+	
 
 	h_dR = new TH1F("h_dR", "h_dR", 100, 0., 20.);
 	AddHistogram(h_dR);
