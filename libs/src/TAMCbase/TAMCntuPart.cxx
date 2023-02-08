@@ -174,7 +174,7 @@ void TAMCntuPart::Clear(Option_t*)
 //! return number of tracks
 Int_t TAMCntuPart::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

@@ -64,7 +64,7 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
    tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
    
    if (nentries == 0)
-      nentries = tree->GetEntries();
+      nentries = tree->GetEntriesFast();
    printf("nentries %d\n", nentries);
    
    printf("plane %d\n", plane);

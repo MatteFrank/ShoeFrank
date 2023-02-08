@@ -2,27 +2,28 @@
 CamName: "GSI2021"
 RunNumber: 4208-4357;
 
-#Idx	Type	                  Main trigger	      Beam     Energy	   Target   Size(cm) Total events	Comments
-1	   "Delta cables"         "MargaritaMajority"	"16O"	   200	      "None"     0      151538	      "VTX problems"
-2	   "Alignment"	           "MargaritaMajority"	"16O"	   200	      "None"     0      698881	      "Moving TW and changing BM HV thresholds"
-3	   "Carbon target"	     "MargaritaMajority"	"16O"	   200	      "Carbon"   0.5	   155206	      "VTX not in final position"
-4	   "Carbon target"	     "MargaritaMajority"	"16O"	   200	      "Carbon"   0.5	   7507550	      "VTX not in data"
-5	   "Alignment"	           "MargaritaMajority"	"16O"	   200	      "None"     0      61762	         "VTX not in data"
-6	   "Poly target"	        "MargaritaMajority"	"16O"	   200	      "Poly"     0.5    12184634	      "VTX not in data"
-7	   "Poly target"	        "MargaritaMajority"	"16O"	   400	      "Poly"     0.5    881266	      "VTX not in data"
-8	   "Tof wall scan"	     "MargaritaMajority"	"16O"	   400	      "Poly"     0.5    1167331        ""
-9	   "Poly target"	        "MargaritaMajority"	"16O"	   400	      "Poly"     1.0    3465891	      "VTX in data"
-10	   "Poly target &Frag"	  "Fragmentation"       "16O"	   400	      "Poly"     1.0    2018969	      "VTX in data"
-11	   "Carbon target"	     "MargaritaMajority"	"16O"	   400	      "Carbon"   0.5	   1252568	      "VTX in data"
-12	   "Carbon target & Frag" "Fragmentation"       "16O"	   400	      "Carbon"   0.5	   2054080	      "VTX in data"
-13	   "Alignment"	           "MargaritaMajority"	"16O"	   200	      "None"     0      233469	      "VTX in data"
-14	   "Carbon target"	     "MargaritaMajority"	"16O"	   200	      "Carbon"   0.5	   604458	      "TW moved..."
-15	   "Carbon target & Frag" "Fragmentation"       "16O"	   200	      "Carbon"   0.5	   2473026	      "Variable configuration of detectors; MB prescale changed!"
-16	   "Carbon target"	     "MargaritaMajority"	"16O"	   200	      "Carbon"   0.5	   564581         ""
-17	   "Calo at 4 degrees"	  "Fragmentation"       "16O"	   200	      "Carbon"   0.5	   2171153	      "Calorimeter at 4 degrees"
-18	   "Calo at 2 degrees"	  "Fragmentation"       "16O"	   200	      "Carbon"   0.5	   1622399	      "Calorimeter at 2 degrees"
-19	   "Pedestals"	           "Pedestals"           "16O"   	0		      "None"     0      816682         ""
-20    "Poly target"	        "MargaritaMajority"	"16O"	   400	      "Poly"     0.5    149242	      "VTX in data"
+#Idx	Type	                  Main trigger	      Beam     Energy	   Target   Size(cm) Total events	Detector Out   Comments
+1	   "Delta cables"         "MargaritaMajority"	"16O"	   200	      "None"     0      151538	      "VTX"          "VTX problems"
+2	   "Alignment"	           "MargaritaMajority"	"16O"	   200	      "None"     0      698881	      "VTX"          "Moving TW and changing BM HV thresholds"
+3	   "Carbon target"	     "MargaritaMajority"	"16O"	   200	      "Carbon"   0.5	   155206	      "VTX"          "VTX not in final position"
+4	   "Carbon target"	     "MargaritaMajority"	"16O"	   200	      "Carbon"   0.5	   7507550	      "VTX"          "VTX not in data"
+5	   "Alignment"	           "MargaritaMajority"	"16O"	   200	      "None"     0      61762	         "VTX"          "VTX not in data"
+6	   "Poly target"	        "MargaritaMajority"	"16O"	   200	      "Poly"     0.5    12184634	      "VTX"          "VTX not in data"
+7	   "Poly target"	        "MargaritaMajority"	"16O"	   400	      "Poly"     0.5    881266	      "VTX"          "VTX not in data"
+8	   "Tof wall scan"	     "MargaritaMajority"	"16O"	   400	      "Poly"     0.5    1167331        ""             ""
+9	   "Poly target"	        "MargaritaMajority"	"16O"	   400	      "Poly"     1.0    3465891	      ""             "VTX in data"
+10	   "Poly target &Frag"	  "Fragmentation"       "16O"	   400	      "Poly"     1.0    2018969	      ""             "VTX in data"
+11	   "Carbon target"	     "MargaritaMajority"	"16O"	   400	      "Carbon"   0.5	   1252568	      ""             "VTX in data"
+12	   "Carbon target & Frag" "Fragmentation"       "16O"	   400	      "Carbon"   0.5	   2054080	      ""             "VTX in data"
+13	   "Alignment"	           "MargaritaMajority"	"16O"	   200	      "None"     0      233469	      ""             "VTX in data"
+14	   "Carbon target"	     "MargaritaMajority"	"16O"	   200	      "Carbon"   0.5	   604458	      ""             "TW moved..."
+15	   "Carbon target & Frag" "Fragmentation"       "16O"	   200	      "Carbon"   0.5	   2473026	      ""             "Variable configuration of detectors; MB prescale changed!"
+16	   "Carbon target"	     "MargaritaMajority"	"16O"	   200	      "Carbon"   0.5	   564581         ""             ""
+17	   "Calo at 4 degrees"	  "Fragmentation"       "16O"	   200	      "Carbon"   0.5	   2171153	      ""             "Calorimeter at 4 degrees"
+18	   "Calo at 2 degrees"	  "Fragmentation"       "16O"	   200	      "Carbon"   0.5	   1622399	      ""             "Calorimeter at 2 degrees"
+19	   "Pedestals"	           "Pedestals"           "16O"   	0		      "None"     0      816682         ""             ""
+20	   "Alignment"	           "MargaritaMajority"	"16O"	   400	      "None"     0      57133	         ""             "VTX in data"
+21    "Poly target"	        "MargaritaMajority"	"16O"	   400	      "Poly"     0.5    149242	      ""             "VTX in data"
 
 ##############################################################################################################
 
@@ -86,8 +87,8 @@ RunNumber: 4208-4357;
 4276	 	"7/16/21 10:47 AM"	"7/16/21 10:57 AM"	530934	   636	   835	   7
 4277	 	"7/16/21 11:00 AM"	"7/16/21 11:24 AM"	1167331	   1496	   780	   8
 4283	  	"7/16/21 11:57 AM"   "7/16/21 12:06 PM"	519655	   558	   931      8
-4286	 	"7/16/21 12:13 PM"	"7/16/21 12:17 PM"	81641	      283	   288	   20
-4287	 	"7/16/21 12:19 PM"	"7/16/21 12:24 PM"	67601	      274	   247	   20
+4286	 	"7/16/21 12:13 PM"	"7/16/21 12:17 PM"	81641	      283	   288	   21
+4287	 	"7/16/21 12:19 PM"	"7/16/21 12:24 PM"	67601	      274	   247	   21
 4288	 	"7/16/21 12:30 PM"	"7/16/21 12:57 PM"	455130	   1575	   289	   9
 4289	 	"7/16/21 12:59 PM"	"7/16/21 01:32 PM"	581781	   2016	   289	   9
 4290	 	"7/16/21 01:36 PM"	"7/16/21 02:06 PM"	526119	   1822	   289	   9

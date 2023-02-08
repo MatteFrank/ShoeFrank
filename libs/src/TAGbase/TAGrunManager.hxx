@@ -24,15 +24,17 @@ public:
     \brief  Run type parameters
     */
    struct TypeParameter_t : public  TNamed {
-      Int_t     TypeId;      ///< Index type run
-      TString   TypeName;    ///< Type of run name
-      TString   Trigger;     ///< Trigger type
-      TString   Beam;        ///< Beam element
-      Float_t   BeamEnergy;  ///< Beam energy per nucleon
-      TString   Target;      ///< Target element
-      Float_t   TargetSize;  ///< Target size
-      Int_t     TotalEvts;   ///< Total event niumber
-      TString   Comments;    ///< Comments
+      Int_t          TypeId;       ///< Index type run
+      TString        TypeName;     ///< Type of run name
+      TString        Trigger;      ///< Trigger type
+      TString        Beam;        ///< Beam element
+      Float_t        BeamEnergy;  ///< Beam energy per nucleon
+      Float_t        BeamEnergy2; ///< Upper beam energy per nucleon
+      TString        Target;      ///< Target element
+      Float_t        TargetSize;  ///< Target size
+      vector<string> DetectorOut; ///< Dectector not present
+      Int_t          TotalEvts;   ///< Total event niumber
+      TString        Comments;    ///< Comments
    };
    
    /*!
@@ -59,7 +61,8 @@ private:
 
    map<int, TypeParameter_t> fTypeParameter; ///< Run type parameter
    map<int, RunParameter_t>  fRunParameter; ///< Run type parameter
-   
+   map<int, int>             fEvtCounter; ///< Run type parameter
+
 public:
    TAGrunManager(const TString exp = "", Int_t runNumber = -1);
    virtual ~TAGrunManager();
@@ -84,7 +87,12 @@ public:
    //! Get parameter for a given run type
    TypeParameter_t&     GetTypePar(Int_t idx)          { return fTypeParameter[idx]; }
    //! Get parameter for a given run
-   RunParameter_t&      GetRunPar(Int_t idx)           { return fRunParameter[idx];  }
+   RunParameter_t&      GetRunPar(Int_t idx);
+   //! Get parameter for a given run
+   const RunParameter_t&      GetRunPar(Int_t idx) const;
+
+   //! Check detector off
+   Bool_t               IsDetectorOff(const TString& detName);
 
    // Print out informations
    void                 Print(Option_t* opt = "") const;
@@ -94,6 +102,8 @@ private:
    void DecodeTypeLine(TString& line);
    // Decode run info
    void DecodeRunLine(TString& line);
+   // Smart print
+   TString SmartPrint(Int_t nb, Int_t sep = 1000) const;
 
 private:
    static const TString fgkDefaultActName;  ///< Default action name

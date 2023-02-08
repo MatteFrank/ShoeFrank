@@ -113,7 +113,7 @@ Bool_t TAMSDactNtuCluster::Action()
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
     fListOfStrips = pNtuHit->GetListOfStrips(i);
 
-    if (fListOfStrips->GetEntries() == 0) continue;
+    if (fListOfStrips->GetEntriesFast() == 0) continue;
     ok += FindClusters(i);
   }
   
@@ -144,7 +144,7 @@ void TAMSDactNtuCluster::SearchCluster()
 {
   fClustersN = 0;
   // Search for cluster
-  for (Int_t iStrip = 0; iStrip < fListOfStrips->GetEntries(); ++iStrip) { // loop over seed strips
+  for (Int_t iStrip = 0; iStrip < fListOfStrips->GetEntriesFast(); ++iStrip) { // loop over seed strips
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iStrip);
     if (!strip->IsSeed() && fgSeedAlgo) continue;
     if (strip->Found()) continue;
@@ -164,11 +164,11 @@ void TAMSDactNtuCluster::SearchCluster()
 //! \param[in] idx index on Hit list
 TAGobject*  TAMSDactNtuCluster::GetHitObject(Int_t idx) const
 {
-  if (idx >= 0 && idx < GetListOfStrips()->GetEntries() )
+  if (idx >= 0 && idx < GetListOfStrips()->GetEntriesFast() )
     return (TAGobject*)GetListOfStrips()->At(idx);
   
   else {
-    Error("GetHitObject()", "Error in index %d (max: %d)", idx, GetListOfStrips()->GetEntries()-1);
+    Error("GetHitObject()", "Error in index %d (max: %d)", idx, GetListOfStrips()->GetEntriesFast()-1);
     return 0x0;
   }
 }
@@ -181,10 +181,10 @@ void TAMSDactNtuCluster::FillMaps()
   // Clear maps
   ClearMaps();
   
-  if (fListOfStrips->GetEntries() == 0) return;
+  if (fListOfStrips->GetEntriesFast() == 0) return;
   
   // fill maps for cluster
-  for (Int_t i = 0; i < fListOfStrips->GetEntries(); i++) { // loop over hit strips
+  for (Int_t i = 0; i < fListOfStrips->GetEntriesFast(); i++) { // loop over hit strips
     
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(i);
     Int_t stripId  = strip->GetStrip();
@@ -213,7 +213,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
   for (Int_t i = 0; i< fClustersN; ++i)
     pNtuClus->NewCluster(iSensor);
   
-  for (Int_t iPix = 0; iPix < fListOfStrips->GetEntries(); ++iPix) {
+  for (Int_t iPix = 0; iPix < fListOfStrips->GetEntriesFast(); ++iPix) {
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iPix);
     Int_t stripId = strip->GetStrip();
     if(!CheckLine(stripId)) continue;
@@ -279,7 +279,7 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
 
   Float_t tClusterPulseSum = 0.;
   
-  for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
+  for (Int_t i = 0; i < fCurListOfStrips->GetEntriesFast(); ++i) {
     TAMSDhit* strip   = (TAMSDhit*)fCurListOfStrips->At(i);
     tCorrection      += strip->GetPosition()*strip->GetEnergyLoss();
     tStrip           += strip->GetStrip()*strip->GetEnergyLoss();
@@ -289,7 +289,7 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   pos = tCorrection/tClusterPulseSum;
   cog = tStrip/tClusterPulseSum;
    
-  for (Int_t i = 0; i < fCurListOfStrips->GetEntries(); ++i) {
+  for (Int_t i = 0; i < fCurListOfStrips->GetEntriesFast(); ++i) {
     TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
     tCorrection2 = strip->GetEnergyLoss()*(strip->GetPosition()-pos)*(strip->GetPosition()-pos);
     posErr += tCorrection2;
@@ -319,7 +319,7 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
 void TAMSDactNtuCluster::ComputeEta(TAMSDcluster* cluster)
 {
   if (!fCurListOfStrips) return;
-  Int_t nstrips = fCurListOfStrips->GetEntries();
+  Int_t nstrips = fCurListOfStrips->GetEntriesFast();
 
   Float_t eta     = 0.;
   TAMSDhit* strip = 0x0;
@@ -378,7 +378,7 @@ Bool_t TAMSDactNtuCluster::ApplyCuts(TAMSDcluster* cluster)
    TAMSDparConf* pConfig = (TAMSDparConf*) fpConfig->Object();
    
    TClonesArray* list = cluster->GetListOfStrips();
-   Int_t  entries = list->GetEntries();
+   Int_t  entries = list->GetEntriesFast();
    
    // cuts on strips in cluster
    if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofStripsInCluster ||

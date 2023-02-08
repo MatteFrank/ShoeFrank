@@ -102,7 +102,7 @@ void ReadCaRawMC(TString name = "16O_C2H4_200_1.root", TString expName = "16O_20
    TStopwatch watch;
    watch.Start();
    
-   Long64_t nentries = tree->GetEntries();
+   Long64_t nentries = tree->GetEntriesFast();
    
    cout<<"Running against ntuple with:: "<<nentries<<" entries!"<<endl;
    Long64_t nbytes = 0, nb = 0;

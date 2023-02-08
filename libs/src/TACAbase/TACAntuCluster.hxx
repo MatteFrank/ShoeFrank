@@ -75,7 +75,7 @@ public:
    TClonesArray*     GetListOfHits()                   const { return fListOfHits;     }
   
    //! Get number of hits
-   Int_t             GetHitsN()                        const { return fListOfHits->GetEntries(); }
+   Int_t             GetHitsN()                        const { return fListOfHits->GetEntriesFast(); }
    
    // reset pixels
    void              ResetHits();

@@ -37,6 +37,8 @@ TAGrunManager::TAGrunManager(const TString exp, Int_t runNumber)
    if (fCampaignName.IsNull()) {
       Error("TAGrunManager()", "No campaign name set, please set the campaign");
    }
+   
+   fEvtCounter.clear();
 }
 
 //_____________________________________________________________________________
@@ -108,8 +110,9 @@ Bool_t TAGrunManager::FromFile(TString ifile)
    
    fFileStream->Close();
 
-   Int_t type = fRunParameter.at(fRunNumber).RunType;
-   fCurType   = fTypeParameter.at(type);
+   RunParameter_t runPar = GetRunPar(fRunNumber);
+   Int_t type            = runPar.RunType;
+   fCurType              = fTypeParameter.at(type);
    
    return true;
 }
@@ -132,7 +135,7 @@ void TAGrunManager::DecodeTypeLine(TString& line)
       printf("Index: %d\n", idx);
 
       
-   // TYpe name
+   // Type name
    Int_t i = pos+1;
    Int_t p = 0;
    char buf[255];
@@ -198,11 +201,21 @@ void TAGrunManager::DecodeTypeLine(TString& line)
    buf[p] = '\0';
    
    TString energy = buf;
-   typeParameter.BeamEnergy = energy.Atof();
+   if (!energy.Contains("-")) {
+      typeParameter.BeamEnergy = energy.Atof();
+      typeParameter.BeamEnergy2 = 0.;
+      if(FootDebugLevel(1))
+         printf("Energy: %.0f\n", energy.Atof());
+   } else {
+      pos = energy.First("-");
+      TString energy1(energy(0, pos));
+      typeParameter.BeamEnergy = energy1.Atof();
+      TString energy2(energy(pos+1, energy.Length()-pos));
+      typeParameter.BeamEnergy2 = energy2.Atof();
+      if(FootDebugLevel(1))
+         printf("Energy: %.0f %.0f\n",  energy1.Atof(), energy2.Atof());
+   }
 
-   if(FootDebugLevel(1))
-      printf("Energy: %.0f\n", energy.Atof());
-   
    // Target
    i++;
    p = 0;
@@ -239,7 +252,29 @@ void TAGrunManager::DecodeTypeLine(TString& line)
       printf("Total Events: %d\n", evtTot);
    }
    
+   // detector out
+   i++;
+   p = 0;
+   while (line[i] != '\"') {
+      buf[p++] = line[i];
+      i++;
+   }
+   buf[p] = '\0';
+   
+   TString detectorOut = buf;
+   typeParameter.DetectorOut =  TAGparTools::Tokenize(detectorOut.Data(), " " );
+
+   if(FootDebugLevel(1))
+      printf("DetectorOut: %s\n", detectorOut.Data());
+      
    // Comments
+   
+   i++;
+   p = 0;
+   while (line[i] != '\"') {
+      i++;
+   }
+   
    i++;
    p = 0;
    while (line[i] != '\"') {
@@ -320,15 +355,57 @@ void TAGrunManager::DecodeRunLine(TString& line)
    
    sscanf(tmp.Data(), "%d %d %d %d", &daqEvts, &duration, &daqRate, &runType);
 
+   fEvtCounter[runType] += daqEvts;
    runParameter.DaqEvts  = daqEvts;
    runParameter.Duration = duration;
-   runParameter.DaqRate = daqRate;
-   runParameter.RunType = runType;
+   runParameter.DaqRate  = daqRate;
+   runParameter.RunType  = runType;
    
    if(FootDebugLevel(1))
       printf("daqEvts: %d duration: %d daqRate: %d runType: %d\n", daqEvts, duration, daqRate, runType);
    
    fRunParameter[idx] = runParameter;
+}
+
+
+//------------------------------------------+-----------------------------------
+//! Decode type line
+//!
+//! \param[in] nb number to print
+TString TAGrunManager::SmartPrint(Int_t nb, Int_t sep) const
+{
+   vector<int> separated;
+   
+   do {
+      separated.push_back(nb % sep);
+      nb /= sep;
+   } while(nb > 0);
+   
+   TString tmp;
+   for (Int_t i = (int)separated.size()-1; i >=0; --i) {
+      if (i == (int)separated.size()-1)
+         tmp +=  Form("%d ",separated[i]);
+      else
+         tmp +=  Form("%03d ",separated[i]);
+   }
+
+   return tmp;
+}
+
+//_____________________________________________________________________________
+//! Check if detector present
+//!
+//! \param[in] detName detector name
+Bool_t TAGrunManager::IsDetectorOff(const TString& detName)
+{
+   for ( vector<string>::iterator it = fCurType.DetectorOut.begin(); it != fCurType.DetectorOut.end(); ++it) {
+      string tmp = *it;
+      TString name = tmp.data();
+      if (name.Contains(detName.Data()))
+         return true;
+   }
+   
+   return false;
 }
 
 //------------------------------------------+-----------------------------------
@@ -341,40 +418,90 @@ void TAGrunManager::Print(Option_t* opt) const
    
    if (option.Contains("all")) {
       cout << "Number of types: " << fTypeParameter.size() << endl;
-
-      for (Int_t i = 1; i < (int)fTypeParameter.size()+1; ++i) {
-         cout  << "  Type index:    " << fTypeParameter.at(i).TypeId << endl;
-         cout  << "  Type name:     " << fTypeParameter.at(i).TypeName.Data() << endl;
-         cout  << "  Main Trigger:  " << fTypeParameter.at(i).Trigger.Data() << endl;
-         cout  << "  Type Beam:     " << fTypeParameter.at(i).Beam.Data() << endl;
-         cout  << "  Beam Energy:   " << fTypeParameter.at(i).BeamEnergy << endl;
-         cout  << "  Type Target:   " << fTypeParameter.at(i).Target.Data() << endl;
-         cout  << "  Target Size:   " << fTypeParameter.at(i).TargetSize << endl;
-         cout  << "  Total Events:  " << fTypeParameter.at(i).TotalEvts << endl;
-         cout  << "  Comments:      " << fTypeParameter.at(i).Comments.Data() << endl;
-
+      
+      for (const auto &it : fTypeParameter) {
+         cout  << "  Type index:    " << it.second.TypeId << endl;
+         cout  << "  Type name:     " << it.second.TypeName.Data() << endl;
+         cout  << "  Main Trigger:  " << it.second.Trigger.Data() << endl;
+         cout  << "  Type Beam:     " << it.second.Beam.Data() << endl;
+         cout  << "  Beam Energy:   " << it.second.BeamEnergy ;
+         if (it.second.BeamEnergy2 > 0)
+            cout  << " - " << it.second.BeamEnergy2 << endl;
+         else
+            cout << endl;
+         
+         cout  << "  Type Target:   " << it.second.Target.Data() << endl;
+         cout  << "  Target Size:   " << it.second.TargetSize << endl;
+         cout  << "  Total Events:  " << it.second.TotalEvts << endl;
+         cout  << "  DetectorOut:  ";
+         for (Int_t j = 0; j < (int) it.second.DetectorOut.size(); ++j)
+            cout  << " " << it.second.DetectorOut[j].data();
+         
+         cout << endl;
+         cout  << "  Comments:      " << it.second.Comments.Data() << endl;
+         
          cout  << endl;
       }
       cout << "  Current campaign number: " << fRunNumber << endl;
       cout  << endl;
-
-   } else {
-      Int_t i = fRunNumber;
-      Int_t duration = fRunParameter.at(i).Duration;
+      
+   } else if (option.Contains("count")) {
+      Int_t sum = 0;
+      for (const auto &it : fEvtCounter) {
+         cout << "  Type index:    " << setw(2) << it.first << "  Total Events:  " << setw(11) << SmartPrint(it.second).Data() << '\n';
+         sum += it.second;
+      }
+      cout << "                     Total Events:  " << setw(11) <<  SmartPrint(sum).Data() << endl;
+   }  else {
+      RunParameter_t runPar = GetRunPar(fRunNumber);
+      Int_t duration = runPar.Duration;
       Int_t minutes  = duration / 60;
       Int_t seconds  = duration % 60;
       Int_t hours    = minutes  / 60;
       minutes        = minutes  % 60;
       
       printf("\nCurrent run number:     %d\n", fRunNumber);
-      printf("  Daq events:           %d %03d\n", fRunParameter.at(i).DaqEvts/1000, fRunParameter.at(i).DaqEvts % 1000);
+      printf("  Daq events:           %s\n", SmartPrint(runPar.DaqEvts).Data());
       printf("  Duration:             %d s [%02dh:%02dmin:%02ds]\n", duration, hours, minutes, seconds);
-      printf("  Daq Rate:             %d Hz\n", fRunParameter.at(i).DaqRate);
+      printf("  Daq Rate:             %d Hz\n", runPar.DaqRate);
 
-      Int_t type = fRunParameter.at(i).RunType;
-      printf("  Run Beam:             %s\n",         fTypeParameter.at(type).Beam.Data());
-      printf("  Run Beam Energy:      %.1f MeV/u\n", fTypeParameter.at(type).BeamEnergy);
-      printf("  Run Target:           %s\n",         fTypeParameter.at(type).Target.Data());
-      printf("  Run Target Size:      %.1f cm\n\n",       fTypeParameter.at(type).TargetSize);
+      printf("  Run Beam:             %s\n", fCurType.Beam.Data());
+      printf("  Run Beam Energy:      %.1f", fCurType.BeamEnergy);
+      if (fCurType.BeamEnergy2 > 0)
+         printf(" - %.1f MeV/u\n", fCurType.BeamEnergy2);
+      else
+         printf(" MeV/u\n");
+      printf("  Run Target:           %s\n",         fCurType.Target.Data());
+      printf("  Run Target Size:      %.1f cm\n\n",  fCurType.TargetSize);
    }
+}
+
+//------------------------------------------+-----------------------------------
+//! Get current run parameter
+//!
+//! \param[in] idx index in the run array
+TAGrunManager::RunParameter_t& TAGrunManager::GetRunPar(Int_t idx)
+{
+   auto itr = fRunParameter.find(idx);
+   if (itr == fRunParameter.end()) {
+      Error("GetRunPar()", "Wrong run number %d taking %d instead", idx, fRunArray[0]);
+      return fRunParameter.at(fRunArray[0]);
+   }
+   
+   return fRunParameter.at(idx);
+}
+
+//------------------------------------------+-----------------------------------
+//! Get current run parameter
+//!
+//! \param[in] idx index in the run array
+const TAGrunManager::RunParameter_t& TAGrunManager::GetRunPar(Int_t idx) const
+{
+   auto itr = fRunParameter.find(idx);
+   if (itr == fRunParameter.end()) {
+      Error("GetRunPar()", "Wrong run number %d taking %d instead", idx, fRunArray[0]);
+      return fRunParameter.at(fRunArray[0]);
+   }
+   
+   return fRunParameter.at(idx);
 }

@@ -258,10 +258,13 @@ void BaseReco::CampaignChecks()
       if (tgtSize != tgtSizeType && targetType != "None")
          Error("CampaignChecks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
       
-      // Check if VTX is in
-      if (fCampManager->IsDetectorOn(TAVTparGeo::GetBaseName())) {
-         if (comType.Contains("not") && comType.Contains("VTX")) {
-            Error("CampaignChecks()", "VTX not included in this run");
+      // Check if a detetcor is off in a given run
+      vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
+      for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+         TString str = *it;
+         
+         if (fRunManager->IsDetectorOff(str)) {
+            Error("CampaignChecks()", "the detector %s is NOT referenced in this run", str.Data());
             exit(0);
          }
       }

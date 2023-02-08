@@ -56,7 +56,7 @@ TANErawHit::~TANErawHit()
 //! Get number of hits
 Int_t TANEntuRaw::GetHitsN() const
 {
-  return fListOfHits->GetEntries();
+  return fListOfHits->GetEntriesFast();
 }
 
 //##############################################################################

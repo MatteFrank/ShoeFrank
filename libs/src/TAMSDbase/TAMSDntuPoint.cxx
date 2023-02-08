@@ -214,7 +214,7 @@ int TAMSDntuPoint::GetPointsN(int iStation) const
 {
   if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
     TClonesArray* list = (TClonesArray*)fListOfPoints->At(iStation);
-    return list->GetEntries();
+    return list->GetEntriesFast();
   } else return -1;
 }
 

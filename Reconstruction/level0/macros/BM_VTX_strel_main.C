@@ -85,8 +85,8 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
   //****************************************** Event Loop ****************************************
 
   //read BM and Vertex loop
-  if (nentries == 0 || nentries>tree->GetEntries())
-    maxentries = tree->GetEntries();
+  if (nentries == 0 || nentries>tree->GetEntriesFast())
+    maxentries = tree->GetEntriesFast();
   else
     maxentries=nentries;
 

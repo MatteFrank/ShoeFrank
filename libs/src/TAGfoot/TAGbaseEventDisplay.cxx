@@ -925,7 +925,7 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
          if (!clus->IsValid()) continue;
          TVector3 pos = clus->GetPositionG();
          TVector3 posG = pos;
-         Int_t nPix = clus->GetListOfPixels()->GetEntries();
+         Int_t nPix = clus->GetListOfPixels()->GetEntriesFast();
          if (prefix == "vt")
             posG = fpFootGeo->FromVTLocalToGlobal(posG);
          else if (prefix == "it")
@@ -993,7 +993,7 @@ void TAGbaseEventDisplay::UpdateStripElements()
          if (!clus->IsValid()) continue;
          TVector3 pos = clus->GetPositionG();
          TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
-         Int_t nStrip = clus->GetListOfStrips()->GetEntries();
+         Int_t nStrip = clus->GetListOfStrips()->GetEntriesFast();
 
          x = posG(0);
          y = posG(1);

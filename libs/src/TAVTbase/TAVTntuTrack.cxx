@@ -42,7 +42,7 @@ TAVTntuTrack::~TAVTntuTrack()
 //! return number of tracks
 Int_t TAVTntuTrack::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

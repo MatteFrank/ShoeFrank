@@ -228,7 +228,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
       for (int ch = 0; ch < NChannels; ch++)
       {
          // Fitting histos with gaus to compute ped and raw_sigma
-         if (hADC[sen][ch]->GetEntries())
+         if (hADC[sen][ch]->GetEntriesFast())
          {
             hADC[sen][ch]->Fit("gaus", "QS");
             fittedgaus = (TF1 *)hADC[sen][ch]->GetListOfFunctions()->FindObject("gaus");
@@ -299,7 +299,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
       for (int ch = 0; ch < NChannels; ch++)
       {
          // Fitting histos with gaus to compute ped and raw_sigma
-         if (hSignal[sen][ch]->GetEntries())
+         if (hSignal[sen][ch]->GetEntriesFast())
          {
             hSignal[sen][ch]->Fit("gaus", "QS");
             fittedgaus = (TF1 *)hSignal[sen][ch]->GetListOfFunctions()->FindObject("gaus");

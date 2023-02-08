@@ -510,7 +510,7 @@ TAGntuGlbTrack::~TAGntuGlbTrack()
 //! return number of tracks
 Int_t TAGntuGlbTrack::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -599,7 +599,7 @@ TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, float pdg
 //! \param[in] tof time of flight of particle
 TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
 {
-   Int_t trkId = fListOfTracks->GetEntries();
+   Int_t trkId = fListOfTracks->GetEntriesFast();
    TClonesArray &trackArray = *fListOfTracks;
    TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof);
    track->SetTrackId(trkId);
