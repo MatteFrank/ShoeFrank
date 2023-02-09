@@ -110,9 +110,9 @@ Bool_t TAGrunManager::FromFile(TString ifile)
    
    fFileStream->Close();
 
-   RunParameter_t runPar = GetRunPar(fRunNumber);
-   Int_t type            = runPar.RunType;
-   fCurType              = fTypeParameter.at(type);
+   fCurRun     = GetRunPar(fRunNumber);
+   Int_t type  = fCurRun.RunType;
+   fCurType    = fTypeParameter.at(type);
    
    return true;
 }
@@ -372,7 +372,7 @@ void TAGrunManager::DecodeRunLine(TString& line)
 //! Decode type line
 //!
 //! \param[in] nb number to print
-TString TAGrunManager::SmartPrint(Int_t nb, Int_t sep) const
+TString TAGrunManager::SmartPrint(Int_t nb, Int_t sep)
 {
    vector<int> separated;
    
@@ -391,6 +391,60 @@ TString TAGrunManager::SmartPrint(Int_t nb, Int_t sep) const
 
    return tmp;
 }
+
+//_____________________________________________________________________________
+//! iostream for TypeParameter_t
+//!
+//! \param[in] out output stream
+//! \param[in] type type parameter to print
+ostream& operator<< (std::ostream& out, const TAGrunManager::TypeParameter_t& type)
+{
+      out  << "  Type index:           " << type.TypeId << endl;
+      out  << "  Type name:            " << type.TypeName.Data() << endl;
+      out  << "  Main Trigger:         " << type.Trigger.Data() << endl;
+      out  << "  Type Beam:            " << type.Beam.Data() << endl;
+      out  << "  Beam Energy:          " << type.BeamEnergy ;
+      if (type.BeamEnergy2 > 0)
+        cout  << " - " << type.BeamEnergy2 << endl;
+      else
+         out << endl;
+      
+      out  << "  Type Target:          " << type.Target.Data() << endl;
+      out  << "  Target Size:          " << type.TargetSize << endl;
+      out  << "  Total Events:         " << TAGrunManager::SmartPrint(type.TotalEvts) << endl;
+      out  << "  DetectorOut:          ";
+      for (Int_t j = 0; j < (int) type.DetectorOut.size(); ++j)
+         out  << " " << type.DetectorOut[j].data();
+      
+      out << endl;
+      out  << "  Comments:             " << type.Comments.Data() << endl;
+      
+      out  << endl;
+   
+   return  out;
+}
+
+//_____________________________________________________________________________
+//! iostream for TypeParameter_t
+//!
+//! \param[in] out output stream
+//! \param[in] run run  parameter to print
+ostream& operator<< (ostream& out, const TAGrunManager::RunParameter_t& run)
+{
+   Int_t duration = run.Duration;
+   Int_t minutes  = duration / 60;
+   Int_t seconds  = duration % 60;
+   Int_t hours    = minutes  / 60;
+   minutes        = minutes  % 60;
+   
+   out << Form("\nCurrent run number:     %d\n", run.RunId);
+   out << Form("  Daq events:           %s\n",TAGrunManager::SmartPrint(run.DaqEvts).Data());
+   out << Form("  Duration:             %d s [%02dh:%02dmin:%02ds]\n", duration, hours, minutes, seconds);
+   out << Form("  Daq Rate:             %d Hz\n", run.DaqRate);
+   
+   return  out;
+}
+
 
 //_____________________________________________________________________________
 //! Check if detector present
@@ -419,29 +473,9 @@ void TAGrunManager::Print(Option_t* opt) const
    if (option.Contains("all")) {
       cout << "Number of types: " << fTypeParameter.size() << endl;
       
-      for (const auto &it : fTypeParameter) {
-         cout  << "  Type index:    " << it.second.TypeId << endl;
-         cout  << "  Type name:     " << it.second.TypeName.Data() << endl;
-         cout  << "  Main Trigger:  " << it.second.Trigger.Data() << endl;
-         cout  << "  Type Beam:     " << it.second.Beam.Data() << endl;
-         cout  << "  Beam Energy:   " << it.second.BeamEnergy ;
-         if (it.second.BeamEnergy2 > 0)
-            cout  << " - " << it.second.BeamEnergy2 << endl;
-         else
-            cout << endl;
-         
-         cout  << "  Type Target:   " << it.second.Target.Data() << endl;
-         cout  << "  Target Size:   " << it.second.TargetSize << endl;
-         cout  << "  Total Events:  " << it.second.TotalEvts << endl;
-         cout  << "  DetectorOut:  ";
-         for (Int_t j = 0; j < (int) it.second.DetectorOut.size(); ++j)
-            cout  << " " << it.second.DetectorOut[j].data();
-         
-         cout << endl;
-         cout  << "  Comments:      " << it.second.Comments.Data() << endl;
-         
-         cout  << endl;
-      }
+      for (const auto &it : fTypeParameter)
+         cout << it.second;
+      
       cout << "  Current campaign number: " << fRunNumber << endl;
       cout  << endl;
       
@@ -452,27 +486,12 @@ void TAGrunManager::Print(Option_t* opt) const
          sum += it.second;
       }
       cout << "                     Total Events:  " << setw(11) <<  SmartPrint(sum).Data() << endl;
-   }  else {
-      RunParameter_t runPar = GetRunPar(fRunNumber);
-      Int_t duration = runPar.Duration;
-      Int_t minutes  = duration / 60;
-      Int_t seconds  = duration % 60;
-      Int_t hours    = minutes  / 60;
-      minutes        = minutes  % 60;
       
-      printf("\nCurrent run number:     %d\n", fRunNumber);
-      printf("  Daq events:           %s\n", SmartPrint(runPar.DaqEvts).Data());
-      printf("  Duration:             %d s [%02dh:%02dmin:%02ds]\n", duration, hours, minutes, seconds);
-      printf("  Daq Rate:             %d Hz\n", runPar.DaqRate);
-
-      printf("  Run Beam:             %s\n", fCurType.Beam.Data());
-      printf("  Run Beam Energy:      %.1f", fCurType.BeamEnergy);
-      if (fCurType.BeamEnergy2 > 0)
-         printf(" - %.1f MeV/u\n", fCurType.BeamEnergy2);
-      else
-         printf(" MeV/u\n");
-      printf("  Run Target:           %s\n",         fCurType.Target.Data());
-      printf("  Run Target Size:      %.1f cm\n\n",  fCurType.TargetSize);
+   }  else {
+      cout << fCurRun << endl;
+      
+      printf("Current type:\n");
+      cout << fCurType;
    }
 }
 
