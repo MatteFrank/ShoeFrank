@@ -500,9 +500,15 @@ TString TAGparTools::Normalize(const char* line)
    while ( rv[0] == ' ' || rv == '\t')
 	  rv.Remove(0,1);
    
-   while ( rv[rv.Length()-1] == ' ' || rv[rv.Length()-1] == '\t')
-	  rv.Remove(rv.Length()-1,1);
+   if (rv.Length() <= 0)
+      return rv;
    
+   while ( rv[rv.Length()-1] == ' ' || rv[rv.Length()-1] == '\t') {
+      if (rv.Length() <= 1)
+         return rv;
+      rv.Remove(rv.Length()-1,1);
+   }
+
    Ssiz_t i(0);
    bool kill = false;
    
@@ -513,7 +519,7 @@ TString TAGparTools::Normalize(const char* line)
 			--i;
 		 } else
 			kill = true;
-	  } else 
+	  } else
 		 kill = false;
    }
    
@@ -845,9 +851,12 @@ vector<TString> TAGparTools::Tokenize(const TString line, const Char_t delimiter
    do{
       if (line[i] == delimiter) {
          pos2 = i;
-         TString tmp(line(pos1, pos2-pos1));
+            TString tmp(line(pos1, pos2-pos1));
+            tmp = Normalize(tmp.Data());
+            
          if (!tmp.IsWhitespace())
             list.push_back(tmp);
+         
          pos1 = pos2+1;
          i++;
       }

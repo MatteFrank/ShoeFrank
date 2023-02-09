@@ -80,8 +80,6 @@ public:
    void    FillArray(TString& s, TArrayC& array);
    // Fill integer array from string
    void    FillArray(TString& s, TArrayI& array);
-   // Normalize (remove double blank)
-   TString Normalize(const char* line);
    
    // Set up transformation matrices
    void    SetupMatrices(Int_t size);
@@ -130,7 +128,9 @@ public:
    // Tokenize string
    static vector<string> Tokenize(const string str, const string delimiters);
    // Tokenize TString
-   static vector<TString> Tokenize(const TString line, const Char_t delimiter = '\"');
+   static vector<TString> Tokenize(const TString line, const Char_t delimiter = '"');
+   // Normalize (remove double blank)
+   static TString Normalize(const char* line);
    
 protected:
    static Int_t fgPrecisionLevel; ///< Precision level for cout
