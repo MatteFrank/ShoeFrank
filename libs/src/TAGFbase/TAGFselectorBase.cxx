@@ -570,18 +570,33 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 			//}
 			//cout << counts[j] << endl;
 		}
-		for (int i = 0; i < counts.size()/2; ++i){
+		for (int i = 0; i < counts.size()/2-1; ++i){
 			
-			if (counts[2*i+1]>counts[2*i] && i!=4)
-			 {
+			/*if (counts[2*i+1]>counts[2*i] && i!=4 && i!=0)
+			 {	
+			 	air_fragm=true;
 			 	air_bet_det_fragm=true;
 			 	//break;
-			 } 
+			 }
+			 */
+			 if (counts[2*i+1]>counts[2*i]  ) //|| counts[21]>counts[20]
+			  {
+			  	air_fragm=true;
+			  } 
+			  if (counts[2*i+2]>counts[2*i+1])
+			  {
+			  	det_fragm=true;
+			  }
+
+
 		}
 
+		//cout <<air_fragm<< " " << det_fragm <<endl;
 
 
-		for(int i=1; i<frag.size(); ++i){
+
+
+		/*for(int i=1; i<frag.size(); ++i){
 			TAMCpart* MCpart = mcNtu->GetTrack(frag.at(i));
 			int region = MCpart->GetRegion(); //get region where fragment originates 
 			TVector3 finalPos = MCpart->GetFinalPos();
@@ -607,7 +622,7 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 					
 			}
 		}	
-	
+	*/
 
 
 		if (has_tof)
