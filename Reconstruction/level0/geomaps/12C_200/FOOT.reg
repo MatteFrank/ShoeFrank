@@ -1,16 +1,16 @@
  Region n.        1 BLACK   
  Region n.        2 AIR1    
  Region n.        3 AIR2    
- Region n.        4 AIR_CAL0
- Region n.        5 AIR_CAL1
- Region n.        6 AIR_CAL2
- Region n.        7 AIR_CAL3
- Region n.        8 AIR_CAL4
- Region n.        9 AIR_CAL5
- Region n.       10 AIR_CAL6
- Region n.       11 AIR_CAL7
- Region n.       12 AIR_CAL8
- Region n.       13 AIR_CAL9
+ Region n.        4 AIRCAL0 
+ Region n.        5 AIRCAL1 
+ Region n.        6 AIRCAL2 
+ Region n.        7 AIRCAL3 
+ Region n.        8 AIRCAL4 
+ Region n.        9 AIRCAL5 
+ Region n.       10 AIRCAL6 
+ Region n.       11 AIRCAL7 
+ Region n.       12 AIRCAL8 
+ Region n.       13 AIRCAL9 
  Region n.       14 STC     
  Region n.       15 STCMYL1 
  Region n.       16 STCMYL2 
