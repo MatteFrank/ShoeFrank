@@ -198,7 +198,7 @@ ClassImp(TASTntuRaw);
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TASTntuRaw::TASTntuRaw() :
-  fHistN(0), fListOfHits(0), fSuperHit(0), fRunTime(0x0){
+  fHitsN(0), fListOfHits(0), fSuperHit(0), fRunTime(0x0){
 
   SetupClones();
 }
@@ -221,7 +221,7 @@ void TASTntuRaw::SetupClones()
 //! Clear event.
 void TASTntuRaw::Clear(Option_t*){
   TAGdata::Clear();
-  fHistN = 0;
+  fHitsN = 0;
   
   if (fListOfHits) fListOfHits->Clear();
 }
@@ -231,7 +231,10 @@ void TASTntuRaw::Clear(Option_t*){
 //! access to the hit
 TASTrawHit* TASTntuRaw::GetHit(Int_t i)
 {
-  return (TASTrawHit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i < fHitsN)
+    return (TASTrawHit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 
@@ -239,7 +242,10 @@ TASTrawHit* TASTntuRaw::GetHit(Int_t i)
 //! Read-only access \a i 'th hit
 const TASTrawHit* TASTntuRaw::GetHit(Int_t i) const
 {
-  return (const TASTrawHit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i < fHitsN)
+    return (const TASTrawHit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
@@ -248,7 +254,7 @@ void TASTntuRaw::NewHit(TWaveformContainer *W, string algo, double frac, double 
 {
   TClonesArray &pixelArray = *fListOfHits;
   TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W, algo, frac, del);
-  fHistN++;
+  fHitsN++;
 }
 
 //------------------------------------------+-----------------------------------
@@ -311,7 +317,7 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double
 void TASTntuRaw::ToStream(ostream& os, Option_t* option) const
 {
   os << "TASTntuRaw " << GetName()
-	 << " fHistN"    << fHistN
+	 << " fHitsN"    << fHitsN
      << endl;
 }
 

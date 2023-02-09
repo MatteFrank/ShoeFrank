@@ -195,7 +195,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, TAMSDcluster* clusX, TAMSDcl
 //! \param[in] iStation station id
 TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
 {
-   if (iStation >= 0  || iStation < fGeometry->GetStationsN()) {
+   if (iStation >= 0  && iStation < fGeometry->GetStationsN()) {
       TClonesArray &pointArray = *GetListOfPoints(iStation);
       TAMSDpoint* pt = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint(*point);
       pt->SetClusterIdx(pointArray.GetEntriesFast()-1);

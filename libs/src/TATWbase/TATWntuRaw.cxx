@@ -159,7 +159,10 @@ void TATWntuRaw::ToStream(ostream& os, Option_t* option) const
 
 TATWrawHit* TATWntuRaw::GetHit(Int_t i)
 {
-  return (TATWrawHit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i<GetHitsN())
+    return (TATWrawHit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
@@ -167,5 +170,8 @@ TATWrawHit* TATWntuRaw::GetHit(Int_t i)
 
 const TATWrawHit* TATWntuRaw::GetHit(Int_t i) const
 {
-  return (const TATWrawHit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i<GetHitsN())
+    return (const TATWrawHit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }

@@ -194,6 +194,8 @@ TAGtrack::TAGtrack(string name, long evNum,
 	fListOfPoints(0x0)
 {
 	SetupClones();
+   fMcTrackIdx.Set(0);
+   fMcTrackMap.clear();
 
 	fName = name;
 	fEvtNumber = evNum;
@@ -236,6 +238,8 @@ TAGtrack::TAGtrack(string name, long evNum,
 //! Destructor.
 TAGtrack::~TAGtrack()
 {
+   fMcTrackIdx.Set(0);
+   fMcTrackMap.clear();
    delete fListOfPoints;
 }
 
@@ -319,7 +323,6 @@ TAGpoint* TAGtrack::AddPoint(TString name, TVector3 measPos, TVector3 measPosErr
 //! \param[in] opt clear options
 void TAGtrack::Clear(Option_t*)
 {
-   fListOfPoints->Delete();
    fListOfPoints->Delete();
 }
 
@@ -519,8 +522,9 @@ TString TAGntuGlbTrack::fgkBranchName   = "glbtrack.";
 //! Default constructor.
 TAGntuGlbTrack::TAGntuGlbTrack()
  : TAGdata(),
-   fListOfTracks(new TClonesArray("TAGtrack"))
+   fListOfTracks(0x0)
 {
+   SetupClones();
 }
 
 //------------------------------------------+-----------------------------------

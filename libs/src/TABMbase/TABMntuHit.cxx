@@ -233,12 +233,18 @@ return;
 //! access \a i 'th hit
 TABMhit* TABMntuHit::GetHit(Int_t i)
 {
-   return (TABMhit*) ((*fListOfHits)[i]);
+  if( i>=0 && i < GetHitsN() )
+    return (TABMhit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 const TABMhit* TABMntuHit::GetHit(Int_t i) const
 {
-   return (const TABMhit*) ((*fListOfHits)[i]);
+  if( i>=0 && i < GetHitsN() )
+    return (const TABMhit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }

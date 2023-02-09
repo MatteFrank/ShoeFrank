@@ -106,8 +106,12 @@ TAGFselectorBase::~TAGFselectorBase()
 
 	m_trackSlopeMap.clear();
 
-	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
-		it->second.clear();
+	// if(m_measParticleMC_collection)
+	// {
+	// 	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
+	// 		it->second.clear();
+	// 	m_measParticleMC_collection->clear();
+	// }
 }
 
 
@@ -198,10 +202,11 @@ int TAGFselectorBase::FillTrackRepVector()
 map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 {
 
-	if(m_debug > 0) cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+	if(m_debug > 0) 
+		cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 
 	map<string, int> genCount_vector;
-	m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	// m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
 
 	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 

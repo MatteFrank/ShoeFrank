@@ -69,6 +69,12 @@ void TAGFselectorTrue::Categorize( ) {
 			posV = TVector3(0,0,0);
 			for( vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasGlobId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasGlobId).end(); ++itTrackMC )
 			{
+				if(*itTrackMC == -666)
+				{
+					if(m_debug > 0)
+						cout << "Pile-up particle from VT!" << endl;
+					continue;
+				}
 				GetTrueParticleType(*itTrackMC, &flukaID, &charge, &mass, &posV, &momV );
 
 				TString outName, pdgName;

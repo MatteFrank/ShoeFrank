@@ -65,14 +65,20 @@ Int_t TABMntuRaw::GetHitsN() const
 //! Access \a i 'th hit
 TABMrawHit* TABMntuRaw::GetHit(Int_t i)
 {
-   return (TABMrawHit*) ((*fListOfHits)[i]);
+   if(i >= 0 && i < GetHitsN() )
+      return (TABMrawHit*) ((*fListOfHits)[i]);
+   else
+      return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 const TABMrawHit* TABMntuRaw::GetHit(Int_t i) const
 {
-   return (const TABMrawHit*) ((*fListOfHits)[i]);
+   if(i >= 0 && i < GetHitsN() )
+      return (const TABMrawHit*) ((*fListOfHits)[i]);
+   else
+      return 0x0;
 }
 //------------------------------------------+-----------------------------------
 //! Setup clones.

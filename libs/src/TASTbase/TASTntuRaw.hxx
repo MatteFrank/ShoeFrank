@@ -49,7 +49,7 @@ public:
   TASTntuRaw();
   virtual         ~TASTntuRaw();
 
-  Int_t             GetHitsN() {return fHistN;}
+  Int_t             GetHitsN() {return fHitsN;}
 
   TASTrawHit*       GetHit(Int_t i_ind);
   const TASTrawHit* GetHit(Int_t i_ind) const;
@@ -71,7 +71,7 @@ public:
   ClassDef(TASTntuRaw,3);
   
 private:
-   Int_t           fHistN;          //
+   Int_t           fHitsN;          //
    TClonesArray*   fListOfHits;         // hits
    TASTrawHit*     fSuperHit;  //!
    Int_t           fRunTime;

@@ -180,8 +180,13 @@ TClonesArray* TACAntuCluster::GetListOfClusters() const
 //! \param[in] iCluster cluster index
 TACAcluster* TACAntuCluster::GetCluster(Int_t iCluster)
 {
-   TClonesArray* list = GetListOfClusters();
-   return (TACAcluster*)list->At(iCluster);
+   if(iCluster >= 0 && iCluster < GetClustersN())
+   {
+      TClonesArray* list = GetListOfClusters();
+      return (TACAcluster*)list->At(iCluster);
+   }
+   else
+      return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
@@ -190,8 +195,13 @@ TACAcluster* TACAntuCluster::GetCluster(Int_t iCluster)
 //! \param[in] iCluster cluster index
 const TACAcluster* TACAntuCluster::GetCluster(Int_t iCluster) const
 {
-   TClonesArray* list = GetListOfClusters();
-   return (TACAcluster*)list->At(iCluster);
+   if(iCluster >= 0 && iCluster < GetClustersN())
+   {
+      TClonesArray* list = GetListOfClusters();
+      return (TACAcluster*)list->At(iCluster);
+   }
+   else
+      return 0x0;
 }
 
 //------------------------------------------+-----------------------------------

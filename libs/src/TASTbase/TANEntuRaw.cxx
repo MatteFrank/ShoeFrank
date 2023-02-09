@@ -103,7 +103,10 @@ void TANEntuRaw::Clear(Option_t*)
 //! \param[in] i hit index
 TANErawHit* TANEntuRaw::GetHit(Int_t i)
 {
-  return (TANErawHit*) ((*fListOfHits)[i]);;
+  if(i >= 0 && i < GetHitsN())
+    return (TANErawHit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 
@@ -113,7 +116,10 @@ TANErawHit* TANEntuRaw::GetHit(Int_t i)
 //! \param[in] i hit index
 const TANErawHit* TANEntuRaw::GetHit(Int_t i) const
 {
-  return (const TANErawHit*) ((*fListOfHits)[i]);;
+  if(i >= 0 && i < GetHitsN())
+    return (const TANErawHit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------

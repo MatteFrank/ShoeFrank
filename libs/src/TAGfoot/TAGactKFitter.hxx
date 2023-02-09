@@ -169,7 +169,7 @@ private:
 	TAGF_KalmanStudies* m_trackAnalysis;				///< GenFit custom output class
 
 	map< int, vector<AbsMeasurement*> > m_allHitMeasGF;	///< Map of GenFit measurements; the key is the FitPlane index
-	map< int, vector<int> > m_measParticleMC_collection;	///< Map of the MC particles found in each measurement; the key is the global measurement ID (det*1E7 + sensor*1E5 + hit)
+	map< int, vector<int> >* m_measParticleMC_collection;	///< Map of the MC particles found in each measurement; the key is the global measurement ID (det*1E7 + sensor*1E5 + hit)
 
 	map<TString,Track*> m_mapTrack;						///< Map of the tracks sent to the MakeFit function; the key is the track name, i.e. particle hypothesis ("H_3", "Li_7", ...) + an index containing the vertex number and tracklet number (1E3*vertex+tracklet). For "TrueParticle" selection, the number at the end of the track name is the MC particle ID
 	vector<Track*> m_vectorConvergedTrack;				///< Vector of fitted+converged tracks

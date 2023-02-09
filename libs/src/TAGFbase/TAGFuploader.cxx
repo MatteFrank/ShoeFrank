@@ -18,13 +18,20 @@
 //! 
 //! The class converts clusters/points in GenFit format
 //! \param[in] aSensorIDmap Pointer to the TAGFdetectorMap object that handles the GenFit geometry
-TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) :
-m_allHitMeas(0x0)
+TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap, bool IsMC ) :
+m_allHitMeas(0x0),
+m_measParticleMC_collection(0x0),
+m_NtracksMC(0),
+m_IsMC(IsMC)
 {
 
 	m_SensorIDMap = aSensorIDmap;
 
-	m_measParticleMC_collection = new map< int, vector<int> >();
+	if(m_IsMC)
+	{
+		m_NtracksMC = ((TAMCntuPart*)gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object())->GetTracksN();
+		m_measParticleMC_collection = new map< int, vector<int> >();
+	}
 	
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
@@ -66,13 +73,16 @@ TAGFuploader::~TAGFuploader()
 		m_allHitMeas->clear();
 	}
 
-	if( m_measParticleMC_collection->size() > 0 )
+	if(m_IsMC && m_measParticleMC_collection)
 	{
-		for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
-			it->second.clear();
+		if( m_measParticleMC_collection->size() > 0 )
+		{
+			for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
+				it->second.clear();
+		}
+		m_measParticleMC_collection->clear();
+		delete m_measParticleMC_collection;
 	}
-	m_measParticleMC_collection->clear();
-	delete m_measParticleMC_collection;
 }
 
 
@@ -139,7 +149,7 @@ int TAGFuploader::UploadClusVT(){
 
 		int nclus = vtclus->GetClustersN(iSensor);
 
-		if (m_debug > 1)	    Info( "UploadClusVT()", "\nfound %i  in sensor %i", nclus, iSensor );
+		if (m_debug > 1) Info( "UploadClusVT()", "found %i  in sensor %i", nclus, iSensor );
 
 		if (nclus == 0) continue;
 		totClus += nclus;
@@ -183,7 +193,7 @@ int TAGFuploader::UploadClusIT(){
 
 		int nclus = itclus->GetClustersN(iSensor);
 
-		if (m_debug > 1)    std::cout << "\nfound " << nclus << " in sensor " << iSensor << std::endl;
+		if (m_debug > 1)	std::cout << "found " << nclus << " in sensor " << iSensor << "\n";
 
 		if (nclus == 0) continue;
 		totClus += nclus;
@@ -228,7 +238,7 @@ int TAGFuploader::UploadClusMSD() {
 		// cout << "Sensor::" << iSensor << endl;
 		int nclus = msdclus->GetClustersN(iSensor);
 
-		if (m_debug > 1)	std::cout << "\nfound " << nclus << " in sensor " << iSensor << std::endl;
+		if (m_debug > 1)	std::cout << "found " << nclus << " in sensor " << iSensor << "\n";
 
 		if (nclus == 0) continue;
 		totClus += nclus;
@@ -291,7 +301,7 @@ int TAGFuploader::UploadHitsTW() {
 
 	// take the ntuple object already filled
 	TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-	if ( m_debug > 0 )		cout << "\nnumber of TW points read: " << ntup->GetPointsN() << "\n";
+	if ( m_debug > 0 )	cout << "\nnumber of TW points read: " << ntup->GetPointsN() << "\n";
 
 	int totPoints = ntup->GetPointsN();
 
@@ -489,12 +499,18 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 	  // planarCov[k][k] = 0.001*0.001;
 	}
 
-	vector<int> mcParticlesInMeasuerement;
-	for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
-		mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+	if( m_IsMC )
+	{
+		vector<int> mcParticlesInMeasuerement;
+		// cout << "VT MEAS:: " << iMeas << " has N track MC = " << clus->GetMcTracksN() << endl;
+		for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
+			mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+		}
+
+		(*m_measParticleMC_collection)[iMeas];
+		(*m_measParticleMC_collection)[iMeas] = mcParticlesInMeasuerement;
 	}
 
-	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
 
 	int planeID = m_SensorIDMap->GetFitPlaneIDFromMeasID( iMeas );
 	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas );
@@ -554,12 +570,16 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 	  planarCov[k][k] = pixReso(k)*pixReso(k);
 	}
 
-	vector<int> mcParticlesInMeasuerement;
-	for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
-		mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
-	}
+	if( m_IsMC )
+	{
+		vector<int> mcParticlesInMeasuerement;
+		for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
+			mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+		}
 
-	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
+		(*m_measParticleMC_collection)[iMeas];
+		(*m_measParticleMC_collection)[iMeas] = mcParticlesInMeasuerement;
+	}
 
 	int sensorID = m_SensorIDMap->GetFitPlaneIDFromMeasID( iMeas );
 	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas );
@@ -638,12 +658,16 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 		planarCov[k][k] = pixReso*pixReso;
 	}
 
-	vector<int> mcParticlesInMeasuerement;
-	for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
-		mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
-	}
+	if( m_IsMC )
+	{
+		vector<int> mcParticlesInMeasuerement;
+		for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
+				mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+		}
 
-	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
+		(*m_measParticleMC_collection)[iMeas];
+		(*m_measParticleMC_collection)[iMeas] = mcParticlesInMeasuerement;
+	}
 
 	int sensorID = m_SensorIDMap->GetFitPlaneIDFromMeasID( iMeas );
 	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas );
@@ -711,17 +735,17 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 		cout << pixReso(k)*pixReso(k) << endl;
 	}
 
-	vector<int> mcParticlesInMeasuerement;
-	for (int nPart = 0; nPart < point->GetMcTracksN(); nPart++) {
-		mcParticlesInMeasuerement.push_back( point->GetMcTrackIdx( nPart ) );
-		if(m_debug > 0) 
-		{
-			cout << "TW meas::" << iMeas << "\tMCTrack::" << point->GetMcTrackIdx( nPart ) << endl;
-			point->GetPosition().Print();
+	if( m_IsMC )
+	{
+		vector<int> mcParticlesInMeasuerement;
+		// cout << "TW MEAS:: " << iMeas << " has N track MC = " << point->GetMcTracksN() << endl;
+		for (int nPart = 0; nPart < point->GetMcTracksN(); nPart++) {
+			mcParticlesInMeasuerement.push_back( point->GetMcTrackIdx( nPart ) );
 		}
-	}
 
-	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
+		(*m_measParticleMC_collection)[iMeas];
+		(*m_measParticleMC_collection)[iMeas] = mcParticlesInMeasuerement;
+	}
 
 	int sensorID = m_SensorIDMap->GetFitPlaneTW();
 	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas);

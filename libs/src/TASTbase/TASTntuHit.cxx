@@ -106,14 +106,20 @@ TASThit* TASTntuHit::NewHit(double charge, double de, double time, bool pileup)
 //! Access \a i 'th hit
 TASThit* TASTntuHit::GetHit(Int_t i)
 {
-   return (TASThit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i<GetHitsN())
+    return (TASThit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 const TASThit* TASTntuHit::GetHit(Int_t i) const
 {
-   return (const TASThit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i<GetHitsN())
+    return (const TASThit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------

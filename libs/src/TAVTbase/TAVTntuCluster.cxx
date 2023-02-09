@@ -40,7 +40,7 @@ TAVTntuCluster::~TAVTntuCluster()
 //! \param[in] iSensor sensor id
 Int_t TAVTntuCluster::GetClustersN(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
 	  TClonesArray*list = GetListOfClusters(iSensor);
 	  return list->GetEntriesFast();   
    } else 
@@ -53,7 +53,7 @@ Int_t TAVTntuCluster::GetClustersN(Int_t iSensor) const
 //! \param[in] iSensor sensor id
 TClonesArray* TAVTntuCluster::GetListOfClusters(Int_t iSensor)
 {
-   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
 	  TClonesArray* list = (TClonesArray*)fListOfClusters->At(iSensor);
 	  return list;
    } else 
@@ -66,7 +66,7 @@ TClonesArray* TAVTntuCluster::GetListOfClusters(Int_t iSensor)
 //! \param[in] iSensor sensor id
 TClonesArray* TAVTntuCluster::GetListOfClusters(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
 	  TClonesArray* list = (TClonesArray*)fListOfClusters->At(iSensor);
 	  return list;
 	  
@@ -81,7 +81,7 @@ TClonesArray* TAVTntuCluster::GetListOfClusters(Int_t iSensor) const
 //! \param[in] iCluster cluster index
 TAVTcluster* TAVTntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 {
-   if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
+   if (iCluster >=0 && iCluster < GetClustersN(iSensor)) {
 	  TClonesArray* list = GetListOfClusters(iSensor);
 	  return (TAVTcluster*)list->At(iCluster);
    } else
@@ -95,7 +95,7 @@ TAVTcluster* TAVTntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 //! \param[in] iCluster cluster index
 const TAVTcluster* TAVTntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) const
 {
-   if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
+   if (iCluster >=0 && iCluster < GetClustersN(iSensor)) {
 	  TClonesArray* list = GetListOfClusters(iSensor);
 	  return (TAVTcluster*)list->At(iCluster);
    } else
@@ -134,7 +134,7 @@ void TAVTntuCluster::Clear(Option_t*)
 //! \param[in] iSensor sensor id
 TAVTcluster* TAVTntuCluster::NewCluster(Int_t iSensor)
 {
-   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
 	  TClonesArray &clusterArray = *GetListOfClusters(iSensor);
 	  TAVTcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAVTcluster();
      cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
@@ -152,7 +152,7 @@ TAVTcluster* TAVTntuCluster::NewCluster(Int_t iSensor)
 //! \param[in] iSensor sensor id
 TAVTcluster* TAVTntuCluster::NewCluster(TAVTcluster* clus, Int_t iSensor)
 {
-   if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
 	  TClonesArray &clusterArray = *GetListOfClusters(iSensor);
 	  TAVTcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAVTcluster(*clus);
      cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);

@@ -72,6 +72,12 @@ void TAGFselectorStandard::CategorizeVT()
 		//cluster test
 	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
 
+	if(!vertexContainer || !vtntuclus)
+	{
+		Warning("CategorizeVT()", "VT vertices or ntuCluster pointers are null. Skipping event...");
+		return;
+	}
+
 	int vertexNumber = vertexContainer->GetVertexN();
 	// if( vertexNumber != 1 )
 	// {
@@ -155,9 +161,14 @@ void TAGFselectorStandard::CategorizeVT()
 					vector<int> iPart = m_measParticleMC_collection->at( hitToAdd->getHitId() );
 					cout << "\t-- Truth particles of the measurement:\n";
 					for (int k=0; k< iPart.size(); k++) {
-						TAMCpart* particle = m_McNtuEve->GetTrack( iPart.at(k) );
-						TVector3 mcMom = particle->GetInitP();
-						cout << "\t\t-charge: " << particle->GetCharge() << "   mom:"; mcMom.Print();
+						if(iPart[k] != -666)
+						{
+							TAMCpart* particle = m_McNtuEve->GetTrack( iPart[k] );
+							TVector3 mcMom = particle->GetInitP();
+							cout << "\t\t-charge: " << particle->GetCharge() << "  mom:"; mcMom.Print();
+						}
+						else
+							cout << "Pile-up particle from VT!" << endl;
 					}
 				}
 
@@ -165,6 +176,7 @@ void TAGFselectorStandard::CategorizeVT()
 
 			if (fitTrack_->getNumPointsWithMeasurement() > 4 || fitTrack_->getNumPointsWithMeasurement() < 3){
 				Warning("Categorize_dataLike()", "Track with %d measurements found in VTX => rejected!", fitTrack_->getNumPointsWithMeasurement());
+				delete fitTrack_;
 				continue;
 			}
 
