@@ -407,10 +407,10 @@ ostream& operator<< (std::ostream& out, const TAGrunManager::TypeParameter_t& ty
       if (type.BeamEnergy2 > 0)
         cout  << " - " << type.BeamEnergy2 << endl;
       else
-         out << endl;
+         out << " MeV/u" << endl;
       
       out  << "  Type Target:          " << type.Target.Data() << endl;
-      out  << "  Target Size:          " << type.TargetSize << endl;
+      out  << "  Target Size:          " << type.TargetSize << " cm" << endl;
       out  << "  Total Events:         " << TAGrunManager::SmartPrint(type.TotalEvts) << endl;
       out  << "  DetectorOut:          ";
       for (Int_t j = 0; j < (int) type.DetectorOut.size(); ++j)
@@ -439,7 +439,7 @@ ostream& operator<< (ostream& out, const TAGrunManager::RunParameter_t& run)
    
    out << Form("\nCurrent run number:     %d\n", run.RunId);
    out << Form("  Daq events:           %s\n",TAGrunManager::SmartPrint(run.DaqEvts).Data());
-   out << Form("  Duration:             %d s [%02dh:%02dmin:%02ds]\n", duration, hours, minutes, seconds);
+   out << Form("  Duration:             %d s [%02dh:%02dm:%02ds]\n", duration, hours, minutes, seconds);
    out << Form("  Daq Rate:             %d Hz\n", run.DaqRate);
    
    return  out;
