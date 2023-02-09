@@ -802,7 +802,7 @@ Int_t  TAGparTools::GetCrossReg(TString &regname)
 }
 
 //____________________________________________________________________________
-//! Tokenize
+//! Tokenize string
 //!
 //! \param[in] str string
 //! \param[in] delimiters delimiter
@@ -825,4 +825,34 @@ vector<string>  TAGparTools::Tokenize(const string str, const string delimiters)
    }
    
    return tokens;
+}
+
+//____________________________________________________________________________
+//! Tokenize TString
+//!
+//! \param[in] str TString
+//! \param[in] delimiters delimiter
+//! \return a TString vector
+vector<TString> TAGparTools::Tokenize(const TString line, const Char_t delimiter)
+{
+   vector<TString> list;
+
+   Int_t len  = line.Length();
+   Int_t pos1 = 0;
+   Int_t pos2 = 0;
+   Int_t i    = 0;
+   
+   do{
+      if (line[i] == delimiter) {
+         pos2 = i;
+         TString tmp(line(pos1, pos2-pos1));
+         if (!tmp.IsWhitespace())
+            list.push_back(tmp);
+         pos1 = pos2+1;
+         i++;
+      }
+      i++;
+   } while (i < len);
+   
+   return list;
 }

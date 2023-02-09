@@ -129,6 +129,8 @@ public:
    static void  SetPrecisionLevel(Int_t level) { fgPrecisionLevel = level; }
    // Tokenize string
    static vector<string> Tokenize(const string str, const string delimiters);
+   // Tokenize TString
+   static vector<TString> Tokenize(const TString line, const Char_t delimiter = '\"');
    
 protected:
    static Int_t fgPrecisionLevel; ///< Precision level for cout
