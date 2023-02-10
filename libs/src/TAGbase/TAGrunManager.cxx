@@ -205,10 +205,9 @@ void TAGrunManager::DecodeTypeLine(TString& line)
          default:
             break;
       }
-      fTypeParameter[idx] = typeParameter;
    }
-
-
+   
+   fTypeParameter[idx] = typeParameter;
 }
 
 //------------------------------------------+-----------------------------------
@@ -219,72 +218,55 @@ void TAGrunManager::DecodeRunLine(TString& line)
 {
    RunParameter_t runParameter;
    
-   // Index
-   Int_t pos = line.First("\"");
-   TString tmp(line(0, pos));
-   Int_t idx = tmp.Atoi();
+   vector<TString> list = TAGparTools::Tokenize(line);
+   
+   Int_t idx;
+   for (Int_t i = 0; i < (int)list.size(); ++i ) {
 
-   // printf("%d\n", idx);
-   runParameter.RunId = idx;
-   
-   // Start of run
-   Int_t i = pos+1;
-   Int_t p = 0;
-   char buf[255];
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
-   
-   TString start = buf;
-   runParameter.StartTime = start;
-
-   if(FootDebugLevel(1))
-      printf("Start: %s\n", start.Data());
-   
-   // Stop of run
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      i++;
-   }
-   
-   i++;
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
-   
-   TString stop = buf;
-   runParameter.StopTime = stop;
-
-   if(FootDebugLevel(1))
-      printf("Stop: %s\n", stop.Data());
-   
-   //daqEvts, duration, daqRate & runType
-   tmp = line(i+1, line.Length()-i);
-   
-   Int_t daqEvts;
-   Int_t duration;
-   Int_t daqRate;
-   Int_t runType;
-   
-   sscanf(tmp.Data(), "%d %d %d %d", &daqEvts, &duration, &daqRate, &runType);
-
-   fEvtCounter[runType] += daqEvts;
-   runParameter.DaqEvts  = daqEvts;
-   runParameter.Duration = duration;
-   runParameter.DaqRate  = daqRate;
-   runParameter.RunType  = runType;
-   
-   if(FootDebugLevel(1))
-      printf("daqEvts: %d duration: %d daqRate: %d runType: %d\n", daqEvts, duration, daqRate, runType);
-   
+      switch (i) {
+         case 0:
+            runParameter.RunId = list[i].Atoi();
+            idx = runParameter.RunId;
+            if(FootDebugLevel(1))
+               printf("Index: %d\n", runParameter.RunId);
+            break;
+            
+         case 1:
+            runParameter.StartTime = list[i];
+            if(FootDebugLevel(1))
+               printf("Type: %s\n",  runParameter.StartTime.Data());
+            break;
+            
+         case 2:
+            runParameter.StopTime = list[i];
+            if(FootDebugLevel(1))
+               printf("Trigger: %s\n", runParameter.StopTime.Data());
+            break;
+            
+         case 3:
+            Int_t daqEvts;
+            Int_t duration;
+            Int_t daqRate;
+            Int_t runType;
+            
+            sscanf(list[i].Data(), "%d %d %d %d", &daqEvts, &duration, &daqRate, &runType);
+            
+            fEvtCounter[runType] += daqEvts;
+            runParameter.DaqEvts  = daqEvts;
+            runParameter.Duration = duration;
+            runParameter.DaqRate  = daqRate;
+            runParameter.RunType  = runType;
+            
+            if(FootDebugLevel(1))
+               printf("daqEvts: %d duration: %d daqRate: %d runType: %d\n", daqEvts, duration, daqRate, runType);
+            
+         default:
+            break;
+      }
+   }// Index
+         
    fRunParameter[idx] = runParameter;
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Decode type line

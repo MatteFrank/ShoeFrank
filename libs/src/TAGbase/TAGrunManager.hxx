@@ -111,7 +111,7 @@ private:
    void DecodeTypeLine(TString& line);
    // Decode run info
    void DecodeRunLine(TString& line);
-   
+
 private:
    static const TString fgkDefaultActName;  ///< Default action name
    static const TString fgkDefaultFolder;   ///< Default campaign folder
