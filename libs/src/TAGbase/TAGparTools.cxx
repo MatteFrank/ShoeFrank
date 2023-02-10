@@ -864,5 +864,14 @@ vector<TString> TAGparTools::Tokenize(const TString line, const Char_t delimiter
       i++;
    } while (i < len);
    
+   // if no separator at the end of line
+   if (pos1 < len -2) {
+      TString tmp(line(pos1, len-pos1));
+      tmp = Normalize(tmp.Data());
+      
+      if (!tmp.IsWhitespace())
+         list.push_back(tmp);
+   }
+   
    return list;
 }
