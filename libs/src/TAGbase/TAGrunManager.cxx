@@ -125,173 +125,91 @@ void TAGrunManager::DecodeTypeLine(TString& line)
 {
    TypeParameter_t typeParameter;
    
-   // Index
-   Int_t pos = line.First("\"");
-   TString tmp(line(0, pos));
-   Int_t idx = tmp.Atoi();
-   typeParameter.TypeId = idx;
-
-   if(FootDebugLevel(1))
-      printf("Index: %d\n", idx);
-
-      
-   // Type name
-   Int_t i = pos+1;
-   Int_t p = 0;
-   char buf[255];
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
+   vector<TString> list = TAGparTools::Tokenize(line);
    
-   TString type = buf;
-   typeParameter.TypeName = type;
-
-   if(FootDebugLevel(1))
-      printf("Type: %s\n", type.Data());
-
-   // Main Trigger
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      i++;
-   }
-   
-   i++;
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
-   
-   TString trigger = buf;
-   typeParameter.Trigger = trigger;
-
-   if(FootDebugLevel(1))
-      printf("Trigger: %s\n", trigger.Data());
-
-   // Beam
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      i++;
-   }
-   
-   i++;
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
-   
-   TString beam = buf;
-   typeParameter.Beam = beam;
-
-   if(FootDebugLevel(1))
-      printf("Beam %s\n", beam.Data());
-   
-   //Beam energy
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
-   
-   TString energy = buf;
-   if (!energy.Contains("-")) {
-      typeParameter.BeamEnergy = energy.Atof();
-      typeParameter.BeamEnergy2 = 0.;
-      if(FootDebugLevel(1))
-         printf("Energy: %.0f\n", energy.Atof());
-   } else {
-      pos = energy.First("-");
-      TString energy1(energy(0, pos));
-      typeParameter.BeamEnergy = energy1.Atof();
-      TString energy2(energy(pos+1, energy.Length()-pos));
-      typeParameter.BeamEnergy2 = energy2.Atof();
-      if(FootDebugLevel(1))
-         printf("Energy: %.0f %.0f\n",  energy1.Atof(), energy2.Atof());
+   Int_t idx;
+   for (Int_t i = 0; i < (int)list.size(); ++i ) {
+      switch (i) {
+         case 0:
+            typeParameter.TypeId = list[i].Atoi();
+            idx = typeParameter.TypeId;
+            if(FootDebugLevel(1))
+               printf("Index: %d\n", idx);
+            break;
+            
+         case 1:
+            typeParameter.TypeName = list[i];
+            if(FootDebugLevel(1))
+               printf("Type: %s\n", typeParameter.TypeName.Data());
+            break;
+            
+         case 2:
+            typeParameter.Trigger = list[i];
+            if(FootDebugLevel(1))
+               printf("Trigger: %s\n", typeParameter.Trigger.Data());
+            break;
+            
+         case 3:
+            typeParameter.Beam = list[i];
+            if(FootDebugLevel(1))
+               printf("Beam %s\n", typeParameter.Beam.Data());
+            break;
+            
+         case 4:
+            if (!list[i].Contains("-")) {
+               typeParameter.BeamEnergy = list[i].Atof();
+               typeParameter.BeamEnergy2 = 0.;
+               if(FootDebugLevel(1))
+                  printf("Energy: %.0f\n", list[i].Atof());
+            } else {
+               Int_t pos = list[i].First("-");
+               TString energy1(list[i](0, pos));
+               typeParameter.BeamEnergy = energy1.Atof();
+               TString energy2(list[i](pos+1, list[i].Length()-pos));
+               typeParameter.BeamEnergy2 = energy2.Atof();
+               if(FootDebugLevel(1))
+                  printf("Energy: %.0f %.0f\n",  energy1.Atof(), energy2.Atof());
+            }
+            break;
+            
+         case 5:
+            typeParameter.Target = list[i];
+            if(FootDebugLevel(1))
+               printf("Target: %s\n", typeParameter.Target.Data());
+            break;
+            
+         case 6:
+            Float_t size;
+            Int_t evtTot;
+            sscanf(list[i].Data(), "%f %d", &size, &evtTot);
+            typeParameter.TargetSize = size;
+            typeParameter.TotalEvts = evtTot;
+            if(FootDebugLevel(1)) {
+               printf("Target size: %.1f\n", size);
+               printf("Total Events: %d\n", evtTot);
+            }
+            break;
+            
+         case 7:
+            typeParameter.DetectorOut =  TAGparTools::Tokenize(list[i].Data(), " " );
+            if(FootDebugLevel(1))
+               printf("DetectorOut: %s\n", list[i].Data());
+            break;
+            
+         case 8:
+            typeParameter.Comments = list[i];
+            if(FootDebugLevel(1))
+               printf("Comments: %s\n", typeParameter.Comments.Data());
+            break;
+            
+         default:
+            break;
+      }
+      fTypeParameter[idx] = typeParameter;
    }
 
-   // Target
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
-   
-   TString target = buf;
-   typeParameter.Target = target;
 
-   if(FootDebugLevel(1))
-      printf("Target: %s\n", target.Data());
-
-   // Target size & total number of events
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p-1] = '\0';
-   
-   Float_t size;
-   Int_t evtTot;
-   sscanf(buf, "%f %d", &size, &evtTot);
-   
-   typeParameter.TargetSize = size;
-   typeParameter.TotalEvts = evtTot;
-
-   if(FootDebugLevel(1)) {
-      printf("Target size: %.1f\n", size);
-      printf("Total Events: %d\n", evtTot);
-   }
-   
-   // detector out
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
-   
-   TString detectorOut = buf;
-   typeParameter.DetectorOut =  TAGparTools::Tokenize(detectorOut.Data(), " " );
-
-   if(FootDebugLevel(1))
-      printf("DetectorOut: %s\n", detectorOut.Data());
-      
-   // Comments
-   
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      i++;
-   }
-   
-   i++;
-   p = 0;
-   while (line[i] != '\"') {
-      buf[p++] = line[i];
-      i++;
-   }
-   buf[p] = '\0';
-   
-   TString comment = buf;
-   typeParameter.Comments = comment;
-
-   if(FootDebugLevel(1))
-      printf("Comments: %s\n", comment.Data());
-
-   fTypeParameter[idx] = typeParameter;
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Decode run line
