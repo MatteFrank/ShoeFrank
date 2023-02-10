@@ -140,7 +140,7 @@ TAVTcluster* TAVTntuCluster::NewCluster(Int_t iSensor)
      cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
 	  return cluster;
    } else {
-	  cout << Form("Wrong sensor number %d\n", iSensor);
+	  Error("NewCluster()", "Wrong sensor number %d\n", iSensor);
 	  return 0x0;
    }   
 }
@@ -158,7 +158,7 @@ TAVTcluster* TAVTntuCluster::NewCluster(TAVTcluster* clus, Int_t iSensor)
      cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
 	  return cluster;
    } else {
-	  cout << Form("Wrong sensor number %d\n", iSensor);
+	  Error("NewCluster()", "Wrong sensor number %d\n", iSensor);
 	  return 0x0;
    }   
 }

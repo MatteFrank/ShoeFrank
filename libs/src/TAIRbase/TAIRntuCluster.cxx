@@ -138,7 +138,7 @@ TAIRcluster* TAIRntuCluster::NewCluster(Int_t iSensor)
 	  TAIRcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAIRcluster();
 	  return cluster;
    } else {
-	  cout << Form("Wrong sensor number %d\n", iSensor);
+	  Error("NewCluster()", "Wrong sensor number %d\n", iSensor);
 	  return 0x0;
    }   
 }
@@ -155,7 +155,7 @@ TAIRcluster* TAIRntuCluster::NewCluster(TAIRcluster* clus, Int_t iSensor)
 	  TAIRcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAIRcluster(*clus);
 	  return cluster;
    } else {
-	  cout << Form("Wrong sensor number %d\n", iSensor);
+	  Error("NewCluster()", "Wrong sensor number %d\n", iSensor);
 	  return 0x0;
    }   
 }

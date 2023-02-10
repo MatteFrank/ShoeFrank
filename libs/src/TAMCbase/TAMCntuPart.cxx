@@ -187,7 +187,7 @@ Int_t TAMCntuPart::GetTracksN() const
 //! \param[in] i track index
 TAMCpart* TAMCntuPart::GetTrack(Int_t i)
 {
-  if(i >= 0  && i < GetTracksN())
+  if(i >= 0 && i < GetTracksN())
    return (TAMCpart*) ((*fListOfTracks)[i]);
   else 
     return 0x0;
@@ -199,7 +199,7 @@ TAMCpart* TAMCntuPart::GetTrack(Int_t i)
 //! \param[in] i track index
 const TAMCpart* TAMCntuPart::GetTrack(Int_t i) const
 {
-  if(i >=  0 && i < GetTracksN())
+  if(i >= 0 && i < GetTracksN())
     return (const TAMCpart*) ((*fListOfTracks)[i]);
   else 
     return 0x0;

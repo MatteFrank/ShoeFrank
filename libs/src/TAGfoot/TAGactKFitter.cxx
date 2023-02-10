@@ -208,38 +208,8 @@ Bool_t TAGactKFitter::Action()	{
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
 
 	m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
-	// cout << "MC NTU tracks BEFORE -> ev::" <<evNum << endl;
-	// cout << m_trueParticleRep->GetTracksN() << "   " << m_trueParticleRep << endl;
-	// if(m_trueParticleRep->GetTracksN() > 1)
-	// {
-	// 	cout << "HERE!!!" << endl;
-	// 	cin.get();
-	// }
-	// for(int i=0; i<m_trueParticleRep->GetTracksN(); ++i)
-	// {
-	// 	TAMCpart* part = m_trueParticleRep->GetTrack(i);
-	// 	cout << "part::" << i << "    " << part << endl;
-	// 	cout << "GetInitPos::"; part->GetInitPos().Print();
-	// 	cout << "GetInitP::"; part->GetInitP().Print();
-	// 	cout << "GetFinalPos::"; part->GetFinalPos().Print();
-	// 	cout << "GetFinalP::"; part->GetFinalP().Print();
-	// 	cout << "GetMass::" << part->GetMass() << endl;
-	// 	cout << "GetType::" << part->GetType() << endl;
-	// 	cout << "GetRegion::" << part->GetRegion() << endl;
-	// 	cout << "GetBaryon::" << part->GetBaryon() << endl;
-	// 	cout << "GetFlukaID::" << part->GetFlukaID() << endl;
-	// 	cout << "GetMotherID::" << part->GetMotherID() << endl;
-	// 	cout << "GetCharge::" << part->GetCharge() << endl;
-	// 	cout << "GetDead::" << part->GetDead() << endl;
-	// 	cout << "GetTime::" << part->GetTime() << endl;
-	// 	cout << "GetTrkLength::" << part->GetTrkLength() << endl;
-	// 	cout << "GetTof::" << part->GetTof() << endl;
 
-	// 	TVector3 v = part->GetInitPos();
-	// 	// if( fabs(v.x() - (-0.006975)) < 0.000001 && fabs(v.y() - (-0.265196)) < 0.000001 && fabs(v.z() - (-0.102081)) < 0.000001 )
-	// }
-	// if(evNum == 139) cin.get();
-
+	//Check if ST signlaed a pile-up
 	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc("stDat", "TASTntuRaw")->Object())->GetSuperHit()->GetPileUp() )
 	{
 		if( m_debug > 0 )
@@ -250,10 +220,10 @@ Bool_t TAGactKFitter::Action()	{
 		return true;
 	}
 
-
 	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  start!" << endl;
+	
+	//Declare uploader -> get measurements in genfit format
 	TAGFuploader* m_uploader = new TAGFuploader( m_SensorIDMap, m_IsMC );
-
 	m_uploader->TakeMeasHits4Fit( m_allHitMeasGF );
 	vector<int> chVect;
 	m_uploader->GetPossibleCharges( &chVect, m_IsMC );
@@ -269,7 +239,7 @@ Bool_t TAGactKFitter::Action()	{
 			cout << it->first << "\t" << it->second.size() << endl;
 	}
 
-	// TAGFselectorBase* m_selector = new TAGFselectorBase(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
+	//Declare selector object
 	TAGFselectorBase* m_selector = 0x0;
 	if (TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle")
 	{
@@ -291,8 +261,7 @@ Bool_t TAGactKFitter::Action()	{
 	
 	m_selector->SetVariables(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents, &m_noTWpointEvents);
 
-	// cout << "MC NTU tracks AFTER SELECTOR CTOR" << endl;
-	// cout << m_trueParticleRep->GetTracksN() << "   " << m_trueParticleRep << endl;
+	//Find track candiadates and fit them
 	if (m_selector->FindTrackCandidates() >= 0)
 	{
 
@@ -300,14 +269,11 @@ Bool_t TAGactKFitter::Action()	{
 			//RZ: Check selection efficiency counts --> better define the "visible" particles, right now is not really compatible with TrueParticle selection
 			FillGenCounter( m_selector->CountParticleGenaratedAndVisible() );
 		}
-		// cout << "MC NTU tracks AFTER SELECTOR" << endl;
-		// cout << m_trueParticleRep->GetTracksN() << "   " << m_trueParticleRep << endl;
 
 		MakeFit(evNum, m_selector);
 	}
-		// cout << "MC NTU tracks AFTER MAKEFIT" << endl;
-		// cout << m_trueParticleRep->GetTracksN() << "   " << m_trueParticleRep << endl;
 
+	//Check if global tracks match w/ any CALO cluster
 	if( TAGrecoManager::GetPar()->IncludeCA() )
 		MatchCALOclusters();
 
@@ -317,102 +283,7 @@ Bool_t TAGactKFitter::Action()	{
 		h_GFeventType->Fill(m_selector->GetEventType());
 	}
 
-	// cout << "TRACKSN::" << m_outTrackRepo->GetTracksN() << endl;
-	// for(int i=0; i<m_outTrackRepo->GetTracksN(); ++i)
-	// {
-	// 	TAGtrack* trk = (TAGtrack*)m_outTrackRepo->GetTrack(i);
-	// 	cout << "TRACK!!!!  " << trk << endl;
-	// 	cout << i << endl;
-	// 	cout << "GetEvtNumber::" << trk->GetEvtNumber() << endl;
-	// 	cout << "GetPdgID::" << trk->GetPdgID() << endl;
-	// 	cout << "GetLength::" << trk->GetLength() << endl;
-	// 	cout << "GetChi2::" << trk->GetChi2() << endl;
-	// 	cout << "GetNdof::" << trk->GetNdof() << endl;
-	// 	cout << "GetPval::" << trk->GetPval() << endl;
-	// 	cout << "GetQuality::" << trk->GetQuality() << endl;
-	// 	cout << "GetMass::" << trk->GetMass() << endl;
-	// 	cout << "GetMomentum::" << trk->GetMomentum() << endl;
-	// 	cout << "GetTwChargeZ::" << trk->GetTwChargeZ() << endl;
-	// 	cout << "GetTwTof::" << trk->GetTwTof() << endl;
-	// 	cout << "GetTrackId::" << trk->GetTrackId() << endl;
-	// 	cout << "GetFitMass::" << trk->GetFitMass() << endl;
-	// 	cout << "GetFitChargeZ::" << trk->GetFitChargeZ() << endl;
-	// 	cout << "GetFitTof::" << trk->GetFitTof() << endl;
-	// 	cout << "GetFitEnergyLoss::" << trk->GetFitEnergyLoss() << endl;
-	// 	cout << "GetFitEnergy::" << trk->GetFitEnergy() << endl;
-	// 	cout << "GetCalEnergy::" << trk->GetCalEnergy() << endl;
-	// 	cout << "GetPointsN::" << trk->GetPointsN() << endl;
-	// 	cout << "GetMcMainTrackId::" << trk->GetMcMainTrackId() << endl;
-	// 	cout << "GetTgtTheta::" << trk->GetTgtTheta() << endl;
-	// 	cout << "GetTgtPhi::" << trk->GetTgtPhi() << endl;
-	// 	cout << "GetTgtThetaBm::" << trk->GetTgtThetaBm() << endl;
-	// 	cout << "GetTgtPhiBm::" << trk->GetTgtPhiBm() << endl;
-	// 	cout << "GetTotEnergyLoss::" << trk->GetTotEnergyLoss() << endl;
-	// 	cout << "GetMsdEnergyLoss::" << trk->GetMsdEnergyLoss() << endl;
-	// 	cout << "GetTwEnergyLoss::" << trk->GetTwEnergyLoss() << endl;
-	// 	cout << "HasTwPoint::" << trk->HasTwPoint() << endl;
-	// 	cout << "GetCALOmatchedClusterId::" << trk->GetCALOmatchedClusterId() << endl;
-	// 	cout << "GetTgtDirection::"; trk->GetTgtDirection().Print();
-	// 	cout << "GetTgtPosError::"; trk->GetTgtPosError().Print();
-	// 	cout << "GetTgtPosition::"; trk->GetTgtPosition().Print();
-	// 	cout << "GetTgtMomentum::"; trk->GetTgtMomentum().Print();
-	// 	cout << "GetTgtMomError::"; trk->GetTgtMomError().Print();
-	// 	cout << "GetTwPosition::"; trk->GetTwPosition().Print();
-	// 	cout << "GetTwPosError::"; trk->GetTwPosError().Print();
-	// 	cout << "GetTwMomentum::"; trk->GetTwMomentum().Print();
-	// 	cout << "GetTwMomError::"; trk->GetTwMomError().Print();
-	// 	cout << "List of points::" << trk->GetListOfPoints() << endl;
-	// 	for(int j=0; j< trk->GetPointsN(); ++j)
-	// 	{
-	// 		TAGpoint* pt = trk->GetPoint(j);
-	// 		cout << "POINT::" << j << "   " << pt << endl;
-	// 		cout << "IsValid::" << pt->IsValid() << endl;
-	// 		cout << "GetDeviceType::" << pt->GetDeviceType() << endl;
-	// 		cout << "GetDevMajorType::" << pt->GetDevMajorType() << endl;
-	// 		cout << "GetDevMinorType::" << pt->GetDevMinorType() << endl;
-	// 		cout << "GetClusterIdx::" << pt->GetClusterIdx() << endl;
-	// 		cout << "GetSensorIdx::" << pt->GetSensorIdx() << endl;
-	// 		cout << "GetElementsN::" << pt->GetElementsN() << endl;
-	// 		cout << "GetPosition::"; pt->GetPosition().Print();
-	// 		cout << "GetPosError::"; pt->GetPosError().Print();
-	// 		cout << "GetPositionG::"; pt->GetPositionG().Print();
-	// 		cout << "GetPosErrorG::"; pt->GetPosErrorG().Print();
-	// 		cout << "GetMeasPosition::"; pt->GetMeasPosition().Print();
-	// 		cout << "GetMeasPosError::"; pt->GetMeasPosError().Print();
-	// 		cout << "GetFitPosition::"; pt->GetFitPosition().Print();
-	// 		cout << "GetFitPosError::"; pt->GetFitPosError().Print();
-	// 		cout << "GetMcTracksN::" << pt->GetMcTracksN() << endl;
-	// 		cout << "GetDevName::" << pt->GetDevName() << endl;
-	// 		cout << "GetPositionG::"; pt->GetPositionG().Print();
-	// 		cout << "GetPosErrorG::"; pt->GetPosErrorG().Print();
-	// 		cout << "GetMomentum::"; pt->GetMomentum().Print();
-	// 		cout << "GetMomError::"; pt->GetMomError().Print();
-	// 		cout << "GetEnergyLoss::" << pt->GetEnergyLoss() << endl;
-	// 	}
-	// }
-	// cout << "MC NTU tracks AFTER" << endl;
-	// cout << m_trueParticleRep->GetTracksN() << "   " << m_trueParticleRep << endl;
-	// for(int i=0; i<m_trueParticleRep->GetTracksN(); ++i)
-	// {
-	// 	TAMCpart* part = m_trueParticleRep->GetTrack(i);
-	// 	cout << "part::" << i << "    " << part << endl;
-	// 	cout << "GetInitPos::"; part->GetInitPos().Print();
-	// 	cout << "GetInitP::"; part->GetInitP().Print();
-	// 	cout << "GetFinalPos::"; part->GetFinalPos().Print();
-	// 	cout << "GetFinalP::"; part->GetFinalP().Print();
-	// 	cout << "GetMass::" << part->GetMass() << endl;
-	// 	cout << "GetType::" << part->GetType() << endl;
-	// 	cout << "GetRegion::" << part->GetRegion() << endl;
-	// 	cout << "GetBaryon::" << part->GetBaryon() << endl;
-	// 	cout << "GetFlukaID::" << part->GetFlukaID() << endl;
-	// 	cout << "GetMotherID::" << part->GetMotherID() << endl;
-	// 	cout << "GetCharge::" << part->GetCharge() << endl;
-	// 	cout << "GetDead::" << part->GetDead() << endl;
-	// 	cout << "GetTime::" << part->GetTime() << endl;
-	// 	cout << "GetTrkLength::" << part->GetTrkLength() << endl;
-	// 	cout << "GetTof::" << part->GetTof() << endl;
-	// }
-	// if(evNum == 139) cin.get();
+	//Clear
 	chVect.clear();
 
 	delete m_uploader;
@@ -975,17 +846,9 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 	    //check
 	    fitTrack->checkConsistency();
 	    if ( m_debug > 2 )	    fitTrack->Print();
-		// cout << "MC NTU tracks BEFORE EPE" << endl;
-		int n_old = m_trueParticleRep->GetTracksN();
-		// cout << m_trueParticleRep->GetTracksN() << "   " << m_trueParticleRep << endl;
+
 		if( m_IsMC )	EvaluateProjectionEfficiency(fitTrack);
-		// cout << "MC NTU tracks AFTER EPE" << endl;
-		// cout << m_trueParticleRep->GetTracksN() << "   " << m_trueParticleRep << endl;
-		if(m_trueParticleRep->GetTracksN() != n_old)
-		{
-			std::cout << m_trueParticleRep->GetTracksN() << "\t" << n_old << std::endl;
-			cin.get();
-		}
+
 		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" )
 			CheckChargeHypothesis(&PartName, fitTrack, m_selector);
 
@@ -1384,10 +1247,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		TVector3 mcMom, mcPos;
 
 		trackMC_id = FindMostFrequent( &mcParticleID_track );
-		if(trackMC_id != -666) //Check if track is mostly VT pile-up
+		//Check if track is mostly VT pile-up, if not go ahead
+		if(trackMC_id != -666) 
 		{
 			// trackMC_id = track->getMcTrackId();     //???????
-			// m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
 			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
 			mcMom = particle->GetInitP();
 			mcPos = particle->GetInitPos();
@@ -1437,7 +1300,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
 			}
 		}
-
 
 		if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
 	}
@@ -2188,7 +2050,6 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 		m_NClusTrack.at( PlaneId )++;
 
 		bool good = false;
-		// cout << "TracksN before::"<< m_trueParticleRep->GetTracksN() << "\n";
 		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
 		{
 			if(*itTrackMC == -666)

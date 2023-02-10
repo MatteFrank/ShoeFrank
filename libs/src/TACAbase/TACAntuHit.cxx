@@ -115,7 +115,7 @@ TACAhit* TACAntuHit::GetHit(Int_t id)
    if (id >=0 && id < 22*22) {
       return (TACAhit*)fListOfHits->At(id);
    } else {
-      cout << Form("Wrong sensor number %d\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }
@@ -129,7 +129,7 @@ const TACAhit* TACAntuHit::GetHit(Int_t id) const
    if (id >=0 && id < 22*22) {
       return (TACAhit*)fListOfHits->At(id);
    } else {
-      Error("GetPixel()", "Wrong sensor number %d\n", id);
+      Error("GetPixel()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }

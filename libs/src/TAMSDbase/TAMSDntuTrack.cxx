@@ -49,7 +49,7 @@ Int_t TAMSDntuTrack::GetTracksN() const
 //! \param[in] iTrack track index
 TAMSDtrack* TAMSDntuTrack::GetTrack(Int_t iTrack)
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
 	  return (TAMSDtrack*)fListOfTracks->At(iTrack);
    else
 	  return 0x0;
@@ -61,7 +61,7 @@ TAMSDtrack* TAMSDntuTrack::GetTrack(Int_t iTrack)
 //! \param[in] iTrack track index
 const TAMSDtrack* TAMSDntuTrack::GetTrack(Int_t iTrack) const
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
 	  return (TAMSDtrack*)fListOfTracks->At(iTrack);
    else
 	  return 0x0;

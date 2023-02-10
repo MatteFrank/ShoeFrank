@@ -121,7 +121,7 @@ TAMChit* TAMCntuHit::GetHit(Int_t id)
    if (id >=0 && id < fListOfHits->GetEntriesFast()) {
       return (TAMChit*)fListOfHits->At(id);
    } else {
-      cout << Form("Wrong sensor number %d\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }
@@ -135,7 +135,7 @@ const TAMChit* TAMCntuHit::GetHit(Int_t id) const
    if (id >=0 && id < fListOfHits->GetEntriesFast()) {
       return (TAMChit*)fListOfHits->At(id);
    } else {
-      Error("GetPixel()", "Wrong sensor number %d\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }

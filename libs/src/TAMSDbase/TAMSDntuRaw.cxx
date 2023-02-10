@@ -121,7 +121,7 @@ TAMSDntuRaw::~TAMSDntuRaw()
 //! \param[in] iSensor sensor id
 Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
+   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN())
 	  return GetStrips(iSensor)->GetEntriesFast();
    else {
 	  Error("GetStripsN()","Wrong sensor number %d\n", iSensor);
@@ -135,7 +135,7 @@ Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuRaw::GetStrips(Int_t iSensor) const
 { 
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN())
+   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN())
 	  return (TClonesArray*)fListOfStrips->At(iSensor);
    else {
 	  Error("GetStrips()","Wrong sensor number %d\n", iSensor);
@@ -151,10 +151,10 @@ TClonesArray* TAMSDntuRaw::GetStrips(Int_t iSensor) const
 //! \param[in] iStrip strip index
 const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
 {
-   if (iStrip >=0 || iStrip < GetStripsN(iSensor))
+   if (iStrip >=0 && iStrip < GetStripsN(iSensor))
 	  return (TAMSDrawHit*)GetStrips(iSensor)->At(iStrip);
    else {
-	  Error("GetStrips()","Wrong sensor number %d\n", iSensor);
+	  Error("GetStrip()","Wrong sensor number %d\n", iSensor);
 	  return 0x0;
    }
 }
@@ -166,7 +166,7 @@ const TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip) const
 //! \param[in] iStrip strip index
 TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
 {
-   if (iStrip >=0 || iStrip < GetStripsN(iSensor))
+   if (iStrip >=0 && iStrip < GetStripsN(iSensor))
 	  return (TAMSDrawHit*)GetStrips(iSensor)->At(iStrip);
    else {
 	  Error("GetStrip()","Wrong sensor number %d\n", iSensor);
@@ -183,7 +183,7 @@ TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
 //! \param[in] value raw measured charge
 TAMSDrawHit* TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double_t value)
 {
-   if (sensor >= 0  || sensor < fpGeoMap->GetSensorsN()) {
+   if (sensor >= 0  && sensor < fpGeoMap->GetSensorsN()) {
 	  TClonesArray &stripArray = *GetStrips(sensor);
 	  return new(stripArray[stripArray.GetEntriesFast()]) TAMSDrawHit(sensor, view, strip, value);
    } else {

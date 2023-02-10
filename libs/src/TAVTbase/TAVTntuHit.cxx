@@ -68,7 +68,7 @@ Int_t TAVTntuHit::GetPixelsN(Int_t iSensor) const
 //! \param[in] iSensor sensor index
 TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor)
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = (TClonesArray*)fListOfPixels->At(iSensor);
       return list;
    } else {
@@ -83,7 +83,7 @@ TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor)
 //! \param[in] iSensor sensor index
 TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = (TClonesArray*)fListOfPixels->At(iSensor);
       return list;
    } else {
@@ -99,11 +99,11 @@ TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor) const
 //! \param[in] iPixel pixel index
 TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel)
 {
-   if (iPixel >=0 || iPixel < GetPixelsN(iSensor)) {
+   if (iPixel >=0 && iPixel < GetPixelsN(iSensor)) {
       TClonesArray* list = GetListOfPixels(iSensor);
       return (TAVThit*)list->At(iPixel);
    } else {
-      Error("GetPixel()", "Wrong sensor number %d\n", iSensor);
+      Error("GetPixel()", "Wrong sensor %d or pixel %d\n", iSensor, iPixel);
       return 0x0;
    }
 }
@@ -115,11 +115,11 @@ TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel)
 //! \param[in] iPixel pixel index
 const TAVThit* TAVTntuHit::GetPixel(Int_t iSensor, Int_t iPixel) const
 {
-   if (iPixel >=0 || iPixel < GetPixelsN(iSensor)) {
+   if (iPixel >=0 && iPixel < GetPixelsN(iSensor)) {
       TClonesArray* list = GetListOfPixels(iSensor);
       return (TAVThit*)list->At(iPixel);
    } else {
-      Error("GetPixel()", "Wrong sensor number %d\n", iSensor);
+      Error("GetPixel()", "Wrong sensor %d or pixel %d\n", iSensor, iPixel);
       return 0x0;
    }
 }
@@ -162,7 +162,7 @@ void TAVTntuHit::Clear(Option_t*)
 //! \param[in] aColumn column number
 TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn)
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray &pixelArray = *GetListOfPixels(iSensor);
       std::pair<int, int> idx(aLine, aColumn);
       
