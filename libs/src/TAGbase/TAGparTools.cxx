@@ -504,9 +504,10 @@ TString TAGparTools::Normalize(const char* line)
       return rv;
    
    while ( rv[rv.Length()-1] == ' ' || rv[rv.Length()-1] == '\t') {
-      if (rv.Length() <= 1)
-         return rv;
-      rv.Remove(rv.Length()-1,1);
+      if (rv.Length() >= 1) {
+         rv.Remove(rv.Length()-1,1);
+         if (rv.Length() <= 0) return rv;
+      }
    }
 
    Ssiz_t i(0);
