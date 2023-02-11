@@ -58,6 +58,7 @@ private:
    TString         fName;           ///< Campaign name
    TArrayI         fRunArray;       ///< Run array
    TypeParameter_t fCurType;        ///< Current type parameter
+   RunParameter_t  fCurRun;         ///< Current run parameter
 
    map<int, TypeParameter_t> fTypeParameter; ///< Run type parameter
    map<int, RunParameter_t>  fRunParameter; ///< Run type parameter
@@ -81,8 +82,11 @@ public:
    //! Set run number
    void                 SetRunNumber(Int_t run)        { fRunNumber = run ;          }
 
-   //! Get Current type
+   //! Get Current type parameter
    TypeParameter_t      GetCurrentType()         const { return fCurType ;           }
+   
+   //! Get Current run parameter
+   RunParameter_t       GetCurrentRun()          const { return fCurRun ;            }
    
    //! Get parameter for a given run type
    TypeParameter_t&     GetTypePar(Int_t idx)          { return fTypeParameter[idx]; }
@@ -97,13 +101,16 @@ public:
    // Print out informations
    void                 Print(Option_t* opt = "") const;
    
+   // output stream for TypeParameter_t
+   friend ostream&      operator<< (ostream& out,  const TypeParameter_t& type);
+   // output stream for RunParameter_t
+   friend ostream&      operator<< (ostream& out,  const RunParameter_t& run);
+
 private:
    // Decode type info
    void DecodeTypeLine(TString& line);
    // Decode run info
    void DecodeRunLine(TString& line);
-   // Smart print
-   TString SmartPrint(Int_t nb, Int_t sep = 1000) const;
 
 private:
    static const TString fgkDefaultActName;  ///< Default action name
@@ -118,6 +125,9 @@ public:
    //! Get default extension name
    static const Char_t* GetDefaultExt()     { return fgkDefaultExt.Data();     }
    
+   // Smart print
+   static  TString SmartPrint(Int_t nb, Int_t sep = 1000);
+
    ClassDef(TAGrunManager,1)
 };
 

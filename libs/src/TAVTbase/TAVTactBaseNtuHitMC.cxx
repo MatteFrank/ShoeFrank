@@ -37,7 +37,7 @@ using namespace std;
 //! Class imp
 ClassImp(TAVTactBaseNtuHitMC);
 
-Bool_t  TAVTactBaseNtuHitMC::fgPileup          = true;
+Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
 Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 1.736; // ajust for GSI (not enough)
 Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
 Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;

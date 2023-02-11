@@ -45,6 +45,7 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   npure = 0;
   nclean = 0;
   ntracks = 0;
+  recoEvents = 0;
   fFlagMC = isMC;
   purity_cut=0.51;
   clean_cut=1.;
@@ -97,8 +98,9 @@ void GlobalRecoAna::LoopEvent() {
 
     Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
+    if (nt > 0) recoEvents++;
 
-    TAGWDtrigInfo* wdTrig = 0x0;
+          TAGWDtrigInfo *wdTrig = 0x0;
     if (fFlagMC ==false){
       wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
       FragTriggerStudies();
@@ -1034,10 +1036,25 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + ALLTW FIX : i don't want not fragmented primary
-  if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {
-    if (Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/){
-      FillYieldReco("yield-trkcutsMC",Z_true,Z_meas,Th_true );
-      ((TH1D*)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
+
+  // check del TAGpoint del TW
+  for (int ic = 0; ic < fGlbTrack->GetPointsN(); ic++)
+  { // from all the points of the track...
+    TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
+    TString str = tmp_poi->GetDevName();
+    if (str.Contains(TATWparGeo::GetBaseName()))
+    { //...i just want the TAGPOINT of TW
+      if (tmp_poi->GetMcTracksN() == 1)
+      { // if there is no ghost hits in the TW
+        if (tmp_poi->GetMcTrackIdx(0) == fGlbTrack->GetMcMainTrackId())
+        { // if there is match of MCId
+          if (Z_true > 0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
+          {
+             FillYieldReco("yield-trkcutsMC", Z_true, Z_meas, Th_true);
+             ((TH1D *)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
+          }
+        }
+      }
     }
   }
 
@@ -2336,17 +2353,18 @@ void GlobalRecoAna::AfterEventLoop(){
     }else {  // real data
       luminosity_name = "luminosityREAL";
     }
-  h = new TH1D(luminosity_name.c_str(),"",1, 0. ,1.);
-  ((TH1D*)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1,Ntg*nTotEv  );
+    h = new TH1D(luminosity_name.c_str(), "", 1, 0., 1.);
+    ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * recoEvents);
+    cout << "Reconstructed events: " << recoEvents << endl;
 
-
-  //study efficiency of MB trigger
-  if (fFlagMC == false) {
-     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))
-     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))
-//TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
-    ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency")) -> Divide(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB")));
-    ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_RejectPower")) ->SetBinContent(1,(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->GetEntries() /((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))->GetEntries() )  );
+    // study efficiency of MB trigger
+    if (fFlagMC == false)
+    {
+      //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))
+      //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))
+      // TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
+      ((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency"))->Divide(((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMB")));
+      ((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMBFrag_RejectPower"))->SetBinContent(1, (((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->GetEntries() / ((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMB"))->GetEntries()));
   }
 
 

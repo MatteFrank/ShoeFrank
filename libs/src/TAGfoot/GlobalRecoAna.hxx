@@ -127,6 +127,7 @@ class GlobalRecoAna : public LocalReco {
   Int_t ntracks;
   Int_t nTotEv;  //total number of events (-nev flag)
   Int_t currEvent;
+  Int_t recoEvents; // events in whick global tracks are created
 
   vector<pair<Int_t,Int_t>> pure_track_xcha;    //vector index = particle charge; first=npure; second=ntracks
 
