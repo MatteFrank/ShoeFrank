@@ -121,8 +121,6 @@ public:
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
     //! MSD tracking
     Bool_t IsMsdTracking()       const { return fEnableMsdTrack;      }
-    //! MSD pedestal run
-    Bool_t IsMsdPedestal()       const { return fEnableMsdPed;        }
     //! ITR tracking
     Bool_t IsItrTracking()       const { return fEnableItrTrack;      }
     //! TW Calibration flag
@@ -183,11 +181,6 @@ public:
     void EnableMsdTrack()              {  fEnableMsdTrack = true;     }
     //! Disable MSD tracking
     void DisableMsdTrack()             {  fEnableMsdTrack = false;    }
-   
-   //! Enable MSD pedestal
-   void EnableMsdPedestal()            {  fEnableMsdPed = true;       }
-   //! Disable MSD pedestal
-   void DisableMsdPedestal()           {  fEnableMsdPed = false;      }
    
     //! Enable ITR tracking
     void EnableItrTrack()              {  fEnableItrTrack = true;     }
@@ -290,7 +283,6 @@ private:
    Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
    Bool_t               fEnableRegionMc;        ///< Enable MC region reading
    Bool_t               fEnableMsdTrack;        ///< Enable MSD tracking
-   Bool_t               fEnableMsdPed;          ///< Enable MSD pedestal run
    Bool_t               fEnableItrTrack;        ///< Enable ITR tracking
 
    Bool_t               fIncludeST;             ///< Include STC

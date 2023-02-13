@@ -211,12 +211,7 @@ public:
    void EnableMsdTracking()    { fFlagMsdTrack = true;    }
    //! Disable MSD tracking
    void DisableMsdTracking()   { fFlagMsdTrack = false;   }
-   
-   //! Enable MSD pedestal
-   void EnableMsdPedestal()    { fFlagMsdPed = true;    }
-   //! Disable MSD pedestal
-   void DisableMsdPedestal()   { fFlagMsdPed = false;   }
-   
+      
    //! Enable ITR tracking
    void EnableItrTracking()    { fFlagItrTrack = true;    }
    //! Disable ITR tracking
@@ -504,7 +499,6 @@ protected:
    Bool_t                fFlagHits;         ///< flag to save hits in tree
    Bool_t                fFlagHisto;        ///< flag for histo generatiom
    Bool_t                fFlagTrack;        ///< flag for tracking
-   Bool_t                fFlagMsdPed;       ///< flag for MSD pedestal run
    Bool_t                fFlagMsdTrack;     ///< flag for MSD tracking
    Bool_t                fFlagItrTrack;     ///< flag for ITR tracking
    Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar

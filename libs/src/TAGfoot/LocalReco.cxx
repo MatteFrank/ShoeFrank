@@ -158,9 +158,6 @@ void LocalReco::CreateRawAction()
 
    if (TAGrecoManager::GetPar()->IncludeMSD()  && !fgStdAloneFlag) {
       
-      if (fFlagMsdPed) 
-         TAMSDactNtuRaw::EnablePedRun();
-      
       fpDatRawMsd   = new TAGdataDsc("msdDat", new TAMSDntuRaw());
       fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd, fpParConfMsd);
       if (fFlagHisto)

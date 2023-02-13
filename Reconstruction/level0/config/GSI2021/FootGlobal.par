@@ -57,7 +57,6 @@ EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
 EnableMsdTrack:      n
-EnableMsdPed:        n
 EnableSaveHits:      n
 EnableRootObject:    y
 EnableTWZmc:         n
