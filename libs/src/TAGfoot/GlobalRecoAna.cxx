@@ -69,7 +69,7 @@ void GlobalRecoAna::LoopEvent() {
 
   if(FootDebugLevel(1))
     cout<<"GlboalRecoAna::LoopEvent start"<<endl;
-  if (fSkipEventsN>0) 
+  if (fSkipEventsN>0)
   {
   currEvent=fSkipEventsN;
   nTotEv+=  fSkipEventsN;
@@ -85,7 +85,7 @@ void GlobalRecoAna::LoopEvent() {
     SelectionCuts();
 
 
-    
+
     ClustersPositionStudy();
 
     int evtcutstatus=ApplyEvtCuts();
@@ -94,7 +94,7 @@ void GlobalRecoAna::LoopEvent() {
       ++currEvent;
       continue;
     }
-      
+
 
     Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
@@ -261,7 +261,7 @@ void GlobalRecoAna:: Booking(){
     h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","Z_truevsZ_reco_TWGhostHitsRemoved;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
     h2  = new TH2D("Z_truevsZ_reco_All","Z_truevsZ_reco_All;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
 
-    
+
     gDirectory->cd("..");
   }
 
@@ -815,7 +815,7 @@ for(int i=1; i<=5; i++){
   //theta Mig Matrix
 
     gDirectory->mkdir("theta_MigMat");
-    gDirectory->cd("theta_MigMat"); 
+    gDirectory->cd("theta_MigMat");
     for(int iz=1; iz<=primary_cha; iz++){
     string name = "Z_" + to_string(iz-1) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
     gDirectory->mkdir(name.c_str());
@@ -824,7 +824,7 @@ for(int i=1; i<=5; i++){
     h2 = new TH2D(name_h2.c_str(), "Theta Migration Matrix; theta_true; theta_reco",10,0.,10.,10,0.,10.);
     gDirectory->cd("..");
     }
-    gDirectory->cd(".."); 
+    gDirectory->cd("..");
 
 
 
@@ -1078,8 +1078,8 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
     string name_ = "yield-trkREAL";
     name_ += name[pos-1];
     FillYieldReco(name_.c_str(),Z_meas,0,Th_recoBM );
-    
-    
+
+
 
 
 
@@ -1169,8 +1169,8 @@ void GlobalRecoAna::MCParticleStudies() {
   auto finalPos = particle-> GetFinalPos();
   int baryon = particle->GetBaryon();
   TVector3 initMom = particle->GetInitP();
-  double InitPmod = pow( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2), 0.5 );
-  Float_t Ek_tr_tot = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass );
+  double InitPmod = sqrt( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2));
+  Float_t Ek_tr_tot = ( sqrt( pow(InitPmod,2) + pow(mass,2)) - mass );
   Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
   Float_t Ek_true = Ek_tr_tot / (double)baryon;
   Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());   // in deg
@@ -2279,8 +2279,8 @@ void GlobalRecoAna::BeforeEventLoop(){
 
   if(FootDebugLevel(1))
     cout<<"GlobalRecoAna::BeforeEventLoop start"<<endl;
-  
-  
+
+
   ReadParFiles();
   CampaignChecks();
   SetupTree();
@@ -2291,7 +2291,7 @@ void GlobalRecoAna::BeforeEventLoop(){
      }
 
   file_out = new TFile(GetTitle(),"RECREATE");
-  
+
   cout<<"Going to create "<<GetTitle()<<" outfile "<<endl;
 //  SetRunNumber(runNb); //serve veramente?
   //  myReader->GetTree()->Print();
@@ -2767,8 +2767,8 @@ void GlobalRecoAna::TWAlgoStudy(){
     int type = mctrk1->GetType();
     int baryon = mctrk1->GetBaryon();
     int dead = mctrk1->GetDead();
-    double InitPmod = pow( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2), 0.5 );
-    double Ekin_point = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass )/(double)baryon*1000.;
+    double InitPmod = sqrt( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2) );
+    double Ekin_point = ( sqrt( pow(InitPmod,2) + pow(mass,2)) - mass )/(double)baryon*1000.;
     double CosTheta = initMom(2)/InitPmod;
     double Theta = TMath::ACos(CosTheta)*180./TMath::Pi();
     int indexSize = twp->GetMcTracksN();
@@ -2933,7 +2933,7 @@ for(int it=0;it<myGlb->GetTracksN();it++){ // for every track
   if (N_TrkIdMC_TW == 1) {      //stampa solo se non c'è gosh hits
       ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);
   }
-  
+
   ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_All"))->Fill(Z_true,Z_meas); //stampa senza misreco-cuts
 
 }
@@ -2952,8 +2952,8 @@ auto  Mid = particle->GetMotherID();
             auto finalPos = particle-> GetFinalPos();
             int baryon = particle->GetBaryon();
             TVector3 initMom = particle->GetInitP();
-            double InitPmod = pow( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2), 0.5 );
-            Float_t Ek_tr_tot = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass );
+            double InitPmod = sqrt( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2) );
+            Float_t Ek_tr_tot = sqrt( pow(InitPmod,2) + pow(mass,2)) - mass;
             Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
             Float_t Ek_true = Ek_tr_tot / (double)baryon;
             Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());   // in deg
@@ -3625,11 +3625,11 @@ bool GlobalRecoAna::SelectionCuts(){
   bool categorize_VTBMmatching = false;
 	bool categorize_TWdist = false;
   TAVTvertex* vtxPD   = 0x0; //NEW
-  
+
 //1) The event has at least one TWpoint
 if (myTWNtuPt->GetPointsN()==0){
   categorize_TWpoint = false;
-} 
+}
   else {
   categorize_TWpoint = true;
   }
@@ -3656,7 +3656,7 @@ if (categorize_BMtrack == true && categorize_VTvtx == true ){
 		}
 		else if(!vtxPD->IsBmMatched() ){
 			  continue;
-		} 
+		}
     else {
       categorize_VTBMmatching = true;
     }
@@ -3667,7 +3667,7 @@ categorize_VTBMmatching = false;
 
 
 
-	
+
 
 ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(1,1);   // all events
 if (categorize_TWpoint) ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(2,1);
