@@ -17,8 +17,29 @@
 
 //! \brief Default constructor for GenFit Kalman fitter
 TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGaction(name, "TAGactKFitter - Global GenFit Tracker"),
-		fpGlobTrackRepo(outTrackRepo),
-		m_IsMC(false) {
+fpGlobTrackRepo(outTrackRepo),
+m_fitter(0x0),
+m_fitter_extrapolation(0x0),
+m_dafRefFitter(0x0),
+m_dafSimpleFitter(0x0),
+m_trueParticleRep(0x0),
+m_outTrackRepo(0x0),
+m_SensorIDMap(0x0),
+m_trackAnalysis(0x0),
+m_measParticleMC_collection(0x0),
+m_ST_geo(0x0),
+m_BM_geo(0x0),
+m_TG_geo(0x0),
+m_DI_geo(0x0),
+m_VT_geo(0x0),
+m_IT_geo(0x0),
+m_MSD_geo(0x0),
+m_TW_geo(0x0),
+m_CA_geo(0x0),
+m_TopVolume(0x0),
+m_GeoTrafo(0x0),
+m_IsMC(false)
+{
 
 	AddDataOut(outTrackRepo, "TAGntuGlbTrack");
 
@@ -95,6 +116,10 @@ TAGactKFitter::TAGactKFitter (const char* name, TAGdataDsc* outTrackRepo) : TAGa
 	m_singleVertexCounter = 0;
 	m_noVTtrackletEvents = 0;
 	m_noTWpointEvents = 0;
+	m_SCpileUpEvts = 0;
+
+	m_eventDisplayCounter = 0;
+	m_CALOextrapTolerance = 5;
 }
 
 
@@ -118,8 +143,7 @@ TAGactKFitter::~TAGactKFitter() {
 	delete m_dafRefFitter;
 	delete m_dafSimpleFitter;
 
-	delete m_trueParticleRep;
-	// delete m_outTrackRepo;
+	// delete m_trueParticleRep;
 	delete m_SensorIDMap;
 	delete m_trackAnalysis;
 
@@ -148,7 +172,7 @@ TAGactKFitter::~TAGactKFitter() {
 void TAGactKFitter::SetMcSample()
 {
 	m_IsMC = true;
-	m_trueParticleRep = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+	m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
 }
 
 
@@ -161,7 +185,7 @@ void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
 
 	for( map<string, int>::iterator it = mappa.begin(); it != mappa.end(); ++it )	{
 
-		if ( m_genCount_vector.find( (*it).first ) == m_genCount_vector.end() )
+		if ( m_genCount_vector.size() < 1 || m_genCount_vector.find( (*it).first ) == m_genCount_vector.end() )
 			m_genCount_vector[ (*it).first ] = 0;
 
 		m_genCount_vector.at( (*it).first ) += (*it).second;
@@ -183,19 +207,31 @@ Bool_t TAGactKFitter::Action()	{
 
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
 
-	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
+	m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
 
-	TAGFuploader* m_uploader = new TAGFuploader( m_SensorIDMap );
+	//Check if ST signlaed a pile-up
+	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc("stDat", "TASTntuRaw")->Object())->GetSuperHit()->GetPileUp() )
+	{
+		if( m_debug > 0 )
+			Info("Action()", "Event %ld flagged as pile-up from the SC! Skipping...", evNum);
 
+		m_SCpileUpEvts++;
+		fpGlobTrackRepo->SetBit(kValid);
+		return true;
+	}
+
+	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  start!" << endl;
+	
+	//Declare uploader -> get measurements in genfit format
+	TAGFuploader* m_uploader = new TAGFuploader( m_SensorIDMap, m_IsMC );
 	m_uploader->TakeMeasHits4Fit( m_allHitMeasGF );
 	vector<int> chVect;
 	m_uploader->GetPossibleCharges( &chVect, m_IsMC );
 
 	if ( m_IsMC ) {
-		m_measParticleMC_collection = *(m_uploader->TakeMeasParticleMC_Collection());
+		m_measParticleMC_collection = m_uploader->TakeMeasParticleMC_Collection();
 		m_numGenParticle_noFrag += m_uploader->GetNumGenParticle_noFrag();
 	}
-
 	if(m_debug > 0)	{
 		cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
 		cout << "Plane\tN. hits" << endl;
@@ -203,8 +239,8 @@ Bool_t TAGactKFitter::Action()	{
 			cout << it->first << "\t" << it->second.size() << endl;
 	}
 
-	// TAGFselectorBase* m_selector = new TAGFselectorBase(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents);
-	TAGFselectorBase* m_selector;
+	//Declare selector object
+	TAGFselectorBase* m_selector = 0x0;
 	if (TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle")
 	{
 		if (!m_IsMC)
@@ -220,8 +256,12 @@ Bool_t TAGactKFitter::Action()	{
 	else
 		Error("TAGactKFitter::Action()", "TAGrecoManager::GetPar()->PreselectStrategy() not defined"), exit(0);
 
-	m_selector->SetVariables(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, &m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents, &m_noTWpointEvents);
+	if( !m_selector )
+		Error("TAGactKFitter::Action()", "Error in TAGFselector construction, aborting..."), exit(0);
+	
+	m_selector->SetVariables(&m_allHitMeasGF, &chVect, m_SensorIDMap, &m_mapTrack, m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents, &m_noTWpointEvents);
 
+	//Find track candiadates and fit them
 	if (m_selector->FindTrackCandidates() >= 0)
 	{
 
@@ -232,25 +272,28 @@ Bool_t TAGactKFitter::Action()	{
 
 		MakeFit(evNum, m_selector);
 	}
+
+	//Check if global tracks match w/ any CALO cluster
+	if( TAGrecoManager::GetPar()->IncludeCA() )
+		MatchCALOclusters();
+
 	if( TAGrecoManager::GetPar()->IsSaveHisto() )
 	{
 		m_selector->FillPlaneOccupancy(h_PlaneOccupancy);
 		h_GFeventType->Fill(m_selector->GetEventType());
 	}
 
+	//Clear
 	chVect.clear();
 
-	delete m_selector;
 	delete m_uploader;
+	delete m_selector;
 
 	fpGlobTrackRepo->SetBit(kValid);
+	if(m_debug > 0) cout << "TAGactKFitter::Action()  -> end! " << endl;
 	return true;
 
 }
-
-
-
-
 
 
 
@@ -279,18 +322,18 @@ void TAGactKFitter::Finalize() {
 	if( ValidHistogram() )
 	{
 		// map<string, map<float, TH1F*> > h_dPOverP_x_bin
-		for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); collIt++ )
-			for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); it++ ) {
+		for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); ++collIt )
+			for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); ++it ) {
 				AddHistogram( (*it).second );
 				cout << "TAGactKFitter::Finalize() -- " << (*it).second->GetTitle()<< endl;
 			}
 
 		// map<string, TH1F*>* h_resoP_over_Pkf
-		for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); it++ )
+		for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); ++it )
 			AddHistogram( (*it).second );
 
 		// map<string, TH1F*>* h_biasP_over_Pkf
-		for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); it++ )
+		for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it )
 			AddHistogram( (*it).second );
 
 		TH1F* h_deltaP_tot = new TH1F();
@@ -298,7 +341,7 @@ void TAGactKFitter::Finalize() {
 
 		// map<string, TH1F*>* h_deltaP
 		int count = 0;
-		for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); it++ ) {
+		for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); ++it ) {
 			if ( count == 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
 			else 				h_deltaP_tot->Add( (*it).second, 1 );
 			AddHistogram( (*it).second );
@@ -309,7 +352,7 @@ void TAGactKFitter::Finalize() {
 
 		// map<string, TH1F*>* h_sigmaP
 		count=0;
-		for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); it++ ) {
+		for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); ++it ) {
 			if ( count == 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
 			else 				h_sigmaP_tot->Add( (*it).second, 1 );
 			AddHistogram( (*it).second );
@@ -330,9 +373,10 @@ void TAGactKFitter::Finalize() {
 		SetHistogramDir(fDirectory);
 	}
 
-	cout << "Single vertex events::" << m_singleVertexCounter << endl;
-	cout << "Events w/out valid VT tracklets::" << m_noVTtrackletEvents << endl;
-	cout << "Events w/out valid TW point::" << m_noTWpointEvents << endl;
+	cout << "Single vertex events::" << m_singleVertexCounter << "\n";
+	cout << "Events w/ pile-up in the SC::" << m_SCpileUpEvts << "\n";
+	cout << "Events w/out valid VT tracklets::" << m_noVTtrackletEvents << "\n";
+	cout << "Events w/out valid TW point::" << m_noTWpointEvents << "\n";
 
 	//show event display
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() )
@@ -423,34 +467,34 @@ void TAGactKFitter::CreateGeometry()  {
 
 	// take geometry objects
 	if (TAGrecoManager::GetPar()->IncludeST())
-		m_ST_geo = shared_ptr<TASTparGeo> ( (TASTparGeo*) gTAGroot->FindParaDsc("stGeo", "TASTparGeo")->Object() );
+		m_ST_geo = static_cast<TASTparGeo*> ( gTAGroot->FindParaDsc("stGeo", "TASTparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeBM())
-		m_BM_geo = shared_ptr<TABMparGeo> ( (TABMparGeo*) gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object() );
+		m_BM_geo = static_cast<TABMparGeo*> ( gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeTG())
-		m_TG_geo = shared_ptr<TAGparGeo> ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() );
+		m_TG_geo = static_cast<TAGparGeo*> ( gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeDI())
-		m_DI_geo = shared_ptr<TADIparGeo> ( (TADIparGeo*) gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
+		m_DI_geo = static_cast<TADIparGeo*> ( gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeVT() )
-		m_VT_geo = shared_ptr<TAVTparGeo> ( (TAVTparGeo*) gTAGroot->FindParaDsc("vtGeo", "TAVTparGeo")->Object() );
+		m_VT_geo = static_cast<TAVTparGeo*> ( gTAGroot->FindParaDsc("vtGeo", "TAVTparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeIT() )
-		m_IT_geo = shared_ptr<TAITparGeo> ( (TAITparGeo*) gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
+		m_IT_geo = static_cast<TAITparGeo*> ( gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeMSD() )
-		m_MSD_geo = shared_ptr<TAMSDparGeo> ( (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
+		m_MSD_geo = static_cast<TAMSDparGeo*> ( gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeTW() )
-		m_TW_geo = shared_ptr<TATWparGeo> ( (TATWparGeo*) gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
+		m_TW_geo = static_cast<TATWparGeo*> ( gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeCA())
-		m_CA_geo = shared_ptr<TACAparGeo> ( (TACAparGeo*) gTAGroot->FindParaDsc("caGeo", "TACAparGeo")->Object() );
+		m_CA_geo = static_cast<TACAparGeo*> ( gTAGroot->FindParaDsc("caGeo", "TACAparGeo")->Object() );
 
 
-  m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+  m_GeoTrafo = static_cast<TAGgeoTrafo*> ( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()) );
 
 
   //set the stage for TGeoManagerInterface class of GenFit
@@ -505,6 +549,7 @@ void TAGactKFitter::CreateGeometry()  {
 		genfit::SharedPlanePtr detectorplane(targetPlane);
 		m_SensorIDMap->AddFitPlane(-42, detectorplane);
 		m_SensorIDMap->AddFitPlaneIDToDet(-42, "TG");
+		delete targetPlane;
 	}
 
 	// Vertex
@@ -598,12 +643,11 @@ void TAGactKFitter::CreateGeometry()  {
 				m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
 				m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "IT");
 				++indexOfPlane;
-				if( m_debug > 1 )
-					cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 
 				// Some debug print-outs for geometry
 				if(m_debug > 1)
 				{
+					cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 					cout << "IT sensor::" << i << endl;
 					cout << "origin::"; origin_.Print();
 					cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
@@ -817,7 +861,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 		}
 
 		// map of the number of converged tracks for each track hypothesis
-		if ( m_nSelectedTrackCandidates.find( PartName ) == m_nSelectedTrackCandidates.end() )	m_nSelectedTrackCandidates[ PartName ] = 0;
+		if ( m_nSelectedTrackCandidates.size() <1 || m_nSelectedTrackCandidates.find( PartName ) == m_nSelectedTrackCandidates.end() )
+			m_nSelectedTrackCandidates[ PartName ] = 0;
 		m_nSelectedTrackCandidates[ PartName ]++;
 
 		if(m_debug > 0)	{
@@ -884,7 +929,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 			if ( (TAGrecoManager::GetPar()->Chi2Cut() < 0) || ( m_refFitter->getRedChiSqu(fitTrack, fitTrack->getCardinalRep()) <= TAGrecoManager::GetPar()->Chi2Cut() ) ) {
 				NconvTracks++;
 
-				if ( m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )	m_nConvergedTracks_all[ PartName ] = 0;
+				if ( m_nConvergedTracks_all.size() < 1 || m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )
+					m_nConvergedTracks_all[ PartName ] = 0;
 				m_nConvergedTracks_all[ PartName ]++;
 
 				RecordTrackInfo( fitTrack, newTrackName );
@@ -901,7 +947,12 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 	}	// end  - loop over all hit category
 
 	if( TAGrecoManager::GetPar()->IsSaveHisto() )
-		h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
+	{
+		if( m_mapTrack.find("dummy") == m_mapTrack.end() )
+			h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
+		else
+			h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() - 1);
+	}
 
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
@@ -965,7 +1016,7 @@ void TAGactKFitter::MakePrefit() {
 void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 	if(m_debug > 0)		cout << "RECORD START" << endl;
-	TAGtrack* shoeOutTrack;
+	TAGtrack* shoeOutTrack(0x0);
 	bool hasTwPoint = false;
 	vector<TAGpoint*> shoeTrackPointRepo;
 	Int_t TwChargeZ = -1;
@@ -1074,7 +1125,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//End VTX; 
 
 	// start TW: extrap some mm after TW for fitted total energy loss
-	TVector3 recoPos_TW, recoMom_TW;
+	TVector3 recoPos_TW(0,0,0), recoMom_TW(0,0,0);
 	TMatrixD recoPos_TW_cov(3,3);
 	TMatrixD recoMom_TW_cov(3,3);
 	double energyOutTw = -1;
@@ -1162,8 +1213,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//Set additional variables
 	shoeOutTrack->SetTrackId(std::atoi(tok.at(2).c_str()));
 	shoeOutTrack->SetHasTwPoint(hasTwPoint);
-	shoeOutTrack->SetTwChargeZ(TwChargeZ);
-	shoeOutTrack->SetTwTof(TwTof);
+	if( hasTwPoint )
+	{
+		shoeOutTrack->SetTwChargeZ(TwChargeZ);
+		shoeOutTrack->SetTwTof(TwTof);
+	}
 	//Energy in GeV
 	shoeOutTrack->SetFitEnergy( energyAtTgt);
 	if(energyOutTw >= 0)
@@ -1171,9 +1225,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	
 	//Calculate emission angles wrt BM track
 	TVector3 TrackDir(-100,-100,-100);
-	if( ((TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
+	if( static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
 	{
-		TVector3 BMslope = ( (TABMntuTrack*) gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
+		TVector3 BMslope = static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
 		BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope).Unit();
 		shoeOutTrack->SetTgtThetaBm(BMslope.Angle( recoMom_target ));
 
@@ -1193,55 +1247,58 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		TVector3 mcMom, mcPos;
 
 		trackMC_id = FindMostFrequent( &mcParticleID_track );
-		// trackMC_id = track->getMcTrackId();     //???????
-
-		TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
-		mcMom = particle->GetInitP();
-		mcPos = particle->GetInitPos();
-		int mcCharge = particle->GetCharge();
-
-		if( ValidHistogram() )
+		//Check if track is mostly VT pile-up, if not go ahead
+		if(trackMC_id != -666) 
 		{
-			h_trackMC_true_id->Fill( trackMC_id );
-			h_mcMom->Fill( mcMom.Mag() );
-			h_mcPosX->Fill( mcPos.X() );
-			h_mcPosY->Fill( mcPos.Y() );
-			h_mcPosZ->Fill( mcPos.Z() );
-		}
+			// trackMC_id = track->getMcTrackId();     //???????
+			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
+			mcMom = particle->GetInitP();
+			mcPos = particle->GetInitPos();
+			int mcCharge = particle->GetCharge();
+
+			if( ValidHistogram() )
+			{
+				h_trackMC_true_id->Fill( trackMC_id );
+				h_mcMom->Fill( mcMom.Mag() );
+				h_mcPosX->Fill( mcPos.X() );
+				h_mcPosY->Fill( mcPos.Y() );
+				h_mcPosZ->Fill( mcPos.Z() );
+			}
+			if(m_debug > 0)
+			{
+				cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
+				cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
+			}
+
+			m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
+
+			m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
+
+			trackQuality = TrackQuality( &mcParticleID_track );
+			if(m_debug > 0) cout << "trackQuality::" << trackQuality << "\n";
 
 
-		if(m_debug > 0)
-		{
-			cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
-			cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
-		}
+			if ( mcCharge == fitCh && trackQuality > 0.7 ) {
+				if ( m_nConvergedTracks_matched.size() < 1 || m_nConvergedTracks_matched.find( PartName ) == m_nConvergedTracks_matched.end() )
+					m_nConvergedTracks_matched[ PartName ] = 0;
+				
+				m_nConvergedTracks_matched[ PartName ]++;
+			}
+			else
+			{
+				if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
+			}
 
-		m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
-
-		m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
-
-		trackQuality = TrackQuality( &mcParticleID_track );
-		if(m_debug > 0) cout << "trackQuality::" << trackQuality << "\n";
-
-
-		if ( mcCharge == fitCh && trackQuality > 0.7 ) {
-			if ( m_nConvergedTracks_matched.find( PartName ) == m_nConvergedTracks_matched.end() )	m_nConvergedTracks_matched[ PartName ] = 0;
-			m_nConvergedTracks_matched[ PartName ]++;
-		}
-		else
-		{
-			if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
-		}
-
-	//	shoeOutTrack->SetMCInfo( trackMC_id, trackQuality );
-		if( ValidHistogram() )
-		{
-			h_chargeMC->Fill( mcCharge );
-			h_trackQuality->Fill( trackQuality );
 			shoeOutTrack->SetQuality( trackQuality );
-			h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
-			h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
-			h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
+			if( ValidHistogram() )
+			{
+				h_chargeMC->Fill( mcCharge );
+				h_trackQuality->Fill( trackQuality );
+				shoeOutTrack->SetQuality( trackQuality );
+				h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
+				h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
+				h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
+			}
 		}
 
 		if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
@@ -1304,6 +1361,88 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		delete it;
 	shoeTrackPointRepo.clear();
 
+}
+
+
+
+//! \brief Find possible matching CALO clusters for global tracks w/ a converged Kalman Filter fit
+void TAGactKFitter::MatchCALOclusters()
+{
+	TACAntuCluster* caNtuCluster = (TACAntuCluster*) gTAGroot->FindDataDsc("caClus","TACAntuCluster")->Object() ;
+	if( caNtuCluster->GetClustersN() < 1 )
+	{
+		if( m_debug > 1)
+			Info("MatchCALOClusters()", "No CALO clusters to match in event %ld", (long)gTAGroot->CurrentEventId().EventNumber());
+		return;
+	}
+
+	double extrapDistZ, extrapDistZmatch;
+	double posDist,posDistMatch;
+	bool found;
+	TVector3 twPos, twDir;
+	TVector3 caPos, extrapPos;
+	TACAcluster* clus;
+	int matchIndex;
+
+	TAGtrack* track;
+	for(int iTrack = 0; iTrack < m_outTrackRepo->GetTracksN(); ++iTrack)
+	{
+		found = false;
+		track = m_outTrackRepo->GetTrack(iTrack);
+		if( !track->HasTwPoint() ) continue;
+
+		twPos = track->GetTwPosition();
+		twDir = track->GetTwMomentum();
+		twDir *= 1/twDir.Z();
+		posDistMatch = m_CALOextrapTolerance;
+
+		if( m_debug > 1 )
+		{
+			cout << "TW_POS::"; twPos.Print();
+			cout << "TW_DIR::"; twDir.Print();
+		}
+
+		for( int i=0; i<caNtuCluster->GetClustersN(); ++i )
+		{
+			clus = caNtuCluster->GetCluster(i);
+			if(m_debug > 1)
+			{
+				cout << "CLUS_ID::" << i << endl;
+				cout << "POS::"; clus->GetPosition().Print();
+				cout << "POSG::"; clus->GetPositionG().Print();
+				cout << "GLOB::"; m_GeoTrafo->FromCALocalToGlobal(clus->GetPositionG()).Print();
+			}
+			caPos = m_GeoTrafo->FromCALocalToGlobal( clus->GetPositionG() );
+
+			extrapDistZ =   ( twDir.X()*(caPos.X() - twPos.X())
+							+ twDir.Y()*(caPos.Y() - twPos.Y())
+							+ twDir.Z()*(caPos.Z() - twPos.Z()) )/(twDir.Mag2());
+			
+			extrapPos = twPos + extrapDistZ*twDir;
+			posDist = (extrapPos - caPos).Mag();
+
+			if( m_debug > 1 )
+			{
+				cout << "Extrap length::" << extrapDistZ << endl;
+				cout << "Extrap pos::"; extrapPos.Print();
+				cout << "Dist from cluster::" << posDist << endl;
+			}
+
+			if( posDist < posDistMatch)
+			{
+				if(m_debug > 1)
+					cout << "MATCHED ID::" << i << endl;
+
+				posDistMatch = posDist;
+				extrapDistZmatch = extrapDistZ;
+				found = true;
+				matchIndex = i;
+			}
+		}
+
+		if(found)
+			track->SetCALOmatchedClusterId(matchIndex);
+	}
 }
 
 
@@ -1399,7 +1538,7 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 	*iClus = m_SensorIDMap->GetHitIDFromMeasID( hitID );
 
 	if ( m_IsMC )
-		*iPart = m_measParticleMC_collection.at( hitID );
+		*iPart = m_measParticleMC_collection->at( hitID );
 
 }
 
@@ -1911,12 +2050,22 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 		m_NClusTrack.at( PlaneId )++;
 
 		bool good = false;
-		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection.at(MeasId).begin(); itTrackMC != m_measParticleMC_collection.at(MeasId).end(); ++itTrackMC)
+		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
 		{
-			TAMCpart* particle = m_trueParticleRep->GetTrack(*itTrackMC);
-			chargeMC = particle->GetCharge();
+			if(*itTrackMC == -666)
+			{
+				chargeMC = -666;
+			}
+			else
+			{
+				TAMCpart* particle = m_trueParticleRep->GetTrack(*itTrackMC);
+				// cout << particle << endl;
+				// if(!particle) continue;
+				chargeMC = particle->GetCharge();
+			}
+			if(m_debug > 0)	
+				cout << "Plane::" << PlaneId << "\tChargeHypo::" << chargeHypo << "\tMCCharge::" << chargeMC << "\tMeasId::" << MeasId << "\tMCTrackId::" << *itTrackMC << "\tflagGood::" << good << endl;
 
-			if(m_debug > 0)	cout << "Plane::" << PlaneId << "\tChargeHypo::" << chargeHypo << "\tMCCharge::" << chargeMC << "\tMeasId::" << MeasId << "\tMCTrackId::" << *itTrackMC << "\tflagGood::" << good << endl;
 
 			if(chargeHypo == chargeMC && !good)
 			{
@@ -2007,6 +2156,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 
 void TAGactKFitter::ClearData()
 {
+	m_outTrackRepo->Clear();
 	for(auto it = m_allHitMeasGF.begin(); it != m_allHitMeasGF.end(); ++it)
 	{
 		for(auto itvec : it->second)
@@ -2019,14 +2169,15 @@ void TAGactKFitter::ClearData()
 		delete it;
 	m_vectorConvergedTrack.clear();
 
-	if( m_IsMC )
-	{
-		for(auto it = m_measParticleMC_collection.begin(); it != m_measParticleMC_collection.end(); ++it)
-			it->second.clear();
-		m_measParticleMC_collection.clear();
-	}
+	// if( m_IsMC && m_measParticleMC_collection)
+	// {
+	// 	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
+	// 		it->second.clear();
+	// 	m_measParticleMC_collection->clear();
+	// }
+	m_measParticleMC_collection = 0x0;
 
-	for ( auto trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); trackIt++)
+	for ( auto trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt)
 		delete trackIt->second;
 	m_mapTrack.clear();
 

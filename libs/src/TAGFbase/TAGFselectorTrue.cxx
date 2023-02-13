@@ -42,11 +42,11 @@ void TAGFselectorTrue::Categorize( ) {
 	}
 
 	//Cycle on FitPlanes
-	if(m_debug > 0) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+	if(m_debug > 1) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
 	{
 
-		if(m_debug > 0) cout << "Plane::" << iPlane << "\n";
+		if(m_debug > 1) cout << "Plane::" << iPlane << "\n";
 		
 		//Skip plane if no hit was found
 		if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()){continue;}
@@ -61,7 +61,7 @@ void TAGFselectorTrue::Categorize( ) {
 			int MeasGlobId = (*itHit)->getHitId();
 
 			//Cycle on all the MC particles that created that cluster/measurement
-			if(m_debug > 0) cout << "Cycle on MC particles with GlobId::" << MeasGlobId << "\n";
+			if(m_debug > 1) cout << "Cycle on MC particles with GlobId::" << MeasGlobId << "\n";
 
 
 			TVector3 posV;		//global coord [cm]
@@ -69,6 +69,12 @@ void TAGFselectorTrue::Categorize( ) {
 			posV = TVector3(0,0,0);
 			for( vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasGlobId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasGlobId).end(); ++itTrackMC )
 			{
+				if(*itTrackMC == -666)
+				{
+					if(m_debug > 0)
+						cout << "Pile-up particle from VT!" << endl;
+					continue;
+				}
 				GetTrueParticleType(*itTrackMC, &flukaID, &charge, &mass, &posV, &momV );
 
 				TString outName, pdgName;

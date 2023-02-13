@@ -27,7 +27,7 @@ public:
                TVector3 i_ip,TVector3 i_fp);
 
 	virtual         ~TAMCpart();
-
+   virtual void    Clear();
    //! Get initial position
    TVector3         GetInitPos()      const { return fInitPos;        }
    //! Get initial momentum

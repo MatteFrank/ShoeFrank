@@ -38,7 +38,7 @@ public:
                       TAGcluster();
                       TAGcluster(const TAGcluster& cluster);
 
-   virtual           ~TAGcluster() {}
+   virtual           ~TAGcluster();
 
    //! Get validity
    Bool_t                   IsValid()          const { return fIsValid;       }

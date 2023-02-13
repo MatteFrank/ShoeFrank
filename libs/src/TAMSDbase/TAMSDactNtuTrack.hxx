@@ -7,6 +7,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TAVTactNtuTrack.hxx"
+#include "TAGrecoManager.hxx"
 
 class TAVTbaseParGeo;
 class TAVTbaseParConf;
@@ -20,7 +21,7 @@ public:
                               TAGparaDsc* p_config   = 0,
                               TAGparaDsc* p_geomap   = 0);
    virtual ~TAMSDactNtuTrack();
-   
+   Bool_t   Action() override;
 protected:
    void                     AddNewTrack(TAGbaseTrack* track);
    TAGbaseTrack*            NewTrack();

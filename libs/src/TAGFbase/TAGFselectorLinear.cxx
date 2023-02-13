@@ -24,7 +24,6 @@ TAGFselectorLinear::TAGFselectorLinear() : TAGFselectorStandard()
 //! \brief Base function for track finding/selection/categorization for linear data-like selection
 void TAGFselectorLinear::Categorize( ) {
 
-	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
 
 	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
 	{
@@ -32,30 +31,33 @@ void TAGFselectorLinear::Categorize( ) {
 		throw -1;
 	}
 	else
+	{
+		if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
 		CategorizeVT();
+		if( m_debug > 1 )cout << "******** END OF VT CYCLE **********\n";
+	}
 
-	if( m_debug > 1 ) cout << "******** END OF VT CYCLE **********\n";
-
-	if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
-	
 	if( m_systemsON.Contains("IT") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
 		CategorizeIT();
-	
-	if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
+		if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
+	}
 
-	if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
 	
 	if( m_systemsON.Contains("MSD") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
 		CategorizeMSD();
-	
-	if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
+		if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
+	}
 
-	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
-	
 	if( m_systemsON.Contains("TW") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
 		CategorizeTW();
-	
-	if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
+		if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
+	}
 
 	double dPVal = 1.E-3; // convergence criterion
 	KalmanFitter* preFitter = new KalmanFitter(1, dPVal);
@@ -103,13 +105,11 @@ void TAGFselectorLinear::Categorize( ) {
 //! This step is performed through a linear extrapolation at the MSD
 void TAGFselectorLinear::CategorizeMSD()
 {
-	int findMSD;
-
 	// Extrapolate to MSD
 	// same index if VTX_tracklets (for one vertex..)
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
 
-		findMSD=0;
+		int findMSD=0;
 
 		int maxMSDdetPlane = m_SensorIDMap->GetMaxFitPlane("MSD");
 		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
@@ -211,7 +211,7 @@ void TAGFselectorLinear::CategorizeTW()
 	}
 
 	// Extrapolate to TW
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++) 
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) 
 	{
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
 		int VTsensorId = m_SensorIDMap->GetSensorIDFromMeasID( firstTrackMeas->getHitId() );
@@ -228,8 +228,6 @@ void TAGFselectorLinear::CategorizeTW()
 		int indexOfMin = -1;
 		int count = 0;
 
-		double distInX, distInY;
-
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
 			if (  m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != planeTW )
@@ -241,8 +239,8 @@ void TAGFselectorLinear::CategorizeTW()
 			if( m_debug > 0) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< "\n";
 
 			if ( distanceFromHit < TWdistance )	{
-				distInX = guessOnTW.X() - (*it)->getRawHitCoords()(0);
-				distInY = guessOnTW.Y() - (*it)->getRawHitCoords()(1);
+				double distInX = guessOnTW.X() - (*it)->getRawHitCoords()(0);
+				double distInY = guessOnTW.Y() - (*it)->getRawHitCoords()(1);
 				TWdistance = distanceFromHit;
 				indexOfMin = count;
 			}

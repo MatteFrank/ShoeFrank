@@ -161,7 +161,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 
     TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, y, position );
     return point;
   } else {
-    cout << Form("Wrong sensor number %d\n", iStation);
+    Error("NewPoint()", "Wrong station number %d\n", iStation);
     return 0x0;
   }
 }
@@ -183,7 +183,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, TAMSDcluster* clusX, TAMSDcl
       TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, clusX, clusY);
       return point;
    } else {
-      cout << Form("Wrong sensor number %d\n", iStation);
+      Error("NewPoint()", "Wrong station number %d\n", iStation);
       return 0x0;
    }
 }
@@ -195,13 +195,13 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, TAMSDcluster* clusX, TAMSDcl
 //! \param[in] iStation station id
 TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
 {
-   if (iStation >= 0  || iStation < fGeometry->GetStationsN()) {
+   if (iStation >= 0  && iStation < fGeometry->GetStationsN()) {
       TClonesArray &pointArray = *GetListOfPoints(iStation);
       TAMSDpoint* pt = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint(*point);
       pt->SetClusterIdx(pointArray.GetEntriesFast()-1);
       return pt;
    } else {
-      cout << Form("Wrong sensor number %d\n", iStation);
+      Error("NewPoint()", "Wrong station number %d\n", iStation);
       return 0x0;
    }
 }

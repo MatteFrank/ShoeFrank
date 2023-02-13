@@ -228,7 +228,7 @@ void TAVTactBaseNtuHitMC::FillPileup(vector<RawMcHit_t>& storedEvtInfo, TAMChit*
    mcHit.y   = posIn.Y();
    mcHit.zi  = posIn.Z();
    mcHit.zo  = posOut.Z();
-   mcHit.tkid = trackIdx;
+   mcHit.tkid = -666;// trackIdx;
    mcHit.htid = hitIdx;
    storedEvtInfo.push_back(mcHit);
 }

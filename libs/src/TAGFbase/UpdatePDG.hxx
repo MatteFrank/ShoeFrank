@@ -38,7 +38,7 @@ public:
   int GetPdgCode( string partName );
   int GetPdgCodeMainIsotope(int partCharge);
 
-  float GetPdgMass( string partName );
+  float GetPdgMass( const string &partName );
   float GetPdgMass( int PdgCode );
   
   string GetPdgName( int code );

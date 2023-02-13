@@ -45,7 +45,7 @@ Int_t TAIRntuTrack::GetTracksN() const
 //! \param[in] iTrack track index
 TAIRtrack* TAIRntuTrack::GetTrack(Int_t iTrack)
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
 	  return (TAIRtrack*)fListOfTracks->At(iTrack);
    else
 	  return 0x0;
@@ -57,7 +57,7 @@ TAIRtrack* TAIRntuTrack::GetTrack(Int_t iTrack)
 //! \param[in] iTrack track index
 const TAIRtrack* TAIRntuTrack::GetTrack(Int_t iTrack) const
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
 	  return (TAIRtrack*)fListOfTracks->At(iTrack);
    else
 	  return 0x0;

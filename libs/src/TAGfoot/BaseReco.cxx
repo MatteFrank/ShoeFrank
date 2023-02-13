@@ -117,6 +117,9 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
 #ifdef TOE_FLAG
    fActGlbTrack(0x0),
 #endif
+#ifdef GENFIT_FLAG
+   fActGlbkFitter(0x0),
+#endif
    fActGlbTrackS(0x0),
    fFlagOut(true),
    fFlagTree(false),

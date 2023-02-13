@@ -61,7 +61,7 @@ TAMSDntuHit::~TAMSDntuHit()
 //! \param[in] iSensor sensor id
 Int_t TAMSDntuHit::GetStripsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = GetListOfStrips(iSensor);
       return list->GetEntriesFast();
    } else  {
@@ -76,7 +76,7 @@ Int_t TAMSDntuHit::GetStripsN(Int_t iSensor) const
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor)
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0 && iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = (TClonesArray*)fListOfStrips->At(iSensor);
       return list;
    } else {
@@ -91,7 +91,7 @@ TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor)
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0 && iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray* list = (TClonesArray*)fListOfStrips->At(iSensor);
       return list;
    } else {
@@ -108,7 +108,7 @@ TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor) const
 //! \param[in] iStrip strip id
 TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip)
 {
-   if (iStrip >=0 || iStrip < GetStripsN(iSensor)) {
+   if (iStrip >=0 && iStrip < GetStripsN(iSensor)) {
       TClonesArray* list = GetListOfStrips(iSensor);
       return (TAMSDhit*)list->At(iStrip);
    } else {
@@ -124,7 +124,7 @@ TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip)
 //! \param[in] iStrip strip id
 const TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip) const
 {
-   if (iStrip >=0 || iStrip < GetStripsN(iSensor)) {
+   if (iStrip >=0 && iStrip < GetStripsN(iSensor)) {
       TClonesArray* list = GetListOfStrips(iSensor);
       return (TAMSDhit*)list->At(iStrip);
    } else {
@@ -171,7 +171,7 @@ void TAMSDntuHit::Clear(Option_t*)
 //! \param[in] aStrip strip id
 TAMSDhit* TAMSDntuHit::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_t aStrip)
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
       TClonesArray &stripArray = *GetListOfStrips(iSensor);
       std::pair<int, int> idx(aView, aStrip);
       

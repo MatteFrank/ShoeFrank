@@ -245,7 +245,7 @@ TATWhit* TATWntuHit::GetHit( int hitID, int layer ) {
 //! return a pixel for a given sensor
 TATWhit* TATWntuHit::GetHit( int hitID) {
 
-  if(hitID<fListOfHits->GetEntriesFast())
+  if(hitID >=0 && hitID<fListOfHits->GetEntriesFast())
     return (TATWhit*)(fListOfHits->At(hitID));
   else
     return nullptr;

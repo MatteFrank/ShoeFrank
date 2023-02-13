@@ -44,9 +44,16 @@ ClassImp(LocalRecoMC)
 LocalRecoMC::LocalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fEvtStruct(0x0),
+   fActNtuMcTrk(0x0),
+   fActNtuMcReg(0x0),
+   fActNtuMcEvt(0x0),
+   fActNtuHitSt(0x0),
+   fActNtuHitBm(0x0),
    fActNtuHitVtx(0x0),
    fActNtuHitIt(0x0),
    fActNtuHitMsd(0x0),
+   fActNtuHitTw(0x0),
+   fActNtuHitCa(0x0),
    fActEvtReader(0x0)
 {
    fFlagMC = true;

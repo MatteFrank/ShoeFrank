@@ -55,7 +55,7 @@ Bool_t TAVTactNtuCluster::Action()
 {
    TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
-   
+   fpNtuClus->Clear();
    Bool_t ok = true;
    
    if (pNtuHit->IsValid()) {

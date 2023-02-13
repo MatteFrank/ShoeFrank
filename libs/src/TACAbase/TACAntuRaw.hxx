@@ -70,7 +70,7 @@ public:
   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
 private:
-   Int_t           fHistN;          ///< Number of hits (useless)
+   Int_t           fHitsN;          ///< Number of hits (useless)
    TClonesArray*   fListOfHits;     ///< list of  hits
 
 private:

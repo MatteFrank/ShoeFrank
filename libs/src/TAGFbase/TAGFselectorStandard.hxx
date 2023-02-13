@@ -19,7 +19,7 @@ public:
 
 	TAGFselectorStandard();
 
-	virtual void	Categorize();
+	virtual void	Categorize() override;
 
 protected:
 

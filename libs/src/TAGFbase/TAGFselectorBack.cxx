@@ -87,14 +87,13 @@ void TAGFselectorBack::BackTracklets()
 		TVector3 globPosTW = m_GeoTrafo->FromTWLocalToGlobal(TVector3(xTW, yTW, zTW));
 		int MSDPlane1 = m_SensorIDMap->GetMinFitPlane("MSD");
 		int MSDPlane2 = MSDPlane1+1;
-		bool isMSD1y, isMSD2y;
 		float xMSD = -100., yMSD = -100.;
 		float zMSD = m_SensorIDMap->GetFitPlane(MSDPlane1)->getO().Z();
 
 		//Cycle on the first 2 planes of MSD
 		for(vector<AbsMeasurement*>::iterator itMSD1 = m_allHitMeas->at(MSDPlane1).begin(); itMSD1 != m_allHitMeas->at(MSDPlane1).end(); ++itMSD1)
 		{
-			isMSD1y = static_cast<PlanarMeasurement*>(*itMSD1)->getYview();
+			bool isMSD1y = static_cast<PlanarMeasurement*>(*itMSD1)->getYview();
 
 			if( isMSD1y )
 				yMSD = (m_SensorIDMap->GetFitPlane(MSDPlane1)->toLab(TVector2((*itMSD1)->getRawHitCoords()(0), 0))).Y();
@@ -105,7 +104,7 @@ void TAGFselectorBack::BackTracklets()
 
 			for(vector<AbsMeasurement*>::iterator itMSD2 = m_allHitMeas->at(MSDPlane2).begin(); itMSD2 != m_allHitMeas->at(MSDPlane2).end(); ++itMSD2)
 			{
-				isMSD2y = static_cast<PlanarMeasurement*>(*itMSD2)->getYview();
+				bool isMSD2y = static_cast<PlanarMeasurement*>(*itMSD2)->getYview();
 
 				if( isMSD1y == isMSD2y )
 					Warning("BackTracklets()", "MSD clusters have the same strip direction!!");
@@ -152,8 +151,8 @@ void TAGFselectorBack::BackTracklets()
 					double distanceInY = m_MSDtolerance;
 
 					//RZ: TO BE CHECKED!! ADDED TO AVOID ERRORS
-					Bool_t areLightFragments = false;
-					if (areLightFragments) distanceInY = m_MSDtolerance*2;
+					// Bool_t areLightFragments = false;
+					// if (areLightFragments) distanceInY = m_MSDtolerance*2;
 					// loop all absMeas in the found IT plane
 
 					if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
@@ -167,7 +166,7 @@ void TAGFselectorBack::BackTracklets()
 
 						//RZ: CHECK -> AVOID ERRORS
 						double distanceFromHit;
-						string strip;
+						// string strip;
 
 						if ( ! static_cast<PlanarMeasurement*>(*it)->getYview() )
 							distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));

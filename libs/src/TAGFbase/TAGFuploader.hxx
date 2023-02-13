@@ -56,7 +56,7 @@ class TAGFuploader {
 
 public:
 	
-	TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
+	explicit TAGFuploader ( TAGFdetectorMap* aSensorIDmap, bool IsMC );
 	virtual ~TAGFuploader();
 	
 	int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );
@@ -90,6 +90,8 @@ private:
 	int m_debug;											///< Global debug value
 	bool switchOff_HHe;										///< Boolean flag to switch off light fragments
 
+	bool m_IsMC;
+	uint m_NtracksMC;
 };
 
 #endif
