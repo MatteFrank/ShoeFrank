@@ -336,7 +336,8 @@ private:
     
 private:
    static TString   fgkBranchName;    ///< Branch name in TTree
-   
+   int   fEventType;                  ///< GF event type
+
 public:
    TAGntuGlbTrack();
    virtual         ~TAGntuGlbTrack();
@@ -347,6 +348,10 @@ public:
    const TAGtrack*  GetTrack(Int_t i) const;
    // Get number of global tracks
    Int_t            GetTracksN()      const;
+
+   void            SetEventType(Int_t i) {fEventType = i;}
+
+   Int_t           GetEventType() const {return fEventType;}
    
    //! Get list of global tracks
    TClonesArray*    GetListOfTracks() { return fListOfTracks; }

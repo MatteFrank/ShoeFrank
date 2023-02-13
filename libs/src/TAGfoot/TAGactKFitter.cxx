@@ -242,6 +242,7 @@ Bool_t TAGactKFitter::Action()	{
 		h_eventMatrix->Fill(m_selector->GetEventType(),m_selector->GetMCEventType());
 
 	}
+	m_outTrackRepo->SetEventType(m_selector->GetEventType());
 
 	chVect.clear();
 

@@ -495,6 +495,7 @@ TString TAGntuGlbTrack::fgkBranchName   = "glbtrack.";
 //! Default constructor.
 TAGntuGlbTrack::TAGntuGlbTrack()
  : TAGdata(),
+   fEventType(0),
    fListOfTracks(new TClonesArray("TAGtrack"))
 {
 }
@@ -553,6 +554,7 @@ void TAGntuGlbTrack::SetupClones()
 //! \param[in] opt clear option
 void TAGntuGlbTrack::Clear(Option_t*)
 {
+   fEventType = 0;
    fListOfTracks->Delete();
 }
 
