@@ -422,7 +422,7 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 			m_eventType = 2; //Good event, likely some tracks exiting the angular acceptance
 			if( foundIncrease && !foundIncreaseBtwDets )
 				m_eventType = 3; //Likely fragmentation in a detector plane
-			if( !foundIncrease && foundIncreaseBtwDets )
+			if( foundIncrease && foundIncreaseBtwDets )
 				m_eventType = 4; //Likely fragmentation in air
 			//if( foundIncrease && foundIncreaseBtwDets )
 			//	m_eventType = 6; //Likely fragmentation in both
@@ -447,23 +447,27 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	////////////////////////////////////////////////////////////////////
 
 
-	if (m_IsMC){
+	if (m_IsMC)
+	{
 
 		//creare oggetto MCpart, con get, prendere info necessarie su particelle,
 		//
 
 		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*) gTAGroot->FindDataDsc("regMc","TAMCntuRegion")->Object();
 		Int_t nCross  = mcNtuReg->GetRegionsN();
-		mc_eventType=5;
+		TAMCntuPart* mcNtu = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc","TAMCntuPart")->Object();
+
+		
 		bool air_fragm = false;
 		bool det_fragm = false;
 		bool lost_fragm = false;
 		bool has_tof = false;
 		bool air_bet_det_fragm=false;
-		TAMCntuPart* mcNtu = (TAMCntuPart*) gTAGroot->FindDataDsc("eveMc","TAMCntuPart")->Object();
-		int goodId;
+		
+		mc_eventType=5;
+		
 		vector<int> frag{-1};
-		vector<int> counts (21,0);
+		vector<int> counts (22,0);
 
 		int maxcount=-1;
 
@@ -482,8 +486,10 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 			//TAMCpart* MCpart = mcNtu->GetTrack(trackIdx);
 
 			if (NewReg>=81 && NewReg<=120)  //crosses TW
-				has_tof=true;
+				has_tof=true; //cout<< cross->GetCharge() << endl;
 				
+			if(cross->GetCharge()==0.)
+				continue;
 
 
 			//if (NewReg>50 && NewReg<81)
@@ -491,11 +497,11 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	
 			//fragm crosses target
 			if(OldReg==50 && NewReg==2)
-				counts[0]++;
+				counts[0]++; //cout<< cross->GetCharge() << endl;
 
 			//fragm crosses VTX 
 			if(OldReg==2 && (NewReg==51 || NewReg==55 || NewReg==59))
-				counts[1]++;
+				counts[1]++; 
 			if((OldReg==51 || OldReg==55 || OldReg==59) && NewReg==2)
 				counts[2]++;
 			if(OldReg==2 && (NewReg==52 || NewReg==56 || NewReg==60))
@@ -535,15 +541,15 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 			if(OldReg==2 && (NewReg==68 || NewReg==74 || NewReg==80))
 				counts[19]++;
 			if((OldReg==68 || OldReg==74 || OldReg==80) && NewReg==2)
-				counts[20]++;
+				counts[20]++; 
 
 			//crosses air1->air2
 			//if(OldReg==2 && NewReg==3)
-			//	counts[21]++;
+				//counts[21]++;
 
 			//crosses air3->SCN
-			//if(OldReg==3 && (NewReg>=81 && NewReg<=100))
-			//	counts[22]++;
+			if(OldReg==3 && (NewReg>=101 && NewReg<=120))
+				counts[21]++; //cout << cross->GetCharge()<<endl;
 			
 			if (std::find(frag.begin(), frag.end(), trackIdx) == frag.end()) 
 			{
@@ -570,16 +576,23 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 			//}
 			//cout << counts[j] << endl;
 		}
-		for (int i = 0; i < counts.size()/2-1; ++i){
+		//cout << counts[21] << endl << endl;
+		//for (int i = 0; i < counts.size(); ++i)
+		//{
+			//cout << counts[i] <<endl;
+		//}
+		//cout <<endl;
+		/*for (int i = 0; i < counts.size()/2-1; ++i){
 			
-			/*if (counts[2*i+1]>counts[2*i] && i!=4 && i!=0)
+			if (counts[2*i+1]>counts[2*i] && i!=4 && i!=0)
 			 {	
 			 	air_fragm=true;
 			 	air_bet_det_fragm=true;
 			 	//break;
 			 }
-			 */
-			 if (counts[2*i+1]>counts[2*i]  ) //|| counts[21]>counts[20]
+			 
+			 
+			 if (counts[2*i+1]>counts[2*i] || counts[21]>counts[20] ) 
 			  {
 			  	air_fragm=true;
 			  } 
@@ -590,13 +603,13 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 
 
 		}
-
+		*/
 		//cout <<air_fragm<< " " << det_fragm <<endl;
 
 
 
 
-		/*for(int i=1; i<frag.size(); ++i){
+		for(int i=1; i<frag.size(); ++i){
 			TAMCpart* MCpart = mcNtu->GetTrack(frag.at(i));
 			int region = MCpart->GetRegion(); //get region where fragment originates 
 			TVector3 finalPos = MCpart->GetFinalPos();
@@ -605,7 +618,7 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 		
 			double finalZpos = finalPos[2];
 			double initZpos = initPos[2];
-			bool is_inside = (initZpos>0. && initZpos < 189.15);
+			bool is_inside = (initZpos>0. && initZpos < 189.15); //born between TG and SCN
 			bool is_air = (region==2 || region==3);
 			if (region>120){ //exclude fragmentation in calorimeter 
 					continue;	
@@ -622,12 +635,13 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 					
 			}
 		}	
-	*/
+		
 
 
 		if (has_tof)
 		{	
 			mc_eventType=1;	
+
 			if (lost_fragm && det_fragm && air_fragm)		//fragm in air, det and lost
 				mc_eventType=9;
 			if (lost_fragm && det_fragm && !air_fragm)		//both lost and det
@@ -636,6 +650,8 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 				mc_eventType=7;
 			if (!lost_fragm && det_fragm && air_fragm)		//both det and air fragm
 				mc_eventType=6;
+			
+			
 			if (lost_fragm && !det_fragm && !air_fragm)		//only fragments lost
 				mc_eventType=2;
 			if (!lost_fragm && det_fragm && !air_fragm)		//only frag in det	
