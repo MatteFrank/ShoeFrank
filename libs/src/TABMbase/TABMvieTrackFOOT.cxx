@@ -136,8 +136,8 @@ void TABMvieTrackFOOT::Paint(Option_t* option)
       snprintf(text,sizeof(text),"MyChi2Red: %lf",p_trk->GetChiSquare());
       gPad->PaintText(-0.6*p_bmgeo->GetWidth(), +0.40*p_bmgeo->GetLength(),text);
       attline_trk.Modify();
-      mylar1posTrack=p_trk->PointAtLocalZ(p_bmgeo->GetMylar1().Z());
-      mylar2posTrack=p_trk->PointAtLocalZ(p_bmgeo->GetMylar2().Z());
+      mylar1posTrack=p_trk->Intersection(p_bmgeo->GetMylar1().Z());
+      mylar2posTrack=p_trk->Intersection(p_bmgeo->GetMylar2().Z());
       gPad->PaintLine(-mylar1posTrack.X()-p_bmgeo->GetWidth()/2.,mylar1posTrack.Z(),-mylar2posTrack.X()-p_bmgeo->GetWidth()/2.,mylar2posTrack.Z());
     }
   }

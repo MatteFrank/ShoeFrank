@@ -10,7 +10,7 @@
 #include "TAGrecoManager.hxx"
 
 /*!
- \class TAGgeoTrafo 
+ \class TAGgeoTrafo
  \brief/Class that handles the Geometrical transformations in FOOT. **
  */
 
@@ -59,7 +59,7 @@ const Char_t* TAGgeoTrafo::GetDeviceName(Int_t devType)
      if(item.second == devType)
         return item.first.Data();
    }
-   
+
    return TString().Data();
 }
 
@@ -80,7 +80,7 @@ TAGgeoTrafo::TAGgeoTrafo(const TString expName)
 
 //_____________________________________________________________________________
 //! Destructor
-TAGgeoTrafo::~TAGgeoTrafo() 
+TAGgeoTrafo::~TAGgeoTrafo()
 {
    delete fMatrixList;
    delete fDeviceList;
@@ -114,19 +114,19 @@ TGeoCombiTrans* TAGgeoTrafo::GetCombiTrafo(const char* nameSuf) const
 {
    TString name = Form("%s%s", fgkTrafoBaseName, nameSuf);
    const TGeoHMatrix* matrix = (const TGeoHMatrix*)fMatrixList->FindObject(name);
-   
+
    if (matrix) {
       const Double_t* mat = matrix->GetRotationMatrix();
       const Double_t* dis = matrix->GetTranslation();
-      
+
       TGeoRotation rot;
       rot.SetMatrix(mat);
-      
+
       TGeoTranslation trans;
       trans.SetTranslation(dis[0], dis[1], dis[2]);
-      
+
       return  new TGeoCombiTrans(trans, rot);
-      
+
    } else {
       Error("GetTrafo","No matrix with name %s found, reset to ID", name.Data());
       return new TGeoCombiTrans();
@@ -171,7 +171,7 @@ TVector3 TAGgeoTrafo::GetDeviceAngle(const char* nameSuf) const
 //! \param[in] mat a given matrix
 void TAGgeoTrafo::AddTrafo(TGeoHMatrix* mat)
 {
-	  fMatrixList->Add(mat);  
+	  fMatrixList->Add(mat);
 }
 
 //_____________________________________________________________________________
@@ -192,15 +192,15 @@ void TAGgeoTrafo::AddDevice(DeviceParameter_t* device)
 TVector3 TAGgeoTrafo::Global2Local(const char* name, TVector3& glob) const
 {
    const TGeoHMatrix* mat = GetTrafo(name);
-   
+
    Double_t local[3]  = {0., 0., 0.};
    Double_t global[3] = {glob.X(), glob.Y(), glob.Z()};
-   
+
    mat->MasterToLocal(global, local);
    TVector3 pos(local[0], local[1], local[2]);
-   
+
    return pos;
-}   
+}
 
 //_____________________________________________________________________________
 //! Transformation from global FOOT to local detector framework for vector (no translation)
@@ -211,15 +211,15 @@ TVector3 TAGgeoTrafo::Global2Local(const char* name, TVector3& glob) const
 TVector3 TAGgeoTrafo::Global2LocalVect(const char* name, TVector3& glob) const
 {
    const TGeoHMatrix* mat = GetTrafo(name);
-   
+
    Double_t local[3]  = {0., 0., 0.};
    Double_t global[3] = {glob.X(), glob.Y(), glob.Z()};
-   
+
    mat->MasterToLocalVect(global, local);
    TVector3 pos(local[0], local[1], local[2]);
-   
+
    return pos;
-}   
+}
 
 //_____________________________________________________________________________
 //! Transformation from local detector to global FOOT framework
@@ -230,15 +230,15 @@ TVector3 TAGgeoTrafo::Global2LocalVect(const char* name, TVector3& glob) const
 TVector3 TAGgeoTrafo::Local2Global(const char* name, TVector3& loc) const
 {
    const TGeoHMatrix* mat = GetTrafo(name);
-   
+
    Double_t local[3]  = {loc.X(), loc.Y(), loc.Z()};
    Double_t global[3] = {0., 0., 0.};
-   
+
    mat->LocalToMaster(local, global);
    TVector3 pos(global[0], global[1], global[2]);
 
    return pos;
-}   
+}
 
 //_____________________________________________________________________________
 //! Transformation from local detector to global FOOT framework for vector (no translation)
@@ -249,15 +249,15 @@ TVector3 TAGgeoTrafo::Local2Global(const char* name, TVector3& loc) const
 TVector3 TAGgeoTrafo::Local2GlobalVect(const char* name, TVector3& loc) const
 {
    const TGeoHMatrix* mat = GetTrafo(name);
-   
+
    Double_t local[3]  = {loc.X(), loc.Y(), loc.Z()};
    Double_t global[3] = {0., 0., 0.};
-   
+
    mat->LocalToMasterVect(local, global);
    TVector3 pos(global[0], global[1], global[2]);
-   
+
    return pos;
-}   
+}
 
 
 //_____________________________________________________________________________
@@ -274,19 +274,19 @@ bool TAGgeoTrafo::FromFile(TString ifile)
       Error("FromFile()", "failed to open file '%s'", ifile.Data());
       return kTRUE;
    }
-  
+
    Info("FromFile()", "Open file %s for geometry", ifile.Data());
-   
+
    while(!fFileStream->Eof()) {
       TString name;
       TString baseName = "";
       TVector3 center;
       TVector3 angle;
-      
+
       fFileStream->ReadStrings(baseName);
       fFileStream->ReadVector3(center);
       fFileStream->ReadVector3(angle);
-            
+
       name = Form("%s%s", fgkTrafoBaseName, baseName.Data());
       if(FootDebugLevel(1))
          printf("%s\n", name.Data());
@@ -295,7 +295,7 @@ bool TAGgeoTrafo::FromFile(TString ifile)
       device->Angle  = angle;
       device->SetName(name.Data());
       AddDevice(device);
-      
+
       TGeoRotation rot;
       rot.RotateX(angle[0]); rot.RotateY(angle[1]); rot.RotateZ(angle[2]);
       TGeoTranslation trans(center[0], center[1], center[2]);
@@ -305,11 +305,11 @@ bool TAGgeoTrafo::FromFile(TString ifile)
       TGeoHMatrix* trafo = new TGeoHMatrix(transfo);
       trafo->SetName(name.Data());
       AddTrafo(trafo);
-      
+
    }
-   
+
    fFileStream->Close();
-    
+
    return kTRUE;
 }
 
@@ -854,4 +854,10 @@ TVector3 TAGgeoTrafo::GetCACenter()
 TVector3 TAGgeoTrafo::GetCAAngles()
 {
    return GetDeviceAngle("CA");
+}
+
+//_____________________________________________________________________________
+//! Get Projection
+TVector3 TAGgeoTrafo::Intersection(const TVector3 slope, const TVector3 origin, const Double_t finalZ){
+  return origin+slope*((finalZ-origin[2])/slope[2]);
 }

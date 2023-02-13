@@ -338,7 +338,7 @@ Double_t TAGtrack::GetTgtTheta() const
 
 //______________________________________________________________________________
 //! Get phi angle at target
-Double_t TAGtrack::GetTgtPhi() const 
+Double_t TAGtrack::GetTgtPhi() const
 {
    TVector3 origin = fTgtDir.Unit();
    Double_t phi     = origin.Phi();
@@ -352,12 +352,7 @@ Double_t TAGtrack::GetTgtPhi() const
 //! \param[in] posZ Z position
 TVector3 TAGtrack::Intersection(Double_t posZ) const
 {
-   TVector3 result(fTgtPos);  // track origin in xyz tracker coordinates
-   result(2) = 0.;
-   result += fTgtDir * posZ; // intersection in xyz frame at z_plane
-   result(2) = posZ;
-
-   return  result;
+   return TAGgeoTrafo::Intersection(fTgtDir,fTgtPos,posZ);;
 }
 
 //______________________________________________________________________________
@@ -464,26 +459,26 @@ TArrayI TAGtrack::GetMcTrackIdx()
 //------------------------------------------+-----------------------------------
 //! Get MC track index - most probable
 Int_t TAGtrack::GetMcMainTrackId()
-{  
+{
 
    //----- set the array fMcTrackMap: it takes all the possible mc particles of every point in progressive order
-   
+
    fMcTrackMap.clear();
    fMcTrackIdx.Set(0);
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
-      const TAGpoint* point = GetPoint(iPoint);     
-      
-         
+      const TAGpoint* point = GetPoint(iPoint);
+
+
 
       for( Int_t i = 0; i < point->GetMcTracksN(); ++i) {
-         
-         Int_t trackIdx = point->GetMcTrackIdx(i);         
+
+         Int_t trackIdx = point->GetMcTrackIdx(i);
             fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
             fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
             fMcTrackMap[trackIdx]+=1;
-            
-            //cout << "track id :"<<trackIdx << endl;         
-      }  
+
+            //cout << "track id :"<<trackIdx << endl;
+      }
    }
 
 //----- according to the multiplicity of every id, it takes the most probable
@@ -492,13 +487,13 @@ Int_t multiplicity = -1;
 
    //cout << "track size: "<< fMcTrackMap.size() << endl;
    for ( auto it = fMcTrackMap.begin(); it != fMcTrackMap.end(); ++it  )
-{  
+{
   //cout << "track id:" << it->first << '\t' << "n°: " << it->second << endl;
   if (multiplicity < it->second) {
      multiplicity = it->second;
      mode = it->first;
   }
-} 
+}
    //cout <<"mode :"<<mode<<endl;
 
    return mode;

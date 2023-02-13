@@ -34,7 +34,7 @@ private:
    TObjArray*   fMatrixList; ///< List of transformation matrices
    TObjArray*   fDeviceList; ///< List of devices
    TString      fExpName;    ///< Name of the experiment
-   
+
 private:
    static TString fgDefaultActName;
    static const Float_t fgkCmToMu;        ///< conversion factor bw cm and micron
@@ -276,7 +276,7 @@ public:
    static           Float_t MevToGev()               { return fgkMevToGev;      }
    //! Conversion factor of GeV in keV
    static           Float_t GevToKev()               { return fgkGevToKev;      }
-   
+
    //! Conversion factor of Gass in Tesla
    static           Float_t GausToTesla()            { return fgkGausToTesla;   }
    //! Conversion factor of Gass in KiloGaus
@@ -311,7 +311,10 @@ public:
    static           Int_t   GetDeviceType(const TString name) { return fgkDeviceType[name];}
    // Get device name from device number
    static    const Char_t*  GetDeviceName(Int_t devType);
-   
+
+   //Get projection of a line
+   static    TVector3 Intersection(const TVector3 slope, const TVector3 origin, const Double_t finalZ);
+
    ClassDef(TAGgeoTrafo,1)
 };
 

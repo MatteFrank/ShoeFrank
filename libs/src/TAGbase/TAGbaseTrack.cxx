@@ -5,16 +5,15 @@
 
 #include "TMath.h"
 #include "TAGrecoManager.hxx"
-#include "TAGgeoTrafo.hxx" 
 #include "TAGbaseTrack.hxx"
 
 /*!
  \class TAGbaseTrack
  \brief Base class for track
- 
+
  A particle track from e.g. accelerator passing the tracker
  The track is measured by the tracker with its reference planes
- 
+
  A line is defined by its
                    origin     = (x_0,y_0,z_0),
                    slope      = (dx/dz,dy/dz,1),
@@ -116,7 +115,7 @@ Float_t TAGbaseTrack::GetTheta() const
 {
    TVector3 direction = fSlope->Unit();
    Float_t theta      = direction.Theta()*TMath::RadToDeg();
-   
+
    return theta;
 }
 
@@ -126,7 +125,7 @@ Float_t TAGbaseTrack::GetPhi() const
 {
    TVector3 origin = fOrigin->Unit();
    Float_t phi     = origin.Phi()*TMath::RadToDeg();
-   
+
    return phi;
 }
 
@@ -163,20 +162,6 @@ void TAGbaseTrack::Zero(){
 }
 
 //______________________________________________________________________________
-//! Get point extrapolation from Z position
-//!
-//! \param[in] beta Z position
-TVector3 TAGbaseTrack::GetPoint(Float_t beta)
-{
-   TVector3 result;
-   result = (*fSlope) * beta;
-   TVector3 offset = *fOrigin;
-   offset(2) = 0.;
-   return result += offset;
-}
-
-
-//______________________________________________________________________________
 //! Compute distance between a point M(x,y,z) and a
 //!
 //! line defined by (origin, slope)
@@ -192,10 +177,10 @@ Float_t TAGbaseTrack::Distance(TVector3& p)
    dY2 *= dY2;
    Float_t prod2 = fSlope->Y()*(p.X()-fOrigin->X()) - fSlope->X()*(p.Y()-fOrigin->Y());
    prod2 *= prod2;
-   
+
    Float_t distance = dX2 +dY2 + prod2;
    distance = TMath::Sqrt(distance);
-   
+
    return distance;
 }
 
@@ -234,10 +219,7 @@ void TAGbaseTrack::SetLineErrorValue(const TVector3& aOriginErr, const TVector3&
 //! \param[in] posZ Z position
 TVector3 TAGbaseTrack::Intersection(Float_t posZ) const
 {
-  TVector3 result(GetOrigin());  // track origin in xyz tracker coordinates
-  result(2) = 0.;
-  result += GetSlopeZ() * posZ; // intersection in xyz frame at z_plane
-  return  result;
+  return TAGgeoTrafo::Intersection(GetSlopeZ(),GetOrigin(),posZ);
 }
 
 //______________________________________________________________________________
@@ -252,7 +234,7 @@ Float_t TAGbaseTrack::Distance(TAGbaseTrack* track, Float_t z) const
    TVector3 pos2 = track->Intersection(z);
    TVector3 pos0 = pos1-pos2;
    Float_t rho0  = pos0.Mag();
-   
+
    return rho0;
 }
 
@@ -267,7 +249,7 @@ TVector2 TAGbaseTrack::DistanceXY(TAGbaseTrack* track, Float_t z) const
    TVector3 pos1 = Intersection(z);
    TVector3 pos2 = track->Intersection(z);
    TVector3 pos0 = pos1-pos2;
-   
+
    return TVector2(pos0.X(), pos0.Y());
 }
 
@@ -286,7 +268,7 @@ TVector2 TAGbaseTrack::DistanceMin(TAGbaseTrack* track, Float_t zMin, Float_t zM
    Float_t rho  = 0.;
    Float_t rhoh = 0.;
    Float_t h    = eps;
-   
+
    while (TMath::Abs(zMax - zMin) > eps) {
 	  z    = (zMax + zMin)/2.;
 	  rho  = Distance(track, z);
@@ -316,7 +298,7 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
    ndfU = ndfV = -2; // indeed, two parameters are fit per dimemsions (4 in all)
    fChiSquare = fChiSquareU = fChiSquareV = 0.0;
    if( GetClustersN() <=2 ) return; // return 0. for chisquare if there is less than 2 hits
-   
+
    for (Int_t ht = 0; ht < GetClustersN(); ht++){
 	  Float_t posZ = GetCluster(ht)->GetPositionG().Pz();
 	  tUtrack = Intersection(posZ).Px();
@@ -326,7 +308,7 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 	  ndfU++;
 	  fChiSquareU += tdU * tdU;
 	  dhs = err;
-	  
+
 	  // only for pixel detector
 	  tVtrack = Intersection(posZ).Py();
 	  if (dhs == 0.)
@@ -334,13 +316,13 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 	  tdV = (GetCluster(ht)->GetPositionG().Py() - tVtrack)/(dhs);
 	  ndfV++;
 	  fChiSquareV += tdV * tdV;
-   
+
    }
-   
+
    fChiSquare = (fChiSquareU+fChiSquareV) / Double_t(2*GetClustersN()-4);
    fChiSquareU /= ndfU;
    fChiSquareV /= ndfV;
-   
+
    if(FootDebugLevel(1))
 	  printf("TAGbaseTrack::MakeChiSquare chi2u=%f, ndfu=%d, chi2v=%f, ndfv=%d, chi2=%f, ndf=%d, resol=%f\n",
 			 fChiSquareU, ndfU, fChiSquareV, ndfV, fChiSquare, 2*GetClustersN()-4, dhs);
