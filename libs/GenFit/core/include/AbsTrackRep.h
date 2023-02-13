@@ -25,7 +25,7 @@
 
 #include "SharedPlanePtr.h"
 //#include "MaterialInfo.h"
-#include "MaterialProperties.h"
+#include "Material.h"
 
 #include <TVector3.h>
 #include <TObject.h>
@@ -40,7 +40,7 @@ namespace genfit {
  * @brief Simple struct containing MaterialProperties and stepsize in the material.
  */
 struct MatStep {
-  MaterialProperties materialProperties_;
+  Material material_;
   double stepSize_;
 
   MatStep() {
@@ -126,11 +126,11 @@ class AbsTrackRep : public TObject {
       bool stopAtBoundary = false,
       bool calcJacobianNoise = false) const {
     TVector3 wireDir(point2 - point1);
-    wireDir.Unit();
+    wireDir = wireDir.Unit();
     double retval = this->extrapolateToLine(state, point1, wireDir, stopAtBoundary, calcJacobianNoise);
     poca = this->getPos(state);
     dirInPoca = this->getMom(state);
-    dirInPoca.Unit();
+    dirInPoca = dirInPoca.Unit();
 
     poca_onwire = point1 + wireDir*((poca - point1)*wireDir);
     

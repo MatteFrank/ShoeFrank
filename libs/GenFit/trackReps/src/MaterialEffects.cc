@@ -28,6 +28,7 @@
 #include <assert.h>
 
 #include <TDatabasePDG.h>
+#include "MonopoleConstants.h"
 #include <TMath.h>
 
 #include <TH1D.h>
@@ -56,6 +57,7 @@ MaterialEffects::MaterialEffects():
   mEE_(0),
   pdg_(0),
   charge_(0),
+  mag_charge_(0),
   mass_(0),
   mscModelCode_(0),
   materialInterface_(nullptr),
@@ -158,7 +160,7 @@ double MaterialEffects::effects(const std::vector<RKStep>& steps,
         debugOut << "and noise";
       debugOut << " for ";
       debugOut << "stepSize = " << it->matStep_.stepSize_ << "\t";
-      it->matStep_.materialProperties_.Print();
+      it->matStep_.material_.Print();
     }
 
     double stepSign(1.);
@@ -167,7 +169,14 @@ double MaterialEffects::effects(const std::vector<RKStep>& steps,
     realPath = fabs(realPath);
     stepSize_ = realPath;
 
-    it->matStep_.materialProperties_.getMaterialProperties(matDensity_, matZ_, matA_, radiationLength_, mEE_);
+
+    const Material& currentMaterial = it->matStep_.material_;
+    matDensity_ = currentMaterial.density;
+    matZ_ = currentMaterial.Z;
+    matA_ = currentMaterial.A;
+    radiationLength_ = currentMaterial.radiationLength;
+    mEE_ = currentMaterial.mEE;
+
 
     if (matZ_ > 1.E-3) { // don't calculate energy loss for vacuum
 
@@ -178,6 +187,10 @@ double MaterialEffects::effects(const std::vector<RKStep>& steps,
         double p(0), gammaSquare(0), gamma(0), betaSquare(0);
         this->getMomGammaBeta(E_, p, gammaSquare, gamma, betaSquare);
         double pSquare = p*p;
+
+        if (pdg_ == c_monopolePDGCode) {
+          charge_ = mag_charge_ * mom / hypot(mom, mass_); //effective charge for monopoles
+        }
 
         if (energyLossBetheBloch_ && noiseBetheBloch_)
           this->noiseBetheBloch(*noise, p, betaSquare, gamma, gammaSquare);
@@ -208,7 +221,7 @@ void MaterialEffects::stepper(const RKTrackRep* rep,
                               const double& mom, // momentum
                               double& relMomLoss, // relative momloss for the step will be added
                               const int& pdg,
-                              MaterialProperties& currentMaterial,
+                              Material& currentMaterial,
                               StepLimits& limits,
                               bool varField)
 {
@@ -261,9 +274,13 @@ void MaterialEffects::stepper(const RKTrackRep* rep,
   materialInterface_->initTrack(state7[0], state7[1], state7[2],
                                 limits.getStepSign() * state7[3], limits.getStepSign() * state7[4], limits.getStepSign() * state7[5]);
 
-  materialInterface_->getMaterialParameters(matDensity_, matZ_, matA_, radiationLength_, mEE_);
-  currentMaterial.setMaterialProperties(matDensity_, matZ_, matA_, radiationLength_, mEE_);
 
+  currentMaterial = materialInterface_->getMaterialParameters();
+  matDensity_ = currentMaterial.density;
+  matZ_ = currentMaterial.Z;
+  matA_ = currentMaterial.A;
+  radiationLength_ = currentMaterial.radiationLength;
+  mEE_ = currentMaterial.mEE;
 
   if (debugLvl_ > 0) {
     debugOut << "     currentMaterial "; currentMaterial.Print();
@@ -290,7 +307,6 @@ void MaterialEffects::stepper(const RKTrackRep* rep,
   sMax = limits.getLowestLimitSignedVal();
 
   stepSize_ = limits.getStepSign() * minStep;
-  MaterialProperties materialAfter;
   M1x3 SA;
   double boundaryStep(sMax);
 
@@ -330,7 +346,7 @@ void MaterialEffects::stepper(const RKTrackRep* rep,
     materialInterface_->initTrack(state7[0], state7[1], state7[2],
                                   limits.getStepSign() * state7[3], limits.getStepSign() * state7[4], limits.getStepSign() * state7[5]);
 
-    materialInterface_->getMaterialParameters(materialAfter);
+    Material materialAfter = materialInterface_->getMaterialParameters();
 
     if (debugLvl_ > 0) {
       debugOut << "     material after step: "; materialAfter.Print();
@@ -350,7 +366,7 @@ void MaterialEffects::stepper(const RKTrackRep* rep,
 void MaterialEffects::getParticleParameters()
 {
   TParticlePDG* part = TDatabasePDG::Instance()->GetParticle(pdg_);
-  charge_ = int(part->Charge() / 3.);  // We only ever use the square
+  charge_ = part->Charge() / 3.;  // We only ever use the square
   mass_ = part->Mass(); // GeV
 }
 
@@ -434,10 +450,13 @@ double MaterialEffects::momentumLoss(double stepSign, double mom, bool linear)
 }
 
 
-double MaterialEffects::dEdx(double Energy) const {
+double MaterialEffects::dEdx(double Energy) {
 
   double mom(0), gammaSquare(0), gamma(0), betaSquare(0);
   this->getMomGammaBeta(Energy, mom, gammaSquare, gamma, betaSquare);
+  if (pdg_ == c_monopolePDGCode) { // if TParticlePDG also had magnetic charge, life would have been easier.
+    charge_ = mag_charge_ * sqrt(betaSquare); //effective charge for monopoles
+  }
 
   double result(0);
 
@@ -815,8 +834,12 @@ void MaterialEffects::drawdEdx(int pdg) {
   stepSize_ = 1;
 
   materialInterface_->initTrack(0, 0, 0, 1, 1, 1);
-  materialInterface_->getMaterialParameters(matDensity_, matZ_, matA_, radiationLength_, mEE_);
-
+  auto currentMaterial = materialInterface_->getMaterialParameters();
+  matDensity_ = currentMaterial.density;
+  matZ_ = currentMaterial.Z;
+  matA_ = currentMaterial.A;
+  radiationLength_ = currentMaterial.radiationLength;
+  mEE_ = currentMaterial.mEE;
 
   double minMom = 0.00001;
   double maxMom = 10000;
@@ -829,6 +852,9 @@ void MaterialEffects::drawdEdx(int pdg) {
   for (int i=0; i<nSteps; ++i) {
     double mom = pow(10., log10(minMom) + i*logStepSize);
     double E = hypot(mom, mass_);
+    if (pdg_ == c_monopolePDGCode) {
+      charge_ = mag_charge_ * mom / E; //effective charge for monopoles
+    }
 
     energyLossBrems_ = false;
     energyLossBetheBloch_ = true;

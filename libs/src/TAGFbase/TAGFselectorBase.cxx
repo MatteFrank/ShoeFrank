@@ -156,11 +156,11 @@ int TAGFselectorBase::FindTrackCandidates()
 	if (FillTrackRepVector() != 0)
 		return -1;
 
-	if( TAGrecoManager::GetPar()->EnableEventDisplay() )
-		CreateDummyTrack();
-
 	// fill m_mapTrack
 	Categorize();
+
+	if( TAGrecoManager::GetPar()->EnableEventDisplay() )
+		CreateDummyTrack();
 
 	return 0;
 }

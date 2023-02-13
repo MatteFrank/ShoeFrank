@@ -198,7 +198,7 @@ void GFGbl::beginRun()
     ghistosV[i] = new TH1F(Form("pull_v_%i", i + 1), "Res/Res.Err. (V)", 1000, -20., 20.);
     downWeightsHistosU[i] = new TH1F(Form("downWeights_u_%i", i + 1), "Down-weights (U)", 1000, 0., 1.);
     downWeightsHistosV[i] = new TH1F(Form("downWeights_v_%i", i + 1), "Down-weights (V)", 1000, 0., 1.);
-
+    
     localPar1[i] = new TH1F(Form("localPar1_%i", i + 1), "Residual (U)", 1000, -0.1, 0.1);
     localPar2[i] = new TH1F(Form("localPar2_%i", i + 1), "Residual (U)", 1000, -0.1, 0.1);
     localPar3[i] = new TH1F(Form("localPar3_%i", i + 1), "Residual (U)", 1000, -0.1, 0.1);
@@ -261,13 +261,14 @@ void getScattererFromMatList(double& length, double& theta, double& s, double& d
   // (part of) second moment / variance (non-normalized)
   double sumx3x3 = 0.;
   
+  // cppcheck-suppress unreadVariable
   double xmin = 0.;
   double xmax = 0.;
   
   for (unsigned int i = 0; i < steps.size(); i++) {
     const MatStep step = steps.at(i);
     // inverse of material radiation length ... (in 1/cm) ... "density of scattering"
-    double rho = 1. / step.materialProperties_.getRadLen();
+    double rho = 1. / step.material_.radiationLength;
     len += fabs(step.stepSize_);
     xmin = xmax;
     xmax = xmin + fabs(step.stepSize_);
@@ -310,7 +311,7 @@ void getScattererFromMatList(double& length, double& theta, double& s, double& d
 }
 
 
-void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool resortHits)
+void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resortHits*/)
 {
   // Flag used to mark error in raw measurement combination
   // measurement won't be considered, but scattering yes
@@ -845,9 +846,9 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool resortH
     
     pvalue = TMath::Prob(Chi2, Ndf);
     
-    traj->printTrajectory(100);
-    traj->printData();
-    traj->printPoints(100);
+    //traj->printTrajectory(100);
+    //traj->printData();
+    //traj->printPoints(100);
     
     #ifdef OUTPUT
     // Fill histogram with fit result

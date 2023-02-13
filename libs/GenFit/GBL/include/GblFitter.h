@@ -97,7 +97,7 @@ namespace genfit {
      * @param recalcJacobians Number of iteration up to which Jacobians should be recalculated / planes/meas updated after the fit.
      *                        0 = do not recalculate Jacobians. 1 = recalculate after first GBL fit. 2 = after 1st and 2nd GBL fit etc.
      */
-    void setOptions(std::string internalIterations = "", bool enableScatterers = true, bool enableIntermediateScatterer = true, unsigned int externalIterations = 1, unsigned int recalcJacobians = 1) {
+    void setOptions(const std::string &internalIterations = "", bool enableScatterers = true, bool enableIntermediateScatterer = true, unsigned int externalIterations = 1, unsigned int recalcJacobians = 1) {
       m_externalIterations = externalIterations;
       m_gblInternalIterations = internalIterations;
       m_recalcJacobians = recalcJacobians;
@@ -152,7 +152,7 @@ namespace genfit {
      * Hit resorting currently supported (use only if necessary /wire chamber/ ... will 
      * extrapolate along whole track to sort the hits).
      */
-    void processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool resortHits = false);
+    void processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool resortHits = false) override;
     
     /**
      * @brief Propagate seed, populate track with scatterers

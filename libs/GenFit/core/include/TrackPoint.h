@@ -48,7 +48,7 @@ class TrackPoint : public TObject {
  public:
 
   TrackPoint();
-  TrackPoint(Track* track);
+  explicit TrackPoint(Track* track);
 
   /**
    * @brief Contructor taking list of measurements.
@@ -144,11 +144,7 @@ class TrackPoint : public TObject {
    */
   std::map<unsigned int, AbsFitterInfo*> vFitterInfos_; //!
 
-#ifndef __CINT__
   std::unique_ptr<ThinScatterer> thinScatterer_; // Ownership
-#else
-  class ThinScatterer* thinScatterer_;
-#endif
 
  public:
 
