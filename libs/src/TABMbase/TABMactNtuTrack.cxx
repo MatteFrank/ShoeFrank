@@ -348,13 +348,13 @@ Bool_t TABMactNtuTrack::Action()
       TABMtrack *savedtracktr=p_ntutrk->GetTrack(i);
       TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
       Float_t posZ = geoTrafo->FromGlobalToBMLocal(TVector3(0,0,0)).Z();
-      TVector3 pos = savedtracktr->PointAtLocalZ(posZ);
+      TVector3 pos = savedtracktr->Intersection(posZ);
       fpHisMap->Fill(pos[0], pos[1]);
-      pos = savedtracktr->PointAtLocalZ(geoTrafo->FromGlobalToBMLocal(geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0))).Z());
+      pos = savedtracktr->Intersection(geoTrafo->FromGlobalToBMLocal(geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0))).Z());
       fpHisMapTW->Fill(pos.X(), pos.Y());
       fpHisMylar12d->Fill(savedtracktr->GetOrigin().X(), savedtracktr->GetOrigin().Y());
       // posZ = geoTrafo->FromGlobalToBMLocal(geoTrafo->FromMSDLocalToGlobal(0.,0.,0.)).Z(); //msd first plane z position in global position
-      // pos = savedtracktr->PointAtLocalZ(posZ);
+      // pos = savedtracktr->Intersection(posZ);
       // fpHis0MSD->Fill(pos[0], pos[1]);
 
 
