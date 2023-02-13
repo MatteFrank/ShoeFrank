@@ -318,7 +318,7 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
    if( GetClustersN() <=2 ) return; // return 0. for chisquare if there is less than 2 hits
    
    for (Int_t ht = 0; ht < GetClustersN(); ht++){
-	  Float_t posZ = GetCluster(ht)->GetPosition().Pz();
+	  Float_t posZ = GetCluster(ht)->GetPositionG().Pz();
 	  tUtrack = Intersection(posZ).Px();
 	  if (dhs == 0.)
 		 dhs = GetCluster(ht)->GetPosError().Px();

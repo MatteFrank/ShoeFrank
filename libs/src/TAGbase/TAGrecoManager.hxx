@@ -24,12 +24,13 @@
 
 #include "TString.h"
 #include "TObjArray.h"
+#include "TObjArray.h"
 
 #include "TAGrunInfo.hxx"
 
 using namespace std;
 
-class TAGrecoManager {
+class TAGrecoManager : public TObject{
 
 public:
    // singleton class of global foot parameters
@@ -42,7 +43,7 @@ public:
    // From file
 	void  FromFile();
    // Print info
-	void  Print(Option_t* opt = "");
+	void  Print(Option_t* opt = "") const;
    // Get run info
    const TAGrunInfo GetGlobalInfo();
    // Find MC particle
@@ -326,6 +327,9 @@ public:
    static void   SetClassDebugLevel(const char* className, Int_t level);
    // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
+   
+   ClassDef(TAGrecoManager,1)
+
 };
 
 #define FootDebug(level, func, message, ...) TAGrecoManager::Debug(level, ClassName(), func, message, __VA_ARGS__)

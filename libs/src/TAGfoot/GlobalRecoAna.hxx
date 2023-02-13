@@ -84,6 +84,7 @@ class GlobalRecoAna : public LocalReco {
   void FillYieldMC(string folderName, Int_t charge_tr, Double_t theta_tr, Double_t Ek=0.);
   void BookYield(string path, bool enableMigMatr= false);
   void ClustersPositionStudy();
+  void ThetaTrueVSThetaRecoPlots(); //study mig matrix of theta
 
   //useful formulas
   TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ){
@@ -126,6 +127,7 @@ class GlobalRecoAna : public LocalReco {
   Int_t ntracks;
   Int_t nTotEv;  //total number of events (-nev flag)
   Int_t currEvent;
+  Int_t recoEvents; // events in whick global tracks are created
 
   vector<pair<Int_t,Int_t>> pure_track_xcha;    //vector index = particle charge; first=npure; second=ntracks
 

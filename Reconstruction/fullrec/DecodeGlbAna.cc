@@ -96,8 +96,8 @@ int main(int argc, char *argv[]) {
   watch.Start();
 
   GlobalRecoAna* glbAna = new GlobalRecoAna(exp, runNb, in, out, mc, nTotEv);
-  glbAna->BeforeEventLoop();
   if(nSkipEv > 0 /*&& (lrc || mc)*/)  glbAna->GoEvent(nSkipEv);
+  glbAna->BeforeEventLoop(); 
   glbAna->LoopEvent();
   glbAna->AfterEventLoop();
   watch.Print();
