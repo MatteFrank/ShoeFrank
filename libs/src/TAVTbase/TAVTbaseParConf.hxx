@@ -48,7 +48,8 @@ protected:
 	  Int_t      PlanesForTrackMinimum;  ///< min # planes to build a track in an event
 	  Float_t    SearchHitDistance;      ///< max distance hit-track to add hit to track
 	  Float_t    TrackChi2Limit;         ///< chi2 limit on the track
-	  Float_t    BmTrackChi2Limit;       ///< chi2 limit on the BM track
+     Float_t    BmTrackChi2Limit;       ///< chi2 limit on the BM track
+     Float_t    McPileUpPar;            ///< MC pileup Poisson parameter
    };
    
    SensorParameter_t fSensorParameter[32]; ///< sensor parameters
