@@ -68,7 +68,7 @@ private:
    
 private:
     Bool_t   DecodeHits(const DEMSDEvent* evt);
-    Double_t ComputeCN(Int_t strip, Double_t *VaContent, Int_t type);
+    Double_t ComputeCN(Double_t *VaContent, Double_t threshold);
 
 private:
    static UInt_t fkgThreshold;           ///< charge threshold
