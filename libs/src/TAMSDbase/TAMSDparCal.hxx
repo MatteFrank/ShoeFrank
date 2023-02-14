@@ -22,13 +22,6 @@ class TAMSDparCal : public TAGparTools
 {
 private:
   TAMSDcalibrationMap* fMapCal;  ///< Calibration map
-   TF1*                fFunc1;   ///< 1st function
-   TF1*                fFunc2;   ///< 2nd function
-   TF1*                fFunc3;   ///< 3rd function
-   TF1*                fFuncEta; ///< Eta function
-   
-private:
-   void SetFunctions();
 
 public:
   TAMSDparCal(int strip_number_p);
@@ -44,8 +37,6 @@ public:
 
   Double_t GetPedestalThreshold(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed);
 
-  Float_t ComputeEtaChargeCorrection(Float_t eta);
-  Float_t ComputeEtaPosCorrection(Float_t eta);
   Double_t GetElossParam(Float_t eta);
 
  ClassDef(TAMSDparCal, 0)
