@@ -17,7 +17,6 @@ if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../level0/config/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/config/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../level0/cammaps/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/cammaps/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../level0/calib/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/calib/)
- file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/macros/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/)
  execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/data/ ${CMAKE_BINARY_DIR}/Reconstruction/fullrec/)
 endif(FILECOPY)
 
