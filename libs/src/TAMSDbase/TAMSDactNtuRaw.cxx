@@ -235,9 +235,9 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                   fpHisCommonMode[sensorId]->Fill(cnFirst);
             }
          }         
-
-         if (p_parconf->GetSensorPar(sensorId).DeadStripMap[i] == 1) continue;
    
+         if (pedestal.status)
+            hit->SetNoisy(true);
 
          if (fgPedestalSub) { // pedestal subtraction is enabled
             seedFirst = false;
@@ -262,6 +262,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                if (ValidHistogram())
                   fpHisStripMap[sensorId]->Fill(i, adcFirst - meanFirst - cnFirst);
                }
+
          }
          
          view = 1;
@@ -286,8 +287,8 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             }
          }         
          
-         if (p_parconf->GetSensorPar(sensorId).DeadStripMap[i] == 1) continue;
-
+         if (pedestal.status)
+            hit->SetNoisy(true);
          
          if (fgPedestalSub) { // pedestal subtraction is enabled
             seedSecond = false;

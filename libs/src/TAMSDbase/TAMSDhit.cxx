@@ -30,7 +30,8 @@ TAMSDhit::TAMSDhit()
    fIndex(0),
    fView(0),
    fStrip(0),
-   fIsSeed(false)
+   fIsSeed(false),
+   fIsNoisy(false)
 {
 }
 
@@ -49,7 +50,8 @@ TAMSDhit::TAMSDhit( Int_t input, Float_t value, Int_t view, Int_t strip)
    fIndex(0),
    fView(view),
    fStrip(strip),
-   fIsSeed(false)
+   fIsSeed(false),
+   fIsNoisy(false)
 {
 }
 
@@ -65,7 +67,8 @@ TAMSDhit::TAMSDhit(const TAMSDhit& hit)
    fIndex(hit.fIndex),
    fView(hit.fView),
    fStrip(hit.fStrip),
-   fIsSeed(hit.fIsSeed)
+   fIsSeed(hit.fIsSeed),
+   fIsNoisy(hit.fIsNoisy)
 {
 }
 

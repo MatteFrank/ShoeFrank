@@ -191,6 +191,7 @@ void TAMSDactNtuCluster::FillMaps()
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(i);
     Int_t stripId  = strip->GetStrip();
     if (!CheckLine(stripId)) continue;
+    if (strip->IsNoisy()) continue;
     
     TAGactNtuCluster1D::FillMaps(stripId, map_idx);
     map_idx++;
