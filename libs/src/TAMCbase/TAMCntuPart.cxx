@@ -90,7 +90,7 @@ TAMCpart::~TAMCpart()
 {
 }
 
-void TAMCpart::Clear()
+void TAMCpart::Clear(Option_t* /*opt*/)
 {
   delete this;
 }
