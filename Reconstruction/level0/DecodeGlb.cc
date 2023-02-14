@@ -7,10 +7,12 @@
 #include "LocalReco.hxx"
 #include "LocalRecoMC.hxx"
 #include "GlobalReco.hxx"
+#include "GlobalToeReco.hxx"
 
 int main (int argc, char *argv[])  {
 
    TString in("");
+   TString inMc("");
    TString out("");
    TString exp("");
    
@@ -28,6 +30,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
       if(strcmp(argv[i],"-skipEv") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
+      if(strcmp(argv[i],"-inmc") == 0)  { inMc = TString(argv[++i]);   } // MC file name
       
       if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
@@ -43,6 +46,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -run value     : [def=-1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -mc            : reco from MC local reco tree"<<endl;
+         cout<<"      -inmc          : MC file name  "<<endl;
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
@@ -53,6 +57,9 @@ int main (int argc, char *argv[])  {
    TAGrecoManager::Instance(exp);
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
+   
+   Bool_t toe = TAGrecoManager::GetPar()->IncludeTOE();
+   Bool_t gf  = TAGrecoManager::GetPar()->IncludeKalman();
    
    if (out.IsNull()) {
       TAGrecoManager::GetPar()->DisableTree();
@@ -70,9 +77,13 @@ int main (int argc, char *argv[])  {
       exit(-1);
    }
    
-   if (lrc)
-      glbRec = new GlobalReco(exp, runNb, in, out, mc);
-   else if (mc) {
+   if (lrc) {
+      if (toe)
+         glbRec = new GlobalToeReco(exp, runNb, in, out, mc, inMc);
+      if (gf)
+         glbRec = new GlobalReco(exp, runNb, in, out, mc);
+      
+   } else if (mc) {
      glbRec = new LocalRecoMC(exp, runNb, in, out);
      
    } else {
