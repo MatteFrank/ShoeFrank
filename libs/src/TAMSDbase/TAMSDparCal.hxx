@@ -42,7 +42,7 @@ public:
   Bool_t   LoadPedestalMap(TString Filename);
   TAMSDcalibrationMap::PedParameter_t GetPedestal(Int_t sensorId, Int_t stripId);
 
-  Double_t GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed);
+  Double_t GetPedestalThreshold(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed);
 
   Float_t ComputeEtaChargeCorrection(Float_t eta);
   Float_t ComputeEtaPosCorrection(Float_t eta);
