@@ -140,6 +140,8 @@ private:
    TH2F*           fpHisClusLeftPix;    ///< number of clusters left (not tracked) vs # pixels
    TH1F*           fpHisTheta;          ///< Polar angular distribution
    TH1F*           fpHisPhi;            ///< Azimutal angular distribution
+   TH1F*           fpHisMass;           ///< Mass distribution
+   TH1F*           fpHisZ;              ///< Atomic number distribution
    TH1F*           fpHisMeanPixel;      ///< Mean number of pixels per tracked cluster
    TH1F*           fpHisMeanCharge;     ///< Mwean Charge per tracked cluster
    TH2F*           fpHisTwDeCaE;        ///< TW-deltaE vs CA-E

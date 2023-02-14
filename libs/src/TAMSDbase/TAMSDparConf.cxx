@@ -47,6 +47,12 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
       nameExp = name;
    
    if (!Open(nameExp)) return false;
+  
+   Int_t tmp;
+   ReadItem(tmp);
+   fAnalysisParameter.PedestalFlag = tmp;
+   if(FootDebugLevel(1))
+      cout << "Pedestal run flag: "<< fAnalysisParameter.PedestalFlag << endl;
    
    ReadItem(fAnalysisParameter.PlanesForTrackMinimum);
    if(FootDebugLevel(1))
@@ -102,3 +108,4 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
    
    return kFALSE;
 }
+

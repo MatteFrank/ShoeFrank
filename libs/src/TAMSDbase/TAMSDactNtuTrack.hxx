@@ -7,6 +7,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TAVTactNtuTrack.hxx"
+#include "TAGrecoManager.hxx"
 
 class TAVTbaseParGeo;
 class TAVTbaseParConf;
@@ -20,19 +21,19 @@ public:
                               TAGparaDsc* p_config   = 0,
                               TAGparaDsc* p_geomap   = 0);
    virtual ~TAMSDactNtuTrack();
-   
+   Bool_t   Action() override;
 protected:
-   void                     AddNewTrack(TAGbaseTrack* track);
-   TAGbaseTrack*            NewTrack();
-   Int_t                    GetTracksN();
+   void                     AddNewTrack(TAGbaseTrack* track) override;
+   TAGbaseTrack*            NewTrack() override;
+   Int_t                    GetTracksN() override;
    
-   TAGcluster*              GetCluster(Int_t iPlane, Int_t iClus);
-   Int_t                    GetClustersN(Int_t iPlane);
+   TAGcluster*              GetCluster(Int_t iPlane, Int_t iClus) override;
+   Int_t                    GetClustersN(Int_t iPlane) override;
    
-   void                     SetBeamPosition(TVector3 pos);
+   void                     SetBeamPosition(TVector3 pos) override;
    
-   virtual TAVTbaseParGeo*  GetParGeo();
-   virtual TAVTbaseParConf* GetParConf();
+   virtual TAVTbaseParGeo*  GetParGeo() override;
+   virtual TAVTbaseParConf* GetParConf() override;
 
    ClassDef(TAMSDactNtuTrack,0)
 };

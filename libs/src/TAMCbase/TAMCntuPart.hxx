@@ -27,7 +27,7 @@ public:
                TVector3 i_ip,TVector3 i_fp);
 
 	virtual         ~TAMCpart();
-
+   virtual void     Clear(Option_t* opt="");
    //! Get initial position
    TVector3         GetInitPos()      const { return fInitPos;        }
    //! Get initial momentum
@@ -134,11 +134,11 @@ class TAMCntuPart : public TAGdata {
                                 TVector3 i_ipos, TVector3 i_fpos,
                                 TVector3 i_ip,TVector3 i_fp);
    // Setup clones
-	virtual void        SetupClones();
+	 void        SetupClones();
    // Clear
-	virtual void        Clear(Option_t* opt="");
+	 void        Clear(Option_t* opt="");
    // To stream
-	virtual void        ToStream(ostream& os=cout, Option_t* option="") const;
+	 void        ToStream(ostream& os=cout, Option_t* option="") const;
 
 public:
    //! Get branch name

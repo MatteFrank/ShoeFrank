@@ -165,8 +165,8 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     tree->SetBranchAddress(TAGntuGlbTrack::GetBranchName(), &glbntutrk);
   }
 
-  if (nentries == 0 || nentries>tree->GetEntries())
-    maxentries = tree->GetEntries();
+  if (nentries == 0 || nentries>tree->GetEntriesFast())
+    maxentries = tree->GetEntriesFast();
   else
     maxentries=nentries;
 
@@ -190,7 +190,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   Booking(file_out);
 
   cout<<"input file="<<nameFile.Data()<<endl;
-  cout<<"I'll process "<<maxentries<<" events. The input tree contains a total of "<<tree->GetEntries()<<" events."<<endl;
+  cout<<"I'll process "<<maxentries<<" events. The input tree contains a total of "<<tree->GetEntriesFast()<<" events."<<endl;
   Zbeam = parGeo->GetBeamPar().AtomicNumber;
   cout<<"ZBEAM = "<<Zbeam<<endl;
 

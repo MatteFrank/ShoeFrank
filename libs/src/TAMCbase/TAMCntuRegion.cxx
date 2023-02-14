@@ -101,7 +101,7 @@ void TAMCntuRegion::SetupClones()
 //! Get number of regions
 Int_t TAMCntuRegion::GetRegionsN() const
 {
-   return fListOfRegions->GetEntries();
+   return fListOfRegions->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -110,10 +110,10 @@ Int_t TAMCntuRegion::GetRegionsN() const
 //! \param[in] id index region
 TAMCregion* TAMCntuRegion::GetRegion(Int_t id)
 {
-   if (id >=0 || id < fListOfRegions->GetEntriesFast()) {
+   if (id >=0 && id < fListOfRegions->GetEntriesFast()) {
       return (TAMCregion*)fListOfRegions->At(id);
    } else {
-      cout << Form("Wrong sensor number %d\n", id);
+      cout << Form("Wrong region number %d\n", id);
       return 0x0;
    }
 }
@@ -124,10 +124,10 @@ TAMCregion* TAMCntuRegion::GetRegion(Int_t id)
 //! \param[in] id index region
 const TAMCregion* TAMCntuRegion::GetRegion(Int_t id) const
 {
-   if (id >=0 || id < fListOfRegions->GetEntriesFast()) {
+   if (id >=0 && id < fListOfRegions->GetEntriesFast()) {
       return (TAMCregion*)fListOfRegions->At(id);
    } else {
-      Error("GetRegion()", "Wrong sensor number %d\n", id);
+      Error("GetRegion()", "Wrong region number %d\n", id);
       return 0x0;
    }
 }

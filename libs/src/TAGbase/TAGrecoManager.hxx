@@ -24,12 +24,13 @@
 
 #include "TString.h"
 #include "TObjArray.h"
+#include "TObjArray.h"
 
 #include "TAGrunInfo.hxx"
 
 using namespace std;
 
-class TAGrecoManager {
+class TAGrecoManager : public TObject{
 
 public:
    // singleton class of global foot parameters
@@ -42,7 +43,7 @@ public:
    // From file
 	void  FromFile();
    // Print info
-	void  Print(Option_t* opt = "");
+	void  Print(Option_t* opt = "") const;
    // Get run info
    const TAGrunInfo GetGlobalInfo();
    // Find MC particle
@@ -118,12 +119,6 @@ public:
     Bool_t IsTWRateSmearMC()     const { return fEnableTWRateSmearMC; }
     //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
-    //! MSD tracking
-    Bool_t IsMsdTracking()       const { return fEnableMsdTrack;      }
-    //! MSD pedestal run
-    Bool_t IsMsdPedestal()       const { return fEnableMsdPed;        }
-    //! ITR tracking
-    Bool_t IsItrTracking()       const { return fEnableItrTrack;      }
     //! TW Calibration flag
     Bool_t CalibTW()             const { return fDoCalibTW;           }
     //! BM Calibration flag
@@ -177,22 +172,7 @@ public:
     void EnableRegionMc()              {  fEnableRegionMc = true;     }
     //! Disable MC region reading
     void DisableRegionMc()             {  fEnableRegionMc = false;    }
-   
-    //! Enable MSD tracking
-    void EnableMsdTrack()              {  fEnableMsdTrack = true;     }
-    //! Disable MSD tracking
-    void DisableMsdTrack()             {  fEnableMsdTrack = false;    }
-   
-   //! Enable MSD pedestal
-   void EnableMsdPedestal()            {  fEnableMsdPed = true;       }
-   //! Disable MSD pedestal
-   void DisableMsdPedestal()           {  fEnableMsdPed = false;      }
-   
-    //! Enable ITR tracking
-    void EnableItrTrack()              {  fEnableItrTrack = true;     }
-    //! Disable ITR tracking
-    void DisableItrTrack()             {  fEnableItrTrack = false;    }
-   
+      
     //! Enable filling in tree
     void EnableTree()                  {  fEnableTree = true;         }
     //! Disable filling in tree
@@ -289,7 +269,6 @@ private:
    Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
    Bool_t               fEnableRegionMc;        ///< Enable MC region reading
    Bool_t               fEnableMsdTrack;        ///< Enable MSD tracking
-   Bool_t               fEnableMsdPed;          ///< Enable MSD pedestal run
    Bool_t               fEnableItrTrack;        ///< Enable ITR tracking
 
    Bool_t               fIncludeST;             ///< Include STC
@@ -326,6 +305,9 @@ public:
    static void   SetClassDebugLevel(const char* className, Int_t level);
    // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
+   
+   ClassDef(TAGrecoManager,1)
+
 };
 
 #define FootDebug(level, func, message, ...) TAGrecoManager::Debug(level, ClassName(), func, message, __VA_ARGS__)

@@ -45,6 +45,7 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   npure = 0;
   nclean = 0;
   ntracks = 0;
+  recoEvents = 0;
   fFlagMC = isMC;
   purity_cut=0.51;
   clean_cut=1.;
@@ -52,7 +53,7 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
 
   outfile = fileNameout;
 
-
+  Th_true = -999.; //from TAMCparticle
   Th_meas = -999.; //from TWpoint
   Th_reco = -999.; //from global tracking
   Th_recoBM = -999.; //from global tracking wrt BM direction
@@ -65,32 +66,47 @@ GlobalRecoAna::~GlobalRecoAna()
 }
 
 void GlobalRecoAna::LoopEvent() {
-  currEvent=0;
+
+  if(FootDebugLevel(1))
+    cout<<"GlboalRecoAna::LoopEvent start"<<endl;
+  if (fSkipEventsN>0)
+  {
+  currEvent=fSkipEventsN;
+  nTotEv+=  fSkipEventsN;
+  }
+  else currEvent=0;
 
 //*********************************************************************************** begin loop on every event **********************************************
   while(gTAGroot->NextEvent()) { //for every event
     //fFlagMC = false;     //N.B.: for MC FAKE REAL
-    DiffApp_trkIdx = false;
-
     if (currEvent % 100 == 0 || FootDebugLevel(1))
       cout <<"current Event: " <<currEvent<<endl;
+    DiffApp_trkIdx = false;
+    SelectionCuts();
+
+
+
     ClustersPositionStudy();
 
     int evtcutstatus=ApplyEvtCuts();
     ((TH1D*)gDirectory->Get("Evtcutstatus"))->Fill(evtcutstatus);
-    if(evtcutstatus)
+    if(evtcutstatus){
+      ++currEvent;
       continue;
+    }
+
 
     Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
+    if (nt > 0) recoEvents++;
 
-    TAGWDtrigInfo* wdTrig = 0x0;
+          TAGWDtrigInfo *wdTrig = 0x0;
     if (fFlagMC ==false){
       wdTrig = (TAGWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
       FragTriggerStudies();
     }
 
-    if (fFlagMC ==false && nt >0){
+    if (fFlagMC ==true && nt >0){
     //initialize Trk Id to 0
       TrkIdMC = -1;
       N_TrkIdMC_TW =-1;
@@ -103,11 +119,12 @@ void GlobalRecoAna::LoopEvent() {
 
     //*********************************************************************************** begin loop on global tracks **********************************************
     for(int it=0;it<nt;it++) { // for every track
-
       int trkstatus=ApplyTrkCuts();
       ((TH1D*)gDirectory->Get("Trkcutstatus"))->Fill(trkstatus);
-      if(trkstatus)
+      if(trkstatus){
+        ntracks++;
         continue;
+      }
 
       isPrimaryInEvent = false;
       fGlbTrack = myGlb->GetTrack(it);
@@ -117,12 +134,16 @@ void GlobalRecoAna::LoopEvent() {
 
       if(fFlagMC){
         MCGlbTrkLoopSetVariables();
-        GlbTrackPurityStudy();
+        //GlbTrackPurityStudy();
       }
 
       //Set the reconstructed quantities
       RecoGlbTrkLoopSetVariables();
       //Evaluate the measured mass
+      if(fFlagMC){
+      ThetaTrueVSThetaRecoPlots();
+      }
+
       EvaluateMass();
 
       if(FootDebugLevel(1)){
@@ -233,11 +254,15 @@ void GlobalRecoAna:: Booking(){
   h2  = new TH2D("TWpointsDistribution","",40, -20. ,20., 40, -20 ,20.);
 
   if (fFlagMC == true) {
-  gDirectory->mkdir("TrkVsMC");
-  gDirectory->cd("TrkVsMC");
-  h2  = new TH2D("Z_truevsZ_reco_TWFixed","",10, 0 ,10., 10, 0 ,10.);
-  h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","",10, 0 ,10., 10, 0 ,10.);
-  gDirectory->cd("..");
+    gDirectory->mkdir("TrkVsMC");
+    gDirectory->cd("TrkVsMC");
+    h2  = new TH2D("Z_truevsZ_reco_TWFixed","Z_truevsZ_reco_TWFixed;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
+    h2  = new TH2D("Z_truevsZ_reco_TrackFixed","Z_truevsZ_reco_TrackFixed;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
+    h2  = new TH2D("Z_truevsZ_reco_TWGhostHitsRemoved","Z_truevsZ_reco_TWGhostHitsRemoved;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
+    h2  = new TH2D("Z_truevsZ_reco_All","Z_truevsZ_reco_All;Z_true;Z_reco",10, 0 ,10., 10, 0 ,10.);
+
+
+    gDirectory->cd("..");
   }
 
   h2  = new TH2D("Z_truevsZ_reco","",10, 0 ,10., 10, 0 ,10.);
@@ -263,8 +288,8 @@ void GlobalRecoAna:: Booking(){
         gDirectory->mkdir(Form("Zmc%d",kz));
         gDirectory->cd(Form("Zmc%d",kz));
           h = new TH1D("Mass_clean","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
- h = new TH1D("Mass_pure","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
- h = new TH1D("Mass_impure","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
+          h = new TH1D("Mass_pure","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
+          h = new TH1D("Mass_impure","Reconstructed mass spectra;Mass[Amu];",iz*300, (Double_t)iz/2. ,(Double_t)iz*2.5);
         gDirectory->cd("..");
       }
     gDirectory->cd("..");
@@ -337,10 +362,10 @@ BookYield ("yield-trkMC", true);
 BookYield ("yield-trkGHfixMC", true);
 
 // Cross section recostruction histos MC + ALL TW HITS FIXED
-BookYield ("yield-trkTWfixMC", true);
+BookYield ("yield-trkcutsMC", true);
 
 // Cross section recostruction histos from REAL DATA
-BookYield ("yield-trkTrigger");
+BookYield ("yield-trkReco");
 
 // Cross section TRUE histos
 BookYield ("yield-true_cut");
@@ -348,30 +373,39 @@ BookYield ("yield-true_cut");
 // Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
 BookYield ("yield-true_DET");
 
-// Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
-//BookYield ("yield-true_DET2");
+// Cross section TRUE histos reco real
+TString name = GetTitle();
+Int_t pos = name.Last('.');
+string name_ = "yield-trkREAL";
+name_ += name[pos-1];
+BookYield (name_.c_str());
+
+
+
+
 } else {
 
 // Cross section recostruction histos from REAL DATA
 BookYield ("yield-trkREAL");
 }
 
-
-
+//cuts selection
+h = new TH1D("h_eventSelected", "Event cuts in selector; cut; Events", 5, 0., 5.);
+std::string name_h[5] = {"All events","At least 1 TW point","1 BM Track",">0 vtx points","vtx - BM matching"};
+for(int i=1; i<=5; i++){
+	//int bin2 = h_eventSelected->GetXaxis()->FindBin(i);
+	((TH1D*)gDirectory->Get("h_eventSelected"))->GetXaxis()->SetBinLabel(i, name_h[i-1].c_str());
+}
 
   if(fFlagMC == false ){
     gDirectory->mkdir("fragTriggerStudies");
     gDirectory->cd("fragTriggerStudies");
-    h = new TH1D("chargeMB","chargeMB",8, 0.5 ,8.5);
-    h = new TH1D("chargeMBFrag","chargeMBFrag",8, 0.5 ,8.5);
-    h = new TH1D("chargeMBFrag_efficiency","chargeMBFrag",8, 0.5 ,8.5);
-    h = new TH1D("chargeMBFrag_RejectPower","",1, 0. ,1.);
+      h = new TH1D("chargeMB","chargeMB",8, 0.5 ,8.5);
+      h = new TH1D("chargeMBFrag","chargeMBFrag",8, 0.5 ,8.5);
+      h = new TH1D("chargeMBFrag_efficiency","chargeMBFrag",8, 0.5 ,8.5);
+      h = new TH1D("chargeMBFrag_RejectPower","",1, 0. ,1.);
     gDirectory->cd("..");
   }
-
-
-
-
 
   if(fFlagMC){
     gDirectory->mkdir("MC_check");
@@ -418,8 +452,6 @@ BookYield ("yield-trkREAL");
     h2= new TH2D("Mixing_matrix_cut", "Mixing_matrix_cut",8,0.5,8.5,8,0.5,8.5);
     gDirectory->cd("..");
 
-
-
     gDirectory->mkdir("MC");
     gDirectory->cd("MC");
     h2 = new TH2D("ChargePoi_vs_ChargeVT","",11, -1. ,10.,11, -1. ,10.);
@@ -430,9 +462,6 @@ BookYield ("yield-trkREAL");
       h2 = new TH2D("MCpartVsGlbtrackNum","Number of MC particles exit from target Vs number of reconstructed tracks;",11, -0.5, 10.5,11, -0.5, 10.5);
       h2 = new TH2D("MCpartVsGlbtrackNum_angle10","Number of MC particles exit from target with angle <10 Vs number of reconstructed tracks;",11, -0.5, 10.5,11, -0.5, 10.5);
     }
-
-
-
 
     for(int iz=0; iz<=primary_cha; iz++){
       gDirectory->mkdir(Form("Z%d",iz));
@@ -782,6 +811,29 @@ BookYield ("yield-trkREAL");
     gDirectory->cd("..");
   gDirectory->cd("..");
 
+
+  //theta Mig Matrix
+
+    gDirectory->mkdir("theta_MigMat");
+    gDirectory->cd("theta_MigMat");
+    for(int iz=1; iz<=primary_cha; iz++){
+    string name = "Z_" + to_string(iz-1) +"#"+to_string(iz-0.5)+"_"+to_string(iz+0.5);
+    gDirectory->mkdir(name.c_str());
+    gDirectory->cd(name.c_str());
+    string name_h2 = "migMatrix_theta_Z"+to_string(iz);
+    h2 = new TH2D(name_h2.c_str(), "Theta Migration Matrix; theta_true; theta_reco",10,0.,10.,10,0.,10.);
+    gDirectory->cd("..");
+    }
+    gDirectory->cd("..");
+
+
+
+
+
+
+
+
+
   if(FootDebugLevel(1))
     cout<<"GlboalRecoAna::Booking done"<<endl;
 
@@ -869,6 +921,7 @@ void GlobalRecoAna::MCGlbTrkLoopSetVariables(){
       }
 
       Th_true = P_true.Theta()*180./TMath::Pi();
+      //cout << "theta true: "<< Th_true <<endl;
       Th_cross = P_cross.Theta()*TMath::RadToDeg();
     }
   }
@@ -894,8 +947,8 @@ void GlobalRecoAna::RecoGlbTrkLoopSetVariables(){
    // take the direction of the beam in global SdR
    TVector3 BMslope = fpFootGeo->VecFromBMLocalToGlobal(myBMNtuTrk->GetTrack(0)->GetSlope());
    //take the angle between these 2 vectors
-   Th_recoBM = BMslope.Angle( TgtMomentum )*TMath::RadToDeg();
-
+   //Th_recoBM = BMslope.Angle( TgtMomentum )*TMath::RadToDeg();
+  Th_recoBM =  fGlbTrack->GetTgtThetaBm() *TMath::RadToDeg();
    if(FootDebugLevel(1))
      cout << "momX: " << TgtMomentum.X() << " momY: " << TgtMomentum.Y() << " momZ: " << TgtMomentum.Z() << endl << "BMX: " << BMslope.X() << " BMY: " << BMslope.Y() << " BMZ: " << BMslope.Z() << endl << "TH_mom: " << TgtMomentum.Theta() *TMath::RadToDeg()  <<  " thBM: "<< BMslope.Theta() *TMath::RadToDeg() << " th_recoBM: "<<Th_recoBM <<endl << endl;
 
@@ -933,10 +986,12 @@ void GlobalRecoAna::EkBinningStudies(){
   double DE=M_meas*Dg; //delta mass
   //----------
 
-  ((TH2D*)gDirectory->Get(Form("Ekin/Z%d/DE_vs_Ekin",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev(),DE*fpFootGeo->GevToMev());
-  ((TH1D*)gDirectory->Get(Form("Ekin/Z%d/Ek_meas",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev());
-  //migration matrix plot
   ((TH2D*)gDirectory->Get("Z_TWvsZ_fit"))->Fill(fGlbTrack->GetTwChargeZ(),fGlbTrack->GetFitChargeZ());
+  if(Z_meas<=primary_cha && Z_meas>0){
+    ((TH2D*)gDirectory->Get(Form("Ekin/Z%d/DE_vs_Ekin",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev(),DE*fpFootGeo->GevToMev());
+    ((TH1D*)gDirectory->Get(Form("Ekin/Z%d/Ek_meas",Z_meas)))->Fill(Ek_meas*fpFootGeo->GevToMev());
+  }
+  //migration matrix plot
   if(fFlagMC)
     ((TH2D*)gDirectory->Get("Z_truevsZ_reco"))->Fill(Z_true,Z_meas);
 
@@ -976,28 +1031,68 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
 
   //-------------------------------------------------------------
   //--Yield for CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA
-  if ( Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+  if ( Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
     FillYieldReco("yield-trkMC",Z_true,Z_meas,Th_true );
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + ALLTW FIX : i don't want not fragmented primary
-  if (N_TrkIdMC_TW == 1 && TrkIdMC_TW == TrkIdMC) {
-    if (Z_true >0. && Z_true < primary_cha && TriggerCheckMC() == true){
-      FillYieldReco("yield-trkTWfixMC",Z_true,Z_meas,Th_true );
-      ((TH1D*)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
+
+  // check del TAGpoint del TW
+  for (int ic = 0; ic < fGlbTrack->GetPointsN(); ic++)
+  { // from all the points of the track...
+    TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
+    TString str = tmp_poi->GetDevName();
+    if (str.Contains(TATWparGeo::GetBaseName()))
+    { //...i just want the TAGPOINT of TW
+      if (tmp_poi->GetMcTracksN() == 1)
+      { // if there is no ghost hits in the TW
+        if (tmp_poi->GetMcTrackIdx(0) == fGlbTrack->GetMcMainTrackId())
+        { // if there is match of MCId
+          if (Z_true > 0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
+          {
+             FillYieldReco("yield-trkcutsMC", Z_true, Z_meas, Th_true);
+             ((TH1D *)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
+          }
+        }
+      }
     }
   }
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + GHOST HITS FIX : i don't want not fragmented primary
   if (N_TrkIdMC_TW == 1)
-    if (Z_true >0. && Z_true <= primary_cha && TriggerCheckMC() == true)
+    if (Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
       FillYieldReco("yield-trkGHfixMC",Z_true,Z_meas,Th_true );
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAGWDtrigInfo )
-  if (Z_meas >0. && Z_meas <= primary_cha && TriggerCheck() == true)
-    FillYieldReco("yield-trkTrigger",Z_meas,0,Th_reco );
+  if (Z_meas >0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/)
+    FillYieldReco("yield-trkReco",Z_meas,0,Th_recoBM );
+
+  //-------------------------------------------------------------
+  //--CROSS SECTION reco
+  if (Z_meas >0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/){
+
+    TString name = GetTitle();
+    Int_t pos = name.Last('.');
+    string name_ = "yield-trkREAL";
+    name_ += name[pos-1];
+    FillYieldReco(name_.c_str(),Z_meas,0,Th_recoBM );
+
+
+
+
+
+
+
+
+
+
+
+
+  }
+
+
 
 return;
 }
@@ -1009,11 +1104,11 @@ void GlobalRecoAna::FillDataGlbTrkYields(){
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
-  if ( Z_meas >0. && Z_meas < primary_cha && wdTrig -> GetTriggersStatus()[1] == 1)     //fragmentation hardware trigger ON
+  if ( Z_meas >0. && Z_meas <= primary_cha /*&& wdTrig -> GetTriggersStatus()[1] == 1*/)     //fragmentation hardware trigger ON
   //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
    {
     //cout << "inside " <<endl;
-    FillYieldReco("yield-trkREAL",Z_meas,0,Th_reco );
+    FillYieldReco("yield-trkREAL",Z_meas,0,Th_recoBM );
     //cout << "thBM: "<< Th_recoBM <<endl;
     ((TH1D*)gDirectory->Get("ThReco_frag"))->Fill(Th_recoBM);
     ((TH1D*)gDirectory->Get("Charge_trk_frag"))->Fill(Z_meas);
@@ -1039,7 +1134,8 @@ void GlobalRecoAna::FillTrkPlots(){
   ((TH1D*)gDirectory->Get("Tof_tw"))->Fill(fGlbTrack->GetTwTof());
   ((TH1D*)gDirectory->Get("Tof_meas"))->Fill(Tof_meas);
   ((TH1D*)gDirectory->Get("Beta_meas"))->Fill(Beta_meas);
-  ((TH1D*)gDirectory->Get(Form("Zrec%d/Mass",Z_meas)))->Fill(M_meas);
+  if(Z_meas<=primary_cha && Z_meas>0)
+    ((TH1D*)gDirectory->Get(Form("Zrec%d/Mass",Z_meas)))->Fill(M_meas);
 
   if(fFlagMC && Beta_true>=0){
     ((TH1D*)gDirectory->Get("Charge_trk_True"))->Fill(Z_true);
@@ -1073,8 +1169,8 @@ void GlobalRecoAna::MCParticleStudies() {
   auto finalPos = particle-> GetFinalPos();
   int baryon = particle->GetBaryon();
   TVector3 initMom = particle->GetInitP();
-  double InitPmod = pow( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2), 0.5 );
-  Float_t Ek_tr_tot = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass );
+  double InitPmod = sqrt( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2));
+  Float_t Ek_tr_tot = ( sqrt( pow(InitPmod,2) + pow(mass,2)) - mass );
   Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
   Float_t Ek_true = Ek_tr_tot / (double)baryon;
   Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());   // in deg
@@ -1505,30 +1601,23 @@ void GlobalRecoAna::MSDanal(TAGpoint *tmp_poi, Int_t &idxCLU) {
           cout<<"tmp_msdclu->GetStripsN()="<<tmp_msdclu->GetStripsN()<<endl;
         }
 
-        for(int istri=0;istri<tmp_msdclu->GetStripsN();istri++){
-
-          TAMSDhit* strip = tmp_msdclu->GetStrip(istri);
-          if(FootDebugLevel(1))
-            cout<<"strip->GetMcTracksN()="<<strip->GetMcTracksN()<<endl;
-          if(strip->GetMcTracksN()>0){
-            for(int imcpa = 0; imcpa<strip->GetMcTracksN();imcpa++){
-            int ipa = strip->GetMcTrackIdx(imcpa);
+        if(tmp_msdclu->GetMcTracksN()>0){
+          for(int imcpa = 0; imcpa<tmp_msdclu->GetMcTracksN();imcpa++){
+            int ipa = tmp_msdclu->GetMcTrackIdx(imcpa);
             if(ipa>=0){
              TAMCpart *tmp_mctrack = GetNtuMcTrk()->GetTrack(ipa);
              Int_t charge_msd = tmp_mctrack->GetCharge();
              if(FootDebugLevel(1))
-               cout<<"sen "<<tmp_poi->GetSensorIdx()<<" : msdcl "<<tmp_poi->GetClusterIdx()<<" : stri "<<istri<<" ::: "<<"Poi MC "<<imcpa<<" = "<<charge<<" - "<<charge_msd<<" "<<strip->GetMcTrackIdx(imcpa)<<" "<<tmp_mctrack->GetFlukaID()<<" "<<tmp_mctrack->GetMotherID()<<" "<<tmp_mctrack->GetInitPos().X()<<" "<<tmp_mctrack->GetFinalPos().X()<<endl;
+               cout<<"sen "<<tmp_poi->GetSensorIdx()<<" : msdcl "<<tmp_poi->GetClusterIdx()<<" ::: "<<"Poi MC "<<imcpa<<" = "<<charge<<" - "<<charge_msd<<" "<<tmp_msdclu->GetMcTrackIdx(imcpa)<<" "<<tmp_mctrack->GetFlukaID()<<" "<<tmp_mctrack->GetMotherID()<<" "<<tmp_mctrack->GetInitPos().X()<<" "<<tmp_mctrack->GetFinalPos().X()<<endl;
 
-             ((TH2D*)gDirectory->Get("MC/ChargePoi_vs_ChargeMSD"))->Fill(charge_msd,charge);
-             mapall[strip->GetMcTrackIdx(imcpa)][charge_msd][tmp_mctrack->GetMotherID()+1].push_back(1);
-             if(charge_msd==charge)
-               nchargeok_msd++;
-             nchargeall_msd++;
-            }
-            }
-          }//close if MCtracks
-
-        }//close loop on strips
+               ((TH2D*)gDirectory->Get("MC/ChargePoi_vs_ChargeMSD"))->Fill(charge_msd,charge);
+               mapall[tmp_msdclu->GetMcTrackIdx(imcpa)][charge_msd][tmp_mctrack->GetMotherID()+1].push_back(1);
+               if(charge_msd==charge)
+                 nchargeok_msd++;
+               nchargeall_msd++;
+             }
+          }
+        }//close if MCtracks
 
         if(mapall.size()>1){
           if(FootDebugLevel(1))
@@ -2008,38 +2097,40 @@ void GlobalRecoAna::FillMassPlots(){
     cout<<"GlobalRecoAna::FillMassPlots start"<<endl;
 
   Int_t Z_meas=fGlbTrack->GetTwChargeZ();
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/chi2min",Z_meas)))->Fill(mass_ana->GetChiValue());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/almmin",Z_meas)))->Fill(mass_ana->GetAlmValue());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/mom_bestvsmeas",Z_meas)))->Fill((mass_ana->GetMomBest()-mass_ana->GetMomMeas())*TAGgeoTrafo::GevToMev());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/ekin_bestvsmeas",Z_meas)))->Fill((mass_ana->GetEkinBest()-mass_ana->GetEkinMeas())*TAGgeoTrafo::GevToMev());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/tof_bestvsmeas",Z_meas)))->Fill(mass_ana->GetTofBest()-mass_ana->GetTofMeas());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pb",Z_meas)))->Fill(mass_ana->GetMassPb());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pberr",Z_meas)))->Fill(mass_ana->GetMassErrPb());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_be",Z_meas)))->Fill(mass_ana->GetMassBe());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_beerr",Z_meas)))->Fill(mass_ana->GetMassErrBe());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pe",Z_meas)))->Fill(mass_ana->GetMassPe());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_peerr",Z_meas)))->Fill(mass_ana->GetMassErrPe());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_wavg",Z_meas)))->Fill(mass_ana->GetMassWavg());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_wavgerr",Z_meas)))->Fill(mass_ana->GetMassErrWavg());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_chi",Z_meas)))->Fill(mass_ana->GetMassChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_chierr",Z_meas)))->Fill(mass_ana->GetMassErrChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_chi",Z_meas)))->Fill(mass_ana->GetMomChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_chierr",Z_meas)))->Fill(mass_ana->GetMomErrChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_chi",Z_meas)))->Fill(mass_ana->GetEkinChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_chierr",Z_meas)))->Fill(mass_ana->GetEkinErrChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_chi",Z_meas)))->Fill(mass_ana->GetTofChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_chierr",Z_meas)))->Fill(mass_ana->GetTofErrChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_alm",Z_meas)))->Fill(mass_ana->GetMassAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_almerr",Z_meas)))->Fill(mass_ana->GetMassErrAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_alm",Z_meas)))->Fill(mass_ana->GetMomAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_almerr",Z_meas)))->Fill(mass_ana->GetMomErrAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_alm",Z_meas)))->Fill(mass_ana->GetEkinChi());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_almerr",Z_meas)))->Fill(mass_ana->GetEkinErrAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_alm",Z_meas)))->Fill(mass_ana->GetTofAlm());
-  ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_almerr",Z_meas)))->Fill(mass_ana->GetTofErrAlm());
-  ((TH1D*)gDirectory->Get("MassReco/InputStatus"))->Fill(mass_ana->GetInputStatus());
-  ((TH1D*)gDirectory->Get("MassReco/ChiMassStatus"))->Fill(mass_ana->GetChiFitStatus());
-  ((TH1D*)gDirectory->Get("MassReco/AlmMassStatus"))->Fill(mass_ana->GetAlmFitStatus());
+  if(Z_meas<=primary_cha && Z_meas>0){
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/chi2min",Z_meas)))->Fill(mass_ana->GetChiValue());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/almmin",Z_meas)))->Fill(mass_ana->GetAlmValue());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/mom_bestvsmeas",Z_meas)))->Fill((mass_ana->GetMomBest()-mass_ana->GetMomMeas())*TAGgeoTrafo::GevToMev());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/ekin_bestvsmeas",Z_meas)))->Fill((mass_ana->GetEkinBest()-mass_ana->GetEkinMeas())*TAGgeoTrafo::GevToMev());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/tof_bestvsmeas",Z_meas)))->Fill(mass_ana->GetTofBest()-mass_ana->GetTofMeas());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pb",Z_meas)))->Fill(mass_ana->GetMassPb());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pberr",Z_meas)))->Fill(mass_ana->GetMassErrPb());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_be",Z_meas)))->Fill(mass_ana->GetMassBe());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_beerr",Z_meas)))->Fill(mass_ana->GetMassErrBe());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_pe",Z_meas)))->Fill(mass_ana->GetMassPe());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_peerr",Z_meas)))->Fill(mass_ana->GetMassErrPe());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_wavg",Z_meas)))->Fill(mass_ana->GetMassWavg());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_wavgerr",Z_meas)))->Fill(mass_ana->GetMassErrWavg());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_chi",Z_meas)))->Fill(mass_ana->GetMassChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_chierr",Z_meas)))->Fill(mass_ana->GetMassErrChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_chi",Z_meas)))->Fill(mass_ana->GetMomChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_chierr",Z_meas)))->Fill(mass_ana->GetMomErrChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_chi",Z_meas)))->Fill(mass_ana->GetEkinChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_chierr",Z_meas)))->Fill(mass_ana->GetEkinErrChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_chi",Z_meas)))->Fill(mass_ana->GetTofChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_chierr",Z_meas)))->Fill(mass_ana->GetTofErrChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_alm",Z_meas)))->Fill(mass_ana->GetMassAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mass_almerr",Z_meas)))->Fill(mass_ana->GetMassErrAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_alm",Z_meas)))->Fill(mass_ana->GetMomAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Mom_almerr",Z_meas)))->Fill(mass_ana->GetMomErrAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_alm",Z_meas)))->Fill(mass_ana->GetEkinChi());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Ekin_almerr",Z_meas)))->Fill(mass_ana->GetEkinErrAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_alm",Z_meas)))->Fill(mass_ana->GetTofAlm());
+    ((TH1D*)gDirectory->Get(Form("MassReco/Zreco%d/Tof_almerr",Z_meas)))->Fill(mass_ana->GetTofErrAlm());
+    ((TH1D*)gDirectory->Get("MassReco/InputStatus"))->Fill(mass_ana->GetInputStatus());
+    ((TH1D*)gDirectory->Get("MassReco/ChiMassStatus"))->Fill(mass_ana->GetChiFitStatus());
+    ((TH1D*)gDirectory->Get("MassReco/AlmMassStatus"))->Fill(mass_ana->GetAlmFitStatus());
+  }
 
   return;
 }
@@ -2189,12 +2280,18 @@ void GlobalRecoAna::BeforeEventLoop(){
   if(FootDebugLevel(1))
     cout<<"GlobalRecoAna::BeforeEventLoop start"<<endl;
 
-  CampaignChecks();
+
   ReadParFiles();
+  CampaignChecks();
   SetupTree();
+  cout <<"fSkipEventsN :" << fSkipEventsN <<endl;
   myReader->Open(GetName(), "READ", "tree");
+  if (fSkipEventsN > 0){
+       myReader->Reset(fSkipEventsN);
+     }
 
   file_out = new TFile(GetTitle(),"RECREATE");
+
   cout<<"Going to create "<<GetTitle()<<" outfile "<<endl;
 //  SetRunNumber(runNb); //serve veramente?
   //  myReader->GetTree()->Print();
@@ -2203,6 +2300,9 @@ void GlobalRecoAna::BeforeEventLoop(){
   gTAGroot->BeginEventLoop();
   mass_ana=new GlobalRecoMassAna();
   myGlb = (TAGntuGlbTrack*)fpNtuGlbTrack->GenerateObject();
+  //myVtNtuClus = (TAVTntuCluster*)fpNtuClusVtx->GenerateObject();
+  myVtNtuVtx = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
+
   myTWNtuPt = (TATWntuPoint*)fpNtuRecTw->GenerateObject();
   myMSDNtuHit = (TAMSDntuHit*)fpNtuRecTw->GenerateObject();
   pCaNtuClu = (TACAntuCluster*)fpNtuClusCa->GenerateObject();
@@ -2253,24 +2353,25 @@ void GlobalRecoAna::AfterEventLoop(){
     }else {  // real data
       luminosity_name = "luminosityREAL";
     }
-  h = new TH1D(luminosity_name.c_str(),"",1, 0. ,1.);
-  ((TH1D*)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1,Ntg*nTotEv  );
+    h = new TH1D(luminosity_name.c_str(), "", 1, 0., 1.);
+    ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * recoEvents);
+    cout << "Reconstructed events: " << recoEvents << endl;
 
-
-  //study efficiency of MB trigger
-  if (fFlagMC == false) {
-     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))
-     //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))
-//TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
-    ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency")) -> Divide(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB")));
-    ((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag_RejectPower")) ->SetBinContent(1,(((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->GetEntries() /((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))->GetEntries() )  );
+    // study efficiency of MB trigger
+    if (fFlagMC == false)
+    {
+      //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMB"))
+      //((TH1D*)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))
+      // TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
+      ((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMBFrag_efficiency"))->Divide(((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMB")));
+      ((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMBFrag_RejectPower"))->SetBinContent(1, (((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMBFrag"))->GetEntries() / ((TH1D *)gDirectory->Get("fragTriggerStudies/chargeMB"))->GetEntries()));
   }
 
 
   gTAGroot->EndEventLoop();
 
   if(fFlagMC)
-    StudyThetaReso(); //to be fixed!!!
+    //StudyThetaReso(); //to be fixed!!!
   //PrintNCharge();
 
   cout <<"Writing..." << endl;
@@ -2666,8 +2767,8 @@ void GlobalRecoAna::TWAlgoStudy(){
     int type = mctrk1->GetType();
     int baryon = mctrk1->GetBaryon();
     int dead = mctrk1->GetDead();
-    double InitPmod = pow( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2), 0.5 );
-    double Ekin_point = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass )/(double)baryon*1000.;
+    double InitPmod = sqrt( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2) );
+    double Ekin_point = ( sqrt( pow(InitPmod,2) + pow(mass,2)) - mass )/(double)baryon*1000.;
     double CosTheta = initMom(2)/InitPmod;
     double Theta = TMath::ACos(CosTheta)*180./TMath::Pi();
     int indexSize = twp->GetMcTracksN();
@@ -2825,9 +2926,16 @@ for(int it=0;it<myGlb->GetTracksN();it++){ // for every track
       ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWFixed"))->Fill(Z_true,Z_meas);
   }
 
+  if (TrkIdMC_TW == TrkIdMC) {      //stampa solo se TW point ha id della traccia
+      ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TrackFixed"))->Fill(Z_true,Z_meas);
+  }
+
   if (N_TrkIdMC_TW == 1) {      //stampa solo se non c'è gosh hits
       ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_TWGhostHitsRemoved"))->Fill(Z_true,Z_meas);
   }
+
+  ((TH2D*)gDirectory->Get("TrkVsMC/Z_truevsZ_reco_All"))->Fill(Z_true,Z_meas); //stampa senza misreco-cuts
+
 }
 
 //------------------------------  STUDY OF MC PARTICLES
@@ -2844,8 +2952,8 @@ auto  Mid = particle->GetMotherID();
             auto finalPos = particle-> GetFinalPos();
             int baryon = particle->GetBaryon();
             TVector3 initMom = particle->GetInitP();
-            double InitPmod = pow( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2), 0.5 );
-            Float_t Ek_tr_tot = ( pow( pow(InitPmod,2) + pow(mass,2), 0.5) - mass );
+            double InitPmod = sqrt( pow(initMom(0),2) + pow(initMom(1),2) + pow(initMom(2),2) );
+            Float_t Ek_tr_tot = sqrt( pow(InitPmod,2) + pow(mass,2)) - mass;
             Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
             Float_t Ek_true = Ek_tr_tot / (double)baryon;
             Float_t theta_tr = particle->GetInitP().Theta()*(180/TMath::Pi());   // in deg
@@ -2996,7 +3104,7 @@ void GlobalRecoAna:: BookYield (string path, bool enableMigMatr) {
 
       h = new TH1D("theta_","",200, 0 ,90.);
       if (enableMigMatr)
-      h2 = new TH2D("migMatrix_Z", "Bkg Z_true vs Z_reco",8,0.5,8.5,8,0.5,8.5);
+      h2 = new TH2D("migMatrix_Z", "migMatrix_Z; Z_{true}; Z_{reco}",8,0.5,8.5,8,0.5,8.5);
 
       gDirectory->cd("..");
     }
@@ -3508,4 +3616,75 @@ for (int i = 0; i < myTWNtuPt->GetPointsN(); i++) {
 //TABMntuHit* bmNtuHit = (TABMntuHit*) fpNtuHitBm->GenerateObject();
 //Int_t nbmHits  = bmNtuHit->GetHitsN();
 //cout <<nbmHits << endl;
+}
+
+bool GlobalRecoAna::SelectionCuts(){
+  bool categorize_TWpoint = false;
+	bool categorize_BMtrack = false;
+	bool categorize_VTvtx = false;
+  bool categorize_VTBMmatching = false;
+	bool categorize_TWdist = false;
+  TAVTvertex* vtxPD   = 0x0; //NEW
+
+//1) The event has at least one TWpoint
+if (myTWNtuPt->GetPointsN()==0){
+  categorize_TWpoint = false;
+}
+  else {
+  categorize_TWpoint = true;
+  }
+
+//2) There is only one BM track
+if (myBMNtuTrk->GetTracksN() !=1) {
+  categorize_BMtrack = false;
+} else {categorize_BMtrack = true;
+}
+
+//3) There is at least one vtx point
+if (myVtNtuVtx -> GetVertexN()  == 0 ) {
+categorize_VTvtx = false;
+} else {categorize_VTvtx = true;
+}
+
+//4) there is vtx - bm matching with at least one vtx point
+if (categorize_BMtrack == true && categorize_VTvtx == true ){
+  categorize_VTBMmatching = false;
+  for (Int_t iVtx = 0; iVtx < myVtNtuVtx -> GetVertexN(); ++iVtx) {
+		vtxPD = myVtNtuVtx->GetVertex(iVtx);
+		if (vtxPD == 0x0){
+			continue;
+		}
+		else if(!vtxPD->IsBmMatched() ){
+			  continue;
+		}
+    else {
+      categorize_VTBMmatching = true;
+    }
+  }
+} else {
+categorize_VTBMmatching = false;
+}
+
+
+
+
+
+((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(1,1);   // all events
+if (categorize_TWpoint) ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(2,1);
+if (categorize_TWpoint && categorize_BMtrack)     ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(3,1);
+if (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx) ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(4,1);
+if (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx && categorize_VTBMmatching== 1) ((TH1D*)gDirectory->Get("h_eventSelected"))->AddBinContent(5,1);
+
+return (categorize_TWpoint && categorize_BMtrack && categorize_VTvtx && categorize_VTBMmatching );
+}
+
+
+void GlobalRecoAna::ThetaTrueVSThetaRecoPlots(){
+    if(Z_true>0 && Z_true<=primary_cha){
+
+    string name = "theta_MigMat/Z_" + to_string(Z_true-1) +"#"+to_string(Z_true-0.5)+"_"+to_string(Z_true+0.5)+"/migMatrix_theta_Z"+to_string(Z_true);
+    //cout << name << endl;
+    ((TH2D*)gDirectory->Get(name.c_str()))->Fill(Th_true, Th_recoBM);
+
+    }
 }

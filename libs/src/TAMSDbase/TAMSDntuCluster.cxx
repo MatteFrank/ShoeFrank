@@ -45,9 +45,9 @@ TAMSDntuCluster::~TAMSDntuCluster()
 //! \param[in] iSensor sensor id
 Int_t TAMSDntuCluster::GetClustersN(Int_t iSensor) const
 {
-  if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
     TClonesArray*list = GetListOfClusters(iSensor);
-    return list->GetEntries();   
+    return list->GetEntriesFast();   
   } else 
     return -1;   
 }
@@ -58,7 +58,7 @@ Int_t TAMSDntuCluster::GetClustersN(Int_t iSensor) const
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor)
 {
-  if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
     TClonesArray* list = (TClonesArray*)fListOfClusters->At(iSensor);
     return list;
   } else 
@@ -71,7 +71,7 @@ TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor)
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor) const
 {
-  if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
     TClonesArray* list = (TClonesArray*)fListOfClusters->At(iSensor);
     return list;
     
@@ -86,7 +86,7 @@ TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor) const
 //! \param[in] iCluster cluster index
 TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 {
-  if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
+  if (iCluster >=0 && iCluster < GetClustersN(iSensor)) {
     TClonesArray* list = GetListOfClusters(iSensor);
     return (TAMSDcluster*)list->At(iCluster);
   } else
@@ -100,7 +100,7 @@ TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster)
 //! \param[in] iCluster cluster index
 const TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) const
 {
-  if (iCluster >=0 || iCluster < GetClustersN(iSensor)) {
+  if (iCluster >=0 && iCluster < GetClustersN(iSensor)) {
     TClonesArray* list = GetListOfClusters(iSensor);
     return (TAMSDcluster*)list->At(iCluster);
   } else
@@ -139,13 +139,13 @@ void TAMSDntuCluster::Clear(Option_t*)
 //! \param[in] iSensor sensor id
 TAMSDcluster* TAMSDntuCluster::NewCluster(Int_t iSensor)
 {
-  if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
     TClonesArray &clusterArray = *GetListOfClusters(iSensor);
     TAMSDcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAMSDcluster();
     cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
     return cluster;
   } else {
-    cout << Form("Wrong sensor number %d\n", iSensor);
+    Error("NewCluster()", "Wrong sensor number %d\n", iSensor);
     return 0x0;
   }   
 }
@@ -157,15 +157,15 @@ TAMSDcluster* TAMSDntuCluster::NewCluster(Int_t iSensor)
 //! \param[in] iSensor sensor id
 TAMSDcluster* TAMSDntuCluster::NewCluster(TAMSDcluster* clus, Int_t iSensor)
 {
-  if (iSensor >= 0  || iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
     TClonesArray &clusterArray = *GetListOfClusters(iSensor);
     TAMSDcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAMSDcluster(*clus);
     cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
     return cluster;
   } else {
-    cout << Form("Wrong sensor number %d\n", iSensor);
+    Error("NewCluster()", "Wrong sensor number %d\n", iSensor);
     return 0x0;
-  }   
+  }
 }
 
 /*------------------------------------------+---------------------------------*/

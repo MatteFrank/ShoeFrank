@@ -260,7 +260,7 @@ Bool_t TACAactNtuClusterP::ApplyCuts(TACAcluster* cluster)
   // TACAparConf* pConfig = (TACAparConf*) fpConfig->Object();
 
   // TClonesArray* list = cluster->GetListOfHits();
-  // Int_t  entries = list->GetEntries();
+  // Int_t  entries = list->GetEntriesFast();
 
   // cuts on crystals in cluster
   // if(entries < pConfig->GetSensorPar(cluster->GetPlaneNumber()).MinNofCrystalsInCluster ||

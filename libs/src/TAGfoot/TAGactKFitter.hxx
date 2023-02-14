@@ -58,10 +58,12 @@
 
 #include "TADIparGeo.hxx"
 
+#include "TASTntuRaw.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAIThit.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TAMCntuPart.hxx"
+#include "TACAntuCluster.hxx"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -106,41 +108,43 @@ public:
 
 	virtual	void   CreateHistogram();
 
-
-	int MakeFit(long evNum, TAGFselectorBase* selector);
-	void MakePrefit();
-
-	void RecordTrackInfo( Track* track, string hitSampleName );
-
-	void IncludeDetectors();
-	void CreateGeometry();
-
 	void Finalize();
 
-	void PrintEfficiency();
-	void PrintPurity();
-	void PrintSelectionEfficiency();
-
-	void InitEventDisplay();
-
-	void MatrixToZero( TMatrixD *matrix );
-
-	int FindMostFrequent( vector<vector<int>>* mcParticleID_track );
-	double TrackQuality( vector<vector<int>>* mcParticleID_track );
-
-	void GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart );
-	void GetRecoTrackInfo ( int i, Track* track, TVector3* KalmanPos, TVector3* KalmanMom,
-											TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
-	// void GetRecoTrackInfo ( StateOnPlane* state,
-	// 										TVector3* KalmanPos, TVector3* KalmanMom,
-	// 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
-	void GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
-
-	void FillGenCounter( map<string, int> mappa );
-	void SetMcSample();
+	void	SetMcSample();
 
 private:
 
+	int		MakeFit(long evNum, TAGFselectorBase* selector);
+	void	MakePrefit();
+
+	void	RecordTrackInfo( Track* track, string hitSampleName );
+
+	void	IncludeDetectors();
+	void	CreateGeometry();
+
+	void	PrintEfficiency();
+	void	PrintPurity();
+	void	PrintSelectionEfficiency();
+
+	void	InitEventDisplay();
+
+	void	MatrixToZero( TMatrixD *matrix );
+
+	int		FindMostFrequent( vector<vector<int>>* mcParticleID_track );
+	double	TrackQuality( vector<vector<int>>* mcParticleID_track );
+
+	void	GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart );
+	void	GetRecoTrackInfo ( int i, Track* track, TVector3* KalmanPos, TVector3* KalmanMom, TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
+
+	void 	MatchCALOclusters();
+	
+	// void GetRecoTrackInfo ( StateOnPlane* state,
+	// 										TVector3* KalmanPos, TVector3* KalmanMom,
+	// 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
+	void	GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
+
+	void	FillGenCounter( map<string, int> mappa );
+	
 	void	EvaluateProjectionEfficiency(Track* fitTrack);
 	void	CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselectorBase* selector);
 	void	ClearData();
@@ -155,7 +159,7 @@ private:
 	AbsKalmanFitter*  m_dafRefFitter;					///< DAF (Deterministic annealing filter) with kalman ref
 	AbsKalmanFitter*  m_dafSimpleFitter;				///< DAF (Deterministic annealing filter) with simple kalman
 
-	TAMCntuPart*  m_trueParticleRep=0x0;				///< Ptr to TAMCntuPart object
+	TAMCntuPart*  m_trueParticleRep;					///< Ptr to TAMCntuPart object
 
 	// TAGFuploader* m_uploader;							///< GenFit Uploader
 	// TAGFselectorBase* m_selector;							///< GenFit Selector
@@ -165,7 +169,7 @@ private:
 	TAGF_KalmanStudies* m_trackAnalysis;				///< GenFit custom output class
 
 	map< int, vector<AbsMeasurement*> > m_allHitMeasGF;	///< Map of GenFit measurements; the key is the FitPlane index
-	map< int, vector<int> > m_measParticleMC_collection;	///< Map of the MC particles found in each measurement; the key is the global measurement ID (det*1E7 + sensor*1E5 + hit)
+	map< int, vector<int> >* m_measParticleMC_collection;	///< Map of the MC particles found in each measurement; the key is the global measurement ID (det*1E7 + sensor*1E5 + hit)
 
 	map<TString,Track*> m_mapTrack;						///< Map of the tracks sent to the MakeFit function; the key is the track name, i.e. particle hypothesis ("H_3", "Li_7", ...) + an index containing the vertex number and tracklet number (1E3*vertex+tracklet). For "TrueParticle" selection, the number at the end of the track name is the MC particle ID
 	vector<Track*> m_vectorConvergedTrack;				///< Vector of fitted+converged tracks
@@ -177,15 +181,15 @@ private:
 
 	EventDisplay* display;								///< GenFit event display
 
-	shared_ptr<TASTparGeo> m_ST_geo;					///< Pointer to ST parGeo
-	shared_ptr<TABMparGeo> m_BM_geo;					///< Pointer to BM parGeo
-	shared_ptr<TAGparGeo> m_TG_geo;						///< Pointer to TG parGeo
-	shared_ptr<TADIparGeo> m_DI_geo;					///< Pointer to DI parGeo
-	shared_ptr<TAVTparGeo> m_VT_geo;					///< Pointer to VT parGeo
-	shared_ptr<TAITparGeo> m_IT_geo;					///< Pointer to IT parGeo
-	shared_ptr<TAMSDparGeo> m_MSD_geo;					///< Pointer to MSD parGeo
-	shared_ptr<TATWparGeo> m_TW_geo;					///< Pointer to TW parGeo
-	shared_ptr<TACAparGeo> m_CA_geo;					///< Pointer to CA parGeo
+	TASTparGeo* m_ST_geo;								///< Pointer to ST parGeo
+	TABMparGeo* m_BM_geo;								///< Pointer to BM parGeo
+	TAGparGeo* m_TG_geo;								///< Pointer to TG parGeo
+	TADIparGeo* m_DI_geo;								///< Pointer to DI parGeo
+	TAVTparGeo* m_VT_geo;								///< Pointer to VT parGeo
+	TAITparGeo* m_IT_geo;								///< Pointer to IT parGeo
+	TAMSDparGeo* m_MSD_geo;								///< Pointer to MSD parGeo
+	TATWparGeo* m_TW_geo;								///< Pointer to TW parGeo
+	TACAparGeo* m_CA_geo;								///< Pointer to CA parGeo
 	TGeoVolume* m_TopVolume;							///< Top volume of geometry
 
 	TAGgeoTrafo* m_GeoTrafo;							///< GeoTrafo object
@@ -278,8 +282,11 @@ private:
 
 	uint m_singleVertexCounter;							///< Counter for events w/ only one vertex
 	uint m_noVTtrackletEvents;							///< Counter for events w/ no valid VT tracklets
+	uint m_SCpileUpEvts;								///< Counter for events flagged as pile-up in the SC
 	uint m_noTWpointEvents;								///< Counter for events w/ no valid TW point
-	uint m_eventDisplayCounter=0;						///< Aux counter for event display event counter
+	uint m_eventDisplayCounter;							///< Aux counter for event display event counter
+
+	float m_CALOextrapTolerance;						///< Maximum tolerance for CALO cluster matching in global tracks extrapolation
 
 	ClassDef(TAGactKFitter,0);
 };

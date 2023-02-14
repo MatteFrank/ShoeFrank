@@ -30,6 +30,7 @@ set( with_dictionnaries
    TATWactCalibTW
    TATWactNtuPoint
    TATWparGeo
+   TATWparConf
    TATWdigitizer
    TATWchannelMap
    TATWcalibrationMap

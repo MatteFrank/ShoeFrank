@@ -346,10 +346,10 @@ void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter,
    if (key.IsNull()) return;
    
    TObjArray* list = key.Tokenize(delimiter);
-   if (list->GetEntries() != size)
+   if (list->GetEntriesFast() != size)
 	  Error("ReadItem()","wrong tokenize for [%s] with size %d", key.Data(), size);
    
-   for (Int_t k = 0; k < list->GetEntries(); k++) {
+   for (Int_t k = 0; k < list->GetEntriesFast(); k++) {
 	  TObjString* obj = (TObjString*)list->At(k);
 	  TString item = obj->GetString();
      item =  Normalize(item);
@@ -361,7 +361,7 @@ void TAGparTools::ReadItem(Double_t* coeff, Int_t size,  const Char_t delimiter,
    }
    
    if(FootDebugLevel(3)) {
-	  for (Int_t i = 0; i < list->GetEntries(); ++i) {
+	  for (Int_t i = 0; i < list->GetEntriesFast(); ++i) {
 		 cout << coeff[i] << " " ;      
 	  }
 	  cout << endl;
@@ -500,9 +500,16 @@ TString TAGparTools::Normalize(const char* line)
    while ( rv[0] == ' ' || rv == '\t')
 	  rv.Remove(0,1);
    
-   while ( rv[rv.Length()-1] == ' ' || rv[rv.Length()-1] == '\t')
-	  rv.Remove(rv.Length()-1,1);
+   if (rv.Length() <= 0)
+      return rv;
    
+   while ( rv[rv.Length()-1] == ' ' || rv[rv.Length()-1] == '\t') {
+      if (rv.Length() >= 1) {
+         rv.Remove(rv.Length()-1,1);
+         if (rv.Length() <= 0) return rv;
+      }
+   }
+
    Ssiz_t i(0);
    bool kill = false;
    
@@ -513,7 +520,7 @@ TString TAGparTools::Normalize(const char* line)
 			--i;
 		 } else
 			kill = true;
-	  } else 
+	  } else
 		 kill = false;
    }
    
@@ -802,7 +809,7 @@ Int_t  TAGparTools::GetCrossReg(TString &regname)
 }
 
 //____________________________________________________________________________
-//! Tokenize
+//! Tokenize string
 //!
 //! \param[in] str string
 //! \param[in] delimiters delimiter
@@ -825,4 +832,46 @@ vector<string>  TAGparTools::Tokenize(const string str, const string delimiters)
    }
    
    return tokens;
+}
+
+//____________________________________________________________________________
+//! Tokenize TString
+//!
+//! \param[in] str TString
+//! \param[in] delimiters delimiter
+//! \return a TString vector
+vector<TString> TAGparTools::Tokenize(const TString line, const Char_t delimiter)
+{
+   vector<TString> list;
+
+   Int_t len  = line.Length();
+   Int_t pos1 = 0;
+   Int_t pos2 = 0;
+   Int_t i    = 0;
+   
+   do{
+      if (line[i] == delimiter) {
+         pos2 = i;
+            TString tmp(line(pos1, pos2-pos1));
+            tmp = Normalize(tmp.Data());
+            
+         if (!tmp.IsWhitespace())
+            list.push_back(tmp);
+         
+         pos1 = pos2+1;
+         i++;
+      }
+      i++;
+   } while (i < len);
+   
+   // if no separator at the end of line
+   if (pos1 < len -2) {
+      TString tmp(line(pos1, len-pos1));
+      tmp = Normalize(tmp.Data());
+      
+      if (!tmp.IsWhitespace())
+         list.push_back(tmp);
+   }
+   
+   return list;
 }

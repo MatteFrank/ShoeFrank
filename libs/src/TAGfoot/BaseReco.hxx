@@ -207,21 +207,6 @@ public:
    //! Disable tracking
    void DisableTracking()      { fFlagTrack = false;      }
    
-   //! Enable MSD tracking
-   void EnableMsdTracking()    { fFlagMsdTrack = true;    }
-   //! Disable MSD tracking
-   void DisableMsdTracking()   { fFlagMsdTrack = false;   }
-   
-   //! Enable MSD pedestal
-   void EnableMsdPedestal()    { fFlagMsdPed = true;    }
-   //! Disable MSD pedestal
-   void DisableMsdPedestal()   { fFlagMsdPed = false;   }
-   
-   //! Enable ITR tracking
-   void EnableItrTracking()    { fFlagItrTrack = true;    }
-   //! Disable ITR tracking
-   void DisableItrTracking()   { fFlagItrTrack = false;   }
-   
    //! Enable TW calibration per bar
    void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
    //! Disable TW calibration per bar
@@ -384,6 +369,20 @@ public:
    //! Check MC info saving in output tree
    static Bool_t IsSaveMc()    { return fSaveMcFlag;  }
    
+   //! return  MSD tracking
+   static Bool_t IsMsdTracking()      { return fgFlagMsdTrack;    }
+   //! Enable MSD tracking
+   static void EnableMsdTracking()    { fgFlagMsdTrack = true;    }
+   //! Disable MSD tracking
+   static void DisableMsdTracking()   { fgFlagMsdTrack = false;   }
+
+   //! return  MSD tracking
+   static Bool_t IsItrTracking()      { return fgFlagItrTrack;    }
+   //! Enable ITR tracking
+   static void EnableItrTracking()    { fgFlagItrTrack = true;    }
+   //! Disable ITR tracking
+   static void DisableItrTracking()   { fgFlagItrTrack = false;   }
+   
 protected:
 
    TString               fExpName;        ///< Experiment name
@@ -504,9 +503,6 @@ protected:
    Bool_t                fFlagHits;         ///< flag to save hits in tree
    Bool_t                fFlagHisto;        ///< flag for histo generatiom
    Bool_t                fFlagTrack;        ///< flag for tracking
-   Bool_t                fFlagMsdPed;       ///< flag for MSD pedestal run
-   Bool_t                fFlagMsdTrack;     ///< flag for MSD tracking
-   Bool_t                fFlagItrTrack;     ///< flag for ITR tracking
    Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar
    TString               fgVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
@@ -551,6 +547,8 @@ protected:
    static Bool_t fgItrTrackFlag; ///< ITR tracking flag
    static Bool_t fgMsdTrackFlag; ///< MSD tracking flag
    static Bool_t fSaveMcFlag;    ///< MC saving flag
+   static Bool_t fgFlagMsdTrack; ///< flag for MSD tracking
+   static Bool_t fgFlagItrTrack; ///< flag for ITR tracking
 
    ClassDef(BaseReco, 1);        ///< Base class for reconstruction
 };

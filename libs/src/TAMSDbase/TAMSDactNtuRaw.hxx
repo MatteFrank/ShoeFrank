@@ -51,10 +51,6 @@ public:
    static void EnableCNSub()   { fgCommonModeSub = true;  }
    //! Disable common mode subtraction
    static void DisableCNSub()  { fgCommonModeSub = false; }
-   //! Enable pedestal run
-   static void EnablePedRun()  { fgPedestal = true;       }
-   //! Disable pedestal run
-   static void DisablePedRun() { fgPedestal = false;      }
 
 private:
     TAGdataDsc*     fpDatRaw;		        ///< output data dsc
@@ -63,6 +59,8 @@ private:
     TAGparaDsc*     fpParCal;            ///< calibration parameter dsc
     TAGparaDsc*     fpParGeo;            ///< geometry parameter dsc
     TAGparaDsc*     fpParConf;           ///< configuration parameter dsc
+
+   Bool_t           fPedestal;          ///< Flag for pedestal runs
 
     TH1F*           fpHisSeedMap[MaxPlane];    ///< seed map
     TH1F*           fpHisStripMap[MaxPlane];   ///< strip map
@@ -76,7 +74,6 @@ private:
    static UInt_t fkgThreshold;           ///< charge threshold
    static Bool_t fgPedestalSub;          ///< pedestal substraction flag
    static Bool_t fgCommonModeSub;        ///< common noise substraction flag
-   static Bool_t fgPedestal;             ///< Flag for pedestal runs
 };
 
 #endif

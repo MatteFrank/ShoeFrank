@@ -58,7 +58,7 @@ TACArawHit::~TACArawHit()
 //! Get number of hits
 Int_t TACAntuRaw::GetHitsN() const
 {
-  return fListOfHits->GetEntries();
+  return fListOfHits->GetEntriesFast();
 }
 
 //##############################################################################
@@ -70,7 +70,7 @@ ClassImp(TACAntuRaw);
 //! Default constructor.
 TACAntuRaw::TACAntuRaw()
 : TAGdata(),
-  fHistN(0),
+  fHitsN(0),
   fListOfHits(0)
 {
   SetupClones();
@@ -95,7 +95,7 @@ void TACAntuRaw::SetupClones()
 //! Clear event.
 void TACAntuRaw::Clear(Option_t*){
   TAGdata::Clear();
-  fHistN = 0;
+  fHitsN = 0;
 
   if (fListOfHits) fListOfHits->Clear();
 }
@@ -107,7 +107,10 @@ void TACAntuRaw::Clear(Option_t*){
 //! \param[in] i hit index
 TACArawHit* TACAntuRaw::GetHit(Int_t i)
 {
-  return (TACArawHit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i < GetHitsN())
+    return (TACArawHit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 
@@ -117,7 +120,10 @@ TACArawHit* TACAntuRaw::GetHit(Int_t i)
 //! \param[in] i hit index
 const TACArawHit* TACAntuRaw::GetHit(Int_t i) const
 {
-  return (const TACArawHit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i < GetHitsN())
+    return (const TACArawHit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
@@ -129,7 +135,7 @@ void TACAntuRaw::NewHit(TWaveformContainer *W, double temp)
 {  
   TClonesArray &pixelArray = *fListOfHits;
   TACArawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TACArawHit(W, temp);
-  fHistN++;
+  fHitsN++;
 }
 
 //______________________________________________________________________________
@@ -140,7 +146,7 @@ void TACAntuRaw::NewHit(TWaveformContainer *W, double temp)
 void TACAntuRaw::ToStream(ostream& os, Option_t* option) const
 {
    os << "TACAntuRaw " << GetName()
-	   << " fHistN" << fHistN
+	   << " fHitsN" << fHitsN
       << endl;
 }
 

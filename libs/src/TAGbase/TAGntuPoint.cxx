@@ -302,7 +302,7 @@ TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 
 //! Get number of points
 Int_t TAGntuPoint::GetPointsN()
 {
-	return fListOfPoints->GetEntries();
+	return fListOfPoints->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

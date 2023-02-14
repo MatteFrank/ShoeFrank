@@ -111,10 +111,14 @@
       IF ( X.LE.XLAT(1) .OR. X.GT.XLAT(NX) .OR.
      &     Y.LE.YLAT(1) .OR. Y.GT.YLAT(NY) .OR.
      &     Z.LE.ZLAT(1) .OR. Z.GT.ZLAT(NZ) ) THEN
-         B = 30.D-06
-         BTX = ZERZER
-         BTY = ZERZER
-         BTZ = ONEONE
+C     GEOMAGNETIC FIELD AT CNAO
+         BXE = -18.28D-06
+         BYE =  13.61D-06
+         BZE = -41.80D-06
+         B = SQRT(BXE**2 + BYE**2 + BZE**2)         
+         BTX = BXE/B
+         BTY = BYE/B
+         BTZ = BZE/B
       ELSE
          
 *     trovo le coordinate XB dei punti del lattice che stanno 

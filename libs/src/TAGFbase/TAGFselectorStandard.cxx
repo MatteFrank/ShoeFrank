@@ -24,40 +24,40 @@ TAGFselectorStandard::TAGFselectorStandard() : TAGFselectorBase()
 //! \brief Base function for standard track finding/selection/categorization
 void TAGFselectorStandard::Categorize( ) {
 
-	if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
-
 	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
 	{
 		Error("Categorize_dataLike()", "Standard selection algorithm currently not supported without Vertex!");
 		exit(0);
 	}
 	else
+	{
+		if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
 		CategorizeVT();
+		if( m_debug > 1 ) cout << "******** END OF VT CYCLE **********\n";
+	}
 
-	if( m_debug > 1 ) cout << "******** END OF VT CYCLE **********\n";
-
-	if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
-	
 	if( m_systemsON.Contains("IT") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
 		CategorizeIT();
-	
-	if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
+		if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
+	}
 
-	if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
-	
 	if( m_systemsON.Contains("MSD") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
 		CategorizeMSD();
+		if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
+	}
 	else
 		SetTrackSeedNoMSD();
 
-	if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
-
-	if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
-	
 	if( m_systemsON.Contains("TW") )
+	{
+		if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
 		CategorizeTW();
-	
-	if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
+		if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
+	}
 
 	FillTrackCategoryMap();
 }
@@ -72,6 +72,12 @@ void TAGFselectorStandard::CategorizeVT()
 		//cluster test
 	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
 
+	if(!vertexContainer || !vtntuclus)
+	{
+		Warning("CategorizeVT()", "VT vertices or ntuCluster pointers are null. Skipping event...");
+		return;
+	}
+
 	int vertexNumber = vertexContainer->GetVertexN();
 	// if( vertexNumber != 1 )
 	// {
@@ -80,7 +86,6 @@ void TAGFselectorStandard::CategorizeVT()
 	// }
 	if( vertexNumber == 1)
 		(*m_singleVertexCounter)++;
-	TAVTvertex* vtxPD   = 0x0; //NEW
 
 	TVector3 pos_(0, 0, 0);		//global coord [cm]
     TVector3 mom_(0, 0, 7.);	//GeV //considering that fragments have same velocity of beam this should be changed accordingly
@@ -89,12 +94,12 @@ void TAGFselectorStandard::CategorizeVT()
 
 	//loop over all vertices
 	for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) {
-		vtxPD = vertexContainer->GetVertex(iVtx);
+		TAVTvertex* vtxPD = vertexContainer->GetVertex(iVtx);
 		if (vtxPD == 0x0){
 			cout << "Vertex number " << iVtx << " seems to be empty\n";
 			continue;
 		}
-		else if( !m_IsMC && !vtxPD->IsBmMatched() )
+		else if( !vtxPD->IsBmMatched() )
 		{
 			if(m_debug > 0)
 			{
@@ -106,7 +111,7 @@ void TAGFselectorStandard::CategorizeVT()
 		if ( m_debug > 0 )	cout << "vertex number " << iVtx << " has this nr of tracks " << vtxPD->GetTracksN() <<"\n";
 
 		//loop over tracks for each Vertex
-		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {
+		for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); ++iTrack) {
 
 			TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
 
@@ -156,9 +161,14 @@ void TAGFselectorStandard::CategorizeVT()
 					vector<int> iPart = m_measParticleMC_collection->at( hitToAdd->getHitId() );
 					cout << "\t-- Truth particles of the measurement:\n";
 					for (int k=0; k< iPart.size(); k++) {
-						TAMCpart* particle = m_McNtuEve->GetTrack( iPart.at(k) );
-						TVector3 mcMom = particle->GetInitP();
-						cout << "\t\t-charge: " << particle->GetCharge() << "   mom:"; mcMom.Print();
+						if(iPart[k] != -666)
+						{
+							TAMCpart* particle = m_McNtuEve->GetTrack( iPart[k] );
+							TVector3 mcMom = particle->GetInitP();
+							cout << "\t\t-charge: " << particle->GetCharge() << "  mom:"; mcMom.Print();
+						}
+						else
+							cout << "Pile-up particle from VT!" << endl;
 					}
 				}
 
@@ -166,12 +176,13 @@ void TAGFselectorStandard::CategorizeVT()
 
 			if (fitTrack_->getNumPointsWithMeasurement() > 4 || fitTrack_->getNumPointsWithMeasurement() < 3){
 				Warning("Categorize_dataLike()", "Track with %d measurements found in VTX => rejected!", fitTrack_->getNumPointsWithMeasurement());
+				delete fitTrack_;
 				continue;
 			}
 
 			for ( int nRep=0; nRep < m_trackRepVec.size(); nRep++) {
 				fitTrack_->addTrackRep( m_trackRepVec.at( nRep )->clone() );
-				if ( m_debug > 1 ) {
+				if ( m_debug > 0 ) {
 					cout << "TAGFselectorStandard::CategorizeVT() -- rep charge = " << m_trackRepVec.at( nRep )->getPDGCharge() << "\n";
 				}
 			}
@@ -204,7 +215,7 @@ void TAGFselectorStandard::CategorizeIT()	{
 	TVector3 tmpExtrap, tmpVTX;
 
 	// same index if VTX_tracklets (for one vertex..)
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) {
 		int addedMeas = 0;
 		
 		//Get last VT measurement for extrapolation
@@ -216,13 +227,12 @@ void TAGFselectorStandard::CategorizeIT()	{
 		//Get some parameters for IT FitPlanes
 		int maxITdetPlane = m_SensorIDMap->GetMaxFitPlane("IT");
 		int minITdetPlane = m_SensorIDMap->GetMinFitPlane("IT");
-		double tmpITz;
 		vector<float>* allZinIT = m_SensorIDMap->GetPossibleITz();
 
 
 		for ( int iz = 0; iz < allZinIT->size(); iz++ ) {
 			
-			tmpITz = allZinIT->at(iz);
+			double tmpITz = allZinIT->at(iz);
 			tmpExtrap = tmpVTX + m_trackSlopeMap[itTrack->first]*( tmpITz - tmpVTX.Z() );
 
 			vector<int>* planesAtZ  = m_SensorIDMap->GetPlanesAtZ( tmpITz );
@@ -231,7 +241,7 @@ void TAGFselectorStandard::CategorizeIT()	{
 			// RZ: there is a potentially bad issue here with the bending plane!!! the intersection might be in another sensor since it is done with a linear extrapolation. Would it be better to only check the y? how much do we risk of f-ing this up?
 
 			Int_t sensorId;
-			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); iPlane++ ) {
+			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); ++iPlane ) {
 				// cout << "Found plane::" << *iPlane << " at z::" << tmpITz << "\n";
 				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
 				{
@@ -288,9 +298,6 @@ void TAGFselectorStandard::CategorizeIT()	{
 				}
 			}	// end loop on IT planes
 		} // end loop over z
-
-		++itTrack;
-
 	}	// end loop on GF Track candidates
 }
 
@@ -303,16 +310,13 @@ void TAGFselectorStandard::CategorizeIT()	{
 //! This step uses a Kalman Filter extrapolation to find the MSD measurements of the track
 void TAGFselectorStandard::CategorizeMSD()	{
 
-	//RZ: CHECK!!! ADDED TO AVOID ERRORS
-	int findMSD;
-
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 
 	// Extrapolate to MSD
 	// same index if VTX_tracklets (for one vertex..)
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();++itTrack) {
 
-		findMSD=0;
+		int findMSD=0;
 
 		int maxMSDdetPlane = m_SensorIDMap->GetMaxFitPlane("MSD");
 		int minMSDdetPlane = m_SensorIDMap->GetMinFitPlane("MSD");
@@ -346,7 +350,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 		m_fitter_extrapolation->setMaxIterations(1);
 		float chi2 = 10000;
 		int idCardRep = -1;
-		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  --  number of Reps = "<< itTrack->second->getNumReps() <<"\n";
+		if(m_debug > 0)	cout << "\nSelectorKalmanGF::CategorizeMSD()  -- track " << itTrack->first << "has this number of Reps = "<< itTrack->second->getNumReps() <<"\n";
 
 		for(int repId = 0; repId < itTrack->second->getNumReps(); ++repId)
 		{
@@ -472,8 +476,6 @@ void TAGFselectorStandard::CategorizeMSD()	{
 			}
 
 		} // end loop MSD planes
-		
-		++itTrack;
 
 	}// end loop on GF Track candidates
 	delete m_fitter_extrapolation;
@@ -489,7 +491,7 @@ void TAGFselectorStandard::SetTrackSeedNoMSD()
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 
 	//Set the seed of the track fit when MSD is not included
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) {
 
 		//RZ: SET STATE SEED
 		PlanarMeasurement* firstTrackMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(0)->getRawMeasurement());
@@ -581,7 +583,7 @@ void TAGFselectorStandard::SetTrackSeedNoMSD()
 			cout << "CardRep charge::" << itTrack->second->getCardinalRep()->getPDGCharge() << "\n";
 		}
 		
-		++itTrack;
+
 
 	}// end loop on GF Track candidates
 	delete m_fitter_extrapolation;
@@ -602,7 +604,7 @@ void TAGFselectorStandard::CategorizeTW()
 	// Extrapolate to TW
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 	m_fitter_extrapolation->setMaxIterations(1);
-	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); itTrack++) 
+	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) 
 	{
 		m_fitter_extrapolation->processTrackWithRep(itTrack->second, itTrack->second->getCardinalRep() );
 

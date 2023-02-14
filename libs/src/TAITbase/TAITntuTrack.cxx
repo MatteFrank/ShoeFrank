@@ -40,7 +40,7 @@ TAITntuTrack::~TAITntuTrack()
 //! return number of tracks
 Int_t TAITntuTrack::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -49,7 +49,7 @@ Int_t TAITntuTrack::GetTracksN() const
 //! \param[in] iTrack track index
 TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack)
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
 	  return (TAITtrack*)fListOfTracks->At(iTrack);
    else
 	  return 0x0;
@@ -61,7 +61,7 @@ TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack)
 //! \param[in] iTrack track index
 const TAITtrack* TAITntuTrack::GetTrack(Int_t iTrack) const
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
 	  return (TAITtrack*)fListOfTracks->At(iTrack);
    else
 	  return 0x0;

@@ -109,7 +109,7 @@ void TAMCntuHit::SetupClones()
 //! Get number of hits
 Int_t TAMCntuHit::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -118,10 +118,10 @@ Int_t TAMCntuHit::GetHitsN() const
 //! \param[in] id hit index
 TAMChit* TAMCntuHit::GetHit(Int_t id)
 {
-   if (id >=0 || id < fListOfHits->GetEntriesFast()) {
+   if (id >=0 && id < fListOfHits->GetEntriesFast()) {
       return (TAMChit*)fListOfHits->At(id);
    } else {
-      cout << Form("Wrong sensor number %d\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }
@@ -132,10 +132,10 @@ TAMChit* TAMCntuHit::GetHit(Int_t id)
 //! \param[in] id hit index
 const TAMChit* TAMCntuHit::GetHit(Int_t id) const
 {
-   if (id >=0 || id < fListOfHits->GetEntriesFast()) {
+   if (id >=0 && id < fListOfHits->GetEntriesFast()) {
       return (TAMChit*)fListOfHits->At(id);
    } else {
-      Error("GetPixel()", "Wrong sensor number %d\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }

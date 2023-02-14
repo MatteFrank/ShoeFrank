@@ -24,15 +24,17 @@ public:
     \brief  Run type parameters
     */
    struct TypeParameter_t : public  TNamed {
-      Int_t     TypeId;      ///< Index type run
-      TString   TypeName;    ///< Type of run name
-      TString   Trigger;     ///< Trigger type
-      TString   Beam;        ///< Beam element
-      Float_t   BeamEnergy;  ///< Beam energy per nucleon
-      TString   Target;      ///< Target element
-      Float_t   TargetSize;  ///< Target size
-      Int_t     TotalEvts;   ///< Total event niumber
-      TString   Comments;    ///< Comments
+      Int_t          TypeId;       ///< Index type run
+      TString        TypeName;     ///< Type of run name
+      TString        Trigger;      ///< Trigger type
+      TString        Beam;        ///< Beam element
+      Float_t        BeamEnergy;  ///< Beam energy per nucleon
+      Float_t        BeamEnergy2; ///< Upper beam energy per nucleon
+      TString        Target;      ///< Target element
+      Float_t        TargetSize;  ///< Target size
+      vector<string> DetectorOut; ///< Dectector not present
+      Int_t          TotalEvts;   ///< Total event niumber
+      TString        Comments;    ///< Comments
    };
    
    /*!
@@ -56,10 +58,12 @@ private:
    TString         fName;           ///< Campaign name
    TArrayI         fRunArray;       ///< Run array
    TypeParameter_t fCurType;        ///< Current type parameter
+   RunParameter_t  fCurRun;         ///< Current run parameter
 
    map<int, TypeParameter_t> fTypeParameter; ///< Run type parameter
    map<int, RunParameter_t>  fRunParameter; ///< Run type parameter
-   
+   map<int, int>             fEvtCounter; ///< Run type parameter
+
 public:
    TAGrunManager(const TString exp = "", Int_t runNumber = -1);
    virtual ~TAGrunManager();
@@ -78,17 +82,30 @@ public:
    //! Set run number
    void                 SetRunNumber(Int_t run)        { fRunNumber = run ;          }
 
-   //! Get Current type
+   //! Get Current type parameter
    TypeParameter_t      GetCurrentType()         const { return fCurType ;           }
+   
+   //! Get Current run parameter
+   RunParameter_t       GetCurrentRun()          const { return fCurRun ;            }
    
    //! Get parameter for a given run type
    TypeParameter_t&     GetTypePar(Int_t idx)          { return fTypeParameter[idx]; }
    //! Get parameter for a given run
-   RunParameter_t&      GetRunPar(Int_t idx)           { return fRunParameter[idx];  }
+   RunParameter_t&      GetRunPar(Int_t idx);
+   //! Get parameter for a given run
+   const RunParameter_t&      GetRunPar(Int_t idx) const;
+
+   //! Check detector off
+   Bool_t               IsDetectorOff(const TString& detName);
 
    // Print out informations
    void                 Print(Option_t* opt = "") const;
    
+   // output stream for TypeParameter_t
+   friend ostream&      operator<< (ostream& out,  const TypeParameter_t& type);
+   // output stream for RunParameter_t
+   friend ostream&      operator<< (ostream& out,  const RunParameter_t& run);
+
 private:
    // Decode type info
    void DecodeTypeLine(TString& line);
@@ -108,6 +125,9 @@ public:
    //! Get default extension name
    static const Char_t* GetDefaultExt()     { return fgkDefaultExt.Data();     }
    
+   // Smart print
+   static  TString SmartPrint(Int_t nb, Int_t sep = 1000);
+
    ClassDef(TAGrunManager,1)
 };
 

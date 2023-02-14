@@ -132,8 +132,8 @@ void AnalyzeMSD(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.
    TFile *f = new TFile(filename.Data());
    tree = (TTree*)f->Get("tree");
 
-   if (nentries == 0 || nentries>tree->GetEntries())
-     maxentries = tree->GetEntries();
+   if (nentries == 0 || nentries>tree->GetEntriesFast())
+     maxentries = tree->GetEntriesFast();
    else
      maxentries=nentries;
 
@@ -326,7 +326,7 @@ void AnalyzeMSD(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.
       for (int ch = 0; ch < NChannels; ch++)
       {
          // Fitting histos with gaus to compute ped and raw_sigma
-         if (hADC[sen][ch]->GetEntries())
+         if (hADC[sen][ch]->GetEntriesFast())
          {
             hADC[sen][ch]->Fit("gaus", "QS");
             fittedgaus = (TF1 *)hADC[sen][ch]->GetListOfFunctions()->FindObject("gaus");
@@ -400,7 +400,7 @@ void AnalyzeMSD(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.
       for (int ch = 0; ch < NChannels; ch++)
       {
          // Fitting histos with gaus to compute ped and raw_sigma
-         if (hSignal[sen][ch]->GetEntries())
+         if (hSignal[sen][ch]->GetEntriesFast())
          {
             hSignal[sen][ch]->Fit("gaus", "QS");
             fittedgaus = (TF1 *)hSignal[sen][ch]->GetListOfFunctions()->FindObject("gaus");

@@ -460,7 +460,7 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 			Info("GetMeasId_eventLevel()", "plane::%d\tIsFitPlaneInDet::%d", planeId, IsFitPlaneInDet(planeId, itDet->first));
 		}
 		//WRITE THIS IN A MORE EFFICIENT WAY!!! It just works right now
-		if(!found && IsFitPlaneInDet(planeId, itDet->first))
+		if(IsFitPlaneInDet(planeId, itDet->first))
 		{
 			if(m_debug > 1)	cout << "GetMeasID_eventLevel()\tDetGood\n";
 			

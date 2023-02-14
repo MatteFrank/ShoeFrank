@@ -85,8 +85,6 @@ public:
 
 protected:
    TAGdataDsc*           fpNtuWDtrigInfo; ///< contains the WD trigger info
-   
-private:
    TAGdataDsc*           fpDaqEvent;      ///< DAQ event
    TAGdataDsc*           fpNtuEvt;        ///< input data event dsc
    TAGdataDsc*           fpDatRawMsd;     ///< input raw data dsc for MSD

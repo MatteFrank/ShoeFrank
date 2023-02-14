@@ -23,6 +23,9 @@ map<TString, TString> TAGrecoManager::fgkDectFullName = {{"ST", "Start Counter"}
 
 const TString TAGrecoManager::fgkDefParName = "FootGlobal.par";
 
+//! Class Imp
+ClassImp(TAGrecoManager);
+
 //_____________________________________________________________________________
 //! Global static pointer used to ensure a single instance of the class.
 TAGrecoManager* TAGrecoManager::fgInstance = NULL;
@@ -66,11 +69,12 @@ TAGrecoManager::~TAGrecoManager()
 //!
 //! \param[in] expName experiment name
 TAGrecoManager::TAGrecoManager( const TString expName )
-: fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),
+: TObject(),
+  fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
   fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
   fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fEnableTWRateSmearMC(false),
-  fDoCalibTW(false),       fDoCalibBM(false),    fEnableRegionMc(false), fEnableMsdTrack(false), fEnableItrTrack(false),
+  fDoCalibTW(false),       fDoCalibBM(false),    fEnableRegionMc(false),
   fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
   fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
   fIncludeKalman(false),   fIncludeTOE(false),   fIncludeStraight(false)
@@ -505,28 +509,7 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("EnableRegionMc: %d\n", fEnableRegionMc);
     }
-    
-    if (key.Contains("EnableMsdTrack:")  ) {
-       if ( item.Contains("y"))  fEnableMsdTrack = true;
-       else                      fEnableMsdTrack = false;
-       if (fDebugLevel > 0)
-          printf("EnableMsdTrack: %d\n", fEnableMsdTrack);
-    }
-     
-    if (key.Contains("EnableMsdPed:")  ) {
-       if ( item.Contains("y"))  fEnableMsdPed = true;
-       else                      fEnableMsdPed = false;
-       if (fDebugLevel > 0)
-          printf("EnableMsdPed: %d\n", fEnableMsdPed);
-    }
-     
-    if (key.Contains("EnableItrTrack:")  ) {
-       if ( item.Contains("y"))  fEnableItrTrack = true;
-       else                      fEnableItrTrack = false;
-       if (fDebugLevel > 0)
-          printf("EnableItrTrack: %d\n", fEnableItrTrack);
-    }
-     
+         
     if (key.Contains("IncludeDI:") ) {
       if ( item.Contains("y"))  fIncludeDI = true;
       else                      fIncludeDI = false;
@@ -835,8 +818,8 @@ void TAGrecoManager::GetMcInfo(const char* className, const char* funcName, cons
 //! Print
 //!
 //! \param[in] opt print out option
-void TAGrecoManager::Print(Option_t* opt) {
-   
+void TAGrecoManager::Print(Option_t* opt) const
+{
    TString option(opt);
    
    cout << endl << "========================   Input Parameters  =============================" << endl<<endl;
@@ -858,18 +841,18 @@ void TAGrecoManager::Print(Option_t* opt) {
          printf("%s - ", str.Data());
       }
       
-      printf("\n");
+      printf("\n\n");
 
       if (fIncludeKalman)
-         cout << "Using GenFit for Global Recontruction" << endl;
+         Info("Print()", "Using GenFit for Global Recontruction");
       
       if (fIncludeTOE)
-         cout << "Using TOE for Global Recontruction" << endl;
+         Info("Print()", "Using TOE for Global Recontruction");
       
       if (fIncludeStraight)
-         cout << "Using straight line extrapolation for Global Recontruction" << endl;
+         Info("Print()", "Using straight line extrapolation for Global Recontruction");
 
-      printf("\n\n");
+      printf("\n");
 
    }
 }

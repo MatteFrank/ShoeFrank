@@ -11,6 +11,8 @@ using namespace std;
 #include "TClonesArray.h"
 #include "TAGdata.hxx"
 #include "TAGbaseWD.hxx"
+#include "TFile.h"
+//
 
 /*!
  \class TASThit
@@ -25,6 +27,13 @@ public:
     
   ClassDef(TASTrawHit,2);
   //
+  virtual Bool_t		CheckForPileUp(TWaveformContainer *w, Int_t event=-1);
+
+  Bool_t GetPileUp()          const { return fPileUp;    }
+  //void SetPileUp(bool b)  { fPileUp = b;    }   //  set happens in CheckForPileUp
+
+private:
+  bool fPileUp;
 };
 
 //##############################################################################
@@ -40,7 +49,7 @@ public:
   TASTntuRaw();
   virtual         ~TASTntuRaw();
 
-  Int_t             GetHitsN() {return fHistN;}
+  Int_t             GetHitsN() {return fHitsN;}
 
   TASTrawHit*       GetHit(Int_t i_ind);
   const TASTrawHit* GetHit(Int_t i_ind) const;
@@ -62,7 +71,7 @@ public:
   ClassDef(TASTntuRaw,3);
   
 private:
-   Int_t           fHistN;          //
+   Int_t           fHitsN;          //
    TClonesArray*   fListOfHits;         // hits
    TASTrawHit*     fSuperHit;  //!
    Int_t           fRunTime;

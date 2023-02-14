@@ -12,6 +12,8 @@
 #include "TASTparGeo.hxx"
 #include "TASTntuRaw.hxx"
 #include "TASTntuHit.hxx"
+#include "TH1.h"
+#include "TH2.h"
 
 class TASTactNtuHit : public TAGaction {
 
@@ -41,9 +43,9 @@ private:
   TH1F *hTotAmplitude; 
   TH1F *hPedestal;
   TH1F *hEff;
-  
-  
-  
+  TH1F *hPileUp;
+  TH2F* hChargevsTime[3];
+   
 private:
   void   SavePlot(TGraph g,TF1 f1, TF1 f2, TASTrawHit *hit);
 

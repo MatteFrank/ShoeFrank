@@ -227,7 +227,7 @@ TATWhit* TATWntuHit::Hit(Int_t i)
 //! return a pixel for a given sensor
 TATWhit* TATWntuHit::GetHit( int hitID, int layer ) {
 	int tmpId(0);
-	for(int iD=0; iD<fListOfHits->GetEntries(); iD++)
+	for(int iD=0; iD<fListOfHits->GetEntriesFast(); iD++)
 	{
 		int CurrentLayer=((TATWhit*)fListOfHits->At(iD))->GetLayer();
 		if(CurrentLayer == layer)
@@ -245,7 +245,7 @@ TATWhit* TATWntuHit::GetHit( int hitID, int layer ) {
 //! return a pixel for a given sensor
 TATWhit* TATWntuHit::GetHit( int hitID) {
 
-  if(hitID<fListOfHits->GetEntries())
+  if(hitID >=0 && hitID<fListOfHits->GetEntriesFast())
     return (TATWhit*)(fListOfHits->At(hitID));
   else
     return nullptr;

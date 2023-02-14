@@ -22,6 +22,7 @@
 #pragma link C++ class TATWactNtuHitMC+;
 #pragma link C++ class TATWactNtuPoint+;
 #pragma link C++ class TATWparGeo+;
+#pragma link C++ class TATWparConf+;
 
 
 #endif

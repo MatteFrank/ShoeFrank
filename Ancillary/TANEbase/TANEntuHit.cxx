@@ -101,7 +101,7 @@ void TANEntuHit::SetupClones()
 //! return number of hits
 Int_t TANEntuHit::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -110,10 +110,10 @@ Int_t TANEntuHit::GetHitsN() const
 //! \param[in] id crystal id
 TANEhit* TANEntuHit::GetHit(Int_t id)
 {
-   if (id >=0 || id < 22*22) {
+   if (id >=0 && id < 22*22) {
       return (TANEhit*)fListOfHits->At(id);
    } else {
-      cout << Form("Wrong sensor number %d\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }
@@ -124,10 +124,10 @@ TANEhit* TANEntuHit::GetHit(Int_t id)
 //! \param[in] id crystal id
 const TANEhit* TANEntuHit::GetHit(Int_t id) const
 {
-   if (id >=0 || id < 22*22) {
+   if (id >=0 && id < 22*22) {
       return (TANEhit*)fListOfHits->At(id);
    } else {
-      Error("GetPixel()", "Wrong sensor number %d\n", id);
+      Error("GetPixel()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }

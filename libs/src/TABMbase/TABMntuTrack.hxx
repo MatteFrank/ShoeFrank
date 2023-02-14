@@ -22,10 +22,10 @@ class TABMntuTrack : public TAGdata {
                     TABMntuTrack();
     virtual         ~TABMntuTrack();
 
-    Int_t            GetTracksN()  const{return fListOfTracks->GetEntries();};
+    Int_t            GetTracksN()  const{return fListOfTracks->GetEntriesFast();};
     TABMtrack*       GetTrack(Int_t i) {return (GetTracksN()) ? (TABMtrack*) ((*fListOfTracks)[i]) : 0x0;};
     const TABMtrack* GetTrack(Int_t i) const{return (GetTracksN()) ? (const TABMtrack*) ((*fListOfTracks)[i]) : 0x0;};
-    TABMtrack*       GetPrunedTrack() {return (fPrunedTrack->GetEntries()) ? (TABMtrack*) ((*fPrunedTrack)[0]) : 0x0;};
+    TABMtrack*       GetPrunedTrack() {return (fPrunedTrack->GetEntriesFast()) ? (TABMtrack*) ((*fPrunedTrack)[0]) : 0x0;};
     Int_t            GetPrunedStatus() {return fPrunedStatus;};
     Int_t            GetTrackStatus(){return fStatus;};
 

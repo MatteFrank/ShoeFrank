@@ -252,6 +252,12 @@ void TAGactNtuGlbTrackS::CreateHistogram()
    fpHisMsdDeCaE->SetStats(kFALSE);
    AddHistogram(fpHisMsdDeCaE);
 
+   fpHisMass = new TH1F(Form("%sMass", prefix.Data()), Form("%s - Mass distribution", titleDev.Data()), 500, 0, 0.05);
+   AddHistogram(fpHisMass);
+
+   fpHisZ = new TH1F(Form("%sZ", prefix.Data()), Form("%s - Z distribution", titleDev.Data()), 10, -0.5, 9.5);
+   AddHistogram(fpHisZ);
+
    SetValidHistogram(kTRUE);
 }
 
@@ -846,6 +852,11 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
    
    if(FootDebugLevel(1))
       printf("Charge %.0f Mass %f\n", Z, mass);
+   
+   if (ValidHistogram()) {
+      fpHisMass->Fill(mass);
+      fpHisZ->Fill(Z);
+   }
 }
 
 //------------------------------------------+-----------------------------------

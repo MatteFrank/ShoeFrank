@@ -37,8 +37,7 @@ using namespace std;
 //! Class imp
 ClassImp(TAVTactBaseNtuHitMC);
 
-Bool_t  TAVTactBaseNtuHitMC::fgPileup          = false;
-Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 1.736; // ajust for GSI (not enough)
+//Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 1.736; // ajust for GSI (not enough, for memory)
 Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
 Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
@@ -52,25 +51,34 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap,
  : TAGaction(name, "TAVTactBaseNtuHitMC - NTuplize hit MC data"),
    fpGeoMap(pGeoMap),
    fpConfig(pConfig),
-	fNoisyPixelsN(0)
-{   
-	fpHisPoisson = (TH1F*)gDirectory->FindObject("vtPoisson");
-	if (fpHisPoisson == 0x0) {
-	   
-		Double_t tot = 0.;
-		Double_t par = fgPoissonPar;
-
-		for (Int_t i = 1; i < 60; ++i) {
-			tot += TMath::PoissonI(i, par);
-		}
-
-		fpHisPoisson = new TH1F("vtPoisson", "Poisson", 62, -0.5, 61.5);
-
-		for (Int_t i = 1; i < 60; ++i) {
-			Float_t val = TMath::PoissonI(i, par)/tot*100.;
-			fpHisPoisson->Fill(i, val);
-		}
-	}
+	fNoisyPixelsN(0),
+   fPileup(false)
+{
+   TAVTparConf* parConf = (TAVTparConf*) fpConfig->Object();
+   Float_t pilepPar = parConf->GetAnalysisPar().McPileUpPar;
+   
+   if (pilepPar > 0.)
+      fPileup = true;
+   
+   if (fPileup) {
+      fpHisPoisson = (TH1F*)gDirectory->FindObject("vtPoisson");
+      if (fpHisPoisson == 0x0) {
+         
+         Double_t tot = 0.;
+         Double_t par = pilepPar;
+         
+         for (Int_t i = 1; i < 60; ++i) {
+            tot += TMath::PoissonI(i, par);
+         }
+         
+         fpHisPoisson = new TH1F("vtPoisson", "Poisson", 62, -0.5, 61.5);
+         
+         for (Int_t i = 1; i < 60; ++i) {
+            Float_t val = TMath::PoissonI(i, par)/tot*100.;
+            fpHisPoisson->Fill(i, val);
+         }
+      }
+   }
    
    TString tmp(name);
    fPrefix = tmp(0,2);
@@ -193,7 +201,7 @@ void  TAVTactBaseNtuHitMC::GeneratePileup()
          posOut = pGeoMap->Detector2Sensor(hit.id, posOut);
 
 		  if (!fDigitizer->Process(hit.de, posIn.X(), posIn.Y(), posIn.Z(), posOut.Z())) continue;
-		  FillPixels( hit.id, hitIdx, trackIdx, true);
+		  FillPixels( hit.id, -hitIdx, -trackIdx, true);
 	   }
 	}
 }
@@ -220,7 +228,7 @@ void TAVTactBaseNtuHitMC::FillPileup(vector<RawMcHit_t>& storedEvtInfo, TAMChit*
    mcHit.y   = posIn.Y();
    mcHit.zi  = posIn.Z();
    mcHit.zo  = posOut.Z();
-   mcHit.tkid = trackIdx;
+   mcHit.tkid = -666;// trackIdx;
    mcHit.htid = hitIdx;
    storedEvtInfo.push_back(mcHit);
 }
