@@ -2,11 +2,11 @@ A) level0 reconstruction tools
 
 1)Running from raw data:
 - command:
-DecodeRaw -in dataRaw/data_test.00004313.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out run4313_Out.root -nev 10000 -exp GSI2021 -run 4313
+DecodeGlb -in dataRaw/data_test.00004313.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out run4313_Out.root -nev 10000 -exp GSI2021 -run 4313
 
 2)Running from MC data:
 - command:
-DecodeMC -in 16O_C_200_trig_shoereg.root -out 16O_C_200_1_Out.root -nev 10000 -exp GSI2021_MC -run 200
+DecodeGlb -in 16O_C_200_trig_shoereg.root -out 16O_C_200_1_Out.root -nev 10000 -exp GSI2021_MC -run 200 -mc
 
 B) Flags in FootGlobal.par for reconstruction
 ############   Options for reconstruction   ################
@@ -37,7 +37,7 @@ A) fullrec reconstruction tools with TOE
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlbToe -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
+DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
              -exp GSI -run 2239
 
 2)Running from MC data:
@@ -52,7 +52,7 @@ DecodeGlbToe -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_2
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlbToe -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
 
 3)Running from L0 reconstruction tree:
 - activate TOE in FootGlobal.par and local reco
@@ -66,7 +66,7 @@ DecodeGlbToe -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 1
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlbToe -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
 
 B) fullrec reconstruction tools with GenFit
 1)Running from raw data: (DOES NOT WORK)
