@@ -74,7 +74,7 @@ TAGrecoManager::TAGrecoManager( const TString expName )
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
   fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
   fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fEnableTWRateSmearMC(false),
-  fDoCalibTW(false),       fDoCalibBM(false),    fEnableRegionMc(false), fEnableMsdTrack(false), fEnableItrTrack(false),
+  fDoCalibTW(false),       fDoCalibBM(false),    fEnableRegionMc(false),
   fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
   fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
   fIncludeKalman(false),   fIncludeTOE(false),   fIncludeStraight(false)
@@ -509,21 +509,7 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("EnableRegionMc: %d\n", fEnableRegionMc);
     }
-    
-    if (key.Contains("EnableMsdTrack:")  ) {
-       if ( item.Contains("y"))  fEnableMsdTrack = true;
-       else                      fEnableMsdTrack = false;
-       if (fDebugLevel > 0)
-          printf("EnableMsdTrack: %d\n", fEnableMsdTrack);
-    }
-     
-    if (key.Contains("EnableItrTrack:")  ) {
-       if ( item.Contains("y"))  fEnableItrTrack = true;
-       else                      fEnableItrTrack = false;
-       if (fDebugLevel > 0)
-          printf("EnableItrTrack: %d\n", fEnableItrTrack);
-    }
-     
+         
     if (key.Contains("IncludeDI:") ) {
       if ( item.Contains("y"))  fIncludeDI = true;
       else                      fIncludeDI = false;

@@ -89,8 +89,8 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    TAGrecoManager::GetPar()->Print();
    
    fFlagTrack    = TAGrecoManager::GetPar()->IsTracking();
-   fFlagMsdTrack = TAGrecoManager::GetPar()->IsMsdTracking();
-   fFlagItrTrack = TAGrecoManager::GetPar()->IsItrTracking();
+   fFlagMsdTrack = BaseReco::IsMsdTracking();
+   fFlagItrTrack = BaseReco::IsItrTracking();
 
    // default constructon
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {

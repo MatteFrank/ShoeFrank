@@ -12,6 +12,7 @@
 
 #include "TAGactTreeReader.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "BaseReco.hxx"
 
 
 #include "TAGrecoManager.hxx"
@@ -397,8 +398,8 @@ void ConvertNtuple::ReadParFiles()
 void ConvertNtuple::GlobalSettings()
 {
    Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
-   Bool_t trkMsd = TAGrecoManager::GetPar()->IsMsdTracking();
-   Bool_t trkItr = TAGrecoManager::GetPar()->IsItrTracking();
+   Bool_t trkMsd = BaseReco::IsMsdTracking();
+   Bool_t trkItr = BaseReco::IsItrTracking();
    
    // global setting
    if (trk)

@@ -119,10 +119,6 @@ public:
     Bool_t IsTWRateSmearMC()     const { return fEnableTWRateSmearMC; }
     //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
-    //! MSD tracking
-    Bool_t IsMsdTracking()       const { return fEnableMsdTrack;      }
-    //! ITR tracking
-    Bool_t IsItrTracking()       const { return fEnableItrTrack;      }
     //! TW Calibration flag
     Bool_t CalibTW()             const { return fDoCalibTW;           }
     //! BM Calibration flag
@@ -176,17 +172,7 @@ public:
     void EnableRegionMc()              {  fEnableRegionMc = true;     }
     //! Disable MC region reading
     void DisableRegionMc()             {  fEnableRegionMc = false;    }
-   
-    //! Enable MSD tracking
-    void EnableMsdTrack()              {  fEnableMsdTrack = true;     }
-    //! Disable MSD tracking
-    void DisableMsdTrack()             {  fEnableMsdTrack = false;    }
-   
-    //! Enable ITR tracking
-    void EnableItrTrack()              {  fEnableItrTrack = true;     }
-    //! Disable ITR tracking
-    void DisableItrTrack()             {  fEnableItrTrack = false;    }
-   
+      
     //! Enable filling in tree
     void EnableTree()                  {  fEnableTree = true;         }
     //! Disable filling in tree

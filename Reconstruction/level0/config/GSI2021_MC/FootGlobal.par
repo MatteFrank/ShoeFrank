@@ -41,7 +41,6 @@ Kalman Particle Types:	C
 EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
-EnableMsdTrack:      n
 
 EnableSaveHits:      y
 EnableRootObject:    y
