@@ -640,17 +640,10 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	//RZ: WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//MSD detector coordinates are all in the X value of the position vector!!!! So, an X strip will give the local pos in the X value. A Y strip will rotate the Y measurement in local coords and return it in the X when looking at detector coordinates.
 
-	if ( clus->GetPlaneView() == 0 ){
-		// planarCoords(0) = hitPos.x();
-		planarCoords(0) = clus->GetPositionF();
-		pixReso = 0.003; //hardcoded!!!!!
-	}
-	else{
-		// planarCoords(0) = hitPos.y();
-		planarCoords(0) = clus->GetPositionF();
-		pixReso = 0.003; //hardcoded!!!!!
+	planarCoords(0) = clus->GetPositionF();
+	pixReso = clus->GetPosErrorF();
+	if ( clus->GetPlaneView() == 1 )
 		isYView = true;
-	}
 
 	// set covariance matrix
 	planarCov.UnitMatrix();

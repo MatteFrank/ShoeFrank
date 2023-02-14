@@ -581,3 +581,44 @@ tuple<string, int, int> TAGFdetectorMap::GetDetSensorHitFromMeasID(int measId)
 	int hitID = GetHitIDFromMeasID(measId);
 	return make_tuple(detName, sensorId, hitID);
 }
+
+
+/*************** MSD FUNCTIONS *************************/
+
+//! \brief Set the X (0) or Y (1) view for an MSD sensor
+//! \param iSensor Index of the MSD sensor
+//! \param view view of the sensor
+void TAGFdetectorMap::SetMSDsensorView(int iSensor, const int &view)
+{
+	if( m_detectorIndex.find("MSD") == m_detectorIndex.end() )
+	{
+		Error("SetMSDsensorView()", "Tried to set MSD sensor view but detector is not in GF map!");
+		exit(0);
+	}
+	if( m_MSDviewMap.find(iSensor) != m_MSDviewMap.end() )
+	{
+		Error("SetMSDsensorView()", "Tried to set X-Y view of MSD sensors already included in GF map. Check MSD geometry!");
+		exit(0);
+	}
+	
+	m_MSDviewMap[iSensor] = view;
+}
+
+
+//! \brief Get the view (X = 0, Y = 1) of an MSD sensor
+//! \param iSensor Index of the sensor
+//! \return View of the sensor
+int TAGFdetectorMap::GetMSDsensorView(int iSensor) const
+{
+	if( m_detectorIndex.find("MSD") == m_detectorIndex.end() )
+	{
+		Error("GetMSDsensorView()", "Tried to get MSD sensor view but detector is not in GF map!");
+		exit(0);
+	}
+	if( m_MSDviewMap.find(iSensor) == m_MSDviewMap.end() )
+	{
+		Error("GetMSDsensorView()", "MSD sensor %d not included in GF map!", iSensor);
+		exit(0);
+	}
+	return m_MSDviewMap.at(iSensor);
+}

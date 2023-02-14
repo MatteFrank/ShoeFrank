@@ -692,6 +692,7 @@ void TAGactKFitter::CreateGeometry()  {
 
 				m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
 				m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "MSD");
+				m_SensorIDMap->SetMSDsensorView(i, m_MSD_geo->GetSensorPar(i).TypeIdx);
 				++indexOfPlane;
 
 				// Some debug print-outs for geometry
@@ -1060,12 +1061,24 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			TwChargeZ = point->GetChargeZ();
 			TwTof = point->GetToF();
 			shoeTrackPoint->SetEnergyLoss(point->GetEnergyLoss());
+			shoeTrackPoint->SetElementsN(0);
 			hasTwPoint = true;
 		}
 		else if(detName == "MSD")
 		{
 			TAMSDcluster* MSDclus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object() )->GetCluster( iSensor, iClus );
 			shoeTrackPoint->SetEnergyLoss(MSDclus->GetEnergyLoss());
+			shoeTrackPoint->SetElementsN(MSDclus->GetElementsN());
+		}
+		else if(detName == "IT")
+		{
+			TAITcluster* ITclus = ( (TAITntuCluster*)gTAGroot->FindDataDsc("itClus", "TAITntuCluster")->Object() )->GetCluster( iSensor, iClus );
+			shoeTrackPoint->SetElementsN(ITclus->GetElementsN());
+		}
+		else if(detName == "VT")
+		{
+			TAVTcluster* VTclus = ( (TAVTntuCluster*)gTAGroot->FindDataDsc("vtClus", "TAVTntuCluster")->Object() )->GetCluster( iSensor, iClus );
+			shoeTrackPoint->SetElementsN(VTclus->GetElementsN());
 		}
 
 		// getRecoInfo
@@ -1345,10 +1358,41 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_momentum->Fill( recoMom_target.Mag() );
 		h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
 
+		//Fill residual and pull plots
+		std::pair<string, std::pair<int,int>> sensId;
+		int cluster_size;
+		float res, pull;
 		for(auto it : shoeTrackPointRepo){
-			// TString detname=it->GetDevName()
-			h_resoFitMeas[make_pair(it->GetDevName(),make_pair(it->GetSensorIdx(),0))]->Fill(it->GetMeasPosition().Y()-it->GetFitPosition().Y());
-			h_resoFitMeas[make_pair(it->GetDevName(),make_pair(it->GetSensorIdx(),1))]->Fill(it->GetMeasPosition().X()-it->GetFitPosition().X());
+			if( (string)it->GetDevName() == "MSD")
+			{
+				int view = m_SensorIDMap->GetMSDsensorView(it->GetSensorIdx());
+				sensId = make_pair(it->GetDevName(),make_pair(it->GetSensorIdx(),view));
+				cluster_size = it->GetElementsN();
+				res = it->GetMeasPosition()(view) - it->GetFitPosition()(view);
+				pull = res/TMath::Sqrt(pow(it->GetMeasPosError()(view), 2) - pow(it->GetFitPosError()(view), 2));
+				h_resoFitMeas[sensId]->Fill(res);
+				h_pullFitMeas[sensId]->Fill(pull);
+				h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
+			}
+			else
+			{
+				sensId = make_pair(it->GetDevName(),make_pair(it->GetSensorIdx(),0));
+				cluster_size = it->GetElementsN();
+				res = it->GetMeasPosition().X() - it->GetFitPosition().X();
+				pull = res/TMath::Sqrt(pow(it->GetMeasPosError().X(), 2) - pow(it->GetFitPosError().X(), 2));
+				h_resoFitMeas[sensId]->Fill(res);
+				h_pullFitMeas[sensId]->Fill(pull);
+				if( (string)it->GetDevName() != "TW" )
+					h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
+				
+				sensId = make_pair(it->GetDevName(),make_pair(it->GetSensorIdx(),1));
+				res = it->GetMeasPosition().Y()-it->GetFitPosition().Y();
+				pull = res/TMath::Sqrt(pow(it->GetMeasPosError().Y(), 2) - pow(it->GetFitPosError().Y(), 2));
+				h_resoFitMeas[sensId]->Fill(res);
+				h_pullFitMeas[sensId]->Fill(pull);
+				if( (string)it->GetDevName() != "TW" )
+					h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
+			}
 		}
 	}
 
@@ -1947,35 +1991,80 @@ void TAGactKFitter::CreateHistogram()	{
 		AddHistogram(h_PlaneOccupancy[iEv]);
 	}
 
+	//Define residual and pull histograms
+	std::pair<string, std::pair<int, int>> sensId;
 	if(TAGrecoManager::GetPar()->IncludeVT()){
 		for(Int_t i=0;i<m_VT_geo->GetSensorsN();i++){
-			h_resoFitMeas[make_pair("VT",make_pair(i,0))] = new TH1F(Form("Res_vtY_layer_%d",i),Form("Residual between fitted global track and measured VT point in VT layer %d on Y view;Meas-Fit Y[cm];Number of points",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[make_pair("VT",make_pair(i,0))]);
-			h_resoFitMeas[make_pair("VT",make_pair(i,1))] = new TH1F(Form("Res_vtX_layer_%d",i),Form("Residual between fitted global track and measured VT point in VT layer %d on X view;Meas-Fit X[cm];Number of points",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[make_pair("VT",make_pair(i,1))]);
+			sensId = make_pair("VT",make_pair(i,0));
+			h_resoFitMeas[sensId] = new TH1F(Form("Res_vtX_layer_%d",i),Form("Residual between fitted global track and measured VT cluster in VT layer %d on X view;Meas-Fit X[cm];Entries",i),600,-0.1,0.1);
+			AddHistogram(h_resoFitMeas[sensId]);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_vtX_layer_%d",i),Form("Pull for measured VT cluster in layer %d on X view;Meas-Fit Pull X;Entries",i),600,-5,5);
+			AddHistogram(h_pullFitMeas[sensId]);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_vtX_layer_%d",i),Form("Pull vs cluster size for VT in layer %d on X view;Meas-Fit Pull X;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
+			AddHistogram(h_pullVsClusSize[sensId]);
+
+			sensId = make_pair("VT",make_pair(i,1));
+			h_resoFitMeas[sensId] = new TH1F(Form("Res_vtY_layer_%d",i),Form("Residual between fitted global track and measured VT cluster in VT layer %d on Y view;Meas-Fit Y[cm];Entries",i),600,-0.1,0.1);
+			AddHistogram(h_resoFitMeas[sensId]);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_vtY_layer_%d",i),Form("Pull for measured VT cluster in layer %d on Y view;Meas-Fit Pull Y[cm];Entries",i),600,-5,5);
+			AddHistogram(h_pullFitMeas[sensId]);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_vtY_layer_%d",i),Form("Pull vs cluster size for VT in layer %d on Y view;Meas-Fit Pull Y;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
+			AddHistogram(h_pullVsClusSize[sensId]);
 		}
   }
 	if(TAGrecoManager::GetPar()->IncludeIT()){
 		for(Int_t i=0;i<m_IT_geo->GetSensorsN();i++){
-			h_resoFitMeas[make_pair("IT",make_pair(i,0))] = new TH1F(Form("Res_itY_layer_%d",i),Form("Residual between fitted global track and measured IT point in IT layer %d on Y view;Meas-Fit Y[cm];Number of points",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[make_pair("IT",make_pair(i,0))]);
-			h_resoFitMeas[make_pair("IT",make_pair(i,1))] = new TH1F(Form("Res_itX_layer_%d",i),Form("Residual between fitted global track and measured IT point in IT layer %d on X view;Meas-Fit X[cm];Number of points",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[make_pair("IT",make_pair(i,1))]);
+			sensId = make_pair("IT",make_pair(i,0));
+			h_resoFitMeas[sensId] = new TH1F(Form("Res_itX_layer_%d",i),Form("Residual between fitted global track and measured IT cluster in IT layer %d on X view;Meas-Fit X[cm];Entries",i),600,-0.1,0.1);
+			AddHistogram(h_resoFitMeas[sensId]);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_itX_layer_%d",i),Form("Pull for measured IT cluster in layer %d on X view;Meas-Fit Pull X;Entries",i),600,-5,5);
+			AddHistogram(h_pullFitMeas[sensId]);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_itX_layer_%d",i),Form("Pull vs cluster size for  IT in layer %d on X view;Meas-Fit Pull X;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
+			AddHistogram(h_pullVsClusSize[sensId]);
+
+			sensId = make_pair("IT",make_pair(i,1));
+			h_resoFitMeas[sensId] = new TH1F(Form("Res_itY_layer_%d",i),Form("Residual between fitted global track and measured IT cluster in IT layer %d on Y view;Meas-Fit Y[cm];Entries",i),600,-0.1,0.1);
+			AddHistogram(h_resoFitMeas[sensId]);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_itY_layer_%d",i),Form("Pull for measured IT cluster in layer %d on Y view;Meas-Fit Pull Y;Entries",i),600,-5,5);
+			AddHistogram(h_pullFitMeas[sensId]);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_itY_layer_%d",i),Form("Pull vs cluster size for IT in layer %d on Y view;Meas-Fit Pull Y;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
+			AddHistogram(h_pullVsClusSize[sensId]);
 		}
 	}
 	if(TAGrecoManager::GetPar()->IncludeMSD()){
 		for(Int_t i=0;i<m_MSD_geo->GetSensorsN();i++){
-			h_resoFitMeas[make_pair("MSD",make_pair(i,0))] = new TH1F(Form("Res_msdY_layer_%d",i),Form("Residual between fitted global track and measured MSD point in MSD layer %d on Y view;Meas-Fit Y[cm];Number of points",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[make_pair("MSD",make_pair(i,0))]);
-			h_resoFitMeas[make_pair("MSD",make_pair(i,1))] = new TH1F(Form("Res_msdX_layer_%d",i),Form("Residual between fitted global track and measured MSD point in MSD layer %d on X view;Meas-Fit X[cm];Number of points",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[make_pair("MSD",make_pair(i,1))]);
+			sensId = make_pair("MSD",make_pair(i,m_SensorIDMap->GetMSDsensorView(i)));
+			char strip;
+			if( m_SensorIDMap->GetMSDsensorView(i) )
+				strip = 'Y';
+			else
+				strip = 'X';
+
+			h_resoFitMeas[sensId] = new TH1F(Form("Res_msd%c_layer_%d",strip,i),Form("Residual between fitted global track and measured MSD cluster in MSD layer %d on %c view;Meas-Fit %c [cm];Entries",i,strip,strip),600,-0.1,0.1);
+			AddHistogram(h_resoFitMeas[sensId]);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_msd%c_layer_%d",strip,i),Form("Pull for measured MSD cluster in layer %d on %c view;Meas-Fit Pull %c;Entries",i,strip,strip),600,-5,5);
+			AddHistogram(h_pullFitMeas[sensId]);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_msd%c_layer_%d",strip,i),Form("Pull vs cluster size for MSD in layer %d on %c view;Meas-Fit Pull %c;Cluster size [N strips]",i,strip,strip), 600,-5,5, 10, -0.5, 9.5);
+			AddHistogram(h_pullVsClusSize[sensId]);
 		}
 	}
 	if(TAGrecoManager::GetPar()->IncludeTW()){
-		h_resoFitMeas[make_pair("TW",make_pair(0,0))] = new TH1F("Res_twY","Residual between fitted global track and measured TW point on Y view;Meas-Fit Y[cm];Number of points",600,-3.,3.);
-		AddHistogram(h_resoFitMeas[make_pair("TW",make_pair(0,0))]);
-		h_resoFitMeas[make_pair("TW",make_pair(0,1))] = new TH1F("Res_twX","Residual between fitted global track and measured TW point on X view;Meas-Fit X[cm];Number of points",600,-3.,3.);
-		AddHistogram(h_resoFitMeas[make_pair("TW",make_pair(0,1))]);
+		sensId = make_pair("TW",make_pair(0,0));
+		h_resoFitMeas[sensId] = new TH1F("Res_twX","Residual between fitted global track and measured TW point on X view;Meas-Fit X[cm];Entries",600,-3.,3.);
+		AddHistogram(h_resoFitMeas[sensId]);
+		h_pullFitMeas[sensId] = new TH1F("Pull_twX","Pull for measured TW point in X view;Meas-Fit Pull X;Entries",600,-5,5);
+		AddHistogram(h_pullFitMeas[sensId]);
+		// h_pullVsClusSize[sensId] = new TH2F("PullVsClusSize_twX","Pull vs cluster size for TW on X view;Meas-Fit Pull X;Cluster size", 600,-5,5, 60, -0.5, 59.5);
+		// AddHistogram(h_pullVsClusSize[sensId]);
+
+		sensId = make_pair("TW",make_pair(0,1));
+		h_resoFitMeas[sensId] = new TH1F("Res_twY","Residual between fitted global track and measured TW point on Y view;Meas-Fit Y[cm];Entries",600,-3.,3.);
+		AddHistogram(h_resoFitMeas[sensId]);
+		h_pullFitMeas[sensId] = new TH1F("Pull_twY","Pull for measured TW point in Y view;Meas-Fit Pull Y;Entries",600,-5,5);
+		AddHistogram(h_pullFitMeas[sensId]);
+		// h_pullVsClusSize[sensId] = new TH2F("PullVsClusSize_twY","Pull vs cluster size for TW on Y view;Meas-Fit Pull Y;Cluster size", 600,-5,5, 60, -0.5, 59.5);
+		// AddHistogram(h_pullVsClusSize[sensId]);
+
 	}
 
 	SetValidHistogram(kTRUE);
