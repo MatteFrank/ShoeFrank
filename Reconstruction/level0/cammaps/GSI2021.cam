@@ -46,7 +46,7 @@ NumberFiles: 5
 "./calib/GSI2021/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/GSI2021/TATWdetector.geo": -1
 "./config/GSI2021/TATWdetector.cfg": -1
 "./config/GSI2021/TATW_BBparameters.cfg": -1
