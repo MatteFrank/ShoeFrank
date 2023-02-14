@@ -152,3 +152,61 @@ if (BENCHMARK)
       COMMENT "Running macro BenchMark.C"
   )
 endif(BENCHMARK)
+
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(DecodeGlb DecodeGlb.cc)
+#
+target_link_libraries(DecodeGlb ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS DecodeGlb DESTINATION bin)
+
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(ConvertNtuple ConvertNtuple.cc)
+#
+target_link_libraries(ConvertNtuple ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS ConvertNtuple DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(DecodeGlbAna DecodeGlbAna.cc)
+#
+target_link_libraries(DecodeGlbAna ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS DecodeGlbAna DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+if (TOE_DIR)
+if(DEFINED OTC )
+    if( "${OTC}" STREQUAL ON )
+    add_executable(OptimizeToeCuts OptimizeToeCuts.cc)
+    target_compile_options( OptimizeToeCuts PUBLIC -ffast-math  )
+    target_link_libraries(OptimizeToeCuts ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS OptimizeToeCuts DESTINATION bin)
+
+    endif()
+endif()
+endif (TOE_DIR)
