@@ -44,33 +44,27 @@ public:
    virtual ~TAVTactBaseNtuHitMC() {};
    
    //! Base action 
-   virtual bool  Action()      { return true; }
+   virtual bool  Action()             { return true;     }
 
    //! Fill noise over sensors
-   virtual void  FillNoise()   { return;      }
+   virtual void  FillNoise()          { return;          }
    
-   // Base creation of histogram
-   void          CreateHistogram();
-
-public:
    //! Set refit flag
-   static void   SetPileup(Bool_t flag)      { fgPileup = flag;         }
+   void   SetPileup(Bool_t flag)      { fPileup = flag;  }
    
    //! Get refit flag
-   static Bool_t GetPileup()                 { return fgPileup;         }
+   Bool_t GetPileup()                 { return fPileup;  }
+
+   // Base creation of histogram
+   void          CreateHistogram();
    
+public:
    //! Set number of pileup evt
-   static void   SetPileupEventsN(Bool_t n)  { fgPileupEventsN = n;     }
+   static void   SetPileupEventsN(Bool_t n)         { fgPileupEventsN = n;       }
    
    //! Get number of pileup evt
-   static Int_t  GetPileupEventsN()          { return fgPileupEventsN;  }
+   static Int_t  GetPileupEventsN()                 { return fgPileupEventsN;    }
    
-   //! Set Poisson parameter
-   static void   SetPoissonPar(Float_t par)  { fgPoissonPar = par;      }
-   
-   //! Get Poisson parameter
-   static Float_t GetPoissonPar()            { return fgPoissonPar;     }
-
    //! Get Sigma noise level
    static Float_t GetSigmaNoiseLevel()              { return fgSigmaNoiseLevel;  }
    //! Set Sigma noise level
@@ -87,6 +81,8 @@ protected:
    TAGgeoTrafo*    fpGeoTrafo;         ///< Gobal transformation
    TAVTbaseDigitizer*  fDigitizer;     ///< cluster size digitizer
    Int_t           fNoisyPixelsN;      ///< number of noisy pixels
+   Bool_t          fPileup;           ///< flag to generated pileup events
+
    
    TString         fPrefix;            ///< prefix of histogram
    TString         fTitleDev;          ///< device name for histogram title
@@ -117,9 +113,7 @@ protected:
    virtual void    FillPixels( Int_t /*sensorId*/, Int_t /*mcId*/, Int_t /*trackId*/, Bool_t /*pileup*/ ) { return; }
 
 protected:
-   static Bool_t   fgPileup;           ///< flag to generated pileup events
    static Int_t    fgPileupEventsN;    ///< number of pileup events to be stored
-   static Float_t  fgPoissonPar;       ///< Poisson parameter for pileup simulation
    static Float_t  fgSigmaNoiseLevel;  ///< Sigma noise level
    static Int_t    fgMcNoiseId;        ///< MC noise track Id
 

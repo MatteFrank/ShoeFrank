@@ -88,17 +88,17 @@ bool TAITactNtuHitMC::Action()
    Digitize(storedEvtInfo, storedEvents);
    
    // Pileup
-   if (fgPileup && storedEvents <= fgPileupEventsN) {
+   if (fPileup && storedEvents <= fgPileupEventsN) {
       fStoredEvents.push_back(storedEvtInfo);
       storedEvents++;
    }
    
-   if (fgPileup && storedEvents >= fgPileupEventsN)
+   if (fPileup && storedEvents >= fgPileupEventsN)
    GeneratePileup();
    
    if(FootDebugLevel(1)) {
       std::vector<RawMcHit_t> mcInfo;
-      if (fgPileup && storedEvents <= fgPileupEventsN) {
+      if (fPileup && storedEvents <= fgPileupEventsN) {
          for (Int_t i = 0; i < fStoredEvents.size(); ++i) {
             printf("Event %d\n", i);
             mcInfo = fStoredEvents[i];
@@ -154,7 +154,7 @@ void TAITactNtuHitMC::Digitize(vector<RawMcHit_t>& storedEvtInfo, Int_t storedEv
       Int_t trackIdx = hit->GetTrackIdx()-1;
       
       // used for pileup ...
-      if (fgPileup && storedEvents <= fgPileupEventsN)
+      if (fPileup && storedEvents <= fgPileupEventsN)
          FillPileup(storedEvtInfo, hit, i);
       
       // Transformations

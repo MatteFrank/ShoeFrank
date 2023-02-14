@@ -104,7 +104,6 @@ void TAGactTreeWriter::SetupElementBranch(TAGdataDsc* p_data, const char* branch
 {
   TAGactTreeWriterBranch* p_chan = new TAGactTreeWriterBranch(p_data, branch,
                                            i_size, i_compress, kFALSE);
-    cout << p_chan->GetName() << "    " << p_chan << endl;
   AddDataIn(p_data, "TAGdata");		    // ??? be more specific ???
   fpBranchList->Add(p_chan);
   return;

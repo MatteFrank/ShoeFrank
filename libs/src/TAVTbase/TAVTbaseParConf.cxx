@@ -81,6 +81,10 @@ Bool_t TAVTbaseParConf::FromFile(const TString& name)
    if(FootDebugLevel(1))
 	  cout << "Limit of Chi2 for BM tracks: "<< fAnalysisParameter.BmTrackChi2Limit << endl;
    
+   ReadItem(fAnalysisParameter.McPileUpPar);
+   if(FootDebugLevel(1))
+      cout << "MC pileup Poisson parameter: "<< fAnalysisParameter.McPileUpPar << endl;
+   
    ReadItem(fSensorsN);  
    if(FootDebugLevel(1))
      cout << endl << "Reading Parameters for "<< fSensorsN << " Sensors" << endl;

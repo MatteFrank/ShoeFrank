@@ -17,7 +17,6 @@ ClassImp(TAMSDactNtuRaw);
 UInt_t TAMSDactNtuRaw::fkgThreshold    = 0;
 Bool_t TAMSDactNtuRaw::fgPedestalSub   = true;
 Bool_t TAMSDactNtuRaw::fgCommonModeSub = true;
-Bool_t TAMSDactNtuRaw::fgPedestal      = false;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -53,6 +52,9 @@ TAMSDactNtuRaw::TAMSDactNtuRaw(const char* name,
   AddPara(dscpargeo, "TAMSDparGeo");
   AddPara(dscparconf, "TAMSDparConf");
   AddDataIn(dscdatdaq, "TAGdaqEvent");
+   
+   TAMSDparConf* p_parconf= (TAMSDparConf*)   fpParConf->Object();
+   fPedestal = p_parconf->GetAnalysisPar().PedestalFlag;
 }
 
 //------------------------------------------+-----------------------------------
@@ -238,7 +240,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       
       TAMSDrawHit* hit;
 
-      if(fgPedestal) {
+      if(fPedestal) {
          
          view=0;
          sensorId = p_parmap->GetSensorId(boardId, view);
