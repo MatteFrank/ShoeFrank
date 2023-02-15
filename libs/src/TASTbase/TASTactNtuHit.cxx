@@ -191,20 +191,20 @@ void TASTactNtuHit::CreateHistogram()
   AddHistogram(hEff);
 
 
-  sprintf(histoname,"stTotChargevsTotTime");
+  strcpy(histoname,"stTotChargevsTotTime");
   hChargevsTime[0] = new TH2F(histoname, histoname,  256, 0., 256., 1100, -0.1, 40.);
   AddHistogram(hChargevsTime[0]);
 
-  sprintf(histoname,"stTotChargevsTotTime-NOPILEUP-DerivativeMode");
+  strcpy(histoname,"stTotChargevsTotTime-NOPILEUP-DerivativeMode");
   hChargevsTime[1] = new TH2F(histoname, histoname,  256, 0., 256., 1100, -0.1, 40.);
   AddHistogram(hChargevsTime[1]);
 
 
-  sprintf(histoname,"stTotChargevsTotTime-NOPILEUP-ChargeMode");
+  strcpy(histoname,"stTotChargevsTotTime-NOPILEUP-ChargeMode");
   hChargevsTime[2] = new TH2F(histoname, histoname,  256, 0., 256., 1100, -0.1, 40.);
   AddHistogram(hChargevsTime[2]);
 
-  sprintf(histoname,"pileup");
+  strcpy(histoname,"pileup");
   hPileUp = new TH1F(histoname, histoname, 2, 0., 2.);
   AddHistogram(hPileUp);
 
