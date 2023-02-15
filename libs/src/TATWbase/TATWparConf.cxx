@@ -70,26 +70,26 @@ Bool_t TATWparConf::FromFile(const TString& name)
    ReadItem(tmp);
    fEnableTWZmc = tmp;
    if(FootDebugLevel(1))
-      cout<<"fEnableTWZmc="<<fEnableTWZmc<<endl;
+      cout<< "Enable MC true Z: " << fEnableTWZmc <<endl;
 
    ReadItem(tmp);
    fEnableTWnoPU = tmp;
    if(FootDebugLevel(1))
-      cout<<"fEnableTWnoPU="<<fEnableTWnoPU<<endl;
+      cout<<"Enable no pileup: "<< fEnableTWnoPU <<endl;
    
    ReadItem(tmp);
    fEnableTWZmatch = tmp;
    if(FootDebugLevel(1))
-      cout<<"fEnableTWZmatch="<<fEnableTWZmatch<<endl;
+      cout<<"Enable Z matching: "<< fEnableTWZmatch <<endl;
    
    ReadItem(tmp);
    fEnableTWCalBar = tmp;
    if(FootDebugLevel(1))
-      cout<<"fEnableTWCalBar="<<fEnableTWCalBar<<endl;
+      cout<<"Enable calibration by bar: "<< fEnableTWCalBar <<endl;
    
    ReadItem(fBarsN);
    if(FootDebugLevel(1))
-      cout<<"fBarsN="<<fBarsN<<endl;
+      cout<<"Number of bars: "<< fBarsN <<endl;
    
    Close();
    
