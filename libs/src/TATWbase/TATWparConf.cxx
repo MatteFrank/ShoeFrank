@@ -63,6 +63,8 @@ Bool_t TATWparConf::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
    
+   Info("FromFile()", "Open file %s for configuration\n", name.Data());
+
    Int_t tmp;
    ReadItem(tmp);
    fEnableTWZmc = tmp;
