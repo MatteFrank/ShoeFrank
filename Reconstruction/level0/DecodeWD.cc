@@ -66,15 +66,13 @@ int main (int argc, char *argv[])  {
    Bool_t hit = TAGrecoManager::GetPar()->IsSaveHits();
    Bool_t trk = TAGrecoManager::GetPar()->IsTracking();
    Bool_t obj = TAGrecoManager::GetPar()->IsReadRootObj();
-   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
-   Bool_t tbc = TAGrecoManager::GetPar()->IsTWCalBar();
    
-   if (tbc && !out.IsNull()) {
-     Int_t pos = out.Last('.');
-     out = out(0, pos);
-     out.Append("_TWBarCalib.root");
-     cout<<out.Data()<<endl;
-   }
+//   if (tbc && !out.IsNull()) {
+//     Int_t pos = out.Last('.');
+//     out = out(0, pos);
+//     out.Append("_TWBarCalib.root");
+//     cout<<out.Data()<<endl;
+//   }
    
    LocalReco* locRec = new LocalReco(exp, runNb, in, out);
    locRec->EnableStdAlone();
@@ -94,12 +92,6 @@ int main (int argc, char *argv[])  {
    
    if (trk)
       locRec->EnableTracking();
-   
-   if(zmatch)
-     locRec->EnableTWZmatch();
-   
-   if (tbc)
-     locRec->EnableTWcalibPerBar();
    
    if (mth)
       locRec->EnableM28lusMT();

@@ -27,15 +27,17 @@ class TATWparConf : public TAGparTools
     virtual         ~TATWparConf();
 
    //! Is Z from MC
-   Bool_t    IsTWZmc()    const { return fEnableTWZmc;    }
+   Bool_t    IsZmc()         const { return fEnableZmc;       }
    //! Is no pileup flag
-   Bool_t    IsTWnoPU()   const { return fEnableTWnoPU;   }
+   Bool_t    IsNoPileUp()    const { return fEnableNoPileUp;  }
    //! Is Z matching
-   Bool_t    IsTWZmatch() const { return fEnableTWZmatch; }
+   Bool_t    IsZmatching()   const { return fEnableZmatching; }
    //! Is Calibration per bar
-   Bool_t    IsTWCalBar() const { return fEnableTWCalBar; }
+   Bool_t    IsCalibBar()    const { return fEnableCalibBar;  }
+   //! Is rate smearing in MC
+   Bool_t    IsRateSmearMc() const { return fEnableCalibBar;  }
    //! Number of bars
-   Int_t     GetBarsN()   const { return fBarsN;          }
+   Int_t     GetBarsN()      const { return fBarsN;           }
 
    Bool_t    FromFile(const TString& name);
 
@@ -43,12 +45,13 @@ class TATWparConf : public TAGparTools
    void      ToStream(ostream& os = cout, Option_t* option = "") const;
 
 private:
-   TString   fkDefaultParName;  ///< default parconf file name ("./config/TATWdetector.cfg")
-   Bool_t    fEnableTWZmc;     ///< Enable Z from MC
-   Bool_t    fEnableTWnoPU;    ///< Enable no pileup flag
-   Bool_t    fEnableTWZmatch;  ///< Z matching
-   Bool_t    fEnableTWCalBar;  ///< Calibration per bar
-   Int_t     fBarsN;           ///< Number of bars
+   TString   fkDefaultParName;   ///< default parconf file name ("./config/TATWdetector.cfg")
+   Bool_t    fEnableZmc;         ///< Enable Z from MC
+   Bool_t    fEnableNoPileUp;    ///< Enable no pileup flag
+   Bool_t    fEnableZmatching;   ///< Z matching
+   Bool_t    fEnableCalibBar;    ///< Calibration per bar
+   Bool_t    fEnableRateSmearMc; ///< MC rate smearing
+   Int_t     fBarsN;             ///< Number of bars
 
    ClassDef(TATWparConf,1)
 };

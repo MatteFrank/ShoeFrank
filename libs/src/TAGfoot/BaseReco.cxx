@@ -136,7 +136,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fgCalClusterAlgo("Padme"),
    fFlagZtrueMC(false),
    fFlagZrecPUoff(false),
-   fFlagZmatchTw(false),
    fFlagMC(false),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),
@@ -321,10 +320,6 @@ void BaseReco::GlobalSettings()
    Bool_t hit    = TAGrecoManager::GetPar()->IsSaveHits();
    Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
    Bool_t obj    = TAGrecoManager::GetPar()->IsReadRootObj();
-   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
-   Bool_t tbc    = TAGrecoManager::GetPar()->IsTWCalBar();
-   Bool_t zmc    = TAGrecoManager::GetPar()->IsTWZmc();
-   Bool_t zrec   = TAGrecoManager::GetPar()->IsTWnoPU();
 
    // global setting
    if (ntu)
@@ -340,19 +335,6 @@ void BaseReco::GlobalSettings()
    
    if (trk)
       EnableTracking();
- 
-   if(zmatch)
-      EnableTWZmatch();
-   
-   if (tbc)
-      EnableTWcalibPerBar();
-   
-   if(zmc)
-      EnableZfromMCtrue();
-   
-   if(zrec && !zmc)
-      EnableZrecWithPUoff();
-
 }
 
 //__________________________________________________________
@@ -723,6 +705,15 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
+      fpParConfTw = new TAGparaDsc("twConf", new TATWparConf());
+      TATWparConf* parConf = (TATWparConf*)fpParConfTw->Object();
+      parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      fFlagZtrueMC     = parConf->IsZmc();
+      fFlagTWbarCalib  = parConf->IsCalibBar();
+      fFlagRateSmearTw = parConf->IsRateSmearMc();
+      
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
@@ -985,7 +976,7 @@ void BaseReco::CreateRecActionTw()
    fpNtuRecTw = new TAGdataDsc("twPoint", new TATWntuPoint());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
-   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuHitTw, fpNtuRecTw, fpParGeoTw, fpParCalTw, fFlagZmatchTw, fFlagZtrueMC);
+   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuHitTw, fpNtuRecTw, fpParGeoTw, fpParConfTw, fpParCalTw);
    if (fFlagHisto)
      fActPointTw->CreateHistogram();
 }

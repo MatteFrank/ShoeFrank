@@ -14,6 +14,7 @@
 
 #include "TATWntuHit.hxx"
 #include "TATWparGeo.hxx"
+#include "TATWparConf.hxx"
 
 #include "TAGgeoTrafo.hxx"
 #include "TAMCflukaStruct.hxx"
@@ -33,11 +34,9 @@ public:
                             TAGdataDsc* p_ntuStMC=0,
                             TAGdataDsc* p_ntuEve=0,
                             TAGdataDsc* p_hitraw=0,
+                            TAGparaDsc* p_parconf=0,
                             TAGparaDsc* p_parcal=0,
                             TAGparaDsc *p_pargeoG=0,
-                            Bool_t isZmc = false,
-			    Bool_t isZrecPUoff = false,
-			    Bool_t isRateSmear = false,
                             EVENT_STRUCT* evStr = 0);
   
    virtual  ~TATWactNtuHitMC();
@@ -51,6 +50,7 @@ private:
    TAGdataDsc*     fpNtuStMC;   // input mc hit ST
    TAGdataDsc*     fpNtuEve;    // input eve track dsc
    TAGdataDsc*     fpNtuRaw;    // output data dsc
+   TAGparaDsc*     fpParConf;   // configuration parameter dsc
    TAGparaDsc*     fpCalPar;    // calibration parameter dsc
    TAGparaDsc*     fParGeoG;    // beam parameter dsc
    TATWdigitizer*  fDigitizer;  // digitizer

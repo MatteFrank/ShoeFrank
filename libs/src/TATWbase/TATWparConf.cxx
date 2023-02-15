@@ -31,10 +31,10 @@ ClassImp(TATWparConf);
 TATWparConf::TATWparConf()
  : TAGparTools(),
    fkDefaultParName(""),
-   fEnableTWZmc(false),
-   fEnableTWnoPU(false),
-   fEnableTWZmatch(false),
-   fEnableTWCalBar(false),
+   fEnableZmc(false),
+   fEnableNoPileUp(false),
+   fEnableZmatching(false),
+   fEnableCalibBar(false),
    fBarsN(0)
 {
   fkDefaultParName = "./config/TATWdetector.cfg";
@@ -67,24 +67,24 @@ Bool_t TATWparConf::FromFile(const TString& name)
 
    Int_t tmp;
    ReadItem(tmp);
-   fEnableTWZmc = tmp;
+   fEnableZmc = tmp;
    if(FootDebugLevel(1))
-      cout<< "Enable MC true Z: " << fEnableTWZmc <<endl;
+      cout<< "Enable MC true Z: " << fEnableZmc <<endl;
 
    ReadItem(tmp);
-   fEnableTWnoPU = tmp;
+   fEnableNoPileUp = tmp;
    if(FootDebugLevel(1))
-      cout<<"Enable no pileup: "<< fEnableTWnoPU <<endl;
+      cout<<"Enable no pileup: "<< fEnableNoPileUp <<endl;
    
    ReadItem(tmp);
-   fEnableTWZmatch = tmp;
+   fEnableZmatching = tmp;
    if(FootDebugLevel(1))
-      cout<<"Enable Z matching: "<< fEnableTWZmatch <<endl;
+      cout<<"Enable Z matching: "<< fEnableZmatching <<endl;
    
    ReadItem(tmp);
-   fEnableTWCalBar = tmp;
+   fEnableRateSmearMc = tmp;
    if(FootDebugLevel(1))
-      cout<<"Enable calibration by bar: "<< fEnableTWCalBar <<endl;
+      cout<<"Enable rate smearing in MC: "<< fEnableRateSmearMc <<endl;
    
    ReadItem(fBarsN);
    if(FootDebugLevel(1))
@@ -99,11 +99,12 @@ Bool_t TATWparConf::FromFile(const TString& name)
 //! Clear config info
 void TATWparConf::Clear(Option_t*)
 {
-   fEnableTWZmc    = false;
-   fEnableTWnoPU   = false;
-   fEnableTWZmatch = false;
-   fEnableTWCalBar = false;
-   fBarsN          = 0;
+   fEnableZmc         = false;
+   fEnableNoPileUp    = false;
+   fEnableZmatching   = false;
+   fEnableCalibBar    = false;
+   fEnableRateSmearMc = false;
+   fBarsN             = 0;
 }
 
 /*------------------------------------------+---------------------------------*/

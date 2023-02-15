@@ -29,24 +29,20 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
                                  TAGdataDsc* p_ntuStMC,
                                  TAGdataDsc* p_ntuEve,
                                  TAGdataDsc* p_hitraw,
+                                 TAGparaDsc* p_parconf,
                                  TAGparaDsc* p_parcal,
                                  TAGparaDsc* p_parGeoG,
-                                 Bool_t isZmc,
-                                 Bool_t isZrecPUoff,
-                                 Bool_t isRateSmear,
                                  EVENT_STRUCT* evStr)
  : TAGaction(name, "TATWactNtuHitMC - NTuplize ToF raw data"),
    fpNtuMC(p_ntuMC),
    fpNtuStMC(p_ntuStMC),
    fpNtuEve(p_ntuEve),
    fpNtuRaw(p_hitraw),
+   fpParConf(p_parconf),
    fpCalPar(p_parcal),
    fParGeoG(p_parGeoG),
    fCnt(0),
    fCntWrong(0),
-   fIsZtrueMC(isZmc),
-   fIsZrecPUoff(isZrecPUoff),
-   fIsRateSmear(isRateSmear),
    fEventStruct(evStr)
 {
    if (fEventStruct == 0x0) {
@@ -55,6 +51,7 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
       AddDataIn(p_ntuEve, "TAMCntuPart");
    }
    AddDataOut(p_hitraw, "TATWntuHit");
+   AddPara(p_parconf,"TATWparConf");
    AddPara(p_parcal,"TATWparCal");
    AddPara(p_parGeoG,"TAGparGeo");
    
@@ -65,6 +62,11 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    
    CreateDigitizer();
    
+   TATWparConf* parConf = (TATWparConf*) p_parconf->Object();
+   fIsZtrueMC   = parConf->IsZmc();
+   fIsZrecPUoff = parConf->IsNoPileUp();
+   fIsRateSmear = parConf->IsRateSmearMc();
+
    if( fIsZtrueMC ) {
       fDigitizer->SetMCtrue();
       fDigitizer->SetPileUpOff();
