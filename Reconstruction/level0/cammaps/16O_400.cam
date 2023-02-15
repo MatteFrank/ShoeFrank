@@ -43,7 +43,7 @@ NumberFiles: 2
 "./config/16O_400/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/16O_400/TATWdetector.geo": -1
 "./config/16O_400/TATWdetector.cfg": -1
 "./config/16O_400/TATW_BBparameters.cfg": -1

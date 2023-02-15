@@ -37,7 +37,7 @@ NumberFiles: 2
 "./config/GSI2021_MC/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/GSI2021_MC/TATWdetector.geo": -1
 "./config/GSI2021_MC/TATWdetector.cfg": -1
 "./config/GSI2021_MC/TATW_BBparameters.cfg": -1

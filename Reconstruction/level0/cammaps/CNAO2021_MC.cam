@@ -17,7 +17,7 @@ NumberFiles: 1
 "./geomaps/CNAO2021_MC/TAGdetector.geo": 150;200;300;400
 
 DetectorName: "TW"
-NumberFiles: 6
+NumberFiles: 7
 "./geomaps/CNAO2021_MC/TATWdetector.geo": -1
 "./config/CNAO2021_MC/TATWdetector.cfg": -1
 "./config/CNAO2021_MC/TATW_BBparameters.cfg": -1

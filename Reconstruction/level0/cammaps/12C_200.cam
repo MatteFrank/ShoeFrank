@@ -43,7 +43,7 @@ NumberFiles: 2
 "./config/12C_200/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/12C_200/TATWdetector.geo": -1
 "./config/12C_200/TATWdetector.cfg": -1
 "./config/12C_200/TATW_BBparameters.cfg": -1
