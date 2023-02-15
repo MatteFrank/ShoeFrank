@@ -134,7 +134,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fgItrTrackingAlgo("Full"),
    fgMsdTrackingAlgo("Full"),
    fgCalClusterAlgo("Padme"),
-   fFlagZrecPUoff(false),
    fFlagMC(false),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),

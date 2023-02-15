@@ -485,7 +485,6 @@ protected:
    TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgCalClusterAlgo;  ///< cal tracking clustering ("std" for standard, "Padme" for PADME one)
-   Bool_t                fFlagZrecPUoff;    ///< Z rec TW PU off flag
    Bool_t                fFlagRateSmearTw;  ///< TW eloss emaring due to rate
 
    Bool_t                fFlagMC;           ///< MC flag
