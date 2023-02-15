@@ -81,6 +81,7 @@ Bool_t TAMSDactNtuHit::Action()
          Int_t view       = strip->GetView();
          Double_t charge  = strip->GetCharge();
          Bool_t isSeed    = strip->IsSeed();
+         Bool_t isNoisy   = strip->IsNoisy();
          Float_t posStrip = p_geoMap->GetPosition(stripId);
          if(FootDebugLevel(2))
             cout<<" Sens "<<sensorId<<" strip "<<stripId<<" View "<<view<<" position (cm) "<<posStrip<<" "<<endl;
@@ -91,6 +92,7 @@ Bool_t TAMSDactNtuHit::Action()
          TAMSDhit* hit = p_nturaw->NewStrip(sensorId, charge, view, stripId);
          hit->SetPosition(posStrip);
          hit->SetSeed(isSeed);
+         hit->SetNoisy(isNoisy);
       }
    }
    fpNtuRaw->SetBit(kValid);

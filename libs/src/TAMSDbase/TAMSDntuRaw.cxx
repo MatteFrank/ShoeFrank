@@ -25,7 +25,8 @@ TAMSDrawHit::TAMSDrawHit()
    fIndex(0),
    fView(0),
    fStrip(0),
-   fIsSeed(false)
+   fIsSeed(false),
+   fIsNoisy(false)
 {
 }
 
@@ -43,7 +44,8 @@ TAMSDrawHit::TAMSDrawHit(Int_t id, Int_t view, Int_t strip, Double_t charge)
    fIndex(0),
    fView(view),
    fStrip(strip),
-   fIsSeed(false)
+   fIsSeed(false),
+   fIsNoisy(false)
 {
 }
 
