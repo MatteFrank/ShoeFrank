@@ -73,7 +73,6 @@ TAGrecoManager::TAGrecoManager( const TString expName )
   fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
   fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
-  fEnableTWZmc(false),     fEnableTWnoPU(false), fEnableTWZmatch(false), fEnableTWCalBar(false), fEnableTWRateSmearMC(false),
   fDoCalibTW(false),       fDoCalibBM(false),    fEnableRegionMc(false),
   fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
   fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
@@ -108,18 +107,6 @@ const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 
    if (IsReadRootObj())
       runInfo.GetGlobalPar().EnableRootObject = true;
-  
-   if (IsTWZmc())
-      runInfo.GetGlobalPar().EnableTWZmc = true;
-  
-   if (IsRegionMc())
-     runInfo.GetGlobalPar().EnableRegionMc = true;
-
-   if (IsTWnoPU())
-      runInfo.GetGlobalPar().EnableTWnoPU = true;
-  
-   if (IsTWZmatch())
-      runInfo.GetGlobalPar().EnableTWZmatch = true;
   
    if (IncludeKalman())
       runInfo.GetGlobalPar().IncludeKalman = true;
@@ -465,42 +452,6 @@ void TAGrecoManager::FromFile()
       else                      fEnableRootObject = false;
       if (fDebugLevel > 0)
         printf("EnableRootObject: %d\n", fEnableRootObject);
-    }
-    
-    if (key.Contains("EnableTWZmc:") ) {
-      if ( item.Contains("y"))  fEnableTWZmc = true;
-      else                      fEnableTWZmc = false;
-      if (fDebugLevel > 0)
-        printf("EnableTWZmc: %d\n", fEnableTWZmc);
-    }
-    
-    if (key.Contains("EnableTWnoPU:") ) {
-      if ( item.Contains("y"))  fEnableTWnoPU = true;
-      else                      fEnableTWnoPU = false;
-      if (fDebugLevel > 0)
-        printf("EnableTWnoPU: %d\n", fEnableTWnoPU);
-    }
-    
-
-    if (key.Contains("EnableTWZmatch:") ) {
-      if ( item.Contains("y"))  fEnableTWZmatch = true;
-      else                      fEnableTWZmatch = false;
-      if (fDebugLevel > 0)
-        printf("EnableTWZmatch: %d\n", fEnableTWZmatch);
-    }
-    
-    if (key.Contains("EnableTWCalBar:")  ) {
-      if ( item.Contains("y"))  fEnableTWCalBar = true;
-      else                      fEnableTWCalBar = false;
-      if (fDebugLevel > 0)
-        printf("EnableTWCalBar: %d\n", fEnableTWCalBar);
-    }
-
-    if (key.Contains("EnableTWRateSmearMC:")  ) {
-      if ( item.Contains("y"))  fEnableTWRateSmearMC = true;
-      else                      fEnableTWRateSmearMC = false;
-      if (fDebugLevel > 0)
-        printf("EnableTWRateSmearMC: %d\n", fEnableTWRateSmearMC);
     }
     
     if (key.Contains("EnableRegionMc:")  ) {
