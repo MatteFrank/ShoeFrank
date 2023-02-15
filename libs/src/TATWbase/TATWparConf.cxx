@@ -56,16 +56,13 @@ Bool_t TATWparConf::FromFile(const TString& name)
    TString nameExp;
    
    if (name.IsNull()){
-      cout<<"Warning in TATWparConf::FromFile:: the input filename is Null, I will load the default par file:"<<fkDefaultParName.Data()<<endl;
+      Warning("FromFile()","The input filename is Null, I will load the default par file: %s", fkDefaultParName.Data());
       nameExp = fkDefaultParName;
    }else
       nameExp = name;
    
    if (!Open(nameExp)) return false;
    
-   
-   
-   //cuts
    Int_t tmp;
    ReadItem(tmp);
    fEnableTWZmc = tmp;
