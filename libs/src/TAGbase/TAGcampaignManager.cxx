@@ -264,11 +264,11 @@ bool TAGcampaign::FromFile(TString ifile)
          // config
          if (fileName.Contains("config") && fileName.EndsWith(".cfg") && !fileName.Contains("T0")) { // needed for BM
             
-//            // check order in TW config files
-//            if (fileName.Contains(fgTWcfgFileType[0]) && fFileConfMap[detName].size() != 0 ) {
-//               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
-//               exit(0);
-//            }
+            // check order in TW config files
+            if (fileName.Contains(fgTWcfgFileType[0]) && fFileConfMap[detName].size() != 0 ) {
+               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
             
             fFileConfMap[detName].push_back(fileName);
             fRunsConfMap[detName].push_back(array);
@@ -370,6 +370,7 @@ const Char_t* TAGcampaign::GetGeoFile(const TString& detName, Int_t runNumber)
 //! \param[in] bEnergy beam energy
 const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, TString bName, Int_t bEnergy, Int_t item)
 {
+   // if ever the TW config is missing
    if (fFileConfMap[detName].size() == 1 ) {
       item = 0;
    } else {
