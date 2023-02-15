@@ -134,7 +134,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fgItrTrackingAlgo("Full"),
    fgMsdTrackingAlgo("Full"),
    fgCalClusterAlgo("Padme"),
-   fFlagZtrueMC(false),
    fFlagZrecPUoff(false),
    fFlagMC(false),
    fReadL0Hits(false),
@@ -710,7 +709,6 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
       
-      fFlagZtrueMC     = parConf->IsZmc();
       fFlagTWbarCalib  = parConf->IsCalibBar();
       fFlagRateSmearTw = parConf->IsRateSmearMc();
       
@@ -749,23 +747,15 @@ void BaseReco::ReadParFiles()
       }
 
       isTof_calib = true;
-      if(fFlagTWbarCalib) {
          parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
                                                    isTof_calib,fFlagTWbarCalib);
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
-      } else {
-         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
-                                                   isTof_calib,fFlagTWbarCalib);
-         parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
-      }
 
       parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber,
                                                  Form("%d%s", A_beam,ion_name.Data()),
                                                  (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
-      if (parFileName.IsNull() && fFlagMC) {
-         fFlagZtrueMC = true;
-         Warning("ReadParFiles()", "BB parametrization file does not exist for %d%s at %d MeV switch to true MC Z\n", A_beam, ion_name.Data(), (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
-      } else
+      
+      if (!parFileName.IsNull()) // should not happen
          parCal->FromFileZID(parFileName.Data(),Z_beam);
 
       if(fFlagMC) { // set in MC threshold and active bars from data informations
