@@ -34,6 +34,7 @@ NumberFiles: 3
 DetectorName: "TW"
 NumberFiles: 6
 "./geomaps/testCALO/TATWdetector.geo": -1
+"./config/testCALO/TATWdetector.cfg": -1
 "./config/testCALO/TATW_BBparameters.cfg": -1
 "./config/testCALO/TATWChannelMapXML.map": -1
 "./calib/testCALO/TATW_Energy_Calibration.cal": -1

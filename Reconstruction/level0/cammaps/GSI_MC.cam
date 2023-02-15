@@ -30,6 +30,7 @@ NumberFiles: 2
 DetectorName: "TW"
 NumberFiles: 5
 "./geomaps/GSI_MC/TATWdetector.geo": -1
+"./config/GSI_MC/TATWdetector.cfg": -1
 "./config/GSI_MC/TATW_BBparameters.cfg": -1
 "./config/GSI_MC/TATWbarsMapStatus.map": -1
 "./calib/GSI_MC/TATW_Energy_Calibration.cal": -1

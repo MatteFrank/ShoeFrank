@@ -35,6 +35,7 @@ NumberFiles: 2
 DetectorName: "TW"
 NumberFiles: 5
 "./geomaps/CNAO2020/TATWdetector.geo": -1
+"./config/CNAO2020/TATWdetector.cfg": -1
 "./config/CNAO2020/TATW_BBparameters.cfg": -1
 "./config/CNAO2020/TATWbarsMapStatus.map": -1
 "./calib/CNAO2020/TATW_Energy_Calibration.cal": -1

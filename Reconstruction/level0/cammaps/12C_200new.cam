@@ -45,6 +45,7 @@ NumberFiles: 2
 DetectorName: "TW"
 NumberFiles: 5
 "./geomaps/12C_200new/TATWdetector.geo": -1
+"./config/12C_200new/TATWdetector.cfg": -1
 "./config/12C_200new/TATW_BBparameters.cfg": -1
 "./config/12C_200new/TATWbarsMapStatus.map": -1
 "./calib/12C_200new/TATW_Energy_Calibration.cal": -1

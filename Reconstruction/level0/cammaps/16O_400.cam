@@ -45,6 +45,7 @@ NumberFiles: 2
 DetectorName: "TW"
 NumberFiles: 5
 "./geomaps/16O_400/TATWdetector.geo": -1
+"./config/16O_400/TATWdetector.cfg": -1
 "./config/16O_400/TATW_BBparameters.cfg": -1
 "./config/16O_400/TATWbarsMapStatus.map": -1
 "./calib/16O_400/TATW_Energy_Calibration.cal": -1

@@ -41,6 +41,7 @@ NumberFiles: 5
 DetectorName: "TW"
 NumberFiles: 5
 "./geomaps/HIT2022/TATWdetector.geo": -1
+"./config/HIT2022/TATWdetector.cfg": -1
 "./config/HIT2022/TATW_BBparameters.cfg": -1
 "./config/HIT2022/TATWChannelMapXML.map": -1
 "./calib/HIT2022/TATW_Energy_Calibration.cal": -1
