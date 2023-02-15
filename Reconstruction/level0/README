@@ -66,10 +66,10 @@ DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1
 
 B) fullrec reconstruction tools with GenFit
-1)Running from raw data: (DOES NOT WORK)
+1)Running from raw data:
  - activate Kalman in FootGlobal.par
    . . .
    IncludeKalman:   y
@@ -96,7 +96,7 @@ DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_
    Reverse Tracking:   false
    . . .
 - command:
-DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1
 
 3)Running from L0 reconstruction tree:
 - activate Kalman in FootGlobal.par and local reco
