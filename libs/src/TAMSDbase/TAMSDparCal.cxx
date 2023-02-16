@@ -86,7 +86,7 @@ TAMSDcalibrationMap::PedParameter_t TAMSDparCal::GetPedestal(Int_t sensorId, Int
 //! \param[in] sensorId sensor id
 //! \param[in] pedestal_p pedestal parameter
 //! \param[in] seed seed flag
-Double_t TAMSDparCal::GetPedestalThreshold(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed)
+Double_t TAMSDparCal::GetPedestalValue(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed)
 {
    Double_t sigLevel = 0;
    
@@ -100,8 +100,11 @@ Double_t TAMSDparCal::GetPedestalThreshold(Int_t sensorId, TAMSDcalibrationMap::
    Double_t sigma    = pedestal_p.sigma;
 
    Double_t value = mean + sigLevel*sigma;
-
-   return value;
+   
+   if (pedestal_p.status)
+      return value;
+   else
+      return -1;
 }
 
 //_____________________________________________________________________
