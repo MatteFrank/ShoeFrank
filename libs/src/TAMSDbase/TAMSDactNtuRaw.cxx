@@ -225,7 +225,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       
       UInt_t adcSecond = evt->SecondPlane[i];
       UInt_t adcFirst = evt->FirstPlane[i];
-      UInt_t adcDummy; 
+      UInt_t adcDummy;
       Int_t view  = -1;
       Int_t sensorId = -1;
       Bool_t status  = true;
@@ -246,7 +246,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
          sensorId = p_parmap->GetSensorId(boardId, view);
          if(sensorId % 2 == 0)
             hit = p_datraw->AddStrip(sensorId, view, i, adcFirst);
-         else 
+         else
             hit = p_datraw->AddStrip(sensorId, view, i, adcSecond);
          
          view=1;
