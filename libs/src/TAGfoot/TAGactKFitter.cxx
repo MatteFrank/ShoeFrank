@@ -207,7 +207,8 @@ Bool_t TAGactKFitter::Action()	{
 
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
 
-	m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
+	if( m_IsMC )
+		m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
 
 	//Check if ST signlaed a pile-up
 	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc("stDat", "TASTntuRaw")->Object())->GetSuperHit()->GetPileUp() )
@@ -2242,7 +2243,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 
 
 
-
+//! \brief Clear data for new loop
 void TAGactKFitter::ClearData()
 {
 	m_outTrackRepo->Clear();
@@ -2273,6 +2274,7 @@ void TAGactKFitter::ClearData()
 }
 
 
+//! \brief Delete all histograms
 void TAGactKFitter::ClearHistos()
 {
 	if ( m_IsMC ){
