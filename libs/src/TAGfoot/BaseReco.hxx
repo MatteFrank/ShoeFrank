@@ -52,6 +52,7 @@
 #include "TAVTparConf.hxx"
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"
+#include "TATWparConf.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TASTntuHit.hxx"
@@ -206,32 +207,7 @@ public:
    void EnableTracking()       { fFlagTrack = true;       }
    //! Disable tracking
    void DisableTracking()      { fFlagTrack = false;      }
-   
-   //! Enable TW calibration per bar
-   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
-   //! Disable TW calibration per bar
-   void DisableTWcalibPerBar() { fFlagTWbarCalib = false; }
-
-   //! Enable using true MC charge for TW
-   void EnableZfromMCtrue()    { fFlagZtrueMC = true;     }
-   //! Disable using true MC charge for TW
-   void DisableZfromMCtrue()   { fFlagZtrueMC = false;    }
-
-   //! Enable Z reconstruction with pileup off for TW
-   void EnableZrecWithPUoff()  { fFlagZrecPUoff = true;   }
-   //! Disable Z reconstruction with pileup off for TW
-   void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
   
-   //! Enable Z reconstruction matching for TW
-   void EnableTWZmatch()       { fFlagZmatchTw = true;   }
-   //! Disable Z reconstruction matching for TW
-   void DisableTWZmatch()      { fFlagZmatchTw = false;  }
-
-   //! Enable tw eloss smearing due to rate
-   void EnableTWRateSmearMC()       { fFlagRateSmearTw = true;   }
-   //! DIsable tw eloss smearing due to rate
-   void DisableTWRateSmearMC()      { fFlagRateSmearTw = false;  }
-   
    //! Enable Reconstruction cutter for TOE
    void EnableRecCutter()      { fFlagRecCutter = true;   }
    //! Disable Reconstruction cutter for TOE
@@ -424,7 +400,8 @@ protected:
    TAGparaDsc*           fpParConfVtx;    ///< VTX configuration parameter
    TAGparaDsc*           fpParConfIt;     ///< ITR configuration parameter
    TAGparaDsc*           fpParConfMsd;    ///< MSD configuration parameter
-   
+   TAGparaDsc*           fpParConfTw;     ///< TW configuration parameter
+
    TAGdataDsc*           fpDatRawSt;     ///< Raw hit input dsc for STC
    TAGdataDsc*           fpNtuHitSt;     ///< Hit input dsc for STC
    TAGdataDsc*           fpDatRawBm;     ///< Raw hit input dsc for BM
@@ -508,9 +485,6 @@ protected:
    TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
    TString               fgCalClusterAlgo;  ///< cal tracking clustering ("std" for standard, "Padme" for PADME one)
-   Bool_t                fFlagZtrueMC;      ///< Z true MC flag
-   Bool_t                fFlagZrecPUoff;    ///< Z rec TW PU off flag
-   Bool_t                fFlagZmatchTw;     ///< TW Z match
    Bool_t                fFlagRateSmearTw;  ///< TW eloss emaring due to rate
 
    Bool_t                fFlagMC;           ///< MC flag

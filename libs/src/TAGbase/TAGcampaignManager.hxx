@@ -34,7 +34,7 @@ public:
    // Get geometry file name
    const Char_t*     GetGeoFile(const  TString& detName, Int_t runNumber);
    // Get configuration file name
-   const Char_t*     GetConfFile(const TString& detName, Int_t runNumber, TString bName = "", Int_t bEnergy = -1);
+   const Char_t*     GetConfFile(const TString& detName, Int_t runNumber, TString bName = "", Int_t bEnergy = -1, Int_t item = 0);
    // Get mapping file name
    const Char_t*     GetMapFile(const  TString& detName, Int_t runNumber, Int_t item = 0);
    // Get region file name
@@ -58,8 +58,8 @@ private:
    map<TString, TArrayI> fRunsGeoMap;          ///< Map of list of run for a given detector
    
    // configuration file
-   map<TString, TString> fFileConfMap;         ///< Map of configuration file names for a given detect
-   map<TString, TArrayI> fRunsConfMap;         ///< Map of list of run for a given detector
+   map<TString, vector<TString> > fFileConfMap; ///< Map of configuration file names for a given detect
+   map<TString, vector<TArrayI> > fRunsConfMap; ///< Map of list of run for a given detector
    
    // mapping file
    map<TString, vector<TString> > fFileMap;    ///< Map of mapping file names for a given detect
@@ -86,6 +86,7 @@ private:
 private:
    static map<Int_t, TString> fgTWcalFileType; ///< Map of special TW calibration file name
    static map<Int_t, TString> fgTWmapFileType; ///< Map of special TW mapping file name
+   static map<Int_t, TString> fgTWcfgFileType; ///< Map of special TW mapping file name
    static map<Int_t, TString> fgCAcalFileType; ///< Map of special CA calibration file name
 
    ClassDef(TAGcampaign,2)
@@ -138,8 +139,8 @@ public:
    const Char_t*        GetCurGeoFile(const TString& detName, Int_t runNumber = -1)  { return fCurCampaign->GetGeoFile(detName, runNumber);  }
    //! Get current configuration file name
    const Char_t*        GetCurConfFile(const TString& detName, Int_t runNumber = -1,
-                                       TString bName = "", Int_t bEnergy = -1)
-   { return fCurCampaign->GetConfFile(detName, runNumber, bName, bEnergy); }
+                                       TString bName = "", Int_t bEnergy = -1, Int_t item = 0)
+   { return fCurCampaign->GetConfFile(detName, runNumber, bName, bEnergy, item); }
    //! Get current mapping file name
    const Char_t*        GetCurMapFile(const TString& detName, Int_t runNumber = -1, Int_t item = 0)  { return fCurCampaign->GetMapFile(detName, runNumber, item);  }
    //! Get current region file name

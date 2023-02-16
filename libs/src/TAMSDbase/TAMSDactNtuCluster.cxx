@@ -115,6 +115,7 @@ Bool_t TAMSDactNtuCluster::Action()
 
     if (fListOfStrips->GetEntriesFast() == 0) continue;
     ok += FindClusters(i);
+   //TODO: add check for clusters containing noisy strips to manipulate them (noisy strips are now simply skipped in the clusterization)
   }
   
   if(ok)
@@ -183,14 +184,17 @@ void TAMSDactNtuCluster::FillMaps()
   
   if (fListOfStrips->GetEntriesFast() == 0) return;
   
+  Int_t map_idx = 0;
   // fill maps for cluster
   for (Int_t i = 0; i < fListOfStrips->GetEntriesFast(); i++) { // loop over hit strips
     
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(i);
     Int_t stripId  = strip->GetStrip();
     if (!CheckLine(stripId)) continue;
+    if (strip->IsNoisy()) continue;
     
-    TAGactNtuCluster1D::FillMaps(stripId, i);
+    TAGactNtuCluster1D::FillMaps(stripId, map_idx);
+    map_idx++;
   }
 }
 
@@ -366,7 +370,7 @@ void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
 
   eCorrection = p_parcal->GetElossParam(fCurrentEta);
 
-  cluster->SetEnergyLossCorr(fCurrentEnergy * eCorrection);
+  cluster->SetEnergyLossCorr(fCurrentEnergy / eCorrection);
 }
 
 //_____________________________________________________________________________

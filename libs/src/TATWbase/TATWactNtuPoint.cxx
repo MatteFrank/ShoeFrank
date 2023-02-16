@@ -25,20 +25,22 @@ ClassImp(TATWactNtuPoint);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap, TAGparaDsc* pCalMap, Bool_t isZmatch, Bool_t isZmc)
+TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuPoint, TAGparaDsc* pGeoMap, TAGparaDsc* pConfMap , TAGparaDsc* pCalMap)
  : TAGaction(name, "TATWactNtuCluster - NTuplize cluster"),
    fpNtuRaw(pNtuRaw),
    fpNtuPoint(pNtuPoint),
    fpGeoMap(pGeoMap),
+   fpConfMap(pConfMap),
    fpCalMap(pCalMap),
    fDefPosErr(0),
-   fIsZmatch(isZmatch),
-   fIsZMCtrue(isZmc)
+   fIsZmatch(false),
+   fIsZMCtrue(false)
 {
    AddDataIn(pNtuRaw,   "TATWntuHit");
    AddDataOut(pNtuPoint, "TATWntuPoint");
 
    AddPara(pGeoMap, "TATWparGeo");
+   AddPara(pConfMap, "TATWparConf");
    AddPara(pCalMap, "TATWparCal");
 
    fparGeoTW = (TATWparGeo*) fpGeoMap->Object();
@@ -53,8 +55,11 @@ TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataD
    fparGeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
    fZbeam = fparGeo->GetBeamPar().AtomicNumber;
 
-   fmapMultHit.clear();
+   TATWparConf* parConf = (TATWparConf*) fpConfMap->Object();
+   fIsZmatch = parConf->IsZmatching();
+   fIsZMCtrue = parConf->IsZmc();
 
+   fmapMultHit.clear();
 }
 
 //------------------------------------------+-----------------------------------

@@ -51,10 +51,6 @@ TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
    fGlobalParameter.EnableSaveHits   = right.fGlobalParameter.EnableSaveHits;
    fGlobalParameter.EnableTracking   = right.fGlobalParameter.EnableTracking;
    fGlobalParameter.EnableRootObject = right.fGlobalParameter.EnableRootObject;
-   fGlobalParameter.EnableTWZmc      = right.fGlobalParameter.EnableTWZmc;
-   fGlobalParameter.EnableTWnoPU     = right.fGlobalParameter.EnableTWnoPU;
-   fGlobalParameter.EnableTWZmatch   = right.fGlobalParameter.EnableTWZmatch;
-   fGlobalParameter.EnableTWCalBar   = right.fGlobalParameter.EnableTWCalBar;
    fGlobalParameter.EnableRegionMc   = right.fGlobalParameter.EnableRegionMc;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
@@ -91,10 +87,6 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
    fGlobalParameter.EnableSaveHits   = right.fGlobalParameter.EnableSaveHits;
    fGlobalParameter.EnableTracking   = right.fGlobalParameter.EnableTracking;
    fGlobalParameter.EnableRootObject = right.fGlobalParameter.EnableRootObject;
-   fGlobalParameter.EnableTWZmc      = right.fGlobalParameter.EnableTWZmc;
-   fGlobalParameter.EnableTWnoPU     = right.fGlobalParameter.EnableTWnoPU;
-   fGlobalParameter.EnableTWZmatch   = right.fGlobalParameter.EnableTWZmatch;
-   fGlobalParameter.EnableTWCalBar   = right.fGlobalParameter.EnableTWCalBar;
    fGlobalParameter.EnableRegionMc   = right.fGlobalParameter.EnableRegionMc;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
@@ -141,10 +133,6 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  EnableTracking: %d\n", fGlobalParameter.EnableTracking)
    << Form("  EnableSaveHits: %d\n", fGlobalParameter.EnableSaveHits)
    << Form("  EnableRootObject: %d\n", fGlobalParameter.EnableRootObject)
-   << Form("  EnableTWZmc: %d\n", fGlobalParameter.EnableTWZmc)
-   << Form("  EnableTWnoPU: %d\n\n", fGlobalParameter.EnableTWnoPU)
-   << Form("  EnableTWZmatch: %d\n", fGlobalParameter.EnableTWZmatch)
-   << Form("  EnableTWCalBar: %d\n\n", fGlobalParameter.EnableTWCalBar)
    << Form("  EnableRegionMc: %d\n\n", fGlobalParameter.EnableRegionMc)
    << Form("  IncludeKalman: %d\n", fGlobalParameter.IncludeKalman)
    << Form("  IncludeTOE: %d\n\n", fGlobalParameter.IncludeTOE)

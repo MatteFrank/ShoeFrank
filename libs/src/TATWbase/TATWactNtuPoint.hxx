@@ -10,6 +10,7 @@
 #include "TAGaction.hxx"
 
 #include "TATWparGeo.hxx"
+#include "TATWparConf.hxx"
 #include "TATWparCal.hxx"
 
 #include "TAGparTools.hxx"
@@ -25,10 +26,9 @@ public:
                              TAGdataDsc* p_nturaw   = 0,
                              TAGdataDsc* p_ntupoint = 0,
                              TAGparaDsc* p_geomap   = 0,
-                             TAGparaDsc* p_calmap   = 0,
-                             Bool_t isZmatch   = false,
-                             Bool_t isMC   = false);
-
+                             TAGparaDsc* p_conf     = 0,
+                             TAGparaDsc* p_calmap   = 0);
+   
    virtual ~TATWactNtuPoint();
    
    //! Action
@@ -57,7 +57,8 @@ private:
    TAGdataDsc*     fpNtuRaw;		 // input data dsc
    TAGdataDsc*     fpNtuPoint;           // output data dsc
    TAGparaDsc*     fpGeoMap;		 // geometry para dsc
-   TAGparaDsc*     fpCalMap;		 // calibration Z para dsc
+   TAGparaDsc*     fpConfMap;       // configuration para dsc
+   TAGparaDsc*     fpCalMap;       // calibration Z para dsc
 
    TAGparGeo*      fparGeo;
    TAGgeoTrafo*    fgeoTrafo;

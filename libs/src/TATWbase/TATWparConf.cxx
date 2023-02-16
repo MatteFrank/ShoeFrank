@@ -31,10 +31,10 @@ ClassImp(TATWparConf);
 TATWparConf::TATWparConf()
  : TAGparTools(),
    fkDefaultParName(""),
-   fEnableTWZmc(false),
-   fEnableTWnoPU(false),
-   fEnableTWZmatch(false),
-   fEnableTWCalBar(false),
+   fEnableZmc(false),
+   fEnableNoPileUp(false),
+   fEnableZmatching(false),
+   fEnableCalibBar(false),
    fBarsN(0)
 {
   fkDefaultParName = "./config/TATWdetector.cfg";
@@ -56,40 +56,39 @@ Bool_t TATWparConf::FromFile(const TString& name)
    TString nameExp;
    
    if (name.IsNull()){
-      cout<<"Warning in TATWparConf::FromFile:: the input filename is Null, I will load the default par file:"<<fkDefaultParName.Data()<<endl;
+      Warning("FromFile()","The input filename is Null, I will load the default par file: %s", fkDefaultParName.Data());
       nameExp = fkDefaultParName;
    }else
       nameExp = name;
    
    if (!Open(nameExp)) return false;
    
-   
-   
-   //cuts
+   Info("FromFile()", "Open file %s for configuration\n", name.Data());
+
    Int_t tmp;
    ReadItem(tmp);
-   fEnableTWZmc = tmp;
+   fEnableZmc = tmp;
    if(FootDebugLevel(1))
-      cout<<"fEnableTWZmc="<<fEnableTWZmc<<endl;
+      cout<< "Enable MC true Z: " << fEnableZmc <<endl;
 
    ReadItem(tmp);
-   fEnableTWnoPU = tmp;
+   fEnableNoPileUp = tmp;
    if(FootDebugLevel(1))
-      cout<<"fEnableTWnoPU="<<fEnableTWnoPU<<endl;
+      cout<<"Enable no pileup: "<< fEnableNoPileUp <<endl;
    
    ReadItem(tmp);
-   fEnableTWZmatch = tmp;
+   fEnableZmatching = tmp;
    if(FootDebugLevel(1))
-      cout<<"fEnableTWZmatch="<<fEnableTWZmatch<<endl;
+      cout<<"Enable Z matching: "<< fEnableZmatching <<endl;
    
    ReadItem(tmp);
-   fEnableTWCalBar = tmp;
+   fEnableRateSmearMc = tmp;
    if(FootDebugLevel(1))
-      cout<<"fEnableTWCalBar="<<fEnableTWCalBar<<endl;
+      cout<<"Enable rate smearing in MC: "<< fEnableRateSmearMc <<endl;
    
    ReadItem(fBarsN);
    if(FootDebugLevel(1))
-      cout<<"fBarsN="<<fBarsN<<endl;
+      cout<<"Number of bars: "<< fBarsN <<endl;
    
    Close();
    
@@ -100,11 +99,12 @@ Bool_t TATWparConf::FromFile(const TString& name)
 //! Clear config info
 void TATWparConf::Clear(Option_t*)
 {
-   fEnableTWZmc    = false;
-   fEnableTWnoPU   = false;
-   fEnableTWZmatch = false;
-   fEnableTWCalBar = false;
-   fBarsN          = 0;
+   fEnableZmc         = false;
+   fEnableNoPileUp    = false;
+   fEnableZmatching   = false;
+   fEnableCalibBar    = false;
+   fEnableRateSmearMc = false;
+   fBarsN             = 0;
 }
 
 /*------------------------------------------+---------------------------------*/

@@ -43,8 +43,9 @@ NumberFiles: 2
 "./config/CNAO2022_MC/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/CNAO2022_MC/TATWdetector.geo": -1
+"./config/CNAO2022_MC/TATWdetector.cfg": -1
 "./config/CNAO2022_MC/TATW_BBparameters.cfg": -1
 "./config/CNAO2022_MC/TATWbarsMapStatus.map": -1
 "./calib/CNAO2022_MC/TATW_Energy_Calibration.cal": -1

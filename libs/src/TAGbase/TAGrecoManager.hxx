@@ -107,16 +107,6 @@ public:
     Bool_t IsTracking()          const { return fEnableTracking;      }
     //! Root object flag
     Bool_t IsReadRootObj()       const { return fEnableRootObject;    }
-    //! TW MC atomic charge flag
-    Bool_t IsTWZmc()             const { return fEnableTWZmc;         }
-    //! TW no pileup flag
-    Bool_t IsTWnoPU()            const { return fEnableTWnoPU;        }
-    //! TW atomic charge Z matching flag
-    Bool_t IsTWZmatch()          const { return fEnableTWZmatch;      }
-    //! TW calibration per bar flag
-    Bool_t IsTWCalBar()          const { return fEnableTWCalBar;      }
-    //! MC region flag
-    Bool_t IsTWRateSmearMC()     const { return fEnableTWRateSmearMC; }
     //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
     //! TW Calibration flag
@@ -260,11 +250,6 @@ private:
    Bool_t               fEnableSaveHits;        ///< Enable saving hits
    Bool_t               fEnableTracking;        ///< Enable tracking
    Bool_t               fEnableRootObject;      ///< Enable root object in tree
-   Bool_t               fEnableTWZmc;           ///< Enable TW MC atomic charge Z
-   Bool_t               fEnableTWnoPU;          ///< Enable TW no pileup
-   Bool_t               fEnableTWZmatch;        ///< Enable TW MC atomic charge Z matching
-   Bool_t               fEnableTWCalBar;        ///< Enable TW calibration per bar
-   Bool_t               fEnableTWRateSmearMC;   ///< Enable TW smeareing due to rate
    Bool_t               fDoCalibTW;             ///< Enable TW cliabration process
    Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
    Bool_t               fEnableRegionMc;        ///< Enable MC region reading

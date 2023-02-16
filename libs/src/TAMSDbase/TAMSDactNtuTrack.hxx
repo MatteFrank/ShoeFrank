@@ -21,19 +21,20 @@ public:
                               TAGparaDsc* p_config   = 0,
                               TAGparaDsc* p_geomap   = 0);
    virtual ~TAMSDactNtuTrack();
-   Bool_t   Action() override;
+   Bool_t   Action();
+   
 protected:
-   void                     AddNewTrack(TAGbaseTrack* track) override;
-   TAGbaseTrack*            NewTrack() override;
-   Int_t                    GetTracksN() override;
+   void                     AddNewTrack(TAGbaseTrack* track) ;
+   TAGbaseTrack*            NewTrack() ;
+   Int_t                    GetTracksN() ;
    
-   TAGcluster*              GetCluster(Int_t iPlane, Int_t iClus) override;
-   Int_t                    GetClustersN(Int_t iPlane) override;
+   TAGcluster*              GetCluster(Int_t iPlane, Int_t iClus) ;
+   Int_t                    GetClustersN(Int_t iPlane) ;
    
-   void                     SetBeamPosition(TVector3 pos) override;
+   void                     SetBeamPosition(TVector3 pos) ;
    
-   virtual TAVTbaseParGeo*  GetParGeo() override;
-   virtual TAVTbaseParConf* GetParConf() override;
+   virtual TAVTbaseParGeo*  GetParGeo() ;
+   virtual TAVTbaseParConf* GetParConf() ;
 
    ClassDef(TAMSDactNtuTrack,0)
 };

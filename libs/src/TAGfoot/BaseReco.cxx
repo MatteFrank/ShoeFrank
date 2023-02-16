@@ -134,9 +134,6 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fgItrTrackingAlgo("Full"),
    fgMsdTrackingAlgo("Full"),
    fgCalClusterAlgo("Padme"),
-   fFlagZtrueMC(false),
-   fFlagZrecPUoff(false),
-   fFlagZmatchTw(false),
    fFlagMC(false),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),
@@ -234,41 +231,43 @@ void BaseReco::CampaignChecks()
    fRunManager->SetRunNumber(fRunNumber);
    if (fRunManager->FromFile()) {
       fRunManager->Print();
-      
-      TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-      Int_t Abeam       = parGeo->GetBeamPar().AtomicMass;
-      TString beamName  = parGeo->GetBeamPar().Material;
-      TString beam      = Form("%d%s", Abeam, beamName.Data());
-      Int_t energyBeam  = int(parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev());
-      TString target    = parGeo->GetTargetPar().Material;
-      Float_t tgtSize   = parGeo->GetTargetPar().Size[2];
-
-      TString beamType    = fRunManager->GetCurrentType().Beam;
-      Int_t energyType    = (int)fRunManager->GetCurrentType().BeamEnergy;
-      TString targetType  = fRunManager->GetCurrentType().Target;
-      Float_t tgtSizeType = fRunManager->GetCurrentType().TargetSize;
-      TString comType     = fRunManager->GetCurrentType().Comments;
-
-      if (energyBeam != energyType)
-         Error("CampaignChecks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
-      
-      if (beam != beamType)
-         Error("CampaignChecks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
-      
-      if (strncmp(target.Data(), targetType.Data(), min(targetType.Length(), target.Length()))  && targetType != "None")
-         Error("CampaignChecks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
-      
-      if (tgtSize != tgtSizeType && targetType != "None")
-         Error("CampaignChecks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
-      
-      // Check if a detetcor is off in a given run
-      vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
-      for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
-         TString str = *it;
+            
+      if (fpParGeoG) {
+         TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
+         Int_t Abeam       = parGeo->GetBeamPar().AtomicMass;
+         TString beamName  = parGeo->GetBeamPar().Material;
+         TString beam      = Form("%d%s", Abeam, beamName.Data());
+         Int_t energyBeam  = int(parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev());
+         TString target    = parGeo->GetTargetPar().Material;
+         Float_t tgtSize   = parGeo->GetTargetPar().Size[2];
          
-         if (fRunManager->IsDetectorOff(str)) {
-            Error("CampaignChecks()", "the detector %s is NOT referenced in this run", str.Data());
-            exit(0);
+         TString beamType    = fRunManager->GetCurrentType().Beam;
+         Int_t energyType    = (int)fRunManager->GetCurrentType().BeamEnergy;
+         TString targetType  = fRunManager->GetCurrentType().Target;
+         Float_t tgtSizeType = fRunManager->GetCurrentType().TargetSize;
+         TString comType     = fRunManager->GetCurrentType().Comments;
+         
+         if (energyBeam != energyType)
+            Error("CampaignChecks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
+         
+         if (beam != beamType)
+            Error("CampaignChecks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
+         
+         if (strncmp(target.Data(), targetType.Data(), min(targetType.Length(), target.Length()))  && targetType != "None")
+            Error("CampaignChecks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
+         
+         if (tgtSize != tgtSizeType && targetType != "None")
+            Error("CampaignChecks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
+         
+         // Check if a detetcor is off in a given run
+         vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
+         for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+            TString str = *it;
+            
+            if (fRunManager->IsDetectorOff(str)) {
+               Error("CampaignChecks()", "the detector %s is NOT referenced in this run", str.Data());
+               exit(0);
+            }
          }
       }
    }
@@ -321,10 +320,6 @@ void BaseReco::GlobalSettings()
    Bool_t hit    = TAGrecoManager::GetPar()->IsSaveHits();
    Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
    Bool_t obj    = TAGrecoManager::GetPar()->IsReadRootObj();
-   Bool_t zmatch = TAGrecoManager::GetPar()->IsTWZmatch();
-   Bool_t tbc    = TAGrecoManager::GetPar()->IsTWCalBar();
-   Bool_t zmc    = TAGrecoManager::GetPar()->IsTWZmc();
-   Bool_t zrec   = TAGrecoManager::GetPar()->IsTWnoPU();
 
    // global setting
    if (ntu)
@@ -340,19 +335,6 @@ void BaseReco::GlobalSettings()
    
    if (trk)
       EnableTracking();
- 
-   if(zmatch)
-      EnableTWZmatch();
-   
-   if (tbc)
-      EnableTWcalibPerBar();
-   
-   if(zmc)
-      EnableZfromMCtrue();
-   
-   if(zrec && !zmc)
-      EnableZrecWithPUoff();
-
 }
 
 //__________________________________________________________
@@ -723,6 +705,14 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
+      fpParConfTw = new TAGparaDsc("twConf", new TATWparConf());
+      TATWparConf* parConf = (TATWparConf*)fpParConfTw->Object();
+      parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      fFlagTWbarCalib  = parConf->IsCalibBar();
+      fFlagRateSmearTw = parConf->IsRateSmearMc();
+      
       fpParCalTw = new TAGparaDsc("twCal", new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
@@ -758,23 +748,15 @@ void BaseReco::ReadParFiles()
       }
 
       isTof_calib = true;
-      if(fFlagTWbarCalib) {
-         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
-                                                   isTof_calib,fFlagTWbarCalib);
-         parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
-      } else {
-         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
-                                                   isTof_calib,fFlagTWbarCalib);
-         parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
-      }
+      parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                isTof_calib,fFlagTWbarCalib);
+      parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
 
       parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber,
                                                  Form("%d%s", A_beam,ion_name.Data()),
                                                  (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
-      if (parFileName.IsNull() && fFlagMC) {
-         fFlagZtrueMC = true;
-         Warning("ReadParFiles()", "BB parametrization file does not exist for %d%s at %d MeV switch to true MC Z\n", A_beam, ion_name.Data(), (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
-      } else
+      
+      if (!parFileName.IsNull()) // should not happen
          parCal->FromFileZID(parFileName.Data(),Z_beam);
 
       if(fFlagMC) { // set in MC threshold and active bars from data informations
@@ -985,7 +967,7 @@ void BaseReco::CreateRecActionTw()
    fpNtuRecTw = new TAGdataDsc("twPoint", new TATWntuPoint());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) return;
 
-   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuHitTw, fpNtuRecTw, fpParGeoTw, fpParCalTw, fFlagZmatchTw, fFlagZtrueMC);
+   fActPointTw = new TATWactNtuPoint("twActPoint", fpNtuHitTw, fpNtuRecTw, fpParGeoTw, fpParConfTw, fpParCalTw);
    if (fFlagHisto)
      fActPointTw->CreateHistogram();
 }

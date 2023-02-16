@@ -73,17 +73,15 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
-add_executable(DecodeRaw DecodeRaw.cc)
+#add_executable(DecodeRaw DecodeRaw.cc)
 #
 #target_compile_options( DecodeRaw PUBLIC -g -I/usr/local/Cellar/gperftools/2.8/include/ )
-target_link_libraries(DecodeRaw ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
+#target_link_libraries(DecodeRaw ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
 #target_link_options(DecodeRaw PUBLIC  -L/usr/local/Cellar/gperftools/2.8/lib/ -lprofiler)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS DecodeRaw DESTINATION bin)
-
 add_executable(DecodeWD DecodeWD.cc)
 target_link_libraries(DecodeWD ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
 install(TARGETS DecodeWD DESTINATION bin)
@@ -91,18 +89,6 @@ install(TARGETS DecodeWD DESTINATION bin)
 add_executable(DecodeCA DecodeCA.cc)
 target_link_libraries(DecodeCA ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
 install(TARGETS DecodeCA DESTINATION bin)
-
-#----------------------------------------------------------------------------
-# Add the executable, and link it to the Genfit and root libraries
-#
-add_executable(DecodeMC DecodeMC.cc)
-#
-target_link_libraries(DecodeMC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
-
-#----------------------------------------------------------------------------
-# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
-#
-install(TARGETS DecodeMC DESTINATION bin)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
@@ -152,3 +138,61 @@ if (BENCHMARK)
       COMMENT "Running macro BenchMark.C"
   )
 endif(BENCHMARK)
+
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(DecodeGlb DecodeGlb.cc)
+#
+target_link_libraries(DecodeGlb ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS DecodeGlb DESTINATION bin)
+
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(ConvertNtuple ConvertNtuple.cc)
+#
+target_link_libraries(ConvertNtuple ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS ConvertNtuple DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(DecodeGlbAna DecodeGlbAna.cc)
+#
+target_link_libraries(DecodeGlbAna ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS DecodeGlbAna DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+if (TOE_DIR)
+if(DEFINED OTC )
+    if( "${OTC}" STREQUAL ON )
+    add_executable(OptimizeToeCuts OptimizeToeCuts.cc)
+    target_compile_options( OptimizeToeCuts PUBLIC -ffast-math  )
+    target_link_libraries(OptimizeToeCuts ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS OptimizeToeCuts DESTINATION bin)
+
+    endif()
+endif()
+endif (TOE_DIR)

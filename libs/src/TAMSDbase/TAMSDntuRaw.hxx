@@ -28,6 +28,7 @@ protected:
    Int_t      fView;      ///< plane view
    Int_t      fStrip;     ///< strip number
    Bool_t     fIsSeed;    ///< seed flag
+   Bool_t     fIsNoisy;   ///< noisy flag
          
 public:
    TAMSDrawHit();
@@ -49,6 +50,8 @@ public:
    Int_t      GetIndex()        const    { return fIndex;    }
    //! Get seed flag
    Bool_t    IsSeed()           const    { return fIsSeed;   }
+   //! Get noisy flag
+   Bool_t    IsNoisy()          const    { return fIsNoisy;  }
    //! Is Sortable
    Bool_t     IsSortable()      const    { return kTRUE;     }
 
@@ -64,8 +67,10 @@ public:
    void     SetIndex(Int_t index)        { fIndex = index;   }
    //! Set seed flag
    void     SetSeed(Bool_t s=true)       { fIsSeed = s;      }
+   //! Set noisy flag
+   void     SetNoisy(Bool_t n=true)      { fIsNoisy = n;     }
 
-   ClassDef(TAMSDrawHit,2)
+   ClassDef(TAMSDrawHit,3)
 };
 
 //######################################################################################
