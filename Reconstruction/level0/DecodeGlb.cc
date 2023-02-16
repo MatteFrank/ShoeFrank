@@ -80,8 +80,10 @@ int main (int argc, char *argv[])  {
    if (lrc) {
       if (toe)
          glbRec = new GlobalToeReco(exp, runNb, in, out, mc, inMc);
-      if (gf)
+      else if (gf)
          glbRec = new GlobalReco(exp, runNb, in, out, mc);
+      else
+         Error("main()", "Running on decoded files but no Global reconstruction algorithm (TOE or Genfit) chosen! Enable them from the FootGlobal.par file"), exit(0);
       
    } else if (mc) {
      glbRec = new LocalRecoMC(exp, runNb, in, out);
