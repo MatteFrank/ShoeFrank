@@ -748,9 +748,9 @@ void BaseReco::ReadParFiles()
       }
 
       isTof_calib = true;
-         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
-                                                   isTof_calib,fFlagTWbarCalib);
-         parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
+      parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+                                                isTof_calib,fFlagTWbarCalib);
+      parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
 
       parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber,
                                                  Form("%d%s", A_beam,ion_name.Data()),
