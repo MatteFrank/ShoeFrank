@@ -104,7 +104,7 @@ public:
   void     AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
   
   
-  ClassDef(TAMSDhit,4)                            // Pixel or Pixel of a Detector Plane
+  ClassDef(TAMSDhit,5)                            // Pixel or Pixel of a Detector Plane
 };
 
 #endif

@@ -70,7 +70,7 @@ public:
    //! Set noisy flag
    void     SetNoisy(Bool_t n=true)      { fIsNoisy = n;     }
 
-   ClassDef(TAMSDrawHit,2)
+   ClassDef(TAMSDrawHit,3)
 };
 
 //######################################################################################
