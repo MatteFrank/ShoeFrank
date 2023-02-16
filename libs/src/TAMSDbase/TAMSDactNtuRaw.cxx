@@ -92,9 +92,80 @@ void TAMSDactNtuRaw::CreateHistogram()
 //------------------------------------------+-----------------------------------
 //! Compute common noise
 //!
+//! \param[in] strip strip number
+//! \param[in] vaContent input vector
+//! \param[in] type type
+Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t* vaContent, Int_t type)
+{
+   Float_t cn   = 0;
+   Int_t cnt    = 0;
+
+   Float_t mean = TMath::Mean(CN_CH, vaContent);
+   Float_t rms  = TMath::RMS(CN_CH, vaContent);
+
+   if (type == 0) { //simple common noise wrt VA mean ADC value
+   
+      for (size_t i = 0; i < CN_CH; i++) {
+         if (vaContent[i] > mean - 2 * rms && vaContent[i] < mean + 2 * rms) {
+            cn += vaContent[i];
+            cnt++;
+         }
+      }
+      
+      if (cnt != 0)
+         return cn / cnt;
+      else
+         return -999;
+      
+   } else if (type == 1) { //Common noise with fixed threshold to exclude potential real signal strips
+   
+      for (size_t i = 0; i < CN_CH; i++) {
+         if (vaContent[i] < MIP_ADC / 2) { //very conservative cut: half the value expected for a Minimum Ionizing Particle
+            cn += vaContent[i];
+            cnt++;
+         }
+      }
+      if (cnt != 0)
+         return cn / cnt;
+      else
+         return -999;
+      
+   } else {//Common Noise with 'self tuning' threshold: we use the some of the channels to calculate a baseline level, then we use all the strips in a band around that value to compute the CN
+
+      Float_t hard_cm = 0;
+      Int_t cnt2 = 0;
+      for (size_t i = 8; i < 23; i++) {
+         if (vaContent[i] < 1.5 * MIP_ADC) {//looser constraint than algo 2
+            hard_cm += vaContent[i];
+            cnt2++;
+         }
+      }
+      
+      if (cnt2 != 0)
+         hard_cm = hard_cm / cnt2;
+      else
+         return -999;
+
+      for (size_t i = 23; i < 55; i++) {
+         if (vaContent[i] > hard_cm - 2 * rms && vaContent[i] < hard_cm + 2 * rms) { //we use only channels with a value around the baseline calculated at the previous step
+            cn += vaContent[i];
+            cnt++;
+         }
+      }
+      
+      if (cnt != 0)
+         return cn / cnt;
+      else
+         return -999;
+   }
+}
+
+//------------------------------------------+-----------------------------------
+//! Compute common noise
+//!
 //! \param[in] vaContent input ASIC vector
 //! \param[in] threshold threshold value
-Double_t TAMSDactNtuRaw::ComputeCN(Double_t* vaContent, Double_t threshold)
+Double_t TAMSDactNtuRaw::ComputeCNMedian(Double_t* vaContent, Double_t threshold)
 {
    Float_t cn = 0;
 
@@ -112,7 +183,7 @@ Double_t TAMSDactNtuRaw::ComputeCN(Double_t* vaContent, Double_t threshold)
    }
    else
    {
-      ComputeCN(vaContent, threshold+1);
+      ComputeCNMedian(vaContent, threshold+1);
    }
 
    return cn;
@@ -230,7 +301,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                   if (pedestal.status) continue;
                   vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
                }
-               cnFirst = ComputeCN(vaContent, 10);
+               cnFirst = ComputeCN(i, vaContent, 0);
                if (ValidHistogram())
                   fpHisCommonMode[sensorId]->Fill(cnFirst);
             }
@@ -281,7 +352,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                   if (pedestal.status) continue;
                   vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
                }
-               cnSecond = ComputeCN(vaContent, 10);
+               cnSecond = ComputeCN(i, vaContent, 0);
                if (ValidHistogram())
                   fpHisCommonMode[sensorId]->Fill(cnSecond);
             }
