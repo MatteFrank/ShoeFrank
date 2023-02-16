@@ -37,7 +37,7 @@
 //! Class Imp
 ClassImp(BaseReco)
 
-Bool_t  BaseReco::fgFlagMsdTrack  = true;
+Bool_t  BaseReco::fgFlagMsdTrack  = false;
 Bool_t  BaseReco::fgFlagItrTrack  = false;
 Bool_t  BaseReco::fSaveMcFlag     = true;
 
