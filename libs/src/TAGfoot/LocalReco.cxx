@@ -41,7 +41,8 @@ Int_t   LocalReco::fgNumFileStdAlone = 1;
 //! \param[in] runNumber run number
 //! \param[in] fileNameIn data input file name
 //! \param[in] fileNameout data output root file name
-LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+//! \param[in] IsSubFile flag to enable or disable the subfile of only the input file
+LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t IsSubFile)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fpDaqEvent(0x0),
    fpNtuEvt(0x0),
@@ -55,7 +56,7 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActNtuHitMsd(0x0),
    fpDatRawMsd(0x0),
    fActEvtReader(0x0),
-   fSubFileFlag(false)
+   fSubFileFlag(IsSubFile)
   {
      if (fRunNumber == -1)  // if not set from outside, take from name
         SetRunNumberFromFile();

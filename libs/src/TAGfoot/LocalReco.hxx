@@ -38,7 +38,7 @@ class LocalReco : public BaseReco
 {
 public:
    // default constructor
-   LocalReco(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");
+   LocalReco(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t IsSubFile=false);
    
    virtual ~LocalReco();
    

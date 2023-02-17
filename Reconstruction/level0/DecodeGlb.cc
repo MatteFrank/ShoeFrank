@@ -18,7 +18,7 @@ int main (int argc, char *argv[])  {
    
    Bool_t mc  = false;
    Bool_t mth = false;
-   
+   Bool_t IsSubFile = false;   
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    Int_t nSkipEv = 0;
@@ -31,7 +31,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
       if(strcmp(argv[i],"-inmc") == 0)  { inMc = TString(argv[++i]);   } // MC file name
-      
+      if(strcmp(argv[i],"-subfile") == 0)   { IsSubFile = true;   } // Disable the processing of the chain of all the sub file related to a given run: only the subfile related to the input file is processed
       if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
       
@@ -47,6 +47,7 @@ int main (int argc, char *argv[])  {
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -mc            : reco from MC local reco tree"<<endl;
          cout<<"      -inmc          : MC file name  "<<endl;
+         cout<<"      -subfile       : [def=false] when true disable the processing of the chain of all the sub file related to a given run: only the subfile related to the input file is processed"<<endl;         
          cout<<"      -mth           : enable multi threading (for clustering)"<<endl;
          return 1;
       }
@@ -89,14 +90,13 @@ int main (int argc, char *argv[])  {
      glbRec = new LocalRecoMC(exp, runNb, in, out);
      
    } else {
-      glbRec = new LocalReco(exp, runNb, in, out);
+      glbRec = new LocalReco(exp, runNb, in, out, IsSubFile);
    }
    
    
    // global setting
    if (mth)
       glbRec->EnableM28lusMT();
-
    
    TStopwatch watch;
    watch.Start();
