@@ -65,10 +65,15 @@ public:
 	int		GetHitIDFromMeasID(int measId);
 	tuple<string, int, int> GetDetSensorHitFromMeasID(int measId);
 
+	//IT functions
 	vector<int>* GetPlanesAtZ( float zPos );
 	vector<float>* GetPossibleITz();
 	vector<int>* GetPlanesAtZLocal( float zPos );
 	vector<float>* GetPossibleITzLocal();
+
+	//MSD functions
+	void	SetMSDsensorView(int iSensor, const int &view);
+	int 	GetMSDsensorView(int iSensor) const;
 
 private:
 	map<string, vector<int>> m_DetToFitPlaneMap;	///< Map linking detector names to corresponding GenFit FitPlanes
@@ -79,6 +84,7 @@ private:
 	vector<float> m_itPossibleZ;					///< Vector with possible values for Z coordinate of IT planes
 	map<float, vector<int>> m_zOrderingPlanesLocal;	///< Map linking possible Z local coordinates of IT planes w/ vector of their indices
 	vector<float> m_itPossibleZLocal;				///< Vector with possible values for Z local coordinate of IT planes
+	map<int, int> m_MSDviewMap;						///< Map linking MSD sensors to their view: X=0 (vertical strips), Y=1 (horizontal strips)
 
 	int m_debug;									///< Global debug value
 };

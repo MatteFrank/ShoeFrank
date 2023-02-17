@@ -157,6 +157,7 @@ double RKTrackRep::extrapolateToLine(StateOnPlane& state,
   else if (calcJacobianNoise)
     fillExtrapSteps = true;
 
+  // cppcheck-suppress unreadVariable
   double step(0.), lastStep(0.), maxStep(1.E99), angle(0), distToPoca(0), tracklength(0);
   double charge = getCharge(state);
   double mass = getMass(state);
@@ -257,6 +258,7 @@ double RKTrackRep::extrapToPoint(StateOnPlane& state,
   else if (calcJacobianNoise)
     fillExtrapSteps = true;
 
+  // cppcheck-suppress unreadVariable
   double step(0.), lastStep(0.), maxStep(1.E99), angle(0), distToPoca(0), tracklength(0);
   TVector3 dir(state7[3], state7[4], state7[5]);
   if (G != nullptr) {
@@ -1070,7 +1072,7 @@ double RKTrackRep::getRadiationLenght() const {
   double radLen(0);
 
   for (unsigned int i = 0; i<RKSteps_.size(); ++i) {
-    radLen += RKSteps_.at(i).matStep_.stepSize_ / RKSteps_.at(i).matStep_.materialProperties_.getRadLen();
+    radLen += RKSteps_.at(i).matStep_.stepSize_ / RKSteps_.at(i).matStep_.material_.radiationLength;
   }
 
   return radLen;
@@ -1563,35 +1565,6 @@ void RKTrackRep::getState5(StateOnPlane& state, const M1x7& state7) const {
 
 }
 
-
-
-void RKTrackRep::transformPM7(const MeasuredStateOnPlane& state,
-                              M7x7& out7x7) const {
-
-  // get vectors and aux variables
-  const TVector3& U(state.getPlane()->getU());
-  const TVector3& V(state.getPlane()->getV());
-  const TVector3& W(state.getPlane()->getNormal());
-
-  const TVectorD& state5(state.getState());
-  double spu(getSpu(state));
-
-  M1x3 pTilde;
-  pTilde[0] = spu * (W.X() + state5(1)*U.X() + state5(2)*V.X()); // a_x
-  pTilde[1] = spu * (W.Y() + state5(1)*U.Y() + state5(2)*V.Y()); // a_y
-  pTilde[2] = spu * (W.Z() + state5(1)*U.Z() + state5(2)*V.Z()); // a_z
-
-  M5x7 J_pM;
-  calcJ_pM_5x7(J_pM, U, V, pTilde, spu);
-
-  // since the Jacobian contains a lot of zeros, and the resulting cov has to be symmetric,
-  // the multiplication can be done much faster directly on array level
-  // out = J_pM^T * in5x5 * J_pM
-  const M5x5& in5x5_ = *((M5x5*) state.getCov().GetMatrixArray());
-  RKTools::J_pMTxcov5xJ_pM(J_pM, in5x5_, out7x7);
-}
-
-
 void RKTrackRep::calcJ_pM_5x7(M5x7& J_pM, const TVector3& U, const TVector3& V, const M1x3& pTilde, double spu) const {
   /*if (debugLvl_ > 1) {
     debugOut << "RKTrackRep::calcJ_pM_5x7 \n";
@@ -1697,30 +1670,6 @@ void RKTrackRep::transformPM6(const MeasuredStateOnPlane& state,
   RKTools::J_pMTxcov5xJ_pM(J_pM_5x6, in5x5_, out6x6);
 
 }
-
-
-void RKTrackRep::transformM7P(const M7x7& in7x7,
-                              const M1x7& state7,
-                              MeasuredStateOnPlane& state) const { // plane must already be set!
-
-  // get vectors and aux variables
-  const TVector3& U(state.getPlane()->getU());
-  const TVector3& V(state.getPlane()->getV());
-  const TVector3& W(state.getPlane()->getNormal());
-
-  M1x3& A = *((M1x3*) &state7[3]);
-
-  M7x5 J_Mp;
-  calcJ_Mp_7x5(J_Mp, U, V, W, A);
-
-  // since the Jacobian contains a lot of zeros, and the resulting cov has to be symmetric,
-  // the multiplication can be done much faster directly on array level
-  // out5x5 = J_Mp^T * in * J_Mp
-  M5x5& out5x5_ = *((M5x5*) state.getCov().GetMatrixArray());
-  RKTools::J_MpTxcov7xJ_Mp(J_Mp, in7x7, out5x5_);
-
-}
-
 
 void RKTrackRep::calcJ_Mp_7x5(M7x5& J_Mp, const TVector3& U, const TVector3& V, const TVector3& W, const M1x3& A) const {
 
@@ -1877,6 +1826,7 @@ bool RKTrackRep::RKutta(const M1x4& SU,
   double  momentum   ( fabs(charge/state7[6]) ); // momentum [GeV]
   double  relMomLoss ( 0 );                      // relative momentum loss in RKutta
   double  deltaAngle ( 0. );                     // total angle by which the momentum has changed during extrapolation
+  // cppcheck-suppress unreadVariable
   double  An(0), S(0), Sl(0), CBA(0);
 
 
@@ -2038,6 +1988,7 @@ bool RKTrackRep::RKutta(const M1x4& SU,
 
 
       coveredDistance += S;
+      // cppcheck-suppress unreadVariable
       Way  += fabs(S);
 
       double beta = 1/hypot(1, mass*state7[6]/charge);
@@ -2317,12 +2268,12 @@ double RKTrackRep::estimateStep(const M1x7& state7,
                                             charge/state7[6], // |p|
                                             relMomLoss,
                                             pdgCode_,
-                                            lastStep->matStep_.materialProperties_,
+                                            lastStep->matStep_.material_,
                                             limits,
                                             true);
   } else { //assume material has not changed
     if  (RKSteps_.size()>1) {
-      lastStep->matStep_.materialProperties_ = (lastStep - 1)->matStep_.materialProperties_;
+      lastStep->matStep_.material_ = (lastStep - 1)->matStep_.material_;
     }
   }
 
@@ -2375,6 +2326,7 @@ double RKTrackRep::Extrap(const DetPlane& startPlane,
   unsigned int numIt(0);
 
   double coveredDistance(0.);
+  // cppcheck-suppress unreadVariable
   double dqop(0.);
 
   const TVector3 W(destPlane.getNormal());
@@ -2435,7 +2387,7 @@ double RKTrackRep::Extrap(const DetPlane& startPlane,
       debugOut<<"RKSteps \n";
       for (std::vector<RKStep>::iterator it = RKSteps_.begin(); it != RKSteps_.end(); ++it){
         debugOut << "stepSize = " << it->matStep_.stepSize_ << "\t";
-        it->matStep_.materialProperties_.Print();
+        it->matStep_.material_.Print();
       }
       debugOut<<"\n";
     }
@@ -2664,7 +2616,7 @@ void RKTrackRep::checkCache(const StateOnPlane& state, const SharedPlanePtr* pla
         continue;
       }
       if (RKSteps_.at(i).matStep_.stepSize_ * firstStep < 0) {
-        if (RKSteps_.at(i-1).matStep_.materialProperties_ == RKSteps_.at(i).matStep_.materialProperties_) {
+        if (RKSteps_.at(i-1).matStep_.material_ == RKSteps_.at(i).matStep_.material_) {
           RKSteps_.at(i-1).matStep_.stepSize_ += RKSteps_.at(i).matStep_.stepSize_;
         }
         RKSteps_.erase(RKSteps_.begin()+i, RKSteps_.end());

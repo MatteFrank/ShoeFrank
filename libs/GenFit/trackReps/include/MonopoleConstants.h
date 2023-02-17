@@ -1,5 +1,5 @@
-/* Copyright 2008-2010, Technische Universitaet Muenchen,
-   Authors: Christian Hoeppner & Sebastian Neubert & Johannes Rauch
+/* Copyright 2019, Belle II Collaboration
+   Authors: Dmitrii Neverov
 
    This file is part of GENFIT.
 
@@ -16,16 +16,19 @@
    You should have received a copy of the GNU Lesser General Public License
    along with GENFIT.  If not, see <http://www.gnu.org/licenses/>.
 */
-#pragma link off all globals;
-#pragma link off all classes;
-#pragma link off all functions;
 
-#pragma link C++ nestedclass;
-#pragma link C++ nestedtypedef;
+#pragma once
 
-#pragma link C++ namespace genfit;
+namespace genfit {
 
-#pragma link C++ class genfit::HelixTrackModel+;
-#pragma link C++ class genfit::MeasurementCreator+;
-#pragma link C++ class genfit::mySpacepointDetectorHit+;
-#pragma link C++ class genfit::mySpacepointMeasurement+;
+  /* The PDG code used for the magnetic monopole; somewhat arbitrary.
+   *
+   * PDG allocates all code starting with 99 to be
+   * used for user-defined particles. Some folks weave
+   * the magnetic charge and mass into the code itself,
+   * but here we would like to consider them as floats,
+   * and so we have to store them elsewhere as data members.
+   */
+  const int c_monopolePDGCode = 99666;
+
+}

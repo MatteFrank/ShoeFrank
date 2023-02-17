@@ -34,6 +34,7 @@
 
 #define FILENAME "/tmp/streamerTest.root"
 
+constexpr bool verbose = false;
 
 bool emptyTrackTest()
 {
@@ -42,7 +43,7 @@ bool emptyTrackTest()
   genfit::Track *t = new genfit::Track();
   try {
     t->checkConsistency();
-  } catch (genfit::Exception) {
+  } catch (genfit::Exception&) {
     return false;
   }
 
@@ -58,7 +59,7 @@ bool emptyTrackTest()
   try {
     t->checkConsistency();
     result = true;
-  } catch (genfit::Exception) {
+  } catch (genfit::Exception&) {
     result = false;
   }
   delete t;
@@ -187,7 +188,7 @@ int main() {
         genfit::TrackPoint* tp = new genfit::TrackPoint(measurements, fitTrack);
         // test scatterers
         genfit::ThinScatterer* sc = new genfit::ThinScatterer(genfit::SharedPlanePtr(new genfit::DetPlane(TVector3(1,1,1), TVector3(1,1,1))),
-                                                              genfit::MaterialProperties(1,2,3,4,5));
+                                                              genfit::Material(1,2,3,4,5));
         tp->setScatterer(sc);
 
         fitTrack->insertPoint(tp);
@@ -278,20 +279,23 @@ int main() {
         // track ok
       }
       else {
-        std::cout << "stored track not equal, small differences can occur if some info has been pruned." << std::endl;
-        pState->Print();
-        fitTrack->getFittedState().getState().Print();
-        pMatrix->Print();
-        fitTrack->getFittedState().getCov().Print();
-        plane->Print();
-        fitTrack->getFittedState().getPlane()->Print();
-
+        if (verbose) {
+          std::cout << "stored track not equal, small differences can occur if some info has been pruned." << std::endl;
+          pState->Print();
+          fitTrack->getFittedState().getState().Print();
+          pMatrix->Print();
+          fitTrack->getFittedState().getCov().Print();
+          plane->Print();
+          fitTrack->getFittedState().getPlane()->Print();
+          }
         ++fail;
         //return 1;
       }
     }
     catch (genfit::Exception& e) {
-      std::cerr << e.what();
+        if (verbose) {
+            std::cerr << e.what();
+        }
       return 1;
     }
   }

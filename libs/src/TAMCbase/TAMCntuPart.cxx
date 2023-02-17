@@ -171,7 +171,7 @@ void TAMCntuPart::SetupClones()   {
 //! \param[in] opt option for clearing (not used)
 void TAMCntuPart::Clear(Option_t*)
 {
-   fListOfTracks->Clear("C");
+   fListOfTracks->Clear();
 }
 
 //------------------------------------------+-----------------------------------

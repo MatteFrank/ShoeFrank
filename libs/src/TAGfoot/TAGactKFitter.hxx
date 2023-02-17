@@ -258,7 +258,9 @@ private:
 	map<string, TH1F*> h_sigmaP;						///< Map of histograms for total sigma of dP distributions; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_resoP_over_Pkf;				///< Map of histograms for dP/P resolution (sigma) for each particle; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_biasP_over_Pkf;				///< Map of histograms for dP/P bias for each particle; the key is the particle name ("H", "He", "Li", ...)
-	map< pair<string,pair<int,int>>, TH1F*> h_resoFitMeas;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 0=Y or 1=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_resoFitMeas;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_pullFitMeas;						///< Map of histograms for fitted and measured pulls; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH2F*> h_pullVsClusSize;					///< Map of histograms for fitted and measured pulls vs cluster size; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 
 	vector<TH1F*> h_momentum_true;						///< Vector of histograms for MC momentum module at the TG
 	vector<TH1F*> h_momentum_reco;						///< Vector of histograms for Fitted momentum moduel at the TG
