@@ -617,7 +617,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files dipole
-   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IsLocalReco() ) {
+   if (TAGrecoManager::GetPar()->IncludeDI() ) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
@@ -630,7 +630,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for vertex
-   if (TAGrecoManager::GetPar()->IncludeVT() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
@@ -650,7 +650,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for inner tracker
-   if (TAGrecoManager::GetPar()->IncludeIT() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
@@ -670,7 +670,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for multi strip detector
-   if (TAGrecoManager::GetPar()->IncludeMSD() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
@@ -699,7 +699,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for Tof Wall
-   if (TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
