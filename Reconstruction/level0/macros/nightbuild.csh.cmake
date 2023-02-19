@@ -34,3 +34,5 @@ DecodeGlb -in $FOOTMCDATA/GSI2021/16O_C_400_1_shoereg.root -out runGSI2021_MC_40
 
 #Compare to reference plots
 root -q TestBenchMark.C+\(0\)
+
+\mv nightbuild.log nightbuild.old
