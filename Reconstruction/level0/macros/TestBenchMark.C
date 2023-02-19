@@ -16,15 +16,25 @@
 #include <TPaveText.h>
 #include <TLegend.h>
 
-
 #endif
 
-Float_t sigma = 0.68;
+const Float_t sigma = 0.68;
 std::map<TString, TString> mapName = {{"VT", "vtClusPixelTot"}, {"MSD", "msClusStripTot"}};
 
 // main
-void TestBenchMark(TString nameRef = "./data/runGSI2021_4306_RefPlots_1kEvts.root", TString name = "runGSI2021_4306_Plots_1kEvts.root")
+void TestBenchMark(Bool_t rawData = true)
 {
+   TString nameRef;
+   TString name;
+   
+   if (rawData) {
+      nameRef = "./data/runGSI2021_4306_RefPlots_1kEvts.root";
+      name = "runGSI2021_4306_Plots_1kEvts.root";
+   } else {
+      nameRef = "./data/runGSI2021_MC_400_RefPlots_1kEvts.root";
+      name = "runGSI2021_MC_400_Plots_1kEvts.root";
+   }
+   
    TFile *fRefPlots = new TFile(nameRef.Data());
    TFile *fPlots = new TFile(name.Data());
 
