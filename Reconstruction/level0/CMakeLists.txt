@@ -13,6 +13,7 @@ set(LIBNAME LocalReco)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/rootlogon.C"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/benchmark.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/nightbuild.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/cron.tab.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/cron.tab"  @ONLY)
 
 #----------------------------------------------------------------------------
 # Copy geomaps + config + macro
