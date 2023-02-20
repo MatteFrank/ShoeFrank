@@ -13,6 +13,8 @@ else
   setenv LD_LIBRARY_PATH $ROOTSYS/lib:./:$FOOTLIBS/lib:${LD_LIBRARY_PATH}
 endif
 
+set path = ($FOOTBUILD/bin $path)
+
 # pull last version
 cd $FOOTSRC
 echo "update newgeom branch"
