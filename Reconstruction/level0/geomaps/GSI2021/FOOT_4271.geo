@@ -8,8 +8,8 @@ TargetPosX: 0. TargetPosY: 0. TargetPosZ: 0.
 TargetAngX: 0. TargetAngX: 0. TargetAngX: 0.
 
 BmBaseName: "BM"
-BMPosX: -0.046351  BMPosY: 0.005228  BMPosZ: -19.9
-BMAngX: -0.066103  BMAngY: 0.024920  BMAngZ: 0.
+BMPosX: -0.131551  BMPosY: -0.000582  BMPosZ: -19.9
+BMAngX: -0.066103  BMAngY:  0.024920  BMAngZ: 0.
 
 VertexBaseName: "VT"
 VTPosX: -0.146955  VTPosY:  0.055152  VTPosZ: 2.1
