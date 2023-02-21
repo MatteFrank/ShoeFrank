@@ -5,6 +5,7 @@
 
 #include "TMath.h"
 #include "TAGrecoManager.hxx"
+#include "TAGgeoTrafo.hxx" 
 #include "TAGbaseTrack.hxx"
 
 /*!
@@ -290,42 +291,72 @@ TVector2 TAGbaseTrack::DistanceMin(TAGbaseTrack* track, Float_t zMin, Float_t zM
 //! \param[in] dhs constant error for each cluster
 void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 {
-   // Computes the chi2 of the fit track using dhs as the error
-   Float_t tdU, tdV;
-   Float_t tUtrack, tVtrack, err;
-   Int_t   ndfU, ndfV;
-   err = dhs;
-   ndfU = ndfV = -2; // indeed, two parameters are fit per dimemsions (4 in all)
-   fChiSquare = fChiSquareU = fChiSquareV = 0.0;
-   if( GetClustersN() <=2 ) return; // return 0. for chisquare if there is less than 2 hits
+  /*
+  static int firstEventsOnly = 500;
 
-   for (Int_t ht = 0; ht < GetClustersN(); ht++){
-	  Float_t posZ = GetCluster(ht)->GetPositionG().Pz();
-	  tUtrack = Intersection(posZ).Px();
-	  if (dhs == 0.)
-		 dhs = GetCluster(ht)->GetPosError().Px();
-	  tdU = (GetCluster(ht)->GetPositionG().Px() - tUtrack)/(dhs);
-	  ndfU++;
-	  fChiSquareU += tdU * tdU;
-	  dhs = err;
+  if( firstEventsOnly>0 ){
+    TVector3 pos=*fOrigin;    
+    TVector3 slope=*fSlope;
+    TVector3 posErr=*fOriginErr;
+    std::cout<<"VTTrack "<<fTrackIdx<<" pos=("<<pos.X()<<", "<<pos.Y()<<", "<<pos.Z()<<") "
+	     <<" dir=("<<slope.X()<<", "<<slope.Y()<<", "<<slope.Z()<<")\n\t"
+	     <<"\tPosErr=("<<posErr.X()<<", "<<posErr.Y()<<", "<<posErr.Z()<<")\n";
+	     }*/
 
-	  // only for pixel detector
-	  tVtrack = Intersection(posZ).Py();
-	  if (dhs == 0.)
-		 dhs = GetCluster(ht)->GetPosError().Py();
-	  tdV = (GetCluster(ht)->GetPositionG().Py() - tVtrack)/(dhs);
-	  ndfV++;
-	  fChiSquareV += tdV * tdV;
+  // Computes the chi2 of the fit track using dhs as the error
+  Float_t tdU, tdV;
+  Float_t tUtrack, tVtrack, err;
+  Int_t   ndfU, ndfV;
+  err = dhs;
+  ndfU = ndfV = -2; // indeed, two parameters are fit per dimemsions (4 in all)
+  fChiSquare = fChiSquareU = fChiSquareV = 0.0;
+  if( GetClustersN() <=2 ) return; // return 0. for chisquare if there is less than 2 hits
+   
+  for (Int_t ht = 0; ht < GetClustersN(); ht++){
+    Float_t posZ = GetCluster(ht)->GetPositionG().Pz();
+    tUtrack = Intersection(posZ).Px();
+    Float_t dhsx = dhs;
+    if (dhsx == 0.)
+      dhsx = GetCluster(ht)->GetPosError().Px();
+    tdU = (GetCluster(ht)->GetPositionG().Px() - tUtrack)/(dhsx);
+    ndfU++;
+    fChiSquareU += tdU * tdU;
+    dhs = err;
+	  
+    // only for pixel detector
+    Float_t dhsy = dhs;
+    tVtrack = Intersection(posZ).Py();
+    if (dhsy == 0.)
+      dhsy = GetCluster(ht)->GetPosError().Py();
+    tdV = (GetCluster(ht)->GetPositionG().Py() - tVtrack)/(dhsy);
+    ndfV++;
+    fChiSquareV += tdV * tdV;
+   
+    /*    if( firstEventsOnly>0){
+      TAGcluster* clus = GetCluster(ht);
+      TVector3 pos = clus->GetPosition();
+      TVector3 posg = clus->GetPositionG();
+      TVector3 posErr = clus->GetPosError();
+      std::cout<<"Hit "<<ht<<"   pos=("<<pos.X()<<", "<<pos.Y()<<", "<<pos.Z()<<") "
+	       <<" PosErr=("<<posErr.X()<<", "<<posErr.Y()<<", "<<posErr.Z()<<")\n"
+	       <<"\tposG=("<<posg.X()<<", "<<posg.Y()<<", "<<posg.Z()<<")   posZ="<<posZ<<"\t"
+	       <<"Sensor="<<clus->GetSensorIdx()<<"  Npixels="<<clus->GetElementsN()
+	       <<"\n\tUtrk="<<tUtrack<<" dhsx="<<dhsx<<" tdU="<<tdU<<" chisqU="<<fChiSquareU
+	       <<"\n\tVtrk="<<tVtrack<<" dhsy="<<dhsy<<" tdV="<<tdV<<" chisqV="<<fChiSquareV
+	       <<"\n";
+    }*/
 
-   }
+  }
 
-   fChiSquare = (fChiSquareU+fChiSquareV) / Double_t(2*GetClustersN()-4);
-   fChiSquareU /= ndfU;
-   fChiSquareV /= ndfV;
-
-   if(FootDebugLevel(1))
-	  printf("TAGbaseTrack::MakeChiSquare chi2u=%f, ndfu=%d, chi2v=%f, ndfv=%d, chi2=%f, ndf=%d, resol=%f\n",
-			 fChiSquareU, ndfU, fChiSquareV, ndfV, fChiSquare, 2*GetClustersN()-4, dhs);
+  if( firstEventsOnly>0 ) firstEventsOnly--;
+   
+  fChiSquare = (fChiSquareU+fChiSquareV) / Double_t(2*GetClustersN()-4);
+  fChiSquareU /= ndfU;
+  fChiSquareV /= ndfV;
+   
+  if(FootDebugLevel(1))
+    printf("TAGbaseTrack::MakeChiSquare chi2u=%f, ndfu=%d, chi2v=%f, ndfv=%d, chi2=%f, ndf=%d, resol=%f\n",
+	   fChiSquareU, ndfU, fChiSquareV, ndfV, fChiSquare, 2*GetClustersN()-4, dhs);
 }
 
 // __________________________________________________________________________

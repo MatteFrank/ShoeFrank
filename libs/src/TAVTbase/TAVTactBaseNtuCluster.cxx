@@ -28,7 +28,7 @@ ClassImp(TAVTactBaseNtuCluster);
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pGeoMap geometry parameter descriptor
 TAVTactBaseNtuCluster::TAVTactBaseNtuCluster(const char* name, 
-											 TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
+					     TAGparaDsc* pConfig, TAGparaDsc* pGeoMap)
  : TAGactNtuCluster2D(name, "TAVTactNtuCluster - NTuplize cluster"),
    fpConfig(pConfig),
    fpGeoMap(pGeoMap),
@@ -213,6 +213,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    
    pos = tCorrection*(1./fClusterPulseSum);
    
+   posErr.SetXYZ(0.,0.,0.);
    for (Int_t i = 0; i < fCurListOfPixels->GetEntriesFast(); ++i) {
 	  TAVThit* pixel = (TAVThit*)fCurListOfPixels->At(i);
 	  tCorrection2.SetXYZ(pixel->GetPulseHeight()*(pixel->GetPosition()(0)-(pos)(0))*(pixel->GetPosition()(0)-(pos)(0)), 
@@ -224,9 +225,11 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    posErr *= 1./fClusterPulseSum;
    
    // for cluster with a single pixel
-   Float_t lim = 2.5e-7; // in cm !
-   if (posErr(0) < lim) posErr(0) = lim; //(20/Sqrt(12)^2
-   if (posErr(1) < lim) posErr(1) = lim; //(20/Sqrt(12)^2
+   Float_t lim = 33.3e-8; // in cm^2 !
+   if (posErr(0) < lim) posErr(0) = lim; //(20 um / Sqrt(12) )^2 = (5.77 um)^2
+   else posErr(0) *= 0.04; // factor 5 reduction on sigma
+   if (posErr(1) < lim) posErr(1) = lim; //(20 um / Sqrt(12) )^2 = (5.77 um)^2
+   else posErr(1) *= 0.04; // factor 5 reduction on sigma
    
    fCurrentPosition.SetXYZ((pos)(0), (pos)(1), 0);
    fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0)), TMath::Sqrt((posErr)(1)), 0);
