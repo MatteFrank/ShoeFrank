@@ -18,6 +18,7 @@ export PATH=/cvmfs/sft.cern.ch/lcg/contrib/make/4.3/Linux-x86_64/bin:/urs/bin:$P
 
 export FOOTLIBS=@CMAKE_BINARY_DIR@/libs/
 export FOOTBUILD=@CMAKE_BINARY_DIR@
+export FOOTSRC=@CMAKE_CURRENT_SOURCE_DIR@/../../
 export FOOTLEVEL0=$FOOTMAIN/Reconstruction/level0
 export FOOTRAWDATA=$FOOTBUILD/Reconstruction/level0/dataRaw
 export FOOTMCDATA=$FOOTBUILD/Reconstruction/level0/dataMC
