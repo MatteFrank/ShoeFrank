@@ -679,7 +679,9 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	}
 }
 
-int TAGFselectorBase::GetMCEventType() { return mc_eventType; }
+int TAGFselectorBase::GetMCEventType() { return mc_eventType;
+	
+}
 
 
 
@@ -687,7 +689,8 @@ int TAGFselectorBase::GetMCEventType() { return mc_eventType; }
 
 
 //! \brief Get the event type seen by the Genfit selector
-int TAGFselectorBase::GetEventType() { return m_eventType; }
+int TAGFselectorBase::GetEventType() { return  m_eventType;
+}
 
 
 //! \brief Fill plane occupancy histogram

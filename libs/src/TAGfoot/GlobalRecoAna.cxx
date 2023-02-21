@@ -58,6 +58,10 @@ GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameI
   Th_reco = -999.; //from global tracking
   Th_recoBM = -999.; //from global tracking wrt BM direction
 
+  Type_reco=0;
+  //Z_oot=0;
+  initRegion=-1;
+
 
 }
 
@@ -97,6 +101,16 @@ void GlobalRecoAna::LoopEvent() {
 
 
     Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
+    Type_reco = myGlb->GetEventType();
+
+    //selection on type. Uncomment if want to select only in target fragm
+    /* if (Type_reco==3 || Type_reco==4 || Type_reco ==5){
+      ++currEvent;
+      continue;
+    }
+    //---
+   
+  */
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
     if (nt > 0) recoEvents++;
 
@@ -117,6 +131,8 @@ void GlobalRecoAna::LoopEvent() {
     if (fFlagMC == true )
       TrackVsMCStudy();
 
+    //selection on type
+    if(!(Type_reco==1 || Type_reco==2)){
     //*********************************************************************************** begin loop on global tracks **********************************************
     for(int it=0;it<nt;it++) { // for every track
       int trkstatus=ApplyTrkCuts();
@@ -129,6 +145,16 @@ void GlobalRecoAna::LoopEvent() {
       isPrimaryInEvent = false;
       fGlbTrack = myGlb->GetTrack(it);
 
+      Int_t trackID = fGlbTrack->GetMcMainTrackId();
+     // cout << trackID << endl;
+      mcPart = myMcNtuPart->GetTrack(trackID);
+
+      initRegion = mcPart->GetRegion();
+      //cout << initRegion <<endl;
+      
+
+
+
       //fEvtGlbTrkVec.clear(); //!
       //ComputeMCtruth(TrkIdMC, Z_true, P_true, P_cross, Ek_true);
 
@@ -140,11 +166,15 @@ void GlobalRecoAna::LoopEvent() {
       //Set the reconstructed quantities
       RecoGlbTrkLoopSetVariables();
       //Evaluate the measured mass
+
       if(fFlagMC){
       ThetaTrueVSThetaRecoPlots();
       }
 
       EvaluateMass();
+
+      
+
 
       if(FootDebugLevel(1)){
         cout<<"GlobalRecoAna::Z_meas="<<Z_meas<<"  P_meas="<<P_meas<<"  primary_tof="<<primary_tof<<"  Tof_meas="<<Tof_meas<<"  Beta_meas="<<Beta_meas<<"  M_meas="<<M_meas<<"  Ek_meas="<<Ek_meas<<endl;
@@ -152,12 +182,13 @@ void GlobalRecoAna::LoopEvent() {
       }
 
       //some specific studies
-      EkBinningStudies();
+      //EkBinningStudies();
       FillUnfoldingPlots();
 
       //fill the yields plots
       if(fFlagMC)
         FillMCGlbTrkYields();
+
       else
         FillDataGlbTrkYields();
 
@@ -176,7 +207,7 @@ void GlobalRecoAna::LoopEvent() {
       }
 
     } //********* end loop on global tracks ****************
-
+  }
     //Studies dedicated to MC dataset
     if(fFlagMC)
       MCParticleStudies();
@@ -366,6 +397,34 @@ BookYield ("yield-trkcutsMC", true);
 
 // Cross section recostruction histos from REAL DATA
 BookYield ("yield-trkReco");
+
+BookYield ("yield-trkMC_oot", true);
+
+BookYield ("yield-trkcutsMC_oot", true);
+
+
+
+
+/*
+BookYield ("yield-trkType12");
+
+BookYield ("yield-trkType1");
+
+BookYield ("yield-trkType2");
+
+BookYield ("yield-trkType3");
+
+BookYield ("yield-trkType4");
+
+BookYield ("yield-trkType5");
+
+BookYield ("yield-trkTypeAll");
+
+BookYield ("yield-trkType34");
+
+
+*/
+
 
 // Cross section TRUE histos
 BookYield ("yield-true_cut");
@@ -942,6 +1001,8 @@ void GlobalRecoAna::RecoGlbTrkLoopSetVariables(){
   Beta_meas=fGlbTrack->GetLength()/Tof_meas/TAGgeoTrafo::GetLightVelocity();
   M_meas = fGlbTrack->GetMass(); //It's the track mass hp, cannot be used as mass measurement
 
+  
+
   //take the vector direction of the fragment in global SdR wrt target
    TVector3 TgtMomentum = fGlbTrack->GetTgtMomentum().Unit();
    // take the direction of the beam in global SdR
@@ -1032,7 +1093,20 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
   //-------------------------------------------------------------
   //--Yield for CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA
   if ( Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
-    FillYieldReco("yield-trkMC",Z_true,Z_meas,Th_true );
+    { //cout << "sto per entrare in trkMCcon un theta " << Th_true << endl;
+      FillYieldReco("yield-trkMC",Z_true,Z_meas,Th_true );
+    }
+
+  //-------------------------------------------------------
+
+  if (Z_true >0. && Z_true <= primary_cha && initRegion!=GetParGeoG()->GetRegTarget())
+  {
+    //Z_oot = mcPart->GetCharge();
+
+    FillYieldReco("yield-trkMC_oot",Z_true,Z_meas,Th_true );
+  }
+
+
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + ALLTW FIX : i don't want not fragmented primary
@@ -1058,6 +1132,29 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
     }
   }
 
+  //-----COPY of the above, only with out of target 
+  // check del TAGpoint del TW
+  for (int ic = 0; ic < fGlbTrack->GetPointsN(); ic++)
+  { // from all the points of the track...
+    TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
+    TString str = tmp_poi->GetDevName();
+    if (str.Contains(TATWparGeo::GetBaseName()))
+    { //...i just want the TAGPOINT of TW
+      if (tmp_poi->GetMcTracksN() == 1)
+      { // if there is no ghost hits in the TW
+        if (tmp_poi->GetMcTrackIdx(0) == fGlbTrack->GetMcMainTrackId())
+        { // if there is match of MCId
+          if (Z_true > 0. && Z_true <= primary_cha && initRegion!=GetParGeoG()->GetRegTarget())
+          {
+             FillYieldReco("yield-trkcutsMC_oot", Z_true, Z_meas, Th_true);
+             ((TH1D *)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
+          }
+        }
+      }
+    }
+  }
+
+
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + GHOST HITS FIX : i don't want not fragmented primary
   if (N_TrkIdMC_TW == 1)
@@ -1066,6 +1163,7 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAGWDtrigInfo )
+
   if (Z_meas >0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/)
     FillYieldReco("yield-trkReco",Z_meas,0,Th_recoBM );
 
@@ -1080,19 +1178,36 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
     FillYieldReco(name_.c_str(),Z_meas,0,Th_recoBM );
 
 
-
-
-
-
-
-
-
-
-
-
   }
 
+  //----------------------------------------------
+  //Selection on event type
+  
+  /*
+  if (Type_reco == 1 && Z_meas >0. && Z_meas <= primary_cha)
+    FillYieldReco("yield-trkType1", Z_meas,0,Th_reco);
 
+  if (Type_reco == 2 && Z_meas >0. && Z_meas <= primary_cha)
+    FillYieldReco("yield-trkType2", Z_meas,0,Th_reco);
+
+  if (Type_reco == 3 && Z_meas >0. && Z_meas <= primary_cha)
+    FillYieldReco("yield-trkType3", Z_meas,0,Th_reco);
+
+  if (Type_reco == 4 && Z_meas >0. && Z_meas <= primary_cha)
+    FillYieldReco("yield-trkType4", Z_meas,0,Th_reco);
+
+  if (Type_reco == 5 && Z_meas >0. && Z_meas <= primary_cha)
+    FillYieldReco("yield-trkType5", Z_meas,0,Th_reco);
+
+  if (Z_meas >0. && Z_meas <= primary_cha)
+    FillYieldReco("yield-trkTypeAll", Z_meas,0,Th_reco);
+
+  if ((Type_reco == 1 || Type_reco == 2) && Z_meas >0. && Z_meas <= primary_cha)
+    FillYieldReco("yield-trkType12", Z_meas,0,Th_reco);
+
+  if ((Type_reco == 3 || Type_reco == 4) && Z_meas >0. && Z_meas <= primary_cha)
+    FillYieldReco("yield-trkType34", Z_meas,0,Th_reco);
+  */
 
 return;
 }
@@ -1134,8 +1249,10 @@ void GlobalRecoAna::FillTrkPlots(){
   ((TH1D*)gDirectory->Get("Tof_tw"))->Fill(fGlbTrack->GetTwTof());
   ((TH1D*)gDirectory->Get("Tof_meas"))->Fill(Tof_meas);
   ((TH1D*)gDirectory->Get("Beta_meas"))->Fill(Beta_meas);
+
   if(Z_meas<=primary_cha && Z_meas>0)
     ((TH1D*)gDirectory->Get(Form("Zrec%d/Mass",Z_meas)))->Fill(M_meas);
+
 
   if(fFlagMC && Beta_true>=0){
     ((TH1D*)gDirectory->Get("Charge_trk_True"))->Fill(Z_true);
@@ -3000,9 +3117,18 @@ void GlobalRecoAna::FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Doubl
             ((TH1D*)gDirectory->Get(path.c_str()))->Fill(Th);
 
             string path_matrix = folderName+"/Z_" + to_string(Z-1) +"#"+to_string(Z-0.5)+"_"+to_string(Z+0.5)+"/theta_"+to_string(i)+"#"+to_string(theta_binning[i][0])+"_"+to_string(theta_binning[i][1])+"/migMatrix_Z";
-            if (!(Z_meas==0))
-            ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z,Z_meas);
+            
+            //cout << "before if" <<endl;
+            if (!(Z_meas==0)){
+              //cout << path_matrix << endl;
+              
+              //cout << "after decl" <<endl;
+              //cout << Z << " "<< Z_meas << endl;
 
+              ((TH2D*)gDirectory->Get(path_matrix.c_str()))->Fill(Z,Z_meas);
+              //cout << "after fill" <<endl;
+            }
+            
 
            /*for (int j=0; j < ek_nbin; j++) {
              if((Ek_meas*fpFootGeo->GevToMev())>=ek_binning[j][0] && (Ek_meas*fpFootGeo->GevToMev())<ek_binning[j][1]) {

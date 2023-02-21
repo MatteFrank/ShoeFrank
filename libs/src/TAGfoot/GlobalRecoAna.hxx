@@ -144,6 +144,12 @@ class GlobalRecoAna : public LocalReco {
   Double_t Ek_meas; //Energy per mass (GeV/u)
   Double_t Beta_meas;
 
+  Int_t Type_reco;
+  //Int_t Z_oot;
+  int initRegion;
+
+  TAMCpart* mcPart;
+
   //MC quantities: true=production, cross=target, cross_calo=at calo enterance
   Int_t Z_true;
   Double_t Ek_true;
