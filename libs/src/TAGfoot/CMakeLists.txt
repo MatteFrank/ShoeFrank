@@ -39,6 +39,7 @@ set( with_dictionnaries
    TAGactNtuGlbTrackS
    GlobalReco
    GlobalRecoAna
+   GlobalRecoMV
    GlobalRecoMassAna   
    GlobalToeReco
 )
@@ -127,3 +128,8 @@ install(TARGETS ${LIBNAME}  RUNTIME DESTINATION bin
 							LIBRARY DESTINATION lib
 							ARCHIVE DESTINATION lib
 							COMPONENT libraries)
+
+#===================================================#
+#       Turn On all compiling options
+#===================================================#
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith  -Wmissing-declarations -Wundef -Wshadow  -Wno-unused-parameter -Wfloat-equal -ansi")

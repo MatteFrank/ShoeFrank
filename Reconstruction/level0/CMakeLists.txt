@@ -12,10 +12,6 @@ set(LIBNAME LocalReco)
 #
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/rootlogon.C"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/benchmark.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/nightbuild.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/nightbuild_ui10.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_ui10.csh"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/nightbuild_tier3.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier3.csh"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/cron.tab.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/cron.tab"  @ONLY)
 
 #----------------------------------------------------------------------------
 # Copy geomaps + config + macro
@@ -94,6 +90,10 @@ add_executable(DecodeCA DecodeCA.cc)
 target_link_libraries(DecodeCA ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
 install(TARGETS DecodeCA DESTINATION bin)
 
+add_executable(DecodeGlbMV DecodeGlbMV.cc)
+target_link_libraries(DecodeGlbMV ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES} )
+install(TARGETS DecodeGlbMV DESTINATION bin)
+
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
 #
@@ -134,9 +134,6 @@ install(TARGETS AnalyzeBmStd DESTINATION bin)
 # Run BenchMark macro
 #
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh)
-execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh)
-execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_ui10.csh)
-execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier3.csh)
 
 if (BENCHMARK)
   add_custom_command(TARGET AnalyzeBmStd POST_BUILD
