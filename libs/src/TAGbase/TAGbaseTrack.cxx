@@ -348,7 +348,7 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 
   }
 
-  if( firstEventsOnly>0 ) firstEventsOnly--;
+  //  if( firstEventsOnly>0 ) firstEventsOnly--;
    
   fChiSquare = (fChiSquareU+fChiSquareV) / Double_t(2*GetClustersN()-4);
   fChiSquareU /= ndfU;
