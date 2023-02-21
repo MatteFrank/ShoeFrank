@@ -48,7 +48,7 @@ void TestBenchMark(Bool_t rawData = true)
 
       Float_t PValue =  hPixTotRef->Chi2Test(hPixTot,"UU P");
       
-      if (PValue < sigma) printf("Cluster distribution changes for detectort %s\n", it.first.Data());
+      if (PValue < sigma) printf("Cluster distribution changes for detector %s\n", it.first.Data());
    }
 }
 
