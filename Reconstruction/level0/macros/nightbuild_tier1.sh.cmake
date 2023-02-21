@@ -23,7 +23,7 @@ source /opt/exp_software/foot/root/root_install/bin/thisroot.sh
 export FOOTLIBS=@CMAKE_BINARY_DIR@/libs/
 export FOOTBUILD=@CMAKE_BINARY_DIR@
 export FOOTSRC=@CMAKE_CURRENT_SOURCE_DIR@/../../
-export FOOTLEVEL0=$FOOTMAIN/Reconstruction/level0
+export FOOTLEVEL0=$FOOTBUILD/Reconstruction/level0
 export FOOTRAWDATA=$FOOTBUILD/Reconstruction/level0/dataRaw
 export FOOTMCDATA=$FOOTBUILD/Reconstruction/level0/dataMC
 
