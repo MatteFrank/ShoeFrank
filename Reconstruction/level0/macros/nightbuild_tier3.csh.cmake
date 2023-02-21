@@ -26,7 +26,7 @@ echo "update newgeom branch"
 git pull origin newgeom_v1.0
 echo " "
 
-#build last verison
+#build last version
 echo "execute cmake & make"
 cd $FOOTBUILD
 cmake3 $FOOTSRC -DCMAKE_BUILD_TYPE=Debug -DANC_DIR=ON -DFILECOPY=ON
