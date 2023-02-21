@@ -52,6 +52,8 @@ class TABMtrack : public TObject {
     void SetGhost(Int_t gho_in)                         { fGhost=gho_in;}
     void SetTrackIdX(Int_t trk_in)                      { fTrackIdX=trk_in;}
     void SetTrackIdY(Int_t trk_in)                      { fTrackIdY=trk_in;}
+    void SetCovarianceX(Double_t sq_q, Double_t sq_m, Double_t sqsm) { fCovarX.SetXYZ(sq_q,sq_m, sqsm);};
+    void SetCovarianceY(Double_t sq_q, Double_t sq_m, Double_t sqsm) { fCovarY.SetXYZ(sq_q,sq_m, sqsm);};
     // void NewSet(TVectorD ftrackpar);//set fSlope and fOrigin, used for the FIRST tracking
 
     //Getters
@@ -70,24 +72,26 @@ class TABMtrack : public TObject {
 
     //others
     void PrintTrackPosDir();
-    // TVector3 PointAtLocalZ(double zloc) const;
+    TVector3 PointAtLocalZ(double zloc) const;
     TVector3 Intersection(Float_t zloc) const;
     Int_t mergeTrack(const TABMtrack &otherview);
 
 private:
-    Int_t         fNHitX;	              //number of associated hits (different from nwire because of hits in the same cell)
-    Int_t         fNHitY;	              //number of associated hits (different from nwire because of hits in the same cell)
-    Double_t      fChiSquare;           //reduced chi2
-    Double_t      fChiSquareX;          //reduced chi2 on xz view
-    Double_t      fChiSquareY;          //reduced chi2 on yz view
-    Int_t         fIsConv;              //fit converged flag: 0=not set, 1=converged, 2=not converged
-    TVector3      fSlope;               //direction of the track from mylar1_pos to mylar2_pos
-    TVector3      fOrigin;              //position of the track on the xy plane at z=0
-    Int_t         fGhost;               //to be checked with the vertex: -1=not set, 0=not fGhost, 1=fGhost
-    Int_t         fTrackIdX;            //track id for the XZ view (view==1)
-    Int_t         fTrackIdY;            //track id for the YZ view (view==0)
-
-    ClassDef(TABMtrack,2)
+  Int_t         fNHitX;	              //number of associated hits (different from nwire because of hits in the same cell)
+  Int_t         fNHitY;	              //number of associated hits (different from nwire because of hits in the same cell)
+  Double_t      fChiSquare;           //reduced chi2
+  Double_t      fChiSquareX;          //reduced chi2 on xz view
+  Double_t      fChiSquareY;          //reduced chi2 on yz view
+  Int_t         fIsConv;              //fit converged flag: 0=not set, 1=converged, 2=not converged
+  TVector3      fSlope;               //direction of the track from mylar1_pos to mylar2_pos
+  TVector3      fOrigin;              //position of the track on the xy plane at z=0
+  Int_t         fGhost;               //to be checked with the vertex: -1=not set, 0=not fGhost, 1=fGhost
+  Int_t         fTrackIdX;            //track id for the XZ view (view==1)
+  Int_t         fTrackIdY;            //track id for the YZ view (view==0
+  TVector3      fOriginErr;           //Error on origin as estimated by the fit
+  TVector3      fCovarX;  // covariance in x and y (sigma^2 q , sigma^2 m, sigma q sigma m) 
+  TVector3      fCovarY;  
+  ClassDef(TABMtrack,2)
 
 };
 

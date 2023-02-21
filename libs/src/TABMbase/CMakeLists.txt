@@ -35,6 +35,8 @@ set( with_dictionnaries
    TABMparCal
    TABMactNtuRaw
    TABMactVmeReader
+   TABMLegendreFitter 
+   TABMMinuitFitter
 )
 
 set( without_dictionnaries

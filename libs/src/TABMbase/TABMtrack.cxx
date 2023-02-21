@@ -15,6 +15,9 @@ TABMtrack::TABMtrack():
 {
   fSlope.SetXYZ(1.,1.,1.);
   fOrigin.SetXYZ(0.,0.,0.);
+  fOriginErr = fOrigin;
+  fCovarX = fOrigin;
+  fCovarY = fOrigin;
  }
 
 //------------------------------------------+-----------------------------------
@@ -29,6 +32,7 @@ void TABMtrack::Dump() const
   cout<<"new tracking: fNHitX="<<fNHitX<<"  fNHitY="<<fNHitY<<"  fChiSquare="<<fChiSquare<<"  fChiSquareX="<<fChiSquareX<<"  fChiSquareY="<<fChiSquareY<<"  fIsConv="<<fIsConv<<"  fGhost="<<fGhost<<"  fTrackIdX="<<fTrackIdX<<"  fTrackIdY="<<fTrackIdY<<endl;
   cout<<"fSlope=("<<fSlope.X()<<", "<<fSlope.Y()<<", "<<fSlope.Z()<<")"<<endl;
   cout<<"fOrigin=("<<fOrigin.X()<<", "<<fOrigin.Y()<<", "<<fOrigin.Z()<<")"<<endl;
+  cout<<"fOriginErr=("<<fOriginErr.X()<<", "<<fOriginErr.Y()<<", "<<fOriginErr.Z()<<")"<<endl;
 }
 
 /*-----------------------------------------------------------------*/
@@ -47,8 +51,10 @@ void TABMtrack::Clean()
   fTrackIdX=-1;
   fTrackIdY=-1;
   fOrigin.SetXYZ(0.,0.,0.);
-  fSlope.SetXYZ(1.,1.,1.);
-
+  fSlope.SetXYZ(0.,0.,1.);
+  fOriginErr = fOrigin;
+  fCovarX = fOrigin;
+  fCovarY = fOrigin;
 }
 
 TABMtrack::TABMtrack(const TABMtrack &tr_in){
@@ -63,6 +69,9 @@ TABMtrack::TABMtrack(const TABMtrack &tr_in){
   fTrackIdY=tr_in.fTrackIdY;
   fOrigin=tr_in.fOrigin;
   fSlope=tr_in.fSlope;
+  fOriginErr=tr_in.fOriginErr;
+  fCovarX=tr_in.fCovarX;
+  fCovarY=tr_in.fCovarY;
 }
 
 TABMtrack& TABMtrack::operator=(TABMtrack const& in){
@@ -78,9 +87,20 @@ TABMtrack& TABMtrack::operator=(TABMtrack const& in){
     this->fTrackIdY=in.fTrackIdY;
     this->fSlope=in.fSlope;
     this->fOrigin=in.fOrigin;
+    this->fOriginErr=in.fOriginErr;
+    this->fCovarX=in.fCovarX;
+    this->fCovarY=in.fCovarY;
   }
   return *this;
 }
+
+
+TVector3 TABMtrack::PointAtLocalZ(double zloc) const
+{
+   TVector3 projected(fSlope.X()/fSlope.Z()*zloc+fOrigin.X() ,fSlope.Y()/fSlope.Z()*zloc+fOrigin.Y(), zloc);
+   return projected;
+}
+
 
 TVector3 TABMtrack::Intersection(Float_t zloc) const
 {
@@ -111,6 +131,7 @@ Int_t TABMtrack::mergeTrack(const TABMtrack &otherview){
     fOrigin.SetX(otherview.fOrigin.X());
     fNHitX=otherview.fNHitX;
     fTrackIdX=otherview.fTrackIdX;
+    fCovarX = otherview.fCovarX;
   }else{
     fChiSquareY=otherview.fChiSquareY;
     fChiSquare=(fChiSquareX*(fNHitX-2.)+otherview.fChiSquareY*(otherview.fNHitY-2.))/(fNHitX+otherview.fNHitY-4.);
@@ -118,7 +139,9 @@ Int_t TABMtrack::mergeTrack(const TABMtrack &otherview){
     fOrigin.SetY(otherview.fOrigin.Y());
     fNHitY=otherview.fNHitY;
     fTrackIdY=otherview.fTrackIdY;
+    fCovarY = otherview.fCovarY;    
   }
+  fOriginErr.SetXYZ(sqrt(fCovarX.Y()), sqrt(fCovarY.Y()),0.0);
 
   return 0;
 }
