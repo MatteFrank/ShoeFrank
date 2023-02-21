@@ -1,23 +1,24 @@
-#! /bin/tcsh
+#! /bin/bash
 #define cnaf server env
-alias cmake /usr/bin/cmake3
 source /opt/exp_software/foot/root/root-6.20.04/bin/thisroot.sh
 
 #define env
-setenv FOOTLIBS @CMAKE_BINARY_DIR@/libs/
-setenv FOOTBUILD @CMAKE_BINARY_DIR@
-setenv FOOTSRC @CMAKE_CURRENT_SOURCE_DIR@/../../
-setenv FOOTLEVEL0 $FOOTBUILD/Reconstruction/level0
-setenv FOOTRAWDATA $FOOTBUILD/Reconstruction/level0/dataRaw
-setenv FOOTMCDATA $FOOTBUILD/Reconstruction/level0/dataMC
+export FOOTLIBS=@CMAKE_BINARY_DIR@/libs/
+export FOOTBUILD=@CMAKE_BINARY_DIR@
+export FOOTLEVEL0=$FOOTMAIN/Reconstruction/level0
+export FOOTRAWDATA=$FOOTBUILD/Reconstruction/level0/dataRaw
+export FOOTMCDATA=$FOOTBUILD/Reconstruction/level0/dataMC
 
-if ($OSTYPE == "darwin") then
-  setenv DYLD_LIBRARY_PATH $ROOTSYS/lib:./:$FOOTLIBS/lib:${DYLD_LIBRARY_PATH}
+
+if [[ "$OSTYPE" == "darwin"* ]]
+then
+  export DYLD_LIBRARY_PATH=$ROOTSYS/lib:./:$ASOFTREF/lib:${DYLD_LIBRARY_PATH}
 else
-  setenv LD_LIBRARY_PATH $ROOTSYS/lib:./:$FOOTLIBS/lib:${LD_LIBRARY_PATH}
-endif
+  export LD_LIBRARY_PATH=$ROOTSYS/lib:./:$ASOFTREF/lib:${LD_LIBRARY_PATH}
+fi
 
-set path = ($FOOTBUILD/bin $path)
+export PATH=$PATH:$FOOTBUILD/bin
+
 
 # pull last version
 cd $FOOTSRC
@@ -28,7 +29,7 @@ echo " "
 #build last verison
 echo "execute cmake & make"
 cd $FOOTBUILD
-cmake $FOOTSRC -DCMAKE_BUILD_TYPE=Debug -DANC_DIR=ON -DFILECOPY=ON
+cmake3 $FOOTSRC -DCMAKE_BUILD_TYPE=Debug -DANC_DIR=ON -DFILECOPY=ON
 make -j4
 echo " "
 
