@@ -136,7 +136,7 @@ install(TARGETS AnalyzeBmStd DESTINATION bin)
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh)
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh)
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_ui10.csh)
-execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier1.csh)
+execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier1.sh)
 
 if (BENCHMARK)
   add_custom_command(TARGET AnalyzeBmStd POST_BUILD
