@@ -24,8 +24,8 @@ export FOOTLIBS=@CMAKE_BINARY_DIR@/libs/
 export FOOTBUILD=@CMAKE_BINARY_DIR@
 export FOOTSRC=@CMAKE_CURRENT_SOURCE_DIR@/../../
 export FOOTLEVEL0=$FOOTBUILD/Reconstruction/level0
-export FOOTRAWDATA=$FOOTBUILD/Reconstruction/level0/dataRaw
-export FOOTMCDATA=$FOOTBUILD/Reconstruction/level0/dataMC
+export FOOTRAWDATA=/storage/gpfs_data/foot_tier3/GSI2021
+export FOOTMCDATA=/storage/gpfs_data/foot_tier3/Simulation/GSI2021_MC
 
 export LD_LIBRARY_PATH=$ROOTSYS/lib:./:$FOOTLIBS/lib:${LD_LIBRARY_PATH}
 export PATH=$PATH:$FOOTBUILD/bin
@@ -56,7 +56,7 @@ echo " "
 
 #Run MC reconstruction
 echo "Run reconstruction of MC data"
-DecodeGlb -in $FOOTMCDATA/GSI2021/16O_C_400_1_shoereg.root -out runGSI2021_MC_400_Plots_1kEvts.root -nev 1000 -exp GSI2021_MC -run 400 -mc
+DecodeGlb -in $FOOTMCDATA/16O_C_400_1_shoereg.root -out runGSI2021_MC_400_Plots_1kEvts.root -nev 1000 -exp GSI2021_MC -run 400 -mc
 echo " "
 
 #Compare to reference plots
