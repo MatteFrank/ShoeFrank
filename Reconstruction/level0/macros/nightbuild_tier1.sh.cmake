@@ -1,17 +1,19 @@
 #! /bin/bash
 #define cnaf server env
+
 # compilers
 . /cvmfs/sft.cern.ch/lcg/releases/gcc/9.3.0-6991b/x86_64-centos7/setup.sh
-gcc --version
+
+#python2
 export PATH=/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.9.p1-af54f/x86_64-slc6-gcc48-opt/bin/:$PATH
 
-python2 --version
+#python3
 export PATH=/cvmfs/sft.cern.ch/lcg/releases/Python/3.9.6-b0f98/x86_64-centos7-gcc9-opt:$PATH
 
-python3 --version
+#cmake
 export PATH=/cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gcc9-opt/bin:$PATH
-cmake --version
 
+#make
 export PATH=/cvmfs/sft.cern.ch/lcg/contrib/make/4.3/Linux-x86_64/bin:/urs/bin:$PATH
 
 export FOOTLIBS=@CMAKE_BINARY_DIR@/libs/
@@ -20,14 +22,7 @@ export FOOTLEVEL0=$FOOTMAIN/Reconstruction/level0
 export FOOTRAWDATA=$FOOTBUILD/Reconstruction/level0/dataRaw
 export FOOTMCDATA=$FOOTBUILD/Reconstruction/level0/dataMC
 
-
-if [[ "$OSTYPE" == "darwin"* ]]
-then
-  export DYLD_LIBRARY_PATH=$ROOTSYS/lib:./:$ASOFTREF/lib:${DYLD_LIBRARY_PATH}
-else
-  export LD_LIBRARY_PATH=$ROOTSYS/lib:./:$ASOFTREF/lib:${LD_LIBRARY_PATH}
-fi
-
+export LD_LIBRARY_PATH=$ROOTSYS/lib:./:$FOOTLIBS/lib:${LD_LIBRARY_PATH}
 export PATH=$PATH:$FOOTBUILD/bin
 
 
