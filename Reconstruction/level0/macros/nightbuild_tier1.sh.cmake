@@ -16,6 +16,10 @@ export PATH=/cvmfs/sft.cern.ch/lcg/releases/CMake/3.18.4-2ffec/x86_64-centos7-gc
 #make
 export PATH=/cvmfs/sft.cern.ch/lcg/contrib/make/4.3/Linux-x86_64/bin:/urs/bin:$PATH
 
+#root
+source /opt/exp_software/foot/root/root_install/bin/thisroot.sh
+
+#foot
 export FOOTLIBS=@CMAKE_BINARY_DIR@/libs/
 export FOOTBUILD=@CMAKE_BINARY_DIR@
 export FOOTSRC=@CMAKE_CURRENT_SOURCE_DIR@/../../
@@ -25,7 +29,6 @@ export FOOTMCDATA=$FOOTBUILD/Reconstruction/level0/dataMC
 
 export LD_LIBRARY_PATH=$ROOTSYS/lib:./:$FOOTLIBS/lib:${LD_LIBRARY_PATH}
 export PATH=$PATH:$FOOTBUILD/bin
-
 
 # pull last version
 cd $FOOTSRC
