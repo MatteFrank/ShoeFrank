@@ -28,10 +28,12 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
     fpNtuHit(dscnturaw),
     fpParGeo(dscbmgeo),
     fpParCon(dscbmcon),
-    fpParCal(dscbmcal)
+    fpParCal(dscbmcal), 
+    legendreFit(nullptr), minuitFit(nullptr),
+    clk("TABMactNtuTrack")
 {
   if (FootDebugLevel(1))
-   cout<<"TABMactNtuTrack::default constructor::Creating the Beam Monitor Track ntuplizer"<<endl;
+    cout<<"TABMactNtuTrack::default constructor::Creating the Beam Monitor Track ntuplizer"<<endl;
   AddDataOut(fpNtuTrk, "TABMntuTrack");
   AddDataIn(fpNtuHit,  "TABMntuHit");
   AddPara(fpParGeo,  "TABMparGeo");
@@ -40,13 +42,15 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
 
   fpTmpTrack=new TABMtrack();
 
-  //new chi2 ROOT based
-  fpFunctor= new ROOT::Math::Functor(this,&TABMactNtuTrack::EvaluateChi2,2);
-  fpMinimizer = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Fumili2");
-
+ 
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
+  
   //legendre
-  fLegPolSum=new TH2F("fLegPolSum","Legendre polynomial space; m; q[cm]",p_bmcon->GetLegMBin(),-p_bmcon->GetLegMRange(),p_bmcon->GetLegMRange(), p_bmcon->GetLegRBin(),-p_bmcon->GetLegRRange(),p_bmcon->GetLegRRange());
+  legendreFit = ::new TABMLegendreFitter("LegendreFitter", p_bmcon);
+
+  minuitFit = ::new TABMMinuitFitter("MinuitFitter", p_bmcon);
+
+  //  fLegPolSum=new TH2F("fLegPolSum","Legendre polynomial space; m; q[cm]",p_bmcon->GetLegMBin(),-p_bmcon->GetLegMRange(),p_bmcon->GetLegMRange(), p_bmcon->GetLegRBin(),-p_bmcon->GetLegRRange(),p_bmcon->GetLegRRange());
 
 }
 
@@ -54,10 +58,10 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
 //! Destructor.
 
 TABMactNtuTrack::~TABMactNtuTrack(){
-delete fpTmpTrack;
-delete fpMinimizer;
-delete fpFunctor;
-delete fLegPolSum;
+  delete fpTmpTrack;
+  delete legendreFit;
+  delete minuitFit;
+  clk.print();
 }
 
 
@@ -69,6 +73,8 @@ void TABMactNtuTrack::CreateHistogram()
 
   fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResTot);
+  fpResTot1 = new TH2F("bmTrackResClean","Residual vs Rdrift; Residual [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResTot1);
   fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of the tracks at the target center; X[cm]; Y[cm]", 250, -3., 3.,250 , -3, 3);
   AddHistogram(fpHisMap);
   fpHisMapTW = new TH2F("bmTrackTWMap","BM - Position of the tracks at the TW center; X[cm]; Y[cm]", 500, -10., 10.,500 , -10, 10);
@@ -118,7 +124,7 @@ void TABMactNtuTrack::CreateHistogram()
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
   if(p_bmcal->GetResoFunc()!=nullptr){
-    fpParRes=(TH1D*)(p_bmcal->GetResoFunc()->GetHistogram()->Clone("bmParResolution"));
+    fpParRes=(TH1F*)p_bmcal->GetResoFunc()->GetHistogram()->Clone("bmParResolution");
     fpParRes->SetTitle("BM input resolution; Drift distance [cm]; Resolution [cm]");
     fpParRes->SetAxisRange(0,0.8);
     AddHistogram(fpParRes);
@@ -163,21 +169,62 @@ void TABMactNtuTrack::CreateHistogram()
   }
 
 
-   SetValidHistogram(kTRUE);
+  fpFitIters = new TH1I("bmFitIters","Number of Minuit Iterations; Iterations; Entries",101,-0.5, 100.5);
+  fpFitPulls1 = new TH2F("bmPulls1","Approximate pulls;  pull distribution; distance [cm]", 100, -5.,5., 100,0.,1.);
+  fpFitPulls2 = new TH2F("bmPulls2","Better pulls; pull distribution; distance [cm]", 100,-5.,5.,100,0.,1.);
+  fpFitQ = new TH1F("bmFitQ","Constant term; Constant term: fit-initial value [cm]; Entries",300,-1.5, 1.5);
+  fpFitM = new TH1F("bmFitM","Slope variable; Slope: initial value; Entries",100,-0.02, 0.02);
+  fpFitQdiff = new TH1F("bmFitQdiff","Constant term; Constant term: initial value [cm]; Entries",100,-1.5, 1.5);
+  fpFitMdiff = new TH1F("bmFitMdiff","Slope variable; Slope: fit-initial value; Entries",100,-0.02, 0.02);
+  fpFitQvalue = new TH1F("bmFitQvalue",
+			 "Constant term value; Fit constant term [cm]; Entries",
+			 300,-1.5, 1.5);
+  fpFitMvalue = new TH1F("bmFitMvalue","Slope variable; fit slope; Entries",
+			 100,-0.02, 0.02);
+  fpFitQFvsQ = new TH2F("bmFitQFvsQ","Constant term: fit value vs starting value; Q starting value [cm]; Q fit value [cm]",
+			300,-1.5, 1.5, 300, -1.5, 1.5);
+  fpFitMFvsM = new TH2F("bmFitMFvsM","Slope term: fit value vs starting value; M starting value []; M fit value []",
+			100,-0.02, 0.02, 100, -0.005, 0.005);
+  fpFitMFvsQF = new TH2F("bmFitMFvsQF","Fit results: slope fit value vs Q constant term; Q fit value [cm]; M fit value []",
+			300,-1.5, 1.5, 100, -0.02, 0.02);
+  fpRebinM = new TH1I("bmRebinM","Number of rebins for the Slope; # slope rebins; entries",5,-0.5,4.5);
+  fpRebinQ = new TH1I("bmRebinQ","Number of rebins for the constant term; # constant term rebins; entries",5,-0.5,4.5);
+
+
+  AddHistogram(fpFitIters);
+  AddHistogram(fpFitPulls1);
+  AddHistogram(fpFitPulls2);
+  AddHistogram(fpFitQ);
+  AddHistogram(fpFitM);
+  AddHistogram(fpFitQdiff);
+  AddHistogram(fpFitMdiff);
+  AddHistogram(fpFitQvalue);
+  AddHistogram(fpFitMvalue);
+  AddHistogram(fpFitQFvsQ);
+  AddHistogram(fpFitMFvsM);
+  AddHistogram(fpFitMFvsQF);
+  AddHistogram(fpRebinM);
+  AddHistogram(fpRebinQ);
+
+
+
+
+
+  SetValidHistogram(kTRUE);
 }
 
 //------------------------------------------+-----------------------------------
 //! Action.
 Bool_t TABMactNtuTrack::Action()
 {
-  TABMntuTrack* p_ntutrk = (TABMntuTrack*) fpNtuTrk->Object();
+  p_ntutrk = (TABMntuTrack*) fpNtuTrk->Object();
   p_ntutrk->Clear();
-  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
+  p_nturaw = (TABMntuHit*) fpNtuHit->Object();
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   TABMparGeo* p_bmgeo = (TABMparGeo*) fpParGeo->Object();
 
-  Int_t i_nhit = p_nturaw->GetHitsN();
-  Int_t firedview=0, tmp_int;
+  i_nhit = p_nturaw->GetHitsN();
+  Int_t firedview=0;
   //NB.: If the preselection reject the event no track will be saved
   fTrackNum=0;
   fNowView=0;
@@ -188,60 +235,31 @@ Bool_t TABMactNtuTrack::Action()
 
   //check for some cuts
   if(i_nhit>=p_bmcon->GetMaxHitCut()){
-   if(FootDebugLevel(1))
+    if(FootDebugLevel(1))
       cout<<"TABMactNtuTrack::no possible track!!:the number of hits is too high:  number of hit="<<i_nhit<<"  Maxhitcut="<<p_bmcon->GetMaxHitCut()<<endl;
-      p_ntutrk->SetTrackStatus(-2);
-      if(ValidHistogram()){
-        fpHisTrackStatus->Fill(-2);
-        fpNtotTrack->Fill(0);
-        fpNXtrack->Fill(0);
-        fpNYtrack->Fill(0);
-      }
-      fpNtuTrk->SetBit(kValid);
-      return kTRUE;
+    EarlyReturn(-2);
+    return kTRUE;
   }else if(i_nhit<=p_bmcon->GetMinHitCut()){
-     if(FootDebugLevel(1))
-       cout<<"TABMactNtuTrack::no possible track!!:the number of hits is too low:  number of hit="<<i_nhit<<"  Minhitcut="<<p_bmcon->GetMinHitCut()<<endl;
-       p_ntutrk->SetTrackStatus(-1);
-       if(ValidHistogram()){
-         fpHisTrackStatus->Fill(-1);
-         fpNtotTrack->Fill(0);
-         fpNXtrack->Fill(0);
-         fpNYtrack->Fill(0);
-       }
-       fpNtuTrk->SetBit(kValid);
-       return kTRUE;
-   }
+    if(FootDebugLevel(1))
+      cout<<"TABMactNtuTrack::no possible track!!:the number of hits is too low:  number of hit="<<i_nhit<<"  Minhitcut="<<p_bmcon->GetMinHitCut()<<endl;
+    EarlyReturn(-1);
+    return kTRUE;
+  }
 
   //apply some cut on the minimum number of fired plane for each view
   if(p_nturaw->GetTothitsNx()<p_bmcon->GetPlaneHitCut() || p_nturaw->GetTothitsNy()<p_bmcon->GetPlaneHitCut()){
     if(FootDebugLevel(1))
       cout<<"TABMactNtuTrack::no possible track!!: number of xz view hit="<<p_nturaw->GetTothitsNx()<<"  number of yz view hit="<<p_nturaw->GetTothitsNy()<<"   planehitcut="<<p_bmcon->GetPlaneHitCut()<<endl;
     if(p_nturaw->GetTothitsNy()<p_bmcon->GetPlaneHitCut())
-      p_ntutrk->SetTrackStatus(1);
+      EarlyReturn(1);
     else
-      p_ntutrk->SetTrackStatus(2);
-    if(ValidHistogram()){
-      fpHisTrackStatus->Fill(p_ntutrk->GetTrackStatus());
-      fpNtotTrack->Fill(0);
-      fpNXtrack->Fill(0);
-      fpNYtrack->Fill(0);
-    }
-    fpNtuTrk->SetBit(kValid);
+      EarlyReturn(2);
     return kTRUE;
   }
 
   //loop for track reconstruction on each view
   do{
-    firedview=0;
-    //check the number of hits for each view
-    for(Int_t i_h = 0; i_h < i_nhit; i_h++) {
-      TABMhit* p_hit = p_nturaw->GetHit(i_h);
-      if(FootDebugLevel(3))
-        cout<<"hit="<<i_h<<" plane="<<p_hit->GetPlane()<<"  view="<<p_hit->GetView()<<"  cell="<<p_hit->GetCell()<<"  plane="<<p_hit->GetPlane()<<"  rdrift="<<p_hit->GetRdrift()<<"  isfake="<<p_hit->GetIsFake()<<"  isselected="<<p_hit->GetIsSelected()<<"  fNowView="<<fNowView<<endl;
-      if(p_hit->GetView()==fNowView && p_hit->GetIsSelected()<=0)
-        ++firedview;
-    }
+    firedview = CountRemainingHits(fNowView);
 
     //Apply cuts on the number of hits
     if(firedview<p_bmcon->GetPlaneHitCut()){
@@ -255,60 +273,48 @@ Bool_t TABMactNtuTrack::Action()
       continue;
     }
 
-    //tracking
-    ChargeLegendrePoly();//hit selection with legendre transform
-
-    //find the highest peak in legendre space
-    tmp_int=FindLegendreBestValues();
-    //check and flag the associated hits
-    Int_t nselhit=CheckAssHits(p_bmcon->GetAssHitErr(),  p_bmcon->GetLegRRange()/p_bmcon->GetLegRBin());
+    // tracking
+    Int_t nselhits = legendreFit->doLegendreFit(p_nturaw, fTrackNum, fNowView);
 
     //hit selection done! now check for cuts
-    if(nselhit<p_bmcon->GetPlaneHitCut()){
+    if(nselhits<p_bmcon->GetPlaneHitCut()){
       if(FootDebugLevel(1))
-        cout<<"TABMactNtuTrack::The number of hits on one view is less than the minimum required:  min hit per view="<<p_bmcon->GetPlaneHitCut()<<"  number of selected hits="<<nselhit<<"  fTrackNum="<<fTrackNum<<"  fNowView="<<fNowView<<endl;
+        cout<<"TABMactNtuTrack::The number of hits on one view is less than the minimum required:  min hit per view="<<p_bmcon->GetPlaneHitCut()<<"  number of selected hits="<<nselhits<<"  fTrackNum="<<fTrackNum<<"  fNowView="<<fNowView<<endl;
     }
-    if(nselhit<p_bmcon->GetPlaneHitCut() && fNowView==0){
+    if( nselhits<p_bmcon->GetPlaneHitCut() && fNowView==0 ){
       fNowView=1;
       ++fTrackNum;
       continue;
     }
-    if(nselhit<p_bmcon->GetPlaneHitCut() && fNowView==1)
+    if(nselhits<p_bmcon->GetPlaneHitCut() && fNowView==1)
       break;
 
-     //ok we can reconstruct the particle track using the minimization of Chi2
+    //ok we can reconstruct the particle track using the minimization of Chi2
     fpTmpTrack->Clean();
-    if(fNowView==0){
-      fpTmpTrack->SetSlopeY(fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin));
-      fpTmpTrack->SetOriginY(fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin));
-      fpTmpTrack->SethitsNy(nselhit);
-    }else{
-      fpTmpTrack->SetSlopeX(fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin));
-      fpTmpTrack->SetOriginX(fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin));
-      fpTmpTrack->SethitsNx(nselhit);
+    minuitFit->Prepare(p_nturaw, fTrackNum, fNowView);
+	
+    minuitFit->Minimize(legendreFit->GetBestQValue(), 
+			legendreFit->GetBestMValue(), fpTmpTrack);
+
+    Int_t status = minuitFit->Status();
+    static int maxprintouts=500;
+    if( maxprintouts>0 ){
+      maxprintouts--;
+      legendreFit->ToStream();
+      minuitFit->ToStream();
     }
-    tmp_int= NumericalMinimizationDouble();
-    if(tmp_int!=0){
-      p_ntutrk->SetTrackStatus(8+tmp_int);
-      if(ValidHistogram()){
-        fpHisTrackStatus->Fill(8+tmp_int);
-        fpNtotTrack->Fill(0);
-        fpNXtrack->Fill(0);
-        fpNYtrack->Fill(0);
-      }
-      fpNtuTrk->SetBit(kValid);
-      return kTRUE;
-    }else if(ComputeDataAll()){
-      p_ntutrk->SetTrackStatus(8);//something is wrong, this should not happen!
-      if(ValidHistogram()){
-        fpHisTrackStatus->Fill(8);
-        fpNtotTrack->Fill(0);
-        fpNXtrack->Fill(0);
-        fpNYtrack->Fill(0);
-      }
-      fpNtuTrk->SetBit(kValid);
-      return kTRUE;
+
+    if(status!=0){
+      EarlyReturn(8+status);
+      return kTRUE; // ?? why this return ?? // there might be another view!
     }
+	
+    minuitFit->ComputeAll();
+
+    if(status==0){
+      FillFitHistograms();
+    }
+
     //add the reconstructed track
     if(fNowView==0){
       fpTmpTrack->SetTrackIdY(fTrackNum+1);
@@ -318,7 +324,7 @@ Bool_t TABMactNtuTrack::Action()
       xtracktr.push_back(TABMtrack(*fpTmpTrack));
     }
     ++fTrackNum;
-  }while(fTrackNum<20);
+  } while( fTrackNum<20 );
 
   if(p_bmcon->GetInvertTrack())
     InvertTracks(ytracktr, p_bmcon->GetInvertTrack());
@@ -332,66 +338,9 @@ Bool_t TABMactNtuTrack::Action()
     xtracktr.pop_back();
   }
 
-  CombineTrack(ytracktr, xtracktr, p_ntutrk);
+  CombineTrack(ytracktr, xtracktr);
 
-  if (ValidHistogram()){
-    fpHisTrackStatus->Fill(p_ntutrk->GetTrackStatus());
-    for(Int_t i=0;i<xtracktr.size();++i){
-      fpHisChi2XZ->Fill(xtracktr.at(i).GetChiSquareX());
-      fpHisNhitXTrack->Fill(xtracktr.at(i).GetHitsNx());
-    }
-    for(Int_t i=0;i<ytracktr.size();++i){
-      fpHisChi2YZ->Fill(ytracktr.at(i).GetChiSquareY());
-      fpHisNhitYTrack->Fill(ytracktr.at(i).GetHitsNy());
-    }
-    for(Int_t i=0;i<p_ntutrk->GetTracksN();++i){
-      TABMtrack *savedtracktr=p_ntutrk->GetTrack(i);
-      TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-      Float_t posZ = geoTrafo->FromGlobalToBMLocal(TVector3(0,0,0)).Z();
-      TVector3 pos = savedtracktr->Intersection(posZ);
-      fpHisMap->Fill(pos[0], pos[1]);
-      pos = savedtracktr->Intersection(geoTrafo->FromGlobalToBMLocal(geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0))).Z());
-      fpHisMapTW->Fill(pos.X(), pos.Y());
-      fpHisMylar12d->Fill(savedtracktr->GetOrigin().X(), savedtracktr->GetOrigin().Y());
-      // posZ = geoTrafo->FromGlobalToBMLocal(geoTrafo->FromMSDLocalToGlobal(0.,0.,0.)).Z(); //msd first plane z position in global position
-      // pos = savedtracktr->Intersection(posZ);
-      // fpHis0MSD->Fill(pos[0], pos[1]);
-
-
-
-      fpHisAngleX->Fill(savedtracktr->GetSlope().X()/savedtracktr->GetSlope().Z());
-      fpHisAngleY->Fill(savedtracktr->GetSlope().Y()/savedtracktr->GetSlope().Z());
-      fpHisChi2Red->Fill(savedtracktr->GetChiSquare());
-      fpHisNhitTotTrack->Fill(savedtracktr->GetHitsNtot());
-      fpHisNrejhitTrack->Fill(p_nturaw->GetHitsN()-savedtracktr->GetHitsNtot());
-      for(Int_t k=0;k<i;++k){
-        fpTrackAngles->Fill(p_ntutrk->GetTrack(i)->GetSlope().Angle(p_ntutrk->GetTrack(k)->GetSlope())*TMath::RadToDeg());
-        fpTrackSep->Fill((p_ntutrk->GetTrack(i)->GetOrigin()-p_ntutrk->GetTrack(k)->GetOrigin()).Mag());
-      }
-    }
-    for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-      TABMhit* p_hit=p_nturaw->GetHit(i);
-      if(p_hit->GetIsSelected()>0){
-        fpResTot->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
-        if(TAGrecoManager::GetPar()->CalibBM()){
-          fpResTimeTot->Fill(p_hit->GetResidual(),p_hit->GetTdrift());
-          if((int)(p_hit->GetTdrift()/10.)<fpResTimeBin.size())
-            fpResTimeBin.at((int)(p_hit->GetTdrift()/10.))->Fill(p_hit->GetResidual());
-          if((int)(p_hit->GetRdrift()*100)<fpResDistBin.size())
-            fpResDistBin.at((int)(p_hit->GetRdrift()*100))->Fill(p_hit->GetResidual());
-        }
-      }
-      if(p_hit->GetIsSelected()>0 && p_hit->GetIsFake()==0){
-        fpHisTrackFakeHit->Fill(0);
-      }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()>0){
-        fpHisTrackFakeHit->Fill(2);
-      }else if (p_hit->GetIsFake()>0  &&  p_hit->GetIsSelected()>0){
-        fpHisTrackFakeHit->Fill(1);
-      }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()==0){
-        fpHisTrackFakeHit->Fill(-1);
-      }
-    }
-  }
+  FillTrackHistograms( ytracktr, xtracktr );
 
   if(FootDebugLevel(2))
     cout<<"TABMactNtuTrack:end of tracking"<<endl;
@@ -400,292 +349,19 @@ Bool_t TABMactNtuTrack::Action()
   return kTRUE;
 }
 
-
-
-void TABMactNtuTrack::ChargeLegendrePoly(){
-
-  if(FootDebugLevel(2))
-    cout<<"TABMactNtuTrack:: start charge legendre pol graphs"<<endl;
-
-  fLegPolSum->Reset("ICESM");
-  TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
-  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
-  fLegPolSum->SetBins(p_bmcon->GetLegMBin(),-p_bmcon->GetLegMRange(),p_bmcon->GetLegMRange(), p_bmcon->GetLegRBin(),-p_bmcon->GetLegRRange(),p_bmcon->GetLegRRange());
-
-  Float_t tmp_float;
-  for(Int_t i_h = 0; i_h < p_nturaw->GetHitsN(); ++i_h) {
+Int_t TABMactNtuTrack::CountRemainingHits(Int_t view){
+  //check the number of hits in this view
+  Int_t nhits=0;
+  for(Int_t i_h = 0; i_h < i_nhit; i_h++) {
     TABMhit* p_hit = p_nturaw->GetHit(i_h);
-    if(p_hit->GetView()==fNowView && p_hit->GetIsSelected()<=0){
-      for(Int_t k=1;k<fLegPolSum->GetXaxis()->GetNbins();++k){
-        tmp_float=fLegPolSum->GetXaxis()->GetBinCenter(k);
-        fLegPolSum->Fill(tmp_float, ((fNowView==1) ? p_hit->GetWirePos().X() : p_hit->GetWirePos().Y()) -tmp_float*p_hit->GetWirePos().Z()+p_hit->GetRdrift()*sqrt(tmp_float*tmp_float+1.));
-        fLegPolSum->Fill(tmp_float, ((fNowView==1) ? p_hit->GetWirePos().X() : p_hit->GetWirePos().Y()) -tmp_float*p_hit->GetWirePos().Z()-p_hit->GetRdrift()*sqrt(tmp_float*tmp_float+1.));
-      }
-    }
+    if(FootDebugLevel(3))
+      cout<<"hit="<<i_h<<" plane="<<p_hit->GetPlane()<<"  view="<<p_hit->GetView()<<"  cell="<<p_hit->GetCell()<<"  plane="<<p_hit->GetPlane()<<"  rdrift="<<p_hit->GetRdrift()<<"  isfake="<<p_hit->GetIsFake()<<"  isselected="<<p_hit->GetIsSelected()<<"  View="<<view<<endl;
+    if(p_hit->GetView()==view && p_hit->GetIsSelected()<=0)
+      ++nhits;
   }
-
-  if(FootDebugLevel(2))
-    cout<<"TABMactNtuTrack::legpolsum done"<<endl;
-
-return;
+  return nhits;
 }
 
-// adopted to save the legpolsum th2d
-void TABMactNtuTrack::SaveLegpol(){
-
-  TString tmp_tstring="legpolsum_";
-  tmp_tstring+=gTAGroot->CurrentEventNumber();
-  tmp_tstring+="_";
-  tmp_tstring+=fTrackNum;
-  tmp_tstring+=(fNowView==0) ? "_y_" : "_x_";
-  tmp_tstring+=".root";
-  fLegPolSum->SaveAs(tmp_tstring.Data());
-
-  return;
-}
-
-Int_t TABMactNtuTrack::FindLegendreBestValues(){
-
-  if(FootDebugLevel(2))
-    cout<<"TABMactNtuTrack::FindLegendreBestValues: start"<<endl;
-
-  Int_t first_maxbin,last_maxbin;
-  //X values
-  fBestMBin=-1;
-  Int_t rebinm=0;
-  do{
-    first_maxbin=fLegPolSum->FindFirstBinAbove(fLegPolSum->GetMaximum()-1);
-    last_maxbin=fLegPolSum->FindLastBinAbove(fLegPolSum->GetMaximum()-1);
-    if(first_maxbin==last_maxbin){
-      fBestMBin=first_maxbin;
-    }else if((last_maxbin-first_maxbin)<3){//value to optimize
-      fBestMBin=(Int_t)((last_maxbin+first_maxbin)/2);
-    }else{
-      fLegPolSum->RebinX();
-      rebinm++;
-    }
-  }while(fBestMBin==-1);
-
-  if(FootDebugLevel(3))
-    cout<<"TABMactNtuTrack::FindLegendreBestValues: check on m done, now I'll check on q  fBestMBin="<<fBestMBin<<endl;
-
-  //check on r
-  fBestRBin=-1;
-  Int_t rebinr=0;
-  do{
-    first_maxbin=fLegPolSum->FindFirstBinAbove(fLegPolSum->GetMaximum()-1,2);
-    last_maxbin=fLegPolSum->FindLastBinAbove(fLegPolSum->GetMaximum()-1,2);
-    if(first_maxbin==last_maxbin){
-      fBestRBin=first_maxbin;
-    }else if((last_maxbin-first_maxbin)<3){//value to optimize
-      fBestRBin=(Int_t)((last_maxbin+first_maxbin)/2);
-    }else{
-      fLegPolSum->RebinY();
-      rebinr++;
-    }
-  }while(fBestRBin==-1);
-
-  if(FootDebugLevel(2))
-    cout<<"TABMactNtuTrack::FindLegendreBestValues:check on r done  fBestRBin="<<fBestRBin<<"   bincontent="<<fLegPolSum->GetBinContent(fBestMBin,fBestRBin)<<"  best m="<<fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin)<<"  best q="<<fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin)<<"   rebinm="<<rebinm<<"  rebinr="<<rebinr<<endl;
-
-return rebinm+rebinr;
-}
-
-
-//for Legendre polynomy tracking, set the associated hits
-Int_t TABMactNtuTrack::CheckAssHits(const Float_t asshiterror, const Float_t minRerr) {
-
-  if(FootDebugLevel(2)){
-    cout<<"TABMactNtuTrack::CheckAssHits with fNowView="<<fNowView<<" start"<<endl;
-      cout<<"first estimate of the track: slope="<<fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin)<<"  Mbinwidth="<<fLegPolSum->GetXaxis()->GetBinWidth(fBestMBin)<<"  R0="<<fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin)<<"  R0binwidth="<<fLegPolSum->GetYaxis()->GetBinWidth(fBestRBin)<<endl;
-  }
-
-  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
-  Int_t wireplane[6]={-1,-1,-1,-1,-1,-1};
-  Int_t selview=0;
-  Float_t xvalue, yvaluemax, yvaluemin,yvalue, res, diff, legvalue, mindist, maxdist, a0pos;
-
-  for(Int_t i=0;i<p_nturaw->GetHitsN();++i) {
-    TABMhit* p_hit = p_nturaw->GetHit(i);
-    if(p_hit->GetIsSelected()<=0 && p_hit->GetView()==fNowView){
-      Double_t maxerror= (p_hit->GetSigma()*asshiterror > minRerr) ? p_hit->GetSigma()*asshiterror : minRerr;
-      maxdist=p_hit->GetRdrift()+maxerror;
-      mindist=p_hit->GetRdrift()-maxerror;
-      //~ if(mindist<0)
-        //~ mindist=0;
-      a0pos=(fNowView==0) ? p_hit->GetWirePos().Y() : p_hit->GetWirePos().X();
-      xvalue=fLegPolSum->GetXaxis()->GetBinCenter(fBestMBin);
-      yvaluemax=a0pos -xvalue*p_hit->GetWirePos().Z()+maxdist*sqrt(xvalue*xvalue+1.);
-      yvaluemin=a0pos -xvalue*p_hit->GetWirePos().Z()+mindist*sqrt(xvalue*xvalue+1.);
-      yvalue=a0pos -xvalue*p_hit->GetWirePos().Z()+p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
-      res=max(p_hit->GetSigma(),fLegPolSum->GetYaxis()->GetBinWidth(fBestRBin));
-      legvalue=fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin);
-      diff=fabs(yvalue - legvalue);
-      if(yvaluemax>=legvalue && yvaluemin<=legvalue){
-        CheckPossibleHits(wireplane,yvalue,diff,res,selview,i, p_hit);
-      }else{
-        yvaluemin=a0pos-xvalue*p_hit->GetWirePos().Z()-maxdist*sqrt(xvalue*xvalue+1.);
-        yvaluemax=a0pos-xvalue*p_hit->GetWirePos().Z()-mindist*sqrt(xvalue*xvalue+1.);
-        yvalue=a0pos-xvalue*p_hit->GetWirePos().Z()-p_hit->GetRdrift()*sqrt(xvalue*xvalue+1.);
-        diff=fabs(yvalue - legvalue);
-        if(yvaluemax>=legvalue && yvaluemin<=legvalue){
-          CheckPossibleHits(wireplane,yvalue,diff,res,selview,i, p_hit);
-        }else{
-          if(FootDebugLevel(4))
-            cout<<"TABMactNtuTrack::CheckAssHits: HIT DISCHARGED: hitnum="<<i<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<0<<"  yvalue="<<yvalue<<"  legvalue="<<legvalue<<"  diff="<<diff<<"   res="<<res<<endl;
-          p_hit->SetIsSelected(-1);
-        }
-      }
-    }
-  }
-
-  if(FootDebugLevel(2))
-      cout<<"TABMactNtuTrack::CheckAssHits: done"<<endl;
-
-return selview;
-}
-
-//used in CheckAssHits
-void TABMactNtuTrack::CheckPossibleHits(Int_t wireplane[], Float_t yvalue, Float_t diff, Float_t res, Int_t &selview, const Int_t hitnum, TABMhit* p_hit){
-
-  TABMhit*   p_doublehit;
-  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
-
-  if(wireplane[p_hit->GetPlane()]==-1){
-    if(FootDebugLevel(4))
-      cout<<"TABMactNtuTrack::CheckAssHits: hit selected hitnum="<<hitnum<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<p_hit->GetView()<<"  cellid="<<p_hit->GetIdCell()<<"  yvalue="<<yvalue<<"  bestvalue="<<fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin)<<"  diff="<<diff<<"   residual="<<diff/res<<endl;
-    wireplane[p_hit->GetPlane()]=hitnum;
-    p_hit->SetIsSelected(fTrackNum+1);
-    p_hit->SetResidual(diff/res);
-    selview++;
-  }else{
-    p_doublehit=p_nturaw->GetHit(wireplane[p_hit->GetPlane()]);
-    if(p_doublehit->GetResidual()> diff/res){
-      if(FootDebugLevel(4))
-        cout<<"TABMactNtuTrack::CheckAssHits: hit replaced! selected= hitnum="<<hitnum<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<p_hit->GetView()<<"  cellid="<<p_hit->GetIdCell()<<"  yvalue="<<yvalue<<"  bestvalue="<<fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin)<<"  diff="<<diff<<"   residual="<<diff/res<<"  replace the hit num="<<wireplane[p_hit->GetPlane()]<<endl;
-      p_hit->SetIsSelected(fTrackNum+1);
-      p_hit->SetResidual(diff/res);
-      wireplane[p_hit->GetPlane()]=hitnum;
-      p_doublehit->SetIsSelected(-1);
-    }else{
-      p_hit->SetIsSelected(-1);
-      if(FootDebugLevel(4))
-        cout<<"TABMactNtuTrack::CheckAssHits: HIT DISCHARGED: hitnum="<<hitnum<<"  isFake="<<p_hit->GetIsFake()<<"  view="<<p_hit->GetView()<<"  yvalue="<<yvalue<<"  bestvalue="<<fLegPolSum->GetYaxis()->GetBinCenter(fBestRBin)<<"  diff="<<diff<<"   res="<<res<<endl;
-    }
-  }
-
-  return;
-}
-
-
-
-Double_t TABMactNtuTrack::EvaluateChi2(const double *params){
-
-  Double_t chi2=0, res;
-  TVector3 vers,r0;
-  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
-  TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
-
-  if(fNowView==0){
-    vers.SetXYZ(0., params[0], 1.);
-    r0.SetXYZ(0., params[1], 0.);
-  }else{
-    vers.SetXYZ(params[0], 0., 1.);
-    r0.SetXYZ(params[1], 0., 0.);
-  }
-
-  for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    TABMhit* p_hit = p_nturaw->GetHit(i);
-    if( p_hit->GetView()==fNowView && p_hit->GetIsSelected()==(fTrackNum+1) ){
-      res=p_hit->GetRdrift()-p_bmgeo->FindRdrift(r0, vers, p_hit->GetWirePos(), p_hit->GetWireDir(), true);
-      chi2+=res*res/p_hit->GetSigma()/p_hit->GetSigma();
-    }
-  }
-
-  return chi2;
-}
-
-
-Int_t TABMactNtuTrack::NumericalMinimizationDouble(){
-
-  if(FootDebugLevel(2))
-    cout<<"TABMactNtuTrack:: NumericalMinimizationDouble start, fNowView="<<fNowView<<"  fTrackNum="<<fTrackNum<<endl;
-
-  TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
-
-  // Set the variables to be minimized
-  fpMinimizer->SetFunction(*fpFunctor);
-  fpMinimizer->SetMaxFunctionCalls(p_bmcon->GetNumIte());
-  fpMinimizer->SetMaxIterations(p_bmcon->GetNumIte());
-  fpMinimizer->SetTolerance(p_bmcon->GetParMove());
-  fpMinimizer->SetPrintLevel(0);
-  fpMinimizer->SetVariable(0,"m",0., p_bmcon->GetParMove());
-  fpMinimizer->SetVariable(1,"q",0., p_bmcon->GetParMove());
-  fpMinimizer->SetVariableValue(0,((fNowView==0) ? fpTmpTrack->GetSlope().Y() : fpTmpTrack->GetSlope().X())/fpTmpTrack->GetSlope().Z());
-  fpMinimizer->SetVariableValue(1,(fNowView==0) ? fpTmpTrack->GetOrigin().Y() : fpTmpTrack->GetOrigin().X());
-
-  fpMinimizer->Minimize();
-
- Int_t status=fpMinimizer->Status();
-  if(status==0){
-    if(fNowView==0){
-      fpTmpTrack->SetSlopeY(fpMinimizer->X()[0]);
-      fpTmpTrack->SetOriginY(fpMinimizer->X()[1]);
-    }else{
-      fpTmpTrack->SetSlopeX(fpMinimizer->X()[0]);
-      fpTmpTrack->SetOriginX(fpMinimizer->X()[1]);
-    }
-
-    fpTmpTrack->SetIsConv(1);
-    if(FootDebugLevel(1)){
-      cout<<"TABMactNtuTrack:: NumericalMinimizationDouble done:  fNowView="<<fNowView<<"   The track parameters are:"<<endl;
-      cout<<"Pvers=("<<fpTmpTrack->GetSlope().X()<<", "<<fpTmpTrack->GetSlope().Y()<<", "<<fpTmpTrack->GetSlope().Z()<<")"<<endl;
-      cout<<"R0=("<<fpTmpTrack->GetOrigin().X()<<", "<<fpTmpTrack->GetOrigin().Y()<<", "<<fpTmpTrack->GetOrigin().Z()<<")"<<endl;
-    }
-
-    fpMinimizer->Clear();
-    return 0;
-  }else if(FootDebugLevel(1))
-    cout<<"TABMactNtuTrack:: NumericalMinimizationDouble: minimization failed: status="<<status<<endl;
-
-  fpMinimizer->Clear();
-  return status;
-}
-
-
-
-Bool_t TABMactNtuTrack::ComputeDataAll(){
-
-  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
-  TABMparGeo* p_bmgeo  = (TABMparGeo*) fpParGeo->Object();
-
-  Float_t res, chi2red=0.;
-  Int_t nselhit=0;
-  for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
-    TABMhit* p_hit=p_nturaw->GetHit(i);
-    if(p_hit->GetIsSelected()==(fTrackNum+1)){
-      ++nselhit;
-      res=p_hit->GetRdrift()-p_bmgeo->FindRdrift(fpTmpTrack->GetOrigin(), fpTmpTrack->GetSlope(), p_hit->GetWirePos(), p_hit->GetWireDir(),true);
-      p_hit->SetResidual(res);
-      p_hit->SetChi2(res*res/p_hit->GetSigma()/p_hit->GetSigma());
-      chi2red+=p_hit->GetChi2();
-    }
-  }
-
-  if(nselhit<3 || nselhit!=fpTmpTrack->GetHitsNtot() ){
-    cout<<"TABMactNtuTrack::ComputeDataAll::Error!!!  nselhit="<<nselhit<<"   fpTmpTrack->GetHitsNx()="<<fpTmpTrack->GetHitsNx()<<"   fpTmpTrack->GetHitsNy()="<<fpTmpTrack->GetHitsNy()<<endl;
-    return kTRUE;
-  }
-  if(fNowView==0)
-    fpTmpTrack->SetChiSquareY(chi2red/(nselhit-2.));
-  else
-    fpTmpTrack->SetChiSquareX(chi2red/(nselhit-2.));
-
-  if (FootDebugLevel(2))
-      cout<<"TABMactNtuTrack::ComputeDataAll finished: track has been reconstructed,  chi2red="<<chi2red/(nselhit-2.)<<"  fNowView="<<fNowView<<endl;
-
-  return kFALSE;
-}
 
 //invert the direction and the position of the ytracktr track parameters
 void TABMactNtuTrack::InvertTracks(vector<TABMtrack> &tracktrvec, Int_t InvertView){
@@ -699,6 +375,7 @@ void TABMactNtuTrack::InvertTracks(vector<TABMtrack> &tracktrvec, Int_t InvertVi
       tracktrvec.at(i).SetSlopeY(-tracktrvec.at(i).GetSlope().Y());
     }
   }
+  
   if(InvertView==1 || InvertView==3){
     for(Int_t i=0;i<tracktrvec.size();i++){
       tracktrvec.at(i).SetOriginX(-tracktrvec.at(i).GetOrigin().X());
@@ -712,8 +389,9 @@ void TABMactNtuTrack::InvertTracks(vector<TABMtrack> &tracktrvec, Int_t InvertVi
   return;
 }
 
+
 //combine the tracks reconstructed for each view
-void TABMactNtuTrack::CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr, TABMntuTrack* p_ntutrk){
+void TABMactNtuTrack::CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr ){
 
   if (FootDebugLevel(2))
     cout<<"TABMactNtuTrack::CombineTrack: start; Number of tracks on yz="<<ytracktr.size()<<"  number of tracks on xz="<<xtracktr.size()<<endl;
@@ -745,10 +423,11 @@ void TABMactNtuTrack::CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack
     fpNYtrack->Fill(ytracktr.size());
   }
   if (FootDebugLevel(2))
-  cout<<"TABMactNtuTrack::CombineTrack: end; total number of saved tracks="<<p_ntutrk->GetTracksN()<<endl;
+    cout<<"TABMactNtuTrack::CombineTrack: end; total number of saved tracks="<<p_ntutrk->GetTracksN()<<endl;
 
   return;
 }
+
 
 void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &meanTimeReso, Double_t &meanDistReso){
 
@@ -798,5 +477,114 @@ void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &mean
   fpParNewSTrel->Fit(newstrel,"QBR+");
   fpParNewDistRes->Fit(resofunc,"QR+");
 
-return;
+  return;
+}
+
+
+void  TABMactNtuTrack::EarlyReturn( Int_t code){
+  p_ntutrk->SetTrackStatus(code);
+  if(ValidHistogram()){
+    fpHisTrackStatus->Fill(code);
+    fpNtotTrack->Fill(0);
+    fpNXtrack->Fill(0);
+    fpNYtrack->Fill(0);
+  }
+  fpNtuTrk->SetBit(kValid);
+}
+
+
+void TABMactNtuTrack::FillTrackHistograms(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr ){
+  if (ValidHistogram()){
+    fpHisTrackStatus->Fill(p_ntutrk->GetTrackStatus());
+    for(Int_t i=0;i<xtracktr.size();++i){
+      fpHisChi2XZ->Fill(xtracktr.at(i).GetChiSquareX());
+      fpHisNhitXTrack->Fill(xtracktr.at(i).GetHitsNx());
+    }
+    for(Int_t i=0;i<ytracktr.size();++i){
+      fpHisChi2YZ->Fill(ytracktr.at(i).GetChiSquareY());
+      fpHisNhitYTrack->Fill(ytracktr.at(i).GetHitsNy());
+    }
+    for(Int_t i=0;i<p_ntutrk->GetTracksN();++i){
+      TABMtrack *savedtracktr=p_ntutrk->GetTrack(i);
+      TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+      Float_t posZ = geoTrafo->FromGlobalToBMLocal(TVector3(0,0,0)).Z();
+      TVector3 pos = savedtracktr->PointAtLocalZ(posZ);
+      fpHisMap->Fill(pos[0], pos[1]);
+      pos = savedtracktr->PointAtLocalZ(geoTrafo->FromGlobalToBMLocal(geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0))).Z());
+      fpHisMapTW->Fill(pos.X(), pos.Y());
+      fpHisMylar12d->Fill(savedtracktr->GetOrigin().X(), savedtracktr->GetOrigin().Y());
+      // posZ = geoTrafo->FromGlobalToBMLocal(geoTrafo->FromMSDLocalToGlobal(0.,0.,0.)).Z(); //msd first plane z position in global position
+      // pos = savedtracktr->PointAtLocalZ(posZ);
+      // fpHis0MSD->Fill(pos[0], pos[1]);
+      
+      fpHisAngleX->Fill(savedtracktr->GetSlope().X()/savedtracktr->GetSlope().Z());
+      fpHisAngleY->Fill(savedtracktr->GetSlope().Y()/savedtracktr->GetSlope().Z());
+      fpHisChi2Red->Fill(savedtracktr->GetChiSquare());
+      fpHisNhitTotTrack->Fill(savedtracktr->GetHitsNtot());
+      fpHisNrejhitTrack->Fill(p_nturaw->GetHitsN()-savedtracktr->GetHitsNtot());
+      for(Int_t k=0;k<i;++k){
+        fpTrackAngles->Fill(p_ntutrk->GetTrack(i)->GetSlope().Angle(p_ntutrk->GetTrack(k)->GetSlope())*TMath::RadToDeg());
+        fpTrackSep->Fill((p_ntutrk->GetTrack(i)->GetOrigin()-p_ntutrk->GetTrack(k)->GetOrigin()).Mag());
+      }
+    }
+    for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
+      TABMhit* p_hit=p_nturaw->GetHit(i);
+      if(p_hit->GetIsSelected()>0){
+        fpResTot->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+        if(TAGrecoManager::GetPar()->CalibBM()){
+          fpResTimeTot->Fill(p_hit->GetResidual(),p_hit->GetTdrift());
+          if((int)(p_hit->GetTdrift()/10.)<fpResTimeBin.size())
+            fpResTimeBin.at((int)(p_hit->GetTdrift()/10.))->Fill(p_hit->GetResidual());
+          if((int)(p_hit->GetRdrift()*100)<fpResDistBin.size())
+            fpResDistBin.at((int)(p_hit->GetRdrift()*100))->Fill(p_hit->GetResidual());
+        }
+      }
+      if(p_hit->GetIsSelected()>0 && p_hit->GetIsFake()==0){
+        fpHisTrackFakeHit->Fill(0);
+      }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()>0){
+        fpHisTrackFakeHit->Fill(2);
+      }else if (p_hit->GetIsFake()>0  &&  p_hit->GetIsSelected()>0){
+        fpHisTrackFakeHit->Fill(1);
+      }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()==0){
+        fpHisTrackFakeHit->Fill(-1);
+      }
+    }
+  }
+}
+
+
+void TABMactNtuTrack::FillFitHistograms(){
+
+  Float_t Qstart, Mstart, Qfit, Mfit;
+  Qfit = minuitFit->Qfit();
+  Mfit = minuitFit->Mfit();
+  Qstart = legendreFit->GetBestQValue();
+  Mstart = legendreFit->GetBestMValue();
+  fpFitM->Fill(Mstart);
+  fpFitQ->Fill(Qstart);
+  fpFitMdiff->Fill(Mfit-Mstart);
+  fpFitQdiff->Fill(Qfit-Qstart);
+  fpFitMvalue->Fill(Mfit);
+  fpFitQvalue->Fill(Qfit);
+  fpFitQFvsQ->Fill(Qstart, Qfit);
+  fpFitMFvsM->Fill(Mstart, Mfit);
+  fpFitMFvsQF->Fill(Qfit, Mfit);
+  fpFitIters->Fill(minuitFit->NCalls());
+  fpRebinM->Fill(legendreFit->GetMRebins());
+  fpRebinQ->Fill(legendreFit->GetQRebins());
+
+  for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
+    TABMhit* p_hit=p_nturaw->GetHit(i);
+    if(p_hit->GetIsSelected()==(fTrackNum+1)){
+      
+      Float_t distance = p_hit->GetRdrift();
+      Float_t residual = p_hit->GetResidual();
+      Float_t pull = residual/p_hit->GetSigma();
+      fpFitPulls1->Fill(pull,distance);
+      fpResTot1->Fill(residual,distance);
+    }
+  }
+
+  minuitFit->EvaluatePulls(fpFitPulls2);
+
 }

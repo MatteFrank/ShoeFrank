@@ -23,6 +23,9 @@ using namespace std;
 #include "TABMntuHit.hxx"
 #include "TABMhit.hxx"
 #include "TABMntuTrack.hxx"
+#include "TABMLegendreFitter.hxx"
+#include "TABMMinuitFitter.hxx"
+#include "../TAGfoot/ClockCounter.hxx"
 
 #include <TDecompChol.h>
 
@@ -32,10 +35,6 @@ using namespace std;
 #include "TProfile.h"
 #include "TGeoManager.h"
 
-#include "Math/Minimizer.h"
-#include "TFitter.h"
-#include "Math/Factory.h"
-#include "Math/Functor.h"
 #include "TRandom2.h"
 #include "TError.h"
 
@@ -57,23 +56,18 @@ public:
   virtual Bool_t  Action();
   virtual  void   CreateHistogram();
 
-  //reco methods (ordered)
-  void ChargeLegendrePoly();                        //fill the fLegPolSum for the legendre polynomy
-  Int_t FindLegendreBestValues();                   //find in fLegPolSum the hghest bin with the first estimate of the track parameters
-  Int_t CheckAssHits(const Float_t asshiterror, const Float_t minMerr);    //fill the fSelMap with the associated hits
-  void CheckPossibleHits(Int_t wireplane[], Float_t yvalue, Float_t diff, Float_t res, Int_t &selview, const Int_t hitnum, TABMhit* p_hit);//adopted inside checkasshits to check if a hit is associated to the track or not
-  Int_t NumericalMinimizationDouble();              //use minuit2 to refine the track parameters
-  Double_t EvaluateChi2(const double *params);      //adopted in minuit2 to calculate the track chi2 with the selected hits
-  Bool_t ComputeDataAll();                          //after the reconstruction, calculate the residuals, chi2 for all the hits
   void InvertTracks(vector<TABMtrack> &tracktrvec, Int_t InvertView);  //Invert the BM tracks Y axis parameters (to be consistent with the VTX in GSI2021 campaign)
-  void CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr, TABMntuTrack* p_ntutrk); //combine the track of both views
+  void CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr); //combine the track of both views
   void EvaluateDistRes();                           //Evaluate the resolution distribution
 
   //for calibration only
-  void FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &meanTimeReso, Double_t &meanDistReso);          //Fit the calibration plots and writhe the output
+  void FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &meanTimeReso, Double_t &meanDistReso);          //Fit the calibration plots and write the output
 
-  //not used methods
-  void SaveLegpol();                                // extra method adopted to save fLegPolSum in a different file,
+  void EarlyReturn( Int_t code);
+  void FillTrackHistograms(vector<TABMtrack> &ytracktr, vector<TABMtrack> &xtracktr);
+  void FillFitHistograms();
+
+  Int_t CountRemainingHits( Int_t view );
 
   private:
 
@@ -83,21 +77,23 @@ public:
   TAGparaDsc*       fpParCon;		    // input data dsc
   TAGparaDsc*       fpParCal;		    // input data dsc
 
+  TABMntuTrack* p_ntutrk; 
+  TABMntuHit*   p_nturaw;
+  Int_t         i_nhit;
+
+
+
+
   TABMtrack *       fpTmpTrack;     // adopted for reconstruction
-
-  //Legendre:
-  TH2F*    fLegPolSum;
-  Int_t    fBestMBin;
-  Int_t    fBestRBin;
-  Int_t    fTrackNum;
-  Int_t    fNowView;
-
-  //chi2 minimization ROOT minuit2 based
-  ROOT::Math::Minimizer* fpMinimizer;
-  ROOT::Math::Functor* fpFunctor;
-
+  int fTrackNum;
+  int fNowView;
+  
+  TABMLegendreFitter  *legendreFit;
+  TABMMinuitFitter    *minuitFit;
+  
   //histos
   TH2F*            fpResTot;
+  TH2F*            fpResTot1;
   TH2F*            fpHisMap;
   TH2F*            fpHisMapTW;
   TH2F*            fpHisMylar12d;
@@ -122,7 +118,7 @@ public:
   TH1I*            fpNYtrack;
   TH1F*            fpTrackAngles;
   TH1F*            fpTrackSep;
-  TH1D*            fpParRes;
+  TH1F*            fpParRes;
   TH1F*            fpParSTrel;
 
   //for bm calibration
@@ -135,7 +131,25 @@ public:
   std::vector<TH1F*> fpResTimeBin; //for the STREL calibration
   std::vector<TH1F*> fpResDistBin; //for the STREL calibration
 
-   ClassDef(TABMactNtuTrack,0)
+  // chisq minimization
+  TH1I*            fpFitIters;
+  TH1F*            fpFitQvalue;
+  TH1F*            fpFitMvalue;
+  TH1F*            fpFitQ;
+  TH1F*            fpFitM;
+  TH1F*            fpFitQdiff;
+  TH1F*            fpFitMdiff;
+  TH2F*            fpFitPulls1;
+  TH2F*            fpFitPulls2;
+  TH2F*            fpFitQFvsQ;
+  TH2F*            fpFitMFvsM;
+  TH2F*            fpFitMFvsQF;
+  TH1I*            fpBadHits;
+  TH1I*            fpUnassignedHits;
+  TH1I*            fpRebinM;
+  TH1I*            fpRebinQ;
+  ClockCounter  clk;
+  ClassDef(TABMactNtuTrack,0)
 };
 
 

@@ -21,5 +21,6 @@
 #pragma link C++ class TABMparCal+;
 #pragma link C++ class TABMactNtuRaw+;
 #pragma link C++ class TABMactVmeReader+;
-
+#pragma link C++ class TABMLegendreFitter+;
+#pragma link C++ class TABMMinuitFitter+;
 #endif
