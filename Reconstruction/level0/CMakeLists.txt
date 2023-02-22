@@ -11,11 +11,6 @@ set(LIBNAME LocalReco)
 # Copy rootlogon
 #
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/rootlogon.C.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/rootlogon.C"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/benchmark.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/nightbuild.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/nightbuild_ui10.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_ui10.csh"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/nightbuild_tier1.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier1.sh"  @ONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/macros/cron.tab.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/cron.tab"  @ONLY)
 
 #----------------------------------------------------------------------------
 # Copy geomaps + config + macro
@@ -29,6 +24,19 @@ if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/README   DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/level0/)
  execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/data/ ${CMAKE_BINARY_DIR}/Reconstruction/level0/)
 endif(FILECOPY)
+
+#----------------------------------------------------------------------------
+# Night build script
+#
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/script/benchmark.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/script/nightbuild.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/script/nightbuild_ui10.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_ui10.csh"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/script/nightbuild_tier1.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier1.sh"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/script/cron.tab.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/cron.tab"  @ONLY)
+
+execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh)
+execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_ui10.csh)
+execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier1.sh)
 
 
 #----------------------------------------------------------------------------
@@ -134,9 +142,6 @@ install(TARGETS AnalyzeBmStd DESTINATION bin)
 # Run BenchMark macro
 #
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh)
-execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh)
-execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_ui10.csh)
-execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier1.sh)
 
 if (BENCHMARK)
   add_custom_command(TARGET AnalyzeBmStd POST_BUILD
