@@ -19,7 +19,7 @@
 #endif
 
 const Float_t sigma = 0.68;
-std::map<TString, TString> mapName = {{"VT", "vtClusPixelTot"}, {"MSD", "msClusStripTot"}};
+std::map<TString, std::vector<TString> > mapName = {{"VT", {"vtClusPixelTot"}}, {"MSD", {"msClusStripTot"}}};
 
 // main
 void TestBenchMark(Bool_t rawData = true)
@@ -40,15 +40,20 @@ void TestBenchMark(Bool_t rawData = true)
 
    
    for (auto const& it : mapName) {
-      TString nameHist = Form("%s/%s", it.first.Data(), it.second.Data());
-      TH1F* hPixTotRef = (TH1F*)fRefPlots->Get(nameHist.Data());
-      TH1F* hPixTot = (TH1F*)fPlots->Get(nameHist.Data());
       
-      printf("PValue for detector %s:\n", it.first.Data());
-
-      Float_t PValue =  hPixTotRef->Chi2Test(hPixTot,"UU P");
-      
-      if (PValue < sigma) printf("Cluster distribution changes for detector %s\n", it.first.Data());
+      auto vec = it.second;
+      for (auto const& itv : vec) {
+         
+         TString nameHist = Form("%s/%s", it.first.Data(), itv.Data());
+         TH1F* hPixTotRef = (TH1F*)fRefPlots->Get(nameHist.Data());
+         TH1F* hPixTot = (TH1F*)fPlots->Get(nameHist.Data());
+         
+         printf("PValue for detector %s:\n", it.first.Data());
+         
+         Float_t PValue =  hPixTotRef->Chi2Test(hPixTot,"UU P");
+         
+         if (PValue < sigma) printf("Cluster distribution changes for detector %s\n", it.first.Data());
+      }
    }
 }
 
