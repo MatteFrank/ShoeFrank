@@ -15,7 +15,7 @@
 #include "TAMCntuPart.hxx"
 #include "TAMCntuEvent.hxx"
 #include "LocalReco.hxx"
-
+#include "TAGntuEvent.hxx"
 #include "LocalRecoMC.hxx"
 #include "GlobalRecoMV.hxx"
 
