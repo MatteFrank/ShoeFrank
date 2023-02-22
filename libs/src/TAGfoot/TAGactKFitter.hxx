@@ -40,6 +40,7 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TH1F.h>
+#include <TH3F.h>
 #include <TH2F.h>
 #include <TF1.h>
 #include <TGraphErrors.h>
@@ -75,7 +76,7 @@
 #include "TAVTtrack.hxx"
 #include "TAITtrack.hxx"
 
-
+#include "TAGactTreeWriter.hxx"
 #include "TAGFuploader.hxx"
 #include "TAGFselectorTrue.hxx"
 #include "TAGFselectorStandard.hxx"
@@ -107,6 +108,7 @@ public:
 	Bool_t Action();
 
 	virtual	void   CreateHistogram();
+	virtual void   SetHistogramDir(TDirectory* dir);
 
 	void Finalize();
 
@@ -250,6 +252,8 @@ private:
 	TH1F* h_mcPosY;										///< MC Y position at the TG -- histo
 	TH1F* h_mcPosZ;										///< MC Z position at the TG -- histo
 	TH2I* h_PlaneOccupancy[6];
+	TH3F* h_MSDxCorrelation;
+	TH3F* h_MSDyCorrelation;
 
 	TH1I* h_GFeventType;								///< Event categorization seen by the GF selector
 
@@ -259,6 +263,7 @@ private:
 	map<string, TH1F*> h_resoP_over_Pkf;				///< Map of histograms for dP/P resolution (sigma) for each particle; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_biasP_over_Pkf;				///< Map of histograms for dP/P bias for each particle; the key is the particle name ("H", "He", "Li", ...)
 	map< pair<string,pair<int,int>>, TH1F*> h_resoFitMeas;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH2F*> h_FitVsMeas;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 	map< pair<string,pair<int,int>>, TH1F*> h_pullFitMeas;						///< Map of histograms for fitted and measured pulls; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 	map< pair<string,pair<int,int>>, TH2F*> h_pullVsClusSize;					///< Map of histograms for fitted and measured pulls vs cluster size; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 

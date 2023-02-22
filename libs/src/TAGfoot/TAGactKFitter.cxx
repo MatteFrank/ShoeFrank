@@ -1362,6 +1362,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		//Fill residual and pull plots
 		std::pair<string, std::pair<int,int>> sensId;
 		int cluster_size;
+		std::vector<float> msdCoords[2];
 		float res, pull;
 		for(auto it : shoeTrackPointRepo){
 			if( (string)it->GetDevName() == "MSD")
@@ -1372,8 +1373,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				res = it->GetMeasPosition()(view) - it->GetFitPosition()(view);
 				pull = res/TMath::Sqrt(pow(it->GetMeasPosError()(view), 2) - pow(it->GetFitPosError()(view), 2));
 				h_resoFitMeas[sensId]->Fill(res);
+				h_FitVsMeas[sensId]->Fill(res, it->GetFitPosition()(view));
 				h_pullFitMeas[sensId]->Fill(pull);
 				h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
+				msdCoords[view].push_back( it->GetFitPosition()(view));
 			}
 			else
 			{
@@ -1395,7 +1398,14 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 					h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
 			}
 		}
+
+		if(msdCoords[0].size() == 3 && msdCoords[1].size() == 3)
+		{
+			h_MSDxCorrelation->Fill(msdCoords[0][0], msdCoords[0][1], msdCoords[0][2]);
+			h_MSDyCorrelation->Fill(msdCoords[1][0], msdCoords[1][1], msdCoords[1][2]);
+		}
 	}
+
 
 	if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: DONE HISTOGRAM FILL "  << endl;
 
@@ -1973,13 +1983,13 @@ void TAGactKFitter::CreateHistogram()	{
 	AddHistogram(h_momentum);
 
 	for (int i = 0; i < 9; ++i){
-		h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 150, 0.,15.));
+		h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d;p [GeV];Entries",i), 150, 0.,15.));
 		AddHistogram(h_momentum_true[i]);
 
-		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 150, 0.,15.));
+		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d;p [GeV];Entries",i), 150, 0.,15.));
 		AddHistogram(h_momentum_reco[i]);
 
-		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRadio%d",i), Form("Momentum Ratio %d",i), 150, 0, 2.5));
+		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRadio%d",i), Form("Momentum Ratio %d;p_{reco}/p_{true};Entries",i), 150, 0, 2.5));
 		AddHistogram(h_ratio_reco_true[i]);
 	}
 
@@ -2043,6 +2053,8 @@ void TAGactKFitter::CreateHistogram()	{
 
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_msd%c_layer_%d",strip,i),Form("Residual between fitted global track and measured MSD cluster in MSD layer %d on %c view;Meas-Fit %c [cm];Entries",i,strip,strip),600,-0.1,0.1);
 			AddHistogram(h_resoFitMeas[sensId]);
+			h_FitVsMeas[sensId] = new TH2F(Form("Res_FitVsRes_msd%c_layer_%d",strip,i),Form("Fitted global track vs measured MSD cluster in layer %d on %c view;Fitted pos %c [cm];Meas-Fit res %c",i,strip,strip,strip),600,-0.1,0.1,600,-3,3);
+			AddHistogram(h_FitVsMeas[sensId]);
 			h_pullFitMeas[sensId] = new TH1F(Form("Pull_msd%c_layer_%d",strip,i),Form("Pull for measured MSD cluster in layer %d on %c view;Meas-Fit Pull %c;Entries",i,strip,strip),600,-5,5);
 			AddHistogram(h_pullFitMeas[sensId]);
 			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_msd%c_layer_%d",strip,i),Form("Pull vs cluster size for MSD in layer %d on %c view;Meas-Fit Pull %c;Cluster size [N strips]",i,strip,strip), 600,-5,5, 10, -0.5, 9.5);
@@ -2068,9 +2080,44 @@ void TAGactKFitter::CreateHistogram()	{
 
 	}
 
+	if(TAGrecoManager::GetPar()->IncludeMSD()){
+		h_MSDxCorrelation = new TH3F("h_MSDxCorrelation", "h_MSDxCorrelation;x1 [cm];x2 [cm]; x3 [cm];", 100, -1, 1, 100, -1, 1, 100, -1, 1);
+		AddHistogram(h_MSDxCorrelation);
+		h_MSDyCorrelation = new TH3F("h_MSDyCorrelation", "h_MSDyCorrelation;y1 [cm];y2 [cm]; y3 [cm];", 100, -1, 1, 100, -1, 1, 100, -1, 1);
+		AddHistogram(h_MSDyCorrelation);
+	}
+
 	SetValidHistogram(kTRUE);
 
 	return;
+}
+
+
+//! \brief Set directory for action histograms
+//! 
+//! Re-implemented from TAGaction to have a subdirectory for global track residuals and pulls
+void TAGactKFitter::SetHistogramDir(TDirectory* dir)
+{
+	TDirectory* subdir = 0x0;
+	dir->GetObject("TRKRES", subdir);
+	if( !subdir )
+		subdir = dir->mkdir("TRKRES");
+
+	if (fpHistList) {
+		for (TObjLink* lnk = fpHistList->FirstLink(); lnk; lnk=lnk->Next()) {
+			TH1* h = (TH1*)lnk->GetObject();
+			TString name(h->GetName());
+			if( name.Contains("Pull") || name.Contains("Res_") )
+				h->SetDirectory(subdir);
+			else
+				h->SetDirectory(dir);
+		}
+		fbIsOpenFile = true;
+	}
+
+	fDirectory = dir;
+
+	if (!dir->IsWritable() || !subdir->IsWritable()) fbIsOpenFile = false;
 }
 
 
