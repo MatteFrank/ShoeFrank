@@ -27,11 +27,47 @@ GlobalRecoMV::GlobalRecoMV(TString expName, Int_t runNumber,
 			   Bool_t isMC, Int_t innTotEv) : 
   GlobalRecoAna(expName, runNumber, fileNameIn, fileNameout, isMC, innTotEv)
 {
+
+  methods.Register(new TANLBMAnalysis());
+  methods.Register(new TANLBMVTmatchAnalysis());
 }
 
 
 GlobalRecoMV::~GlobalRecoMV()
 {
+}
+
+
+void GlobalRecoMV::BeforeEventLoop(){
+
+  if(FootDebugLevel(1))
+    cout<<"GlobalRecoAna::BeforeEventLoop start"<<endl;
+  
+  ReadParFiles();
+  CampaignChecks();
+  SetupTree();
+
+  cout <<"fSkipEventsN :" << fSkipEventsN <<endl;
+  myReader->Open(GetName(), "READ", "tree");
+  if (fSkipEventsN > 0){
+    myReader->Reset(fSkipEventsN);
+  }
+
+  file_out = new TFile(GetTitle(),"RECREATE");
+  file_out->cd();
+
+  cout<<"Going to create "<<GetTitle()<<" outfile "<<endl;
+
+  //initialization of several objects needed for the analysis
+  gTAGroot->BeginEventLoop();
+  mass_ana=new GlobalRecoMassAna();
+
+  myVtNtuVtx = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
+  myBMNtuTrk = (TABMntuTrack*) fpNtuTrackBm->GenerateObject();
+
+  methods.BeforeEventLoop();
+
+  return;
 }
 
 
@@ -52,9 +88,7 @@ void GlobalRecoMV::LoopEvent() {
 	(currEvent%100==0)|| FootDebugLevel(1))
       cout <<"current Event: " <<currEvent<<endl;
 
-    AnalyzeBM();
-    AnalyzeVTX();
-    MatchBMVTX();
+    methods.ProcessEvent();
 
     ++currEvent;
     if (currEvent == nTotEv)
@@ -71,7 +105,8 @@ void GlobalRecoMV::AfterEventLoop(){
 
   if(FootDebugLevel(1))
     cout<<"GlobalRecoAna::AfterEventLoop start"<<endl;
-  //  GlobalRecoAna::AfterEventLoop();
+
+  methods.AfterEventLoop();
 
   gTAGroot->EndEventLoop();
 
@@ -85,8 +120,8 @@ void GlobalRecoMV::AfterEventLoop(){
   for(std::vector<int>::const_iterator iter=goodEvents.begin(); iter!=goodEvents.end(); ++iter){
     file<<*iter<<"\n";
   }
-  file.close();
 
+  file.close();
 
   return;
 }
@@ -374,55 +409,6 @@ void GlobalRecoMV:: Booking(){
 }
 
 
-void GlobalRecoMV::BeforeEventLoop(){
-
-  if(FootDebugLevel(1))
-    cout<<"GlobalRecoAna::BeforeEventLoop start"<<endl;
-  
-  ReadParFiles();
-  CampaignChecks();
-  SetupTree();
-  cout <<"fSkipEventsN :" << fSkipEventsN <<endl;
-  myReader->Open(GetName(), "READ", "tree");
-  if (fSkipEventsN > 0){
-    myReader->Reset(fSkipEventsN);
-  }
-
-  file_out = new TFile(GetTitle(),"RECREATE");
-  
-  cout<<"Going to create "<<GetTitle()<<" outfile "<<endl;
-
-  //initialization of several objects needed for the analysis
-  gTAGroot->BeginEventLoop();
-  mass_ana=new GlobalRecoMassAna();
-
-  myVtNtuVtx = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
-  myBMNtuTrk = (TABMntuTrack*) fpNtuTrackBm->GenerateObject();
-
-
-  //set variables
-  primary_cha=GetParGeoG()->GetBeamPar().AtomicNumber;
-  Double_t beam_mass_number=GetParGeoG()->GetBeamPar().AtomicMass*TAGgeoTrafo::GetMassFactorMeV(); //primary mass number in mev
-  Double_t beam_energy=GetParGeoG()->GetBeamPar().Energy*GetParGeoG()->GetBeamPar().AtomicMass*TAGgeoTrafo::GevToMev(); //Total kinetic energy (MeV)
-  Double_t beam_speed = sqrt( beam_energy*beam_energy + 2.*beam_mass_number*beam_energy )/(beam_mass_number + beam_energy)*TAGgeoTrafo::GetLightVelocity(); //cm/ns
-  primary_tof=(fpFootGeo->GetTGCenter().Z()-fpFootGeo->GetSTCenter().Z())/beam_speed; //ns
-
-  Booking();
-
-  pure_track_xcha.clear();
-  pure_track_xcha.resize(primary_cha+1,std::make_pair(0,0));
-  Ntg=GetParGeoG()->GetTargetPar().Density*TMath::Na()*GetParGeoG()->GetTargetPar().Size.Z()/GetParGeoG()->GetTargetPar().AtomicMass;
-
-  if(FootDebugLevel(1)) {
-    cout<<"primary_cha="<<primary_cha<<"  beam_mass_number="<<beam_mass_number<<"  beam_energy="<<beam_energy<<"  beam_speed="<<beam_speed<<"  primary_tof="<<primary_tof<<endl;
-    cout<<"N_target="<< Ntg << endl;
-    cout <<"target density="<< GetParGeoG()->GetTargetPar().Density << endl;
-    cout << "target z=" << GetParGeoG()->GetTargetPar().Size.Z() << endl;
-    cout << "target A=" << GetParGeoG()->GetTargetPar().AtomicMass << endl;
-  }
-
-  return;
-}
 
 
 void GlobalRecoMV::SetupTree(){
@@ -528,177 +514,3 @@ void GlobalRecoMV::SetupTree(){
   return;
 }
 
-
-void GlobalRecoMV::AnalyzeBM(){
-
-  //BM track position study
-  TH1D* h1;
-  TH2D* h2;
-  h1 = ((TH1D*)gDirectory->Get("clusPosition/BM/bm_n_tracks"));
-  h1->Fill(myBMNtuTrk->GetTracksN());
-
-  h1v[ntracks]->Fill(myBMNtuTrk->GetTracksN());
-
-  for( Int_t iTrack = 0; iTrack < myBMNtuTrk->GetTracksN(); ++iTrack ) {
-    TABMtrack* track = myBMNtuTrk->GetTrack(iTrack);
-    int nhx = track->GetHitsNx();
-    int nhy = track->GetHitsNy();
-    Double_t chi2x = track->GetChiSquareX()*(nhx-2);
-    Double_t chi2y = track->GetChiSquareY()*(nhy-2);
-    h1v[chix]->Fill(chi2x );
-    h1v[chiy]->Fill(chi2y );
-    h1v[nx]->Fill( nhx );
-    h1v[ny]->Fill( nhy );
-    Double_t probxval = TMath::Prob( chi2x, nhx-2);
-    Double_t probyval = TMath::Prob( chi2y, nhy-2);
-    h1v[probx]->Fill( probxval );
-    h1v[proby]->Fill( probyval );
-    if( nhx==3 )       h1v[prob3]->Fill(probxval);
-    else if( nhx==4 )  h1v[prob4]->Fill(probxval);
-    else if( nhx==5 )  h1v[prob5]->Fill(probxval);
-    else if( nhx==6 )  h1v[prob6]->Fill(probxval);
-    if( nhy==3 )       h1v[prob3]->Fill(probyval);
-    else if( nhy==4 )  h1v[prob4]->Fill(probyval);
-    else if( nhy==5 )  h1v[prob5]->Fill(probyval);
-    else if( nhy==6 )  h1v[prob6]->Fill(probyval);
-  }
-
-
-  if (myBMNtuTrk->GetTracksN() == 1){  // select only events with 1 bm track
-    for( Int_t iTrack = 0; iTrack < myBMNtuTrk->GetTracksN(); ++iTrack ) {
-      TABMtrack* track = myBMNtuTrk->GetTrack(iTrack);
-      //project to the target in the BM ref., then move to the global ref.
-      TVector3 bmlocalproj=ProjectToZ(track->GetSlope(), track->GetOrigin(),
-				      fpFootGeo->FromGlobalToBMLocal(fpFootGeo->GetTGCenter()).Z());
-      TVector3 bmgloproj=ProjectToZ(fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope()), fpFootGeo->FromBMLocalToGlobal(track->GetOrigin()),fpFootGeo->GetTGCenter().Z());
-      h2= ((TH2D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_bmsys"));
-      h2->Fill(bmlocalproj.X(),bmlocalproj.Y());
-      h2 = ((TH2D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_glbsys"));
-      h2->Fill(bmgloproj.X(),bmgloproj.Y());
-      h1=((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_Xpos_glbsys"));
-      h1->Fill(bmgloproj.X());
-      h1=((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_Ypos_glbsys"));
-      h1->Fill(bmgloproj.Y());
-      h1=((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_bmsys_theta"));
-      h1-> Fill( track->GetSlope().Theta()*TMath::RadToDeg() );
-      h1=((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_bmsys_phi"));
-      h1-> Fill( track->GetSlope().Phi()*TMath::RadToDeg() );
-      h1=((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_glbsys_theta"));
-      auto globalSlope = (fpFootGeo->VecFromBMLocalToGlobal(track->GetSlope()));
-      h1-> Fill( globalSlope.Theta()*TMath::RadToDeg() );
-      h1=((TH1D*)gDirectory->Get("clusPosition/BM/all-events/bm_target_glbsys_phi"));
-      h1-> Fill( globalSlope.Phi()*TMath::RadToDeg() );
-      
-      //study pattern of several quantities wrt events: Spill studies
-      h2=((TH2D*)gDirectory->Get("clusPosition/BM/all-events/spill/bm_posX_vsEvent"));
-      h2->Fill(currEvent,bmgloproj.X());
-      h2=((TH2D*)gDirectory->Get("clusPosition/BM/all-events/spill/bm_posY_vsEvent"));
-      h2->Fill(currEvent,bmgloproj.Y());
-    }
-
-    // only for single track events. 
-    // check interesting hits...
-    
-  }
-}
-
-
-void GlobalRecoMV::AnalyzeVTX(){
-}
-
-
-void GlobalRecoMV::MatchBMVTX(){
-
-  TAGgeoTrafo* fpFootGeo = (TAGgeoTrafo*)
-    gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-
-  // strong requirements for matching
-  if( myBMNtuTrk->GetTracksN()!=1 ) return;
-
-  //skip empty or too crowded events
-  TAVTntuVertex *vertexContainer = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
-  int vertexNumber = vertexContainer->GetVertexN();
-  TAVTvertex* vtxPD   = 0x0; //NEW
-  int nvtxtracks=0;
-  for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) { // for every vertexEvent
-    vtxPD = vertexContainer->GetVertex(iVtx);
-    nvtxtracks += vtxPD->GetTracksN();
-  }
-
-  h1v[nvtx]->Fill(nvtxtracks);
-
-  if( nvtxtracks<1 || nvtxtracks>3 ) return;
-
-  TABMtrack* bmTrack = myBMNtuTrk->GetTrack(0);
-  TVector3 bmPos   = fpFootGeo->FromBMLocalToGlobal( bmTrack->GetOrigin() );
-  TVector3 bmSlope = fpFootGeo->VecFromBMLocalToGlobal( bmTrack->GetSlope() );
-  bmSlope *= 1./bmSlope.Z();
-
-  Double_t zTgt = fpFootGeo->GetTGCenter().Z();
-  
-  TVector3 bmTrkg = extrapolate( zTgt, bmPos, bmSlope);
-
-
-  TAVTtrack* bestMatchTracklet = 0;
-  Double_t bestDistancesq = 100000000.0;
-  Double_t distancesq = 0.0;
-  Double_t xBM = bmTrkg.X();
-  Double_t yBM = bmTrkg.Y();
-  Double_t zBM = bmTrkg.Z();
-  for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) { // for every vertexEvent
-    vtxPD = vertexContainer->GetVertex(iVtx);
-    for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {  //for every tracklet
-      TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
-      
-      TVector3 vtPos   = fpFootGeo->FromVTLocalToGlobal( tracklet->GetOrigin() );
-      TVector3 vtSlope = fpFootGeo->VecFromVTLocalToGlobal( tracklet->GetSlopeZ() );
-
-      TVector3 vtTrkg = extrapolate( zTgt, vtPos, vtSlope );
-      Double_t xVTX = vtTrkg.X();
-      Double_t yVTX = vtTrkg.Y();
-      distancesq = pow(xBM-xVTX,2)+pow(yBM-yVTX,2);
-      if( distancesq<bestDistancesq ){
-	bestDistancesq = distancesq;
-	bestMatchTracklet = tracklet;
-      }
-      h1v[allDistances]->Fill(TMath::Sqrt(distancesq));
-    }
-  }
-  h1v[matchDistance]->Fill(TMath::Sqrt(bestDistancesq));
-
-
-
-
-  // here with the best BM-VTX match
-  TVector3 vtPos   = fpFootGeo->FromVTLocalToGlobal( bestMatchTracklet->GetOrigin() );
-  TVector3 vtSlope = fpFootGeo->VecFromVTLocalToGlobal( bestMatchTracklet->GetSlopeZ() );
-  
-  TVector3 vtTrkg = extrapolate( zTgt, vtPos, vtSlope );
-
-  Double_t xVTX = vtTrkg.X();
-  Double_t yVTX = vtTrkg.Y();
-  Double_t zVTX = vtTrkg.Z();
-  Double_t angle= bmSlope.Angle(vtSlope);
-  h1v[sensors]->Fill( bestMatchTracklet->GetClustersN() );
-  h1v[xdiff]->Fill(xBM-xVTX);
-  h1v[ydiff]->Fill(yBM-yVTX);
-  h1v[theta]->Fill(angle);
-  Double_t ndf = bestMatchTracklet->GetClustersN()-2.;
-  h1v[chi2xvt]->Fill( bestMatchTracklet->GetChi2U()*ndf );
-  h1v[chi2yvt]->Fill( bestMatchTracklet->GetChi2V()*ndf );
-  h2resvstx->Fill( bmTrack->GetSlope().X(), xBM-xVTX);
-  h2resvsty->Fill( bmTrack->GetSlope().Y(), yBM-yVTX);
-  h2match->Fill(xBM-xVTX, yBM-yVTX);
-
-  goodEvents.push_back(gTAGroot->CurrentEventNumber());
-
-}
-
-
-TVector3 GlobalRecoMV::extrapolate(Double_t z, 
-				   const TVector3 & pos, 
-				   const TVector3 & dir) const {
-
-  TVector3 result = pos + dir*(z-pos.Z())*(1./dir.Z());
-  return result;
-}
