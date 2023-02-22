@@ -28,7 +28,6 @@ endif(FILECOPY)
 #----------------------------------------------------------------------------
 # Night build script
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/benchmark.sh.cmake"        "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild.csh.cmake"      "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild.csh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild_ui10.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_ui10.csh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild_tier1.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/level0/nightbuild_tier1.sh"  @ONLY)
@@ -137,19 +136,6 @@ target_link_libraries(AnalyzeBmStd ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS AnalyzeBmStd DESTINATION bin)
-
-#----------------------------------------------------------------------------
-# Run BenchMark macro
-#
-execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh)
-
-if (BENCHMARK)
-  add_custom_command(TARGET AnalyzeBmStd POST_BUILD
-      COMMAND "${CMAKE_BINARY_DIR}/Reconstruction/level0/benchmark.sh"
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Reconstruction/level0/
-      COMMENT "Running macro BenchMark.C"
-  )
-endif(BENCHMARK)
 
 
 #----------------------------------------------------------------------------
