@@ -201,15 +201,37 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          boardId = (evt->boardHeader & 0xF) - 1;
 
          sensorId = map->GetSensorId(boardId, 0);
-         for (int ch = 0; ch < NChannels; ch++)
+
+         if (sensorId % 2 == 0)
          {
-            hADC[sensorId][ch]->Fill(evt->FirstPlane[ch]);
+            for (int ch = 0; ch < NChannels; ch++)
+            {
+               hADC[sensorId][ch]->Fill(evt->FirstPlane[ch]);
+            }
+         }
+         else
+         {
+            for (int ch = 0; ch < NChannels; ch++)
+            {
+               hADC[sensorId][ch]->Fill(evt->SecondPlane[ch]);
+            }
          }
 
          sensorId = map->GetSensorId(boardId, 1);
-         for (int ch = 0; ch < NChannels; ch++)
+
+         if (sensorId % 2 == 0)
          {
-            hADC[sensorId][ch]->Fill(evt->SecondPlane[ch]);
+            for (int ch = 0; ch < NChannels; ch++)
+            {
+               hADC[sensorId][ch]->Fill(evt->FirstPlane[ch]);
+            }
+         }
+         else
+         {
+            for (int ch = 0; ch < NChannels; ch++)
+            {
+               hADC[sensorId][ch]->Fill(evt->SecondPlane[ch]);
+            }
          }
       }
       // printf("\n");
