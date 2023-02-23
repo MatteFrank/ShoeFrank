@@ -221,6 +221,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(iPix);
     Int_t stripId = strip->GetStrip();
     if(!CheckLine(stripId)) continue;
+    if(strip->IsNoisy()) continue;
     
     Int_t clusterN = GetClusterNumber(stripId);
     if ( clusterN != -1 ) {
