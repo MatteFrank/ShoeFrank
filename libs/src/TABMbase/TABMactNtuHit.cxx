@@ -63,57 +63,56 @@ void TABMactNtuHit::CreateHistogram(){
 
   DeleteHistogram();
 
-  fpHisPivot_paoloni = new TH1I( "bmRawEffPivot", "pivot counter for the plane efficiency method; index; Counter", 8, -0.5, 7.5);
+  fpHisPivot_paoloni = new TH1I( "bmEffPivot", "pivot counter for the plane efficiency method; index; Counter", 8, -0.5, 7.5);
   AddHistogram(fpHisPivot_paoloni);
-  fpHisProbe_paoloni = new TH1I( "bmRawEffProbe", "probe counter for the plane efficiency method; index; Counter", 8, -0.5, 7.5);
+  fpHisProbe_paoloni = new TH1I( "bmEffProbe", "probe counter for the plane efficiency method; index; Counter", 8, -0.5, 7.5);
   AddHistogram(fpHisProbe_paoloni);
-  fpHisEval_paoloni = new TH1F( "bmRawEffEvalTot", "Overall hit detection efficiency ; Efficiency; Events", 110, 0., 1.1);
+  fpHisEval_paoloni = new TH1F( "bmEffEvalTot", "Overall hit detection efficiency ; Efficiency; Events", 110, 0., 1.1);
   AddHistogram(fpHisEval_paoloni);
-  fpHisEval_paoloni_Xview = new TH1F( "bmRaweffEvalXview", "Hit detection efficiency on xz view; Efficiency; Events", 110, 0., 1.1);
+  fpHisEval_paoloni_Xview = new TH1F( "bmeffEvalXview", "Hit detection efficiency on xz view; Efficiency; Events", 110, 0., 1.1);
   AddHistogram(fpHisEval_paoloni_Xview);
-  fpHisEval_paoloni_Yview = new TH1F( "bmRaweffEvalYview", "Hit detection efficiency on yz view; Efficiency; Events", 110, 0., 1.1);
+  fpHisEval_paoloni_Yview = new TH1F( "bmeffEvalYview", "Hit detection efficiency on yz view; Efficiency; Events", 110, 0., 1.1);
   AddHistogram(fpHisEval_paoloni_Yview);
-  fpHisCell = new TH1I( "bmRawHitCell", "cell index; index; Counter", 3, -0.5, 2.5);
-	AddHistogram(fpHisCell);
-  fpHisHitXCellAll = new TH1I( "bmRawHitXEventAll", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
+  fpHisCell = new TH1I( "bmHitCell", "cell index; index; Counter", 3, -0.5, 2.5);
+  AddHistogram(fpHisCell);
+  fpHisHitXCellAll = new TH1I( "bmHitXEventAll", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
   AddHistogram(fpHisHitXCellAll);
-  fpHisHitXCellX = new TH1I( "bmRawHitXEventXview", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
+  fpHisHitXCellX = new TH1I( "bmHitXEventXview", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
   AddHistogram(fpHisHitXCellX);
-  fpHisHitXCellY = new TH1I( "bmRawHitXEventYview", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
+  fpHisHitXCellY = new TH1I( "bmHitXEventYview", "Number of raw hits x event; Number of hits x Event;Events", 31, -0.5, 30.5);
   AddHistogram(fpHisHitXCellY);
-  fpHisView = new TH1I( "bmRawHitView", "view index; index; Counter", 2, -0.5, 1.5);
+  fpHisView = new TH1I( "bmHitView", "view index; index; Counter", 2, -0.5, 1.5);
   AddHistogram(fpHisView);
-  fpHisPlane = new TH1I( "bmRawHitPlane", "plane index; index; Counter", 6, -0.5, 5.5);
+  fpHisPlane = new TH1I( "bmHitPlane", "plane index; index; Counter", 6, -0.5, 5.5);
   AddHistogram(fpHisPlane);
-	fpHisHitTotDist=new TH1I( "bmRawHiTotDist", "Total Number of accepted hits x event; Number of hits; Events", 31, -0.5, 30.5);
+  fpHisHitTotDist=new TH1I( "bmHitDistribution", "Total Number of ACCEPTED hits x event; Number of hits; Events", 31, -0.5, 30.5);
   AddHistogram(fpHisHitTotDist);
-	fpHisHitXzviewDist=new TH1I( "bmRawHiXzviewDist", "Number of accepted hits on XZ view x event; Number of hits; Events", 21, -0.5, 20.5);
+  fpHisHitXzviewDist=new TH1I( "bmHiXzviewDist", "Number of accepted hits on XZ view x event; Number of hits; Events", 21, -0.5, 20.5);
   AddHistogram(fpHisHitXzviewDist);
-	fpHisHitYzviewDist=new TH1I( "bmRawHiYzviewDist", "Number of accepted hits on YZ view x event; Number of hits; Events", 21, -0.5, 20.5);
+  fpHisHitYzviewDist=new TH1I( "bmHiYzviewDist", "Number of accepted hits on YZ view x event; Number of hits; Events", 21, -0.5, 20.5);
   AddHistogram(fpHisHitYzviewDist);
-  fpHisRdrift = new TH1F( "bmRawHitRdrift", "Rdrift; Rdrift [cm]; numevent", 100, 0., 1.);
+  fpHisRdrift = new TH1F( "bmHitRdrift", "Rdrift; Rdrift [cm]; numevent", 100, 0., 1.);
   AddHistogram(fpHisRdrift);
-  fpHisTdrift = new TH1F( "bmRawHitTdrift", "Tdrift; Tdrift [s]; numevent", 400, 0., 400.);
+  fpHisTdrift = new TH1F( "bmHitTdrift", "Tdrift; Tdrift [s]; numevent", 400, 0., 400.);
   AddHistogram(fpHisTdrift);
-  fpHisDiscAccept=new TH1I( "bmRawHitAccDisc", "Number of hits accepted/discharged in the time cut; -1=discharged 1=accepted; Events", 3, -1.5, 1.5);
+  fpHisDiscAccept=new TH1I( "bmHitAccDisc", "Number of hits accepted/discharged in the time cut; -1=discharged 1=accepted; Events", 3, -1.5, 1.5);
   AddHistogram(fpHisDiscAccept);
-  fpHisDiscTime = new TH1F( "bmRawHitDiscTime", "Discharged time measurements; Time_meas-T0-trigger-Timecut or negative Time_meas [ns]; numevent", 500, -1000., 1000.);
+  fpHisDiscTime = new TH1F( "bmHitDiscTime", "Discharged time measurements; Time_meas-T0-trigger-Timecut or negative Time_meas [ns]; numevent", 500, -1000., 1000.);
   AddHistogram(fpHisDiscTime);
-
-	fpHisMapX=new TH2I( "bmRawCellRawOccupancyX", "Cell occupancy for raw hits; z; x", 11, -5.5, 5.5,7, -2.8,2.8);
-	AddHistogram(fpHisMapX);
-	fpHisMapY=new TH2I( "bmRawCellRawOccupancyY", "Cell occupancy for raw hits; z; y", 11, -5.5, 5.5,7, -2.8,2.8);
-	AddHistogram(fpHisMapY);
+  fpHisMapX=new TH2I( "bmCellRawOccupancyX", "Cell occupancy for raw hits; z; x", 11, -5.5, 5.5,7, -2.8,2.8);
+  AddHistogram(fpHisMapX);
+  fpHisMapY=new TH2I( "bmCellRawOccupancyY", "Cell occupancy for raw hits; z; y", 11, -5.5, 5.5,7, -2.8,2.8);
+  AddHistogram(fpHisMapY);
 
   //Need setbincontent to 1 in order to use addbincontent later
-	for(Int_t i=0;i<36;++i){
-		if((i/3)%2==0){
-			fpHisMapY->SetBinContent(fDrawMap[i],i);
-			fpHisMapY->SetBinContent(fDrawMap[i]+13,i);
-		}else{
-			fpHisMapX->SetBinContent(fDrawMap[i],i);
-			fpHisMapX->SetBinContent(fDrawMap[i]+13,i);
-		}
+  for(Int_t i=0;i<36;++i){
+    if((i/3)%2==0){
+      fpHisMapY->SetBinContent(fDrawMap[i],i);
+      fpHisMapY->SetBinContent(fDrawMap[i]+13,i);
+    }else{
+      fpHisMapX->SetBinContent(fDrawMap[i],i);
+      fpHisMapX->SetBinContent(fDrawMap[i]+13,i);
+    }
   }
 
   SetValidHistogram(kTRUE);
