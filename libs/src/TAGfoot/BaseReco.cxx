@@ -681,6 +681,9 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
+      if (parConf->GetAnalysisPar().TrackingFlag)
+         EnableMsdTracking();
+      
       if(!fFlagMC){
          fpParMapMsd = new TAGparaDsc("msdMap", new TAMSDparMap());
          TAMSDparMap*  parMapMsd = (TAMSDparMap*)fpParMapMsd->Object();
