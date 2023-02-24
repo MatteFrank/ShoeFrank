@@ -20,12 +20,7 @@ setenv FOOTLEVEL0 $FOOTBUILD/Reconstruction/level0
 setenv FOOTRAWDATA $FOOTBUILD/Reconstruction/level0/dataRaw
 setenv FOOTMCDATA $FOOTBUILD/Reconstruction/level0/dataMC
 
-if ($OSTYPE == "darwin") then
-  setenv DYLD_LIBRARY_PATH $ROOTSYS/lib:./:$FOOTLIBS/lib:${DYLD_LIBRARY_PATH}
-else
-  setenv LD_LIBRARY_PATH $ROOTSYS/lib:./:$FOOTLIBS/lib:${LD_LIBRARY_PATH}
-endif
-
+setenv LD_LIBRARY_PATH $ROOTSYS/lib:./:$FOOTLIBS/lib:${LD_LIBRARY_PATH}
 set path = ($FOOTBUILD/bin $path)
 
 # pull last version
