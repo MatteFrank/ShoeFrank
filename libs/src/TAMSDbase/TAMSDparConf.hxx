@@ -33,6 +33,7 @@ private:
     */
    struct AnalysisParameter_t : public  TObject {
       Bool_t     PedestalFlag;           ///< Pedestal run flag
+      Bool_t     TrackingFlag;           ///< Tracking run flag
       Int_t      PlanesForTrackMinimum;  ///< min # planes to build a track in an event
       Float_t    SearchHitDistance;      ///< max distance hit-track to add hit to track
    };

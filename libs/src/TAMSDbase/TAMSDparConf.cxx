@@ -54,6 +54,12 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout << "Pedestal run flag: "<< fAnalysisParameter.PedestalFlag << endl;
    
+   ReadItem(tmp);
+   fAnalysisParameter.TrackingFlag = tmp;
+   if(FootDebugLevel(1))
+      cout << " Tracking flag: "<< fAnalysisParameter.TrackingFlag << endl;
+   
+   
    ReadItem(fAnalysisParameter.PlanesForTrackMinimum);
    if(FootDebugLevel(1))
       cout << "Minimum number of plane for tracking: "<< fAnalysisParameter.PlanesForTrackMinimum << endl;
