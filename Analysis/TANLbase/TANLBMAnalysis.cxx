@@ -1,4 +1,7 @@
 #include "TANLBMAnalysis.hxx"
+#include "TABMntuTrack.hxx"
+#include "TAGroot.hxx"
+#include <TROOT.h>
 #include "TH1D.h"
 #include "TH2D.h"
 
@@ -6,19 +9,21 @@ TANLBMAnalysis::TANLBMAnalysis(){
 }
 
 
-TANLBMAnalysis::~TANLBMAnalysis(){
+TANLBMAnalysis::~TANLBMAnalysis() : myBMTrackContainer(nullptr) {
 }
 
 
-  //
+void TANLBMAnalysis::BeforeEventLoop() {
+    Setup();
+    Booking();
+}
+
+
 void TANLBMAnalysis::Setup(){
-gTAGroot->FindDataDsc(GetName())
-}
-
-
-void TANLBMAnalysis::BeforeEventLoop(){
-  Setup();
-  Booking();
+  myBMTrackContainer = gTAGroot->FindDataDsc("bmtrack");
+  if (myBMTrackContainer == nullptr) {
+      std::cout << "TANLBMAnalysis: error getting data for bmtrack. \n"
+  }
 }
 
 
@@ -83,10 +88,10 @@ void TANLBMAnalysis::ProcessEvent(){
   TH1D* h1;
   TH2D* h2;
 
-  h1v[ntracks]->Fill(myBMNtuTrk->GetTracksN());
+  h1v[ntracks]->Fill(myBMTrackContainer->GetTracksN());
 
-  for( Int_t iTrack = 0; iTrack < myBMNtuTrk->GetTracksN(); ++iTrack ) {
-    TABMtrack* track = myBMNtuTrk->GetTrack(iTrack);
+  for( Int_t iTrack = 0; iTrack < myBMTrackContainer->GetTracksN(); ++iTrack ) {
+    TABMtrack* track = myBMTrackContainer->GetTrack(iTrack);
     int nhx = track->GetHitsNx();
     int nhy = track->GetHitsNy();
     Double_t chi2x = track->GetChiSquareX()*(nhx-2);
@@ -110,9 +115,9 @@ void TANLBMAnalysis::ProcessEvent(){
   }
 
 
-  if (myBMNtuTrk->GetTracksN() == 1){  // select only events with 1 bm track
-    for( Int_t iTrack = 0; iTrack < myBMNtuTrk->GetTracksN(); ++iTrack ) {
-      TABMtrack* track = myBMNtuTrk->GetTrack(iTrack);
+  if (myBMTrackContainer->GetTracksN() == 1){  // select only events with 1 bm track
+    for( Int_t iTrack = 0; iTrack < myBMTrackContainer->GetTracksN(); ++iTrack ) {
+      TABMtrack* track = myBMTrackContainer->GetTrack(iTrack);
       //project to the target in the BM ref., then move to the global ref.
       TVector3 bmlocalproj=ProjectToZ(track->GetSlope(), track->GetOrigin(),
 				      fpFootGeo->FromGlobalToBMLocal(fpFootGeo->GetTGCenter()).Z());

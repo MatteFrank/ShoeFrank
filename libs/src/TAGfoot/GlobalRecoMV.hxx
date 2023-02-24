@@ -37,7 +37,6 @@ private:
 
   TANLAnalysisManager methods;
 
-  std::vector<int> goodEvents;
 };
 
 #endif

@@ -7,6 +7,8 @@
 
 class TH1D;
 class TH2D;
+class TABMntuTrack;
+class TAVTntuVertex;
 
 class TANLBMVTmatchAnalysis : public TANLbaseAnalysis {
 public:
@@ -30,6 +32,8 @@ public:
   
 private:
 
+    void Booking();
+
   enum hist1Name {nvtx, allDistances, matchDistance, sensors, xdiff, ydiff, theta, chi2xvt, chi2yvt,
 		  last1d};
   enum hist2Name {h2match,resvstx,resvsty,
@@ -38,6 +42,8 @@ private:
   TH1D * h1v[last1d];
   TH1D * h2v[last2d];
 
+  TABMntuTrack* myBMTrackContainer;
+  TAVTntuVertex* myVertexContainer;
 };
 
 #endif;

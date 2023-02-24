@@ -6,6 +6,7 @@
 
 class TH1D;
 class TH2D;
+class TABMntuTrack;
 
 class TANLBMAnalysis : public TANLbaseAnalysis {
 public:
@@ -14,7 +15,6 @@ public:
 
   virtual ~TANLBMAnalysis();
 
-  //
   virtual void Setup();
 
   virtual void BeforeEventLoop();
@@ -36,6 +36,7 @@ private:
   TH1D * h1v[last1d];
   TH1D * h2v[last2d];
 
+  TABMntuTrack* myBMTrackContainer;
 };
 
 #endif;

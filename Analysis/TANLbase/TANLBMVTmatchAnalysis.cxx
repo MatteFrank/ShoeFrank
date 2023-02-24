@@ -2,7 +2,7 @@
 #include "TH1D.h"
 #include "TH2D.h"
 
-TANLBMVTmatchAnalysis::TANLBMVTmatchAnalysis(){
+TANLBMVTmatchAnalysis::TANLBMVTmatchAnalysis() : myBMTrackContainer(nullptr) , myVertexContainer(nullptr) {
 }
 
 
@@ -10,12 +10,26 @@ TANLBMVTmatchAnalysis::~TANLBMVTmatchAnalysis(){
 }
 
 
-  //
-void TANLBMVTmatchAnalysis::Setup(){
+void TANLBMVTmatchAnalysis::BeforeEventLoop() {
+    Setup();
+    Booking();
 }
 
 
-void TANLBMVTmatchAnalysis::BeforeEventLoop(){
+void TANLBMVTmatchAnalysis::Setup(){
+    myBMTrackContainer = gTAGroot->FindDataDsc("bmtrack");
+    if (myBMTrackContainer == nullptr) {
+        std::cout << "TANLBMVTmatchAnalysis: error getting data for bmtrack. Check FootGlobal.par\n"
+    }
+
+    myVertexContainer = gTAGroot->FindDataDsc("vtvtx");
+    if (myVertexContainer == nullptr) {
+        std::cout << "TANLBMVTmatchAnalysis: error getting data for vtvtx. Check FootGlobal.par\n"
+    }
+}
+
+
+void TANLBMVTmatchAnalysis::Booking(){
  
   gDirectory->mkdir("VT");
   gDirectory->cd("VT");
@@ -51,15 +65,14 @@ void TANLBMVTmatchAnalysis::ProcessEvent(){
     gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
   // strong requirements for matching
-  if( myBMNtuTrk->GetTracksN()!=1 ) return;
+  if( myBMTrackContainer->GetTracksN()!=1 ) return;
 
   //skip empty or too crowded events
-  TAVTntuVertex *vertexContainer = (TAVTntuVertex*)fpNtuVtx->GenerateObject();
-  int vertexNumber = vertexContainer->GetVertexN();
+  int vertexNumber = myVertexContainer->GetVertexN();
   TAVTvertex* vtxPD   = 0x0; //NEW
   int nvtxtracks=0;
   for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) { // for every vertexEvent
-    vtxPD = vertexContainer->GetVertex(iVtx);
+    vtxPD = myVertexContainer->GetVertex(iVtx);
     nvtxtracks += vtxPD->GetTracksN();
   }
 
@@ -67,7 +80,7 @@ void TANLBMVTmatchAnalysis::ProcessEvent(){
 
   if( nvtxtracks<1 || nvtxtracks>3 ) return;
 
-  TABMtrack* bmTrack = myBMNtuTrk->GetTrack(0);
+  TABMtrack* bmTrack = myBMTrackContainer->GetTrack(0);
   TVector3 bmPos   = fpFootGeo->FromBMLocalToGlobal( bmTrack->GetOrigin() );
   TVector3 bmSlope = fpFootGeo->VecFromBMLocalToGlobal( bmTrack->GetSlope() );
   bmSlope *= 1./bmSlope.Z();
@@ -75,7 +88,6 @@ void TANLBMVTmatchAnalysis::ProcessEvent(){
   Double_t zTgt = fpFootGeo->GetTGCenter().Z();
   
   TVector3 bmTrkg = extrapolate( zTgt, bmPos, bmSlope);
-
 
   TAVTtrack* bestMatchTracklet = 0;
   Double_t bestDistancesq = 100000000.0;
@@ -96,14 +108,13 @@ void TANLBMVTmatchAnalysis::ProcessEvent(){
       Double_t yVTX = vtTrkg.Y();
       distancesq = pow(xBM-xVTX,2)+pow(yBM-yVTX,2);
       if( distancesq<bestDistancesq ){
-	bestDistancesq = distancesq;
-	bestMatchTracklet = tracklet;
+          bestDistancesq = distancesq;
+          bestMatchTracklet = tracklet;
       }
       h1v[allDistances]->Fill(TMath::Sqrt(distancesq));
     }
   }
   h1v[matchDistance]->Fill(TMath::Sqrt(bestDistancesq));
-
 
 
   // here with the best BM-VTX match
@@ -129,13 +140,14 @@ void TANLBMVTmatchAnalysis::ProcessEvent(){
 
 }
 
+
 void TANLBMVTmatchAnalysis::AfterEventLoop(){
 }
+
 
 TVector3 TANLBMVTmatch::extrapolate(Double_t z, 
 				   const TVector3 & pos, 
 				   const TVector3 & dir) const {
-
   TVector3 result = pos + dir*(z-pos.Z())*(1./dir.Z());
   return result;
 }
