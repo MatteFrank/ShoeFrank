@@ -63,4 +63,5 @@ echo " "
 echo "Compare MC data histograms with reference"
 root -q TestBenchMark.C+\(0\)
 
-\mv nightbuild.log nightbuild.old
+\mv nightbuild.new nightbuild.old
+\mv nightbuild.log nightbuild.new
