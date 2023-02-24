@@ -15,7 +15,7 @@
 #endif
 
 const Float_t sigma = 0.68;
-std::map<TString, std::vector<TString> > mapName = {{"VT", {"vtClusPixelTot"}}, {"MSD", {"msClusStripTot"}}};
+std::map<TString, std::vector<TString> > mapName = {{"BM", {"bmTrackTotNumber", "bmParResolution"}}, {"VT", {"vtClusPixelTot"}}, {"MSD", {"msClusStripTot"}} };
 
 // main
 void TestBenchMark(Bool_t rawData = true)
@@ -43,7 +43,7 @@ void TestBenchMark(Bool_t rawData = true)
          TH1F* hPixTotRef = (TH1F*)fRefPlots->Get(nameHist.Data());
          TH1F* hPixTot    = (TH1F*)fPlots->Get(nameHist.Data());
          
-         printf("PValue for detector %s:\n", it.first.Data());
+         printf("Detector %s: PValue for %s:\n", it.first.Data(), itv.Data());
          Float_t PValue   = hPixTotRef->Chi2Test(hPixTot,"UU P");
          
          if (PValue < sigma) printf("Cluster distribution changes for detector %s\n", it.first.Data());
