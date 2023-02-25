@@ -88,9 +88,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
    
-   fFlagTrack    = TAGrecoManager::GetPar()->IsTracking();
-   fFlagMsdTrack = BaseReco::IsMsdTracking();
-   fFlagItrTrack = BaseReco::IsItrTracking();
+   fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
 
    // default constructon
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {
@@ -227,6 +225,35 @@ TAGbaseEventDisplay::~TAGbaseEventDisplay()
 void TAGbaseEventDisplay::ReadParFiles()
 {
    fReco->ReadParFiles();
+}
+
+//__________________________________________________________
+//! Read parameters files
+void TAGbaseEventDisplay::AdditionalTracking()
+{
+   
+   fFlagMsdTrack = BaseReco::IsMsdTracking();
+   fFlagItrTrack = BaseReco::IsItrTracking();
+
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      if (fFlagItrTrack) {
+         fItTrackDisplay = new TAEDtrack("Inner Tracker Track");
+         fItTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fItTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fItTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fItTrackDisplay->SetPickable(true);
+      }
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      if (fFlagMsdTrack) {
+         fMsdTrackDisplay = new TAEDtrack("Micro Strip Track");
+         fMsdTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fMsdTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fMsdTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fMsdTrackDisplay->SetPickable(true);
+      }
+   }
 }
 
 //__________________________________________________________

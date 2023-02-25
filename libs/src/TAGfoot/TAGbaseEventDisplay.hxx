@@ -72,6 +72,8 @@ public:
 protected:   
    // Read parameter files
    void ReadParFiles();
+   // Read parameter files
+   void AdditionalTracking();
    // Set reconstruction options
    void SetRecoOptions();
    
