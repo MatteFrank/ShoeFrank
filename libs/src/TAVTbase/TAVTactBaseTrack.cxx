@@ -86,12 +86,8 @@ TAVTactBaseTrack::TAVTactBaseTrack(const char* name,
    else
       printf("Wrong prefix for histograms !");
 
-   
-   TAVTbaseParConf* config = GetParConf();
-   fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
-   fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
-   SetGeoTrafo(TAGgeoTrafo::GetDefaultActName().Data());
 
+   SetGeoTrafo(TAGgeoTrafo::GetDefaultActName().Data());
 }
 
 //------------------------------------------+-----------------------------------
