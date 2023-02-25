@@ -661,6 +661,9 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
+      if (parConf->GetAnalysisPar().TrackingFlag)
+         EnableItrTracking();
+
       if(!fFlagMC) {
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
