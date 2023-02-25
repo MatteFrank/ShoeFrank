@@ -3,6 +3,7 @@
 
 #include "TANLbaseAnalysis.hxx"
 #include <list>
+class TAGgeoTrafo;
 
 class TANLAnalysisManager : public TANLbaseAnalysis {
 public:
@@ -12,7 +13,7 @@ public:
   virtual ~TANLAnalysisManager();
 
  //
-  virtual void Setup();
+  virtual void Setup(TAGgeoTrafo* aTrafo);
 
   virtual void BeforeEventLoop();
 

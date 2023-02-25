@@ -1,11 +1,12 @@
 #include "TANLAnalysisManager.hxx"
+#include "TAGgeoTrafo.hxx"
 #include <algorithm>
 
 TANLAnalysisManager::TANLAnalysisManager(){
 }
 
 
-~TANLAnalysisManager::TANLAnalysisManager(){
+TANLAnalysisManager::~TANLAnalysisManager(){
   for(auto it = methods.rbegin(); it!= methods.rend(); it++){
     delete *it;
   }
@@ -13,37 +14,38 @@ TANLAnalysisManager::TANLAnalysisManager(){
 }
 
 
-void TANLAnalysisManager::Setup(){
+void TANLAnalysisManager::Setup(TAGgeoTrafo *aTrafo){
+  TANLbaseAnalysis::Setup(aTrafo);
   for(auto it = methods.begin(); it!= methods.end(); it++){
-    it->Setup();
+    (*it)->Setup(aTrafo);
   }
 }
 
 
 void TANLAnalysisManager::BeforeEventLoop(){
   for(auto it = methods.begin(); it!= methods.end(); it++){
-    it->BeforeEventLoop();
+    (*it)->BeforeEventLoop();
   }
 }
 
 
 void TANLAnalysisManager::ProcessEvent(){
   for(auto it = methods.begin(); it!= methods.end(); it++){
-    it->ProcessEvent();
+    (*it)->ProcessEvent();
   }
 }
 
 
 void TANLAnalysisManager::AfterEventLoop(){
   for(auto it = methods.begin(); it!= methods.end(); it++){
-    it->AfterEventLoop();
+    (*it)->AfterEventLoop();
   }
 }
 
 // specific for the analysis manager
 
 void TANLAnalysisManager::Register(TANLbaseAnalysis * anAnalysis){
-  if( !methods.hasAnalysis(anAnalysis) )
+  if( !hasAnalysis(anAnalysis) )
     methods.push_back(anAnalysis);
 }
 

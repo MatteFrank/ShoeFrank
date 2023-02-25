@@ -1,6 +1,12 @@
 #include "TANLBMVTmatchAnalysis.hxx"
+#include "TAVTntuVertex.hxx"
+#include "TAVTtrack.hxx"
+#include "TABMtrack.hxx"
+#include "TABMntuTrack.hxx"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TROOT.h"
+#include <iostream>
 
 TANLBMVTmatchAnalysis::TANLBMVTmatchAnalysis() : myBMTrackContainer(nullptr) , myVertexContainer(nullptr) {
 }
@@ -11,21 +17,21 @@ TANLBMVTmatchAnalysis::~TANLBMVTmatchAnalysis(){
 
 
 void TANLBMVTmatchAnalysis::BeforeEventLoop() {
-    Setup();
     Booking();
 }
 
 
-void TANLBMVTmatchAnalysis::Setup(){
-    myBMTrackContainer = gTAGroot->FindDataDsc("bmtrack");
-    if (myBMTrackContainer == nullptr) {
-        std::cout << "TANLBMVTmatchAnalysis: error getting data for bmtrack. Check FootGlobal.par\n"
-    }
+void TANLBMVTmatchAnalysis::Setup(TAGgeoTrafo* aTrafo){
+  TANLbaseAnalysis::Setup(aTrafo);
+  myBMTrackContainer = (TABMntuTrack*)(gTAGroot->FindDataDsc("bmtrack")->Object());
+  if (myBMTrackContainer == nullptr) {
+    std::cout << "TANLBMVTmatchAnalysis: error getting data for bmtrack. Check FootGlobal.par\n";
+  }
 
-    myVertexContainer = gTAGroot->FindDataDsc("vtvtx");
-    if (myVertexContainer == nullptr) {
-        std::cout << "TANLBMVTmatchAnalysis: error getting data for vtvtx. Check FootGlobal.par\n"
-    }
+  myVertexContainer = (TAVTntuVertex*) (gTAGroot->FindDataDsc("vtvtx")->Object());
+  if (myVertexContainer == nullptr) {
+    std::cout << "TANLBMVTmatchAnalysis: error getting data for vtvtx. Check FootGlobal.par\n";
+  }
 }
 
 
@@ -55,6 +61,7 @@ void TANLBMVTmatchAnalysis::Booking(){
 		       "Match BM-VT Residuals vs ty; ty BM; BM-VT y difference",
 		       100, -0.01,0.01, 100, -0.5,0.5);
 
+  gDirectory->cd("..");
   gDirectory->cd("..");
 }
 
@@ -96,7 +103,7 @@ void TANLBMVTmatchAnalysis::ProcessEvent(){
   Double_t yBM = bmTrkg.Y();
   Double_t zBM = bmTrkg.Z();
   for (Int_t iVtx = 0; iVtx < vertexNumber; ++iVtx) { // for every vertexEvent
-    vtxPD = vertexContainer->GetVertex(iVtx);
+    vtxPD = myVertexContainer->GetVertex(iVtx);
     for (int iTrack = 0; iTrack < vtxPD->GetTracksN(); iTrack++) {  //for every tracklet
       TAVTtrack* tracklet = vtxPD->GetTrack( iTrack );
       
@@ -145,7 +152,7 @@ void TANLBMVTmatchAnalysis::AfterEventLoop(){
 }
 
 
-TVector3 TANLBMVTmatch::extrapolate(Double_t z, 
+TVector3 TANLBMVTmatchAnalysis::extrapolate(Double_t z, 
 				   const TVector3 & pos, 
 				   const TVector3 & dir) const {
   TVector3 result = pos + dir*(z-pos.Z())*(1./dir.Z());

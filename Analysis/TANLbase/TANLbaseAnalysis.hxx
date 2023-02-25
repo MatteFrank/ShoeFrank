@@ -13,6 +13,7 @@
 // Abstract base class TANLbaseAnalysis
 // it provides the interface for a generic Analysis class
 //  
+class TAGgeoTrafo;
 
 class TANLbaseAnalysis {
 public:
@@ -22,16 +23,18 @@ public:
   virtual ~TANLbaseAnalysis();
 
   //
-  virtual void Setup();
+  virtual void Setup(TAGgeoTrafo* aTrafo);
 
-  virtual void BeforeEventLoop(){};
+  virtual void BeforeEventLoop();
 
-  virtual void ProcessEvent(){};
+  virtual void ProcessEvent();
 
-  virtual void AfterEventLoop(){};
+  virtual void AfterEventLoop();
 
 
-private:
+protected:
+
+  TAGgeoTrafo*          fpFootGeo;       ///< trafo prointer
 };
 
 #endif

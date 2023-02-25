@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED}   )
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 if (GENFIT_DIR)
@@ -39,7 +39,6 @@ set( with_dictionnaries
    TAGactNtuGlbTrackS
    GlobalReco
    GlobalRecoAna
-   GlobalRecoMV
    GlobalRecoMassAna   
    GlobalToeReco
 )

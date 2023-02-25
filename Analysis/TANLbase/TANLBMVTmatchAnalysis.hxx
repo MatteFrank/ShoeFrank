@@ -4,6 +4,7 @@
 #include "TANLbaseAnalysis.hxx"
 #include "TVector3.h"
 #include <list>
+#include <iostream>
 
 class TH1D;
 class TH2D;
@@ -18,7 +19,7 @@ public:
   virtual ~TANLBMVTmatchAnalysis();
 
   //
-  virtual void Setup();
+  virtual void Setup(TAGgeoTrafo* aTrafo);
 
   virtual void BeforeEventLoop();
 
@@ -28,7 +29,7 @@ public:
   
   TVector3 extrapolate(Double_t z, 
 		       const TVector3 & pos, 
-		       const TVector3 & dir);
+		       const TVector3 & dir) const;
   
 private:
 
@@ -40,10 +41,10 @@ private:
 		  last2d};
 
   TH1D * h1v[last1d];
-  TH1D * h2v[last2d];
+  TH2D * h2v[last2d];
 
   TABMntuTrack* myBMTrackContainer;
   TAVTntuVertex* myVertexContainer;
 };
 
-#endif;
+#endif 

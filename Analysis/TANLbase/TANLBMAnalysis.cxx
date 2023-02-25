@@ -1,28 +1,31 @@
 #include "TANLBMAnalysis.hxx"
 #include "TABMntuTrack.hxx"
+#include "TABMtrack.hxx"
 #include "TAGroot.hxx"
 #include <TROOT.h>
 #include "TH1D.h"
 #include "TH2D.h"
+#include <iostream>
 
-TANLBMAnalysis::TANLBMAnalysis(){
+TANLBMAnalysis::TANLBMAnalysis() : myBMTrackContainer(nullptr){
 }
 
 
-TANLBMAnalysis::~TANLBMAnalysis() : myBMTrackContainer(nullptr) {
+TANLBMAnalysis::~TANLBMAnalysis(){
 }
 
 
 void TANLBMAnalysis::BeforeEventLoop() {
-    Setup();
     Booking();
 }
 
 
-void TANLBMAnalysis::Setup(){
-  myBMTrackContainer = gTAGroot->FindDataDsc("bmtrack");
+void TANLBMAnalysis::Setup(TAGgeoTrafo* aTrafo){
+
+  TANLbaseAnalysis::Setup(aTrafo);
+  myBMTrackContainer =  (TABMntuTrack*) (gTAGroot->FindDataDsc("bmtrack")->Object());
   if (myBMTrackContainer == nullptr) {
-      std::cout << "TANLBMAnalysis: error getting data for bmtrack. \n"
+    std::cout << "TANLBMAnalysis: error getting data for bmtrack. \n";
   }
 }
 
@@ -71,23 +74,25 @@ void TANLBMAnalysis::Booking(){
 
   gDirectory->mkdir("all-events");
   gDirectory->cd("all-events");
-  h2v[onTargetLocal = new TH2D("bm_target_bmsys","BM tracks on target  projections in BM sys ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+  h2v[onTargetLocal] = new TH2D("bm_target_bmsys","BM tracks on target  projections in BM sys ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
   h2v[onTargetGlb] = new TH2D("bm_target_glbsys","BM tracks on target projections in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
   h1v[XposGlb] = new TH1D("bm_target_Xpos_glbsys","BM tracks X pos on target projections in GLB sys (other method);X[cm]",600,-3.,3.);
-  h1v[XposGlb] = new TH1D("bm_target_Ypos_glbsys","BM tracks Y pos on target projections in GLB sys (other method);Y[cm]",600,-3.,3.);
+  h1v[YposGlb] = new TH1D("bm_target_Ypos_glbsys","BM tracks Y pos on target projections in GLB sys (other method);Y[cm]",600,-3.,3.);
   h1v[ThetaLoc] = new TH1D("bm_target_bmsys_theta","theta of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
   h1v[ThetaGlb] = new TH1D("bm_target_glbsys_theta","theta of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
   h1v[PhiLoc] = new TH1D("bm_target_bmsys_phi","phi of tracks on target  projections in local system; deg; counts",100, 0 ,50.);
   h1v[PhiGlb] = new TH1D("bm_target_glbsys_phi","phi of tracks on target  projections in global system; deg; counts",100, 0 ,50.);
   gDirectory->cd("..");
+
+  gDirectory->cd("..");
+  gDirectory->cd("..");
+
 }
 
 
 void TANLBMAnalysis::ProcessEvent(){
-  //BM track position study
-  TH1D* h1;
-  TH2D* h2;
 
+  //BM track position study
   h1v[ntracks]->Fill(myBMTrackContainer->GetTracksN());
 
   for( Int_t iTrack = 0; iTrack < myBMTrackContainer->GetTracksN(); ++iTrack ) {
@@ -146,4 +151,4 @@ void TANLBMAnalysis::ProcessEvent(){
 }
 
 void TANLBMAnalysis::AfterEventLoop(){
-    }
+}

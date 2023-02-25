@@ -1,47 +1,9 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
-#include <time.h>
-#include <math.h>
-#include <sys/time.h>
 #include <TApplication.h>
-#include <TSystem.h>
-
-#include <TROOT.h>
-#include <TTree.h>
-#include <TFile.h>
-#include <TH1D.h>
-#include <TH2D.h>
-#include <TF1.h>
-#include <TGraph.h>
-#include <TGraphErrors.h>
-#include <TMultiGraph.h>
-#include <TLegend.h>
-#include <TSpline.h>
-#include <TVector3.h>
-#include <TVectorD.h>
-#include <TKey.h>
-#include <TMath.h>
-
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <sstream>
-
-#include <TStopwatch.h>
-#include <TApplication.h>
-#include "TAGaction.hxx"
-#include "TAGactTreeReader.hxx"
-#include "TAGroot.hxx"
-#include "TAGactTreeReader.hxx"
-#include "TAGntuGlbTrack.hxx"
-
 #include "GlobalRecoMV.hxx"
 
 using namespace std;
-
-
 
 int main(int argc, char *argv[]) {
 
@@ -54,30 +16,33 @@ int main(int argc, char *argv[]) {
    Int_t runNb = -1;
    Int_t nTotEv = 1e7;
    Int_t nSkipEv = 0;
-
-   for (int i = 0; i < argc; i++){
-      if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  }   // Raw file name for output
-      if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  }   // Root file in input
-      if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
-      if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
-      if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
-      if(strcmp(argv[i],"-skipEv") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
-      if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
-
-      if(strcmp(argv[i],"-help") == 0)  {
-         cout<<" Decoder help:"<<endl;
-         cout<<" Ex: Decoder [opts] "<<endl;
-         cout<<" possible opts are:"<<endl;
-         cout<<"      -in path/file  : [def=""] raw/root input file"<<endl;
-         cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
-         cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
-         cout<<"      -run value     : [def=-1] Run number"<<endl;
-         cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
-	 cout<<"      -skipEv nevts  : [def=0] number of events to skip\n";
-         cout<<"      -mc            : reco from MC local reco tree"<<endl;
-
-         return 1;
-      }
+   bool  found = false;
+   for (int i = 1; i < argc; i++){
+     found = false;
+     if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  found=true;}   // Raw file name for output
+     if(strcmp(argv[i],"-in") == 0)    { in = TString(argv[++i]);  found=true;}   // Root file in input
+     if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); found=true;}   // extention for config/geomap files
+     if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); found=true;}   // Number of events to be analized
+     if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  found=true;}   // Run Number
+     if(strcmp(argv[i],"-skipEv") == 0)   { nSkipEv = atoi(argv[++i]); found=true;}  // Number of events to be skip
+     if(strcmp(argv[i],"-mc") == 0)    { mc = true; found=true;   } // reco from MC local reco data
+     
+     if(strcmp(argv[i],"-help") == 0 || found==false)  {
+       cout<<" "<<argv[0]<<" help:     \n"
+	   <<" Ex: DecodeGlbMV [opts]  \n"
+	   <<" possible opts are:      \n"
+	   <<"      -in path/file  : [def=""] raw/root input file  \n"
+	   <<"      -out path/file : [def=*_Out.root] Root output file  \n"
+	   <<"      -nev value     : [def=10^7] Numbers of events to process  \n"
+	   <<"      -run value     : [def=-1] Run number  \n"
+	   <<"      -exp name      : [def=""] experient name for config/geomap extention  \n"
+	   <<"      -skipEv nevts  : [def=0] number of events to skip  \n"
+	   <<"      -mc            : reco from MC local reco tree  \n";       
+       if( found==false ){
+	 cout<<" option  "<<argv[i]<<"  not known!\n";
+       }
+       return 1;
+     }
    }
 
    if(in.IsNull() || gSystem->AccessPathName(in.Data()))
@@ -96,13 +61,14 @@ int main(int argc, char *argv[]) {
 
   GlobalRecoMV glbAna(exp, runNb, in, out, mc, nTotEv);
   if(nSkipEv > 0 )  glbAna.GoEvent(nSkipEv);
+
   glbAna.BeforeEventLoop(); 
   glbAna.LoopEvent();
   glbAna.AfterEventLoop();
+
   watch.Print();
 
   cout<<"DecodeGlbMV finished, output file="<<out.Data()<<endl;
 
   return 0;
-
 }
