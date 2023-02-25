@@ -1,7 +1,8 @@
 #ifndef GlobalRecoMV_hxx
 #define GlobalRecoMV_hxx
 
-#include "GlobalRecoAna.hxx"
+#include "LocalReco.hxx"
+#include "TAGactTreeReader.hxx"
 #include "TANLAnalysisManager.hxx"
 
 // #pragma GCC diagnostic warning "-Wall"
@@ -15,14 +16,15 @@
 
 using namespace std;
 
-class GlobalRecoMV : public GlobalRecoAna {
+class GlobalRecoMV : public LocalReco {
 
   public:
   GlobalRecoMV(TString expName, Int_t runNumber, TString fileNameIn, 
 	       TString fileNameout, Bool_t isMC, Int_t nTotEv);
   ~GlobalRecoMV();
 
-  //BaseReco overwritten methds
+  //BaseReco overwritten methods
+  
   void BeforeEventLoop();
   void LoopEvent();
   void AfterEventLoop();
@@ -32,6 +34,15 @@ class GlobalRecoMV : public GlobalRecoAna {
   void SetupTree();
 
 private:
+  
+  Int_t nTotEv;  //total number of events (-nev flag)
+  Int_t nSkipEvt; // events to skip
+  Int_t currEvent;
+  bool  isMC;
+
+  //useful variables
+  TFile *file_out;
+  TAGactTreeReader* myReader;
 
   TANLAnalysisManager methods;
 

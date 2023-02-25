@@ -13,8 +13,8 @@ using namespace std;
 
 GlobalRecoMV::GlobalRecoMV(TString expName, Int_t runNumber, 
 			   TString fileNameIn, TString fileNameout, 
-			   Bool_t isMC, Int_t innTotEv) : 
-  GlobalRecoAna(expName, runNumber, fileNameIn, fileNameout, isMC, innTotEv)
+			   Bool_t aNisMC, Int_t innTotEv) : 
+  LocalReco(expName, runNumber, fileNameIn, fileNameout), nTotEv(innTotEv), nSkipEvt(0), currEvent(0), isMC(aNisMC)
 {
 }
 

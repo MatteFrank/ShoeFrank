@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <TApplication.h>
+#include "TStopwatch.h"
 #include "GlobalRecoMV.hxx"
 
 using namespace std;
@@ -17,6 +18,7 @@ int main(int argc, char *argv[]) {
    Int_t nTotEv = 1e7;
    Int_t nSkipEv = 0;
    bool  found = false;
+
    for (int i = 1; i < argc; i++){
      found = false;
      if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  found=true;}   // Raw file name for output
@@ -27,7 +29,7 @@ int main(int argc, char *argv[]) {
      if(strcmp(argv[i],"-skipEv") == 0)   { nSkipEv = atoi(argv[++i]); found=true;}  // Number of events to be skip
      if(strcmp(argv[i],"-mc") == 0)    { mc = true; found=true;   } // reco from MC local reco data
      
-     if(strcmp(argv[i],"-help") == 0 || found==false)  {
+     if( strcmp(argv[i],"-help") == 0 || found==false || nSkipEv <0 || nTotEv<0 ){
        cout<<" "<<argv[0]<<" help:     \n"
 	   <<" Ex: DecodeGlbMV [opts]  \n"
 	   <<" possible opts are:      \n"
@@ -45,8 +47,7 @@ int main(int argc, char *argv[]) {
      }
    }
 
-   if(in.IsNull() || gSystem->AccessPathName(in.Data()))
-   {
+   if( in.IsNull() || gSystem->AccessPathName(in.Data()) ){
       Error("main()", "Input file does not exist or is null");
       exit(-1);
    }
