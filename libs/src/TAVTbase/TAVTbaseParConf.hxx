@@ -44,7 +44,8 @@ protected:
     \brief  Analysis parameters
     */
    struct AnalysisParameter_t : public  TObject {
-	  Int_t      TracksMaximum;          ///< maximum number of tracks to be allowed
+     Bool_t     TrackingFlag;           ///< Tracking run flag
+     Int_t      TracksMaximum;          ///< maximum number of tracks to be allowed
 	  Int_t      PlanesForTrackMinimum;  ///< min # planes to build a track in an event
 	  Float_t    SearchHitDistance;      ///< max distance hit-track to add hit to track
 	  Float_t    TrackChi2Limit;         ///< chi2 limit on the track
