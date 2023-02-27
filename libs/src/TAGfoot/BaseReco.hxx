@@ -184,10 +184,8 @@ public:
    //! Set run number
    void SetRunNumber(Int_t run)                { fRunNumber = run; }
 
-  void SetRateRuns(Int_t run1, Int_t run2){
-    fRateInitRun=run1;
-    fRateEndRun=run2;
-  }
+   //! Set rate runs
+  void SetRateRuns(Int_t run1, Int_t run2)     { fRateInitRun=run1; fRateEndRun=run2; }
 
    //! Enable tree
    void EnableTree()           { fFlagTree = true;        }
