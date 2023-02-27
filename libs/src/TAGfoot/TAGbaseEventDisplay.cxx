@@ -262,10 +262,8 @@ void TAGbaseEventDisplay::SetRecoOptions()
    fReco->DisableSaveHits();
    fReco->EnableHisto();
    
-   if (fFlagTrack) {
-      fReco->SetMsdTrackingAlgo(fgMsdTrackingAlgo[0]);
+   if (fFlagTrack) 
       fReco->EnableTracking();
-   }
    
    fReco->GlobalSettings();
    

@@ -229,10 +229,7 @@ public:
 
    //! Flag for MC data
    Bool_t IsMcData()           { return fFlagMC;          }
-   
-   // Set Msd Tracking algorithm
-   void SetMsdTrackingAlgo(char c);
-  
+     
    // Set Cal clusteing algorithm
    void SetCalClusterAlgo(char c);
    

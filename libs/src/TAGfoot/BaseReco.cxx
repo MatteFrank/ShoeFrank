@@ -663,10 +663,10 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
-      if (parConf->GetAnalysisPar().TrackingFlag)
+      if (parConf->GetAnalysisPar().TrackingFlag) {
          EnableItrTracking();
-
-      fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
+         fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
+      }
       
       if(!fFlagMC) {
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
@@ -688,8 +688,10 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
-      if (parConf->GetAnalysisPar().TrackingFlag)
+      if (parConf->GetAnalysisPar().TrackingFlag) {
          EnableMsdTracking();
+         fMsdTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
+      }
       
       if(!fFlagMC){
          fpParMapMsd = new TAGparaDsc("msdMap", new TAMSDparMap());
@@ -1315,24 +1317,6 @@ void BaseReco::AddRecRequiredItem()
 
    if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) 
       gTAGroot->AddRequiredItem("glbActTrackS");
-}
-
-//__________________________________________________________
-//! Set MSD tracking algorithm
-//!
-//! \param[in] c toggle btw standard and combinaison algorithm
-void BaseReco::SetMsdTrackingAlgo(char c)
-{
-   switch (c) {
-      case 'S':
-         fMsdTrackingAlgo = "Std";
-         break;
-      case 'F':
-         fMsdTrackingAlgo = "Full";
-         break;
-      default:
-         printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
-   }
 }
 
 //__________________________________________________________

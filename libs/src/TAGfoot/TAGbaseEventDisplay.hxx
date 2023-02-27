@@ -97,21 +97,6 @@ protected:
    void UpdateElements(const TString prefix);
    
 public:   
-   //! Set MSD Tracking algorithm
-   static void SetMsdTrackingAlgo(char c)
-   {
-      switch (c) {
-         case 'S':
-            fgMsdTrackingAlgo = "Std";
-            break;
-         case 'F':
-            fgMsdTrackingAlgo = "Full";
-            break;
-         default:
-            printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
-      }
-   }
-   
    //! Disable stand alone DAQ
    static void DisableStdAlone()    { fgStdAloneFlag = false; }
    //! Enable stand alone DAQ
