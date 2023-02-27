@@ -65,9 +65,12 @@ Bool_t TAVTbaseParConf::FromFile(const TString& name)
    fAnalysisParameter.TrackingFlag = tmp;
    if(FootDebugLevel(1))
       cout << "Tracking flag: "<< fAnalysisParameter.TrackingFlag << endl;
-   
-   // read position algorithme
-   ReadItem(fAnalysisParameter.TracksMaximum);  
+
+   ReadItem(fAnalysisParameter.TrackingAlgo);
+   if(FootDebugLevel(1))
+      cout << "Tracking algorithm: "<< fAnalysisParameter.TrackingAlgo << endl;
+
+   ReadItem(fAnalysisParameter.TracksMaximum);
    if(FootDebugLevel(1))
       cout << "Maximum tracks per event: "<< fAnalysisParameter.TracksMaximum << endl;
    
