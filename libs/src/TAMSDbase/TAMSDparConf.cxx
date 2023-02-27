@@ -59,6 +59,9 @@ Bool_t TAMSDparConf::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout << " Tracking flag: "<< fAnalysisParameter.TrackingFlag << endl;
    
+   ReadItem(fAnalysisParameter.TrackingAlgo);
+   if(FootDebugLevel(1))
+      cout << "Tracking algorithm: "<< fAnalysisParameter.TrackingAlgo << endl;
    
    ReadItem(fAnalysisParameter.PlanesForTrackMinimum);
    if(FootDebugLevel(1))
