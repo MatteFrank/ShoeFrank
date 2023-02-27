@@ -83,6 +83,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParConfVtx(0x0),
    fpParConfIt(0x0),
    fpParConfMsd(0x0),
+   fpParConfTw(0x0),
+   fpParConfCa(0x0),
    fpDatRawSt(0x0),
    fpDatRawCa(0x0),
    fpNtuHitSt(0x0),
@@ -785,6 +787,13 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName);
 
+      fpParConfCa = new TAGparaDsc("caConf", new TACAparConf());
+      TACAparConf* parConf = (TACAparConf*)fpParConfCa->Object();
+      parFileName = fCampManager->GetCurConfFile(TACAparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      fCalClusterAlgo  = parConf->GetAnalysisPar().ClusteringAlgo;
+      
       fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
 

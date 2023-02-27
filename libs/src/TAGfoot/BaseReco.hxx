@@ -53,6 +53,7 @@
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"
 #include "TATWparConf.hxx"
+#include "TACAparConf.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TASTntuHit.hxx"
@@ -392,6 +393,7 @@ protected:
    TAGparaDsc*           fpParConfIt;     ///< ITR configuration parameter
    TAGparaDsc*           fpParConfMsd;    ///< MSD configuration parameter
    TAGparaDsc*           fpParConfTw;     ///< TW configuration parameter
+   TAGparaDsc*           fpParConfCa;     ///< CA configuration parameter
 
    TAGdataDsc*           fpDatRawSt;     ///< Raw hit input dsc for STC
    TAGdataDsc*           fpNtuHitSt;     ///< Hit input dsc for STC
