@@ -39,7 +39,11 @@ echo " "
 #run rawdata reconstruction
 cd $FOOTLEVEL0
 echo "Run reconstruction of raw data"
+\cp ./config/GSI2021/TAMSDdetector.cfg TAMSDdetector_old.cfg
+sed 's/TrackingFlag:               0/TrackingFlag:               1/' ./config/GSI2021/TAMSDdetector.cfg > TAMSDdetector_new.cfg
+\mv  TAMSDdetector_new.cfg* ./config/GSI2021TAMSDdetector.cfg
 DecodeGlb -in $FOOTRAWDATA/data_test.00004306.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out runGSI2021_4306_Plots_1kEvts.root -nev 1000 -exp GSI2021 -run 4306
+\mv TAMSDdetector_old.cfg ./config/GSI2021TAMSDdetector.cfg
 echo " "
 
 #Compare to reference plots
@@ -49,7 +53,10 @@ echo " "
 
 #Run MC reconstruction
 echo "Run reconstruction of MC data"
+\cp ./config/GSI2021_MC/TAMSDdetector.cfg TAMSDdetector_old.cfg
+sed 's/TrackingFlag:               0/TrackingFlag:               1/' ./config/GSI2021/TAMSDdetector.cfg > TAMSDdetector_new.cfg
 DecodeGlb -in $FOOTMCDATA/GSI2021/16O_C_400_1_shoereg.root -out runGSI2021_MC_400_Plots_1kEvts.root -nev 1000 -exp GSI2021_MC -run 400 -mc
+\mv TAMSDdetector_old.cfg ./config/GSI2021_MCTAMSDdetector.cfg
 echo " "
 
 #Compare to reference plots
