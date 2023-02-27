@@ -130,10 +130,10 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagTrack(false),
    fFlagTWbarCalib(false),
    fFlagRateSmearTw(false),
-   fgVtxTrackingAlgo("Full"),
-   fgItrTrackingAlgo("Full"),
-   fgMsdTrackingAlgo("Full"),
-   fgCalClusterAlgo("Padme"),
+   fVtxTrackingAlgo("Full"),
+   fItrTrackingAlgo("Full"),
+   fMsdTrackingAlgo("Full"),
+   fCalClusterAlgo("Padme"),
    fFlagMC(false),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),
@@ -640,7 +640,9 @@ void BaseReco::ReadParFiles()
       TAVTparConf* parConf = (TAVTparConf*)fpParConfVtx->Object();
       parFileName = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
-
+    
+      fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
+      
       if(!fFlagMC) {
          fpParMapVtx = new TAGparaDsc("vtMap", new TAVTparMap());
          TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
@@ -664,6 +666,8 @@ void BaseReco::ReadParFiles()
       if (parConf->GetAnalysisPar().TrackingFlag)
          EnableItrTracking();
 
+      fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
+      
       if(!fFlagMC) {
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
@@ -871,12 +875,12 @@ void BaseReco::CreateRecActionVtx()
       fActClusVtx->CreateHistogram();
 
    if (fFlagTrack) {
-      if (fgVtxTrackingAlgo.Contains("Std") ) {
+      if (fVtxTrackingAlgo.Contains("Std") ) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackVtx  = new TAVTactNtuTrack("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx, 0, fpNtuTrackBm);
          else
             fActTrackVtx  = new TAVTactNtuTrack("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx);
-      } else if (fgVtxTrackingAlgo.Contains("Full")) {
+      } else if (fVtxTrackingAlgo.Contains("Full")) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackVtx  = new TAVTactNtuTrackF("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx, 0, fpNtuTrackBm);
          else
@@ -919,13 +923,13 @@ void BaseReco::CreateRecActionIt()
    if (fgFlagItrTrack && fFlagTrack) {
       fpNtuTrackIt = new TAGdataDsc("itTrack", new TAITntuTrack());
 
-      if (fgItrTrackingAlgo.Contains("Std") ) {
+      if (fItrTrackingAlgo.Contains("Std") ) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackIt = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpNtuTrackBm);
          else
             fActTrackIt = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt);
 
-      }  else if (fgItrTrackingAlgo.Contains("Full")) {
+      }  else if (fItrTrackingAlgo.Contains("Full")) {
          fActTrackIt = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
       }
 
@@ -954,10 +958,10 @@ void BaseReco::CreateRecActionMsd()
    if (fgFlagMsdTrack && fFlagTrack) {
       fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
 
-      if (fgMsdTrackingAlgo.Contains("Std") ) {
+      if (fMsdTrackingAlgo.Contains("Std") ) {
          fActTrackMsd = new TAMSDactNtuTrack("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd);
 
-      }  else if (fgMsdTrackingAlgo.Contains("Full")) {
+      }  else if (fMsdTrackingAlgo.Contains("Full")) {
          fActTrackMsd = new TAMSDactNtuTrackF("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd, fpParGeoG);
       }
 
@@ -988,12 +992,12 @@ void BaseReco::CreateRecActionCa()
    if (fFlagMC)
       TACAactNtuCluster::DisableChargeThres();
    
-   if (fgCalClusterAlgo.Contains("Std") ) {
+   if (fCalClusterAlgo.Contains("Std") ) {
       if (fFlagMC)
          fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
       else
          fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
-   } else if (fgCalClusterAlgo.Contains("Padme") ) {
+   } else if (fCalClusterAlgo.Contains("Padme") ) {
       if (fFlagMC)
          fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
       else
@@ -1314,42 +1318,6 @@ void BaseReco::AddRecRequiredItem()
 }
 
 //__________________________________________________________
-//! Set VTX tracking algorithm
-//!
-//! \param[in] c toggle btw standard and combinaison algorithm
-void BaseReco::SetVtxTrackingAlgo(char c)
-{
-   switch (c) {
-      case 'S':
-         fgVtxTrackingAlgo = "Std";
-         break;
-      case 'F':
-         fgVtxTrackingAlgo = "Full";
-         break;
-      default:
-         printf("SetVtxTrackingAlgo: Wrongly set tracking algorithm");
-   }
-}
-
-//__________________________________________________________
-//! Set ITR tracking algorithm
-//!
-//! \param[in] c toggle btw standard and combinaison algorithm
-void BaseReco::SetItrTrackingAlgo(char c)
-{
-   switch (c) {
-      case 'S':
-         fgItrTrackingAlgo = "Std";
-         break;
-      case 'F':
-         fgItrTrackingAlgo = "Full";
-         break;
-      default:
-         printf("SetItrTrackingAlgo: Wrongly set tracking algorithm");
-   }
-}
-
-//__________________________________________________________
 //! Set MSD tracking algorithm
 //!
 //! \param[in] c toggle btw standard and combinaison algorithm
@@ -1357,10 +1325,10 @@ void BaseReco::SetMsdTrackingAlgo(char c)
 {
    switch (c) {
       case 'S':
-         fgMsdTrackingAlgo = "Std";
+         fMsdTrackingAlgo = "Std";
          break;
       case 'F':
-         fgMsdTrackingAlgo = "Full";
+         fMsdTrackingAlgo = "Full";
          break;
       default:
          printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
@@ -1375,10 +1343,10 @@ void BaseReco::SetCalClusterAlgo(char c)
 {
    switch (c) {
       case 'S':
-         fgMsdTrackingAlgo = "Std";
+         fMsdTrackingAlgo = "Std";
          break;
       case 'P':
-         fgMsdTrackingAlgo = "Padme";
+         fMsdTrackingAlgo = "Padme";
          break;
       default:
          printf("SetCalClusterAlgo: Wrongly set clustering algorithm");

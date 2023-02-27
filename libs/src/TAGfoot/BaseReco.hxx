@@ -230,12 +230,6 @@ public:
    //! Flag for MC data
    Bool_t IsMcData()           { return fFlagMC;          }
    
-   // Set Vtx Tracking algorithm
-   void SetVtxTrackingAlgo(char c);
-   
-   // Set Itr Tracking algorithm
-   void SetItrTrackingAlgo(char c);
-   
    // Set Msd Tracking algorithm
    void SetMsdTrackingAlgo(char c);
   
@@ -481,10 +475,10 @@ protected:
    Bool_t                fFlagHisto;        ///< flag for histo generatiom
    Bool_t                fFlagTrack;        ///< flag for tracking
    Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar
-   TString               fgVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgCalClusterAlgo;  ///< cal tracking clustering ("std" for standard, "Padme" for PADME one)
+   TString               fVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fCalClusterAlgo;  ///< cal tracking clustering ("std" for standard, "Padme" for PADME one)
    Bool_t                fFlagRateSmearTw;  ///< TW eloss emaring due to rate
 
    Bool_t                fFlagMC;           ///< MC flag

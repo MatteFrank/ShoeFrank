@@ -96,37 +96,7 @@ protected:
    // Update elements
    void UpdateElements(const TString prefix);
    
-public:
-   //! Set VTX Tracking algorithm
-   static void SetVtxTrackingAlgo(char c)
-   {
-      switch (c) {
-         case 'S':
-            fgVtxTrackingAlgo = "Std";
-            break;
-         case 'F':
-            fgVtxTrackingAlgo = "Full";
-            break;
-         default:
-            printf("SetVtxTrackingAlgo: Wrongly set tracking algorithm");
-      }
-   }
-   
-   //! Set Itr Tracking algorithm
-   static void SetItrTrackingAlgo(char c)
-   {
-      switch (c) {
-         case 'S':
-            fgItrTrackingAlgo = "Std";
-            break;
-         case 'F':
-            fgItrTrackingAlgo = "Full";
-            break;
-         default:
-            printf("SetItrTrackingAlgo: Wrongly set tracking algorithm");
-      }
-   }
-   
+public:   
    //! Set MSD Tracking algorithm
    static void SetMsdTrackingAlgo(char c)
    {
