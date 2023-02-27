@@ -48,6 +48,8 @@ Bool_t TACAparConf::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
   
+   Info("FromFile()", "Open file %s for configuration\n", name.Data());
+
    
    ReadItem(fAnalysisParameter.ClusteringAlgo);
    if(FootDebugLevel(1))
