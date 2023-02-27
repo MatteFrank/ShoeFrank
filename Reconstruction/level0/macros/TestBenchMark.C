@@ -15,8 +15,8 @@
 #endif
 
 const Float_t sigma = 0.68;
-std::map<TString, std::vector<TString> > mapName = {{"BM", {"bmTrackTotNumber", "bmParResolution"}}, {"VT", {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
-                                                    {"MSD", {"msClusStripTot"}}, {"FOOT", {"glbTrackEvt", "glbTrackClus"}}  };
+std::map<TString, std::vector<TString> > mapName = {{"BM", {"bmTrackTotNumber", "bmTrackNtotHitsxTrack"}}, {"VT", {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
+                                                    {"MSD", {"msClusStripTot", "msTrackEvt", "msTrackClus"}}, {"FOOT", {"glbTrackEvt", "glbTrackClus"}}  };
 
 // main
 void TestBenchMark(Bool_t rawData = true)
