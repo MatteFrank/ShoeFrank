@@ -91,7 +91,7 @@ void GlobalToeReco::SetTreeBranches()
   BaseReco::SetTreeBranches();
   
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
-    if (fFlagMC && fSaveMcFlag) {
+    if (fFlagMC && fgSaveMcFlag) {
       fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
       

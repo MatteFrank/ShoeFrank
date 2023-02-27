@@ -331,11 +331,11 @@ public:
 
 public:
    //! Disable MC info saving in output tree
-   static void DisableSaveMc() { fSaveMcFlag = false; }
+   static void DisableSaveMc() { fgSaveMcFlag = false; }
    //! Enable MC info saving in output tree
-   static void EnableSaveMc()  { fSaveMcFlag = true;  }
+   static void EnableSaveMc()  { fgSaveMcFlag = true;  }
    //! Check MC info saving in output tree
-   static Bool_t IsSaveMc()    { return fSaveMcFlag;  }
+   static Bool_t IsSaveMc()    { return fgSaveMcFlag;  }
    
    //! return  MSD tracking
    static Bool_t IsMsdTracking()      { return fgFlagMsdTrack;    }
@@ -513,7 +513,7 @@ protected:
 protected:
    static Bool_t fgItrTrackFlag; ///< ITR tracking flag
    static Bool_t fgMsdTrackFlag; ///< MSD tracking flag
-   static Bool_t fSaveMcFlag;    ///< MC saving flag
+   static Bool_t fgSaveMcFlag;    ///< MC saving flag
    static Bool_t fgFlagMsdTrack; ///< flag for MSD tracking
    static Bool_t fgFlagItrTrack; ///< flag for ITR tracking
 

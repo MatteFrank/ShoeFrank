@@ -39,7 +39,7 @@ ClassImp(BaseReco)
 
 Bool_t  BaseReco::fgFlagMsdTrack  = false;
 Bool_t  BaseReco::fgFlagItrTrack  = false;
-Bool_t  BaseReco::fSaveMcFlag     = true;
+Bool_t  BaseReco::fgSaveMcFlag     = true;
 
 //__________________________________________________________
 //! Constructor
@@ -1119,7 +1119,7 @@ void BaseReco::SetL0TreeBranches()
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
     fActEvtReader = new TAGactTreeReader("evtReader");
      
-    if (!fSaveMcFlag)
+    if (!fgSaveMcFlag)
        if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull()) {
           fActEvtReader->AddFriendTree(fFriendFileName,fFriendTreeName);
           Info("SetL0TreeBranches()", "\n Open file %s for friend tree %s\n", fFriendFileName.Data(), fFriendTreeName.Data());
