@@ -46,8 +46,9 @@ NumberFiles: 6
 "./calib/GSI2021_MC/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/GSI2021_MC/TACAdetector.geo": -1
+"./config/GSI2021_MC/TACAdetector.cfg": -1
 "./calib/GSI2021_MC/TACA_Energy_Calibration.cal": -1
 "./config/GSI2021_MC/TACAcrystalMapStatus.map": -1
 

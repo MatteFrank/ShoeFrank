@@ -46,8 +46,9 @@ NumberFiles: 6
 "./calib/Alpha_TW2_MC/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/Alpha_TW2_MC/TACAdetector.geo": -1
+"./config/Alpha_TW2_MC/TACAdetector.cfg": -1
 "./calib/Alpha_TW2_MC/TACA_Energy_Calibration.cal": -1
 "./config/Alpha_TW2_MC/TACAcrystalMapStatus.map": -1
 

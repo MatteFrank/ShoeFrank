@@ -27,8 +27,9 @@ NumberFiles: 6
 "./calib/197Au_MC/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/197Au_MC/TACAdetector.geo": -1
 "./config/197Au_MC/TACAcrystalMapStatus.map": -1
+"./config/197Au_MC/TACAdetector.cfg": -1
 "./calib/197Au_MC/TACA_Energy_Calibration.cal": -1
 

@@ -46,8 +46,9 @@ NumberFiles: 6
 "./calib/40Ca_300_MC/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/40Ca_300_MC/TACAdetector.geo": -1
+"./config/40Ca_300_MC/TACAdetector.cfg": -1
 "./calib/40Ca_300_MC/TACA_Energy_Calibration.cal": -1
 "./config/40Ca_300_MC/TACAcrystalMapStatus.map": -1
 

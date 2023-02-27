@@ -52,7 +52,8 @@ NumberFiles: 6
 "./calib/CNAO2022_MC/TATW_Tof_Calibration.cal": -1;
 
 DetectorName: "CA"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/CNAO2022_MC/TACAdetector.geo": -1
 "./config/CNAO2022_MC/TACAdetector.map": -1
+"./config/CNAO2022_MC/TACAdetector.cfg": -1
 "./config/CNAO2022_MC/TACAcrystalMapStatus.map": -1

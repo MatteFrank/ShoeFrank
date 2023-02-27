@@ -52,8 +52,9 @@ NumberFiles: 6
 "./calib/16O_200/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
-NumberFiles: 3
+NumberFiles: 4
 "./geomaps/16O_200/TACAdetector.geo": -1
 "./config/16O_200/TACAcrystalMapStatus.map": -1
+"./config/16O_200/TACAdetector.cfg": -1
 "./calib/16O_200/TACA_Energy_Calibration.cal": -1
 
