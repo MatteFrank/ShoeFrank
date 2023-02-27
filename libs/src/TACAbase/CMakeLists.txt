@@ -30,6 +30,7 @@ set( with_dictionnaries
    TACAactNtuClusterP
    TACAparGeo
    TACAparCal
+   TACAparConf
    TACAcalibrationMap
    TAGWDtrigInfo
    TAGactWDreader
