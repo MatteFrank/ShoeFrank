@@ -15,7 +15,7 @@
 #endif
 
 const Float_t sigma = 0.68;
-std::map<TString, std::vector<TString> > mapName = {{"BM", {"bmTrackTotNumber", "bmTrackNtotHitsxTrack"}}, {"VT", {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
+std::map<TString, std::vector<TString> > mapName = {{"BM", {"bmHitDistribution", "bmTrackTotNumber", "bmTrackNtotHitsxTrack"}}, {"VT", {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
                                                     {"MSD", {"msClusStripTot", "msTrackEvt", "msTrackClus"}}, {"FOOT", {"glbTrackEvt", "glbTrackClus"}}  };
 
 // main
