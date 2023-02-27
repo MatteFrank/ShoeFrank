@@ -19,6 +19,8 @@ public:
    virtual ~TACAparConf();
    
 private:
+    TString    fkDefaultConfName; ///< default detector configuration file
+
    /*!
     \struct AnalysisParameter_t
     \brief  Analysis parameters
@@ -34,7 +36,7 @@ public:
    Bool_t               FromFile(const TString& name = "");
       
    //! Get analysis parameters
-   AnalysisParameter_t& GetAnalysisPar()             { return fAnalysisParameter;           }
+   AnalysisParameter_t& GetAnalysisPar() { return fAnalysisParameter; }
 
    ClassDef(TACAparConf,1)
 };
