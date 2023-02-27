@@ -47,7 +47,7 @@ sed 's/IncludeStraight: n/IncludeStraight: y/' ./config/GSI2021/FootGlobal.par >
 \mv   FootGlobal_new.par ./config/GSI2021/FootGlobal.par
 DecodeGlb -in $FOOTRAWDATA/data_test.00004306.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out runGSI2021_4306_Plots_1kEvts.root -nev 1000 -exp GSI2021 -run 4306
 \mv TAMSDdetector_old.cfg ./config/GSI2021TAMSDdetector.cfg
-\mv FootGlobal_old.par ../config/GSI2021/FootGlobal.par
+\mv FootGlobal_old.par ./config/GSI2021/FootGlobal.par
 echo " "
 
 #Compare to reference plots
@@ -65,7 +65,7 @@ sed 's/IncludeStraight: n/IncludeStraight: y/' ./config/GSI2021/FootGlobal.par >
 \mv   FootGlobal_new.par ./config/GSI2021_MC/FootGlobal.par
 DecodeGlb -in $FOOTMCDATA/GSI2021/16O_C_400_1_shoereg.root -out runGSI2021_MC_400_Plots_1kEvts.root -nev 1000 -exp GSI2021_MC -run 400 -mc
 \mv TAMSDdetector_old.cfg ./config/GSI2021_MCTAMSDdetector.cfg
-\mv FootGlobal_old.par ../config/GSI2021_MC/FootGlobal.par
+\mv FootGlobal_old.par ./config/GSI2021_MC/FootGlobal.par
 echo " "
 
 #Compare to reference plots
