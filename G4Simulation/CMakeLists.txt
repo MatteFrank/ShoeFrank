@@ -70,9 +70,9 @@ set(TCFO_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/${TCFO}")
 # Copy geomaps + config file and vis geant macros in working sim directory
 #
 if (FILECOPY)
- file(COPY ${FOOT_LEVEL0}/cammaps/ DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation/cammaps/)
- file(COPY ${FOOT_LEVEL0}/geomaps/ DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation/geomaps/)
- file(COPY ${FOOT_LEVEL0}/config/  DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation/config/)
+ file(COPY ${FOOT_REC}/cammaps/ DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation/cammaps/)
+ file(COPY ${FOOT_REC}/geomaps/ DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation/geomaps/)
+ file(COPY ${FOOT_REC}/config/  DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation/config/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/README DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation/)
  execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/data/ ${CMAKE_BINARY_DIR}/G4Simulation)
 endif(FILECOPY)
@@ -83,7 +83,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/G4Simulation/macros/ DESTINATION ${CMAKE_BINARY_DI
 #----------------------------------------------------------------------------
 # Copy rootlogon
 #
-file(COPY ${CMAKE_BINARY_DIR}/Reconstruction/level0/rootlogon.C DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation)
+file(COPY ${CMAKE_BINARY_DIR}/Reconstruction/rootlogon.C DESTINATION ${CMAKE_BINARY_DIR}/G4Simulation)
 
 #----------------------------------------------------------------------------
 # internal and external dependencies
