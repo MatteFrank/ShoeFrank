@@ -502,7 +502,7 @@ void TAGactKFitter::CreateGeometry()  {
   // this is the World volume
   TGeoMedium* med = gGeoManager->GetMedium("AIR");
   m_TopVolume = gGeoManager->MakeBox("World",med, 300., 300., 300.);
-  m_TopVolume->SetInvisible();
+//   m_TopVolume->SetInvisible();
   gGeoManager->SetTopVolume(m_TopVolume);
 
   m_vecHistoColor = { kBlack, kRed-9, kRed+1, kRed-2, kOrange+7, kOrange, kOrange+3, kGreen+1,
@@ -555,7 +555,7 @@ void TAGactKFitter::CreateGeometry()  {
 
 	// Vertex
 	if (TAGrecoManager::GetPar()->IncludeVT()) {
-		TGeoVolume* vtVol  = m_VT_geo->BuildVertex();
+		TGeoVolume* vtVol  = m_VT_geo->BuildVertex(m_VT_geo->GetBaseName(), "M28", true);
 		vtVol->SetLineColor(kRed+1);
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAVTparGeo::GetBaseName());
 		m_TopVolume->AddNode(vtVol, 4, transfo);
@@ -563,14 +563,16 @@ void TAGactKFitter::CreateGeometry()  {
 		if(m_systemsON.Contains("VT"))
 		{
 			for ( int i = 0; i < m_VT_geo->GetSensorsN(); ++i ) {
-				TVector3 origin_(m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i)) );
+				int signOffset = m_VT_geo->GetSensorPar(i).IsReverseY ? -1 : 1;
+				TVector3 EpiOffset = signOffset*TVector3(0,0,-m_VT_geo->GetTotalSize().Z()/2 + m_VT_geo->GetPixThickness() + m_VT_geo->GetEpiSize().Z()/2);
 
+				TVector3 origin_(m_GeoTrafo->FromVTLocalToGlobal(m_VT_geo->GetSensorPosition(i) + EpiOffset) );
 				// RZ, note to self: Careful w/ coordinates here: the "IsInActive" functions uses exactly the coordinates give to define the active area, either they are local or global!! BE CONSISTENT AND RE-CHECK EVERYTHING
 				float xMin, xMax, yMin, yMax;
-				xMin = m_VT_geo->GetEpiOffset().X() - m_VT_geo->GetEpiSize().X()/2;
-				xMax = m_VT_geo->GetEpiOffset().X() + m_VT_geo->GetEpiSize().X()/2;
-				yMin = m_VT_geo->GetEpiOffset().Y() - m_VT_geo->GetEpiSize().Y()/2;
-				yMax = m_VT_geo->GetEpiOffset().Y() + m_VT_geo->GetEpiSize().Y()/2;
+				xMin = /*m_VT_geo->GetEpiOffset().X()*/ - m_VT_geo->GetEpiSize().X()/2;
+				xMax = /*m_VT_geo->GetEpiOffset().X()*/ + m_VT_geo->GetEpiSize().X()/2;
+				yMin = /*m_VT_geo->GetEpiOffset().Y()*/ - m_VT_geo->GetEpiSize().Y()/2;
+				yMax = /*m_VT_geo->GetEpiOffset().Y()*/ + m_VT_geo->GetEpiSize().Y()/2;
 				genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane(xMin, xMax, yMin, yMax);
 				TVector3 normal_versor = TVector3(0,0,1);
 				TVector3 trafoNorm = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Sensor2DetectorVect(i, normal_versor));
@@ -610,7 +612,7 @@ void TAGactKFitter::CreateGeometry()  {
 
 	// IT
 	if (TAGrecoManager::GetPar()->IncludeIT()) {
-		TGeoVolume* itVol  = m_IT_geo->BuildInnerTracker();
+		TGeoVolume* itVol  = m_IT_geo->BuildInnerTracker(m_IT_geo->GetBaseName(), "Module", true);
 		itVol->SetLineColor(kRed);
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetBaseName());
 		m_TopVolume->AddNode(itVol, 6, transfo);
@@ -618,12 +620,15 @@ void TAGactKFitter::CreateGeometry()  {
 		if( m_systemsON.Contains("IT") )
 		{
 			for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
-				TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i)) );
+				int signOffset = m_IT_geo->GetSensorPar(i).IsReverseY ? -1 : 1;
+				TVector3 EpiOffset = signOffset*TVector3(0,0,-m_IT_geo->GetTotalSize().Z()/2 + m_IT_geo->GetPixThickness() + m_IT_geo->GetEpiSize().Z()/2);
+
+				TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i) + EpiOffset) );
 				float xMin, xMax, yMin, yMax;
-				xMin = m_IT_geo->GetEpiOffset().X() - m_IT_geo->GetEpiSize().X()/2;
-				xMax = m_IT_geo->GetEpiOffset().X() + m_IT_geo->GetEpiSize().X()/2;
-				yMin = m_IT_geo->GetEpiOffset().Y() - m_IT_geo->GetEpiSize().Y()/2;
-				yMax = m_IT_geo->GetEpiOffset().Y() + m_IT_geo->GetEpiSize().Y()/2;
+				xMin = /*m_IT_geo->GetEpiOffset().X()*/ - m_IT_geo->GetEpiSize().X()/2;
+				xMax = /*m_IT_geo->GetEpiOffset().X()*/ + m_IT_geo->GetEpiSize().X()/2;
+				yMin = /*m_IT_geo->GetEpiOffset().Y()*/ - m_IT_geo->GetEpiSize().Y()/2;
+				yMax = /*m_IT_geo->GetEpiOffset().Y()*/ + m_IT_geo->GetEpiSize().Y()/2;
 
 				// This make all the 32 IT sensors
 				genfit::AbsFinitePlane* activeArea = new RectangularFinitePlane( xMin, xMax, yMin, yMax );
@@ -671,12 +676,15 @@ void TAGactKFitter::CreateGeometry()  {
 		if( m_systemsON.Contains("MSD") )
 		{
 			for ( int i = 0; i < m_MSD_geo->GetSensorsN(); i++ ) {
-				TVector3 origin_( m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i)) );
+				int signOffset = i%2 == 1 ? -1 : 1;
+				TVector3 EpiOffset = signOffset*TVector3(0,0,-m_MSD_geo->GetTotalSize().Z()/2 + m_MSD_geo->GetMetalThickness() + m_MSD_geo->GetEpiSize().Z()/2);
 
-				float xMin = m_MSD_geo->GetEpiOffset().x() - m_MSD_geo->GetEpiSize().x()/2;
-				float xMax = m_MSD_geo->GetEpiOffset().x() + m_MSD_geo->GetEpiSize().x()/2;
-				float yMin = m_MSD_geo->GetEpiOffset().y() - m_MSD_geo->GetEpiSize().y()/2;
-				float yMax = m_MSD_geo->GetEpiOffset().y() + m_MSD_geo->GetEpiSize().y()/2;
+				TVector3 origin_( m_GeoTrafo->FromMSDLocalToGlobal(m_MSD_geo->GetSensorPosition(i) + EpiOffset ));
+
+				float xMin = /*m_MSD_geo->GetEpiOffset().x()*/ - m_MSD_geo->GetEpiSize().x()/2;
+				float xMax = /*m_MSD_geo->GetEpiOffset().x()*/ + m_MSD_geo->GetEpiSize().x()/2;
+				float yMin = /*m_MSD_geo->GetEpiOffset().y()*/ - m_MSD_geo->GetEpiSize().y()/2;
+				float yMax = /*m_MSD_geo->GetEpiOffset().y()*/ + m_MSD_geo->GetEpiSize().y()/2;
 
 				TVector3 normal_versor = TVector3(0,0,1);
 				TVector3 trafoNorm = m_GeoTrafo->VecFromMSDLocalToGlobal(m_MSD_geo->Sensor2DetectorVect(i, normal_versor));
@@ -1374,9 +1382,15 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				pull = res/TMath::Sqrt(pow(it->GetMeasPosError()(view), 2) - pow(it->GetFitPosError()(view), 2));
 				h_resoFitMeas[sensId]->Fill(res);
 				h_FitVsMeas[sensId]->Fill(res, it->GetFitPosition()(view));
+				h_resFitErr[sensId]->Fill(it->GetFitPosError()(view));
+				h_resMeasErr[sensId]->Fill(it->GetMeasPosError()(view));
 				h_pullFitMeas[sensId]->Fill(pull);
 				h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
 				msdCoords[view].push_back( it->GetFitPosition()(view));
+
+				// cout << "MSD" << it->GetSensorIdx() << "\t " << "view::" << view << "\n";
+				// cout << "meas::"; it->GetMeasPosition().Print();
+				// cout << "fit::"; it->GetFitPosition().Print();
 			}
 			else
 			{
@@ -1396,6 +1410,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				h_pullFitMeas[sensId]->Fill(pull);
 				if( (string)it->GetDevName() != "TW" )
 					h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
+				
+				// cout << it->GetDevName() << it->GetSensorIdx() << "\n";
+				// cout << "meas::"; it->GetMeasPosition().Print();
+				// cout << "fit::"; it->GetFitPosition().Print();
 			}
 		}
 
@@ -2053,12 +2071,16 @@ void TAGactKFitter::CreateHistogram()	{
 
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_msd%c_layer_%d",strip,i),Form("Residual between fitted global track and measured MSD cluster in MSD layer %d on %c view;Meas-Fit %c [cm];Entries",i,strip,strip),600,-0.1,0.1);
 			AddHistogram(h_resoFitMeas[sensId]);
-			h_FitVsMeas[sensId] = new TH2F(Form("Res_FitVsRes_msd%c_layer_%d",strip,i),Form("Fitted global track vs measured MSD cluster in layer %d on %c view;Fitted pos %c [cm];Meas-Fit res %c",i,strip,strip,strip),600,-0.1,0.1,600,-3,3);
+			h_FitVsMeas[sensId] = new TH2F(Form("Res_FitVsRes_msd%c_layer_%d",strip,i),Form("Fitted global track vs measured MSD cluster in layer %d on %c view;Meas-Fit res %c;Fitted pos %c [cm]",i,strip,strip,strip),300,-0.1,0.1,300,-3,3);
 			AddHistogram(h_FitVsMeas[sensId]);
 			h_pullFitMeas[sensId] = new TH1F(Form("Pull_msd%c_layer_%d",strip,i),Form("Pull for measured MSD cluster in layer %d on %c view;Meas-Fit Pull %c;Entries",i,strip,strip),600,-5,5);
 			AddHistogram(h_pullFitMeas[sensId]);
 			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_msd%c_layer_%d",strip,i),Form("Pull vs cluster size for MSD in layer %d on %c view;Meas-Fit Pull %c;Cluster size [N strips]",i,strip,strip), 600,-5,5, 10, -0.5, 9.5);
 			AddHistogram(h_pullVsClusSize[sensId]);
+			h_resFitErr[sensId] = new TH1F(Form("Res_FitErr_msd%c_layer_%d",strip,i),Form("Fit Error for measured MSD cluster in layer %d on %c view;Fit error %c;Entries",i,strip,strip),600,0,.02);
+			AddHistogram(h_resFitErr[sensId]);
+			h_resMeasErr[sensId] = new TH1F(Form("Res_MeasErr_msd%c_layer_%d",strip,i),Form("Meas Error for measured MSD cluster in layer %d on %c view;Meas error %c;Entries",i,strip,strip),600,0,.02);
+			AddHistogram(h_resMeasErr[sensId]);
 		}
 	}
 	if(TAGrecoManager::GetPar()->IncludeTW()){

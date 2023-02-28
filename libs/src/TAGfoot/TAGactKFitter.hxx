@@ -266,6 +266,8 @@ private:
 	map< pair<string,pair<int,int>>, TH2F*> h_FitVsMeas;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 	map< pair<string,pair<int,int>>, TH1F*> h_pullFitMeas;						///< Map of histograms for fitted and measured pulls; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 	map< pair<string,pair<int,int>>, TH2F*> h_pullVsClusSize;					///< Map of histograms for fitted and measured pulls vs cluster size; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_resFitErr;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_resMeasErr;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 
 	vector<TH1F*> h_momentum_true;						///< Vector of histograms for MC momentum module at the TG
 	vector<TH1F*> h_momentum_reco;						///< Vector of histograms for Fitted momentum moduel at the TG

@@ -518,6 +518,11 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 	hit->setPlane( m_SensorIDMap->GetFitPlane(planeID), planeID ); 
 	(*m_allHitMeas)[ planeID ].push_back(hit);
 
+	if( m_debug > 1 )
+	{
+		cout << "toLab::";
+		(m_SensorIDMap->GetFitPlane(planeID)->toLab(TVector2(clus->GetPosition().X(),clus->GetPosition().Y()))).Print(); 
+	}
 
 	if ( m_debug > 0 )  cout << "\nPrepare4Vertex::Exiting\n";
 }
@@ -585,9 +590,16 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas );
 	// nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
-	hit->setPlane( m_SensorIDMap->GetFitPlane(sensorID), sensorID );	 
+	hit->setPlane( m_SensorIDMap->GetFitPlane(sensorID), sensorID );	
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
+
+	if( m_debug > 1 )
+	{
+		cout << "toLab::";
+		(m_SensorIDMap->GetFitPlane(sensorID)->toLab(TVector2(clus->GetPosition().X(),clus->GetPosition().Y()))).Print(); 
+	}
+
 
 	if ( m_debug > 0 )			cout << "\nPrepare4InnerTracker::Exiting\n";
 
