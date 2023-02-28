@@ -26,7 +26,8 @@ private:
     \brief  Analysis parameters
     */
    struct AnalysisParameter_t : public  TObject {
-      TString    ClusteringAlgo;           ///< Tracking algorithm
+      Bool_t     EnableArduinoTemp;        ///< Enable arduino reading
+      TString    ClusteringAlgo;           ///< Clustetring  algorithm
    };
    
    AnalysisParameter_t fAnalysisParameter;   ///< analysis parameters

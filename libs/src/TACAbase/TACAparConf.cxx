@@ -50,7 +50,13 @@ Bool_t TACAparConf::FromFile(const TString& name)
   
    Info("FromFile()", "Open file %s for configuration\n", name.Data());
 
+   Int_t tmp;
+   ReadItem(tmp);
+   fAnalysisParameter.EnableArduinoTemp = tmp;
+   if(FootDebugLevel(1))
+      cout << "Arduino reading flag: "<< fAnalysisParameter.EnableArduinoTemp << endl;
    
+
    ReadItem(fAnalysisParameter.ClusteringAlgo);
    if(FootDebugLevel(1))
       cout << "Clustering algorithm: "<< fAnalysisParameter.ClusteringAlgo << endl;
