@@ -31,7 +31,6 @@ if (FILECOPY)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cammaps/ DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/cammaps/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/calib/   DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/calib/)
  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/README   DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/)
- execute_process(COMMAND ln -sf ${CMAKE_BINARY_DIR}/Reconstruction/data/ ${CMAKE_BINARY_DIR}/Reconstruction/)
 endif(FILECOPY)
 
 #----------------------------------------------------------------------------
