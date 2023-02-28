@@ -3,9 +3,9 @@
 setenv FOOTLIBS @CMAKE_BINARY_DIR@/libs/
 setenv FOOTBUILD @CMAKE_BINARY_DIR@
 setenv FOOTSRC @CMAKE_CURRENT_SOURCE_DIR@/../../
-setenv FOOTLEVEL0 $FOOTBUILD/Reconstruction/level0
-setenv FOOTRAWDATA $FOOTBUILD/Reconstruction/level0/dataRaw
-setenv FOOTMCDATA $FOOTBUILD/Reconstruction/level0/dataMC
+setenv FOOTREC $FOOTBUILD/Reconstruction/
+setenv FOOTRAWDATA $FOOTBUILD/Reconstruction/dataRaw
+setenv FOOTMCDATA $FOOTBUILD/Reconstruction/dataMC
 
 if ($OSTYPE == "darwin") then
   setenv DYLD_LIBRARY_PATH $ROOTSYS/lib:./:$FOOTLIBS/lib:${DYLD_LIBRARY_PATH}
@@ -29,7 +29,7 @@ make -j4
 echo " "
 
 #run rawdata reconstruction
-cd $FOOTLEVEL0
+cd $FOOTREC
 echo "Run reconstruction of raw data"
 DecodeGlb -in $FOOTRAWDATA/data_test.00004306.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out runGSI2021_4306_Plots_1kEvts.root -nev 1000 -exp GSI2021 -run 4306
 echo " "

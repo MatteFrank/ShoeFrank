@@ -23,7 +23,7 @@ source /opt/exp_software/foot/root/root_install/bin/thisroot.sh
 export FOOTLIBS=@CMAKE_BINARY_DIR@/libs/
 export FOOTBUILD=@CMAKE_BINARY_DIR@
 export FOOTSRC=@CMAKE_CURRENT_SOURCE_DIR@/../../
-export FOOTLEVEL0=$FOOTBUILD/Reconstruction/level0
+export FOOTREC=$FOOTBUILD/Reconstruction/
 export FOOTRAWDATA=/storage/gpfs_data/foot_tier3/GSI2021
 export FOOTMCDATA=/storage/gpfs_data/foot_tier3/Simulation/GSI2021_MC
 
@@ -44,7 +44,7 @@ make -j4
 echo " "
 
 #run rawdata reconstruction
-cd $FOOTLEVEL0
+cd $FOOTREC
 echo "Run reconstruction of raw data"
 DecodeGlb -in $FOOTRAWDATA/data_test.00004306.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out runGSI2021_4306_Plots_1kEvts.root -nev 1000 -exp GSI2021 -run 4306
 echo " "

@@ -16,9 +16,9 @@ source $YBASEPATH/bin/thisroot.csh
 setenv FOOTLIBS @CMAKE_BINARY_DIR@/libs/
 setenv FOOTBUILD @CMAKE_BINARY_DIR@
 setenv FOOTSRC @CMAKE_CURRENT_SOURCE_DIR@/../../
-setenv FOOTLEVEL0 $FOOTBUILD/Reconstruction/level0
-setenv FOOTRAWDATA $FOOTBUILD/Reconstruction/level0/dataRaw
-setenv FOOTMCDATA $FOOTBUILD/Reconstruction/level0/dataMC
+setenv FOOTREC $FOOTBUILD/Reconstruction/
+setenv FOOTRAWDATA $FOOTBUILD/Reconstruction/dataRaw
+setenv FOOTMCDATA $FOOTBUILD/Reconstruction/dataMC
 
 setenv LD_LIBRARY_PATH $ROOTSYS/lib:./:$FOOTLIBS/lib:${LD_LIBRARY_PATH}
 set path = ($FOOTBUILD/bin $path)
@@ -37,7 +37,7 @@ make -j4
 echo " "
 
 #run rawdata reconstruction
-cd $FOOTLEVEL0
+cd $FOOTREC
 echo "Run reconstruction of raw data"
 \cp ./config/GSI2021/TAMSDdetector.cfg TAMSDdetector_old.cfg
 \cp ./config/GSI2021/FootGlobal.par FootGlobal_old.par
