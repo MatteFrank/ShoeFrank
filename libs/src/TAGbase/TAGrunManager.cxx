@@ -303,16 +303,16 @@ ostream& operator<< (std::ostream& out, const TAGrunManager::TypeParameter_t& ty
       out  << "  Type name:            " << type.TypeName.Data() << endl;
       out  << "  Main Trigger:         " << type.Trigger.Data() << endl;
       out  << "  Type Beam:            " << type.Beam.Data() << endl;
-      out  << "  Beam Energy:          " << type.BeamEnergy ;
+      out  << "  Beam Energy:          " << Form("%5.1f", type.BeamEnergy);
       if (type.BeamEnergy2 > 0)
-        cout  << " - " << type.BeamEnergy2 << endl;
+        cout  << " - "  <<  Form("%6.1f", type.BeamEnergy2) << endl;
       else
          out << " MeV/u" << endl;
       
       out  << "  Type Target:          " << type.Target.Data() << endl;
-      out  << "  Target Size:          " << type.TargetSize << " cm" << endl;
+      out  << "  Target Size:          "  <<  Form("%4.2f", type.TargetSize) << " cm" << endl;
       out  << "  Total Events:         " << TAGrunManager::SmartPrint(type.TotalEvts) << endl;
-      out  << "  DetectorOut:          ";
+      out  << "  DetectorOut:         ";
       for (Int_t j = 0; j < (int) type.DetectorOut.size(); ++j)
          out  << " " << type.DetectorOut[j].data();
       
