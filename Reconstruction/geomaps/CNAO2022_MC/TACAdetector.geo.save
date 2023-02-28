@@ -3,7 +3,7 @@
 //
 // Geometry file for FOOT Calorimeter
 //
-// Created with macro: Reconstruction/level0/BuildCaGeoFile.C
+// Created with macro: Reconstruction/BuildCaGeoFile.C
 //
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of Geometry 

@@ -97,7 +97,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
    fprintf(fp,"//\n");
    fprintf(fp,"// Geometry file for FOOT Calorimeter\n");
    fprintf(fp,"//\n");
-   fprintf(fp,"// Created with macro: Reconstruction/level0/BuildCaGeoFile.C\n");
+   fprintf(fp,"// Created with macro: Reconstruction/BuildCaGeoFile.C\n");
    fprintf(fp,"//\n");
 
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
