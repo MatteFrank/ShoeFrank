@@ -97,16 +97,17 @@ void LocalReco::CreateRawAction()
          parTimeWD->FromFileTcal(parFileName.Data());
       }
       
-      if (fCampManager->GetCurrentCamNumber() >=20) // tmp solution
+      TACAparConf* parConf = (TACAparConf*)fpParConfCa->Object();
+      if (parConf->GetAnalysisPar().EnableArduinoTemp)
          TAGactWDreader::EnableArduinoTempCA();
 
       fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
                                       fpParTimeWD, fpParMapCa, fgStdAloneFlag);
       if (fgStdAloneFlag)
-	fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
+         fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
       if(fFlagHisto)
-	fActWdRaw->CreateHistogram();
+         fActWdRaw->CreateHistogram();
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() ||(TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
