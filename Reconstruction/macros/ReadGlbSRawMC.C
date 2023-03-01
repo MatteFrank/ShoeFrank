@@ -62,6 +62,7 @@
 
 //TW
 #include "TATWparGeo.hxx"
+#include "TATWparConf.hxx"
 #include "TATWparCal.hxx"
 #include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
@@ -72,6 +73,7 @@
 // CA
 #include "TACAparGeo.hxx"
 #include "TACAparCal.hxx"
+#include "TACAparConf.hxx"
 #include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
 
@@ -191,7 +193,7 @@ void FillMCMsd(Int_t runNumber) {
    
    /*Ntupling the MC Vertex information*/
    msdGeo    = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
-   TAMSDparGeo* geomap   = (TAMSDparGeo*) msdGeo->Object();
+   TAMSDparGeo* geomap = (TAMSDparGeo*) msdGeo->Object();
    TString parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
@@ -217,10 +219,15 @@ void FillMCTw(Int_t runNumber)
    Float_t kinE_beam = parGeoG->GetBeamPar().Energy; //GeV/u
    
    twGeo    = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
-   TATWparGeo* geomap   = (TATWparGeo*) twGeo->Object();
+   TATWparGeo* geomap  = (TATWparGeo*) twGeo->Object();
    TString parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
    
+   TAGparaDsc* twConf = new TAGparaDsc("twConf", new TATWparConf());
+   TATWparConf* parConf = (TATWparConf*)twConf->Object();
+   parFileName = campManager->GetCurConfFile(TATWparGeo::GetBaseName(), runNumber);
+   parConf->FromFile(parFileName.Data());
+      
    TAGparaDsc* twCal   = new TAGparaDsc("twCal", new TATWparCal());
    TATWparCal* parCal   = (TATWparCal*) twCal->Object();
    parFileName = campManager->GetCurMapFile(TATWparGeo::GetBaseName(), runNumber);
@@ -248,7 +255,7 @@ void FillMCTw(Int_t runNumber)
    
    vtActReader->SetupBranch(stMc, TAMCntuHit::GetStcBranchName());
    vtActReader->SetupBranch(twMc, TAMCntuHit::GetTofBranchName());
-   twActNtu  = new TATWactNtuHitMC("twActNtu", twMc, stMc, vtEve, twNtu, twCal, tgGeo, false, false);
+   twActNtu  = new TATWactNtuHitMC("twActNtu", twMc, stMc, vtEve, twNtu, twConf, twCal, tgGeo);
    twActRec  = new TATWactNtuPoint("twActRec", twNtu, twRec, twGeo, twCal);
 }
 
@@ -259,6 +266,11 @@ void FillMCCa(Int_t runNumber)
    TACAparGeo* geomap   = (TACAparGeo*) caGeo->Object();
    TString parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
+   
+   TAGparaDsc* caConf = new TAGparaDsc("caConf", new TACAparConf());
+   TACAparConf* parConf = (TACAparConf*)caConf->Object();
+   parFileName = campManager->GetCurConfFile(TACAparGeo::GetBaseName(), runNumber);
+   parConf->FromFile(parFileName.Data());
    
    TAGparaDsc* caCal  = new TAGparaDsc("caCal", new TACAparCal());
    TACAparCal* parCal = (TACAparCal*)caCal->Object();
@@ -274,7 +286,7 @@ void FillMCCa(Int_t runNumber)
    
    vtActReader->SetupBranch(caMc, TAMCntuHit::GetCalBranchName());
    caActNtu  = new TACAactNtuHitMC("caActNtu", caMc, vtEve, caNtu, caGeo, caCal, tgGeo);
-   caActClus = new TACAactNtuCluster("caActClus", caNtu, caClus, caGeo, 0x0, twRec);
+   caActClus = new TACAactNtuCluster("caActClus", caNtu, caClus, caGeo, 0x0, 0x0, twRec);
 }
 
 void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 3, TString expName = "12C_200", Int_t runNumber = 1)

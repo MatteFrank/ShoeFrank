@@ -15,10 +15,6 @@ void DisplayMcFOOT(TString file = "16O_C_200_trig_shoereg.root", TString expName
 //void DisplayMcFOOT(TString file = "12C_C_200shoe.root", TString expName = "12C_200", Int_t runNumber = 1)
 //void DisplayMcFOOT(TString file = "12C_C_200.root", TString expName = "12C_200", Int_t runNumber = 1)
 {
-   TAGbaseEventDisplay::SetVtxTrackingAlgo('F');
-//   TAGbaseEventDisplay::EnableItrTracking();
-//   TAGbaseEventDisplay::DisableTracking();
-   
    TAGeventDisplayMC::Instance(expName, runNumber)->ShowDisplay(file);
 }
 

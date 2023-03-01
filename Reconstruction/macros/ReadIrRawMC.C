@@ -101,7 +101,6 @@ void FillMCVertex(Int_t runNumber) {
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
    parconf->FromFile();
    
-   TAVTparConf::SetHistoMap();
    vtActReader  = new TAGactTreeReader("vtActEvtReader");
    vtActReader->SetupBranch(vtMc, TAMCntuHit::GetVtxBranchName());
    vtActReader->SetupBranch(vtEve,TAMCntuPart::GetBranchName());

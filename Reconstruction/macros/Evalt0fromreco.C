@@ -50,8 +50,8 @@ void Evalt0fromreco(TString in_filename, Bool_t evalreso=false){
         cout<<"i="<<i<<"  t0="<<tdcraw->GetBinCenter(start_bin)<<endl;
     if(start_bin==-1000)
       cout<<"WARNING: check if your tdc bin is ok!!! "<<"  tdcchannel="<<i<<"   peak_bin="<<peak_bin<<"   start_bin="<<start_bin<<"   MaximumBin="<<tdcraw->GetMaximumBin()<<endl;
-    if(tdcraw->GetEntriesFast()<1000)
-      cout<<"WARNING: the number of hits is low:   tdcchannel="<<i<<"  i="<<i<<" number of hits:"<<tdcraw->GetEntriesFast()<<endl;
+    if(tdcraw->GetEntries()<1000)
+      cout<<"WARNING: the number of hits is low:   tdcchannel="<<i<<"  i="<<i<<" number of hits:"<<tdcraw->GetEntries()<<endl;
   }
 
 
@@ -62,8 +62,8 @@ void Evalt0fromreco(TString in_filename, Bool_t evalreso=false){
     for(Int_t i=0;i<100;i++){
       // reso=((TH1D*)gDirectory->Get(Form("BM/bmTrackResDist_%d",i)));        //for gsi2021
       reso=((TH1D*)gDirectory->Get(Form("BM/bmTrackResDist_%d",i)));          //for  bmgsi2020std.root
-      if(reso->GetEntriesFast()>300){
-        gaus->SetParameters(reso->GetEntriesFast(),reso->GetMean(),reso->GetStdDev());
+      if(reso->GetEntries()>300){
+        gaus->SetParameters(reso->GetEntries(),reso->GetMean(),reso->GetStdDev());
         reso->Fit(gaus,"QR+");
         fpParNewDistRes->SetBinContent(i+1,gaus->GetParameter(2));
       }else{

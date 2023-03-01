@@ -1,5 +1,5 @@
 
-#if defined(__CLING__)
+#if !defined(__CINT__) || defined(__MAKECINT__)
    // ROOT6-specific code here ...
 #include "TString.h"
 #include "TAMSDparGeo.hxx"

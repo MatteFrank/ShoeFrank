@@ -126,7 +126,6 @@ void FillVertex()
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
    parconf->FromFile("./config/TAVTdetector.cfg");
    
-   TAVTparConf::SetHistoMap();
    TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());

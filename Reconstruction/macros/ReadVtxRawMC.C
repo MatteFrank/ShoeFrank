@@ -56,7 +56,6 @@ void FillVertex(Int_t runNumber)
   parFileName = campManager->GetCurConfFile(TAVTparGeo::GetBaseName(), runNumber);
   parconf->FromFile(parFileName.Data());
   
-  TAVTparConf::SetHistoMap();
   TAGdataDsc* vtEve  = new TAGdataDsc("vtEve", new TAMCntuPart());
   TAGdataDsc* vtMc   = new TAGdataDsc("vtMc", new TAMCntuHit());
   TAGdataDsc* vtNtu  = new TAGdataDsc("vtNtu", new TAVTntuHit());

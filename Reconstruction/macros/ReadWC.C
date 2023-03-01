@@ -36,11 +36,12 @@
 #endif
 
 // main
-TAGgeoTrafo*      pGeoTrafo = 0x0;
-TAGactTreeWriter* outFile   = 0x0;
-TAGactWCreader*   wcFile    = 0x0;
-TAPLactNtuHit*    stActNtu  = 0x0;
-TACEactNtuHit*    twActNtu  = 0x0;
+TAGgeoTrafo*        pGeoTrafo   = 0x0;
+TAGcampaignManager* campManager = 0x0;
+TAGactTreeWriter*   outFile     = 0x0;
+TAGactWCreader*     wcFile      = 0x0;
+TAPLactNtuHit*      stActNtu    = 0x0;
+TACEactNtuHit*      twActNtu    = 0x0;
 
 // tree flag
 Bool_t treeFlag = true;
@@ -57,7 +58,7 @@ void FillClinm(Int_t runNumber)
       
    TAGparaDsc* wcMap = new TAGparaDsc("wcMap", new TAGbaseWCparMap());
    TAGbaseWCparMap* map = (TAGbaseWCparMap*) wcMap->Object();
-   TString parFileName = campManager->GetCurMapFile(TANEparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurMapFile(TACEparGeo::GetBaseName(), runNumber);
    map->FromFile(parFileName.Data());
 
    
@@ -110,7 +111,7 @@ void ReadWC(TString name = "Run_1200plas_1500plasnew_backTipex_2plas_coinc_24.6M
 
    outFile = new TAGactTreeWriter("outFile");
    
-   FillClinm();
+   FillClinm(runNumber);
    char path[400];
    strcpy(path, name.Data());
    wcFile->Open(path);

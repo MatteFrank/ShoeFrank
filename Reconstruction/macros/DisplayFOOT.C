@@ -14,7 +14,6 @@ void DisplayFOOT(TString file = "dataRaw/data_test.00005300.physics_foot.daq.RAW
 //void DisplayFOOT(TString file = "dataRaw/data_built.2211.physics_foot.daq.VTX.1.dat", TString expName = "GSI", Int_t runNumber = 2211)
 //void DisplayFOOT(TString file = "./run_2211", TString expName = "GSI", Int_t runNumber = 2211)
 {
-   //TAGbaseEventDisplay::SetVtxTrackingAlgo('F');
    //TAGbaseEventDisplay::EnableStdAlone();
    TAGeventDisplay::Instance(expName, runNumber)->ShowDisplay(file);
 }

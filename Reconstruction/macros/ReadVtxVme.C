@@ -51,7 +51,6 @@ void FillVertex()
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
    parconf->FromFile("./config/GSI/TAVTdetector.cfg");
    
-   TAVTparConf::SetHistoMap();
    TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
    TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
@@ -74,10 +73,7 @@ void FillVertex()
 
 void ReadVtxVme(TString path = "./run_1026", Int_t nMaxEvts = 10000)
 {
-   TAGroot tagr;
-   tagr.SetCampaignNumber(100);
-   tagr.SetRunNumber(1);
-   
+   TAGroot tagr;   
    TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
    geoTrafo->FromFile();
    
