@@ -45,6 +45,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/CompileMacro.py.cmake"     "
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/nightbuild.csh)
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_ui10.csh)
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_tier1.sh)
+execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/CompileMacro.py)
 
 
 #----------------------------------------------------------------------------

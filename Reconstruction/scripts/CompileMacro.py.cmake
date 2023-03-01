@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 # macro to compile all macros in Reconstruction/macros
 #
 # usage: python3 CompileMacro.py > & compile.txt &
