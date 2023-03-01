@@ -4,8 +4,8 @@
 
 import os
 
-os.environ["DYLD_LIBRARY_PATH"] = "/Users/cfinck/Hadron/FOOT/build/libs//lib"
-path1 = "/Users/cfinck/Hadron/FOOT/trunk/Reconstruction/macros/"
+os.environ["DYLD_LIBRARY_PATH"] = "@CMAKE_BINARY_DIR@/libs/lib"
+path1 = "@CMAKE_CURRENT_SOURCE_DIR@/macros/"
 
 for filename in os.listdir(path1):
    cmd = 'root -q -e ' + '\'.L ' + filename + '+' '\''
