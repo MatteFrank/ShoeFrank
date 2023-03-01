@@ -22,8 +22,8 @@
 #include "TACAparGeo.hxx"
 #include "TAITparGeo.hxx"
 #include "TATWparGeo.hxx"
-#include "TAVTntuRaw.hxx"
-#include "TACAntuRaw.hxx"
+#include "TAVTntuHit.hxx"
+#include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"
@@ -111,7 +111,7 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
 
       //loop of MC truth
       for (int ii = 0; ii<eve->GetTracksN(); ii++){
-         TAMCeveTrack* track = eve->GetTrack(ii);
+         TAMCpart* track = eve->GetTrack(ii);
          TVector3 pos_in_track = track->GetInitPos();
          TVector3 pos_out_track = track->GetFinalPos();
          if (ii==0){
@@ -153,7 +153,7 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
          /////// loop over number of clusters
          for(Int_t i = 0; i < nClus; ++i){
             TACAcluster* clus = caClus->GetCluster(i);
-            Float_t clus_en = clus->GetCharge();          //energy released in the cluster
+            Float_t clus_en = clus->GetEnergy();          //energy released in the cluster
             Float_t hit_en = 0;                           //energy released in the crystals
             
             Int_t nHits = clus->GetHitsN();               //number of crystals hit in that cluster
@@ -165,7 +165,7 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
             /////// loop over crystals hit
             for (Int_t j = 0; j < nHits; ++j){
                // printf("  ## HIT: %d\n", j);
-               TACAntuHit* hit = clus->GetHit(j);
+               TACAhit* hit = clus->GetHit(j);
                Int_t cry_id = hit->GetCrystalId();
                Float_t enDep = hit->GetCharge();
                hit_en += hit->GetCharge();
@@ -180,7 +180,7 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
                   Int_t idx = hit->GetMcTrackIdx(k); // index of the tracks in the track branch
                   Int_t idx_ca = hit->GetMcIndex(k); // index of the tracks in the calo branch
                   // printf("    %d) Part ID %d ", k, idx);
-                  TAMCeveTrack* track = eve->GetTrack(idx);
+                  TAMCpart* track = eve->GetTrack(idx);
                   // printf("charge %d - mass %g - motherID: %d", track->GetCharge(), track->GetMass(), track->GetMotherID());
                   TAMChit* mcHit = caMc->GetHit(idx_ca);
                   Double_t deltaE = mcHit->GetDeltaE();
@@ -219,7 +219,7 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
 
          for(itr = idx_fg_clus.begin(); itr!= idx_fg_clus.end(); ++itr){
             Int_t idxxx = *itr;
-            TAMCeveTrack* track = eve->GetTrack(idxxx);
+            TAMCpart* track = eve->GetTrack(idxxx);
             Double_t p = sqrt( track->GetInitP()[0]*track->GetInitP()[0] + track->GetInitP()[1]*track->GetInitP()[1] + track->GetInitP()[2]*track->GetInitP()[2]);
             Double_t ek =sqrt(p*p + track->GetMass()*track->GetMass()) - track->GetMass();
             if (track->GetCharge()<7.) hChargeIon_N[track->GetCharge()]->Fill(ek);
@@ -230,21 +230,21 @@ void PrintCaClusMcInfo(TString nameFile = Form("200_C_TG_TW_CALO_1e5_Out_%s.root
    } //end loop events
 
    printf("\n-------- OUTPUT ---------\n");
-   printf("p arrived: %f\n", hChargeIon_D[1]->GetEntriesFast());
-   printf("He arrived: %f\n", hChargeIon_D[2]->GetEntriesFast());
-   printf("Li arrived: %f\n", hChargeIon_D[3]->GetEntriesFast());
-   printf("Be arrived: %f\n", hChargeIon_D[4]->GetEntriesFast());
-   printf("B arrived: %f\n", hChargeIon_D[5]->GetEntriesFast());
-   printf("C arrived: %f\n", hChargeIon_D[6]->GetEntriesFast());
-   printf("N arrived: %f\n", hChargeIon_D[0]->GetEntriesFast());
+   printf("p arrived: %f\n", hChargeIon_D[1]->GetEntries());
+   printf("He arrived: %f\n", hChargeIon_D[2]->GetEntries());
+   printf("Li arrived: %f\n", hChargeIon_D[3]->GetEntries());
+   printf("Be arrived: %f\n", hChargeIon_D[4]->GetEntries());
+   printf("B arrived: %f\n", hChargeIon_D[5]->GetEntries());
+   printf("C arrived: %f\n", hChargeIon_D[6]->GetEntries());
+   printf("N arrived: %f\n", hChargeIon_D[0]->GetEntries());
 
-   printf("p seen by Calo: %f\n", hChargeIon_N[1]->GetEntriesFast());
-   printf("He seen by Calo: %f\n", hChargeIon_N[2]->GetEntriesFast());
-   printf("Li seen by Calo: %f\n", hChargeIon_N[3]->GetEntriesFast());
-   printf("Be seen by Calo: %f\n", hChargeIon_N[4]->GetEntriesFast());
-   printf("B seen by Calo: %f\n", hChargeIon_N[5]->GetEntriesFast());
-   printf("C seen by Calo: %f\n", hChargeIon_N[6]->GetEntriesFast());
-   printf("N seen by Calo: %f\n", hChargeIon_N[0]->GetEntriesFast());
+   printf("p seen by Calo: %f\n", hChargeIon_N[1]->GetEntries());
+   printf("He seen by Calo: %f\n", hChargeIon_N[2]->GetEntries());
+   printf("Li seen by Calo: %f\n", hChargeIon_N[3]->GetEntries());
+   printf("Be seen by Calo: %f\n", hChargeIon_N[4]->GetEntries());
+   printf("B seen by Calo: %f\n", hChargeIon_N[5]->GetEntries());
+   printf("C seen by Calo: %f\n", hChargeIon_N[6]->GetEntries());
+   printf("N seen by Calo: %f\n", hChargeIon_N[0]->GetEntries());
 
    cHitPerClus->cd();
    hHitPerClus->Draw("hist");
