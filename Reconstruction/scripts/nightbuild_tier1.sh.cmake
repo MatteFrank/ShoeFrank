@@ -22,7 +22,7 @@ source /opt/exp_software/foot/root/root_install/bin/thisroot.sh
 #foot
 export FOOTLIBS=@CMAKE_BINARY_DIR@/libs/
 export FOOTBUILD=@CMAKE_BINARY_DIR@
-export FOOTSRC=@CMAKE_CURRENT_SOURCE_DIR@/../../
+export FOOTSRC=@CMAKE_CURRENT_SOURCE_DIR@/../
 export FOOTREC=$FOOTBUILD/Reconstruction/
 export FOOTRAWDATA=/storage/gpfs_data/foot_tier3/GSI2021
 export FOOTMCDATA=/storage/gpfs_data/foot_tier3/Simulation/GSI2021_MC
