@@ -15,7 +15,7 @@ source $YBASEPATH/bin/thisroot.csh
 #define env
 setenv FOOTLIBS @CMAKE_BINARY_DIR@/libs/
 setenv FOOTBUILD @CMAKE_BINARY_DIR@
-setenv FOOTSRC @CMAKE_CURRENT_SOURCE_DIR@/../../
+setenv FOOTSRC @CMAKE_CURRENT_SOURCE_DIR@/../
 setenv FOOTREC $FOOTBUILD/Reconstruction/
 setenv FOOTRAWDATA $FOOTBUILD/Reconstruction/dataRaw
 setenv FOOTMCDATA $FOOTBUILD/Reconstruction/dataMC
