@@ -12,6 +12,7 @@
 #pragma link C++ class TACAparMap+;
 #pragma link C++ class TACAactNtuHitMC+;
 #pragma link C++ class TACAactNtuHit+;
+#pragma link C++ class TACAactBaseNtuCluster+;
 #pragma link C++ class TACAactNtuCluster+;
 #pragma link C++ class TACAactNtuClusterP+;
 #pragma link C++ class TACAcluster+;

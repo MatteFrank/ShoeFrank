@@ -26,6 +26,7 @@ set( with_dictionnaries
    TACAdigitizer
    TACAactNtuHitMC
    TACAactNtuHit
+   TACAactBaseNtuCluster
    TACAactNtuCluster
    TACAactNtuClusterP
    TACAparGeo
