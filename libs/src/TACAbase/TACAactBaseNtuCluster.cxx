@@ -48,7 +48,7 @@ TACAactBaseNtuCluster::TACAactBaseNtuCluster(const char* name, TAGdataDsc* pNtuR
    AddPara(pGeoMap,     "TACAparGeo");
    if (pCalib)
       AddPara(pCalib,     "TACAparCal");
-   //AddPara(pConfig, "TACAparConf");
+   AddPara(pConfig, "TACAparConf");
 
    TACAparGeo* parGeo  = (TACAparGeo*) fpGeoMap->Object();
    fDimX = max(parGeo->GetMaxNumLines(), parGeo->GetMaxNumColumns());

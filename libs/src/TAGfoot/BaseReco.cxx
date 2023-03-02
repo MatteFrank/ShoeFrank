@@ -1005,14 +1005,14 @@ void BaseReco::CreateRecActionCa()
    
    if (fCalClusterAlgo.Contains("Std") ) {
       if (fFlagMC)
-         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpParConfCa, fpNtuRecTw);
       else
-         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
+         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, fpParConfCa, fpNtuRecTw);
    } else if (fCalClusterAlgo.Contains("Padme") ) {
       if (fFlagMC)
-         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpParConfCa, fpNtuRecTw);
       else
-         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
+         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, fpParConfCa, fpNtuRecTw);
    }
    
    if (fFlagHisto)

@@ -453,7 +453,7 @@ protected:
    TATWactNtuPoint*      fActPointTw;    ///< action for TW points
    TATWactCalibTW*       fActCalibTw;    ///< action for TW calibration
 
-   TAGactNtuCluster2D*   fActClusCa;     ///< action for clusters
+   TACAactBaseNtuCluster* fActClusCa;     ///< action for clusters
    TACAactNtuHit*        fActNtuHitCa;   ///< action for hit
 
 #ifdef TOE_FLAG

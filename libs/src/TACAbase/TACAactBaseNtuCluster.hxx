@@ -25,10 +25,10 @@ class TH2F;
 class TACAactBaseNtuCluster : public TAGactNtuCluster2D {
    
 public:
-   explicit  TACAactBaseNtuCluster(const char* name      = 0,  TAGdataDsc* p_nturaw  = 0,
-                               TAGdataDsc* p_ntuclus = 0, TAGparaDsc* p_geomap = 0,
-                               TAGparaDsc*  p_calib  = 0,
-                               TAGparaDsc*  p_config = 0, TAGdataDsc* p_twpt = 0);
+   explicit  TACAactBaseNtuCluster(const char* name      = 0, TAGdataDsc* p_nturaw = 0,
+                                   TAGdataDsc* p_ntuclus = 0, TAGparaDsc* p_geomap = 0,
+                                   TAGparaDsc*  p_calib  = 0,
+                                   TAGparaDsc*  p_config = 0, TAGdataDsc* p_twpt = 0);
    
    virtual ~TACAactBaseNtuCluster();
    
