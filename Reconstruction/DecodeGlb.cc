@@ -78,7 +78,7 @@ int main (int argc, char *argv[])  {
       exit(-1);
    }
    
-   if (lrc) {
+   if (!lrc) {
      if (mc) 
        glbRec = new LocalRecoMC(exp, runNb, in, out);
      else
