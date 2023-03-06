@@ -272,6 +272,7 @@ void TAEDbaseInterface::ShowDisplay(const TString fileName)
    
    SetFileName(fileName);
    ReadParFiles();
+   AdditionalTracking();
    CreateRawAction();
    CreateRecAction();
    AddRequiredItem();

@@ -64,6 +64,9 @@ public:
    //! Read parameters files
    virtual void ReadParFiles() = 0;
    
+   //! Read parameters files
+   virtual void AdditionalTracking() = 0;
+   
    //! Open File
    virtual void SetFileName(const TString fileName) = 0;
    

@@ -45,6 +45,10 @@ TAMSDactNtuTrack::TAMSDactNtuTrack(const char* name,
       AddDataIn(pNtuClus,   "TAMSDntuPoint");
       AddDataOut(pNtuTrack, "TAMSDntuTrack");
    }
+   
+   TAMSDparConf* config = (TAMSDparConf*)fpConfig->Object();
+   fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
+   fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
 }
 
 //------------------------------------------+-----------------------------------

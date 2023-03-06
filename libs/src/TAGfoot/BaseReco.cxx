@@ -39,7 +39,7 @@ ClassImp(BaseReco)
 
 Bool_t  BaseReco::fgFlagMsdTrack  = false;
 Bool_t  BaseReco::fgFlagItrTrack  = false;
-Bool_t  BaseReco::fSaveMcFlag     = true;
+Bool_t  BaseReco::fgSaveMcFlag     = true;
 
 //__________________________________________________________
 //! Constructor
@@ -83,6 +83,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParConfVtx(0x0),
    fpParConfIt(0x0),
    fpParConfMsd(0x0),
+   fpParConfTw(0x0),
+   fpParConfCa(0x0),
    fpDatRawSt(0x0),
    fpDatRawCa(0x0),
    fpNtuHitSt(0x0),
@@ -130,10 +132,10 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagTrack(false),
    fFlagTWbarCalib(false),
    fFlagRateSmearTw(false),
-   fgVtxTrackingAlgo("Full"),
-   fgItrTrackingAlgo("Full"),
-   fgMsdTrackingAlgo("Full"),
-   fgCalClusterAlgo("Padme"),
+   fVtxTrackingAlgo("Full"),
+   fItrTrackingAlgo("Full"),
+   fMsdTrackingAlgo("Full"),
+   fCalClusterAlgo("Padme"),
    fFlagMC(false),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),
@@ -617,7 +619,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files dipole
-   if (TAGrecoManager::GetPar()->IncludeDI() || TAGrecoManager::GetPar()->IsLocalReco() ) {
+   if (TAGrecoManager::GetPar()->IncludeDI() ) {
       fpParGeoDi = new TAGparaDsc(TADIparGeo::GetDefParaName(), new TADIparGeo());
       TADIparGeo* parGeo = (TADIparGeo*)fpParGeoDi->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
@@ -630,7 +632,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for vertex
-   if (TAGrecoManager::GetPar()->IncludeVT() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeVT()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
@@ -640,7 +642,9 @@ void BaseReco::ReadParFiles()
       TAVTparConf* parConf = (TAVTparConf*)fpParConfVtx->Object();
       parFileName = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
-
+    
+      fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
+      
       if(!fFlagMC) {
          fpParMapVtx = new TAGparaDsc("vtMap", new TAVTparMap());
          TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
@@ -650,7 +654,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for inner tracker
-   if (TAGrecoManager::GetPar()->IncludeIT() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
@@ -661,6 +665,11 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
+      if (parConf->GetAnalysisPar().TrackingFlag) {
+         EnableItrTracking();
+         fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
+      }
+      
       if(!fFlagMC) {
          fpParMapIt = new TAGparaDsc("itMap", new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
@@ -670,7 +679,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for multi strip detector
-   if (TAGrecoManager::GetPar()->IncludeMSD() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
@@ -681,6 +690,11 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
+      if (parConf->GetAnalysisPar().TrackingFlag) {
+         EnableMsdTracking();
+         fMsdTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
+      }
+      
       if(!fFlagMC){
          fpParMapMsd = new TAGparaDsc("msdMap", new TAMSDparMap());
          TAMSDparMap*  parMapMsd = (TAMSDparMap*)fpParMapMsd->Object();
@@ -699,7 +713,7 @@ void BaseReco::ReadParFiles()
    }
 
    // initialise par files for Tof Wall
-   if (TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
       fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
@@ -773,6 +787,13 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName);
 
+      fpParConfCa = new TAGparaDsc("caConf", new TACAparConf());
+      TACAparConf* parConf = (TACAparConf*)fpParConfCa->Object();
+      parFileName = fCampManager->GetCurConfFile(TACAparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      fCalClusterAlgo  = parConf->GetAnalysisPar().ClusteringAlgo;
+      
       fpParCalCa = new TAGparaDsc("caCal", new TACAparCal());
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
 
@@ -865,12 +886,12 @@ void BaseReco::CreateRecActionVtx()
       fActClusVtx->CreateHistogram();
 
    if (fFlagTrack) {
-      if (fgVtxTrackingAlgo.Contains("Std") ) {
+      if (fVtxTrackingAlgo.Contains("Std") ) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackVtx  = new TAVTactNtuTrack("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx, 0, fpNtuTrackBm);
          else
             fActTrackVtx  = new TAVTactNtuTrack("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx);
-      } else if (fgVtxTrackingAlgo.Contains("Full")) {
+      } else if (fVtxTrackingAlgo.Contains("Full")) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackVtx  = new TAVTactNtuTrackF("vtActTrack", fpNtuClusVtx, fpNtuTrackVtx, fpParConfVtx, fpParGeoVtx, 0, fpNtuTrackBm);
          else
@@ -913,13 +934,13 @@ void BaseReco::CreateRecActionIt()
    if (fgFlagItrTrack && fFlagTrack) {
       fpNtuTrackIt = new TAGdataDsc("itTrack", new TAITntuTrack());
 
-      if (fgItrTrackingAlgo.Contains("Std") ) {
+      if (fItrTrackingAlgo.Contains("Std") ) {
          if (TAGrecoManager::GetPar()->IncludeBM())
             fActTrackIt = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpNtuTrackBm);
          else
             fActTrackIt = new TAITactNtuTrack("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt);
 
-      }  else if (fgItrTrackingAlgo.Contains("Full")) {
+      }  else if (fItrTrackingAlgo.Contains("Full")) {
          fActTrackIt = new TAITactNtuTrackF("itActTrack", fpNtuClusIt, fpNtuTrackIt, fpParConfIt, fpParGeoIt, 0x0, fpParGeoG);
       }
 
@@ -948,10 +969,10 @@ void BaseReco::CreateRecActionMsd()
    if (fgFlagMsdTrack && fFlagTrack) {
       fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
 
-      if (fgMsdTrackingAlgo.Contains("Std") ) {
+      if (fMsdTrackingAlgo.Contains("Std") ) {
          fActTrackMsd = new TAMSDactNtuTrack("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd);
 
-      }  else if (fgMsdTrackingAlgo.Contains("Full")) {
+      }  else if (fMsdTrackingAlgo.Contains("Full")) {
          fActTrackMsd = new TAMSDactNtuTrackF("msdActTrack", fpNtuRecMsd, fpNtuTrackMsd, fpParConfMsd, fpParGeoMsd, fpParGeoG);
       }
 
@@ -982,16 +1003,16 @@ void BaseReco::CreateRecActionCa()
    if (fFlagMC)
       TACAactNtuCluster::DisableChargeThres();
    
-   if (fgCalClusterAlgo.Contains("Std") ) {
+   if (fCalClusterAlgo.Contains("Std") ) {
       if (fFlagMC)
-         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpParConfCa, fpNtuRecTw);
       else
-         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
-   } else if (fgCalClusterAlgo.Contains("Padme") ) {
+         fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, fpParConfCa, fpNtuRecTw);
+   } else if (fCalClusterAlgo.Contains("Padme") ) {
       if (fFlagMC)
-         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, 0x0, fpNtuRecTw);
+         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, 0x0, fpParConfCa, fpNtuRecTw);
       else
-         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, 0x0, fpNtuRecTw);
+         fActClusCa = new TACAactNtuClusterP("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, fpParConfCa, fpNtuRecTw);
    }
    
    if (fFlagHisto)
@@ -1098,7 +1119,7 @@ void BaseReco::SetL0TreeBranches()
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
     fActEvtReader = new TAGactTreeReader("evtReader");
      
-    if (!fSaveMcFlag)
+    if (!fgSaveMcFlag)
        if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull()) {
           fActEvtReader->AddFriendTree(fFriendFileName,fFriendTreeName);
           Info("SetL0TreeBranches()", "\n Open file %s for friend tree %s\n", fFriendFileName.Data(), fFriendTreeName.Data());
@@ -1308,60 +1329,6 @@ void BaseReco::AddRecRequiredItem()
 }
 
 //__________________________________________________________
-//! Set VTX tracking algorithm
-//!
-//! \param[in] c toggle btw standard and combinaison algorithm
-void BaseReco::SetVtxTrackingAlgo(char c)
-{
-   switch (c) {
-      case 'S':
-         fgVtxTrackingAlgo = "Std";
-         break;
-      case 'F':
-         fgVtxTrackingAlgo = "Full";
-         break;
-      default:
-         printf("SetVtxTrackingAlgo: Wrongly set tracking algorithm");
-   }
-}
-
-//__________________________________________________________
-//! Set ITR tracking algorithm
-//!
-//! \param[in] c toggle btw standard and combinaison algorithm
-void BaseReco::SetItrTrackingAlgo(char c)
-{
-   switch (c) {
-      case 'S':
-         fgItrTrackingAlgo = "Std";
-         break;
-      case 'F':
-         fgItrTrackingAlgo = "Full";
-         break;
-      default:
-         printf("SetItrTrackingAlgo: Wrongly set tracking algorithm");
-   }
-}
-
-//__________________________________________________________
-//! Set MSD tracking algorithm
-//!
-//! \param[in] c toggle btw standard and combinaison algorithm
-void BaseReco::SetMsdTrackingAlgo(char c)
-{
-   switch (c) {
-      case 'S':
-         fgMsdTrackingAlgo = "Std";
-         break;
-      case 'F':
-         fgMsdTrackingAlgo = "Full";
-         break;
-      default:
-         printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
-   }
-}
-
-//__________________________________________________________
 //! Set CAL clustering  algorithm
 //!
 //! \param[in] c toggle btw standard and padme algorithm
@@ -1369,10 +1336,10 @@ void BaseReco::SetCalClusterAlgo(char c)
 {
    switch (c) {
       case 'S':
-         fgMsdTrackingAlgo = "Std";
+         fMsdTrackingAlgo = "Std";
          break;
       case 'P':
-         fgMsdTrackingAlgo = "Padme";
+         fMsdTrackingAlgo = "Padme";
          break;
       default:
          printf("SetCalClusterAlgo: Wrongly set clustering algorithm");

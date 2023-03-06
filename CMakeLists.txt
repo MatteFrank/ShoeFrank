@@ -34,10 +34,6 @@ option(ANC_DIR "Include ancillary" OFF)
 option(FILECOPY "Files copying" OFF)
 
 #------------------------------------------------------------------------------
-# option Bench mark
-option(BENCHMARK "Run benchmark script" OFF)
-
-#------------------------------------------------------------------------------
 # Enforce an out-of-source builds before anything else
 #
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})

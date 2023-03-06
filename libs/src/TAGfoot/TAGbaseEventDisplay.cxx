@@ -51,8 +51,6 @@
 //! Class Imp
 ClassImp(TAGbaseEventDisplay)
 
-TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Full";
-TString TAGbaseEventDisplay::fgItrTrackingAlgo = "Full";
 TString TAGbaseEventDisplay::fgMsdTrackingAlgo = "Full";
 Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
@@ -88,9 +86,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
    
-   fFlagTrack    = TAGrecoManager::GetPar()->IsTracking();
-   fFlagMsdTrack = BaseReco::IsMsdTracking();
-   fFlagItrTrack = BaseReco::IsItrTracking();
+   fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
 
    // default constructon
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {
@@ -230,6 +226,35 @@ void TAGbaseEventDisplay::ReadParFiles()
 }
 
 //__________________________________________________________
+//! Read parameters files
+void TAGbaseEventDisplay::AdditionalTracking()
+{
+   
+   fFlagMsdTrack = BaseReco::IsMsdTracking();
+   fFlagItrTrack = BaseReco::IsItrTracking();
+
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      if (fFlagItrTrack) {
+         fItTrackDisplay = new TAEDtrack("Inner Tracker Track");
+         fItTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fItTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fItTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fItTrackDisplay->SetPickable(true);
+      }
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      if (fFlagMsdTrack) {
+         fMsdTrackDisplay = new TAEDtrack("Micro Strip Track");
+         fMsdTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fMsdTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fMsdTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fMsdTrackDisplay->SetPickable(true);
+      }
+   }
+}
+
+//__________________________________________________________
 //! Set reconstruction alorithm options for trackers
 void TAGbaseEventDisplay::SetRecoOptions()
 {
@@ -237,12 +262,8 @@ void TAGbaseEventDisplay::SetRecoOptions()
    fReco->DisableSaveHits();
    fReco->EnableHisto();
    
-   if (fFlagTrack) {
-      fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
-      fReco->SetItrTrackingAlgo(fgItrTrackingAlgo[0]);
-      fReco->SetMsdTrackingAlgo(fgMsdTrackingAlgo[0]);
+   if (fFlagTrack) 
       fReco->EnableTracking();
-   }
    
    fReco->GlobalSettings();
    

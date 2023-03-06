@@ -26,7 +26,7 @@
 //! Class Imp
 ClassImp(ConvertNtuple)
 
-Bool_t  ConvertNtuple::fSaveMcFlag = true;
+Bool_t  ConvertNtuple::fgSaveMcFlag = true;
 
 //__________________________________________________________
 //! Constructor
@@ -514,7 +514,7 @@ void ConvertNtuple::SetL0TreeBranches()
 {
    fActEvtReader = new TAGactTreeReader("evtReader");
    
-   if (!fSaveMcFlag)
+   if (!fgSaveMcFlag)
       if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull()) {
          fActEvtReader->AddFriendTree(fFriendFileName,fFriendTreeName);
          Info("SetL0TreeBranches()", "\n Open file %s for friend tree %s\n", fFriendFileName.Data(), fFriendTreeName.Data());

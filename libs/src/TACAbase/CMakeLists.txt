@@ -26,10 +26,12 @@ set( with_dictionnaries
    TACAdigitizer
    TACAactNtuHitMC
    TACAactNtuHit
+   TACAactBaseNtuCluster
    TACAactNtuCluster
    TACAactNtuClusterP
    TACAparGeo
    TACAparCal
+   TACAparConf
    TACAcalibrationMap
    TAGWDtrigInfo
    TAGactWDreader

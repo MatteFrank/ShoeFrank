@@ -38,7 +38,8 @@ public:
     \struct PolynomialFit_t
     \brief  polynonial fit  parameters
     */
-    struct PolynomialFit_t{
+    struct PolynomialFit_t  {
+       PolynomialFit_t() : parameter_x(), parameter_y() {}
         std::array<double, 4> parameter_x; ///< parameter x
         std::array<double, 2> parameter_y; ///< parameter y
     };

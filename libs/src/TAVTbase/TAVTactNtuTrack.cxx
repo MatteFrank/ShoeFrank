@@ -50,6 +50,9 @@ TAVTactNtuTrack::TAVTactNtuTrack(const char* name,
       AddDataIn(pNtuClus,   "TAVTntuCluster");
       AddDataOut(pNtuTrack, "TAVTntuTrack");
    }
+   TAVTparConf* config = (TAVTparConf*)fpConfig->Object();
+   fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
+   fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
 }
 
 //------------------------------------------+-----------------------------------

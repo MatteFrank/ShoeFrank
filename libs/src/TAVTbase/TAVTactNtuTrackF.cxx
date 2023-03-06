@@ -21,6 +21,7 @@
 #include "TAGgeoTrafo.hxx"
 
 #include "TAVTparGeo.hxx"
+#include "TAVTparConf.hxx"
 #include "TAVTtrack.hxx"
 #include "TAVTntuTrack.hxx"
 #include "TAVTactNtuTrackF.hxx"
@@ -54,6 +55,10 @@ TAVTactNtuTrackF::TAVTactNtuTrackF(const char* name,
       AddDataIn(pNtuClus,   "TAVTntuCluster");
       AddDataOut(pNtuTrack, "TAVTntuTrack");
    }
+   
+   TAVTparConf* config = (TAVTparConf*)fpConfig->Object();
+   fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
+   fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
 }
 
 //------------------------------------------+-----------------------------------

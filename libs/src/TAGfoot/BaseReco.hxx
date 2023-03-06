@@ -53,6 +53,7 @@
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"
 #include "TATWparConf.hxx"
+#include "TACAparConf.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TASTntuHit.hxx"
@@ -183,10 +184,8 @@ public:
    //! Set run number
    void SetRunNumber(Int_t run)                { fRunNumber = run; }
 
-  void SetRateRuns(Int_t run1, Int_t run2){
-    fRateInitRun=run1;
-    fRateEndRun=run2;
-  }
+   //! Set rate runs
+  void SetRateRuns(Int_t run1, Int_t run2)     { fRateInitRun=run1; fRateEndRun=run2; }
 
    //! Enable tree
    void EnableTree()           { fFlagTree = true;        }
@@ -229,16 +228,7 @@ public:
 
    //! Flag for MC data
    Bool_t IsMcData()           { return fFlagMC;          }
-   
-   // Set Vtx Tracking algorithm
-   void SetVtxTrackingAlgo(char c);
-   
-   // Set Itr Tracking algorithm
-   void SetItrTrackingAlgo(char c);
-   
-   // Set Msd Tracking algorithm
-   void SetMsdTrackingAlgo(char c);
-  
+     
    // Set Cal clusteing algorithm
    void SetCalClusterAlgo(char c);
    
@@ -339,11 +329,11 @@ public:
 
 public:
    //! Disable MC info saving in output tree
-   static void DisableSaveMc() { fSaveMcFlag = false; }
+   static void DisableSaveMc() { fgSaveMcFlag = false; }
    //! Enable MC info saving in output tree
-   static void EnableSaveMc()  { fSaveMcFlag = true;  }
+   static void EnableSaveMc()  { fgSaveMcFlag = true;  }
    //! Check MC info saving in output tree
-   static Bool_t IsSaveMc()    { return fSaveMcFlag;  }
+   static Bool_t IsSaveMc()    { return fgSaveMcFlag;  }
    
    //! return  MSD tracking
    static Bool_t IsMsdTracking()      { return fgFlagMsdTrack;    }
@@ -401,6 +391,7 @@ protected:
    TAGparaDsc*           fpParConfIt;     ///< ITR configuration parameter
    TAGparaDsc*           fpParConfMsd;    ///< MSD configuration parameter
    TAGparaDsc*           fpParConfTw;     ///< TW configuration parameter
+   TAGparaDsc*           fpParConfCa;     ///< CA configuration parameter
 
    TAGdataDsc*           fpDatRawSt;     ///< Raw hit input dsc for STC
    TAGdataDsc*           fpNtuHitSt;     ///< Hit input dsc for STC
@@ -462,7 +453,7 @@ protected:
    TATWactNtuPoint*      fActPointTw;    ///< action for TW points
    TATWactCalibTW*       fActCalibTw;    ///< action for TW calibration
 
-   TAGactNtuCluster2D*   fActClusCa;     ///< action for clusters
+   TACAactBaseNtuCluster* fActClusCa;     ///< action for clusters
    TACAactNtuHit*        fActNtuHitCa;   ///< action for hit
 
 #ifdef TOE_FLAG
@@ -481,10 +472,10 @@ protected:
    Bool_t                fFlagHisto;        ///< flag for histo generatiom
    Bool_t                fFlagTrack;        ///< flag for tracking
    Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar
-   TString               fgVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgCalClusterAlgo;  ///< cal tracking clustering ("std" for standard, "Padme" for PADME one)
+   TString               fVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fCalClusterAlgo;  ///< cal tracking clustering ("std" for standard, "Padme" for PADME one)
    Bool_t                fFlagRateSmearTw;  ///< TW eloss emaring due to rate
 
    Bool_t                fFlagMC;           ///< MC flag
@@ -520,7 +511,7 @@ protected:
 protected:
    static Bool_t fgItrTrackFlag; ///< ITR tracking flag
    static Bool_t fgMsdTrackFlag; ///< MSD tracking flag
-   static Bool_t fSaveMcFlag;    ///< MC saving flag
+   static Bool_t fgSaveMcFlag;    ///< MC saving flag
    static Bool_t fgFlagMsdTrack; ///< flag for MSD tracking
    static Bool_t fgFlagItrTrack; ///< flag for ITR tracking
 

@@ -324,7 +324,7 @@ void LocalRecoMC::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
   
-   if (!fSaveMcFlag)
+   if (!fgSaveMcFlag)
       return;
    
    fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());

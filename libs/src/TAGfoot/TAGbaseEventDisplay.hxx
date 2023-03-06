@@ -72,6 +72,8 @@ public:
 protected:   
    // Read parameter files
    void ReadParFiles();
+   // Read parameter files
+   void AdditionalTracking();
    // Set reconstruction options
    void SetRecoOptions();
    
@@ -94,52 +96,7 @@ protected:
    // Update elements
    void UpdateElements(const TString prefix);
    
-public:
-   //! Set VTX Tracking algorithm
-   static void SetVtxTrackingAlgo(char c)
-   {
-      switch (c) {
-         case 'S':
-            fgVtxTrackingAlgo = "Std";
-            break;
-         case 'F':
-            fgVtxTrackingAlgo = "Full";
-            break;
-         default:
-            printf("SetVtxTrackingAlgo: Wrongly set tracking algorithm");
-      }
-   }
-   
-   //! Set Itr Tracking algorithm
-   static void SetItrTrackingAlgo(char c)
-   {
-      switch (c) {
-         case 'S':
-            fgItrTrackingAlgo = "Std";
-            break;
-         case 'F':
-            fgItrTrackingAlgo = "Full";
-            break;
-         default:
-            printf("SetItrTrackingAlgo: Wrongly set tracking algorithm");
-      }
-   }
-   
-   //! Set MSD Tracking algorithm
-   static void SetMsdTrackingAlgo(char c)
-   {
-      switch (c) {
-         case 'S':
-            fgMsdTrackingAlgo = "Std";
-            break;
-         case 'F':
-            fgMsdTrackingAlgo = "Full";
-            break;
-         default:
-            printf("SetMsdTrackingAlgo: Wrongly set tracking algorithm");
-      }
-   }
-   
+public:   
    //! Disable stand alone DAQ
    static void DisableStdAlone()    { fgStdAloneFlag = false; }
    //! Enable stand alone DAQ
