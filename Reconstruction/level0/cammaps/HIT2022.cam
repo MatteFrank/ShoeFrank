@@ -32,10 +32,10 @@ NumberFiles: 1
 
 DetectorName: "MSD"
 NumberFiles: 5
-"./geomaps/HIT2022/TAMSDdetector.geo": 4709; 4741;
-"./config/HIT2022/TAMSDdetector.cfg": 4709; 4741;
-"./config/HIT2022/TAMSDdetector.map": 4709, 4741; 4745;
-"./calib/HIT2022/TAMSD_Pedestal.cal": 4709; 4741; 4745;
+"./geomaps/HIT2022/TAMSDdetector.geo": 4709; 4731;
+"./config/HIT2022/TAMSDdetector.cfg": 4709; 4731;
+"./config/HIT2022/TAMSDdetector.map": 4709; 4731;
+"./calib/HIT2022/TAMSD_Pedestal.cal": 4709; 4741; 4745; 4764; 4783; 4799; 4800; 4823; 4850; 4889;
 "./calib/HIT2022/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
