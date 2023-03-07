@@ -47,6 +47,13 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    gROOT->SetBatch(kTRUE);
    gErrorIgnoreLevel = kWarning;
 
+   //Check if the file exists
+   if (gSystem->AccessPathName(filename))
+   {
+      cout << "File " << filename << " does not exist" << endl;
+      return;
+   }
+
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
