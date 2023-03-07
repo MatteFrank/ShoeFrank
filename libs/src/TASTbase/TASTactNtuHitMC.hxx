@@ -6,6 +6,10 @@
 */
 /*------------------------------------------+---------------------------------*/
 
+#include <vector>
+
+#include "TASTntuHit.hxx"
+
 #include "TAMCflukaStruct.hxx"
 
 #include "TAGaction.hxx"
@@ -14,7 +18,7 @@
 class TASTdigitizer;
 class TASTactNtuHitMC : public TAGaction {
   public:
-    explicit        TASTactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_nturaw=0, EVENT_STRUCT* evStr=0);
+    explicit        TASTactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_ntuHit=0, EVENT_STRUCT* evStr=0);
    
     virtual         ~TASTactNtuHitMC();
 
@@ -22,16 +26,21 @@ class TASTactNtuHitMC : public TAGaction {
 
 
   private:
-    TAGdataDsc*     fpNtuMC;          // input mc hit
-    TAGdataDsc*     fpNtuEve;         // input eve track dsc
-    TAGdataDsc*     fpNtuRaw;		    // output data dsc
-    TASTdigitizer*  fDigitizer;       // cluster size digitizer
-    EVENT_STRUCT*   fEventStruct;
+    TAGdataDsc*        fpNtuMC;          // input mc hit
+    TAGdataDsc*        fpNtuEve;         // input eve track dsc
+    TAGdataDsc*        fpNtuHit;		    // output data dsc
+
+    TASTdigitizer*     fDigitizer;       // cluster size digitizer
+
+    EVENT_STRUCT*      fEventStruct;
+
+    vector<TASThit*>   fVecStHit;     //! vector to store ST Hits
 
   private:
     void            CreateDigitizer();
-   
-   ClassDef(TASTactNtuHitMC,0)
+    void            FlagUnderEnergyThresholtHits(TASThit *hitst);   
+
+  ClassDef(TASTactNtuHitMC,0)
 
 };
 

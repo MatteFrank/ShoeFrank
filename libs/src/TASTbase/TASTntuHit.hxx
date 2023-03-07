@@ -27,23 +27,28 @@ public:
   virtual         ~TASThit();
   
   
-  Double_t       GetTime()                  const   { return fTime;                 }
-  Double_t       GetCharge()                const   { return fCharge;               }
-  Double_t       GetDe()                    const   { return fCharge;               }
+  Double_t       GetTime()                  const   { return fTime;             }
+  Double_t       GetCharge()                const   { return fCharge;           }
+  Double_t       GetDe()                    const   { return fDe;               }
   
+  Bool_t         IsValid()                  const   { return fIsValid;          }
+
   inline void SetTime(double value)                 { fTime = value;                }
   inline void SetCharge(double value)               { fCharge = value;              }
   inline void SetDe(double value)                   { fDe = value;                  }
   inline void SetPileUp(bool value)                 { fPileUp = value;              }
 
-  Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
-  Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+  Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];   }
+  Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];}
   Int_t          GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
 
   bool           GetPileUp()                const   {return fPileUp; }
   void           Clear(Option_t* option = "C");
   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
+
+  void           SetValid(Bool_t t)                 { fIsValid   = t;           }
+  
 private:
  
   Double32_t      fCharge;
@@ -52,7 +57,9 @@ private:
   bool            fPileUp;
   
   TArrayI         fMCindex;                  // Id of the hit created in the simulation
-  TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
+  TArrayI         fMcTrackIdx;               // Index of the track created in the simulationOB
+
+  Bool_t          fIsValid;
    
    ClassDef(TASThit,1)
 };

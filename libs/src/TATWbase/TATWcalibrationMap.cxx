@@ -38,13 +38,13 @@ void TATWcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
   ifstream fin_Q;
   fin_Q.open(FileName,std::ifstream::in);
   
-  int posQ[nSlatCross*nLayers];  // Id of the bars crossing (0-399)
-  int layQ[nSlatCross*nLayers];  // layer (0 for Ybars and 1 for Xbars)
-  int barX[nSlatCross*nLayers];  // Id of the bars in the layerX
-  int barY[nSlatCross*nLayers];  // Id of the bars in the layerY
+  int posQ[nBarCross*nLayers];  // Id of the bars crossing (0-399)
+  int layQ[nBarCross*nLayers];  // layer (0 for Ybars and 1 for Xbars)
+  int barX[nBarCross*nLayers];  // Id of the bars in the layerX
+  int barY[nBarCross*nLayers];  // Id of the bars in the layerY
 
   // Birks parameters for energy calibration p0 and p1
-  double Q_corrp0[nSlatCross*nLayers], Q_corrp1[nSlatCross*nLayers]; 
+  double Q_corrp0[nBarCross*nLayers], Q_corrp1[nBarCross*nLayers]; 
 
 
   if(fin_Q.is_open()){
@@ -52,7 +52,7 @@ void TATWcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
     int  cnt(0);
     char line[200];
     
-    // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
+    // loop over all the slat crosses ( nBarCross*nLayers ) for two TW layers
     while (fin_Q.getline(line, 200, '\n')) {
 
       if(strchr(line,'#')) {
@@ -76,7 +76,7 @@ void TATWcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
 
   
   // store in a Map the two Birks parameter p0 and p1 for energy calibration with key their position Id (Id of the bars crossing)  
-  for(int i=0; i<nSlatCross*nLayers; i++) {
+  for(int i=0; i<nBarCross*nLayers; i++) {
 
     if(layQ[i]==LayerX){
 
@@ -116,20 +116,20 @@ void TATWcalibrationMap::LoadTofCalibrationMap(std::string FileName)
   ifstream fin_TOF;
   fin_TOF.open(FileName,std::ifstream::in);
   
-  int posT[nSlatCross*nLayers];  // Id of the bars crossing (0-399)
-  int layT[nSlatCross*nLayers];  // layer (0 for Ybars and 1 for Xbars)
-  int barX[nSlatCross*nLayers];  // Id of the bars in the layerX
-  int barY[nSlatCross*nLayers];  // Id of the bars in the layerY
+  int posT[nBarCross*nLayers];  // Id of the bars crossing (0-399)
+  int layT[nBarCross*nLayers];  // layer (0 for Ybars and 1 for Xbars)
+  int barX[nBarCross*nLayers];  // Id of the bars in the layerX
+  int barY[nBarCross*nLayers];  // Id of the bars in the layerY
   
   // Delta Time parameters for Tof calibration DeltaT1 and DeltaT2
-  double deltaT[nSlatCross*nLayers], deltaT2[nSlatCross*nLayers];
+  double deltaT[nBarCross*nLayers], deltaT2[nBarCross*nLayers];
   
   if(fin_TOF.is_open()) {
     
     int  cnt(0);
     char line[200];
 
-    // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
+    // loop over all the slat crosses ( nBarCross*nLayers ) for two TW layers
     while (fin_TOF.getline(line, 200, '\n')) {
       
       if(strchr(line,'#')) {
@@ -153,7 +153,7 @@ void TATWcalibrationMap::LoadTofCalibrationMap(std::string FileName)
   
   
     // store in a Map the two Delta Time parameter DeltaT1 and DeltaT2 for energy calibration with key their Bar Id (Id of the bars in Pisa notation)
-  for(int i=0; i<nSlatCross*nLayers; i++) {
+  for(int i=0; i<nBarCross*nLayers; i++) {
     
     if(layT[i]==LayerX){
       
@@ -194,11 +194,11 @@ void TATWcalibrationMap::LoadBarEnergyCalibrationMap(std::string FileName)
     ifstream fileBarE;
     fileBarE.open(FileName,std::ifstream::in);
     
-    int BarId[nSlats];  // Id of the bars (Pisa notation 0-40)
-    int lay[nSlats];  // layer (0 for Ybars and 1 for Xbars)
+    int BarId[nBars];  // Id of the bars (Pisa notation 0-40)
+    int lay[nBars];  // layer (0 for Ybars and 1 for Xbars)
 
     // Birks parameters for energy calibration p0 and p1
-    double P0[nSlats], P1[nSlats];
+    double P0[nBars], P1[nBars];
 
 
     if(fileBarE.is_open()){
@@ -230,7 +230,7 @@ void TATWcalibrationMap::LoadBarEnergyCalibrationMap(std::string FileName)
 
     
     // store in a Map the two Birks parameter p0 and p1 for energy calibration with key their Bar Id (Id of the bars in Pisa notation)
-    for(int i=0; i<nSlats; i++) {
+    for(int i=0; i<nBars; i++) {
 
       if(lay[i]==LayerX){
 
@@ -267,11 +267,11 @@ void TATWcalibrationMap::LoadBarTofCalibrationMap(std::string FileName)
     ifstream fileBarT;
     fileBarT.open(FileName,std::ifstream::in);
     
-    int BarId[nSlats];  // Id of the bars (Pisa notation 0-40)
-    int lay[nSlats];  // layer (0 for Ybars and 1 for Xbars)
+    int BarId[nBars];  // Id of the bars (Pisa notation 0-40)
+    int lay[nBars];  // layer (0 for Ybars and 1 for Xbars)
 
     // Delta Time parameters for Tof calibration DeltaT1 and DeltaT2
-    double DeltaT1[nSlats], DeltaT2[nSlats];
+    double DeltaT1[nBars], DeltaT2[nBars];
 
 
     if(fileBarT.is_open()){
@@ -303,7 +303,7 @@ void TATWcalibrationMap::LoadBarTofCalibrationMap(std::string FileName)
 
     
     // store in a Map the two Delta Time parameter DeltaT1 and DeltaT2 for energy calibration with key their Bar Id (Id of the bars in Pisa notation)
-    for(int i=0; i<nSlats; i++) {
+    for(int i=0; i<nBars; i++) {
 
       if(lay[i]==LayerX){
 
@@ -340,11 +340,11 @@ void TATWcalibrationMap::LoadBarElossTuning(std::string FileName)
     ifstream fileTune;
     fileTune.open(FileName,std::ifstream::in);
     
-    int BarId[nSlats];  // Id of the bars (Pisa notation 0-40)
-    int lay[nSlats];  // layer (0 for Ybars and 1 for Xbars)
+    int BarId[nBars];  // Id of the bars (Pisa notation 0-40)
+    int lay[nBars];  // layer (0 for Ybars and 1 for Xbars)
 
     // A B C parabola parameters for Energy Tuning
-    double A[nSlats], B[nSlats], C[nSlats];
+    double A[nBars], B[nBars], C[nBars];
 
 
     if(fileTune.is_open()){
@@ -376,7 +376,7 @@ void TATWcalibrationMap::LoadBarElossTuning(std::string FileName)
     
     
     // store in a Map the three parameter A,B and C for energy tuning with key their Bar Id (Id of the bars in Pisa notation)
-    for(int i=0; i<nSlats; i++) {
+    for(int i=0; i<nBars; i++) {
       
       if(lay[i]==LayerX){
 
