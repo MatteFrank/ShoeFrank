@@ -262,7 +262,7 @@ Bool_t TATWparCal::FromBarStatusFile(const TString& name) {
   Info("FromBarStatusFile()", "Open file %s for bar status map\n", name.Data());
    
   Double_t* tmp = new Double_t[4];
-  for (Int_t ibar = 0; ibar < (Int_t)nSlats; ibar++) { // Loop over the bars
+  for (Int_t ibar = 0; ibar < (Int_t)nBars; ibar++) { // Loop over the bars
 
     // read parameters
     ReadItem(tmp, 4, ' ');

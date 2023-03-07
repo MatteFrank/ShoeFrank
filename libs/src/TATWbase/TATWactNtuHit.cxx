@@ -185,7 +185,6 @@ Bool_t TATWactNtuHit::Action()
    }
    
    double STtrigTime(0);
-   double STtrigTimeOth(0);
    Int_t SThitN(0.);
    TASThit *stHit;
    Double_t time_st(0.);
@@ -193,7 +192,6 @@ Bool_t TATWactNtuHit::Action()
    if(fpSTNtuRaw) {
       
       STtrigTime = p_STnturaw->GetTriggerTime();
-      STtrigTimeOth = p_STnturaw->GetTriggerTimeOth();
       
       SThitN = p_STnturaw->GetHitsN();  // same of STtrigTime
       
@@ -202,7 +200,7 @@ Bool_t TATWactNtuHit::Action()
    }
    
    if(FootDebugLevel(1))
-      cout<<"ST hitN::"<<SThitN<<" trigTime::"<<STtrigTime<<"  trigTimeOth::"<<STtrigTimeOth<<" time_ST::"<<time_st<<endl;
+      cout<<"ST hitN::"<<SThitN<<" trigTime::"<<STtrigTime<<" time_ST::"<<time_st<<endl;
    /////////////////////////////////////////////////////
    
    p_nturaw->SetupClones();
@@ -217,7 +215,7 @@ Bool_t TATWactNtuHit::Action()
       ch_num = aHi->GetChID();
       bo_num = aHi->GetBoardId();
       aHi->SetTime(aHi->GetTime());
-      aHi->SetTimeOth(aHi->GetTimeOth());
+
       if (PMap.find(aHi->GetBoardId())==PMap.end()){
          PMap[aHi->GetBoardId()].resize(NUMBEROFCHANNELS);
          for (int ch=0;ch<NUMBEROFCHANNELS;++ch){
@@ -259,28 +257,23 @@ Bool_t TATWactNtuHit::Action()
 
 
 	    // this to be consistent with the the bar id of TATWdetector.geo [barId=0-19]
-	    Int_t ShoeBarId = (BarId)%nSlatsPerLayer;
+	    Int_t ShoeBarId = (BarId)%nBarsPerLayer;
 
 	    // get Charge, Amplitude (pedesta subtracted) and time on side a of the bar
 	    Double_t ChargeA  = hita->GetCharge();
 	    Double_t AmplitudeA  = hita->GetAmplitude();
 	    Double_t TimeA    = hita->GetTime();
-	    Double_t TimeAOth = hita->GetTimeOth();
 
 	    // get Charge, Amplitude (pedesta subtracted) and time on side b of the bar
 	    Double_t ChargeB  = hitb->GetCharge();
 	    Double_t AmplitudeB  = hitb->GetAmplitude();
 	    Double_t TimeB    = hitb->GetTime();
-	    Double_t TimeBOth = hitb->GetTimeOth();
 
 	    // get raw energy
 	    Double_t rawEnergy = GetRawEnergy(hita,hitb);
 
 	    // get raw time in ns
 	    Double_t rawTime    = GetRawTime(hita,hitb) - STtrigTime;
-	    Double_t rawTimeOth = GetRawTimeOth(hita,hitb) - STtrigTimeOth;
-
-	    Double_t chargeCOM  = GetChargeCenterofMass(hita,hitb);
 
 	    // get position from the TOF between the two channels
 	    Double_t posAlongBar = GetPosition(hita,hitb);
@@ -302,7 +295,6 @@ Bool_t TATWactNtuHit::Action()
 
 	    // get time calibrated time in ns
 	    Double_t Time    = GetTime(rawTime,Layer,PosId,BarId);
-	    Double_t TimeOth = GetTimeOth(rawTimeOth,Layer,PosId,BarId);
 	    	    
 	    
 	    if(FootDebugLevel(1)) {
@@ -313,7 +305,7 @@ Bool_t TATWactNtuHit::Action()
 	    }
 
 
-	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,rawTime,posAlongBar,chargeCOM,ChargeA,ChargeB,AmplitudeA, AmplitudeB,TimeA,TimeB,TimeAOth,TimeBOth,TrigType);
+	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,posAlongBar,ChargeA,ChargeB,AmplitudeA,AmplitudeB,TimeA,TimeB,TrigType);
 
 	    Int_t Zrec = f_parcal->GetChargeZ(Energy,Time,Layer);
 	    fCurrentHit->SetChargeZ(Zrec);
@@ -382,7 +374,7 @@ Double_t TATWactNtuHit::GetRawEnergy(TATWrawHit*a,TATWrawHit*b)
 
 Double_t TATWactNtuHit::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId, Int_t barId)
 {
-  if ( rawenergy<0 || posId<0 || posId>=nSlatCross || (layerId!=LayerX && layerId!=LayerY) )
+  if ( rawenergy<0 || posId<0 || posId>=nBarCross || (layerId!=LayerX && layerId!=LayerY) )
     {
       return -1;
     }
@@ -448,17 +440,10 @@ Double_t TATWactNtuHit::GetRawTime(TATWrawHit*a,TATWrawHit*b)
 
 //________________________________________________________________
 
-Double_t TATWactNtuHit::GetRawTimeOth(TATWrawHit*a,TATWrawHit*b)
-{
-  return (a->GetTimeOth()+b->GetTimeOth())/2;
-}
-
-//________________________________________________________________
-
 Double_t  TATWactNtuHit::GetTime(Double_t RawTime, Int_t layerId, Int_t posId, Int_t barId)
 {
 
-  if ( posId<0 || posId>=nSlatCross || (layerId!=LayerX && layerId!=LayerY) )
+  if ( posId<0 || posId>=nBarCross || (layerId!=LayerX && layerId!=LayerY) )
     {
       return -1;
     }
@@ -484,39 +469,6 @@ Double_t  TATWactNtuHit::GetTime(Double_t RawTime, Int_t layerId, Int_t posId, I
   return RawTime - deltaT;
 
 }
-//________________________________________________________________
-
-Double_t  TATWactNtuHit::GetTimeOth(Double_t RawTimeOth, Int_t layerId, Int_t posId, Int_t barId)
-{
-
-    if ( posId<0 || posId>=nSlatCross || (layerId!=LayerX && layerId!=LayerY) ) {
-      return -1;
-    }
-
-  TATWparCal*   p_calmap = (TATWparCal*)    fpCalPar->Object();
-
-  //delta Time to be applied to Raw time to get the calibrated value
-  Double_t deltaT, deltaT2;
-
-  if( f_parcal->IsBarCalibration() ) {
-
-    deltaT2 = f_parcal->getCalibrationMap()->GetBarTofParameter(barId,layerId,0);
-    deltaT  = f_parcal->getCalibrationMap()->GetBarTofParameter(barId,layerId,1);
-    
-  } else if ( f_parcal->IsPosCalibration() ) {
-
-    deltaT2 = f_parcal->getCalibrationMap()->GetPosTofParameter(posId,layerId,0);
-    deltaT  = f_parcal->getCalibrationMap()->GetPosTofParameter(posId,layerId,1);
-
-  }
-
-  if(FootDebugLevel(1))
-    cout<<"rawTimeOth::"<<RawTimeOth<<" deltaT::"<<deltaT<<" deltaT2::"<<deltaT2<<" TOF::"<<(RawTimeOth-deltaT)<<endl;
-
-  return (RawTimeOth - deltaT);
-  
-}
-
 //________________________________________________________________
 
 Double_t TATWactNtuHit::GetPosition(TATWrawHit*a,TATWrawHit*b)
@@ -554,7 +506,7 @@ Int_t TATWactNtuHit::GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos)
     return -1;
   }
 
-  barCrossId = barY + barX * nSlatsPerLayer;  // left top corner is (0,0) --> pos=0, right bottom corner is (19,19) --> pos = 399
+  barCrossId = barY + barX * nBarsPerLayer;  // left top corner is (0,0) --> pos=0, right bottom corner is (19,19) --> pos = 399
 
   if(FootDebugLevel(1))
     Info("GetBarCrossId()","%s, bar::%d, rawPos::%f, perp_BarId::%d, barCrossId::%d\n",LayerName[(TLayer)layer].data(),barId,rawPos,perp_BarId,barCrossId);

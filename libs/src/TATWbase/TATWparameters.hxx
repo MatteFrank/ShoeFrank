@@ -60,9 +60,9 @@ static std::map<TLayer,std::string> LayerName={{LayerX,"LayerX"},{LayerY,"LayerY
 enum TWparam
   {
    nLayers = 2,
-   nSlats = 40,
-   nSlatsPerLayer = nSlats/nLayers,              // 20
-   nSlatCross = nSlatsPerLayer*nSlatsPerLayer    // 400
+   nBars = 40,
+   nBarsPerLayer = nBars/nLayers,              // 20
+   nBarCross = nBarsPerLayer*nBarsPerLayer    // 400
   };
 
 #endif
