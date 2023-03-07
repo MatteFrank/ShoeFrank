@@ -12,7 +12,6 @@
 #include <TROOT.h>
 #include <TStopwatch.h>
 
-#include "Evento.hxx"
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
