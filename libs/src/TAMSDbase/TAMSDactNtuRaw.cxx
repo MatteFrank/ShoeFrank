@@ -259,11 +259,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Int_t sensorId = -1;
       Bool_t status  = true;
       
-      Double_t valueX = -99;
-      Double_t valueY = -99;
+      Double_t valueFirst = -99;
+      Double_t valueSecond = -99;
       
-      Double_t meanX  = 0;
-      Double_t meanY  = 0;
+      Double_t meanFirst  = 0;
+      Double_t meanSecond  = 0;
       
       Double_t vaContent[CN_CH] = {0};
       
@@ -297,15 +297,15 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
          
          if( pedestal.status ) {
             if (fgPedestalSub) {
-               Bool_t seedX = false;
-               valueX = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
-               meanX = pedestal.mean;
+               Bool_t seedFirst = false;
+               valueFirst = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
+               meanFirst = pedestal.mean;
                if(sensorId%2 == 0)
                   adcDummy = adcFirst;
                else
                   adcDummy = adcSecond;
                
-               valueX = adcDummy - valueX;
+               valueFirst = adcDummy - valueFirst;
 
                   if (fgCommonModeSub)
                   {
@@ -322,23 +322,23 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                      }
                   }
 
-                  valueX -= cnFirst;
-                  if (valueX > 0)
+                  valueFirst -= cnFirst;
+                  if (valueFirst > 0)
                   {
-                     seedX = true;
+                     seedFirst = true;
                      if (ValidHistogram())
-                        fpHisSeedMap[sensorId]->Fill(i, adcDummy - meanX - cnFirst);
+                        fpHisSeedMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
                   }
 
-                  valueX = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
-                  valueX = adcDummy - valueX - cnFirst;
-                  if (valueX > 0)
+                  valueFirst = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
+                  valueFirst = adcDummy - valueFirst - cnFirst;
+                  if (valueFirst > 0)
                   {
-                     TAMSDrawHit *hit = p_datraw->AddStrip(sensorId, view, i, adcDummy - meanX - cnFirst);
-                     hit->SetSeed(seedX);
+                     TAMSDrawHit *hit = p_datraw->AddStrip(sensorId, view, i, adcDummy - meanFirst - cnFirst);
+                     hit->SetSeed(seedFirst);
 
                      if (ValidHistogram())
-                        fpHisStripMap[sensorId]->Fill(i, adcDummy - meanX - cnFirst);
+                        fpHisStripMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
                   }
                }
          }
@@ -353,16 +353,16 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
          
          if( pedestal.status ) {
             if (fgPedestalSub) {
-               Bool_t seedY = false;
-               valueY = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
-               meanY = pedestal.mean;
+               Bool_t seedSecond = false;
+               valueSecond = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
+               meanSecond = pedestal.mean;
                UInt_t *adcPtr;
                if (sensorId % 2 == 0)
                      adcDummy = adcFirst;
                else
                      adcDummy = adcSecond;
                
-               valueY = adcDummy - valueY;
+               valueSecond = adcDummy - valueSecond;
                
                if (fgCommonModeSub) {
                   if (i % CN_CH == 0) {
@@ -377,25 +377,25 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                   }
                }
                
-               valueY -= cnSecond;
-               if (valueY > 0) {
-                  seedY = true;
+               valueSecond -= cnSecond;
+               if (valueSecond > 0) {
+                  seedSecond = true;
                   if (ValidHistogram())
-                     fpHisSeedMap[sensorId]->Fill(i, adcDummy-meanY-cnSecond);
+                     fpHisSeedMap[sensorId]->Fill(i, adcDummy-meanSecond-cnSecond);
                }
                
-               valueY = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
-               valueY = adcDummy - valueY - cnSecond;
-               if (valueY > 0) {
-                  TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcDummy-meanY-cnSecond);
-                  hit->SetSeed(seedY);
+               valueSecond = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
+               valueSecond = adcDummy - valueSecond - cnSecond;
+               if (valueSecond > 0) {
+                  TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcDummy-meanSecond-cnSecond);
+                  hit->SetSeed(seedSecond);
                   
                   if (ValidHistogram())
-                     fpHisStripMap[sensorId]->Fill(i, adcDummy-meanY-cnSecond);
+                     fpHisStripMap[sensorId]->Fill(i, adcDummy-meanSecond-cnSecond);
                }
                
                if(FootDebugLevel(2)) {
-                  if(valueX>0 || valueY>0)
+                  if(valueFirst>0 || valueSecond>0)
                      cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
                }
             }
