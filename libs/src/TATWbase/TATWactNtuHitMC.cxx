@@ -3,19 +3,14 @@
  \brief   Implementation of TATWactNtuHitMC.
  */
 
-// #include "TAGparTools.hxx"
-// #include "TAGgeoTrafo.hxx"
+#include "TAMCflukaParser.hxx"
 
 #include "TASTntuHit.hxx"
 
-// #include "TATWntuRaw.hxx"
 #include "TATWparCal.hxx"
-#include "TATWactNtuHitMC.hxx"
-#include "TAMCflukaParser.hxx"
-
-
-#include <TCanvas.h>
 #include "TATWdigitizer.hxx"
+
+#include "TATWactNtuHitMC.hxx"
 
 /*!
  \class TATWactNtuHitMC
