@@ -15,7 +15,6 @@
 #include <map>
 #include <TGeoManager.h>
 #include <TGeoVolume.h>
-#include "Evento.hxx"
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
