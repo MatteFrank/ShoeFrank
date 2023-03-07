@@ -61,16 +61,16 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
   geoTrafo->FromFile(parFileName);
   
-  TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
-  TASTparGeo* stparGeo = (TASTparGeo*)parGeoSt->Object();
-  parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
-  stparGeo->FromFile(parFileName);
+  // TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
+  // TASTparGeo* stparGeo = (TASTparGeo*)parGeoSt->Object();
+  // parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
+  // stparGeo->FromFile(parFileName);
   
   
-  TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
-  TABMparGeo* bmparGeo = (TABMparGeo*)parGeoBm->Object();
-  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
-  bmparGeo->FromFile(parFileName);
+  // TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
+  // TABMparGeo* bmparGeo = (TABMparGeo*)parGeoBm->Object();
+  // parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  // bmparGeo->FromFile(parFileName);
   
   
   TAGparaDsc* parGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
@@ -79,20 +79,20 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   vtparGeo->FromFile(parFileName);
   
   
-  TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
-  TAITparGeo* itparGeo = (TAITparGeo*)parGeoIt->Object();
-  parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
-  itparGeo->FromFile(parFileName);
+  // TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+  // TAITparGeo* itparGeo = (TAITparGeo*)parGeoIt->Object();
+  // parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+  // itparGeo->FromFile(parFileName);
   
-  TAGparaDsc* parGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
-  TAMSDparGeo* msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
-  parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
-  msdparGeo->FromFile(parFileName);
+  // TAGparaDsc* parGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
+  // TAMSDparGeo* msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
+  // parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+  // msdparGeo->FromFile(parFileName);
   
-  TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
-  TATWparGeo* twparGeo = (TATWparGeo*)parGeoTw->Object();
-  parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
-  twparGeo->FromFile(parFileName);
+  // TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
+  // TATWparGeo* twparGeo = (TATWparGeo*)parGeoTw->Object();
+  // parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+  // twparGeo->FromFile(parFileName);
   
   
   TTree *tree = 0;
@@ -100,15 +100,15 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   tree = (TTree*)f->Get("tree");
   
   
-  TASTntuHit *stHit = new TASTntuHit();
-  tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stHit);
+  // TASTntuHit *stHit = new TASTntuHit();
+  // tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stHit);
   // tree->SetBranchAddress("stNtu", &stHit);
   
-  TABMntuHit*  bmHit = new TABMntuHit(); 
-  tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmHit);
+  // TABMntuHit*  bmHit = new TABMntuHit(); 
+  // tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmHit);
   
-  TABMntuTrack*  bmTrack = new TABMntuTrack();
-  tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmTrack);
+  // TABMntuTrack*  bmTrack = new TABMntuTrack();
+  // tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmTrack);
   
   // //    TAVTntuCluster *vtClus = new TAVTntuCluster();
   // // // vtClus->SetParGeo(vtparGeo);
@@ -124,23 +124,30 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   // TATW_ContainerPoint *twpoint = new TATW_ContainerPoint();
   // tree->SetBranchAddress(TATW_ContainerPoint::GetBranchName(), &twpoint);
   
-  TATWntuHit *twrh = new TATWntuHit();
-  tree->SetBranchAddress(TATWntuHit::GetBranchName(), &twrh);
+  // TATWntuHit *twrh = new TATWntuHit();
+  // tree->SetBranchAddress(TATWntuHit::GetBranchName(), &twrh);
   
   TAVTntuVertex* vtx      = new TAVTntuVertex();
   tree->SetBranchAddress(TAVTntuVertex::GetBranchName(), &vtx);
+
+  // TAVTntuCluster* vtclus      = new TAVTntuCluster();
+  // tree->SetBranchAddress(TAVTntuCluster::GetBranchName(), &vtclus);
   
+  TAVTntuHit* vthit      = new TAVTntuHit();
+  tree->SetBranchAddress(TAVTntuHit::GetBranchName(), &vthit);
+  
+
   TAVTntuTrack *vttrack = new TAVTntuTrack();
   tree->SetBranchAddress(TAVTntuTrack::GetBranchName(), &vttrack);
   TAGdataDsc* track = new TAGdataDsc("vttrack", vttrack);
   
   
-  //    TAMCntuPart *eve = new TAMCntuPart();
-  //    tree->SetBranchAddress(TAMCntuPart::GetBranchName(), &eve);
+  //TAMCntuPart *eve = new TAMCntuPart();
+  //tree->SetBranchAddress(TAMCntuPart::GetBranchName(), &eve);
   
   
-  //    TAMCntuHit *vtMc = new TAMCntuHit();
-  //    tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
+  //TAMCntuHit *vtMc = new TAMCntuHit();
+  //tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
   
   if (nentries == 0)
     nentries = tree->GetEntriesFast();
@@ -151,38 +158,41 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   
   
   
-  vector<float> st_charge, st_time, st_pos_x, st_pos_y, st_pos_z;
-  vector<TVector3> st_pos;
+  // vector<float> st_charge, st_time, st_pos_x, st_pos_y, st_pos_z;
+  // vector<TVector3> st_pos;
   
-  vector<int> bm_trkind;
-  vector<TVector3> bm_Pvers, bm_R0;
-  vector<float> bm_Pvers_x, bm_Pvers_y, bm_Pvers_z;
-  vector<float> bm_R0_x, bm_R0_y, bm_R0_z, bmtrk_chi2;
+  // vector<int> bm_trkind;
+  // vector<TVector3> bm_Pvers, bm_R0;
+  // vector<float> bm_Pvers_x, bm_Pvers_y, bm_Pvers_z;
+  // vector<float> bm_R0_x, bm_R0_y, bm_R0_z, bmtrk_chi2;
   
   vector<TVector3> vtx_coll;
   vector<float> vtx_x, vtx_y, vtx_z;
   
   
-  vector<double> mc_trk_charge, mc_trk_mass, mc_trk_tof, mc_trk_length;
-  vector<float> mc_trk_intpos_x,  mc_trk_intpos_y,  mc_trk_intpos_z;
-  vector<float> mc_trk_finpos_x,  mc_trk_finpos_y,  mc_trk_finpos_z;
+  // vector<double> mc_trk_charge, mc_trk_mass, mc_trk_tof, mc_trk_length;
+  // vector<float> mc_trk_intpos_x,  mc_trk_intpos_y,  mc_trk_intpos_z;
+  // vector<float> mc_trk_finpos_x,  mc_trk_finpos_y,  mc_trk_finpos_z;
   
   vector<int> trk_ind;
   vector<TVector3>  trk_vtx_clus, trk_slopez, trk_origin;
   vector<vector<TVector3> > trk_vtx_clus_2;
-  
   vector<int> trk_vtx_clus_n, trk_vtx_clus_tothit;
-  vector<float>  trk_vtx_clus_x, trk_vtx_clus_y, trk_vtx_clus_z, trk_chi2; 
+  vector<float>  trk_vtx_clus_x, trk_vtx_clus_y, trk_vtx_clus_z, trk_chi2;
+
+  vector<int> vtx_hit_line, vtx_hit_col, vtx_hit_frame, vtx_hit_frame_size, vtx_hit_sensor;
   
-  vector<double> tw_eloss, tw_time, tw_pos, tw_chargeA, tw_chargeB, tw_timeA, tw_timeB, tw_chargeCOM;
-  vector<int> tw_bar, tw_layer;
+  // vector<double> tw_eloss, tw_time, tw_pos, tw_chargeA, tw_chargeB, tw_timeA, tw_timeB, tw_chargeCOM;
+  // vector<int> tw_bar, tw_layer;
   
-  Int_t nsthit;
-  Int_t nbmtrack;
+  // Int_t nsthit;
+  // Int_t nbmtrack;
   Int_t nvtx;
   Int_t nvttrack;
-  Int_t mctrack;
-  Int_t ntwhit;
+  Int_t nvtclus;
+  Int_t nvthit;
+  // Int_t mctrack;
+  // Int_t ntwhit;
   
   Int_t pos1 = nameFile.Last('.');
   TString nameOut = nameFile(0, pos1);
@@ -199,20 +209,20 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   
   TFile *file_out = new TFile(nameOut,"RECREATE");
   TTree *tree_out = new TTree("OuTree","Reco Event Tree");
-  tree_out->Branch("st_time",             &st_time);
-  tree_out->Branch("st_charge",           &st_charge);
-  tree_out->Branch("st_hit_n",            &nsthit   );
-  tree_out->Branch("st_pos_x",            &st_pos_x );
-  tree_out->Branch("st_pos_y",            &st_pos_y );
-  tree_out->Branch("st_pos_z",            &st_pos_z );
-  tree_out->Branch("bm_trk_n",            &nbmtrack );
-  tree_out->Branch("bm_trk_chi2",         &bmtrk_chi2 );
-  tree_out->Branch("bm_Pvers_x",          &bm_Pvers_x );
-  tree_out->Branch("bm_Pvers_y",          &bm_Pvers_y );
-  tree_out->Branch("bm_Pvers_z",          &bm_Pvers_z );
-  tree_out->Branch("bm_R0_x",             &bm_R0_x );
-  tree_out->Branch("bm_R0_y",             &bm_R0_y );
-  tree_out->Branch("bm_R0_z",             &bm_R0_z );
+  // tree_out->Branch("st_time",             &st_time);
+  // tree_out->Branch("st_charge",           &st_charge);
+  // tree_out->Branch("st_hit_n",            &nsthit   );
+  // tree_out->Branch("st_pos_x",            &st_pos_x );
+  // tree_out->Branch("st_pos_y",            &st_pos_y );
+  // tree_out->Branch("st_pos_z",            &st_pos_z );
+  // tree_out->Branch("bm_trk_n",            &nbmtrack );
+  // tree_out->Branch("bm_trk_chi2",         &bmtrk_chi2 );
+  // tree_out->Branch("bm_Pvers_x",          &bm_Pvers_x );
+  // tree_out->Branch("bm_Pvers_y",          &bm_Pvers_y );
+  // tree_out->Branch("bm_Pvers_z",          &bm_Pvers_z );
+  // tree_out->Branch("bm_R0_x",             &bm_R0_x );
+  // tree_out->Branch("bm_R0_y",             &bm_R0_y );
+  // tree_out->Branch("bm_R0_z",             &bm_R0_z );
   tree_out->Branch("vertex_n",            &nvtx );
   tree_out->Branch("vertex_x",            &vtx_x );
   tree_out->Branch("vertex_y",            &vtx_y );
@@ -226,17 +236,24 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   tree_out->Branch("vt_trk_clus_x",       &trk_vtx_clus_x );
   tree_out->Branch("vt_trk_clus_y",       &trk_vtx_clus_y );
   tree_out->Branch("vt_trk_clus_z",       &trk_vtx_clus_z );
-  tree_out->Branch("tw_time",             &tw_time);
-  tree_out->Branch("tw_eloss",            &tw_eloss);
-  tree_out->Branch("tw_hit_n",            &ntwhit   );
-  tree_out->Branch("tw_bar",              &tw_bar );
-  tree_out->Branch("tw_layer",            &tw_layer );
-  tree_out->Branch("tw_pos",              &tw_pos );   
-  tree_out->Branch("tw_timeA",            &tw_timeA);
-  tree_out->Branch("tw_timeB",            &tw_timeB);
-  tree_out->Branch("tw_chargeA",          &tw_chargeA);
-  tree_out->Branch("tw_chargeB",          &tw_chargeB);
-  tree_out->Branch("tw_chargeCOM",        &tw_chargeCOM);
+  tree_out->Branch("vt_hit_n",       &nvthit );
+  tree_out->Branch("vt_hit_line",         &vtx_hit_line );
+  tree_out->Branch("vt_hit_col",          &vtx_hit_col );
+  tree_out->Branch("vt_hit_frame",        &vtx_hit_frame );
+  tree_out->Branch("vt_hit_frame_size",        &vtx_hit_frame_size );
+  tree_out->Branch("vt_hit_sensor",       &vtx_hit_sensor );
+
+  // tree_out->Branch("tw_time",             &tw_time);
+  // tree_out->Branch("tw_eloss",            &tw_eloss);
+  // tree_out->Branch("tw_hit_n",            &ntwhit   );
+  // tree_out->Branch("tw_bar",              &tw_bar );
+  // tree_out->Branch("tw_layer",            &tw_layer );
+  // tree_out->Branch("tw_pos",              &tw_pos );   
+  // tree_out->Branch("tw_timeA",            &tw_timeA);
+  // tree_out->Branch("tw_timeB",            &tw_timeB);
+  // tree_out->Branch("tw_chargeA",          &tw_chargeA);
+  // tree_out->Branch("tw_chargeB",          &tw_chargeB);
+  // tree_out->Branch("tw_chargeCOM",        &tw_chargeCOM);
   // tree_out->Branch("mc_trk_n",            &mctrack );
   // tree_out->Branch("mc_trk_charge",       &mc_trk_charge );
   // tree_out->Branch("mc_trk_mass",         &mc_trk_mass );
@@ -252,10 +269,10 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   
   
   for (Int_t ev = 0; ev < nentries; ++ev) {
-    if(ev%100==0) printf("Processed Events: %d\n", ev);
+    if(ev%1000==0) printf("Processed Events: %d\n", ev);
     
-    stHit->Clear();
-    bmHit->Clear();
+    // stHit->Clear();
+    // bmHit->Clear();
     //bmTrack->Clear();
     
     // //vtClus->Clear();
@@ -263,10 +280,11 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     // msdClus->Clear();
     
     
-    twrh->Clear();
-    // vttrack->Clear();
-    // vtx->Clear();
-    
+    // twrh->Clear();
+    vttrack->Clear();
+    vtx->Clear();
+    //vtclus->Clear();
+    vthit->Clear();
     
     // vtMc->Clear();
     // eve->Clear();
@@ -274,23 +292,23 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     
     tree->GetEntry(ev);
     
-    st_charge.clear();
-    st_time.clear();
-    st_pos.clear();
-    st_pos_x.clear();
-    st_pos_y.clear();
-    st_pos_z.clear();
+    // st_charge.clear();
+    // st_time.clear();
+    // st_pos.clear();
+    // st_pos_x.clear();
+    // st_pos_y.clear();
+    // st_pos_z.clear();
     
-    bm_trkind.clear();
-    bmtrk_chi2.clear();
-    bm_Pvers.clear();
-    bm_R0.clear();
-    bm_Pvers_x.clear();
-    bm_Pvers_y.clear(); 
-    bm_Pvers_z.clear();
-    bm_R0_x.clear();
-    bm_R0_y.clear(); 
-    bm_R0_z.clear();
+    // bm_trkind.clear();
+    // bmtrk_chi2.clear();
+    // bm_Pvers.clear();
+    // bm_R0.clear();
+    // bm_Pvers_x.clear();
+    // bm_Pvers_y.clear(); 
+    // bm_Pvers_z.clear();
+    // bm_R0_x.clear();
+    // bm_R0_y.clear(); 
+    // bm_R0_z.clear();
     
     
     vtx_coll.clear();
@@ -299,16 +317,16 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     vtx_z.clear();
     
     
-    mc_trk_charge.clear(); 
-    mc_trk_mass.clear();
-    mc_trk_tof.clear();
-    mc_trk_length.clear();
-    mc_trk_intpos_x.clear();
-    mc_trk_intpos_y.clear();
-    mc_trk_intpos_z.clear();
-    mc_trk_finpos_x.clear();
-    mc_trk_finpos_y.clear();
-    mc_trk_finpos_z.clear();
+    // mc_trk_charge.clear(); 
+    // mc_trk_mass.clear();
+    // mc_trk_tof.clear();
+    // mc_trk_length.clear();
+    // mc_trk_intpos_x.clear();
+    // mc_trk_intpos_y.clear();
+    // mc_trk_intpos_z.clear();
+    // mc_trk_finpos_x.clear();
+    // mc_trk_finpos_y.clear();
+    // mc_trk_finpos_z.clear();
     
     
     trk_ind.clear();
@@ -322,25 +340,32 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     trk_vtx_clus_x.clear();
     trk_vtx_clus_y.clear();
     trk_vtx_clus_z.clear();
+
+    vtx_hit_line.clear();
+    vtx_hit_col.clear();
+    vtx_hit_frame.clear();
+    vtx_hit_frame_size.clear();
+    vtx_hit_sensor.clear();
+
     
-    tw_eloss.clear();
-    tw_time.clear();
-    tw_pos.clear();
-    tw_bar.clear();
-    tw_layer.clear();
-    tw_chargeA.clear();
-    tw_chargeB.clear();
-    tw_timeA.clear();
-    tw_timeB.clear();
-    tw_chargeCOM.clear();
-    // Int_t nPlanes = vtparGeo->GetSensorsN();
-    // cout << " iPlane  " <<   nPlanes  << endl;
+    // tw_eloss.clear();
+    // tw_time.clear();
+    // tw_pos.clear();
+    // tw_bar.clear();
+    // tw_layer.clear();
+    // tw_chargeA.clear();
+    // tw_chargeB.clear();
+    // tw_timeA.clear();
+    // tw_timeB.clear();
+    // tw_chargeCOM.clear();
+    //Int_t nPlanes = vtparGeo->GetSensorsN();
+    //cout << " iPlane  " <<   nPlanes  << endl;
     
     
-    // for( Int_t iPlane = 0; iPlane < nPlanes; iPlane++) {
+    //for( Int_t iPlane = 0; iPlane < nPlanes; iPlane++) {
     
     //   Int_t nclus = vtClus->GetClustersN(iPlane);
-    //   //totClus += nclus;
+       //totClus += nclus;
     //   cout << " nclus " <<  nclus << endl;
     //   if (nclus == 0) continue;
     
@@ -362,99 +387,104 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     
     
     
-    Int_t       nstHits  = stHit->GetHitsN();
+    //Int_t       nstHits  = stHit->GetHitsN();
     //cout << "n  sthits  " << nstHits << endl;
     // //hits
     
-    double time = stHit->GetTriggerTime();
-    double charge = stHit->GetCharge();
-    //cout << "timest  " << timetest << endl;
-    st_charge.push_back(charge);
-    st_time.push_back(time);
-    for (Int_t i = 0; i < nstHits; i++) {
+    // double time = stHit->GetTriggerTime();
+    // double charge = stHit->GetCharge();
+    // //cout << "timest  " << timetest << endl;
+    // st_charge.push_back(charge);
+    // st_time.push_back(time);
+    // for (Int_t i = 0; i < nstHits; i++) {
       
-      TASThit* hit = stHit->GetHit(i);
-      Float_t charge  = hit->GetCharge();
-      Float_t time    = hit->GetTime();
+    //   TASThit* hit = stHit->GetHit(i);
+    //   Float_t charge  = hit->GetCharge();
+    //   Float_t time    = hit->GetTime();
       
-      TVector3 posHit(0,0,0); // center
+    //   TVector3 posHit(0,0,0); // center
       
-      TVector3 posHitG = geoTrafo->FromSTLocalToGlobal(posHit);
+    //   TVector3 posHitG = geoTrafo->FromSTLocalToGlobal(posHit);
       
-      //  cout << " time  " << time << endl;
-      // cout << " charge  " << charge << endl;
-      // cout << " posHitG x " <<  posHitG.X() << endl;
-      // cout << " posHitG y " <<  posHitG.Y() << endl;
-      // cout << " posHitG z " <<  posHitG.Z() << endl;
+    //   //  cout << " time  " << time << endl;
+    //   // cout << " charge  " << charge << endl;
+    //   // cout << " posHitG x " <<  posHitG.X() << endl;
+    //   // cout << " posHitG y " <<  posHitG.Y() << endl;
+    //   // cout << " posHitG z " <<  posHitG.Z() << endl;
       
-      // st_charge.push_back(charge);
-      // st_time.push_back(time);
-      st_pos.push_back(posHitG);
-    }
+    //   // st_charge.push_back(charge);
+    //   // st_time.push_back(time);
+    //   st_pos.push_back(posHitG);
+    // }
     
     
     
-    Int_t       nbmHits  = bmHit->GetHitsN();
+    // Int_t       nbmHits  = bmHit->GetHitsN();
     
-    // cout << " nbmHits   " << nbmHits  << endl;
-    // //hits
-    for (Int_t i = 0; i < nbmHits; i++) {
-      TABMhit* hit = bmHit->GetHit(i);
+    // // cout << " nbmHits   " << nbmHits  << endl;
+    // // //hits
+    // for (Int_t i = 0; i < nbmHits; i++) {
+    //   TABMhit* hit = bmHit->GetHit(i);
       
-      Int_t view  = hit->GetView();
-      Int_t lay   = hit->GetPlane();
-      Int_t cell  = hit->GetCell();
+    //   Int_t view  = hit->GetView();
+    //   Int_t lay   = hit->GetPlane();
+    //   Int_t cell  = hit->GetCell();
       
-      Float_t x = bmparGeo->GetWireX(bmparGeo->GetSenseId(cell),lay,view);
-      Float_t y = bmparGeo->GetWireY(bmparGeo->GetSenseId(cell),lay,view);
-      Float_t z = bmparGeo->GetWireZ(bmparGeo->GetSenseId(cell),lay,view);
+    //   Float_t x = bmparGeo->GetWireX(bmparGeo->GetSenseId(cell),lay,view);
+    //   Float_t y = bmparGeo->GetWireY(bmparGeo->GetSenseId(cell),lay,view);
+    //   Float_t z = bmparGeo->GetWireZ(bmparGeo->GetSenseId(cell),lay,view);
       
-      TVector3 posHit(x, y, z);
+    //   TVector3 posHit(x, y, z);
       
-      // cout << "poshit0 " << posHit.X()  << endl;
-      // cout << "poshit1 " << posHit.Y()  << endl;
-      // cout << "poshit2 " << posHit.Z()  << endl;
+    //   // cout << "poshit0 " << posHit.X()  << endl;
+    //   // cout << "poshit1 " << posHit.Y()  << endl;
+    //   // cout << "poshit2 " << posHit.Z()  << endl;
       
       
-    }
+    // }
     
     
     
     ///Track in BM
-    int  Nbmtrack = bmTrack->GetTracksN();
-    // cout << " ntrack  BM  " << Nbmtrack  << endl;
-    if( bmTrack->GetTracksN() > 0 ) {
-      for( Int_t iTrack = 0; iTrack < bmTrack->GetTracksN(); ++iTrack ) {
+    // int  Nbmtrack = bmTrack->GetTracksN();
+    // // cout << " ntrack  BM  " << Nbmtrack  << endl;
+    // if( bmTrack->GetTracksN() > 0 ) {
+    //   for( Int_t iTrack = 0; iTrack < bmTrack->GetTracksN(); ++iTrack ) {
         
-        bm_trkind.push_back(iTrack);
+    //     bm_trkind.push_back(iTrack);
         
-        TABMtrack* track = bmTrack->GetTrack(iTrack);
+    //     TABMtrack* track = bmTrack->GetTrack(iTrack);
         
-        Int_t nHits = track->GetHitsNtot();
-        // cout << " nHits  BM  " <<  nHits << endl;
+    //     Int_t nHits = track->GetHitsNtot();
+    //     // cout << " nHits  BM  " <<  nHits << endl;
         
-        TVector3 Pvers = track->GetSlope();  //direction of the track from mylar1_pos to mylar2_pos
-        TVector3 R0 = track->GetOrigin();              //position of the track on the xy plane at z=0
+    //     TVector3 Pvers = track->GetSlope();  //direction of the track from mylar1_pos to mylar2_pos
+    //     TVector3 R0 = track->GetOrigin();              //position of the track on the xy plane at z=0
         
-        Double_t mychi2 = track->GetChiSquare();
-        //      cout << " mychi2Red   " << mychi2  << endl;
+    //     Double_t mychi2 = track->GetChiSquare();
+    //     //      cout << " mychi2Red   " << mychi2  << endl;
         
-        bmtrk_chi2.push_back(mychi2);
+    //     bmtrk_chi2.push_back(mychi2);
         
         
-        bm_Pvers.push_back(Pvers);
-        bm_R0.push_back(R0);
+    //     bm_Pvers.push_back(Pvers);
+    //     bm_R0.push_back(R0);
         
-      } // end loop on tracks
+    //   } // end loop on tracks
       
-    } // nTracks > 0
+    // } // nTracks > 0
     
     
     
+    //RR
+    
+
+
+
     //  ///Vertex collection
     TAVTvertex*    vtxPD   = 0x0;//NEW
     TVector3 vtxPositionPD = TVector3(0.,0.,0.);
-    cout << " vtx->GetVertexN() " << vtx->GetVertexN() <<endl;
+    //cout << " vtx->GetVertexN() " << vtx->GetVertexN() <<endl;
     
     for (Int_t iVtx = 0; iVtx < vtx->GetVertexN(); ++iVtx) {
       vtxPD = vtx->GetVertex(iVtx);
@@ -517,7 +547,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     //  }
     
     ///Vertex track collection
-    cout << " vertex tracks " << vttrack->GetTracksN() <<endl;
+    //cout << " vertex tracks " << vttrack->GetTracksN() <<endl;
     if( vttrack->GetTracksN() > 0 ) {
       for( Int_t iTrack = 0; iTrack < vttrack->GetTracksN(); ++iTrack ) {
         TAVTtrack* track = vttrack->GetTrack(iTrack);
@@ -578,104 +608,130 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
       }
     }
     
+    //cout << " vtx->GetVertexN() " << vtx->GetVertexN() <<endl;
+    nvthit = 0;
+
+    for (Int_t iSensor = 0; iSensor < 4 ; iSensor++){
+      nvthit += vthit->GetPixelsN(iSensor);
+      for (Int_t iVtxHit = 0; iVtxHit < vthit->GetPixelsN(iSensor); ++iVtxHit) {
+        TAVThit* pixel = vthit->GetPixel(iSensor, iVtxHit);
+        if (pixel == 0x0) continue;
+        for (Int_t iFrame = 0; iFrame < pixel->GetFrameOnSize(); iFrame++){
+                    
+          vtx_hit_line.push_back(pixel->GetPixelLine());
+          vtx_hit_col.push_back(pixel->GetPixelColumn());
+          vtx_hit_frame.push_back(pixel->GetFrameOn(iFrame));
+          vtx_hit_frame_size.push_back(pixel->GetFrameOnSize());
+          vtx_hit_sensor.push_back(iSensor);
+
+          
+
+        }
+
+      }
+    }
+    
+
     
     
-    Int_t  Ntwhit = twrh->GetHitN();
+    //Int_t  Ntwhit = twrh->GetHitN();
     //   cout << " n hit in Tofwall " << Ntwhit  <<endl;
     // if(  twrh->GetHitN() > 0 ) {
-    for (int i = 0; i < twrh->GetHitN(); i++) {
+    // for (int i = 0; i < twrh->GetHitN(); i++) {
       
-      TATWhit *hit = twrh->Hit(i);;
-      int bar = hit->GetBar();
-      int layer = hit->GetLayer();
-      //    TVector3 posG = hit->GetPosition();
+    //   TATWhit *hit = twrh->Hit(i);;
+    //   int bar = hit->GetBar();
+    //   int layer = hit->GetLayer();
+    //   //    TVector3 posG = hit->GetPosition();
       
-      //     // posG = fpFootGeo->FromTWLocalToGlobal(posG);
+    //   //     // posG = fpFootGeo->FromTWLocalToGlobal(posG);
       
-      //     posG = geoTrafo->FromTWLocalToGlobal(posG);
-      //     // cout << " posG  x  "<<  posG.X()  << endl;
-      //     // cout << " posG  y  "<<  posG.Y()  << endl;
-      //     // cout << " posG  z  "<<  posG.Z()  << endl;
-      
-      
-      //     Float_t edep1  = point->GetEnergyLoss1();
-      //     Float_t edep2  = point->GetEnergyLoss2();
-      //     Float_t edep   = point->GetEnergyLoss();
-      //     Float_t timeTW = point->GetTime();
+    //   //     posG = geoTrafo->FromTWLocalToGlobal(posG);
+    //   //     // cout << " posG  x  "<<  posG.X()  << endl;
+    //   //     // cout << " posG  y  "<<  posG.Y()  << endl;
+    //   //     // cout << " posG  z  "<<  posG.Z()  << endl;
       
       
-      
-      // cout << " bar    "<<  bar  << endl;
-      // cout << " layer  "<< layer   << endl;
-      
-      
-      Double_t eloss = hit->GetEnergyLoss(); 
-      Double_t twtime = hit->GetTime();       
-      Double_t pos = hit->GetPosition();
-      TVector3 postw(0,0,0);
-      TVector3 postwglob = geoTrafo->FromTWLocalToGlobal(postw);
-      
-      // cout << " eloss    "<<  eloss  << endl;
-      // cout << " timeTW  "<< twtime   << endl;
-      // cout << " pos  "<< pos   << endl;
-      
-      // cout << " postwglob x   "<<  postwglob.x()  << endl;
-      // cout << " postwglob y   "<<  postwglob.y()  << endl;
-      // cout << " postwglob z   "<<  postwglob.z()  << endl;
-      
-      Double_t  chargeA = hit->GetChargeChA();  
-      Double_t  chargeB = hit->GetChargeChB();  
-      Double_t  timeA = hit->GetChargeTimeA();
-      Double_t  timeB = hit->GetChargeTimeB();
-      Double_t  chargeCOM = hit->GetCOM();
-      
-      //	cout << " chargeA    "<< chargeA   << endl;
-      // cout << " chargeB  "<< chargeB  << endl;
-      // cout << " timeA  "<< timeA   << endl;
-      // cout << " timeB  "<< timeB   << endl;
-      
-      // Float_t posdetframe = hit->GetHitCoordinate_detectorFrame(); 
-      // Float_t poszdetframe = hit->GetHitZ_detectorFrame();         
-      
-      tw_eloss.push_back(eloss);
-      tw_time.push_back(twtime);
-      tw_pos.push_back(pos);
-      tw_bar.push_back(bar);
-      tw_layer.push_back(layer);
-      tw_chargeA.push_back(chargeA);
-      tw_timeA.push_back(timeA);
-      tw_chargeB.push_back(chargeB);
-      tw_timeB.push_back(timeB);
-      tw_chargeCOM.push_back(chargeCOM);
+    //   //     Float_t edep1  = point->GetEnergyLoss1();
+    //   //     Float_t edep2  = point->GetEnergyLoss2();
+    //   //     Float_t edep   = point->GetEnergyLoss();
+    //   //     Float_t timeTW = point->GetTime();
       
       
-    }
+      
+    //   // cout << " bar    "<<  bar  << endl;
+    //   // cout << " layer  "<< layer   << endl;
+      
+      
+    //   Double_t eloss = hit->GetEnergyLoss(); 
+    //   Double_t twtime = hit->GetTime();       
+    //   Double_t pos = hit->GetPosition();
+    //   TVector3 postw(0,0,0);
+    //   TVector3 postwglob = geoTrafo->FromTWLocalToGlobal(postw);
+      
+    //   // cout << " eloss    "<<  eloss  << endl;
+    //   // cout << " timeTW  "<< twtime   << endl;
+    //   // cout << " pos  "<< pos   << endl;
+      
+    //   // cout << " postwglob x   "<<  postwglob.x()  << endl;
+    //   // cout << " postwglob y   "<<  postwglob.y()  << endl;
+    //   // cout << " postwglob z   "<<  postwglob.z()  << endl;
+      
+    //   Double_t  chargeA = hit->GetChargeChA();  
+    //   Double_t  chargeB = hit->GetChargeChB();  
+    //   Double_t  timeA = hit->GetChargeTimeA();
+    //   Double_t  timeB = hit->GetChargeTimeB();
+    //   Double_t  chargeCOM = hit->GetCOM();
+      
+    //   //	cout << " chargeA    "<< chargeA   << endl;
+    //   // cout << " chargeB  "<< chargeB  << endl;
+    //   // cout << " timeA  "<< timeA   << endl;
+    //   // cout << " timeB  "<< timeB   << endl;
+      
+    //   // Float_t posdetframe = hit->GetHitCoordinate_detectorFrame(); 
+    //   // Float_t poszdetframe = hit->GetHitZ_detectorFrame();         
+      
+    //   tw_eloss.push_back(eloss);
+    //   tw_time.push_back(twtime);
+    //   tw_pos.push_back(pos);
+    //   tw_bar.push_back(bar);
+    //   tw_layer.push_back(layer);
+    //   tw_chargeA.push_back(chargeA);
+    //   tw_timeA.push_back(timeA);
+    //   tw_chargeB.push_back(chargeB);
+    //   tw_timeB.push_back(timeB);
+    //   tw_chargeCOM.push_back(chargeCOM);
+      
+      
+    // }
     
     
     
-    nsthit = st_pos.size();
+    // nsthit = st_pos.size();
     
-    for (Int_t i = 0; i < nsthit; i++) {
-      st_pos_x.push_back(st_pos.at(i).X());
-      st_pos_y.push_back(st_pos.at(i).Y());
-      st_pos_z.push_back(st_pos.at(i).Z());
+    // for (Int_t i = 0; i < nsthit; i++) {
+    //   st_pos_x.push_back(st_pos.at(i).X());
+    //   st_pos_y.push_back(st_pos.at(i).Y());
+    //   st_pos_z.push_back(st_pos.at(i).Z());
       
-    }
+    // }
     
     
-    nbmtrack = bm_trkind.size();
+    // nbmtrack = bm_trkind.size();
     
-    for (Int_t i = 0; i < nbmtrack; i++) {
-      bm_Pvers_x.push_back(bm_Pvers.at(i).X());
-      bm_Pvers_y.push_back(bm_Pvers.at(i).Y());
-      bm_Pvers_z.push_back(bm_Pvers.at(i).Z());
+    // for (Int_t i = 0; i < nbmtrack; i++) {
+    //   bm_Pvers_x.push_back(bm_Pvers.at(i).X());
+    //   bm_Pvers_y.push_back(bm_Pvers.at(i).Y());
+    //   bm_Pvers_z.push_back(bm_Pvers.at(i).Z());
       
       
-      bm_R0_x.push_back(bm_R0.at(i).X());
-      bm_R0_y.push_back(bm_R0.at(i).Y());
-      bm_R0_z.push_back(bm_R0.at(i).Z());
+    //   bm_R0_x.push_back(bm_R0.at(i).X());
+    //   bm_R0_y.push_back(bm_R0.at(i).Y());
+    //   bm_R0_z.push_back(bm_R0.at(i).Z());
       
-    }
+    // }
+
+    //filling
     
     nvtx = vtx_coll.size();
     for (Int_t i = 0; i < nvtx; i++) {
@@ -705,7 +761,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     
     
     
-    ntwhit = tw_pos.size();
+    //ntwhit = tw_pos.size();
     
     tree_out->Fill();
     
