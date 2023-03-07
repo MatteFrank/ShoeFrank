@@ -90,6 +90,35 @@ void TAMSDactNtuRaw::CreateHistogram()
 }
 
 //------------------------------------------+-----------------------------------
+//! Compute common noise (with median)
+//!
+//! \param[in] vaContent input ASIC vector
+//! \param[in] threshold threshold value
+Double_t TAMSDactNtuRaw::ComputeCN(Double_t* vaContent, Double_t threshold)
+{
+   Float_t cn = 0;
+
+   std::vector<Double_t> goodStrips;
+
+   // Get the median of the strips below the threshold
+   for (size_t i = 0; i < CN_CH; i++) {
+      if (vaContent[i] < threshold)
+         goodStrips.push_back(vaContent[i]);
+   }
+
+   if(goodStrips.size() > 32)
+   {
+      cn = TMath::Median(goodStrips.size(), &goodStrips[0]);
+   }
+   else
+   {
+      ComputeCN(vaContent, threshold+1);
+   }
+
+   return cn;
+}
+
+//------------------------------------------+-----------------------------------
 //! Compute common noise
 //!
 //! \param[in] strip strip number
@@ -115,7 +144,7 @@ Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t* vaContent, Int_t type)
       if (cnt != 0)
          return cn / cnt;
       else
-         return -999;
+         return 0;
       
    } else if (type == 1) { //Common noise with fixed threshold to exclude potential real signal strips
    
@@ -128,7 +157,7 @@ Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t* vaContent, Int_t type)
       if (cnt != 0)
          return cn / cnt;
       else
-         return -999;
+         return 0;
       
    } else {//Common Noise with 'self tuning' threshold: we use the some of the channels to calculate a baseline level, then we use all the strips in a band around that value to compute the CN
 
@@ -144,7 +173,7 @@ Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t* vaContent, Int_t type)
       if (cnt2 != 0)
          hard_cm = hard_cm / cnt2;
       else
-         return -999;
+         return 0;
 
       for (size_t i = 23; i < 55; i++) {
          if (vaContent[i] > hard_cm - 2 * rms && vaContent[i] < hard_cm + 2 * rms) { //we use only channels with a value around the baseline calculated at the previous step
@@ -156,7 +185,7 @@ Double_t TAMSDactNtuRaw::ComputeCN(Int_t strip, Double_t* vaContent, Int_t type)
       if (cnt != 0)
          return cn / cnt;
       else
-         return -999;
+         return 0;
    }
 }
 
@@ -287,7 +316,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                         for (int VaChan = 0; VaChan < CN_CH; VaChan++)
                            vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
 
-                        cnX = ComputeCN(i, vaContent, 0);
+                        cnX = ComputeCN(vaContent, 10);
                         if (ValidHistogram())
                            fpHisCommonMode[sensorId]->Fill(cnX);
                      }
@@ -342,7 +371,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                         for (int VaChan = 0; VaChan < CN_CH; VaChan++)
                            vaContent[VaChan] = *(adcPtr + VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
 
-                        cnY = ComputeCN(i, vaContent, 0);
+                        cnY = ComputeCN(vaContent, 10);
                         if (ValidHistogram())
                            fpHisCommonMode[sensorId]->Fill(cnY);
                   }
@@ -371,10 +400,8 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                }
             }
          }
-         
       }
    }
    
    return kTRUE;
-
 }
