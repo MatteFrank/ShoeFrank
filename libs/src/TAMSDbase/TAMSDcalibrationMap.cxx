@@ -88,8 +88,8 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
       
       int sensorId, stripId;
       int asicId, asicCh;
-      double Q_corrp0, Q_corrp1, Q_corrp2;
-      int status;
+      double ped_mean, ped_sigma;
+      int noise_status;
       double sigmaLevelSeed, sigmaLevelHit;
       int k = 0;
       
@@ -102,7 +102,7 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
          
          if(strchr(line,'#')) {
             if(FootDebugLevel(1))
-               Info("LoadEnergyCalibrationMap()","Skip comment line:: %s\n",line);
+               Info("LoadPedestalMap()","Skip comment line:: %s\n",line);
             continue;
          }
         
@@ -126,12 +126,10 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
                Info("LoadEnergyCalibrationMap()","Skip comment line:: %s\n",line);
             continue;
          }
-         
-         sscanf(line, "%d %d %d %d %lf %lf %d",&sensorId, &stripId, &asicId, &asicCh, &Q_corrp0, &Q_corrp1, &status);
+         sscanf(line, "%d %d %d %d %lf %lf %d",&sensorId, &stripId, &asicId, &asicCh, &ped_mean, &ped_sigma, &noise_status);
          if(FootDebugLevel(1))
-            Info("LoadPedestalMap()","sensorId: %d stripId %d Mean: %5.1f Sigma: %3.1f status: %d\n",sensorId, stripId, Q_corrp0, Q_corrp1, status);
-         
-         fPedestal.push_back( PedParameter_t{Q_corrp0, Q_corrp1, !(static_cast<bool>(status))} );
+            Info("LoadPedestalMap()","sensorId: %d stripId %d Mean: %5.1f Sigma: %3.1f status: %d\n",sensorId, stripId, ped_mean, ped_sigma, noise_status);
+         fPedestal.push_back( PedParameter_t{ped_mean, ped_sigma, !(static_cast<bool>(noise_status))} );
       }
    } else
       Info("LoadPedestalMap()","File for pedestal %s not open!!",FileName.Data());

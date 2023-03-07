@@ -298,7 +298,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
          if( pedestal.status ) {
             if (fgPedestalSub) {
                Bool_t seedX = false;
-               valueX = p_parcal->GetPedestalValue(sensorId, pedestal, true);
+               valueX = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
                meanX = pedestal.mean;
                if(sensorId%2 == 0)
                   adcDummy = adcFirst;
@@ -330,7 +330,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                         fpHisSeedMap[sensorId]->Fill(i, adcDummy - meanX - cnX);
                   }
 
-                  valueX = p_parcal->GetPedestalValue(sensorId, pedestal, false);
+                  valueX = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
                   valueX = adcDummy - valueX - cnX;
                   if (valueX > 0)
                   {
@@ -354,7 +354,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
          if( pedestal.status ) {
             if (fgPedestalSub) {
                Bool_t seedY = false;
-               valueY = p_parcal->GetPedestalValue(sensorId, pedestal, true);
+               valueY = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
                meanY = pedestal.mean;
                UInt_t *adcPtr;
                if (sensorId % 2 == 0)
@@ -384,7 +384,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                      fpHisSeedMap[sensorId]->Fill(i, adcDummy-meanY-cnY);
                }
                
-               valueY = p_parcal->GetPedestalValue(sensorId, pedestal, false);
+               valueY = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
                valueY = adcDummy - valueY - cnY;
                if (valueY > 0) {
                   TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcDummy-meanY-cnY);
