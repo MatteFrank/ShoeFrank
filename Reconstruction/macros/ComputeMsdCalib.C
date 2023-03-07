@@ -47,6 +47,13 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    gROOT->SetBatch(kTRUE);
    gErrorIgnoreLevel = kWarning;
 
+   //Check if the file exists
+   if (gSystem->AccessPathName(filename))
+   {
+      cout << "File " << filename << " does not exist" << endl;
+      return;
+   }
+
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
@@ -201,15 +208,37 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
          boardId = (evt->boardHeader & 0xF) - 1;
 
          sensorId = map->GetSensorId(boardId, 0);
-         for (int ch = 0; ch < NChannels; ch++)
+
+         if (sensorId % 2 == 0)
          {
-            hADC[sensorId][ch]->Fill(evt->FirstPlane[ch]);
+            for (int ch = 0; ch < NChannels; ch++)
+            {
+               hADC[sensorId][ch]->Fill(evt->FirstPlane[ch]);
+            }
+         }
+         else
+         {
+            for (int ch = 0; ch < NChannels; ch++)
+            {
+               hADC[sensorId][ch]->Fill(evt->SecondPlane[ch]);
+            }
          }
 
          sensorId = map->GetSensorId(boardId, 1);
-         for (int ch = 0; ch < NChannels; ch++)
+
+         if (sensorId % 2 == 0)
          {
-            hADC[sensorId][ch]->Fill(evt->SecondPlane[ch]);
+            for (int ch = 0; ch < NChannels; ch++)
+            {
+               hADC[sensorId][ch]->Fill(evt->FirstPlane[ch]);
+            }
+         }
+         else
+         {
+            for (int ch = 0; ch < NChannels; ch++)
+            {
+               hADC[sensorId][ch]->Fill(evt->SecondPlane[ch]);
+            }
          }
       }
       // printf("\n");
