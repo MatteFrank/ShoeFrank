@@ -308,7 +308,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             }
          }
          
-         if( pedestal.status ) {
+         if( !pedestal.status ) {
             if (fgPedestalSub) {
                Bool_t seedFirst = false;
                valueFirst = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
@@ -336,6 +336,9 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
 
                   if (ValidHistogram())
                      fpHisStripMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
+
+                  if (pedestal.status)
+                     hit->SetNoisy();
                }
             }
          }
@@ -361,7 +364,7 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             }
          }
          
-         if( pedestal.status ) {
+         if( !pedestal.status ) {
             if (fgPedestalSub) {
                Bool_t seedSecond = false;
                valueSecond = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
@@ -388,8 +391,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                   
                   if (ValidHistogram())
                      fpHisStripMap[sensorId]->Fill(i, adcDummy-meanSecond-cnSecond);
+
+                  if (pedestal.status)
+                     hit->SetNoisy();
                }
-               
+
                if(FootDebugLevel(2)) {
                   if(valueFirst>0 || valueSecond>0)
                      cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
