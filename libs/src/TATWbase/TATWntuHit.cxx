@@ -167,7 +167,20 @@ TATWntuHit::~TATWntuHit()
 }
 
 //______________________________________________________________________________
-//  standard
+//! new hit
+//!
+//! \param[in] layer       LayerId [0->LayerY->rear,1->layerX->front]
+//! \param[in] bar         barId [0-19 fort each layer]
+//! \param[in] energyloss  Deposited energy in MeV
+//! \param[in] atime       time of the TW hit in ns
+//! \param[in] pos         position along the bar in cm
+//! \param[in] ChargeA     Charge of channel A for a given bar
+//! \param[in] ChargeB     Charge of channel B for a given bar
+//! \param[in] AmplitudeA  Amplitude of channel A for a given bar
+//! \param[in] AmplitudeB  Amplitude of channel B for a given bar
+//! \param[in] TimeA       Time of channel A for a given bar
+//! \param[in] TimeB       Time of channel B for a given bar
+//! \param[in] TrigType    Trigger Type Id
 TATWhit* TATWntuHit::NewHit( int layer, int bar, double energyLoss, double atime, double pos, double ChargeA, double ChargeB, double AmplitudeA, double AmplitudeB, double TimeA, double TimeB, Int_t TrigType) {
 
 	TClonesArray &pixelArray = *fListOfHits;
@@ -241,12 +254,11 @@ TClonesArray* TATWntuHit::GetListOfHits() {
 //! Setup clones. Crate and initialise the list of pixels
 void TATWntuHit::SetupClones()   {
 
-	if (fListOfHits) return;
-	fListOfHits = new TClonesArray("TATWhit");
-	//    fListOfHits->SetOwner(true);
+     if (!fListOfHits)
+       fListOfHits = new TClonesArray("TATWhit");
 
+     return;
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Clear event.

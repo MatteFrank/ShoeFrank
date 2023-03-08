@@ -3,7 +3,7 @@
 
 /*!
  \File TATWntuHit.hxx
- \brief   Declaration of TATWntuHit.
+ \brief   Declaration of TATWntuHit, the class for the TW hits.
  */
 /*------------------------------------------+---------------------------------*/
 
@@ -23,30 +23,30 @@
 #include "TATWparameters.hxx"
 
 /*!
- \class TAThHit
+ \class TATWhit
  \brief class for TW  hit **
  */
 class TATWhit : public TAGobject {
    
 private:
-    Int_t    fLayer;
-    Int_t    fBar;
-    Double_t fDe;                     // energy loss in the scintillator bar
-    Double_t fTime;                   // timestamp
-    Double_t fTimeofflight;           // time of flight
-    Double_t fCoordinate;             // x or y coordinate in the local detector frame, depending on the layer
-    Double_t fZ;                      // z coordinate in the local detector frame
-    Int_t    fChargeZ;                // atomic charge Z (tmp solution)
-    TArrayI  fMCindex;                // Id of the hit created in the simulation
-    TArrayI  fMCtrackId;              // Id of the track created in the simulation
-    Double_t fChargeA;
-    Double_t fChargeB;
-    Double_t fAmplitudeA;
-    Double_t fAmplitudeB;
-    Double_t fTimeA;
-    Double_t fTimeB;
-    Bool_t   fIsValid;
-    Int_t    fTrigType;
+    Int_t    fLayer;                  ///< layerId (0 for rear LayerY, 1 for front LayerX)
+    Int_t    fBar;                    ///< barId [0-19] for each Layer
+    Double_t fDe;                     ///< energy loss in the bar [MeV]
+    Double_t fTime;                   ///< timestamp [ns]
+    Double_t fTimeofflight;           ///< time of flight [ns]
+    Double_t fCoordinate;             ///< position along the bar [cm]
+    Double_t fZ;                      ///< z coordinate of the TW layer
+    Int_t    fChargeZ;                ///< Nuclear Charge Number Z 
+    TArrayI  fMCindex;                ///< Id of the hit created in the simulation
+    TArrayI  fMCtrackId;              ///< Id of the track created in the simulation
+    Double_t fChargeA;                ///< Charge in Channel A in the bar
+    Double_t fChargeB;                ///< Charge in Channel B in the bar
+    Double_t fAmplitudeA;             ///< Amplitude in Channel A in the bar
+    Double_t fAmplitudeB;             ///< Amplitude in Channel B in the bar
+    Double_t fTimeA;                  ///< Time in Channel A in the bar
+    Double_t fTimeB;                  ///< Time in Channel B in the bar
+    Bool_t   fIsValid;                ///< TW hit validity check
+    Int_t    fTrigType;               ///< Trigger Type ID
   
 public:
   TATWhit();
@@ -59,26 +59,41 @@ public:
   ~TATWhit() {};
    
    void   Clear(Option_t* option = "C");
+   //! Validity check if bar is part of LayerY (a vertical bar of rear layer)
    bool IsColumn() { return ( fLayer == (Int_t)LayerY ? true : false ); };
+   //! Validity check if bar is part of LayerX (a horizontal bar of front layer)
    bool IsRow()    { return ( fLayer == (Int_t)LayerX ? true : false ); };
    
    //    All the Get methods
+   //! Get BarId [0-19] for a given layer
    Int_t     GetBar()                  const   { return fBar;               }
+   //! Get LayerId [0 -> rear LayerY, 1->front LayerX]
    Int_t     GetLayer()                const   { return fLayer;             }
+   //! Get deposited energy in MeV
    Double_t  GetEnergyLoss()           const   { return fDe;                }
+   //! Get time ns
    Double_t  GetTime()                 const   { return fTime;              }
+   //! Get ToF in ns
    Double_t  GetToF()                  const   { return fTimeofflight;      }
+   //! Get position along the bar
    Double_t  GetPosition()             const   { return fCoordinate;        }
+   //! Get nuclear charge number Z
    Int_t     GetChargeZ()              const   { return fChargeZ;           }
+   //! Get the charge at the bar channel A
    Double_t  GetChargeChA()            const   { return fChargeA;           }
+   //! Get the charge at the bar channel B
    Double_t  GetChargeChB()            const   { return fChargeB;           }
+   //! Get the amplitude at the bar channel A
    Double_t  GetAmplitudeChA()         const   { return fAmplitudeA;        }
+   //! Get the amplitude at the bar channel B
    Double_t  GetAmplitudeChB()         const   { return fAmplitudeB;        }
+   //! Get the time at the bar channel A
    Double_t  GetTimeChA()              const   { return fTimeA;             }
+   //! Get the time at the bar channel B
    Double_t  GetTimeChB()              const   { return fTimeB;             }
+   //! Check if TW hit is valid (properly reconstructed and over threshold)
    Bool_t    IsValid()                 const   { return fIsValid;           }
-   Float_t   GetHitCoordinate_detectorFrame() const   { return fCoordinate; }
-   Float_t   GetHitZ_detectorFrame()          const   { return fZ;          }
+   //! Get the trigger type Id for the decoded run
    Int_t     GetTrigType()             const {return fTrigType;}
   
    // MC track id
@@ -145,7 +160,7 @@ public:
     virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
    
 private:
-   static TString     fgkBranchName;    // Branch name in TTree
+   static TString     fgkBranchName;    ///< Branch name in TTree
    
 public:
    static const Char_t* GetBranchName()   { return fgkBranchName.Data(); }
