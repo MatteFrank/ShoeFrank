@@ -33,12 +33,10 @@ private:
     Int_t    fBar;
     Double_t fDe;                     // energy loss in the scintillator bar
     Double_t fTime;                   // timestamp
-    Double_t fTime_oth;               // timestamp
     Double_t fTimeofflight;           // time of flight
     Double_t fCoordinate;             // x or y coordinate in the local detector frame, depending on the layer
     Double_t fZ;                      // z coordinate in the local detector frame
     Int_t    fChargeZ;                // atomic charge Z (tmp solution)
-    Double_t fChargeCOM;              // Center of Mass evaluated with the charge
     TArrayI  fMCindex;                // Id of the hit created in the simulation
     TArrayI  fMCtrackId;              // Id of the track created in the simulation
     Double_t fChargeA;
@@ -47,8 +45,6 @@ private:
     Double_t fAmplitudeB;
     Double_t fTimeA;
     Double_t fTimeB;
-    Double_t fTimeAOth;
-    Double_t fTimeBOth;
     Bool_t   fIsValid;
     Int_t    fTrigType;
   
@@ -56,10 +52,10 @@ public:
   TATWhit();
   TATWhit( TATWrawHit* hit );
   TATWhit(const TATWhit& aHit);
-  TATWhit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTimeOth,
-           Double_t pos,Double_t chargeCOM,Double_t ChargeA,
+  TATWhit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
+           Double_t pos, Double_t ChargeA,
            Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB,
-           Double_t TimeAOth,Double_t TimeBOth, Int_t trigType);
+           Int_t trigType);
   ~TATWhit() {};
    
    void   Clear(Option_t* option = "C");
@@ -71,17 +67,15 @@ public:
    Int_t     GetLayer()                const   { return fLayer;             }
    Double_t  GetEnergyLoss()           const   { return fDe;                }
    Double_t  GetTime()                 const   { return fTime;              }
-   Double_t  GetTimeOth()              const   { return fTime_oth;          }
    Double_t  GetToF()                  const   { return fTimeofflight;      }
    Double_t  GetPosition()             const   { return fCoordinate;        }
    Int_t     GetChargeZ()              const   { return fChargeZ;           }
-   Double_t  GetCOM()                  const   { return fChargeCOM;         }
    Double_t  GetChargeChA()            const   { return fChargeA;           }
    Double_t  GetChargeChB()            const   { return fChargeB;           }
    Double_t  GetAmplitudeChA()         const   { return fAmplitudeA;        }
    Double_t  GetAmplitudeChB()         const   { return fAmplitudeB;        }
-   Double_t  GetChargeTimeA()          const   { return fTimeA;             }
-   Double_t  GetChargeTimeB()          const   { return fTimeB;             }
+   Double_t  GetTimeChA()              const   { return fTimeA;             }
+   Double_t  GetTimeChB()              const   { return fTimeB;             }
    Bool_t    IsValid()                 const   { return fIsValid;           }
    Float_t   GetHitCoordinate_detectorFrame() const   { return fCoordinate; }
    Float_t   GetHitZ_detectorFrame()          const   { return fZ;          }
@@ -100,13 +94,12 @@ public:
    void      SetToF(Double_t time)              { fTimeofflight = time;     }
    void      SetPosition(Double_t p)            { fCoordinate = p;          }
    void      SetChargeZ(Int_t z)                { fChargeZ = z;             }
-   void      SetCOM(Double_t c)                 { fChargeCOM = c;           }
    void      SetChargeChA(Double_t chg)         { fChargeA = chg;           }
    void      SetChargeChB(Double_t chg)         { fChargeB = chg;           }
    void      SetAmplitudeChA(Double_t amp)      { fAmplitudeA = amp;        }
    void      SetAmplitudeChB(Double_t amp)      { fAmplitudeB = amp;        }
-   void      SetChargeTimeA(Double_t t)         { fTimeA   = t;             }
-   void      SetChargeTimeB(Double_t t)         { fTimeB   = t;             }
+   void      SetTimeChA(Double_t t)             { fTimeA   = t;             }
+   void      SetTimeChB(Double_t t)             { fTimeB   = t;             }
    void      SetValid(Bool_t t)                 { fIsValid   = t;           }
 
   ClassDef(TATWhit,3)                            // Pixel or Pixel of a Detector Plane
@@ -133,9 +126,9 @@ public:
   TATWhit* Hit(Int_t i_ind);
 
 
-   TATWhit*           NewHit(Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
-                             Double_t pos,Double_t chargeCOM,Double_t ChargeA, Double_t ChargeB, Double_t AmplitudeA, Double_t AmplitudeB,
-                             Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth, Int_t trigType);
+   TATWhit*           NewHit(Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
+                             Double_t pos, Double_t ChargeA, Double_t ChargeB, Double_t AmplitudeA, Double_t AmplitudeB,
+                             Double_t TimeA,Double_t TimeB, Int_t trigType);
   
     int               GetHitN(int layer); 
     int 			       GetHitN();

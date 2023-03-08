@@ -68,8 +68,8 @@ private:
    
 private:
     Bool_t   DecodeHits(const DEMSDEvent* evt);
-    Double_t ComputeCN(Int_t strip, Double_t *VaContent, Int_t type);
-
+    Double_t ComputeCN(Double_t *VaContent, Double_t threshold);
+    Double_t ComputeCN(Int_t strip, Double_t* vaContent, Int_t type);
 private:
    static UInt_t fkgThreshold;           ///< charge threshold
    static Bool_t fgPedestalSub;          ///< pedestal substraction flag

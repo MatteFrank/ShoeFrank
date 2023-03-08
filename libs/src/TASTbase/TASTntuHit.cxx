@@ -14,9 +14,10 @@ ClassImp(TASThit);
 //! Default constructor.
 TASThit::TASThit()
  : TAGobject(),
-   fCharge(0.),
-   fTime(0.),
-   fDe(0.)
+   fIsValid(true),
+   fCharge(-1),
+   fTime(-1),
+   fDe(-1)
 {
   Clear();
 }
@@ -25,6 +26,7 @@ TASThit::TASThit()
 //! Constructor
 TASThit::TASThit(Double_t charge, Double_t De, Double_t time, bool pileup)
  : TAGobject(),
+   fIsValid(true),
    fCharge(charge),
    fTime(time),
    fDe(De),
@@ -73,6 +75,7 @@ TASTntuHit::TASTntuHit()
   fTrigTime=-1000;
   fTrigTimeOth=-1000;
   fTrigType=-1000;
+  
   SetupClones();
 }
 
