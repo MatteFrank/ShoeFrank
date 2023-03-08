@@ -102,7 +102,7 @@ public:
    void      SetTimeChB(Double_t t)             { fTimeB   = t;             }
    void      SetValid(Bool_t t)                 { fIsValid   = t;           }
 
-  ClassDef(TATWhit,3)                            // Pixel or Pixel of a Detector Plane
+  ClassDef(TATWhit,4)                            // Pixel or Pixel of a Detector Plane
 };
 
 //##############################################################################
