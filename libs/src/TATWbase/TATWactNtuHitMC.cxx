@@ -310,7 +310,8 @@ Double_t TATWactNtuHitMC::GetTimeST(TAGdataDsc *g_NtuStHit, TATWhit *hitTW)
      TASThit* hitST = pNtuStHit->GetHit(0);
      timeST  = hitST->GetTime();  // time stored in the Hit is in ns
    
-     if(!hitST->IsValid() || timeST<0)
+     // if(!hitST->IsValid() || timeST<0)
+     if(!hitST->IsValid())
        hitTW->SetValid(false);
 
      return timeST;

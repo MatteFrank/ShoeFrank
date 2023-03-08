@@ -33,10 +33,10 @@ public:
   
   Bool_t         IsValid()                  const   { return fIsValid;          }
 
-  inline void SetTime(double value)                 { fTime = value;                }
-  inline void SetCharge(double value)               { fCharge = value;              }
-  inline void SetDe(double value)                   { fDe = value;                  }
-  inline void SetPileUp(bool value)                 { fPileUp = value;              }
+  inline void SetTime(double value)                 { fTime = value;            }
+  inline void SetCharge(double value)               { fCharge = value;          }
+  inline void SetDe(double value)                   { fDe = value;              }
+  inline void SetPileUp(bool value)                 { fPileUp = value;          }
 
   Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];   }
   Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];}

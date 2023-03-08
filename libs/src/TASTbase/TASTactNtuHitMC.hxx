@@ -53,7 +53,8 @@ class TASTactNtuHitMC : public TAGaction {
   private:
     void            CreateDigitizer();
     void            FlagUnderEnergyThresholtHits(TASThit *hitst);   
-
+    void            PlotSCquantities(TASThit *hitst);
+  
   ClassDef(TASTactNtuHitMC,0)
 
 };
