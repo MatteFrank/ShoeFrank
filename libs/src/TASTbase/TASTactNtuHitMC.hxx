@@ -8,12 +8,21 @@
 
 #include <vector>
 
-#include "TASTntuHit.hxx"
-
-#include "TAMCflukaStruct.hxx"
+#include "TH1.h"
+#include "TH2.h"
 
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
+
+#include "TAGroot.hxx"
+
+#include "TAGgeoTrafo.hxx"
+
+#include "TAMCflukaStruct.hxx"
+#include "TAMCntuHit.hxx"
+#include "TAMCntuPart.hxx"
+
+#include "TASTntuHit.hxx"
 
 class TASTdigitizer;
 class TASTactNtuHitMC : public TAGaction {
@@ -24,6 +33,7 @@ class TASTactNtuHitMC : public TAGaction {
 
     virtual Bool_t  Action();
 
+    void            CreateHistogram();
 
   private:
     TAGdataDsc*        fpNtuMC;          // input mc hit
@@ -33,6 +43,10 @@ class TASTactNtuHitMC : public TAGaction {
     TASTdigitizer*     fDigitizer;       // cluster size digitizer
 
     EVENT_STRUCT*      fEventStruct;
+
+    TH1D*              fpHisResTime;
+    TH2D*              fpHisElossTime_MCtrue;
+    TH2D*              fpHisElossTime_MCrec;
 
     vector<TASThit*>   fVecStHit;     //! vector to store ST Hits
 

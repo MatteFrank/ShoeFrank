@@ -9,20 +9,21 @@
 #include <map>
 
 #include "TVector3.h"
-#include "TH1F.h"
-#include "TH2F.h"
+#include "TH1.h"
+#include "TH2.h"
 
-#include "TATWntuHit.hxx"
-#include "TATWparGeo.hxx"
-#include "TATWparConf.hxx"
+#include "TAGaction.hxx"
+#include "TAGdataDsc.hxx"
 
 #include "TAGgeoTrafo.hxx"
+
 #include "TAMCflukaStruct.hxx"
 #include "TAMCntuHit.hxx"
 #include "TAMCntuPart.hxx"
 
-#include "TAGaction.hxx"
-#include "TAGdataDsc.hxx"
+#include "TATWntuHit.hxx"
+#include "TATWparGeo.hxx"
+#include "TATWparConf.hxx"
 
 #include "TATWparameters.hxx"
 
@@ -58,7 +59,7 @@ private:
    TAGparaDsc*     fpCalPar;    // calibration parameter dsc
    TAGparaDsc*     fParGeoG;    // beam parameter dsc
 
-  TATWdigitizer*  fDigitizer;  // digitizer
+   TATWdigitizer*  fDigitizer;  // digitizer
    
    TATWparCal*     f_parcal;
 

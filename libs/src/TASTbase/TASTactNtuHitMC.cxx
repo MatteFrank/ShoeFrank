@@ -3,15 +3,9 @@
   \brief   Implementation of TASTactNtuHitMC.
 */
 
-#include "TAGrecoManager.hxx"
-#include "TAGroot.hxx"
-#include "TASTntuHit.hxx"
-#include "TAGgeoTrafo.hxx"
 #include "TAMCflukaParser.hxx"
-#include "TASTdigitizer.hxx"
 
-#include "TAMCntuHit.hxx"
-#include "TAMCntuPart.hxx"
+#include "TASTdigitizer.hxx"
 
 #include "TASTactNtuHitMC.hxx"
 
@@ -51,19 +45,37 @@ TASTactNtuHitMC::TASTactNtuHitMC(const char* name,
 }
 
 //------------------------------------------+-----------------------------------
+//! Destructor.
+TASTactNtuHitMC::~TASTactNtuHitMC()
+{
+   delete fDigitizer;
+}
+
+//------------------------------------------+-----------------------------------
+//! Setup all histograms.
+void TASTactNtuHitMC::CreateHistogram()
+{
+   DeleteHistogram();
+
+   fpHisElossTime_MCrec = new TH2D("stdE_vs_Time_MCrec","dE_vs_Time_MCrec",1000,0.,10.,200,0.,20.);
+   AddHistogram(fpHisElossTime_MCrec);
+
+   fpHisElossTime_MCtrue = new TH2D("stdE_vs_Time_MCtrue","dE_vs_Time_MCtrue",1000,0.,10.,200,0.,20.);
+   AddHistogram(fpHisElossTime_MCtrue);
+   
+   fpHisResTime = new TH1D("stResTime","ResTime", 2000, -1., 1.);
+   AddHistogram(fpHisResTime);
+
+   return;        
+}
+
+//------------------------------------------+-----------------------------------
 //! Create digitizer
 void TASTactNtuHitMC::CreateDigitizer()
 {
    TASTntuHit* p_ntuHit = (TASTntuHit*) fpNtuHit->Object();
    
    fDigitizer = new TASTdigitizer(p_ntuHit);
-}
-
-//------------------------------------------+-----------------------------------
-//! Destructor.
-TASTactNtuHitMC::~TASTactNtuHitMC()
-{
-   delete fDigitizer;
 }
 
 //------------------------------------------+-----------------------------------
