@@ -294,6 +294,19 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             continue;
          }
          auto pedestal = p_parcal->GetPedestal( sensorId, i );
+
+         if (fgCommonModeSub) { // common mode subtraction is enabled
+            if (i % CN_CH == 0) {
+               const UInt_t* adcPtr = sensorId % 2 == 0 ? &evt->FirstPlane[i] : &evt->SecondPlane[i];
+
+               for (int VaChan = 0; VaChan < CN_CH; VaChan++)
+                  vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
+   
+               cnFirst = ComputeCN(vaContent, 10);
+               if (ValidHistogram())
+                  fpHisCommonMode[sensorId]->Fill(cnFirst);
+            }
+         }
          
          if( pedestal.status ) {
             if (fgPedestalSub) {
@@ -305,42 +318,26 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                else
                   adcDummy = adcSecond;
                
-               valueFirst = adcDummy - valueFirst;
+               valueFirst = adcDummy - valueFirst -cnFirst;
 
-                  if (fgCommonModeSub)
-                  {
-                     if (i % CN_CH == 0)
-                     {
-                        const UInt_t* adcPtr = sensorId % 2 == 0 ? &evt->FirstPlane[i] : &evt->SecondPlane[i];
-
-                        for (int VaChan = 0; VaChan < CN_CH; VaChan++)
-                           vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
-
-                        cnFirst = ComputeCN(vaContent, 10);
-                        if (ValidHistogram())
-                           fpHisCommonMode[sensorId]->Fill(cnFirst);
-                     }
-                  }
-
-                  valueFirst -= cnFirst;
-                  if (valueFirst > 0)
-                  {
-                     seedFirst = true;
-                     if (ValidHistogram())
-                        fpHisSeedMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
-                  }
-
-                  valueFirst = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
-                  valueFirst = adcDummy - valueFirst - cnFirst;
-                  if (valueFirst > 0)
-                  {
-                     TAMSDrawHit *hit = p_datraw->AddStrip(sensorId, view, i, adcDummy - meanFirst - cnFirst);
-                     hit->SetSeed(seedFirst);
-
-                     if (ValidHistogram())
-                        fpHisStripMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
-                  }
+               if (valueFirst > 0)
+               {
+                  seedFirst = true;
+                  if (ValidHistogram())
+                     fpHisSeedMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
                }
+
+               valueFirst = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
+               valueFirst = adcDummy - valueFirst - cnFirst;
+               if (valueFirst > 0)
+               {
+                  TAMSDrawHit *hit = p_datraw->AddStrip(sensorId, view, i, adcDummy - meanFirst - cnFirst);
+                  hit->SetSeed(seedFirst);
+
+                  if (ValidHistogram())
+                     fpHisStripMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
+               }
+            }
          }
          
          view = 1;
@@ -350,6 +347,19 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             continue;
          }
          pedestal = p_parcal->GetPedestal( sensorId, i );
+
+         if (fgCommonModeSub) { // common mode subtraction is enabled
+            if (i % CN_CH == 0) {
+               const UInt_t* adcPtr = sensorId % 2 == 0 ? &evt->FirstPlane[i] : &evt->SecondPlane[i];
+
+               for (int VaChan = 0; VaChan < CN_CH; VaChan++)
+                  vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
+   
+               cnSecond = ComputeCN(vaContent, 10);
+               if (ValidHistogram())
+                  fpHisCommonMode[sensorId]->Fill(cnSecond);
+            }
+         }
          
          if( pedestal.status ) {
             if (fgPedestalSub) {
@@ -362,22 +372,8 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
                else
                      adcDummy = adcSecond;
                
-               valueSecond = adcDummy - valueSecond;
+               valueSecond = adcDummy - valueSecond - cnSecond;
                
-               if (fgCommonModeSub) {
-                  if (i % CN_CH == 0) {
-                        const UInt_t *adcPtr = sensorId % 2 == 0 ? &evt->FirstPlane[i] : &evt->SecondPlane[i];
-
-                        for (int VaChan = 0; VaChan < CN_CH; VaChan++)
-                           vaContent[VaChan] = *(adcPtr + VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
-
-                        cnSecond = ComputeCN(vaContent, 10);
-                        if (ValidHistogram())
-                           fpHisCommonMode[sensorId]->Fill(cnSecond);
-                  }
-               }
-               
-               valueSecond -= cnSecond;
                if (valueSecond > 0) {
                   seedSecond = true;
                   if (ValidHistogram())
