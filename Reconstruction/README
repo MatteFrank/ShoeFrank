@@ -9,17 +9,15 @@ DecodeGlb -in dataRaw/data_test.00004313.physics_foot.daq.RAW._lb0000._FOOT-RCD.
 DecodeGlb -in 16O_C_200_trig_shoereg.root -out 16O_C_200_1_Out.root -nev 10000 -exp GSI2021_MC -run 200 -mc
 
 B) Flags in FootGlobal.par for reconstruction
-############   Options for reconstruction   ################
 
+...
 EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
 
 EnableSaveHits:      n
 EnableRootObject:    n
-
-############   END - Options for reconstruction   ################
-
+...
 
 A) Global reconstruction tools with TOE
 
@@ -28,7 +26,7 @@ A) Global reconstruction tools with TOE
    . . .
    IncludeKalman:   n
    IncludeTOE:      y
-   FromLocalReco: n
+   FromLocalReco:   n
 
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
@@ -43,7 +41,7 @@ DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_
    . . .
    IncludeKalman:   n
    IncludeTOE:      y
-   FromLocalReco: n
+   FromLocalReco:   n
 
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
@@ -72,7 +70,7 @@ B) Global reconstruction tools with GenFit
    . . .
    IncludeKalman:   y
    IncludeTOE:      n
-   FromLocalReco: n
+   FromLocalReco:   n
 
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
@@ -87,7 +85,7 @@ DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_
    . . .
    IncludeKalman:   y
    IncludeTOE:      n
-   FromLocalReco: n
+   FromLocalReco:   n
 
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
@@ -101,7 +99,7 @@ DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_
 . . .
 IncludeKalman:   y
 IncludeTOE:      n
-FromLocalReco: y
+FromLocalReco:   y
 
 Kalman Mode:       ON
 Tracking Systems Considered:      VT IT MSD
