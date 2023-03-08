@@ -27,13 +27,13 @@ public:
    void           SetFunctions();
    void           SetInitParFunction();
    
-   void           SmearTimeST(Double_t energy,Double_t &time);
-
    Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t zout=0, Double_t time = 0, Int_t sensorId = 0, Int_t Z = -99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
   
 
    Bool_t         IsOverEnergyThreshold(double ethr, double ene);  
    Double_t       GetEnergyThreshold() {return fEnergyThreshold;}
+
+   Double_t       SmearTimeST(Double_t energy,Double_t time);
 
    Double_t       GetResTimeST(Double_t edep);
 

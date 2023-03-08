@@ -57,15 +57,17 @@ void TASTactNtuHitMC::CreateHistogram()
 {
    DeleteHistogram();
 
-   fpHisElossTime_MCrec = new TH2D("stdE_vs_Time_MCrec","dE_vs_Time_MCrec",1000,0.,10.,200,0.,20.);
+   fpHisElossTime_MCrec = new TH2D("stdE_vs_Time_MCrec","dE_vs_Time_MCrec",10000,-1.,9.,100,0.,10.);
    AddHistogram(fpHisElossTime_MCrec);
 
-   fpHisElossTime_MCtrue = new TH2D("stdE_vs_Time_MCtrue","dE_vs_Time_MCtrue",1000,0.,10.,200,0.,20.);
+   fpHisElossTime_MCtrue = new TH2D("stdE_vs_Time_MCtrue","dE_vs_Time_MCtrue",10000,-1.,9.,100,0.,10.);
    AddHistogram(fpHisElossTime_MCtrue);
    
    fpHisResTime = new TH1D("stResTime","ResTime", 2000, -1., 1.);
    AddHistogram(fpHisResTime);
 
+   SetValidHistogram(kTRUE);
+      
    return;        
 }
 
@@ -139,6 +141,8 @@ Bool_t TASTactNtuHitMC::Action()
 
        FlagUnderEnergyThresholtHits(hitST);
 
+       PlotSCquantities(hitST);
+       
      }
    
    pNtuHit->SetTriggerTime(trigtime);
@@ -169,4 +173,20 @@ void TASTactNtuHitMC::FlagUnderEnergyThresholtHits(TASThit *hitST) {
      
      return;
 }
+//------------------------------------------------------------------------------
+void TASTactNtuHitMC::PlotSCquantities(TASThit *hitSt) {
 
+  if (ValidHistogram()) {
+
+    Double_t recTime  = hitSt->GetTime();
+    Double_t trueTime  = hitSt->GetCharge(); // in GetCharge stored the true time (only in MC)
+    Double_t edep  = hitSt->GetDe();  // get true MC eloss
+    
+    fpHisElossTime_MCtrue->Fill(trueTime,edep);
+    fpHisElossTime_MCrec->Fill(recTime,edep);
+    fpHisResTime->Fill(recTime-trueTime);
+
+  }
+  
+  return;
+}
