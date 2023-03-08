@@ -1348,7 +1348,7 @@ void TAGbaseEventDisplay::UpdateBarElements()
    
    fTwClusDisplay->RefitPlex();
    
-   if (TAGrecoManager::GetPar()->IsLocalReco()) return;
+   if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
    // Color bar
    TATWparGeo* parGeo = parGeo = fReco->GetParGeoTw();
@@ -1431,7 +1431,7 @@ void TAGbaseEventDisplay::UpdateCrystalElements()
       
    fCaClusDisplay->RefitPlex();
    
-   if (TAGrecoManager::GetPar()->IsLocalReco()) return;
+   if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
    
    TACAparGeo* parGeo = fReco->GetParGeoCa();;
 

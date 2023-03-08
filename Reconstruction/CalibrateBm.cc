@@ -98,7 +98,7 @@ int main (int argc, char *argv[])  {
     TAGrecoManager::GetPar()->IncludeVT(false);
     TAGrecoManager::GetPar()->IncludeIT(false);
     TAGrecoManager::GetPar()->IncludeTOE(false);
-    TAGrecoManager::GetPar()->DisableLocalReco();
+    TAGrecoManager::GetPar()->DisableFromLocalReco();
     if(bmstd){
       TAGrecoManager::GetPar()->IncludeST(false);
       locRec->EnableStdAlone();
@@ -188,7 +188,7 @@ int main (int argc, char *argv[])  {
         TAGrecoManager::GetPar()->IncludeVT(false);
         TAGrecoManager::GetPar()->IncludeIT(false);
         TAGrecoManager::GetPar()->IncludeTOE(false);
-        TAGrecoManager::GetPar()->DisableLocalReco();
+        TAGrecoManager::GetPar()->DisableFromLocalReco();
         if(bmstd){
           TAGrecoManager::GetPar()->IncludeST(false);
           locRec->EnableStdAlone();

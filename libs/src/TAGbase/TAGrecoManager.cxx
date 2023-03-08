@@ -72,7 +72,7 @@ TAGrecoManager::TAGrecoManager( const TString expName )
 : TObject(),
   fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
-  fEnableLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
+  fFromLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
   fDoCalibTW(false),       fDoCalibBM(false),    fEnableRegionMc(false),
   fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
   fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
@@ -90,8 +90,8 @@ const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 {
    TAGrunInfo runInfo;
   
-   if (IsLocalReco())
-      runInfo.GetGlobalPar().EnableLocalReco = true;
+   if (IsFromLocalReco())
+      runInfo.GetGlobalPar().FromLocalReco = true;
   
    if (IsSaveTree())
       runInfo.GetGlobalPar().EnableTree = true;
@@ -242,11 +242,11 @@ void TAGrecoManager::FromFile()
            printf("IncludeStraight: %d\n", fIncludeStraight);
      }
     
-    if (key.Contains("EnableLocalReco:")  ) {
-      if ( item.Contains("y"))  fEnableLocalReco = true;
-      else                      fEnableLocalReco = false;
+    if (key.Contains("FromLocalReco:")  ) {
+      if ( item.Contains("y"))  fFromLocalReco = true;
+      else                      fFromLocalReco = false;
       if (fDebugLevel > 0)
-        printf("EnableLocalReco: %d\n", fEnableLocalReco);
+        printf("FromLocalReco: %d\n", fFromLocalReco);
     }
     
     

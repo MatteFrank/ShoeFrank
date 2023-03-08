@@ -20,7 +20,7 @@ Genfit Event Display ON: n
 IncludeKalman:   n
 IncludeTOE:      n
 IncludeStraight: n
-EnableLocalReco: n
+FromLocalReco:   n
 
 
 ############   Kalman Filter Control Parameters   ################

@@ -19,7 +19,7 @@ Genfit Event Display ON: n
 IncludeKalman:   n
 IncludeTOE:      n
 IncludeStraight: n
-EnableLocalReco: n
+FromLocalReco:   n
 
 Kalman Mode:       ref
 Tracking Systems Considered:    all

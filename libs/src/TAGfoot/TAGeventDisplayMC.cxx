@@ -113,7 +113,7 @@ TAGeventDisplayMC::~TAGeventDisplayMC()
 //! Set reconstruction
 void TAGeventDisplayMC::SetReco()
 {
-   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+   Bool_t lrc = TAGrecoManager::GetPar()->IsFromLocalReco();
    Bool_t mc  = true;
 
    if (fType == 1) {

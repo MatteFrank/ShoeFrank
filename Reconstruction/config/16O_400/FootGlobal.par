@@ -15,7 +15,7 @@ MC Particle Types:  C11  C12  C13 C14  Li6  Li7  Be7  Be9  Be10  B10  B11  N14  
 IncludeKalman:   n
 IncludeTOE:      n
 IncludeStraight: n
-EnableLocalReco: n
+FromLocalReco:   n
 
 ############   Kalman Filter Control Parameters   ################
 

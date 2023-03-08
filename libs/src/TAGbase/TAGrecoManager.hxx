@@ -96,7 +96,7 @@ public:
     //! Local reconstruction flag
 
     //! Reconstruction parameters Getter
-    Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
+    Bool_t IsFromLocalReco()     const { return fFromLocalReco;       }
     //! Saving tree flag
     Bool_t IsSaveTree()          const { return fEnableTree;          }
     //! Save histogram flag
@@ -149,9 +149,9 @@ public:
     void IncludeStraight(Bool_t t)     { fIncludeStraight = t;        }
    
     //! Enable global reconstruction from local reconstruction tree
-    void EnableLocalReco()             {  fEnableLocalReco = true;    }
+    void EnableFromLocalReco()         {  fFromLocalReco = true;      }
     //! Disable global reconstruction from local reconstruction tree
-    void DisableLocalReco()            {  fEnableLocalReco = false;   }
+    void DisableFromLocalReco()        {  fFromLocalReco = false;     }
 
     //! Enable root object tree
     void EnableRootObject()            {  fEnableRootObject = true;   }
@@ -244,7 +244,7 @@ private:
 
    
    //! reconstruction parameter
-   Bool_t               fEnableLocalReco;       ///< Enable global reconstruction from l0 reconstruction
+   Bool_t               fFromLocalReco;         ///< Enable global reconstruction from l0 reconstruction
    Bool_t               fEnableTree;            ///< Enbale tree filling
    Bool_t               fEnableHisto;           ///< Enable histogram filling
    Bool_t               fEnableSaveHits;        ///< Enable saving hits
@@ -291,7 +291,7 @@ public:
    // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
    
-   ClassDef(TAGrecoManager,1)
+   ClassDef(TAGrecoManager,2)
 
 };
 

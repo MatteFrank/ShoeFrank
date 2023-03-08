@@ -67,7 +67,7 @@ int main (int argc, char *argv[])  {
       TAGrecoManager::GetPar()->DisableHisto();
    }
 
-	Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+	Bool_t lrc = TAGrecoManager::GetPar()->IsFromLocalReco();
 	
 	BaseReco* glbRec = 0x0;
 

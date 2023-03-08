@@ -134,7 +134,7 @@ int main (int argc, char *argv[])  {
   TAGrecoManager::GetPar()->IncludeVT(false);
   TAGrecoManager::GetPar()->IncludeIT(false);
   TAGrecoManager::GetPar()->IncludeTOE(false);
-  TAGrecoManager::GetPar()->DisableLocalReco();
+  TAGrecoManager::GetPar()->DisableFromLocalReco();
   TAGrecoManager::GetPar()->IncludeST(false);
   locRec->EnableStdAlone();
   locRec->EnableHisto();

@@ -45,7 +45,7 @@ TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
    fiRun(right.fiRun),
    fCrossMap(right.fCrossMap)
 {
-   fGlobalParameter.EnableLocalReco  = right.fGlobalParameter.EnableLocalReco;
+   fGlobalParameter.FromLocalReco  = right.fGlobalParameter.FromLocalReco;
    fGlobalParameter.EnableTree       = right.fGlobalParameter.EnableTree;
    fGlobalParameter.EnableHisto      = right.fGlobalParameter.EnableHisto;
    fGlobalParameter.EnableSaveHits   = right.fGlobalParameter.EnableSaveHits;
@@ -81,7 +81,7 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
   
    fCrossMap.insert(right.fCrossMap.begin(), right.fCrossMap.end());
   
-   fGlobalParameter.EnableLocalReco  = right.fGlobalParameter.EnableLocalReco;
+   fGlobalParameter.FromLocalReco  = right.fGlobalParameter.FromLocalReco;
    fGlobalParameter.EnableTree       = right.fGlobalParameter.EnableTree;
    fGlobalParameter.EnableHisto      = right.fGlobalParameter.EnableHisto;
    fGlobalParameter.EnableSaveHits   = right.fGlobalParameter.EnableSaveHits;
@@ -127,7 +127,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << endl;
 
    os << "Global info:     \n"
-   << Form("  EnableLocalReco: %d\n", fGlobalParameter.EnableLocalReco)
+   << Form("  FromLocalReco: %d\n", fGlobalParameter.FromLocalReco)
    << Form("  EnableTree: %d\n", fGlobalParameter.EnableTree)
    << Form("  EnableHisto: %d\n", fGlobalParameter.EnableHisto)
    << Form("  EnableTracking: %d\n", fGlobalParameter.EnableTracking)

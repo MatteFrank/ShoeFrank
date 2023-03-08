@@ -87,7 +87,7 @@ TAGeventDisplay::~TAGeventDisplay()
 //! Set reconstruction
 void TAGeventDisplay::SetReco()
 {
-   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+   Bool_t lrc = TAGrecoManager::GetPar()->IsFromLocalReco();
    
    if (fType == 0) {
       if (lrc) {
