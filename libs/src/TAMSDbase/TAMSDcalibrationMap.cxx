@@ -129,7 +129,7 @@ void TAMSDcalibrationMap::LoadPedestalMap(TString FileName)
          sscanf(line, "%d %d %d %d %lf %lf %d",&sensorId, &stripId, &asicId, &asicCh, &ped_mean, &ped_sigma, &noise_status);
          if(FootDebugLevel(1))
             Info("LoadPedestalMap()","sensorId: %d stripId %d Mean: %5.1f Sigma: %3.1f status: %d\n",sensorId, stripId, ped_mean, ped_sigma, noise_status);
-         fPedestal.push_back( PedParameter_t{ped_mean, ped_sigma, !(static_cast<bool>(noise_status))} );
+         fPedestal.push_back( PedParameter_t{ped_mean, ped_sigma, static_cast<bool>(noise_status)} );
       }
    } else
       Info("LoadPedestalMap()","File for pedestal %s not open!!",FileName.Data());

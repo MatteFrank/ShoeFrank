@@ -3,15 +3,9 @@
   \brief   Implementation of TASTactNtuHitMC.
 */
 
-#include "TAGrecoManager.hxx"
-#include "TAGroot.hxx"
-#include "TASTntuHit.hxx"
-#include "TAGgeoTrafo.hxx"
 #include "TAMCflukaParser.hxx"
-#include "TASTdigitizer.hxx"
 
-#include "TAMCntuHit.hxx"
-#include "TAMCntuPart.hxx"
+#include "TASTdigitizer.hxx"
 
 #include "TASTactNtuHitMC.hxx"
 
@@ -25,32 +19,29 @@ ClassImp(TASTactNtuHitMC);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TASTactNtuHitMC::TASTactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve, TAGdataDsc* pNturaw, EVENT_STRUCT* evStr)
-  : TAGaction(name, "TASTactNtuHitMC - NTuplize ToF raw data"),
+TASTactNtuHitMC::TASTactNtuHitMC(const char* name,
+                                 TAGdataDsc* pNtuMC,
+                                 TAGdataDsc* pNtuEve,
+                                 TAGdataDsc* pNtuHit,
+                                 EVENT_STRUCT* evStr)  
+ : TAGaction(name, "TASTactNtuHitMC - NTuplize ST raw data"),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
-   fpNtuRaw(pNturaw),
+   fpNtuHit(pNtuHit),
    fEventStruct(evStr)
 {
    if(FootDebugLevel(1))
       Info("Action()"," Creating the Start Counter MC tuplizer action\n");
   
-   if (fEventStruct == 0x0) {
+   if(fEventStruct == 0x0) {
      AddDataIn(pNtuMC, "TAMCntuHit");
      AddDataIn(pNtuEve, "TAMCntuPart");
    } 
-   AddDataOut(pNturaw, "TASTntuHit");
+   AddDataOut(pNtuHit, "TASTntuHit");
    
    CreateDigitizer();
-}
 
-//------------------------------------------+-----------------------------------
-//! Create digitizer
-void TASTactNtuHitMC::CreateDigitizer()
-{
-   TASTntuHit* p_nturaw = (TASTntuHit*) fpNtuRaw->Object();
-   
-   fDigitizer = new TASTdigitizer(p_nturaw);
+   fVecStHit.clear();
 }
 
 //------------------------------------------+-----------------------------------
@@ -61,14 +52,44 @@ TASTactNtuHitMC::~TASTactNtuHitMC()
 }
 
 //------------------------------------------+-----------------------------------
+//! Setup all histograms.
+void TASTactNtuHitMC::CreateHistogram()
+{
+   DeleteHistogram();
+
+   fpHisElossTime_MCrec = new TH2D("stdE_vs_Time_MCrec","dE_vs_Time_MCrec",1000,0.,10.,200,0.,20.);
+   AddHistogram(fpHisElossTime_MCrec);
+
+   fpHisElossTime_MCtrue = new TH2D("stdE_vs_Time_MCtrue","dE_vs_Time_MCtrue",1000,0.,10.,200,0.,20.);
+   AddHistogram(fpHisElossTime_MCtrue);
+   
+   fpHisResTime = new TH1D("stResTime","ResTime", 2000, -1., 1.);
+   AddHistogram(fpHisResTime);
+
+   return;        
+}
+
+//------------------------------------------+-----------------------------------
+//! Create digitizer
+void TASTactNtuHitMC::CreateDigitizer()
+{
+   TASTntuHit* p_ntuHit = (TASTntuHit*) fpNtuHit->Object();
+   
+   fDigitizer = new TASTdigitizer(p_ntuHit);
+}
+
+//------------------------------------------+-----------------------------------
 //! Action.
 Bool_t TASTactNtuHitMC::Action()
 {
+
+  fVecStHit.clear();
+
   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-  TASTntuHit* pNturaw   = (TASTntuHit*) fpNtuRaw->Object();
+  TASTntuHit* pNtuHit   = (TASTntuHit*) fpNtuHit->Object();
   
   TAMCntuHit* pNtuMC    = 0;
-
+  
   if (fEventStruct == 0x0)
     pNtuMC    = (TAMCntuHit*) fpNtuMC->Object();
    else
@@ -76,45 +97,76 @@ Bool_t TASTactNtuHitMC::Action()
   
   //The number of hits inside the Start Counter is stn
   if(FootDebugLevel(1))
-      Info("Action()","Processing n Onion :: %2d hits", pNtuMC->GetHitsN());
-   
-   Float_t edep, trigtime;
+      Info("Action()","Processing n :: %d hits", pNtuMC->GetHitsN());
+    
+  Double_t edep, trigtime;
    
    fDigitizer->ClearMap();
-   for (Int_t i = 0; i < pNtuMC->GetHitsN(); i++) {
-      TAMChit* hitMC = pNtuMC->GetHit(i);
+   for (Int_t idSThit = 0; idSThit < pNtuMC->GetHitsN(); idSThit++) {
+
+      TAMChit* hitMC = pNtuMC->GetHit(idSThit);
+      if(!hitMC) continue;
       
       TVector3 posIn(hitMC->GetInPosition());
+      TVector3 posInLoc = geoTrafo->FromGlobalToSTLocal(posIn);
+
       TVector3 posOut(hitMC->GetOutPosition());
 
-     Int_t id      = hitMC->GetSensorId();
-     Int_t trackId = hitMC->GetTrackIdx()-1;
-     Float_t z0    = posIn.Z();
-     Float_t z1    = posOut.Z();
-             edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
-     Float_t time  = hitMC->GetTof()*TAGgeoTrafo::SecToPs();
-      
-     TVector3 posInLoc = geoTrafo->FromGlobalToSTLocal(posIn);
-     
+      Int_t id      = hitMC->GetSensorId();
+      Int_t trackId = hitMC->GetTrackIdx()-1;
+      Double_t z0    = posIn.Z();
+      Double_t z1    = posOut.Z();
+      edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
+      Double_t time  = hitMC->GetTof()*TAGgeoTrafo::SecToPs();      
+
      // don't use z for the moment
      fDigitizer->Process(edep, posInLoc[0], posInLoc[1], z0, z1, time, id);
 
 
-     TASThit* hit = fDigitizer->GetCurrentHit();
-     trigtime = hit->GetTime();
-     hit->AddMcTrackIdx(trackId, i);
-  }
-  
-  pNturaw->SetCharge(edep);
-  pNturaw->SetTriggerTime(trigtime);
-  
-  if (fEventStruct != 0x0) {
-    fpNtuMC->SetBit(kValid);
-    fpNtuEve->SetBit(kValid);
-  }
+     TASThit* hitST = fDigitizer->GetCurrentHit();
 
-  fpNtuRaw->SetBit(kValid);
+     trigtime = hitST->GetTime();
+
+     hitST->AddMcTrackIdx(trackId, idSThit);
+
+     fVecStHit.push_back(hitST);
+
+   }
+
+     for(auto it=fVecStHit.begin(); it !=fVecStHit.end(); ++it) {
+       
+       TASThit* hitST = *it;
+
+       FlagUnderEnergyThresholtHits(hitST);
+
+     }
    
-  return kTRUE;
+   pNtuHit->SetTriggerTime(trigtime);
+   
+   if (fEventStruct != 0x0) {
+     fpNtuMC->SetBit(kValid);
+     fpNtuEve->SetBit(kValid);
+   }
+   
+   fpNtuHit->SetBit(kValid);
+   
+   return kTRUE;
+}
+
+//------------------------------------------------------------------------------
+void TASTactNtuHitMC::FlagUnderEnergyThresholtHits(TASThit *hitST) {
+
+     Double_t edep = hitST->GetDe();    // MeV
+
+     if(!fDigitizer->IsOverEnergyThreshold(fDigitizer->GetEnergyThreshold(),edep)) {
+     if(FootDebugLevel(4))
+       Info("Action","the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",edep,fDigitizer->GetEnergyThreshold());
+     
+     edep=-99.; //set energy to nonsense value
+     hitST->SetDe(edep);
+     hitST->SetValid(false);
+   }
+     
+     return;
 }
 

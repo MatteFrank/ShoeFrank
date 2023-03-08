@@ -247,8 +247,8 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
    }
 
    Int_t boardId = (evt->boardHeader & 0xF)-1;
-   Double_t cnX = 0;
-   Double_t cnY = 0;
+   Double_t cnFirst = 0;
+   Double_t cnSecond = 0;
    
    for (Int_t i = 0; i < p_pargeo->GetStripsN(); ++i) {
       
@@ -259,11 +259,11 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
       Int_t sensorId = -1;
       Bool_t status  = true;
       
-      Double_t valueX = -99;
-      Double_t valueY = -99;
+      Double_t valueFirst = -99;
+      Double_t valueSecond = -99;
       
-      Double_t meanX  = 0;
-      Double_t meanY  = 0;
+      Double_t meanFirst  = 0;
+      Double_t meanSecond  = 0;
       
       Double_t vaContent[CN_CH] = {0};
       
@@ -294,53 +294,53 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             continue;
          }
          auto pedestal = p_parcal->GetPedestal( sensorId, i );
+
+         if (fgCommonModeSub) { // common mode subtraction is enabled
+            if (i % CN_CH == 0) {
+               const UInt_t* adcPtr = sensorId % 2 == 0 ? &evt->FirstPlane[i] : &evt->SecondPlane[i];
+
+               for (int VaChan = 0; VaChan < CN_CH; VaChan++)
+                  vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
+   
+               cnFirst = ComputeCN(vaContent, 10);
+               if (ValidHistogram())
+                  fpHisCommonMode[sensorId]->Fill(cnFirst);
+            }
+         }
          
-         if( pedestal.status ) {
+         if( !pedestal.status ) {
             if (fgPedestalSub) {
-               Bool_t seedX = false;
-               valueX = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
-               meanX = pedestal.mean;
+               Bool_t seedFirst = false;
+               valueFirst = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
+               meanFirst = pedestal.mean;
                if(sensorId%2 == 0)
                   adcDummy = adcFirst;
                else
                   adcDummy = adcSecond;
                
-               valueX = adcDummy - valueX;
+               valueFirst = adcDummy - valueFirst -cnFirst;
 
-                  if (fgCommonModeSub)
-                  {
-                     if (i % CN_CH == 0)
-                     {
-                        const UInt_t* adcPtr = sensorId % 2 == 0 ? &evt->FirstPlane[i] : &evt->SecondPlane[i];
-
-                        for (int VaChan = 0; VaChan < CN_CH; VaChan++)
-                           vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
-
-                        cnX = ComputeCN(vaContent, 10);
-                        if (ValidHistogram())
-                           fpHisCommonMode[sensorId]->Fill(cnX);
-                     }
-                  }
-
-                  valueX -= cnX;
-                  if (valueX > 0)
-                  {
-                     seedX = true;
-                     if (ValidHistogram())
-                        fpHisSeedMap[sensorId]->Fill(i, adcDummy - meanX - cnX);
-                  }
-
-                  valueX = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
-                  valueX = adcDummy - valueX - cnX;
-                  if (valueX > 0)
-                  {
-                     TAMSDrawHit *hit = p_datraw->AddStrip(sensorId, view, i, adcDummy - meanX - cnX);
-                     hit->SetSeed(seedX);
-
-                     if (ValidHistogram())
-                        fpHisStripMap[sensorId]->Fill(i, adcDummy - meanX - cnX);
-                  }
+               if (valueFirst > 0)
+               {
+                  seedFirst = true;
+                  if (ValidHistogram())
+                     fpHisSeedMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
                }
+
+               valueFirst = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
+               valueFirst = adcDummy - valueFirst - cnFirst;
+               if (valueFirst > 0)
+               {
+                  TAMSDrawHit *hit = p_datraw->AddStrip(sensorId, view, i, adcDummy - meanFirst - cnFirst);
+                  hit->SetSeed(seedFirst);
+
+                  if (ValidHistogram())
+                     fpHisStripMap[sensorId]->Fill(i, adcDummy - meanFirst - cnFirst);
+
+                  if (pedestal.status)
+                     hit->SetNoisy();
+               }
+            }
          }
          
          view = 1;
@@ -350,52 +350,54 @@ Bool_t TAMSDactNtuRaw::DecodeHits(const DEMSDEvent* evt)
             continue;
          }
          pedestal = p_parcal->GetPedestal( sensorId, i );
+
+         if (fgCommonModeSub) { // common mode subtraction is enabled
+            if (i % CN_CH == 0) {
+               const UInt_t* adcPtr = sensorId % 2 == 0 ? &evt->FirstPlane[i] : &evt->SecondPlane[i];
+
+               for (int VaChan = 0; VaChan < CN_CH; VaChan++)
+                  vaContent[VaChan] = *(adcPtr+VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
+   
+               cnSecond = ComputeCN(vaContent, 10);
+               if (ValidHistogram())
+                  fpHisCommonMode[sensorId]->Fill(cnSecond);
+            }
+         }
          
-         if( pedestal.status ) {
+         if( !pedestal.status ) {
             if (fgPedestalSub) {
-               Bool_t seedY = false;
-               valueY = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
-               meanY = pedestal.mean;
+               Bool_t seedSecond = false;
+               valueSecond = p_parcal->GetPedestalThreshold(sensorId, pedestal, true);
+               meanSecond = pedestal.mean;
                UInt_t *adcPtr;
                if (sensorId % 2 == 0)
                      adcDummy = adcFirst;
                else
                      adcDummy = adcSecond;
                
-               valueY = adcDummy - valueY;
+               valueSecond = adcDummy - valueSecond - cnSecond;
                
-               if (fgCommonModeSub) {
-                  if (i % CN_CH == 0) {
-                        const UInt_t *adcPtr = sensorId % 2 == 0 ? &evt->FirstPlane[i] : &evt->SecondPlane[i];
-
-                        for (int VaChan = 0; VaChan < CN_CH; VaChan++)
-                           vaContent[VaChan] = *(adcPtr + VaChan) - p_parcal->GetPedestal(sensorId, i + VaChan).mean;
-
-                        cnY = ComputeCN(vaContent, 10);
-                        if (ValidHistogram())
-                           fpHisCommonMode[sensorId]->Fill(cnY);
-                  }
-               }
-               
-               valueY -= cnY;
-               if (valueY > 0) {
-                  seedY = true;
+               if (valueSecond > 0) {
+                  seedSecond = true;
                   if (ValidHistogram())
-                     fpHisSeedMap[sensorId]->Fill(i, adcDummy-meanY-cnY);
+                     fpHisSeedMap[sensorId]->Fill(i, adcDummy-meanSecond-cnSecond);
                }
                
-               valueY = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
-               valueY = adcDummy - valueY - cnY;
-               if (valueY > 0) {
-                  TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcDummy-meanY-cnY);
-                  hit->SetSeed(seedY);
+               valueSecond = p_parcal->GetPedestalThreshold(sensorId, pedestal, false);
+               valueSecond = adcDummy - valueSecond - cnSecond;
+               if (valueSecond > 0) {
+                  TAMSDrawHit* hit = p_datraw->AddStrip(sensorId, view, i, adcDummy-meanSecond-cnSecond);
+                  hit->SetSeed(seedSecond);
                   
                   if (ValidHistogram())
-                     fpHisStripMap[sensorId]->Fill(i, adcDummy-meanY-cnY);
+                     fpHisStripMap[sensorId]->Fill(i, adcDummy-meanSecond-cnSecond);
+
+                  if (pedestal.status)
+                     hit->SetNoisy();
                }
-               
+
                if(FootDebugLevel(2)) {
-                  if(valueX>0 || valueY>0)
+                  if(valueFirst>0 || valueSecond>0)
                      cout<<" Sens:: "<<sensorId<<" View:: "<<view<<" Strip:: "<<i<<endl;
                }
             }

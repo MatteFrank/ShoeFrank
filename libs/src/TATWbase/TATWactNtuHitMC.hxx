@@ -9,18 +9,21 @@
 #include <map>
 
 #include "TVector3.h"
-#include "TH1F.h"
-#include "TH2F.h"
+#include "TH1.h"
+#include "TH2.h"
+
+#include "TAGaction.hxx"
+#include "TAGdataDsc.hxx"
+
+#include "TAGgeoTrafo.hxx"
+
+#include "TAMCflukaStruct.hxx"
+#include "TAMCntuHit.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TATWntuHit.hxx"
 #include "TATWparGeo.hxx"
 #include "TATWparConf.hxx"
-
-#include "TAGgeoTrafo.hxx"
-#include "TAMCflukaStruct.hxx"
-
-#include "TAGaction.hxx"
-#include "TAGdataDsc.hxx"
 
 #include "TATWparameters.hxx"
 
@@ -32,6 +35,7 @@ public:
    explicit TATWactNtuHitMC(const char* name=0,
                             TAGdataDsc* p_ntuMC=0,
                             TAGdataDsc* p_ntuStMC=0,
+                            TAGdataDsc* p_ntuStHit=0,
                             TAGdataDsc* p_ntuEve=0,
                             TAGdataDsc* p_hitraw=0,
                             TAGparaDsc* p_parconf=0,
@@ -46,19 +50,22 @@ public:
    void          CreateHistogram();
    
 private:
-   TAGdataDsc*     fpNtuMC;     // input mc hit TW
+   TAGdataDsc*     fpNtuTwMC;   // input mc hit TW
    TAGdataDsc*     fpNtuStMC;   // input mc hit ST
+   TAGdataDsc*     fpNtuStHit;  // input reco MC hit ST
    TAGdataDsc*     fpNtuEve;    // input eve track dsc
    TAGdataDsc*     fpNtuRaw;    // output data dsc
    TAGparaDsc*     fpParConf;   // configuration parameter dsc
    TAGparaDsc*     fpCalPar;    // calibration parameter dsc
    TAGparaDsc*     fParGeoG;    // beam parameter dsc
+
    TATWdigitizer*  fDigitizer;  // digitizer
    
    TATWparCal*     f_parcal;
 
    TAGparGeo*      f_pargeo;
    TAGgeoTrafo*    f_geoTrafo;
+
    EVENT_STRUCT*   fEventStruct;
 
    Int_t           fZbeam;
@@ -69,33 +76,41 @@ private:
    Bool_t          fIsZrecPUoff;
    Bool_t          fIsRateSmear;
 
-   TH1F*           fpHisHitCol;
-   TH1F*           fpHisHitLine;
-   TH1F*           fpHisRecPos;
-   TH1F*           fpHisRecPosMc;
-   TH1F*           fpHisRecTof;
-   TH1F*           fpHisRecTofMc;
-   TH2I*           fpHisZID_f;
-   TH2I*           fpHisZID_r;
-   TH2I*           fpHisZID_MCtrue_f;
-   TH2I*           fpHisZID_MCtrue_r;
+   TH1I*           fpHisHitCol;
+   TH1I*           fpHisHitRow;
+   TH2I*           fpHisZID_MCrec[nLayers];
+   TH2I*           fpHisZID_MCtrue[nLayers];
    TH2D*           fpHisElossTof_MCrec[nLayers];
    TH2D*           fpHisElossTof_MCtrue[nLayers];
    TH1D*           fpHisRate;
 
    // vector of histo with the same size of the ion beam atomic number
+   vector<TH1D*>   fpHisResPos;
+   vector<TH1D*>   fpHisResTof;
+   vector<TH1D*>   fpHisResEloss;
    vector<TH2D*>   fpHisElossTof_MC;
    vector<TH2D*>   fpHisElossTof;
    vector<TH1F*>   fpHisDistZ_MC;
    vector<TH1F*>   fpHisDistZ;
-   vector<TH1D*>   fpHisResPos;
   
    map<int, TATWhit*> fMapPU; //! map for pilepup
    vector<TATWhit*>   fVecPuOff; //! vector for pilepup Off
    
 private:
    void          CreateDigitizer();
-   
+   void          StudyPerformancesZID(TAMChit *hitTW, TAMCntuHit *hitst, TAMCntuPart *part);
+   void          ClearContainers();
+   void          AssignZchargeAndToF(TATWhit *hittw, TAMCntuHit *hitst);     
+   void          PrintTrueMcTWquantities(TAMChit *twhitmc, Int_t idtwhit);
+   void          FlagUnderEnergyThresholtHits(TATWhit *hittw);
+   void          PlotRecMcTWquantities(TATWhit *twhit, TAMCntuHit *hitst, Int_t zrec, Int_t zmc);
+   void          PrintRecTWquantities(TATWhit *tatwhit, Int_t zrec, Int_t zmc);
+  
+   Int_t         GetZmcTrue(TAMCntuPart *mcPart, Int_t trkid);
+
+   Double_t      GetTimeST(TAGdataDsc *ntuStHit, TATWhit *twhit);
+   Double_t      GetTruePosAlongBar(TAMChit *twhitmc);
+
    ClassDef(TATWactNtuHitMC,0)
 };
 

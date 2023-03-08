@@ -58,7 +58,7 @@ if (gSystem->AccessPathName(FileName.c_str()))
       int crysId;  // Id of the crystal
       double Q_corrp0, Q_corrp1, Q_corrp2;
       
-      // loop over all the slat crosses ( nSlatCross*nLayers ) for two TW layers
+      // loop over all the slat crosses ( nBarCross*nLayers ) for two TW layers
       while (fin_Q.getline(line, 108, '\n')) {
          
          if(strchr(line,'/') || strchr(line,'#'))  {
