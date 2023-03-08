@@ -11,7 +11,7 @@
 #include "TString.h"
 #include "TTree.h"
 
-#include "LocalRecoMC.hxx"
+#include "RecoMC.hxx"
 
 #include "TAGactKFitter.hxx"
 #include "UpdatePDG.hxx"
@@ -19,7 +19,7 @@
 #include "TAGFtrackingStudies.hxx"
 
 
-class GlobalRecoMC : public LocalRecoMC
+class GlobalRecoMC : public RecoMC
 {
 public:
   GlobalRecoMC(TString expName, Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "");

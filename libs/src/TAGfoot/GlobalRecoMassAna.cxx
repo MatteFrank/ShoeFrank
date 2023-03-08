@@ -7,8 +7,8 @@
 #include <ostream>
 #include <sstream>
 
-#include "LocalReco.hxx"
-#include "LocalRecoMC.hxx"
+#include "RecoRaw.hxx"
+#include "RecoMC.hxx"
 #include "GlobalRecoMassAna.hxx"
 #include "GlobalRecoAna.hxx"
 

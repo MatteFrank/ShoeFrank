@@ -5,8 +5,8 @@
 #include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
-#include "LocalReco.hxx"
-#include "LocalRecoMC.hxx"
+#include "RecoRaw.hxx"
+#include "RecoMC.hxx"
 #include "TABMntuRaw.hxx"
 #include "TABMhit.hxx"
 
@@ -121,7 +121,7 @@ int main (int argc, char *argv[])  {
   TAGrecoManager::GetPar()->FromFile();
   TAGrecoManager::GetPar()->Print();
 
-  LocalReco* locRec= new LocalReco(exp, runNb, in, rootout);
+  RecoRaw* locRec= new RecoRaw(exp, runNb, in, rootout);
 
   // global setting
   TAGrecoManager::GetPar()->IncludeBM(true);

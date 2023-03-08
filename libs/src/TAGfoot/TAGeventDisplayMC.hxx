@@ -48,7 +48,7 @@ public:
    void ConnectMcElements();
 
    // Set local reconstruction
-   void SetLocalReco();
+   void SetReco();
 
    // Update STC MC info
    void UpdateStInfo(Int_t idx);

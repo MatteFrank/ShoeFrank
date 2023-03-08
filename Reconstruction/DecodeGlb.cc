@@ -4,8 +4,8 @@
 #include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
-#include "LocalReco.hxx"
-#include "LocalRecoMC.hxx"
+#include "RecoRaw.hxx"
+#include "RecoMC.hxx"
 #include "GlobalReco.hxx"
 #include "GlobalToeReco.hxx"
 
@@ -80,9 +80,9 @@ int main (int argc, char *argv[])  {
    
    if (!lrc) {
      if (mc) 
-       glbRec = new LocalRecoMC(exp, runNb, in, out);
+       glbRec = new RecoMC(exp, runNb, in, out);
      else
-       glbRec = new LocalReco(exp, runNb, in, out, IsSubFile);
+       glbRec = new RecoRaw(exp, runNb, in, out, IsSubFile);
    } else {
      if (toe)
        glbRec = new GlobalToeReco(exp, runNb, in, out, mc, inMc);

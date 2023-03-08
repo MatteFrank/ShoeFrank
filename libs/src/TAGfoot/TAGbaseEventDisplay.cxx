@@ -39,8 +39,8 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-#include "LocalReco.hxx"
-#include "LocalRecoMC.hxx"
+#include "RecoRaw.hxx"
+#include "RecoMC.hxx"
 
 /*!
  \Class TAGbaseEventDisplay

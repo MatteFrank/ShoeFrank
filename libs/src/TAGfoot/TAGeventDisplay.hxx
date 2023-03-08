@@ -45,7 +45,7 @@ public:
    virtual ~TAGeventDisplay();
    
    // Set local reconstruction
-   void SetLocalReco();
+   void SetReco();
    
    // skip event
    Bool_t SkipEvent();

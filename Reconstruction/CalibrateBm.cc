@@ -5,8 +5,8 @@
 #include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
-#include "LocalReco.hxx"
-#include "LocalRecoMC.hxx"
+#include "RecoRaw.hxx"
+#include "RecoMC.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -85,7 +85,7 @@ int main (int argc, char *argv[])  {
     rootout+=".root";
     txtout+=".cal";
 
-    LocalReco* locRec= new LocalReco(exp, runNb, infile, rootout);
+    RecoRaw* locRec= new RecoRaw(exp, runNb, infile, rootout);
 
     // global setting
     TAGrecoManager::GetPar()->IncludeBM(true);
@@ -175,7 +175,7 @@ int main (int argc, char *argv[])  {
         end = Form("_%s_%d_ite_%d.root",exp.Data(),runNb,currite);
         rootout+=end;
 
-        LocalReco* locRec= new LocalReco(exp, runNb, invecfile.at(currfilenum), rootout);
+         RecoRaw* locRec= new RecoRaw(exp, runNb, invecfile.at(currfilenum), rootout);
 
         // global setting
         TAGrecoManager::GetPar()->IncludeBM(true);

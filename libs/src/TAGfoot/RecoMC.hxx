@@ -1,8 +1,8 @@
-#ifndef _LocalRecoMC_HXX_
-#define _LocalRecoMC_HXX_
+#ifndef _RecoMC_HXX_
+#define _RecoMC_HXX_
 
 /*!
- \file LocalRecoMC.hxx
+ \file RecoMC.hxx
  \brief Reconstruction class from MC data
  \author Ch. Finck
  */
@@ -26,13 +26,13 @@
 #include "TAMCactNtuRegion.hxx"
 #include "TAMCactNtuEvent.hxx"
 
-class LocalRecoMC : public BaseReco
+class RecoMC : public BaseReco
 {
 public:
    // default constructor
-   LocalRecoMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
+   RecoMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
    
-   virtual ~LocalRecoMC();
+   virtual ~RecoMC();
    
    // Add required items
    virtual void AddRawRequiredItem();
@@ -74,7 +74,7 @@ protected:
   
    TAGactTreeReader*     fActEvtReader; ///< file reader for MC
 
-   ClassDef(LocalRecoMC, 1); ///< Base class for event display
+   ClassDef(RecoMC, 1); ///< Base class for event display
 };
 
 
