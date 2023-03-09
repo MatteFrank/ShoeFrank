@@ -79,13 +79,13 @@ public:
    Double_t  GetPosition()             const   { return fCoordinate;        }
    //! Get nuclear charge number Z
    Int_t     GetChargeZ()              const   { return fChargeZ;           }
-   //! Get the charge at the bar channel A
+   //! Get the charge at the bar channel A (for MC it provides the position along the bar computed by time difference)
    Double_t  GetChargeChA()            const   { return fChargeA;           }
-   //! Get the charge at the bar channel B
+   //! Get the charge at the bar channel B (for MC it provides the true MC position along the bar)
    Double_t  GetChargeChB()            const   { return fChargeB;           }
-   //! Get the amplitude at the bar channel A
+   //! Get the amplitude at the bar channel A (for MC it provides the true energy loss)
    Double_t  GetAmplitudeChA()         const   { return fAmplitudeA;        }
-   //! Get the amplitude at the bar channel B
+   //! Get the amplitude at the bar channel B (for MC it provides the true TW time)
    Double_t  GetAmplitudeChB()         const   { return fAmplitudeB;        }
    //! Get the time at the bar channel A
    Double_t  GetTimeChA()              const   { return fTimeA;             }
