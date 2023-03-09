@@ -130,7 +130,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagTrack(false),
    fFlagTWbarCalib(false),
    fFlagMsdTrack(false),
-   fgFlagItrTrack(false),
+   fFlagItrTrack(false),
    fFlagRateSmearTw(false),
    fVtxTrackingAlgo("Full"),
    fItrTrackingAlgo("Full"),
@@ -548,7 +548,7 @@ void BaseReco::ReadParFiles()
    fpFootGeo->FromFile(parFileName);
 
    // initialise par files for target
-   if (TAGrecoManager::GetPar()->IncludeTG() || TAGrecoManager::GetPar()->IncludeBM() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA() || fgFlagItrTrack) {
+   if (TAGrecoManager::GetPar()->IncludeTG() || TAGrecoManager::GetPar()->IncludeBM() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA() || fFlagItrTrack) {
       fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
@@ -665,7 +665,7 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
-      if ((fgFlagItrTrack = parConf->GetAnalysisPar().TrackingFlag)) {
+      if ((fFlagItrTrack = parConf->GetAnalysisPar().TrackingFlag)) {
          fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
       }
       
@@ -929,7 +929,7 @@ void BaseReco::CreateRecActionIt()
    if (fFlagHisto)
      fActClusIt->CreateHistogram();
 
-   if (fgFlagItrTrack && fFlagTrack) {
+   if (fFlagItrTrack && fFlagTrack) {
       fpNtuTrackIt = new TAGdataDsc("itTrack", new TAITntuTrack());
 
       if (fItrTrackingAlgo.Contains("Std") ) {
@@ -1216,7 +1216,7 @@ void BaseReco::SetTreeBranches()
   
   if (TAGrecoManager::GetPar()->IncludeIT()) {
      fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
-     if (fgFlagItrTrack && fFlagTrack)
+     if (fFlagItrTrack && fFlagTrack)
         fActEvtWriter->SetupElementBranch(fpNtuTrackIt, TAITntuTrack::GetBranchName());
   }
    
@@ -1290,7 +1290,7 @@ void BaseReco::AddRecRequiredItem()
 
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       gTAGroot->AddRequiredItem("itActClus");
-      if (fgFlagItrTrack && fFlagTrack)
+      if (fFlagItrTrack && fFlagTrack)
          gTAGroot->AddRequiredItem("itActTrack");
    }
 
