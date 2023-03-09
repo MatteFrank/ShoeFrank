@@ -13,6 +13,7 @@
 
 #include "TAGaction.hxx"
 #include "TAGparTools.hxx"
+#include "TAGparGeo.hxx"
 
 
 using namespace std;
@@ -53,6 +54,7 @@ public:
 
 private:
    TAGparTools*    fFileStream;     ///< File stream
+   TAGparGeo*      fpParGeo;        ///< target/beam geometry
    TString         fCampaignName;   ///< Current campaign name
    Int_t           fRunNumber;      ///< Current campaign number
    TString         fName;           ///< Campaign name
@@ -81,6 +83,12 @@ public:
 
    //! Set run number
    void                 SetRunNumber(Int_t run)        { fRunNumber = run ;          }
+   
+   //! Get par geo
+   TAGparGeo*           GetParGeo()              const { return fpParGeo;            }
+   
+   //! Set par geo
+   void                 SetParGeo(TAGparGeo* p)        { fpParGeo = p;               }
 
    //! Get Current type parameter
    TypeParameter_t      GetCurrentType()         const { return fCurType ;           }
@@ -93,8 +101,11 @@ public:
    //! Get parameter for a given run
    RunParameter_t&      GetRunPar(Int_t idx);
    //! Get parameter for a given run
-   const RunParameter_t&      GetRunPar(Int_t idx) const;
+   const RunParameter_t& GetRunPar(Int_t idx) const;
 
+   // Checks
+   Bool_t               ConditionChecks(Int_t runNumber = -1, TAGparGeo* parGeo = 0x0);
+   
    //! Check detector off
    Bool_t               IsDetectorOff(const TString& detName);
 
@@ -128,7 +139,7 @@ public:
    // Smart print
    static  TString SmartPrint(Int_t nb, Int_t sep = 1000);
 
-   ClassDef(TAGrunManager,1)
+   ClassDef(TAGrunManager,2)
 };
 
 #endif

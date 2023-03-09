@@ -230,48 +230,9 @@ void BaseReco::CampaignChecks()
   }
    
    // print information of run
-   fRunManager->SetRunNumber(fRunNumber);
-   if (fRunManager->FromFile()) {
-      fRunManager->Print();
-            
-      if (fpParGeoG) {
-         TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-         Int_t Abeam       = parGeo->GetBeamPar().AtomicMass;
-         TString beamName  = parGeo->GetBeamPar().Material;
-         TString beam      = Form("%d%s", Abeam, beamName.Data());
-         Int_t energyBeam  = int(parGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev());
-         TString target    = parGeo->GetTargetPar().Material;
-         Float_t tgtSize   = parGeo->GetTargetPar().Size[2];
-         
-         TString beamType    = fRunManager->GetCurrentType().Beam;
-         Int_t energyType    = (int)fRunManager->GetCurrentType().BeamEnergy;
-         TString targetType  = fRunManager->GetCurrentType().Target;
-         Float_t tgtSizeType = fRunManager->GetCurrentType().TargetSize;
-         TString comType     = fRunManager->GetCurrentType().Comments;
-         
-         if (energyBeam != energyType)
-            Error("CampaignChecks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
-         
-         if (beam != beamType)
-            Error("CampaignChecks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
-         
-         if (strncmp(target.Data(), targetType.Data(), min(targetType.Length(), target.Length()))  && targetType != "None")
-            Error("CampaignChecks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
-         
-         if (tgtSize != tgtSizeType && targetType != "None")
-            Error("CampaignChecks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
-         
-         // Check if a detetcor is off in a given run
-         vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
-         for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
-            TString str = *it;
-            
-            if (fRunManager->IsDetectorOff(str)) {
-               Error("CampaignChecks()", "the detector %s is NOT referenced in this run", str.Data());
-               exit(0);
-            }
-         }
-      }
+   if (fpParGeoG) {
+      TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
+      if (!fRunManager->ConditionChecks(fRunNumber, parGeo)) exit(0);
    }
 }
 

@@ -9,6 +9,7 @@
 #include "TObjArray.h"
 #include "TSystem.h"
 
+#include "TAGgeoTrafo.hxx"
 #include "TAGrecoManager.hxx"
 
 /*
@@ -31,6 +32,7 @@ const TString TAGrunManager::fgkDefaultExt     = ".run";
 TAGrunManager::TAGrunManager(const TString exp, Int_t runNumber)
 : TAGaction(fgkDefaultActName.Data(), "TAGrunManager - Campaign Manager"),
    fFileStream(new TAGparTools()),
+   fpParGeo(0x0),
    fCampaignName(exp),
    fRunNumber(runNumber)
 {
@@ -46,6 +48,65 @@ TAGrunManager::TAGrunManager(const TString exp, Int_t runNumber)
 TAGrunManager::~TAGrunManager()
 {
    delete fFileStream;
+}
+
+
+//------------------------------------------+-----------------------------------
+//! Read global experiment file
+//!
+//! \param[in] ifile file name of the list of experiments
+Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
+{
+   if (runNumber != -1)
+      fRunNumber = runNumber;
+   
+   if (parGeo != 0x0)
+      fpParGeo = parGeo;
+   
+   if (fRunNumber == -1 || fpParGeo == 0x0)
+      return true;
+
+   if (FromFile()) {
+      Print();
+      
+      Int_t Abeam       = fpParGeo->GetBeamPar().AtomicMass;
+      TString beamName  = fpParGeo->GetBeamPar().Material;
+      TString beam      = Form("%d%s", Abeam, beamName.Data());
+      Int_t energyBeam  = int(fpParGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev());
+      TString target    = fpParGeo->GetTargetPar().Material;
+      Float_t tgtSize   = fpParGeo->GetTargetPar().Size[2];
+      
+      TString beamType    = GetCurrentType().Beam;
+      Int_t energyType    = (int)GetCurrentType().BeamEnergy;
+      TString targetType  = GetCurrentType().Target;
+      Float_t tgtSizeType = GetCurrentType().TargetSize;
+      TString comType     = GetCurrentType().Comments;
+      
+      if (energyBeam != energyType)
+         Error("Checks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
+      
+      if (beam != beamType)
+         Error("Checks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
+      
+      if (strncmp(target.Data(), targetType.Data(), min(targetType.Length(), target.Length()))  && targetType != "None")
+         Error("Checks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
+      
+      if (tgtSize != tgtSizeType && targetType != "None")
+         Error("Checks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
+      
+      // Check if a detetcor is off in a given run
+      vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
+      for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+         TString str = *it;
+         
+         if (IsDetectorOff(str)) {
+            Error("Checks()", "the detector %s is NOT referenced in this run", str.Data());
+            return false;
+         }
+      }
+   }
+   
+   return true;
 }
 
 //------------------------------------------+-----------------------------------
