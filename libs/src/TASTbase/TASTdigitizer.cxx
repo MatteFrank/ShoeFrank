@@ -114,7 +114,7 @@ Double_t TASTdigitizer::GetResTimeST(Double_t edep)
 
 //___________________________________________________________________________________________
 
-void TASTdigitizer::SmearTimeST(Double_t eloss, Double_t &time) {
+Double_t TASTdigitizer::SmearTimeST(Double_t eloss, Double_t time) {
 
    Double_t resTimeST = GetResTimeST(eloss);
 
@@ -122,9 +122,8 @@ void TASTdigitizer::SmearTimeST(Double_t eloss, Double_t &time) {
 
    //time should be stored in the hit in ns:
    time  *= TAGgeoTrafo::PsToNs();
-   
-   return;
 
+   return time;
 }
 //___________________________________________________________________________________________
 
@@ -133,15 +132,15 @@ Bool_t TASTdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
 
     // Double_t charge = GetPhotonsN(x0, y0, edep)*fGain;
    if(FootDebugLevel(4))
-     Info("Process"," edep::%.2f  timeST::%.2f",edep,time);
+     Info("Process"," edep::%.2f  timeST::%.6f",edep,time*TAGgeoTrafo::PsToNs());
   
-   SmearTimeST(edep,time);
+   Double_t recTime = SmearTimeST(edep,time);
 
    if(FootDebugLevel(4))
-     Info("Process","Smear ->  edep::%.2f  timeST::%.2f",edep,time);
-   
+     Info("Process","Smear ST time ->  edep::%.2f  timeST::%.6f",edep,recTime);
+
    if (fMap[id] == 0) {
-     fCurrentHit = (TASThit*)fpNtuRaw->NewHit(edep, edep, time); 
+      fCurrentHit = (TASThit*)fpNtuRaw->NewHit(time*TAGgeoTrafo::PsToNs(), edep, recTime); 
       fMap[id] = fCurrentHit;
    } else {
       fCurrentHit = fMap[id];
@@ -153,7 +152,7 @@ Bool_t TASTdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t 
       if(edep>fEnergyMax) {
          
         fEnergyMax = edep;
-        fCurrentHit->SetTime(time);
+        fCurrentHit->SetTime(recTime);
 
        }
        

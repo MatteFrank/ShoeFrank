@@ -13,7 +13,7 @@
 #include "TGeoManager.h"
 
 #include "TAGrecoManager.hxx"
-#include "LocalRecoMC.hxx"
+#include "RecoMC.hxx"
 #include "GlobalToeReco.hxx"
 
 //! Class Imp
@@ -60,7 +60,7 @@ TAGeventDisplayMC::TAGeventDisplayMC(const TString expName, Int_t runNumber, Int
    fTrackMcDisplay(0x0)
 {
    // local reco
-   SetLocalReco();
+   SetReco();
    
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM())
       fStMcDisplay = new TAEDpoint("STC MC hit");
@@ -111,13 +111,13 @@ TAGeventDisplayMC::~TAGeventDisplayMC()
 
 //__________________________________________________________
 //! Set reconstruction
-void TAGeventDisplayMC::SetLocalReco()
+void TAGeventDisplayMC::SetReco()
 {
-   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+   Bool_t lrc = TAGrecoManager::GetPar()->IsFromLocalReco();
    Bool_t mc  = true;
 
    if (fType == 1) {
-     Warning("SetLocalReco", "Old interface for Fluka Structure not supported anymore, switch to new");
+     Warning("SetReco", "Old interface for Fluka Structure not supported anymore, switch to new");
      fType = 2;
    }
    
@@ -126,9 +126,9 @@ void TAGeventDisplayMC::SetLocalReco()
          fReco = new GlobalToeReco(fExpName, fRunNumber, "","",  mc);
          fReco->EnableReadL0Hits();
       } else
-         fReco = new LocalRecoMC(fExpName, fRunNumber);
+         fReco = new RecoMC(fExpName, fRunNumber);
    } else
-      Error("SetLocalReco()", "Unknown type %d", fType);
+      Error("SetReco()", "Unknown type %d", fType);
    
    SetRecoOptions();
 }

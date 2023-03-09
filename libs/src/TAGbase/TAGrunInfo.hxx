@@ -16,13 +16,13 @@
  */
 struct GlobalParameter_t : public  TObject {
    GlobalParameter_t() : TObject(),
-   EnableLocalReco(false), EnableTree(false), EnableHisto(false), EnableSaveHits(false),
+   FromLocalReco(false), EnableTree(false), EnableHisto(false), EnableSaveHits(false),
    EnableTracking(false), EnableRootObject(false), 
    EnableRegionMc(false), IncludeKalman(false), IncludeTOE(false), IncludeDI(false), IncludeST(false), IncludeBM(false),
    IncludeTG(false), IncludeVT(false), IncludeIT(false), IncludeMSD(false), IncludeTW(false),
    IncludeCA(false) { }
 
-   Bool_t EnableLocalReco;  ///< Enable local reconstruction
+   Bool_t FromLocalReco;  ///< Enable local reconstruction
    Bool_t EnableTree;       ///< Enable tree saving
    Bool_t EnableHisto;      ///< Enable histogram
    Bool_t EnableSaveHits;   ///< Enable saving hits
@@ -41,7 +41,7 @@ struct GlobalParameter_t : public  TObject {
    Bool_t IncludeTW;        ///< Include TW
    Bool_t IncludeCA;        ///< Include CAL
 
-   ClassDef(GlobalParameter_t,3)
+   ClassDef(GlobalParameter_t,4)
 };
 
 class TAGrunInfo : public TAGobject {

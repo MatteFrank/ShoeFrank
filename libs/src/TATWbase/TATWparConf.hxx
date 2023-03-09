@@ -2,7 +2,7 @@
 #define _TATWparConf_HXX
 /*!
   \file   TATWparConf.hxx
-  \brief   Declaration of TATWparConf, the Beam Monitor configuration class
+  \brief   Declaration of TATWparConf, the Tof-Wall configuration class
 */
 /*------------------------------------------+---------------------------------*/
 

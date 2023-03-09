@@ -4,7 +4,7 @@
 #include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
-#include "LocalReco.hxx"
+#include "RecoRaw.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -74,7 +74,7 @@ int main (int argc, char *argv[])  {
 //     cout<<out.Data()<<endl;
 //   }
    
-   LocalReco* locRec = new LocalReco(exp, runNb, in, out);
+   RecoRaw* locRec = new RecoRaw(exp, runNb, in, out);
    locRec->EnableStdAlone();
    locRec->SetStdAloneFiles(nFiles);
    

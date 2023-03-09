@@ -5,7 +5,7 @@
 #include <TSystem.h>
 
 #include "TAGrecoManager.hxx"
-#include "LocalReco.hxx"
+#include "RecoRaw.hxx"
 
 int main (int argc, char *argv[])  {
 
@@ -74,7 +74,7 @@ int main (int argc, char *argv[])  {
 
    out = Form("./dE-TOF_Calib_%s_run%d.root",exp.Data(),runNb);
 
-   BaseReco* locRec = new LocalReco(exp, runNb, in, out);
+   BaseReco* locRec = new RecoRaw(exp, runNb, in, out);
 
    // global setting
    if (ntu)

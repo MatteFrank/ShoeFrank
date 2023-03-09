@@ -1,9 +1,9 @@
 
-#ifndef _LocalReco_HXX_
-#define _LocalReco_HXX_
+#ifndef _RecoRaw_HXX_
+#define _RecoRaw_HXX_
 
 /*!
- \file LocalReco.hxx
+ \file RecoRaw.hxx
  \brief Reconstruction class from raw data
  \author Ch. Finck
  */
@@ -34,13 +34,13 @@
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 
-class LocalReco : public BaseReco
+class RecoRaw : public BaseReco
 {
 public:
    // default constructor
-   LocalReco(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t IsSubFile=false);
+   RecoRaw(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t IsSubFile=false);
    
-   virtual ~LocalReco();
+   virtual ~RecoRaw();
    
    // Add required items
    virtual void AddRawRequiredItem();
@@ -114,7 +114,7 @@ private:
    static Bool_t         fgStdAloneFlag;   ///< flag for standalone DAQ
    static Int_t          fgNumFileStdAlone; ///< number of standalone file for WD
 
-   ClassDef(LocalReco, 1); ///< Base class for event display
+   ClassDef(RecoRaw, 1); ///< Base class for event display
 };
 
 

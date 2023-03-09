@@ -1,7 +1,7 @@
 
 
 ################################################################
-######################  Campaign GSI 2021  #####################
+######################  Campaign HIT 2022 MC ###################
 ################################################################
 
 
@@ -19,7 +19,7 @@ Genfit Event Display ON: n
 IncludeKalman:   n
 IncludeTOE:      n
 IncludeStraight: n
-EnableLocalReco: y
+FromLocalReco:   n
 
 Kalman Mode:       ref
 Tracking Systems Considered:    all

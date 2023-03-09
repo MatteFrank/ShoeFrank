@@ -23,7 +23,7 @@
 //! \param[in] fileNameIn data input file name
 //! \param[in] fileNameout data output root file name
 GlobalRecoMC::GlobalRecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
- : LocalRecoMC(expName, runNumber, fileNameIn, fileNameout), fTree(0x0)
+ : RecoMC(expName, runNumber, fileNameIn, fileNameout), fTree(0x0)
 {
 
 	EnableTracking();
@@ -109,14 +109,14 @@ void GlobalRecoMC::LoopEvent(Int_t nEvents, Int_t skipEvent)
 //! After loop
 void GlobalRecoMC::AfterEventLoop()
 {
-  LocalRecoMC::AfterEventLoop();
+  RecoMC::AfterEventLoop();
 }
 
 //______________________________________________________________
 //! Open input file
 void GlobalRecoMC::OpenFileIn()
 {
-	LocalRecoMC::OpenFileIn();
+	RecoMC::OpenFileIn();
 	fTree = ((TAGactTreeReader*)fActEvtReader)->GetTree();
 }
 

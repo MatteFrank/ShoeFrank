@@ -1,12 +1,12 @@
 
 /*!
- \file LocalReco.cxx
- \brief Implementation of LocalReco
+ \file RecoRaw.cxx
+ \brief Implementation of RecoRaw
  */
 /*------------------------------------------+---------------------------------*/
 
 
-#include "LocalReco.hxx"
+#include "RecoRaw.hxx"
 
 #include "TAGntuEvent.hxx"
 #include "TASTntuHit.hxx"
@@ -23,16 +23,16 @@
 #include "TAMSDntuRaw.hxx"
 
 //! Class Imp
-ClassImp(LocalReco)
+ClassImp(RecoRaw)
 
 /*!
- \class LocalReco
+ \class RecoRaw
  \brief Reconstruction class from raw data
  */
 /*------------------------------------------+---------------------------------*/
 
-Bool_t  LocalReco::fgStdAloneFlag    = false;
-Int_t   LocalReco::fgNumFileStdAlone = 1;
+Bool_t  RecoRaw::fgStdAloneFlag    = false;
+Int_t   RecoRaw::fgNumFileStdAlone = 1;
 
 //__________________________________________________________
 //! Constructor
@@ -42,7 +42,7 @@ Int_t   LocalReco::fgNumFileStdAlone = 1;
 //! \param[in] fileNameIn data input file name
 //! \param[in] fileNameout data output root file name
 //! \param[in] IsSubFile flag to enable or disable the subfile of only the input file
-LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t IsSubFile)
+RecoRaw::RecoRaw(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t IsSubFile)
  : BaseReco(expName, runNumber, fileNameIn, fileNameout),
    fpDaqEvent(0x0),
    fpNtuEvt(0x0),
@@ -64,13 +64,13 @@ LocalReco::LocalReco(TString expName, Int_t runNumber, TString fileNameIn, TStri
 
 //__________________________________________________________
 //! default destructor
-LocalReco::~LocalReco()
+RecoRaw::~RecoRaw()
 {
 }
 
 //__________________________________________________________
 //! Create raw data actions
-void LocalReco::CreateRawAction()
+void RecoRaw::CreateRawAction()
 {
    if (!fgStdAloneFlag) {
       fpDaqEvent = new TAGdataDsc("daqEvt", new TAGdaqEvent());
@@ -198,7 +198,7 @@ void LocalReco::CreateRawAction()
 //! Skip a given number of events
 //!
 //! \param[in] iEvent event number to skip
-Bool_t LocalReco::GoEvent(Int_t iEvent)
+Bool_t RecoRaw::GoEvent(Int_t iEvent)
 {
    fSkipEventsN = iEvent;
    
@@ -207,7 +207,7 @@ Bool_t LocalReco::GoEvent(Int_t iEvent)
 
 //__________________________________________________________
 //! Open input file
-void LocalReco::OpenFileIn()
+void RecoRaw::OpenFileIn()
 {
    if (fgStdAloneFlag) {
       if (TAGrecoManager::GetPar()->IncludeVT())
@@ -242,7 +242,7 @@ void LocalReco::OpenFileIn()
 
 //__________________________________________________________
 //! Set raw data histogram directory
-void LocalReco::SetRawHistogramDir()
+void RecoRaw::SetRawHistogramDir()
 {
   // WD
   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA()) {
@@ -314,7 +314,7 @@ void LocalReco::SetRawHistogramDir()
 
 //__________________________________________________________
 //! Close input file
-void LocalReco::CloseFileIn()
+void RecoRaw::CloseFileIn()
 {
    if (fgStdAloneFlag && TAGrecoManager::GetPar()->IncludeBM())
       fActVmeReaderBm->Close();
@@ -326,7 +326,7 @@ void LocalReco::CloseFileIn()
 
 //__________________________________________________________
 //! Add required raw data actions in list
-void LocalReco::AddRawRequiredItem()
+void RecoRaw::AddRawRequiredItem()
 {
    if (!fgStdAloneFlag) {
       fTAGroot->AddRequiredItem("daqActReader");
@@ -376,7 +376,7 @@ void LocalReco::AddRawRequiredItem()
 
 //__________________________________________________________
 //! Set tree branches for writing in output file
-void LocalReco::SetTreeBranches()
+void RecoRaw::SetTreeBranches()
 {
    BaseReco::SetTreeBranches();
 
@@ -432,7 +432,7 @@ void LocalReco::SetTreeBranches()
 }
 
 // --------------------------------------------------------------------------------------
-void LocalReco::SetRunNumberFromFile()
+void RecoRaw::SetRunNumberFromFile()
 {
    // Done by hand shoud be given by DAQ header
    TString name = GetName();

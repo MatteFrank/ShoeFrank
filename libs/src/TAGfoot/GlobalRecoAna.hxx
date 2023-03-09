@@ -23,7 +23,7 @@
 #include "TAGdataDsc.hxx"
 
 #include "BaseReco.hxx"
-#include "LocalReco.hxx"
+#include "RecoRaw.hxx"
 #include "TAGrunInfo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "GlobalRecoMassAna.hxx"
@@ -31,7 +31,7 @@
 
 using namespace std;
 
-class GlobalRecoAna : public LocalReco {
+class GlobalRecoAna : public RecoRaw {
 
   public:
   GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t nTotEv);

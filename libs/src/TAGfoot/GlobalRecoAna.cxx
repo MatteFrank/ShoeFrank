@@ -14,15 +14,15 @@
 #include "BaseReco.hxx"
 #include "TAVTtrack.hxx"
 #include "TAMCntuPart.hxx"
-#include "LocalReco.hxx"
+#include "RecoRaw.hxx"
+#include "RecoMC.hxx"
 
-#include "LocalRecoMC.hxx"
 #include "GlobalRecoAna.hxx"
 
 using namespace std;
 
 
-GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t innTotEv) : LocalReco(expName, runNumber, fileNameIn, fileNameout)
+GlobalRecoAna::GlobalRecoAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t innTotEv) : RecoRaw(expName, runNumber, fileNameIn, fileNameout)
 {
   nchargeok_vt = 0;
   nchargeok_vt_clu = 0;

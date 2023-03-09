@@ -17,7 +17,8 @@ MC Particle Types:	C11	C12	C13 C14	Li6	Li7	B7	B9	B10	Be10	Be11	N14	N15	O16 O15
 
 IncludeKalman:   n
 IncludeTOE:      n
-EnableLocalReco: n
+IncludeStraight: n
+FromLocalReco:   n
 
 Kalman Mode:       ref
 Tracking Systems Considered:    all

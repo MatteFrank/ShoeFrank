@@ -33,8 +33,8 @@ set( with_dictionnaries
    TAGeventDisplay
    TAGeventDisplayMC
    BaseReco
-   LocalRecoMC
-   LocalReco
+   RecoMC
+   RecoRaw
    ConvertNtuple
    TAGactNtuGlbTrackS
    GlobalReco

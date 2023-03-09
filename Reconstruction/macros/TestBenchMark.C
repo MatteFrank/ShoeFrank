@@ -15,8 +15,21 @@
 #endif
 
 const Float_t sigma = 0.68;
-std::map<TString, std::vector<TString> > mapName = {{"BM", {"bmHitDistribution", "bmTrackTotNumber", "bmTrackNtotHitsxTrack"}}, {"VT", {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
-                                                    {"MSD", {"msClusStripTot", "msTrackEvt", "msTrackClus"}}, {"FOOT", {"glbTrackEvt", "glbTrackClus"}}  };
+std::map<TString, std::vector<TString> > mapNameRaw = {
+                                                      {"BM",   {"bmHitDistribution", "bmTrackTotNumber", "bmTrackNtotHitsxTrack"}},
+                                                      {"VT",   {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
+                                                      {"MSD",  {"msClusStripTot", "msTrackEvt", "msTrackClus"}},
+                                                      {"TW",   {"twPointMap"}},
+                                                      {"FOOT", {"glbTrackEvt", "glbTrackClus"}}
+                                                      };
+
+std::map<TString, std::vector<TString> > mapNameMC = {
+                                                     {"BM",   {"bmHitDistribution", "bmTrackTotNumber", "bmTrackNtotHitsxTrack"}},
+                                                     {"VT",   {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
+                                                     {"MSD",  {"msClusStripTot", "msTrackEvt", "msTrackClus"}},
+                                                     {"TW",   {"twPointMap", "twdE_vs_Tof_LayerX_MCrec", "twdE_vs_Tof_LayerY_MCrec", "twZID_MCtrue_LayerX", "twZID_MCtrue_LayerY"}} ,
+                                                     {"FOOT", {"glbTrackEvt", "glbTrackClus"}}
+                                                     };
 
 // main
 void TestBenchMark(Bool_t rawData = true)
@@ -34,7 +47,18 @@ void TestBenchMark(Bool_t rawData = true)
    
    TFile *fRefPlots = new TFile(nameRef.Data());
    TFile *fPlots    = new TFile(name.Data());
-
+   
+   std::map<TString, std::vector<TString> > mapName;
+   
+   if (rawData)
+      mapName = mapNameRaw;
+   else
+      mapName = mapNameMC;
+   
+   Double_t chi2;
+   Int_t    ndf;
+   Int_t    igood;
+   
    for (auto const& it : mapName) {
       
       auto vec = it.second;
@@ -44,10 +68,11 @@ void TestBenchMark(Bool_t rawData = true)
          TH1F* hPixTotRef = (TH1F*)fRefPlots->Get(nameHist.Data());
          TH1F* hPixTot    = (TH1F*)fPlots->Get(nameHist.Data());
          
-         printf("Detector %s: PValue for %s:\n", it.first.Data(), itv.Data());
-         Float_t PValue   = hPixTotRef->Chi2Test(hPixTot,"UU P");
+         cout << left << setw(55)<< Form("Detector %-4s: PValue for %s: ", it.first.Data(), itv.Data());
+         Float_t PValue   = hPixTotRef->Chi2TestX(hPixTot, chi2, ndf, igood, "UU");
+         printf("%.3f\n", PValue);
          
-         if (PValue < sigma) printf("%s changes for detector %s\n", hPixTotRef->GetTitle(), it.first.Data());
+         if (PValue < sigma && ndf != 0) printf("%s changes for detector %s\n", hPixTotRef->GetTitle(), it.first.Data());
       }
    }
 }
