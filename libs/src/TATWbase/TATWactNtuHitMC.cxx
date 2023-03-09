@@ -268,7 +268,7 @@ bool TATWactNtuHitMC::Action() {
 }
 
 //------------------------------------------+-----------------------------------
-
+//! Assign the Tof and the charge Z to the TWhit using the info from ST time
 void TATWactNtuHitMC::AssignZchargeAndToF(TATWhit *hitTW, TAMCntuHit *ntuHitStMC) {
 
      FlagUnderEnergyThresholtHits(hitTW);
@@ -292,7 +292,8 @@ void TATWactNtuHitMC::AssignZchargeAndToF(TATWhit *hitTW, TAMCntuHit *ntuHitStMC
 
      return;
 }
-//------------------------------------------+-----------------------------------// retrieve the Start Counter info to assign the ToF to the TW hit
+//------------------------------------------+-----------------------------------
+//! Retrieve the Start Counter info to assign the ToF to the TW hit
 Double_t TATWactNtuHitMC::GetTimeST(TAGdataDsc *g_NtuStHit, TATWhit *hitTW)
 {
 
@@ -318,6 +319,7 @@ Double_t TATWactNtuHitMC::GetTimeST(TAGdataDsc *g_NtuStHit, TATWhit *hitTW)
 }
    
 //------------------------------------------+-----------------------------------
+//! Study the performances of ZID algorithm: to be used with PU off
 void TATWactNtuHitMC::StudyPerformancesZID(TAMChit *hitTwMC, TAMCntuHit *ntuHitStMC, TAMCntuPart *ntuPart) {
 
    // only for ZID algorithm debug purposes: test algorithm in MC in a clean situation: only primary fragmentation inside TG
@@ -401,6 +403,7 @@ void TATWactNtuHitMC::ClearContainers() {
    return;
 }
 //---------------------------------------------------------------------------
+//! Retrieve MC true charge Z
 Int_t TATWactNtuHitMC::GetZmcTrue(TAMCntuPart *mcpart, Int_t trkId)
 {
      // get true charge
@@ -439,6 +442,7 @@ void TATWactNtuHitMC::PrintTrueMcTWquantities(TAMChit *hitTwMC, Int_t IdTwHit) {
 
 }
 //------------------------------------------------------------------------------
+//! Flag TWhits under enery loss threshold as not valid hits
 void TATWactNtuHitMC::FlagUnderEnergyThresholtHits(TATWhit *hitTW) {
 
      Int_t layer = hitTW->GetLayer();

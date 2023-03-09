@@ -93,8 +93,8 @@ private:
    vector<TH1F*>   fpHisDistZ_MC;
    vector<TH1F*>   fpHisDistZ;
   
-   map<int, TATWhit*> fMapPU; //! map for pilepup
-   vector<TATWhit*>   fVecPuOff; //! vector for pilepup Off
+   map<int, TATWhit*> fMapPU; //! map for pilepup: store TW hits in the same bar in the same event
+   vector<TATWhit*>   fVecPuOff; //! vector for pilepup Off: store all the TW hits without taking care of multi hits in the same bar 
    
 private:
    void          CreateDigitizer();

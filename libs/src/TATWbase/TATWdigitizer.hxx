@@ -81,13 +81,13 @@ private:
    
    // flags
    Bool_t        fMCtrue;
-   Bool_t        fPileUpOff;
+   Bool_t        fPileUpOff;  ///< flag to switch off the PU: when true, hits dopositing energy in the same bar are stored as indipendent hit. When false (defult) multiple hits in the same bar are reconstructed like a single hit
    Bool_t        fMClandauFluctuations;
    Bool_t        fMCRateSmearing;
 
    // deltaE
    
-   TF1*          fDeResE;
+   TF1*          fDeResE;   ///< function to smear the trueMC energy deposited in TW with experimental TW energy loss resolution and parameters in the following
    Double_t      fDeResMin;
    Double_t      fDeResMax;
    Double_t      fDeResECst;
@@ -102,7 +102,7 @@ private:
    Double_t      fDeRateShiftPar1;
    Double_t      fDeRateShiftPar2;
   
-   TF1*          fDeResE_MC;
+   TF1*          fDeResE_MC; ///< function to take care of MC fluctuations and parameters in the following-->not used
    Double_t      fEmcA;  // MeV
    Double_t      fEmcErrA;  // MeV
    Double_t      fEmcB;  // sqrt(MeV)
@@ -115,7 +115,7 @@ private:
    Double_t      fEnergyMax;
 
    // position
-   TF1*          fPosResE;
+   TF1*          fPosResE;  ///< function to smear trueMC position along the bar with experimental position resolution and parameters in the following
    Double_t      fPosCstE;
    Double_t      fPosErrCstE;
    Double_t      fPosLambdaE;
@@ -124,7 +124,7 @@ private:
    Double_t      fPosErrk0E;
 
    // TimeTW
-   TF1*          fTimeTWResE;
+   TF1*          fTimeTWResE;  ///< function to smear the trueMC TWtime with experimental TW time resolution and parameters in the following
    Double_t      fTimeTW_A;
    Double_t      fTimeTWErr_A;
    Double_t      fTimeTW_B;
