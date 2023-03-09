@@ -688,3 +688,60 @@ void TAGcampaign::Print(Option_t* opt) const
       }
    }
 }
+
+//###################################################################################################
+
+//------------------------------------------+-----------------------------------
+//! Campaign checks
+//!
+//! \param[in] runNumber run number
+//! \param[in] flagMC  MC data flag
+bool TAGcampaignManager::CampaignChecks(Int_t runNumber, Bool_t flagMC)
+{
+   if (runNumber == -1 )
+      return true;
+   
+   // check detector include in FootGlobal.par vs current campaign
+   vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
+   for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+      TString str = *it;
+      
+      if (!IsDetectorOn(str)) {
+         Error("CampaignChecks()", "the detector %s is NOT referenced in campaign file", str.Data());
+         return false;
+      }
+   }
+   
+   // check run number vs current campaign
+   TArrayI runArray = GetCurRunArray();
+   Bool_t runOk = false;
+   
+   for (Int_t i = 0; i < runArray.GetSize(); ++i) {
+      if (runNumber == runArray[i])
+         runOk = true;
+   }
+   
+   if (!runOk) {
+      Error("CampaignChecks()", "run %d is NOT referenced in campaign file", runNumber);
+      return false;
+   }
+   
+   // Check raw/MC file
+   if (!flagMC && !GetCurCampaignPar().McFlag)
+      Info("CampaignChecks()", "Reading raw data");
+   
+   if (flagMC && GetCurCampaignPar().McFlag)
+      Info("CampaignChecks()", "Reading MC data");
+   
+   if (flagMC && !GetCurCampaignPar().McFlag) {
+      Error("CampaignChecks()", "Trying to read back MC data file while referenced as raw data in campaign file");
+      return false;
+   }
+   
+   if (!flagMC && GetCurCampaignPar().McFlag) {
+      Error("CampaignChecks()", "Trying to read back raw data file while referenced as MC data in campaign file");
+      return false;
+   }
+   
+   return true;
+}

@@ -187,52 +187,15 @@ BaseReco::~BaseReco()
 //! Campaign information checks
 void BaseReco::CampaignChecks()
 {
-   // check detector include in FootGlobal.par vs current campaign
-   vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
-   for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
-      TString str = *it;
-
-      if (!fCampManager->IsDetectorOn(str)) {
-         Error("CampaignChecks()", "the detector %s is NOT referenced in campaign file", str.Data());
-         exit(0);
-      }
-   }
-
-   // check run number vs current campaign
-   TArrayI runArray = fCampManager->GetCurRunArray();
-   Bool_t runOk = false;
-
-   for (Int_t i = 0; i < runArray.GetSize(); ++i) {
-      if (fRunNumber == runArray[i])
-         runOk = true;
-   }
-
-   if (!runOk) {
-      Error("CampaignChecks()", "run %d is NOT referenced in campaign file", fRunNumber);
+   // campaign checks
+   if (!fCampManager->CampaignChecks(fRunNumber, fFlagMC))
       exit(0);
-   }
-
-  // Check raw/MC file
-  if (!fFlagMC && !fCampManager->GetCurCampaignPar().McFlag)
-    Info("CampaignChecks()", "Reading raw data");
-
-  if (fFlagMC && fCampManager->GetCurCampaignPar().McFlag)
-    Info("CampaignChecks()", "Reading MC data");
-
-  if (fFlagMC && !fCampManager->GetCurCampaignPar().McFlag) {
-    Error("CampaignChecks()", "Trying to read back MC data file while referenced as raw data in campaign file");
-    exit(0);
-  }
-
-  if (!fFlagMC && fCampManager->GetCurCampaignPar().McFlag) {
-    Error("CampaignChecks()", "Trying to read back raw data file while referenced as MC data in campaign file");
-    exit(0);
-  }
    
-   // print information of run
+   // Run Condition Checks
    if (fpParGeoG) {
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-      if (!fRunManager->ConditionChecks(fRunNumber, parGeo)) exit(0);
+      if (!fRunManager->ConditionChecks(fRunNumber, parGeo))
+         exit(0);
    }
 }
 

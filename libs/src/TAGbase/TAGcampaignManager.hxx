@@ -152,6 +152,10 @@ public:
   { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib, elossTuning,rate);  }
    //! Get detector on flag
    Bool_t               IsDetectorOn(const TString& detName)                         { return fCurCampaign->IsDetectorOn(detName);           }
+   
+   // Campaign checks
+   Bool_t               CampaignChecks(Int_t runNumber = -1, Bool_t flagMC = false);
+
    // Print out informations
    void                 Print(Option_t* opt = "") const;
    
