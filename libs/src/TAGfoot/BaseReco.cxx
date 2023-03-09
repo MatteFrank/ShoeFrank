@@ -203,38 +203,8 @@ void BaseReco::CampaignChecks()
 //! Global reconstruction information checks
 void BaseReco::GlobalChecks()
 {
-  if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
-    // from global file
-    Bool_t fromLocalRecoG = TAGrecoManager::GetPar()->IsFromLocalReco();
-    Bool_t globalRecoTOE  = TAGrecoManager::GetPar()->IncludeTOE();
-    Bool_t globalRecoGF   = TAGrecoManager::GetPar()->IncludeKalman();
-
-    // from root file
-    TAGrunInfo info = gTAGroot->CurrentRunInfo();
-    TAGrunInfo* p = &info;
-    if (!p) return; // if run info not found in MC file
-
-    Bool_t fromLocalReco = info.GetGlobalPar().FromLocalReco;
-
-    if (fromLocalRecoG && fromLocalReco)
-      Info("GlobalChecks()", "Make global reconstruction from L0 tree");
-
-    if (globalRecoTOE)
-      Info("GlobalChecks()", "Make global reconstruction with TOE");
-
-    if (globalRecoGF)
-      Info("GlobalChecks()", "Make global reconstruction with GenFit");
-
-    if (fromLocalRecoG && !fromLocalReco) {
-      Error("GlobalChecks()", "FootGlobal::fromLocalReco set but raw data found in root file !");
+   if (!TAGrecoManager::GetPar()->GlobalChecks(fFlagMC))
       exit(0);
-    }
-
-    if (!fromLocalRecoG && fromLocalReco) {
-      Error("GlobalChecks()", "FootGlobal::fromLocalReco not set but L0 tree found in root file!");
-      exit(0);
-    }
-  }
 }
 
 //__________________________________________________________

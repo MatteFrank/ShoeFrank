@@ -206,52 +206,6 @@ void RecoMC::OpenFileIn()
   }
 }
 
-//_____________________________________________________________________________
-//! Global MC data information checks
-void RecoMC::GlobalChecks()
-{
-  // base checks
-  BaseReco::GlobalChecks();
-  
-  // from global file
-  Bool_t enableRootObjectG = TAGrecoManager::GetPar()->IsReadRootObj();
-
-  // from root file
-  TAGrunInfo info = gTAGroot->CurrentRunInfo();
-  TAGrunInfo* p = &info;
-  if (!p) return; // if run info not found in MC file
-  
-  Bool_t enableRootObject = info.GetGlobalPar().EnableRootObject;
-  
-  if (enableRootObjectG && enableRootObject)
-    Info("GlobalChecks()", "Reading MC root file with shoe format");
-  
-  if (!enableRootObjectG && !enableRootObject)
-    Info("GlobalChecks()", "Reading MC root file with Fluka structure format");
-  
-  if (enableRootObjectG && !enableRootObject) {
-    Error("GlobalChecks()", "FootGlobal::enableRootObject set to shoe format but MC file is Fluka structure !");
-    exit(0);
-  }
-  
-  if (!enableRootObjectG && enableRootObject) {
-    Error("GlobalChecks()", "FootGlobal::enableRootObject set to Fluka structure but MC file is shoe format !");
-    exit(0);
-  }
-  
-  Bool_t enableRgeionG = TAGrecoManager::GetPar()->IsRegionMc();
-  Bool_t enableRgeion  = info.GetGlobalPar().EnableRegionMc;
-  
-  if (enableRgeionG && enableRgeion)
-    Info("GlobalChecks()", "Reading MC root tree with region crossing informations");
-  
-  if (enableRgeionG && !enableRgeion)
-    Warning("GlobalChecks()", "FootGlobal::enableRegionMc set but no region crossing found in file");
-  
-  if (!enableRgeionG && enableRgeion)
-    Warning("GlobalChecks()", "FootGlobal::enableRegionMc not set but region crossing found in file");
-}
-
 
 //__________________________________________________________
 //! Set MC data histogram directory

@@ -200,6 +200,9 @@ public:
   
     // Debug levels
     void SetDebugLevels();
+   
+   // Global checks
+   Bool_t GlobalChecks(Bool_t flagMC);
   
 private:
 	TAGrecoManager();

@@ -9,6 +9,7 @@
 #include "TNamed.h"
 #include "Riostream.h"
 
+#include "TAGroot.hxx"
 #include "TAGparTools.hxx"
 #include "TAGrecoManager.hxx"
 
@@ -143,6 +144,84 @@ const TAGrunInfo TAGrecoManager::GetGlobalInfo()
   
    return runInfo;
 }
+
+//_____________________________________________________________________________
+//! Clear debug level for a given class
+//!
+//! \param[in] flagMC MC data flag
+Bool_t TAGrecoManager::GlobalChecks(Bool_t flagMC)
+{
+   // from root file
+   TAGrunInfo info = gTAGroot->CurrentRunInfo();
+   TAGrunInfo* p = &info;
+   if (!p) return true;
+   
+   if (IncludeTOE() || IncludeKalman()) {
+      // from global file
+      Bool_t fromLocalRecoG = IsFromLocalReco();
+      Bool_t globalRecoTOE  = IncludeTOE();
+      Bool_t globalRecoGF   = IncludeKalman();
+   
+      Bool_t fromLocalReco = info.GetGlobalPar().FromLocalReco;
+      
+      if (fromLocalRecoG && fromLocalReco)
+         Info("GlobalChecks()", "Make global reconstruction from L0 tree");
+      
+      if (globalRecoTOE)
+         Info("GlobalChecks()", "Make global reconstruction with TOE");
+      
+      if (globalRecoGF)
+         Info("GlobalChecks()", "Make global reconstruction with GenFit");
+      
+      if (fromLocalRecoG && !fromLocalReco) {
+         Error("GlobalChecks()", "FootGlobal::fromLocalReco set but raw data found in root file !");
+         return false;
+      }
+      
+      if (!fromLocalRecoG && fromLocalReco) {
+         Error("GlobalChecks()", "FootGlobal::fromLocalReco not set but L0 tree found in root file!");
+         return false;
+      }
+   }
+   
+   if (flagMC) {
+      // from global file
+      Bool_t enableRootObjectG = IsReadRootObj();
+   
+      Bool_t enableRootObject = info.GetGlobalPar().EnableRootObject;
+      
+      if (enableRootObjectG && enableRootObject)
+         Info("GlobalChecks()", "Reading MC root file with shoe format");
+      
+      if (!enableRootObjectG && !enableRootObject)
+         Info("GlobalChecks()", "Reading MC root file with Fluka structure format");
+      
+      if (enableRootObjectG && !enableRootObject) {
+         Error("GlobalChecks()", "FootGlobal::enableRootObject set to shoe format but MC file is Fluka structure !");
+         return false;
+      }
+      
+      if (!enableRootObjectG && enableRootObject) {
+         Error("GlobalChecks()", "FootGlobal::enableRootObject set to Fluka structure but MC file is shoe format !");
+         return false;
+      }
+      
+      Bool_t enableRgeionG = TAGrecoManager::GetPar()->IsRegionMc();
+      Bool_t enableRgeion  = info.GetGlobalPar().EnableRegionMc;
+      
+      if (enableRgeionG && enableRgeion)
+         Info("GlobalChecks()", "Reading MC root tree with region crossing informations");
+      
+      if (enableRgeionG && !enableRgeion)
+         Warning("GlobalChecks()", "FootGlobal::enableRegionMc set but no region crossing found in file");
+      
+      if (!enableRgeionG && enableRgeion)
+         Warning("GlobalChecks()", "FootGlobal::enableRegionMc not set but region crossing found in file");
+   }
+   
+   return true;
+}
+
 
 //_____________________________________________________________________________
 //! Read from file

@@ -52,9 +52,6 @@ public:
    // Close File in
    virtual void CloseFileIn();
   
-   // Global Checks
-   virtual void GlobalChecks();
-   
    // Goto Event
    virtual Bool_t GoEvent(Int_t iEvent);
 
