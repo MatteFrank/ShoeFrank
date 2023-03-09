@@ -294,7 +294,8 @@ Double_t TATWdigitizer::GetTimeRight(Double_t pos, Double_t time, Double_t edep)
    
    return timeR;
 }
-//-------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//! Method to compute the position along the bar using the time difference btw ChA e Chb for a given bar (as done in data)
 void TATWdigitizer::ComputePosDeltaTime(Double_t eloss, Double_t time, Double_t &pos, Double_t &timeA, Double_t &timeB) {
 
     // Reconstruct the position along the bar as in data using time differences between bar edges
@@ -388,7 +389,8 @@ void  TATWdigitizer::CheckPUmanaging(Double_t time, Double_t eloss, Double_t pos
          return;
 }
 
-// --------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//! Reconstruct the MC TW hit, smearing the time, the eloss and the position along the bar according to the respective experimental resolutions. For multi hits in the same bar a single hit is reconstracrted (by default) with a depoited energy given by the sum of the single energies deposited and the TW time, the charge Z and the position are the ones related to the hit with the biggest energy deposit
 Bool_t TATWdigitizer::Process(Double_t edep, Double_t posAlongBar, Double_t layer, Double_t barid, Double_t twhitID, Double_t timeTW, Int_t baridA, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/){
    
    Double_t recEloss       = edep;

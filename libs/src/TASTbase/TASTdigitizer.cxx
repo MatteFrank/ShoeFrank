@@ -126,7 +126,7 @@ Double_t TASTdigitizer::SmearTimeST(Double_t eloss, Double_t time) {
    return time;
 }
 //___________________________________________________________________________________________
-
+//! Reconstruct the MC ST hit, smearing the time according to the respective experimental resolutions. For multi hits in the same event a single hit is reconstracrted (by default) with a depoited energy given by the sum of the single energies deposited and the ST time is the ones related to the hit with the biggest energy deposit
 Bool_t TASTdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
 
