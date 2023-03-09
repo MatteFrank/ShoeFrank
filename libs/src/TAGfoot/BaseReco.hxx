@@ -229,9 +229,6 @@ public:
    //! Flag for MC data
    Bool_t IsMcData()           { return fFlagMC;          }
      
-   // Set Cal clusteing algorithm
-   void SetCalClusterAlgo(char c);
-   
    // Campaign checks
    void CampaignChecks();
    

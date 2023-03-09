@@ -1327,21 +1327,3 @@ void BaseReco::AddRecRequiredItem()
    if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) 
       gTAGroot->AddRequiredItem("glbActTrackS");
 }
-
-//__________________________________________________________
-//! Set CAL clustering  algorithm
-//!
-//! \param[in] c toggle btw standard and padme algorithm
-void BaseReco::SetCalClusterAlgo(char c)
-{
-   switch (c) {
-      case 'S':
-         fMsdTrackingAlgo = "Std";
-         break;
-      case 'P':
-         fMsdTrackingAlgo = "Padme";
-         break;
-      default:
-         printf("SetCalClusterAlgo: Wrongly set clustering algorithm");
-   }
-}
