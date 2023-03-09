@@ -230,8 +230,8 @@ void TAGbaseEventDisplay::ReadParFiles()
 void TAGbaseEventDisplay::AdditionalTracking()
 {
    
-   fFlagMsdTrack = BaseReco::IsMsdTracking();
-   fFlagItrTrack = BaseReco::IsItrTracking();
+   fFlagMsdTrack = fReco->IsMsdTracking();
+   fFlagItrTrack = fReco->IsItrTracking();
 
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       if (fFlagItrTrack) {
