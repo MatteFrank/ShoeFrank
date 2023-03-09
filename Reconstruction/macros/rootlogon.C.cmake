@@ -24,71 +24,85 @@
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAG@.so");
 
    tmp = "@TAMC_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAMC@.so");
 
    tmp = "@TADI_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TADI@.so");
 
    tmp = "@TADAQ_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TADAQ@.so");
 
    tmp = "@TAAPI_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAAPI@.so");
 
    tmp = "@TAST_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAST@.so");
 
    tmp = "@TAIR_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAIR@.so");
 
    tmp = "@TABM_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TABM@.so");
 
    tmp = "@TAVT_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAVT@.so");
 
    tmp = "@TAIT_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAIT@.so");
 
    tmp = "@TAMSD_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAMSD@.so");
 
    tmp = "@TATW_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TATW@.so");
 
    tmp = "@TACA_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TACA@.so");
 
    tmp = "@TAED_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAED@.so");
 
    tmp = "@TATOE_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
@@ -104,8 +118,9 @@
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAFO@.so");
 
-  tmp = "@TOE_INCLUDE_DIR@";
+   tmp = "@TOE_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
@@ -118,14 +133,17 @@
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
-   
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAPL@.so");
+
    tmp = "@TACE_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TACE@.so");
    
    tmp = "@TANE_INCLUDE_DIR@";
    printf("- Add %s to the include path \n",tmp.Data());
    tmp.Prepend(" .include ");
    gROOT->ProcessLine(tmp.Data());
+   gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TANE@.so");
 }
