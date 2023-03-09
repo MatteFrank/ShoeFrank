@@ -37,8 +37,6 @@
 //! Class Imp
 ClassImp(BaseReco)
 
-Bool_t  BaseReco::fgFlagMsdTrack  = false;
-Bool_t  BaseReco::fgFlagItrTrack  = false;
 Bool_t  BaseReco::fgSaveMcFlag     = true;
 
 //__________________________________________________________
@@ -131,6 +129,8 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fFlagHisto(false),
    fFlagTrack(false),
    fFlagTWbarCalib(false),
+   fFlagMsdTrack(false),
+   fgFlagItrTrack(false),
    fFlagRateSmearTw(false),
    fVtxTrackingAlgo("Full"),
    fItrTrackingAlgo("Full"),
@@ -489,7 +489,7 @@ void BaseReco::SetRecHistogramDir()
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
       fActClusMsd->SetHistogramDir(subfolder);
       fActPointMsd->SetHistogramDir(subfolder);
-      if (fgFlagMsdTrack && fFlagTrack)
+      if (fFlagMsdTrack && fFlagTrack)
          fActTrackMsd->SetHistogramDir(subfolder);
    }
 
@@ -665,8 +665,7 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
-      if (parConf->GetAnalysisPar().TrackingFlag) {
-         EnableItrTracking();
+      if ((fgFlagItrTrack = parConf->GetAnalysisPar().TrackingFlag)) {
          fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
       }
       
@@ -690,8 +689,7 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
-      if (parConf->GetAnalysisPar().TrackingFlag) {
-         EnableMsdTracking();
+      if ((fFlagMsdTrack = parConf->GetAnalysisPar().TrackingFlag)) {
          fMsdTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
       }
       
@@ -966,7 +964,7 @@ void BaseReco::CreateRecActionMsd()
    if (fFlagHisto)
       fActPointMsd->CreateHistogram();
 
-   if (fgFlagMsdTrack && fFlagTrack) {
+   if (fFlagMsdTrack && fFlagTrack) {
       fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
 
       if (fMsdTrackingAlgo.Contains("Std") ) {
@@ -1225,7 +1223,7 @@ void BaseReco::SetTreeBranches()
   if (TAGrecoManager::GetPar()->IncludeMSD()) {
     fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
      fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
-     if (fgFlagMsdTrack && fFlagTrack)
+     if (fFlagMsdTrack && fFlagTrack)
         fActEvtWriter->SetupElementBranch(fpNtuTrackMsd, TAMSDntuTrack::GetBranchName());
   }
    if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
@@ -1300,7 +1298,7 @@ void BaseReco::AddRecRequiredItem()
       gTAGroot->AddRequiredItem("msdActNtu");
       gTAGroot->AddRequiredItem("msdActClus");
       gTAGroot->AddRequiredItem("msdActPoint");
-      if (fgFlagMsdTrack && fFlagTrack)
+      if (fFlagMsdTrack && fFlagTrack)
          gTAGroot->AddRequiredItem("msdActTrack");
    }
 

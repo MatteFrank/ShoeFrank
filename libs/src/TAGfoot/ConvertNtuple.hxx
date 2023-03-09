@@ -474,8 +474,6 @@ protected:
    void ResetTreeOut();
    
 protected:
-   static Bool_t fgItrTrackFlag; ///< ITR tracking flag
-   static Bool_t fgMsdTrackFlag; ///< MSD tracking flag
    static Bool_t fgSaveMcFlag;    ///< MC saving flag
 
    ClassDef(ConvertNtuple, 1);        ///< Base class for reconstruction

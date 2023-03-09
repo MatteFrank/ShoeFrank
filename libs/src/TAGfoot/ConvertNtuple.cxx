@@ -366,6 +366,13 @@ void ConvertNtuple::ReadParFiles()
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
+      
+      TAGparaDsc* pParConfIt = new TAGparaDsc("itConf", new TAITparConf());
+      TAITparConf* parConf = (TAITparConf*)pParConfIt->Object();
+      parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      fFlagItrTrack = parConf->GetAnalysisPar().TrackingFlag;
    }
    
    // initialise par files for multi strip detector
@@ -374,6 +381,13 @@ void ConvertNtuple::ReadParFiles()
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
+      
+      TAGparaDsc* pParConfMsd = new TAGparaDsc("msdConf", new TAMSDparConf());
+      TAMSDparConf* parConf = (TAMSDparConf*)pParConfMsd->Object();
+      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      fFlagMsdTrack = parConf->GetAnalysisPar().TrackingFlag;
    }
    
    // initialise par files for Tof Wall
@@ -397,19 +411,11 @@ void ConvertNtuple::ReadParFiles()
 //! Global reconstruction settings
 void ConvertNtuple::GlobalSettings()
 {
-   Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
-   Bool_t trkMsd = BaseReco::IsMsdTracking();
-   Bool_t trkItr = BaseReco::IsItrTracking();
+   Bool_t trk  = TAGrecoManager::GetPar()->IsTracking();
    
    // global setting
    if (trk)
       EnableTracking();
-   
-   if (trkMsd)
-      EnableMsdTracking();
-   
-   if (trkItr)
-      EnableItrTracking();
 }
 
 //__________________________________________________________
