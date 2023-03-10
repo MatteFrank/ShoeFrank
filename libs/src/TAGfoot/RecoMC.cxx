@@ -206,54 +206,6 @@ void RecoMC::OpenFileIn()
   }
 }
 
-
-//__________________________________________________________
-//! Set MC data histogram directory
-void RecoMC::SetRawHistogramDir()
-{
-   // ST
-   if (TAGrecoManager::GetPar()->IncludeST()) {
-      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TASTparGeo::GetBaseName());
-      fActNtuHitSt->SetHistogramDir(subfolder);
-   }
-  
-   // BM
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
-     TDirectory* subfolder = fActEvtWriter->File()->mkdir(TABMparGeo::GetBaseName());
-      fActNtuHitBm->SetHistogramDir(subfolder);
-   }
-  
-   // VTX
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
-     TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAVTparGeo::GetBaseName());
-      fActNtuHitVtx->SetHistogramDir(subfolder);
-   }
-  
-   // IT
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAITparGeo::GetBaseName());
-      fActNtuHitIt->SetHistogramDir(subfolder);
-   }
-  
-   // MSD
-   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAMSDparGeo::GetBaseName());
-      fActNtuHitMsd->SetHistogramDir(subfolder);
-   }
-  
-   // TOF
-   if (TAGrecoManager::GetPar()->IncludeTW()) {
-      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TATWparGeo::GetBaseName());
-      fActNtuHitTw->SetHistogramDir(subfolder);
-   }
-   
-   // CAL
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      TDirectory* subfolder = fActEvtWriter->File()->mkdir(TACAparGeo::GetBaseName());
-      fActNtuHitCa->SetHistogramDir(subfolder);
-  }
-}
-
 //__________________________________________________________
 //! Close input file
 void RecoMC::CloseFileIn()

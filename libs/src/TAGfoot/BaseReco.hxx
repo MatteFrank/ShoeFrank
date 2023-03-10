@@ -136,11 +136,8 @@ public:
    // Add required items
    virtual void AddRecRequiredItem();
    
-   //! Set raw histogram directory
-   virtual void SetRawHistogramDir()   { return; }
-   
-   // Set rec histogram directory
-   virtual void SetRecHistogramDir();
+   // Set histogram directory
+   virtual void SetHistogramDir();
    
    // Loop events
    virtual void LoopEvent(Int_t nEvents);

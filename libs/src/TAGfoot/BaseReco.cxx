@@ -320,26 +320,96 @@ void BaseReco::OpenFileOut()
   if (fFlagTree)  SetTreeBranches();
    fActEvtWriter->Open(GetTitle(), "RECREATE");
 
-   if (fFlagHisto) {
-      SetRawHistogramDir();
-      SetRecHistogramDir();
-   }
+   if (fFlagHisto)
+      SetHistogramDir();
 }
 
 //__________________________________________________________
 //! Set reconstructed histogram directory
-void BaseReco::SetRecHistogramDir()
+void BaseReco::SetHistogramDir()
 {
    //Global track
    if(fFlagRecCutter) return;
    
+   TList* list = gTAGroot->ListOfAction();
+   for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      TAGaction* action = (TAGaction*)list->At(i);
+      TString tmp(action->GetName());
+      TString prefix(tmp(0,2));
+      
+      TDirectory* subfolder;
+      
+      if (prefix == "st") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TASTparGeo::GetBaseName());
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TASTparGeo::GetBaseName());
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "bm") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TABMparGeo::GetBaseName());
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TABMparGeo::GetBaseName());
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "vt") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAVTparGeo::GetBaseName());
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAVTparGeo::GetBaseName());
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "it") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAITparGeo::GetBaseName());
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAITparGeo::GetBaseName());
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "ms") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAMSDparGeo::GetBaseName());
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "tw") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TATWparGeo::GetBaseName());
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TATWparGeo::GetBaseName());
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "ca") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TACAparGeo::GetBaseName());
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TACAparGeo::GetBaseName());
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "da") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("DAQ");
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("DAQ");
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "wd") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("WD");
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("WD");
+         action->SetHistogramDir(subfolder);
+         
+      } else if (prefix == "ev") {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("EVT");
+         if (!subfolder)
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("EVT");
+         action->SetHistogramDir(subfolder);
+         
+      } else {
+      }
+   }
+   
    if (fFlagTrack) {
-
+      
 #ifdef GENFIT_FLAG
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
-        TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
-        fActGlbkFitter->SetHistogramDir(subfolder);
-        if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
+         TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
+         fActGlbkFitter->SetHistogramDir(subfolder);
+         if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
       }
 #endif
 #ifdef TOE_FLAG
@@ -349,61 +419,12 @@ void BaseReco::SetRecHistogramDir()
          if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
       }
 #endif
-   }
-
-   //BMN
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
-      if (fFlagTrack) {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TABMparGeo::GetBaseName());
-         fActTrackBm->SetHistogramDir(subfolder);
+      
+      // Global straight track
+      if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAGgeoTrafo::GetBaseName());
+         fActGlbTrackS->SetHistogramDir(subfolder);
       }
-   }
-
-   // VTX
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
-      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAVTparGeo::GetBaseName());
-      fActClusVtx->SetHistogramDir(subfolder);
-
-      if (fFlagTrack) {
-         fActTrackVtx->SetHistogramDir(subfolder);
-         if (TAGrecoManager::GetPar()->IncludeTG()) {
-            fActVtx->SetHistogramDir(subfolder);
-         }
-      }
-   }
-
-   // IT
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAITparGeo::GetBaseName());
-      fActClusIt->SetHistogramDir(subfolder);
-   }
-
-   // MSD
-   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
-      fActClusMsd->SetHistogramDir(subfolder);
-      fActPointMsd->SetHistogramDir(subfolder);
-      if (fFlagMsdTrack && fFlagTrack)
-         fActTrackMsd->SetHistogramDir(subfolder);
-   }
-
-   // TW
-   if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
-      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TATWparGeo::GetBaseName());
-      fActPointTw->SetHistogramDir(subfolder);
-   }
-
-   // CA
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TACAparGeo::GetBaseName());
-      fActClusCa->SetHistogramDir(subfolder);
-      //fActNtuHitCa->SetHistogramDir(subfolder);
-   }
-
-   // Global straight track
-   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
-      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAGgeoTrafo::GetBaseName());
-      fActGlbTrackS->SetHistogramDir(subfolder);
    }
 }
 

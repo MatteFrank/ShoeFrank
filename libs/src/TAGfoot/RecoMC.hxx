@@ -40,9 +40,6 @@ public:
    // Create raw data action
    virtual void CreateRawAction();
    
-   // Set raw histogram directory
-   virtual void SetRawHistogramDir();
-   
    // Create branch in tree
    virtual void SetTreeBranches();
    
