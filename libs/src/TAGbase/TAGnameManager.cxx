@@ -26,12 +26,12 @@ TString                TAGnameManager::fgkActPrefix    = "Act";
 
 vector<TString>        TAGnameManager::fgkParaDscMap   = {"Map", "Geo", "Conf", "Cal", "Tim"};
 
-vector<TString>        TAGnameManager::fgkDataDscMap   = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "Part", "Writer"};
+vector<TString>        TAGnameManager::fgkDataDscMap   = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "reader", "Part", "Writer"};
 
 vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca", "wd", "evt", "reg", "eve"};
 
 map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"}, {"TABM", "bm"}, {"TAVT", "vt"}, {"TAIT", "it"},
-                                                          {"TAMSD", "ms"}, {"TATW", "tw"}, {"TACA", "ca"}, {"TAWD", "wd"},
+                                                          {"TAMSD", "ms"}, {"TATW", "tw"}, {"TACA", "ca"}, {"WD", "wd"},
                                                           {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"},
                                                           {"TAGactDaq", "daq"}, {"actNtuPart", "eve"}, {"TAGactTree", "evt"}};
 
