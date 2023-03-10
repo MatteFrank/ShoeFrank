@@ -30,7 +30,7 @@ const TString TAGrunManager::fgkDefaultExt     = ".run";
 //!
 //! \param[in] exp experiment name
 TAGrunManager::TAGrunManager(const TString exp, Int_t runNumber)
-: TAGaction(fgkDefaultActName.Data(), "TAGrunManager - Campaign Manager"),
+: TAGaction(fgkDefaultActName.Data(), "TAGrunManager - Run Manager"),
    fFileStream(new TAGparTools()),
    fpParGeo(0x0),
    fCampaignName(exp),
