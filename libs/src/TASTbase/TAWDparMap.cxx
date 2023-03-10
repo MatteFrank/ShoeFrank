@@ -1,38 +1,38 @@
 /*!
-  \file TAGbaseWDparMap.cxx
-  \brief   Implementation of TAGbaseWDparMap.
+  \file TAWDparMap.cxx
+  \brief   Implementation of TAWDparMap.
 */
 
 #include <string.h>
 #include <fstream>
 #include "TSystem.h"
 #include "TString.h"
-#include "TAGbaseWDparMap.hxx"
+#include "TAWDparMap.hxx"
 
 //##############################################################################
 
 /*!
-  \class TAGbaseWDparMap 
+  \class TAWDparMap 
   \brief Map parameters for onion and daisy. **
 */
 
 //! Class Imp
-ClassImp(TAGbaseWDparMap);
+ClassImp(TAWDparMap);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAGbaseWDparMap::TAGbaseWDparMap()
+TAWDparMap::TAWDparMap()
 {
-  TAGbaseWDparMap::Clear();
+  TAWDparMap::Clear();
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAGbaseWDparMap::~TAGbaseWDparMap()
+TAWDparMap::~TAWDparMap()
 {}
 
 //------------------------------------------+-----------------------------------
-Bool_t TAGbaseWDparMap::FromFile(const TString& name)
+Bool_t TAWDparMap::FromFile(const TString& name)
 {
   Clear();
   
@@ -82,14 +82,14 @@ Bool_t TAGbaseWDparMap::FromFile(const TString& name)
 
 //------------------------------------------+-----------------------------------
 //! Clear event.
-void TAGbaseWDparMap::Clear(Option_t*)
+void TAWDparMap::Clear(Option_t*)
 {
   TAGpara::Clear();
 }
 
 //------------------------------------------+-----------------------------------
 //! Get channel type
-string TAGbaseWDparMap::GetChannelType(int board, int channel)
+string TAWDparMap::GetChannelType(int board, int channel)
 {
   string res = "CORRUPTED";
   if(fChmap.count(make_pair(board, channel))) {
@@ -100,7 +100,7 @@ string TAGbaseWDparMap::GetChannelType(int board, int channel)
 }
 
 //------------------------------------------+-----------------------------------
-vector<int> TAGbaseWDparMap::GetBoards(string det)
+vector<int> TAWDparMap::GetBoards(string det)
 {
   if(fBolist.count(det)){
     return fBolist.find(det)->second;

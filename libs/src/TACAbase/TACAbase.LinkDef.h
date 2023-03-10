@@ -21,7 +21,7 @@
 #pragma link C++ class TACAparCal+;
 #pragma link C++ class TACAparConf+;
 #pragma link C++ class TACAcalibrationMap+;
-#pragma link C++ class TAGWDtrigInfo+;
+#pragma link C++ class TAWDtrigInfo+;
 #pragma link C++ class TAGactWDreader+;
 
 

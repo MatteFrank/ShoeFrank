@@ -20,8 +20,8 @@
 #include "TAGrunManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
-#include "TAGbaseWDparTime.hxx"
-#include "TAGbaseWDparMap.hxx"
+#include "TAWDparTime.hxx"
+#include "TAWDparMap.hxx"
 
 #include "TASTparMap.hxx"
 #include "TABMparMap.hxx"

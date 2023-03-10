@@ -9,7 +9,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TString.h"
-#include "TAGWDtrigInfo.hxx"
+#include "TAWDtrigInfo.hxx"
 #include "TAGdata.hxx"
 
 class TAGntuEvent : public TAGdata {

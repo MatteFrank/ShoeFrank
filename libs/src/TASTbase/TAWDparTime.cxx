@@ -1,6 +1,6 @@
 /*!
-  \file TAGbaseWDparTime.cxx
-  \brief   Implementation of TAGbaseWDparTime.
+  \file TAWDparTime.cxx
+  \brief   Implementation of TAWDparTime.
 */
 
 #include <string.h>
@@ -12,33 +12,33 @@
 
 #include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
-#include "TAGbaseWDparTime.hxx"
+#include "TAWDparTime.hxx"
 #include "TAGactWDreader.hxx"
 
 //##############################################################################
 
 /*!
-  \class TAGbaseWDparTime 
+  \class TAWDparTime 
   \brief Map Time parameters for WD
 */
 
-ClassImp(TAGbaseWDparTime);
+ClassImp(TAWDparTime);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAGbaseWDparTime::TAGbaseWDparTime()
+TAWDparTime::TAWDparTime()
 {
   InitMap();
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAGbaseWDparTime::~TAGbaseWDparTime()
+TAWDparTime::~TAWDparTime()
 {
 }
 
 //------------------------------------------+-----------------------------------
-bool TAGbaseWDparTime::FromFileCFD(TString cfd_filename)
+bool TAWDparTime::FromFileCFD(TString cfd_filename)
 {
    //get cfd parameters for each detectors
    FILE *stream = fopen(cfd_filename.Data(), "r");
@@ -95,7 +95,7 @@ bool TAGbaseWDparTime::FromFileCFD(TString cfd_filename)
 }
 
 //------------------------------------------+-----------------------------------
-bool TAGbaseWDparTime::FromFileTcal(TString tcal_filename)
+bool TAWDparTime::FromFileTcal(TString tcal_filename)
 {
 
   FILE *stream = fopen(tcal_filename.Data(), "r");
@@ -116,7 +116,7 @@ bool TAGbaseWDparTime::FromFileTcal(TString tcal_filename)
 }
 
 //------------------------------------------+-----------------------------------
-void TAGbaseWDparTime::GetTimeInfo(FILE *stream)
+void TAWDparTime::GetTimeInfo(FILE *stream)
 {
   u_int word;
   int board_id=0, ch_num=0,ret=0;
@@ -159,7 +159,7 @@ void TAGbaseWDparTime::GetTimeInfo(FILE *stream)
 }
 
 //------------------------------------------+-----------------------------------
-void TAGbaseWDparTime::InitMap()
+void TAWDparTime::InitMap()
 {
   pair<int,int> key;
   for(int iBo=0;iBo<NMAX_BO_ID;iBo++){
@@ -174,7 +174,7 @@ void TAGbaseWDparTime::InitMap()
  
 //------------------------------------------+-----------------------------------
 //! Clear event.
-void TAGbaseWDparTime::Clear(Option_t*)
+void TAWDparTime::Clear(Option_t*)
 {
   fTimeParCal.clear();
 
@@ -182,13 +182,13 @@ void TAGbaseWDparTime::Clear(Option_t*)
 }
 
 //------------------------------------------+-----------------------------------
-void TAGbaseWDparTime::ToStream(ostream& os, Option_t*) const
+void TAWDparTime::ToStream(ostream& os, Option_t*) const
 {
 }
 
 //------------------------------------------+-----------------------------------
 //! set time calibration (get from first event)
-void TAGbaseWDparTime::SetTimeCal(int iBo, int iCha,  vector<float> tvec)
+void TAWDparTime::SetTimeCal(int iBo, int iCha,  vector<float> tvec)
 {
   pair<int,int> key = make_pair(iBo,iCha);
   for(int i=0;i<tvec.size();i++){
@@ -199,7 +199,7 @@ void TAGbaseWDparTime::SetTimeCal(int iBo, int iCha,  vector<float> tvec)
 
 //------------------------------------------+-----------------------------------
 //! get time array
-vector<double> TAGbaseWDparTime::GetRawTimeArray(int iBo, int iCha, int TrigCell)
+vector<double> TAWDparTime::GetRawTimeArray(int iBo, int iCha, int TrigCell)
 {
   vector<double> time;
   

@@ -28,9 +28,9 @@
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "TAGWDtrigInfo.hxx"
-#include "TAGbaseWDparTime.hxx"
-#include "TAGbaseWDparMap.hxx"
+#include "TAWDtrigInfo.hxx"
+#include "TAWDparTime.hxx"
+#include "TAWDparMap.hxx"
 #include "TWaveformContainer.hxx"
 #include "TASTparGeo.hxx"
 
@@ -91,7 +91,7 @@ public:
 
 private:
          Int_t    ReadStdAloneEvent(bool &endoffile,
-                                    TAGbaseWDparMap *p_WDMap);
+                                    TAWDparMap *p_WDMap);
          Bool_t   WaveformsTimeCalibration();
   vector<double>  ADC2Volt(vector<int>, double);
          double   ADC2Temp(double adc);
@@ -136,7 +136,7 @@ CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap)
   fpWDMap(pWDmap)
 {
    AddPara(pCAmap, "TACAparMap");
-   AddPara(pWDmap, "TAGbaseWDparMap");
+   AddPara(pWDmap, "TAWDparMap");
 
    fGeometry = (TACAparGeo*) gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
  
@@ -283,7 +283,7 @@ void CAactRaw2Ntu::SetTreeBranches() {
    }
 
    // cross check WD map vs geo maps
-   TAGbaseWDparMap* pWDmap = (TAGbaseWDparMap*)fpWDMap->Object();
+   TAWDparMap* pWDmap = (TAWDparMap*)fpWDMap->Object();
    TACAparMap* pCAmap = (TACAparMap*)fpCAParMap->Object();
    vector<int> boards = pWDmap->GetBoards("CALO");
 
@@ -313,7 +313,7 @@ Bool_t CAactRaw2Ntu::Action() {
 
    bool eof = false;
 
-   ReadStdAloneEvent(eof, (TAGbaseWDparMap*)fpWDMap->Object());
+   ReadStdAloneEvent(eof, (TAWDparMap*)fpWDMap->Object());
 
    fTree->Fill();
   
@@ -440,7 +440,7 @@ vector<double> CAactRaw2Ntu::ADC2Volt(vector<int> v_amp, double dynamic_range) {
 
 //------------------------------------------+-----------------------------------
 //! Read block of CA waveform and Arduino temp from daq file
-Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAGbaseWDparMap *p_WDMap) {
+Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAWDparMap *p_WDMap) {
 
    cout<<"eccomi 0"<<endl;
 
@@ -720,8 +720,8 @@ int main (int argc, char *argv[])  {
    TACAactNtuHit *hit = new TACAactNtuHit();
 
    // WD map
-   TAGparaDsc *pParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
-   TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)pParMapWD->Object();
+   TAGparaDsc *pParMapWD = new TAGparaDsc("WDMap", new TAWDparMap());
+   TAWDparMap* parMapWD = (TAWDparMap*)pParMapWD->Object();
    parFileName = campManager->GetCurMapFile(TASTparGeo::GetBaseName(), runNb);
    parMapWD->FromFile(parFileName.Data());
 

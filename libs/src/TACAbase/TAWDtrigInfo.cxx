@@ -1,26 +1,26 @@
 /*!
- \file TAGWDtrigInfo.cxx
- \brief   Implementation of TAGWDtrigInfo.
+ \file TAWDtrigInfo.cxx
+ \brief   Implementation of TAWDtrigInfo.
  */
 
 #include <sys/time.h>
 #include <math.h>
 
-#include "TAGWDtrigInfo.hxx"
+#include "TAWDtrigInfo.hxx"
 
 /*!
- \class TAGWDtrigInfo
+ \class TAWDtrigInfo
  \brief WD trigger information class
  */
 
 //! Class Imp
-ClassImp(TAGWDtrigInfo);
+ClassImp(TAWDtrigInfo);
 
-TString  TAGWDtrigInfo::fgkBranchName = "WDtrigInfo.";
+TString  TAWDtrigInfo::fgkBranchName = "WDtrigInfo.";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAGWDtrigInfo::TAGWDtrigInfo()
+TAWDtrigInfo::TAWDtrigInfo()
 : TAGdata()
 {
 
@@ -41,7 +41,7 @@ TAGWDtrigInfo::TAGWDtrigInfo()
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
-TAGWDtrigInfo::~TAGWDtrigInfo()
+TAWDtrigInfo::~TAWDtrigInfo()
 {
 }
 
@@ -52,7 +52,7 @@ TAGWDtrigInfo::~TAGWDtrigInfo()
 //! \param[in] triggerID trigger id
 //! \param[in] nbanks number of bancks
 //! \param[in] words vector of words
-void TAGWDtrigInfo::AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t> words)
+void TAWDtrigInfo::AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t> words)
 {
 
    //  fTriggerID = triggerID;
@@ -172,7 +172,7 @@ void TAGWDtrigInfo::AddInfo(int tbo, int triggerID, int nbanks, vector<uint32_t>
 
 //------------------------------------------+-----------------------------------
 //! Clear.
-void TAGWDtrigInfo::Clear(Option_t*)
+void TAWDtrigInfo::Clear(Option_t*)
 {
 
   TAGdata::Clear();
@@ -192,8 +192,8 @@ void TAGWDtrigInfo::Clear(Option_t*)
 //!
 //! \param[in] os output stream
 //! \param[in] option option for printout
-void TAGWDtrigInfo::ToStream(ostream& os, Option_t* option) const
+void TAWDtrigInfo::ToStream(ostream& os, Option_t* option) const
 {
-  os << "TAGWDtrigInfo"
+  os << "TAWDtrigInfo"
   << endl;
 }

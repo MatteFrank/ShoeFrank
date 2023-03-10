@@ -1,8 +1,8 @@
-#ifndef _TAGbaseWDparTime_HXX
-#define _TAGbaseWDparTime_HXX
+#ifndef _TAWDparTime_HXX
+#define _TAWDparTime_HXX
 /*!
-  \file TAGbaseWDparTime.hxx
-  \brief   Declaration of TAGbaseWDparTime.
+  \file TAWDparTime.hxx
+  \brief   Declaration of TAWDparTime.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -17,11 +17,11 @@ using namespace std;
 
 //##############################################################################
 
-class TAGbaseWDparTime : public TAGpara {
+class TAWDparTime : public TAGpara {
    
   public:
-  TAGbaseWDparTime();
-  virtual         ~TAGbaseWDparTime();
+  TAWDparTime();
+  virtual         ~TAWDparTime();
 
   virtual void    Clear(Option_t* opt="");
   virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
@@ -45,7 +45,7 @@ private:
   map<string,double> fCfdFrac;
   map<string,double> fCfdDel;
 
-   ClassDef(TAGbaseWDparTime,1)
+   ClassDef(TAWDparTime,1)
 };
 
 #endif

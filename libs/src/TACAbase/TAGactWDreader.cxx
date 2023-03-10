@@ -7,8 +7,8 @@
 #include "TASTparMap.hxx"
 #include "TATWparMap.hxx"
 #include "TANEparMap.hxx"
-#include "TAGbaseWDparTime.hxx"
-#include "TAGbaseWDparMap.hxx"
+#include "TAWDparTime.hxx"
+#include "TAWDparMap.hxx"
 
 #include "DAQMarkers.hh"
 #include "WDEvent.hh"
@@ -84,9 +84,9 @@ TAGactWDreader::TAGactWDreader(const char* name,
      AddDataOut(p_cawd, "TACAntuRaw");
    if (p_newd)
      AddDataOut(p_newd, "TANEntuRaw");
-   AddDataOut(p_WDtrigInfo, "TAGWDtrigInfo");
-   AddPara(p_WDmap, "TAGbaseWDparMap");
-   AddPara(p_WDtim, "TAGbaseWDparTime");
+   AddDataOut(p_WDtrigInfo, "TAWDtrigInfo");
+   AddPara(p_WDmap, "TAWDparMap");
+   AddPara(p_WDtim, "TAWDparTime");
    if (p_CAmap)
      AddPara(p_CAmap, "TACAparMap");
 
@@ -186,11 +186,11 @@ Bool_t TAGactWDreader::Action()
    TAGdaqEvent*         p_datdaq;
    if (!fgStdAloneFlag) p_datdaq = (TAGdaqEvent*)  fpDatDaq->Object();
 
-   TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)   fpWDTim->Object();
-   TAGbaseWDparMap*     p_WDmap = (TAGbaseWDparMap*)   fpWDMap->Object();
+   TAWDparTime*    p_WDtim = (TAWDparTime*)   fpWDTim->Object();
+   TAWDparMap*     p_WDmap = (TAWDparMap*)   fpWDMap->Object();
    TASTntuRaw*          p_stwd  = (TASTntuRaw*)   fpStWd->Object();
    TATWntuRaw*          p_twwd  = (TATWntuRaw*)   fpTwWd->Object();
-   TAGWDtrigInfo*       p_WDtrigInfo = (TAGWDtrigInfo*)   fpWDtrigInfo->Object();
+   TAWDtrigInfo*       p_WDtrigInfo = (TAWDtrigInfo*)   fpWDtrigInfo->Object();
 
    TACAntuRaw*          p_cawd  = 0x0;
    if (fpCaWd)
@@ -376,7 +376,7 @@ Int_t TAGactWDreader::DecodeArduinoTempCA(const ArduinoEvent* evt)
 //! \param[in] p_WDtrigInfo trigger wave form container descriptor
 //! \param[in] p_WDmap channel map parameter descriptor
 //! \param[in] p_WDtim time parameter descriptor
-Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAGWDtrigInfo* p_WDtrigInfo, TAGbaseWDparTime* p_WDTim, TAGbaseWDparMap* p_WDMap)
+Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAWDtrigInfo* p_WDtrigInfo, TAWDparTime* p_WDTim, TAWDparMap* p_WDMap)
 {
   
    u_int word;
@@ -723,7 +723,7 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
    double dt, t_trig_ref, t_trig;
    TWaveformContainer *wclk_ref;
    
-   TAGbaseWDparMap*     p_WDmap = (TAGbaseWDparMap*)   fpWDMap->Object();
+   TAWDparMap*     p_WDmap = (TAWDparMap*)   fpWDMap->Object();
    vector<int> vSTbo = p_WDmap->GetBoards("ST");
    int STbo=27;
    
@@ -942,7 +942,7 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
 //! \param[in] p_CAmap CA map descriptor
 Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACAntuRaw* p_caraw, TANEntuRaw* p_neraw)
 {
-   TAGbaseWDparTime*    p_WDtim = (TAGbaseWDparTime*)fpWDTim->Object();
+   TAWDparTime*    p_WDtim = (TAWDparTime*)fpWDTim->Object();
   
    TACAparMap*          p_CAmap = 0x0;
    if (fpCAMap)
@@ -1038,7 +1038,7 @@ void TAGactWDreader::Clear()
    fNEwaves.clear();
    fCLKwaves.clear();
 
-   TAGWDtrigInfo* p_WDtrigInfo = (TAGWDtrigInfo*)   fpWDtrigInfo->Object();
+   TAWDtrigInfo* p_WDtrigInfo = (TAWDtrigInfo*)   fpWDtrigInfo->Object();
    p_WDtrigInfo->Clear();
 
    return;
@@ -1052,7 +1052,7 @@ void TAGactWDreader::Clear()
 //! \param[in] p_WDmap mapping parameter descriptor
 //! \param[in] p_WDtim time parameter descriptor
 //! \param[in] p_CAmap CA map descriptor
-Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAGWDtrigInfo *p_WDtrigInfo, TAGbaseWDparTime *p_WDTim, TAGbaseWDparMap *p_WDMap) 
+Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAWDtrigInfo *p_WDtrigInfo, TAWDparTime *p_WDTim, TAWDparMap *p_WDMap) 
 {
    TACAparMap* p_CAmap = (TACAparMap*)   fpCAMap->Object();
 

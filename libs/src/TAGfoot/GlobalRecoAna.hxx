@@ -27,7 +27,7 @@
 #include "TAGrunInfo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "GlobalRecoMassAna.hxx"
-#include "TAGWDtrigInfo.hxx"
+#include "TAWDtrigInfo.hxx"
 
 using namespace std;
 
@@ -181,7 +181,7 @@ class GlobalRecoAna : public RecoRaw {
   TABMntuTrack* myBMNtuTrk ;
   TAMCntuEvent* myMcNtuEvent;
   TAMCntuPart* myMcNtuPart;
-  TAGWDtrigInfo* wdTrig;
+  TAWDtrigInfo* wdTrig;
 
   vector<vector<Int_t>> fGlbTrkVec; //store the global track detector point index, 0=VTX, 1=IT, 2=MSD, 3=TW, 4=CALO, for each global track
   vector<vector<vector<Int_t>>> fEvtGlbTrkVec; //store collection of fGlbTrkVec for each event

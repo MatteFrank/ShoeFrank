@@ -17,7 +17,7 @@
 #include "TATWntuRaw.hxx"
 #include "TATWntuHit.hxx"
 #include "TACAntuHit.hxx"
-#include "TAGWDtrigInfo.hxx"
+#include "TAWDtrigInfo.hxx"
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
@@ -89,10 +89,10 @@ void RecoRaw::CreateRawAction()
 
       fpDatRawSt      = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw      = new TAGdataDsc("twdDat", new TATWntuRaw());
-      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAGWDtrigInfo());
+      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAWDtrigInfo());
       
       if (!fgStdAloneFlag){
-         TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+         TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
          TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber, true);
          parTimeWD->FromFileTcal(parFileName.Data());
       }
@@ -264,7 +264,7 @@ void RecoRaw::SetTreeBranches()
          fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTntuRaw::GetBranchName());
          fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
       }
-      fActEvtWriter->SetupElementBranch(fpNtuWDtrigInfo, TAGWDtrigInfo::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuWDtrigInfo, TAWDtrigInfo::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {

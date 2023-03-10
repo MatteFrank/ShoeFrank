@@ -1,9 +1,9 @@
-#ifndef _TAGWDtrigInfo_HXX
-#define _TAGWDtrigInfo_HXX
+#ifndef _TAWDtrigInfo_HXX
+#define _TAWDtrigInfo_HXX
 
 /*!
- \file TAGWDtrigInfo.hxx
- \brief   Declaration of TAGWDtrigInfo.
+ \file TAWDtrigInfo.hxx
+ \brief   Declaration of TAWDtrigInfo.
  */
 
 /*------------------------------------------+---------------------------------*/
@@ -13,10 +13,10 @@
 #include "TACAparameters.hxx"
 #include "TAGdata.hxx"
 
-class TAGWDtrigInfo : public TAGdata {
+class TAWDtrigInfo : public TAGdata {
 public:
-  TAGWDtrigInfo();
-  virtual          ~TAGWDtrigInfo();
+  TAWDtrigInfo();
+  virtual          ~TAWDtrigInfo();
 
   //! Get Trigger id
   Int_t    GetTriggerID()         const { return fTriggerID;           }
@@ -61,7 +61,7 @@ private:
 private:
   static TString    fgkBranchName; ///< branch name
 
-  ClassDef(TAGWDtrigInfo,1)
+  ClassDef(TAWDtrigInfo,1)
 
 };
 

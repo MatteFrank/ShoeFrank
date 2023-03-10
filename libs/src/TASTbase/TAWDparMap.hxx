@@ -1,8 +1,8 @@
-#ifndef _TAGbaseWDparMap_HXX
-#define _TAGbaseWDparMap_HXX
+#ifndef _TAWDparMap_HXX
+#define _TAWDparMap_HXX
 /*!
-  \file TAGbaseWDparMap.hxx
-  \brief   Declaration of TAGbaseWDparMap.
+  \file TAWDparMap.hxx
+  \brief   Declaration of TAWDparMap.
 */
 /*------------------------------------------+---------------------------------*/
 
@@ -15,10 +15,10 @@ using namespace std;
 
 //##############################################################################
 
-class TAGbaseWDparMap : public TAGpara {
+class TAWDparMap : public TAGpara {
 public:
-  TAGbaseWDparMap();
-  virtual         ~TAGbaseWDparMap();
+  TAWDparMap();
+  virtual         ~TAWDparMap();
   
   Bool_t          FromFile(const TString& name);
   
@@ -31,7 +31,7 @@ private:
   map <pair<int,int>, string> fChmap;
   map <string, vector<int>>   fBolist;
   
-   ClassDef(TAGbaseWDparMap,1)
+   ClassDef(TAWDparMap,1)
 };
 
 #endif

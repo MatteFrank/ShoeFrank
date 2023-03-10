@@ -1,7 +1,7 @@
 #ifndef _TAGactNtuEvent_HXX
 #define _TAGactNtuEvent_HXX
 
-#include "TAGWDtrigInfo.hxx"
+#include "TAWDtrigInfo.hxx"
 #include "TAGaction.hxx"
 #include <TH1F.h>
 

@@ -495,13 +495,13 @@ void BaseReco::ReadParFiles()
          parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
          parMap->FromFile(parFileName.Data());
 
-         fpParMapWD = new TAGparaDsc("WDMap", new TAGbaseWDparMap());
-         TAGbaseWDparMap* parMapWD = (TAGbaseWDparMap*)fpParMapWD->Object();
+         fpParMapWD = new TAGparaDsc("WDMap", new TAWDparMap());
+         TAWDparMap* parMapWD = (TAWDparMap*)fpParMapWD->Object();
          parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
          parMapWD->FromFile(parFileName.Data());
 
-         fpParTimeWD = new TAGparaDsc("WDTim", new TAGbaseWDparTime());
-         TAGbaseWDparTime* parTimeWD = (TAGbaseWDparTime*) fpParTimeWD->Object();
+         fpParTimeWD = new TAGparaDsc("WDTim", new TAWDparTime());
+         TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
          TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
          parTimeWD->FromFileCFD(parFileName.Data());
       }
