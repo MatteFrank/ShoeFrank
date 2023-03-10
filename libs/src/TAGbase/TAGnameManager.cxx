@@ -20,16 +20,20 @@
 //! Class Imp
 ClassImp(TAGnameManager);
 
-vector<TString>  TAGnameManager::fgkParaDscMap = {"Map", "Geo", "Conf", "Cal", "Tim"};
+TString                TAGnameManager::fgkMcSuffix     = "Mc";
 
-vector<TString>  TAGnameManager::fgkDataDscMap = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "Part", "Writer"};
+TString                TAGnameManager::fgkActPrefix    = "Act";
 
-vector<TString>  TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca", "wd", "evt", "reg", "eve"};
+vector<TString>        TAGnameManager::fgkParaDscMap   = {"Map", "Geo", "Conf", "Cal", "Tim"};
 
-map<TString, TString>  TAGnameManager::fgkDetectorMap = {{"TAST", "st"}, {"TABM", "bm"}, {"TAVT", "vt"}, {"TAIT", "it"},
-                                                         {"TAMSD", "ms"}, {"TATW", "tw"}, {"TACA", "ca"}, {"TAWD", "wd"},
-                                                         {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"},
-                                                         {"TAGactDaq", "daq"}, {"actNtuPart", "eve"}, {"TAGactTree", "evt"}};
+vector<TString>        TAGnameManager::fgkDataDscMap   = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "Part", "Writer"};
+
+vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca", "wd", "evt", "reg", "eve"};
+
+map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"}, {"TABM", "bm"}, {"TAVT", "vt"}, {"TAIT", "it"},
+                                                          {"TAMSD", "ms"}, {"TATW", "tw"}, {"TACA", "ca"}, {"TAWD", "wd"},
+                                                          {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"},
+                                                          {"TAGactDaq", "daq"}, {"actNtuPart", "eve"}, {"TAGactTree", "evt"}};
 
 //_____________________________________________________________________________
 //! Constructor
@@ -108,7 +112,7 @@ const TString TAGnameManager::GetDataDscMcName(Int_t idx)
 {
    TString prefix = fgkDataDscMapMC[idx];
    
-   TString name = prefix+"Mc";
+   TString name = prefix+fgkMcSuffix;
    
    return name;
 }
@@ -136,10 +140,10 @@ const TString TAGnameManager::GetActionName(TString className, Bool_t flagMc)
       }
    }
    
-   TString name = prefix+TString("Act")+dataType;
+   TString name = prefix+fgkActPrefix+dataType;
    
    if (flagMc)
-      name += "Mc";
+      name += fgkMcSuffix;
    
    return name;
 }

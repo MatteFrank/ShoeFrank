@@ -34,10 +34,13 @@ public:
    static const TString GetDataDscMcName(Int_t idx = kST);
 
 private:
-   static vector<TString>        fgkParaDscMap; ///< Parameter descriptor vector
-   static vector<TString>        fgkDataDscMap; ///< Data descriptor map
+   static vector<TString>        fgkParaDscMap;   ///< Parameter descriptor vector
+   static vector<TString>        fgkDataDscMap;   ///< Data descriptor map
    static vector<TString>        fgkDataDscMapMC; ///< Data descriptor map
    static map<TString, TString>  fgkDetectorMap;  ///< Detector map
+
+   static TString                fgkMcSuffix;     ///< MC suffix
+   static TString                fgkActPrefix;    /// Action prefix
 
    ClassDef(TAGnameManager,1)
 };
