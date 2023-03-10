@@ -134,9 +134,9 @@ Bool_t TAGrunManager::FromFile(TString ifile)
    if(FootDebugLevel(1))
       cout << "\nReading Run File: " << ifile << endl;
    
-   fFileStream->ReadStrings(fName);
+   fFileStream->ReadStrings(fFileCamName);
    if(FootDebugLevel(1))
-      cout  << "  Current Campaign name:  "<< fName << endl;
+      cout  << "  Current Campaign name:  "<< fFileCamName.Data() << endl;
    
    fFileStream->ReadItem(fRunArray);
    if(FootDebugLevel(1)) {

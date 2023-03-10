@@ -56,6 +56,7 @@ private:
    TAGparTools*    fFileStream;     ///< File stream
    TAGparGeo*      fpParGeo;        ///< target/beam geometry
    TString         fCampaignName;   ///< Current campaign name
+   TString         fFileCamName;    ///< Campaign name from file
    Int_t           fRunNumber;      ///< Current campaign number
    TString         fName;           ///< Campaign name
    TArrayI         fRunArray;       ///< Run array
@@ -139,7 +140,7 @@ public:
    // Smart print
    static  TString SmartPrint(Int_t nb, Int_t sep = 1000);
 
-   ClassDef(TAGrunManager,2)
+   ClassDef(TAGrunManager,3)
 };
 
 #endif
