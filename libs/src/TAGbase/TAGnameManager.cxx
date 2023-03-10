@@ -117,6 +117,7 @@ const TString TAGnameManager::GetDataDscMcName(Int_t idx)
 //! Get data
 //!
 //!  \param[in] className name of paraDsc class
+//!  \param[in] flagMc flag for MC actions 
 const TString TAGnameManager::GetActionName(TString className, Bool_t flagMc)
 {
    TString prefix;
