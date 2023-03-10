@@ -405,8 +405,7 @@ void TAGbaseEventDisplay::OpenFile()
 //! Add required actions in list
 void TAGbaseEventDisplay::AddRequiredItem()
 {
-   fReco->AddRawRequiredItem();
-   fReco->AddRecRequiredItem();
+   fReco->AddRequiredItem();
 
    gTAGroot->BeginEventLoop();
    gTAGroot->Print();

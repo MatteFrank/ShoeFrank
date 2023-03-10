@@ -129,12 +129,9 @@ public:
    
    //! Create rec action
    virtual void CreateRawAction()      { return; }
-   
-   //! Add required items
-   virtual void AddRawRequiredItem()   { return; }
-   
+      
    // Add required items
-   virtual void AddRecRequiredItem();
+   virtual void AddRequiredItem();
    
    // Set histogram directory
    virtual void SetHistogramDir();

@@ -172,7 +172,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
       TAGrecoManager::GetPar()->IncludeTW(true);
 
    if (fFlagOut)
-     fActEvtWriter = new TAGactTreeWriter("locRecFile");
+     fActEvtWriter = new TAGactTreeWriter("evtWriter");
 }
 
 //__________________________________________________________
@@ -256,8 +256,7 @@ void BaseReco::BeforeEventLoop()
 
    CampaignChecks();
 
-   AddRawRequiredItem();
-   AddRecRequiredItem();
+   AddRequiredItem();
 
    OpenFileIn();
 
@@ -1162,11 +1161,8 @@ void BaseReco::SetTreeBranches()
 
 //__________________________________________________________
 //! Add required reconstruction actions in list
-void BaseReco::AddRecRequiredItem()
+void BaseReco::AddRequiredItem()
 {
-   if (fFlagOut)
-      gTAGroot->AddRequiredItem("locRecFile");
-   
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsFromLocalReco()) {
      if (fFlagTrack) {
        if(!fFlagRecCutter)
@@ -1176,67 +1172,20 @@ void BaseReco::AddRecRequiredItem()
      }
      return;
    }
-
-   // if (TAGrecoManager::GetPar()->IncludeKalman() && TAGrecoManager::GetPar()->IsFromLocalReco()) {
-   //   if (fFlagTrack) {
-   //     gTAGroot->AddRequiredItem("glbActKFitter");
-   //   }
-   //   return;
-   // }
-
-   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM())
-      gTAGroot->AddRequiredItem("stActNtu");
-
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
-      gTAGroot->AddRequiredItem("bmActNtu");
-      if (fFlagTrack)
-         gTAGroot->AddRequiredItem("bmActTrack");
+   
+   TList* list = gTAGroot->ListOfAction();
+   for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      TAGaction* action = (TAGaction*)list->At(i);
+      TString name(action->GetName());
+      if(name.BeginsWith("act")) continue;
+      if (name.IsNull()) continue;
+      if (name == "evtWriter") continue; // skip must be at the end
+      
+      gTAGroot->AddRequiredItem(name.Data());
+      if (FootDebugLevel(1))
+         printf("[%s]\n", name.Data());
    }
-
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
-      gTAGroot->AddRequiredItem("vtActNtu");
-      gTAGroot->AddRequiredItem("vtActClus");
-      if (fFlagTrack) {
-         gTAGroot->AddRequiredItem("vtActTrack");
-         if (TAGrecoManager::GetPar()->IncludeTG())
-            gTAGroot->AddRequiredItem("vtActVtx");
-      }
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      gTAGroot->AddRequiredItem("itActClus");
-      if (fFlagItrTrack && fFlagTrack)
-         gTAGroot->AddRequiredItem("itActTrack");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      gTAGroot->AddRequiredItem("msdActNtu");
-      gTAGroot->AddRequiredItem("msdActClus");
-      gTAGroot->AddRequiredItem("msdActPoint");
-      if (fFlagMsdTrack && fFlagTrack)
-         gTAGroot->AddRequiredItem("msdActTrack");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
-     gTAGroot->AddRequiredItem("twActNtu");
-     gTAGroot->AddRequiredItem("twActPoint");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      gTAGroot->AddRequiredItem("caActNtu");
-      gTAGroot->AddRequiredItem("caActClus");
-   }
-
-   if (fFlagTrack) {
-      if (TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman())
-         gTAGroot->AddRequiredItem("glbActTrack");
-
-      if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
-         gTAGroot->AddRequiredItem("glbTrack");
-         gTAGroot->AddRequiredItem("glbActKFitter");
-      }
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) 
-      gTAGroot->AddRequiredItem("glbActTrackS");
+   
+   if (fFlagOut)
+      gTAGroot->AddRequiredItem("evtWriter");
 }

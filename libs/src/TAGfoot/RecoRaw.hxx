@@ -41,9 +41,6 @@ public:
    RecoRaw(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t IsSubFile=false);
    
    virtual ~RecoRaw();
-   
-   // Add required items
-   virtual void AddRawRequiredItem();
 
    // Create raw data action
    virtual void CreateRawAction();

@@ -250,56 +250,6 @@ void RecoRaw::CloseFileIn()
 }
 
 //__________________________________________________________
-//! Add required raw data actions in list
-void RecoRaw::AddRawRequiredItem()
-{
-   if (!fgStdAloneFlag) {
-      fTAGroot->AddRequiredItem("daqActReader");
-      fTAGroot->AddRequiredItem("evtActNtu");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW()) {
-     fTAGroot->AddRequiredItem("wdActRaw");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeST() || (TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
-      fTAGroot->AddRequiredItem("stActNtu");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
-      fTAGroot->AddRequiredItem("bmActRaw");
-      fTAGroot->AddRequiredItem("bmActNtu");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
-      fTAGroot->AddRequiredItem("vtActNtu");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      fTAGroot->AddRequiredItem("itActNtu");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeTW()) {
-      if(TAGrecoManager::GetPar()->CalibTW()) {
-         fTAGroot->AddRequiredItem("twActCalib");
-      } else {
-         fTAGroot->AddRequiredItem("twActNtu");
-      }
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      fTAGroot->AddRequiredItem("msdActRaw");
-      fTAGroot->AddRequiredItem("msdActNtu");
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      fTAGroot->AddRequiredItem("caActNtu");
-   }
-
-
-}
-
-//__________________________________________________________
 //! Set tree branches for writing in output file
 void RecoRaw::SetTreeBranches()
 {

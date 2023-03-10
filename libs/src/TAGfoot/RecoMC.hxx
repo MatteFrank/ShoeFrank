@@ -34,9 +34,6 @@ public:
    
    virtual ~RecoMC();
    
-   // Add required items
-   virtual void AddRawRequiredItem();
-
    // Create raw data action
    virtual void CreateRawAction();
    

@@ -74,7 +74,7 @@ void RecoMC::CreateRawAction()
 {
 
 	if(!fFlagMC)	 return;
-   fActEvtReader = new TAGactTreeReader("actEvtReader");
+   fActEvtReader = new TAGactTreeReader("evtReader");
 
    if ( TAGrecoManager::GetPar()->IsRegionMc()) {
      fpNtuMcReg = new TAGdataDsc(TAMCntuRegion::GetDefParaName(), new TAMCntuRegion());
@@ -211,19 +211,6 @@ void RecoMC::OpenFileIn()
 void RecoMC::CloseFileIn()
 {
    fActEvtReader->Close();
-}
-
-//__________________________________________________________
-//! Add required MC data actions in list
-void RecoMC::AddRawRequiredItem()
-{
-   fTAGroot->AddRequiredItem("actEvtReader");
-   if (!TAGrecoManager::GetPar()->IsReadRootObj()) {
-     fTAGroot->AddRequiredItem("eveActNtuMc");
-     fTAGroot->AddRequiredItem("evtActNtuMc");
-     if (TAGrecoManager::GetPar()->IsRegionMc() )
-       fTAGroot->AddRequiredItem("regActNtuMc");
-   }
 }
 
 //__________________________________________________________
