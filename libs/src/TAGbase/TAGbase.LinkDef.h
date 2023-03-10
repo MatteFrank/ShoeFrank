@@ -44,6 +44,7 @@
 #pragma link C++ class TAGcampaignManager+;
 
 #pragma link C++ class TAGrunManager+;
+#pragma link C++ class TAGnameManager+;
 
 #pragma link C++ class TAGparTools+;
 
