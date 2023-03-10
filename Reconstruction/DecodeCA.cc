@@ -28,7 +28,7 @@
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "TAWDtrigInfo.hxx"
+#include "TAWDntuTrigger.hxx"
 #include "TAWDparTime.hxx"
 #include "TAWDparMap.hxx"
 #include "TWaveformContainer.hxx"

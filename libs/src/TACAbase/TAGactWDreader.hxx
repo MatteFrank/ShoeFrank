@@ -14,7 +14,7 @@
 #include "TACAntuRaw.hxx"
 #include "TANEntuRaw.hxx"
 #include "TACAparMap.hxx"
-#include "TAWDtrigInfo.hxx"
+#include "TAWDntuTrigger.hxx"
 #include "TAWDparTime.hxx"
 #include "TAWDparMap.hxx"
 #include <TH2F.h>
@@ -131,8 +131,8 @@ private:
    ///<
 private:
    Int_t          DecodeArduinoTempCA(const ArduinoEvent* evt);
-   Int_t          DecodeWaveforms(const WDEvent* evt,  TAWDtrigInfo* p_WDtrigInfo, TAWDparTime *p_WDTim, TAWDparMap *p_WDMap);
-   Int_t          ReadStdAloneEvent(bool &endoffile, TAWDtrigInfo* p_WDtrigInfo, TAWDparTime *p_WDTim, TAWDparMap *p_WDMap);
+   Int_t          DecodeWaveforms(const WDEvent* evt,  TAWDntuTrigger* p_WDtrigInfo, TAWDparTime *p_WDTim, TAWDparMap *p_WDMap);
+   Int_t          ReadStdAloneEvent(bool &endoffile, TAWDntuTrigger* p_WDtrigInfo, TAWDparTime *p_WDTim, TAWDparMap *p_WDMap);
    Bool_t         WaveformsTimeCalibration();
    Bool_t         CreateHits(TASTntuRaw *p_straw, TATWntuRaw *p_twraw, TACAntuRaw *p_caraw, TANEntuRaw *p_neraw);
    void           Clear();

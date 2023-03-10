@@ -100,9 +100,9 @@ void GlobalRecoAna::LoopEvent() {
     ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
     if (nt > 0) recoEvents++;
 
-          TAWDtrigInfo *wdTrig = 0x0;
+          TAWDntuTrigger *wdTrig = 0x0;
     if (fFlagMC ==false){
-      wdTrig = (TAWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
+      wdTrig = (TAWDntuTrigger*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
       FragTriggerStudies();
     }
 
@@ -1065,7 +1065,7 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
       FillYieldReco("yield-trkGHfixMC",Z_true,Z_meas,Th_true );
 
   //-------------------------------------------------------------
-  //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAWDtrigInfo )
+  //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAWDntuTrigger )
   if (Z_meas >0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/)
     FillYieldReco("yield-trkReco",Z_meas,0,Th_recoBM );
 
@@ -1312,9 +1312,9 @@ void GlobalRecoAna::SetupTree(){
     myReader->SetupBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
 
     if (fFlagMC == false){
-      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAWDtrigInfo());
+      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAWDntuTrigger());
       gTAGroot->AddRequiredItem("WDtrigInfo");
-      myReader->SetupBranch(fpNtuWDtrigInfo, TAWDtrigInfo::GetBranchName());
+      myReader->SetupBranch(fpNtuWDtrigInfo, TAWDntuTrigger::GetBranchName());
     }
     if(fFlagMC){
       fpNtuMcTw = new TAGdataDsc("mctw",new TAMCntuHit());
@@ -2312,7 +2312,7 @@ void GlobalRecoAna::BeforeEventLoop(){
     myMcNtuEvent = (TAMCntuEvent*)fpNtuMcEvt->GenerateObject();
     myMcNtuPart = (TAMCntuPart*)fpNtuMcTrk->GenerateObject();
   }else{
-    wdTrig = (TAWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();
+    wdTrig = (TAWDntuTrigger*)fpNtuWDtrigInfo->GenerateObject();
   }
 
 
@@ -3119,8 +3119,8 @@ void GlobalRecoAna::FragTriggerStudies(){
   if(FootDebugLevel(1))
     cout<<"GlobalRecoAna::FragTriggerStudies start"<<endl;
 
-  TAWDtrigInfo* wdTrig = 0x0;
-  wdTrig = (TAWDtrigInfo*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware WD
+  TAWDntuTrigger* wdTrig = 0x0;
+  wdTrig = (TAWDntuTrigger*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware WD
   //wdTrig -> GetTriggerID() == 40              //MB trigger    ==1 for frag trigger
   //wdTrig -> GetTriggersStatus()[1] == 1      //in MB trigger, even frag
 

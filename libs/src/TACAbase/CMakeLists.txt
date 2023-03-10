@@ -33,7 +33,7 @@ set( with_dictionnaries
    TACAparCal
    TACAparConf
    TACAcalibrationMap
-   TAWDtrigInfo
+   TAWDntuTrigger
    TAGactWDreader
 )
 

@@ -84,7 +84,7 @@ TAGactWDreader::TAGactWDreader(const char* name,
      AddDataOut(p_cawd, "TACAntuRaw");
    if (p_newd)
      AddDataOut(p_newd, "TANEntuRaw");
-   AddDataOut(p_WDtrigInfo, "TAWDtrigInfo");
+   AddDataOut(p_WDtrigInfo, "TAWDntuTrigger");
    AddPara(p_WDmap, "TAWDparMap");
    AddPara(p_WDtim, "TAWDparTime");
    if (p_CAmap)
@@ -190,7 +190,7 @@ Bool_t TAGactWDreader::Action()
    TAWDparMap*     p_WDmap = (TAWDparMap*)   fpWDMap->Object();
    TASTntuRaw*          p_stwd  = (TASTntuRaw*)   fpStWd->Object();
    TATWntuRaw*          p_twwd  = (TATWntuRaw*)   fpTwWd->Object();
-   TAWDtrigInfo*       p_WDtrigInfo = (TAWDtrigInfo*)   fpWDtrigInfo->Object();
+   TAWDntuTrigger*       p_WDtrigInfo = (TAWDntuTrigger*)   fpWDtrigInfo->Object();
 
    TACAntuRaw*          p_cawd  = 0x0;
    if (fpCaWd)
@@ -376,7 +376,7 @@ Int_t TAGactWDreader::DecodeArduinoTempCA(const ArduinoEvent* evt)
 //! \param[in] p_WDtrigInfo trigger wave form container descriptor
 //! \param[in] p_WDmap channel map parameter descriptor
 //! \param[in] p_WDtim time parameter descriptor
-Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAWDtrigInfo* p_WDtrigInfo, TAWDparTime* p_WDTim, TAWDparMap* p_WDMap)
+Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAWDntuTrigger* p_WDtrigInfo, TAWDparTime* p_WDTim, TAWDparMap* p_WDMap)
 {
   
    u_int word;
@@ -1038,7 +1038,7 @@ void TAGactWDreader::Clear()
    fNEwaves.clear();
    fCLKwaves.clear();
 
-   TAWDtrigInfo* p_WDtrigInfo = (TAWDtrigInfo*)   fpWDtrigInfo->Object();
+   TAWDntuTrigger* p_WDtrigInfo = (TAWDntuTrigger*)   fpWDtrigInfo->Object();
    p_WDtrigInfo->Clear();
 
    return;
@@ -1052,7 +1052,7 @@ void TAGactWDreader::Clear()
 //! \param[in] p_WDmap mapping parameter descriptor
 //! \param[in] p_WDtim time parameter descriptor
 //! \param[in] p_CAmap CA map descriptor
-Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAWDtrigInfo *p_WDtrigInfo, TAWDparTime *p_WDTim, TAWDparMap *p_WDMap) 
+Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAWDntuTrigger *p_WDtrigInfo, TAWDparTime *p_WDTim, TAWDparMap *p_WDMap) 
 {
    TACAparMap* p_CAmap = (TACAparMap*)   fpCAMap->Object();
 

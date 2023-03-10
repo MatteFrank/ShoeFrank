@@ -17,7 +17,7 @@
 #include "TATWntuRaw.hxx"
 #include "TATWntuHit.hxx"
 #include "TACAntuHit.hxx"
-#include "TAWDtrigInfo.hxx"
+#include "TAWDntuTrigger.hxx"
 #include "TASTntuRaw.hxx"
 #include "TABMntuRaw.hxx"
 #include "TAMSDntuRaw.hxx"
@@ -89,7 +89,7 @@ void RecoRaw::CreateRawAction()
 
       fpDatRawSt      = new TAGdataDsc("stDat", new TASTntuRaw());
       fpDatRawTw      = new TAGdataDsc("twdDat", new TATWntuRaw());
-      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAWDtrigInfo());
+      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAWDntuTrigger());
       
       if (!fgStdAloneFlag){
          TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
@@ -264,7 +264,7 @@ void RecoRaw::SetTreeBranches()
          fActEvtWriter->SetupElementBranch(fpDatRawSt, TASTntuRaw::GetBranchName());
          fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
       }
-      fActEvtWriter->SetupElementBranch(fpNtuWDtrigInfo, TAWDtrigInfo::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuWDtrigInfo, TAWDntuTrigger::GetBranchName());
    }
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
