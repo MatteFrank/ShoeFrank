@@ -608,59 +608,59 @@ void TAGactWDreader::CreateHistogram()
      cout<<"I have created the WD histo. "<<endl;
    
    
-   strcpy(histoname,"TriggerID");
+   strcpy(histoname,"wdTriggerID");
    hTriggerID = new TH1F(histoname, histoname, 64, -0.5, 63.5);
    AddHistogram(hTriggerID);
 
-   strcpy(histoname,"DAQRate");
+   strcpy(histoname,"wdDAQRate");
    hDAQRate = new TH1F(histoname, histoname, 1000,0,2000);
    AddHistogram(hDAQRate);
    
-   strcpy(histoname,"STRate");
+   strcpy(histoname,"wdSTRate");
    hSTRate = new TH1F(histoname, histoname, 10000,0,100000);
    AddHistogram(hSTRate);
 
-   strcpy(histoname,"STRate100");
+   strcpy(histoname,"wdSTRate100");
    hSTRate100 = new TH1F(histoname, histoname, 10000,0,100000);
    AddHistogram(hSTRate100);
 
-   strcpy(histoname,"TWRate");
+   strcpy(histoname,"wdTWRate");
    hTWRate = new TH1F(histoname, histoname, 10000,0,100000);
    AddHistogram(hTWRate);
 
-   strcpy(histoname,"TWRate100");
+   strcpy(histoname,"wdTWRate100");
    hTWRate100 = new TH1F(histoname, histoname, 10000,0,100000);
    AddHistogram(hTWRate100);
 
-   strcpy(histoname,"CARate");
+   strcpy(histoname,"wdCARate");
    hCARate = new TH1F(histoname, histoname, 10000,0,100000);
    AddHistogram(hCARate);
 
-   strcpy(histoname,"CARate100");
+   strcpy(histoname,"wdCARate100");
    hCARate100 = new TH1F(histoname, histoname, 10000,0,100000);
    AddHistogram(hCARate100);
 
-   strcpy(histoname,"DAQRateVsTime");
+   strcpy(histoname,"wdDAQRateVsTime");
    hDAQRateVsTime = new TH1F(histoname, histoname, 12000,0,1200);
    AddHistogram(hDAQRateVsTime);
    
-   strcpy(histoname,"STRateVsTime");
+   strcpy(histoname,"wdSTRateVsTime");
    hSTRateVsTime = new TH1F(histoname, histoname, 12000,0,1200);
    AddHistogram(hSTRateVsTime);
    
-   strcpy(histoname,"TWRateVsTime");
+   strcpy(histoname,"wdTWRateVsTime");
    hTWRateVsTime = new TH1F(histoname, histoname, 12000,0,1200);
    AddHistogram(hTWRateVsTime);
    
-   strcpy(histoname,"CARateVsTime");
+   strcpy(histoname,"wdCARateVsTime");
    hCARateVsTime = new TH1F(histoname, histoname, 12000,0,1200);
    AddHistogram(hCARateVsTime);
 
-   strcpy(histoname,"DAQVsST");
+   strcpy(histoname,"wdDAQVsST");
    hDAQVsST = new TH2F(histoname, histoname, 5000,0,50000,100,0,1000);
    AddHistogram(hDAQVsST);
 
-   strcpy(histoname,"RatioDAQ_ST");
+   strcpy(histoname,"wdRatioDAQ_ST");
    hRatioDAQ_ST = new TH1F(histoname, histoname, 1000,0,1);
    AddHistogram(hRatioDAQ_ST);
 
