@@ -22,7 +22,7 @@ ClassImp(TAGnameManager);
 
 vector<TString>  TAGnameManager::fgkParaDscMap = {"Map", "Geo", "Conf", "Cal", "Tim"};
 
-vector<TString>  TAGnameManager::fgkDataDscMap = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "trigInfo", "Event", "Reader", "Part", "Writer"};
+vector<TString>  TAGnameManager::fgkDataDscMap = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "Part", "Writer"};
 
 vector<TString>  TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca", "wd", "evt", "reg", "eve"};
 
