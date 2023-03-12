@@ -17,8 +17,8 @@
 
 
 using namespace std;
-enum  DataMC {
-   kST, kBM, kVTX, kITR, kMSD, kTW, kCAL, kWD, kEVT, kREG, kPART
+enum  DetectorMC {
+   kST, kBM, kVTX, kITR, kMSD, kTW, kCAL
 };
 
 class TAGnameManager : public TAGobject {
