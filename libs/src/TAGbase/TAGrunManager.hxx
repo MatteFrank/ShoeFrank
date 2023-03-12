@@ -62,6 +62,7 @@ private:
    TArrayI         fRunArray;       ///< Run array
    TypeParameter_t fCurType;        ///< Current type parameter
    RunParameter_t  fCurRun;         ///< Current run parameter
+   Bool_t          fIsFileRead;     ///< Flag when file is read
 
    map<int, TypeParameter_t> fTypeParameter; ///< Run type parameter
    map<int, RunParameter_t>  fRunParameter; ///< Run type parameter
@@ -140,7 +141,7 @@ public:
    // Smart print
    static  TString SmartPrint(Int_t nb, Int_t sep = 1000);
 
-   ClassDef(TAGrunManager,3)
+   ClassDef(TAGrunManager,0)
 };
 
 #endif

@@ -34,7 +34,8 @@ TAGrunManager::TAGrunManager(const TString exp, Int_t runNumber)
    fFileStream(new TAGparTools()),
    fpParGeo(0x0),
    fCampaignName(exp),
-   fRunNumber(runNumber)
+   fRunNumber(runNumber),
+   fIsFileRead(false)
 {
    if (fCampaignName.IsNull()) {
       Error("TAGrunManager()", "No campaign name set, please set the campaign");
@@ -115,6 +116,10 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
 //! \param[in] ifile file name of the list of experiments
 Bool_t TAGrunManager::FromFile(TString ifile)
 {
+   // check file already read
+   if (fIsFileRead)
+      return true;
+   
    //Initialization of Geom Parameters
    if(FootDebugLevel(1))
       Info("FromFile()"," Init campaigns ");
@@ -174,6 +179,8 @@ Bool_t TAGrunManager::FromFile(TString ifile)
    fCurRun     = GetRunPar(fRunNumber);
    Int_t type  = fCurRun.RunType;
    fCurType    = fTypeParameter.at(type);
+   
+   fIsFileRead = true;
    
    return true;
 }
