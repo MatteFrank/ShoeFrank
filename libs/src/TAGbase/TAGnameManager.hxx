@@ -29,8 +29,7 @@ public:
 
 public:
    static const TString GetParaDscName(TString className);
-   static const TString GetDataDscName(TString className);
-   static const TString GetActionName(TString className,  Bool_t flagMc = false);
+   static const TString GetActionDscName(TString className);
    static const TString GetDataDscMcName(Int_t idx = kST);
 
 private:
@@ -41,7 +40,7 @@ private:
 
    static TString                fgkMcSuffix;     ///< MC suffix
    static TString                fgkActPrefix;    /// Action prefix
-
+   static TString                fgkNtuHitMc;     ///< Special case for MC Hit container
    ClassDef(TAGnameManager,1)
 };
 

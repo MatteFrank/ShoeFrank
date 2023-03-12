@@ -24,15 +24,17 @@ TString                TAGnameManager::fgkMcSuffix     = "Mc";
 
 TString                TAGnameManager::fgkActPrefix    = "Act";
 
+TString                TAGnameManager::fgkNtuHitMc     = "TAMCntuHit";
+
 vector<TString>        TAGnameManager::fgkParaDscMap   = {"Map", "Geo", "Conf", "Cal", "Tim"};
 
 vector<TString>        TAGnameManager::fgkDataDscMap   = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "reader", "Part", "Writer"};
 
-vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca", "wd", "evt", "reg", "eve"};
+vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca"};
 
-map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"}, {"TABM", "bm"}, {"TAVT", "vt"}, {"TAIT", "it"},
+map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"}, {"TABM", "bm"}, {"TAVT", "vt"}, {"TAIT", "it"}, {"TAGpar", "tg"},
                                                           {"TAMSD", "ms"}, {"TATW", "tw"}, {"TACA", "ca"}, {"WD", "wd"},
-                                                          {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"},
+                                                          {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"}, {"ntuPart", "mc"},  {"TAMCntuEvent", "mc"},
                                                           {"TAGactDaq", "daq"}, {"actNtuPart", "eve"}, {"TAGactTree", "evt"}};
 
 //_____________________________________________________________________________
@@ -80,33 +82,6 @@ const TString TAGnameManager::GetParaDscName(TString className)
 //_____________________________________________________________________________
 //! Get data
 //!
-//!  \param[in] className name of paraDsc class
-const TString TAGnameManager::GetDataDscName(TString className)
-{
-   TString prefix;
-   for (auto const& it : fgkDetectorMap) {
-      if (className.Contains(it.first)) {
-         prefix = it.second;
-         break;
-      }
-   }
-   
-   TString dataType;
-   for (auto const& itv : fgkDataDscMap) {
-      if (className.Contains(itv.Data())) {
-         dataType = itv.Data();
-         break;
-      }
-   }
-   
-   TString name = prefix+dataType;
-   
-   return name;
-}
-
-//_____________________________________________________________________________
-//! Get data
-//!
 //!  \param[in] idx index in the vector
 const TString TAGnameManager::GetDataDscMcName(Int_t idx)
 {
@@ -122,8 +97,8 @@ const TString TAGnameManager::GetDataDscMcName(Int_t idx)
 //!
 //!  \param[in] className name of paraDsc class
 //!  \param[in] flagMc flag for MC actions
-const TString TAGnameManager::GetActionName(TString className, Bool_t flagMc)
-{
+const TString TAGnameManager::GetActionDscName(TString className)
+{   
    TString prefix;
    for (auto const& it : fgkDetectorMap) {
       if (className.Contains(it.first)) {
@@ -140,10 +115,18 @@ const TString TAGnameManager::GetActionName(TString className, Bool_t flagMc)
       }
    }
    
-   TString name = prefix+fgkActPrefix+dataType;
+   TString name;
    
-   if (flagMc)
-      name += fgkMcSuffix;
+   TString actPrefix = fgkActPrefix;
+   actPrefix.ToLower();
+   if (className.Contains(actPrefix)) {
+      name = prefix+fgkActPrefix+dataType;
+      TString suffix = fgkMcSuffix;
+      suffix.ToUpper();
+      if (className.Contains(suffix))
+         name += fgkMcSuffix;
+   } else
+      name = prefix+dataType;
    
    return name;
 }
