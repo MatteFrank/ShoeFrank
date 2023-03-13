@@ -33,7 +33,7 @@ ClassImp(TACAactBaseNtuCluster);
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pTwPoint TW point input container descriptor
-TACAactBaseNtuCluster::TACAactBaseNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap,  TAGparaDsc*  pCalib, TAGparaDsc* pConfig, TAGdataDsc* pTwPoint)
+TACAactBaseNtuCluster::TACAactBaseNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap,  TAGparaDsc*  pCalib, TAGparaDsc* pConfig, TAGdataDsc* pTwPoint, Bool_t flagMC)
  : TAGactNtuCluster2D(name, "TACAactBaseNtuCluster - NTuplize cluster"),
    fpNtuRaw(pNtuRaw),
    fpNtuClus(pNtuClus),
@@ -41,12 +41,14 @@ TACAactBaseNtuCluster::TACAactBaseNtuCluster(const char* name, TAGdataDsc* pNtuR
    fpParCal(pCalib),
    fpGeoMap(pGeoMap),
    fpNtuTwPoint(pTwPoint),
-   fClustersN(0)
+   fClustersN(0),
+   fTwPointZ(0),
+   fFlagMC(flagMC)
 {
    AddDataIn(pNtuRaw,   "TACAntuHit");
    AddDataOut(pNtuClus, "TACAntuCluster");
    AddPara(pGeoMap,     "TACAparGeo");
-   if (pCalib)
+   if (pCalib && !fFlagMC)
       AddPara(pCalib,     "TACAparCal");
    AddPara(pConfig, "TACAparConf");
 
@@ -267,7 +269,7 @@ void TACAactBaseNtuCluster::FillClusterInfo(TACAcluster* cluster)
       if (fpNtuTwPoint) {
          ComputePosition(cluster);
          ComputeMinDist(cluster);
-         if (fpParCal)
+         if (fpParCal && !fFlagMC)
             CalibrateEnergy(cluster);
       }
 

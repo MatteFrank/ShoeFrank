@@ -34,8 +34,8 @@ ClassImp(TACAactNtuClusterP);
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pTwPoint TW point input container descriptor
-TACAactNtuClusterP::TACAactNtuClusterP(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap, TAGparaDsc*  pCalib, TAGparaDsc* pConfig, TAGdataDsc* pTwPoint)
- : TACAactBaseNtuCluster(name, pNtuRaw, pNtuClus, pGeoMap, pCalib, pConfig, pTwPoint)
+TACAactNtuClusterP::TACAactNtuClusterP(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pGeoMap, TAGparaDsc*  pCalib, TAGparaDsc* pConfig, TAGdataDsc* pTwPoint, Bool_t flagMC)
+ : TACAactBaseNtuCluster(name, pNtuRaw, pNtuClus, pGeoMap, pCalib, pConfig, pTwPoint, flagMC)
 {
 }
 

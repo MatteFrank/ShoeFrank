@@ -28,7 +28,7 @@ public:
    explicit  TACAactBaseNtuCluster(const char* name      = 0, TAGdataDsc* p_nturaw = 0,
                                    TAGdataDsc* p_ntuclus = 0, TAGparaDsc* p_geomap = 0,
                                    TAGparaDsc*  p_calib  = 0,
-                                   TAGparaDsc*  p_config = 0, TAGdataDsc* p_twpt = 0);
+                                   TAGparaDsc*  p_config = 0, TAGdataDsc* p_twpt = 0, Bool_t flagMC = false);
    
    virtual ~TACAactBaseNtuCluster();
    
@@ -61,6 +61,8 @@ protected:
    
    Int_t          fClustersN;        ///< number of cluster
    Int_t          fTwPointZ;         ///< Atomic number from TW rec point
+   
+   Bool_t         fFlagMC;           ///< MC flag
 
    TH1F*          fpHisHitTot;       ///< Total number of hits per cluster
    TH1F*          fpHisChargeTot;    ///< Total charge per cluster

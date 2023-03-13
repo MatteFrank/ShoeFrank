@@ -28,7 +28,7 @@ public:
    explicit  TACAactNtuCluster(const char* name      = 0,  TAGdataDsc* p_nturaw  = 0,
                                TAGdataDsc* p_ntuclus = 0, TAGparaDsc* p_geomap = 0,
                                TAGparaDsc*  p_calib  = 0,
-                               TAGparaDsc*  p_config = 0, TAGdataDsc* p_twpt = 0);
+                               TAGparaDsc*  p_config = 0, TAGdataDsc* p_twpt = 0, Bool_t flagMC = false);
    
    virtual ~TACAactNtuCluster();
    
