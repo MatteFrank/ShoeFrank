@@ -71,7 +71,7 @@ void TACAactNtuCluster::FillMaps()
       if (!CheckLine(line)) continue;
       if (!CheckCol(col)) continue;
 
-      if( charge < fgChargeThreshold && fgThresholdFlag) continue;
+      if( charge < fgChargeThreshold && !fFlagMC) continue;
 
       TAGactNtuCluster2D::FillMaps(line, col, i);
    }

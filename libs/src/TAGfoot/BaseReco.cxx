@@ -911,9 +911,6 @@ void BaseReco::CreateRecActionCa()
 {
    fpNtuClusCa = new TAGdataDsc("caClus", new TACAntuCluster());
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
-
-   if (fFlagMC)
-      TACAactNtuCluster::DisableChargeThres();
    
    if (fCalClusterAlgo.Contains("Std") ) {
       fActClusCa = new TACAactNtuCluster("caActClus", fpNtuHitCa, fpNtuClusCa, fpParGeoCa, fpParCalCa, fpParConfCa, fpNtuRecTw, fFlagMC);
