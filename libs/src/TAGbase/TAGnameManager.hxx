@@ -6,10 +6,7 @@
  */
 /*------------------------------------------+---------------------------------*/
 #include <map>
-#include <TArrayI.h>
 #include <TString.h>
-#include <TMath.h>
-#include <TGeoMatrix.h>
 
 #include "TAGobject.hxx"
 #include "TAGparTools.hxx"
@@ -31,7 +28,6 @@ public:
    static const TString GetParaDscName(TString className);
    static const TString GetActionDscName(TString className);
    static const TString GetDataDscMcName(Int_t idx = kST);
-   static void          PrintNames(Option_t* opt = "all") ;
 
 private:
    static vector<TString>        fgkParaDscMap;   ///< Parameter descriptor vector
