@@ -31,6 +31,7 @@ public:
    static const TString GetParaDscName(TString className);
    static const TString GetActionDscName(TString className);
    static const TString GetDataDscMcName(Int_t idx = kST);
+   static void          PrintNames(Option_t* opt = "all") ;
 
 private:
    static vector<TString>        fgkParaDscMap;   ///< Parameter descriptor vector

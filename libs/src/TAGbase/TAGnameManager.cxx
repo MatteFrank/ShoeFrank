@@ -4,10 +4,10 @@
  */
 
 #include "TAGnameManager.hxx"
-#include <fstream>
-#include <unistd.h>
-#include "TObjArray.h"
-#include "TSystem.h"
+#include "TAGroot.hxx"
+#include "TAGaction.hxx"
+#include "TAGdataDsc.hxx"
+#include "TAGparaDsc.hxx"
 
 /*
 \class TAGnameManager
@@ -126,4 +126,42 @@ const TString TAGnameManager::GetActionDscName(TString className)
       name = prefix+dataType;
    
    return name;
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Print
+//!
+//! \param[in] option printout option
+void TAGnameManager::PrintNames(Option_t* option)
+{
+   if (!gTAGroot) return;
+   
+   TString opt(option);
+   
+   if (opt=="all") {
+      TList* list = gTAGroot->ListOfAction();
+      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+         TAGaction* action = (TAGaction*)list->At(i);
+         TString name(action->ClassName());
+         cout << setw(20) << left << action->ClassName() << " " << FootActionDscName(name) << endl;
+      }
+      cout << endl;
+      
+      list = gTAGroot->ListOfDataDsc();
+      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+         TAGdataDsc* dsc = (TAGdataDsc*)list->At(i);
+         TAGdata* obj = dsc->Object();
+         TString name(obj->ClassName());
+         cout << setw(20) << left << obj->ClassName() << " " << FootActionDscName(name) << endl;;
+      }
+      cout << endl;
+      
+      list = gTAGroot->ListOfParaDsc();
+      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+         TAGparaDsc* dsc = (TAGparaDsc*)list->At(i);
+         TAGpara* obj = dsc->Object();
+         TString name(obj->ClassName());
+         cout << setw(20) << left << obj->ClassName() << " " << FootParaDscName(name) << endl;;
+      }
+   }
 }
