@@ -9,9 +9,6 @@
 #include "TObjArray.h"
 #include "TSystem.h"
 
-#include "TAGgeoTrafo.hxx"
-#include "TAGrecoManager.hxx"
-
 /*
 \class TAGnameManager
 \brief Class that manage the names. **
