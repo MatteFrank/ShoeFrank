@@ -44,4 +44,8 @@ private:
    ClassDef(TAGnameManager,1)
 };
 
+#define FootParaDscName(className)   TAGnameManager::GetParaDscName(className).Data()
+#define FootActionDscName(className) TAGnameManager::GetActionDscName(className).Data()
+#define FootDataDscMcName(className) TAGnameManager::GetDataDscMcName(className).Data()
+
 #endif
