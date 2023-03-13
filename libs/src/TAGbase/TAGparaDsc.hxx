@@ -19,6 +19,7 @@ class TAGparaDsc : public TAGnamed {
     };
 
     explicit        TAGparaDsc(const char* name, TAGpara* p_para=0);
+    explicit        TAGparaDsc(TAGpara* p_para=0);
     virtual         ~TAGparaDsc();
 
     // Set Object

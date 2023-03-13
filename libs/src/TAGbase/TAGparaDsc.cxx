@@ -7,6 +7,7 @@
 #include "TList.h"
 
 #include "TAGroot.hxx"
+#include "TAGnameManager.hxx"
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 
@@ -47,6 +48,35 @@ TAGparaDsc::TAGparaDsc(const char* name, TAGpara* p_para)
     fpObjectClass = p_para->IsA();
     SetTitle(p_para->IsA()->GetName());
   }
+}
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+//!
+//! \param[in] p_para parameter descriptor
+TAGparaDsc::TAGparaDsc(TAGpara* p_para)
+: TAGnamed("", 0),
+   fpObject(0),
+   fpObjectClass(0),
+   fpConsumerList(0)
+{
+   if (!gTAGroot) Fatal("TAGparaDsc()", "TAGroot not instantiated");
+   SetBit(kMustCleanup);
+      
+   SetName(FootParaDscName(p_para->ClassName()));
+   
+   if (gTAGroot->FindParaDsc(GetName())) {
+      Warning("TAGparaDsc()",
+              "Parameter descriptor with name '%s' already exists",
+              GetName());
+   }
+   
+   gTAGroot->ListOfParaDsc()->Add(this);
+   
+   if (p_para) {
+      fpObject = p_para;
+      fpObjectClass = p_para->IsA();
+      SetTitle(p_para->IsA()->GetName());
+   }
 }
 
 //------------------------------------------+-----------------------------------
