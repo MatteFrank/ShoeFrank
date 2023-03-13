@@ -76,7 +76,7 @@ class TAGroot : public TAGobject {
    const char*     DefaultDataDscName(const char* className);
    // Default parameter dsc name
    const char*     DefaultParaDscName(const char* className);
-   // Print
+   // Print names
    void            PrintNames(Option_t* option="all") const;
 
 

@@ -348,14 +348,14 @@ const char* TAGroot::DefaultParaDscName(const char* className)
 }
 
 /*------------------------------------------+---------------------------------*/
-//! Print
+//! Print out names of paraDsc, dataDsc or action depending the option
 //!
 //! \param[in] option option for printout
 void TAGroot::PrintNames(Option_t* option) const
 {
    TString opt(option);
    
-   if (opt=="all") {
+   if (opt=="all" || opt.Contains("act")) {
       TList* list = gTAGroot->ListOfAction();
       for (Int_t i = 0; i < list->GetEntries(); ++i) {
          TAGaction* action = (TAGaction*)list->At(i);
@@ -363,8 +363,10 @@ void TAGroot::PrintNames(Option_t* option) const
          cout << setw(20) << left << action->ClassName() << " " << FootActionDscName(name) << endl;
       }
       cout << endl;
-      
-      list = gTAGroot->ListOfDataDsc();
+   }
+   
+   if (opt=="all" || opt.Contains("dat")) {
+      TList* list = gTAGroot->ListOfDataDsc();
       for (Int_t i = 0; i < list->GetEntries(); ++i) {
          TAGdataDsc* dsc = (TAGdataDsc*)list->At(i);
          TAGdata* obj = dsc->Object();
@@ -372,14 +374,17 @@ void TAGroot::PrintNames(Option_t* option) const
          cout << setw(20) << left << obj->ClassName() << " " << FootActionDscName(name) << endl;;
       }
       cout << endl;
-      
-      list = gTAGroot->ListOfParaDsc();
+   }
+   
+   if (opt=="all" || opt.Contains("par")) {
+      TList* list = gTAGroot->ListOfParaDsc();
       for (Int_t i = 0; i < list->GetEntries(); ++i) {
          TAGparaDsc* dsc = (TAGparaDsc*)list->At(i);
          TAGpara* obj = dsc->Object();
          TString name(obj->ClassName());
          cout << setw(20) << left << obj->ClassName() << " " << FootParaDscName(name) << endl;;
       }
+      cout << endl;
    }
 }
 
