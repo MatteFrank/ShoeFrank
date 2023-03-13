@@ -323,28 +323,28 @@ const char* TAGroot::DefaultParaDscName()
 /*------------------------------------------+---------------------------------*/
 //! Returns next default action name.
 //!
-//! \param[in] name item name
+//! \param[in] className name of class
 const char* TAGroot::DefaultActionName(const char* className)
 {
-   return FootActionDscName(className);
+   return Form("%s", FootActionDscName(className));
 }
 
 /*------------------------------------------+---------------------------------*/
 //! Returns next default data descriptor name.
 //!
-//! \param[in] name item name
+//! \param[in] className name of class
 const char* TAGroot::DefaultDataDscName(const char* className)
 {
-   return FootActionDscName(className);
+   return Form("%s", FootActionDscName(className));
 }
 
 /*------------------------------------------+---------------------------------*/
 //! Returns next default data descriptor name.
 //!
-//! \param[in] name item name
+//! \param[in] className name of class
 const char* TAGroot::DefaultParaDscName(const char* className)
 {
-   return FootParaDscName(className);
+   return Form("%s", FootParaDscName(className));
 }
 
 /*------------------------------------------+---------------------------------*/
