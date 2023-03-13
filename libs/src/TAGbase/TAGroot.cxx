@@ -351,7 +351,7 @@ const char* TAGroot::DefaultParaDscName(const char* className)
 //! Print
 //!
 //! \param[in] option option for printout
-void TAGroot::Print(Option_t* option) const
+void TAGroot::PrintNames(Option_t* option) const
 {
    TString opt(option);
    

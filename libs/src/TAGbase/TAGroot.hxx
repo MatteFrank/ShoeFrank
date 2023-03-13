@@ -77,7 +77,7 @@ class TAGroot : public TAGobject {
    // Default parameter dsc name
    const char*     DefaultParaDscName(const char* className);
    // Print
-   void           Print(Option_t* option="all") const;
+   void            PrintNames(Option_t* option="all") const;
 
 
     //! Set campaign name
