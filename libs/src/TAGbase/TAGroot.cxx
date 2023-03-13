@@ -15,6 +15,7 @@
 #include "TList.h"
 
 #include "TAGroot.hxx"
+#include "TAGnameManager.hxx"
 #include "TAGactionFile.hxx"
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
@@ -317,6 +318,33 @@ const char* TAGroot::DefaultDataDscName()
 const char* TAGroot::DefaultParaDscName()
 {
   return Form("P%03d", fiDefParaDscSeqNum++);
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Returns next default action name.
+//!
+//! \param[in] name item name
+const char* TAGroot::DefaultActionName(const char* className)
+{
+   return FootActionDscName(className);
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Returns next default data descriptor name.
+//!
+//! \param[in] name item name
+const char* TAGroot::DefaultDataDscName(const char* className)
+{
+   return FootActionDscName(className);
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Returns next default data descriptor name.
+//!
+//! \param[in] name item name
+const char* TAGroot::DefaultParaDscName(const char* className)
+{
+   return FootParaDscName(className);
 }
 
 /*------------------------------------------+---------------------------------*/

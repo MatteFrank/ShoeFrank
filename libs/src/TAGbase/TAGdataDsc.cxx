@@ -7,7 +7,6 @@
 #include "TList.h"
 
 #include "TAGroot.hxx"
-#include "TAGnameManager.hxx"
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 
@@ -64,7 +63,7 @@ TAGdataDsc::TAGdataDsc(TAGdata* p_data)
    if (!gTAGroot) Fatal("TAGdataDsc()", "TAGroot not instantiated");
    SetBit(kMustCleanup);
    
-   SetName(FootActionDscName(p_data->ClassName()));
+   SetName(gTAGroot->DefaultDataDscName(p_data->ClassName()));
 
    if (gTAGroot->FindDataDsc(GetName())) {
       Warning("TAGdataDsc()", "Data descriptor with name '%s' already exists",

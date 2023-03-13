@@ -7,7 +7,6 @@
 #include "TH1.h"
 
 #include "TAGroot.hxx"
-#include "TAGnameManager.hxx"
 #include "TAGaction.hxx"
 
 /*!
@@ -61,7 +60,7 @@ TAGaction::TAGaction(const char* title)
    if (!gTAGroot) Fatal("TAGaction()", "TAGroot not instantiated");
    SetBit(kMustCleanup);
    
-   SetName(FootActionDscName(ClassName()));
+   SetName(gTAGroot->DefaultActionName(ClassName()));
 
    if (gTAGroot->FindAction(GetName())) {
       Warning("TAGaction()", "Action with name '%s' already exists", GetName());

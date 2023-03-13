@@ -69,6 +69,13 @@ class TAGroot : public TAGobject {
     const char*     DefaultDataDscName();
     // Default parameter dsc name
     const char*     DefaultParaDscName();
+   
+   // Default action name
+   const char*     DefaultActionName(const char* className);
+   // Default data dsc name
+   const char*     DefaultDataDscName(const char* className);
+   // Default parameter dsc name
+   const char*     DefaultParaDscName(const char* className);
 
     //! Set campaign name
     void            SetCampaignName(TString s_cam) { fRunInfo.SetCampaignName(s_cam); }

@@ -7,7 +7,6 @@
 #include "TList.h"
 
 #include "TAGroot.hxx"
-#include "TAGnameManager.hxx"
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
 
@@ -62,7 +61,7 @@ TAGparaDsc::TAGparaDsc(TAGpara* p_para)
    if (!gTAGroot) Fatal("TAGparaDsc()", "TAGroot not instantiated");
    SetBit(kMustCleanup);
       
-   SetName(FootParaDscName(p_para->ClassName()));
+   SetName(gTAGroot->DefaultParaDscName(p_para->ClassName()));
    
    if (gTAGroot->FindParaDsc(GetName())) {
       Warning("TAGparaDsc()",
