@@ -90,58 +90,61 @@ TAGrecoManager::TAGrecoManager( const TString expName )
 const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 {
    TAGrunInfo runInfo;
-  
+
    if (IsFromLocalReco())
       runInfo.GetGlobalPar().FromLocalReco = true;
-  
+
    if (IsSaveTree())
       runInfo.GetGlobalPar().EnableTree = true;
-  
+
    if (IsSaveHisto())
       runInfo.GetGlobalPar().EnableHisto = true;
-  
+
    if (IsSaveHits())
       runInfo.GetGlobalPar().EnableSaveHits = true;
-  
+
+   if (IsRegionMc())
+      runInfo.GetGlobalPar().EnableRegionMc = true;
+
    if (IsTracking())
       runInfo.GetGlobalPar().EnableTracking = true;
 
    if (IsReadRootObj())
       runInfo.GetGlobalPar().EnableRootObject = true;
-  
+
    if (IncludeKalman())
       runInfo.GetGlobalPar().IncludeKalman = true;
-  
+
    if (IncludeTOE())
       runInfo.GetGlobalPar().IncludeTOE = true;
-  
+
    if (IncludeDI())
       runInfo.GetGlobalPar().IncludeDI = true;
-  
+
    if (IncludeST())
       runInfo.GetGlobalPar().IncludeST = true;
-  
+
    if (IncludeBM())
       runInfo.GetGlobalPar().IncludeBM = true;
-  
+
    if (IncludeTG())
       runInfo.GetGlobalPar().IncludeTG = true;
-  
+
    if (IncludeVT())
       runInfo.GetGlobalPar().IncludeVT = true;
-  
+
    if (IncludeIT())
       runInfo.GetGlobalPar().IncludeIT = true;
-  
+
    if (IncludeMSD())
       runInfo.GetGlobalPar().IncludeMSD = true;
-  
+
    if (IncludeTW())
       runInfo.GetGlobalPar().IncludeTW = true;
-  
+
    if (IncludeCA())
       runInfo.GetGlobalPar().IncludeCA = true;
-  
+
    return runInfo;
 }
 
@@ -155,70 +158,70 @@ Bool_t TAGrecoManager::GlobalChecks(Bool_t flagMC)
    TAGrunInfo info = gTAGroot->CurrentRunInfo();
    TAGrunInfo* p = &info;
    if (!p) return true;
-   
+
    if (IncludeTOE() || IncludeKalman()) {
       // from global file
       Bool_t fromLocalRecoG = IsFromLocalReco();
       Bool_t globalRecoTOE  = IncludeTOE();
       Bool_t globalRecoGF   = IncludeKalman();
-   
+
       Bool_t fromLocalReco = info.GetGlobalPar().FromLocalReco;
-      
+
       if (fromLocalRecoG && fromLocalReco)
          Info("GlobalChecks()", "Make global reconstruction from L0 tree");
-      
+
       if (globalRecoTOE)
          Info("GlobalChecks()", "Make global reconstruction with TOE");
-      
+
       if (globalRecoGF)
          Info("GlobalChecks()", "Make global reconstruction with GenFit");
-      
+
       if (fromLocalRecoG && !fromLocalReco) {
          Error("GlobalChecks()", "FootGlobal::fromLocalReco set but raw data found in root file !");
          return false;
       }
-      
+
       if (!fromLocalRecoG && fromLocalReco) {
          Error("GlobalChecks()", "FootGlobal::fromLocalReco not set but L0 tree found in root file!");
          return false;
       }
    }
-   
+
    if (flagMC) {
       // from global file
       Bool_t enableRootObjectG = IsReadRootObj();
-   
+
       Bool_t enableRootObject = info.GetGlobalPar().EnableRootObject;
-      
+
       if (enableRootObjectG && enableRootObject)
          Info("GlobalChecks()", "Reading MC root file with shoe format");
-      
+
       if (!enableRootObjectG && !enableRootObject)
          Info("GlobalChecks()", "Reading MC root file with Fluka structure format");
-      
+
       if (enableRootObjectG && !enableRootObject) {
          Error("GlobalChecks()", "FootGlobal::enableRootObject set to shoe format but MC file is Fluka structure !");
          return false;
       }
-      
+
       if (!enableRootObjectG && enableRootObject) {
          Error("GlobalChecks()", "FootGlobal::enableRootObject set to Fluka structure but MC file is shoe format !");
          return false;
       }
-      
-      Bool_t enableRgeionG = TAGrecoManager::GetPar()->IsRegionMc();
-      Bool_t enableRgeion  = info.GetGlobalPar().EnableRegionMc;
-      
-      if (enableRgeionG && enableRgeion)
+
+      Bool_t enableRegionG = TAGrecoManager::GetPar()->IsRegionMc();
+      Bool_t enableRegion  = info.GetGlobalPar().EnableRegionMc;
+
+      if (enableRegionG && enableRegion)
          Info("GlobalChecks()", "Reading MC root tree with region crossing informations");
-      
-      if (enableRgeionG && !enableRgeion)
+
+      if (enableRegionG && !enableRegion)
          Warning("GlobalChecks()", "FootGlobal::enableRegionMc set but no region crossing found in file");
-      
-      if (!enableRgeionG && enableRgeion)
+
+      if (!enableRegionG && enableRegion)
          Warning("GlobalChecks()", "FootGlobal::enableRegionMc not set but region crossing found in file");
    }
-   
+
    return true;
 }
 
@@ -232,11 +235,11 @@ void TAGrecoManager::FromFile()
     Error("FromFile()", "Cannot open file %s", fParFileName.c_str());
     exit(0);
   }
-  
+
   TString key, item;
   while (!parTools->Eof()) {
     parTools->ReadItem(key, item);
-    
+
     fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
 
     if (key.Contains("Debug:")) {
@@ -244,7 +247,7 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("Debug: %d\n", fDebugLevel);
     }
-    
+
     if (key.Contains("Chi2 cut:")) {
       fChi2 = item.Atof();
       if (fDebugLevel > 0)
@@ -264,7 +267,7 @@ void TAGrecoManager::FromFile()
 		if (  fSkipN <= 0 )	fSkipN = -1;
 		else 					fSkipN -= 1;
 	}
-    
+
     if (key.Contains("MC Particle Types:")) {
       fMcParticles.clear();
       string formulasString = item.Data();
@@ -280,7 +283,7 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("\n");
     }
-    
+
     if (key.Contains("ClassDebugLevel:")) {
       string formulasString = item.Data();
       istringstream formulasStream( formulasString );
@@ -292,20 +295,20 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("ClassDebugLevel: %s %d\n", className.c_str(), classLevel);
     }
-    
+
     if (key.Contains("Genfit Event Display ON:")  ) {
       if ( item.Contains("y")) fEnableEventDisplay = true;
       else                     fEnableEventDisplay = false;
       if (fDebugLevel > 0)
         printf("Genfit Event Display ON: %d\n", fEnableEventDisplay);
     }
-    
+
     if (key.Contains("IncludeKalman:")  ) {
       if ( item.Contains("y")) fIncludeKalman = true;
       else                     fIncludeKalman = false;
       if (fDebugLevel > 0)
         printf("IncludeKalman: %d\n", fIncludeKalman);
-      
+
     }
     if (key.Contains("IncludeTOE:")) {
       if ( item.Contains("y")) fIncludeTOE = true;
@@ -313,32 +316,32 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("IncludeTOE: %d\n", fIncludeTOE);
     }
-     
+
      if (key.Contains("IncludeStraight:")) {
         if ( item.Contains("y")) fIncludeStraight = true;
         else                     fIncludeStraight = false;
         if (fDebugLevel > 0)
            printf("IncludeStraight: %d\n", fIncludeStraight);
      }
-    
+
     if (key.Contains("FromLocalReco:")  ) {
       if ( item.Contains("y"))  fFromLocalReco = true;
       else                      fFromLocalReco = false;
       if (fDebugLevel > 0)
         printf("FromLocalReco: %d\n", fFromLocalReco);
     }
-    
-    
+
+
     if (key.Contains("Kalman Mode:")) {
       vector<TString> tmp_Modes = { "off", "on", "ref", "daf", "dafsimple" };
       istringstream sss(item.Data());
-      
+
       TString inputMode;
       sss >> inputMode;
-      
+
       inputMode.ToLower();
       for (unsigned int i=0; i<tmp_Modes.size(); i++) {
-        
+
         if (inputMode.Contains(tmp_Modes[i]) ) {
           fKalmanMode = tmp_Modes[i];
           break;
@@ -347,17 +350,17 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         cout<<"Kalman Mode:" << fKalmanMode<<endl;
     }
-    
+
     if (key.Contains("Kalman preselection strategy:")) {
       vector<TString> tmp_Modes = { "TrueParticle", "Standard", "Linear", "Backtracking" };
       istringstream sss(item.Data());
-      
+
       TString inputMode;
       sss >> inputMode;
-      
+
       // inputMode.ToLower();
       for (unsigned int i=0; i<tmp_Modes.size(); i++) {
-        
+
         if (inputMode.Contains(tmp_Modes[i]) ) {
           fKPreselectStrategy = tmp_Modes[i];
           break;
@@ -366,7 +369,7 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         cout << "Kalman preselection strategy:" << fKPreselectStrategy << endl;
     }
-    
+
     if (key.Contains("Tracking Systems Considered:")) {
       fTrackingSystems.clear();
       string formulasString = item.Data();
@@ -382,7 +385,7 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("\n");
     }
-    
+
     if (key.Contains("Reverse Tracking:")) {
       if ( item == "true")
         fKalReverse = true;
@@ -391,7 +394,7 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("Reverse Tracking: %d\n", fKalReverse);
     }
-    
+
     if (key.Contains("Kalman Particle Types:")) {
       fKalParticles.clear();
       string formulasString = item.Data();
@@ -407,7 +410,7 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("\n");
     }
-    
+
      if (key.Contains("TGT Tag:")) {
         string tgtstring = item.Data();
         fTgtTag.push_back(tgtstring);
@@ -428,7 +431,7 @@ void TAGrecoManager::FromFile()
            if (fDebugLevel > 0)
               printf("\n");
         }
-        
+
         parTools->ReadItem(key, item);
         fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
 
@@ -445,7 +448,7 @@ void TAGrecoManager::FromFile()
            if (fDebugLevel > 0)
               printf("\n");
         }
-        
+
         parTools->ReadItem(key, item);
         fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
 
@@ -462,7 +465,7 @@ void TAGrecoManager::FromFile()
            if (fDebugLevel > 0)
               printf("\n");
         }
-        
+
         parTools->ReadItem(key, item);
         fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
 
@@ -479,7 +482,7 @@ void TAGrecoManager::FromFile()
            if (fDebugLevel > 0)
               printf("\n");
         }
-        
+
         parTools->ReadItem(key, item);
         fCopyInputFile.push_back(Form("%s %s", key.Data(), item.Data()));
 
@@ -497,139 +500,139 @@ void TAGrecoManager::FromFile()
               printf("\n");
         }
      }
-     
+
     if (key.Contains("EnableTree:") ) {
       if ( item.Contains("y"))  fEnableTree = true;
       else                      fEnableTree = false;
       if (fDebugLevel > 0)
         printf("EnableTree: %d\n", fEnableTree);
     }
-    
+
     if (key.Contains("EnableHisto:")) {
       if ( item.Contains("y") ) fEnableHisto = true;
       else                      fEnableHisto = false;
       if (fDebugLevel > 0)
         printf("EnableHisto: %d\n", fEnableHisto);
     }
-    
+
     if (key.Contains("EnableTracking:")) {
       if ( item.Contains("y") ) fEnableTracking = true;
       else                      fEnableTracking = false;
       if (fDebugLevel > 0)
         printf("EnableTracking: %d\n", fEnableTracking);
     }
-    
+
     if (key.Contains("EnableSaveHits:")  ) {
       if ( item.Contains("y"))  fEnableSaveHits = true;
       else                      fEnableSaveHits = false;
       if (fDebugLevel > 0)
         printf("EnableSaveHits: %d\n", fEnableSaveHits);
     }
-    
+
     if (key.Contains("EnableRootObject:") ) {
       if ( item.Contains("y"))  fEnableRootObject = true;
       else                      fEnableRootObject = false;
       if (fDebugLevel > 0)
         printf("EnableRootObject: %d\n", fEnableRootObject);
     }
-    
+
     if (key.Contains("EnableRegionMc:")  ) {
       if ( item.Contains("y"))  fEnableRegionMc = true;
       else                      fEnableRegionMc = false;
       if (fDebugLevel > 0)
         printf("EnableRegionMc: %d\n", fEnableRegionMc);
     }
-         
+
     if (key.Contains("IncludeDI:") ) {
       if ( item.Contains("y"))  fIncludeDI = true;
       else                      fIncludeDI = false;
       if (fDebugLevel > 0)
         printf("IncludeDI: %d\n", fIncludeDI);
-      
+
       if (fIncludeDI)
         fDectInclude.push_back("DI");
     }
-    
+
     if (key.Contains("IncludeST:")) {
       if ( item.Contains("y"))  fIncludeST = true;
       else                      fIncludeST = false;
       if (fDebugLevel > 0)
         printf("IncludeST: %d\n", fIncludeST);
-      
+
       if (fIncludeST)
         fDectInclude.push_back("ST");
     }
-    
+
     if (key.Contains("IncludeBM:") ) {
       if ( item.Contains("y") )  fIncludeBM = true;
       else                      fIncludeBM = false;
       if (fDebugLevel > 0)
         printf("IncludeBM: %d\n", fIncludeBM);
-      
+
       if (fIncludeBM)
         fDectInclude.push_back("BM");
     }
-    
+
     if (key.Contains("IncludeTG:")  ) {
       if ( item.Contains("y"))  fIncludeTG = true;
       else                      fIncludeTG = false;
       if (fDebugLevel > 0)
         printf("IncludeTG: %d\n", fIncludeTG);
-      
+
       if (fIncludeTG)
         fDectInclude.push_back("TG");
     }
-    
+
     if (key.Contains("IncludeVT:")  ) {
       if ( item.Contains("y"))  fIncludeVT = true;
       else                      fIncludeVT = false;
       if (fDebugLevel > 0)
         printf("IncludeVT: %d\n", fIncludeVT);
-      
+
       if (fIncludeVT)
         fDectInclude.push_back("VT");
     }
-    
+
     if (key.Contains("IncludeIT:") ) {
       if ( item.Contains("y"))  fIncludeIT = true;
       else                      fIncludeIT = false;
       if (fDebugLevel > 0)
         printf("IncludeIT: %d\n", fIncludeIT);
-      
+
       if (fIncludeIT)
         fDectInclude.push_back("IT");
     }
-    
+
     if (key.Contains("IncludeMSD:") ) {
       if ( item.Contains("y"))  fIncludeMSD = true;
       else                      fIncludeMSD = false;
       if (fDebugLevel > 0)
         printf("IncludeMSD: %d\n", fIncludeMSD);
-      
+
       if (fIncludeMSD)
         fDectInclude.push_back("MSD");
     }
-    
+
     if (key.Contains("IncludeTW:")  ) {
       if ( item.Contains("y"))  fIncludeTW = true;
       else                      fIncludeTW = false;
       if (fDebugLevel > 0)
         printf("IncludeTW: %d\n", fIncludeTW);
-      
+
       if (fIncludeTW)
         fDectInclude.push_back("TW");
     }
-    
+
     if (key.Contains("IncludeCA:") ) {
       if ( item.Contains("y"))  fIncludeCA = true;
       else                      fIncludeCA = false;
       if (fDebugLevel > 0)
         printf("IncludeCA: %d\n", fIncludeCA);
-      
+
       if (fIncludeCA)
         fDectInclude.push_back("CA");
     }
-    
+
     if (key.Contains("FLUKA version:")) {
       if ( item == "pro")
         fVerFLUKA = true;
@@ -641,7 +644,7 @@ void TAGrecoManager::FromFile()
         printf("FLUKA version: %d\n", fVerFLUKA);
     }
   }
-  
+
   parTools->Close();
   delete parTools;
 
@@ -667,7 +670,7 @@ void TAGrecoManager::SetDebugLevels()
 void TAGrecoManager::SetClassDebugLevel(const char* className, Int_t level)
 {
    // set the debug level for the given class
-   
+
    if (!className) return;
 
    TObject* obj = Instance()->fClassDebugLevels.FindObject(className);
@@ -686,7 +689,7 @@ void TAGrecoManager::SetClassDebugLevel(const char* className, Int_t level)
 void TAGrecoManager::ClearClassDebugLevel(const char* className)
 {
    // remove the setting of the debug level for the given class
-   
+
    if (!className) return;
      TObject* obj = Instance()->fClassDebugLevels.FindObject(className);
    if (obj) delete Instance()->fClassDebugLevels.Remove(obj);
@@ -701,7 +704,7 @@ Bool_t TAGrecoManager::GetMcDebugLevel(Int_t level, const char* className)
 {
    // get the logging level for the given MC class
    // need to remove compiler index
-   
+
    Int_t status;
    std::size_t sz = 255;
    char output_buffer[255];
@@ -719,7 +722,7 @@ Bool_t TAGrecoManager::GetMcDebugLevel(Int_t level, const char* className)
 Bool_t TAGrecoManager::GetDebugLevel(Int_t level, const char* className)
 {
    // get the logging level for the given module and class
-   
+
    if (className) {
       Int_t classLevel = -1;
       TObject* obj = Instance()->fClassDebugLevels.FindObject(className);
@@ -728,11 +731,11 @@ Bool_t TAGrecoManager::GetDebugLevel(Int_t level, const char* className)
       if ( level <= classLevel)
          return true;
    }
-   
+
    // check global debug level
    if (level <= Instance()->Debug())
       return true;
-   
+
    return false;
 }
 
@@ -743,12 +746,12 @@ Bool_t TAGrecoManager::GetDebugLevel(Int_t level, const char* className)
 Int_t TAGrecoManager::GetDebugLevel(const char* className)
 {
    // get the logging level for the given module and class
-   
+
    if (className) {
       TObject* obj = Instance()->fClassDebugLevels.FindObject(className);
       if (obj) return obj->GetUniqueID();
    }
-   
+
    // return global debug level
    return Instance()->Debug();
 }
@@ -768,7 +771,7 @@ void TAGrecoManager::DebugLine(Int_t level, const char* className, const char* f
    if (level <= Instance()->GetDebugLevel(className)) {
       if (funcName)
          fprintf(stdout, "Debug in <%s::%s>: ", className, funcName);
-   
+
       fprintf(stdout, "%s\n", format);
 
       fprintf(stdout, " in file %s at line %d\n", file, line);
@@ -788,7 +791,7 @@ void TAGrecoManager::Debug(Int_t level, const char* className, const char* funcN
   if (level <= Instance()->GetDebugLevel(className)) {
     if (funcName)
       fprintf(stdout, "Debug in <%s::%s>: ", className, funcName);
-    
+
     if (format==NULL) return;
     va_list ap;
     va_start(ap, format);
@@ -807,16 +810,16 @@ void TAGrecoManager::Debug(Int_t level, const char* className, const char* funcN
 void TAGrecoManager::GetMcInfoMsg(const char* className, const char* funcName, const char* format)
 {
   Int_t status;
-  
+
   std::size_t sz = 255;
   char output_buffer[255];
-  
+
   const char* name = abi::__cxa_demangle(className,  output_buffer, &sz, &status);
-  
+
   if (funcName)
     fprintf(stdout, "Info in <%s::%s>: ", name, funcName);
   cout << format << endl;
-  
+
 }
 
 //_____________________________________________________________________________
@@ -851,7 +854,7 @@ void TAGrecoManager::GetMcInfo(const char* className, const char* funcName, cons
 void TAGrecoManager::Print(Option_t* opt) const
 {
    TString option(opt);
-   
+
    cout << endl << "========================   Input Parameters  =============================" << endl<<endl;
 
    if (option.Contains("all")) {
@@ -863,22 +866,22 @@ void TAGrecoManager::Print(Option_t* opt) const
    } else {
       cout << "Global debug level: " << fDebugLevel << endl;
       cout << "Detectors included:" << endl;
-      
+
       printf(" - ");
       vector<TString> list = fDectInclude;
       for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
          TString str = fgkDectFullName[*it];
          printf("%s - ", str.Data());
       }
-      
+
       printf("\n\n");
 
       if (fIncludeKalman)
          Info("Print()", "Using GenFit for Global Recontruction");
-      
+
       if (fIncludeTOE)
          Info("Print()", "Using TOE for Global Recontruction");
-      
+
       if (fIncludeStraight)
          Info("Print()", "Using straight line extrapolation for Global Recontruction");
 
