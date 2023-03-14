@@ -389,6 +389,20 @@ void TAGroot::PrintNames(Option_t* option) const
 }
 
 /*------------------------------------------+---------------------------------*/
+//! Print out names of paraDsc, dataDsc or action depending the option
+//!
+//! \param[in] option option for printout
+void TAGroot::PrintBranchNames(Option_t* /*option*/) const
+{
+   TList* list = gTAGroot->ListOfDataDsc();
+   for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      TAGdataDsc* dsc = (TAGdataDsc*)list->At(i);
+      TAGdata* obj = dsc->Object();
+      TString name(obj->ClassName());
+      cout << setw(20) << left << obj->ClassName() << " " << FootBranchName(name) << endl;;
+   }
+}
+/*------------------------------------------+---------------------------------*/
 //! Return pointer to action with name and type (or 0).
 /*!
   Scans the list of actions for an action with the name.

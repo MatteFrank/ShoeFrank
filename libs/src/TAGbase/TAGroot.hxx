@@ -78,6 +78,8 @@ class TAGroot : public TAGobject {
    const char*     DefaultParaDscName(const char* className);
    // Print names
    void            PrintNames(Option_t* option="all") const;
+   // Print Branch names
+   void            PrintBranchNames(Option_t* option="") const;
 
 
     //! Set campaign name
