@@ -1103,12 +1103,24 @@ void BaseReco::SetL0TreeBranches()
 //! Set tree branches for writing in output file
 void BaseReco::SetTreeBranches()
 {
-  if (TAGrecoManager::GetPar()->IncludeBM())
-     if (fFlagTrack)
-        fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeST()) {
+      if (fFlagHits) {
+         fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
+      }
+   }
    
+  if (TAGrecoManager::GetPar()->IncludeBM()) {
+     if (fFlagHits)
+        fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
+     
+     if (fFlagTrack)
+         fActEvtWriter->SetupElementBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+  }
    
   if (TAGrecoManager::GetPar()->IncludeVT()) {
+    if (fFlagHits)
+       fActEvtWriter->SetupElementBranch(fpNtuHitVtx, TAVTntuHit::GetBranchName());
+     
     if (!fFlagTrack)
       fActEvtWriter->SetupElementBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
     else {
@@ -1120,24 +1132,39 @@ void BaseReco::SetTreeBranches()
   }
   
   if (TAGrecoManager::GetPar()->IncludeIT()) {
+    if (fFlagHits)
+       fActEvtWriter->SetupElementBranch(fpNtuHitIt, TAITntuHit::GetBranchName());
+     
      fActEvtWriter->SetupElementBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
      if (fFlagItrTrack && fFlagTrack)
         fActEvtWriter->SetupElementBranch(fpNtuTrackIt, TAITntuTrack::GetBranchName());
   }
    
   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-    fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
+    if (fFlagHits)
+       fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
+     
+     fActEvtWriter->SetupElementBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
      fActEvtWriter->SetupElementBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
+     
      if (fFlagMsdTrack && fFlagTrack)
         fActEvtWriter->SetupElementBranch(fpNtuTrackMsd, TAMSDntuTrack::GetBranchName());
   }
-   if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW())
+   if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
+      if (fFlagHits)
+         fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
+         
       fActEvtWriter->SetupElementBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
+   }
 
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
-   if (TAGrecoManager::GetPar()->IncludeCA())
-     fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
+      if (fFlagHits)
+         fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+      
+      fActEvtWriter->SetupElementBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+   }
 
    if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
       if (fFlagTrack)
@@ -1148,6 +1175,7 @@ void BaseReco::SetTreeBranches()
     if (fFlagTrack && !fFlagRecCutter)
       fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
   }
+   gTAGroot->PrintBranchNames();
 }
 
 //__________________________________________________________

@@ -228,45 +228,25 @@ void RecoMC::SetTreeBranches()
   if (TAGrecoManager::GetPar()->IsRegionMc() )
     fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
 
-
-   if (TAGrecoManager::GetPar()->IncludeST()) {
-      fActEvtWriter->SetupElementBranch(fpNtuHitSt, TASTntuHit::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeST())
       fActEvtWriter->SetupElementBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
-   }
    
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
-      fActEvtWriter->SetupElementBranch(fpNtuHitBm, TABMntuHit::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeBM())
       fActEvtWriter->SetupElementBranch(fpNtuMcBm, TAMCntuHit::GetBmBranchName());
-   }
    
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuHitVtx, TAVTntuHit::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeVT())
       fActEvtWriter->SetupElementBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
-   }
    
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuHitIt, TAITntuHit::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeIT())
       fActEvtWriter->SetupElementBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
-   }
    
-   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuHitMsd, TAMSDntuHit::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeMSD())
       fActEvtWriter->SetupElementBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
-   }
    
-   if (TAGrecoManager::GetPar()->IncludeTW()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuHitTw, TATWntuHit::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeTW())
       fActEvtWriter->SetupElementBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
-   }
    
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuHitCa, TACAntuHit::GetBranchName());
+   if (TAGrecoManager::GetPar()->IncludeCA())
       fActEvtWriter->SetupElementBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
-   }
 }
 
