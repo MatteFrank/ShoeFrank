@@ -25,14 +25,13 @@ vector<TString>        TAGnameManager::fgkDataDscMap   = {"Raw", "Hit", "Clus", 
 
 vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca"};
 
-map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"}, {"TABM", "bm"}, {"TAVT", "vt"}, {"TAIT", "it"}, {"TAGpar", "tg"},
-                                                          {"TAMSD", "ms"}, {"TATW", "tw"}, {"TACA", "ca"}, {"WD", "wd"},
+map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"},    {"TABM", "bm"},         {"TAVT", "vt"},         {"TAIT", "it"},
+                                                          {"TAGpar", "tg"},  {"TAMSD", "ms"},        {"TATW", "tw"},         {"TACA", "ca"},     {"WD", "wd"},
                                                           {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"}, {"ntuPart", "mc"},
-                                                          {"TAMCntuEvent", "mc"}, {"Region", "mc"},
-                                                          {"TAGactDaq", "daq"}, {"actNtuPart", "eve"}, {"TAGactTree", "evt"}};
+                                                          {"Region", "mc"},  {"TAGactDaq", "daq"},   {"actNtuPart", "eve"},  {"TAGactTree", "evt"}};
 
-map<TString, TString>  TAGnameManager::fgkBranchMap    = {{"Raw", "dat."}, {"Hit", "rh."}, {"Cluster", "clus."}, {"Point", "pt."}, {"Track", "track."}, {"Vertex", "vtx."},
-                                                          {"TAMCntuEvent", "mcevt."}, {"TAGntuEvent", "evt."}, {"ntuPart", "mctrack."}};
+map<TString, TString>  TAGnameManager::fgkBranchMap    = {{"Raw", "dat."},    {"Hit", "rh."},             {"Cluster", "clus."},    {"Point", "pt."},      {"Track", "track."},
+                                                          {"Vertex", "vtx."}, {"TAMCntuEvent", "mcevt."}, {"TAGntuEvent", "evt."}, {"ntuPart", "track."}, {"Trigger", "trig."}};
 //_____________________________________________________________________________
 //! Constructor
 //!
