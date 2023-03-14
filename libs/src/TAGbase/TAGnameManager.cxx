@@ -21,15 +21,18 @@ TString                TAGnameManager::fgkNtuHitMc     = "TAMCntuHit";
 
 vector<TString>        TAGnameManager::fgkParaDscMap   = {"Map", "Geo", "Conf", "Cal", "Tim"};
 
-vector<TString>        TAGnameManager::fgkDataDscMap   = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "reader", "Part", "Writer"};
+vector<TString>        TAGnameManager::fgkDataDscMap   = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "reader", "Part", "Writer", "Region"};
 
 vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca"};
 
 map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"}, {"TABM", "bm"}, {"TAVT", "vt"}, {"TAIT", "it"}, {"TAGpar", "tg"},
                                                           {"TAMSD", "ms"}, {"TATW", "tw"}, {"TACA", "ca"}, {"WD", "wd"},
-                                                          {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"}, {"ntuPart", "mc"},  {"TAMCntuEvent", "mc"},
+                                                          {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"}, {"ntuPart", "mc"},
+                                                          {"TAMCntuEvent", "mc"}, {"Region", "mc"},
                                                           {"TAGactDaq", "daq"}, {"actNtuPart", "eve"}, {"TAGactTree", "evt"}};
 
+map<TString, TString>  TAGnameManager::fgkBranchMap    = {{"Raw", "dat."}, {"Hit", "rh."}, {"Cluster", "clus."}, {"Point", "pt."}, {"Track", "track."}, {"Vertex", "vtx."},
+                                                          {"TAMCntuEvent", "mcevt."}, {"TAGntuEvent", "evt."}, {"ntuPart", "mctrack."}};
 //_____________________________________________________________________________
 //! Constructor
 //!
@@ -120,6 +123,50 @@ const TString TAGnameManager::GetActionDscName(TString className)
          name += fgkMcSuffix;
    } else
       name = prefix+dataType;
+   
+   return name;
+}
+
+//_____________________________________________________________________________
+//! Get data
+//!
+//!  \param[in] className name of paraDsc class
+//!  \param[in] flagMc flag for MC actions
+const TString TAGnameManager::GetBranchName(TString className)
+{
+   TString prefix;
+   for (auto const& it : fgkDetectorMap) {
+      if (className.Contains(it.first)) {
+         prefix = it.second;
+         break;
+      }
+   }
+   
+   TString suffix;
+   for (auto const& itv : fgkBranchMap) {
+      if (className.Contains(itv.first)) {
+         suffix = itv.second;
+         break;
+      }
+   }
+   
+   TString  name = prefix+suffix;
+   
+   return name;
+}
+
+//_____________________________________________________________________________
+//! Get data
+//!
+//!  \param[in] idx index in the vector
+const TString TAGnameManager::GetBranchMcName(Int_t idx)
+{
+   TString suffix = fgkDataDscMapMC[idx];
+   
+   TString prefix = fgkMcSuffix;
+   prefix.ToLower();
+   
+   TString name = prefix+suffix;
    
    return name;
 }

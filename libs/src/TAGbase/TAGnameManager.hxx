@@ -27,13 +27,16 @@ public:
 public:
    static const TString GetParaDscName(TString className);
    static const TString GetActionDscName(TString className);
+   static const TString GetBranchName(TString className);
    static const TString GetDataDscMcName(Int_t idx = kST);
+   static const TString GetBranchMcName(Int_t idx = kST);
 
 private:
    static vector<TString>        fgkParaDscMap;   ///< Parameter descriptor vector
    static vector<TString>        fgkDataDscMap;   ///< Data descriptor map
    static vector<TString>        fgkDataDscMapMC; ///< Data descriptor map
    static map<TString, TString>  fgkDetectorMap;  ///< Detector map
+   static map<TString, TString>  fgkBranchMap;    ///< Branch map
 
    static TString                fgkMcSuffix;     ///< MC suffix
    static TString                fgkActPrefix;    /// Action prefix
@@ -43,6 +46,8 @@ private:
 
 #define FootParaDscName(className)   TAGnameManager::GetParaDscName(className).Data()
 #define FootActionDscName(className) TAGnameManager::GetActionDscName(className).Data()
+#define FootBranchName(className)    TAGnameManager::GetBranchName(className).Data()
 #define FootDataDscMcName(className) TAGnameManager::GetDataDscMcName(className).Data()
+#define FootBranchMcName(className)  TAGnameManager::GetBranchMcName(className).Data()
 
 #endif
