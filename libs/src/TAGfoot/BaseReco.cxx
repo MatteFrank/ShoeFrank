@@ -1175,7 +1175,6 @@ void BaseReco::SetTreeBranches()
     if (fFlagTrack && !fFlagRecCutter)
       fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
   }
-   gTAGroot->PrintBranchNames();
 }
 
 //__________________________________________________________
