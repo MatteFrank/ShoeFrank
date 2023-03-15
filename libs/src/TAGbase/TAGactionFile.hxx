@@ -23,6 +23,8 @@ class TAGactionFile : public TAGaction {
     virtual void    SetupChannel(TAGdataDsc* p_data, TAGnamed* p_filt);
     // virtual set up branch
     virtual void    SetupBranch(TAGdataDsc* p_data, const char* branch);
+    // virtual set up branch
+    virtual void    SetupBranch(TAGdataDsc* p_data);
     // virtual adding a friend tree
     virtual void    AddFriendTree(TString fileName = "", TString treeName = "EventTree");
 

@@ -90,6 +90,15 @@ void TAGactionFile::SetupBranch(TAGdataDsc* p_data, const char* branch)
 }
 
 //------------------------------------------+-----------------------------------
+//! SetupBranch for tree reader only
+//!
+//! \param[in] p_data data descriptor
+void TAGactionFile::SetupBranch(TAGdataDsc* p_data)
+{
+   return;
+}
+
+//------------------------------------------+-----------------------------------
 //! Add friend tree
 //!
 //! \param[in] fileName root file name
