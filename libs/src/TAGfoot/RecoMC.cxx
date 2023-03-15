@@ -236,31 +236,31 @@ void RecoMC::SetTreeBranches()
    if (!fgSaveMcFlag)
       return;
    
-   fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
-   fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
+   fActEvtWriter->SetupElementBranch(fpNtuMcEvt);
+   fActEvtWriter->SetupElementBranch(fpNtuMcTrk);
   
   if (TAGrecoManager::GetPar()->IsRegionMc() )
-    fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+    fActEvtWriter->SetupElementBranch(fpNtuMcReg);
 
    if (TAGrecoManager::GetPar()->IncludeST())
-      fActEvtWriter->SetupElementBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcSt, FootBranchMcName(kST));
    
    if (TAGrecoManager::GetPar()->IncludeBM())
-      fActEvtWriter->SetupElementBranch(fpNtuMcBm, TAMCntuHit::GetBmBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcBm, FootBranchMcName(kBM));
    
    if (TAGrecoManager::GetPar()->IncludeVT())
-      fActEvtWriter->SetupElementBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcVt, FootBranchMcName(kVTX));
    
    if (TAGrecoManager::GetPar()->IncludeIT())
-      fActEvtWriter->SetupElementBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcIt, FootBranchMcName(kITR));
    
    if (TAGrecoManager::GetPar()->IncludeMSD())
-      fActEvtWriter->SetupElementBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcMsd, FootBranchMcName(kMSD));
    
    if (TAGrecoManager::GetPar()->IncludeTW())
-      fActEvtWriter->SetupElementBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcTw, FootBranchMcName(kTW));
    
    if (TAGrecoManager::GetPar()->IncludeCA())
-      fActEvtWriter->SetupElementBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcCa, FootBranchMcName(kCAL));
 }
 
