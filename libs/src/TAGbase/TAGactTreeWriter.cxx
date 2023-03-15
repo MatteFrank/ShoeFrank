@@ -15,6 +15,8 @@
 #include "TString.h"
 
 #include "TAGroot.hxx"
+#include "TAGnameManager.hxx"
+
 #include "TAGactTreeWriter.hxx"
 
 /*!
@@ -109,6 +111,23 @@ void TAGactTreeWriter::SetupElementBranch(TAGdataDsc* p_data, const char* branch
   return;
 }
 
+//------------------------------------------+-----------------------------------
+// Add input data descriptor.
+//!
+//! \param[in] p_data data descriptor
+//! \param[in] i_size branch size
+//! \param[in] i_compress branch compress level
+void TAGactTreeWriter::SetupElementBranch(TAGdataDsc* p_data, Int_t i_size, Int_t i_compress)
+{
+   TAGdata* obj = p_data->Object();
+   TString name(obj->ClassName());
+   const char* branch = TAGnameManager::GetBranchName(name);
+   TAGactTreeWriterBranch* p_chan = new TAGactTreeWriterBranch(p_data, branch, i_size, i_compress, kFALSE);
+   
+   AddDataIn(p_data, "TAGdata");          // ??? be more specific ???
+   fpBranchList->Add(p_chan);
+   return;
+}
 //------------------------------------------+-----------------------------------
 //! Set compression level for file and all branches.
 //!

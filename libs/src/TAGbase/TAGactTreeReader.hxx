@@ -41,6 +41,8 @@ class TAGactTreeReader : public TAGactionFile {
 
     // Set up branch
     void            SetupBranch(TAGdataDsc* p_data, const char* branch);
+    // Set up branch
+    void            SetupBranch(TAGdataDsc* p_data);
     // Check branch
     Bool_t          CheckBranch(const char* branch, Bool_t verbose = false);
 

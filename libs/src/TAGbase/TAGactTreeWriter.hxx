@@ -49,6 +49,10 @@ class TAGactTreeWriter : public TAGactionFile {
     // Set up branch with data dsc
     void            SetupElementBranch(TAGdataDsc* p_data, const char* branch,
                                        Int_t i_size=32000, Int_t i_compress=-1);
+   // Set up branch with data dsc
+   void            SetupElementBranch(TAGdataDsc* p_data,
+                                      Int_t i_size=32000, Int_t i_compress=-1);
+   
     // Set compression level of tree
     void            SetCompressionLevel(Int_t i_compress=1);
 

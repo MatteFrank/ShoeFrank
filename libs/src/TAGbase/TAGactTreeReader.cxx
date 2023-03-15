@@ -12,6 +12,7 @@
 #include "TAGroot.hxx"
 #include "TAGrunInfo.hxx"
 
+#include "TAGnameManager.hxx"
 #include "TAGactTreeReader.hxx"
 
 /*!
@@ -82,6 +83,22 @@ void TAGactTreeReader::SetupBranch(TAGdataDsc* p_data, const char* branch)
   AddDataOut(p_data, "TAGdata");	    // ??? be more specific ???
   fpBranchList->Add(p_chan);
   return;
+}
+
+//------------------------------------------+-----------------------------------
+//! Add input data descriptor.
+//!
+//! \param[in] p_data data descriptor
+void TAGactTreeReader::SetupBranch(TAGdataDsc* p_data)
+{
+   TAGdata* obj = p_data->Object();
+   TString name(obj->ClassName());
+   const char* branch = TAGnameManager::GetBranchName(name);
+   
+   TAGactTreeReaderBranch* p_chan = new TAGactTreeReaderBranch(p_data, branch);
+   AddDataOut(p_data, "TAGdata");       // ??? be more specific ???
+   fpBranchList->Add(p_chan);
+   return;
 }
 
 //------------------------------------------+-----------------------------------
