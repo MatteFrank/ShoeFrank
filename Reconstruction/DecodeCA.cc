@@ -24,6 +24,7 @@
 #include <TPad.h>
 
 #include "TAGcampaignManager.hxx"
+#include "TAGnameManager.hxx"
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
 #include "TAGactTreeWriter.hxx"
@@ -138,7 +139,7 @@ CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap)
    AddPara(pCAmap, "TACAparMap");
    AddPara(pWDmap, "TAWDparMap");
 
-   fGeometry = (TACAparGeo*) gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
+   fGeometry = (TACAparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TACAparGeo"), "TACAparGeo")->Object();
  
    fProcFiles=1;  
    fMaxFiles=1;
@@ -707,20 +708,20 @@ int main (int argc, char *argv[])  {
    campManager->FromFile();
 
    // geo file for CA
-   TAGparaDsc* parGeoCA = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
+   TAGparaDsc* parGeoCA = new TAGparaDsc(FootParaDscName("TACAparGeo"), new TACAparGeo());
    TACAparGeo* pGeoMap = (TACAparGeo*)parGeoCA->Object();
    TString parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNb);
    pGeoMap->FromFile(parFileName);
    
    // par map for CA
-   TAGparaDsc*  pParMapCa = new TAGparaDsc("caMap", new TACAparMap());
+   TAGparaDsc*  pParMapCa = new TAGparaDsc(new TACAparMap());
    TACAparMap* parMapCA = (TACAparMap*)pParMapCa->Object();
    parFileName = campManager->GetCurMapFile(TACAparGeo::GetBaseName(), runNb);
    parMapCA->FromFile(parFileName.Data());
    TACAactNtuHit *hit = new TACAactNtuHit();
 
    // WD map
-   TAGparaDsc *pParMapWD = new TAGparaDsc("WDMap", new TAWDparMap());
+   TAGparaDsc *pParMapWD = new TAGparaDsc(new TAWDparMap());
    TAWDparMap* parMapWD = (TAWDparMap*)pParMapWD->Object();
    parFileName = campManager->GetCurMapFile(TASTparGeo::GetBaseName(), runNb);
    parMapWD->FromFile(parFileName.Data());
