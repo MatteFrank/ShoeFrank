@@ -47,7 +47,7 @@ private:
 #define FootParaDscName(className)   TAGnameManager::GetParaDscName(className).Data()
 #define FootActionDscName(className) TAGnameManager::GetActionDscName(className).Data()
 #define FootBranchName(className)    TAGnameManager::GetBranchName(className).Data()
-#define FootDataDscMcName(className) TAGnameManager::GetDataDscMcName(className).Data()
-#define FootBranchMcName(className)  TAGnameManager::GetBranchMcName(className).Data()
+#define FootDataDscMcName(idx)       TAGnameManager::GetDataDscMcName(idx).Data()
+#define FootBranchMcName(idx)        TAGnameManager::GetBranchMcName(idx).Data()
 
 #endif
