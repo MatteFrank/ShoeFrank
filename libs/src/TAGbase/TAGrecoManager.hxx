@@ -24,12 +24,13 @@
 
 #include "TString.h"
 #include "TObjArray.h"
+#include "TObjArray.h"
 
 #include "TAGrunInfo.hxx"
 
 using namespace std;
 
-class TAGrecoManager {
+class TAGrecoManager : public TObject{
 
 public:
    // singleton class of global foot parameters
@@ -42,7 +43,7 @@ public:
    // From file
 	void  FromFile();
    // Print info
-	void  Print(Option_t* opt = "");
+	void  Print(Option_t* opt = "") const;
    // Get run info
    const TAGrunInfo GetGlobalInfo();
    // Find MC particle
@@ -95,7 +96,7 @@ public:
     //! Local reconstruction flag
 
     //! Reconstruction parameters Getter
-    Bool_t IsLocalReco()         const { return fEnableLocalReco;     }
+    Bool_t IsFromLocalReco()     const { return fFromLocalReco;       }
     //! Saving tree flag
     Bool_t IsSaveTree()          const { return fEnableTree;          }
     //! Save histogram flag
@@ -106,24 +107,8 @@ public:
     Bool_t IsTracking()          const { return fEnableTracking;      }
     //! Root object flag
     Bool_t IsReadRootObj()       const { return fEnableRootObject;    }
-    //! TW MC atomic charge flag
-    Bool_t IsTWZmc()             const { return fEnableTWZmc;         }
-    //! TW no pileup flag
-    Bool_t IsTWnoPU()            const { return fEnableTWnoPU;        }
-    //! TW atomic charge Z matching flag
-    Bool_t IsTWZmatch()          const { return fEnableTWZmatch;      }
-    //! TW calibration per bar flag
-    Bool_t IsTWCalBar()          const { return fEnableTWCalBar;      }
-    //! MC region flag
-    Bool_t IsTWRateSmearMC()     const { return fEnableTWRateSmearMC; }
     //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
-    //! MSD tracking
-    Bool_t IsMsdTracking()       const { return fEnableMsdTrack;      }
-    //! MSD pedestal run
-    Bool_t IsMsdPedestal()       const { return fEnableMsdPed;        }
-    //! ITR tracking
-    Bool_t IsItrTracking()       const { return fEnableItrTrack;      }
     //! TW Calibration flag
     Bool_t CalibTW()             const { return fDoCalibTW;           }
     //! BM Calibration flag
@@ -164,9 +149,9 @@ public:
     void IncludeStraight(Bool_t t)     { fIncludeStraight = t;        }
    
     //! Enable global reconstruction from local reconstruction tree
-    void EnableLocalReco()             {  fEnableLocalReco = true;    }
+    void EnableFromLocalReco()         {  fFromLocalReco = true;      }
     //! Disable global reconstruction from local reconstruction tree
-    void DisableLocalReco()            {  fEnableLocalReco = false;   }
+    void DisableFromLocalReco()        {  fFromLocalReco = false;     }
 
     //! Enable root object tree
     void EnableRootObject()            {  fEnableRootObject = true;   }
@@ -177,22 +162,7 @@ public:
     void EnableRegionMc()              {  fEnableRegionMc = true;     }
     //! Disable MC region reading
     void DisableRegionMc()             {  fEnableRegionMc = false;    }
-   
-    //! Enable MSD tracking
-    void EnableMsdTrack()              {  fEnableMsdTrack = true;     }
-    //! Disable MSD tracking
-    void DisableMsdTrack()             {  fEnableMsdTrack = false;    }
-   
-   //! Enable MSD pedestal
-   void EnableMsdPedestal()            {  fEnableMsdPed = true;       }
-   //! Disable MSD pedestal
-   void DisableMsdPedestal()           {  fEnableMsdPed = false;      }
-   
-    //! Enable ITR tracking
-    void EnableItrTrack()              {  fEnableItrTrack = true;     }
-    //! Disable ITR tracking
-    void DisableItrTrack()             {  fEnableItrTrack = false;    }
-   
+      
     //! Enable filling in tree
     void EnableTree()                  {  fEnableTree = true;         }
     //! Disable filling in tree
@@ -230,6 +200,9 @@ public:
   
     // Debug levels
     void SetDebugLevels();
+   
+   // Global checks
+   Bool_t GlobalChecks(Bool_t flagMC);
   
 private:
 	TAGrecoManager();
@@ -274,22 +247,16 @@ private:
 
    
    //! reconstruction parameter
-   Bool_t               fEnableLocalReco;       ///< Enable global reconstruction from l0 reconstruction
+   Bool_t               fFromLocalReco;         ///< Enable global reconstruction from l0 reconstruction
    Bool_t               fEnableTree;            ///< Enbale tree filling
    Bool_t               fEnableHisto;           ///< Enable histogram filling
    Bool_t               fEnableSaveHits;        ///< Enable saving hits
    Bool_t               fEnableTracking;        ///< Enable tracking
    Bool_t               fEnableRootObject;      ///< Enable root object in tree
-   Bool_t               fEnableTWZmc;           ///< Enable TW MC atomic charge Z
-   Bool_t               fEnableTWnoPU;          ///< Enable TW no pileup
-   Bool_t               fEnableTWZmatch;        ///< Enable TW MC atomic charge Z matching
-   Bool_t               fEnableTWCalBar;        ///< Enable TW calibration per bar
-   Bool_t               fEnableTWRateSmearMC;   ///< Enable TW smeareing due to rate
    Bool_t               fDoCalibTW;             ///< Enable TW cliabration process
    Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
    Bool_t               fEnableRegionMc;        ///< Enable MC region reading
    Bool_t               fEnableMsdTrack;        ///< Enable MSD tracking
-   Bool_t               fEnableMsdPed;          ///< Enable MSD pedestal run
    Bool_t               fEnableItrTrack;        ///< Enable ITR tracking
 
    Bool_t               fIncludeST;             ///< Include STC
@@ -326,6 +293,9 @@ public:
    static void   SetClassDebugLevel(const char* className, Int_t level);
    // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
+   
+   ClassDef(TAGrecoManager,2)
+
 };
 
 #define FootDebug(level, func, message, ...) TAGrecoManager::Debug(level, ClassName(), func, message, __VA_ARGS__)

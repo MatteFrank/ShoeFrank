@@ -15,6 +15,7 @@
 #include "TList.h"
 
 #include "TAGroot.hxx"
+#include "TAGnameManager.hxx"
 #include "TAGactionFile.hxx"
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
@@ -319,6 +320,88 @@ const char* TAGroot::DefaultParaDscName()
   return Form("P%03d", fiDefParaDscSeqNum++);
 }
 
+/*------------------------------------------+---------------------------------*/
+//! Returns next default action name.
+//!
+//! \param[in] className name of class
+const char* TAGroot::DefaultActionName(const char* className)
+{
+   return Form("%s", FootActionDscName(className));
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Returns next default data descriptor name.
+//!
+//! \param[in] className name of class
+const char* TAGroot::DefaultDataDscName(const char* className)
+{
+   return Form("%s", FootActionDscName(className));
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Returns next default data descriptor name.
+//!
+//! \param[in] className name of class
+const char* TAGroot::DefaultParaDscName(const char* className)
+{
+   return Form("%s", FootParaDscName(className));
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Print out names of paraDsc, dataDsc or action depending the option
+//!
+//! \param[in] option option for printout
+void TAGroot::PrintNames(Option_t* option) const
+{
+   TString opt(option);
+   
+   if (opt=="all" || opt.Contains("act")) {
+      TList* list = gTAGroot->ListOfAction();
+      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+         TAGaction* action = (TAGaction*)list->At(i);
+         TString name(action->ClassName());
+         cout << setw(20) << left << action->ClassName() << " " << FootActionDscName(name) << endl;
+      }
+      cout << endl;
+   }
+   
+   if (opt=="all" || opt.Contains("dat")) {
+      TList* list = gTAGroot->ListOfDataDsc();
+      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+         TAGdataDsc* dsc = (TAGdataDsc*)list->At(i);
+         TAGdata* obj = dsc->Object();
+         TString name(obj->ClassName());
+         cout << setw(20) << left << obj->ClassName() << " " << FootActionDscName(name) << endl;;
+      }
+      cout << endl;
+   }
+   
+   if (opt=="all" || opt.Contains("par")) {
+      TList* list = gTAGroot->ListOfParaDsc();
+      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+         TAGparaDsc* dsc = (TAGparaDsc*)list->At(i);
+         TAGpara* obj = dsc->Object();
+         TString name(obj->ClassName());
+         cout << setw(20) << left << obj->ClassName() << " " << FootParaDscName(name) << endl;;
+      }
+      cout << endl;
+   }
+}
+
+/*------------------------------------------+---------------------------------*/
+//! Print out names of paraDsc, dataDsc or action depending the option
+//!
+//! \param[in] option option for printout
+void TAGroot::PrintBranchNames(Option_t* /*option*/) const
+{
+   TList* list = gTAGroot->ListOfDataDsc();
+   for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      TAGdataDsc* dsc = (TAGdataDsc*)list->At(i);
+      TAGdata* obj = dsc->Object();
+      TString name(obj->ClassName());
+      cout << setw(20) << left << obj->ClassName() << " " << FootBranchName(name) << endl;;
+   }
+}
 /*------------------------------------------+---------------------------------*/
 //! Return pointer to action with name and type (or 0).
 /*!

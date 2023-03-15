@@ -147,8 +147,9 @@ void GblFitter::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool res
     return;
   // -----------------------------------------------------------------
   
-
+  // cppcheck-suppress unreadVariable
   unsigned int nFailed = 0;
+  // cppcheck-suppress unreadVariable
   int fitRes = 0;
   std::vector<std::string> gblIterations;
   gblIterations.push_back(m_gblInternalIterations);
@@ -327,13 +328,14 @@ void GblFitter::getScattererFromMatList(double& length,
   // (part of) second moment / variance (non-normalized)
   double sumx3x3 = 0.;
   
+  // cppcheck-suppress unreadVariable
   double xmin = 0.;
   double xmax = 0.;
   
   for (unsigned int i = 0; i < steps.size(); i++) {
     const MatStep step = steps.at(i);
     // inverse of material radiation length ... (in 1/cm) ... "density of scattering"
-    double rho = 1. / step.materialProperties_.getRadLen();
+    double rho = 1. / step.material_.radiationLength;
     len += fabs(step.stepSize_);
     xmin = xmax;
     xmax = xmin + fabs(step.stepSize_);
@@ -458,7 +460,7 @@ double GblFitter::constructGblInfo(Track* trk, const AbsTrackRep* rep)
     
     // Call segment controller to set MS options:    
     if (m_segmentController)
-      m_segmentController->controlTrackSegment(segmentEntry, segmentExit, this);    
+      m_segmentController->controlTrackSegment(segmentEntry, segmentExit, scatTheta, this);    
     
     // Scattering options: OFF / THIN / THICK
     if (m_enableScatterers && !m_enableIntermediateScatterer) {
@@ -473,7 +475,7 @@ double GblFitter::constructGblInfo(Track* trk, const AbsTrackRep* rep)
     // --------------------------------------------
     
     if (theta1 > scatEpsilon)  
-      point_meas->setScatterer(new ThinScatterer(plane, MaterialProperties(theta1, 0., 0., 0., 0.))); 
+      point_meas->setScatterer(new ThinScatterer(plane, Material(theta1, 0., 0., 0., 0.)));
     
     GblFitterInfo* gblfimeas(new GblFitterInfo(point_meas, rep, reference));
     gblfimeas->setJacobian(jacPointToPoint);
@@ -493,7 +495,7 @@ double GblFitter::constructGblInfo(Track* trk, const AbsTrackRep* rep)
       // --------------------------------------
       TrackPoint* scattp = new TrackPoint(trk);
       scattp->setSortingParameter(point_meas->getSortingParameter() + s2);
-      scattp->setScatterer(new ThinScatterer(reference.getPlane(), MaterialProperties(theta2, 0., 0., 0., 0.)));
+      scattp->setScatterer(new ThinScatterer(reference.getPlane(), Material(theta2, 0., 0., 0., 0.)));
       // Add point to track before next point
       int pointIndex = 0;
       //TODO Deduce this rather than looping over all points

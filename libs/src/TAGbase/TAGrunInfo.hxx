@@ -16,22 +16,18 @@
  */
 struct GlobalParameter_t : public  TObject {
    GlobalParameter_t() : TObject(),
-   EnableLocalReco(false), EnableTree(false), EnableHisto(false), EnableSaveHits(false),
-   EnableTracking(false), EnableRootObject(false), EnableTWZmc(false), EnableTWnoPU(false),EnableTWZmatch(false), EnableTWCalBar(false),
+   FromLocalReco(false), EnableTree(false), EnableHisto(false), EnableSaveHits(false),
+   EnableTracking(false), EnableRootObject(false), 
    EnableRegionMc(false), IncludeKalman(false), IncludeTOE(false), IncludeDI(false), IncludeST(false), IncludeBM(false),
    IncludeTG(false), IncludeVT(false), IncludeIT(false), IncludeMSD(false), IncludeTW(false),
    IncludeCA(false) { }
 
-   Bool_t EnableLocalReco;  ///< Enable local reconstruction
+   Bool_t FromLocalReco;  ///< Enable local reconstruction
    Bool_t EnableTree;       ///< Enable tree saving
    Bool_t EnableHisto;      ///< Enable histogram
    Bool_t EnableSaveHits;   ///< Enable saving hits
    Bool_t EnableTracking;   ///< Enable tracking
    Bool_t EnableRootObject; ///< Enable root object reading
-   Bool_t EnableTWZmc;      ///< Enable TW true MC atomic charge Z
-   Bool_t EnableTWnoPU;     ///< Enable TW no pileup
-   Bool_t EnableTWZmatch;   ///< Enable TW atomic charge matching
-   Bool_t EnableTWCalBar;   ///< Enable TW bar calibration
    Bool_t EnableRegionMc;   ///< Enable MC region
    Bool_t IncludeKalman;    ///< Include Kalman
    Bool_t IncludeTOE;       ///< Include TOE
@@ -45,7 +41,7 @@ struct GlobalParameter_t : public  TObject {
    Bool_t IncludeTW;        ///< Include TW
    Bool_t IncludeCA;        ///< Include CAL
 
-   ClassDef(GlobalParameter_t,2)
+   ClassDef(GlobalParameter_t,4)
 };
 
 class TAGrunInfo : public TAGobject {

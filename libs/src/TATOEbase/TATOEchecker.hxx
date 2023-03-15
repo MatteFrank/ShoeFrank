@@ -1339,7 +1339,7 @@ struct momentum_resolution_output< Derived, histogram< B>, CO>{
         
         for(auto const& link : link_c){
             double value{0};
-            int entries = link.tree_h->GetEntries();
+            int entries = link.tree_h->GetEntriesFast();
             link.tree_h->SetBranchAddress("value", &value);
             if( entries < 100 ){continue;}
             for(auto i{0}; i < entries; ++i){
@@ -1373,7 +1373,7 @@ struct momentum_resolution_output< Derived, histogram< B>, CO>{
 //        std::cout << "writing tree" << std::endl;
         sigma_histogram.Write();
         for( auto& link: link_c){
-            if(link.tree_h->GetEntries() > 100 ) {link.tree_h->Write();}
+            if(link.tree_h->GetEntriesFast() > 100 ) {link.tree_h->Write();}
         }
 //        std::cout << "writing done" << std::endl;
     }
@@ -1404,7 +1404,7 @@ struct momentum_resolution_output< Derived, histogram< reconstruction_base< angl
         
             for(auto link_i = link_c.begin(); link_i != end_i ; ++link_i){
                 double value{0};
-                int entries = link_i->tree_h->GetEntries();
+                int entries = link_i->tree_h->GetEntriesFast();
                 link_i->tree_h->SetBranchAddress("value", &value);
                 if( entries < 100 ){continue;}
                 for(auto i{0}; i < entries; ++i){
@@ -1420,7 +1420,7 @@ struct momentum_resolution_output< Derived, histogram< reconstruction_base< angl
             
             resolution_histogram.Write();
             for(auto link_i = link_c.begin(); link_i != end_i ; ++link_i){
-                if(link_i->tree_h->GetEntries() > 100 ) {link_i->tree_h->Write();}
+                if(link_i->tree_h->GetEntriesFast() > 100 ) {link_i->tree_h->Write();}
             }
         }
     }

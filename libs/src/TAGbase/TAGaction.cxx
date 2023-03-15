@@ -41,7 +41,32 @@ TAGaction::TAGaction(const char* name, const char* title)
   }
 
   gTAGroot->ListOfAction()->Add(this);
+}
 
+//------------------------------------------+-----------------------------------
+//! Default constructor.
+//!
+//! \param[in] name action name
+//! \param[in] title action title name
+TAGaction::TAGaction(const char* title)
+: TAGnamed("", title),
+  fpDataOutList(0),
+  fpDataInList(0),
+  fpParaList(0),
+  fpHistList(0),
+  fbHistValid(kFALSE),
+  fbIsOpenFile(kFALSE)
+{
+   if (!gTAGroot) Fatal("TAGaction()", "TAGroot not instantiated");
+   SetBit(kMustCleanup);
+   
+   SetName(gTAGroot->DefaultActionName(ClassName()));
+
+   if (gTAGroot->FindAction(GetName())) {
+      Warning("TAGaction()", "Action with name '%s' already exists", GetName());
+   }
+   
+   gTAGroot->ListOfAction()->Add(this);
 }
 
 //------------------------------------------+-----------------------------------

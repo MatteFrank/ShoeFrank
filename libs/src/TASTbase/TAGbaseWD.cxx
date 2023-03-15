@@ -19,7 +19,7 @@
  \brief This class stores the params of a single channel waveform
 */
 
-//! Class Imp
+
 ClassImp(TAGbaseWD);
 
 using namespace std;
@@ -133,6 +133,7 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr)
     t1 = tmp_time.at(j);
     t2 = tmp_time.at(j+1);
     prod=a1*a2;
+    if(a1>fBaseline+thr)continue;
     if(prod<0){
       m = (a2-a1)/(t2-t1);
       q = a2-m*t2;

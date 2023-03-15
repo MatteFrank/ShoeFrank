@@ -86,8 +86,8 @@ Bool_t TACAactNtuHit::Action()
       Double_t timeOth = aHi->GetTimeOth();
       Double_t charge  = aHi->GetCharge();
       Double_t amplitude  = aHi->GetAmplitude();
-      Int_t z = 1; //N.B. only for testing pourposes!!!!
-      // Double_t tempADC  = aHi->GetTemperature(); // in ADC count
+
+      //Double_t tempADC  = aHi->GetTemperature(); // in ADC count
       //Double_t temp = ADC2Temp(tempADC);
 
       // here needed mapping file
@@ -101,7 +101,7 @@ Bool_t TACAactNtuHit::Action()
 
       // Temperature correction
       //Double_t charge_tcorr = GetTemperatureCorrection(charge, temp, crysId);
-      //AS:: we wait for a proper integration of T inside the DAQ
+
       Double_t charge_tcorr = charge;
       Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
       totCharge += charge_equalis;

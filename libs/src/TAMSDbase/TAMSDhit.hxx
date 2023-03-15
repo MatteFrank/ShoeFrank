@@ -36,6 +36,7 @@ protected:
   Int_t     fView;                     ///< view value
   Int_t     fStrip;                    ///< strip number
   Bool_t    fIsSeed;                   ///< seed flag
+  Bool_t    fIsNoisy;                  ///< noisy flag
   
   TArrayI   fMCindex;                  ///< Index of the hit created in the simulation
   TArrayI   fMcTrackIdx;               ///< Index of the track created in the simulation
@@ -69,6 +70,8 @@ public:
   Float_t    GetPosition()      const    { return fPosition;   }
   //! Get seed flag
   Bool_t    IsSeed()            const    { return fIsSeed;     }
+  //! Get noisy flag
+  Bool_t    IsNoisy()           const    { return fIsNoisy;    }
 
   //! Is Sortable
   Bool_t     IsSortable()       const    { return kTRUE;     }
@@ -95,11 +98,13 @@ public:
   void     SetPosition(Float_t pos)     { fPosition = pos;   }
   //! Set seed flag
   void     SetSeed(Bool_t s=true)      { fIsSeed = s;       }
+  //! Set noisy flag
+  void     SetNoisy(Bool_t n=true)     { fIsNoisy = n;      }
   // Add MC track Id
   void     AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
   
   
-  ClassDef(TAMSDhit,4)                            // Pixel or Pixel of a Detector Plane
+  ClassDef(TAMSDhit,5)                            // Pixel or Pixel of a Detector Plane
 };
 
 #endif

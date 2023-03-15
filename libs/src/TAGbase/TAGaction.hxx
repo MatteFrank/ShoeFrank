@@ -23,6 +23,8 @@ class TAGaction : public TAGnamed {
     };
 
     explicit        TAGaction(const char* name=0, const char* title=0);
+    explicit        TAGaction(const char* title=0);
+
     virtual         ~TAGaction();
 
     // Clear

@@ -121,10 +121,10 @@ void TAVTactBaseClusterMT::FillMaps(TClonesArray* listOfPixels, Int_t thr)
    // Clear maps
    ClearMaps(thr);
    
-   if (listOfPixels->GetEntries() == 0) return;
+   if (listOfPixels->GetEntriesFast() == 0) return;
    
    // fill maps for cluster
-   for (Int_t i = 0; i < listOfPixels->GetEntries(); i++) { // loop over hit pixels
+   for (Int_t i = 0; i < listOfPixels->GetEntriesFast(); i++) { // loop over hit pixels
       
       TAVTbaseHit* pixel = (TAVTbaseHit*)listOfPixels->At(i);
       if (!pixel->IsValidFrames()) continue;
@@ -147,7 +147,7 @@ void TAVTactBaseClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t thr)
    fClustersN[thr] = 0;
    // Search for cluster
    
-   Int_t pixelsN =  listOfPixels->GetEntries();
+   Int_t pixelsN =  listOfPixels->GetEntriesFast();
    
    for (Int_t iPix = 0; iPix < pixelsN; ++iPix) { // loop over hit pixels
 
@@ -175,11 +175,11 @@ void TAVTactBaseClusterMT::SearchCluster(TClonesArray* listOfPixels, Int_t thr)
 //! \param[in] listOfPixels list of pixels
 TAGobject*  TAVTactBaseClusterMT::GetHitObject(Int_t idx, TClonesArray* listOfPixels) const
 {
-   if (idx >= 0 && idx < listOfPixels->GetEntries() )
+   if (idx >= 0 && idx < listOfPixels->GetEntriesFast() )
       return (TAGobject*)listOfPixels->At(idx);
    
    else {
-      Error("GetHitObject()", "Error in index %d (max: %d)", idx, listOfPixels->GetEntries()-1);
+      Error("GetHitObject()", "Error in index %d (max: %d)", idx, listOfPixels->GetEntriesFast()-1);
       return 0x0;
    }   
 }
@@ -194,7 +194,7 @@ Bool_t TAVTactBaseClusterMT::ApplyCuts(TAVTbaseCluster* cluster)
    TAVTbaseParConf* pConfig = (TAVTbaseParConf*) fpConfig->Object();
    
    TClonesArray* list = cluster->GetListOfPixels();
-   Int_t  entries = list->GetEntries();
+   Int_t  entries = list->GetEntriesFast();
    
    // cuts on pixels in cluster
    if(entries < pConfig->GetSensorPar(cluster->GetSensorIdx()).MinNofPixelsInCluster ||
@@ -234,7 +234,7 @@ void TAVTactBaseClusterMT::ComputeCoGPosition()
    fClusterPulseSum = 0.;
    
    
-   for (Int_t i = 0; i < fCurListOfPixels->GetEntries(); ++i) {
+   for (Int_t i = 0; i < fCurListOfPixels->GetEntriesFast(); ++i) {
       TAVThit* pixel = (TAVThit*)fCurListOfPixels->At(i);
       tCorTemp.SetXYZ(pixel->GetPosition()(0)*pixel->GetPulseHeight(), pixel->GetPosition()(1)*pixel->GetPulseHeight(), pixel->GetPosition()(2));
       tCorrection  += tCorTemp;
@@ -243,7 +243,7 @@ void TAVTactBaseClusterMT::ComputeCoGPosition()
    
    pos = tCorrection*(1./fClusterPulseSum);
    
-   for (Int_t i = 0; i < fCurListOfPixels->GetEntries(); ++i) {
+   for (Int_t i = 0; i < fCurListOfPixels->GetEntriesFast(); ++i) {
 	  TAVThit* pixel = (TAVThit*)fCurListOfPixels->At(i);
 	  tCorrection2.SetXYZ(pixel->GetPulseHeight()*(pixel->GetPosition()(0)-(pos)(0))*(pixel->GetPosition()(0)-(pos)(0)), 
 							pixel->GetPulseHeight()*(pixel->GetPosition()(1)-(pos)(1))*(pixel->GetPosition()(1)-(pos)(1)), 

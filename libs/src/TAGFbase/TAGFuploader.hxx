@@ -43,6 +43,7 @@
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
+#include "TAMSDntuPoint.hxx"
 #include "TAGFdetectorMap.hxx"
 
 #include "TAMCntuPart.hxx"
@@ -55,7 +56,7 @@ class TAGFuploader {
 
 public:
 	
-	TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
+	explicit TAGFuploader ( TAGFdetectorMap* aSensorIDmap, bool IsMC );
 	virtual ~TAGFuploader();
 	
 	int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  );
@@ -80,7 +81,7 @@ private:
 
 	TAGgeoTrafo* m_GeoTrafo;								///< GeoTrafo object for reference frame changes
 
-	TAGFdetectorMap* m_sensorIDmap;							///< TAGFdetectorMap ptr for index handling
+	TAGFdetectorMap* m_SensorIDMap;							///< TAGFdetectorMap ptr for index handling
 
 	map< int, vector<AbsMeasurement*> >* m_allHitMeas;		///< Container for GenFit AbsMeasurements, FitPlane index to vector of respective measurements
 	map< int, vector<int> >* m_measParticleMC_collection;	///< Maps global measurement index to MC particles in the cluster/point
@@ -89,6 +90,8 @@ private:
 	int m_debug;											///< Global debug value
 	bool switchOff_HHe;										///< Boolean flag to switch off light fragments
 
+	bool m_IsMC;
+	uint m_NtracksMC;
 };
 
 #endif

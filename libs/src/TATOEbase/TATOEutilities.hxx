@@ -85,6 +85,8 @@ struct particle_properties{
  \brief polynomial fit parameters for trajectory
  */
 struct PolynomialFit_t{
+   constexpr PolynomialFit_t() : x(), determination_coefficient_x(0), y(), determination_coefficient_y(0) {}
+   
     std::array<double, 4> x; ///< coefficient for x
     double                determination_coefficient_x; ///< I don't know in x
     std::array<double, 2> y;  ///< coefficient for y

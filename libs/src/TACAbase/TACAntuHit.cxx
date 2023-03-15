@@ -103,7 +103,7 @@ void TACAntuHit::SetupClones()
 //! return number of hits
 Int_t TACAntuHit::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -112,10 +112,10 @@ Int_t TACAntuHit::GetHitsN() const
 //! \param[in] id crystal id
 TACAhit* TACAntuHit::GetHit(Int_t id)
 {
-   if (id >=0 || id < 22*22) {
+   if (id >=0 && id < 22*22) {
       return (TACAhit*)fListOfHits->At(id);
    } else {
-      cout << Form("Wrong sensor number %d\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }
@@ -126,10 +126,10 @@ TACAhit* TACAntuHit::GetHit(Int_t id)
 //! \param[in] id crystal id
 const TACAhit* TACAntuHit::GetHit(Int_t id) const
 {
-   if (id >=0 || id < 22*22) {
+   if (id >=0 && id < 22*22) {
       return (TACAhit*)fListOfHits->At(id);
    } else {
-      Error("GetPixel()", "Wrong sensor number %d\n", id);
+      Error("GetPixel()", "Hit id %d out of bounds!\n", id);
       return 0x0;
    }
 }

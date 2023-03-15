@@ -36,7 +36,7 @@ public:
     //! Get list of tracks
     TClonesArray*  GetListOfTracks()        const { return   fListOfTracks;                      }
     //! Get number of tracks
-    Int_t          GetTracksN()             const { return   fListOfTracks->GetEntries();        }
+    Int_t          GetTracksN()             const { return   fListOfTracks->GetEntriesFast();        }
     //! Get Tracks
     TAVTtrack*     GetTrack(Int_t index)          { return (TAVTtrack*)fListOfTracks->At(index); }
    //! Get Tracks (const)

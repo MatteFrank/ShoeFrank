@@ -40,7 +40,7 @@ class TABMntuHit : public TAGdata {
 
     //getters
     //! Get the total number of accepted BM hits
-    Int_t             GetHitsN()     const { return fListOfHits->GetEntries(); }
+    Int_t             GetHitsN()     const { return fListOfHits->GetEntriesFast(); }
     //! Get the number of hits selected for a track on the XZ view
     Int_t             GetSelhitsNx() const { return fSelhitsNX; }
     //! Get the number of hits selected for a track on the YZ view

@@ -64,7 +64,7 @@ void TWaveformContainer::PlotWaveForm(int i)
 {
   Double_t max=fVectA.at(0);
   Double_t min=fVectA.at(0);;
-  for(int bin=0;bin<WAVEFORMBINS;++bin){
+  for(int bin=0;bin<fVectA.size();++bin){
     if (fVectA.at(bin)>max){
       max=fVectA.at(bin);
     }
@@ -74,8 +74,8 @@ void TWaveformContainer::PlotWaveForm(int i)
   }
   std::cout << " max " << max << " min "<< min <<std::endl;
   TCanvas *c = new TCanvas;
-  c->Range(fVectT.at(0),min,fVectA.at(WAVEFORMBINS-1),max);
-  TGraph *g=new TGraph(WAVEFORMBINS,&fVectT[0],&fVectA[0]);
+  c->Range(fVectT.at(0),min,fVectA.at(fVectA.size()-1),max);
+  TGraph *g=new TGraph(fVectA.size(),&fVectT[0],&fVectA[0]);
   g->GetXaxis()->SetTitle("t (ns)");
   g->GetYaxis()->SetTitle("Amplitude (V)");
   g->SetTitle(TString::Format(" Board %d Channel %d",fBoardId,fChannelId));

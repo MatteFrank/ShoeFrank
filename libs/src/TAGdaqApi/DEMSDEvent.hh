@@ -23,8 +23,8 @@ class DEMSDEvent : public DECardEvent {
     //! return class type
     virtual std::string classType() const {return "DEMSDEvent";};
 
-    u_int Xplane[640];  ///< Xplane information
-    u_int Yplane[640];  ///< Yplane information
+    u_int FirstPlane[640];   ///< First Plane (closer to the TG) ADC information
+    u_int SecondPlane[640];  ///< Second Plane ADC information
 
     void fillStrip();
 };

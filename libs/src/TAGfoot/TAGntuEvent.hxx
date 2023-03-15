@@ -1,5 +1,5 @@
-#ifndef _TAMntuEvent_HXX
-#define _TAMntuEvent_HXX
+#ifndef _TAGntuEvent_HXX
+#define _TAGntuEvent_HXX
 
 /*!
  \file TAGntuEvent.hxx
@@ -9,7 +9,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TString.h"
-#include "TAGWDtrigInfo.hxx"
+#include "TAWDntuTrigger.hxx"
 #include "TAGdata.hxx"
 
 class TAGntuEvent : public TAGdata {

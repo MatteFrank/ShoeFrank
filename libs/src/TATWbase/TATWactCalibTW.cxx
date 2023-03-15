@@ -80,7 +80,7 @@ void TATWactCalibTW::CreateHistogram()
   DeleteHistogram();
 
 	//Cycle on the TW positions
-	for(Int_t PosID=0; PosID < nSlatCross; ++PosID)
+	for(Int_t PosID=0; PosID < nBarCross; ++PosID)
 	{
 		//Allocate memory for all the histograms
 		fhQLayerX.push_back(new TH1D(Form("hQLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), Form("hQLayerX-PartID%d-En%.3lf-Pos%d", fParticleID, f_pargeo_gl->GetBeamPar().Energy, PosID), QBINS, QMIN, QMAX));
@@ -204,7 +204,7 @@ Bool_t TATWactCalibTW::Action() {
 			if (hita!=nullptr && hitb!=nullptr )
 			{
 		    // this to be consistent with the the bar id of TATWdetector.map
-		    Int_t ShoeBarId = (BarId)%nSlatsPerLayer;
+		    Int_t ShoeBarId = (BarId)%nBarsPerLayer;
 
 		    // get raw energy
 		    Double_t rawEnergy = GetRawEnergy(hita,hitb);
@@ -310,7 +310,7 @@ Int_t TATWactCalibTW::GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos)
     return -1;
   }
 
-  barCrossId = barY + barX * nSlatsPerLayer;  // left top corner is (0,0) --> pos=0, right bottom corner is (19,19) --> pos = 399
+  barCrossId = barY + barX * nBarsPerLayer;  // left top corner is (0,0) --> pos=0, right bottom corner is (19,19) --> pos = 399
 
   if(FootDebugLevel(1))
     Info("GetBarCrossId()","%s, bar::%d, rawPos::%f, perp_BarId::%d, barCrossId::%d\n",LayerName[(TLayer)layer].data(),barId,rawPos,perp_BarId,barCrossId);

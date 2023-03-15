@@ -50,6 +50,36 @@ TAGdataDsc::TAGdataDsc(const char* name, TAGdata* p_data)
 }
 
 //------------------------------------------+-----------------------------------
+//! Default constructor.
+//!
+//! \param[in] p_data data to descript
+TAGdataDsc::TAGdataDsc(TAGdata* p_data)
+: TAGnamed("", 0),
+   fpObject(0),
+   fpObjectClass(0),
+   fpProducer(0),
+   fpConsumerList(0)
+{
+   if (!gTAGroot) Fatal("TAGdataDsc()", "TAGroot not instantiated");
+   SetBit(kMustCleanup);
+   
+   SetName(gTAGroot->DefaultDataDscName(p_data->ClassName()));
+
+   if (gTAGroot->FindDataDsc(GetName())) {
+      Warning("TAGdataDsc()", "Data descriptor with name '%s' already exists",
+              GetName());
+   }
+   
+   gTAGroot->ListOfDataDsc()->Add(this);
+   
+   if (p_data) {
+      fpObject = p_data;
+      fpObjectClass = p_data->IsA();
+      SetTitle(p_data->IsA()->GetName());
+   }
+}
+
+//------------------------------------------+-----------------------------------
 //! Destructor.
 TAGdataDsc::~TAGdataDsc()
 {

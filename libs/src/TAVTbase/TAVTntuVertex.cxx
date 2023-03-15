@@ -106,7 +106,7 @@ TAVTntuVertex::~TAVTntuVertex()
 //! return the number of vertex
 Int_t TAVTntuVertex::GetVertexN() const
 {
-    return fListOfVertex->GetEntries();
+    return fListOfVertex->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

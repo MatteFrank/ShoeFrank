@@ -84,7 +84,7 @@ Bool_t TAITactNtuClusterMT::FindClusters(Int_t iSensor, TClonesArray* listOfPixe
    // Look in a iterative way to next neighbour
    
    if (FootDebugLevel(1))
-      printf("Thread %d with %d pixels\n", thr, listOfPixels->GetEntries());
+      printf("Thread %d with %d pixels\n", thr, listOfPixels->GetEntriesFast());
    
    FillMaps(listOfPixels, thr);
    SearchCluster(listOfPixels, thr);
@@ -107,7 +107,7 @@ Bool_t TAITactNtuClusterMT::CreateClusters(Int_t iSensor, TClonesArray* listOfPi
    for (Int_t i = 0; i< fClustersN[thr]; ++i)
       pNtuClus->NewCluster(iSensor);
    
-   for (Int_t iPix = 0; iPix < listOfPixels->GetEntries(); ++iPix) {
+   for (Int_t iPix = 0; iPix < listOfPixels->GetEntriesFast(); ++iPix) {
       TAIThit* pixel = (TAIThit*)listOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();

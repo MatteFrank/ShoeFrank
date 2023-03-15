@@ -155,7 +155,7 @@ Bool_t TAVTactBaseNtuVertex::Action()
 
    if (fgCheckBmMatching)
 	  CheckBmMatching();
-   
+
    else {
       for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
          TAVTvertex* vtx  = pNtuVertex->GetVertex(i);
@@ -170,21 +170,22 @@ Bool_t TAVTactBaseNtuVertex::Action()
 //! Check BM matching
 Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 {
-   if (!fpBMntuTrack || !fpNtuVertex) return false;
+   if (!fpBMntuTrack || !fpNtuVertex || !fpFootGeo) return false;
 
    TABMntuTrack* pBMtrack    = (TABMntuTrack*) fpBMntuTrack->Object();
-   if(pBMtrack->GetTracksN() != 1) return false;
+   if(pBMtrack)
+     if(pBMtrack->GetTracksN() != 1)
+      return false;
+
+   TABMtrack* bmTrack = pBMtrack->GetTrack(0);
+   if (!bmTrack) return false;
+
 
    TAVTntuVertex* pNtuVertex = (TAVTntuVertex*)fpNtuVertex->Object();
    TAVTbaseParConf* config   = (TAVTbaseParConf*) fpConfig->Object();
 
    TVector3 minRes(0.,1.,1.);
    Int_t bestVtxIndex        = -1;
-
-   TABMtrack* bmTrack = pBMtrack->GetTrack(0);
-   if (!bmTrack) return false;
-
-   if (!fpFootGeo) return false;
 
    for (Int_t i = 0; i < pNtuVertex->GetVertexN(); ++i) {
 	  TAVTvertex* vtx = pNtuVertex->GetVertex(i);
@@ -193,7 +194,7 @@ Bool_t TAVTactBaseNtuVertex::CheckBmMatching()
 	  vtxPosition          = fpFootGeo->FromVTLocalToGlobal(vtxPosition);
 	  TVector3 bmPosition  = fpFootGeo->FromGlobalToBMLocal(vtxPosition);
 
-	  bmPosition   = bmTrack->PointAtLocalZ(bmPosition.Z());
+	  bmPosition   = bmTrack->Intersection(bmPosition.Z());
 	  bmPosition   = fpFootGeo->FromBMLocalToGlobal(bmPosition);
 	  TVector3 res = vtxPosition - bmPosition;
 
@@ -226,10 +227,10 @@ void TAVTactBaseNtuVertex::ComputeInteractionVertex(TABMtrack* lbm, TAVTtrack lv
    //taking point A of the straight line of bm
    Double_t z = 0;
    Double_t DZ = 1;
-   TVector3 Apoint (lbm->PointAtLocalZ(z).X(), lbm->PointAtLocalZ(z).Y(),z); //coordinates of point A belonging to the straight line of bm in Z = 0
+   TVector3 Apoint (lbm->Intersection(z).X(), lbm->Intersection(z).Y(),z); //coordinates of point A belonging to the straight line of bm in Z = 0
    Apoint  = fpFootGeo->FromBMLocalToGlobal(Apoint);
 
-   TVector3 Bpoint (lvtx.GetPoint(z).X(),lvtx.GetPoint(z).Y(),z); //coordinate of point B belonging to the straight line of vtx in Z = 0
+   TVector3 Bpoint (lvtx.Intersection(z).X(),lvtx.Intersection(z).Y(),z); //coordinate of point B belonging to the straight line of vtx in Z = 0
    Bpoint  = fpFootGeo->FromVTLocalToGlobal(Bpoint);
 
    TVector3 AmB = Apoint-Bpoint;

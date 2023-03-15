@@ -45,6 +45,10 @@ TAMSDactNtuTrack::TAMSDactNtuTrack(const char* name,
       AddDataIn(pNtuClus,   "TAMSDntuPoint");
       AddDataOut(pNtuTrack, "TAMSDntuTrack");
    }
+   
+   TAMSDparConf* config = (TAMSDparConf*)fpConfig->Object();
+   fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
+   fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
 }
 
 //------------------------------------------+-----------------------------------
@@ -53,6 +57,53 @@ TAMSDactNtuTrack::~TAMSDactNtuTrack()
 {
 
 }
+
+//_____________________________________________________________________________
+//! Action
+Bool_t TAMSDactNtuTrack::Action()
+{
+   // BM tracks
+   if (fpBMntuTrack) 
+	  CheckBM();
+   
+   
+   // VTX
+   TAMSDntuTrack* pNtuTrack = (TAMSDntuTrack*) fpNtuTrack->Object();
+   pNtuTrack->Clear();
+   
+   // looking straight
+   FindStraightTracks();
+   
+   // looking inclined line
+   if (!FindTiltedTracks()){
+	  if (ValidHistogram())
+		 FillHistogramm();
+	  fpNtuTrack->SetBit(kValid);
+	  return true;
+   }
+   
+   if (FindVertices())
+	  FindTiltedTracks();
+   
+   if(FootDebugLevel(1)) {
+	  printf("%s %d tracks found\n", this->GetName(), pNtuTrack->GetTracksN()); //print name of action since it's used for all trackers
+	  for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
+		 TAMSDtrack* track = pNtuTrack->GetTrack(i);
+		 printf("   with # clusters %d\n", track->GetClustersN());
+	  }
+   }
+   
+
+   if (ValidHistogram())
+	  FillHistogramm();
+   
+   // Set charge probability
+   SetChargeProba();
+   
+   fpNtuTrack->SetBit(kValid);
+   return true;
+}
+
 
 //_____________________________________________________________________________
 //! Get number of clusters for a given sensor

@@ -23,33 +23,45 @@ class TASThit : public TAGobject {
 public:
    
   TASThit();
-  TASThit(Double_t charge, Double_t de, Double_t time);
+  TASThit(Double_t charge, Double_t de, Double_t time, bool pileup = false);
   virtual         ~TASThit();
   
-  
-  Double_t       GetTime()                  const   { return fTime;                 }
-  Double_t       GetCharge()                const   { return fCharge;               }
-  Double_t       GetDe()                    const   { return fCharge;               }
-  
-  inline void SetTime(double value)                 { fTime = value;                }
-  inline void SetCharge(double value)               { fCharge = value;              }
-  inline void SetDe(double value)                   { fDe = value;                  }
+  //! Get the ST time in ns  
+  Double_t       GetTime()                  const   { return fTime;             }
+  //! Get the ST charge (in MC it provides the true ST time in ns)  
+  Double_t       GetCharge()                const   { return fCharge;           }
+  //! Get the ST edep (in DATA is not calibrated and in MC is the true edep)
+  Double_t       GetDe()                    const   { return fDe;               }
+  //! Validity check for the ST hit reconstruction: not valid if under a default energy threshold
+  Bool_t         IsValid()                  const   { return fIsValid;          }
 
-  Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
-  Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];    }
+  inline void SetTime(double value)                 { fTime = value;            }
+  inline void SetCharge(double value)               { fCharge = value;          }
+  inline void SetDe(double value)                   { fDe = value;              }
+  inline void SetPileUp(bool value)                 { fPileUp = value;          }
+
+  Int_t          GetMcIndex(Int_t index)    const   { return fMCindex[index];   }
+  Int_t          GetMcTrackIdx(Int_t index) const   { return fMcTrackIdx[index];}
   Int_t          GetMcTracksN()             const   { return fMcTrackIdx.GetSize(); }
-   
+  //! Pile up from consecutive events
+  bool           GetPileUp()                const   {return fPileUp; }
   void           Clear(Option_t* option = "C");
   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
+
+  void           SetValid(Bool_t t)                 { fIsValid   = t;           }
+  
 private:
  
-  Double32_t      fCharge;
-  Double32_t      fDe;
-  Double32_t      fTime;
+  Double32_t      fCharge;   ///< charge in DATA. In MC here it is stored the true MC ST time in ns
+  Double32_t      fDe;       ///< energy loss. Not calibrated in DATA. In MC here it is stored the true MC quantity
+  Double32_t      fTime;     ///< time of ST in ns
+  bool            fPileUp;
   
   TArrayI         fMCindex;                  // Id of the hit created in the simulation
-  TArrayI         fMcTrackIdx;               // Index of the track created in the simulation
+  TArrayI         fMcTrackIdx;               // Index of the track created in the simulationOB
+
+  Bool_t          fIsValid;
    
    ClassDef(TASThit,1)
 };
@@ -70,7 +82,7 @@ public:
    
    TASThit*          GetHit(Int_t i_ind);
    const TASThit*    GetHit(Int_t i_ind) const;
-   TASThit*          NewHit(double charge, double de, double time);
+   TASThit*          NewHit(double charge, double de, double time, bool pileup = false );
    virtual void      Clear(Option_t* opt="");
    void              SetupClones();
    

@@ -35,6 +35,8 @@ set( with_dictionnaries
    TAGeventId
    TAGgeoTrafo
    TAGcampaignManager
+   TAGrunManager
+   TAGnameManager
    TAGnamed
    TAGobject
    TAGparTools

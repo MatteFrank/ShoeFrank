@@ -17,10 +17,11 @@
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TAGcampaignManager.hxx"
+#include "TAGrunManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
-#include "TAGbaseWDparTime.hxx"
-#include "TAGbaseWDparMap.hxx"
+#include "TAWDparTime.hxx"
+#include "TAWDparMap.hxx"
 
 #include "TASTparMap.hxx"
 #include "TABMparMap.hxx"
@@ -51,6 +52,8 @@
 #include "TAVTparConf.hxx"
 #include "TAITparConf.hxx"
 #include "TAMSDparConf.hxx"
+#include "TATWparConf.hxx"
+#include "TACAparConf.hxx"
 
 #include "TAMCntuHit.hxx"
 #include "TASTntuHit.hxx"
@@ -78,6 +81,7 @@
 #include "TAMSDactNtuCluster.hxx"
 #include "TAMSDactNtuPoint.hxx"
 #include "TACAactNtuCluster.hxx"
+#include "TACAactNtuClusterP.hxx"
 #include "TATWactNtuPoint.hxx"
 #include "TATWactCalibTW.hxx"
 
@@ -125,18 +129,12 @@ public:
    
    //! Create rec action
    virtual void CreateRawAction()      { return; }
-   
-   //! Add required items
-   virtual void AddRawRequiredItem()   { return; }
-   
+      
    // Add required items
-   virtual void AddRecRequiredItem();
+   virtual void AddRequiredItem();
    
-   //! Set raw histogram directory
-   virtual void SetRawHistogramDir()   { return; }
-   
-   // Set rec histogram directory
-   virtual void SetRecHistogramDir();
+   // Set histogram directory
+   virtual void SetHistogramDir();
    
    // Loop events
    virtual void LoopEvent(Int_t nEvents);
@@ -180,10 +178,8 @@ public:
    //! Set run number
    void SetRunNumber(Int_t run)                { fRunNumber = run; }
 
-  void SetRateRuns(Int_t run1, Int_t run2){
-    fRateInitRun=run1;
-    fRateEndRun=run2;
-  }
+   //! Set rate runs
+  void SetRateRuns(Int_t run1, Int_t run2)     { fRateInitRun=run1; fRateEndRun=run2; }
 
    //! Enable tree
    void EnableTree()           { fFlagTree = true;        }
@@ -204,46 +200,20 @@ public:
    void EnableTracking()       { fFlagTrack = true;       }
    //! Disable tracking
    void DisableTracking()      { fFlagTrack = false;      }
-   
+  
+   //! return  MSD tracking
+   Bool_t IsMsdTracking()      { return fFlagMsdTrack;    }
    //! Enable MSD tracking
    void EnableMsdTracking()    { fFlagMsdTrack = true;    }
    //! Disable MSD tracking
    void DisableMsdTracking()   { fFlagMsdTrack = false;   }
    
-   //! Enable MSD pedestal
-   void EnableMsdPedestal()    { fFlagMsdPed = true;    }
-   //! Disable MSD pedestal
-   void DisableMsdPedestal()   { fFlagMsdPed = false;   }
-   
+   //! return  ITR tracking
+   Bool_t IsItrTracking()      { return fFlagItrTrack;    }
    //! Enable ITR tracking
    void EnableItrTracking()    { fFlagItrTrack = true;    }
    //! Disable ITR tracking
    void DisableItrTracking()   { fFlagItrTrack = false;   }
-   
-   //! Enable TW calibration per bar
-   void EnableTWcalibPerBar()  { fFlagTWbarCalib = true;  }
-   //! Disable TW calibration per bar
-   void DisableTWcalibPerBar() { fFlagTWbarCalib = false; }
-
-   //! Enable using true MC charge for TW
-   void EnableZfromMCtrue()    { fFlagZtrueMC = true;     }
-   //! Disable using true MC charge for TW
-   void DisableZfromMCtrue()   { fFlagZtrueMC = false;    }
-
-   //! Enable Z reconstruction with pileup off for TW
-   void EnableZrecWithPUoff()  { fFlagZrecPUoff = true;   }
-   //! Disable Z reconstruction with pileup off for TW
-   void DisableZrecWithPUoff() { fFlagZrecPUoff = false;  }
-  
-   //! Enable Z reconstruction matching for TW
-   void EnableTWZmatch()       { fFlagZmatchTw = true;   }
-   //! Disable Z reconstruction matching for TW
-   void DisableTWZmatch()      { fFlagZmatchTw = false;  }
-
-   //! Enable tw eloss smearing due to rate
-   void EnableTWRateSmearMC()       { fFlagRateSmearTw = true;   }
-   //! DIsable tw eloss smearing due to rate
-   void DisableTWRateSmearMC()      { fFlagRateSmearTw = false;  }
    
    //! Enable Reconstruction cutter for TOE
    void EnableRecCutter()      { fFlagRecCutter = true;   }
@@ -266,16 +236,7 @@ public:
 
    //! Flag for MC data
    Bool_t IsMcData()           { return fFlagMC;          }
-   
-   // Set Vtx Tracking algorithm
-   void SetVtxTrackingAlgo(char c);
-   
-   // Set Itr Tracking algorithm
-   void SetItrTrackingAlgo(char c);
-   
-   // Set Msd Tracking algorithm
-   void SetMsdTrackingAlgo(char c);
-  
+     
    // Campaign checks
    void CampaignChecks();
    
@@ -373,16 +334,17 @@ public:
 
 public:
    //! Disable MC info saving in output tree
-   static void DisableSaveMc() { fSaveMcFlag = false; }
+   static void DisableSaveMc() { fgSaveMcFlag = false; }
    //! Enable MC info saving in output tree
-   static void EnableSaveMc()  { fSaveMcFlag = true;  }
+   static void EnableSaveMc()  { fgSaveMcFlag = true;  }
    //! Check MC info saving in output tree
-   static Bool_t IsSaveMc()    { return fSaveMcFlag;  }
+   static Bool_t IsSaveMc()    { return fgSaveMcFlag;  }
    
 protected:
 
    TString               fExpName;        ///< Experiment name
    TAGcampaignManager*   fCampManager;    ///< Campaign manager
+   TAGrunManager*        fRunManager;     ///< Run manager
    Int_t                 fRunNumber;      ///< Run number
    TAGroot*              fTAGroot;        ///< pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;       ///< trafo prointer
@@ -419,7 +381,9 @@ protected:
    TAGparaDsc*           fpParConfVtx;    ///< VTX configuration parameter
    TAGparaDsc*           fpParConfIt;     ///< ITR configuration parameter
    TAGparaDsc*           fpParConfMsd;    ///< MSD configuration parameter
-   
+   TAGparaDsc*           fpParConfTw;     ///< TW configuration parameter
+   TAGparaDsc*           fpParConfCa;     ///< CA configuration parameter
+
    TAGdataDsc*           fpDatRawSt;     ///< Raw hit input dsc for STC
    TAGdataDsc*           fpNtuHitSt;     ///< Hit input dsc for STC
    TAGdataDsc*           fpDatRawBm;     ///< Raw hit input dsc for BM
@@ -480,7 +444,7 @@ protected:
    TATWactNtuPoint*      fActPointTw;    ///< action for TW points
    TATWactCalibTW*       fActCalibTw;    ///< action for TW calibration
 
-   TACAactNtuCluster*    fActClusCa;     ///< action for clusters
+   TACAactBaseNtuCluster* fActClusCa;     ///< action for clusters
    TACAactNtuHit*        fActNtuHitCa;   ///< action for hit
 
 #ifdef TOE_FLAG
@@ -498,16 +462,13 @@ protected:
    Bool_t                fFlagHits;         ///< flag to save hits in tree
    Bool_t                fFlagHisto;        ///< flag for histo generatiom
    Bool_t                fFlagTrack;        ///< flag for tracking
-   Bool_t                fFlagMsdPed;       ///< flag for MSD pedestal run
+   Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar
    Bool_t                fFlagMsdTrack;     ///< flag for MSD tracking
    Bool_t                fFlagItrTrack;     ///< flag for ITR tracking
-   Bool_t                fFlagTWbarCalib;   ///< flag for TW calibration per Bar
-   TString               fgVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
-   TString               fgMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
-   Bool_t                fFlagZtrueMC;      ///< Z true MC flag
-   Bool_t                fFlagZrecPUoff;    ///< Z rec TW PU off flag
-   Bool_t                fFlagZmatchTw;     ///< TW Z match
+   TString               fVtxTrackingAlgo; ///< vtx tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fItrTrackingAlgo; ///< itr tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fMsdTrackingAlgo; ///< msd tracking algorithm ("std" with BM, "Full" combinatory)
+   TString               fCalClusterAlgo;  ///< cal tracking clustering ("std" for standard, "Padme" for PADME one)
    Bool_t                fFlagRateSmearTw;  ///< TW eloss emaring due to rate
 
    Bool_t                fFlagMC;           ///< MC flag
@@ -541,9 +502,7 @@ protected:
    void CreateRecActionGlbS();
 
 protected:
-   static Bool_t fgItrTrackFlag; ///< ITR tracking flag
-   static Bool_t fgMsdTrackFlag; ///< MSD tracking flag
-   static Bool_t fSaveMcFlag;    ///< MC saving flag
+   static Bool_t fgSaveMcFlag;    ///< MC saving flag
 
    ClassDef(BaseReco, 1);        ///< Base class for reconstruction
 };

@@ -572,7 +572,7 @@ Bool_t TAIRalignC::Align(Bool_t rough)
       Int_t nValidCluster = 0;
       Int_t aCluster = 0;
       TClonesArray* list = (TClonesArray*)fClusterArray->At(i);
-      nCluster = list->GetEntries();
+      nCluster = list->GetEntriesFast();
 
    //   printf("%d %d\n", i, nCluster);
 
@@ -676,7 +676,7 @@ Bool_t TAIRalignC::FillHistograms()
       
       iPlane = fSecArray[i];
       TClonesArray* list = (TClonesArray*)fClusterArray->At(iPlane);
-      nCluster = list->GetEntries();
+      nCluster = list->GetEntriesFast();
       
       if (nCluster < 1) return false;
       for (Int_t j = 0; j < nCluster; j++){

@@ -22,16 +22,12 @@ TATWhit::TATWhit()
     fCoordinate(-99),
     fZ(-99),
     fChargeZ(-99),
-    fChargeCOM(-1),
     fChargeA(-1),
     fChargeB(-1),
     fAmplitudeA(-1),
     fAmplitudeB(-1),
     fTimeA(-1),
     fTimeB(-1),
-    fTime_oth(-1),
-    fTimeAOth(-1),
-    fTimeBOth(-1),
     fIsValid(true),
     fTrigType(-1000)
 {
@@ -49,16 +45,12 @@ TATWhit::TATWhit( TATWrawHit* hit )
   fCoordinate(-99),
   fZ(-99),
   fChargeZ(-99),
-  fChargeCOM(-1),
   fChargeA(-1),
   fChargeB(-1),
   fAmplitudeA(-1),
   fAmplitudeB(-1),
   fTimeA(-1),
   fTimeB(-1),
-  fTime_oth(-1),
-  fTimeAOth(-1),
-  fTimeBOth(-1),
   fIsValid(true),
   fTrigType(-1000)
 {
@@ -76,7 +68,6 @@ TATWhit::TATWhit(const TATWhit& aHit)
    fCoordinate(aHit.fCoordinate),
    fZ(aHit.fZ),
    fChargeZ(aHit.fChargeZ),
-   fChargeCOM(aHit.fChargeCOM),
    fMCindex(aHit.fMCindex),
    fMCtrackId(aHit.fMCtrackId),
    fChargeA(aHit.fChargeA),
@@ -85,9 +76,6 @@ TATWhit::TATWhit(const TATWhit& aHit)
    fAmplitudeB(aHit.fAmplitudeB),
    fTimeA(aHit.fTimeA),
    fTimeB(aHit.fTimeB),
-   fTime_oth(aHit.fTime_oth),
-   fTimeAOth(aHit.fTimeAOth),
-   fTimeBOth(aHit.fTimeBOth),
    fIsValid(aHit.fIsValid),
    fTrigType(aHit.fTrigType)
 {
@@ -95,9 +83,9 @@ TATWhit::TATWhit(const TATWhit& aHit)
 
 //______________________________________________________________________________
 // Build the hit from its layerID and barID
-TATWhit::TATWhit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_t aTime_oth,
-			Double_t pos,Double_t chargeCOM,Double_t ChargeA,
-		  Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Double_t TimeA_oth,Double_t TimeB_oth, Int_t TrigType):
+TATWhit::TATWhit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime,
+                  Double_t pos, Double_t ChargeA,
+		  Double_t ChargeB,Double_t AmplitudeA,Double_t AmplitudeB,Double_t TimeA,Double_t TimeB, Int_t TrigType):
   
   TAGobject(),
   fLayer(aView),
@@ -108,16 +96,12 @@ TATWhit::TATWhit (Int_t aView, Int_t aBar, Double_t aDe, Double_t aTime, Double_
   fCoordinate(pos),
   fZ(-99),
   fChargeZ(-99),
-  fChargeCOM(chargeCOM),
   fChargeA(ChargeA),
   fChargeB(ChargeB),
   fAmplitudeA(AmplitudeA),
   fAmplitudeB(AmplitudeB),
   fTimeA(TimeA),
   fTimeB(TimeB),
-  fTime_oth(aTime_oth),
-  fTimeAOth(TimeA_oth),
-  fTimeBOth(TimeB_oth),
   fIsValid(true),
   fTrigType(TrigType)
 {
@@ -146,18 +130,14 @@ void TATWhit::Clear(Option_t* /*option*/)
 	fTimeofflight=0,
 	fCoordinate=0;
 	fZ=0;
-   fChargeZ = 0;
-	fChargeCOM=0;
+        fChargeZ = 0;
 	fChargeA=0;
 	fChargeB=0;
 	fAmplitudeA=0;
 	fAmplitudeB=0;
 	fTimeA=0;
 	fTimeB=0;
-	fTime_oth=0;
-	fTimeAOth=0;
-	fTimeBOth=0;
-   fIsValid = true;
+        fIsValid = true;
 
 }
 
@@ -187,15 +167,26 @@ TATWntuHit::~TATWntuHit()
 }
 
 //______________________________________________________________________________
-//  standard
-TATWhit* TATWntuHit::NewHit( int layer, int bar, double energyLoss, double atime, double atime_oth, double pos,double chargeCOM,
-			     double ChargeA, double ChargeB, double AmplitudeA, double AmplitudeB, double TimeA, double TimeB, double TimeA_oth, double TimeB_oth, Int_t TrigType) {
+//! new hit
+//!
+//! \param[in] layer       LayerId [0->LayerY->rear,1->layerX->front]
+//! \param[in] bar         barId [0-19 fort each layer]
+//! \param[in] energyloss  Deposited energy in MeV
+//! \param[in] atime       time of the TW hit in ns
+//! \param[in] pos         position along the bar in cm
+//! \param[in] ChargeA     Charge of channel A for a given bar
+//! \param[in] ChargeB     Charge of channel B for a given bar
+//! \param[in] AmplitudeA  Amplitude of channel A for a given bar
+//! \param[in] AmplitudeB  Amplitude of channel B for a given bar
+//! \param[in] TimeA       Time of channel A for a given bar
+//! \param[in] TimeB       Time of channel B for a given bar
+//! \param[in] TrigType    Trigger Type Id
+TATWhit* TATWntuHit::NewHit( int layer, int bar, double energyLoss, double atime, double pos, double ChargeA, double ChargeB, double AmplitudeA, double AmplitudeB, double TimeA, double TimeB, Int_t TrigType) {
 
 	TClonesArray &pixelArray = *fListOfHits;
 	if(layer == (int)LayerY) fHitlayY++;
 	else   if(layer == (int)LayerX) fHitlayX++;
-	TATWhit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWhit( layer, bar, energyLoss, atime, atime_oth, pos,
-									     chargeCOM,ChargeA, ChargeB, AmplitudeA, AmplitudeB, TimeA, TimeB,  TimeA_oth, TimeB_oth, TrigType);
+	TATWhit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TATWhit( layer, bar, energyLoss, atime, pos, ChargeA, ChargeB, AmplitudeA, AmplitudeB, TimeA, TimeB, TrigType);
 
 
 	return hit;
@@ -227,7 +218,7 @@ TATWhit* TATWntuHit::Hit(Int_t i)
 //! return a pixel for a given sensor
 TATWhit* TATWntuHit::GetHit( int hitID, int layer ) {
 	int tmpId(0);
-	for(int iD=0; iD<fListOfHits->GetEntries(); iD++)
+	for(int iD=0; iD<fListOfHits->GetEntriesFast(); iD++)
 	{
 		int CurrentLayer=((TATWhit*)fListOfHits->At(iD))->GetLayer();
 		if(CurrentLayer == layer)
@@ -245,7 +236,8 @@ TATWhit* TATWntuHit::GetHit( int hitID, int layer ) {
 //! return a pixel for a given sensor
 TATWhit* TATWntuHit::GetHit( int hitID) {
 
-  if(hitID<fListOfHits->GetEntries())
+
+  if(hitID >=0 && hitID<fListOfHits->GetEntriesFast())
     return (TATWhit*)(fListOfHits->At(hitID));
   else
     return nullptr;
@@ -262,12 +254,11 @@ TClonesArray* TATWntuHit::GetListOfHits() {
 //! Setup clones. Crate and initialise the list of pixels
 void TATWntuHit::SetupClones()   {
 
-	if (fListOfHits) return;
-	fListOfHits = new TClonesArray("TATWhit");
-	//    fListOfHits->SetOwner(true);
+     if (!fListOfHits)
+       fListOfHits = new TClonesArray("TATWhit");
 
+     return;
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Clear event.

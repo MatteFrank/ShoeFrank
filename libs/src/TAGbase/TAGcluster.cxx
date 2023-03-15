@@ -55,6 +55,16 @@ TAGcluster::TAGcluster(const TAGcluster& cluster)
 {
 }
 
+TAGcluster::~TAGcluster()
+{
+   fMcTrackIdx.Set(0);
+   fMcHitIdx.Set(0);
+
+   fMcTrackMap.clear();
+   fMcHitMap.clear();
+   fIsValid = false;
+}
+
 //______________________________________________________________________________
 //! Set local position
 //!

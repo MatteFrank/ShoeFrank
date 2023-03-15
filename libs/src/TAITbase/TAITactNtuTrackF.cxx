@@ -54,6 +54,10 @@ TAITactNtuTrackF::TAITactNtuTrackF(const char* name,
       AddDataIn(pNtuClus,   "TAITntuCluster");
       AddDataOut(pNtuTrack, "TAITntuTrack");
    }
+   
+   TAITparConf* config = (TAITparConf*)fpConfig->Object();
+   fRequiredClusters   = config->GetAnalysisPar().PlanesForTrackMinimum;
+   fSearchClusDistance = config->GetAnalysisPar().SearchHitDistance;
 }
 
 //------------------------------------------+-----------------------------------

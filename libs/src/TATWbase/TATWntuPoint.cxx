@@ -45,6 +45,8 @@ TATWpoint::TATWpoint( Double_t x, Double_t dx, TATWhit* rowHit, Double_t y, Doub
    fPositionGlb(-99, -99, -99),
    fRowHit(new TATWhit(*rowHit)),
    fColumnHit(new TATWhit(*colHit)),
+  //  fRowHit(rowHit),
+  //  fColumnHit(colHit),
    fMatchCalIdx(-1),
    fLayer(mainLayer),
    fId(-99),
@@ -182,7 +184,7 @@ TATWpoint* TATWntuPoint::NewPoint(Double_t x, Double_t dx, TATWhit* rowHit, Doub
 //------------------------------------------+-----------------------------------
 Int_t TATWntuPoint::GetPointsN() const
 {
-	return fListOfPoints->GetEntries();
+	return fListOfPoints->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

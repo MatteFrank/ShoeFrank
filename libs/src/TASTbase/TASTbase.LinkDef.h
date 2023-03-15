@@ -7,8 +7,8 @@
 
 
 #pragma link C++ class  TAGbaseWD+;
-#pragma link C++ class  TAGbaseWDparMap+;
-#pragma link C++ class  TAGbaseWDparTime+;
+#pragma link C++ class  TAWDparMap+;
+#pragma link C++ class  TAWDparTime+;
 #pragma link C++ class  TASTactNtuHitMC+;
 #pragma link C++ class  TASTactNtuHit+;
 #pragma link C++ class  TASTntuRaw+;

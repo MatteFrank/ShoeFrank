@@ -39,8 +39,8 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-#include "LocalReco.hxx"
-#include "LocalRecoMC.hxx"
+#include "RecoRaw.hxx"
+#include "RecoMC.hxx"
 
 /*!
  \Class TAGbaseEventDisplay
@@ -51,8 +51,6 @@
 //! Class Imp
 ClassImp(TAGbaseEventDisplay)
 
-TString TAGbaseEventDisplay::fgVtxTrackingAlgo = "Full";
-TString TAGbaseEventDisplay::fgItrTrackingAlgo = "Full";
 TString TAGbaseEventDisplay::fgMsdTrackingAlgo = "Full";
 Bool_t  TAGbaseEventDisplay::fgStdAloneFlag    = false;
 Bool_t  TAGbaseEventDisplay::fgBmSelectHit     = false;
@@ -88,9 +86,7 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
    
-   fFlagTrack    = TAGrecoManager::GetPar()->IsTracking();
-   fFlagMsdTrack = TAGrecoManager::GetPar()->IsMsdTracking();
-   fFlagItrTrack = TAGrecoManager::GetPar()->IsItrTracking();
+   fFlagTrack = TAGrecoManager::GetPar()->IsTracking();
 
    // default constructon
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeBM()) {
@@ -230,6 +226,35 @@ void TAGbaseEventDisplay::ReadParFiles()
 }
 
 //__________________________________________________________
+//! Read parameters files
+void TAGbaseEventDisplay::AdditionalTracking()
+{
+   
+   fFlagMsdTrack = fReco->IsMsdTracking();
+   fFlagItrTrack = fReco->IsItrTracking();
+
+   if (TAGrecoManager::GetPar()->IncludeIT()) {
+      if (fFlagItrTrack) {
+         fItTrackDisplay = new TAEDtrack("Inner Tracker Track");
+         fItTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fItTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fItTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fItTrackDisplay->SetPickable(true);
+      }
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      if (fFlagMsdTrack) {
+         fMsdTrackDisplay = new TAEDtrack("Micro Strip Track");
+         fMsdTrackDisplay->SetMaxEnergy(fMaxEnergy/2.);
+         fMsdTrackDisplay->SetDefWidth(fBoxDefWidth);
+         fMsdTrackDisplay->SetDefHeight(fBoxDefHeight);
+         fMsdTrackDisplay->SetPickable(true);
+      }
+   }
+}
+
+//__________________________________________________________
 //! Set reconstruction alorithm options for trackers
 void TAGbaseEventDisplay::SetRecoOptions()
 {
@@ -237,12 +262,8 @@ void TAGbaseEventDisplay::SetRecoOptions()
    fReco->DisableSaveHits();
    fReco->EnableHisto();
    
-   if (fFlagTrack) {
-      fReco->SetVtxTrackingAlgo(fgVtxTrackingAlgo[0]);
-      fReco->SetItrTrackingAlgo(fgItrTrackingAlgo[0]);
-      fReco->SetMsdTrackingAlgo(fgMsdTrackingAlgo[0]);
+   if (fFlagTrack) 
       fReco->EnableTracking();
-   }
    
    fReco->GlobalSettings();
    
@@ -384,8 +405,7 @@ void TAGbaseEventDisplay::OpenFile()
 //! Add required actions in list
 void TAGbaseEventDisplay::AddRequiredItem()
 {
-   fReco->AddRawRequiredItem();
-   fReco->AddRecRequiredItem();
+   fReco->AddRequiredItem();
 
    gTAGroot->BeginEventLoop();
    gTAGroot->Print();
@@ -925,7 +945,7 @@ void TAGbaseEventDisplay::UpdateQuadElements(const TString prefix)
          if (!clus->IsValid()) continue;
          TVector3 pos = clus->GetPositionG();
          TVector3 posG = pos;
-         Int_t nPix = clus->GetListOfPixels()->GetEntries();
+         Int_t nPix = clus->GetListOfPixels()->GetEntriesFast();
          if (prefix == "vt")
             posG = fpFootGeo->FromVTLocalToGlobal(posG);
          else if (prefix == "it")
@@ -993,7 +1013,7 @@ void TAGbaseEventDisplay::UpdateStripElements()
          if (!clus->IsValid()) continue;
          TVector3 pos = clus->GetPositionG();
          TVector3 posG = fpFootGeo->FromMSDLocalToGlobal(pos);
-         Int_t nStrip = clus->GetListOfStrips()->GetEntries();
+         Int_t nStrip = clus->GetListOfStrips()->GetEntriesFast();
 
          x = posG(0);
          y = posG(1);
@@ -1327,7 +1347,7 @@ void TAGbaseEventDisplay::UpdateBarElements()
    
    fTwClusDisplay->RefitPlex();
    
-   if (TAGrecoManager::GetPar()->IsLocalReco()) return;
+   if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
    // Color bar
    TATWparGeo* parGeo = parGeo = fReco->GetParGeoTw();
@@ -1410,7 +1430,7 @@ void TAGbaseEventDisplay::UpdateCrystalElements()
       
    fCaClusDisplay->RefitPlex();
    
-   if (TAGrecoManager::GetPar()->IsLocalReco()) return;
+   if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
    
    TACAparGeo* parGeo = fReco->GetParGeoCa();;
 

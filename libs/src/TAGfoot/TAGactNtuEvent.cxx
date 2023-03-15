@@ -91,11 +91,11 @@ void TAGactNtuEvent::CreateHistogram(){
      cout<<"I have created the DAQ histo "<<endl;
 
   
-  strcpy(histoname,"DeltaTimeEvents");
+  strcpy(histoname,"daqDeltaTimeEvents");
   hDeltaTimeEvents = new TH1F(histoname, histoname, 20000, 0., 200.);
   AddHistogram(hDeltaTimeEvents);
 
-  strcpy(histoname,"DAQEventsVsTime");
+  strcpy(histoname,"daqEventsVsTime");
   hDAQEventsVsTime = new TH1F(histoname, histoname, 300000, 0., 300.);
   AddHistogram(hDAQEventsVsTime);
 

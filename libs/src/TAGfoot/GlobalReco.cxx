@@ -32,7 +32,7 @@ ClassImp(GlobalReco)
 GlobalReco::GlobalReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
 : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
-  TAGrecoManager::GetPar()->EnableLocalReco();
+  TAGrecoManager::GetPar()->IsFromLocalReco();
   fFlagMC = isMC;
 }
 
@@ -62,7 +62,7 @@ void GlobalReco::SetL0TreeBranches()
 {
   BaseReco::SetL0TreeBranches();
   
-  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
+  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
     if (fFlagMC) {
       fpNtuMcTrk = new TAGdataDsc(TAMCntuPart::GetDefDataName(), new TAMCntuPart());
       fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuPart::GetBranchName());
@@ -75,7 +75,7 @@ void GlobalReco::SetL0TreeBranches()
         fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
       }
       
-      if (TAGrecoManager::GetPar()->IncludeKalman() && TAGrecoManager::GetPar()->IsLocalReco()) {
+      if (TAGrecoManager::GetPar()->IncludeKalman() && TAGrecoManager::GetPar()->IsFromLocalReco()) {
         if (TAGrecoManager::GetPar()->IncludeST()) {
           fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
           fActEvtReader->SetupBranch(fpNtuMcSt,TAMCntuHit::GetStcBranchName());
@@ -121,7 +121,7 @@ void GlobalReco::SetTreeBranches()
 {
   BaseReco::SetTreeBranches();
   
-  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsLocalReco()) {
+  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
     if (fFlagMC) {
       fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
       fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());

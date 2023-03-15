@@ -12,6 +12,7 @@
 
 #include "TAGactTreeReader.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "BaseReco.hxx"
 
 
 #include "TAGrecoManager.hxx"
@@ -25,7 +26,7 @@
 //! Class Imp
 ClassImp(ConvertNtuple)
 
-Bool_t  ConvertNtuple::fSaveMcFlag = true;
+Bool_t  ConvertNtuple::fgSaveMcFlag = true;
 
 //__________________________________________________________
 //! Constructor
@@ -289,7 +290,7 @@ void ConvertNtuple::OpenFileOut()
 void ConvertNtuple::CloseFileOut()
 {
    // saving current run info
-   TAGrecoManager::GetPar()->EnableLocalReco();
+   TAGrecoManager::GetPar()->EnableFromLocalReco();
    TAGrunInfo info = TAGrecoManager::GetPar()->GetGlobalInfo();
    info.SetCampaignName(fExpName);
    info.SetRunNumber(fRunNumber);
@@ -352,7 +353,7 @@ void ConvertNtuple::ReadParFiles()
    }
    
    // initialise par files for vertex
-   if (TAGrecoManager::GetPar()->IncludeVT() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeVT() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
       fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
@@ -360,23 +361,37 @@ void ConvertNtuple::ReadParFiles()
    }
    
    // initialise par files for inner tracker
-   if (TAGrecoManager::GetPar()->IncludeIT() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeIT() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
       fpParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
+      
+      TAGparaDsc* pParConfIt = new TAGparaDsc("itConf", new TAITparConf());
+      TAITparConf* parConf = (TAITparConf*)pParConfIt->Object();
+      parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      fFlagItrTrack = parConf->GetAnalysisPar().TrackingFlag;
    }
    
    // initialise par files for multi strip detector
-   if (TAGrecoManager::GetPar()->IncludeMSD() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeMSD() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
       fpParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
+      
+      TAGparaDsc* pParConfMsd = new TAGparaDsc("msdConf", new TAMSDparConf());
+      TAMSDparConf* parConf = (TAMSDparConf*)pParConfMsd->Object();
+      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+      parConf->FromFile(parFileName.Data());
+      
+      fFlagMsdTrack = parConf->GetAnalysisPar().TrackingFlag;
    }
    
    // initialise par files for Tof Wall
-   if (TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IsLocalReco()) {
+   if (TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
       fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
@@ -396,19 +411,11 @@ void ConvertNtuple::ReadParFiles()
 //! Global reconstruction settings
 void ConvertNtuple::GlobalSettings()
 {
-   Bool_t trk    = TAGrecoManager::GetPar()->IsTracking();
-   Bool_t trkMsd = TAGrecoManager::GetPar()->IsMsdTracking();
-   Bool_t trkItr = TAGrecoManager::GetPar()->IsItrTracking();
+   Bool_t trk  = TAGrecoManager::GetPar()->IsTracking();
    
    // global setting
    if (trk)
       EnableTracking();
-   
-   if (trkMsd)
-      EnableMsdTracking();
-   
-   if (trkItr)
-      EnableItrTracking();
 }
 
 //__________________________________________________________
@@ -513,7 +520,7 @@ void ConvertNtuple::SetL0TreeBranches()
 {
    fActEvtReader = new TAGactTreeReader("evtReader");
    
-   if (!fSaveMcFlag)
+   if (!fgSaveMcFlag)
       if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull()) {
          fActEvtReader->AddFriendTree(fFriendFileName,fFriendTreeName);
          Info("SetL0TreeBranches()", "\n Open file %s for friend tree %s\n", fFriendFileName.Data(), fFriendTreeName.Data());

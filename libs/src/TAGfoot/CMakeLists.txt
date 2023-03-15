@@ -9,8 +9,16 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TATOE} ${TAGF} ${TOE_LIBRARIES} ${GENFIT_LIBRARIES})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADI} ${TADAQ} ${TAAPI} ${TAST} ${TAVT} ${TAIT} ${TAEM} ${TAMSD} ${TAIR} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
+
+if (GENFIT_DIR)
+ set(EXTRA_INTERNAL_LIBRARIES ${EXTRA_INTERNAL_LIBRARIES} ${GENFIT_LIBRARIES} ${TAGF})
+endif(GENFIT_DIR)
+
+if (TOE_DIR)
+   set(EXTRA_INTERNAL_LIBRARIES ${EXTRA_INTERNAL_LIBRARIES} ${TOE_LIBRARIES} ${TATOE})
+endif(TOE_DIR)
 
 #
 # headers / dictionnary / sources 
@@ -25,8 +33,8 @@ set( with_dictionnaries
    TAGeventDisplay
    TAGeventDisplayMC
    BaseReco
-   LocalRecoMC
-   LocalReco
+   RecoMC
+   RecoRaw
    ConvertNtuple
    TAGactNtuGlbTrackS
    GlobalReco

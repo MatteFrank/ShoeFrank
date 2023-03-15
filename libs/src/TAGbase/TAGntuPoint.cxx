@@ -198,7 +198,7 @@ void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* reco
 TVector3 TAGpoint::EvalError( TMatrixD cov )
 {
    TVector3 vec(0,0,0);
-	vec = TVector3( cov(0,0)*cov(0,0), cov(1,1)*cov(1,1), cov(2,2)*cov(2,2) ); // * diagFactor;
+	vec = TVector3( TMath::Sqrt(cov(0,0)), TMath::Sqrt(cov(1,1)), TMath::Sqrt(cov(2,2)) ); // * diagFactor;
    
    return vec;
 }
@@ -302,7 +302,7 @@ TAGpoint* TAGntuPoint::NewPoint(TVector3 measPos, TVector3 measPosErr, TVector3 
 //! Get number of points
 Int_t TAGntuPoint::GetPointsN()
 {
-	return fListOfPoints->GetEntries();
+	return fListOfPoints->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------

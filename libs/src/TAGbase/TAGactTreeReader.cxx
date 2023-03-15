@@ -175,7 +175,7 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
     }
   }
   
-  fiNEntry = (Int_t) fpTree->GetEntries();
+  fiNEntry = (Int_t) fpTree->GetEntriesFast();
   fiCurrentEntry = -1;
 
   TAGrunInfo* p_ri = (TAGrunInfo*) fpFile->Get(TAGrunInfo::GetObjectName());

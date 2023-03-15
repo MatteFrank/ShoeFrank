@@ -11,8 +11,6 @@
 set(BUILD_REC "${CMAKE_BINARY_DIR}/libs")
 set(FOOT_SRC "${CMAKE_SOURCE_DIR}/libs/src")
 set(FOOT_REC "${CMAKE_SOURCE_DIR}/Reconstruction")
-set(FOOT_LEVEL0 "${CMAKE_SOURCE_DIR}/Reconstruction/level0")
-set(FOOT_FULLREC "${CMAKE_SOURCE_DIR}/Reconstruction/fullrec")
 set(REC_INCLUDE_DIR ${FOOT_SRC}/TAGbase ${FOOT_SRC}/TADIbase ${FOOT_SRC}/TAMCbase ${FOOT_SRC}/TASTbase ${FOOT_SRC}/TABMbase ${FOOT_SRC}/TAVTbase ${FOOT_SRC}/TAITbase ${FOOT_SRC}/TAMSDbase ${FOOT_SRC}/TACAbase ${FOOT_SRC}/TATWbase ${FOOT_SRC}/TAEDbase ${FOOT_SRC}/TAGfoot)
 
 
@@ -21,8 +19,8 @@ set(REC_LIBRARIES -lTAGbase -lTADIbase -lTAMCbase -lTASTbase -lTABMbase -lTAMCba
 set(SIM_REC_LIBRARIES TAGbase TADIbase TAMCbase TASTbase TABMbase TAMCbase TAVTbase TAITbase TAMSDbase TACAbase TATWbase TAEDbase TAGfoot)
 set(REC_LIBRARY_DIR ${FOOT_SRC}/lib)
 
-set(REC_GEOMAPS_DIR ${FOOT_LEVEL0}/geomaps)
-set(REC_CONFIG_DIR  ${FOOT_LEVEL0}/config)
+set(REC_GEOMAPS_DIR ${FOOT_REC}/geomaps)
+set(REC_CONFIG_DIR  ${FOOT_REC}/config)
   
 if(NOT REC_FIND_QUIETLY)
   message(" --> Found REC in ${FOOT_SRC}")

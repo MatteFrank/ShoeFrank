@@ -27,13 +27,19 @@ public:
    
    void           SetFunctions();
    void           SetInitParFunction();
+   void           SmearTWquantities(Double_t &energy, Double_t &time, Double_t &pos);
+   void           SmearEnergyLoss(Double_t &energy);
+   void           SmearTimeTW(Double_t energy,Double_t &time);
+   void           SmearPosAlongBar(Double_t energy,Double_t &pos);
+   void           ComputePosDeltaTime(Double_t eloss, Double_t time, Double_t &pos, Double_t &timea, Double_t &timeb);
+
    
-   Bool_t         Process(Double_t edep, Double_t x0, Double_t y0, Double_t zin=0, Double_t timeST=0, Double_t tof = 0, Int_t sensorId = 0, Int_t Z =-99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
+   Bool_t         Process(Double_t edep, Double_t posalongbar, Double_t layer, Double_t barId, Double_t hitId, Double_t time = 0, Int_t sensorId = 0, Int_t Z =-99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
    
-   Float_t        GetResCharge(Float_t energy);
-   Float_t        GetResEnergyExp(Float_t energy);
-   Float_t        GetResEnergyMC(Float_t energy);
-   Float_t        GetElossShiftRate();
+   Double_t       GetResCharge(Double_t energy);
+   Double_t       GetResEnergyExp(Double_t energy);
+   Double_t       GetResEnergyMC(Double_t energy);
+   Double_t       GetElossShiftRate();
 
    TH1D*          GetRate() {return fHisRate;}
   
@@ -52,20 +58,14 @@ public:
    void           SetPileUpOff() {fPileUpOff = true;}
    void           SetRateSmearing() {fMCRateSmearing = true;}
   
-   Float_t        GetResPos(Float_t edep);
-   Float_t        GetResToF(Float_t edep);
-   Float_t        GetResTimeTW(Float_t edep);
+   Double_t       GetResPos(Double_t edep);
+   Double_t       GetResTimeTW(Double_t edep);
    
-   Float_t        GetDeAttLeft(Float_t pos, Float_t edep);
-   Double_t       DeAttLeft(Double_t* pos, Double_t* par);
-
-   Float_t        GetDeAttRight(Float_t pos, Float_t edep);
-   Double_t       DeAttRight(Double_t* pos, Double_t* par);
+   Double_t       GetTimeLeft(Double_t pos, Double_t time, Double_t edep);
+   Double_t       GetTimeRight(Double_t pos, Double_t time, Double_t edep);
    
-   Float_t        GetTimeLeft(Float_t pos, Float_t time, Float_t edep);
-   Float_t        GetTimeRight(Float_t pos, Float_t time, Float_t edep);
-   
-   void           SetGain(Float_t g)   { fGain = g;          }
+   void           SetGain(Double_t g)   { fGain = g;          }
+   void           CheckPUmanaging(Double_t time, Double_t edep, Double_t pos, Int_t chargeZ);
    TATWhit*       GetCurrentHit()      { return fCurrentHit; }
  
    void           ClearMap()           { fMap.clear();       }
@@ -80,90 +80,71 @@ private:
    TATWparGeo*   twParGeo;
    
    // flags
-   Bool_t         fMCtrue;
-   Bool_t         fPileUpOff;
-   Bool_t         fMCRateSmearing;
+   Bool_t        fMCtrue;
+   Bool_t        fPileUpOff;  ///< flag to switch off the PU: when true, hits dopositing energy in the same bar are stored as indipendent hit. When false (defult) multiple hits in the same bar are reconstructed like a single hit
+   Bool_t        fMClandauFluctuations;
+   Bool_t        fMCRateSmearing;
 
    // deltaE
    
-   TF1*          fDeResE;
-   Float_t       fDeResECst;
-   Float_t       fDeErrResECst;
-   Float_t       fDeResEC;
-   Float_t       fDeErrResEC;
+   TF1*          fDeResE;   ///< function to smear the trueMC energy deposited in TW with experimental TW energy loss resolution and parameters in the following
+   Double_t      fDeResMin;
+   Double_t      fDeResMax;
+   Double_t      fDeResECst;
+   Double_t      fDeErrResECst;
+   Double_t      fDeResEC;
+   Double_t      fDeErrResEC;
 
   //rate saturation effect
    TH1D*         fHisRate;
    TF1*          fDeRateShift;
-   Float_t       fDeRateShiftPar0;
-   Float_t       fDeRateShiftPar1;
-   Float_t       fDeRateShiftPar2;
+   Double_t      fDeRateShiftPar0;
+   Double_t      fDeRateShiftPar1;
+   Double_t      fDeRateShiftPar2;
   
-   TF1*          fDeResE_MC;
-   Float_t       fEmcA;  // MeV
-   Float_t       fEmcErrA;  // MeV
-   Float_t       fEmcB;  // sqrt(MeV)
-   Float_t       fEmcErrB;  // sqrt(MeV)
-   Float_t       fEmcC;
-   Float_t       fEmcErrC;
+   TF1*          fDeResE_MC; ///< function to take care of MC fluctuations and parameters in the following-->not used
+   Double_t      fEmcA;  // MeV
+   Double_t      fEmcErrA;  // MeV
+   Double_t      fEmcB;  // sqrt(MeV)
+   Double_t      fEmcErrB;  // sqrt(MeV)
+   Double_t      fEmcC;
+   Double_t      fEmcErrC;
 
-   TF1*          fDeAttLeft;
-   Float_t       fDeAttCstLeft;
-   Float_t       fDeErrAttCstLeft; // not used
-   Float_t       fDeAttLambdaLeft;
-   Float_t       fDeErrAttLambdaLeft;
-   
-   TF1*          fDeAttRight;
-   Float_t       fDeAttCstRight;
-   Float_t       fDeErrAttCstRight; // not used
-   Float_t       fDeAttLambdaRight;
-   Float_t       fDeErrAttLambdaRight;
-   
-   Float_t       fDeAttAsym;
-   Float_t       fDeAttAsymSmear;
-
-   Double_t      fEnergyThreshold;
    Double_t      fElossMeasLimit;
+   Double_t      fEnergyThreshold;
+   Double_t      fEnergyMax;
 
    // position
-   TF1*          fPosResE;
-   Float_t       fPosCstE;
-   Float_t       fPosErrCstE;
-   Float_t       fPosLambdaE;
-   Float_t       fPosErrLambdaE;
-   Float_t       fPosk0E;
-   Float_t       fPosErrk0E;
+   TF1*          fPosResE;  ///< function to smear trueMC position along the bar with experimental position resolution and parameters in the following
+   Double_t      fPosCstE;
+   Double_t      fPosErrCstE;
+   Double_t      fPosLambdaE;
+   Double_t      fPosErrLambdaE;
+   Double_t      fPosk0E;
+   Double_t      fPosErrk0E;
 
-   // TOF
-   TF1*          fTimeTWResE;
-   Float_t       fTimeTW_A;
-   Float_t       fTimeTWErr_A;
-   Float_t       fTimeTW_B;
-   Float_t       fTimeTWErr_B;
-   Float_t       fTimeTW_C;
-   Float_t       fTimeTWErr_C;
+   // TimeTW
+   TF1*          fTimeTWResE;  ///< function to smear the trueMC TWtime with experimental TW time resolution and parameters in the following
+   Double_t      fTimeTW_A;
+   Double_t      fTimeTWErr_A;
+   Double_t      fTimeTW_B;
+   Double_t      fTimeTWErr_B;
+   Double_t      fTimeTW_C;
+   Double_t      fTimeTWErr_C;
 
-  // TOF
-   TF1*          fTofResE;
-   Float_t       fTofCstE;
-   Float_t       fTofErrCstE;
-   Float_t       fTofLambdaE;
-   Float_t       fTofErrLambdaE;
-   Float_t       fTofk0E;
-   Float_t       fTofErrk0E;
-
-   Float_t       fTofPropAlpha; // inverse of light propagation velocity
-   Float_t       fTofErrPropAlpha; 
+   // inverse of light propagation velocity
+   Double_t      fTofPropAlpha;
+   Double_t      fTofErrPropAlpha; 
 
   // misc
-   Float_t       fSlatLength;
-   Float_t       fGain;
+   Double_t      fSlatLength;
+   Double_t      fGain;
    
    map<int, TATWhit*> fMap; //! map for pilepup
    
    
 private:
-   static       Float_t fgHfactor; // happy factor for edep
+   static       Double_t fgHfactor; // happy factor for edep
 
 };
 #endif

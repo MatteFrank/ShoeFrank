@@ -90,6 +90,10 @@ TAMCpart::~TAMCpart()
 {
 }
 
+void TAMCpart::Clear(Option_t* /*opt*/)
+{
+  delete this;
+}
 
 //##############################################################################
 
@@ -174,7 +178,7 @@ void TAMCntuPart::Clear(Option_t*)
 //! return number of tracks
 Int_t TAMCntuPart::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -183,7 +187,10 @@ Int_t TAMCntuPart::GetTracksN() const
 //! \param[in] i track index
 TAMCpart* TAMCntuPart::GetTrack(Int_t i)
 {
-   return (TAMCpart*) ((*fListOfTracks)[i]);;
+  if(i >= 0 && i < GetTracksN())
+   return (TAMCpart*) ((*fListOfTracks)[i]);
+  else 
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
@@ -192,7 +199,10 @@ TAMCpart* TAMCntuPart::GetTrack(Int_t i)
 //! \param[in] i track index
 const TAMCpart* TAMCntuPart::GetTrack(Int_t i) const
 {
-   return (const TAMCpart*) ((*fListOfTracks)[i]);;
+  if(i >= 0 && i < GetTracksN())
+    return (const TAMCpart*) ((*fListOfTracks)[i]);
+  else 
+    return 0x0;
 }
 
 //______________________________________________________________________________

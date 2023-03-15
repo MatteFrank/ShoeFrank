@@ -34,7 +34,7 @@ TAGtrack::TAGtrack()
    fQuality(-99),
    fMass(0.),
    fMomModule(0.),
-   fTwChargeZ(0.),
+   fTwChargeZ(0),
    fTwTof(0.),
    fTrkId(-1),
    fFitMass(-99.),
@@ -51,6 +51,8 @@ TAGtrack::TAGtrack()
    fTwPosError(0,0,0),
    fTwMom(0,0,0),
    fTwMomError(0,0,0),
+   fHasTwPoint(false),
+   fCALOmatched(-1),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -90,6 +92,8 @@ TAGtrack::TAGtrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
    fTwPosError(0,0,0),
    fTwMom(0,0,0),
    fTwMomError(0,0,0),
+   fHasTwPoint(false),
+   fCALOmatched(-1),
    fListOfPoints(0x0)
 {
    SetupClones();
@@ -127,7 +131,9 @@ TAGtrack::TAGtrack(const TAGtrack& aTrack)
    fTwPos(aTrack.fTwPos),
    fTwPosError(aTrack.fTwPosError),
    fTwMom(aTrack.fTwMom),
-   fTwMomError(aTrack.fTwMomError)
+   fTwMomError(aTrack.fTwMomError),
+   fHasTwPoint(aTrack.fHasTwPoint),
+   fCALOmatched(aTrack.fCALOmatched)
 {
    fListOfPoints = (TClonesArray*)aTrack.fListOfPoints->Clone();
 }
@@ -165,9 +171,31 @@ TAGtrack::TAGtrack(string name, long evNum,
                    TMatrixD* TwPos_cov, TMatrixD* TwMom_cov,
                    vector<TAGpoint*>* shoeTrackPointRepo)
 	: TAGnamed(),
+   fQuality(-1),
+   fTwChargeZ(0),
+   fTwTof(0.),
+   fCalEnergy(0.),
+   fTrkId(0),
+   fFitEnergyLoss(0.),
+   fFitEnergy(0.),
+   fBmTheta(-1),
+   fBmPhi(-100),
+   fTgtDir(0,0,0),
+   fTgtPos(0,0,0),
+   fTgtPosError(0,0,0),
+   fTgtMom(0,0,0),
+   fTgtMomError(0,0,0),
+   fTwPos(0,0,0),
+   fTwPosError(0,0,0),
+   fTwMom(0,0,0),
+   fTwMomError(0,0,0),
+   fHasTwPoint(false),
+   fCALOmatched(-1),
 	fListOfPoints(0x0)
 {
 	SetupClones();
+   fMcTrackIdx.Set(0);
+   fMcTrackMap.clear();
 
 	fName = name;
 	fEvtNumber = evNum;
@@ -210,6 +238,8 @@ TAGtrack::TAGtrack(string name, long evNum,
 //! Destructor.
 TAGtrack::~TAGtrack()
 {
+   fMcTrackIdx.Set(0);
+   fMcTrackMap.clear();
    delete fListOfPoints;
 }
 
@@ -294,7 +324,6 @@ TAGpoint* TAGtrack::AddPoint(TString name, TVector3 measPos, TVector3 measPosErr
 void TAGtrack::Clear(Option_t*)
 {
    fListOfPoints->Delete();
-   fListOfPoints->Delete();
 }
 
 //______________________________________________________________________________
@@ -309,7 +338,7 @@ Double_t TAGtrack::GetTgtTheta() const
 
 //______________________________________________________________________________
 //! Get phi angle at target
-Double_t TAGtrack::GetTgtPhi() const 
+Double_t TAGtrack::GetTgtPhi() const
 {
    TVector3 origin = fTgtDir.Unit();
    Double_t phi     = origin.Phi();
@@ -323,12 +352,7 @@ Double_t TAGtrack::GetTgtPhi() const
 //! \param[in] posZ Z position
 TVector3 TAGtrack::Intersection(Double_t posZ) const
 {
-   TVector3 result(fTgtPos);  // track origin in xyz tracker coordinates
-   result(2) = 0.;
-   result += fTgtDir * posZ; // intersection in xyz frame at z_plane
-   result(2) = posZ;
-
-   return  result;
+   return TAGgeoTrafo::Intersection(fTgtDir,fTgtPos,posZ);;
 }
 
 //______________________________________________________________________________
@@ -435,26 +459,26 @@ TArrayI TAGtrack::GetMcTrackIdx()
 //------------------------------------------+-----------------------------------
 //! Get MC track index - most probable
 Int_t TAGtrack::GetMcMainTrackId()
-{  
+{
 
    //----- set the array fMcTrackMap: it takes all the possible mc particles of every point in progressive order
-   
+
    fMcTrackMap.clear();
    fMcTrackIdx.Set(0);
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
-      const TAGpoint* point = GetPoint(iPoint);     
-      
-         
+      const TAGpoint* point = GetPoint(iPoint);
+
+
 
       for( Int_t i = 0; i < point->GetMcTracksN(); ++i) {
-         
-         Int_t trackIdx = point->GetMcTrackIdx(i);         
+
+         Int_t trackIdx = point->GetMcTrackIdx(i);
             fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
             fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackIdx;
             fMcTrackMap[trackIdx]+=1;
-            
-            //cout << "track id :"<<trackIdx << endl;         
-      }  
+
+            //cout << "track id :"<<trackIdx << endl;
+      }
    }
 
 //----- according to the multiplicity of every id, it takes the most probable
@@ -463,13 +487,13 @@ Int_t multiplicity = -1;
 
    //cout << "track size: "<< fMcTrackMap.size() << endl;
    for ( auto it = fMcTrackMap.begin(); it != fMcTrackMap.end(); ++it  )
-{  
+{
   //cout << "track id:" << it->first << '\t' << "n°: " << it->second << endl;
   if (multiplicity < it->second) {
      multiplicity = it->second;
      mode = it->first;
   }
-} 
+}
    //cout <<"mode :"<<mode<<endl;
 
    return mode;
@@ -493,8 +517,9 @@ TString TAGntuGlbTrack::fgkBranchName   = "glbtrack.";
 //! Default constructor.
 TAGntuGlbTrack::TAGntuGlbTrack()
  : TAGdata(),
-   fListOfTracks(new TClonesArray("TAGtrack"))
+   fListOfTracks(0x0)
 {
+   SetupClones();
 }
 
 //------------------------------------------+-----------------------------------
@@ -508,7 +533,7 @@ TAGntuGlbTrack::~TAGntuGlbTrack()
 //! return number of tracks
 Int_t TAGntuGlbTrack::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -517,7 +542,7 @@ Int_t TAGntuGlbTrack::GetTracksN() const
 //! \param[in] iTrack track index
 TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack)
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
       return (TAGtrack*)fListOfTracks->At(iTrack);
    else
       return 0x0;
@@ -529,7 +554,7 @@ TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack)
 //! \param[in] iTrack track index
 const TAGtrack* TAGntuGlbTrack::GetTrack(Int_t iTrack) const
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
       return (TAGtrack*)fListOfTracks->At(iTrack);
    else
       return 0x0;
@@ -551,7 +576,7 @@ void TAGntuGlbTrack::SetupClones()
 //! \param[in] opt clear option
 void TAGntuGlbTrack::Clear(Option_t*)
 {
-   fListOfTracks->Delete();
+   fListOfTracks->Clear();
 }
 
 //______________________________________________________________________________
@@ -597,7 +622,7 @@ TAGtrack* TAGntuGlbTrack::NewTrack(string name, long evNum, int pdgID, float pdg
 //! \param[in] tof time of flight of particle
 TAGtrack* TAGntuGlbTrack::NewTrack(Double_t mass, Double_t mom, Double_t charge, Double_t tof)
 {
-   Int_t trkId = fListOfTracks->GetEntries();
+   Int_t trkId = fListOfTracks->GetEntriesFast();
    TClonesArray &trackArray = *fListOfTracks;
    TAGtrack* track = new(trackArray[trackArray.GetEntriesFast()]) TAGtrack(mass, mom, charge, tof);
    track->SetTrackId(trkId);

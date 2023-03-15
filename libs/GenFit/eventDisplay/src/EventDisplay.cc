@@ -437,7 +437,8 @@ void EventDisplay::drawEvent(unsigned int id, bool resetCam) {
       if (tp->getNumRawMeasurements() > 1) {
         bool sameTypes(true);
         for (unsigned int iM=1; iM<tp->getNumRawMeasurements(); ++iM) {
-          if (typeid(*(tp->getRawMeasurement(iM))) != typeid(*m))
+	  auto& rawMeasurement = *(tp->getRawMeasurement(iM));
+          if (typeid(rawMeasurement) != typeid(*m))
             sameTypes = false;
         }
         if (!sameTypes) {
@@ -585,7 +586,7 @@ void EventDisplay::drawEvent(unsigned int id, bool resetCam) {
         // draw track if corresponding option is set ------------------------------------------
         try {
             if (j == 0) {
-              if (drawBackward_) {
+              if (fi->hasBackwardUpdate() && drawBackward_) {
                   MeasuredStateOnPlane update ( *fi->getBackwardUpdate() );
                   update.extrapolateBy(-3.);
                   makeLines(&update, fi->getBackwardUpdate(), rep, kMagenta, 1, drawTrackMarkers_, drawErrors_, 1);
@@ -598,7 +599,7 @@ void EventDisplay::drawEvent(unsigned int id, bool resetCam) {
                   makeLines(prevFittedState, fittedState, rep, charge > 0 ? kRed : kBlue, 1, false, drawErrors_, 0, 0);
                 }
               }
-              if (drawForward_) {
+              if (fi->hasForwardUpdate() && drawForward_) {
                 makeLines(prevFi->getForwardUpdate(), fi->getForwardPrediction(), rep, kCyan, 1, drawTrackMarkers_, drawErrors_, 1, 0);
                 if (j == numhits-1) {
                   MeasuredStateOnPlane update ( *fi->getForwardUpdate() );
@@ -606,7 +607,7 @@ void EventDisplay::drawEvent(unsigned int id, bool resetCam) {
                   makeLines(fi->getForwardUpdate(), &update, rep, kCyan, 1, drawTrackMarkers_, drawErrors_, 1, 0);
                 }
               }
-              if (drawBackward_) {
+              if (fi->hasBackwardPrediction() && drawBackward_) {
                 makeLines(prevFi->getBackwardPrediction(), fi->getBackwardUpdate(), rep, kMagenta, 1, drawTrackMarkers_, drawErrors_, 1);
               }
               // draw reference track if corresponding option is set ------------------------------------------

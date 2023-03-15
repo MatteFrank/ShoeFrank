@@ -65,10 +65,15 @@ Bool_t TASTactNtuHit::Action()
       charge_dep =  p_datraw->GetSuperHit()->GetCharge();
       amp_tot= p_datraw->GetSuperHit()->GetAmplitude();
       ped= p_datraw->GetSuperHit()->GetPedestal();
-      de_dep = -1000.; //calibration missing
+      //cout << "total charge dep :" << charge_dep << endl;
+     de_dep = -1000.; //calibration missing
       
-      p_nturaw->NewHit(charge_dep, de_dep, timestamp);
-      
+       //cout <<" sono in act ntuRaw : "<< p_datraw->GetSuperHit()->GetPileUp() << endl;
+     p_nturaw->NewHit(charge_dep, de_dep, timestamp, p_datraw->GetSuperHit()->GetPileUp() );
+       //cout <<" sono in act ntuHit : "<< p_nturaw->GetHit(0)->GetPileUp() << endl;
+     
+
+
       p_nturaw->SetTriggerTime(timestamp);
       p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
       
@@ -77,10 +82,26 @@ Bool_t TASTactNtuHit::Action()
       int nHit =  p_datraw->GetHitsN();
       if(ValidHistogram()){
          hTime->Fill(timestamp);
-         hTotCharge->Fill(charge_dep);
+  
+       hTotCharge->Fill(charge_dep);
          hTotAmplitude->Fill(amp_tot);
          hPedestal->Fill(ped);
-         for(int iHit=0;iHit<nHit;iHit++){
+  
+       hChargevsTime[0]-> Fill(timestamp,charge_dep ); //info di superhit
+      
+      //info di superhit - no pileup derivative mode
+      if ( p_nturaw->GetHit(0)->GetPileUp() == false ) hChargevsTime[1]-> Fill(timestamp,charge_dep ); 
+       
+       
+      //info di superhit - no pileup charge mode
+      if ( charge_dep < 2. ) hChargevsTime[2]-> Fill(timestamp,charge_dep ); 
+       
+       
+       
+      hPileUp->Fill(p_nturaw->GetHit(0)->GetPileUp());
+
+
+  for(int iHit=0;iHit<nHit;iHit++){
             Double_t amplitude = p_datraw->GetHit(iHit)->GetAmplitude();
             Double_t charge= p_datraw->GetHit(iHit)->GetCharge();
             Double_t time = p_datraw->GetHit(iHit)->GetTime();
@@ -153,7 +174,7 @@ void TASTactNtuHit::CreateHistogram()
   AddHistogram(hTime);
 
   strcpy(histoname,"stTotCharge");
-  hTotCharge = new TH1F(histoname, histoname, 1100, -0.1, 10.9);
+  hTotCharge = new TH1F(histoname, histoname, 1100, -0.1, 40.);
   AddHistogram(hTotCharge);
 
   strcpy(histoname,"stTotAmplitude");
@@ -168,6 +189,24 @@ void TASTactNtuHit::CreateHistogram()
   strcpy(histoname,"stEff");
   hEff = new TH1F(histoname, histoname, 11, -0.5, 10.5);
   AddHistogram(hEff);
+
+
+  strcpy(histoname,"stTotChargevsTotTime");
+  hChargevsTime[0] = new TH2F(histoname, histoname,  256, 0., 256., 1100, -0.1, 40.);
+  AddHistogram(hChargevsTime[0]);
+
+  strcpy(histoname,"stTotChargevsTotTime-NOPILEUP-DerivativeMode");
+  hChargevsTime[1] = new TH2F(histoname, histoname,  256, 0., 256., 1100, -0.1, 40.);
+  AddHistogram(hChargevsTime[1]);
+
+
+  strcpy(histoname,"stTotChargevsTotTime-NOPILEUP-ChargeMode");
+  hChargevsTime[2] = new TH2F(histoname, histoname,  256, 0., 256., 1100, -0.1, 40.);
+  AddHistogram(hChargevsTime[2]);
+
+  strcpy(histoname,"pileup");
+  hPileUp = new TH1F(histoname, histoname, 2, 0., 2.);
+  AddHistogram(hPileUp);
 
 
   for(int iCh=0;iCh<8;iCh++){

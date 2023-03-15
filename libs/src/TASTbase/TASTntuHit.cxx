@@ -14,20 +14,23 @@ ClassImp(TASThit);
 //! Default constructor.
 TASThit::TASThit()
  : TAGobject(),
-   fCharge(0.),
-   fTime(0.),
-   fDe(0.)
+   fIsValid(true),
+   fCharge(-1),
+   fTime(-1),
+   fDe(-1)
 {
   Clear();
 }
 
 //------------------------------------------+-----------------------------------
 //! Constructor
-TASThit::TASThit(Double_t charge, Double_t De, Double_t time)
+TASThit::TASThit(Double_t charge, Double_t De, Double_t time, bool pileup)
  : TAGobject(),
+   fIsValid(true),
    fCharge(charge),
    fTime(time),
-   fDe(De)
+   fDe(De),
+   fPileUp(pileup)
 {
    
 }
@@ -72,6 +75,7 @@ TASTntuHit::TASTntuHit()
   fTrigTime=-1000;
   fTrigTimeOth=-1000;
   fTrigType=-1000;
+  
   SetupClones();
 }
 
@@ -85,16 +89,19 @@ TASTntuHit::~TASTntuHit()
 //------------------------------------------+-----------------------------------
 Int_t TASTntuHit::GetHitsN() const
 {
-   return fListOfHits->GetEntries();
+   return fListOfHits->GetEntriesFast();
 }
 
 //______________________________________________________________________________
 //
-TASThit* TASTntuHit::NewHit(double charge, double de, double time)
+TASThit* TASTntuHit::NewHit(double charge, double de, double time, bool pileup)
 {
    TClonesArray &pixelArray = *fListOfHits;
-   TASThit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASThit(charge, de, time);
+   //cout <<" sono in new hit: "<< pileup << endl;
+   TASThit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASThit(charge, de, time, pileup);
+   //cout << "sono hit: " << hit -> GetPileUp() << endl;
    
+
    return hit;
 }
 
@@ -102,14 +109,20 @@ TASThit* TASTntuHit::NewHit(double charge, double de, double time)
 //! Access \a i 'th hit
 TASThit* TASTntuHit::GetHit(Int_t i)
 {
-   return (TASThit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i<GetHitsN())
+    return (TASThit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 const TASThit* TASTntuHit::GetHit(Int_t i) const
 {
-   return (const TASThit*) ((*fListOfHits)[i]);;
+  if(i>=0 && i<GetHitsN())
+    return (const TASThit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------

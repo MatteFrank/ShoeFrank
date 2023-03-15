@@ -18,8 +18,8 @@
 #pragma link C++ class TAGbaseEventDisplay;
 
 #pragma link C++ class BaseReco;
-#pragma link C++ class LocalRecoMC;
-#pragma link C++ class LocalReco;
+#pragma link C++ class RecoMC;
+#pragma link C++ class RecoRaw;
 
 #pragma link C++ class ConvertNtuple;
 

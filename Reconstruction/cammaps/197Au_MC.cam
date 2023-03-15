@@ -1,0 +1,35 @@
+// Campaign file
+CamName: "197Au_MC"
+RunNumber: 1
+NumberDevices: 5
+
+DetectorName: "FOOT"
+NumberFiles: 2
+"./geomaps/197Au_MC/FOOT.geo": -1
+"./geomaps/197Au_MC/FOOT.reg": -1
+
+DetectorName: "ST"
+NumberFiles: 2
+"./geomaps/197Au_MC/TASTdetector.geo": -1
+"./config/197Au_MC/TASTdetector.cfg": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/197Au_MC/TAGdetector.geo": -1
+
+DetectorName: "TW"
+NumberFiles: 6
+"./geomaps/197Au_MC/TATWdetector.geo": -1
+"./config/197Au_MC/TATWdetector.cfg": -1
+"./config/197Au_MC/TATW_BBparameters.cfg": -1
+"./config/197Au_MC/TATWbarsMapStatus.map": -1
+"./calib/197Au_MC/TATW_Energy_Calibration.cal": -1
+"./calib/197Au_MC/TATW_Tof_Calibration.cal": -1
+
+DetectorName: "CA"
+NumberFiles: 4
+"./geomaps/197Au_MC/TACAdetector.geo": -1
+"./config/197Au_MC/TACAcrystalMapStatus.map": -1
+"./config/197Au_MC/TACAdetector.cfg": -1
+"./calib/197Au_MC/TACA_Energy_Calibration.cal": -1
+

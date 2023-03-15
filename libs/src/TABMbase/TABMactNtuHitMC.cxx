@@ -81,21 +81,21 @@ void TABMactNtuHitMC::CreateDigitizer()
 void TABMactNtuHitMC::CreateHistogram(){
   DeleteHistogram();
 
-  fpHisCell = new TH1I( "bmMcHitCell", "cell index; index; Counter", 3, -0.5, 2.5);
+  fpHisCell = new TH1I( "bmHitCell", "cell index; index; Counter", 3, -0.5, 2.5);
   AddHistogram(fpHisCell);
-  fpHisView = new TH1I( "bmMcHitView", "view index; index; Counter", 2, -0.5, 1.5);
+  fpHisView = new TH1I( "bmHitView", "view index; index; Counter", 2, -0.5, 1.5);
   AddHistogram(fpHisView);
-  fpHisPlane = new TH1I( "bmMcHitPlane", "plane index; index; Counter", 6, -0.5, 5.5);
+  fpHisPlane = new TH1I( "bmHitPlane", "plane index; index; Counter", 6, -0.5, 5.5);
   AddHistogram(fpHisPlane);
-  fpDisRdrift = new TH1F( "bmMcHitDischargedRdrift", "Discharged hits according to BM efficiency; Rdrift [cm]; numevent", 100, 0., 1.);
+  fpDisRdrift = new TH1F( "bmHitDischargedRdrift", "Discharged hits according to BM efficiency; Rdrift [cm]; numevent", 100, 0., 1.);
   AddHistogram(fpDisRdrift);
-  fpHisRdrift = new TH1F( "bmMcHitRdrift", "Rdrift; Rdrift [cm]; numevent", 100, 0., 1.);
+  fpHisRdrift = new TH1F( "bmHitRdrift", "Rdrift; Rdrift [cm]; numevent", 100, 0., 1.);
   AddHistogram(fpHisRdrift);
-  fpHisHitNum=new TH1I( "bmMcHiDistribution", "Number of ACCEPTED hits x event; Number of hits; Events", 31, -0.5, 30.5);
+  fpHisHitNum=new TH1I( "bmHitDistribution", "Number of ACCEPTED hits x event; Number of hits; Events", 31, -0.5, 30.5);
   AddHistogram(fpHisHitNum);
-  fpHisFakeIndex=new TH1I( "bmMCHitFake", "Charged hits fake index; 0=Hit from primaries, 1=Other fluka hits, 2=Random hit not from fluka; Events", 3, -0.5, 2.5);
+  fpHisFakeIndex=new TH1I( "bmHitFake", "Charged hits fake index; 0=Hit from primaries, 1=Other fluka hits, 2=Random hit not from fluka; Events", 3, -0.5, 2.5);
   AddHistogram(fpHisFakeIndex);
-  fpDisReason=new TH1I( "bmMCDischargedReason", "Discharged hits; 0=efficiency, 1=charge, 2=length, 3=energy, 4=no momentum, 5=dead channel; Events", 6, -0.5, 5.5);
+  fpDisReason=new TH1I( "bmDischargedReason", "Discharged hits; 0=efficiency, 1=charge, 2=length, 3=energy, 4=no momentum, 5=dead channel; Events", 6, -0.5, 5.5);
   AddHistogram(fpDisReason);
 
   SetValidHistogram(kTRUE);

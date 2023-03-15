@@ -70,7 +70,7 @@ class TABMtrack : public TObject {
 
     //others
     void PrintTrackPosDir();
-    TVector3 PointAtLocalZ(double zloc) const;
+    // TVector3 PointAtLocalZ(double zloc) const;
     TVector3 Intersection(Float_t zloc) const;
     Int_t mergeTrack(const TABMtrack &otherview);
 

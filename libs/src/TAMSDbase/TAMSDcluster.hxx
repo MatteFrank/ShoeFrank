@@ -83,7 +83,7 @@ public:
    //! Get center of gravity corrected wrt eta
    Float_t            GetCogCorr()                     const { return fPositionCorr; }
    //! Get number of strips in this clusters
-   Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntries(); }
+   Int_t              GetStripsN()                     const { return  fListOfStrips->GetEntriesFast(); }
    
    //! Get strip
    TAMSDhit*          GetStrip(Int_t idx);

@@ -36,7 +36,7 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-#include "LocalReco.hxx"
+#include "RecoRaw.hxx"
 #include "GlobalToeReco.hxx"
 
 //! Class Imp
@@ -74,7 +74,7 @@ TAGeventDisplay::TAGeventDisplay(const TString expName, Int_t runNumber, Int_t t
  : TAGbaseEventDisplay(expName, runNumber, type)
 {
    // local reco
-   SetLocalReco();  
+   SetReco();  
 }
 
 //__________________________________________________________
@@ -85,23 +85,23 @@ TAGeventDisplay::~TAGeventDisplay()
 
 //__________________________________________________________
 //! Set reconstruction
-void TAGeventDisplay::SetLocalReco()
+void TAGeventDisplay::SetReco()
 {
-   Bool_t lrc = TAGrecoManager::GetPar()->IsLocalReco();
+   Bool_t lrc = TAGrecoManager::GetPar()->IsFromLocalReco();
    
    if (fType == 0) {
       if (lrc) {
          fReco = new GlobalToeReco(fExpName, fRunNumber);
          fReco->EnableReadL0Hits();
       } else
-         fReco = new LocalReco(fExpName, fRunNumber);
+         fReco = new RecoRaw(fExpName, fRunNumber);
    } else
-      Error("SetLocalReco()", "Unknown type %d", fType);
+      Error("SetRecoRaw()", "Unknown type %d", fType);
 
    SetRecoOptions();
 
    if (fgStdAloneFlag)
-      LocalReco::EnableStdAlone();
+      RecoRaw::EnableStdAlone();
 }
 
 //__________________________________________________________

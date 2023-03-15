@@ -11,6 +11,8 @@
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
 
+#include "DEITREvent.hh"
+
 #include "TAITactStdDaqRaw.hxx"
 
 /*!
@@ -60,13 +62,41 @@ Bool_t TAITactStdDaqRaw::GetEvent()
 {
    fData.clear();
    
-   UInt_t words;
+   UInt_t word;
+   UInt_t key;
    
-   fDaqFile.read((char*) &words, sizeof(UInt_t));
-   fEventSize = words-1;
+   // look for header
+   do {
+      fDaqFile.read((char*) &key, sizeof(UInt_t));
+
+      if (key == DEITREvent::GetItrHeader()) {
+         fData.push_back(DEITREvent::GetItrHeader());
+         break;
+      }
+   } while (!fDaqFile.eof());
    
-   fData.resize(fEventSize);
-   fDaqFile.read( (char*) &fData[0], fEventSize*sizeof(UInt_t));
+   
+   // look for trailer
+   do {
+      fDaqFile.read((char*) &word, sizeof(UInt_t));
+
+      fData.push_back(word);
+      
+      if (word == DEITREvent::GetItrTail()) {
+         fData.push_back(DEITREvent::GetItrTail());
+         break;
+      }
+      
+      if (word == DEITREvent::GetItrHeader()) {
+         Int_t pos =  (int) fDaqFile.tellg();
+         fDaqFile.seekg(pos-1);
+         return false;
+      }
+      
+   } while (!fDaqFile.eof());
+
+   if (fDaqFile.eof()) return false;
+   
    
    if(FootDebugLevel(3)) {
       printf("size %d\n", fEventSize);

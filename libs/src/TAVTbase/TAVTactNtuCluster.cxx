@@ -55,13 +55,13 @@ Bool_t TAVTactNtuCluster::Action()
 {
    TAVTntuHit* pNtuHit  = (TAVTntuHit*) fpNtuRaw->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
-   
+   fpNtuClus->Clear();
    Bool_t ok = true;
    
    if (pNtuHit->IsValid()) {
       for (Int_t i = 0; i < pConfig->GetSensorsN(); ++i) {
          fListOfPixels = pNtuHit->GetListOfPixels(i);
-         if (fListOfPixels->GetEntries() == 0) continue;
+         if (fListOfPixels->GetEntriesFast() == 0) continue;
          ok += FindClusters(i);
       }
    }
@@ -100,7 +100,7 @@ Bool_t TAVTactNtuCluster::CreateClusters(Int_t iSensor)
    for (Int_t i = 0; i< fClustersN; ++i)
       pNtuClus->NewCluster(iSensor);
    
-   for (Int_t iPix = 0; iPix < fListOfPixels->GetEntries(); ++iPix) {
+   for (Int_t iPix = 0; iPix < fListOfPixels->GetEntriesFast(); ++iPix) {
       TAVThit* pixel = (TAVThit*)fListOfPixels->At(iPix);
       Int_t line = pixel->GetPixelLine();
       Int_t col  = pixel->GetPixelColumn();

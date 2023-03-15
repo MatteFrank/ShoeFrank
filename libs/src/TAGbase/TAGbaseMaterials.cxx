@@ -23,8 +23,8 @@ TString TAGbaseMaterials::fgkWhat = "                                           
 Int_t TAGbaseMaterials::fgkWhatWidth = 10;
 
 map<TString, TString> TAGbaseMaterials::fgkCommonName = {{"SmCo", "Sm2Co17"}, {"Polyethy", "C2H4"}, {"Kapton", "C22H10N2O5"}, {"Epoxy", "C18H19O3"},
-                                                     {"BGO", "Bi4Ge3O12"}, {"SiCFoam", "SiC/AIR"}, {"TUNGSTEN", "W"}, {"Graphite", "C3"}, {"EJ232", "C9H10"},
-                                                     {"EJ228", "C9H10"}, {"Mylar", "C10H8O4"}, {"PMMA", "C5H8O2"}   };
+                                                        {"BGO", "Bi4Ge3O12"}, {"SiCFoam", "SiC/AIR"}, {"TUNGSTEN", "W"}, {"Graphite", "C3"}, {"EJ232", "C9H10"},
+                                                        {"EJ228", "C9H10"}, {"Mylar", "C10H8O4"}, {"PMMA", "C5H8O2"}, {"NdFeB", "Nd2Fe14B"}};
 
 map<TString, Int_t>   TAGbaseMaterials::fgkLowMat = {{"Graphite", 1}};
 
@@ -74,7 +74,7 @@ vector<TString> TAGbaseMaterials::GetStrings(TString key, const Char_t delimiter
    vector<TString> coeff;
    TObjArray* list = key.Tokenize(delimiter);
    
-   for (Int_t k = 0; k < list->GetEntries(); k++) {
+   for (Int_t k = 0; k < list->GetEntriesFast(); k++) {
       TObjString* obj = (TObjString*)list->At(k);
       TString item = obj->GetString();
       Int_t pos = item.Length();
@@ -83,7 +83,7 @@ vector<TString> TAGbaseMaterials::GetStrings(TString key, const Char_t delimiter
    }
    
    if(FootDebugLevel(1)) {
-      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      for (Int_t i = 0; i < list->GetEntriesFast(); ++i) {
          cout << coeff[i] << " ";
       }
       cout << endl;
@@ -103,10 +103,10 @@ vector<TString> TAGbaseMaterials::GetStrings(TString key, const Char_t delimiter
 void TAGbaseMaterials::GetCoeff(TString key, Float_t* coeff, Int_t size,  const Char_t delimiter)
 {
    TObjArray* list = key.Tokenize(delimiter);
-   if (list->GetEntries() != size)
+   if (list->GetEntriesFast() != size)
       Error("ReadItem()","wrong tokenize for [%s] with size %d", key.Data(), size);
    
-   for (Int_t k = 0; k < list->GetEntries(); k++) {
+   for (Int_t k = 0; k < list->GetEntriesFast(); k++) {
       TObjString* obj = (TObjString*)list->At(k);
       TString item = obj->GetString();
       Int_t pos = item.Length();
@@ -115,7 +115,7 @@ void TAGbaseMaterials::GetCoeff(TString key, Float_t* coeff, Int_t size,  const 
    }
    
    if(FootDebugLevel(1)) {
-      for (Int_t i = 0; i < list->GetEntries(); ++i) {
+      for (Int_t i = 0; i < list->GetEntriesFast(); ++i) {
          cout << coeff[i] << " " ;
       }
       cout << endl;

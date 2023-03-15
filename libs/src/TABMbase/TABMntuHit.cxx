@@ -108,11 +108,11 @@ static void print_value(ostream& os, Int_t i_val)
 void TABMntuHit::ToStream(ostream& os, Option_t* option) const
 {
   os << "TABMntuHit " << GetName()
-     << Form("  nhit=%3d", fListOfHits->GetEntries())
+     << Form("  nhit=%3d", fListOfHits->GetEntriesFast())
      << endl;
 
   os << "slat stat    adct    adcb    tdct    tdcb" << endl;
-  for (Int_t i = 0; i < fListOfHits->GetEntries(); i++) {
+  for (Int_t i = 0; i < fListOfHits->GetEntriesFast(); i++) {
     const TABMhit*  hit = GetHit(i);
     os << Form("%4d", hit->GetCell());
     os << "  "; print_value(os, hit->GetPlane());
@@ -233,12 +233,18 @@ return;
 //! access \a i 'th hit
 TABMhit* TABMntuHit::GetHit(Int_t i)
 {
-   return (TABMhit*) ((*fListOfHits)[i]);
+  if( i>=0 && i < GetHitsN() )
+    return (TABMhit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }
 
 //------------------------------------------+-----------------------------------
 //! Read-only access \a i 'th hit
 const TABMhit* TABMntuHit::GetHit(Int_t i) const
 {
-   return (const TABMhit*) ((*fListOfHits)[i]);
+  if( i>=0 && i < GetHitsN() )
+    return (const TABMhit*) ((*fListOfHits)[i]);
+  else
+    return 0x0;
 }

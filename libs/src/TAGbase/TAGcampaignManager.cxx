@@ -182,6 +182,7 @@ ClassImp(TAGcampaign);
 map<Int_t, TString> TAGcampaign::fgTWcalFileType = {{0, "TATW_Energy"},{1, "TATW_Tof"}, {2, "TATWEnergy"} };
 map<Int_t, TString> TAGcampaign::fgCAcalFileType = {{0, "TACA_Energy"},{1, "TACA_Temperature"}};
 map<Int_t, TString> TAGcampaign::fgTWmapFileType = {{0, "TATWChannel"},{1, "TATWbars"} };
+map<Int_t, TString> TAGcampaign::fgTWcfgFileType = {{0, "TATWdetector"},{1, "TATW_BBparameters"} };
 
 //_____________________________________________________________________________
 //! Constructor
@@ -262,8 +263,15 @@ bool TAGcampaign::FromFile(TString ifile)
 
          // config
          if (fileName.Contains("config") && fileName.EndsWith(".cfg") && !fileName.Contains("T0")) { // needed for BM
-            fFileConfMap[detName] = fileName;
-            fRunsConfMap[detName] = array;
+            
+            // check order in TW config files
+            if (fileName.Contains(fgTWcfgFileType[0]) && fFileConfMap[detName].size() != 0 ) {
+               Error("FromFile()", "File %s must appears in first position in TW mapping list in campaign file %s\n", fileName.Data(), fName.Data());
+               exit(0);
+            }
+            
+            fFileConfMap[detName].push_back(fileName);
+            fRunsConfMap[detName].push_back(array);
            if(FootDebugLevel(1))
                cout << "Device: " << detName << " config file: " << fileName << endl;
 
@@ -360,11 +368,25 @@ const Char_t* TAGcampaign::GetGeoFile(const TString& detName, Int_t runNumber)
 //! \param[in] runNumber run number
 //! \param[in] bName beam particle name
 //! \param[in] bEnergy beam energy
-const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, TString bName, Int_t bEnergy)
+const Char_t* TAGcampaign::GetConfFile(const TString& detName, Int_t runNumber, TString bName, Int_t bEnergy, Int_t item)
 {
-   TString nameFile = fFileConfMap[detName];
-   TArrayI arrayRun = fRunsConfMap[detName];
+   // if ever the TW config is missing
+   if (fFileConfMap[detName].size() == 1 ) {
+      item = 0;
+   } else {
+      if (!bName.IsNull() && bEnergy != 0) {
+         item = 1;
+      } else {
+         item = 0;
+      }
+   }
    
+   vector<TString> vecFile = fFileConfMap[detName];
+   TString nameFile = vecFile[item];
+   
+   vector<TArrayI> vecRun = fRunsConfMap[detName];
+   TArrayI arrayRun = vecRun[item];
+      
    if (!bName.IsNull() && !nameFile.IsNull()) {
       Int_t pos = nameFile.Last('.');
       nameFile.Insert(pos, Form("_%s_%d", bName.Data(), bEnergy));
@@ -585,17 +607,30 @@ void TAGcampaign::Print(Option_t* opt) const
    }
    
    cout << "Configuration files for " << fName << ":" << endl;
-   for ( map<TString, TString>::const_iterator it = fFileConfMap.begin(); it != fFileConfMap.end(); ++it)
-      cout << "  Device name: " << it->first << " with file: " << it->second << endl;
    
-   if (option.Contains("all")) {
-      for ( map<TString, TArrayI>::const_iterator it = fRunsConfMap.begin(); it != fRunsConfMap.end(); ++it) {
-         const TArrayI array = it->second;
-         cout << "  Device name: " << it->first << "  Run number:";
-         for (Int_t i = 0; i <array.GetSize(); ++i) {
-            cout << array[i] << " ";
+   for ( map<TString, vector<TString> >::const_iterator it = fFileConfMap.begin(); it != fFileConfMap.end(); ++it) {
+      
+      vector<TString> vec = it->second;
+      vector<TString>::const_iterator iter;
+      for (iter = vec.begin(); iter != vec.end(); ++iter)
+         cout << "  Device name: " << it->first << " with file: " << iter->Data() << endl;
+      
+      if (option.Contains("all")) {
+         for ( map<TString, vector<TArrayI> >::const_iterator it = fRunsConfMap.begin(); it != fRunsConfMap.end(); ++it) {
+            
+            vector<TArrayI> vecRun = it->second;
+            vector<TArrayI>::const_iterator iterRun;
+            
+            for (iterRun = vecRun.begin(); iterRun != vecRun.end(); ++iterRun) {
+               
+               const TArrayI array = *iterRun;
+               cout << "  Device name: " << it->first << "  Run number:";
+               for (Int_t i = 0; i <array.GetSize(); ++i) {
+                  cout << array[i] << " ";
+               }
+               cout << endl;
+            }
          }
-         cout << endl;
       }
    }
    
@@ -652,4 +687,61 @@ void TAGcampaign::Print(Option_t* opt) const
          }
       }
    }
+}
+
+//###################################################################################################
+
+//------------------------------------------+-----------------------------------
+//! Campaign checks
+//!
+//! \param[in] runNumber run number
+//! \param[in] flagMC  MC data flag
+bool TAGcampaignManager::CampaignChecks(Int_t runNumber, Bool_t flagMC)
+{
+   if (runNumber == -1 )
+      return true;
+   
+   // check detector include in FootGlobal.par vs current campaign
+   vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
+   for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+      TString str = *it;
+      
+      if (!IsDetectorOn(str)) {
+         Error("CampaignChecks()", "the detector %s is NOT referenced in campaign file", str.Data());
+         return false;
+      }
+   }
+   
+   // check run number vs current campaign
+   TArrayI runArray = GetCurRunArray();
+   Bool_t runOk = false;
+   
+   for (Int_t i = 0; i < runArray.GetSize(); ++i) {
+      if (runNumber == runArray[i])
+         runOk = true;
+   }
+   
+   if (!runOk) {
+      Error("CampaignChecks()", "run %d is NOT referenced in campaign file", runNumber);
+      return false;
+   }
+   
+   // Check raw/MC file
+   if (!flagMC && !GetCurCampaignPar().McFlag)
+      Info("CampaignChecks()", "Reading raw data");
+   
+   if (flagMC && GetCurCampaignPar().McFlag)
+      Info("CampaignChecks()", "Reading MC data");
+   
+   if (flagMC && !GetCurCampaignPar().McFlag) {
+      Error("CampaignChecks()", "Trying to read back MC data file while referenced as raw data in campaign file");
+      return false;
+   }
+   
+   if (!flagMC && GetCurCampaignPar().McFlag) {
+      Error("CampaignChecks()", "Trying to read back raw data file while referenced as MC data in campaign file");
+      return false;
+   }
+   
+   return true;
 }

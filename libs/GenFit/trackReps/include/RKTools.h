@@ -26,12 +26,19 @@
 
 #include <stddef.h>
 #include <algorithm>
+#include <initializer_list>
 
 namespace genfit {
 
 template <size_t nRows, size_t nCols>
 struct RKMatrix {
   double vals[nRows * nCols];
+
+  RKMatrix() = default;
+  RKMatrix(const RKMatrix&) = default;
+  RKMatrix(std::initializer_list<double> initList) {
+    std::copy(initList.begin(), initList.end(), vals);
+  };
 
   double& operator()(size_t iRow, size_t iCol) {
     return vals[nCols*iRow + iCol];
@@ -42,10 +49,12 @@ struct RKMatrix {
   const double& operator[](size_t n) const {
     return vals[n];
   }
+
   double* begin() { return vals; }
   double* end() { return vals + nRows * nCols; }
   const double* begin() const { return vals; }
   const double* end() const { return vals + nRows * nCols; }
+
   RKMatrix<nRows, nCols>& operator=(const RKMatrix<nRows, nCols>& o) {
     std::copy(o.begin(), o.end(), this->begin());
     return *this;
@@ -75,10 +84,6 @@ namespace RKTools {
 
   void J_MpTxcov7xJ_Mp(const M7x5& J_Mp, const M7x7& cov7, M5x5& out5);
   void J_MpTxcov6xJ_Mp(const M6x5& J_Mp, const M6x6& cov6, M5x5& out5);
-
-  void J_MMTxcov7xJ_MM(const M7x7& J_MM, M7x7& cov7);
-
-  void J_MMxJ_MM(M7x7& J_MM, const M7x7& J_MM_old);
 
   void J_pMTTxJ_MMTTxJ_MpTT(const M7x5& J_pMT, const M7x7& J_MMT, const M5x7& J_MpT, M5x5& J_pp);
 

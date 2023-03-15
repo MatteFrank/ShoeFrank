@@ -310,32 +310,32 @@ void TAMCevent::AddCROSS(Int_t aCROSSid, Int_t aCROSSnreg, Int_t aCROSSnregold,
 //! \param[in] RootTree root tree
 void TAMCevent::SetBranches(TTree* RootTree)
 {
-    RootTree->Branch(fEvent->GetBranchName(),&fEvent);
-    RootTree->Branch(fTrack->GetBranchName(),&fTrack);
+    RootTree->Branch(TAMCntuEvent::GetBranchName(),&fEvent);
+    RootTree->Branch(TAMCntuPart::GetBranchName(), &fTrack);
   
     if (TAGrecoManager::GetPar()->IsRegionMc())
-       RootTree->Branch(fRegion->GetBranchName(),&fRegion);
+       RootTree->Branch(TAMCntuRegion::GetBranchName(),&fRegion);
 
     if (TAGrecoManager::GetPar()->IncludeST())
-       RootTree->Branch(fHitSTC->GetStcBranchName(),&fHitSTC);
+       RootTree->Branch(TAMCntuHit::GetStcBranchName(),&fHitSTC);
 
     if (TAGrecoManager::GetPar()->IncludeBM())
-       RootTree->Branch(fHitBMN->GetBmBranchName(),&fHitBMN);
+       RootTree->Branch(TAMCntuHit::GetBmBranchName(),&fHitBMN);
 
     if (TAGrecoManager::GetPar()->IncludeVT())
-       RootTree->Branch(fHitVTX->GetVtxBranchName(),&fHitVTX);
+       RootTree->Branch(TAMCntuHit::GetVtxBranchName(),&fHitVTX);
 
     if (TAGrecoManager::GetPar()->IncludeIT())
-       RootTree->Branch(fHitITR->GetItrBranchName(),&fHitITR);
+       RootTree->Branch(TAMCntuHit::GetItrBranchName(),&fHitITR);
 
     if (TAGrecoManager::GetPar()->IncludeMSD())
-       RootTree->Branch(fHitMSD->GetMsdBranchName(),&fHitMSD);
+       RootTree->Branch(TAMCntuHit::GetMsdBranchName(),&fHitMSD);
 
     if (TAGrecoManager::GetPar()->IncludeTW())
-       RootTree->Branch(fHitTW->GetTofBranchName(),&fHitTW);
+       RootTree->Branch(TAMCntuHit::GetTofBranchName(),&fHitTW);
 
     if (TAGrecoManager::GetPar()->IncludeCA())
-       RootTree->Branch(fHitCAL->GetCalBranchName(),&fHitCAL);
+       RootTree->Branch(TAMCntuHit::GetCalBranchName(),&fHitCAL);
 }
 
 /*-----------------------------------------------------------------*/
@@ -344,29 +344,29 @@ void TAMCevent::SetBranches(TTree* RootTree)
 //! \param[in] RootTree root tree
 void TAMCevent::FindBranches(TTree *RootTree)
 {
-    RootTree->SetBranchAddress(fEvent->GetBranchName(),&fEvent);
-    RootTree->SetBranchAddress(fTrack->GetBranchName(),&fTrack);
+    RootTree->SetBranchAddress(TAMCntuEvent::GetBranchName(),&fEvent);
+    RootTree->SetBranchAddress(TAMCntuPart::GetBranchName(),&fTrack);
 
     if (TAGrecoManager::GetPar()->IncludeST())
-       RootTree->SetBranchAddress(fHitSTC->GetStcBranchName(),&fHitSTC);
+       RootTree->SetBranchAddress(TAMCntuHit::GetStcBranchName(),&fHitSTC);
 
     if (TAGrecoManager::GetPar()->IncludeBM())
-       RootTree->SetBranchAddress(fHitBMN->GetBmBranchName(),&fHitBMN);
+       RootTree->SetBranchAddress(TAMCntuHit::GetBmBranchName(),&fHitBMN);
 
     if (TAGrecoManager::GetPar()->IncludeVT())
-       RootTree->SetBranchAddress(fHitVTX->GetVtxBranchName(),&fHitVTX);
+       RootTree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(),&fHitVTX);
 
     if (TAGrecoManager::GetPar()->IncludeIT())
-       RootTree->SetBranchAddress(fHitITR->GetItrBranchName(),&fHitITR);
+       RootTree->SetBranchAddress(TAMCntuHit::GetItrBranchName(),&fHitITR);
 
     if (TAGrecoManager::GetPar()->IncludeMSD())
-       RootTree->SetBranchAddress(fHitMSD->GetMsdBranchName(),&fHitMSD);
+       RootTree->SetBranchAddress(TAMCntuHit::GetMsdBranchName(),&fHitMSD);
 
     if (TAGrecoManager::GetPar()->IncludeTW())
-       RootTree->SetBranchAddress(fHitTW->GetTofBranchName(),&fHitTW);
+       RootTree->SetBranchAddress(TAMCntuHit::GetTofBranchName(),&fHitTW);
 
     if (TAGrecoManager::GetPar()->IncludeCA())
-       RootTree->SetBranchAddress(fHitCAL->GetCalBranchName(),&fHitCAL);
+       RootTree->SetBranchAddress(TAMCntuHit::GetCalBranchName(),&fHitCAL);
 }
 
 /*-----------------------------------------------------------------*/

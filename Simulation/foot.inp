@@ -53,6 +53,13 @@ MATERIAL         62.    150.36      7.46                              SAMARIUM
 MATERIAL         27.   58.9332       8.9                              COBALT
 MATERIAL                             8.3                              SmCo
 COMPOUND          2.  SAMARIUM       17.    COBALT                    SmCo
+MATERIAL         60.                 6.9                              NEODYMIU
+MATERIAL          5.                2.37                              BORON
+MATERIAL         66.                8.55                              DYSPROSI
+MATERIAL         41.                8.57                              NIOBIUM
+MATERIAL                             7.6                              NdFeB
+COMPOUND        -30.  NEODYMIU      -66.      IRON       -1.     BORONNdFeB
+COMPOUND        -0.5  ALUMINUM       -1.  DYSPROSI       -1.   NIOBIUMNdFeB
 MATERIAL          6.   12.0107        2.                              CARBON
 MATERIAL          1.   1.007948.3748e-05                              HYDROGEN
 MATERIAL                           1.023                              EJ228

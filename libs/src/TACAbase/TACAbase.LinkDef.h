@@ -12,13 +12,16 @@
 #pragma link C++ class TACAparMap+;
 #pragma link C++ class TACAactNtuHitMC+;
 #pragma link C++ class TACAactNtuHit+;
+#pragma link C++ class TACAactBaseNtuCluster+;
 #pragma link C++ class TACAactNtuCluster+;
+#pragma link C++ class TACAactNtuClusterP+;
 #pragma link C++ class TACAcluster+;
 #pragma link C++ class TACAntuCluster+;
 #pragma link C++ class TACAparGeo+;
 #pragma link C++ class TACAparCal+;
+#pragma link C++ class TACAparConf+;
 #pragma link C++ class TACAcalibrationMap+;
-#pragma link C++ class TAGWDtrigInfo+;
+#pragma link C++ class TAWDntuTrigger+;
 #pragma link C++ class TAGactWDreader+;
 
 

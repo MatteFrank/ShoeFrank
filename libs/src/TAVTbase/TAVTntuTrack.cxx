@@ -42,7 +42,7 @@ TAVTntuTrack::~TAVTntuTrack()
 //! return number of tracks
 Int_t TAVTntuTrack::GetTracksN() const
 {
-   return fListOfTracks->GetEntries();
+   return fListOfTracks->GetEntriesFast();
 }
 
 //------------------------------------------+-----------------------------------
@@ -51,7 +51,7 @@ Int_t TAVTntuTrack::GetTracksN() const
 //! \param[in] iTrack track index
 TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack)
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
 	  return (TAVTtrack*)fListOfTracks->At(iTrack);
    else
 	  return 0x0;
@@ -63,7 +63,7 @@ TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack)
 //! \param[in] iTrack track index
 const TAVTtrack* TAVTntuTrack::GetTrack(Int_t iTrack) const
 {
-   if (iTrack >=0 || iTrack < GetTracksN())
+   if (iTrack >=0 && iTrack < GetTracksN())
 	  return (TAVTtrack*)fListOfTracks->At(iTrack);
    else
 	  return 0x0;

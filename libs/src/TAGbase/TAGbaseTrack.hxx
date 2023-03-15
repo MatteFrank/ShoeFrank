@@ -4,7 +4,7 @@
 /*!
  \file TAGbaseTrack.hxx
  \brief  class, simple container class for tracks with the associated clusters
- 
+
  \author Ch. Finck
  */
 /*------------------------------------------+---------------------------------*/
@@ -21,10 +21,12 @@
 #include "TAGobject.hxx"
 #include "TAGdata.hxx"
 #include "TAGcluster.hxx"
+#include "TAGcluster.hxx"
+#include "TAGgeoTrafo.hxx"
 
 class TClonesArray;
 class TAGbaseTrack : public TAGobject {
-   
+
 protected:
    //!   origin x0,y0,z0
    TVector3*      fOrigin;                       //->   origin x0,y0,z0
@@ -41,12 +43,12 @@ protected:
    UInt_t         fType;                         ///< 0 for straight, 1 inclined, 2 for bent
    Int_t          fTrackIdx;                     ///< number of the track
    TClonesArray*  fListOfClusters;               ///< list of cluster associated to the track
-   
+
    Float_t        fChiSquare;                    ///< chisquare/ndf of track fit in 2D
    Float_t        fChiSquareU;                   ///< chisquare/ndf of track fit, U dim
    Float_t        fChiSquareV;                   ///< chisquare/ndf of track fit, V dim
    TVector3       fPosVertex;                    ///< vertex position
-  
+
    Int_t          fValidity;                     ///< if = 1 track attached to vertex,
     //! charge probability array
    TArrayF*       fChargeProba;                  //! charge probability array
@@ -66,15 +68,15 @@ protected:
    TArrayI            fMcTrackIdx;               ///< Idx of the track created in the simulation
    //! Map of MC track Id
    std::map<int, int> fMcTrackMap;               //! Map of MC track Id
-   
+
 public:
    TAGbaseTrack();
    ~TAGbaseTrack();
    TAGbaseTrack(const TAGbaseTrack& aTrack);
-   
+
    //! Get cluster
    virtual TAGcluster*   GetCluster(Int_t /*index*/) { return 0x0; }
-   
+
    // Reset line
    void               Zero();
    // Get Distance to a point
@@ -93,15 +95,13 @@ public:
    Float_t            GetTheta()    const;
    // Get phi angle of line
    Float_t            GetPhi()      const;
-   
-   // Get point on line at beta, parameter along the line
-   TVector3           GetPoint(Float_t beta);
+
    // Set values of track
    void               SetValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength = 0.);
    // Set error values of track
    void               SetErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr);
 
-  
+
    // Get distance with another track
    Float_t        Distance(TAGbaseTrack* track, Float_t z) const;
    // Get X-Y distance with another track
@@ -117,12 +117,12 @@ public:
     //! Get list of clusters
    TClonesArray*  GetListOfClusters()        const { return   fListOfClusters;   }
    //! Get number of clusters
-   Int_t          GetClustersN()             const { return   fListOfClusters->GetEntries(); }
+   Int_t          GetClustersN()             const { return   fListOfClusters->GetEntriesFast(); }
    //! Get valid flag
    Bool_t         IsPileUp()                 const { return   fPileup;                }
    //! Get track type
    UInt_t         GetType()                  const { return   fType;                  }
-   
+
    //! Set track number
    void           SetTrackIdx(Int_t number)          { fTrackIdx = number;          }
    //! Set track type
@@ -155,9 +155,9 @@ public:
 
    //! Get chi square
    Float_t        GetChi2()                 const { return fChiSquare;               }
-   //! Get chi squareU 
+   //! Get chi squareU
    Float_t        GetChi2U()                const { return fChiSquareU;              }
-   //! Get chi squareV 
+   //! Get chi squareV
    Float_t        GetChi2V()                const { return fChiSquareV;              }
 
    //! Get Validity
@@ -168,7 +168,7 @@ public:
    Int_t         GetChargeWithMaxProba()     const { return fChargeWithMaxProba;     }
    //! Get charge max proba
    Float_t       GetChargeMaxProba()         const { return fChargeMaxProba;         }
-   
+
    //! Get charge proba
    TArrayF*      GetChargeProbaNorm()        const { return fChargeProbaNorm;        }
    //! Get charge with max proba
@@ -177,21 +177,20 @@ public:
    Float_t       GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm;     }
 
    //! Get mean number of pixels per tracks
-   Double32_t    GetMeanEltsN()              const { return fMeanEltsN/(float) fListOfClusters->GetEntries(); }
-   
+   Double32_t    GetMeanEltsN()              const { return fMeanEltsN/(float) fListOfClusters->GetEntriesFast(); }
+
    //! Get mean charge per tracks
-   Double32_t    GetMeanCharge()             const { return fMeanCharge/(float) fListOfClusters->GetEntries(); }
-   
+   Double32_t    GetMeanCharge()             const { return fMeanCharge/(float) fListOfClusters->GetEntriesFast(); }
+
    // Add MC track Idx
    void          AddMcTrackIdx(Int_t trackIdx);
-   
+
    //! Get MC info
    Int_t         GetMcTrackIdx(Int_t index)  const { return fMcTrackIdx[index];    }
    //! Get MC info size
    Int_t         GetMcTracksN()              const { return fMcTrackIdx.GetSize(); }
-   
+
    ClassDef(TAGbaseTrack,1)                      ///< Describes TAGbaseTrack
 };
 
 #endif
-

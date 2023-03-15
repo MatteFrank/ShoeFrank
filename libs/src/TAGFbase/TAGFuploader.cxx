@@ -5,6 +5,8 @@
 */
 
 #include "TAGFuploader.hxx"
+#include "SpacepointMeasurement.h"
+#include "TrackPoint.h"
 
 /*!
  \class TAGFuploader
@@ -16,11 +18,20 @@
 //! 
 //! The class converts clusters/points in GenFit format
 //! \param[in] aSensorIDmap Pointer to the TAGFdetectorMap object that handles the GenFit geometry
-TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
+TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap, bool IsMC ) :
+m_allHitMeas(0x0),
+m_measParticleMC_collection(0x0),
+m_NtracksMC(0),
+m_IsMC(IsMC)
+{
 
-	m_sensorIDmap = aSensorIDmap;
+	m_SensorIDMap = aSensorIDmap;
 
-	m_measParticleMC_collection = new map< int, vector<int> >();
+	if(m_IsMC)
+	{
+		m_NtracksMC = ((TAMCntuPart*)gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object())->GetTracksN();
+		m_measParticleMC_collection = new map< int, vector<int> >();
+	}
 	
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
@@ -51,16 +62,27 @@ TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap ) {
 //! CURRENTLY NOT USED -> CHECK. Added to have a complete documentation of the class
 TAGFuploader::~TAGFuploader()
 {
-	for(auto it = m_allHitMeas->begin(); it != m_allHitMeas->end(); ++it)
+	if(m_allHitMeas)
 	{
-		for(auto itvec : it->second)
-			delete itvec;
-		it->second.clear();
+		for(auto it = m_allHitMeas->begin(); it != m_allHitMeas->end(); ++it)
+		{
+			for(auto itvec : it->second)
+				delete itvec;
+			it->second.clear();
+		}
+		m_allHitMeas->clear();
 	}
-	m_allHitMeas->clear();
 
-	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
-		it->second.clear();
+	if(m_IsMC && m_measParticleMC_collection)
+	{
+		if( m_measParticleMC_collection->size() > 0 )
+		{
+			for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
+				it->second.clear();
+		}
+		m_measParticleMC_collection->clear();
+		delete m_measParticleMC_collection;
+	}
 }
 
 
@@ -127,7 +149,7 @@ int TAGFuploader::UploadClusVT(){
 
 		int nclus = vtclus->GetClustersN(iSensor);
 
-		if (m_debug > 1)	    Info( "UploadClusVT()", "\nfound %i  in sensor %i", nclus, iSensor );
+		if (m_debug > 1) Info( "UploadClusVT()", "found %i  in sensor %i", nclus, iSensor );
 
 		if (nclus == 0) continue;
 		totClus += nclus;
@@ -144,7 +166,7 @@ int TAGFuploader::UploadClusVT(){
 			}
 			if (!clus->IsValid())	continue; // Guardare meglio cosa significa...
 
-			Prepare4Vertex( clus, m_sensorIDmap->GetMeasID_eventLevel( "VT", iSensor, iClus ) );
+			Prepare4Vertex( clus, m_SensorIDMap->GetMeasID_eventLevel( "VT", iSensor, iClus ) );
 
 		}
 	}
@@ -171,7 +193,7 @@ int TAGFuploader::UploadClusIT(){
 
 		int nclus = itclus->GetClustersN(iSensor);
 
-		if (m_debug > 1)    std::cout << "\nfound " << nclus << " in sensor " << iSensor << std::endl;
+		if (m_debug > 1)	std::cout << "found " << nclus << " in sensor " << iSensor << "\n";
 
 		if (nclus == 0) continue;
 		totClus += nclus;
@@ -187,7 +209,7 @@ int TAGFuploader::UploadClusIT(){
 			}
 			if (!clus->IsValid()) continue;		// Guardare meglio cosa significa...
 
-			Prepare4InnerTracker( clus, m_sensorIDmap->GetMeasID_eventLevel( "IT", iSensor, iClus ) );
+			Prepare4InnerTracker( clus, m_SensorIDMap->GetMeasID_eventLevel( "IT", iSensor, iClus ) );
 
 		}
 	}
@@ -213,10 +235,10 @@ int TAGFuploader::UploadClusMSD() {
 	int nSensors = ( (TAMSDparGeo*) gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() )->GetSensorsN();
 
 	for( int iSensor = 0; iSensor < nSensors; iSensor++){
-
+		// cout << "Sensor::" << iSensor << endl;
 		int nclus = msdclus->GetClustersN(iSensor);
 
-		if (m_debug > 1)	std::cout << "\nfound " << nclus << " in sensor " << iSensor << std::endl;
+		if (m_debug > 1)	std::cout << "found " << nclus << " in sensor " << iSensor << "\n";
 
 		if (nclus == 0) continue;
 		totClus += nclus;
@@ -233,10 +255,36 @@ int TAGFuploader::UploadClusMSD() {
 			}
 			if (!clus->IsValid()) continue;		// Guardare meglio cosa significa...
 
-			Prepare4Strip( clus, m_sensorIDmap->GetMeasID_eventLevel( "MSD", iSensor, iClus ) );
+			Prepare4Strip( clus, m_SensorIDMap->GetMeasID_eventLevel( "MSD", iSensor, iClus ) );
 
 		}
 	}
+
+	//Print out MSDpoint coordinates if in debug mode
+	if(m_debug > 1)
+	{
+		TAMSDntuPoint* msdpoint = (TAMSDntuPoint*) gTAGroot->FindDataDsc("msdPoint","TAMSDntuPoint")->Object();
+		for( int iSensor = 0; iSensor < nSensors; iSensor++)
+		{
+			if(iSensor%2==1)
+			{
+				int npoint = msdpoint->GetPointsN(iSensor/2);
+				std::cout << "station::" << iSensor/2 << std::endl;
+				for(int j=0;j<npoint;++j)
+				{
+					TAMSDpoint* point = msdpoint->GetPoint(iSensor/2, j);
+					std::cout << "pointId::" << j << std::endl;
+					std::cout << "loc::";
+					point->GetPosition().Print();
+					std::cout << "posg::";
+					point->GetPositionG().Print();
+					std::cout << "glob::";
+					m_GeoTrafo->FromMSDLocalToGlobal(point->GetPositionG()).Print();
+				}
+			}
+		}
+	}
+
 	return totClus;
 }
 
@@ -253,7 +301,7 @@ int TAGFuploader::UploadHitsTW() {
 
 	// take the ntuple object already filled
 	TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-	if ( m_debug > 0 )		cout << "\nnumber of TW points read: " << ntup->GetPointsN() << "\n";
+	if ( m_debug > 0 )	cout << "\nnumber of TW points read: " << ntup->GetPointsN() << "\n";
 
 	int totPoints = ntup->GetPointsN();
 
@@ -272,7 +320,7 @@ int TAGFuploader::UploadHitsTW() {
 			continue;
 		}
 
-		Prepare4TofWall( point, m_sensorIDmap->GetMeasID_eventLevel( "TW", 0, iPoint ) );
+		Prepare4TofWall( point, m_SensorIDMap->GetMeasID_eventLevel( "TW", 0, iPoint ) );
 
 	}
 
@@ -348,13 +396,12 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 	{
 		// for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
 		TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint", "TATWntuPoint")->Object();
-		int tmp_ch;
 
 		// save hits in the collection
 		for (int iPoint = 0; iPoint < twPoint->GetPointsN(); iPoint++) {
 
 			TATWpoint* point = twPoint->GetPoint( iPoint );
-			tmp_ch = point->GetChargeZ();
+			int tmp_ch = point->GetChargeZ();
 
 			if ( m_debug > 1 ) cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
 			
@@ -423,13 +470,13 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 		cout << "VT meas::" << iMeas << endl;
 		TAVTparGeo* m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
 		cout << "Sensor pos::";
-		m_VT_geo->GetSensorPosition(m_sensorIDmap->GetSensorIDFromMeasID(iMeas)).Print();
+		m_VT_geo->GetSensorPosition(m_SensorIDMap->GetSensorIDFromMeasID(iMeas)).Print();
 		cout << "VT hit loc coords::";
 		hitPos.Print();
 		cout << "VT hit det coords::";
-		m_VT_geo->Sensor2Detector(m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
+		m_VT_geo->Sensor2Detector(m_SensorIDMap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
 		cout << "VT hit glb coords::";
-		m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector( m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos) ).Print();
+		m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector( m_SensorIDMap->GetSensorIDFromMeasID(iMeas), hitPos) ).Print();
 	}
 
 	// set hit position vector
@@ -439,11 +486,11 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 	TVector3 pixReso = clus->GetPosError();    // z???
 
 	// to be tested for SpasePoints
-	hitCov.UnitMatrix();
-	for (int j = 0; j < 3; j++){
-	  hitCov[j][j] = pixReso(j)*pixReso(j);
-	}
-	hitCov[2][2] = 0.000005;		//hardcoded
+	// hitCov.UnitMatrix();
+	// for (int j = 0; j < 3; j++){
+	//   hitCov[j][j] = pixReso(j)*pixReso(j);
+	// }
+	// hitCov[2][2] = 0.000005;		//hardcoded
 
 	// planar points
 	planarCov.UnitMatrix();
@@ -452,17 +499,23 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 	  // planarCov[k][k] = 0.001*0.001;
 	}
 
-	vector<int> mcParticlesInMeasuerement;
-	for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
-		mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+	if( m_IsMC )
+	{
+		vector<int> mcParticlesInMeasuerement;
+		// cout << "VT MEAS:: " << iMeas << " has N track MC = " << clus->GetMcTracksN() << endl;
+		for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
+			mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+		}
+
+		(*m_measParticleMC_collection)[iMeas];
+		(*m_measParticleMC_collection)[iMeas] = mcParticlesInMeasuerement;
 	}
 
-	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
 
-	int planeID = m_sensorIDmap->GetFitPlaneIDFromMeasID( iMeas );
-	int detId = m_sensorIDmap->GetDetIDFromMeasID( iMeas );
+	int planeID = m_SensorIDMap->GetFitPlaneIDFromMeasID( iMeas );
+	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas );
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr ); // nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
-	hit->setPlane( m_sensorIDmap->GetFitPlane(planeID), planeID ); 
+	hit->setPlane( m_SensorIDMap->GetFitPlane(planeID), planeID ); 
 	(*m_allHitMeas)[ planeID ].push_back(hit);
 
 
@@ -496,13 +549,13 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 		TAITparGeo* m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
 		cout << "IT meas::" << iMeas << endl;
 		cout << "Sensor pos::";
-		m_IT_geo->GetSensorPosition(m_sensorIDmap->GetSensorIDFromMeasID(iMeas)).Print();
+		m_IT_geo->GetSensorPosition(m_SensorIDMap->GetSensorIDFromMeasID(iMeas)).Print();
 		cout << "IT hit loc coords::";
 		hitPos.Print();
 		cout << "IT hit det coords::";
-		m_IT_geo->Sensor2Detector(m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
+		m_IT_geo->Sensor2Detector(m_SensorIDMap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
 		cout << "IT hit glb coords::";
-		m_GeoTrafo->FromITLocalToGlobal( m_IT_geo->Sensor2Detector( m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos) ).Print();
+		m_GeoTrafo->FromITLocalToGlobal( m_IT_geo->Sensor2Detector( m_SensorIDMap->GetSensorIDFromMeasID(iMeas), hitPos) ).Print();
 	}
 
 
@@ -517,18 +570,22 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 	  planarCov[k][k] = pixReso(k)*pixReso(k);
 	}
 
-	vector<int> mcParticlesInMeasuerement;
-	for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
-		mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+	if( m_IsMC )
+	{
+		vector<int> mcParticlesInMeasuerement;
+		for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
+			mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+		}
+
+		(*m_measParticleMC_collection)[iMeas];
+		(*m_measParticleMC_collection)[iMeas] = mcParticlesInMeasuerement;
 	}
 
-	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
-
-	int sensorID = m_sensorIDmap->GetFitPlaneIDFromMeasID( iMeas );
-	int detId = m_sensorIDmap->GetDetIDFromMeasID( iMeas );
+	int sensorID = m_SensorIDMap->GetFitPlaneIDFromMeasID( iMeas );
+	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas );
 	// nullptr e' un TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
-	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID );	 
+	hit->setPlane( m_SensorIDMap->GetFitPlane(sensorID), sensorID );	 
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 
@@ -562,15 +619,18 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	if ( m_debug > 1 )
 	{
 		TAMSDparGeo* m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
-		cout << "MSD Meas::" << iMeas << endl;
+		cout << "MSD Meas::" << iMeas << "\t View::" << clus->GetPlaneView() <<  endl;
 		cout << "Sensor pos::";
-		m_MSD_geo->GetSensorPosition(m_sensorIDmap->GetSensorIDFromMeasID(iMeas)).Print();
+		m_MSD_geo->GetSensorPosition(m_SensorIDMap->GetSensorIDFromMeasID(iMeas)).Print();
 		cout << "MSD hit loc coords::";
 		hitPos.Print();
+		cout << "MSD hit loc frame hit coord::" << clus->GetPositionF() << endl;
 		cout << "MSD hit det coords::";
-		m_MSD_geo->Sensor2Detector(m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
+		m_MSD_geo->Sensor2Detector(m_SensorIDMap->GetSensorIDFromMeasID(iMeas), hitPos).Print();
+		cout << "MSD PositionG::";
+		clus->GetPositionG().Print();
 		cout << "MSD hit glb coords::";
-		m_GeoTrafo->FromMSDLocalToGlobal( m_MSD_geo->Sensor2Detector( m_sensorIDmap->GetSensorIDFromMeasID(iMeas), hitPos) ).Print();
+		m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() ).Print();
 	}
 
 	//check the view, 0 ->X, 1->Y
@@ -580,15 +640,10 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	//RZ: WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//MSD detector coordinates are all in the X value of the position vector!!!! So, an X strip will give the local pos in the X value. A Y strip will rotate the Y measurement in local coords and return it in the X when looking at detector coordinates.
 
-	if ( clus->GetPlaneView() == 0 ){
-		planarCoords(0) = hitPos.x();
-		pixReso = 0.003; //hardcoded!!!!!
-	}
-	else{
-		planarCoords(0) = hitPos.y();
-		pixReso = 0.003; //hardcoded!!!!!
+	planarCoords(0) = clus->GetPositionF();
+	pixReso = clus->GetPosErrorF();
+	if ( clus->GetPlaneView() == 1 )
 		isYView = true;
-	}
 
 	// set covariance matrix
 	planarCov.UnitMatrix();
@@ -596,19 +651,29 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 		planarCov[k][k] = pixReso*pixReso;
 	}
 
-	vector<int> mcParticlesInMeasuerement;
-	for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
-		mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+	if( m_IsMC )
+	{
+		vector<int> mcParticlesInMeasuerement;
+		for (int nPart = 0; nPart < clus->GetMcTracksN(); nPart++) {
+				mcParticlesInMeasuerement.push_back( clus->GetMcTrackIdx( nPart ) );
+		}
+
+		(*m_measParticleMC_collection)[iMeas];
+		(*m_measParticleMC_collection)[iMeas] = mcParticlesInMeasuerement;
 	}
 
-	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
-
-	int sensorID = m_sensorIDmap->GetFitPlaneIDFromMeasID( iMeas );
-	int detId = m_sensorIDmap->GetDetIDFromMeasID( iMeas );
+	int sensorID = m_SensorIDMap->GetFitPlaneIDFromMeasID( iMeas );
+	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas );
 	// nullptr is a TrackPoint(fitTrack). Leave like this otherwise it gives memory leak problems!!!!
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
-	if (isYView) hit->setStripV();
-	hit->setPlane( m_sensorIDmap->GetFitPlane(sensorID), sensorID ); 
+	// if (isYView) hit->setStripV();
+	if (isYView) hit->setYview();
+	hit->setPlane( m_SensorIDMap->GetFitPlane(sensorID), sensorID );
+	if( m_debug > 1 )
+	{
+		cout << "toLab::";
+		(m_SensorIDMap->GetFitPlane(sensorID)->toLab(TVector2(clus->GetPositionF(),0))).Print(); 
+	}
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 
@@ -642,6 +707,9 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	{
 		cout << "TW hit loc coords::";
 		hitPos.Print();
+		cout << "TW glob hit coords::";
+		// TATWparGeo *m_TW_geo = (TATWparGeo *)gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
+		m_GeoTrafo->FromTWLocalToGlobal(point->GetPosition()).Print();
 	}
 
 	// set point position vector
@@ -649,32 +717,33 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	planarCoords(1) = hitPos.y();
 	TVector3 pixReso = point->GetPosErrorG();
 
-	if ( m_debug > 1 )		pixReso.Print();
+	if (m_debug > 1)
+	pixReso.Print();
 
 	planarCov.UnitMatrix();
 	for (int k = 0; k < 2; k++)
 	{
-		planarCov[k][k] = pixReso(k)*pixReso(k);
-		if(m_debug > 1) 
-			cout << pixReso(k)*pixReso(k) << endl;
+	planarCov[k][k] = pixReso(k)*pixReso(k);
+	if(m_debug > 1) 
+		cout << pixReso(k)*pixReso(k) << endl;
 	}
 
-	vector<int> mcParticlesInMeasuerement;
-	for (int nPart = 0; nPart < point->GetMcTracksN(); nPart++) {
-		mcParticlesInMeasuerement.push_back( point->GetMcTrackIdx( nPart ) );
-		if(m_debug > 0) 
-		{
-			cout << "TW meas::" << iMeas << "\tMCTrack::" << point->GetMcTrackIdx( nPart ) << endl;
-			point->GetPosition().Print();
+	if( m_IsMC )
+	{
+		vector<int> mcParticlesInMeasuerement;
+		// cout << "TW MEAS:: " << iMeas << " has N track MC = " << point->GetMcTracksN() << endl;
+		for (int nPart = 0; nPart < point->GetMcTracksN(); nPart++) {
+			mcParticlesInMeasuerement.push_back( point->GetMcTrackIdx( nPart ) );
 		}
+
+		(*m_measParticleMC_collection)[iMeas];
+		(*m_measParticleMC_collection)[iMeas] = mcParticlesInMeasuerement;
 	}
 
-	m_measParticleMC_collection->insert( pair<int, vector<int> > ( iMeas, mcParticlesInMeasuerement ) );
-
-	int sensorID = m_sensorIDmap->GetFitPlaneTW();
-	int detId = m_sensorIDmap->GetDetIDFromMeasID( iMeas);
+	int sensorID = m_SensorIDMap->GetFitPlaneTW();
+	int detId = m_SensorIDMap->GetDetIDFromMeasID( iMeas);
 	PlanarMeasurement* hit = new PlanarMeasurement(planarCoords, planarCov, detId, iMeas, nullptr );
-	hit->setPlane(m_sensorIDmap->GetFitPlane(sensorID), sensorID);      
+	hit->setPlane(m_SensorIDMap->GetFitPlane(sensorID), sensorID);      
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 
 	if ( m_debug > 0 )	  cout << "\nPrepare4TofWall::Exiting\n";

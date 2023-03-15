@@ -92,7 +92,7 @@ Bool_t TAVTdigitizerE::MakeCluster(Double_t x0, Double_t y0, Double_t /*zin*/, D
    Int_t shellPixels  = fShel[lastTurn];
    rpixels            = shellPixels - rpixels;
 
-   if (rpixels != 0)lastTurn--;
+   if (rpixels != 0 && lastTurn > 0) lastTurn--;
 
    // radius
    Int_t closed  = fShel[lastTurn];
