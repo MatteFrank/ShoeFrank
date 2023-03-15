@@ -67,7 +67,6 @@ private:
   vector<string> fvBodyIn;   /// Fluka body out
 
 private:
-  static const TString fgkDefParaName;   /// defaylt parameter name
   static       TString fgDefaultGeoName; /// default detector geomap file
   static const TString fgkDevBaseName;   /// device base name
   static const Int_t fgkDefMagnetsN;     /// default number of Magnets
@@ -77,8 +76,6 @@ public:
   static Int_t         GetDefMagnetsN()      { return fgkDefMagnetsN;        }
    //! Get device base name
   static const Char_t* GetBaseName()         { return fgkDevBaseName.Data(); }
-   //! Get default paramater name
-  static const Char_t* GetDefParaName()      { return fgkDefParaName.Data(); }
   
 public:
   TADIparGeo();

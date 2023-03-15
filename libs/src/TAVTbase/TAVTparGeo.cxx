@@ -53,7 +53,6 @@
 ClassImp(TAVTparGeo);
 
 const TString TAVTparGeo::fgkBaseName      = "VT";
-const TString TAVTparGeo::fgkDefParaName   = "vtGeo";
 
 //______________________________________________________________________________
 //! Standard constructor

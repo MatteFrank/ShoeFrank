@@ -28,7 +28,6 @@
 #include "TAGroot.hxx"
 #include "TATWparameters.hxx"
 
-      TString TATWparGeo::fgkDefParaName     = "twGeo";
 const TString TATWparGeo::fgkBaseName        = "TW";
       Int_t   TATWparGeo::fgkLayerOffset     = 100;
 const Color_t TATWparGeo::fgkDefaultModCol   = kGray+1;

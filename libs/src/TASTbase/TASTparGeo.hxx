@@ -48,7 +48,6 @@ public:
 
 public:
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
-   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
    
 private:
    TVector3  fSize;
@@ -58,7 +57,6 @@ private:
 
 private:
    static const TString fgkBaseName;
-   static const TString fgkDefParaName;
    
    ClassDef(TASTparGeo,1)
 };

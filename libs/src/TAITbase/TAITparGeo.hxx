@@ -59,7 +59,6 @@ private:
 
 protected:
    static const TString fgkBaseNameIt;      ///< IT base name
-   static const TString fgkDefParaNameIt;   ///< Default parameter name
    static const Int_t   fgkDefSensPerLayer; ///< Def number of sensors per layer
    static const Int_t   fgkDefSensPerBoard; ///< Def number of sensors per plume module
    static const Int_t   fgkDefLayersN;      ///< Def number of layers
@@ -168,8 +167,6 @@ public:
 public:
    //! Get base name
    static const Char_t* GetBaseName()    { return fgkBaseNameIt.Data();    }
-   //! Get default parameter name
-   static const Char_t* GetDefParaName() { return fgkDefParaNameIt.Data(); }
    //! Get default number of sensors per board
    static Int_t GetDefSensPerBoard()     {return fgkDefSensPerBoard;       }
 

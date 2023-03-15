@@ -153,8 +153,6 @@ public:
    string PrintParameters();
    string PrintSubtractBodiesFromAir();
 
-   //! Get the name of this class (bmGeo)
-   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
    //! Get the detector name of this class (BM)
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
    //! Get the offset in layer id (6)
@@ -204,7 +202,6 @@ private:
 
    TString         fkDefaultGeoName;  ///< Default par geo file name (./geomaps/TABMdetector.geo)
 
-   static const TString fgkDefParaName;  ///< Default par name (bmGeo)
    static const TString fgkBaseName;    ///< device base name
    static Int_t         fgkLayerOffset; ///< offset in layer id
 

@@ -27,7 +27,6 @@
 ClassImp(TASTparGeo);
 
 const TString TASTparGeo::fgkBaseName    = "ST";
-const TString TASTparGeo::fgkDefParaName = "stGeo";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

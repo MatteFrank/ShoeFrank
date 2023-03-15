@@ -26,7 +26,6 @@ class TAVTparGeo : public TAVTbaseParGeo {
 
 protected:
    static const TString fgkBaseName;    ///< Vtx base name
-   static const TString fgkDefParaName; ///< default parameter name
 
 public:
    TAVTparGeo();
@@ -83,8 +82,6 @@ protected:
 public:
    //! Get base name
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
-   //! Get default parameter name
-   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
 
    ClassDef(TAVTparGeo,1)
 };

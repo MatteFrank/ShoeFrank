@@ -28,7 +28,6 @@ ClassImp(TAITparGeo);
 //##############################################################################
 
 const TString TAITparGeo::fgkBaseNameIt      = "IT";
-const TString TAITparGeo::fgkDefParaNameIt   = "itGeo";
 const Int_t   TAITparGeo::fgkDefSensPerLayer = 8;
 const Int_t   TAITparGeo::fgkDefSensPerBoard = 4;
 const Int_t   TAITparGeo::fgkDefLayersN      = 2;

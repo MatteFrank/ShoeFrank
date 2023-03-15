@@ -36,7 +36,6 @@
 ClassImp(TAGparGeo);
 
 const TString TAGparGeo::fgkBaseName    = "TG";
-const TString TAGparGeo::fgkDefParaName = "tgGeo";
 
 
 //______________________________________________________________________________

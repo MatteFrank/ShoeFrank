@@ -37,7 +37,6 @@
   \brief Geometry parameters of the Calorimeter
 */
 
-const TString TACAparGeo::fgkDefParaName     = "caGeo";
 const TString TACAparGeo::fgkBaseName        = "CA";
 const Color_t TACAparGeo::fgkDefaultCryCol   = kAzure+6;
 const Color_t TACAparGeo::fgkDefaultCryColOn = kRed-5;

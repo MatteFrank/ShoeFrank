@@ -118,7 +118,6 @@ private:
    vector< vector<TVector3> > fvTilt;
    
 private:
-   static TString       fgkDefParaName;
    static const TString fgkBaseName;
    static Int_t         fgkLayerOffset;      // offset in salt id for 2nd layer
    static const Color_t fgkDefaultModCol;    // default color of slat/module;
@@ -126,7 +125,6 @@ private:
    static const TString fgkDefaultBarName;  // default slat name;
 
 public:
-   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
    static Int_t   GetLayerOffset()       { return fgkLayerOffset;        }
    static Color_t GetDefaultModCol()     { return fgkDefaultModCol;      }

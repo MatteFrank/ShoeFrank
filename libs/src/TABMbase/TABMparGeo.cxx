@@ -37,7 +37,6 @@ using namespace std;
 
 ClassImp(TABMparGeo);
 
-const TString TABMparGeo::fgkDefParaName = "bmGeo";
 const TString TABMparGeo::fgkBaseName = "BM";
 Int_t TABMparGeo::fgkLayerOffset      = 6;
 

@@ -82,7 +82,6 @@ private:
 
 private:
    static const TString fgkBaseName;    ///< Base name
-   static const TString fgkDefParaName; ///< Default parameter name
 
 private:
    // Add cubic target
@@ -163,8 +162,6 @@ public:
 public:
    //! Get base name
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
-   //! Get default parameter name
-   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
 
    ClassDef(TAGparGeo,2)
 };

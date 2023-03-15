@@ -80,13 +80,10 @@ private:
   
 private:
   static const TString fgkBaseName;    ///< MSD base name
-  static const TString fgkDefParaName; //< default parameter name
   
 public:
   //! Get base name
   static const Char_t* GetBaseName()                    { return fgkBaseName.Data();    }
-  //! Get default parameter name
-  static const Char_t* GetDefParaName()                 { return fgkDefParaName.Data(); }
   //! Get sensor id from board and side id
   static Int_t GetSensorId(Int_t boardId, Int_t sideId) { return 2*(boardId-1)+sideId;  }
 

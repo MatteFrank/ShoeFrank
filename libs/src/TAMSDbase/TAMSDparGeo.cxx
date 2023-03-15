@@ -18,7 +18,6 @@
 #include "TAGroot.hxx"
 
 const TString TAMSDparGeo::fgkBaseName      = "MSD";
-const TString TAMSDparGeo::fgkDefParaName   = "msdGeo";
 
 /*!
  \class TAMSDparGeo

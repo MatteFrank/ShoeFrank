@@ -138,8 +138,6 @@ public:
 public:
    //! Get the detector name of this class (CA)
    static const Char_t* GetBaseName()     { return fgkBaseName.Data();    }
-   //! Get the parameter name of this class (caGeo)
-   static const Char_t* GetDefParaName()  { return fgkDefParaName.Data(); }
    //! Get default crystal color
    static Color_t GetDefaultCryCol()      { return fgkDefaultCryCol;      }
    //! Get default on crystal color
@@ -154,7 +152,6 @@ public:
 
 private:
    static const TString fgkBaseName;            ///< Detector base name
-   static const TString fgkDefParaName;         ///< default parameter name
    static const Color_t fgkDefaultCryCol;       ///< default color of slat/crystal;
    static const Color_t fgkDefaultCryColOn;     ///< default color of fired slat/crystal;
    static const Color_t fgkDefaultModCol;       ///< default color of module support;
