@@ -6,6 +6,8 @@
 #include "TString.h"
 #include "TClonesArray.h"
 
+#include "TAGnameManager.hxx"
+
 #include "TAITntuHit.hxx"
 
 /*!
@@ -37,7 +39,7 @@ TAITntuHit::TAITntuHit()
   fListOfPixels(0x0),
   fpGeoMap(0x0)
 {
-   fpGeoMap = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
+   fpGeoMap = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object();
    if (!fpGeoMap) {
       Error("TAITntuHit()", "Para desciptor vtGeo does not exist");
       exit(0);

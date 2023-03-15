@@ -30,6 +30,7 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGrecoManager.hxx"
 #include "TAGcampaignManager.hxx"
+#include "TAGnameManager.hxx"
 
 #include "TAIRalignC.hxx"
 
@@ -129,7 +130,7 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
 
    // VTX
    if (fFlagVtx) {
-      fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
+      fpGeoMapVtx    = new TAGparaDsc(FootParaDscName("TAVTparGeo"), new TAVTparGeo());
       TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
       TString parFile = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
       geomapVtx->FromFile(parFile.Data());
@@ -147,7 +148,7 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
    
    // MSD
    if (fFlagMsd) {
-      fpGeoMapMsd    = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
+      fpGeoMapMsd    = new TAGparaDsc(FootParaDscName("TAMSDparGeo"), new TAMSDparGeo());
       TAMSDparGeo* geomapMsd   = (TAMSDparGeo*) fpGeoMapMsd->Object();
       TString parFile = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       geomapMsd->FromFile(parFile.Data());

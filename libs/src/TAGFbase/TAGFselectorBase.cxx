@@ -4,6 +4,7 @@
  \author R. Zarrella and M. Franchini
 */
 
+#include "TAGnameManager.hxx"
 #include "TAGFselectorBase.hxx"
 
 /*!
@@ -38,16 +39,16 @@ m_noTWpointEvents(0x0)
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
 	if(TAGrecoManager::GetPar()->IncludeVT())
-		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeIT())
-		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
+		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeMSD())
-		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeTW())
-		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
+		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object();
 
 	m_systemsON = "";
 	if( TAGrecoManager::GetPar()->KalSystems().at(0) == "all" )
@@ -67,7 +68,7 @@ m_noTWpointEvents(0x0)
 
 	m_detectors = TAGparTools::Tokenize( m_systemsON.Data() , " " );
 
-	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
+	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
 	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
@@ -139,7 +140,7 @@ void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMe
 	m_noTWpointEvents = noTWpointEvents;
 
 	if (m_IsMC)
-		m_McNtuEve = (TAMCntuPart *)gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object();
+      m_McNtuEve = (TAMCntuPart *)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -216,7 +217,7 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 		float mass = particle->GetMass();
 
 
-		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)	continue;
+		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)	continue;
 
 		string outName, pdgName;
 
@@ -578,7 +579,7 @@ int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
 
 			int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
 
-			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
+			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"), "TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
 
 			charge = twpoint->GetChargeZ();
 			break;

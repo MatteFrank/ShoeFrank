@@ -8,6 +8,7 @@
  \file TAMSDntuCluster.cxx
  \brief Implementation TAMSDntuCluster
  */
+#include "TAGnameManager.hxx"
 
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuCluster.hxx"
@@ -111,7 +112,7 @@ const TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) c
 //! Setup clones.
 void TAMSDntuCluster::SetupClones()
 {
-  fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+  fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
   
   if (fListOfClusters) return;
   fListOfClusters    = new TObjArray();

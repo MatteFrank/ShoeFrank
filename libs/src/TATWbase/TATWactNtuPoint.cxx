@@ -12,6 +12,8 @@
 #include "TATWntuHit.hxx"
 #include "TATWntuPoint.hxx"
 
+#include "TAGnameManager.hxx"
+
 #include "TATWactNtuPoint.hxx"
 
 #include "TATWparameters.hxx"
@@ -52,7 +54,7 @@ TATWactNtuPoint::TATWactNtuPoint(const char* name, TAGdataDsc* pNtuRaw, TAGdataD
 
    fgeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
-   fparGeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+   fparGeo = (TAGparGeo*)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object();
    fZbeam = fparGeo->GetBeamPar().AtomicNumber;
 
    TATWparConf* parConf = (TATWparConf*) fpConfMap->Object();

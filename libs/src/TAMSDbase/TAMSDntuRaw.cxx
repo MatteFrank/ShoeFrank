@@ -84,6 +84,7 @@ Int_t TAMSDrawHit::Compare(const TObject* obj) const
 #include "TAGparaDsc.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TAMSDparMap.hxx"
+#include "TAGnameManager.hxx"
 
 TString TAMSDntuRaw::fgkBranchName   = "msdrd.";
 
@@ -101,9 +102,9 @@ TAMSDntuRaw::TAMSDntuRaw()
 : TAGdata(),
   fListOfStrips(0x0)
 {
-   fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+   fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
    if (!fpGeoMap) {
-      Error("TAMSDntuRaw()", "Para desciptor %s does not exist", TAMSDparGeo::GetDefParaName());
+      Error("TAMSDntuRaw()", "Para desciptor %s does not exist", FootParaDscName("TAMSDparGeo"));
       exit(0);
    }
    SetupClones();

@@ -11,6 +11,7 @@
 
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAGnameManager.hxx"
 
 /*!
  \class TATWdigitizer
@@ -77,7 +78,7 @@ TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw ,TAGparaDsc* pParGeo, TAGparaDs
    SetFunctions();
    SetInitParFunction();
    
-   twParGeo =   (TATWparGeo*) gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object();
+   twParGeo =   (TATWparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object();
    twParCal = (TATWparCal*)fpParCal->Object();
    
    fSlatLength = twParGeo->GetBarDimension().Y();

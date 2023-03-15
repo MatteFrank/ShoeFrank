@@ -6,6 +6,7 @@
 #include "TString.h"
 #include "TClonesArray.h"
 
+#include "TAGnameManager.hxx"
 #include "TAVTntuHit.hxx"
 
 /*!
@@ -31,7 +32,7 @@ TAVTntuHit::TAVTntuHit()
   fpGeoMap(0x0),
   fValid(true)
 {
-   fpGeoMap = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+   fpGeoMap = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object();
    if (!fpGeoMap) {
       Error("TAVTntuHit()", "Para desciptor vtGeo does not exist");
       exit(0);

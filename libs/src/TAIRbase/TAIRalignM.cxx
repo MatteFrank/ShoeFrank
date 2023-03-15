@@ -27,8 +27,9 @@
 #include "TAITparConf.hxx"
 
 #include "TAIRntuTrack.hxx"
-
 #include "TAIRalignM.hxx"
+
+#include "TAGnameManager.hxx"
 
 /*!
  \class TAIRalignM
@@ -87,7 +88,7 @@ TAIRalignM::TAIRalignM(const TString name, const TString expName, Int_t runNumbe
    fCampManager->FromFile();
    
    // VTX
-   fpGeoMapVtx    = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
+   fpGeoMapVtx    = new TAGparaDsc(FootParaDscName("TAVTparGeo"), new TAVTparGeo());
    TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
    TString parFile = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
    geomapVtx->FromFile(parFile.Data());
@@ -98,7 +99,7 @@ TAIRalignM::TAIRalignM(const TString name, const TString expName, Int_t runNumbe
    parConfVtx->FromFile(parFile.Data());
    
    // ITR
-   fpGeoMapItr    = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+   fpGeoMapItr    = new TAGparaDsc(FootParaDscName("TAITparGeo"), new TAITparGeo());
    TAITparGeo* geomapItr   = (TAITparGeo*) fpGeoMapItr->Object();
    parFile = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
    geomapItr->FromFile(parFile.Data());

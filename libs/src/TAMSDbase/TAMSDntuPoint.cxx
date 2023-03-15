@@ -6,6 +6,7 @@
 #include "TAMSDntuPoint.hxx"
 #include "TString.h"
 #include "TClonesArray.h"
+#include "TAGnameManager.hxx"
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuPoint.hxx"
 #include "TAMSDtrack.hxx"
@@ -248,7 +249,7 @@ TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 //! Setup clones. Create and initialise the list of points
 void TAMSDntuPoint::SetupClones()
 {
-  fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+   fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
 
    if (fListOfPoints) return;
    fListOfPoints = new TObjArray();

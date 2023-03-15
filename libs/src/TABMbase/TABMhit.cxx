@@ -1,6 +1,8 @@
 #include "TAGroot.hxx"
 #include "TAGparaDsc.hxx"
 #include "TABMparGeo.hxx"
+#include "TAGnameManager.hxx"
+
 #include "TABMhit.hxx"
 
 using namespace std;
@@ -45,7 +47,7 @@ TABMhit::TABMhit( Int_t id, Int_t il, Int_t iv, Int_t ic, Double_t r, Double_t t
   fIsFake=-1;
   fSigma=s;
 
-  TABMparGeo* f_bmgeo = (TABMparGeo*) gTAGroot->FindParaDsc(TABMparGeo::GetDefParaName(), "TABMparGeo")->Object();
+  TABMparGeo* f_bmgeo = (TABMparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TABMparGeo"), "TABMparGeo")->Object();
   Int_t idfilo = f_bmgeo->GetSenseId(fCell);
   fWirePos.SetXYZ(f_bmgeo->GetWireX(idfilo,fPlane,fView), f_bmgeo->GetWireY(idfilo,fPlane,fView), f_bmgeo->GetWireZ(idfilo,fPlane,fView));
   fWireDir.SetXYZ(f_bmgeo->GetWireCX(idfilo,fPlane,fView), f_bmgeo->GetWireCY(idfilo,fPlane,fView), f_bmgeo->GetWireCZ(idfilo,fPlane,fView));
@@ -72,7 +74,7 @@ void TABMhit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 /*
 void TABMhit::SetAW() {
 
-   TABMparGeo* f_bmgeo = (TABMparGeo*) gTAGroot->FindParaDsc(TABMparGeo::GetDefParaName(), "TABMparGeo")->Object();
+   TABMparGeo* f_bmgeo = (TABMparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TABMparGeo"), "TABMparGeo")->Object();
 
   Int_t idfilo = f_bmgeo->GetSenseId(Cell());
 

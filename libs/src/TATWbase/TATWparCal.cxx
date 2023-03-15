@@ -7,6 +7,8 @@
 #include <limits>
 
 #include "TAGrecoManager.hxx"
+#include "TAGnameManager.hxx"
+
 #include "TAGroot.hxx"
 #include <TCanvas.h>
 #include "TATWparCal.hxx"
@@ -39,7 +41,7 @@ TATWparCal::TATWparCal()
   // Standard constructor
   fMapCal=new TATWcalibrationMap();
 
-  fParGeo = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+  fParGeo = (TAGparGeo*)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object();
 
   fGeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 

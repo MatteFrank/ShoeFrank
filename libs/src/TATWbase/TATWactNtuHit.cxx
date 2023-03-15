@@ -9,6 +9,7 @@
 #include "TMath.h"
 #include "TH1F.h"
 
+#include "TAGnameManager.hxx"
 #include "TATWactNtuHit.hxx"
 #include "TATWcalibrationMap.hxx"
 
@@ -66,7 +67,7 @@ TATWactNtuHit::TATWactNtuHit(const char* name,
    
 
   // global geo object
-  f_pargeo_gl = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+  f_pargeo_gl = (TAGparGeo*)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object();
 
   fZbeam = f_pargeo_gl->GetBeamPar().AtomicNumber;
  

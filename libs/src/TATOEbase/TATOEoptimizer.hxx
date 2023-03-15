@@ -19,6 +19,7 @@
 #include "TATOEprocedure.hxx"
 #include "TATOEact.hxx"
 #include "TATOEchecker.hxx"
+#include "TAGnameManager.hxx"
 
 #include "TAGaction.hxx"
 #include "TAGparGeo.hxx"
@@ -202,10 +203,10 @@ struct action_factory<configuration< vertex_tag, tof_tag>> {
         
         auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
         auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
-        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
+        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
         
         auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
-        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object() );
+        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
         
         
         auto list = start_list( detector_properties<vertex_tag>(vertex_hc,
@@ -223,7 +224,7 @@ struct action_factory<configuration< vertex_tag, tof_tag>> {
                                std::move(ukf),
                                std::move(list),
                                nullptr,
-                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object() ),
+                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() ),
                                field_h,
                                true
                                );
@@ -249,13 +250,13 @@ struct action_factory<configuration< vertex_tag, it_tag, tof_tag>> {
         
         auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
         auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
-        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
+        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
         
         auto * cluster_it_hc = static_cast<TAITntuCluster*>(  gTAGroot->FindDataDsc("itClus")->Object() );
-        auto * geo_it_h = static_cast<TAITparGeo*>( gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object() );
+        auto * geo_it_h = static_cast<TAITparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object() );
         
         auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
-        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object() );
+        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
         
         
         auto list = start_list( detector_properties<vertex_tag>(vertex_hc,
@@ -274,7 +275,7 @@ struct action_factory<configuration< vertex_tag, it_tag, tof_tag>> {
                                std::move(ukf),
                                std::move(list),
                                nullptr,
-                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object() ),
+                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() ),
                                field_h,
                                true
                                );
@@ -300,13 +301,13 @@ struct action_factory<configuration<vertex_tag,msd_tag, tof_tag>> {
         
         auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
         auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
-        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
+        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
         
         auto * cluster_msd_hc = static_cast<TAMSDntuCluster*>(  gTAGroot->FindDataDsc("msdClus")->Object() );
-        auto * geo_msd_h = static_cast<TAMSDparGeo*>( gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object() );
+        auto * geo_msd_h = static_cast<TAMSDparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object() );
         
         auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
-        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object() );
+        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
         
         
         auto list = start_list( detector_properties<vertex_tag>(vertex_hc,
@@ -325,7 +326,7 @@ struct action_factory<configuration<vertex_tag,msd_tag, tof_tag>> {
                                std::move(ukf),
                                std::move(list),
                                nullptr,
-                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object() ),
+                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() ),
                                field_h,
                                true
                                );
@@ -350,16 +351,16 @@ struct action_factory<configuration<vertex_tag, it_tag, msd_tag, tof_tag>> {
         
         auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
         auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
-        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object() );
+        auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
         
         auto * cluster_it_hc = static_cast<TAITntuCluster*>(  gTAGroot->FindDataDsc("itClus")->Object() );
-        auto * geo_it_h = static_cast<TAITparGeo*>( gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object() );
+        auto * geo_it_h = static_cast<TAITparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object() );
         
         auto * cluster_msd_hc = static_cast<TAMSDntuCluster*>(  gTAGroot->FindDataDsc("msdClus")->Object() );
-        auto * geo_msd_h = static_cast<TAMSDparGeo*>( gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object() );
+        auto * geo_msd_h = static_cast<TAMSDparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object() );
         
         auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
-        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(TATWparGeo::GetDefParaName(), "TATWparGeo")->Object() );
+        auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
         
         
         auto list = start_list( detector_properties<vertex_tag>(vertex_hc,
@@ -379,7 +380,7 @@ struct action_factory<configuration<vertex_tag, it_tag, msd_tag, tof_tag>> {
                                std::move(ukf),
                                std::move(list),
                                nullptr,
-                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object() ),
+                               static_cast<TAGparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() ),
                                field_h,
                                true
                                );

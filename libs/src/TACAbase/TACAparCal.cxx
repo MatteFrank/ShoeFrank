@@ -5,6 +5,7 @@
 
 #include "TError.h"
 #include "TACAparCal.hxx"
+#include "TAGnameManager.hxx"
 
 /*!
  \class TACAparCal
@@ -23,7 +24,7 @@ TACAparCal::TACAparCal()
 {
   // Standard constructor
   fMapCal = new TACAcalibrationMap();
-  fParGeo = (TACAparGeo*)gTAGroot->FindParaDsc(TACAparGeo::GetDefParaName(), "TACAparGeo")->Object();
+  fParGeo = (TACAparGeo*)gTAGroot->FindParaDsc(FootParaDscName("TACAparGeo"), "TACAparGeo")->Object();
 }
 
 

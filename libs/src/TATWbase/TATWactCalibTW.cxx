@@ -9,6 +9,7 @@
 #include "TMath.h"
 #include "TH1F.h"
 
+#include "TAGnameManager.hxx"
 #include "TATWactCalibTW.hxx"
 
 /*!
@@ -57,7 +58,7 @@ TATWactCalibTW::TATWactCalibTW(const char* name,
   f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
   // global geo object
-  f_pargeo_gl = (TAGparGeo*)gTAGroot->FindParaDsc(TAGparGeo::GetDefParaName(), "TAGparGeo")->Object();
+  f_pargeo_gl = (TAGparGeo*)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object();
 
   fParticleID = ZbeamToParticleID(f_pargeo_gl->GetBeamPar().AtomicNumber);
 

@@ -5,6 +5,7 @@
 
 #include "TAVTparGeo.hxx"
 #include "TAVTntuCluster.hxx"
+#include "TAGnameManager.hxx"
 #include "TAVTntuTrack.hxx"
 
 /*!
@@ -106,7 +107,7 @@ const TAVTcluster* TAVTntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) con
 //! Setup clones.
 void TAVTntuCluster::SetupClones()
 {
-   fGeometry = (TAVTparGeo*) gTAGroot->FindParaDsc(TAVTparGeo::GetDefParaName(), "TAVTparGeo")->Object();
+   fGeometry = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object();
 
    if (fListOfClusters) return;
    fListOfClusters    = new TObjArray();

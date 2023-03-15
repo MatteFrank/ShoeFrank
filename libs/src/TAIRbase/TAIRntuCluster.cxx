@@ -5,6 +5,7 @@
 
 #include "TAITparGeo.hxx"
 #include "TAIRntuCluster.hxx"
+#include "TAGnameManager.hxx"
 
 /*!
  \class TAIRntuCluster
@@ -105,7 +106,7 @@ const TAIRcluster* TAIRntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) con
 //! Setup clones.
 void TAIRntuCluster::SetupClones()
 {
-   fGeometry = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
+   fGeometry = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object();
 
    if (fListOfClusters) return;
    fListOfClusters    = new TObjArray(fGeometry->GetSensorsN());

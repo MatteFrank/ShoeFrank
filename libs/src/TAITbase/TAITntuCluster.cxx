@@ -6,6 +6,8 @@
 #include "TAITparGeo.hxx"
 #include "TAITntuCluster.hxx"
 
+#include "TAGnameManager.hxx"
+
 /*!
  \class TAITntuCluster
  \brief Class for ITR cluster container
@@ -105,7 +107,7 @@ const TAITcluster* TAITntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) con
 //! Setup clones.
 void TAITntuCluster::SetupClones()
 {
-   fGeometry = (TAITparGeo*) gTAGroot->FindParaDsc(TAITparGeo::GetDefParaName(), "TAITparGeo")->Object();
+   fGeometry = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object();
 
    if (fListOfClusters) return;
    fListOfClusters    = new TObjArray(fGeometry->GetSensorsN());

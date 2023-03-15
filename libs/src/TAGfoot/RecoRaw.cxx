@@ -8,6 +8,8 @@
 
 #include "RecoRaw.hxx"
 
+#include "TAGnameManager.hxx"
+
 #include "TAGntuEvent.hxx"
 #include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
@@ -73,23 +75,25 @@ RecoRaw::~RecoRaw()
 void RecoRaw::CreateRawAction()
 {
    if (!fgStdAloneFlag) {
-      fpDaqEvent = new TAGdataDsc("daqEvt", new TAGdaqEvent());
-      fActEvtReader = new TAGactDaqReader("daqActReader", fpDaqEvent);
+      fpDaqEvent = new TAGdataDsc(new TAGdaqEvent());
+      const Char_t* name = FootActionDscName("TAGactDaqReader");
+      fActEvtReader = new TAGactDaqReader(name, fpDaqEvent);
           
-      fpNtuEvt = new TAGdataDsc("evtNtu", new TAGntuEvent());
-      fActNtuEvt = new TAGactNtuEvent("evtActNtu", fpNtuEvt, fpDaqEvent);
+      fpNtuEvt = new TAGdataDsc(new TAGntuEvent());
+      name = FootActionDscName("TAGactNtuEvent");
+      fActNtuEvt = new TAGactNtuEvent(name, fpNtuEvt, fpDaqEvent);
      if (fFlagHisto)
        fActNtuEvt->CreateHistogram();
    }
 
    if (TAGrecoManager::GetPar()->IncludeCA())
-      fpDatRawCa      = new TAGdataDsc("caDat", new TACAntuRaw());
+      fpDatRawCa      = new TAGdataDsc(new TACAntuRaw());
 
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || (TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag) || TAGrecoManager::GetPar()->IncludeCA()) {
 
-      fpDatRawSt      = new TAGdataDsc("stDat", new TASTntuRaw());
-      fpDatRawTw      = new TAGdataDsc("twdDat", new TATWntuRaw());
-      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAWDntuTrigger());
+      fpDatRawSt      = new TAGdataDsc(new TASTntuRaw());
+      fpDatRawTw      = new TAGdataDsc(new TATWntuRaw());
+      fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       
       if (!fgStdAloneFlag){
          TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
@@ -101,7 +105,8 @@ void RecoRaw::CreateRawAction()
       if (parConf->GetAnalysisPar().EnableArduinoTemp)
          TAGactWDreader::EnableArduinoTempCA();
 
-      fActWdRaw  = new TAGactWDreader("wdActRaw", fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
+      const Char_t* name = FootActionDscName("TAGactWDreader");
+      fActWdRaw  = new TAGactWDreader(name, fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
                                       fpParTimeWD, fpParMapCa, fgStdAloneFlag);
       if (fgStdAloneFlag)
          fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
@@ -111,83 +116,92 @@ void RecoRaw::CreateRawAction()
    }
 
    if (TAGrecoManager::GetPar()->IncludeST() ||(TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
-      fpNtuHitSt   = new TAGdataDsc("stNtu", new TASTntuHit());
-      fActNtuHitSt = new TASTactNtuHit("stActNtu", fpDatRawSt, fpNtuHitSt, fpParMapSt);
+      fpNtuHitSt   = new TAGdataDsc(new TASTntuHit());
+      const Char_t* name = FootActionDscName("TASTactNtuHit");
+      fActNtuHitSt = new TASTactNtuHit(name, fpDatRawSt, fpNtuHitSt, fpParMapSt);
       if (fFlagHisto)
          fActNtuHitSt->CreateHistogram();
    }
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
-      fpDatRawBm = new TAGdataDsc("bmDat", new TABMntuRaw());
-      fpNtuHitBm = new TAGdataDsc("bmNtu", new TABMntuHit());
+      fpDatRawBm = new TAGdataDsc(new TABMntuRaw());
+      fpNtuHitBm = new TAGdataDsc(new TABMntuHit());
 
+      const Char_t* name = FootActionDscName("TABMactNtuRaw");
       if (fgStdAloneFlag) {
-         fActVmeReaderBm  = new TABMactVmeReader("bmActRaw", fpDatRawBm, fpParMapBm, fpParCalBm, fpParGeoBm);
+         fActVmeReaderBm  = new TABMactVmeReader(name, fpDatRawBm, fpParMapBm, fpParCalBm, fpParGeoBm);
          if (fFlagHisto)
             fActVmeReaderBm->CreateHistogram();
       } else {
-         fActDatRawBm = new TABMactNtuRaw("bmActRaw", fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuHitSt);
+         fActDatRawBm = new TABMactNtuRaw(name, fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuHitSt);
          if (fFlagHisto)
             fActDatRawBm->CreateHistogram();
       }
-      fActNtuHitBm = new TABMactNtuHit("bmActNtu", fpNtuHitBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
+      name = FootActionDscName("TABMactNtuHit");
+      fActNtuHitBm = new TABMactNtuHit(name, fpNtuHitBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
       if (fFlagHisto)
         fActNtuHitBm->CreateHistogram();
 
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
-      fpNtuHitVtx   = new TAGdataDsc("vtRaw", new TAVTntuHit());
-
+      fpNtuHitVtx   = new TAGdataDsc(new TAVTntuHit());
+      const Char_t* name = FootActionDscName("TAVTactNtuHit");
       if (fgStdAloneFlag) {
-         fActVmeReaderVtx  = new TAVTactVmeReader("vtActNtu", fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
+         fActVmeReaderVtx  = new TAVTactVmeReader(name, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
          if (fFlagHisto)
             fActVmeReaderVtx->CreateHistogram();
 
       } else {
-         fActNtuHitVtx = new TAVTactNtuHit("vtActNtu", fpNtuHitVtx, fpDaqEvent, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
+         fActNtuHitVtx = new TAVTactNtuHit(name, fpNtuHitVtx, fpDaqEvent, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
          if (fFlagHisto)
          fActNtuHitVtx->CreateHistogram();
       }
    }
 
    if (TAGrecoManager::GetPar()->IncludeIT()) {
-      fpNtuHitIt   = new TAGdataDsc("itRaw", new TAITntuHit());
-      fActNtuHitIt = new TAITactNtuHit("itActNtu", fpNtuHitIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
+      fpNtuHitIt   = new TAGdataDsc(new TAITntuHit());
+      const Char_t* name = FootActionDscName("TAITactNtuHit");
+      fActNtuHitIt = new TAITactNtuHit(name, fpNtuHitIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
       if (fFlagHisto)
          fActNtuHitIt->CreateHistogram();
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()  && !fgStdAloneFlag) {
       
-      fpDatRawMsd   = new TAGdataDsc("msdDat", new TAMSDntuRaw());
-      fActDatRawMsd = new TAMSDactNtuRaw("msdActRaw", fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd, fpParConfMsd);
+      fpDatRawMsd   = new TAGdataDsc(new TAMSDntuRaw());
+      const Char_t* name = FootActionDscName("TAMSDactNtuRaw");
+      fActDatRawMsd = new TAMSDactNtuRaw(name, fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd, fpParConfMsd);
       if (fFlagHisto)
          fActDatRawMsd->CreateHistogram();
 
-      fpNtuHitMsd   = new TAGdataDsc("msdRaw", new TAMSDntuHit());
-      fActNtuHitMsd = new TAMSDactNtuHit("msdActNtu", fpDatRawMsd, fpNtuHitMsd, fpParGeoMsd, fpParConfMsd, fpParCalMsd);
+      fpNtuHitMsd   = new TAGdataDsc(new TAMSDntuHit());
+      name = FootActionDscName("TAMSDactNtuHit");
+      fActNtuHitMsd = new TAMSDactNtuHit(name, fpDatRawMsd, fpNtuHitMsd, fpParGeoMsd, fpParConfMsd, fpParCalMsd);
       if (fFlagHisto)
          fActNtuHitMsd->CreateHistogram();
    }
 
    if(TAGrecoManager::GetPar()->IncludeTW()) {
-      fpNtuHitTw   = new TAGdataDsc("twRaw", new TATWntuHit());
+      fpNtuHitTw   = new TAGdataDsc(new TATWntuHit());
 
       if(TAGrecoManager::GetPar()->CalibTW()) {
-        fActCalibTw = new TATWactCalibTW("twActCalib", fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+        const Char_t* name = FootActionDscName("TATWactCalibTW");
+        fActCalibTw = new TATWactCalibTW(name, fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
         fActCalibTw->CreateHistogram();
 
       } else {
-         fActNtuHitTw = new TATWactNtuHit("twActNtu", fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
+         const Char_t* name = FootActionDscName("TATWactNtuHit");
+         fActNtuHitTw = new TATWactNtuHit(name, fpDatRawTw, fpNtuHitTw, fpNtuHitSt, fpParGeoTw, fpParMapTw, fpParCalTw, fpParGeoG);
          if (fFlagHisto)
             fActNtuHitTw->CreateHistogram();
       }
    }
 
    if(TAGrecoManager::GetPar()->IncludeCA()) {
-      fpNtuHitCa   = new TAGdataDsc("caRaw", new TACAntuHit());
-      fActNtuHitCa = new TACAactNtuHit("caActNtu", fpDatRawCa, fpNtuHitCa, fpParGeoCa, fpParMapCa, fpParCalCa);
+      fpNtuHitCa   = new TAGdataDsc(new TACAntuHit());
+      const Char_t* name = FootActionDscName("TACAactNtuHit");
+      fActNtuHitCa = new TACAactNtuHit(name, fpDatRawCa, fpNtuHitCa, fpParGeoCa, fpParMapCa, fpParCalCa);
       if (fFlagHisto){
          fActNtuHitCa->CreateHistogram();
       }

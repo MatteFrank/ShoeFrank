@@ -14,6 +14,7 @@
 #include "TAGgeoTrafo.hxx"
 #include "BaseReco.hxx"
 
+#include "TAGnameManager.hxx"
 
 #include "TAGrecoManager.hxx"
 
@@ -322,7 +323,7 @@ void ConvertNtuple::ReadParFiles()
    
    // initialise par files for target
    if (TAGrecoManager::GetPar()->IncludeTG()) {
-      fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
+      fpParGeoG = new TAGparaDsc(new TAGparGeo());
       TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
@@ -338,7 +339,7 @@ void ConvertNtuple::ReadParFiles()
    // initialise par files for start counter
    if (TAGrecoManager::GetPar()->IncludeST()) {
       
-      fpParGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
+      fpParGeoSt = new TAGparaDsc(new TASTparGeo());
       TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TASTparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
@@ -346,7 +347,7 @@ void ConvertNtuple::ReadParFiles()
    
    // initialise par files for Beam Monitor
    if (TAGrecoManager::GetPar()->IncludeBM()) {
-      fpParGeoBm = new TAGparaDsc("bmGeo", new TABMparGeo());
+      fpParGeoBm = new TAGparaDsc(new TABMparGeo());
       TABMparGeo* parGeo = (TABMparGeo*)fpParGeoBm->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TABMparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
@@ -354,7 +355,7 @@ void ConvertNtuple::ReadParFiles()
    
    // initialise par files for vertex
    if (TAGrecoManager::GetPar()->IncludeVT() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
-      fpParGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
+      fpParGeoVtx = new TAGparaDsc(new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
@@ -362,12 +363,12 @@ void ConvertNtuple::ReadParFiles()
    
    // initialise par files for inner tracker
    if (TAGrecoManager::GetPar()->IncludeIT() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
-      fpParGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+      fpParGeoIt = new TAGparaDsc(new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
-      TAGparaDsc* pParConfIt = new TAGparaDsc("itConf", new TAITparConf());
+      TAGparaDsc* pParConfIt = new TAGparaDsc(new TAITparConf());
       TAITparConf* parConf = (TAITparConf*)pParConfIt->Object();
       parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
@@ -377,12 +378,12 @@ void ConvertNtuple::ReadParFiles()
    
    // initialise par files for multi strip detector
    if (TAGrecoManager::GetPar()->IncludeMSD() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
-      fpParGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
+      fpParGeoMsd = new TAGparaDsc(new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
-      TAGparaDsc* pParConfMsd = new TAGparaDsc("msdConf", new TAMSDparConf());
+      TAGparaDsc* pParConfMsd = new TAGparaDsc(new TAMSDparConf());
       TAMSDparConf* parConf = (TAMSDparConf*)pParConfMsd->Object();
       parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       parConf->FromFile(parFileName.Data());
@@ -392,7 +393,7 @@ void ConvertNtuple::ReadParFiles()
    
    // initialise par files for Tof Wall
    if (TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
-      fpParGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
+      fpParGeoTw = new TAGparaDsc(new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
@@ -400,7 +401,7 @@ void ConvertNtuple::ReadParFiles()
    
    // initialise par files for caloriomter
    if (TAGrecoManager::GetPar()->IncludeCA()) {
-      fpParGeoCa = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
+      fpParGeoCa = new TAGparaDsc(new TACAparGeo());
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
       TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName);

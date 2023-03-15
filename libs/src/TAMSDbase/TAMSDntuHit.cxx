@@ -20,7 +20,7 @@
 //                                                        //
 ////////////////////////////////////////////////////////////
 
-
+#include "TAGnameManager.hxx"
 #include "TAGroot.hxx"
 #include "TAVTparGeo.hxx"
 
@@ -39,9 +39,9 @@ TAMSDntuHit::TAMSDntuHit()
   fListOfStrips(0x0),
   fpGeoMap(0x0)
 {
-   fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(TAMSDparGeo::GetDefParaName(), "TAMSDparGeo")->Object();
+   fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
    if (!fpGeoMap) {
-      Error("TAMSDntuHit()", "Para desciptor %s does not exist", TAMSDparGeo::GetDefParaName());
+      Error("TAMSDntuHit()", "Para desciptor %s does not exist", FootParaDscName("TAMSDparGeo"));
       exit(0);
    }
 

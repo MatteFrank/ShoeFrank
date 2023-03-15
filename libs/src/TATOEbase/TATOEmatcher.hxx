@@ -274,7 +274,7 @@ private:
         auto * mc_track_h = data_mhc->GetTrack(mc_track_index);
         //if size > 1, then the particle has been scattered, therefore need to retrieve mother parameters
         
-//        auto * geometric_parameter_h = static_cast<TAGparGeo*>(  gTAGroot->FindParaDsc( TAGparGeo::GetDefParaName() )->Object() );
+//        auto * geometric_parameter_h = static_cast<TAGparGeo*>(  gTAGroot->FindParaDsc( FootParaDscName("TAGparGeo") )->Object() );
         TVector3 momentum;
 //        double start_time{0};
 //        double end_time{0};
