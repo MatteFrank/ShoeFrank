@@ -92,6 +92,9 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap,
       printf("Wrong prefix for histograms !");
    
    fpGeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   
+   if (TAGrecoManager::GetPar()->IsElecNoiseMc())
+      fgSigmaNoiseLevel = 5;
 }
 
 //------------------------------------------+-----------------------------------
