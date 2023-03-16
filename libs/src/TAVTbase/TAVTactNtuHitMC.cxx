@@ -71,7 +71,7 @@ void TAVTactNtuHitMC::CreateDigitizer()
    else
       fDigitizer = new TAVTdigitizerE(pGeoMap);
    
-   if (fgSigmaNoiseLevel > 0)
+   if (fSigmaNoiseLevel > 0)
       ComputeNoiseLevel();
 }
 
@@ -110,7 +110,7 @@ bool TAVTactNtuHitMC::Action()
       }
    }
    
-   if (fgSigmaNoiseLevel > 0)
+   if (fSigmaNoiseLevel > 0)
       FillNoise();
   
    if (fEventStruct != 0x0) {
