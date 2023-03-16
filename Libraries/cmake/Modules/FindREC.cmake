@@ -8,8 +8,8 @@
 
 # check that library path for rec exist
 
-set(BUILD_REC "${CMAKE_BINARY_DIR}/libs")
-set(FOOT_SRC "${CMAKE_SOURCE_DIR}/libs/src")
+set(BUILD_REC "${CMAKE_BINARY_DIR}/Libraries")
+set(FOOT_SRC "${CMAKE_SOURCE_DIR}/Libraries")
 set(FOOT_REC "${CMAKE_SOURCE_DIR}/Reconstruction")
 set(REC_INCLUDE_DIR ${FOOT_SRC}/TAGbase ${FOOT_SRC}/TADIbase ${FOOT_SRC}/TAMCbase ${FOOT_SRC}/TASTbase ${FOOT_SRC}/TABMbase ${FOOT_SRC}/TAVTbase ${FOOT_SRC}/TAITbase ${FOOT_SRC}/TAMSDbase ${FOOT_SRC}/TACAbase ${FOOT_SRC}/TATWbase ${FOOT_SRC}/TAEDbase ${FOOT_SRC}/TAGfoot)
 
