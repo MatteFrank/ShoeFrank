@@ -52,6 +52,7 @@ protected:
 	  Float_t    TrackChi2Limit;         ///< chi2 limit on the track
      Float_t    BmTrackChi2Limit;       ///< chi2 limit on the BM track
      Float_t    McPileUpPar;            ///< MC pileup Poisson parameter
+     Float_t    McNoiseLevel;           ///< MC electronics noise level
    };
    
    SensorParameter_t fSensorParameter[32]; ///< sensor parameters
@@ -89,7 +90,7 @@ public:
    //! Get analysis parameters
    AnalysisParameter_t& GetAnalysisPar()           { return fAnalysisParameter;         }
 
-   ClassDef(TAVTbaseParConf,3)
+   ClassDef(TAVTbaseParConf,4)
 };
 
 #endif
