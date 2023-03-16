@@ -41,6 +41,7 @@ EnableTracking:      y
 EnableSaveHits:      y
 EnableRootObject:    n
 EnableRegionMc:      n
+EnableElecNoiseMc:   n
 
 ############   END - Options for reconstruction   ################
 

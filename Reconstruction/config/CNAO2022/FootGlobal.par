@@ -56,9 +56,11 @@ TOF Tag Cuts:  12  15
 EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
+
 EnableSaveHits:      y
 EnableRootObject:    y
 EnableRegionMc:      n
+EnableElecNoiseMc:   n
 
 ############   END - Options for reconstruction   ################
 
