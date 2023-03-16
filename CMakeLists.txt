@@ -49,7 +49,7 @@ endif()
 #----------------------------------------------------------------------------
 # Add specific modules
 #
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/Libraries/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 MESSAGE(" --> Including cmake additional path: ${CMAKE_MODULE_PATH}")
 
