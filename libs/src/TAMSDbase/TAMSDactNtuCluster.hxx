@@ -19,7 +19,7 @@ class TAMSDactNtuCluster : public TAGactNtuCluster1D {
 public:
    explicit  TAMSDactNtuCluster(const char* name      = 0, TAGdataDsc* p_nturaw  = 0,
                                 TAGdataDsc* p_ntuclus = 0, TAGparaDsc* p_config  = 0,
-                                TAGparaDsc* p_geomap  = 0, TAGparaDsc* p_calib   = 0);
+                                TAGparaDsc* p_geomap  = 0, TAGparaDsc* p_calib   = 0, Bool_t flagMC = false);
    
    virtual ~TAMSDactNtuCluster();
    
@@ -66,6 +66,7 @@ private:
    TAGparaDsc*     fpConfig;		      ///< config para dsc
    TAGparaDsc*     fpGeoMap;           ///< geometry para dsc
    TAGparaDsc*     fpCalib;            ///< calibration  para dsc
+   Bool_t          fFlagMC;            ///< MC flag
    Float_t         fCurrentPosition;   ///< pointer to current position
    Float_t         fCurrentPosError ;  ///< pointer to current position error
    Float_t         fCurrentCog;        ///< pointer to current center of gravity

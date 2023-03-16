@@ -34,6 +34,7 @@ public:
                                     TAGdataDsc* p_ntuEve = 0,
                                     TAGdataDsc* p_nturaw = 0,
                                     TAGparaDsc* p_geomap = 0,
+                                    TAGparaDsc* p_calmap = 0,
                                     EVENT_STRUCT* evStr  = 0);
    virtual        ~TAMSDactNtuHitMC() {};
    
@@ -46,12 +47,7 @@ public:
    //! Base creation of histogram
    void            CreateHistogram();
 
-public:
-   //! Get sigma noise level
-   static Float_t  GetSigmaNoiseLevel()              { return fgSigmaNoiseLevel;  }
-   //! Set sigma noise level
-   static void     SetSigmaNoiseLevel(Float_t level) { fgSigmaNoiseLevel = level; }
-   
+public:   
    //! Get MC noisy hit id
    static Int_t    GetMcNoiseId()                    { return fgMcNoiseId;        }
    //! Set MC noisy hit id
@@ -61,10 +57,13 @@ private:
    TAGdataDsc*     fpNtuMC;            ///< input mc hit
    TAGdataDsc*     fpNtuEve;           ///< input eve track dsc
    TAGdataDsc*     fpNtuRaw;		      ///< output data dsc
-   TAGparaDsc*     fpGeoMap;		      ///< geometry para dsc
+   TAGparaDsc*     fpGeoMap;           ///< geometry para dsc
+   TAGparaDsc*     fpCalMap;           ///< calibration para dsc
    TAGgeoTrafo*    fpGeoTrafo;         ///< gobal transformation
    TAMSDdigitizer* fDigitizer;         ///< cluster size digitizer
-   Int_t           fNoisyStripsN;      ///< noisy strip
+   Int_t           fNoisyStripsN[32];  ///< noisy strip
+   Bool_t          fNoiseLevel;        ///< sigma noise level flag
+   vector<double>  fSigmaNoiseLevel;   ///< sigma noise level array
    EVENT_STRUCT*   fEventStruct;       ///< old fluka structure
 
    map<pair<int, int>, TAMSDhit*> fMap; //! map for pilepup
@@ -78,7 +77,6 @@ private:
    TH1F*           fpHisAdc[MaxPlane];       ///< charge per strip
    
 private:
-   static Float_t  fgSigmaNoiseLevel;  ///< sigma noise level
    static Int_t    fgMcNoiseId;        ///< default noisy hit id
 
 private:

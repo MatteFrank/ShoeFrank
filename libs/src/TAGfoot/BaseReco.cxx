@@ -607,6 +607,9 @@ void BaseReco::ReadParFiles()
          fMsdTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
       }
       
+      fpParCalMsd = new TAGparaDsc("msdCal", new TAMSDparCal( parGeo->GetStripsN() ));
+      TAMSDparCal* parCalMsd = (TAMSDparCal*)fpParCalMsd->Object();
+      
       if(!fFlagMC){
          fpParMapMsd = new TAGparaDsc("msdMap", new TAMSDparMap());
          TAMSDparMap*  parMapMsd = (TAMSDparMap*)fpParMapMsd->Object();
@@ -614,11 +617,12 @@ void BaseReco::ReadParFiles()
          parMapMsd->FromFile(parFileName.Data());
 
          Bool_t energyFile = true;
-         fpParCalMsd = new TAGparaDsc("msdCal", new TAMSDparCal( parGeo->GetStripsN() ));
-         TAMSDparCal* parCalMsd = (TAMSDparCal*)fpParCalMsd->Object();
          parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber, energyFile);
          parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
 
+         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parCalMsd->LoadPedestalMap(parFileName.Data());
+      } else {
          parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);
          parCalMsd->LoadPedestalMap(parFileName.Data());
       }
@@ -870,7 +874,7 @@ void BaseReco::CreateRecActionMsd()
 
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
-   fActClusMsd = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd, fpParCalMsd);
+   fActClusMsd = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd, fpParCalMsd, fFlagMC);
    if (fFlagHisto)
       fActClusMsd->CreateHistogram();
 

@@ -38,6 +38,18 @@ public:
   Double_t GetPedestalThreshold(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed);
 
   Double_t GetElossParam(Float_t eta);
+   
+   //! Get pedestal seed level
+   //! \param[in] sensorId plane id
+   Double_t                  GetPedestalSeedLevel(Int_t sensorId)  { return fMapCal->GetPedestalSeedLevel(sensorId); }
+   //! Get pedestal hit level
+   //! \param[in] sensorId plane id
+   Double_t                  GetPedestalHitLevel(Int_t sensorId)   { return fMapCal->GetPedestalHitLevel(sensorId);  }
+   
+   //! Get pedestal ize
+   Int_t                    GetPedestaLevelSize()                  { return fMapCal->GetPedestaLevelSize();          }
+
+
 
  ClassDef(TAMSDparCal, 0)
 };

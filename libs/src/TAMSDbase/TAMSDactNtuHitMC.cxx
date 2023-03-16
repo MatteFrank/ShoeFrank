@@ -10,7 +10,7 @@
 #include "TRandom.h"
 
 #include "TAMSDparGeo.hxx"
-#include "TAMSDparConf.hxx"
+#include "TAMSDparCal.hxx"
 
 #include "TAMSDntuHit.hxx"
 #include "TAMCntuHit.hxx"
@@ -34,7 +34,6 @@ using namespace std;
 //! Class imp
 ClassImp(TAMSDactNtuHitMC);
 
-Float_t TAMSDactNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAMSDactNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
@@ -46,13 +45,14 @@ Int_t   TAMSDactNtuHitMC::fgMcNoiseId       = -99;
 //! \param[out] pNtuRaw raw data output container descriptor
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] evStr old Fluka container descriptor
-TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve,TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, EVENT_STRUCT* evStr)
+TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdataDsc* pNtuEve,TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pCalMap, EVENT_STRUCT* evStr)
 :  TAGaction(name, "TAMSDactNtuHitMC - NTuplize MSD MC data"),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
    fpNtuRaw(pNtuRaw),
    fpGeoMap(pGeoMap),
-   fNoisyStripsN(0),
+   fpCalMap(pCalMap),
+   fNoiseLevel(false),
    fEventStruct(evStr)
 {
    if (fEventStruct == 0x0) {
@@ -60,10 +60,19 @@ TAMSDactNtuHitMC::TAMSDactNtuHitMC(const char* name, TAGdataDsc* pNtuMC, TAGdata
      AddDataIn(pNtuEve, "TAMCntuPart");
    }
    AddDataOut(pNtuRaw, "TAMSDntuHit");
-	AddPara(pGeoMap, "TAMSDparGeo");
+   AddPara(pGeoMap, "TAMSDparGeo");
+   AddPara(pCalMap, "TAMSDparCal");
 
    fpGeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
+   if ((fNoiseLevel = TAGrecoManager::GetPar()->IsElecNoiseMc())) {
+      TAMSDparCal* parCal = (TAMSDparCal*) fpCalMap->Object();
+
+      for (Int_t i = 0; i < parCal->GetPedestaLevelSize(); ++i) {
+         fSigmaNoiseLevel.push_back(parCal->GetPedestalHitLevel(i));
+      }
+   }
+   
    CreateDigitizer();
 }
 
@@ -124,7 +133,8 @@ void TAMSDactNtuHitMC::CreateDigitizer()
 {
    TAMSDparGeo* pGeoMap  = (TAMSDparGeo*) fpGeoMap->Object();
    fDigitizer = new TAMSDdigitizer(pGeoMap);
-   if (fgSigmaNoiseLevel > 0)
+   
+   if (fNoiseLevel)
       ComputeNoiseLevel();
 }
 
@@ -184,6 +194,10 @@ bool TAMSDactNtuHitMC::Action()
 		}
    }
 
+   if (fNoiseLevel > 0)
+      FillNoise();
+
+   
    if (fEventStruct != 0x0) {
      fpNtuMC->SetBit(kValid);
      fpNtuEve->SetBit(kValid);
@@ -203,7 +217,8 @@ void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
 {
   TAMSDparGeo* pGeoMap = (TAMSDparGeo*) fpGeoMap->Object();
   TAMSDntuHit* pNtuRaw = (TAMSDntuHit*) fpNtuRaw->Object();
-  
+  TAMSDparCal* parCal  = (TAMSDparCal*) fpCalMap->Object();
+
   Int_t view = pGeoMap->GetSensorPar(sensorId).TypeIdx;
   
   map<int, double> digiMap = fDigitizer->GetMap();
@@ -219,6 +234,10 @@ void TAMSDactNtuHitMC::FillStrips(Int_t sensorId, Int_t hitId,  Int_t trackIdx)
        TAMSDhit* strip  = 0x0;
        pair<int, int> p(sensorId, stripId);
 
+       auto pedestal = parCal->GetPedestal( sensorId, stripId );
+       if( pedestal.status )
+          continue;
+       
        if (fMap[p] == 0) {
           strip = (TAMSDhit*)pNtuRaw->NewStrip(sensorId, digiMap[stripId], view, stripId);
           fMap[p] = strip;
@@ -268,7 +287,7 @@ void TAMSDactNtuHitMC::FillNoise(Int_t sensorId)
   
   Int_t view = pGeoMap->GetSensorPar(sensorId).TypeIdx;
   
-  Int_t stripsN = gRandom->Uniform(0, fNoisyStripsN);
+  Int_t stripsN = gRandom->Uniform(0, fNoisyStripsN[sensorId]);
   for (Int_t i = 0; i < stripsN; ++i) {
     Int_t stripId  = gRandom->Uniform(0,fDigitizer->GetStripsN());
     TAMSDhit* strip = pNtuRaw->NewStrip(sensorId, 1., view, stripId);
@@ -285,13 +304,14 @@ void TAMSDactNtuHitMC::ComputeNoiseLevel()
   f->SetParameters(1,0,1);
   Float_t fraction = 0;
   
-  if (fgSigmaNoiseLevel > 0) {
-    fraction = f->Integral(-fgSigmaNoiseLevel, fgSigmaNoiseLevel)/TMath::Sqrt(2*TMath::Pi());
-    fNoisyStripsN = TMath::Nint(fDigitizer->GetStripsN()*(1.-fraction));
-  }
-  
-   if(FootDebugLevel(1))
-      printf("Number of noise strips %d\n", fNoisyStripsN);
-  
+   TAMSDparCal* parCal = (TAMSDparCal*) fpCalMap->Object();
+
+   for (Int_t i = 0; i < parCal->GetPedestaLevelSize(); ++i) {
+      fraction = f->Integral(-fSigmaNoiseLevel[i], fSigmaNoiseLevel[i])/TMath::Sqrt(2*TMath::Pi());
+      fNoisyStripsN[i] = TMath::Nint(fDigitizer->GetStripsN()*(1.-fraction));
+      
+      if(FootDebugLevel(1))
+         printf("Number of noise strips %d\n", fNoisyStripsN[i]);
+   }
   delete f;
 }
