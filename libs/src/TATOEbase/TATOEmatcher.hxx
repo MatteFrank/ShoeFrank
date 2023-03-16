@@ -31,6 +31,8 @@ class TAVTcluster;
 class TAITcluster;
 #include "TAMSDcluster.hxx"
 #include "TATWntuPoint.hxx"
+#include "TAGnameManager.hxx"
+
 
 
 
@@ -76,7 +78,7 @@ private:
 public:
     TATOEmatcher( TAGparGeo const * global_parameters_ph,
                   Action& action_p ) :
-    data_mhc{ static_cast<TAMCntuPart*>( gTAGroot->FindDataDsc( TAMCntuPart::GetDefDataName() )->Object() ) },
+    data_mhc{ static_cast<TAMCntuPart*>( gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart") )->Object() ) },
         target_limits_m{ retrieve_target_limits( global_parameters_ph ) },
         action_m{action_p}
     {
@@ -278,7 +280,7 @@ private:
         TVector3 momentum;
 //        double start_time{0};
 //        double end_time{0};
-        auto * region_hc{ static_cast<TAMCntuRegion*>( gTAGroot->FindDataDsc( TAMCntuRegion::GetDefParaName() )->Object() ) };
+        auto * region_hc{ static_cast<TAMCntuRegion*>( gTAGroot->FindDataDsc( FootActionDscName("TAMCntuRegion") )->Object() ) };
         for(auto i{0}; i < region_hc->GetRegionsN(); ++ i){
             auto * region_h = region_hc->GetRegion(i);
 //            std::cout << region_h->GetOldCrossN() << "->" << region_h->GetCrossN() << '\n';

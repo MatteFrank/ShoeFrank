@@ -16,7 +16,6 @@
 
 ClassImp(TABMntuRaw);
 
-TString TABMntuRaw::fgkBranchName   = "bmdat.";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

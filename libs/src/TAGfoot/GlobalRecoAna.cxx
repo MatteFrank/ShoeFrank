@@ -1263,7 +1263,7 @@ void GlobalRecoAna::SetupTree(){
   if(TAGrecoManager::GetPar()->IncludeBM()){
   fpNtuTrackBm = new TAGdataDsc("bmtrack" , new TABMntuTrack());
   gTAGroot->AddRequiredItem("bmtrack");
-  myReader->SetupBranch(fpNtuTrackBm, TABMntuTrack::GetBranchName());
+  myReader->SetupBranch(fpNtuTrackBm);
 
   }
 
@@ -1274,76 +1274,76 @@ void GlobalRecoAna::SetupTree(){
     gTAGroot->AddRequiredItem("vtclus");
     gTAGroot->AddRequiredItem("vttrack");
     gTAGroot->AddRequiredItem("vtvtx");
-    myReader->SetupBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
-    myReader->SetupBranch(fpNtuTrackVtx, TAVTntuTrack::GetBranchName());
-    myReader->SetupBranch(fpNtuVtx, TAVTntuVertex::GetBranchName());
+    myReader->SetupBranch(fpNtuClusVtx);
+    myReader->SetupBranch(fpNtuTrackVtx);
+    myReader->SetupBranch(fpNtuVtx);
     if(fFlagMC){
-      fpNtuMcVt = new TAGdataDsc("mcvt",new TAMCntuHit());
+      fpNtuMcVt = new TAGdataDsc(FootDataDscMcName(kVTX),new TAMCntuHit());
       gTAGroot->AddRequiredItem("mcvt");
-      myReader->SetupBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
+      myReader->SetupBranch(fpNtuMcVt, FootBranchMcName(kVTX));
     }
   }
   if(TAGrecoManager::GetPar()->IncludeIT()){
-    fpNtuClusIt = new TAGdataDsc("itclus",new TAITntuCluster());
+    fpNtuClusIt = new TAGdataDsc(new TAITntuCluster());
     gTAGroot->AddRequiredItem("itclus");
-    myReader->SetupBranch(fpNtuClusIt, TAITntuCluster::GetBranchName());
+    myReader->SetupBranch(fpNtuClusIt);
     if(fFlagMC){
-      fpNtuMcIt = new TAGdataDsc("mcit",new TAMCntuHit());
+      fpNtuMcIt = new TAGdataDsc(FootDataDscMcName(kITR), new TAMCntuHit());
       gTAGroot->AddRequiredItem("mcit");
-      myReader->SetupBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
+      myReader->SetupBranch(fpNtuMcIt, FootBranchMcName(kITR));
     }
   }
   if(TAGrecoManager::GetPar()->IncludeMSD()){
-    fpNtuClusMsd = new TAGdataDsc("msdclus",new TAMSDntuCluster());
+    fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
     gTAGroot->AddRequiredItem("msdclus");
-    myReader->SetupBranch(fpNtuClusMsd, TAMSDntuCluster::GetBranchName());
-    fpNtuRecMsd = new TAGdataDsc("msdpoint",new TAMSDntuPoint());
+    myReader->SetupBranch(fpNtuClusMsd);
+    fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint());
     gTAGroot->AddRequiredItem("msdpoint");
-    myReader->SetupBranch(fpNtuRecMsd, TAMSDntuPoint::GetBranchName());
+    myReader->SetupBranch(fpNtuRecMsd);
     if(fFlagMC){
-      fpNtuMcMsd = new TAGdataDsc("mcmsd",new TAMCntuHit());
+      fpNtuMcMsd = new TAGdataDsc(FootDataDscMcName(kMSD),new TAMCntuHit());
       gTAGroot->AddRequiredItem("mcmsd");
-      myReader->SetupBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
+      myReader->SetupBranch(fpNtuMcMsd, FootBranchMcName(kMSD));
     }
   }
   if(TAGrecoManager::GetPar()->IncludeTW()){
-    fpNtuRecTw = new TAGdataDsc("twpt",new TATWntuPoint());
+    fpNtuRecTw = new TAGdataDsc(new TATWntuPoint());
     gTAGroot->AddRequiredItem("twpt");
-    myReader->SetupBranch(fpNtuRecTw, TATWntuPoint::GetBranchName());
+    myReader->SetupBranch(fpNtuRecTw);
 
     if (fFlagMC == false){
-      fpNtuWDtrigInfo = new TAGdataDsc("WDtrigInfo",new TAWDntuTrigger());
+      fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       gTAGroot->AddRequiredItem("WDtrigInfo");
-      myReader->SetupBranch(fpNtuWDtrigInfo, TAWDntuTrigger::GetBranchName());
+      myReader->SetupBranch(fpNtuWDtrigInfo);
     }
     if(fFlagMC){
-      fpNtuMcTw = new TAGdataDsc("mctw",new TAMCntuHit());
+      fpNtuMcTw = new TAGdataDsc(FootDataDscMcName(kTW),new TAMCntuHit());
       gTAGroot->AddRequiredItem("mctw");
-      myReader->SetupBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
+      myReader->SetupBranch(fpNtuMcTw, FootBranchMcName(kTW));
     }
   }
   if(TAGrecoManager::GetPar()->IncludeCA()){
-    fpNtuClusCa = new TAGdataDsc("caclus",new TACAntuCluster());
+    fpNtuClusCa = new TAGdataDsc(new TACAntuCluster());
     gTAGroot->AddRequiredItem("caclus");
-    myReader->SetupBranch(fpNtuClusCa, TACAntuCluster::GetBranchName());
+    myReader->SetupBranch(fpNtuClusCa);
     if(fFlagMC){
-      fpNtuMcCa = new TAGdataDsc("mcca",new TAMCntuHit());
+      fpNtuMcCa = new TAGdataDsc(FootDataDscMcName(kCAL),new TAMCntuHit());
       gTAGroot->AddRequiredItem("mcca");
-      myReader->SetupBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
+      myReader->SetupBranch(fpNtuMcCa, FootBranchMcName(kCAL));
     }
   }
 
   if(fFlagMC){
-    fpNtuMcEvt = new TAGdataDsc("mcevt",new TAMCntuEvent());
-    fpNtuMcTrk = new TAGdataDsc("mctrack",new TAMCntuPart());
+    fpNtuMcEvt = new TAGdataDsc(new TAMCntuEvent());
+    fpNtuMcTrk = new TAGdataDsc(new TAMCntuPart());
     gTAGroot->AddRequiredItem("mcevt");
     gTAGroot->AddRequiredItem("mctrack");
-    myReader->SetupBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
-    myReader->SetupBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
+    myReader->SetupBranch(fpNtuMcEvt);
+    myReader->SetupBranch(fpNtuMcTrk);
     if(TAGrecoManager::GetPar()->IsRegionMc()){
-      fpNtuMcReg = new TAGdataDsc("mcreg",new TAMCntuRegion());
+      fpNtuMcReg = new TAGdataDsc(new TAMCntuRegion());
       gTAGroot->AddRequiredItem("mcreg");
-      myReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+      myReader->SetupBranch(fpNtuMcReg);
     }
   }
 

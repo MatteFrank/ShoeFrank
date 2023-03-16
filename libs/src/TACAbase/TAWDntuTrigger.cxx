@@ -16,8 +16,6 @@
 //! Class Imp
 ClassImp(TAWDntuTrigger);
 
-TString  TAWDntuTrigger::fgkBranchName = "WDtrigInfo.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAWDntuTrigger::TAWDntuTrigger()

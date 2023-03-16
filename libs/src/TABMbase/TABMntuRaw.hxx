@@ -42,15 +42,10 @@ class TABMntuRaw : public TAGdata {
     virtual void      Clear(Option_t* opt="");
     virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
 
-    //! Get the branch name
-    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-
 private:
     TClonesArray*   fListOfHits;    ///< List of BM accepted raw hits
     Int_t           fiNDrop;		    ///< Number of discharged tdc values
     Double_t        fTrigTime;      ///< Trigger time of the event
-
-   static TString fgkBranchName;    ///< Branch name in TTree
 
    ClassDef(TABMntuRaw,1)
 };

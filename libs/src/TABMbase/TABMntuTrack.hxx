@@ -38,16 +38,12 @@ class TABMntuTrack : public TAGdata {
     TABMtrack*      NewPrunedTrack(TABMtrack trk, Int_t view);
     void            SetTrackStatus(Int_t instatus){fStatus=instatus;return;};
 
-    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-
   private:
     Int_t           fStatus;                //-1000=notset, 0=ok, 1=firedUplane<plane_mincut, 2=firedVplane<plane_mincut, 3=hit rejected > rejmax_cut, 4=fit is not converged, 5=chi2red>chi2redcut, >6=error
 
     TClonesArray*   fPrunedTrack;          //list of pruned tracks
     Int_t           fPrunedStatus;          //-1=no pruned track, 0=pruned track on the yz view (view=0), 1= pruned track on the xz view (view=1)
     TClonesArray*   fListOfTracks;			    // list of saved tracks
-
-   static TString fgkBranchName;            // Branch name in TTree
 
    ClassDef(TABMntuTrack,2)
 

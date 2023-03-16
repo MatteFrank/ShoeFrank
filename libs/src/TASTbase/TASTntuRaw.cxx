@@ -22,8 +22,6 @@ using namespace std;
 //! Class Imp
 ClassImp(TASTrawHit);
 
-TString TASTntuRaw::fgkBranchName   = "stdat.";
-
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

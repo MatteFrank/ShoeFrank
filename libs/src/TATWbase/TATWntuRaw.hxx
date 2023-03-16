@@ -54,17 +54,11 @@ public:
   void              SetupClones();
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
   void              UpdateRunTime(int value){fRunTime+=value;}
-   
-public:
-  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
 private:
   Int_t           fHitsN;		    //
   TClonesArray*   fListOfHits;
   Int_t           fRunTime;
-   
-private:
-  static TString  fgkBranchName;    // Branch name in TTree
    
    ClassDef(TATWntuRaw,3);
 

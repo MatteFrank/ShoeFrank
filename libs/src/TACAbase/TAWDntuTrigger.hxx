@@ -41,10 +41,6 @@ public:
   void     Clear(Option_t* opt="");
   void     ToStream(ostream& os=cout, Option_t* option="") const;
 
-public:
-   //! Get branch name
-  static const Char_t* GetBranchName() { return fgkBranchName.Data(); }
-
 private:
 
   Int_t            fTriggerID;                      ///< trigger id
@@ -56,10 +52,6 @@ private:
   Int_t            fWDtrigNum;                      ///< WD trigger number
   Double_t         fMajRate;                        ///< Maj rate
   Double_t         fWDprevruntime;                  ///< WD previous run time
-
-
-private:
-  static TString    fgkBranchName; ///< branch name
 
   ClassDef(TAWDntuTrigger,1)
 

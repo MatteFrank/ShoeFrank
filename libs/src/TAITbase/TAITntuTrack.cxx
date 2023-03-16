@@ -16,8 +16,6 @@
 //! Class Imp
 ClassImp(TAITntuTrack);
 
-TString TAITntuTrack::fgkBranchName   = "ittrack.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAITntuTrack::TAITntuTrack() 

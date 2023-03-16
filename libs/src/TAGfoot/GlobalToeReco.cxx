@@ -70,15 +70,15 @@ void GlobalToeReco::SetL0TreeBranches()
   
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
     if (fFlagMC) {
-      fpNtuMcTrk = new TAGdataDsc(TAMCntuPart::GetDefDataName(), new TAMCntuPart());
-      fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuPart::GetBranchName());
+      fpNtuMcTrk = new TAGdataDsc(new TAMCntuPart());
+      fActEvtReader->SetupBranch(fpNtuMcTrk);
       
-      fpNtuMcEvt = new TAGdataDsc("evtMc", new TAMCntuEvent());
-      fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
+      fpNtuMcEvt = new TAGdataDsc(new TAMCntuEvent());
+      fActEvtReader->SetupBranch(fpNtuMcEvt);
       
       if (TAGrecoManager::GetPar()->IsRegionMc()) {
-        fpNtuMcReg = new TAGdataDsc("regMc", new TAMCntuRegion());
-        fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+        fpNtuMcReg = new TAGdataDsc(new TAMCntuRegion());
+        fActEvtReader->SetupBranch(fpNtuMcReg);
       }
     }
   }
@@ -92,11 +92,11 @@ void GlobalToeReco::SetTreeBranches()
   
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
     if (fFlagMC && fgSaveMcFlag) {
-      fActEvtWriter->SetupElementBranch(fpNtuMcEvt, TAMCntuEvent::GetBranchName());
-      fActEvtWriter->SetupElementBranch(fpNtuMcTrk, TAMCntuPart::GetBranchName());
+      fActEvtWriter->SetupElementBranch(fpNtuMcEvt);
+      fActEvtWriter->SetupElementBranch(fpNtuMcTrk);
       
       if (TAGrecoManager::GetPar()->IsRegionMc() )
-        fActEvtWriter->SetupElementBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+        fActEvtWriter->SetupElementBranch(fpNtuMcReg);
     }
   }
 }

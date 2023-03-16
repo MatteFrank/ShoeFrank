@@ -86,8 +86,6 @@ Int_t TAMSDrawHit::Compare(const TObject* obj) const
 #include "TAMSDparMap.hxx"
 #include "TAGnameManager.hxx"
 
-TString TAMSDntuRaw::fgkBranchName   = "msdrd.";
-
 /*!
  \class TAMSDntuRaw
  \brief Raw hit container for MSD detectors. **

@@ -64,17 +64,10 @@ public:
   
   virtual void      Clear(Option_t* opt="");
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
-
-public:
-   //! Get branch name
-  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
   
 private:
    Int_t           fHitsN;          ///< Number of hits (useless)
    TClonesArray*   fListOfHits;     ///< list of  hits
-
-private:
-   static TString fgkBranchName;    ///< Branch name in TTree
   
   ClassDef(TACAntuRaw,1);
 

@@ -132,8 +132,6 @@ void TACAcluster::AddHit(TACAhit* hit)
 //! Class Imp
 ClassImp(TACAntuCluster);
 
-TString TACAntuCluster::fgkBranchName   = "caclus.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TACAntuCluster::TACAntuCluster()

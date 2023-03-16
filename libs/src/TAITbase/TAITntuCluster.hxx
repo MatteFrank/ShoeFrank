@@ -31,9 +31,6 @@ protected:
    TAVTbaseParGeo*    fGeometry;         //! do NOT stored this pointer !
    TObjArray*         fListOfClusters;   ///< List of clusters
 
-private:   
-   static TString    fgkBranchName;     ///< Branch name in TTree
-
 public:
    TAITntuCluster();
    virtual          ~TAITntuCluster();
@@ -65,10 +62,6 @@ public:
    
    // To stream
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
-   
-public:
-   //! Get branch name
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
 
    ClassDef(TAITntuCluster,1)
 };

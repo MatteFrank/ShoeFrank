@@ -16,8 +16,6 @@
 
 ClassImp(TABMntuTrack);
 
-TString TABMntuTrack::fgkBranchName   = "bmtrack.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

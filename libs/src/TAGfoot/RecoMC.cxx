@@ -81,7 +81,7 @@ void RecoMC::CreateRawAction()
    if ( TAGrecoManager::GetPar()->IsRegionMc()) {
      fpNtuMcReg = new TAGdataDsc(new TAMCntuRegion());
      if (TAGrecoManager::GetPar()->IsReadRootObj())
-       fActEvtReader->SetupBranch(fpNtuMcReg, TAMCntuRegion::GetBranchName());
+       fActEvtReader->SetupBranch(fpNtuMcReg);
      else {
         const Char_t* name = FootActionDscName("TAMCactNtuRegion");
         fActNtuMcReg = new TAMCactNtuRegion(name, fpNtuMcReg, fEvtStruct);
@@ -90,7 +90,7 @@ void RecoMC::CreateRawAction()
   
    fpNtuMcEvt    = new TAGdataDsc(new TAMCntuEvent());
    if (TAGrecoManager::GetPar()->IsReadRootObj())
-     fActEvtReader->SetupBranch(fpNtuMcEvt,TAMCntuEvent::GetBranchName());
+     fActEvtReader->SetupBranch(fpNtuMcEvt);
    else {
       const Char_t* name = FootActionDscName("TAMCactNtuEvent");
       fActNtuMcEvt = new TAMCactNtuEvent(name, fpNtuMcEvt, fEvtStruct);
@@ -98,7 +98,7 @@ void RecoMC::CreateRawAction()
    
    fpNtuMcTrk    = new TAGdataDsc(new TAMCntuPart());
    if (TAGrecoManager::GetPar()->IsReadRootObj())
-     fActEvtReader->SetupBranch(fpNtuMcTrk,TAMCntuPart::GetBranchName());
+     fActEvtReader->SetupBranch(fpNtuMcTrk);
    else {
       const Char_t* name = FootActionDscName("TAMCactNtuPart");
       fActNtuMcTrk = new TAMCactNtuPart(name, fpNtuMcTrk, fEvtStruct);
@@ -107,7 +107,7 @@ void RecoMC::CreateRawAction()
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW()) {
       fpNtuMcSt   = new TAGdataDsc(FootDataDscMcName(kST), new TAMCntuHit());
       if (TAGrecoManager::GetPar()->IsReadRootObj())
-        fActEvtReader->SetupBranch(fpNtuMcSt, TAMCntuHit::GetStcBranchName());
+        fActEvtReader->SetupBranch(fpNtuMcSt, FootBranchMcName(kST));
       
       fpNtuHitSt = new TAGdataDsc(new TASTntuHit());
       const Char_t* name = FootActionDscName("TASTactNtuHitMC");
@@ -119,7 +119,7 @@ void RecoMC::CreateRawAction()
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       fpNtuMcBm   = new TAGdataDsc(FootDataDscMcName(kBM), new TAMCntuHit());
       if (TAGrecoManager::GetPar()->IsReadRootObj())
-        fActEvtReader->SetupBranch(fpNtuMcBm, TAMCntuHit::GetBmBranchName());
+        fActEvtReader->SetupBranch(fpNtuMcBm, FootBranchMcName(kBM));
 
       fpNtuHitBm = new TAGdataDsc(new TABMntuHit());
       const Char_t* name = FootActionDscName("TABMactNtuHitMC");
@@ -131,7 +131,7 @@ void RecoMC::CreateRawAction()
    if (TAGrecoManager::GetPar()->IncludeVT()) {
       fpNtuMcVt   = new TAGdataDsc(FootDataDscMcName(kVTX), new TAMCntuHit());
       if (TAGrecoManager::GetPar()->IsReadRootObj())
-        fActEvtReader->SetupBranch(fpNtuMcVt, TAMCntuHit::GetVtxBranchName());
+        fActEvtReader->SetupBranch(fpNtuMcVt, FootBranchMcName(kVTX));
       
       fpNtuHitVtx = new TAGdataDsc(new TAVTntuHit());
       const Char_t* name = FootActionDscName("TAVTactNtuHitMC");
@@ -143,7 +143,7 @@ void RecoMC::CreateRawAction()
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       fpNtuMcIt   = new TAGdataDsc(FootDataDscMcName(kITR), new TAMCntuHit());
       if (TAGrecoManager::GetPar()->IsReadRootObj())
-        fActEvtReader->SetupBranch(fpNtuMcIt, TAMCntuHit::GetItrBranchName());
+        fActEvtReader->SetupBranch(fpNtuMcIt, FootBranchMcName(kITR));
       
       fpNtuHitIt = new TAGdataDsc(new TAITntuHit());
       const Char_t* name = FootActionDscName("TAITactNtuHitMC");
@@ -155,7 +155,7 @@ void RecoMC::CreateRawAction()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpNtuMcMsd   = new TAGdataDsc(FootDataDscMcName(kMSD), new TAMCntuHit());
       if (TAGrecoManager::GetPar()->IsReadRootObj())
-        fActEvtReader->SetupBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
+        fActEvtReader->SetupBranch(fpNtuMcMsd, FootBranchMcName(kMSD));
       
       fpNtuHitMsd = new TAGdataDsc(new TAMSDntuHit());
       const Char_t* name = FootActionDscName("TAMSDactNtuHitMC");
@@ -167,7 +167,7 @@ void RecoMC::CreateRawAction()
    if(TAGrecoManager::GetPar()->IncludeTW()) {
       fpNtuMcTw   = new TAGdataDsc(FootDataDscMcName(kTW), new TAMCntuHit());
       if (TAGrecoManager::GetPar()->IsReadRootObj())
-        fActEvtReader->SetupBranch(fpNtuMcTw, TAMCntuHit::GetTofBranchName());
+        fActEvtReader->SetupBranch(fpNtuMcTw, FootBranchMcName(kTW));
       
       fpNtuHitTw   = new TAGdataDsc(new TATWntuHit());
       const Char_t* name = FootActionDscName("TATWactNtuHitMC");
@@ -180,7 +180,7 @@ void RecoMC::CreateRawAction()
    if(TAGrecoManager::GetPar()->IncludeCA()) {
      fpNtuMcCa   = new TAGdataDsc(FootDataDscMcName(kCAL), new TAMCntuHit());
      if (TAGrecoManager::GetPar()->IsReadRootObj())
-       fActEvtReader->SetupBranch(fpNtuMcCa, TAMCntuHit::GetCalBranchName());
+       fActEvtReader->SetupBranch(fpNtuMcCa, FootBranchMcName(kCAL));
       
      fpNtuHitCa   = new TAGdataDsc(new TACAntuHit());
       const Char_t* name = FootActionDscName("TACAactNtuHitMC");

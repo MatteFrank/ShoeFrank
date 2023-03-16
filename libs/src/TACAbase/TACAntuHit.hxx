@@ -114,19 +114,12 @@ public:
 
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
 
-public:
-   //! Get branch name
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-
 private:
    TClonesArray*   fListOfHits;   ///< list of hits
    Double_t        fTrigTime;     ///< SC trigger time
    Int_t           fiNAdc;		    ///< Adc number
    Int_t           fiNTdc;		    ///< TDC number
    Int_t           fiNDrop;		 ///< drop ?
-
-private:
-   static TString fgkBranchName;    ///< Branch name in TTree
 
    ClassDef(TACAntuHit,2)
 };

@@ -63,8 +63,6 @@ void TASThit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 //! Class Imp
 ClassImp(TASTntuHit);
 
-TString TASTntuHit::fgkBranchName   = "strh.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TASTntuHit::TASTntuHit()

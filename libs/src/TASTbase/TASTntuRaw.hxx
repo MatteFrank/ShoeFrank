@@ -65,9 +65,7 @@ public:
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
 
   void              UpdateRunTime(int value){fRunTime+=value;}
-   
-  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-    
+       
   ClassDef(TASTntuRaw,3);
   
 private:
@@ -75,8 +73,6 @@ private:
    TClonesArray*   fListOfHits;         // hits
    TASTrawHit*     fSuperHit;  //!
    Int_t           fRunTime;
-
-   static TString fgkBranchName;    // Branch name in TTree
 };
 
 #endif

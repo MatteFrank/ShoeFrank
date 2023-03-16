@@ -17,8 +17,6 @@ using namespace std;
 
 ClassImp(TABMntuHit);
 
-TString TABMntuHit::fgkBranchName   = "bmrh.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 

@@ -28,9 +28,6 @@ private:
    TVector3         fBeamPosition;  ///< Position of beam in x-y direction at z-target given by BM
    Bool_t           fPileup;        ///< true if pileup events
    
-private:
-   static TString fgkBranchName;    ///< Branch name in TTree
-   
 public:
    TAITntuTrack();
    virtual         ~TAITntuTrack();
@@ -65,10 +62,6 @@ public:
    virtual void     Clear(Option_t* opt="");
    // To stream
    virtual void     ToStream(ostream& os=cout, Option_t* option="") const;
-   
-public:
-   //! Get branch
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }  
    
    ClassDef(TAITntuTrack,2)
 };

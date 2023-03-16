@@ -140,19 +140,9 @@ class TAMCntuPart : public TAGdata {
    // To stream
 	 void        ToStream(ostream& os=cout, Option_t* option="") const;
 
-public:
-   //! Get branch name
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();  }
-   //! Get default parameter name
-   static const Char_t* GetDefDataName()  { return fgkDefDataName.Data(); }
-
 private:
    TClonesArray*   fListOfTracks;       ///< ttracks
    
-private:
-   static TString fgkBranchName;        ///< Branch name in TTree
-   static const TString fgkDefDataName; ///< Default parameter name
-
    ClassDef(TAMCntuPart,2)
 };
 

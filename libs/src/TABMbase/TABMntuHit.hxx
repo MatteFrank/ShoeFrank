@@ -35,8 +35,6 @@ class TABMntuHit : public TAGdata {
     virtual void      SetupClones();
     virtual void      Clear(Option_t* opt="");
     virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
-    static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-
 
     //getters
     //! Get the total number of accepted BM hits
@@ -81,7 +79,6 @@ class TABMntuHit : public TAGdata {
 
   private:
     TClonesArray*   fListOfHits;		     ///< list of TABMhit
-    static TString fgkBranchName;        ///< Branch name in TTree
 
     map<Int_t,Int_t> fCellOccMap;        ///< BM occupancy map<cellid, counter for number of hits>
     Float_t          fEffPaoloni;        ///< value of the total efficiency calculated with the method described in Paoloni et al. (2012)

@@ -96,19 +96,13 @@ public:
    double GetTriggerTimeOth()     const { return fTrigTimeOth;  }
    int    GetTrigType()           const { return fTrigType;     }
 
-  
-public:
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-   
+
 private:
   TClonesArray* fListOfHits;			    // hits
   Double32_t    fTrigTime;
   Double32_t    fTrigTimeOth;
   Double32_t    fCharge;
   int           fTrigType;
-
-private:
-   static TString fgkBranchName;    // Branch name in TTree
    
    ClassDef(TASTntuHit,2)
 };

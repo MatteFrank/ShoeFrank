@@ -90,9 +90,6 @@ class TAVTntuVertex : public TAGdata {
 
 private:
    TClonesArray*       fListOfVertex;	 ///< list of vertice, return an object TAVTvertex
-
-private:
-   static TString      fgkBranchName;   ///< Branch name in TTree
    
 public:
     TAVTntuVertex();
@@ -114,11 +111,7 @@ public:
     virtual void       SetupClones();
     // Clear
     virtual void       Clear(Option_t* opt="");
-        
-public:
-    //! Get branch
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-
+      
     ClassDef(TAVTntuVertex,1)
 };
 

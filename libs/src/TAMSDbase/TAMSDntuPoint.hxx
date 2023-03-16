@@ -106,13 +106,6 @@ public:
 
   virtual void        SetupClones();
 
-public:
-   //! Get branch name
-  static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
-
-private:
-  static TString fgkBranchName;    // Branch name in TTree
-
   ClassDef(TAMSDntuPoint,2)
 };
 

@@ -18,8 +18,6 @@
 //! Class Imp
 ClassImp(TAGntuEvent);
 
-TString  TAGntuEvent::fgkBranchName = "evt.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAGntuEvent::TAGntuEvent()

@@ -21,8 +21,6 @@
 //! Class imp
 ClassImp(TAMSDntuCluster);
 
-TString TAMSDntuCluster::fgkBranchName   = "msdclus.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMSDntuCluster::TAMSDntuCluster() 

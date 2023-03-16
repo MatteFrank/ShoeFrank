@@ -159,12 +159,6 @@ public:
     // delete?
     virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
    
-private:
-   static TString     fgkBranchName;    ///< Branch name in TTree
-   
-public:
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data(); }
-   
    ClassDef(TATWntuHit,2)
 };
 

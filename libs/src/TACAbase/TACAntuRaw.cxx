@@ -17,9 +17,6 @@ using namespace std;
 //! Class Imp
 ClassImp(TACArawHit);
 
-TString TACAntuRaw::fgkBranchName   = "cadat.";
-
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TACArawHit::TACArawHit()

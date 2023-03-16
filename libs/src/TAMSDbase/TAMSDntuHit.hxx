@@ -19,9 +19,6 @@ protected:
    TAMSDparGeo*      fpGeoMap;         //! geometry parameter, do not store
    
    std::map<pair<int, int>, int > fMap; //! map
-
-private:
-   static TString    fgkBranchName;    ///< Branch name in TTree
    
 public:
    TAMSDntuHit();
@@ -44,10 +41,6 @@ public:
    virtual void       Clear(Option_t* opt="");
    
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
-   
-public:
-   //! Get branch name
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
    ClassDef(TAMSDntuHit,2)
 };

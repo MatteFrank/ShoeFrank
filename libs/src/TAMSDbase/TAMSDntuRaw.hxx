@@ -87,9 +87,6 @@ class TAMSDntuRaw : public TAGdata {
 protected:
    TObjArray*   fListOfStrips;  ///< list of strips
    TAMSDparGeo* fpGeoMap;       //!
-   
-private:
-   static TString fgkBranchName;    ///< Branch name in TTree
 
 public:
    TAMSDntuRaw();
@@ -115,10 +112,6 @@ public:
    
    //! To stream
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
-
-public:
-   //! Get branch name
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data(); }
 
    ClassDef(TAMSDntuRaw,2)
 };

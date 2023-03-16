@@ -13,9 +13,6 @@
 //! Draw Imp
 ClassImp(TAMCregion);
 
-      TString TAMCntuRegion::fgkBranchName  = "mcreg.";
-const TString TAMCntuRegion::fgkDefParaName = "regMc";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMCregion::TAMCregion()

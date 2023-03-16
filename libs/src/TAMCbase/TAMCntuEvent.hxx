@@ -36,20 +36,12 @@ public:
   // To stream
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
   
-public:
-  //! Get branch name
-  static const Char_t* GetBranchName() { return fgkBranchName.Data(); }
-  
 private:
   Int_t             fEventNumber;    ///< event number
   Int_t             fTriggerNumber;  ///< trigger number
   ULong64_t         fTimeStamp;      ///< time stamp
 
-private:
-  static TString    fgkBranchName;   ///< branch name
-  
   ClassDef(TAMCntuEvent,2)
-  
 };
 
 #endif

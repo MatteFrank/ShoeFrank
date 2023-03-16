@@ -19,9 +19,6 @@ protected:
    TAITparGeo*       fpGeoMap;           //! do not store
    //! pixel map
     std::map<pair<int, int>, int > fMap; //! do not store
-    
-private:
-   static TString    fgkBranchName;      ///< Branch name in TTree
    
 public:
    TAITntuHit();
@@ -49,10 +46,6 @@ public:
    virtual void      Clear(Option_t* opt="");
    // To stream
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
-   
-public:
-   //! Get branch
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
    ClassDef(TAITntuHit,1)
 };

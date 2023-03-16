@@ -105,10 +105,6 @@ void TAMCpart::Clear(Option_t* /*opt*/)
 //! Class Imp
 ClassImp(TAMCntuPart);
 
-      TString TAMCntuPart::fgkBranchName   = "mctrack.";
-const TString TAMCntuPart::fgkDefDataName  = "eveMc";
-
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMCntuPart::TAMCntuPart()

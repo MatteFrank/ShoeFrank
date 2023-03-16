@@ -30,8 +30,6 @@
 //! Class Imp
 ClassImp(TAITntuHit);
 
-TString TAITntuHit::fgkBranchName   = "itrh.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAITntuHit::TAITntuHit()

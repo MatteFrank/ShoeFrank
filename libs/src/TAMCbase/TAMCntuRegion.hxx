@@ -94,19 +94,9 @@ public:
    virtual void      Clear(Option_t* opt="");
    // To stream
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
-   
-public:
-   //! Get branch name
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();  }
-   //! Get default parameter name
-   static const Char_t* GetDefParaName()  { return fgkDefParaName.Data(); }
 
 private:
    TClonesArray*     fListOfRegions;    ///< region crossing list
-  
-private:
-   static       TString fgkBranchName;  ///< Branch name
-   static const TString fgkDefParaName; ///< Default parameter name
 
    ClassDef(TAMCntuRegion,1)
    

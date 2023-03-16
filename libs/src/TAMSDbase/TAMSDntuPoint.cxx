@@ -129,8 +129,6 @@ ClassImp(TAMSDntuPoint);
 
 //##############################################################################
 
-TString TAMSDntuPoint::fgkBranchName   = "msdpt.";
-
 //------------------------------------------+-----------------------------------
 //! Default detector
 TAMSDntuPoint::TAMSDntuPoint()

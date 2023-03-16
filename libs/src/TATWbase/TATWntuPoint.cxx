@@ -150,9 +150,6 @@ void TATWpoint::Clear(Option_t*)
 //! Class Imp
 ClassImp(TATWntuPoint);
 
-
-TString TATWntuPoint::fgkBranchName   = "twpt.";
-
 //------------------------------------------+-----------------------------------
 //! 
 TATWntuPoint::TATWntuPoint() 

@@ -16,8 +16,6 @@
 //! Class imp
 ClassImp(TAMSDntuTrack);
 
-TString TAMSDntuTrack::fgkBranchName   = "mstrack.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMSDntuTrack::TAMSDntuTrack()

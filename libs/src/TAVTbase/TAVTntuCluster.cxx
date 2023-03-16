@@ -16,8 +16,6 @@
 //! Class Imp
 ClassImp(TAVTntuCluster);
 
-TString TAVTntuCluster::fgkBranchName   = "vtclus.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTntuCluster::TAVTntuCluster() 

@@ -30,8 +30,6 @@
 //! Class Imp
 ClassImp(TAMSDntuHit);
 
-TString TAMSDntuHit::fgkBranchName   = "msdrh.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMSDntuHit::TAMSDntuHit()

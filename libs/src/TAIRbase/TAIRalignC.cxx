@@ -122,7 +122,7 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
    
    fInfile        = new TAGactTreeReader("inFile");
    
-   fpGeoMapG    = new TAGparaDsc("gGeo", new TAGparGeo());
+   fpGeoMapG    = new TAGparaDsc(new TAGparGeo());
    TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
    TString parFile = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
    geomapG->FromFile(parFile.Data());
@@ -130,12 +130,12 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
 
    // VTX
    if (fFlagVtx) {
-      fpGeoMapVtx    = new TAGparaDsc(FootParaDscName("TAVTparGeo"), new TAVTparGeo());
+      fpGeoMapVtx    = new TAGparaDsc(new TAVTparGeo());
       TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
       TString parFile = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
       geomapVtx->FromFile(parFile.Data());
       
-      fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
+      fpConfigVtx    = new TAGparaDsc(new TAVTparConf());
       parFile = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
       TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
       parConfVtx->FromFile(parFile.Data());
@@ -143,12 +143,12 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
       devsNtot += parConfVtx->GetSensorsN();
 
       fpNtuClusVtx   = new TAGdataDsc("vtClus", new TAVTntuCluster());
-      fInfile->SetupBranch(fpNtuClusVtx, TAVTntuCluster::GetBranchName());
+      fInfile->SetupBranch(fpNtuClusVtx);
    }
    
    // MSD
    if (fFlagMsd) {
-      fpGeoMapMsd    = new TAGparaDsc(FootParaDscName("TAMSDparGeo"), new TAMSDparGeo());
+      fpGeoMapMsd    = new TAGparaDsc(new TAMSDparGeo());
       TAMSDparGeo* geomapMsd   = (TAMSDparGeo*) fpGeoMapMsd->Object();
       TString parFile = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
       geomapMsd->FromFile(parFile.Data());
@@ -160,8 +160,8 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
       
       devsNtot += parConfMsd->GetSensorsN()/2;
       
-      fpNtuClusMsd  = new TAGdataDsc("msdClus", new TAMSDntuPoint());
-      fInfile->SetupBranch(fpNtuClusMsd, TAMSDntuPoint::GetBranchName());
+      fpNtuClusMsd  = new TAGdataDsc(new TAMSDntuPoint());
+      fInfile->SetupBranch(fpNtuClusMsd);
    }
 
    if (devsNtot <= 2) {

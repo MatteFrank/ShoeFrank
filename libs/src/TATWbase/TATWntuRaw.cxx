@@ -15,8 +15,6 @@ using namespace std;
 //! Class Imp
 ClassImp(TATWrawHit);
 
-TString TATWntuRaw::fgkBranchName   = "twdat.";
-
 //______________________________________________________________________________
 //
 TATWrawHit::TATWrawHit(TWaveformContainer *W, string algo, double frac, double del)

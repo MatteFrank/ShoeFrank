@@ -72,8 +72,6 @@ void TACAhit:: AddMcTrackIdx(Int_t trackId, Int_t mcId)
 //! Class Imp
 ClassImp(TACAntuHit);
 
-TString TACAntuHit::fgkBranchName   = "carh.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TACAntuHit::TACAntuHit()

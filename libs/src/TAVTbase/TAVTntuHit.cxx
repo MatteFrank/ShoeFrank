@@ -22,8 +22,6 @@
 //! Class Imp
 ClassImp(TAVTntuHit);
 
-TString TAVTntuHit::fgkBranchName   = "vtrh.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTntuHit::TAVTntuHit()

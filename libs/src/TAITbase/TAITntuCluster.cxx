@@ -16,8 +16,6 @@
 //! Class Imp
 ClassImp(TAITntuCluster);
 
-TString TAITntuCluster::fgkBranchName   = "itclus.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAITntuCluster::TAITntuCluster() 

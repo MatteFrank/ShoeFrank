@@ -96,10 +96,6 @@ public:
    // To stream
   virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
   
-public:
-   //! Get branch name
-  static const Char_t* GetBranchName() { return fgkBranchName.Data(); }
-  
 private:
   UInt_t            fTimeSec;                  ///< Time in second
   UInt_t            fTimeUsec;                 ///< Time in microsecond
@@ -113,9 +109,6 @@ private:
   UInt_t            fPMTsAndBusy;              ///< PMT's and busy
   Int_t             fTriggerID;                ///< Trigger ID
   UInt_t            fTriggersStatus[NMAXTRIG]; ///< Trigger status
-
-private:
-  static TString    fgkBranchName;             ///< Branch name
   
   ClassDef(TAGntuEvent,1)
   

@@ -15,8 +15,6 @@
 //! Class Imp
 ClassImp(TAMCntuEvent);
 
-TString  TAMCntuEvent::fgkBranchName = "mcevt.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMCntuEvent::TAMCntuEvent()

@@ -23,9 +23,6 @@ protected:
    
     std::map<pair<int, int>, int > fMap; //! pixel map
     
-private:
-   static TString    fgkBranchName;    ///< Branch name in TTree
-   
 public:
    TAVTntuHit();
    virtual          ~TAVTntuHit();
@@ -58,10 +55,6 @@ public:
    virtual void      Clear(Option_t* opt="");
    // To stream
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
-   
-public:
-   //! Get branch
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
    ClassDef(TAVTntuHit,2)
 };

@@ -18,8 +18,6 @@
 //! Class Imp
 ClassImp(TAVTntuTrack);
 
-TString TAVTntuTrack::fgkBranchName   = "vttrack.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAVTntuTrack::TAVTntuTrack() 

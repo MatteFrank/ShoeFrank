@@ -100,9 +100,6 @@ class TACAntuCluster : public TAGdata {
 protected:
    TClonesArray*      fListOfClusters; ///< List of clusters
    
-private:
-   static TString    fgkBranchName;    ///< Branch name in TTree
-   
 public:
    TACAntuCluster();
    virtual          ~TACAntuCluster();
@@ -122,10 +119,6 @@ public:
    virtual void       Clear(Option_t* opt="");
    
    virtual void       ToStream(ostream& os=cout, Option_t* option="") const;
-   
-public:
-   //! return branch name
-   static const Char_t* GetBranchName()   { return fgkBranchName.Data();   }
    
    ClassDef(TACAntuCluster,1)
 };

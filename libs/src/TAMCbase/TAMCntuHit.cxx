@@ -13,14 +13,6 @@
 //! Class Imp
 ClassImp(TAMChit);
 
-TString  TAMCntuHit::fgkStcBranchName = "mcst.";
-TString  TAMCntuHit::fgkBmBranchName  = "mcbm.";
-TString  TAMCntuHit::fgkVtxBranchName = "mcvt.";
-TString  TAMCntuHit::fgkItrBranchName = "mcit.";
-TString  TAMCntuHit::fgkMsdBranchName = "mcmsd.";
-TString  TAMCntuHit::fgkTofBranchName = "mctw.";
-TString  TAMCntuHit::fgkCalBranchName = "mcca.";
-
 //------------------------------------------+-----------------------------------
 //! Default constructor.
 TAMChit::TAMChit()
