@@ -1,7 +1,7 @@
 #! /bin/tcsh
 #define sbgli server env
 
-setenv FOOTREC /iphc-work/desis/FOOT/build//Reconstruction/
+setenv FOOTREC /iphc-work/desis/FOOT/build/Reconstruction/
 cd $FOOTREC
 
 echo "sending mail"
