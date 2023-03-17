@@ -47,7 +47,6 @@ class TABMactNtuHitMC : public TAGaction {
     TAGparaDsc*     fpParCon;		    ///< BM config params.
     TAGparaDsc*     fpParCal;		    ///< BM calibration params.
     TAGparaDsc*     fpParGeo;		    ///< BM geo params.
-    Bool_t          fFakeHits;       ///< Fake hits flag
     TABMdigitizer*  fDigitizer;     ///< cluster size digitizer
     EVENT_STRUCT*   fEventStruct;   ///< old version of input mc hit, useful for back compatibility
 
