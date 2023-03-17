@@ -37,6 +37,7 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
     fpParCon(dscbmcon),
     fpParCal(dscbmcal),
     fpParGeo(dscbmgeo),
+    fFakeHits(false),
     fEventStruct(evStr)
 {
    if (FootDebugLevel(1))
@@ -51,6 +52,9 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
    AddPara(fpParCal, "TABMparCal");
    AddPara(fpParGeo, "TABMparGeo");
 
+   if (TAGrecoManager::GetPar()->IsElecNoiseMc())
+      fFakeHits = true;
+   
    CreateDigitizer();
 }
 
@@ -182,7 +186,7 @@ Bool_t TABMactNtuHitMC::Action()
 	  }
   }
 
-  if(p_bmcon->GetSmearHits()==2)
+  if(p_bmcon->GetSmearHits()==2 && fFakeHits)
     CreateFakeHits();
 
   //histos
