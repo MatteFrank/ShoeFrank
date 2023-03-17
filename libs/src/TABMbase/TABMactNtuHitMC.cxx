@@ -37,7 +37,6 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
     fpParCon(dscbmcon),
     fpParCal(dscbmcal),
     fpParGeo(dscbmgeo),
-    fFakeHits(false),
     fEventStruct(evStr)
 {
    if (FootDebugLevel(1))
