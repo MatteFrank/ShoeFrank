@@ -38,6 +38,7 @@ endif(FILECOPY)
 #
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild.csh.cmake"      "${CMAKE_BINARY_DIR}/Reconstruction/nightbuild.csh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild_ui10.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_ui10.csh"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild_li.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_li.csh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild_tier1.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_tier1.sh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/cron.tab.cmake"            "${CMAKE_BINARY_DIR}/Reconstruction/cron.tab"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/CompileMacro.py.cmake"     "${CMAKE_BINARY_DIR}/Reconstruction/CompileMacro.py"  @ONLY)
