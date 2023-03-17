@@ -72,7 +72,10 @@ void TestBenchMark(Bool_t rawData = true)
          Float_t PValue   = hPixTotRef->Chi2TestX(hPixTot, chi2, ndf, igood, "UU");
          printf("%.3f\n", PValue);
          
-         if (PValue < sigma && ndf != 0) printf("%s changes for detector %s\n", hPixTotRef->GetTitle(), it.first.Data());
+         if (PValue < sigma && ndf != 0) {
+            printf("%s changes for detector %s\n", hPixTotRef->GetTitle(), it.first.Data());
+            printf("PatternError\n")
+         }
       }
    }
 }
