@@ -74,9 +74,7 @@ root -q TestBenchMark.C+\(0\)
 
 \mv nightbuild.new nightbuild.old
 \mv nightbuild.log nightbuild.new
+
 #\cp  nightbuild.new ~/
-
- #ssh sbgli  -o BatchMode=yes 'cat nightbuild.new | mail -s "shoe night build" cfinck@iphc.cnrs.fr'
-cat nightbuild.new | mail -s "shoe night build" cfinck@iphc.cnrs.fr
-
+#ssh sbgli  -o BatchMode=yes 'cat nightbuild.new | mail -s "shoe night build" cfinck@iphc.cnrs.fr'
 #\rm  ~/nightbuild.new
