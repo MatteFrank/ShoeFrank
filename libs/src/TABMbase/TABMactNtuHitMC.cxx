@@ -182,7 +182,7 @@ Bool_t TABMactNtuHitMC::Action()
 	  }
   }
 
-  if(p_bmcon->GetSmearHits()==2)
+  if(p_bmcon->GetSmearHits()==2 || TAGrecoManager::GetPar()->IsElecNoiseMc())
     CreateFakeHits();
 
   //histos
