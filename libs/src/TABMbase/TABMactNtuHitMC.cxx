@@ -51,9 +51,6 @@ TABMactNtuHitMC::TABMactNtuHitMC(const char* name,
    AddPara(fpParCal, "TABMparCal");
    AddPara(fpParGeo, "TABMparGeo");
 
-   if (TAGrecoManager::GetPar()->IsElecNoiseMc())
-      fFakeHits = true;
-   
    CreateDigitizer();
 }
 
