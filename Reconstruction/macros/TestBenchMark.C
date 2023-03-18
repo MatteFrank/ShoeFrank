@@ -74,7 +74,7 @@ void TestBenchMark(Bool_t rawData = true)
          
          if (PValue < sigma && ndf != 0) {
             printf("%s changes for detector %s\n", hPixTotRef->GetTitle(), it.first.Data());
-            printf("PatternError\n")
+            printf("PatternError\n");
          }
       }
    }
