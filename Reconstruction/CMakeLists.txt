@@ -41,6 +41,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild_ui10.csh.cmake" "
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild_li.csh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_li.csh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/nightbuild_tier1.sh.cmake" "${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_tier1.sh"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/cron.tab.cmake"            "${CMAKE_BINARY_DIR}/Reconstruction/cron.tab"  @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/cron.tab_ui10.cmake"       "${CMAKE_BINARY_DIR}/Reconstruction/cron_ui10.tab"  @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/CompileMacro.py.cmake"     "${CMAKE_BINARY_DIR}/Reconstruction/CompileMacro.py"  @ONLY)
 
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/nightbuild.csh)
