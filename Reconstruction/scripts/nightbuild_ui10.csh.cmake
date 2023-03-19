@@ -44,6 +44,7 @@ else
   echo "PatternError"
 endif
 echo " "
+
 #make
 make -j4
 if ( $status == 0 ) then
