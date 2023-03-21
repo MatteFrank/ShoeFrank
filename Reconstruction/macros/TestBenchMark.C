@@ -66,23 +66,23 @@ void TestBenchMark(Bool_t rawData = true)
       for (auto const& itv : vec) {
          
          TString nameHist = Form("%s/%s", it.first.Data(), itv.Data());
-         TH1* hPixTotRef = (TH1*)fRefPlots->Get(nameHist.Data());
-         TH1* hPixTot    = (TH1*)fPlots->Get(nameHist.Data());
+         TH1* histoRef = (TH1*)fRefPlots->Get(nameHist.Data());
+         TH1* histo    = (TH1*)fPlots->Get(nameHist.Data());
          
          Float_t PValue = 0;
          cout << left << setw(55)<< Form("Detector %-4s: PValue for %s: ", it.first.Data(), itv.Data());
          if (!nameHist.Contains("TrackClus")) { // only for filled bins number > 2
-            PValue   = hPixTotRef->Chi2TestX(hPixTot, chi2, ndf, igood, "UU");
+            PValue   = histoRef->Chi2TestX(histo, chi2, ndf, igood, "UU");
          } else {
-            Float_t mean = hPixTot->GetMean();
-            Float_t meanRef = hPixTotRef->GetMean();
+            Float_t mean = histo->GetMean();
+            Float_t meanRef = histoRef->GetMean();
             if (TMath::Abs(mean - meanRef) < gTolerance)
                PValue = 1.;
          }
          printf("%.3f\n", PValue);
          
          if (PValue < sigma) {
-            printf("%s changes for detector %s\n", hPixTotRef->GetTitle(), it.first.Data());
+            printf("%s changes for detector %s\n", histoRef->GetTitle(), it.first.Data());
             printf("PatternError\n");
          }
       }
