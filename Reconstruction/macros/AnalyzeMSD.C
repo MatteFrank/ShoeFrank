@@ -22,7 +22,7 @@
 #include "TAGdaqEvent.hxx"
 #include "TAGactDaqReader.hxx"
 
-#include "TAGWDtrigInfo.hxx"
+#include "TAWDntuTrigger.hxx"
 
 #include "TAMSDparMap.hxx"
 #include "TAMSDparGeo.hxx"
@@ -147,8 +147,8 @@ void AnalyzeMSD(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.
    TAMSDntuTrack *msdntutrack= new TAMSDntuTrack();
    tree->SetBranchAddress(TAMSDntuTrack::GetBranchName(), &msdntutrack);
 
-   TAGWDtrigInfo *triginfo = new TAGWDtrigInfo();
-   tree->SetBranchAddress(TAGWDtrigInfo::GetBranchName(), &triginfo);
+   TAWDntuTrigger *triginfo = new TAWDntuTrigger();
+   tree->SetBranchAddress(TAWDntuTrigger::GetBranchName(), &triginfo);
 
 
    TFile *fout = new TFile("outfile.root","RECREATE");
