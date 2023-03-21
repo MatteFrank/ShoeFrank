@@ -30,6 +30,7 @@ std::map<TString, std::vector<TString> > mapNameMC = {
                                                      {"TW",   {"twPointMap", "twdE_vs_Tof_LayerX_MCrec", "twdE_vs_Tof_LayerY_MCrec", "twZID_MCtrue_LayerX", "twZID_MCtrue_LayerY"}} ,
                                                      {"FOOT", {"glbTrackEvt", "glbTrackClus"}}
                                                      };
+const Float_t gTolerance = 0.1;
 
 // main
 void TestBenchMark(Bool_t rawData = true)
@@ -65,14 +66,22 @@ void TestBenchMark(Bool_t rawData = true)
       for (auto const& itv : vec) {
          
          TString nameHist = Form("%s/%s", it.first.Data(), itv.Data());
-         TH1F* hPixTotRef = (TH1F*)fRefPlots->Get(nameHist.Data());
-         TH1F* hPixTot    = (TH1F*)fPlots->Get(nameHist.Data());
+         TH1* hPixTotRef = (TH1*)fRefPlots->Get(nameHist.Data());
+         TH1* hPixTot    = (TH1*)fPlots->Get(nameHist.Data());
          
+         Float_t PValue = 0;
          cout << left << setw(55)<< Form("Detector %-4s: PValue for %s: ", it.first.Data(), itv.Data());
-         Float_t PValue   = hPixTotRef->Chi2TestX(hPixTot, chi2, ndf, igood, "UU");
+         if (!nameHist.Contains("TrackClus")) { // only for filled bins number > 2
+            PValue   = hPixTotRef->Chi2TestX(hPixTot, chi2, ndf, igood, "UU");
+         } else {
+            Float_t mean = hPixTot->GetMean();
+            Float_t meanRef = hPixTotRef->GetMean();
+            if (TMath::Abs(mean - meanRef) < gTolerance)
+               PValue = 1.;
+         }
          printf("%.3f\n", PValue);
          
-         if (PValue < sigma && ndf != 0) {
+         if (PValue < sigma) {
             printf("%s changes for detector %s\n", hPixTotRef->GetTitle(), it.first.Data());
             printf("PatternError\n");
          }
