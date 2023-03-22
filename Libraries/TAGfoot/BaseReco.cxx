@@ -884,12 +884,9 @@ void BaseReco::CreateRecActionMsd()
 
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
-<<<<<<< HEAD:libs/src/TAGfoot/BaseReco.cxx
-   fActClusMsd = new TAMSDactNtuCluster("msdActClus", fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd, fpParCalMsd, fFlagMC);
-=======
    const Char_t* name = FootActionDscName("TAMSDactNtuCluster");
-   fActClusMsd = new TAMSDactNtuCluster(name, fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd, fpParCalMsd);
->>>>>>> origin/newgeom_v2.0:Libraries/TAGfoot/BaseReco.cxx
+   fActClusMsd = new TAMSDactNtuCluster(name, fpNtuHitMsd, fpNtuClusMsd, fpParConfMsd, fpParGeoMsd, fpParCalMsd, fFlagMC);
+
    if (fFlagHisto)
       fActClusMsd->CreateHistogram();
 
