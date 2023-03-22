@@ -1,4 +1,4 @@
-setenv ASOFTREF @CMAKE_BINARY_DIR@/libs/
+setenv ASOFTREF @CMAKE_BINARY_DIR@/Libraries/
 setenv FOOTMAIN @CMAKE_BINARY_DIR@
 
 if ($OSTYPE == "darwin") then
