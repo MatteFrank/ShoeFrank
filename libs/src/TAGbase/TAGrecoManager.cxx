@@ -105,6 +105,9 @@ const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 
    if (IsRegionMc())
       runInfo.GetGlobalPar().EnableRegionMc = true;
+   
+   if (IsElecNoiseMc())
+      runInfo.GetGlobalPar().EnableElecNoiseMc = true;
 
    if (IsTracking())
       runInfo.GetGlobalPar().EnableTracking = true;
@@ -220,6 +223,12 @@ Bool_t TAGrecoManager::GlobalChecks(Bool_t flagMC)
 
       if (!enableRegionG && enableRegion)
          Warning("GlobalChecks()", "FootGlobal::enableRegionMc not set but region crossing found in file");
+      
+      Bool_t enableNoiseG = TAGrecoManager::GetPar()->IsElecNoiseMc();
+      if (enableNoiseG)
+         Info("GlobalChecks()", "Eletronics noise flag ON");
+      else
+         Info("GlobalChecks()", "Eletronics noise flag OFF");
    }
 
    return true;
@@ -542,6 +551,13 @@ void TAGrecoManager::FromFile()
       if (fDebugLevel > 0)
         printf("EnableRegionMc: %d\n", fEnableRegionMc);
     }
+     
+     if (key.Contains("EnableElecNoiseMc:")  ) {
+        if ( item.Contains("y"))  fEnableElecNoiseMc = true;
+        else                      fEnableElecNoiseMc = false;
+        if (fDebugLevel > 0)
+           printf("EnableElecNoiseMc: %d\n", fEnableRegionMc);
+     }
 
     if (key.Contains("IncludeDI:") ) {
       if ( item.Contains("y"))  fIncludeDI = true;

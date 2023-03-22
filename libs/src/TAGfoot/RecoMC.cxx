@@ -146,7 +146,7 @@ void RecoMC::CreateRawAction()
         fActEvtReader->SetupBranch(fpNtuMcMsd, TAMCntuHit::GetMsdBranchName());
       
       fpNtuHitMsd = new TAGdataDsc("msdRaw", new TAMSDntuHit());
-      fActNtuHitMsd = new TAMSDactNtuHitMC("msdActNtu", fpNtuMcMsd, fpNtuMcTrk, fpNtuHitMsd, fpParGeoMsd, fEvtStruct);
+      fActNtuHitMsd = new TAMSDactNtuHitMC("msdActNtu", fpNtuMcMsd, fpNtuMcTrk, fpNtuHitMsd, fpParGeoMsd, fpParCalMsd, fEvtStruct);
       if (fFlagHisto)
          fActNtuHitMsd->CreateHistogram();
    }

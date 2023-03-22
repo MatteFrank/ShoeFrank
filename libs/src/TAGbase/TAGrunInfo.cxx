@@ -52,6 +52,7 @@ TAGrunInfo::TAGrunInfo(const TAGrunInfo& right)
    fGlobalParameter.EnableTracking   = right.fGlobalParameter.EnableTracking;
    fGlobalParameter.EnableRootObject = right.fGlobalParameter.EnableRootObject;
    fGlobalParameter.EnableRegionMc   = right.fGlobalParameter.EnableRegionMc;
+   fGlobalParameter.EnableElecNoiseMc= right.fGlobalParameter.EnableElecNoiseMc;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
    fGlobalParameter.IncludeDI        = right.fGlobalParameter.IncludeDI;
@@ -88,6 +89,7 @@ const TAGrunInfo& TAGrunInfo::operator=(const TAGrunInfo &right)
    fGlobalParameter.EnableTracking   = right.fGlobalParameter.EnableTracking;
    fGlobalParameter.EnableRootObject = right.fGlobalParameter.EnableRootObject;
    fGlobalParameter.EnableRegionMc   = right.fGlobalParameter.EnableRegionMc;
+   fGlobalParameter.EnableElecNoiseMc= right.fGlobalParameter.EnableElecNoiseMc;
    fGlobalParameter.IncludeKalman    = right.fGlobalParameter.IncludeKalman;
    fGlobalParameter.IncludeTOE       = right.fGlobalParameter.IncludeTOE;
    fGlobalParameter.IncludeDI        = right.fGlobalParameter.IncludeDI;
@@ -134,6 +136,7 @@ void TAGrunInfo::ToStream(ostream& os, Option_t* option) const
    << Form("  EnableSaveHits: %d\n", fGlobalParameter.EnableSaveHits)
    << Form("  EnableRootObject: %d\n", fGlobalParameter.EnableRootObject)
    << Form("  EnableRegionMc: %d\n\n", fGlobalParameter.EnableRegionMc)
+   << Form("  EnableElecNoiseMc: %d\n\n", fGlobalParameter.EnableElecNoiseMc)
    << Form("  IncludeKalman: %d\n", fGlobalParameter.IncludeKalman)
    << Form("  IncludeTOE: %d\n\n", fGlobalParameter.IncludeTOE)
    << Form("  IncludeDI: %d\n", fGlobalParameter.IncludeDI)

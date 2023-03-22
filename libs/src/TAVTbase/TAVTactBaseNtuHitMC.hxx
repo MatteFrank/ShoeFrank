@@ -64,12 +64,7 @@ public:
    
    //! Get number of pileup evt
    static Int_t  GetPileupEventsN()                 { return fgPileupEventsN;    }
-   
-   //! Get Sigma noise level
-   static Float_t GetSigmaNoiseLevel()              { return fgSigmaNoiseLevel;  }
-   //! Set Sigma noise level
-   static void    SetSigmaNoiseLevel(Float_t level) { fgSigmaNoiseLevel = level; }
-   
+      
    //! Get MC noise track id
    static Int_t   GetMcNoiseId()                    { return fgMcNoiseId;        }
    //! Set MC noise track id
@@ -81,8 +76,8 @@ protected:
    TAGgeoTrafo*    fpGeoTrafo;         ///< Gobal transformation
    TAVTbaseDigitizer*  fDigitizer;     ///< cluster size digitizer
    Int_t           fNoisyPixelsN;      ///< number of noisy pixels
-   Bool_t          fPileup;           ///< flag to generated pileup events
-
+   Bool_t          fPileup;            ///< flag to generated pileup events
+   Float_t         fSigmaNoiseLevel;   ///< Sigma noise level
    
    TString         fPrefix;            ///< prefix of histogram
    TString         fTitleDev;          ///< device name for histogram title
@@ -114,7 +109,6 @@ protected:
 
 protected:
    static Int_t    fgPileupEventsN;    ///< number of pileup events to be stored
-   static Float_t  fgSigmaNoiseLevel;  ///< Sigma noise level
    static Int_t    fgMcNoiseId;        ///< MC noise track Id
 
    ClassDef(TAVTactBaseNtuHitMC,0)

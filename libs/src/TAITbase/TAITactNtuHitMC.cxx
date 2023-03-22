@@ -70,7 +70,7 @@ void TAITactNtuHitMC::CreateDigitizer()
 {
    TAITparGeo* pGeoMap  = (TAITparGeo*) fpGeoMap->Object();
    fDigitizer = new TAITdigitizerE(pGeoMap);
-   if (fgSigmaNoiseLevel > 0)
+   if (fSigmaNoiseLevel > 0)
       ComputeNoiseLevel();
 }
 
@@ -110,7 +110,7 @@ bool TAITactNtuHitMC::Action()
       }
    }
    
-   if (fgSigmaNoiseLevel > 0)
+   if (fSigmaNoiseLevel > 0)
       FillNoise();
   
    if (fEventStruct != 0x0) {

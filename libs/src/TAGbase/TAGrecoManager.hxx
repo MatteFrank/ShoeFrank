@@ -109,6 +109,8 @@ public:
     Bool_t IsReadRootObj()       const { return fEnableRootObject;    }
     //! MC region flag
     Bool_t IsRegionMc()          const { return fEnableRegionMc;      }
+   //! MC electronics noise flag
+   Bool_t IsElecNoiseMc()        const { return fEnableElecNoiseMc;   }
     //! TW Calibration flag
     Bool_t CalibTW()             const { return fDoCalibTW;           }
     //! BM Calibration flag
@@ -256,6 +258,7 @@ private:
    Bool_t               fDoCalibTW;             ///< Enable TW cliabration process
    Bool_t               fDoCalibBM;             ///< Enable BM cliabration process
    Bool_t               fEnableRegionMc;        ///< Enable MC region reading
+   Bool_t               fEnableElecNoiseMc;     ///< Enable electronics nois in MC
    Bool_t               fEnableMsdTrack;        ///< Enable MSD tracking
    Bool_t               fEnableItrTrack;        ///< Enable ITR tracking
 

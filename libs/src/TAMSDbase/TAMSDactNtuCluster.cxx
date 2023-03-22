@@ -34,13 +34,14 @@ Bool_t TAMSDactNtuCluster::fgSeedAlgo = true;
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] pCalib calibration parameter descriptor
-TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pCalib)
+TAMSDactNtuCluster::TAMSDactNtuCluster(const char* name, TAGdataDsc* pNtuRaw, TAGdataDsc* pNtuClus, TAGparaDsc* pConfig, TAGparaDsc* pGeoMap, TAGparaDsc* pCalib, Bool_t flagMC)
   : TAGactNtuCluster1D(name, "TAMSDactNtuCluster - NTuplize cluster"),
     fpNtuRaw(pNtuRaw),
     fpNtuClus(pNtuClus),
     fpConfig(pConfig),
     fpGeoMap(pGeoMap),
     fpCalib(pCalib),
+    fFlagMC(flagMC),
     fCurrentPosition(0.),
     fCurrentPosError(0.),
     fListOfStrips(0x0),
@@ -239,7 +240,7 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
     fCurListOfStrips = cluster->GetListOfStrips();
     ComputePosition(cluster);
     ComputeEta(cluster);
-    if (fpCalib)
+    if (fpCalib && !fFlagMC)
        ComputeCorrEnergy(cluster);
     
     TVector3 posG(GetCurrentPosition(), 0, 0);

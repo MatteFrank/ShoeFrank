@@ -57,6 +57,10 @@ public:
   //! \param[in] sensorId plane id
   Double_t                  GetPedestalHitLevel(Int_t sensorId)              { return fSigmaNoiseLevelHit[sensorId];          }
    
+   //! Get pedestal ize
+   Int_t                    GetPedestaLevelSize()                           { return (int)fSigmaNoiseLevelHit.size();         }
+   
+   
   ClassDef(TAMSDcalibrationMap, 0)
 };
 

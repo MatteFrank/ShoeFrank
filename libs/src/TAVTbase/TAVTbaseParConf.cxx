@@ -94,6 +94,10 @@ Bool_t TAVTbaseParConf::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout << "MC pileup Poisson parameter: "<< fAnalysisParameter.McPileUpPar << endl;
    
+   ReadItem(fAnalysisParameter.McNoiseLevel);
+   if(FootDebugLevel(1))
+      cout << "MC electronics noise level: "<< fAnalysisParameter.McNoiseLevel << endl;
+   
    ReadItem(fSensorsN);  
    if(FootDebugLevel(1))
      cout << endl << "Reading Parameters for "<< fSensorsN << " Sensors" << endl;

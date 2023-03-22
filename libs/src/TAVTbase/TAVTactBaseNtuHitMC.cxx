@@ -39,7 +39,6 @@ ClassImp(TAVTactBaseNtuHitMC);
 
 //Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 1.736; // ajust for GSI (not enough, for memory)
 Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
-Float_t TAVTactBaseNtuHitMC::fgSigmaNoiseLevel = -1.;
 Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
@@ -52,7 +51,8 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap,
    fpGeoMap(pGeoMap),
    fpConfig(pConfig),
 	fNoisyPixelsN(0),
-   fPileup(false)
+   fPileup(false),
+   fSigmaNoiseLevel(-1)
 {
    TAVTparConf* parConf = (TAVTparConf*) fpConfig->Object();
    Float_t pilepPar = parConf->GetAnalysisPar().McPileUpPar;
@@ -92,6 +92,9 @@ TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap,
       printf("Wrong prefix for histograms !");
    
    fpGeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+   
+   if (TAGrecoManager::GetPar()->IsElecNoiseMc())
+      fSigmaNoiseLevel = parConf->GetAnalysisPar().McNoiseLevel;
 }
 
 //------------------------------------------+-----------------------------------
@@ -150,8 +153,8 @@ void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 	f->SetParameters(1,0,1);
 	Float_t fraction = 0;
 	
-	if (fgSigmaNoiseLevel > 0) {
-	   fraction = f->Integral(-fgSigmaNoiseLevel, fgSigmaNoiseLevel)/TMath::Sqrt(2*TMath::Pi());
+	if (fSigmaNoiseLevel > 0) {
+	   fraction = f->Integral(-fSigmaNoiseLevel, fSigmaNoiseLevel)/TMath::Sqrt(2*TMath::Pi());
 	   fNoisyPixelsN = TMath::Nint(fDigitizer->GetPixelsNx()*fDigitizer->GetPixelsNy()*(1.-fraction));
 	}
 	
