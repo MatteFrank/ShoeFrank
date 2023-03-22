@@ -201,11 +201,11 @@ struct action_factory<configuration< vertex_tag, tof_tag>> {
         using state = state_impl< state_vector, state_covariance  >;
         
         
-        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
-        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
+        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object() );
+        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"))->Object() );
         auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
         
-        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
+        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc(FootParaDscName("TATWntuPoint"))->Object() );
         auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
         
         
@@ -248,14 +248,14 @@ struct action_factory<configuration< vertex_tag, it_tag, tof_tag>> {
         using state = state_impl< state_vector, state_covariance  >;
         
         
-        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
-        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
+        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object() );
+        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"))->Object() );
         auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
         
-        auto * cluster_it_hc = static_cast<TAITntuCluster*>(  gTAGroot->FindDataDsc("itClus")->Object() );
+        auto * cluster_it_hc = static_cast<TAITntuCluster*>(  gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"))->Object() );
         auto * geo_it_h = static_cast<TAITparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object() );
         
-        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
+        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() );
         auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
         
         
@@ -299,14 +299,14 @@ struct action_factory<configuration<vertex_tag,msd_tag, tof_tag>> {
         using state = state_impl< state_vector, state_covariance  >;
         
         
-        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
-        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
+        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object() );
+        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"))->Object() );
         auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
         
-        auto * cluster_msd_hc = static_cast<TAMSDntuCluster*>(  gTAGroot->FindDataDsc("msdClus")->Object() );
+        auto * cluster_msd_hc = static_cast<TAMSDntuCluster*>(  gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"))->Object() );
         auto * geo_msd_h = static_cast<TAMSDparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object() );
         
-        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
+        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() );
         auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
         
         
@@ -349,17 +349,17 @@ struct action_factory<configuration<vertex_tag, it_tag, msd_tag, tof_tag>> {
         using state = state_impl< state_vector, state_covariance  >;
         
         
-        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc("vtClus")->Object() );
-        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc("vtVtx")->Object() );
+        auto * cluster_vtx_hc = static_cast<TAVTntuCluster*>( gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object() );
+        auto * vertex_hc = static_cast<TAVTntuVertex*>( gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"))->Object() );
         auto * geo_vtx_h = static_cast<TAVTparGeo*>(gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
         
-        auto * cluster_it_hc = static_cast<TAITntuCluster*>(  gTAGroot->FindDataDsc("itClus")->Object() );
+        auto * cluster_it_hc = static_cast<TAITntuCluster*>(  gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"))->Object() );
         auto * geo_it_h = static_cast<TAITparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object() );
         
-        auto * cluster_msd_hc = static_cast<TAMSDntuCluster*>(  gTAGroot->FindDataDsc("msdClus")->Object() );
+        auto * cluster_msd_hc = static_cast<TAMSDntuCluster*>(  gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"))->Object() );
         auto * geo_msd_h = static_cast<TAMSDparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object() );
         
-        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc("twPoint")->Object() );
+        auto * cluster_tw_hc = static_cast<TATWntuPoint*>( gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() );
         auto * geo_tw_h = static_cast<TATWparGeo*>( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
         
         
