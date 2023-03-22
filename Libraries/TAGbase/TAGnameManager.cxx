@@ -165,7 +165,7 @@ const TString TAGnameManager::GetBranchMcName(Int_t idx)
    TString prefix = fgkMcSuffix;
    prefix.ToLower();
    
-   TString name = prefix+suffix;
+   TString name = prefix+suffix+".";
    
    return name;
 }
