@@ -27,6 +27,7 @@
 #include "TAGrunInfo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "GlobalRecoMassAna.hxx"
+#include "TAGnameManager.hxx"
 #include "TAWDntuTrigger.hxx"
 
 using namespace std;

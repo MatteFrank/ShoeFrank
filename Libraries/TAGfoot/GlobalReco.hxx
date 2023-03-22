@@ -9,6 +9,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TString.h"
+#include "TAGnameManager.hxx"
 #include "BaseReco.hxx"
 
 

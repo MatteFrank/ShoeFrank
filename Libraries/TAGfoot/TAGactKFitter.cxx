@@ -46,7 +46,7 @@ m_IsMC(false)
 	int nIter = 20; // max number of iterations
 	double dPVal = 1.E-3; // convergence criterion
 	m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
-	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().Energy;
+	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().Energy;
 
 	gGeoManager->ClearPhysicalNodes();
 
@@ -172,7 +172,7 @@ TAGactKFitter::~TAGactKFitter() {
 void TAGactKFitter::SetMcSample()
 {
 	m_IsMC = true;
-	m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
+	m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object());
 }
 
 
@@ -208,10 +208,10 @@ Bool_t TAGactKFitter::Action()	{
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
 
 	if( m_IsMC )
-		m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
+		m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object());
 
 	//Check if ST signlaed a pile-up
-	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc("stDat", "TASTntuRaw")->Object())->GetSuperHit()->GetPileUp() )
+	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc(FootActionDscName("TASTntuRaw"), "TASTntuRaw")->Object())->GetSuperHit()->GetPileUp() )
 	{
 		if( m_debug > 0 )
 			Info("Action()", "Event %ld flagged as pile-up from the SC! Skipping...", evNum);
@@ -468,31 +468,31 @@ void TAGactKFitter::CreateGeometry()  {
 
 	// take geometry objects
 	if (TAGrecoManager::GetPar()->IncludeST())
-		m_ST_geo = static_cast<TASTparGeo*> ( gTAGroot->FindParaDsc("stGeo", "TASTparGeo")->Object() );
+		m_ST_geo = static_cast<TASTparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TASTparGeo"), "TASTparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeBM())
-		m_BM_geo = static_cast<TABMparGeo*> ( gTAGroot->FindParaDsc("bmGeo", "TABMparGeo")->Object() );
+		m_BM_geo = static_cast<TABMparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TABMparGeo"), "TABMparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeTG())
-		m_TG_geo = static_cast<TAGparGeo*> ( gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() );
+		m_TG_geo = static_cast<TAGparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeDI())
-		m_DI_geo = static_cast<TADIparGeo*> ( gTAGroot->FindParaDsc("diGeo", "TADIparGeo")->Object() );
+		m_DI_geo = static_cast<TADIparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TADIparGeo"), "TADIparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeVT() )
-		m_VT_geo = static_cast<TAVTparGeo*> ( gTAGroot->FindParaDsc("vtGeo", "TAVTparGeo")->Object() );
+		m_VT_geo = static_cast<TAVTparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeIT() )
-		m_IT_geo = static_cast<TAITparGeo*> ( gTAGroot->FindParaDsc("itGeo", "TAITparGeo")->Object() );
+		m_IT_geo = static_cast<TAITparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeMSD() )
-		m_MSD_geo = static_cast<TAMSDparGeo*> ( gTAGroot->FindParaDsc("msdGeo", "TAMSDparGeo")->Object() );
+		m_MSD_geo = static_cast<TAMSDparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object() );
 
 	if ( TAGrecoManager::GetPar()->IncludeTW() )
-		m_TW_geo = static_cast<TATWparGeo*> ( gTAGroot->FindParaDsc("twGeo", "TATWparGeo")->Object() );
+		m_TW_geo = static_cast<TATWparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object() );
 
 	if (TAGrecoManager::GetPar()->IncludeCA())
-		m_CA_geo = static_cast<TACAparGeo*> ( gTAGroot->FindParaDsc("caGeo", "TACAparGeo")->Object() );
+		m_CA_geo = static_cast<TACAparGeo*> ( gTAGroot->FindParaDsc(FootParaDscName("TACAparGeo"), "TACAparGeo")->Object() );
 
 
   m_GeoTrafo = static_cast<TAGgeoTrafo*> ( gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data()) );
@@ -1058,7 +1058,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		//RZ: First easy implementation -> Check in future when you have more TWpoints in the track
 		if(detName == "TW")
 		{
-			TATWpoint* point = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( iClus );
+			TATWpoint* point = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"),"TATWntuPoint")->Object() )->GetPoint( iClus );
 			TwChargeZ = point->GetChargeZ();
 			TwTof = point->GetToF();
 			shoeTrackPoint->SetEnergyLoss(point->GetEnergyLoss());
@@ -1067,18 +1067,18 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		}
 		else if(detName == "MSD")
 		{
-			TAMSDcluster* MSDclus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object() )->GetCluster( iSensor, iClus );
+			TAMSDcluster* MSDclus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"),"TAMSDntuCluster")->Object() )->GetCluster( iSensor, iClus );
 			shoeTrackPoint->SetEnergyLoss(MSDclus->GetEnergyLoss());
 			shoeTrackPoint->SetElementsN(MSDclus->GetElementsN());
 		}
 		else if(detName == "IT")
 		{
-			TAITcluster* ITclus = ( (TAITntuCluster*)gTAGroot->FindDataDsc("itClus", "TAITntuCluster")->Object() )->GetCluster( iSensor, iClus );
+			TAITcluster* ITclus = ( (TAITntuCluster*)gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"), "TAITntuCluster")->Object() )->GetCluster( iSensor, iClus );
 			shoeTrackPoint->SetElementsN(ITclus->GetElementsN());
 		}
 		else if(detName == "VT")
 		{
-			TAVTcluster* VTclus = ( (TAVTntuCluster*)gTAGroot->FindDataDsc("vtClus", "TAVTntuCluster")->Object() )->GetCluster( iSensor, iClus );
+			TAVTcluster* VTclus = ( (TAVTntuCluster*)gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"), "TAVTntuCluster")->Object() )->GetCluster( iSensor, iClus );
 			shoeTrackPoint->SetElementsN(VTclus->GetElementsN());
 		}
 
@@ -1106,7 +1106,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );           // dipendono dallo stato considerato in GeV
 
 	//Stop if the fitted charge is outside of boundaries
-	if(fitCh < 0 || fitCh > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {return;}
+	if(fitCh < 0 || fitCh > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {return;}
 
 	//Vertexing for track length
 	if( m_debug > 1)	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
@@ -1120,7 +1120,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 	else
 	{
-		TAVTvertex* vtx = ((TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object() )->GetVertex( std::atoi(tok.at(2).c_str())/1000 ); //Find the vertex associated to the track using the fitTrackName (1000*iVtx + iTracklet)
+		TAVTvertex* vtx = ((TAVTntuVertex*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"), "TAVTntuVertex")->Object() )->GetVertex( std::atoi(tok.at(2).c_str())/1000 ); //Find the vertex associated to the track using the fitTrackName (1000*iVtx + iTracklet)
 		targetMeas = m_GeoTrafo->FromVTLocalToGlobal(vtx->GetPosition());
 	}
 
@@ -1239,9 +1239,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	
 	//Calculate emission angles wrt BM track
 	TVector3 TrackDir(-100,-100,-100);
-	if( static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object())->GetTracksN() > 0 )
+	if( static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc(FootActionDscName("TABMntuTrack"),"TABMntuTrack")->Object())->GetTracksN() > 0 )
 	{
-		TVector3 BMslope = static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc("bmTrack","TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
+		TVector3 BMslope = static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc(FootActionDscName("TABMntuTrack"),"TABMntuTrack")->Object() )->GetTrack(0)->GetSlope();
 		BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope).Unit();
 		shoeOutTrack->SetTgtThetaBm(BMslope.Angle( recoMom_target ));
 
@@ -1413,7 +1413,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 //! \brief Find possible matching CALO clusters for global tracks w/ a converged Kalman Filter fit
 void TAGactKFitter::MatchCALOclusters()
 {
-	TACAntuCluster* caNtuCluster = (TACAntuCluster*) gTAGroot->FindDataDsc("caClus","TACAntuCluster")->Object() ;
+	TACAntuCluster* caNtuCluster = (TACAntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TACAntuCluster"),"TACAntuCluster")->Object() ;
 	if( caNtuCluster->GetClustersN() < 1 )
 	{
 		if( m_debug > 1)
@@ -1607,22 +1607,22 @@ void TAGactKFitter::GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr
 	int iClus = m_SensorIDMap->GetHitIDFromMeasID( hitID );
 
 	if ( det == "VT" ) {
-		TAVTcluster* clus = ( (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object() )->GetCluster( iSensor, iClus );
+		TAVTcluster* clus = ( (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"),"TAVTntuCluster")->Object() )->GetCluster( iSensor, iClus );
 		*pos = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
 		*posErr = clus->GetPosError();
 	}
 	else if ( det == "IT" ) {
-		TAITcluster* clus = ( (TAITntuCluster*) gTAGroot->FindDataDsc("itClus","TAITntuCluster")->Object() )->GetCluster( iSensor, iClus );
+		TAITcluster* clus = ( (TAITntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"),"TAITntuCluster")->Object() )->GetCluster( iSensor, iClus );
 		*pos = m_GeoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
 		*posErr = clus->GetPosError();
 	}
 	else if ( det == "MSD" ) {
-		TAMSDcluster* clus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc("msdClus","TAMSDntuCluster")->Object() )->GetCluster( iSensor, iClus );
+		TAMSDcluster* clus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"),"TAMSDntuCluster")->Object() )->GetCluster( iSensor, iClus );
 		*pos = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() );
 		*posErr = clus->GetPosError();
 	}
 	else if ( det == "TW" ) {
-		TATWpoint* clus = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( iClus );
+		TATWpoint* clus = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"),"TATWntuPoint")->Object() )->GetPoint( iClus );
 		*pos = m_GeoTrafo->FromTWLocalToGlobal( clus->GetPositionG() );
 		*posErr = clus->GetPosErrorG();
 	}
@@ -2176,7 +2176,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 {
 	int chargeFromTW = m_selector->GetChargeFromTW( fitTrack );
 	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;
-	if( chargeFromTW < 1 || chargeFromTW > ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber )
+	if( chargeFromTW < 1 || chargeFromTW > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber )
 	{
 		// Info("CheckChargeHypothesis()", "Wrong evaluation of TW charge for track candidate %s. No check performed...", PartName->c_str());
 		return;
@@ -2212,7 +2212,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 		mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
 
 		// int pointID = m_SensorIDMap->GetHitIDFromMeasID(fitTrack->getRawMeasurement(-1)->getHitId());
-		// float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( pointID )->GetMeanToF();
+		// float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"),"TATWntuPoint")->Object() )->GetPoint( pointID )->GetMeanToF();
 		// float beam_speed =
 		// TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
 		// float beta = (m_GeoTrafo->GetTWCenter().Z() - m_GeoTrafo->GetTGCenter().Z())/(TOF*TAGgeoTrafo::GetLightVelocity());

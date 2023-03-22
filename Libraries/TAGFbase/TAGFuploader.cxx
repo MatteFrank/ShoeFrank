@@ -395,7 +395,7 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 	}
 	else //data-like: get all possible charges from TW
 	{
-		// for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc("tgGeo", "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
+		// for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
 		TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"), "TATWntuPoint")->Object();
 
 		// save hits in the collection

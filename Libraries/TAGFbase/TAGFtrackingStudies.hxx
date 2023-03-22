@@ -48,6 +48,7 @@
 #include <TMath.h>
 
 #include "TAGparGeo.hxx"
+#include "TAGnameManager.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTntuHit.hxx"

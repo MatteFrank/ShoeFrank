@@ -68,9 +68,9 @@ void TAGFselectorStandard::Categorize( ) {
 //! The algorithm currently starts from VT tracklets and checks the number of points in them
 void TAGFselectorStandard::CategorizeVT()
 {
-	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc("vtVtx", "TAVTntuVertex")->Object();
+	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"), "TAVTntuVertex")->Object();
 		//cluster test
-	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc("vtClus","TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
+	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"),"TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
 
 	if(!vertexContainer || !vtntuclus)
 	{

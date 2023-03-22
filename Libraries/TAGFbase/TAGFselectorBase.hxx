@@ -31,6 +31,7 @@
 #include "TAGroot.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
+#include "TAGnameManager.hxx"
 
 #include "TAGparGeo.hxx"
 #include "TAGgeoTrafo.hxx"
