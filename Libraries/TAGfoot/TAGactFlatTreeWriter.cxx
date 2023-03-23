@@ -77,9 +77,11 @@ ClassImp(TAGactFlatTreeWriter)
 //!
 //! \param[in] name action name
 //! \param[in] isMC tMC flag
-TAGactFlatTreeWriter::TAGactFlatTreeWriter(const char* name, Bool_t isMC)
+TAGactFlatTreeWriter::TAGactFlatTreeWriter(const char* name)
 :  TAGactTreeWriter(name),
-   fFlagMC(isMC)
+   fFlagMC(false),
+   fFlagItrTrack(false),
+   fFlagMsdTrack(false)
 {
    fFlagTrack    = TAGrecoManager::GetPar()->IsTracking();
 }
@@ -132,6 +134,11 @@ void TAGactFlatTreeWriter::SetDescriptors()
       fFlagMsdTrack = true;
    else
       fFlagMsdTrack = false;
+   
+   if (fpNtuMcTrk)
+      fFlagMC = true;
+   else
+      fFlagMC = false;
 }
 
 
@@ -156,26 +163,6 @@ Int_t TAGactFlatTreeWriter::Open(const TString& name, Option_t* option, const TS
    SetTreeBranches();
    
    return 0;
-}
-
-//__________________________________________________________
-//! Close output file
-void TAGactFlatTreeWriter::Close()
-{
-   // saving current run info
-   TAGrecoManager::GetPar()->EnableFromLocalReco();
-   TAGrunInfo info = TAGrecoManager::GetPar()->GetGlobalInfo();
-   
-   //add crossing map if enabled in input mc files
-   if(fFlagMC){
-      TAGrunInfo inputinfo = gTAGroot->CurrentRunInfo();
-      if(inputinfo.GetGlobalPar().EnableRegionMc==true && info.GetGlobalPar().EnableRegionMc==true)
-         info.ImportCrossMap(inputinfo);
-   }
-   gTAGroot->SetRunInfo(info);
-   fpFile->Write();
-   fpFile->Print();
-   fpFile->Close();
 }
 
 //__________________________________________________________

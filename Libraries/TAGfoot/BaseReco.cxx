@@ -174,11 +174,12 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
       TAGrecoManager::GetPar()->IncludeTW(true);
 
    if (fFlagOut) {
-      const Char_t* name = FootActionDscName("TAGactTreeWriter");
-      fActEvtWriter = new TAGactTreeWriter(name);
       if (fFlagFlatOut) {
          const Char_t* name = FootActionDscName("TAGactFlatTreeWriter");
-         fActConvWriter = new TAGactFlatTreeWriter(name);
+         fActEvtWriter = new TAGactFlatTreeWriter(name);
+      } else {
+         const Char_t* name = FootActionDscName("TAGactTreeWriter");
+         fActEvtWriter = new TAGactTreeWriter(name);
       }
    }
 }
@@ -324,14 +325,12 @@ void BaseReco::AfterEventLoop()
 //!  Open output file
 void BaseReco::OpenFileOut()
 {
-  if (fFlagTree)  SetTreeBranches();
    fActEvtWriter->Open(GetTitle(), "RECREATE");
-
+   if (!fFlagFlatOut && fFlagTree)  SetTreeBranches();
+   
    if (fFlagHisto)
       SetHistogramDir();
    
-   if (fFlagFlatOut)
-      fActConvWriter->Open(GetTitle());
 }
 
 //__________________________________________________________
@@ -457,9 +456,6 @@ void BaseReco::CloseFileOut()
    gTAGroot->SetRunInfo(info);
    fActEvtWriter->Print();
    fActEvtWriter->Close();
-   
-   if (fFlagFlatOut)
-      fActConvWriter->Close();
 }
 
 //__________________________________________________________

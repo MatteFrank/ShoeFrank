@@ -29,8 +29,7 @@ class TAGactFlatTreeWriter : public TAGactTreeWriter
 {
 public:
    // default constructor
-   TAGactFlatTreeWriter(const char* name = 0,
-                    Bool_t isMC      = false);
+   TAGactFlatTreeWriter(const char* name = 0);
    
    // default destructor
    virtual ~TAGactFlatTreeWriter();
@@ -40,9 +39,6 @@ public:
    
    //! Open File In
    Int_t  Open(const TString& name, Option_t* option="RECREATE", const TString treeName="tree", Bool_t dscBranch = true);
-
-   // virtual close file
-   void   Close();
       
    // Create branch in tree
    void   SetTreeBranches();
@@ -51,21 +47,18 @@ public:
    void   FillTreeOut();
    
 protected:
-   TFile*          fpFile;   ///< File writer
-   TTree*          fpTree;        ///< Flay Ntuple out
-
-   TAGdataDsc*     fpNtuHitSt;           ///< VT vertex container
-   TAGdataDsc*     fpNtuTrackBm;           ///< VT vertex container
-   TAGdataDsc*     fpNtuTrackVtx;           ///< VT vertex container
-   TAGdataDsc*     fpNtuVtx;           ///< VT vertex container
-   TAGdataDsc*     fpNtuClusIt;        ///< IT cluster container
-   TAGdataDsc*     fpNtuTrackIt;        ///< IT cluster container
-   TAGdataDsc*     fpNtuRecMsd;      ///< MSD point container
-   TAGdataDsc*     fpNtuTrackMsd;      ///< MSD point container
+   TAGdataDsc*     fpNtuHitSt;          ///< ST hit container
+   TAGdataDsc*     fpNtuTrackBm;        ///< BM track container
+   TAGdataDsc*     fpNtuTrackVtx;       ///< VT vertex container
+   TAGdataDsc*     fpNtuVtx;            ///< VT vertex container
+   TAGdataDsc*     fpNtuClusIt;         ///< IT cluster container
+   TAGdataDsc*     fpNtuTrackIt;        ///< IT track container
+   TAGdataDsc*     fpNtuRecMsd;         ///< MSD point container
+   TAGdataDsc*     fpNtuTrackMsd;       ///< MSD track container
    TAGdataDsc*     fpNtuRecTw;          ///< TW rec point container
    TAGdataDsc*     fpNtuClusCa;         ///< CA cluster container
-   TAGdataDsc*     fpNtuGlbTrack;          ///< output tracks
-   TAGdataDsc*     fpNtuMcTrk;          ///< output tracks
+   TAGdataDsc*     fpNtuGlbTrack;       ///< Glb track cointainers
+   TAGdataDsc*     fpNtuMcTrk;          ///< MC tracks conatianers
    
    TAGparaDsc*     fpGeoMapVtx;         ///< geometry para dsc
    TAGparaDsc*     fpGeoMapItr;         ///< geometry para dsc

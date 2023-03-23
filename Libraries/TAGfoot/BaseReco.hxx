@@ -430,7 +430,6 @@ protected:
    
    TAGactionFile*        fActEvtReader;  ///< Tree/event reader
    TAGactTreeWriter*     fActEvtWriter;  ///< write histo and tree
-   TAGactFlatTreeWriter*     fActConvWriter; ///< writer for flat ntuple tree
 
    TABMactNtuTrack*      fActTrackBm;    ///< action for tracks
    
