@@ -20,54 +20,12 @@
 #include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
-#include "TASTparGeo.hxx"
-#include "TABMparGeo.hxx"
-#include "TAGparGeo.hxx"
-#include "TADIparGeo.hxx"
-#include "TAVTparGeo.hxx"
-#include "TAITparGeo.hxx"
-#include "TAMSDparGeo.hxx"
-#include "TATWparGeo.hxx"
-#include "TACAparGeo.hxx"
 
-#include "TASTntuHit.hxx"
-
-#include "TABMntuHit.hxx"
-#include "TABMntuTrack.hxx"
-
-#include "TAVTntuHit.hxx"
-#include "TAVTntuCluster.hxx"
-#include "TAVTntuTrack.hxx"
-#include "TAVTtrack.hxx"
-#include "TAVTntuVertex.hxx"
-
-#include "TAITntuHit.hxx"
-#include "TAITntuCluster.hxx"
-#include "TAITntuTrack.hxx"
-
-#include "TAMSDntuHit.hxx"
-#include "TAMSDntuCluster.hxx"
-#include "TAMSDntuPoint.hxx"
-#include "TAMSDntuTrack.hxx"
-
-#include "TATWntuHit.hxx"
-#include "TATWntuPoint.hxx"
-
-#include "TACAntuHit.hxx"
-#include "TACAntuCluster.hxx"
-
-#include "TAGntuGlbTrack.hxx"
-
-#include "TAGactionFile.hxx"
-
-#include "TAMCntuHit.hxx"
-#include "TAMCntuPart.hxx"
-#include "TAMCntuRegion.hxx"
-#include "TAMCntuEvent.hxx"
+#include "BaseReco.hxx"
 
 using namespace std;
 
-class ConvertNtuple : public TNamed // using TNamed for the in/out files
+class ConvertNtuple : public BaseReco // using TNamed for the in/out files
 {
 public:
    // default constructor
@@ -75,10 +33,7 @@ public:
    
    // default destructor
    virtual ~ConvertNtuple();
-   
-   // Read parameters
-   void ReadParFiles();
-   
+      
    // Create raw action
    virtual void CreateRecAction();
    
@@ -91,9 +46,6 @@ public:
    
    // Loop events
    virtual void LoopEvent(Int_t nEvents);
-   
-   //! Goto Event
-   virtual Bool_t GoEvent(Int_t iEvent);
    
    // Begin loop
    virtual void BeforeEventLoop();
@@ -112,206 +64,24 @@ public:
    
    // Close File Out
    virtual void CloseFileOut();
-   
-   // Global sets
-   virtual void GlobalSettings();
-   
+      
    // Create branch in tree
    virtual void SetTreeBranches();
   
   // Create L0 branch in tree
   virtual void SetL0TreeBranches();
    
-   //! Set experiment name
-   virtual void SetExpName(const Char_t* name) { fExpName = name;  }
-   
-   //! Set run number
-   void SetRunNumber(Int_t run)                { fRunNumber = run; }
-
    // Fill tree out
    void FillTreeOut();
    
-   //! Flag for MC data
-   Bool_t IsMcData()           { return fFlagMC;          }
-   
-   // Campaign checks
-   void CampaignChecks();
-   
-   // Add friend tree
-   void AddFriendTree(TString fileName, TString treeName);
-   
-   //! Enable tracking
-   void EnableTracking()       { fFlagTrack = true;       }
-   //! Disable tracking
-   void DisableTracking()      { fFlagTrack = false;      }
-   
-   //! Enable MSD tracking
-   void EnableMsdTracking()    { fFlagMsdTrack = true;    }
-   //! Disable MSD tracking
-   void DisableMsdTracking()   { fFlagMsdTrack = false;   }
-   
-   //! Enable ITR tracking
-   void EnableItrTracking()    { fFlagItrTrack = true;    }
-   //! Disable ITR tracking
-   void DisableItrTracking()   { fFlagItrTrack = false;   }
-   
-   // Par geo getters
-   //! Get parameters geo transformations
-   TAGgeoTrafo*         GetGeoTrafo()       const { return fpFootGeo;                                }
-   //! Get STC geometry parameters
-   TASTparGeo*          GetParGeoSt()       const { return (TASTparGeo*)fpParGeoSt->Object();        }
-   //! Get target geometry parameters
-   TAGparGeo*           GetParGeoG()        const { return (TAGparGeo*)fpParGeoG->Object();          }
-   //! Get BM geometry parameters
-   TABMparGeo*          GetParGeoBm()       const { return (TABMparGeo*)fpParGeoBm->Object();        }
-   //! Get VTX geometry parameters
-   TAVTparGeo*          GetParGeoVtx()      const { return (TAVTparGeo*)fpParGeoVtx->Object();       }
-   //! Get ITR geometry parameters
-   TAITparGeo*          GetParGeoIt()       const { return (TAITparGeo*)fpParGeoIt->Object();        }
-   //! Get MSD geometry parameters
-   TAMSDparGeo*         GetParGeoMsd()      const { return (TAMSDparGeo*)fpParGeoMsd->Object();      }
-   //! Get TW geometry parameters
-   TATWparGeo*          GetParGeoTw()       const { return (TATWparGeo*)fpParGeoTw->Object();        }
-   //! Get CAL geometry parameters
-   TACAparGeo*          GetParGeoCa()       const { return (TACAparGeo*)fpParGeoCa->Object();        }
-   
-   // Containers getters
-   //! Get STC hits containers
-   TASTntuHit*          GetNtuHitSt()       const { return (TASTntuHit*) fpNtuHitSt->Object();       }
-   //! Get BM hits containers
-   TABMntuHit*          GetNtuHitBm()       const { return (TABMntuHit*)fpNtuHitBm->Object();        }
-   //! Get BM tracks containers
-   TABMntuTrack*        GetNtuTrackBm()     const { return (TABMntuTrack*)fpNtuTrackBm->Object();    }
-   
-   //! Get VTX clusters containers
-   TAVTntuCluster*      GetNtuClusterVtx()  const { return (TAVTntuCluster*)fpNtuClusVtx->Object();  }
-   //! Get VTX Tracks containers
-   TAVTntuTrack*        GetNtuTrackVtx()    const { return (TAVTntuTrack*)fpNtuTrackVtx->Object();   }
-   //! Get VTX vertex containers
-   TAVTntuVertex*       GetNtuVertexVtx()   const { return (TAVTntuVertex*)fpNtuVtx->Object();       }
-   //! Get VTX vertex desciptor
-   TAGdataDsc*          GetDscVertexVtx()   const { return fpNtuVtx;                                 }
-   
-   //! Get ITR clusters containers
-   TAITntuCluster*      GetNtuClusterIt()   const { return (TAITntuCluster*)fpNtuClusIt->Object();   }
-   //! Get ITR tracks containers
-   TAITntuTrack*        GetNtuTrackIt()     const { return (TAITntuTrack*)fpNtuTrackIt->Object();    }
-
-   //! Get MSD clusters containers
-   TAMSDntuCluster*     GetNtuClusterMsd()  const { return (TAMSDntuCluster*)fpNtuClusMsd->Object(); }
-   //! Get MSD points containers
-   TAMSDntuPoint*       GetNtuPointMsd()    const { return (TAMSDntuPoint*)fpNtuRecMsd->Object();    }
-   //! Get MSD tracks containers
-   TAMSDntuTrack*       GetNtuTrackMsd()    const { return (TAMSDntuTrack*)fpNtuTrackMsd->Object();  }
-
-   //! Get TW hits containers
-   TATWntuHit*          GetNtuHitTw()       const { return (TATWntuHit*) fpNtuHitTw->Object();       }
-   //! Get TW points containers
-   TATWntuPoint*        GetNtuPointTw()     const { return (TATWntuPoint*) fpNtuRecTw->Object();     }
-   
-   //! Get CAL hits containers
-   TACAntuHit*          GetNtuHitCa()       const { return (TACAntuHit*) fpNtuHitCa->Object();       }
-   //! Get CAL clusters containers
-   TACAntuCluster*      GetNtuClusterCa()   const { return (TACAntuCluster*) fpNtuClusCa->Object();  }
-
-   //! Get global tracks containers
-   TAGntuGlbTrack*      GetNtuGlbTrack()    const { return (TAGntuGlbTrack*)fpNtuGlbTrack->Object(); }
-   
-   // MC container Getter
-   //! MC event container Getter
-   TAMCntuEvent*        GetNtuMcEvt()       const { return (TAMCntuEvent*)fpNtuMcEvt->Object();      }
-   //! MC particle container Getter
-   TAMCntuPart*         GetNtuMcTrk()       const { return (TAMCntuPart*)fpNtuMcTrk->Object();       }
-   //! MC region container Getter
-   TAMCntuRegion*       GetNtuMcReg()       const { return (TAMCntuRegion*)fpNtuMcReg->Object();     }
-   //! MC STC hit container Getter
-   TAMCntuHit*          GetNtuMcSt()        const { return (TAMCntuHit*)fpNtuMcSt->Object();         }
-   //! MC BM hit container Getter
-   TAMCntuHit*          GetNtuMcBm()        const { return (TAMCntuHit*)fpNtuMcBm->Object();         }
-   //! MC VTX hit container Getter
-   TAMCntuHit*          GetNtuMcVtx()       const { return (TAMCntuHit*)fpNtuMcVt->Object();         }
-   //! MC ITR hit container Getter
-   TAMCntuHit*          GetNtuMcIt()        const { return (TAMCntuHit*)fpNtuMcIt->Object();         }
-   //! MC MSD hit container Getter
-   TAMCntuHit*          GetNtuMcMsd()       const { return (TAMCntuHit*)fpNtuMcMsd->Object();        }
-   //! MC TW hit container Getter
-   TAMCntuHit*          GetNtuMcTw()        const { return (TAMCntuHit*)fpNtuMcTw->Object();         }
-   //! MC CAL hit container Getter
-   TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
-
-public:
-   //! Disable MC info saving in output tree
-   static void DisableSaveMc() { fgSaveMcFlag = false; }
-   //! Enable MC info saving in output tree
-   static void EnableSaveMc()  { fgSaveMcFlag = true;  }
-   //! Check MC info saving in output tree
-   static Bool_t IsSaveMc()    { return fgSaveMcFlag;  }
-   
 protected:
    TString               fExpName;        ///< Experiment name
-   TAGcampaignManager*   fCampManager;    ///< Campaign manager
-   Int_t                 fRunNumber;      ///< Run number
-   Int_t                 fSkipEventsN;    ///< Skipped events
-   TAGroot*              fTAGroot;        ///< pointer to TAGroot
-   TAGgeoTrafo*          fpFootGeo;       ///< trafo prointer
+ 
    TFile*                fActEvtWriter;   ///< File writer
    TTree*                fTreeOut;        ///< Flay Ntuple out
-   TString               fFriendFileName; ///< Friend file name
-   TString               fFriendTreeName; ///< Friend tree name
-
-   TAGparaDsc*           fpParGeoSt;      ///< STC geometry parameter
-   TAGparaDsc*           fpParGeoG;       ///< Beam/target geometry parameter
-   TAGparaDsc*           fpParGeoBm;      ///< BM geometry parameter
-   TAGparaDsc*           fpParGeoVtx;     ///< VTX geometry parameter
-   TAGparaDsc*           fpParGeoIt;      ///< ITR geometry parameter
-   TAGparaDsc*           fpParGeoMsd;     ///< MSD geometry parameter
-   TAGparaDsc*           fpParGeoTw;      ///< TW geometry parameter
-   TAGparaDsc*           fpParGeoCa;      ///< CAL geometry parameter
-   
-   TAGdataDsc*           fpNtuHitSt;     ///< Hit input dsc for STC
-   TAGdataDsc*           fpNtuHitBm;     ///< Hit input dsc for STC
-   TAGdataDsc*           fpNtuHitVtx;    ///< Hit input dsc for VTX
-   TAGdataDsc*           fpNtuHitIt;     ///< Hit input dsc for ITR
-   TAGdataDsc*           fpNtuHitMsd;    ///< Hit input dsc for MSD
-   TAGdataDsc*           fpNtuHitTw;     ///< Hit input dsc for TW
-   TAGdataDsc*           fpNtuHitCa;     ///< Hit input dsc for CAL
-
-   TAGdataDsc*           fpNtuClusVtx;	  ///< input cluster data dsc for VTX
-   TAGdataDsc*           fpNtuClusIt;	  ///< input cluster data dsc for ITR
-   TAGdataDsc*           fpNtuClusMsd;   ///< input cluster data dsc for MSD
-   TAGdataDsc*           fpNtuRecMsd;    ///< input point data dsc for MSD
-   TAGdataDsc*           fpNtuRecTw;     ///< input point data dsc for TW
-   TAGdataDsc*           fpNtuClusCa;    ///< input cluster data dsc for CAL
-  
-   TAGdataDsc*           fpNtuMcEvt;     ///< input MC event dsc
-   TAGdataDsc*           fpNtuMcTrk;     ///< input MC track dsc
-   TAGdataDsc*           fpNtuMcReg;     ///< input MC region dsc
-   TAGdataDsc*           fpNtuMcSt;      ///< input MC dsc for STC
-   TAGdataDsc*           fpNtuMcBm;      ///< input MC dsc for BM
-   TAGdataDsc*           fpNtuMcVt;      ///< input MC dsc for VTX
-   TAGdataDsc*           fpNtuMcIt;      ///< input MC dsc for ITR
-   TAGdataDsc*           fpNtuMcMsd;     ///< input MC dsc for MSD
-   TAGdataDsc*           fpNtuMcTw;      ///< input MC dsc for TW
-   TAGdataDsc*           fpNtuMcCa;      ///< input MC dsc for CAL
-  
-   TAGdataDsc*           fpNtuTrackBm;   ///< input track data dsc for BM
-   TAGdataDsc*           fpNtuTrackVtx;  ///< input track data dsc for VTX
-   TAGdataDsc*           fpNtuTrackIt;   ///< input track data dsc for ITR
-   TAGdataDsc*           fpNtuTrackMsd;  ///< input track data dsc for MSD
-   TAGdataDsc*           fpNtuVtx;       ///< input Vtx data dsc for VTX
-   
-   TAGdataDsc*           fpNtuGlbTrack;  ///< input data dsc global track TOE/GenFit
-   
    TAGactTreeReader*     fActEvtReader;  ///< Tree/event reader
    
-   
-   Bool_t                fFlagOut;       ///< flag for output file
-   Bool_t                fFlagTrack;     ///< flag for tracking
-   Bool_t                fFlagMsdTrack;  ///< flag for MSD tracking
-   Bool_t                fFlagItrTrack;  ///< flag for ITR tracking
-   Bool_t                fFlagMC;        ///< MC flag
-   Bool_t                fReadL0Hits;    ///< read back hits
 
    //Output fields
    //ST
