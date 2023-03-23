@@ -31,6 +31,9 @@
 
 #include "TAVTbaseDigitizer.hxx"
 
+//Fit
+#include "TFitResult.h"
+
 /*!
  \class TAVTactBaseTrack 
  \brief Base class to NTuplizer VTX-IT-MSD track
@@ -250,11 +253,12 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 		 fGraphV->SetPointError(i, dz, dy);
 	  }
 	  
-	  fGraphU->Fit("pol1", "Q");
-     auto fitResult = fGraphU->Fit("pol1", "Q");
-     auto covMatrix = fitResult->GetCovarianceMatrix();
-     cout << "Covariance matrix from the fit ";
-     covMatrix.Print();
+
+     auto fitResult = fGraphU->Fit("pol1", "SQ");
+     TMatrixDSym covMatrix = fitResult->GetCovarianceMatrix();
+     cout << "coviariance value: " << covMatrix(0, 0) << " " << covMatrix(0, 1) << " " << covMatrix(1, 0) << " " << covMatrix(1, 1) << endl;
+     //cout << "Covariance matrix from the fit " << endl;
+     //covMatrix.Print();
 
 
      TF1 *polyU = fGraphU->GetFunction("pol1");
@@ -262,8 +266,10 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 	  slope[0]     = polyU->GetParameter(1);
      originErr[0] = polyU->GetParError(0);
      slopeErr[0]  = polyU->GetParError(1);
+     //cout << "p0 error: " << originErr[0];
+     //cout << "p1 error: " << slopeErr[0];
 
-	  fGraphV->Fit("pol1", "Q");
+     fGraphV->Fit("pol1", "Q");
 	  TF1* polyV   = fGraphV->GetFunction("pol1");
 	  origin[1]    = polyV->GetParameter(0);
 	  slope[1]     = polyV->GetParameter(1);

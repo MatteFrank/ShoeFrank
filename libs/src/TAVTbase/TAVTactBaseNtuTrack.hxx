@@ -14,7 +14,6 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 
-
 class TAGgeoTrafo;
 class TABMtrack;
 class TGraphErrors;
