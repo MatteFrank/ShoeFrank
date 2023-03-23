@@ -256,7 +256,6 @@ void ConvertNtuple::CreateRecActionGlb()
       fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
 }
 
-
 //__________________________________________________________
 //! Set L0 tree branches for reading back
 void ConvertNtuple::SetL0TreeBranches()
@@ -356,7 +355,6 @@ void ConvertNtuple::SetL0TreeBranches()
       }
    }
 }
-
 
 //__________________________________________________________
 //! Set tree branches for writing in output file
