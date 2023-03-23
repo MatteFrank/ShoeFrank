@@ -55,6 +55,8 @@
 #include "TATWparConf.hxx"
 #include "TACAparConf.hxx"
 
+#include "TAMCntuEvent.hxx"
+#include "TAMCntuPart.hxx"
 #include "TAMCntuHit.hxx"
 #include "TASTntuHit.hxx"
 #include "TABMntuHit.hxx"
