@@ -12,10 +12,8 @@
 
 #include "TAGactTreeReader.hxx"
 #include "TAGgeoTrafo.hxx"
-#include "BaseReco.hxx"
 
 #include "TAGnameManager.hxx"
-
 #include "TAGrecoManager.hxx"
 
 /*!
@@ -27,8 +25,6 @@
 //! Class Imp
 ClassImp(ConvertNtuple)
 
-Bool_t  ConvertNtuple::fgSaveMcFlag = true;
-
 //__________________________________________________________
 //! Constructor
 //!
@@ -37,74 +33,8 @@ Bool_t  ConvertNtuple::fgSaveMcFlag = true;
 //! \param[in] fileNameIn data input file name
 //! \param[in] fileNameout data output root file name
 ConvertNtuple::ConvertNtuple(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, TString fileNameMcIn, TString treeNameMc)
-: TNamed(fileNameIn.Data(), fileNameout.Data()),
-   fExpName(expName),
-   fRunNumber(runNumber),
-   fSkipEventsN(0),
-   fFriendFileName(""),
-   fFriendTreeName(""),
-   fpParGeoSt(0x0),
-   fpParGeoG(0x0),
-   fpParGeoBm(0x0),
-   fpParGeoVtx(0x0),
-   fpParGeoIt(0x0),
-   fpParGeoMsd(0x0),
-   fpParGeoTw(0x0),
-   fpNtuHitSt(0x0),
-   fpNtuHitBm(0x0),
-   fpNtuHitVtx(0x0),
-   fpNtuHitIt(0x0),
-   fpNtuHitMsd(0x0),
-   fpNtuHitTw(0x0),
-   fpNtuHitCa(0x0),
-   fpNtuClusVtx(0x0),
-   fpNtuClusIt(0x0),
-   fpNtuClusMsd(0x0),
-   fpNtuRecMsd(0x0),
-   fpNtuRecTw(0x0),
-   fpNtuMcTrk(0x0),
-   fpNtuTrackBm(0x0),
-   fpNtuTrackVtx(0x0),
-   fpNtuTrackIt(0x0),
-   fpNtuVtx(0x0),
-   fpNtuGlbTrack(0x0),
-   fFlagOut(true),
-   fFlagTrack(false),
-   fFlagItrTrack(false),
-   fFlagMsdTrack(false),
-   fFlagMC(false),
-   fReadL0Hits(false)
+ : BaseReco(expName, runNumber, fileNameIn, fileNameout)
 {
-   
-   // check folder
-   if (!fExpName.IsNull())
-      fExpName += "/";
-   
-   if (fileNameout == "")
-      fFlagOut = false;
-   
-   // define TAGroot
-   fTAGroot = new TAGroot();
-   
-   // global transformation
-   fpFootGeo = new TAGgeoTrafo();
-   
-   // load campaign file
-   fCampManager = new TAGcampaignManager(expName);
-   fCampManager->FromFile();
-   
-   // Save run info
-   gTAGroot->SetRunNumber(fRunNumber);
-   gTAGroot->SetCampaignName(fExpName);
-   
-   // activate per default only TW if TOE on
-   if (TAGrecoManager::GetPar()->IncludeTOE())
-      TAGrecoManager::GetPar()->IncludeTW(true);
-   
-   // Read Trafo file
-   TString parFileName = fCampManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), fRunNumber);
-   fpFootGeo->FromFile(parFileName);
-   
    fFlagMC = isMC;
    
    if (!fileNameMcIn.IsNull() && isMC) {
@@ -118,66 +48,6 @@ ConvertNtuple::ConvertNtuple(TString expName, Int_t runNumber, TString fileNameI
 //! default destructor
 ConvertNtuple::~ConvertNtuple()
 {
-   // default destructor
-   delete fTAGroot; // should delete all data, para and actions
-}
-
-//_____________________________________________________________________________
-//! Campaign information checks
-void ConvertNtuple::CampaignChecks()
-{
-   // check detector include in FootGlobal.par vs current campaign
-   vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
-   for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
-      TString str = *it;
-      
-      if (!fCampManager->IsDetectorOn(str)) {
-         Error("CampaignChecks()", "the detector %s is NOT referenced in campaign file", str.Data());
-         exit(0);
-      }
-   }
-   
-   // check run number vs current campaign
-   TArrayI runArray = fCampManager->GetCurRunArray();
-   Bool_t runOk = false;
-   
-   for (Int_t i = 0; i < runArray.GetSize(); ++i) {
-      if (fRunNumber == runArray[i])
-         runOk = true;
-   }
-   
-   if (!runOk) {
-      Error("CampaignChecks()", "run %d is NOT referenced in campaign file", fRunNumber);
-      exit(0);
-   }
-   
-   // Check raw/MC file
-   if (!fFlagMC && !fCampManager->GetCurCampaignPar().McFlag)
-      Info("CampaignChecks()", "Reading raw data");
-   
-   if (fFlagMC && fCampManager->GetCurCampaignPar().McFlag)
-      Info("CampaignChecks()", "Reading MC data");
-   
-   if (fFlagMC && !fCampManager->GetCurCampaignPar().McFlag) {
-      Error("CampaignChecks()", "Trying to read back MC data file while referenced as raw data in campaign file");
-      exit(0);
-   }
-   
-   if (!fFlagMC && fCampManager->GetCurCampaignPar().McFlag) {
-      Error("CampaignChecks()", "Trying to read back raw data file while referenced as MC data in campaign file");
-      exit(0);
-   }
-}
-
-//__________________________________________________________
-//! Add friend tree in root file
-//!
-//! \param[in] fileName root file name
-//! \param[in] treeName tree name
-void ConvertNtuple::AddFriendTree(TString fileName, TString treeName)
-{
-   fFriendFileName = fileName;
-   fFriendTreeName = treeName;
 }
 
 //__________________________________________________________
@@ -198,8 +68,7 @@ void ConvertNtuple::BeforeEventLoop()
    
    OpenFileIn();
    
-   if (fFlagOut)
-      OpenFileOut();
+   OpenFileOut();
    
    fTAGroot->BeginEventLoop();
    fTAGroot->Print();
@@ -230,25 +99,8 @@ void ConvertNtuple::LoopEvent(Int_t nEvents)
       
       if (!fTAGroot->NextEvent()) break;
       FillTreeOut();
-      fTreeOut->Fill();
       ResetTreeOut();
    }
-}
-
-//__________________________________________________________
-//! Go to a given event
-//!
-//! \param[in] iEvent event number to go
-Bool_t ConvertNtuple::GoEvent(Int_t iEvent)
-{
-   // only possible for MC data
-   if (iEvent < fActEvtReader->NEvents()) {
-      fSkipEventsN = iEvent;
-      fActEvtReader->Reset(iEvent);
-      return true;
-   }
-   
-   return false;
 }
 
 //__________________________________________________________
@@ -257,8 +109,7 @@ void ConvertNtuple::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
    
-   if (fFlagOut)
-      CloseFileOut();
+   CloseFileOut();
    CloseFileIn();
 }
 
@@ -280,7 +131,7 @@ void ConvertNtuple::CloseFileIn()
 //!  Open output file
 void ConvertNtuple::OpenFileOut()
 {
-   fActEvtWriter = new TFile(GetTitle(),"RECREATE");
+   fActEvtWriter = new TFile("toto.root","RECREATE");
    fTreeOut      = new TTree("OutTree","Reco Event Tree");
    
    SetTreeBranches();
@@ -306,117 +157,6 @@ void ConvertNtuple::CloseFileOut()
    fActEvtWriter->Write();
    fActEvtWriter->Print();
    fActEvtWriter->Close();
-}
-
-//__________________________________________________________
-//! Read parameters files
-void ConvertNtuple::ReadParFiles()
-{
-   Int_t Z_beam = 0;
-   Int_t A_beam = 0;
-   TString ion_name;
-   Float_t kinE_beam = 0.;
-   
-   // Read Trafo file
-   TString parFileName = fCampManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), fRunNumber);
-   fpFootGeo->FromFile(parFileName);
-   
-   // initialise par files for target
-   if (TAGrecoManager::GetPar()->IncludeTG()) {
-      fpParGeoG = new TAGparaDsc(new TAGparGeo());
-      TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
-      parGeo->FromFile(parFileName.Data());
-      
-      Z_beam = parGeo->GetBeamPar().AtomicNumber;
-      A_beam = parGeo->GetBeamPar().AtomicMass;
-      ion_name = parGeo->GetBeamPar().Material;
-      kinE_beam = parGeo->GetBeamPar().Energy; //GeV/u
-      
-      parGeo->Print();
-   }
-   
-   // initialise par files for start counter
-   if (TAGrecoManager::GetPar()->IncludeST()) {
-      
-      fpParGeoSt = new TAGparaDsc(new TASTparGeo());
-      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TASTparGeo::GetBaseName(), fRunNumber);
-      parGeo->FromFile(parFileName.Data());
-   }
-   
-   // initialise par files for Beam Monitor
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
-      fpParGeoBm = new TAGparaDsc(new TABMparGeo());
-      TABMparGeo* parGeo = (TABMparGeo*)fpParGeoBm->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TABMparGeo::GetBaseName(), fRunNumber);
-      parGeo->FromFile(parFileName.Data());
-   }
-   
-   // initialise par files for vertex
-   if (TAGrecoManager::GetPar()->IncludeVT() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
-      fpParGeoVtx = new TAGparaDsc(new TAVTparGeo());
-      TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
-      parGeo->FromFile(parFileName.Data());
-   }
-   
-   // initialise par files for inner tracker
-   if (TAGrecoManager::GetPar()->IncludeIT() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
-      fpParGeoIt = new TAGparaDsc(new TAITparGeo());
-      TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
-      parGeo->FromFile(parFileName.Data());
-      
-      TAGparaDsc* pParConfIt = new TAGparaDsc(new TAITparConf());
-      TAITparConf* parConf = (TAITparConf*)pParConfIt->Object();
-      parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
-      parConf->FromFile(parFileName.Data());
-      
-      fFlagItrTrack = parConf->GetAnalysisPar().TrackingFlag;
-   }
-   
-   // initialise par files for multi strip detector
-   if (TAGrecoManager::GetPar()->IncludeMSD() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
-      fpParGeoMsd = new TAGparaDsc(new TAMSDparGeo());
-      TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
-      parGeo->FromFile(parFileName.Data());
-      
-      TAGparaDsc* pParConfMsd = new TAGparaDsc(new TAMSDparConf());
-      TAMSDparConf* parConf = (TAMSDparConf*)pParConfMsd->Object();
-      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
-      parConf->FromFile(parFileName.Data());
-      
-      fFlagMsdTrack = parConf->GetAnalysisPar().TrackingFlag;
-   }
-   
-   // initialise par files for Tof Wall
-   if (TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IsFromLocalReco()) {
-      fpParGeoTw = new TAGparaDsc(new TATWparGeo());
-      TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
-      parGeo->FromFile(parFileName.Data());
-   }
-   
-   // initialise par files for caloriomter
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      fpParGeoCa = new TAGparaDsc(new TACAparGeo());
-      TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
-      parGeo->FromFile(parFileName);
-   }
-}
-
-//__________________________________________________________
-//! Global reconstruction settings
-void ConvertNtuple::GlobalSettings()
-{
-   Bool_t trk  = TAGrecoManager::GetPar()->IsTracking();
-   
-   // global setting
-   if (trk)
-      EnableTracking();
 }
 
 //__________________________________________________________
@@ -513,7 +253,6 @@ void ConvertNtuple::CreateRecActionGlb()
    if(fFlagTrack)
       fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
 }
-
 
 //__________________________________________________________
 //! Set L0 tree branches for reading back
@@ -614,7 +353,6 @@ void ConvertNtuple::SetL0TreeBranches()
       }
    }
 }
-
 
 //__________________________________________________________
 //! Set tree branches for writing in output file
@@ -892,7 +630,7 @@ void ConvertNtuple::ResetTreeOut()
 //! Add required reconstruction actions in list
 void ConvertNtuple::AddRecRequiredItem()
 {
-   gTAGroot->AddRequiredItem("evtReader");
+   gTAGroot->AddRequiredItem(FootActionDscName("TAGactTreeReader"));
 }
 
 //__________________________________________________________
@@ -925,6 +663,8 @@ void ConvertNtuple::FillTreeOut()
       
    if (fFlagMC)
       FillTreeOutMc();
+   
+   fTreeOut->Fill();
 }
 
 //__________________________________________________________
