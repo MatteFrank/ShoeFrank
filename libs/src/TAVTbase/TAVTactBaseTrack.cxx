@@ -251,8 +251,14 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 	  }
 	  
 	  fGraphU->Fit("pol1", "Q");
-	  TF1* polyU   = fGraphU->GetFunction("pol1");
-	  origin[0]    = polyU->GetParameter(0);
+     auto fitResult = fGraphU->Fit("pol1", "Q");
+     auto covMatrix = fitResult->GetCovarianceMatrix();
+     cout << "Covariance matrix from the fit ";
+     covMatrix.Print();
+
+
+     TF1 *polyU = fGraphU->GetFunction("pol1");
+     origin[0]    = polyU->GetParameter(0);
 	  slope[0]     = polyU->GetParameter(1);
      originErr[0] = polyU->GetParError(0);
      slopeErr[0]  = polyU->GetParError(1);
