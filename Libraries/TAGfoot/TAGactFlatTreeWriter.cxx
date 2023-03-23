@@ -78,7 +78,7 @@ ClassImp(TAGactFlatTreeWriter)
 //! \param[in] name action name
 //! \param[in] isMC tMC flag
 TAGactFlatTreeWriter::TAGactFlatTreeWriter(const char* name, Bool_t isMC)
-:  TAGactionFile(name, "TAGactNtuGlbTrackS - NTuplize Straight Track"),
+:  TAGactTreeWriter(name),
    fFlagMC(isMC)
 {
    fFlagTrack    = TAGrecoManager::GetPar()->IsTracking();
@@ -93,7 +93,7 @@ TAGactFlatTreeWriter::~TAGactFlatTreeWriter()
 //__________________________________________________________
 //! Loop over events
 //!
-Bool_t TAGactFlatTreeWriter::Action()
+Bool_t TAGactFlatTreeWriter::Process()
 {
    FillTreeOut();
    ResetTreeOut();
@@ -150,8 +150,8 @@ Int_t TAGactFlatTreeWriter::Open(const TString& name, Option_t* option, const TS
    TString tmp(name(0, pos));
    tmp += "_FlatTree.root";
    
-   fActEvtWriter = new TFile(tmp.Data(), "RECREATE");
-   fTreeOut      = new TTree(treeName.Data(), "Reco Event Tree");
+   fpFile = new TFile(tmp.Data(), option);
+   fpTree = new TTree(treeName.Data(), "Reco Event Tree");
    
    SetTreeBranches();
    
@@ -173,9 +173,9 @@ void TAGactFlatTreeWriter::Close()
          info.ImportCrossMap(inputinfo);
    }
    gTAGroot->SetRunInfo(info);
-   fActEvtWriter->Write();
-   fActEvtWriter->Print();
-   fActEvtWriter->Close();
+   fpFile->Write();
+   fpFile->Print();
+   fpFile->Close();
 }
 
 //__________________________________________________________
@@ -183,128 +183,128 @@ void TAGactFlatTreeWriter::Close()
 void TAGactFlatTreeWriter::SetTreeBranches()
 {
    if (TAGrecoManager::GetPar()->IncludeST()) {
-      fTreeOut->Branch("st_time",             &fTimeSt);
-      fTreeOut->Branch("st_charge",           &fChargeSt);
-      fTreeOut->Branch("st_hit_n",            &fHitsNst );
-      fTreeOut->Branch("st_pos",              &fPosSt );
+      fpTree->Branch("st_time",             &fTimeSt);
+      fpTree->Branch("st_charge",           &fChargeSt);
+      fpTree->Branch("st_hit_n",            &fHitsNst );
+      fpTree->Branch("st_pos",              &fPosSt );
    }
    
    if (TAGrecoManager::GetPar()->IncludeBM() && fFlagTrack) {
-      fTreeOut->Branch("bm_trk_n",            &fTracksNbm );
-      fTreeOut->Branch("bm_trk_chi2",         &fTrackChi2Bm );
-      fTreeOut->Branch("bm_Pvers",            &fPversBm );
-      fTreeOut->Branch("bm_R0",               &fR0Bm );
+      fpTree->Branch("bm_trk_n",            &fTracksNbm );
+      fpTree->Branch("bm_trk_chi2",         &fTrackChi2Bm );
+      fpTree->Branch("bm_Pvers",            &fPversBm );
+      fpTree->Branch("bm_R0",               &fR0Bm );
    }
    
    if (TAGrecoManager::GetPar()->IncludeVT() && fFlagTrack) {
-      fTreeOut->Branch("vertex_n",            &fVextexNvt );
-      fTreeOut->Branch("vertex_Pos",          &fVertexPosVt );
+      fpTree->Branch("vertex_n",            &fVextexNvt );
+      fpTree->Branch("vertex_Pos",          &fVertexPosVt );
       
-      fTreeOut->Branch("vt_trk_n",            &fTracksNvt );
-      fTreeOut->Branch("vt_trk_chi2",         &fTrackChi2Vt );
-      fTreeOut->Branch("vt_trk_slopez",       &fTrackSlopezVt );
-      fTreeOut->Branch("vt_trk_origin",       &fTrackOriginVt );
-      fTreeOut->Branch("vt_trk_clus_pos_vec", &fTrackClusPosVecVt );
-      fTreeOut->Branch("vt_trk_clus",         &fTrackClustersNvt );
-      fTreeOut->Branch("vt_trk_clus_hits",    &fTrackClusHitsNvt);
+      fpTree->Branch("vt_trk_n",            &fTracksNvt );
+      fpTree->Branch("vt_trk_chi2",         &fTrackChi2Vt );
+      fpTree->Branch("vt_trk_slopez",       &fTrackSlopezVt );
+      fpTree->Branch("vt_trk_origin",       &fTrackOriginVt );
+      fpTree->Branch("vt_trk_clus_pos_vec", &fTrackClusPosVecVt );
+      fpTree->Branch("vt_trk_clus",         &fTrackClustersNvt );
+      fpTree->Branch("vt_trk_clus_hits",    &fTrackClusHitsNvt);
    }
    
    if (TAGrecoManager::GetPar()->IncludeIT()) {
-      fTreeOut->Branch("it_sensor_id",        &fSensorIdIt );
-      fTreeOut->Branch("it_clus_n",           &fClustersNit );
-      fTreeOut->Branch("vt_clus_pos_vec",     &fClusPosVecIt );
+      fpTree->Branch("it_sensor_id",        &fSensorIdIt );
+      fpTree->Branch("it_clus_n",           &fClustersNit );
+      fpTree->Branch("vt_clus_pos_vec",     &fClusPosVecIt );
       
       if(fFlagItrTrack && fFlagTrack) {
-         fTreeOut->Branch("it_trk_n",            &fTracksNit );
-         fTreeOut->Branch("it_trk_chi2",         &fTrackChi2It );
-         fTreeOut->Branch("it_trk_slopez",       &fTrackSlopezIt );
-         fTreeOut->Branch("it_trk_origin",       &fTrackOriginIt );
-         fTreeOut->Branch("it_trk_clus_pos_vec", &fTrackClusPosVecIt );
-         fTreeOut->Branch("it_trk_clus",         &fTrackClustersNit );
-         fTreeOut->Branch("it_trk_clus_hits",    &fTrackClusHitsNit);
+         fpTree->Branch("it_trk_n",            &fTracksNit );
+         fpTree->Branch("it_trk_chi2",         &fTrackChi2It );
+         fpTree->Branch("it_trk_slopez",       &fTrackSlopezIt );
+         fpTree->Branch("it_trk_origin",       &fTrackOriginIt );
+         fpTree->Branch("it_trk_clus_pos_vec", &fTrackClusPosVecIt );
+         fpTree->Branch("it_trk_clus",         &fTrackClustersNit );
+         fpTree->Branch("it_trk_clus_hits",    &fTrackClusHitsNit);
       }
    }
    
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      fTreeOut->Branch("msd_station_id",      &fStationIdMsd);
-      fTreeOut->Branch("msd_pt_n",            &fPointsNmsd);
-      fTreeOut->Branch("msd_time",            &fTimeMsd);
-      fTreeOut->Branch("msd_eloss1",          &fEnergyLoss1Msd);
-      fTreeOut->Branch("msd_eloss2",          &fEnergyLoss2Msd);
-      fTreeOut->Branch("msd_pos",             &fPosMsd );
+      fpTree->Branch("msd_station_id",      &fStationIdMsd);
+      fpTree->Branch("msd_pt_n",            &fPointsNmsd);
+      fpTree->Branch("msd_time",            &fTimeMsd);
+      fpTree->Branch("msd_eloss1",          &fEnergyLoss1Msd);
+      fpTree->Branch("msd_eloss2",          &fEnergyLoss2Msd);
+      fpTree->Branch("msd_pos",             &fPosMsd );
       
       if(fFlagMsdTrack && fFlagTrack) {
-         fTreeOut->Branch("msd_trk_n",            &fTracksNmsd );
-         fTreeOut->Branch("msd_trk_chi2",         &fTrackChi2Msd );
-         fTreeOut->Branch("msd_trk_slopez",       &fTrackSlopezMsd );
-         fTreeOut->Branch("msd_trk_origin",       &fTrackOriginMsd );
-         fTreeOut->Branch("msd_trk_clus_pos_vec", &fTrackClusPosVecMsd );
-         fTreeOut->Branch("msd_trk_clus",         &fTrackClustersNmsd );
-         fTreeOut->Branch("msd_trk_clus_hits",    &fTrackClusHitsNmsd);
+         fpTree->Branch("msd_trk_n",            &fTracksNmsd );
+         fpTree->Branch("msd_trk_chi2",         &fTrackChi2Msd );
+         fpTree->Branch("msd_trk_slopez",       &fTrackSlopezMsd );
+         fpTree->Branch("msd_trk_origin",       &fTrackOriginMsd );
+         fpTree->Branch("msd_trk_clus_pos_vec", &fTrackClusPosVecMsd );
+         fpTree->Branch("msd_trk_clus",         &fTrackClustersNmsd );
+         fpTree->Branch("msd_trk_clus_hits",    &fTrackClusHitsNmsd);
       }
    }
    
    if (TAGrecoManager::GetPar()->IncludeTW()) {
-      fTreeOut->Branch("tw_pt_n",             &fPointsNtw);
-      fTreeOut->Branch("tw_time",             &fTimeTw);
-      fTreeOut->Branch("tw_eloss",            &fEnergyLossTw);
-      fTreeOut->Branch("tw_pos",              &fPosTw );
-      fTreeOut->Branch("tw_chargeZ",          &fChargeZTw);
+      fpTree->Branch("tw_pt_n",             &fPointsNtw);
+      fpTree->Branch("tw_time",             &fTimeTw);
+      fpTree->Branch("tw_eloss",            &fEnergyLossTw);
+      fpTree->Branch("tw_pos",              &fPosTw );
+      fpTree->Branch("tw_chargeZ",          &fChargeZTw);
    }
    
    
    if (TAGrecoManager::GetPar()->IncludeCA()) {
-      fTreeOut->Branch("ca_clus_n",           &fClustersNca);
-      fTreeOut->Branch("tw_energy",           &fEnergyCa);
-      fTreeOut->Branch("ca_pos",              &fPosCa);
+      fpTree->Branch("ca_clus_n",           &fClustersNca);
+      fpTree->Branch("tw_energy",           &fEnergyCa);
+      fpTree->Branch("ca_pos",              &fPosCa);
    }
    
    if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman() || TAGrecoManager::GetPar()->IncludeStraight()) {
-      fTreeOut->Branch("glb_evt_number",      &fEvtNumberGlb);
-      fTreeOut->Branch("glb_Pdg_id",          &fPdgIdGlb);
-      fTreeOut->Branch("glb_length",          &fLengthGlb);
-      fTreeOut->Branch("glb_chi2",            &fChi2Glb);
-      fTreeOut->Branch("glb_nof",             &fNdofGlb);
-      fTreeOut->Branch("glb_Pval",            &fPvalGlb);
-      fTreeOut->Branch("glb_quality",         &fQualityGlb);
+      fpTree->Branch("glb_evt_number",      &fEvtNumberGlb);
+      fpTree->Branch("glb_Pdg_id",          &fPdgIdGlb);
+      fpTree->Branch("glb_length",          &fLengthGlb);
+      fpTree->Branch("glb_chi2",            &fChi2Glb);
+      fpTree->Branch("glb_nof",             &fNdofGlb);
+      fpTree->Branch("glb_Pval",            &fPvalGlb);
+      fpTree->Branch("glb_quality",         &fQualityGlb);
       
-      fTreeOut->Branch("glb_mass",            &fMassGlb);
-      fTreeOut->Branch("glb_mom_mod",         &fMomModuleGlb);
-      fTreeOut->Branch("glb_tw_chg_z",        &fTwChargeZGlb);
-      fTreeOut->Branch("glb_tw_tof",          &fTwTofGlb);
-      fTreeOut->Branch("glb_cal_energy",      &fCalEnergyGlb);
-      fTreeOut->Branch("glb_trk_id",          &fTrkIdGlb);
+      fpTree->Branch("glb_mass",            &fMassGlb);
+      fpTree->Branch("glb_mom_mod",         &fMomModuleGlb);
+      fpTree->Branch("glb_tw_chg_z",        &fTwChargeZGlb);
+      fpTree->Branch("glb_tw_tof",          &fTwTofGlb);
+      fpTree->Branch("glb_cal_energy",      &fCalEnergyGlb);
+      fpTree->Branch("glb_trk_id",          &fTrkIdGlb);
       
-      fTreeOut->Branch("glb_fit_mass",        &fFitMassGlb);
-      fTreeOut->Branch("glb_fit_charge_z",    &fFitChargeZGlb);
-      fTreeOut->Branch("glb_fit_tof",         &fFitTofGlb);
-      fTreeOut->Branch("glb_fit_enerhy_loss", &fFitEnergyLossGlb);
-      fTreeOut->Branch("glb_fit_energy",      &fFitEnergyGlb);
+      fpTree->Branch("glb_fit_mass",        &fFitMassGlb);
+      fpTree->Branch("glb_fit_charge_z",    &fFitChargeZGlb);
+      fpTree->Branch("glb_fit_tof",         &fFitTofGlb);
+      fpTree->Branch("glb_fit_enerhy_loss", &fFitEnergyLossGlb);
+      fpTree->Branch("glb_fit_energy",      &fFitEnergyGlb);
       
-      fTreeOut->Branch("glb_tgt_dir",        &fTgtDirGlb);
-      fTreeOut->Branch("glb_tgt_pos",        &fTgtPosGlb);
-      fTreeOut->Branch("glb_tgt_pos_err",    &fTgtPosErrorGlb);
-      fTreeOut->Branch("glb_tgt_mom",        &fTgtMomGlb);
-      fTreeOut->Branch("glb_tgt_mom_err",    &fTgtMomErrorGlb);
+      fpTree->Branch("glb_tgt_dir",        &fTgtDirGlb);
+      fpTree->Branch("glb_tgt_pos",        &fTgtPosGlb);
+      fpTree->Branch("glb_tgt_pos_err",    &fTgtPosErrorGlb);
+      fpTree->Branch("glb_tgt_mom",        &fTgtMomGlb);
+      fpTree->Branch("glb_tgt_mom_err",    &fTgtMomErrorGlb);
       
-      fTreeOut->Branch("glb_tw_pos",         &fTwPosGlb);
-      fTreeOut->Branch("glb_tw_pos_err",     &fTwPosErrorGlb);
-      fTreeOut->Branch("glb_tw_mom",         &fTwMomGlb);
-      fTreeOut->Branch("glb_tw_mom_err",     &fTwMomErrorGlb);
+      fpTree->Branch("glb_tw_pos",         &fTwPosGlb);
+      fpTree->Branch("glb_tw_pos_err",     &fTwPosErrorGlb);
+      fpTree->Branch("glb_tw_mom",         &fTwMomGlb);
+      fpTree->Branch("glb_tw_mom_err",     &fTwMomErrorGlb);
    }
    
    if (fFlagMC) {
-      fTreeOut->Branch("mc_trk_n",            &fPartsNmc );
-      fTreeOut->Branch("mc_trk_charge",       &fPartChargeMc );
-      fTreeOut->Branch("mc_trk_mass",         &fPartMassMc );
-      fTreeOut->Branch("mc_trk_tof",          &fPartTofMc );
-      fTreeOut->Branch("mc_trk_length",       &fPartLengthMc );
-      fTreeOut->Branch("mc_trk_intpos_x",     &fPartInPosxMc );
-      fTreeOut->Branch("mc_trk_intpos_y",     &fPartInPosyMc );
-      fTreeOut->Branch("mc_trk_intpos_z",     &fPartInPoszMc );
-      fTreeOut->Branch("mc_trk_finpos_x",     &fPartOutPosxMc );
-      fTreeOut->Branch("mc_trk_finpos_y",     &fPartOutPosyMc );
-      fTreeOut->Branch("mc_trk_finpos_z",     &fPartOutPoszMc );
+      fpTree->Branch("mc_trk_n",            &fPartsNmc );
+      fpTree->Branch("mc_trk_charge",       &fPartChargeMc );
+      fpTree->Branch("mc_trk_mass",         &fPartMassMc );
+      fpTree->Branch("mc_trk_tof",          &fPartTofMc );
+      fpTree->Branch("mc_trk_length",       &fPartLengthMc );
+      fpTree->Branch("mc_trk_intpos_x",     &fPartInPosxMc );
+      fpTree->Branch("mc_trk_intpos_y",     &fPartInPosyMc );
+      fpTree->Branch("mc_trk_intpos_z",     &fPartInPoszMc );
+      fpTree->Branch("mc_trk_finpos_x",     &fPartOutPosxMc );
+      fpTree->Branch("mc_trk_finpos_y",     &fPartOutPosyMc );
+      fpTree->Branch("mc_trk_finpos_z",     &fPartOutPoszMc );
    }
 }
 
@@ -481,7 +481,7 @@ void TAGactFlatTreeWriter::FillTreeOut()
    if (fFlagMC)
       FillTreeOutMc();
    
-   fTreeOut->Fill();
+   fpTree->Fill();
 }
 
 //__________________________________________________________

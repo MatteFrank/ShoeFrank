@@ -21,11 +21,11 @@
 #include "TAGgeoTrafo.hxx"
 
 
-#include "TAGactionFile.hxx"
+#include "TAGactTreeWriter.hxx"
 
 using namespace std;
 
-class TAGactFlatTreeWriter : public TAGactionFile
+class TAGactFlatTreeWriter : public TAGactTreeWriter
 {
 public:
    // default constructor
@@ -36,10 +36,10 @@ public:
    virtual ~TAGactFlatTreeWriter();
    
    // Loop events
-   Bool_t Action();
+   Bool_t Process();
    
    //! Open File In
-   Int_t  Open(const TString& name, Option_t* option="READ", const TString treeName="tree", Bool_t dscBranch = true);
+   Int_t  Open(const TString& name, Option_t* option="RECREATE", const TString treeName="tree", Bool_t dscBranch = true);
 
    // virtual close file
    void   Close();
@@ -51,8 +51,8 @@ public:
    void   FillTreeOut();
    
 protected:
-   TFile*          fActEvtWriter;   ///< File writer
-   TTree*          fTreeOut;        ///< Flay Ntuple out
+   TFile*          fpFile;   ///< File writer
+   TTree*          fpTree;        ///< Flay Ntuple out
 
    TAGdataDsc*     fpNtuHitSt;           ///< VT vertex container
    TAGdataDsc*     fpNtuTrackBm;           ///< VT vertex container
