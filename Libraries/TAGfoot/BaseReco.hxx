@@ -95,6 +95,7 @@
 #include "TAMSDactNtuTrack.hxx"
 #include "TAMSDactNtuTrackF.hxx"
 
+#include "TAGactFlatTreeWriter.hxx"
 #include "TAVTactNtuVertex.hxx"
 
 #include "TAGactNtuGlbTrackS.hxx"
@@ -429,6 +430,7 @@ protected:
    
    TAGactionFile*        fActEvtReader;  ///< Tree/event reader
    TAGactTreeWriter*     fActEvtWriter;  ///< write histo and tree
+   TAGactFlatTreeWriter*     fActConvWriter; ///< writer for flat ntuple tree
 
    TABMactNtuTrack*      fActTrackBm;    ///< action for tracks
    
@@ -460,6 +462,7 @@ protected:
 #endif
 
    Bool_t                fFlagOut;          ///< flag for output file
+   Bool_t                fFlagFlatOut;      ///< flag for flat ntuple output file
    Bool_t                fFlagTree;         ///< flag to save in tree
    Bool_t                fFlagHits;         ///< flag to save hits in tree
    Bool_t                fFlagHisto;        ///< flag for histo generatiom

@@ -125,6 +125,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
 #endif
    fActGlbTrackS(0x0),
    fFlagOut(true),
+   fFlagFlatOut(false),
    fFlagTree(false),
    fFlagHits(false),
    fFlagHisto(false),
@@ -175,6 +176,10 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    if (fFlagOut) {
       const Char_t* name = FootActionDscName("TAGactTreeWriter");
       fActEvtWriter = new TAGactTreeWriter(name);
+      if (fFlagFlatOut) {
+         const Char_t* name = FootActionDscName("TAGactFlatTreeWriter");
+         fActConvWriter = new TAGactFlatTreeWriter(name);
+      }
    }
 }
 
@@ -324,6 +329,9 @@ void BaseReco::OpenFileOut()
 
    if (fFlagHisto)
       SetHistogramDir();
+   
+   if (fFlagFlatOut)
+      fActConvWriter->Open(GetTitle());
 }
 
 //__________________________________________________________
@@ -449,6 +457,9 @@ void BaseReco::CloseFileOut()
    gTAGroot->SetRunInfo(info);
    fActEvtWriter->Print();
    fActEvtWriter->Close();
+   
+   if (fFlagFlatOut)
+      fActConvWriter->Close();
 }
 
 //__________________________________________________________
@@ -1219,12 +1230,17 @@ void BaseReco::AddRequiredItem()
       if(name.BeginsWith("act")) continue;
       if (name.IsNull()) continue;
       if (name == FootActionDscName("TAGactTreeWriter")) continue; // skip must be at the end
-      
+      if (name == FootActionDscName("TAGactFlatTreeWriter")) continue; // skip must be at the end
+
       gTAGroot->AddRequiredItem(name.Data());
       if (FootDebugLevel(1))
          printf("[%s]\n", name.Data());
    }
    
-   if (fFlagOut)
+   if (fFlagOut) {
       gTAGroot->AddRequiredItem(FootActionDscName("TAGactTreeWriter"));
+      if (fFlagFlatOut)
+         gTAGroot->AddRequiredItem(FootActionDscName("TAGactFlatTreeWriter"));
+   }
+
 }

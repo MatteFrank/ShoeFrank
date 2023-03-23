@@ -37,6 +37,7 @@ set( with_dictionnaries
    RecoRaw
    ConvertNtuple
    TAGactNtuGlbTrackS
+   TAGactFlatTreeWriter
    GlobalReco
    GlobalRecoAna
    GlobalRecoMassAna   
