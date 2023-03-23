@@ -40,7 +40,6 @@ public:
    //! Create rec action
    virtual void CreateRawAction()      { return; }
    
-
    // Add required items
    virtual void AddRecRequiredItem();
    
@@ -74,14 +73,12 @@ public:
    // Fill tree out
    void FillTreeOut();
    
-  
 protected:
    TString               fExpName;        ///< Experiment name
  
    TFile*                fActEvtWriter;   ///< File writer
    TTree*                fTreeOut;        ///< Flay Ntuple out
    TAGactTreeReader*     fActEvtReader;  ///< Tree/event reader
-   
 
    //Output fields
    //ST
@@ -242,9 +239,6 @@ protected:
    
    // Reset items in tree out
    void ResetTreeOut();
-   
-protected:
-   static Bool_t fgSaveMcFlag;    ///< MC saving flag
 
    ClassDef(ConvertNtuple, 1);        ///< Base class for reconstruction
 };
