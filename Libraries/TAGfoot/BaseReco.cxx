@@ -1040,7 +1040,7 @@ void BaseReco::CreateRecActionGlbS()
 void BaseReco::SetL0TreeBranches()
 {
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
-    const Char_t* name = FootActionDscName("TAVTactNtuCluster");
+    const Char_t* name = FootActionDscName("TAGactTreeReader");
     fActEvtReader = new TAGactTreeReader(name);
      
     if (!fgSaveMcFlag)

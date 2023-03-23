@@ -450,7 +450,7 @@ void ConvertNtuple::CreateRecAction()
 void ConvertNtuple::CreateRecActionBm()
 {
    if(fFlagTrack)
-      fpNtuTrackBm = new TAGdataDsc("bmTrack", new TABMntuTrack());
+      fpNtuTrackBm = new TAGdataDsc(new TABMntuTrack());
 }
 
 //__________________________________________________________
@@ -458,12 +458,12 @@ void ConvertNtuple::CreateRecActionBm()
 void ConvertNtuple::CreateRecActionVtx()
 {
    if(fFlagTrack) {
-      fpNtuTrackVtx = new TAGdataDsc("vtTrack", new TAVTntuTrack());
+      fpNtuTrackVtx = new TAGdataDsc(new TAVTntuTrack());
       if (TAGrecoManager::GetPar()->IncludeTG())
-         fpNtuVtx = new TAGdataDsc("vtVtx",   new TAVTntuVertex());
+         fpNtuVtx = new TAGdataDsc(new TAVTntuVertex());
    }
    
-   fpNtuClusVtx = new TAGdataDsc("vtClus", new TAVTntuCluster());
+   fpNtuClusVtx = new TAGdataDsc(new TAVTntuCluster());
    GetNtuClusterVtx()->SetParGeo(GetParGeoVtx());
 }
 
@@ -471,39 +471,39 @@ void ConvertNtuple::CreateRecActionVtx()
 //! Create ITR reconstruction containers
 void ConvertNtuple::CreateRecActionIt()
 {
-   fpNtuClusIt = new TAGdataDsc("itClus", new TAITntuCluster());
+   fpNtuClusIt = new TAGdataDsc(new TAITntuCluster());
    GetNtuClusterIt()->SetParGeo(GetParGeoIt());
    
    if (fFlagItrTrack && fFlagTrack)
-      fpNtuTrackIt = new TAGdataDsc("itTrack", new TAITntuTrack());
+      fpNtuTrackIt = new TAGdataDsc(new TAITntuTrack());
 }
 
 //__________________________________________________________
 //! Create MSD reconstruction containers
 void ConvertNtuple::CreateRecActionMsd()
 {
-   fpNtuClusMsd = new TAGdataDsc("msdClus", new TAMSDntuCluster());
+   fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
    GetNtuClusterMsd()->SetParGeo(GetParGeoMsd());
    
-   fpNtuRecMsd  = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+   fpNtuRecMsd  = new TAGdataDsc(new TAMSDntuPoint());
    GetNtuPointMsd()->SetParGeo(GetParGeoMsd());
    
    if (fFlagMsdTrack && fFlagTrack)
-      fpNtuTrackMsd = new TAGdataDsc("msdTrack", new TAMSDntuTrack());
+      fpNtuTrackMsd = new TAGdataDsc(new TAMSDntuTrack());
 }
 
 //__________________________________________________________
 //! Create TW reconstruction containers
 void ConvertNtuple::CreateRecActionTw()
 {
-   fpNtuRecTw = new TAGdataDsc("twPoint", new TATWntuPoint());
+   fpNtuRecTw = new TAGdataDsc(new TATWntuPoint());
 }
 
 //__________________________________________________________
 //! Create CAL reconstruction containers
 void ConvertNtuple::CreateRecActionCa()
 {
-   fpNtuClusCa = new TAGdataDsc("caClus", new TACAntuCluster());
+   fpNtuClusCa = new TAGdataDsc(new TACAntuCluster());
 }
 
 //__________________________________________________________
@@ -519,7 +519,8 @@ void ConvertNtuple::CreateRecActionGlb()
 //! Set L0 tree branches for reading back
 void ConvertNtuple::SetL0TreeBranches()
 {
-   fActEvtReader = new TAGactTreeReader("evtReader");
+   const Char_t* name = FootActionDscName("TAGactTreeReader");
+   fActEvtReader = new TAGactTreeReader(name);
    
    if (!fgSaveMcFlag)
       if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull()) {
@@ -578,37 +579,37 @@ void ConvertNtuple::SetL0TreeBranches()
    
    if (fReadL0Hits && fFlagMC) {
       if (TAGrecoManager::GetPar()->IncludeST()) {
-         fpNtuMcSt   = new TAGdataDsc("stMc", new TAMCntuHit());
+         fpNtuMcSt   = new TAGdataDsc(FootDataDscMcName(kST), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcSt,FootBranchMcName(kST));
       }
       
       if (TAGrecoManager::GetPar()->IncludeBM()) {
-         fpNtuMcBm   = new TAGdataDsc("bmMc", new TAMCntuHit());
+         fpNtuMcBm   = new TAGdataDsc(FootDataDscMcName(kBM), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcBm,FootBranchMcName(kBM));
       }
       
       if (TAGrecoManager::GetPar()->IncludeVT()) {
-         fpNtuMcVt   = new TAGdataDsc("vtMc", new TAMCntuHit());
+         fpNtuMcVt   = new TAGdataDsc(FootDataDscMcName(kVTX), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcVt,FootBranchMcName(kVTX));
       }
       
       if (TAGrecoManager::GetPar()->IncludeIT()) {
-         fpNtuMcIt   = new TAGdataDsc("itMc", new TAMCntuHit());
+         fpNtuMcIt   = new TAGdataDsc(FootDataDscMcName(kITR), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcIt,FootBranchMcName(kITR));
       }
       
       if (TAGrecoManager::GetPar()->IncludeMSD()) {
-         fpNtuMcMsd   = new TAGdataDsc("msdMc", new TAMCntuHit());
+         fpNtuMcMsd   = new TAGdataDsc(FootDataDscMcName(kMSD), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcMsd,FootBranchMcName(kMSD));
       }
       
       if(TAGrecoManager::GetPar()->IncludeTW()) {
-         fpNtuMcTw   = new TAGdataDsc("twMc", new TAMCntuHit());
+         fpNtuMcTw   = new TAGdataDsc(FootDataDscMcName(kTW), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcTw,FootBranchMcName(kTW));
       }
       
       if(TAGrecoManager::GetPar()->IncludeCA()) {
-         fpNtuMcCa   = new TAGdataDsc("caMc", new TAMCntuHit());
+         fpNtuMcCa   = new TAGdataDsc(FootDataDscMcName(kCAL), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcCa,FootBranchMcName(kCAL));
       }
    }
