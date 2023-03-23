@@ -25,8 +25,6 @@
 //! Class Imp
 ClassImp(ConvertNtuple)
 
-Bool_t  ConvertNtuple::fgSaveMcFlag = true;
-
 //__________________________________________________________
 //! Constructor
 //!
