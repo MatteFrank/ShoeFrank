@@ -23,7 +23,7 @@ vector<TString>        TAGnameManager::fgkParaDscMap   = {"Map", "Geo", "Conf", 
 
 vector<TString>        TAGnameManager::fgkDataDscMap   = {"Raw", "Hit", "Clus", "Track", "Vertex", "Point", "Trigger", "Event", "Reader", "reader", "Part", "Writer", "Region"};
 
-vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "ms", "tw", "ca"};
+vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it", "msd", "tw", "ca"};
 
 map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"},    {"TABM", "bm"},         {"TAVT", "vt"},         {"TAIT", "it"},     {"TADI", "di"},
                                                           {"TAGpar", "tg"},  {"TAMSD", "ms"},        {"TATW", "tw"},         {"TACA", "ca"},     {"WD", "wd"},
