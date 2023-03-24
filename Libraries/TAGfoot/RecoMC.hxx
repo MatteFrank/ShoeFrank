@@ -37,9 +37,6 @@ public:
    // Create raw data action
    virtual void CreateRawAction();
    
-   // Create branch in tree
-   virtual void SetTreeBranches();
-   
    // Open File
    virtual void OpenFileIn();
    

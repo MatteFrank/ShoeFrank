@@ -263,41 +263,6 @@ void RecoRaw::CloseFileIn()
       fActEvtReader->Close();
 }
 
-//__________________________________________________________
-//! Set tree branches for writing in output file
-void RecoRaw::SetTreeBranches()
-{
-   BaseReco::SetTreeBranches();
-
-   if (!fgStdAloneFlag)
-      fActEvtWriter->SetupElementBranch(fpNtuEvt);
-
-   if (TAGrecoManager::GetPar()->IncludeST()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpDatRawSt);
-      
-      fActEvtWriter->SetupElementBranch(fpNtuWDtrigInfo);
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeBM())
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpDatRawBm);
-
-   if (TAGrecoManager::GetPar()->IncludeMSD())
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpDatRawMsd);
-
-   if (TAGrecoManager::GetPar()->IncludeTW())
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpDatRawTw);
-
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      if (fFlagHits) {
-        fActEvtWriter->SetupElementBranch(fpDatRawCa);
-      }
-   }
-}
-
 // --------------------------------------------------------------------------------------
 void RecoRaw::SetRunNumberFromFile()
 {
