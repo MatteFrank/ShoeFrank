@@ -151,8 +151,6 @@ void TAGactFlatTreeWriter::SetDescriptors()
 //! \param[in] dscBranch flag for object descriptor
 Int_t TAGactFlatTreeWriter::Open(const TString& name, Option_t* option, const TString treeName, Bool_t /*dscBranch*/)
 {
-   SetDescriptors();
-   
    TDirectory* p_cwd = gDirectory;
    
    Int_t pos = name.Last('.');
@@ -162,7 +160,10 @@ Int_t TAGactFlatTreeWriter::Open(const TString& name, Option_t* option, const TS
    fpFile = new TFile(tmp.Data(), option);
    fpTree = new TTree(treeName.Data(), "Reco Event Tree");
    
-   SetTreeBranches();
+   if (TAGrecoManager::GetPar()->IsSaveTree()) {
+      SetDescriptors();
+      SetTreeBranches();
+   }
    
    gDirectory = p_cwd;
 
