@@ -153,6 +153,8 @@ Int_t TAGactFlatTreeWriter::Open(const TString& name, Option_t* option, const TS
 {
    SetDescriptors();
    
+   TDirectory* p_cwd = gDirectory;
+   
    Int_t pos = name.Last('.');
    TString tmp(name(0, pos));
    tmp += "_FlatTree.root";
@@ -162,6 +164,8 @@ Int_t TAGactFlatTreeWriter::Open(const TString& name, Option_t* option, const TS
    
    SetTreeBranches();
    
+   gDirectory = p_cwd;
+
    return 0;
 }
 
