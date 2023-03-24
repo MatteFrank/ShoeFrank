@@ -54,6 +54,7 @@ TOF Tag Cuts:  12  15
 ############   Options for reconstruction   ################
 
 EnableTree:          y
+EnableFlatTree:      n
 EnableHisto:         y
 EnableTracking:      y
 

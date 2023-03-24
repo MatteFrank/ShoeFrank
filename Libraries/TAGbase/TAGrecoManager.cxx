@@ -73,7 +73,7 @@ TAGrecoManager::TAGrecoManager( const TString expName )
 : TObject(),
   fParFileName(""),        fDebugLevel(0),       fChi2(-1),				    fMeasureN(11),			 fSkipN(-1),
   fKalmanMode(""),         fKalReverse(false),   fVerFLUKA(false),
-  fFromLocalReco(false), fEnableTree(false),   fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
+  fFromLocalReco(false),   fEnableTree(false),   fEnableFlatTree(false), fEnableHisto(false),    fEnableSaveHits(false), fEnableTracking(false), fEnableRootObject(false),
   fDoCalibTW(false),       fDoCalibBM(false),    fEnableRegionMc(false),
   fIncludeST(false),       fIncludeBM(false),    fIncludeTG(false),      fIncludeDI(false),      fIncludeTW(false),      fIncludeMSD(false),
   fIncludeCA(false),       fIncludeIT(false),    fIncludeVT(false),
@@ -96,6 +96,9 @@ const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 
    if (IsSaveTree())
       runInfo.GetGlobalPar().EnableTree = true;
+   
+   if (IsSaveFlatTree())
+      runInfo.GetGlobalPar().EnableFlatTree = true;
 
    if (IsSaveHisto())
       runInfo.GetGlobalPar().EnableHisto = true;
@@ -167,7 +170,13 @@ Bool_t TAGrecoManager::GlobalChecks(Bool_t flagMC)
       Bool_t fromLocalRecoG = IsFromLocalReco();
       Bool_t globalRecoTOE  = IncludeTOE();
       Bool_t globalRecoGF   = IncludeKalman();
-
+      Bool_t globalFlatTree = IsSaveFlatTree();
+      
+      if (fromLocalRecoG && globalFlatTree) {
+         Error("GlobalChecks()", "From Local Reco cannot be done from flat tree !");
+         return false;
+      }
+      
       Bool_t fromLocalReco = info.GetGlobalPar().FromLocalReco;
 
       if (fromLocalRecoG && fromLocalReco)
@@ -515,6 +524,13 @@ void TAGrecoManager::FromFile()
       else                      fEnableTree = false;
       if (fDebugLevel > 0)
         printf("EnableTree: %d\n", fEnableTree);
+    }
+     
+    if (key.Contains("EnableFlatTree:") ) {
+       if ( item.Contains("y"))  fEnableFlatTree = true;
+       else                      fEnableFlatTree = false;
+       if (fDebugLevel > 0)
+          printf("EnableFlatTree: %d\n", fEnableFlatTree);
     }
 
     if (key.Contains("EnableHisto:")) {

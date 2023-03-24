@@ -125,7 +125,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
 #endif
    fActGlbTrackS(0x0),
    fFlagOut(true),
-   fFlagFlatOut(false),
+   fFlagFlatTree(false),
    fFlagTree(false),
    fFlagHits(false),
    fFlagHisto(false),
@@ -173,12 +173,14 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    if (TAGrecoManager::GetPar()->IncludeTOE())
       TAGrecoManager::GetPar()->IncludeTW(true);
 
+   fFlagFlatTree = TAGrecoManager::GetPar()->IsSaveFlatTree();
+
    if (fFlagOut) {
-      if (fFlagFlatOut) {
+      if (fFlagFlatTree) {
          const Char_t* name = FootActionDscName("TAGactFlatTreeWriter");
          fActEvtWriter = new TAGactFlatTreeWriter(name, fFlagMC);
       } else {
-         const Char_t* name = FootActionDscName("TAGactTreeWriter");
+         const Char_t* name = FootActionDscName("TAGactDscTreeWriter");
          fActEvtWriter = new TAGactDscTreeWriter(name, fFlagMC);
       }
    }
@@ -1146,7 +1148,7 @@ void BaseReco::AddRequiredItem()
       TString name(action->GetName());
       if(name.BeginsWith("act")) continue;
       if (name.IsNull()) continue;
-      if (name == FootActionDscName("TAGactTreeWriter")) continue; // skip must be at the end
+      if (name == FootActionDscName("TAGactDscTreeWriter")) continue; // skip must be at the end
       if (name == FootActionDscName("TAGactFlatTreeWriter")) continue; // skip must be at the end
 
       gTAGroot->AddRequiredItem(name.Data());
@@ -1155,9 +1157,10 @@ void BaseReco::AddRequiredItem()
    }
    
    if (fFlagOut) {
-      gTAGroot->AddRequiredItem(FootActionDscName("TAGactTreeWriter"));
-      if (fFlagFlatOut)
+      if (fFlagFlatTree)
          gTAGroot->AddRequiredItem(FootActionDscName("TAGactFlatTreeWriter"));
+      else
+         gTAGroot->AddRequiredItem(FootActionDscName("TAGactDscTreeWriter"));
    }
 
 }

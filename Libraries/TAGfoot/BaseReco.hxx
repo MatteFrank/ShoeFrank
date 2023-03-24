@@ -187,6 +187,11 @@ public:
    //! Disable tree
    void DisableTree()          { fFlagTree = false;       }
    
+   //! Enable tree
+   void EnableFlatTree()       { fFlagFlatTree = true;    }
+   //! Disable tree
+   void DisableFlatTree()      { fFlagFlatTree = false;   }
+   
    //! Enable save hits
    void EnableSaveHits()       { fFlagHits = true;        }
    //! Disable save hits
@@ -459,7 +464,7 @@ protected:
 #endif
 
    Bool_t                fFlagOut;          ///< flag for output file
-   Bool_t                fFlagFlatOut;      ///< flag for flat ntuple output file
+   Bool_t                fFlagFlatTree;     ///< flag for flat ntuple output file
    Bool_t                fFlagTree;         ///< flag to save in tree
    Bool_t                fFlagHits;         ///< flag to save hits in tree
    Bool_t                fFlagHisto;        ///< flag for histo generatiom

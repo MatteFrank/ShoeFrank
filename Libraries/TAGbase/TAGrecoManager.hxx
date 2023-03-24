@@ -99,6 +99,8 @@ public:
     Bool_t IsFromLocalReco()     const { return fFromLocalReco;       }
     //! Saving tree flag
     Bool_t IsSaveTree()          const { return fEnableTree;          }
+    //! Saving flat tree flag
+    Bool_t IsSaveFlatTree()      const { return fEnableFlatTree;      }
     //! Save histogram flag
     Bool_t IsSaveHisto()         const { return fEnableHisto;         }
     //! Save hits flag
@@ -169,6 +171,11 @@ public:
     void EnableTree()                  {  fEnableTree = true;         }
     //! Disable filling in tree
     void DisableTree()                 {  fEnableTree = false;        }
+   
+    //! Enable filling in tree
+    void EnableFlatTree()              {  fEnableFlatTree = true;     }
+    //! Disable filling in tree
+    void DisableFlatTree()             {  fEnableFlatTree = false;    }
    
     //! Enable filling histograms
     void EnableHisto()                 {  fEnableHisto = true;        }
@@ -251,6 +258,7 @@ private:
    //! reconstruction parameter
    Bool_t               fFromLocalReco;         ///< Enable global reconstruction from l0 reconstruction
    Bool_t               fEnableTree;            ///< Enbale tree filling
+   Bool_t               fEnableFlatTree;        ///< Enbale flat tree filling
    Bool_t               fEnableHisto;           ///< Enable histogram filling
    Bool_t               fEnableSaveHits;        ///< Enable saving hits
    Bool_t               fEnableTracking;        ///< Enable tracking
@@ -297,7 +305,7 @@ public:
    // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
    
-   ClassDef(TAGrecoManager,2)
+   ClassDef(TAGrecoManager,3)
 
 };
 
