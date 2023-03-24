@@ -33,10 +33,6 @@ public:
    // Read L0 branch in tree
    void SetL0TreeBranches();
   
-   // Create branch in tree
-   void SetTreeBranches();
-    
-    
     bool GoEvent(Int_t iEvent){ fSkipEventsN = iEvent; fActEvtReader->Reset(iEvent); return true; }
 
    ClassDef(GlobalToeReco, 0); ///< Class def

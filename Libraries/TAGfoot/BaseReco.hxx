@@ -169,10 +169,7 @@ public:
    
    // Close File Out
    virtual void CloseFileOut();
-   
-   // Create branch in tree
-   virtual void SetTreeBranches();
-  
+     
   // Create L0 branch in tree
   virtual void SetL0TreeBranches();
    

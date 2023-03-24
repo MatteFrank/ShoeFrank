@@ -83,20 +83,3 @@ void GlobalToeReco::SetL0TreeBranches()
     }
   }
 }
-
-//__________________________________________________________
-//! Set output tree branches
-void GlobalToeReco::SetTreeBranches()
-{
-  BaseReco::SetTreeBranches();
-  
-  if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
-    if (fFlagMC && fgSaveMcFlag) {
-      fActEvtWriter->SetupElementBranch(fpNtuMcEvt);
-      fActEvtWriter->SetupElementBranch(fpNtuMcTrk);
-      
-      if (TAGrecoManager::GetPar()->IsRegionMc() )
-        fActEvtWriter->SetupElementBranch(fpNtuMcReg);
-    }
-  }
-}
