@@ -81,7 +81,7 @@ class TAGactTreeWriter : public TAGactionFile {
     // Print branch info
     static void print_branch(ostream& os, Double_t d_bsize, TBranch* p_branch, Bool_t b_ptop);
   
-  private:
+  protected:
     TList*          fpBranchList; ///< List of branches
     TFile*          fpFile;       ///< Root file
     TTree*          fpTree;       ///< Tree
