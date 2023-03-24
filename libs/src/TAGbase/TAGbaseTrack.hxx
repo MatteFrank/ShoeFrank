@@ -10,6 +10,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include <map>
+#include <vector>
 
 ///< ROOT classes
 #include "TClonesArray.h"
@@ -24,6 +25,9 @@
 #include "TAGcluster.hxx"
 #include "TAGgeoTrafo.hxx"
 
+// Fit
+#include "TFitResult.h"
+
 class TClonesArray;
 class TAGbaseTrack : public TAGobject {
 
@@ -36,6 +40,7 @@ protected:
    TVector3*      fOriginErr;                    //->   origin dx0,dy0,dz0
    //!  the error slope (dx/dz, dy/dz, 1)
    TVector3*      fSlopeErr;                     //->   the error slope (dx/dz, dy/dz, 1)
+
 
    Float_t        fLength;                       ///< Length of track
 
@@ -68,8 +73,10 @@ protected:
    TArrayI            fMcTrackIdx;               ///< Idx of the track created in the simulation
    //! Map of MC track Id
    std::map<int, int> fMcTrackMap;               //! Map of MC track Id
+   TMatrixDSym fCovMatrixU;                          //! covariance matrix in X position for fit
+   TMatrixDSym fCovMatrixV;                          //! covariance matrix in Y position for fit
 
-public:
+public: 
    TAGbaseTrack();
    ~TAGbaseTrack();
    TAGbaseTrack(const TAGbaseTrack& aTrack);
@@ -89,6 +96,10 @@ public:
    TVector3&          GetOriginErr() const { return *fOriginErr; }
    //! Get error slope of line
    TVector3&          GetSlopeErrZ() const { return *fSlopeErr;  }
+
+   TMatrixDSym GetCovMatrixU() const {return fCovMatrixU; }
+   TMatrixDSym GetCovMatrixV() const { return fCovMatrixV; }
+
    //! Get length of line
    Float_t            GetLength()   const { return fLength;  }
    // Get theta angle of line
@@ -135,8 +146,11 @@ public:
    void           SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength = 0.);
    // Set values of line track
    void           SetLineErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr);
-   // Make chi square
-   void           MakeChiSquare(Float_t dhs = 0.);
+   // Set covariance of the fit of the track
+   void           SetCovarianceMatrix(TMatrixDSym covMatrixU, TMatrixDSym covMatrixV);
+
+       // Make chi square
+       void MakeChiSquare(Float_t dhs = 0.);
    // Set charge proba
    void           SetChargeProba(const TArrayF* proba);
    //! Set charge with max proba
@@ -148,7 +162,7 @@ public:
    //! Set charge with max proba normalize
    void           SetChargeWithMaxProbaNorm(Int_t proba) { fChargeWithMaxProbaNorm = proba; }
    //! Set charge  max proba normalize
-   void           SetChargeMaxProbaNorm(Float_t proba)   { fChargeMaxProbaNorm = proba;     }
+   void           SetChargeMaxProbaNorm(Float_t proba)   { fChargeMaxProbaNorm = proba; }
 
    //! Add cluster (virtual)
    virtual  void  AddCluster(TAGcluster* /*cluster*/) { return; }

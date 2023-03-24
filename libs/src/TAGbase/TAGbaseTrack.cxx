@@ -68,30 +68,30 @@ TAGbaseTrack::TAGbaseTrack()
 //! Copy constructor
 //!
 //! \param[in] aTrack track to copy
-TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack& aTrack)
-:  TAGobject(aTrack),
-   fOrigin(new TVector3(*aTrack.fOrigin)),
-   fSlope(new TVector3(*aTrack.fSlope)),
-   fOriginErr(new TVector3(*aTrack.fOriginErr)),
-   fSlopeErr(new TVector3(*aTrack.fSlopeErr)),
-   fLength(aTrack.fLength),
-   fPileup(aTrack.fPileup),
-   fType(aTrack.GetType()),
-   fTrackIdx(aTrack.GetTrackIdx()),
-   fChiSquare(aTrack.GetChi2()),
-   fChiSquareU(aTrack.GetChi2U()),
-   fChiSquareV(aTrack.GetChi2V()),
-   fPosVertex(aTrack.fPosVertex),
-   fValidity(aTrack.fValidity),
-   fChargeProba(new TArrayF(*aTrack.fChargeProba)),
-   fChargeWithMaxProba(aTrack.fChargeWithMaxProba),
-   fChargeMaxProba(aTrack.fChargeMaxProba),
-   fChargeProbaNorm(new TArrayF(*aTrack.fChargeProbaNorm)),
-   fChargeWithMaxProbaNorm(aTrack.fChargeWithMaxProbaNorm),
-   fChargeMaxProbaNorm(aTrack.fChargeMaxProbaNorm),
-   fMeanEltsN(aTrack.fMeanEltsN),
-   fMeanCharge(aTrack.fMeanCharge),
-   fMcTrackIdx(aTrack.fMcTrackIdx)
+TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack &aTrack)
+    : TAGobject(aTrack),
+      fOrigin(new TVector3(*aTrack.fOrigin)),
+      fSlope(new TVector3(*aTrack.fSlope)),
+      fOriginErr(new TVector3(*aTrack.fOriginErr)),
+      fSlopeErr(new TVector3(*aTrack.fSlopeErr)),
+      fLength(aTrack.fLength),
+      fPileup(aTrack.fPileup),
+      fType(aTrack.GetType()),
+      fTrackIdx(aTrack.GetTrackIdx()),
+      fChiSquare(aTrack.GetChi2()),
+      fChiSquareU(aTrack.GetChi2U()),
+      fChiSquareV(aTrack.GetChi2V()),
+      fPosVertex(aTrack.fPosVertex),
+      fValidity(aTrack.fValidity),
+      fChargeProba(new TArrayF(*aTrack.fChargeProba)),
+      fChargeWithMaxProba(aTrack.fChargeWithMaxProba),
+      fChargeMaxProba(aTrack.fChargeMaxProba),
+      fChargeProbaNorm(new TArrayF(*aTrack.fChargeProbaNorm)),
+      fChargeWithMaxProbaNorm(aTrack.fChargeWithMaxProbaNorm),
+      fChargeMaxProbaNorm(aTrack.fChargeMaxProbaNorm),
+      fMeanEltsN(aTrack.fMeanEltsN),
+      fMeanCharge(aTrack.fMeanCharge),
+      fMcTrackIdx(aTrack.fMcTrackIdx)
 {
    fListOfClusters = (TClonesArray*)aTrack.fListOfClusters->Clone();
 }
@@ -211,6 +211,13 @@ void TAGbaseTrack::SetLineValue(const TVector3& aOrigin, const TVector3& aSlope,
 void TAGbaseTrack::SetLineErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr)
 {
    SetErrorValue(aOriginErr, aSlopeErr);
+}
+
+void TAGbaseTrack::SetCovarianceMatrix(TMatrixDSym covMatrixU, TMatrixDSym covMatrixV){
+    fCovMatrixU.ResizeTo(covMatrixU);
+    fCovMatrixU = covMatrixU;
+    fCovMatrixV.ResizeTo(covMatrixV);
+    fCovMatrixV = covMatrixV;
 }
 
 //______________________________________________________________________________
