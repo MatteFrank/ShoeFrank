@@ -38,7 +38,7 @@
 //! Class Imp
 ClassImp(BaseReco)
 
-Bool_t  BaseReco::fgSaveMcFlag     = true;
+Bool_t  BaseReco::fgSaveMcFlag = true;
 
 //__________________________________________________________
 //! Constructor
@@ -325,8 +325,8 @@ void BaseReco::AfterEventLoop()
 //!  Open output file
 void BaseReco::OpenFileOut()
 {
+   if (fFlagTree && !fFlagFlatOut)  SetTreeBranches();
    fActEvtWriter->Open(GetTitle(), "RECREATE");
-   if (!fFlagFlatOut && fFlagTree)  SetTreeBranches();
    
    if (fFlagHisto)
       SetHistogramDir();
