@@ -123,6 +123,11 @@ void TAVTactBaseTrack::CreateHistogram()
 	  AddHistogram(fpHisResX[i]);
 	  fpHisResY[i] = new TH1F(Form("%sResY%d", fPrefix.Data(), i+1), Form("%s - ResidualY of sensor %d", fTitleDev.Data(), i+1), 400, -0.01, 0.01);
 	  AddHistogram(fpHisResY[i]);
+
+     fpHisPullX[i] = new TH1F(Form("%sPullX%d", fPrefix.Data(), i + 1), Form("%s - PullX of sensor %d", fTitleDev.Data(), i + 1), 400, -2, 2);
+     AddHistogram(fpHisPullX[i]);
+     fpHisPullY[i] = new TH1F(Form("%sPullY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d", fTitleDev.Data(), i + 1), 400, -2, 2);   // ! range
+     AddHistogram(fpHisPullY[i]);
    }
    
    fpHisMeanPixel = new TH1F(Form("%sMeanClusPix", fPrefix.Data()), Form("%s - mean pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
@@ -194,16 +199,28 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
    TVector3  slope;   // slope along z-axis in tracker system
    TVector3  originErr;  // origin error in the tracker system
    TVector3  slopeErr;   // slope error along z-axis in tracker system
+   TMatrixDSym covMatrixU(1);
+   TMatrixDSym covMatrixV(1);
+
 
    // init
-   origin.SetXYZ(0.,0.,0.);
+   origin.SetXYZ(0., 0., 0.);
    slope.SetXYZ(0.,0.,1.);
 
    originErr.SetXYZ(0.,0.,0.);
    slopeErr.SetXYZ(0.,0.,0.);
-   
+
+   covMatrixU(0,0) =0.;
+   covMatrixV(0,0) = 0.;
+
+   // values from covariance matrix
+   //  std::map<std::string, vector<Double_t>> variance;
+   //  variance["dm"] = {0.,0.};
+   //  variance["dq"]= {0., 0.};
+   //  variance["dmdq"]={0., 0.};   //covariance between origin and slope
+
    Int_t nClusters = track->GetClustersN();
-   
+
    if( nClusters == 2) {
 	  TAGcluster* cluster0 = track->GetCluster(0);
 	  TAGcluster* cluster1 = track->GetCluster(1);
@@ -254,31 +271,35 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 	  }
 	  
 
-     auto fitResult = fGraphU->Fit("pol1", "SQ");
-     TMatrixDSym covMatrix = fitResult->GetCovarianceMatrix();
-     cout << "coviariance value: " << covMatrix(0, 0) << " " << covMatrix(0, 1) << " " << covMatrix(1, 0) << " " << covMatrix(1, 1) << endl;
-     //cout << "Covariance matrix from the fit " << endl;
-     //covMatrix.Print();
-
-
+     auto fitResultU = fGraphU->Fit("pol1", "SQ");
+     covMatrixU.ResizeTo(fitResultU->GetCovarianceMatrix());
+     covMatrixU = fitResultU->GetCovarianceMatrix();
      TF1 *polyU = fGraphU->GetFunction("pol1");
      origin[0]    = polyU->GetParameter(0);
 	  slope[0]     = polyU->GetParameter(1);
      originErr[0] = polyU->GetParError(0);
      slopeErr[0]  = polyU->GetParError(1);
-     //cout << "p0 error: " << originErr[0];
-     //cout << "p1 error: " << slopeErr[0];
+   //   variance["dq"][0] = covMatrixU(0, 0);
+   //   variance["dm"][0] = covMatrixU(1, 1);
+   //   variance["dmdq"][0] = covMatrixU(0, 1);
 
-     fGraphV->Fit("pol1", "Q");
-	  TF1* polyV   = fGraphV->GetFunction("pol1");
+     auto fitResultV = fGraphV->Fit("pol1", "SQ");
+     covMatrixV.ResizeTo(fitResultV->GetCovarianceMatrix());
+     covMatrixV = fitResultV->GetCovarianceMatrix();
+     TF1* polyV   = fGraphV->GetFunction("pol1");
 	  origin[1]    = polyV->GetParameter(0);
 	  slope[1]     = polyV->GetParameter(1);
      originErr[1] = polyV->GetParError(0);
      slopeErr[1]  = polyV->GetParError(1);
-   }
+   //   variance["dq"][1] = covMatrixV(0, 0);
+   //   variance["dm"][1] = covMatrixV(1, 1);
+   //   variance["dmdq"][1] = covMatrixV(0, 1);
    
+   }
+   track->SetCovarianceMatrix(covMatrixU, covMatrixV);
    track->SetLineValue(origin, slope);
    track->SetLineErrorValue(originErr, slopeErr);
+   
 }
 
 //_____________________________________________________________________________
@@ -301,9 +322,21 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
 	  Int_t idx          = cluster->GetSensorIdx();
 	  Float_t posZ       = cluster->GetPositionG()[2];
 	  TVector3 impact    = track->Intersection(posZ);
-   
      TVector3 impactLoc =  pGeoMap->Detector2Sensor(idx, impact);
-      
+
+     Double_t dxOverdm = track->Intersection(posZ).X() / track->GetSlopeZ().X();
+     Double_t dxOverdq = track->Intersection(posZ).X() / track->GetOrigin().X();
+     Double_t fitErrorX2 = dxOverdm * dxOverdm* track->GetCovMatrixU()(1,1) + dxOverdq * dxOverdq * track->GetCovMatrixU()(0,0) + 2.*dxOverdm*dxOverdq*track->GetCovMatrixU()(0,1);
+     Double_t fitErrorX = sqrt(fitErrorX2);
+     Double_t resX = track->Intersection(posZ).X() - cluster->GetPositionG()[0];
+     
+     if (fitErrorX2 > cluster->GetPosError().X() * cluster->GetPosError().X()) cout << "negative sqrt!" <<endl;
+      else {
+       Double_t pullX = resX / sqrt(cluster->GetPosError().X() * cluster->GetPosError().X() - fitErrorX2);
+       cout << "pullX: " << pullX << endl;
+      }
+       
+
      fpHisTrackMap[idx]->Fill(impactLoc[0], impactLoc[1]);
 	  fpHisResTotX->Fill(impact[0]-cluster->GetPositionG()[0]);
 	  fpHisResTotY->Fill(impact[1]-cluster->GetPositionG()[1]);

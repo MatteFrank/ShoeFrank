@@ -109,6 +109,9 @@ protected:
       
    TH1F*           fpHisResX[MaxTrkSens];  ///< Residual in X histogram
    TH1F*           fpHisResY[MaxTrkSens];  ///< Residual in Y histogram
+   TH1F*           fpHisPullX[MaxTrkSens];            ///< Pull in X histogram
+   TH1F*           fpHisPullY[MaxTrkSens];            ///< Pull in Y histogram
+
    TH1F*           fpHisResTotX;        ///< Total Residual in X histogram
    TH1F*           fpHisResTotY;        ///< Total Residual in Y histogram
    TH2F*           fpHisTrackMap[MaxTrkSens];  ///< track map per sensor histogram
