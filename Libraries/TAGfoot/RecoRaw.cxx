@@ -44,8 +44,8 @@ Int_t   RecoRaw::fgNumFileStdAlone = 1;
 //! \param[in] fileNameIn data input file name
 //! \param[in] fileNameout data output root file name
 //! \param[in] IsSubFile flag to enable or disable the subfile of only the input file
-RecoRaw::RecoRaw(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t IsSubFile)
- : BaseReco(expName, runNumber, fileNameIn, fileNameout),
+RecoRaw::RecoRaw(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t IsSubFile, Bool_t isMC)
+ : BaseReco(expName, runNumber, fileNameIn, fileNameout, isMC),
    fpDaqEvent(0x0),
    fpNtuEvt(0x0),
    fActWdRaw(0x0),

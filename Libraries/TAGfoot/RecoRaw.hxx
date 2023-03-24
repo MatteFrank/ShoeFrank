@@ -38,7 +38,7 @@ class RecoRaw : public BaseReco
 {
 public:
    // default constructor
-   RecoRaw(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t IsSubFile=false);
+   RecoRaw(TString expName = "", Int_t runNumber = -1, TString fileNameIn = "", TString fileNameout = "", Bool_t IsSubFile=false, Bool_t isMC = false);
    
    virtual ~RecoRaw();
 
@@ -74,6 +74,8 @@ public:
    static void DisableStdAlone()                  { fgStdAloneFlag = false;    }
    //! Enable stand alone DAQ
    static void EnableStdAlone()                   { fgStdAloneFlag = true;     }
+   //! Get stand alone DAQ
+   static Bool_t IsStdAlone()                     { return fgStdAloneFlag;     }
    //! Set max number of file to be processed for stand alone DAQ
    static void SetStdAloneFiles(Int_t value)      { fgNumFileStdAlone = value; }
 

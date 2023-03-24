@@ -77,9 +77,9 @@ ClassImp(TAGactFlatTreeWriter)
 //!
 //! \param[in] name action name
 //! \param[in] isMC tMC flag
-TAGactFlatTreeWriter::TAGactFlatTreeWriter(const char* name)
+TAGactFlatTreeWriter::TAGactFlatTreeWriter(const char* name, Bool_t isMC)
 :  TAGactTreeWriter(name),
-   fFlagMC(false),
+   fFlagMC(isMC),
    fFlagItrTrack(false),
    fFlagMsdTrack(false)
 {

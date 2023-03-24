@@ -29,7 +29,7 @@ class TAGactFlatTreeWriter : public TAGactTreeWriter
 {
 public:
    // default constructor
-   TAGactFlatTreeWriter(const char* name = 0);
+   TAGactFlatTreeWriter(const char* name = 0, Bool_t isMC = false);
    
    // default destructor
    virtual ~TAGactFlatTreeWriter();
@@ -60,11 +60,9 @@ protected:
    TAGdataDsc*     fpNtuGlbTrack;       ///< Glb track cointainers
    TAGdataDsc*     fpNtuMcTrk;          ///< MC tracks conatianers
    
-   TAGparaDsc*     fpGeoMapVtx;         ///< geometry para dsc
    TAGparaDsc*     fpGeoMapItr;         ///< geometry para dsc
    TAGparaDsc*     fpGeoMapMsd;         ///< geometry para dsc
-   TAGparaDsc*     fpGeoMapTof;         ///< geometry para dsc
-   TAGparaDsc*     fpGeoMapG;           ///< geometry para dsc
+
    Bool_t          fFlagMC;             ///< MC flag
    Bool_t          fFlagTrack;          ///< tracking flag
    Bool_t          fFlagItrTrack;       ///< flag for ITR tracking

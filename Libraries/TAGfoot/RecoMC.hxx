@@ -30,7 +30,7 @@ class RecoMC : public BaseReco
 {
 public:
    // default constructor
-   RecoMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "");
+   RecoMC(TString expName = "", Int_t runNumber = 1, TString fileNameIn = "", TString fileNameout = "", Bool_t isMC = true);
    
    virtual ~RecoMC();
    

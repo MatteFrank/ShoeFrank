@@ -47,7 +47,7 @@ Bool_t  BaseReco::fgSaveMcFlag = true;
 //! \param[in] runNumber run number
 //! \param[in] fileNameIn data input file name
 //! \param[in] fileNameout data output root file name
-BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
+BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
    fRunNumber(runNumber),
@@ -138,7 +138,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fItrTrackingAlgo("Full"),
    fMsdTrackingAlgo("Full"),
    fCalClusterAlgo("Padme"),
-   fFlagMC(false),
+   fFlagMC(isMC),
    fReadL0Hits(false),
    fM28ClusMtFlag(false),
    fFlagRecCutter(false),
@@ -176,10 +176,10 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    if (fFlagOut) {
       if (fFlagFlatOut) {
          const Char_t* name = FootActionDscName("TAGactFlatTreeWriter");
-         fActEvtWriter = new TAGactFlatTreeWriter(name);
+         fActEvtWriter = new TAGactFlatTreeWriter(name, fFlagMC);
       } else {
          const Char_t* name = FootActionDscName("TAGactTreeWriter");
-         fActEvtWriter = new TAGactTreeWriter(name);
+         fActEvtWriter = new TAGactDscTreeWriter(name, fFlagMC);
       }
    }
 }
@@ -325,12 +325,10 @@ void BaseReco::AfterEventLoop()
 //!  Open output file
 void BaseReco::OpenFileOut()
 {
-   if (fFlagTree && !fFlagFlatOut)  SetTreeBranches();
    fActEvtWriter->Open(GetTitle(), "RECREATE");
    
    if (fFlagHisto)
       SetHistogramDir();
-   
 }
 
 //__________________________________________________________
@@ -1127,83 +1125,6 @@ void BaseReco::SetL0TreeBranches()
   }
 }
 
-//__________________________________________________________
-//! Set tree branches for writing in output file
-void BaseReco::SetTreeBranches()
-{
-   if (TAGrecoManager::GetPar()->IncludeST()) {
-      if (fFlagHits) {
-         fActEvtWriter->SetupElementBranch(fpNtuHitSt);
-      }
-   }
-   
-  if (TAGrecoManager::GetPar()->IncludeBM()) {
-     if (fFlagHits)
-        fActEvtWriter->SetupElementBranch(fpNtuHitBm);
-     
-     if (fFlagTrack)
-         fActEvtWriter->SetupElementBranch(fpNtuTrackBm);
-  }
-   
-  if (TAGrecoManager::GetPar()->IncludeVT()) {
-    if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitVtx);
-     
-    if (!fFlagTrack)
-      fActEvtWriter->SetupElementBranch(fpNtuClusVtx);
-    else {
-      fActEvtWriter->SetupElementBranch(fpNtuClusVtx);
-      fActEvtWriter->SetupElementBranch(fpNtuTrackVtx);
-      if (TAGrecoManager::GetPar()->IncludeTG())
-         fActEvtWriter->SetupElementBranch(fpNtuVtx);
-    }
-  }
-  
-  if (TAGrecoManager::GetPar()->IncludeIT()) {
-    if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitIt);
-     
-     fActEvtWriter->SetupElementBranch(fpNtuClusIt);
-     if (fFlagItrTrack && fFlagTrack)
-        fActEvtWriter->SetupElementBranch(fpNtuTrackIt);
-  }
-   
-  if (TAGrecoManager::GetPar()->IncludeMSD()) {
-    if (fFlagHits)
-       fActEvtWriter->SetupElementBranch(fpNtuHitMsd);
-     
-     fActEvtWriter->SetupElementBranch(fpNtuClusMsd);
-     fActEvtWriter->SetupElementBranch(fpNtuRecMsd);
-     
-     if (fFlagMsdTrack && fFlagTrack)
-        fActEvtWriter->SetupElementBranch(fpNtuTrackMsd);
-  }
-   if (TAGrecoManager::GetPar()->IncludeTW() && !TAGrecoManager::GetPar()->CalibTW()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuHitTw);
-         
-      fActEvtWriter->SetupElementBranch(fpNtuRecTw);
-   }
-
-   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
-
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      if (fFlagHits)
-         fActEvtWriter->SetupElementBranch(fpNtuHitCa);
-      
-      fActEvtWriter->SetupElementBranch(fpNtuClusCa);
-   }
-
-   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
-      if (fFlagTrack)
-         fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-   }
-   
-  if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
-    if (fFlagTrack && !fFlagRecCutter)
-      fActEvtWriter->SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
-  }
-}
 
 //__________________________________________________________
 //! Add required reconstruction actions in list

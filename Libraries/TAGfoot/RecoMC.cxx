@@ -42,8 +42,8 @@ ClassImp(RecoMC)
 //! \param[in] runNumber run number
 //! \param[in] fileNameIn data input file name
 //! \param[in] fileNameout data output root file name
-RecoMC::RecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout)
- : BaseReco(expName, runNumber, fileNameIn, fileNameout),
+RecoMC::RecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
+ : BaseReco(expName, runNumber, fileNameIn, fileNameout, isMC),
    fEvtStruct(0x0),
    fActNtuMcTrk(0x0),
    fActNtuMcReg(0x0),
@@ -56,9 +56,7 @@ RecoMC::RecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fil
    fActNtuHitTw(0x0),
    fActNtuHitCa(0x0),
    fActEvtReader(0x0)
-{
-   fFlagMC = true;
-  
+{  
   if (!TAGrecoManager::GetPar()->IsReadRootObj())
     fEvtStruct = new EVENT_STRUCT;
 }
