@@ -173,8 +173,11 @@ void TAGactDscTreeWriter::SetDescriptors()
 //! \param[in] dscBranch flag for object descriptor
 Int_t TAGactDscTreeWriter::Open(const TString& name, Option_t* option, const TString treeName, Bool_t /*dscBranch*/)
 {
-   SetDescriptors();
-   SetTreeBranches();
+   if (TAGrecoManager::GetPar()->IsSaveTree()) {
+      SetDescriptors();
+      SetTreeBranches();
+   }
+   
    TAGactTreeWriter::Open(name, option);
    
    return 0;
@@ -258,6 +261,17 @@ void TAGactDscTreeWriter::SetTreeBranches()
    }
    
    if (fFlagMC) {
+      if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
+         if (fSaveMcFlag) {
+            SetupElementBranch(fpNtuMcEvt);
+            SetupElementBranch(fpNtuMcTrk);
+            
+            if (TAGrecoManager::GetPar()->IsRegionMc() )
+               SetupElementBranch(fpNtuMcReg);
+         }
+         return;
+      }
+      
       if (!fSaveMcFlag)
          return;
       
