@@ -13,7 +13,7 @@ setenv CMAKE_MODULE_PATH $YBASEPATH/etc/root/cmake:$CMAKE_MODULE_PATH
 source $YBASEPATH/bin/thisroot.csh
 
 #define env
-setenv FOOTLIBS @CMAKE_BINARY_DIR@/libs/
+setenv FOOTLIBS @CMAKE_BINARY_DIR@/Libraries/
 setenv FOOTBUILD @CMAKE_BINARY_DIR@
 setenv FOOTSRC @CMAKE_CURRENT_SOURCE_DIR@/../
 setenv FOOTREC $FOOTBUILD/Reconstruction/
