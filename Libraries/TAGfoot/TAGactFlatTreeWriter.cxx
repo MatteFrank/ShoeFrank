@@ -119,7 +119,7 @@ void TAGactFlatTreeWriter::SetDescriptors()
    fpNtuTrackMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuTrack"),  "TAMSDntuTrack"));
    fpNtuRecTw    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"),   "TATWntuPoint"));
    fpNtuClusCa   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuCluster"), "TACAntuCluster"));
-   fpNtuGlbTrack = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAGntuGlbTrack"), "TAGntuGlbTrack"));
+   fpNtuGlbTrack = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc("glbTrack",  "TAGntuGlbTrack"));
    fpNtuMcTrk    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"),    "TAMCntuPart"));
    
    fpGeoMapItr = static_cast<TAGparaDsc*>(gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo"));

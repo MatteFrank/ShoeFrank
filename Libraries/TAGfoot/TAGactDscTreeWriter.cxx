@@ -128,7 +128,7 @@ void TAGactDscTreeWriter::SetDescriptors()
    fpNtuHitCa    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuHit"),      "TACAntuHit"));
    fpNtuClusCa   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuCluster"),  "TACAntuCluster"));
    
-   fpNtuGlbTrack = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAGntuGlbTrack"),  "TAGntuGlbTrack"));
+   fpNtuGlbTrack = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc("glbTrack",  "TAGntuGlbTrack"));
    
    if (fFlagMC) {
       fpNtuMcTrk = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"),    "TAMCntuPart"));
