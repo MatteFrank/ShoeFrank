@@ -251,7 +251,7 @@ void ConvertNtuple::CreateRecActionCa()
 void ConvertNtuple::CreateRecActionGlb()
 {
    if(fFlagTrack)
-      fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+      fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
 }
 
 //__________________________________________________________
