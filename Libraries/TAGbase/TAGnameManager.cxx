@@ -27,7 +27,7 @@ vector<TString>        TAGnameManager::fgkDataDscMapMC = {"st", "bm", "vt", "it"
 
 map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"},    {"TABM", "bm"},         {"TAVT", "vt"},         {"TAIT", "it"},     {"TADI", "di"},
                                                           {"TAGpar", "tg"},  {"TAMSD", "ms"},        {"TATW", "tw"},         {"TACA", "ca"},     {"WD", "wd"},
-                                                          {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"}, {"ntuPart", "mc"},
+                                                          {"TAGdaq", "daq"}, {"TAGntuEvent", "evt"}, {"actNtuEvent", "evt"}, {"ntuPart", "mc"},  {"TAGntuGlb", "glb"},
                                                           {"Region", "mc"},  {"TAGactDaq", "daq"},   {"actNtuPart", "eve"},  {"TAGactDscTree", "evt"}, {"TAGactFlatTree", "conv"}};
 
 map<TString, TString>  TAGnameManager::fgkBranchMap    = {{"Raw", "dat."},    {"Hit", "rh."},             {"Cluster", "clus."},    {"Point", "pt."},      {"Track", "track."},

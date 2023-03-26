@@ -961,7 +961,7 @@ void BaseReco::CreateRecActionGlb()
    
   if(fFlagTrack) {
     SetL0TreeBranches();
-    fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+    fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
     fActGlbTrack  = new TAGactNtuGlbTrack( "glbActTrack",
 					   fpNtuClusVtx,
 					   fpNtuTrackVtx,
@@ -1019,7 +1019,7 @@ void BaseReco::CreateRecActionGlbGF()
 		UpdatePDG::Instance();
 
 		// Initialisation of KFfitter
-		fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+		fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
 		fActGlbkFitter = new TAGactKFitter("glbActKFitter", fpNtuGlbTrack);
       if(fFlagMC)
          fActGlbkFitter->SetMcSample();
@@ -1034,7 +1034,7 @@ void BaseReco::CreateRecActionGlbGF()
 void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
-      fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
+      fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
       fActGlbTrackS = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuRecMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
       
       if (fFlagHisto)
