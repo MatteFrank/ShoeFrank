@@ -49,12 +49,6 @@ public:
    
    //! Close File in
    virtual void CloseFileIn();
-      
-   // Open File Out
-   virtual void OpenFileOut();
-   
-   // Close File Out
-   virtual void CloseFileOut();
   
   // Create L0 branch in tree
   virtual void SetL0TreeBranches();

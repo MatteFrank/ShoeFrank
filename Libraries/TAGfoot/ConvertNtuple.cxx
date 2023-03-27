@@ -42,6 +42,9 @@ ConvertNtuple::ConvertNtuple(TString expName, Int_t runNumber, TString fileNameI
       fFriendFileName = fileNameMcIn;
       fFriendTreeName = treeNameMc;
    }
+   
+   const Char_t* name = FootActionDscName("TAGactTreeReader");
+   fActEvtReader = new TAGactTreeReader(name);
 }
 
 //__________________________________________________________
@@ -54,6 +57,7 @@ ConvertNtuple::~ConvertNtuple()
 //! Open input file
 void ConvertNtuple::OpenFileIn()
 {
+   SetL0TreeBranches();
    fActEvtReader->Open(GetName(), "READ", "tree");
 }
 
@@ -62,35 +66,6 @@ void ConvertNtuple::OpenFileIn()
 void ConvertNtuple::CloseFileIn()
 {
    fActEvtReader->Close();
-}
-
-//__________________________________________________________
-//!  Open output file
-void ConvertNtuple::OpenFileOut()
-{
-   fActEvtWriter->Open(GetTitle(), "RECREATE");
-}
-
-//__________________________________________________________
-//! Close output file
-void ConvertNtuple::CloseFileOut()
-{
-   // saving current run info
-   TAGrecoManager::GetPar()->EnableFromLocalReco();
-   TAGrunInfo info = TAGrecoManager::GetPar()->GetGlobalInfo();
-   info.SetCampaignName(fExpName);
-   info.SetRunNumber(fRunNumber);
-   
-   //add crossing map if enabled in input mc files
-   if(fFlagMC){
-      TAGrunInfo inputinfo = gTAGroot->CurrentRunInfo();
-      if(inputinfo.GetGlobalPar().EnableRegionMc==true && info.GetGlobalPar().EnableRegionMc==true)
-         info.ImportCrossMap(inputinfo);
-   }
-   gTAGroot->SetRunInfo(info);
-   fActEvtWriter->Write();
-   fActEvtWriter->Print();
-   fActEvtWriter->Close();
 }
 
 //__________________________________________________________
@@ -192,12 +167,6 @@ void ConvertNtuple::CreateRecActionGlb()
 //! Set L0 tree branches for reading back
 void ConvertNtuple::SetL0TreeBranches()
 {
-   const Char_t* name = FootActionDscName("TAGactTreeReader");
-   fActEvtReader = new TAGactTreeReader(name);
-   
-   name = FootActionDscName("TAGactFlatTreeWriter");
-   fActEvtWriter = new TAGactFlatTreeWriter(name, fFlagMC);
-
    if (!fgSaveMcFlag)
       if (!fFriendFileName.IsNull() && !fFriendTreeName.IsNull()) {
          fActEvtReader->AddFriendTree(fFriendFileName,fFriendTreeName);
@@ -208,7 +177,7 @@ void ConvertNtuple::SetL0TreeBranches()
       fpNtuHitSt   = new TAGdataDsc(new TASTntuHit());
       fActEvtReader->SetupBranch(fpNtuHitSt);
    }
-   
+
    if (TAGrecoManager::GetPar()->IncludeBM() && fFlagTrack)
       fActEvtReader->SetupBranch(fpNtuTrackBm);
    

@@ -188,9 +188,7 @@ Int_t TAGactDscTreeWriter::Open(const TString& name, Option_t* option, const TSt
 void TAGactDscTreeWriter::SetTreeBranches()
 {
    if (TAGrecoManager::GetPar()->IncludeST()) {
-      if (fFlagHits) {
          SetupElementBranch(fpNtuHitSt);
-      }
    }
    
    if (TAGrecoManager::GetPar()->IncludeBM()) {
