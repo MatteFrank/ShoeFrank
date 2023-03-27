@@ -49,7 +49,7 @@ endif()
 #----------------------------------------------------------------------------
 # Add specific modules
 #
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/libs/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 MESSAGE(" --> Including cmake additional path: ${CMAKE_MODULE_PATH}")
 
@@ -80,7 +80,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/setupFOOT.csh.cmake" "${CMAKE_BINARY
 #----------------------------------------------------------------------------
 # Set the output paths
 #
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/libs/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Libraries/lib)
 
 #----------------------------------------------------------------------------
 # Set src libraries name
@@ -113,24 +113,24 @@ add_definitions(-Wno-shadow)
 #----------------------------------------------------------------------------
 # Set src includes
 #
-set(TATOE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATOE}")
-set(TAG_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAG}")
-set(TADAQ_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TADAQ}")
-set(TAAPI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAAPI}")
-set(TADI_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TADI}")
-set(TAIR_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAIR}")
-set(TAST_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAST}")
-set(TABM_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TABM}")
-set(TAVT_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAVT}")
-set(TAIT_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAIT}")
-set(TAMSD_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAMSD}")
-set(TATW_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATW}")
-set(TACA_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TACA}")
-set(TAMC_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAMC}")
-set(TAED_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAED}")
-set(TATOE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TATOE}")
-set(TAGF_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAGF}")
-set(TAFO_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/libs/src/${TAFO}")
+set(TATOE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TATOE}")
+set(TAG_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAG}")
+set(TADAQ_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TADAQ}")
+set(TAAPI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAAPI}")
+set(TADI_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TADI}")
+set(TAIR_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAIR}")
+set(TAST_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAST}")
+set(TABM_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TABM}")
+set(TAVT_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAVT}")
+set(TAIT_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAIT}")
+set(TAMSD_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAMSD}")
+set(TATW_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TATW}")
+set(TACA_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TACA}")
+set(TAMC_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAMC}")
+set(TAED_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAED}")
+set(TATOE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TATOE}")
+set(TAGF_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAGF}")
+set(TAFO_INCLUDE_DIR " ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/${TAFO}")
 
 set(TAPL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TAPL}")
 set(TACE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TACE}")
@@ -151,15 +151,15 @@ endif()
 #
 if (GENFIT_DIR)
   SET(GENFIT_INCLUDE_DIR
-      ${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/core/include/
-		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/eventDisplay/include/
-		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/fields/include/
-		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/finitePlanes/include/
-		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/fitters/include/
-		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/GBL/include/
-		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/measurements/include/
-		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/trackReps/include/
-		${CMAKE_CURRENT_SOURCE_DIR}/libs/GenFit/utilities/include/
+      ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/core/include/
+		${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/eventDisplay/include/
+		${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/fields/include/
+		${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/finitePlanes/include/
+		${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/fitters/include/
+		${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/GBL/include/
+		${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/measurements/include/
+		${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/trackReps/include/
+		${CMAKE_CURRENT_SOURCE_DIR}/Libraries/GenFit/utilities/include/
       )
 
   set (GENFIT_LIBRARIES  genfit2)
@@ -170,7 +170,7 @@ endif(GENFIT_DIR)
 # TOE
 #
 if (TOE_DIR)
-  SET(TOE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/TOE/)
+  SET(TOE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Libraries/TOE/)
   SET(TOE_LIBRARIES  TOE)
   add_compile_definitions(TOE_FLAG=1)
 endif(TOE_DIR)
@@ -184,7 +184,7 @@ string(PREPEND  GENFIT_INCLUDE_ROOT "-I")
 #----------------------------------------------------------------------------
 # Globals 
 #
-add_subdirectory(libs)
+add_subdirectory(Libraries)
 add_subdirectory(Reconstruction)
 add_subdirectory(Simulation)
 if (Geant4_DIR)

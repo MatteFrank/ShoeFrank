@@ -55,6 +55,7 @@ int main (int argc, char *argv[])  {
    TAGrecoManager::Instance(exp);
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
+   TAGrecoManager::GetPar()->EnableFlatTree();
 
    if(in.IsNull() || gSystem->AccessPathName(in.Data()))
    {
@@ -81,18 +82,3 @@ int main (int argc, char *argv[])  {
    
    return 0;
 } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

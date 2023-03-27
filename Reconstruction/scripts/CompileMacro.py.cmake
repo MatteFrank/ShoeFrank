@@ -5,8 +5,8 @@
 
 import os
 
-os.environ["DYLD_LIBRARY_PATH"] = "@CMAKE_BINARY_DIR@/libs/lib"
-os.environ["LD_LIBRARY_PATH"] = "@CMAKE_BINARY_DIR@/libs/lib"
+os.environ['DYLD_LIBRARY_PATH'] = "@CMAKE_BINARY_DIR@/libs/lib"
+os.environ['LD_LIBRARY_PATH'] = "@CMAKE_BINARY_DIR@/libs/lib"
 path1 = "@CMAKE_CURRENT_SOURCE_DIR@/macros/"
 
 for filename in os.listdir(path1):

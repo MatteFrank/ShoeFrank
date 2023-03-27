@@ -35,12 +35,14 @@ Genfit Event Display ON: n
 ############   Options for reconstruction   ################
 
 EnableTree:          y
+EnableFlatTree:      n
 EnableHisto:         y
 EnableTracking:      y
 
 EnableSaveHits:      y
 EnableRootObject:    n
 EnableRegionMc:      n
+EnableElecNoiseMc:   n
 
 ############   END - Options for reconstruction   ################
 

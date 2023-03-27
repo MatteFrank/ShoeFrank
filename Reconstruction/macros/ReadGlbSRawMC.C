@@ -22,6 +22,9 @@
 #include "TAMCntuHit.hxx"
 #include "TAMCntuPart.hxx"
 
+//ST
+#include "TASTntuHit.hxx"
+
 // VTX
 #include "TAGparGeo.hxx"
 #include "TAVTparGeo.hxx"
@@ -250,12 +253,13 @@ void FillMCTw(Int_t runNumber)
    
    TAGdataDsc* stMc  = new TAGdataDsc("stMc", new TAMCntuHit());
    TAGdataDsc* twMc  = new TAGdataDsc("twMc", new TAMCntuHit());
+   TAGdataDsc* stNtu = new TAGdataDsc("stNtu", new TASTntuHit());
    TAGdataDsc* twNtu = new TAGdataDsc("twNtu", new TATWntuHit());
    twRec = new TAGdataDsc("twPoint", new TATWntuPoint());
    
    vtActReader->SetupBranch(stMc, TAMCntuHit::GetStcBranchName());
    vtActReader->SetupBranch(twMc, TAMCntuHit::GetTofBranchName());
-   twActNtu  = new TATWactNtuHitMC("twActNtu", twMc, stMc, vtEve, twNtu, twConf, twCal, tgGeo);
+   twActNtu  = new TATWactNtuHitMC("twActNtu", twMc, stMc, stNtu, vtEve, twNtu, twConf, twCal, tgGeo);
    twActRec  = new TATWactNtuPoint("twActRec", twNtu, twRec, twGeo, twCal);
 }
 

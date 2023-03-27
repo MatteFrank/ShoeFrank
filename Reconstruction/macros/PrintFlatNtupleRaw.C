@@ -104,7 +104,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stHit);
   // tree->SetBranchAddress("stNtu", &stHit);
   
-  TABMntuHit*  bmHit = new TABMntuHit(); 
+  TABMntuHit*  bmHit = new TABMntuHit();
   tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmHit);
   
   TABMntuTrack*  bmTrack = new TABMntuTrack();
@@ -172,9 +172,9 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   vector<vector<TVector3> > trk_vtx_clus_2;
   
   vector<int> trk_vtx_clus_n, trk_vtx_clus_tothit;
-  vector<float>  trk_vtx_clus_x, trk_vtx_clus_y, trk_vtx_clus_z, trk_chi2; 
+  vector<float>  trk_vtx_clus_x, trk_vtx_clus_y, trk_vtx_clus_z, trk_chi2;
   
-  vector<double> tw_eloss, tw_time, tw_pos, tw_chargeA, tw_chargeB, tw_timeA, tw_timeB, tw_chargeCOM;
+  vector<double> tw_eloss, tw_time, tw_pos, tw_chargeA, tw_chargeB, tw_timeA, tw_timeB;
   vector<int> tw_bar, tw_layer;
   
   Int_t nsthit;
@@ -187,7 +187,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   Int_t pos1 = nameFile.Last('.');
   TString nameOut = nameFile(0, pos1);
   //string nameOut = nameFile(0, pos1);
-  // cout << " name out 0 " << nameOut << endl;   
+  // cout << " name out 0 " << nameOut << endl;
   nameOut.Append("_ntu.root");
   
   // Int_t pos2 = nameOut.Last('/');
@@ -221,8 +221,8 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   tree_out->Branch("vt_trk_chi2",         &trk_chi2 );
   tree_out->Branch("vt_trk_slopez",       &trk_slopez );
   tree_out->Branch("vt_trk_origin",       &trk_origin );
-  tree_out->Branch("vt_trk_clus",         &trk_vtx_clus_n ); 
-  tree_out->Branch("vt_trk_clus_hits",    &trk_vtx_clus_tothit); 
+  tree_out->Branch("vt_trk_clus",         &trk_vtx_clus_n );
+  tree_out->Branch("vt_trk_clus_hits",    &trk_vtx_clus_tothit);
   tree_out->Branch("vt_trk_clus_x",       &trk_vtx_clus_x );
   tree_out->Branch("vt_trk_clus_y",       &trk_vtx_clus_y );
   tree_out->Branch("vt_trk_clus_z",       &trk_vtx_clus_z );
@@ -231,12 +231,11 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
   tree_out->Branch("tw_hit_n",            &ntwhit   );
   tree_out->Branch("tw_bar",              &tw_bar );
   tree_out->Branch("tw_layer",            &tw_layer );
-  tree_out->Branch("tw_pos",              &tw_pos );   
+  tree_out->Branch("tw_pos",              &tw_pos );
   tree_out->Branch("tw_timeA",            &tw_timeA);
   tree_out->Branch("tw_timeB",            &tw_timeB);
   tree_out->Branch("tw_chargeA",          &tw_chargeA);
   tree_out->Branch("tw_chargeB",          &tw_chargeB);
-  tree_out->Branch("tw_chargeCOM",        &tw_chargeCOM);
   // tree_out->Branch("mc_trk_n",            &mctrack );
   // tree_out->Branch("mc_trk_charge",       &mc_trk_charge );
   // tree_out->Branch("mc_trk_mass",         &mc_trk_mass );
@@ -286,10 +285,10 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     bm_Pvers.clear();
     bm_R0.clear();
     bm_Pvers_x.clear();
-    bm_Pvers_y.clear(); 
+    bm_Pvers_y.clear();
     bm_Pvers_z.clear();
     bm_R0_x.clear();
-    bm_R0_y.clear(); 
+    bm_R0_y.clear();
     bm_R0_z.clear();
     
     
@@ -299,7 +298,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     vtx_z.clear();
     
     
-    mc_trk_charge.clear(); 
+    mc_trk_charge.clear();
     mc_trk_mass.clear();
     mc_trk_tof.clear();
     mc_trk_length.clear();
@@ -332,7 +331,6 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     tw_chargeB.clear();
     tw_timeA.clear();
     tw_timeB.clear();
-    tw_chargeCOM.clear();
     // Int_t nPlanes = vtparGeo->GetSensorsN();
     // cout << " iPlane  " <<   nPlanes  << endl;
     
@@ -508,7 +506,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     
     
     //    Double_t      Tof =      track->GetTof();              // time of flight
-    //    Double_t      TrkLength =  track->GetTrkLength(); 
+    //    Double_t      TrkLength =  track->GetTrkLength();
     //    // cout << " Tof   " << Tof   << "  TrkLength  "<<  TrkLength << endl;
     //    mc_trk_tof.push_back(Tof);
     //    mc_trk_length.push_back(TrkLength);
@@ -522,7 +520,7 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
       for( Int_t iTrack = 0; iTrack < vttrack->GetTracksN(); ++iTrack ) {
         TAVTtrack* track = vttrack->GetTrack(iTrack);
         trk_ind.push_back(iTrack);
-        Float_t Chi2 = track-> GetChi2();  
+        Float_t Chi2 = track-> GetChi2();
         trk_chi2.push_back(Chi2);
         
         TVector3 slopez = track->GetSlopeZ();
@@ -609,8 +607,8 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
       // cout << " layer  "<< layer   << endl;
       
       
-      Double_t eloss = hit->GetEnergyLoss(); 
-      Double_t twtime = hit->GetTime();       
+      Double_t eloss = hit->GetEnergyLoss();
+      Double_t twtime = hit->GetTime();
       Double_t pos = hit->GetPosition();
       TVector3 postw(0,0,0);
       TVector3 postwglob = geoTrafo->FromTWLocalToGlobal(postw);
@@ -623,19 +621,18 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
       // cout << " postwglob y   "<<  postwglob.y()  << endl;
       // cout << " postwglob z   "<<  postwglob.z()  << endl;
       
-      Double_t  chargeA = hit->GetChargeChA();  
-      Double_t  chargeB = hit->GetChargeChB();  
-      Double_t  timeA = hit->GetChargeTimeA();
-      Double_t  timeB = hit->GetChargeTimeB();
-      Double_t  chargeCOM = hit->GetCOM();
+      Double_t  chargeA = hit->GetChargeChA();
+      Double_t  chargeB = hit->GetChargeChB();
+      Double_t  timeA = hit->GetTimeChA();
+      Double_t  timeB = hit->GetTimeChB();
       
       //	cout << " chargeA    "<< chargeA   << endl;
       // cout << " chargeB  "<< chargeB  << endl;
       // cout << " timeA  "<< timeA   << endl;
       // cout << " timeB  "<< timeB   << endl;
       
-      // Float_t posdetframe = hit->GetHitCoordinate_detectorFrame(); 
-      // Float_t poszdetframe = hit->GetHitZ_detectorFrame();         
+      // Float_t posdetframe = hit->GetHitCoordinate_detectorFrame();
+      // Float_t poszdetframe = hit->GetHitZ_detectorFrame();
       
       tw_eloss.push_back(eloss);
       tw_time.push_back(twtime);
@@ -646,8 +643,6 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
       tw_timeA.push_back(timeA);
       tw_chargeB.push_back(chargeB);
       tw_timeB.push_back(timeB);
-      tw_chargeCOM.push_back(chargeCOM);
-      
       
     }
     
@@ -687,14 +682,14 @@ void PrintFlatNtupleRaw(TString expName = "12C_200", Int_t runNumber = 1, TStrin
     
     // // cout<<  "ntrack   " << trk_ind.size() << endl;
     nvttrack = trk_ind.size();
-    for (Int_t i = 0; i <nvttrack ; i++) {	 
+    for (Int_t i = 0; i <nvttrack ; i++) {
       
-      trk_vtx_clus_n.push_back(trk_vtx_clus_2.at(i).size());	
+      trk_vtx_clus_n.push_back(trk_vtx_clus_2.at(i).size());
       // cout<<  "trk_vtx_clus_n " << trk_vtx_clus_n.at(i)  << endl;
       
       for (Int_t j = 0; j < trk_vtx_clus_n.at(i); j++) {
         
-        // cout << "j " << j << endl; 
+        // cout << "j " << j << endl;
         // cout << " trk_vtx_clus_2.at(i).at(j).X()   " << trk_vtx_clus_2.at(i).at(j).X() << endl;
         trk_vtx_clus_x.push_back(trk_vtx_clus_2.at(i).at(j).X());
         trk_vtx_clus_y.push_back(trk_vtx_clus_2.at(i).at(j).Y());
