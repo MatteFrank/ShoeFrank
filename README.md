@@ -6,37 +6,39 @@ Useful links:
 - FOOT [webpage](https://web.infn.it/foot/en/home/)
 - SHOE [TWiki](http://arpg-serv.ing2.uniroma1.it/twiki/bin/view/Main/FOOTSoftware) containing also the installation guide
 - SHOE [Doxygen manual](http://arpg-serv.ing2.uniroma1.it/FOOTshoe/shoe/html/index.html) with classes and methods documentation
-- FOOT [Analysis and Reconstruction Meeting](https://agenda.infn.it/event/34092/ and follwing), status and update meeting about SHOE 
-- FOOT [Physics Meeting](https://agenda.infn.it/event/34035/ and following), report on ongoing physics analysis
+- FOOT [Indico page](https://agenda.infn.it/category/903/):
+  - FOOT [Analysis and Reconstruction Meeting](https://agenda.infn.it/category/1858/), status and update meeting about SHOE 
+  - FOOT [Physics Meeting](https://agenda.infn.it/category/1375/), report on ongoing physics analysis
 
 ## Local reconstruction tools:
 
 Flags in FootGlobal.par for local reconstruction
-...
+```
 EnableTree:          y
 EnableHisto:         y
 EnableTracking:      y
 
 EnableSaveHits:      n
 EnableRootObject:    y
-...
+```
 
 1) Running from raw data:
-========================
-- command:
-DecodeGlb -in dataRaw/data_test.00004313.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out run4313_Out.root -nev 10000 -exp GSI2021 -run 4313
+   - command:
+   ```
+   DecodeGlb -in dataRaw/data_test.00004313.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out run4313_Out.root -nev 10000 -exp GSI2021 -run 4313
+   ```
 
 2) Running from MC data:
-========================
-- command:
-DecodeGlb -in 16O_C_200_trig_shoereg.root -out 16O_C_200_1_Out.root -nev 10000 -exp GSI2021_MC -run 200 -mc
+   - command:
+   ```
+   DecodeGlb -in 16O_C_200_trig_shoereg.root -out 16O_C_200_1_Out.root -nev 10000 -exp GSI2021_MC -run 200 -mc
+   ```
 
 ## Global reconstruction tools with TOE:
 
 1) Running from raw data:
-========================
-- activate TOE in FootGlobal.par
-   . . .
+   - activate TOE in FootGlobal.par
+   ```
    IncludeKalman:   n
    IncludeTOE:      y
    FromLocalReco:   n
@@ -44,15 +46,15 @@ DecodeGlb -in 16O_C_200_trig_shoereg.root -out 16O_C_200_1_Out.root -nev 10000 -
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
    Reverse Tracking:   false
-   . . .
-- command:
-DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
-             -exp GSI -run 2239
+   ```
+   - command:
+   ```
+   DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000 -exp GSI -run 2239
+   ```
 
 2) Running from MC data:
-========================
-- activate TOE in FootGlobal.par
-   . . .
+   - activate TOE in FootGlobal.par
+   ```
    IncludeKalman:   n
    IncludeTOE:      y
    FromLocalReco:   n
@@ -60,14 +62,15 @@ DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
    Reverse Tracking:   false
-   . . .
-- command:
-DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+   ```
+   - command:
+   ```
+   DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+   ```
 
 3) Running from local reconstruction tree:
-=========================================
-- activate TOE in FootGlobal.par and local reco
-   . . .
+   - activate TOE in FootGlobal.par and local reco
+   ```
    IncludeKalman:   n
    IncludeTOE:      y
    FromLocalReco: y
@@ -75,16 +78,17 @@ DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
    Reverse Tracking:   false
-   . . .
-- command:
-DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1
+   ```
+   - command:
+   ```
+   DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1
+   ```
 
 ## Global reconstruction tools with GenFit:
 
 1) Running from raw data:
-========================
- - activate Kalman in FootGlobal.par
-   . . .
+   - activate Kalman in FootGlobal.par
+   ```
    IncludeKalman:   y
    IncludeTOE:      n
    FromLocalReco:   n
@@ -92,14 +96,15 @@ DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
    Reverse Tracking:   false
-   . . .
-- command:
-DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000
-          -exp GSI -run 2239
+   ```
+   - command:
+   ```
+   DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_1_GlbOut.root -nev 10000 -exp GSI -run 2239
+   ```
 
 2) Running from MC data:
-- activate Kalman in FootGlobal.par
-   . . .
+   - activate Kalman in FootGlobal.par
+   ```
    IncludeKalman:   y
    IncludeTOE:      n
    FromLocalReco:   n
@@ -107,23 +112,30 @@ DecodeGlb -in dataRaw/data_built.2239.physics_foot.daq.VTX.1.dat -out 12C_C_200_
    Kalman Mode:       ON
    Tracking Systems Considered:      VT IT MSD
    Reverse Tracking:   false
-   . . .
-- command:
-DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1
+   ```
+   - command:
+   ```
+   DecodeGlb -in 12C_C_200_1.root -out 12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1
+   ```
 
 3) Running from local reconstruction tree:
-- activate Kalman in FootGlobal.par and local reco
-. . .
-IncludeKalman:   y
-IncludeTOE:      n
-FromLocalReco:   y
+   - activate Kalman in FootGlobal.par and local reco
+   ```
+   IncludeKalman:   y
+   IncludeTOE:      n
+   FromLocalReco:   y
 
-Kalman Mode:       ON
-Tracking Systems Considered:      VT IT MSD
-Reverse Tracking:   false
-. . .
-- command:
-DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+   Kalman Mode:       ON
+   Tracking Systems Considered:      VT IT MSD
+   Reverse Tracking:   false
+   ```
+   - command:
+   ```
+   DecodeGlb -in 12C_C_200_L0Out.root -out  12C_C_200_1_GlbOut.root -nev 10000 -exp 12C_200 -run 1 -mc
+   ```
 
 ## Convert recontructed tree into a flat Ntpule (std::vector)
+Command:
+```
 ConvertNtuple -in run4313_Out.root -out run4313_FlatOut.root -nev 10000 -exp GSI2021 -run 4313 (-mc)
+```

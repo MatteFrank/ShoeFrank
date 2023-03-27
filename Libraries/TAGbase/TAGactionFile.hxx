@@ -28,6 +28,10 @@ class TAGactionFile : public TAGaction {
     // virtual adding a friend tree
     virtual void    AddFriendTree(TString fileName = "", TString treeName = "EventTree");
 
+    // Skip event
+    virtual void    SkipEvents(Int_t nEvents);
+    // Number of event
+    virtual Int_t   NEvents();
     // virtual close file
     virtual void    Close();
     // virtual open file flag

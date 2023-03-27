@@ -59,8 +59,6 @@ protected:
    TAMSDactNtuHitMC*     fActNtuHitMsd; ///< action for MSD MC hits
    TATWactNtuHitMC*      fActNtuHitTw;  ///< action for TW MC hits
    TACAactNtuHitMC*      fActNtuHitCa;  ///< action for CAL MC hits
-  
-   TAGactTreeReader*     fActEvtReader; ///< file reader for MC
 
    ClassDef(RecoMC, 1); ///< Base class for event display
 };

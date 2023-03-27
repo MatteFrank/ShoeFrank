@@ -97,8 +97,6 @@ protected:
    TAMSDactNtuHit*       fActNtuHitMsd;    ///< action for MSD hits
    TATWactNtuHit*        fActNtuHitTw;     ///< action for TW hits
    TACAactNtuHit*        fActNtuHitCa;     ///< action for CAL hits
-
-   TAGactDaqReader*      fActEvtReader;    ///< reader for real data (DAQ)
   
    Int_t                 fSubFileNumber; ///< number of subfile to process
    Bool_t                fSubFileFlag;  ///< flag for subfile processing
