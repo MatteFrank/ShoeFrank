@@ -14,6 +14,12 @@ project (FOOT)
 MESSAGE("${PROJECT_NAME}:")
 
 #------------------------------------------------------------------------------
+# If not specified, set the build type to Debug as default
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+#------------------------------------------------------------------------------
 # option Geant4
 option(Geant4_DIR "Include G4 simulation" OFF)
 
