@@ -314,7 +314,6 @@ void RecoMC::AddRawRequiredItem()
    fTAGroot->AddRequiredItem("actEvtReader");
    if (!TAGrecoManager::GetPar()->IsReadRootObj()) {
      fTAGroot->AddRequiredItem("eveActNtuMc");
-     fTAGroot->AddRequiredItem("evtActNtuMc");
      if (TAGrecoManager::GetPar()->IsRegionMc() )
        fTAGroot->AddRequiredItem("regActNtuMc");
    }

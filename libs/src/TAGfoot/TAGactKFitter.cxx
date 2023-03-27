@@ -208,9 +208,12 @@ Bool_t TAGactKFitter::Action()	{
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
 
 	if( m_IsMC )
+	{
 		m_trueParticleRep = static_cast<TAMCntuPart*> (gTAGroot->FindDataDsc("eveMc", "TAMCntuPart")->Object());
+		CalculateTrueMomentumAtTgt();
+	}
 
-	//Check if ST signlaed a pile-up
+	//Check if ST signaled a pile-up
 	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc("stDat", "TASTntuRaw")->Object())->GetSuperHit()->GetPileUp() )
 	{
 		if( m_debug > 0 )
@@ -289,6 +292,7 @@ Bool_t TAGactKFitter::Action()	{
 
 	delete m_uploader;
 	delete m_selector;
+	m_trueMomentumAtTgt.clear();
 
 	fpGlobTrackRepo->SetBit(kValid);
 	if(m_debug > 0) cout << "TAGactKFitter::Action()  -> end! " << endl;
@@ -444,7 +448,8 @@ void TAGactKFitter::IncludeDetectors() {
 			m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
 		}
 	}
-	if (m_debug > 0)	cout << "TAGactKFitter::IncludeDetectors() -- Detector systems for Kalman:  " << m_systemsON << endl;
+	
+	cout << "TAGactKFitter::IncludeDetectors() -- Detector systems for Kalman:  " << m_systemsON << endl;
 
 	// print-out of the particle hypothesis used for the fit
 	cout << "TAGactKFitter::IncludeDetectors() -- TAGrecoManager::GetPar()->MCParticles()";
@@ -1274,7 +1279,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		{
 			// trackMC_id = track->getMcTrackId();     //???????
 			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
-			mcMom = particle->GetInitP();
+			if( particle->GetMotherID() == 0 )
+				mcMom = particle->GetInitP();
+			else
+				mcMom = m_trueMomentumAtTgt[trackMC_id];
 			mcPos = particle->GetInitPos();
 			int mcCharge = particle->GetCharge();
 
@@ -1319,7 +1327,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				shoeOutTrack->SetQuality( trackQuality );
 				h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
 				h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
-				h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag() - particle->GetInitP().Mag() );	// check if not present
+				h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag()/particle->GetInitP().Mag() );	// check if not present
 			}
 		}
 
@@ -1833,6 +1841,29 @@ void TAGactKFitter::PrintEfficiency() {
 
 
 
+void TAGactKFitter::CalculateTrueMomentumAtTgt()
+{
+	if(TAGrecoManager::GetPar()->IsRegionMc())
+	{
+		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc("regMc", "TAMCntuRegion")->Object();
+		for(int i = 0; i < mcNtuReg->GetRegionsN(); ++i)
+		{
+			TAMCregion* mcReg = (TAMCregion*)mcNtuReg->GetRegion(i);
+			if( mcReg->GetOldCrossN() == 50 && mcReg->GetCrossN() == 2 )
+				m_trueMomentumAtTgt[ mcReg->GetTrackIdx() - 1 ] = mcReg->GetMomentum();
+		}
+	}
+
+	for(int i=0; i< m_trueParticleRep->GetTracksN(); ++i)
+	{
+		if( m_trueMomentumAtTgt.find(i) != m_trueMomentumAtTgt.end() ) continue;
+
+		TAMCpart* part = (TAMCpart*)m_trueParticleRep->GetTrack(i);
+		m_trueMomentumAtTgt[ i ] = part->GetInitP();
+	}
+}
+
+
 
 //----------------------------------------------------------------------------------------------------
 
@@ -2001,13 +2032,13 @@ void TAGactKFitter::CreateHistogram()	{
 	AddHistogram(h_momentum);
 
 	for (int i = 0; i < 9; ++i){
-		h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d;p [GeV];Entries",i), 150, 0.,15.));
+		h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d;p [GeV];Entries",i), 1000, 0.,15.));
 		AddHistogram(h_momentum_true[i]);
 
-		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d;p [GeV];Entries",i), 150, 0.,15.));
+		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d;p [GeV];Entries",i), 1000, 0.,15.));
 		AddHistogram(h_momentum_reco[i]);
 
-		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRadio%d",i), Form("Momentum Ratio %d;p_{reco}/p_{true};Entries",i), 150, 0, 2.5));
+		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRatio%d",i), Form("Momentum Ratio %d;p_{reco}/p_{true};Entries",i), 500, 0, 2.5));
 		AddHistogram(h_ratio_reco_true[i]);
 	}
 
@@ -2266,29 +2297,6 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 			}
 		}
 
-		//Reset track seed
-		double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(chargeFromTW) );
-		int A_Hypo = round(mass_Hypo/m_AMU);
-
-		TVector3 pos, mom;
-		TVectorD seed = fitTrack->getStateSeed();
-		pos.SetX(seed(0)); pos.SetY(seed(1)); pos.SetZ(seed(2));
-		if(m_debug > 1)	pos.Print();
-
-		mom.SetX(seed(3)); mom.SetY(seed(4)); mom.SetZ(seed(5));
-		if(m_debug > 1)	mom.Print();
-
-		mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
-
-		// int pointID = m_SensorIDMap->GetHitIDFromMeasID(fitTrack->getRawMeasurement(-1)->getHitId());
-		// float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( pointID )->GetMeanToF();
-		// float beam_speed =
-		// TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
-		// float beta = (m_GeoTrafo->GetTWCenter().Z() - m_GeoTrafo->GetTGCenter().Z())/(TOF*TAGgeoTrafo::GetLightVelocity());
-		if(m_debug > 1)	mom.Print();
-
-		fitTrack->setStateSeed(pos,mom);
-
 		//update the name of the particle associated to track
 		switch(chargeFromTW)
 		{
@@ -2308,6 +2316,35 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 	else
 		m_NTWTracksGoodHypo++;
 
+	//Reset track seed
+	double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(chargeFromTW) );
+	int A_Hypo = round(mass_Hypo/m_AMU);
+
+	TVector3 pos, mom;
+	TVectorD seed = fitTrack->getStateSeed();
+	pos.SetX(seed(0)); pos.SetY(seed(1)); pos.SetZ(seed(2));
+	if(m_debug > 1)	pos.Print();
+
+	mom.SetX(seed(3)); mom.SetY(seed(4)); mom.SetZ(seed(5));
+	if(m_debug > 1)	mom.Print();
+
+	// mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
+	// cout << "momBefore::" << mom.Mag() << endl;
+	int pointID = m_SensorIDMap->GetHitIDFromMeasID(fitTrack->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId());
+	float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( pointID )->GetMeanTof();
+	float var = m_BeamEnergy/m_AMU;
+	float beam_speed = TAGgeoTrafo::GetLightVelocity()*TMath::Sqrt(var*(var + 2))/(var + 1);
+	TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
+	float beta = (m_GeoTrafo->GetTWCenter().Z() - m_GeoTrafo->GetTGCenter().Z())/(TOF*TAGgeoTrafo::GetLightVelocity());
+	mom.SetMag(mass_Hypo*beta/TMath::Sqrt(1 - pow(beta,2)));
+	// cout << "mass::" << mass_Hypo << endl;
+	// cout << "beta::" << beta << endl;
+	// cout << "gamma::" << 1/TMath::Sqrt(1-pow(beta,2)) << endl;
+	// cout << "mom::" << mom.Mag() << endl;
+
+	if(m_debug > 1)	mom.Print();
+
+	fitTrack->setStateSeed(pos,mom);
 }
 
 
