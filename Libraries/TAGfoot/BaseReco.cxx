@@ -962,7 +962,8 @@ void BaseReco::CreateRecActionGlb()
   if(fFlagTrack) {
     SetL0TreeBranches();
     fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
-    fActGlbTrack  = new TAGactNtuGlbTrack( "glbActTrack",
+    const Char_t* name = FootActionDscName("TAGactNtuGlbTrack");
+    fActGlbTrack  = new TAGactNtuGlbTrack(name,
 					   fpNtuClusVtx,
 					   fpNtuTrackVtx,
 					   fpNtuVtx,
@@ -1020,7 +1021,8 @@ void BaseReco::CreateRecActionGlbGF()
 
 		// Initialisation of KFfitter
 		fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
-		fActGlbkFitter = new TAGactKFitter("glbActKFitter", fpNtuGlbTrack);
+      const Char_t* name = FootActionDscName("TAGactKFitter");
+		fActGlbkFitter = new TAGactKFitter(name, fpNtuGlbTrack);
       if(fFlagMC)
          fActGlbkFitter->SetMcSample();
 		if (fFlagHisto)
@@ -1035,7 +1037,8 @@ void BaseReco::CreateRecActionGlbS()
 {
    if(fFlagTrack) {
       fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
-      fActGlbTrackS = new TAGactNtuGlbTrackS("glbActTrackS", fpNtuVtx, fpNtuClusIt, fpNtuRecMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
+      const Char_t* name = FootActionDscName("TAGactNtuGlbTrackS");
+      fActGlbTrackS = new TAGactNtuGlbTrackS(name, fpNtuVtx, fpNtuClusIt, fpNtuRecMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG);
       
       if (fFlagHisto)
          fActGlbTrackS->CreateHistogram();
@@ -1135,9 +1138,9 @@ void BaseReco::AddRequiredItem()
    if (TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IsFromLocalReco()) {
      if (fFlagTrack) {
        if(!fFlagRecCutter)
-          gTAGroot->AddRequiredItem("glbActTrack");
+          gTAGroot->AddRequiredItem(FootActionDscName("TAGactNtuGlbTrack"));
        else
-          gTAGroot->AddRequiredItem("evtReader");
+          gTAGroot->AddRequiredItem(FootActionDscName("TAGactTreeReader"));
      }
      return;
    }
