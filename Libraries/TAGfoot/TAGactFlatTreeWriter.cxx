@@ -134,9 +134,7 @@ void TAGactFlatTreeWriter::SetDescriptors()
       fFlagMsdTrack = true;
    else
       fFlagMsdTrack = false;
-   
 }
-
 
 //------------------------------------------+-----------------------------------
 //! Open file.
