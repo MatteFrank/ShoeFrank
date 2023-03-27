@@ -103,53 +103,53 @@ TAGactDscTreeWriter::~TAGactDscTreeWriter()
 //!
 void TAGactDscTreeWriter::SetDescriptors()
 {   
-   fpNtuHitSt    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TASTntuHit"),      "TASTntuHit"));
+   fpNtuHitSt    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TASTntuHit")));
    
-   fpNtuHitBm    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TABMntuHit"),      "TABMntuHit"));
-   fpNtuTrackBm  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TABMntuTrack"),    "TABMntuTrack"));
+   fpNtuHitBm    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TABMntuHit")));
+   fpNtuTrackBm  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TABMntuTrack")));
    
-   fpNtuHitVtx   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuHit"),      "TAVTntuHit"));
-   fpNtuClusVtx  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"),  "TAVTntuCluster"));
-   fpNtuTrackVtx = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuTrack"),    "TAVTntuTrack"));
-   fpNtuVtx      = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"),   "TAVTntuVertex"));
+   fpNtuHitVtx   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuHit")));
+   fpNtuClusVtx  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster")));
+   fpNtuTrackVtx = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuTrack")));
+   fpNtuVtx      = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex")));
    
-   fpNtuHitIt    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuHit"),      "TAITntuHit"));
-   fpNtuClusIt   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"),  "TAITntuCluster"));
-   fpNtuTrackIt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuTrack"),    "TAITntuTrack"));
+   fpNtuHitIt    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuHit")));
+   fpNtuClusIt   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster")));
+   fpNtuTrackIt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuTrack")));
    
-   fpNtuHitMsd   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuHit"),     "TAMSDntuHit"));
-   fpNtuClusMsd  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"), "TAMSDntuCluster"));
-   fpNtuRecMsd   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuPoint"),   "TAMSDntuPoint"));
-   fpNtuTrackMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuTrack"),   "TAMSDntuTrack"));
+   fpNtuHitMsd   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuHit")));
+   fpNtuClusMsd  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster")));
+   fpNtuRecMsd   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuPoint")));
+   fpNtuTrackMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuTrack")));
    
-   fpNtuHitTw    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuHit"),      "TATWntuHit"));
-   fpNtuRecTw    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"),    "TATWntuPoint"));
+   fpNtuHitTw    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuHit")));
+   fpNtuRecTw    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint")));
    
-   fpNtuHitCa    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuHit"),      "TACAntuHit"));
-   fpNtuClusCa   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuCluster"),  "TACAntuCluster"));
+   fpNtuHitCa    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuHit")));
+   fpNtuClusCa   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuCluster")));
    
-   fpNtuGlbTrack = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAGntuGlbTrack"),  "TAGntuGlbTrack"));
+   fpNtuGlbTrack = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAGntuGlbTrack")));
    
    if (fFlagMC) {
-      fpNtuMcTrk = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"),    "TAMCntuPart"));
-      fpNtuMcEvt = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuEvent"),   "TAMCntuEvent"));
-      fpNtuMcReg = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"),  "TAMCntuRegion"));
-      fpNtuMcSt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kST),              "TAMCntuHit"));
-      fpNtuMcBm  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kBM),              "TAMCntuHit"));
-      fpNtuMcVt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kVTX),             "TAMCntuHit"));
-      fpNtuMcIt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kITR),             "TAMCntuHit"));
-      fpNtuMcMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kMSD),             "TAMCntuHit"));
-      fpNtuMcTw  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kTW),              "TAMCntuHit"));
-      fpNtuMcCa  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kCAL),             "TAMCntuHit"));
+      fpNtuMcTrk = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart")));
+      fpNtuMcEvt = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuEvent")));
+      fpNtuMcReg = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion")));
+      fpNtuMcSt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kST)));
+      fpNtuMcBm  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kBM)));
+      fpNtuMcVt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kVTX)));
+      fpNtuMcIt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kITR)));
+      fpNtuMcMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kMSD)));
+      fpNtuMcTw  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kTW)));
+      fpNtuMcCa  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootDataDscMcName(kCAL)));
       
    } else {
-      fpNtuEvt    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAGntuEvent"),    "TAGntuEvent"));
-      fpWDtrigger = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAWDntuTrigger"), "TAWDntuTrigger"));
-      fpDatRawSt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TASTntuRaw"),     "TASTntuRaw"));
-      fpDatRawBm  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TABMntuRaw"),     "TABMntuRaw"));
-      fpDatRawMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuRaw"),    "TAMSDntuRaw"));
-      fpDatRawTw  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuRaw"),     "TATWntuRaw"));
-      fpDatRawCa  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuRaw"),     "TACAntuRaw"));
+      fpNtuEvt    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAGntuEvent")));
+      fpWDtrigger = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAWDntuTrigger")));
+      fpDatRawSt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TASTntuRaw")));
+      fpDatRawBm  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TABMntuRaw")));
+      fpDatRawMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuRaw")));
+      fpDatRawTw  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuRaw")));
+      fpDatRawCa  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuRaw")));
    }
    
    if (fpNtuTrackIt)

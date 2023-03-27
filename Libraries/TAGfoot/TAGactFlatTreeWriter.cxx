@@ -109,21 +109,21 @@ Bool_t TAGactFlatTreeWriter::Process()
 void TAGactFlatTreeWriter::SetDescriptors()
 {
    fpFootGeo     = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   fpNtuHitSt    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TASTntuHit"),     "TASTntuHit"));
-   fpNtuTrackBm  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TABMntuTrack"),   "TABMntuTrack"));
-   fpNtuTrackVtx = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuTrack"),   "TAVTntuTrack"));
-   fpNtuVtx      = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"),  "TAVTntuVertex"));
-   fpNtuClusIt   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"), "TAITntuCluster"));
-   fpNtuTrackIt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuTrack"),   "TAITntuTrack"));
-   fpNtuRecMsd   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuPoint"),  "TAMSDntuPoint"));
-   fpNtuTrackMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuTrack"),  "TAMSDntuTrack"));
-   fpNtuRecTw    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"),   "TATWntuPoint"));
-   fpNtuClusCa   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuCluster"), "TACAntuCluster"));
-   fpNtuGlbTrack = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAGntuGlbTrack"), "TAGntuGlbTrack"));
-   fpNtuMcTrk    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"),    "TAMCntuPart"));
+   fpNtuHitSt    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TASTntuHit")));
+   fpNtuTrackBm  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TABMntuTrack")));
+   fpNtuTrackVtx = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuTrack")));
+   fpNtuVtx      = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex")));
+   fpNtuClusIt   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster")));
+   fpNtuTrackIt  = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAITntuTrack")));
+   fpNtuRecMsd   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuPoint")));
+   fpNtuTrackMsd = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuTrack")));
+   fpNtuRecTw    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint")));
+   fpNtuClusCa   = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TACAntuCluster")));
+   fpNtuGlbTrack = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAGntuGlbTrack")));
+   fpNtuMcTrk    = static_cast<TAGdataDsc*>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart")));
    
-   fpGeoMapItr = static_cast<TAGparaDsc*>(gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo"));
-   fpGeoMapMsd = static_cast<TAGparaDsc*>(gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo"));
+   fpGeoMapItr = static_cast<TAGparaDsc*>(gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo")));
+   fpGeoMapMsd = static_cast<TAGparaDsc*>(gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo")));
    
    if (fpNtuTrackIt)
       fFlagItrTrack = true;
