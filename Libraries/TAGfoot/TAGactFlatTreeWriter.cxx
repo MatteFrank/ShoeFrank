@@ -135,10 +135,6 @@ void TAGactFlatTreeWriter::SetDescriptors()
    else
       fFlagMsdTrack = false;
    
-   if (fpNtuMcTrk)
-      fFlagMC = true;
-   else
-      fFlagMC = false;
 }
 
 
