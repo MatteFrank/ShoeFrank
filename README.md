@@ -3,11 +3,11 @@
 This is the repository for the official simulation and analysis software of the FOOT  experiment.
 
 Useful links:
-- [FOOT webpage](https://web.infn.it/foot/en/home/)
-- [SHOE TWiki](http://arpg-serv.ing2.uniroma1.it/twiki/bin/view/Main/FOOTSoftware) containing also the installation guide
+- FOOT [webpage](https://web.infn.it/foot/en/home/)
+- SHOE [TWiki](http://arpg-serv.ing2.uniroma1.it/twiki/bin/view/Main/FOOTSoftware) containing also the installation guide
 - SHOE [Doxygen manual](http://arpg-serv.ing2.uniroma1.it/FOOTshoe/shoe/html/index.html) with classes and methods documentation
 - FOOT [Analysis and Reconstruction Meeting](https://agenda.infn.it/event/34092/ and follwing), status and update meeting about SHOE 
-- FOOT [Physics Meeting]( https://agenda.infn.it/event/21783/ and following), report on ongoing physics analysis
+- FOOT [Physics Meeting](https://agenda.infn.it/event/34035/ and following), report on ongoing physics analysis
 
 ## Local reconstruction tools:
 
