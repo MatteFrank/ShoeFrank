@@ -39,6 +39,7 @@ Kalman Particle Types:	C
 ############   Options for reconstruction   ################
 
 EnableTree:          y
+EnableFlatTree:      n
 EnableHisto:         y
 EnableTracking:      y
 

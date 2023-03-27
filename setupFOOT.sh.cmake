@@ -1,4 +1,4 @@
-export ASOFTREF=@CMAKE_BINARY_DIR@/libs/
+export ASOFTREF=@CMAKE_BINARY_DIR@/Libraries/
 export FOOTMAIN=@CMAKE_BINARY_DIR@
 
 

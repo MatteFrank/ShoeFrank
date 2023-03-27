@@ -35,6 +35,7 @@ Genfit Event Display ON: n
 ############   Options for reconstruction   ################
 
 EnableTree:          y
+EnableFlatTree:      n
 EnableHisto:         y
 EnableTracking:      y
 
