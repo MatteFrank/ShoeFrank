@@ -32,6 +32,10 @@ map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"},    {"T
 
 map<TString, TString>  TAGnameManager::fgkBranchMap    = {{"Raw", "dat."},    {"Hit", "rh."},             {"Cluster", "clus."},    {"Point", "pt."},      {"Track", "track."},
                                                           {"Vertex", "vtx."}, {"TAMCntuEvent", "mcevt."}, {"TAGntuEvent", "evt."}, {"ntuPart", "track."}, {"Trigger", "trig."}};
+
+map<TString, TString>  TAGnameManager::fgkBaseNameMap  = {{"TAST", "ST"},    {"TABM", "BM"},         {"TAVT", "VT"},         {"TAIT", "IT"},           {"TADI", "DI"},
+                                                          {"TAGpar", "TG"},  {"TAMSD", "MSD"},       {"TATW", "TW"},         {"TACA", "CA"},           {"WD", "WD"},
+                                                          {"TAGdaq", "DAQ"}, {"TAGevent", "EVT"},    {"TAGgeoTrafo", "FOOT"}};
 //_____________________________________________________________________________
 //! Constructor
 //!
@@ -166,6 +170,23 @@ const TString TAGnameManager::GetBranchMcName(Int_t idx)
    prefix.ToLower();
    
    TString name = prefix+suffix+".";
+   
+   return name;
+}
+
+//_____________________________________________________________________________
+//! Get base name
+//!
+//!  \param[in] className name of paraDsc class
+const TString TAGnameManager::GetBaseName(TString className)
+{
+   TString name;
+   for (auto const& it : fgkBaseNameMap) {
+      if (className.Contains(it.first)) {
+         name = it.second;
+         break;
+      }
+   }
    
    return name;
 }
