@@ -59,7 +59,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   //define and charge the detectors par files
 
   geoTrafo = new TAGgeoTrafo();
-  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
   geoTrafo->FromFile(parFileName);
 
   TAGparaDsc* fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
@@ -70,32 +70,32 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
 
   TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
   stparGeo = (TASTparGeo*)parGeoSt->Object();
-  parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TASTparGeo"), runNumber);
   stparGeo->FromFile(parFileName);
 
   TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
   bmparGeo = (TABMparGeo*)parGeoBm->Object();
-  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TABMparGeo"), runNumber);
   bmparGeo->FromFile(parFileName);
 
   TAGparaDsc* parGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
   vtparGeo = (TAVTparGeo*)parGeoVtx->Object();
-  parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
   vtparGeo->FromFile(parFileName);
 
   TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
   itparGeo = (TAITparGeo*)parGeoIt->Object();
-  parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TAITparGeo"), runNumber);
   itparGeo->FromFile(parFileName);
 
   TAGparaDsc* parGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
   msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
-  parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
   msdparGeo->FromFile(parFileName);
 
   TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
   twparGeo = (TATWparGeo*)parGeoTw->Object();
-  parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TATWparGeo"), runNumber);
   twparGeo->FromFile(parFileName);
 
   //define and load the detector interesting quantities that will be passed in the analysis methods

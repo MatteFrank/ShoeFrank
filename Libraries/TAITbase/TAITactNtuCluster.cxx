@@ -16,6 +16,8 @@
 #include "TAITntuCluster.hxx"
 #include "TAITactNtuCluster.hxx"
 
+#include "TAGnameManager.hxx"
+
 /*!
  \class TAITactNtuCluster 
  \brief NTuplizer for ITR raw hits
@@ -117,7 +119,7 @@ Bool_t TAITactNtuCluster::CreateClusters(Int_t iSensor)
    
    for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
       cluster = pNtuClus->GetCluster(iSensor, i);
-      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAITparGeo::GetBaseName()));
+      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TAITparGeo")));
       FillClusterInfo(iSensor, cluster);
    }
    

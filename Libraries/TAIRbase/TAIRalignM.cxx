@@ -90,23 +90,23 @@ TAIRalignM::TAIRalignM(const TString name, const TString expName, Int_t runNumbe
    // VTX
    fpGeoMapVtx    = new TAGparaDsc(FootParaDscName("TAVTparGeo"), new TAVTparGeo());
    TAVTparGeo* geomapVtx   = (TAVTparGeo*) fpGeoMapVtx->Object();
-   TString parFile = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
+   TString parFile = fCampManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), fRunNumber);
    geomapVtx->FromFile(parFile.Data());
       
    fpConfigVtx    = new TAGparaDsc("vtConf", new TAVTparConf());
-   parFile = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
+   parFile = fCampManager->GetCurConfFile(FootBaseName("TAVTparGeo"), fRunNumber);
    TAVTparConf* parConfVtx = (TAVTparConf*) fpConfigVtx->Object();
    parConfVtx->FromFile(parFile.Data());
    
    // ITR
    fpGeoMapItr    = new TAGparaDsc(FootParaDscName("TAITparGeo"), new TAITparGeo());
    TAITparGeo* geomapItr   = (TAITparGeo*) fpGeoMapItr->Object();
-   parFile = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
+   parFile = fCampManager->GetCurGeoFile(FootBaseName("TAITparGeo"), fRunNumber);
    geomapItr->FromFile(parFile.Data());
    
    fpConfigItr    = new TAGparaDsc("itConf", new TAITparConf());
    TAITparConf* parConfItr = (TAITparConf*) fpConfigItr->Object();
-   parFile = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
+   parFile = fCampManager->GetCurConfFile(FootBaseName("TAVTparGeo"), fRunNumber);
    parConfItr->FromFile(parFile.Data());
    
    //IR

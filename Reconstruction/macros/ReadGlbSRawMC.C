@@ -145,7 +145,7 @@ void FillMCVertex(Int_t runNumber) {
    
    vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
    
    vtEve  = new TAGdataDsc("vtEve", new TAMCntuPart());
@@ -175,7 +175,7 @@ void FillMCInnerTracker(Int_t runNumber) {
    /*Ntupling the MC Inner tracker information*/
    itGeo    = new TAGparaDsc("itGeo", new TAITparGeo());
    TAITparGeo* geomap   = (TAITparGeo*) itGeo->Object();
-   TString parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAITparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
    
    TAGdataDsc* itMc     = new TAGdataDsc("itMc", new TAMCntuHit());
@@ -197,7 +197,7 @@ void FillMCMsd(Int_t runNumber) {
    /*Ntupling the MC Vertex information*/
    msdGeo    = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
    TAMSDparGeo* geomap = (TAMSDparGeo*) msdGeo->Object();
-   TString parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
    
    TAGdataDsc* msdMc     = new TAGdataDsc("msdMc", new TAMCntuHit());
@@ -223,30 +223,30 @@ void FillMCTw(Int_t runNumber)
    
    twGeo    = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
    TATWparGeo* geomap  = (TATWparGeo*) twGeo->Object();
-   TString parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TATWparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
    
    TAGparaDsc* twConf = new TAGparaDsc("twConf", new TATWparConf());
    TATWparConf* parConf = (TATWparConf*)twConf->Object();
-   parFileName = campManager->GetCurConfFile(TATWparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurConfFile(FootBaseName("TATWparGeo"), runNumber);
    parConf->FromFile(parFileName.Data());
       
    TAGparaDsc* twCal   = new TAGparaDsc("twCal", new TATWparCal());
    TATWparCal* parCal   = (TATWparCal*) twCal->Object();
-   parFileName = campManager->GetCurMapFile(TATWparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurMapFile(FootBaseName("TATWparGeo"), runNumber);
    parCal->FromBarStatusFile(parFileName.Data());
    
    Bool_t isTof_calib = false;
-   parFileName = campManager->GetCurCalFile(TATWparGeo::GetBaseName(), runNumber,
+   parFileName = campManager->GetCurCalFile(FootBaseName("TATWparGeo"), runNumber,
                                             isTof_calib,false);
    parCal->FromCalibFile(parFileName.Data(),isTof_calib,false);
    
    isTof_calib = true;
-   parFileName = campManager->GetCurCalFile(TATWparGeo::GetBaseName(), runNumber,
+   parFileName = campManager->GetCurCalFile(FootBaseName("TATWparGeo"), runNumber,
                                             isTof_calib,false);
    parCal->FromCalibFile(parFileName.Data(),isTof_calib,false);
    
-   parFileName = campManager->GetCurConfFile(TATWparGeo::GetBaseName(), runNumber,
+   parFileName = campManager->GetCurConfFile(FootBaseName("TATWparGeo"), runNumber,
                                              Form("%d%s", A_beam,ion_name.Data()),
                                              (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
    parCal->FromFileZID(parFileName.Data(),Z_beam);
@@ -268,20 +268,20 @@ void FillMCCa(Int_t runNumber)
    /*Ntupling the MC Vertex information*/
    caGeo    = new TAGparaDsc(TACAparGeo::GetDefParaName(), new TACAparGeo());
    TACAparGeo* geomap   = (TACAparGeo*) caGeo->Object();
-   TString parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TACAparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
    
    TAGparaDsc* caConf = new TAGparaDsc("caConf", new TACAparConf());
    TACAparConf* parConf = (TACAparConf*)caConf->Object();
-   parFileName = campManager->GetCurConfFile(TACAparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurConfFile(FootBaseName("TACAparGeo"), runNumber);
    parConf->FromFile(parFileName.Data());
    
    TAGparaDsc* caCal  = new TAGparaDsc("caCal", new TACAparCal());
    TACAparCal* parCal = (TACAparCal*)caCal->Object();
-   parFileName = campManager->GetCurMapFile(TACAparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurMapFile(FootBaseName("TACAparGeo"), runNumber);
    parCal->FromCrysStatusFile(parFileName.Data());
    
-   parFileName = campManager->GetCurCalFile(TACAparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurCalFile(FootBaseName("TACAparGeo"), runNumber);
    parCal->LoadEnergyCalibrationMap(parFileName.Data());
    
    TAGdataDsc* caMc     = new TAGdataDsc("caMc", new TAMCntuHit());
@@ -305,7 +305,7 @@ void ReadGlbSRawMC(TString filename = "12C_C_200noB.root", Int_t nMaxEvts = 3, T
    campManager->FromFile();
    
    TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
    geoTrafo->FromFile(parFileName);
    
    TFile* f = new TFile(filename.Data());

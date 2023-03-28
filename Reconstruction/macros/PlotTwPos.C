@@ -39,7 +39,7 @@ void PlotTwPos(TString nameFile = "12C_C_200_L0Out.root", TString expName = "12C
   // geo file for TW
   TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
   TATWparGeo* pGeoMap = (TATWparGeo*)parGeoTw->Object();
-  TString parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TATWparGeo"), runNumber);
   pGeoMap->FromFile(parFileName);
   
   // Branch setting

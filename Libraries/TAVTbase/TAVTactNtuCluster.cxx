@@ -15,6 +15,8 @@
 #include "TAVTntuCluster.hxx"
 #include "TAVTactNtuCluster.hxx"
 
+#include "TAGnameManager.hxx"
+
 /*!
  \class TAVTactNtuCluster 
  \brief NTuplizer for VTX clusters
@@ -119,7 +121,7 @@ Bool_t TAVTactNtuCluster::CreateClusters(Int_t iSensor)
 
    for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
       cluster = pNtuClus->GetCluster(iSensor, i);
-      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName()));
+      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TAVTparGeo")));
       FillClusterInfo(iSensor, cluster);
    }
    

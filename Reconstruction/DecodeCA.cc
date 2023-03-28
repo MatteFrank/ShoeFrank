@@ -710,20 +710,20 @@ int main (int argc, char *argv[])  {
    // geo file for CA
    TAGparaDsc* parGeoCA = new TAGparaDsc(FootParaDscName("TACAparGeo"), new TACAparGeo());
    TACAparGeo* pGeoMap = (TACAparGeo*)parGeoCA->Object();
-   TString parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNb);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TACAparGeo"), runNb);
    pGeoMap->FromFile(parFileName);
    
    // par map for CA
    TAGparaDsc*  pParMapCa = new TAGparaDsc(new TACAparMap());
    TACAparMap* parMapCA = (TACAparMap*)pParMapCa->Object();
-   parFileName = campManager->GetCurMapFile(TACAparGeo::GetBaseName(), runNb);
+   parFileName = campManager->GetCurMapFile(FootBaseName("TACAparGeo"), runNb);
    parMapCA->FromFile(parFileName.Data());
    TACAactNtuHit *hit = new TACAactNtuHit();
 
    // WD map
    TAGparaDsc *pParMapWD = new TAGparaDsc(new TAWDparMap());
    TAWDparMap* parMapWD = (TAWDparMap*)pParMapWD->Object();
-   parFileName = campManager->GetCurMapFile(TASTparGeo::GetBaseName(), runNb);
+   parFileName = campManager->GetCurMapFile(FootBaseName("TASTparGeo"), runNb);
    parMapWD->FromFile(parFileName.Data());
 
    CAactRaw2Ntu * caDatReader = new CAactRaw2Ntu(pParMapCa, pParMapWD);

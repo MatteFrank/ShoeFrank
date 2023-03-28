@@ -26,6 +26,7 @@
 #include "TAGrunInfo.hxx"
 #include "TAGroot.hxx"
 #include "TAGrecoManager.hxx"
+#include "TAGnameManager.hxx"
 
 using namespace std;
 
@@ -374,7 +375,7 @@ int main(int argc, char *argv[])
    
    //read the fluka .out file to load the crossing regions:
    if(regFlag) {
-      outflukaname = campManager->GetCurRegFile(TAGgeoTrafo::GetBaseName(), runNb);
+      outflukaname = campManager->GetCurRegFile(FootBaseName("TAGgeoTrafo"), runNb);
       printf("Open region file %s\n", outflukaname.Data());
       Int_t regnum;
       TString regname;

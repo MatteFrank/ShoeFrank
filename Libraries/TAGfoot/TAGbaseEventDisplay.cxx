@@ -285,7 +285,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
       fVolumeNames[irVol->GetName()] = kSTC;
 
 
-      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TASTparGeo::GetBaseName());
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(FootBaseName("TASTparGeo"));
       AddGeometry(irVol, transfo);
    }
 
@@ -295,7 +295,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
       TGeoVolume* bmVol  = parGeo->BuildBeamMonitor();
       fVolumeNames[bmVol->GetName()] = kBMN;
 
-      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TABMparGeo::GetBaseName());
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(FootBaseName("TABMparGeo"));
       AddGeometry(bmVol, transfo);
    }
 
@@ -315,7 +315,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
       TGeoVolume* vtVol  = parGeo->BuildVertex();
       fVolumeNames[vtVol->GetName()] = kVTX;
 
-      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAVTparGeo::GetBaseName());
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(FootBaseName("TAVTparGeo"));
       AddGeometry(vtVol, transfo);
    }
 
@@ -335,7 +335,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
       TGeoVolume* itVol  = parGeo->BuildInnerTracker();
       fVolumeNames[itVol->GetName()] = kITR;
 
-      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAITparGeo::GetBaseName());
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(FootBaseName("TAITparGeo"));
       AddGeometry(itVol, transfo);
    }
 
@@ -345,7 +345,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
       TGeoVolume* msdVol = parGeo->BuildMicroStripDetector();
       fVolumeNames[msdVol->GetName()] = kMSD;
 
-      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(FootBaseName("TAMSDparGeo"));
       AddGeometry(msdVol, transfo);
    }
 
@@ -355,7 +355,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
       TGeoVolume* twVol = parGeo->BuildTofWall();
       fVolumeNames[twVol->GetName()] = kTOF;
 
-      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TATWparGeo::GetBaseName());
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(FootBaseName("TATWparGeo"));
       AddGeometry(twVol, transfo);
    }
 
@@ -365,7 +365,7 @@ void TAGbaseEventDisplay::BuildDefaultGeometry()
       TGeoVolume* caVol = parGeo->BuildCalorimeter();
       fVolumeNames[caVol->GetName()] = kCAL;
 
-      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(TACAparGeo::GetBaseName());
+      TGeoCombiTrans* transfo = fpFootGeo->GetCombiTrafo(FootBaseName("TACAparGeo"));
       AddGeometry(caVol, transfo);
    }
 }

@@ -14,6 +14,7 @@
 #include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TACAactBaseNtuCluster.hxx"
+#include "TAGnameManager.hxx"
 
 #include "TATWntuPoint.hxx"
 /*!
@@ -197,7 +198,7 @@ Bool_t TACAactBaseNtuCluster::CreateClusters()
    // Remove no valid cluster
    for (Int_t i = pNtuClus->GetClustersN()-1; i >= 0; --i) {
       cluster = pNtuClus->GetCluster(i);
-      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(TACAparGeo::GetBaseName()));
+      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TACAparGeo")));
       if (!cluster->IsValid())
          pNtuClus->GetListOfClusters()->Remove(cluster);
    }

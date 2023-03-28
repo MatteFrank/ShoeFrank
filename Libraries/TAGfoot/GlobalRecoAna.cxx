@@ -1042,7 +1042,7 @@ void GlobalRecoAna::FillMCGlbTrkYields(){
   { // from all the points of the track...
     TAGpoint *tmp_poi = fGlbTrack->GetPoint(ic);
     TString str = tmp_poi->GetDevName();
-    if (str.Contains(TATWparGeo::GetBaseName()))
+    if (str.Contains(FootBaseName("TATWparGeo")))
     { //...i just want the TAGPOINT of TW
       if (tmp_poi->GetMcTracksN() == 1)
       { // if there is no ghost hits in the TW
@@ -2395,7 +2395,7 @@ bool GlobalRecoAna::TriggerCheck() {
           TString str = tmp_poi->GetDevName();
           Int_t cluID = -1;
 
-          if(str.Contains(TATWparGeo::GetBaseName())){  // ... I take the TWPoint
+          if(str.Contains(FootBaseName("TATWparGeo"))){  // ... I take the TWPoint
           TATWpoint *tw_point = GetNtuPointTw()->GetPoint(tmp_poi->GetClusterIdx());
 
           if ( ( tw_point->GetRowID() == 8 || tw_point->GetRowID() == 9 || tw_point->GetRowID() == 10 )   //VETO Condition in TW Plane X
@@ -2495,14 +2495,14 @@ void GlobalRecoAna::GlbTrackPurityStudy(){
     TString str = tmp_poi->GetDevName();
     Int_t cluID = -1;
 
-    if(str.Contains(TAVTparGeo::GetBaseName())){//vtx
+    if(str.Contains(FootBaseName("TAVTparGeo"))){//vtx
       VTanal(tmp_poi, cluID);
       if(tmp_poi->GetClusterIdx()>=0)
         vtxpoints.push_back(ic);
       if(cluID!=-1)
         mapclu[cluID]++;
     }
-    if(str.Contains(TAITparGeo::GetBaseName())){//it
+    if(str.Contains(FootBaseName("TAITparGeo"))){//it
       ITanal(tmp_poi, cluID);
       if(tmp_poi->GetClusterIdx()>=0)
         itpoints.push_back(ic);
@@ -2510,7 +2510,7 @@ void GlobalRecoAna::GlbTrackPurityStudy(){
         mapclu[cluID]++;
     }
 
-    if(str.Contains(TAMSDparGeo::GetBaseName())){//msd
+    if(str.Contains(FootBaseName("TAMSDparGeo"))){//msd
       MSDanal(tmp_poi, cluID);
       if(tmp_poi->GetClusterIdx()>=0)
         msdpoints.push_back(ic);
@@ -2518,7 +2518,7 @@ void GlobalRecoAna::GlbTrackPurityStudy(){
         mapclu[cluID]++;
     }
 
-    if(str.Contains(TATWparGeo::GetBaseName())){//tw
+    if(str.Contains(FootBaseName("TATWparGeo"))){//tw
       TWanal(tmp_poi, cluID);
       if(tmp_poi->GetClusterIdx()>=0){
         twpoints.push_back(ic);
@@ -2531,7 +2531,7 @@ void GlobalRecoAna::GlbTrackPurityStudy(){
       if(cluID!=-1)
         mapclu[cluID]++;
     }
-      // if(str.Contains(TACAparGeo::GetBaseName()))// actually the calorimeter is not used by the trackers!
+      // if(str.Contains(FootBaseName("TACAparGeo")))// actually the calorimeter is not used by the trackers!
       //   CALOanal(tmp_poi,cluID);
   }//end loop on meas points
   fGlbTrkVec.push_back(vtxpoints);
@@ -2862,7 +2862,7 @@ for(int it=0;it<myGlb->GetTracksN();it++){ // for every track
           TString str = tmp_poi->GetDevName();
           Int_t cluID = -1;
 
-          if(str.Contains(TATWparGeo::GetBaseName())){ //...i just want the TAGPOINT of TW
+          if(str.Contains(FootBaseName("TATWparGeo"))){ //...i just want the TAGPOINT of TW
 
             N_TrkIdMC_TW = tmp_poi->GetMcTracksN();  // n° of tracks crossing the TW with same MC_ID
             TrkIdMC_TW = tmp_poi->GetMcTrackIdx(0);

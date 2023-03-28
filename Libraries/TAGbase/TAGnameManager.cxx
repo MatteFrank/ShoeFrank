@@ -33,9 +33,9 @@ map<TString, TString>  TAGnameManager::fgkDetectorMap  = {{"TAST", "st"},    {"T
 map<TString, TString>  TAGnameManager::fgkBranchMap    = {{"Raw", "dat."},    {"Hit", "rh."},             {"Cluster", "clus."},    {"Point", "pt."},      {"Track", "track."},
                                                           {"Vertex", "vtx."}, {"TAMCntuEvent", "mcevt."}, {"TAGntuEvent", "evt."}, {"ntuPart", "track."}, {"Trigger", "trig."}};
 
-map<TString, TString>  TAGnameManager::fgkBaseNameMap  = {{"TAST", "ST"},    {"TABM", "BM"},         {"TAVT", "VT"},         {"TAIT", "IT"},           {"TADI", "DI"},
+map<TString, TString>  TAGnameManager::fgkBaseNameMap  = {{"TAST", "ST"},    {"TABM", "BM"},         {"TAVT", "VT"},         {"TAIT", "IT"},           {"TADI", "DI"}, {"TAWD", "WD"},
                                                           {"TAGpar", "TG"},  {"TAMSD", "MSD"},       {"TATW", "TW"},         {"TACA", "CA"},           {"WD", "WD"},
-                                                          {"TAGdaq", "DAQ"}, {"TAGevent", "EVT"},    {"TAGgeoTrafo", "FOOT"}};
+                                                          {"TAGevent", "EVT"},    {"TAGgeoTrafo", "FOOT"}};
 //_____________________________________________________________________________
 //! Constructor
 //!
