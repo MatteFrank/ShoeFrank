@@ -588,8 +588,8 @@ void TAGactKFitter::CreateGeometry()  {
 				TVector3 trafoU = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Sensor2DetectorVect(i, U));
 				TVector3 trafoV = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Sensor2DetectorVect(i, V));
 				// Some debug print-outs for geometry
-				if(m_debug > 1)
-				{
+				// if(m_debug > 1)
+				// {
 					cout << "VT sensor::" << i << endl;
 					cout << "origin::"; origin_.Print();
 					cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
@@ -598,7 +598,7 @@ void TAGactKFitter::CreateGeometry()  {
 					cout << "trafoU::"; trafoU.Print();
 					cout << "trafoV::"; trafoV.Print();
 					cout << "Z versor::"; trafoNorm.Print();
-				}
+				// }
 				detectorplane->setUV(trafoU, trafoV);
 				m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
 				m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "VT");
@@ -656,8 +656,8 @@ void TAGactKFitter::CreateGeometry()  {
 				++indexOfPlane;
 
 				// Some debug print-outs for geometry
-				if(m_debug > 1)
-				{
+				// if(m_debug > 1)
+				// {
 					cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 					cout << "IT sensor::" << i << endl;
 					cout << "origin::"; origin_.Print();
@@ -666,7 +666,7 @@ void TAGactKFitter::CreateGeometry()  {
 					cout << "V::"; V.Print();
 					cout << "trafoU::"; trafoU.Print();
 					cout << "trafoV::"; trafoV.Print();
-				}
+				// }
 			}
 		}
 	}
