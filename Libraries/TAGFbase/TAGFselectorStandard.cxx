@@ -124,8 +124,6 @@ void TAGFselectorStandard::CategorizeVT()
 
 			Track*  fitTrack_ = new Track();  // container of the tracking objects
 			fitTrack_->setStateSeed(pos_, mom_);
-			int VTminSensorPerTracklet = -1;
-			TVector2 posDummy;
 
 			// loop over clusters in the tracklet --> inverse numbering
 			for (int iCluster = ncluster - 1; iCluster >= 0; iCluster--) {
@@ -144,13 +142,7 @@ void TAGFselectorStandard::CategorizeVT()
 				// if ( m_allHitMeas->find( plane ) == m_allHitMeas->end() )	continue;
 				// if ( m_allHitMeas->at(plane).find( index ) == m_allHitMeas->at(plane).end() )	continue;
 
-
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (  m_allHitMeas->at(plane).at(index) ))->clone();
-				if( VTminSensorPerTracklet == -1 )
-				{
-					VTminSensorPerTracklet = plane;
-					posDummy = TVector2((hitToAdd)->getRawHitCoords()(0), (hitToAdd)->getRawHitCoords()(1));
-				}
 				fitTrack_->insertMeasurement( hitToAdd );
 
 				if( m_debug > 1) 
@@ -196,13 +188,8 @@ void TAGFselectorStandard::CategorizeVT()
 
 			int IdTrack = iVtx*1000 + iTrack;
 
-			TVector3 posSeed = m_SensorIDMap->GetFitPlane(VTminSensorPerTracklet)->toLab( posDummy );
-
 			m_trackTempMap[IdTrack] = new Track(*fitTrack_);
 			m_trackSlopeMap[IdTrack] = m_GeoTrafo->VecFromVTLocalToGlobal(tracklet->GetSlopeZ());
-			TVector3 test = m_trackSlopeMap[IdTrack];
-			test.SetMag(7.5);
-			fitTrack_->setStateSeed(posSeed, test);
 			m_trackSlopeMap[IdTrack] *= 1./m_trackSlopeMap[IdTrack].Z();
 		
 			delete fitTrack_;
@@ -225,14 +212,14 @@ void TAGFselectorStandard::CategorizeIT()	{
 
 	// ExtrapFromVTXtoIT 
 	TVector3 tmpExtrap, tmpVTX;
-	KalmanFitter *m_fitter_extrapolation = new KalmanFitter(1);
-	m_fitter_extrapolation->setMaxIterations(1);
+	// KalmanFitter *m_fitter_extrapolation = new KalmanFitter(1);
+	// m_fitter_extrapolation->setMaxIterations(1);
 
 	// same index if VTX_tracklets (for one vertex..)
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) {
 		int addedMeas = 0;
 		
-		m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
+		// m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
 		
 		//Get last VT measurement for extrapolation
 		PlanarMeasurement* lastVTXMeas = static_cast<genfit::PlanarMeasurement*> (itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement());
@@ -256,16 +243,14 @@ void TAGFselectorStandard::CategorizeIT()	{
 
 			Int_t sensorId;
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); ++iPlane ) {
-				TVector3 guessOnIT = ExtrapolateToOuterTracker(itTrack->second, *iPlane);
-				guessOnIT = m_SensorIDMap->GetFitPlane(*iPlane)->toLab(TVector2(guessOnIT.X(),guessOnIT.Y()));
-				guessOnIT = m_GeoTrafo->FromGlobalToITLocal(guessOnIT);
-				// cout << "Found plane::" << *iPlane << " at z::" << tmpITz << "\n";
+				// TVector3 guessOnIT = ExtrapolateToOuterTracker(itTrack->second, *iPlane);
+
 				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
 				{
 					Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", *iPlane);
 					throw -1;
 				}
-				guessOnIT =  m_IT_geo->Detector2Sensor(sensorId, guessOnIT);
+
 				TVector3 guessOnPlaneIT = m_GeoTrafo->FromGlobalToITLocal( tmpExtrap ); //RZ: IsInActive controls local or global variables????
 				guessOnPlaneIT = m_IT_geo->Detector2Sensor(sensorId, guessOnPlaneIT); //Move to local coords
 				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( guessOnPlaneIT.Y() ) )
@@ -291,10 +276,8 @@ void TAGFselectorStandard::CategorizeIT()	{
 					int count = 0;
 					for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( sensorMatch ).begin(); it != m_allHitMeas->at( sensorMatch ).end(); ++it){
 					
-						// check -> RZ: why do we need this check???? is it for debug only??
-						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR IT" <<endl, exit(0);
-						cout << "Plane::" << *iPlane << "\tguessX::" << guessOnIT.X() << "\trawCoordsX::" << (*it)->getRawHitCoords()(0)  << "\tdistX::" << fabs(guessOnIT.X() - (*it)->getRawHitCoords()(0)) << "\tguessY::" << guessOnIT.Y() << "\trawCoordsY::" << (*it)->getRawHitCoords()(1)  << "\tdistY::" << fabs(guessOnIT.Y() - (*it)->getRawHitCoords()(1)) <<endl;
-						cout << "Plane::" << *iPlane << "\tguessX::" << guessOnPlaneIT.X() << "\trawCoordsX::" << (*it)->getRawHitCoords()(0)  << "\tdistX::" << fabs(guessOnPlaneIT.X() - (*it)->getRawHitCoords()(0)) << "\tguessY::" << guessOnPlaneIT.Y() << "\trawCoordsY::" << (*it)->getRawHitCoords()(1)  << "\tdistY::" << fabs(guessOnPlaneIT.Y() - (*it)->getRawHitCoords()(1)) <<endl;
+						if( m_debug > 1)
+							cout << "Plane::" << *iPlane << "\tguessX::" << guessOnPlaneIT.X() << "\trawCoordsX::" << (*it)->getRawHitCoords()(0)  << "\tdistX::" << fabs(guessOnPlaneIT.X() - (*it)->getRawHitCoords()(0)) << "\tguessY::" << guessOnPlaneIT.Y() << "\trawCoordsY::" << (*it)->getRawHitCoords()(1)  << "\tdistY::" << fabs(guessOnPlaneIT.Y() - (*it)->getRawHitCoords()(1)) <<endl;
 
 						// find hit at minimum distance
 						if ( fabs( guessOnPlaneIT.Y() - (*it)->getRawHitCoords()(1) ) < distanceInY ){
@@ -310,7 +293,9 @@ void TAGFselectorStandard::CategorizeIT()	{
 				
 				//Insert measurement in GF track if found!
 				if (indexOfMinY != -1 && distanceInX < 1.){
-					if(m_debug > 0) cout << "ITcheck\tTrack::" << itTrack->first << "\tdistanceInY::" << distanceInY << "\tdistanceinX::" << distanceInX << "\n";
+					if(m_debug > 0)
+						cout << "ITcheck\tTrack::" << itTrack->first << "\tdistanceInY::" << distanceInY << "\tdistanceinX::" << distanceInX << "\n";
+
 					AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> ( m_allHitMeas->at(sensorMatch).at(indexOfMinY) ))->clone();
 					(itTrack->second)->insertMeasurement( hitToAdd );
 					addedMeas++;
@@ -319,6 +304,8 @@ void TAGFselectorStandard::CategorizeIT()	{
 			}	// end loop on IT planes
 		} // end loop over z
 	}	// end loop on GF Track candidates
+
+	// delete m_fitter_extrapolation;
 }
 
 

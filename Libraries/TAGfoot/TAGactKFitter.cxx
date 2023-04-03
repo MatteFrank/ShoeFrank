@@ -588,8 +588,8 @@ void TAGactKFitter::CreateGeometry()  {
 				TVector3 trafoU = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Sensor2DetectorVect(i, U));
 				TVector3 trafoV = m_GeoTrafo->VecFromVTLocalToGlobal(m_VT_geo->Sensor2DetectorVect(i, V));
 				// Some debug print-outs for geometry
-				// if(m_debug > 1)
-				// {
+				if(m_debug > 1)
+				{
 					cout << "VT sensor::" << i << endl;
 					cout << "origin::"; origin_.Print();
 					cout << "Boundaries::\tx=["<< xMin << "," << xMax << "]\ty=[" << yMin << "," << yMax << "]\n";
@@ -598,7 +598,7 @@ void TAGactKFitter::CreateGeometry()  {
 					cout << "trafoU::"; trafoU.Print();
 					cout << "trafoV::"; trafoV.Print();
 					cout << "Z versor::"; trafoNorm.Print();
-				// }
+				}
 				detectorplane->setUV(trafoU, trafoV);
 				m_SensorIDMap->AddFitPlane(indexOfPlane, detectorplane);
 				m_SensorIDMap->AddFitPlaneIDToDet(indexOfPlane, "VT");
@@ -624,8 +624,9 @@ void TAGactKFitter::CreateGeometry()  {
 		if( m_systemsON.Contains("IT") )
 		{
 			for ( int i = 0; i < m_IT_geo->GetSensorsN(); i++ ) {
-				int signOffset = m_IT_geo->GetSensorPar(i).IsReverseY ? -1 : 1;
- 				TVector3 EpiOffset = signOffset*TVector3(0,0,-m_IT_geo->GetTotalSize().Z()/2 + m_IT_geo->GetPixThickness() + m_IT_geo->GetEpiSize().Z()/2);
+				// int signOffsetY = m_IT_geo->GetSensorPar(i).IsReverseY ? -1 : 1;
+				// int signOffsetX = m_IT_geo->GetSensorPar(i).IsReverseX ? -1 : 1;
+ 				TVector3 EpiOffset = TVector3(0,0,-m_IT_geo->GetTotalSize().Z()/2 + m_IT_geo->GetPixThickness() + m_IT_geo->GetEpiSize().Z()/2);
  
  				TVector3 origin_(m_GeoTrafo->FromITLocalToGlobal(m_IT_geo->GetSensorPosition(i) + EpiOffset) );
 
@@ -656,8 +657,8 @@ void TAGactKFitter::CreateGeometry()  {
 				++indexOfPlane;
 
 				// Some debug print-outs for geometry
-				// if(m_debug > 1)
-				// {
+				if(m_debug > 1)
+				{
 					cout << "IT plane::" << indexOfPlane << "\tZ::" << origin_.Z() << endl;
 					cout << "IT sensor::" << i << endl;
 					cout << "origin::"; origin_.Print();
@@ -666,7 +667,7 @@ void TAGactKFitter::CreateGeometry()  {
 					cout << "V::"; V.Print();
 					cout << "trafoU::"; trafoU.Print();
 					cout << "trafoV::"; trafoV.Print();
-				// }
+				}
 			}
 		}
 	}
@@ -1684,8 +1685,8 @@ void TAGactKFitter::GetRecoTrackInfo ( int i, Track* track,
 
 
 	// Get reco track kinematics and errors
-	*KalmanPos = TVector3( (track->getFittedState(i).get6DState())[0],	(track->getFittedState(i).get6DState())[1],	(track->getFittedState(i).get6DState())[2] );
-	*KalmanMom = TVector3( (track->getFittedState(i).get6DState())[3], (track->getFittedState(i).get6DState())[4],	(track->getFittedState(i).get6DState())[5] );
+	*KalmanPos = TVector3( (track->getFittedState(i).get6DState())[0], (track->getFittedState(i).get6DState())[1], (track->getFittedState(i).get6DState())[2] );
+	*KalmanMom = TVector3( (track->getFittedState(i).get6DState())[3], (track->getFittedState(i).get6DState())[4], (track->getFittedState(i).get6DState())[5] );
 
 	MatrixToZero(KalmanPos_cov);
 	MatrixToZero(KalmanMom_cov);

@@ -17,7 +17,10 @@
 //! \brief Default constructor
 TAGFselectorBack::TAGFselectorBack() : TAGFselectorBase()
 {
-	m_ITtolerance = 1.;
+	m_VTtolerance = .1;
+	m_ITtolerance = .1;
+	m_MSDtolerance = .1;
+	m_TWtolerance = 4.;
 }
 
 
@@ -43,19 +46,19 @@ void TAGFselectorBack::Categorize( ) {
 
 	if (TAGrecoManager::GetPar()->IncludeIT())
 	{
-		// if (m_debug > 1)
+		if (m_debug > 1)
 			Info("Categorize_Backtracking()", "Start of IT cycle!");
 		CategorizeIT_back();
-		// if (m_debug > 1)
+		if (m_debug > 1)
 			Info("Categorize_Backtracking()", "End of IT cycle!");
 	}
 
 	if (TAGrecoManager::GetPar()->IncludeVT())
 	{
-		// if (m_debug > 1)
+		if (m_debug > 1)
 			Info("Categorize_Backtracking()", "Start of VT cycle!");
 		CategorizeVT_back();
-		// if (m_debug > 1)
+		if (m_debug > 1)
 			Info("Categorize_Backtracking()", "End of VT cycle!");
 	}
 
@@ -91,6 +94,12 @@ void TAGFselectorBack::BackTracklets()
 		float xMSD = -100., yMSD = -100.;
 		float zMSD = m_SensorIDMap->GetFitPlane(MSDPlane1)->getO().Z();
 
+		if( m_allHitMeas->find(MSDPlane1) == m_allHitMeas->end() )
+		{
+			Warning("BackTracklets()", "No MSD clusters in first plane!!");
+			return;
+		}
+
 		//Cycle on the first 2 planes of MSD
 		for(vector<AbsMeasurement*>::iterator itMSD1 = m_allHitMeas->at(MSDPlane1).begin(); itMSD1 != m_allHitMeas->at(MSDPlane1).end(); ++itMSD1)
 		{
@@ -102,6 +111,12 @@ void TAGFselectorBack::BackTracklets()
 			else
 				xMSD = (m_SensorIDMap->GetFitPlane(MSDPlane1)->toLab(TVector2((*itMSD1)->getRawHitCoords()(0), 0))).X();
 				// xMSD = m_GeoTrafo->FromMSDLocalToGlobal(TVector3((*itMSD1)->getRawHitCoords()(0), 0, 0)).X();
+
+			if( m_allHitMeas->find(MSDPlane2) == m_allHitMeas->end() )
+			{
+				Warning("BackTracklets()", "No MSD clusters in second plane!!");
+				return;
+			}
 
 			for(vector<AbsMeasurement*>::iterator itMSD2 = m_allHitMeas->at(MSDPlane2).begin(); itMSD2 != m_allHitMeas->at(MSDPlane2).end(); ++itMSD2)
 			{
@@ -203,7 +218,15 @@ void TAGFselectorBack::BackTracklets()
 
 				try
 				{
-					mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo )*0.95);
+					int pointID = m_SensorIDMap->GetHitIDFromMeasID(testTrack->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId());
+					float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( pointID )->GetMeanTof();
+					float var = m_BeamEnergy/m_AMU;
+					float beam_speed = TAGgeoTrafo::GetLightVelocity()*TMath::Sqrt(var*(var + 2))/(var + 1);
+					TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
+					float beta = (m_GeoTrafo->GetTWCenter().Z() - m_GeoTrafo->GetTGCenter().Z())/(TOF*TAGgeoTrafo::GetLightVelocity());
+					mom.SetMag(mass_Hypo*beta/TMath::Sqrt(1 - pow(beta,2)));
+					
+					// mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo )*0.95);
 					testTrack->setStateSeed(pos, mom);
 
 					m_fitter_extrapolation->processTrackWithRep(testTrack, testTrack->getCardinalRep() );
@@ -265,7 +288,7 @@ void TAGFselectorBack::CategorizeIT_back()
 		//Get some parameters for IT FitPlanes
 		vector<float>* allZinIT = m_SensorIDMap->GetPossibleITzLocal();
 		
-		for ( int iz = 0; iz < allZinIT->size(); iz++ )
+		for ( int iz = allZinIT->size()-1; iz >= 0; --iz )
 		{
 			vector<int>* planesAtZ  = m_SensorIDMap->GetPlanesAtZLocal( allZinIT->at(iz) );
 
@@ -290,27 +313,26 @@ void TAGFselectorBack::CategorizeIT_back()
 					continue;
 				}
 
-				cout << "IT Plane::" << *iPlane << endl;
 				TVector3 momGuessOnIT_dummy;
 				guessOnIT = ExtrapolateToOuterTracker(itTrack->second, *iPlane, momGuessOnIT_dummy);
-				guessOnIT.Print();
-				momGuessOnIT_dummy.Print();
-				// if (!m_SensorIDMap->GetFitPlane(ITplane)->isInActive(guessOnIT.x(), guessOnIT.y())) // RZ: should be ok since X,Y local coordinates of MSD are currently in the detector frame
-				// 	continue;
-				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( guessOnIT.Y() ) )
+				if( m_debug > 1 )
 				{
-					// if(m_debug > 1)
-					cout << "Extrapolation to IT not in active region of sensor " << *iPlane << endl;
-					continue;
+					cout<<"PosGuess::";guessOnIT.Print();
+					cout<<"MomGuess::";momGuessOnIT_dummy.Print();
 				}
 
-				// if(m_debug > 1)
-				cout << "Extrapolation to IT is in active area of sensor " << *iPlane << endl;
+				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( guessOnIT.Y() ) )
+				{
+					if(m_debug > 1)
+						cout << "Extrapolation to IT not in active region of sensor " << *iPlane << endl;
+					continue;
+				}
 
 				int count = 0;
 				for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( *iPlane ).begin(); it != m_allHitMeas->at( *iPlane ).end(); ++it)
 				{
-					cout << "Plane::" << *iPlane << "\tguessX::" << guessOnIT.X() << "\trawCoordsX::" << (*it)->getRawHitCoords()(0)  << "\tdistX::" << fabs(guessOnIT.X() - (*it)->getRawHitCoords()(0)) << "\tguessY::" << guessOnIT.Y() << "\trawCoordsY::" << (*it)->getRawHitCoords()(1)  << "\tdistY::" << fabs(guessOnIT.Y() - (*it)->getRawHitCoords()(1)) <<endl;
+					if( m_debug > 1 )
+						cout << "Plane::" << *iPlane << "\tguessX::" << guessOnIT.X() << "\trawCoordsX::" << (*it)->getRawHitCoords()(0)  << "\tdistX::" << fabs(guessOnIT.X() - (*it)->getRawHitCoords()(0)) << "\tguessY::" << guessOnIT.Y() << "\trawCoordsY::" << (*it)->getRawHitCoords()(1)  << "\tdistY::" << fabs(guessOnIT.Y() - (*it)->getRawHitCoords()(1)) <<endl;
 
 					// find hit at minimum distance
 					if ( fabs( guessOnIT.Y() - (*it)->getRawHitCoords()(1) ) < distanceInY )
@@ -328,15 +350,17 @@ void TAGFselectorBack::CategorizeIT_back()
 			//Insert measurement in GF track if found!
 			if (indexOfMinY != -1)// && distanceInX < 1.)
 			{
-				// if(m_debug > 0)
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> ( m_allHitMeas->at(sensorMatch).at(indexOfMinY) ))->clone();
 				(itTrack->second)->insertMeasurement( hitToAdd, 0);
 
 				guessOnIT = m_SensorIDMap->GetFitPlane(sensorMatch)->toLab( TVector2((hitToAdd)->getRawHitCoords()(0), (hitToAdd)->getRawHitCoords()(1)) );
 				guessOnIT.SetZ(guessOnIT.Z()*0.99);
 
-				cout << "****SEED****"<<endl;
-				guessOnIT.Print(); momGuessOnIT.Print();
+				if(m_debug > 0)
+				{
+					cout << "****SEED****"<<endl;
+					guessOnIT.Print(); momGuessOnIT.Print();
+				}
 				(itTrack->second)->setStateSeed(guessOnIT,momGuessOnIT);
 				m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
 			}
@@ -364,21 +388,20 @@ void TAGFselectorBack::CategorizeVT_back()
 
 		for(int VTplane = maxVTplane; VTplane != minVTplane-1; VTplane--)
 		{
-			cout << "VT Plane::" << VTplane << endl;
+			// cout << "VT Plane::" << VTplane << endl;
 			TVector3 momGuessOnVT;
 			TVector3 guessOnVT = ExtrapolateToOuterTracker(itTrack->second, VTplane, momGuessOnVT);
-			guessOnVT.Print();
+			// guessOnVT.Print();
 			if (!m_SensorIDMap->GetFitPlane(VTplane)->isInActive(guessOnVT.x(), guessOnVT.y())) // RZ: should be ok since X,Y local coordinates of MSD are currently in the detector frame
 				continue;
 
-			cout << "guess is in active area" << endl;
 			int indexOfMinDist = -1;
 			int count = 0;
 			double minDist = m_VTtolerance;
 
 			if (m_allHitMeas->find(VTplane) == m_allHitMeas->end())
 			{
-				// if (m_debug > 0)
+				if (m_debug > 0)
 					Info("CategorizeVT_back()", "No measurement found in VTplane %d", VTplane);
 				continue;
 			}
@@ -391,7 +414,7 @@ void TAGFselectorBack::CategorizeVT_back()
 
 				// RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit = TMath::Sqrt( pow(guessOnVT.x() - (*it)->getRawHitCoords()(0), 2) + pow(guessOnVT.y() - (*it)->getRawHitCoords()(1), 2) );
-				cout << "Plane::" << VTplane << "\tguessX::" << guessOnVT.X() << "\trawHitCoordsX::" << (*it)->getRawHitCoords()(0)<< "\tguessY::" << guessOnVT.Y() << "\trawHitCoordsY::" << (*it)->getRawHitCoords()(1)  << "\tdist::" << distanceFromHit<<endl;
+				// cout << "Plane::" << VTplane << "\tguessX::" << guessOnVT.X() << "\trawHitCoordsX::" << (*it)->getRawHitCoords()(0)<< "\tguessY::" << guessOnVT.Y() << "\trawHitCoordsY::" << (*it)->getRawHitCoords()(1)  << "\tdist::" << distanceFromHit<<endl;
 
 
 				// find hit at minimum distance
@@ -413,8 +436,8 @@ void TAGFselectorBack::CategorizeVT_back()
 				guessOnVT = m_SensorIDMap->GetFitPlane(VTplane)->toLab( TVector2((hitToAdd)->getRawHitCoords()(0), (hitToAdd)->getRawHitCoords()(1)) );
 				guessOnVT.SetZ(guessOnVT.Z()*0.99);
 
-				cout << "****SEED****"<<endl;
-				guessOnVT.Print(); momGuessOnVT.Print();
+				// cout << "****SEED****"<<endl;
+				// guessOnVT.Print(); momGuessOnVT.Print();
 				(itTrack->second)->setStateSeed(guessOnVT,momGuessOnVT);
 				m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
 			}
@@ -461,7 +484,7 @@ TVector3 TAGFselectorBack::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 	kfTest = *(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep( repId )))->getBackwardUpdate());
 	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
 
-	TVector3 posi(kfTest.getPos());
+	TVector3 posi((kfTest.getState()[3]),(kfTest.getState()[4]), 0);
 	mom = kfTest.getMom();
 
 	// TVector3 posi((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());
