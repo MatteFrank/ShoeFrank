@@ -111,6 +111,15 @@ protected:
    TH1F*           fpHisResY[MaxTrkSens];  ///< Residual in Y histogram
    TH1F*           fpHisPullX[MaxTrkSens];            ///< Pull in X histogram
    TH1F*           fpHisPullY[MaxTrkSens];            ///< Pull in Y histogram
+   TH1F*           fpHisTrackClustPosX[MaxTrkSens];   ///< cluster position in X histogram
+   TH1F*           fpHisTrackClustPosY[MaxTrkSens];   ///< cluster position in Y histogram
+   TH1F*           fpHisTrackClustPosErrX[MaxTrkSens]; ///< cluster err position in X histogram
+   TH1F*           fpHisTrackClustPosErrY[MaxTrkSens]; ///< cluster err position in Y histogram
+   TH1F*           fpHisFitClustPosX[MaxTrkSens];   ///< cluster position in X histogram by fit
+   TH1F*           fpHisFitClustPosY[MaxTrkSens];   ///< cluster position in Y histogram by fit
+   TH1F*           fpHisFitClustPosErrX[MaxTrkSens];///< cluster err position by fit in X histogram
+   TH1F*           fpHisFitClustPosErrY[MaxTrkSens];///< cluster err position by fit in Y histogram
+
 
    TH1F*           fpHisResTotX;        ///< Total Residual in X histogram
    TH1F*           fpHisResTotY;        ///< Total Residual in Y histogram
