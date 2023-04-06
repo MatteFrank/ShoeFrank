@@ -28,7 +28,7 @@ NumberFiles: 2
 "./config/HIT2022_MC/TAMSDdetector.cfg": -1
 
 DetectorName: "TW"
-NumberFiles: 6
+NumberFiles: 7
 "./geomaps/HIT2022_MC/TATWdetector.geo": -1
 "./config/HIT2022_MC/TATWdetector.cfg": -1
 "./config/HIT2022_MC/TATW_BBparameters.cfg": -1
