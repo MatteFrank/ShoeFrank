@@ -88,7 +88,7 @@ Bool_t TACAactNtuHit::Action()
 
       // here needed mapping file
       Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
-       if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation 
+       if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation
         Error("Action", " --- Not well mapped WD vs crystal ID. board: %d  ch: %d -> crysId %d", bo_num, ch_num, crysId);
          continue;
       }
@@ -106,7 +106,7 @@ Bool_t TACAactNtuHit::Action()
 
       TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time,type);
       createdhit->SetValid(true);
-  
+
       if (ValidHistogram()) {
          if (crysId < 9) { // Only 9 histograms
             fhCharge[crysId]->Fill(energy);
@@ -125,24 +125,24 @@ Bool_t TACAactNtuHit::Action()
 
 // --------------------------------------------------------------------------------------
 //! Convert ADC counts from sensor to Temperature to Celsius
-Double_t TACAactNtuHit::ADC2Temp(Double_t adc) 
+Double_t TACAactNtuHit::ADC2Temp(Double_t adc)
 {
 
    // the NTC (negative temperature coefficient) sensor
 
-   const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate 
+   const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate
    const double R0 = 10000.0; // series resistance in the voltage divider (Ohm)
    const double Ron = 50.;// value of the multiplexer Ron (Ohm) for ADG406B (dual supply)
-   
+
    double Vadc = (VCC/1023.0) * adc; // 10-bit ADC: max. value is 1023
    double Rt = (Vadc/(VCC-Vadc))*R0 - Ron; // voltage divider equation with Ron correction
 
-   // The Steinhart-Hart formula is given below with the nominal coefficients a, b and c, 
+   // The Steinhart-Hart formula is given below with the nominal coefficients a, b and c,
    // which after calibration could be replaced by three constants for each crystal:
    double a = 0.00138867, b = 0.000204491, c = 1.05E-07;
 
    Double_t temp = 1./ (a + b * log(Rt) + c * pow(log(Rt), 3)) - 273.15;
-   
+
    return temp;
 }
 
@@ -218,8 +218,8 @@ Double_t TACAactNtuHit::GetEqualisationCorrection(Double_t charge_tcorr, Int_t  
 {
    TACAparCal* parcal = (TACAparCal*) fpParCal->Object();
 
-   Double_t Equalis0 = parcal->getCalibrationMap()->GetEqualiseCry(crysId);
-   Double_t charge_equalis = charge_tcorr * Equalis0;
+  // Double_t Equalis0 = parcal->getCalibrationMap()->GetEqualiseCry(crysId);
+  Double_t charge_equalis = charge_tcorr; //* Equalis0;
 
    return charge_equalis;
 }
@@ -282,7 +282,7 @@ void TACAactNtuHit::CreateHistogram()
    // sprintf(histoname,"stTrigTime");
    // fhTrigTime = new TH1F(histoname, histoname, 256, 0., 256.);
    // AddHistogram(fhTrigTime);
-   
+
    fhTotCharge = new TH1F("caTotCharge", "caTotCharge", 400, -0.1, 3.9);
    AddHistogram(fhTotCharge);
 

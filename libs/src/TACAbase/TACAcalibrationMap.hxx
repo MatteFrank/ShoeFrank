@@ -28,16 +28,19 @@ private:
       double offset;  ///< offset
       double slope;   ///< slope
    };
-   
+
   TCalibrationMapType       fCalibrationMap;       ///< Calibration map
-  vector<Double_t>          fCalibTemperatureCry;  ///< map for temperature calibration per cry ID
-  vector<Double_t>          fEqualisFactorCry;     ///< map for equalisation factor per cry ID
+  //vector<Double_t>          fCalibTemperatureCry;  ///< map for temperature calibration per cry ID
+  //vector<Double_t>          fEqualisFactorCry;     ///< map for equalisation factor per cry ID
+  vector<Double_t>          fParameterACry;        ///< map for temperature calibration per cry ID
+  vector<Double_t>          fParameterBCry;        ///< map for temperature calibration per cry ID
+  vector<Double_t>          fParameterCCry;        ///< map for temperature calibration per cry ID
   vector<ElossParameter_t>  fCalibElossMapCry;     ///< map for energy calibration per crystal
   TACAparMap*               fParpMap;              ///< mapping file
-   
+
 public:
   TACAcalibrationMap();
-    
+
   void LoadCryTemperatureCalibrationMap(std::string Filename);
   void LoadEnergyCalibrationMap(std::string Filename);
 
@@ -52,12 +55,18 @@ public:
   //! Get cystal number
   Int_t    GetCrystalsN()                      const { return fCalibrationMap.size();          }
   //! Get temperature parameter per crystal
-  Double_t GetTemperatureCry(Int_t cryId)            { return fCalibTemperatureCry[cryId];     }
+  //Double_t GetTemperatureCry(Int_t cryId)            { return fCalibTemperatureCry[cryId];     } //modified
   //! Get equilized temperature per crystal
-  Double_t GetEqualiseCry(Int_t cryId)               { return fEqualisFactorCry[cryId];        }
-   
+  //Double_t GetEqualiseCry(Int_t cryId)               { return fEqualisFactorCry[cryId];        }
+
   Double_t GetElossParam(Int_t cryId, UInt_t parId);
- 
+
+  Double_t GetParameterACry(Int_t cryId)             { return fParameterACry[cryId];           }
+
+  Double_t GetParameterBCry(Int_t cryId)             { return fParameterBCry[cryId];           }
+
+  Double_t GetParameterCCry(Int_t cryId)             { return fParameterCCry[cryId];           }
+
   ClassDef(TACAcalibrationMap, 0)
 };
 

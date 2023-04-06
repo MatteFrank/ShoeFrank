@@ -31,7 +31,7 @@ private:
   vector<float>             fStatusEmin;        ///< energy minimum vector
   map<int, pair<int, int> > fStatusCrysHwId;    ///< crystal HW id
   TACAcalibrationMap*       fMapCal;            ///< calibratiom type
-  
+
 public:
   TACAparCal();
   virtual ~TACAparCal();
@@ -41,11 +41,14 @@ public:
 
   Bool_t   LoadEnergyCalibrationMap(TString Filename);
   Bool_t   LoadCryTemperatureCalibrationMap(const TString& Filename);
-  
+
   Double_t GetElossParam(Int_t crystalId, UInt_t ParameterNumber);
-  Double_t GetTemperatureCry(Int_t crystalId);
-  Double_t GetEqualiseCry(Int_t crystalId);
-   
+  // Double_t GetTemperatureCry(Int_t crystalId);
+  // Double_t GetEqualiseCry(Int_t crystalId);
+  Double_t GetParameterACry(Int_t crystalId);
+  Double_t GetParameterBCry(Int_t crystalId);
+  Double_t GetParameterCCry(Int_t crystalId);
+
   Bool_t  FromCrysStatusFile(const TString& name);
   void    GetCrysMap(Int_t crysId, Int_t& crysBoard, Int_t& crysCh);
 
@@ -55,7 +58,7 @@ public:
   //! Get crystal threshold
   //! \param[in] id crystal id
   Float_t GetCrystalThres(Int_t id)  const { return fStatusEmin[id]; }
-  
+
 private:
   static TString fgkCrysStatus;    ///< default bar status file
 
