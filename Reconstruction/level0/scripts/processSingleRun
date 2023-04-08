@@ -1,7 +1,0 @@
-#!/bin/bash
-run=$1
-outfile=$2
-formSlurm=$(printf "%02d" ${SLURM_ARRAY_TASK_ID})
-echo $SLURM_ARRAY_TASK_ID
-echo /lustre/nyx/bio/gtraini/FOOT/NewGeom/Ale/shoe/build/bin/DecodeRaw -in /lustre/nyx/bio/asarti/FOOT/data/data_test.${run}.physics_foot.daq.RAW._lb0000._EB-RCD._${formSlurm}.data -his -trk -ntu -hit -out ${outfile}_F${SLURM_ARRAY_TASK_ID}.root
-/lustre/nyx/bio/gtraini/FOOT/NewGeom/Ale/shoe/build/bin/DecodeRaw -in /lustre/nyx/bio/asarti/FOOT/data/data_test.${run}.physics_foot.daq.RAW._lb0000._EB-RCD._${formSlurm}.data -his -trk -ntu -hit -out ${outfile}_F${SLURM_ARRAY_TASK_ID}.root

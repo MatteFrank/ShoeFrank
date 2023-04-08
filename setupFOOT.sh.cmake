@@ -1,8 +1,5 @@
-export ASOFTREF=@CMAKE_BINARY_DIR@/libs/
+export ASOFTREF=@CMAKE_BINARY_DIR@/Libraries/
 export FOOTMAIN=@CMAKE_BINARY_DIR@
-export FOOTLEVEL0=$FOOTMAIN/Reconstruction/level0
-export FOOTFULLREC=$FOOTMAIN/Reconstruction/fullrec
-export FOOTRES=$FOOTLEVEL0/results
 
 
 if [[ "$OSTYPE" == "darwin"* ]]

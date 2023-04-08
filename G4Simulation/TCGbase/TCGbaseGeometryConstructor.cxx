@@ -62,6 +62,7 @@
 
 #include "TAGgeoTrafo.hxx"
 #include "TAGrecoManager.hxx"
+#include "TAGnameManager.hxx"
 #include "TAGroot.hxx"
 
 using namespace CLHEP;
@@ -106,7 +107,7 @@ TCGbaseGeometryConstructor::TCGbaseGeometryConstructor(const TString expName, In
    // initialise geo trafo file
    // global transformation
    fpFootGeo = new TAGgeoTrafo();
-   TString geoFileName = fCampManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), fRunNumber);
+   TString geoFileName = fCampManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), fRunNumber);
    fpFootGeo->FromFile(geoFileName.Data());
    
    // initialise map file for target/beam

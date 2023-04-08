@@ -22,7 +22,6 @@
 build
 bin
 cmake
-include
 .vscode
 
 Reconstruction/level0/results
