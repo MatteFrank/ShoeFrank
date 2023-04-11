@@ -276,7 +276,7 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 		 // Apply cuts
 		 if (AppyCuts(track)) {
 			track->SetTrackIdx(GetTracksN());
-			track->MakeChiSquare();
+			//track->MakeChiSquare();    //i put it in update param
 			track->SetType(0);
          AddNewTrack(track);
 			TVector3 orig(0,0,0);

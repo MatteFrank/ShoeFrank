@@ -63,7 +63,7 @@ TAVTactBaseTrack::TAVTactBaseTrack(const char* name,
   fpGeoMap(pGeoMap),
   fpCalib(pCalib),
   fTracksMaximum(100),
-  fRequiredClusters(3),
+  fRequiredClusters(4),
   fSearchClusDistance(100),
   fGraphU(new TGraphErrors()),
   fGraphV(new TGraphErrors())
@@ -125,9 +125,9 @@ void TAVTactBaseTrack::CreateHistogram()
       AddHistogram(fpHisResY[i]);
 
       // pull
-      fpHisPullX[i] = new TH1F(Form("%sPullX%d", fPrefix.Data(), i + 1), Form("%s - PullX of sensor %d", fTitleDev.Data(), i + 1), 400, -2, 2);
+      fpHisPullX[i] = new TH1F(Form("%sPullX%d", fPrefix.Data(), i + 1), Form("%s - PullX of sensor %d", fTitleDev.Data(), i + 1), 50, -2, 2);
       AddHistogram(fpHisPullX[i]);
-      fpHisPullY[i] = new TH1F(Form("%sPullY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d", fTitleDev.Data(), i + 1), 400, -2, 2); // ! range
+      fpHisPullY[i] = new TH1F(Form("%sPullY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d", fTitleDev.Data(), i + 1), 50, -2, 2); // ! range
       AddHistogram(fpHisPullY[i]);
 
       // meas position
@@ -296,10 +296,10 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 		 fGraphV->SetPointError(i, dz, dy);
 	  }
 	  
-
      auto fitResultU = fGraphU->Fit("pol1", "SQ");
      covMatrixU.ResizeTo(fitResultU->GetCovarianceMatrix());
      covMatrixU = fitResultU->GetCovarianceMatrix();
+
      TF1 *polyU = fGraphU->GetFunction("pol1");
      origin[0]    = polyU->GetParameter(0);
 	  slope[0]     = polyU->GetParameter(1);
@@ -320,7 +320,9 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
    //   variance["dq"][1] = covMatrixV(0, 0);
    //   variance["dm"][1] = covMatrixV(1, 1);
    //   variance["dmdq"][1] = covMatrixV(0, 1);
-   
+     track->SetChi2U(fitResultU->Chi2() / fitResultU->Ndf());
+     track->SetChi2V(fitResultV->Chi2() / fitResultV->Ndf());
+     track->SetChi2((fitResultV->Chi2() + fitResultU->Chi2()) / (fitResultV->Ndf() + fitResultU->Ndf()));
    }
    track->SetCovarianceMatrix(covMatrixU, covMatrixV);
    track->SetLineValue(origin, slope);
