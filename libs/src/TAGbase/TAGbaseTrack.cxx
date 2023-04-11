@@ -314,6 +314,7 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 	  tdU = (GetCluster(ht)->GetPositionG().Px() - tUtrack)/(dhs);
 	  ndfU++;
 	  fChiSquareU += tdU * tdU;
+     
 	  dhs = err;
 
 	  // only for pixel detector
@@ -323,9 +324,10 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 	  tdV = (GetCluster(ht)->GetPositionG().Py() - tVtrack)/(dhs);
 	  ndfV++;
 	  fChiSquareV += tdV * tdV;
-
+     dhs = err;
    }
-
+   //cout << "chisquare x: " << fChiSquareU << endl;
+   //cout << "ndfU: " << ndfU << endl;
    fChiSquare = (fChiSquareU+fChiSquareV) / Double_t(2*GetClustersN()-4);
    fChiSquareU /= ndfU;
    fChiSquareV /= ndfV;

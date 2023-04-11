@@ -112,9 +112,15 @@ public:
    // Set error values of track
    void               SetErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr);
 
+   //! Set chi square
+   void SetChi2(Float_t chi2) { fChiSquare = chi2; }
+   //! Set chi squareU
+   void SetChi2U(Float_t chi2U) { fChiSquareU = chi2U; }
+   //! Set chi squareV
+   void SetChi2V(Float_t chi2V){fChiSquareV = chi2V;}
 
    // Get distance with another track
-   Float_t        Distance(TAGbaseTrack* track, Float_t z) const;
+   Float_t Distance(TAGbaseTrack *track, Float_t z) const;
    // Get X-Y distance with another track
    TVector2       DistanceXY(TAGbaseTrack* track, Float_t z) const;
    // Get distance with another track
