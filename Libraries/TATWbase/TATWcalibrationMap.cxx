@@ -56,13 +56,13 @@ void TATWcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
     while (fin_Q.getline(line, 200, '\n')) {
 
       if(strchr(line,'#')) {
-	if(FootDebugLevel(1))
+	if(FootDebugLevel(4))
 	  Info("LoadEnergyCalibrationMap()","Skip comment line:: %s\n",line);
 	continue;
       }
 
       sscanf(line, "%d %d %d %lf %lf %d",&posQ[cnt],&barX[cnt],&barY[cnt],&Q_corrp0[cnt],&Q_corrp1[cnt],&layQ[cnt]);
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(4))
 	Info("LoadEnergyCalibrationMap()","%d %d %d %.5f %.7f %d\n",posQ[cnt],barX[cnt],barY[cnt],Q_corrp0[cnt],Q_corrp1[cnt],layQ[cnt]);
       
       cnt++;
@@ -83,7 +83,7 @@ void TATWcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
       fCalibElossMapLayX[posQ[i]].push_back(Q_corrp0[i]);
       fCalibElossMapLayX[posQ[i]].push_back(Q_corrp1[i]);
 
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(4))
 	cout<<"Position: "<<posQ[i]<<" Layer: "<<layQ[i]<<" P0: "<<fCalibElossMapLayX[posQ[i]][0]<<" P1: "<<fCalibElossMapLayX[posQ[i]][1]<<endl;
 
     } else if (layQ[i]==LayerY) {
@@ -91,7 +91,7 @@ void TATWcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
       fCalibElossMapLayY[posQ[i]].push_back(Q_corrp0[i]);
       fCalibElossMapLayY[posQ[i]].push_back(Q_corrp1[i]);
 
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(4))
 	cout<<"Position: "<<posQ[i]<<" Layer: "<<layQ[i]<<" P0: "<<fCalibElossMapLayY[posQ[i]][0]<<" P1: "<<fCalibElossMapLayY[posQ[i]][1]<<endl;
       
     }
@@ -133,13 +133,13 @@ void TATWcalibrationMap::LoadTofCalibrationMap(std::string FileName)
     while (fin_TOF.getline(line, 200, '\n')) {
       
       if(strchr(line,'#')) {
-	if(FootDebugLevel(1))
+	if(FootDebugLevel(4))
 	  Info("LoadTofCalibrationMap()","Skip comment line:: %s\n",line);
 	continue;
       }
       
       sscanf(line, "%d %d %d %lf %lf %d",&posT[cnt],&barX[cnt],&barY[cnt],&deltaT[cnt],&deltaT2[cnt],&layT[cnt]);
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(4))
 	Info("LoadTofCalibrationMap()","%d %d %d %.6f %.6f %d\n",posT[cnt],barX[cnt],barY[cnt],deltaT[cnt],deltaT2[cnt],layT[cnt]);
       
       cnt++;
@@ -160,7 +160,7 @@ void TATWcalibrationMap::LoadTofCalibrationMap(std::string FileName)
       fCalibTofMapLayX[posT[i]].push_back(deltaT[i]);
       fCalibTofMapLayX[posT[i]].push_back(deltaT2[i]);
       
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(4))
 	cout<<"Position: "<<posT[i]<<" Layer: "<<layT[i]<<" q: "<<fCalibTofMapLayX[posT[i]][0]<<" m: "<<fCalibTofMapLayX[posT[i]][1]<<endl;
 
     } else if (layT[i]==LayerY){
@@ -168,7 +168,7 @@ void TATWcalibrationMap::LoadTofCalibrationMap(std::string FileName)
       fCalibTofMapLayY[posT[i]].push_back(deltaT[i]);
       fCalibTofMapLayY[posT[i]].push_back(deltaT2[i]);
 
-    if(FootDebugLevel(1))
+    if(FootDebugLevel(4))
       cout<<"Position: "<<posT[i]<<" Layer: "<<layT[i]<<" q: "<<fCalibTofMapLayY[posT[i]][0]<<" m: "<<fCalibTofMapLayY[posT[i]][1]<<endl;
 
     }
@@ -210,13 +210,13 @@ void TATWcalibrationMap::LoadBarEnergyCalibrationMap(std::string FileName)
       while (fileBarE.getline(line, 200, '\n')) {
 
         if(strchr(line,'#')) {
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(4))
         Info("LoadBarEnergyCalibrationMap()","Skip comment line:: %s\n",line);
       continue;
         }
 
         sscanf(line, "%d %lf %lf %d",&BarId[cnt],&P0[cnt],&P1[cnt],&lay[cnt]);
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  Info("LoadBarEnergyCalibrationMap()","%d %.5f %.7f %d\n",BarId[cnt],P0[cnt],P1[cnt],lay[cnt]);
         
         cnt++;
@@ -237,7 +237,7 @@ void TATWcalibrationMap::LoadBarEnergyCalibrationMap(std::string FileName)
         fCalibElossBarMapLayX[BarId[i]].push_back(P0[i]);
         fCalibElossBarMapLayX[BarId[i]].push_back(P1[i]);
 
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  cout<<"BarId: "<<BarId[i]<<" Layer: "<<lay[i]<<" P0: "<<fCalibElossBarMapLayX[BarId[i]][0]<<" P1: "<<fCalibElossBarMapLayX[BarId[i]][1]<<endl;
 	
       } else if (lay[i]==LayerY) {
@@ -245,7 +245,7 @@ void TATWcalibrationMap::LoadBarEnergyCalibrationMap(std::string FileName)
         fCalibElossBarMapLayY[BarId[i]].push_back(P0[i]);
         fCalibElossBarMapLayY[BarId[i]].push_back(P1[i]);
 	
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  cout<<"BarId: "<<BarId[i]<<" Layer: "<<lay[i]<<" P0: "<<fCalibElossBarMapLayY[BarId[i]][0]<<" P1: "<<fCalibElossBarMapLayY[BarId[i]][1]<<endl;
         
       }
@@ -283,13 +283,13 @@ void TATWcalibrationMap::LoadBarTofCalibrationMap(std::string FileName)
       while (fileBarT.getline(line, 200, '\n')) {
 
         if(strchr(line,'#')) {
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(4))
         Info("LoadBarTofCalibrationMap()","Skip comment line:: %s\n",line);
       continue;
         }
 
         sscanf(line, "%d %lf %lf %d",&BarId[cnt],&DeltaT1[cnt],&DeltaT2[cnt],&lay[cnt]);
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  Info("LoadBarTofCalibrationMap()","%d %.5f %.7f %d\n",BarId[cnt],DeltaT1[cnt],DeltaT2[cnt],lay[cnt]);
         
         cnt++;
@@ -310,7 +310,7 @@ void TATWcalibrationMap::LoadBarTofCalibrationMap(std::string FileName)
         fCalibTofBarMapLayX[BarId[i]].push_back(DeltaT1[i]);
         fCalibTofBarMapLayX[BarId[i]].push_back(DeltaT2[i]);
 
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  cout<<"BarId: "<<BarId[i]<<" Layer: "<<lay[i]<<" Delta Time 1: "<<fCalibTofBarMapLayX[BarId[i]][0]<<" Delta Time 2: "<<fCalibTofBarMapLayX[BarId[i]][1]<<endl;
 	
       } else if (lay[i]==LayerY) {
@@ -318,7 +318,7 @@ void TATWcalibrationMap::LoadBarTofCalibrationMap(std::string FileName)
         fCalibTofBarMapLayY[BarId[i]].push_back(DeltaT1[i]);
         fCalibTofBarMapLayY[BarId[i]].push_back(DeltaT2[i]);
 	
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  cout<<"BarId: "<<BarId[i]<<" Layer: "<<lay[i]<<" Delta Time 1: "<<fCalibTofBarMapLayY[BarId[i]][0]<<" Delta Time 2: "<<fCalibTofBarMapLayY[BarId[i]][1]<<endl;
         
       }
@@ -356,13 +356,13 @@ void TATWcalibrationMap::LoadBarElossTuning(std::string FileName)
       while (fileTune.getline(line, 200, '\n')) {
 
         if(strchr(line,'#')) {
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(4))
         Info("LoadBarElossTuning()","Skip comment line:: %s\n",line);
       continue;
         }
 	
         sscanf(line, "%d %lf %lf %lf %d",&BarId[cnt],&A[cnt],&B[cnt],&C[cnt],&lay[cnt]);
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  Info("LoadBarElossTuning()","%d %.5f %.7f %.5f %d\n",BarId[cnt],A[cnt],B[cnt],C[cnt],lay[cnt]);
         
         cnt++;
@@ -384,7 +384,7 @@ void TATWcalibrationMap::LoadBarElossTuning(std::string FileName)
         fElossTuningBarMapLayX[BarId[i]].push_back(B[i]);
         fElossTuningBarMapLayX[BarId[i]].push_back(C[i]);
           
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  cout<<"BarId: "<<BarId[i]<<" Layer: "<<lay[i]<<" A: "<<fElossTuningBarMapLayX[BarId[i]][0]<<" B: "<<fElossTuningBarMapLayX[BarId[i]][1]<<" C: "<<fElossTuningBarMapLayX[BarId[i]][2]<<endl;
 
       } else if (lay[i]==LayerY) {
@@ -393,7 +393,7 @@ void TATWcalibrationMap::LoadBarElossTuning(std::string FileName)
         fElossTuningBarMapLayY[BarId[i]].push_back(B[i]);
         fElossTuningBarMapLayY[BarId[i]].push_back(C[i]);
 
-        if(FootDebugLevel(1))
+        if(FootDebugLevel(4))
 	  cout<<"BarId: "<<BarId[i]<<" Layer: "<<lay[i]<<" A: "<<fElossTuningBarMapLayY[BarId[i]][0]<<" B: "<<fElossTuningBarMapLayY[BarId[i]][1]<<" C: "<<fElossTuningBarMapLayY[BarId[i]][2]<<endl;
           
       }
@@ -414,7 +414,7 @@ void TATWcalibrationMap::LoadCalibrationMap(std::string FileName)
 	x.ReadFile(FileName);
 	std::vector<XMLNodePointer_t> BarVector;
 	BarVector=x.GetChildNodesByName(x.GetMainNode(),"BAR");
-   if (FootDebugLevel(1)) {
+   if (FootDebugLevel(4)) {
       Info("LoadCalibrationMap()", " => Calibration ");
       Info("LoadCalibrationMap()", " Description: %s", x.GetContentAsString("DESCRIPTION",x.GetMainNode()).data());
       Info("LoadCalibrationMap()", " Creation date: %s", x.GetContentAsString("DATE",x.GetMainNode()).data());
@@ -431,7 +431,7 @@ void TATWcalibrationMap::LoadCalibrationMap(std::string FileName)
 		}
 		fCalibrationMap[BarId].push_back(p0);
 		fCalibrationMap[BarId].push_back(p1);
-      if (FootDebugLevel(1))
+      if (FootDebugLevel(4))
           Info("LoadCalibrationMap()", "BAR_ID %d  par0 %f par1 %f ",BarId,p0,p1);
 	}
 }
