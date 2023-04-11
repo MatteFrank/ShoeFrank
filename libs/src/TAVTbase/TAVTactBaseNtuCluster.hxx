@@ -81,9 +81,15 @@ protected:
    TH1F*          fpHisPixelTot;	        ///< Total number of pixels per cluster
    TH1F*          fpHisPixel[MaxSens];	  ///< number of pixels per cluster per sensor
    TH2F*          fpHisClusMap[MaxSens]; ///< cluster map per sensor
-   
+
+   TH1F *fpClusDistribX;      ///< X distribution of pixels of a cluster
+   TH1F *fpClusDistribY;      ///< X distribution of pixels of a cluster
+
+
    TString        fPrefix;            ///< prefix of histogram
    TString        fTitleDev;          ///< device name for histogram title
+
+
 
 protected:
    // Search cluster
@@ -94,6 +100,8 @@ protected:
    void   ComputeSeedPosition();
    // Compute CoG position
    void   ComputeCoGPosition();
+   // Estimate Position by median
+   void EstimateMedian();
    // Fill cluster info
    void   FillClusterInfo(Int_t iSensor, TAVTbaseCluster* cluster);
 
