@@ -86,7 +86,7 @@ void FillMCVertex(Int_t runNumber) {
    
    TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
    
    vtEve  = new TAGdataDsc("vtEve", new TAMCntuPart());
@@ -123,7 +123,7 @@ void FillMCInnerTracker(Int_t runNumber) {
    /*Ntupling the MC Inner tracker information*/
    TAGparaDsc* itGeo    = new TAGparaDsc("itGeo", new TAITparGeo());
    TAITparGeo* geomap   = (TAITparGeo*) itGeo->Object();
-   TString parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAITparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
    
    TAGdataDsc* itMc   = new TAGdataDsc("itMc", new TAMCntuHit());
@@ -160,7 +160,7 @@ void ReadGlbSRawMC(TString filename = "12C_C_200shoereg.root", Int_t nMaxEvts = 
    campManager->FromFile();
    
    TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
    geoTrafo->FromFile(parFileName);
    
    TFile* f = new TFile(filename.Data());

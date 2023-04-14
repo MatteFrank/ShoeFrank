@@ -39,12 +39,14 @@ Kalman Particle Types:	C
 ############   Options for reconstruction   ################
 
 EnableTree:          y
+EnableFlatTree:      n
 EnableHisto:         y
 EnableTracking:      y
 
 EnableSaveHits:      y
 EnableRootObject:    y
 EnableRegionMc:      y
+EnableElecNoiseMc:   n
 
 ############   END - Options for reconstruction   ################
 

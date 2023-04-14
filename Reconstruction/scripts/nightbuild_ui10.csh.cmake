@@ -13,7 +13,7 @@ setenv CMAKE_MODULE_PATH $YBASEPATH/etc/root/cmake:$CMAKE_MODULE_PATH
 source $YBASEPATH/bin/thisroot.csh
 
 #define env
-setenv FOOTLIBS @CMAKE_BINARY_DIR@/libs/
+setenv FOOTLIBS @CMAKE_BINARY_DIR@/Libraries/
 setenv FOOTBUILD @CMAKE_BINARY_DIR@
 setenv FOOTSRC @CMAKE_CURRENT_SOURCE_DIR@/../
 setenv FOOTREC $FOOTBUILD/Reconstruction/
@@ -27,13 +27,31 @@ set path = ($FOOTBUILD/bin $path)
 cd $FOOTSRC
 echo "update newgeom branch"
 git pull origin newgeom_v1.0
+if ( $status == 0 ) then
+  echo "Pulling fine"
+else
+  echo "PatternError"
+endif
 echo " "
 
 #build last version
 echo "execute cmake & make"
 cd $FOOTBUILD
 cmake $FOOTSRC -DCMAKE_BUILD_TYPE=Debug -DANC_DIR=ON -DFILECOPY=ON
+if ( $status == 0 ) then
+  echo "Cofiguration fine"
+else
+  echo "PatternError"
+endif
+echo " "
+
+#make
 make -j4
+if ( $status == 0 ) then
+  echo "Compilation fine"
+else
+  echo "PatternError"
+endif
 echo " "
 
 #run rawdata reconstruction
@@ -48,6 +66,12 @@ sed 's/IncludeStraight: n/IncludeStraight: y/' ./config/GSI2021/FootGlobal.par >
 DecodeGlb -in $FOOTRAWDATA/data_test.00004306.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data -out runGSI2021_4306_Plots_1kEvts.root -nev 1000 -exp GSI2021 -run 4306
 \mv TAMSDdetector_old.cfg ./config/GSI2021TAMSDdetector.cfg
 \mv FootGlobal_old.par ./config/GSI2021/FootGlobal.par
+
+if ( $status == 0 ) then
+  echo "Raw data reconstruction fine"
+else
+  echo "PatternError"
+endif
 echo " "
 
 #Compare to reference plots
@@ -66,6 +90,12 @@ sed 's/IncludeStraight: n/IncludeStraight: y/' ./config/GSI2021/FootGlobal.par >
 DecodeGlb -in $FOOTMCDATA/GSI2021/16O_C_400_1_shoereg.root -out runGSI2021_MC_400_Plots_1kEvts.root -nev 1000 -exp GSI2021_MC -run 400 -mc
 \mv TAMSDdetector_old.cfg ./config/GSI2021_MCTAMSDdetector.cfg
 \mv FootGlobal_old.par ./config/GSI2021_MC/FootGlobal.par
+
+if ( $status == 0 ) then
+  echo "MC data reconstruction fine"
+else
+  echo "PatternError"
+endif
 echo " "
 
 #Compare to reference plots
@@ -75,7 +105,3 @@ root -q TestBenchMark.C+\(0\)
 \mv nightbuild.new nightbuild.old
 \mv nightbuild.log nightbuild.new
 \cp  nightbuild.new ~/
-
- ssh sbgli  -o BatchMode=yes 'cat nightbuild.new | mail -s "shoe night build" cfinck@iphc.cnrs.fr'
- 
-\rm  ~/nightbuild.new

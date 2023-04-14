@@ -56,40 +56,40 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
   campManager->FromFile();
   
   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
   geoTrafo->FromFile(parFileName);
   
   TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
   TASTparGeo* stparGeo = (TASTparGeo*)parGeoSt->Object();
-  parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TASTparGeo"), runNumber);
   stparGeo->FromFile(parFileName);
   
   
   TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
   TABMparGeo* bmparGeo = (TABMparGeo*)parGeoBm->Object();
-  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TABMparGeo"), runNumber);
   bmparGeo->FromFile(parFileName);
   
   
   TAGparaDsc* parGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
   TAVTparGeo* vtparGeo = (TAVTparGeo*)parGeoVtx->Object();
-  parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
   vtparGeo->FromFile(parFileName);
   
   
   TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
   TAITparGeo* itparGeo = (TAITparGeo*)parGeoIt->Object();
-  parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TAITparGeo"), runNumber);
   itparGeo->FromFile(parFileName);
   
   TAGparaDsc* parGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
   TAMSDparGeo* msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
-  parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
   msdparGeo->FromFile(parFileName);
   
   TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
   TATWparGeo* twparGeo = (TATWparGeo*)parGeoTw->Object();
-  parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TATWparGeo"), runNumber);
   twparGeo->FromFile(parFileName);
   
   

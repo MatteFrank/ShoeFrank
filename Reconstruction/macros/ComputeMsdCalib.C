@@ -64,31 +64,31 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    campManager->FromFile();
 
    TAGgeoTrafo *geoTrafo = new TAGgeoTrafo();
-   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
    geoTrafo->FromFile(parFileName);
 
    // ###################### FILLING MSD #################################
    TAGparaDsc *msdMap = new TAGparaDsc("msdMap", new TAMSDparMap());
    TAMSDparMap *map = (TAMSDparMap *)msdMap->Object();
-   parFileName = campManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurMapFile(FootBaseName("TAMSDparGeo"), runNumber);
    map->FromFile(parFileName.Data());
 
    TAGparaDsc *msdGeo = new TAGparaDsc("msdGeo", new TAMSDparGeo());
    TAMSDparGeo *geomap = (TAMSDparGeo *)msdGeo->Object();
-   parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
 
    TAGparaDsc *msdConf = new TAGparaDsc("msdConf", new TAMSDparConf());
    TAMSDparConf *confmap = (TAMSDparConf *)msdConf->Object();
-   parFileName = campManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurConfFile(FootBaseName("TAMSDparGeo"), runNumber);
    confmap->FromFile(parFileName.Data());
 
    TAGparaDsc *msdCal = new TAGparaDsc("msdCal", new TAMSDparCal(geomap->GetStripsN()));
    TAMSDparCal *parCalMsd = (TAMSDparCal *)msdCal->Object();
-   parFileName = campManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), runNumber, true);
+   parFileName = campManager->GetCurCalFile(FootBaseName("TAMSDparGeo"), runNumber, true);
    parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
 
-   parFileName = campManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), runNumber);
+   parFileName = campManager->GetCurCalFile(FootBaseName("TAMSDparGeo"), runNumber);
    parCalMsd->LoadPedestalMap(parFileName.Data());
 
    TAGdataDsc *msdDaq = new TAGdataDsc("msdDaq", new TAGdaqEvent());

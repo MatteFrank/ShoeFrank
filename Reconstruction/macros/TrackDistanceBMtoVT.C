@@ -38,12 +38,12 @@ void TrackDistanceBMtoVT(TString nameFile = "12C_C_200_L0Out.root", TString expN
   campManager->FromFile();
   
   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
   geoTrafo->FromFile(parFileName);
   
   TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
   TABMparGeo* pGeoMap = (TABMparGeo*)parGeoBm->Object();
-  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TABMparGeo"), runNumber);
   pGeoMap->FromFile(parFileName);
   
   

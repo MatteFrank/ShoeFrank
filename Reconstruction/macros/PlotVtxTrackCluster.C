@@ -40,7 +40,7 @@ void PlotVtxTrackCluster(TString nameFile = "12C_C_200_L0Out.root", TString expN
   // geo file for VTX
   TAGparaDsc* parGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
   TAVTparGeo* pGeoMap = (TAVTparGeo*)parGeoVtx->Object();
-  TString parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
   pGeoMap->FromFile(parFileName);
   
   // Branch setting
