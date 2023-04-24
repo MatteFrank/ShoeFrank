@@ -52,6 +52,8 @@ protected:
    Float_t        fChiSquare;                    ///< chisquare/ndf of track fit in 2D
    Float_t        fChiSquareU;                   ///< chisquare/ndf of track fit, U dim
    Float_t        fChiSquareV;                   ///< chisquare/ndf of track fit, V dim
+   Float_t        fPvalueU;                      ///< pvalue of fit U dim
+   Float_t        fPvalueV;                      ///< pvalue of fit U dim
    TVector3       fPosVertex;                    ///< vertex position
 
    Int_t          fValidity;                     ///< if = 1 track attached to vertex,
@@ -119,6 +121,10 @@ public:
    //! Set chi squareV
    void SetChi2V(Float_t chi2V){fChiSquareV = chi2V;}
 
+   void SetPvalueU(Float_t pU) { fPvalueU = pU; }
+   //! Set chi squareV
+   void SetPvalueV(Float_t pV) { fPvalueV = pV; }
+
    // Get distance with another track
    Float_t Distance(TAGbaseTrack *track, Float_t z) const;
    // Get X-Y distance with another track
@@ -175,10 +181,14 @@ public:
 
    //! Get chi square
    Float_t        GetChi2()                 const { return fChiSquare;               }
-   //! Get chi squareU
+   //! Get chi squareU (reduced)
    Float_t        GetChi2U()                const { return fChiSquareU;              }
-   //! Get chi squareV
+   //! Get chi squareV (reduced)
    Float_t        GetChi2V()                const { return fChiSquareV;              }
+   //! Get chi square p value U
+   Float_t GetPvalueU() const { return fPvalueU; }
+   //! Get chi square p value V
+   Float_t GetPvalueV() const { return fPvalueV; }
 
    //! Get Validity
    Int_t         GetValidity()               const { return fValidity;               }
