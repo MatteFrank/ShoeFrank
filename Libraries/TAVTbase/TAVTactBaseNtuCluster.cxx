@@ -230,7 +230,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    if (posErr(1) < lim) posErr(1) = lim; //(20/Sqrt(12)^2
 
    fCurrentPosition.SetXYZ((pos)(0), (pos)(1), 0);
-   fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0)), TMath::Sqrt((posErr)(1)), 0);
+   fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0) * 0.6), TMath::Sqrt((posErr)(1) * 0.72), 0);  //multiplicative factor to make the pull with a sigma close to 1 according to gsi 2021 mc 400 mev/n
 }
 
 //______________________________________________________________________________
