@@ -12,6 +12,11 @@
 #include "TVector3.h"
 #include "TVector2.h"
 
+#include "TAMCparTools.hxx"
+#include "TAMCntuHit.hxx"
+#include "TAMCntuPart.hxx"
+#include "TAGnameManager.hxx"
+
 //BM
 #include "TABMntuTrack.hxx"
 
@@ -111,6 +116,16 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    fpHisClusLeft = new TH1F(Form("%sClusLeft", fPrefix.Data()), Form("%s - Clusters left per sensor", fTitleDev.Data()), 8, 1, 8);
    AddHistogram(fpHisClusLeft);
 
+   if (GetFlagMC()){
+      fpHisTrackMultiplicity_frag = new TH1F(Form("%sTrackMultiplicity_frag", fPrefix.Data()), Form("%s - Track multiplicity of clusters when there if fragmentation (MC)", fTitleDev.Data()), 5, -0.5, 4.5);
+      AddHistogram(fpHisTrackMultiplicity_frag );
+      fpHisTrackMultiplicity_primary  = new TH1F(Form("%sTrackMultiplicity_primary", fPrefix.Data()), Form("%s - Track multiplicity of clusters if no fragmentation (MC)", fTitleDev.Data()), 5, -0.5, 4.5);
+      AddHistogram(fpHisTrackMultiplicity_primary);
+
+   }
+
+
+
    SetValidHistogram(kTRUE);
    return;
 }
@@ -128,28 +143,35 @@ Bool_t TAVTactBaseNtuTrack::Action()
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
    pNtuTrack->Clear();
 
-   // looking straight
-   FindStraightTracks();
+   
+   FindTiltedTracks();
 
-   // looking inclined line
-   if (!FindTiltedTracks()){
-	  if (ValidHistogram())
-		 FillHistogramm();
-	  fpNtuTrack->SetBit(kValid);
-	  return true;
-   }
+   //looking straight
+   // FindStraightTracks();
 
-   if (FindVertices())
-	  FindTiltedTracks();
+   // //looking inclined line
+   //     if (!FindTiltedTracks())
+   // { // it is never false with TAVTactNtuTrackF::FindTiltedTracks()
+   //   if (ValidHistogram())
+	// 	 FillHistogramm();
+	//   fpNtuTrack->SetBit(kValid);
+	//   return true;
+   // }
 
-   if(FootDebugLevel(1)) {
-	  printf("%s %d tracks found\n", this->GetName(), pNtuTrack->GetTracksN()); //print name of action since it's used for all trackers
-	  for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
-		 TAVTtrack* track = pNtuTrack->GetTrack(i);
-		 printf("   with # clusters %d\n", track->GetClustersN());
-	  }
-   }
+   // if (FindVertices()){    //it is always false
+	//   FindTiltedTracks();
+   // }
 
+   // if(FootDebugLevel(1)) {
+	//   printf("%s %d tracks found\n", this->GetName(), pNtuTrack->GetTracksN()); //print name of action since it's used for all trackers
+	//   for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i) {
+	// 	 TAVTtrack* track = pNtuTrack->GetTrack(i);
+	// 	 printf("   with # clusters %d\n", track->GetClustersN());
+	//   }
+   // }
+
+   if (GetFlagMC())
+   EvaluateTrack();
 
    if (ValidHistogram())
 	  FillHistogramm();
@@ -407,4 +429,62 @@ void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.Y());
 	  fpHisVtxResY->Fill(origin.Y(), bmTrackPos.Y());
    }
+}
+
+
+//_____________________________________________________________________________
+//! Study of the purity of the track
+void TAVTactBaseNtuTrack::EvaluateTrack()
+{  
+   bool good_clus = true; 
+   TAVTntuTrack *pNtuTrack = (TAVTntuTrack *)fpNtuTrack->Object();
+   pNtuEve = static_cast<TAMCntuPart *>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object());
+   vector<int> id_vec; // vector of MC_ID of every cluster
+   std::map<std::string, int> m; //map of the multiplicity of different cluster in a track
+
+
+   //from MC: study the fragmentation of the primary
+
+   double_t target_sizeZ = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetTargetPar().Size.Z();
+   Int_t target_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetRegTarget();
+   Bool_t isFragment = false;
+
+   TAMCpart *primary_MC = pNtuEve->GetTrack(0); // mcparticle primary
+   if ( primary_MC->GetMotherID() == -1  // if primary of the beam
+    && primary_MC->GetInitPos().Z() < -100  // if the particle is born at the beginning of the setup
+    && (primary_MC->GetFinalPos().Z() >= -(target_sizeZ/2.) && primary_MC->GetFinalPos().Z() <= (target_sizeZ/2.)) // if the particle goes into fragmentation inside the target
+   ) isFragment = true;
+
+
+   // if the primary particle goes into fragmentation in the target:
+
+   for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i)   //for every track
+   {  
+      id_vec.clear();
+      m.clear();
+      //cout << "track n°" << i << endl;
+         TAVTtrack *track = pNtuTrack->GetTrack(i);
+     for (Int_t j = 0; j < track->GetClustersN(); ++j){     // for every cluster
+         TAVTcluster *clus = (TAVTcluster *)track->GetCluster(j);
+         good_clus = true;
+         if (clus->GetMcTracksN()>1){   // i study only tracks with clusters well reconstructed
+            good_clus = false;
+            break;
+         }
+         id_vec.push_back(clus->GetMcTrackIdx(0));
+         //cout << "id particle: "<< clus->GetMcTrackIdx(0) << endl;
+         
+         //cout << "particella charge: " << track->GetCharge() << endl;
+
+     }
+     if (good_clus == false) continue;
+     //if  (!std::equal(id_vec.begin() + 1, id_vec.end(), id_vec.begin())) //if all the index are not equal
+     for (auto &element : id_vec)
+     {
+         ++m[to_string(element)];
+     }
+
+     if (isFragment) fpHisTrackMultiplicity_frag->Fill(m.size());
+     else fpHisTrackMultiplicity_primary->Fill(m.size());
+     }
 }

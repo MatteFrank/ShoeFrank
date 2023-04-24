@@ -10,6 +10,7 @@
 
 #include "TAVTactBaseTrack.hxx"
 #include "TAVTparameters.hxx"
+#include "TAMCntuPart.hxx"
 
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
@@ -49,7 +50,10 @@ public:
    
    //! Set BM track pointer
    void             SetBMntuTrack(TAGdataDsc* pBMtrack) { fpBMntuTrack = pBMtrack;     }
-   
+
+   void SetFlagMC(Bool_t is_MC) { flagMC = is_MC; }
+   Bool_t GetFlagMC() { return flagMC; }
+
 protected:
    // Fill BM histogram from BM track
    void   FillBmHistogramm(TVector3 bmTrackPos);
@@ -65,6 +69,12 @@ protected:
    virtual Bool_t FindVertices()     { return false; }
    // Set charge probability
    void           SetChargeProba();
+
+   //studies on purity of the track
+   void           EvaluateTrack();
+
+
+
    
 protected:
    TAGdataDsc*      fpBMntuTrack;	     ///< BM track pointer
@@ -83,8 +93,16 @@ protected:
    TH1F*            fpHisBmChi2;         ///< number of clusters per track
    TH1F*            fpHiVtxTgResX;       ///< Vertex resolution at Target X
    TH1F*            fpHiVtxTgResY;       ///< Vertex resolution at Target Y
-   
-   ClassDef(TAVTactBaseNtuTrack,0)
+   TH1F*            fpHisTrackMultiplicity_frag;     ///< multiplicity of clusters of different MC particles in a reconstructed track if fragmentation
+   TH1F*            fpHisTrackMultiplicity_primary;     ///< multiplicity of clusters of different MC particles in a reconstructed track if no fragmentation
+
+       Bool_t flagMC; ///< if the dataset is MC
+
+   ClassDef(TAVTactBaseNtuTrack, 0)
+
+       private :
+
+       TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object
 };
 
 #endif
