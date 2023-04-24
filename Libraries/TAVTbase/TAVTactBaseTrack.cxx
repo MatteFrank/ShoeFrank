@@ -119,39 +119,39 @@ void TAVTactBaseTrack::CreateHistogram()
       fpHisTrackMap[i]->SetStats(kFALSE);
       AddHistogram(fpHisTrackMap[i]);
 
-      fpHisResX[i] = new TH1F(Form("%sResX%d", fPrefix.Data(), i + 1), Form("%s - ResidualX of sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 400, -0.01, 0.01);
+      fpHisResX[i] = new TH1F(Form("%sResX%d", fPrefix.Data(), i + 1), Form("%s - ResidualX of sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, -0.01, 0.01);
       AddHistogram(fpHisResX[i]);
-      fpHisResY[i] = new TH1F(Form("%sResY%d", fPrefix.Data(), i + 1), Form("%s - ResidualY of sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 400, -0.01, 0.01);
+      fpHisResY[i] = new TH1F(Form("%sResY%d", fPrefix.Data(), i + 1), Form("%s - ResidualY of sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, -0.01, 0.01);
       AddHistogram(fpHisResY[i]);
 
       // pull
-      fpHisPullX[i] = new TH1F(Form("%sPullX%d", fPrefix.Data(), i + 1), Form("%s - PullX of sensor %d", fTitleDev.Data(), i + 1), 50, -2, 2);
+      fpHisPullX[i] = new TH1F(Form("%sPullX%d", fPrefix.Data(), i + 1), Form("%s - PullX of sensor %d", fTitleDev.Data(), i + 1), 100, -5, 5);
       AddHistogram(fpHisPullX[i]);
-      fpHisPullY[i] = new TH1F(Form("%sPullY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d", fTitleDev.Data(), i + 1), 50, -2, 2); // ! range
+      fpHisPullY[i] = new TH1F(Form("%sPullY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d", fTitleDev.Data(), i + 1), 100, -5, 5); // ! range
       AddHistogram(fpHisPullY[i]);
 
       // meas position
-      fpHisTrackClustPosX[i] = new TH1F(Form("%sTrackClusPosX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 400, -5, 5);
+      fpHisTrackClustPosX[i] = new TH1F(Form("%sTrackClusPosX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, -5, 5);
       AddHistogram(fpHisTrackClustPosX[i]);
-      fpHisTrackClustPosY[i] = new TH1F(Form("%sTrackClusPosY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 400, -5, 5); // ! range
+      fpHisTrackClustPosY[i] = new TH1F(Form("%sTrackClusPosY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, -5, 5); // ! range
       AddHistogram(fpHisTrackClustPosY[i]);
 
       // meas position resolution
-      fpHisTrackClustPosErrX[i] = new TH1F(Form("%sTrackClusPosErrX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position error in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 100, 0., 0.005);
+      fpHisTrackClustPosErrX[i] = new TH1F(Form("%sTrackClusPosErrX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position error in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, 0., 0.002);
       AddHistogram(fpHisTrackClustPosErrX[i]);
-      fpHisTrackClustPosErrY[i] = new TH1F(Form("%sTrackClusPosErrY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position error in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 100, 0., 0.005); // ! range
+      fpHisTrackClustPosErrY[i] = new TH1F(Form("%sTrackClusPosErrY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position error in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, 0., 0.002); // ! range
       AddHistogram(fpHisTrackClustPosErrY[i]);
 
       // fit position
-      fpHisFitClustPosX[i] = new TH1F(Form("%sFitClusPosX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position by fit in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 400, -5, 5);
+      fpHisFitClustPosX[i] = new TH1F(Form("%sFitClusPosX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position by fit in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, -5, 5);
       AddHistogram(fpHisFitClustPosX[i]);
-      fpHisFitClustPosY[i] = new TH1F(Form("%sFitClusPosY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position by fit in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 400, -5, 5); // ! range
+      fpHisFitClustPosY[i] = new TH1F(Form("%sFitClusPosY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position by fit in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, -5, 5); // ! range
       AddHistogram(fpHisFitClustPosY[i]);
 
       // fit resolution
-      fpHisFitClustPosErrX[i] = new TH1F(Form("%sFitClusPosErrX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position error by fit in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 100, 0., 0.005);
+      fpHisFitClustPosErrX[i] = new TH1F(Form("%sFitClusPosErrX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position error by fit in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, 0., 0.002);
       AddHistogram(fpHisFitClustPosErrX[i]);
-      fpHisFitClustPosErrY[i] = new TH1F(Form("%sFitClusPosErrY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position error by fit  in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 100, 0., 0.005); // ! range
+      fpHisFitClustPosErrY[i] = new TH1F(Form("%sFitClusPosErrY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position error by fit  in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, 0., 0.002); // ! range
       AddHistogram(fpHisFitClustPosErrY[i]);
 
    }
@@ -164,10 +164,14 @@ void TAVTactBaseTrack::CreateHistogram()
    AddHistogram(fpHisResTotX);
    AddHistogram(fpHisResTotY);
    
-   fpHisChi2TotX = new TH1F(Form("%sChi2TotX", fPrefix.Data()), Form("%s - Total Chi2 X", fTitleDev.Data()), 200, 0, 20);
-   fpHisChi2TotY = new TH1F(Form("%sChi2TotY", fPrefix.Data()), Form("%s - Total Chi2 Y", fTitleDev.Data()), 200, 0, 20);
+   fpHisChi2TotX = new TH1F(Form("%sChi2TotX", fPrefix.Data()), Form("%s - Total Chi2 X", fTitleDev.Data()), 50, 0, 5);
+   fpHisChi2TotY = new TH1F(Form("%sChi2TotY", fPrefix.Data()), Form("%s - Total Chi2 Y", fTitleDev.Data()), 50, 0, 5);
+   fpHisChi2probX = new TH1F(Form("%sChi2pvalueX", fPrefix.Data()), Form("%s - p value of the fit (chi2 probability) X", fTitleDev.Data()), 100, 0, 1);
+   fpHisChi2probY = new TH1F(Form("%sChi2pvalueY", fPrefix.Data()), Form("%s - p value of the fit (chi2 probability) Y", fTitleDev.Data()), 100, 0, 1);
    AddHistogram(fpHisChi2TotX);
    AddHistogram(fpHisChi2TotY);
+   AddHistogram(fpHisChi2probX);
+   AddHistogram(fpHisChi2probY);
    
    fpHisTrackEvt = new TH1F(Form("%sTrackEvt", fPrefix.Data()), Form("%s - Number of tracks per event", fTitleDev.Data()), 20, -0.5, 19.5);
    AddHistogram(fpHisTrackEvt);
@@ -295,8 +299,8 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
 		 fGraphV->SetPoint(i, z, y);
 		 fGraphV->SetPointError(i, dz, dy);
 	  }
-	  
-     auto fitResultU = fGraphU->Fit("pol1", "SQ");
+
+     auto fitResultU = fGraphU->Fit("pol1", "SQEX0");
      covMatrixU.ResizeTo(fitResultU->GetCovarianceMatrix());
      covMatrixU = fitResultU->GetCovarianceMatrix();
 
@@ -309,7 +313,7 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
    //   variance["dm"][0] = covMatrixU(1, 1);
    //   variance["dmdq"][0] = covMatrixU(0, 1);
 
-     auto fitResultV = fGraphV->Fit("pol1", "SQ");
+     auto fitResultV = fGraphV->Fit("pol1", "SQEX0");
      covMatrixV.ResizeTo(fitResultV->GetCovarianceMatrix());
      covMatrixV = fitResultV->GetCovarianceMatrix();
      TF1* polyV   = fGraphV->GetFunction("pol1");
@@ -320,9 +324,12 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
    //   variance["dq"][1] = covMatrixV(0, 0);
    //   variance["dm"][1] = covMatrixV(1, 1);
    //   variance["dmdq"][1] = covMatrixV(0, 1);
-     track->SetChi2U(fitResultU->Chi2() / fitResultU->Ndf());
-     track->SetChi2V(fitResultV->Chi2() / fitResultV->Ndf());
+     track->SetChi2U(fitResultU->Chi2());
+     track->SetChi2V(fitResultV->Chi2());
+     //cout << fitResultU->Ndf() << endl;
      track->SetChi2((fitResultV->Chi2() + fitResultU->Chi2()) / (fitResultV->Ndf() + fitResultU->Ndf()));
+     track->SetPvalueU(fitResultU->Prob());
+     track->SetPvalueV(fitResultV->Prob());
    }
    track->SetCovarianceMatrix(covMatrixU, covMatrixV);
    track->SetLineValue(origin, slope);
@@ -392,13 +399,16 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
       fpHisTrackMap[idx]->Fill(impactLoc[0], impactLoc[1]);
       fpHisResTotX->Fill(impact[0] - cluster->GetPositionG()[0]);
       fpHisResTotY->Fill(impact[1] - cluster->GetPositionG()[1]);
-      fpHisResX[idx]->Fill(impact[0] - cluster->GetPositionG()[0]);
-      fpHisResY[idx]->Fill(impact[1] - cluster->GetPositionG()[1]);
+      fpHisResX[idx]->Fill(resX);
+      fpHisResY[idx]->Fill(resY);
       fpHisClusSensor->Fill(idx + 1);
    }
    fpHisChi2TotX->Fill(track->GetChi2U());
    fpHisChi2TotY->Fill(track->GetChi2V());
-   
+
+   fpHisChi2probX->Fill(track->GetPvalueU());
+   fpHisChi2probY->Fill(track->GetPvalueV());
+
    TVector3 origin = track->GetOrigin();
    fpHisBeamProf->Fill(origin.X(), origin.Y());
    

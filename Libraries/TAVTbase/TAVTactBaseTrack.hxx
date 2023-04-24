@@ -129,7 +129,9 @@ protected:
    TH2F*           fpHisBeamProf;       ///< VTX Beam profile extrapolated to target histogram
    TH1F*           fpHisChi2TotX;       ///< Total Chi2 in X direction histogram
    TH1F*           fpHisChi2TotY;       ///< Total Chi2 in Y direction histogram
-   TH1F*           fpHisTrackEvt;       ///< number of track per event histogram
+   TH1F*           fpHisChi2probX;      ///< Total Chi2 pvalue in X direction histogram
+   TH1F*           fpHisChi2probY;      ///< Total Chi2 pvalue in Y direction histogram
+   TH1F *fpHisTrackEvt;             ///< number of track per event histogram
    TH1F*           fpHisTrackClus;      ///< number of clusters per track histogram
    TH1F*           fpHisClusSensor;     ///< number of tracked clusters per sensor histogram
    TH1F*           fpHisTheta;          ///< Polar angular distribution histogram
