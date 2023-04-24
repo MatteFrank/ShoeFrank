@@ -39,7 +39,7 @@ ClassImp(TAVTactBaseNtuHitMC);
 
 //Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 1.736; // ajust for GSI (not enough, for memory)
 Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
-Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
+Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -666;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -157,7 +157,7 @@ void TAVTactBaseNtuHitMC::ComputeNoiseLevel()
 	   fraction = f->Integral(-fSigmaNoiseLevel, fSigmaNoiseLevel)/TMath::Sqrt(2*TMath::Pi());
 	   fNoisyPixelsN = TMath::Nint(fDigitizer->GetPixelsNx()*fDigitizer->GetPixelsNy()*(1.-fraction));
 	}
-	
+
    FootDebugLine(1, "ComputeNoiseLevel()", Form("Number of noise pixels %d\n", fNoisyPixelsN));
 	
 	delete f;

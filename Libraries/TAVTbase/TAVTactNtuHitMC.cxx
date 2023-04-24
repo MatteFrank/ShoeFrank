@@ -277,7 +277,7 @@ void TAVTactNtuHitMC::FillNoise(Int_t sensorId)
 {
 	TAVTntuHit* pNtuRaw = (TAVTntuHit*) fpNtuRaw->Object();
 
-	Int_t pixelsN = gRandom->Uniform(0, fNoisyPixelsN);
+	Int_t pixelsN = gRandom->Uniform(0, fNoisyPixelsN*10);
 	for (Int_t i = 0; i < pixelsN; ++i) {
 	   Int_t col  = gRandom->Uniform(0,fDigitizer->GetPixelsNx());
 	   Int_t line = gRandom->Uniform(0,fDigitizer->GetPixelsNy());
