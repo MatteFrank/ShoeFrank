@@ -826,6 +826,9 @@ void BaseReco::CreateRecActionVtx()
       if (fFlagHisto)
          fActTrackVtx->CreateHistogram();
 
+      if (fFlagMC)
+         fActTrackVtx->SetFlagMC(true);
+         
       if (TAGrecoManager::GetPar()->IncludeTG()) {
          const Char_t* name = FootActionDscName("TAVTactNtuVertexPD");
          if(TAGrecoManager::GetPar()->IncludeBM()) {
