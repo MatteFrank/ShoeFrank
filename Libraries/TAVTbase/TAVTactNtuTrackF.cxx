@@ -71,7 +71,8 @@ TAVTactNtuTrackF::~TAVTactNtuTrackF()
 //_____________________________________________________________________________
 //! Find tilted tracks
 Bool_t TAVTactNtuTrackF::FindTiltedTracks()
-{
+{  
+
    Double_t minDistance  = 1.e9;
    Double_t aDistance = 0;
    
@@ -84,16 +85,14 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
    TAGbaseTrack* track = 0x0;
    Int_t nPlane   = pGeoMap->GetSensorsN()-1;
    Int_t curPlane = nPlane;
-   
+
    fMapClus.clear();
    
-   while (curPlane >= fRequiredClusters) {
+   while (curPlane >= fRequiredClusters-1) {
 	  
 	  // Get the last plane
 	  curPlane = nPlane--;
-	  
-	  Int_t nLastClusters    = GetClustersN(curPlane);
-	  
+	  Int_t nLastClusters    = GetClustersN(curPlane);  
 	  if ( nLastClusters == 0) continue;
 
 	  for( Int_t iLastClus = 0; iLastClus < nLastClusters; ++iLastClus) { // loop on cluster of last plane
@@ -108,16 +107,15 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 			for( Int_t iNextClus = 0; iNextClus < nNextClusters; ++iNextClus) { // loop on cluster of next plane
 			   TAGcluster* nextCluster = GetCluster(iPlane, iNextClus);
 			   if (nextCluster->Found()) continue;
-            if (fMapClus[lastCluster] == 1) continue;
+			   if (fMapClus[lastCluster] == 1)
+				   continue;
 
-            track = NewTrack();
-;
+			   track = NewTrack();
 			   track->AddCluster(lastCluster);
 			   nextCluster->SetFound();
 			   track->AddCluster(nextCluster);
 
 			   UpdateParam(track);
-
 			   if (!IsGoodCandidate(track)) {
 				  nextCluster->SetFound(false);
                for (Int_t i = 0; i < track->GetClustersN(); i++) {
@@ -164,7 +162,7 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 			   // apply cut
 			   if (AppyCuts(track)) {
 				  track->SetTrackIdx(GetTracksN());
-				  track->MakeChiSquare();
+				  //track->MakeChiSquare(); //i put it in update param
 				  track->SetType(1);
 				  AddNewTrack(track);
 				  
@@ -209,11 +207,9 @@ Bool_t TAVTactNtuTrackF::IsGoodCandidate(TAGbaseTrack* trk)
    }
    
    TAVTbaseParGeo*  pGeoMap  = (TAVTbaseParGeo*) fpGeoMap->Object();
-
    Float_t width  = pGeoMap->GetEpiSize()[0];//VTX_WIDTH/2.;
    Float_t height = pGeoMap->GetEpiSize()[1];//VTX_HEIGHT/2.;
    TVector3 vec = track->Intersection(-fpFootGeo->GetVTCenter()[2]);
-   
    if (TMath::Abs(vec.X()) > width || TMath::Abs(vec.Y()) > height)
 	  return false;
    
