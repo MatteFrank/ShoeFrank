@@ -2070,22 +2070,22 @@ public:
                
                auto const * vertex_h = dynamic_cast<TAVTcluster const*>( value.data );
                if( vertex_h ){
-                  fill_measured_point_l( vertex_h, TAVTparGeo::GetBaseName(), &TAGgeoTrafo::FromVTLocalToGlobal );
+                  fill_measured_point_l( vertex_h, FootBaseName("TAVTparGeo"), &TAGgeoTrafo::FromVTLocalToGlobal );
                   continue;
                }
                auto const * it_h = dynamic_cast<TAITcluster const*>( value.data );
                if( it_h ){
-                  fill_measured_point_l( it_h, TAITparGeo::GetBaseName(), &TAGgeoTrafo::FromITLocalToGlobal );
+                  fill_measured_point_l( it_h, FootBaseName("TAITparGeo"), &TAGgeoTrafo::FromITLocalToGlobal );
                   continue;
                }
                auto const * msd_h = dynamic_cast<TAMSDcluster const*>( value.data );
                if( msd_h ){
-                  fill_measured_point_l( msd_h, TAMSDparGeo::GetBaseName(), &TAGgeoTrafo::FromMSDLocalToGlobal );
+                  fill_measured_point_l( msd_h, FootBaseName("TAMSDparGeo"), &TAGgeoTrafo::FromMSDLocalToGlobal );
                   continue;
                }
                auto const * tw_h = dynamic_cast<TATWpoint const*>( value.data );
                if( tw_h ){
-                  fill_measured_point_l( tw_h, TATWparGeo::GetBaseName(), &TAGgeoTrafo::FromTWLocalToGlobal );
+                  fill_measured_point_l( tw_h, FootBaseName("TATWparGeo"), &TAGgeoTrafo::FromTWLocalToGlobal );
                   continue;
                }
                

@@ -38,13 +38,13 @@ void ExtrapoleBMtoTG(TString nameFile = "12C_C_200_L0Out.root", TString expName 
   
   //Initialise global tranformation
   TAGgeoTrafo* geoTrafo = new TAGgeoTrafo();
-  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
   geoTrafo->FromFile(parFileName);
   
   //Read BM geometry
   TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
   TABMparGeo* pGeoMap = (TABMparGeo*)parGeoBm->Object();
-  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TABMparGeo"), runNumber);
   pGeoMap->FromFile(parFileName);
   
   //Set BM track branch

@@ -182,6 +182,8 @@ Int_t TAGactTreeReader::Open(const TString& name, Option_t* option, const TStrin
     for (TObjLink* lnk = fpBranchList->FirstLink(); lnk; lnk=lnk->Next()) {
       TAGactTreeReaderBranch* p_chan =(TAGactTreeReaderBranch*)lnk->GetObject();
       TBranch* p_branch = fpTree->GetBranch(p_chan->fName);
+      if(FootDebugLevel(1))
+         cout<<p_chan->fName<<endl;
       if (p_branch) {
         p_branch->SetAddress(p_chan->fpDataDsc->ObjectPointer());
       } else {

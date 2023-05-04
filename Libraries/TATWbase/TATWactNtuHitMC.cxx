@@ -334,6 +334,14 @@ void TATWactNtuHitMC::StudyPerformancesZID(TAMChit *hitTwMC, TAMCntuHit *ntuHitS
    Int_t mothId = track->GetMotherID();
 
    // true Tof between true TW hit and first SC hit (It's ok, only mothId=0 tracks are considered below)
+   // The number of true hits inside the Start Counter has to be 1 !!
+   if(ntuHitStMC->GetHitsN()<1) {
+     if(FootDebugLevel(4))
+       Warning("StudyPerformancesZID","N of true hits in ST is %d...return",ntuHitStMC->GetHitsN());
+     
+     return;
+   }
+
    TAMChit* hitStMC = ntuHitStMC->GetHit(0);
    if(!hitStMC) return;
    
@@ -468,6 +476,14 @@ void TATWactNtuHitMC::PlotRecMcTWquantities(TATWhit *hitTW, TAMCntuHit *ntuHitSt
        if(!hitTW->IsValid()) {
          if(FootDebugLevel(4))
            Info("PlotRecMcTWquantities","skip not valid TW hits");
+         return;
+       }
+
+       // The number of true hits inside the Start Counter has to be 1 !!
+       if(ntuHitStMC->GetHitsN()<1) {
+         if(FootDebugLevel(4))
+           Warning("PlotRecMcTWquantities","N of true hits in ST is %d...return",ntuHitStMC->GetHitsN());
+         
          return;
        }
   

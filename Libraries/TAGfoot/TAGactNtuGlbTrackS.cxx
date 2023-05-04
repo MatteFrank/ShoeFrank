@@ -13,6 +13,7 @@
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGrecoManager.hxx"
+#include "TAGnameManager.hxx"
 
 // TGT
 #include "TAGparGeo.hxx"
@@ -385,8 +386,8 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
       // from VT local to FOOT global
       posG = fpFootGeo->FromVTLocalToGlobal(posG);
 
-      TAGpoint* point = track->AddPoint(TAVTparGeo::GetBaseName(), posG, errG, posG, errG);
-      point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAVTparGeo::GetBaseName()));
+      TAGpoint* point = track->AddPoint(FootBaseName("TAVTparGeo"), posG, errG, posG, errG);
+      point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TAVTparGeo")));
       point->SetSensorIdx(cluster->GetSensorIdx());
       point->SetClusterIdx(cluster->GetClusterIdx());
       FillMcTrackId(cluster, point);
@@ -530,8 +531,8 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
 
          posG = fpFootGeo->FromITLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(TAITparGeo::GetBaseName(), posG, errG, posG, errG);
-         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TAITparGeo::GetBaseName()));
+         TAGpoint* point = track->AddPoint(FootBaseName("TAITparGeo"), posG, errG, posG, errG);
+         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TAITparGeo")));
          point->SetSensorIdx(iSensor);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          FillMcTrackId(bestCluster, point);
@@ -617,7 +618,7 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          
          posG = fpFootGeo->FromMSDLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(TAMSDparGeo::GetBaseName(), posG, errG, posG, errG);
+         TAGpoint* point = track->AddPoint(FootBaseName("TAMSDparGeo"), posG, errG, posG, errG);
          point->SetSensorIdx(iStation);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
@@ -728,8 +729,8 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
       
          posG = fpFootGeo->FromTWLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(TATWparGeo::GetBaseName(), posG, errG, posG, errG);
-         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TATWparGeo::GetBaseName()));
+         TAGpoint* point = track->AddPoint(FootBaseName("TATWparGeo"), posG, errG, posG, errG);
+         point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TATWparGeo")));
          point->SetSensorIdx(0);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
@@ -805,8 +806,8 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
          
       posG = fpFootGeo->FromCALocalToGlobal(posG);
          
-      TAGpoint* point = track->AddPoint(TACAparGeo::GetBaseName(), posG, errG, posG, errG);
-      point->SetDeviceType(TAGgeoTrafo::GetDeviceType(TACAparGeo::GetBaseName()));
+      TAGpoint* point = track->AddPoint(FootBaseName("TACAparGeo"), posG, errG, posG, errG);
+      point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TACAparGeo")));
       point->SetSensorIdx(0);
       point->SetClusterIdx(bestCluster->GetClusterIdx());
       point->SetEnergyLoss(bestCluster->GetEnergy());
@@ -887,24 +888,24 @@ void TAGactNtuGlbTrackS::FillHistogramm(TAGtrack* track)
       TVector3 impact = track->Intersection(posZ);
  
       
-      if (devName.Contains(TAVTparGeo::GetBaseName()))
+      if (devName.Contains(FootBaseName("TAVTparGeo")))
          offset = 0;
       
-      if (devName.Contains(TAITparGeo::GetBaseName()))
+      if (devName.Contains(FootBaseName("TAITparGeo")))
          offset = fOffsetItr;;
       
-      if (devName.Contains(TAMSDparGeo::GetBaseName())) {
+      if (devName.Contains(FootBaseName("TAMSDparGeo"))) {
          offset = fOffsetMsd;
          msdEnergyLoss += cluster->GetEnergyLoss();
          msdSensorsN++;
       }
       
-      if (devName.Contains(TATWparGeo::GetBaseName())) {
+      if (devName.Contains(FootBaseName("TATWparGeo"))) {
          offset = fOffsetTof;
          twEnergyLoss = cluster->GetEnergyLoss();
       }
       
-      if (devName.Contains(TACAparGeo::GetBaseName())) {
+      if (devName.Contains(FootBaseName("TACAparGeo"))) {
          offset = fOffsetTof+1;
          caEnergyRes = cluster->GetEnergyLoss();
       }
