@@ -28,6 +28,8 @@
 #include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrack.hxx"
 
+#include "TAGnameManager.hxx"
+
 #endif
 
 // main
@@ -38,28 +40,30 @@ TAVTactNtuTrack*   vtActTrck = 0x0;
 
 void FillVertex()
 {
-   TAGparaDsc* vtMap    = new TAGparaDsc("vtMap", new TAVTparMap());
+   TAGparaDsc* vtMap    = new TAGparaDsc(new TAVTparMap());
    TAVTparMap* map   = (TAVTparMap*) vtMap->Object();
    map->FromFile("./config/TAVTdetector.map");
    
    
-   TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
+   TAGparaDsc* vtGeo    = new TAGparaDsc(new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
    geomap->FromFile("./geomaps/GSI/TAVTdetector.geo");
    
-   TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
+   TAGparaDsc*  vtConf  = new TAGparaDsc(new TAVTparConf());
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
    parconf->FromFile("./config/GSI/TAVTdetector.cfg");
    
-   TAGdataDsc* vtNtu    = new TAGdataDsc("vtNtu", new TAVTntuHit());
-   TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
-   TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
+   TAGdataDsc* vtNtu    = new TAGdataDsc(new TAVTntuHit());
+   TAGdataDsc* vtClus   = new TAGdataDsc(new TAVTntuCluster());
+   TAGdataDsc* vtTrck   = new TAGdataDsc(new TAVTntuTrack());
    
    
-   vtActClus =  new TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
+   const Char_t* name = FootActionDscName("TAVTactNtuCluster");
+   vtActClus =  new TAVTactNtuCluster(name, vtNtu, vtClus, vtConf, vtGeo);
    vtActClus->CreateHistogram();
    
-   vtActTrck = new TAVTactNtuTrack("vtActTrck", vtClus, vtTrck, vtConf, vtGeo);
+   name = FootActionDscName("TAVTactNtuTrack");
+   vtActTrck = new TAVTactNtuTrack(name, vtClus, vtTrck, vtConf, vtGeo);
    vtActTrck->CreateHistogram();
    
    //   outFile->SetupElementBranch(vtNtu, "vtrh.");
