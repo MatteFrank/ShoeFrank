@@ -11,6 +11,7 @@
 #include "TAVTactBaseTrack.hxx"
 #include "TAVTparameters.hxx"
 #include "TAMCntuPart.hxx"
+#include "TAMCntuRegion.hxx"
 
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
@@ -53,6 +54,7 @@ public:
 
    void SetFlagMC(Bool_t is_MC) { flagMC = is_MC; }
    Bool_t GetFlagMC() { return flagMC; }
+   void Finalize(); // function to call after eventloop
 
 protected:
    // Fill BM histogram from BM track
@@ -73,12 +75,12 @@ protected:
    //studies on purity of the track
    void           EvaluateTrack();
 
-
-
    
-protected:
-   TAGdataDsc*      fpBMntuTrack;	     ///< BM track pointer
-	
+   void PrintEfficiency();
+   bool isVTMatched(Int_t Id_part);
+
+       protected : TAGdataDsc *fpBMntuTrack; ///< BM track pointer
+
    Bool_t           fBmTrackOk;          ///< flag for BM track chi2 cut
    TABMtrack*       fBmTrack;            ///< BM track pointer
    TVector3         fBmTrackPos;         ///< BM track position
@@ -95,14 +97,24 @@ protected:
    TH1F*            fpHiVtxTgResY;       ///< Vertex resolution at Target Y
    TH1F*            fpHisTrackMultiplicity_frag;     ///< multiplicity of clusters of different MC particles in a reconstructed track if fragmentation
    TH1F*            fpHisTrackMultiplicity_primary;     ///< multiplicity of clusters of different MC particles in a reconstructed track if no fragmentation
+   TH1F *           fpReconstructedTracks;
+   TH1F *           fpTrackEfficiency;
+   TH1F *           fpTrackEfficiencyFake;
+   TH1F *           fpTrackPurity;
 
-       Bool_t flagMC; ///< if the dataset is MC
+
+   Bool_t flagMC; ///< if the dataset is MC
 
    ClassDef(TAVTactBaseNtuTrack, 0)
 
-       private :
+       // Efficiency & Purity variables
+   map<int, int> m_nRecoTracks;      ///< Map of total number of reconstructed track candidates; the key is the particle charge (1,2,3...)
+   map<int, int> m_nMCTracks;            ///< Map of total number of MC particles generated in the geometrical acceptance of the VTX; the key is the particle charge (1,2,3...)
+   map<int, int> m_nRecoTracks_matched;
+   map<int, int> m_nCorrectClus; ///< Map of total number of MC cluster well associated to a VTX track; the key is the particle charge (1,2,3...)
 
-       TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object
+       private : TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object
+   TAMCntuRegion *pNtuReg; ///< Ptr to TAMCntuReg object
 };
 
 #endif
