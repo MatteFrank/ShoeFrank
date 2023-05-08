@@ -208,6 +208,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    
    for (Int_t i = 0; i < fCurListOfPixels->GetEntriesFast(); ++i) {
       TAVThit* pixel = (TAVThit*)fCurListOfPixels->At(i);
+      //cout << "pixel: " << i << pixel->GetPosition()(0) << endl;
       tCorTemp.SetXYZ(pixel->GetPosition()(0)*pixel->GetPulseHeight(), pixel->GetPosition()(1)*pixel->GetPulseHeight(), pixel->GetPosition()(2));
       tCorrection  += tCorTemp;
       fClusterPulseSum  += pixel->GetPulseHeight();
@@ -230,7 +231,7 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    if (posErr(1) < lim) posErr(1) = lim; //(20/Sqrt(12)^2
 
    fCurrentPosition.SetXYZ((pos)(0), (pos)(1), 0);
-   fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0) * 0.6), TMath::Sqrt((posErr)(1) * 0.72), 0);  //multiplicative factor to make the pull with a sigma close to 1 according to gsi 2021 mc 400 mev/n
+   fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0)) * (1. / TMath::Sqrt(2)), TMath::Sqrt((posErr)(1)) * (1. / TMath::Sqrt(2)), 0); // multiplicative factor to make the pull with a sigma close to 1 according to gsi 2021 mc 400 mev/n
 }
 
 //______________________________________________________________________________
