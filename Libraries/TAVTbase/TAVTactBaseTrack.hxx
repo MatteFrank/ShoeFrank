@@ -120,7 +120,8 @@ protected:
    TH1F*           fpHisFitClustPosErrX[MaxTrkSens];///< cluster err position by fit in X histogram
    TH1F*           fpHisFitClustPosErrY[MaxTrkSens];///< cluster err position by fit in Y histogram
 
-
+   TH2F*           fpHisPosCompareX;          ///< Comparison of difference of position with the central hitted pixel
+   TH2F*           fpHisPosCompareY;                    ///< Comparison of difference of position with the central hitted pixel
    TH1F*           fpHisResTotX;        ///< Total Residual in X histogram
    TH1F*           fpHisResTotY;        ///< Total Residual in Y histogram
    TH2F*           fpHisTrackMap[MaxTrkSens];  ///< track map per sensor histogram
@@ -136,6 +137,8 @@ protected:
    TH1F*           fpHisClusSensor;     ///< number of tracked clusters per sensor histogram
    TH1F*           fpHisTheta;          ///< Polar angular distribution histogram
    TH1F*           fpHisPhi;            ///< Azimutal angular distribution histogram
+
+
   
    TString         fPrefix;             ///< prefix of histogram
    TString         fTitleDev;           ///< device name for histogram title
