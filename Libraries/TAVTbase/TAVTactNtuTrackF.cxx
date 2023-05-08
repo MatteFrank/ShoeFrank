@@ -115,6 +115,7 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
 			   nextCluster->SetFound();
 			   track->AddCluster(nextCluster);
 
+			   fMapClus[lastCluster] = 1;
 			   UpdateParam(track);
 			   if (!IsGoodCandidate(track)) {
 				  nextCluster->SetFound(false);
@@ -122,8 +123,8 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
                  TAGcluster* clus = track->GetCluster(i);
                  fMapClus[clus] = 0;
               }
-               if (curPlane == pGeoMap->GetSensorsN()-1)
-                  fMapClus[lastCluster] = 1;
+            //    if (curPlane == pGeoMap->GetSensorsN()-1)
+            //       fMapClus[lastCluster] = 1;
 				  delete track;
 				  continue;
 			   }
