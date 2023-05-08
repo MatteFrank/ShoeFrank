@@ -10,6 +10,7 @@
 
 #include "TAMCntuPart.hxx"
 #include "TAMCntuHit.hxx"
+#include "TAGnameManager.hxx"
 
 
 #include "TASTparGeo.hxx"
@@ -48,10 +49,12 @@
 
 #include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAWDntuTrigger.hxx"
 #include "TAGrunInfo.hxx"
 #include "TAGparGeo.hxx"
 
 #include "TAMCntuHit.hxx"
+#include "TAMCntuRegion.hxx"
 #include "TAGntuEvent.hxx"
 
 
@@ -70,7 +73,7 @@
 using namespace std;
 
 static int  IncludeReg; // from runinfo
-static int  IncludeTOE; // from runinfo
+static int  IncludeGLB; // from runinfo
 
 //other global parameters taken from campaign manager
 static int  IncludeMC;
@@ -90,10 +93,14 @@ static TAGrunInfo*   runinfo;  //runinfo
 static TAGgeoTrafo*  geoTrafo; //geometry
 static TAGparGeo* parGeo; //beam info
 static TAMCntuHit *bmNtuEve;
+static TAMCntuHit *vtMc;
+static TAMCntuHit *itMc;
+static TAMCntuHit *msdMc;
+static TAMCntuHit *twMc;
+static TAMCntuHit *caMc;
 static TASTntuHit *stNtuHit;
 static TABMntuHit*  bmNtuHit;
 static TABMntuTrack*  bmNtuTrack;
-static TAMCntuHit *vtMc;
 static TAVTntuVertex* vtxNtuVertex;
 static TAVTntuCluster *vtxNtuCluster;
 static TAVTntuTrack *vtxNtuTrack;
@@ -104,7 +111,9 @@ static TAMSDntuHit *msdNtuHit;
 static TAITntuCluster *itClus;
 static TATWntuPoint *twNtuPoint;
 static TAMCntuPart *mcNtuPart;
+static TAMCntuRegion *mcNtuReg;
 static TAGntuGlbTrack *glbntutrk;
+static TAWDntuTrigger *wdTrigInfo;
 static TASTparGeo* stparGeo;
 static TABMparGeo* bmparGeo;
 static TAVTparGeo* vtparGeo;
@@ -895,21 +904,21 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   cout<<"AngX: "<<geoTrafo->GetDeviceAngle(detname.Data()).X()<<" AngY: "<<geoTrafo->GetDeviceAngle(detname.Data()).Y()<<" AngZ: "<<geoTrafo->GetDeviceAngle(detname.Data()).Z()<<endl;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname))->GetEntries(),((TH1D*)gDirectory->Get(slopexname))->GetMean(), ((TH1D*)gDirectory->Get(slopexname))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t resyrot=gaus->GetParameter(1);
   Double_t yrotpar=-atan(gaus->GetParameter(1))*RAD2DEG;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t resxrot=gaus->GetParameter(1);
   Double_t xrotpar=atan(gaus->GetParameter(1))*RAD2DEG;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname))->Fit("gaus","","QB+",-2,2);
+  ((TH1D*)gDirectory->Get(tgposxname))->Fit("gaus","","qB+",-2,2);
   Double_t resxtra=gaus->GetParameter(1);
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname))->Fit("gaus","","QB+",-2,2);
+  ((TH1D*)gDirectory->Get(tgposyname))->Fit("gaus","","qB+",-2,2);
   Double_t resytra=gaus->GetParameter(1);
 
   cout<<"AlignWrtTarget:: first residual parameters:"<<endl;
@@ -951,19 +960,19 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   }
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   resxrot=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   resyrot=gaus->GetParameter(1);
   cout<<"AlignWrtTarget::after the rotation matrix the new residuals are:"<<endl;
   cout<<"resxrot="<<resxrot<<"  resyrot="<<resyrot<<endl;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t newresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t newresytra=gaus->GetParameter(1);
   cout<<"newresxtra="<<newresxtra<<"  newresytra="<<newresytra<<endl;
 
@@ -1002,17 +1011,17 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   }
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t finalresxrot=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t finalresyrot=gaus->GetParameter(1);
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t finalresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t finalresytra=gaus->GetParameter(1);
 
   cout<<endl<<endl<<endl;
@@ -1070,19 +1079,19 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
 
   //initial residual btw deta and detb:
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t resyrot=gaus->GetParameter(1);
   Double_t yrotpar=-atan(gaus->GetParameter(1))*RAD2DEG;
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t resxrot=gaus->GetParameter(1);
   Double_t xrotpar=atan(gaus->GetParameter(1))*RAD2DEG;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t resxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t resytra=gaus->GetParameter(1);
 
   detanewangle.SetXYZ(xrotpar+detaangle.X(),yrotpar+detaangle.Y(),detaangle.Z());
@@ -1141,17 +1150,17 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
 
   //estimate the new bm geometry parameters
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t newresxrot=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t newresyrot=gaus->GetParameter(1);
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t newresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t newresytra=gaus->GetParameter(1);
 
   detanewpos.SetXYZ(-newresxtra+detacenter.X(),-newresytra+detacenter.Y(),detacenter.Z());
@@ -1213,17 +1222,17 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
 
   //estimate the new bm geometry parameters
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t finalresxrot=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t finalresyrot=gaus->GetParameter(1);
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t finalresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t finalresytra=gaus->GetParameter(1);
 
   cout<<endl<<endl<<endl;
