@@ -312,8 +312,10 @@ void BaseReco::LoopEvent(Int_t nEvents)
 //! Actions after loop event
 void BaseReco::AfterEventLoop()
 {
+
+  fActTrackVtx->Finalize();
 #ifdef GENFIT_FLAG
-   if (TAGrecoManager::GetPar()->IncludeKalman())	fActGlbkFitter->Finalize();
+      if (TAGrecoManager::GetPar()->IncludeKalman()) fActGlbkFitter->Finalize();
 #endif
 
    fTAGroot->EndEventLoop();
