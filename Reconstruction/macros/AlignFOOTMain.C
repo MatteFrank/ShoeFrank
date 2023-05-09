@@ -38,7 +38,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   campManager->FromFile();
 
   IncludeReg=runinfo->GetGlobalPar().EnableRegionMc;
-  IncludeTOE=(tree->FindBranch("glbtrack.")!=nullptr);
+  IncludeGLB=(tree->FindBranch("glbtrack.")!=nullptr);
   IncludeDAQ=(tree->FindBranch("evt.")!=nullptr);
   IncludeMC=campManager->GetCampaignPar(campManager->GetCurrentCamNumber()).McFlag;
   IncludeDI=campManager->IsDetectorOn("DI");
@@ -59,108 +59,128 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   //define and charge the detectors par files
 
   geoTrafo = new TAGgeoTrafo();
-  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
   geoTrafo->FromFile(parFileName);
 
-  TAGparaDsc* fpParGeoG = new TAGparaDsc(TAGparGeo::GetDefParaName(), new TAGparGeo());
+  TAGparaDsc* fpParGeoG = new TAGparaDsc(new TAGparGeo());
   parGeo = (TAGparGeo*)fpParGeoG->Object();
   parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
   parGeo->FromFile(parFileName.Data());
 
-
-  TAGparaDsc* parGeoSt = new TAGparaDsc(TASTparGeo::GetDefParaName(), new TASTparGeo());
+  TAGparaDsc* parGeoSt = new TAGparaDsc(new TASTparGeo());
   stparGeo = (TASTparGeo*)parGeoSt->Object();
-  parFileName = campManager->GetCurGeoFile(FootBaseName("TASTparGeo"), runNumber);
+  parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
   stparGeo->FromFile(parFileName);
 
-  TAGparaDsc* parGeoBm = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
+  TAGparaDsc* parGeoBm = new TAGparaDsc(new TABMparGeo());
   bmparGeo = (TABMparGeo*)parGeoBm->Object();
-  parFileName = campManager->GetCurGeoFile(FootBaseName("TABMparGeo"), runNumber);
+  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
   bmparGeo->FromFile(parFileName);
 
-  TAGparaDsc* parGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
+  TAGparaDsc* parGeoVtx = new TAGparaDsc(new TAVTparGeo());
   vtparGeo = (TAVTparGeo*)parGeoVtx->Object();
-  parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
+  parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
   vtparGeo->FromFile(parFileName);
 
-  TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
+  TAGparaDsc* parGeoIt = new TAGparaDsc(new TAITparGeo());
   itparGeo = (TAITparGeo*)parGeoIt->Object();
-  parFileName = campManager->GetCurGeoFile(FootBaseName("TAITparGeo"), runNumber);
+  parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
   itparGeo->FromFile(parFileName);
 
-  TAGparaDsc* parGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
+  TAGparaDsc* parGeoMsd = new TAGparaDsc(new TAMSDparGeo());
   msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
-  parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
+  parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
   msdparGeo->FromFile(parFileName);
 
-  TAGparaDsc* parGeoTw = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
+  TAGparaDsc* parGeoTw = new TAGparaDsc(new TATWparGeo());
   twparGeo = (TATWparGeo*)parGeoTw->Object();
-  parFileName = campManager->GetCurGeoFile(FootBaseName("TATWparGeo"), runNumber);
+  parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
   twparGeo->FromFile(parFileName);
 
   //define and load the detector interesting quantities that will be passed in the analysis methods
   if(IncludeSC>0){
     stNtuHit= new TASTntuHit();
-    tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stNtuHit);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(stNtuHit->ClassName()), &stNtuHit);
   }
 
   if(IncludeBM){
     bmNtuHit = new TABMntuHit();
-    tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmNtuHit);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(bmNtuHit->ClassName()), &bmNtuHit);
     bmNtuTrack = new TABMntuTrack();
-    tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmNtuTrack);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(bmNtuTrack->ClassName()), &bmNtuTrack);
     if(IncludeMC){
       bmNtuEve = new TAMCntuHit();
-      tree->SetBranchAddress(TAMCntuHit::GetBmBranchName(), &bmNtuEve);
+      tree->SetBranchAddress(FootBranchMcName(kBM), &bmNtuEve);
     }
   }
-
+  
   if(IncludeVT){
     vtxNtuVertex = new TAVTntuVertex();
-    tree->SetBranchAddress(TAVTntuVertex::GetBranchName(), &vtxNtuVertex);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuVertex->ClassName()), &vtxNtuVertex);
     vtxNtuTrack = new TAVTntuTrack();
-    tree->SetBranchAddress(TAVTntuTrack::GetBranchName(), &vtxNtuTrack);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuTrack->ClassName()), &vtxNtuTrack);
     vtxNtuCluster = new TAVTntuCluster();
     vtxNtuCluster->SetParGeo(vtparGeo);
-    tree->SetBranchAddress(TAVTntuCluster::GetBranchName(), &vtxNtuCluster);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuCluster->ClassName()), &vtxNtuCluster);
     if(IncludeMC){
       vtMc = new TAMCntuHit();
-      tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
+      tree->SetBranchAddress(FootBranchMcName(kVTX), &vtMc);
     }
   }
 
   if(IncludeIT){
     itClus = new TAITntuCluster();
-    tree->SetBranchAddress(TAITntuCluster::GetBranchName(), &itClus);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(itClus->ClassName()), &itClus);
+    if(IncludeMC){
+      itMc = new TAMCntuHit();
+      tree->SetBranchAddress(FootBranchMcName(kITR), &itMc);
+    }
   }
 
   if(IncludeMSD){
     msdntuclus= new TAMSDntuCluster();
-    tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), &msdntuclus);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntuclus->ClassName()), &msdntuclus);
+    if(IncludeMC){
+      msdMc = new TAMCntuHit();
+      tree->SetBranchAddress(FootBranchMcName(kMSD), &msdMc);
+    }
+  }
+
+  if(IncludeMSD){
+    msdntuclus= new TAMSDntuCluster();
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntuclus->ClassName()), &msdntuclus);
     msdntutrack= new TAMSDntuTrack();
-    tree->SetBranchAddress(TAMSDntuTrack::GetBranchName(), &msdntutrack);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntutrack->ClassName()), &msdntutrack);
     msdNtuPoint= new TAMSDntuPoint();
-    tree->SetBranchAddress(TAMSDntuPoint::GetBranchName(), &msdNtuPoint);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuPoint->ClassName()), &msdNtuPoint);
     msdNtuHit= new TAMSDntuHit();
-    tree->SetBranchAddress(TAMSDntuHit::GetBranchName(), &msdNtuHit);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuHit->ClassName()), &msdNtuHit);
   }
 
   if(IncludeTW){
     twNtuPoint = new TATWntuPoint();
-    tree->SetBranchAddress(TATWntuPoint::GetBranchName(), &twNtuPoint);
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(twNtuPoint->ClassName()), &twNtuPoint);
+    if(IncludeMC){
+      twMc = new TAMCntuHit();
+      tree->SetBranchAddress(FootBranchMcName(kTW), &twMc);
+    }
   }
 
   if(IncludeMC>0){
     mcNtuPart = new TAMCntuPart();
-    tree->SetBranchAddress(TAMCntuPart::GetBranchName(), &mcNtuPart);
-  }
-
-  if(IncludeDAQ){
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(mcNtuPart->ClassName()), &mcNtuPart);
+    if(IncludeReg){
+      mcNtuReg=new TAMCntuRegion();
+      tree->SetBranchAddress(TAGnameManager::GetBranchName(mcNtuReg->ClassName()), &mcNtuReg);
+    }
+  }else if(IncludeDAQ){
+    wdTrigInfo=new TAWDntuTrigger();
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(wdTrigInfo->ClassName()), &wdTrigInfo);
     tgevent= new TAGntuEvent();
     tree->SetBranchAddress("evt.", &tgevent);
   }
 
-  if(IncludeTOE){
+  if(IncludeGLB){
     glbntutrk = new TAGntuGlbTrack();
     tree->SetBranchAddress(TAGntuGlbTrack::GetBranchName(), &glbntutrk);
   }
