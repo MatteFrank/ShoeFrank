@@ -133,7 +133,9 @@ void TAVTactBaseNtuTrack::CreateHistogram()
       AddHistogram(fpTrackEfficiencyFake);
       fpTrackPurity = new TH1F(Form("%sTrackPurity", fPrefix.Data()), "Purity in track reconstruction; purity; events;", primary_charge, 0.5, primary_charge +0.5);
       AddHistogram(fpTrackPurity);
-      }
+      fpTrackClones = new TH1F(Form("%sTrackClones", fPrefix.Data()), "Track clones among all the reconstructed; ratio; events;", primary_charge, 0.5, primary_charge + 0.5);
+      AddHistogram(fpTrackClones);
+            }
 
 
 
@@ -474,6 +476,7 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
    ) isFragment = true;
  
 //----- loop on every reconstructed track
+   m_nClone.clear();
    for (Int_t i = 0; i < pNtuTrack->GetTracksN(); ++i)   //for every track
    {  
       id_vec.clear();
@@ -516,24 +519,43 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
      // define the charge of the track as the one of the most probable MCparticle
      int charge_track = pNtuEve->GetTrack(max_id)->GetCharge();
      m_nRecoTracks[charge_track]++;
+     m_nClone[charge_track][max_id]++;
+     if (m_nClone[charge_track][max_id]>1){
+         n_clones[charge_track] += 1;
+         cout << "wowowo" << endl;
+     } 
 
      //TAMCpart *particle = pNtuEve->GetTrack(max_id);
      if (isVTMatched(max_id)){
          m_nRecoTracks_matched[charge_track]++;
          m_nCorrectClus[charge_track]+=m[to_string(max_id)];
+         m_nTotalClus[charge_track] += track->GetClustersN();
      }
    }
+   m_nClone.clear(); //refresh at every event
+       // // clone of tracks
+       // for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++)
+       // {
+       //   for (std::map<int, int>::iterator it = m_nClone[i].begin(); it != m_nClone[i].end(); ++it)
+       //   {
+       //       if (it->second > 1)
+       //       {
+       //          n_clones[i] += it->second;
+       //       }
+       //   }
+       //   m_nClone[i].clear();
+       // }
+       // m_nClone.clear();
 
-  
-//----- loop on every MCpart
-     for (Int_t i = 0; i < pNtuEve->GetTracksN(); ++i) // for every mc part
-     {
+       //----- loop on every MCpart
+       for (Int_t i = 0; i < pNtuEve->GetTracksN(); ++i) // for every mc part
+   {
      TAMCpart *particle = pNtuEve->GetTrack(i);
       if (isVTMatched(i)) {
          m_nMCTracks[particle->GetCharge()]++;
       }
    }
-}
+   }
 
 //_____________________________________________________________________________
 //! \brief Finalize all the needed histograms for GenFit studies
@@ -555,8 +577,9 @@ void TAVTactBaseNtuTrack::PrintEfficiency()
      float n_reco = (float)m_nRecoTracks_matched[i];
      float n_fake = (float)m_nRecoTracks[i] - (float)m_nRecoTracks_matched[i];
      float n_mc = (float)m_nMCTracks[i];
-     float n_clus = (float)m_nCorrectClus[i];
-     cout << "Z="<<i<<endl<<"n_reco: "<< n_reco << " n_fake " << n_fake << " n_mc " << n_mc << " n_clus "<<n_clus << endl;
+     float n_CorrectClus = (float)m_nCorrectClus[i];
+     float n_TotalClus = (float)m_nTotalClus[i];
+     //cout << "Z="<<i<<endl<<"n_reco: "<< n_reco << " n_fake " << n_fake << " n_mc " << n_mc << " n_clus "<<n_clus << endl;
 
      // recognition efficiency: reconstructed tracks in the set of the MC possible one
      float eff = 0;     
@@ -578,10 +601,19 @@ void TAVTactBaseNtuTrack::PrintEfficiency()
      // purity of track
      float purity = 0;
      float purity_err = 0;
-     if ((float)m_nRecoTracks_matched[i]>0) purity = n_clus / (4*(float)m_nRecoTracks_matched[i]);
-     if ((float)m_nRecoTracks_matched[i]>0) purity_err = TMath::Sqrt(purity * abs(1 - purity) / (4*(float)m_nRecoTracks_matched[i]));   //! hard coded the total number of cluster in a track
+     if ((float)m_nRecoTracks_matched[i]>0) purity = n_CorrectClus / n_TotalClus;
+     if ((float)m_nRecoTracks_matched[i]>0) purity_err = TMath::Sqrt(purity * abs(1 - purity) / n_TotalClus);   //! hard coded the total number of cluster in a track
      fpTrackPurity->SetBinContent(i, purity);
      fpTrackPurity->SetBinError(i, purity_err);
+
+     // clones
+     float clones_ratio = 0;
+     float clones_err = 0;
+     if ((float)m_nRecoTracks[i]>0) clones_ratio = n_clones[i] / (float)m_nRecoTracks[i];
+     if ((float)m_nRecoTracks[i]>0) clones_err = TMath::Sqrt(clones_ratio * abs(1 - clones_ratio) / (float)m_nRecoTracks[i]);
+     cout << "clones ratio: " << i << " " << clones_ratio << " of " << n_clones[i] << " / " << m_nRecoTracks[i] <<endl;
+     fpTrackClones->SetBinContent(i, clones_ratio);
+     fpTrackClones->SetBinError(i, clones_err);
    }
 }
 

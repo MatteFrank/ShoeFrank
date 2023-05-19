@@ -101,9 +101,9 @@ protected:
    TH1F *           fpTrackEfficiency;
    TH1F *           fpTrackEfficiencyFake;
    TH1F *           fpTrackPurity;
+   TH1F * fpTrackClones;
 
-
-   Bool_t flagMC; ///< if the dataset is MC
+       Bool_t flagMC; ///< if the dataset is MC
 
    ClassDef(TAVTactBaseNtuTrack, 0)
 
@@ -111,7 +111,10 @@ protected:
    map<int, int> m_nRecoTracks;      ///< Map of total number of reconstructed track candidates; the key is the particle charge (1,2,3...)
    map<int, int> m_nMCTracks;            ///< Map of total number of MC particles generated in the geometrical acceptance of the VTX; the key is the particle charge (1,2,3...)
    map<int, int> m_nRecoTracks_matched;
-   map<int, int> m_nCorrectClus; ///< Map of total number of MC cluster well associated to a VTX track; the key is the particle charge (1,2,3...)
+   map<int, int> m_nCorrectClus; ///< Map of total number of MC clusters well associated to a VTX track; the key is the particle charge (1,2,3...)
+   map<int, int> m_nTotalClus;   ///< Map of total number of MC clusters  associated to a VTX track; the key is the particle charge (1,2,3...)
+   map<int, map<int,int>> m_nClone;   ///< Map of total number of clone id for the same charge in a single event; the key is [particle charge][specific ID]
+   map<int, int> n_clones;             ///< Map of total number of clone id for the same charge ; the key is [particle charge]
 
        private : TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object
    TAMCntuRegion *pNtuReg; ///< Ptr to TAMCntuReg object
