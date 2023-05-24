@@ -138,7 +138,10 @@ void TATWactNtuHitMC::CreateHistogram()
          
      fpHisResPos.push_back( new TH1D(Form("twResPos_Z_%d",iZ), Form("ResPos_Z_%d",iZ), 400,-20,20) );
      AddHistogram(fpHisResPos[iZ-1]);
-        
+
+     fpHisResPos_2.push_back( new TH1D(Form("twResPos_2_Z_%d",iZ), Form("ResPos_2_Z_%d",iZ), 400,-20,20) );
+     AddHistogram(fpHisResPos_2[iZ-1]);
+
      fpHisResTof.push_back( new TH1D(Form("twResTof_Z_%d",iZ), Form("ResTof_Z_%d",iZ), 2000, -1., 1.) );
      AddHistogram(fpHisResTof[iZ-1]);
         
@@ -514,9 +517,11 @@ void TATWactNtuHitMC::PlotRecMcTWquantities(TATWhit *hitTW, TAMCntuHit *ntuHitSt
               fpHisElossTof[hitTW->GetChargeZ()-1]->Fill(recTof,recEloss);
 
               Double_t recPosAlongBar = hitTW->GetPosition();
+              Double_t recPosAlongBar_2 = hitTW->GetChargeChA();
               Double_t truePosAlongBar = hitTW->GetChargeChB(); // in MC in GetChargeB stored the true position along the bar
 
               fpHisResPos[hitTW->GetChargeZ()-1]->Fill(recPosAlongBar-truePosAlongBar);
+              fpHisResPos_2[hitTW->GetChargeZ()-1]->Fill(recPosAlongBar_2-truePosAlongBar);
               
               Double_t trueEloss = hitTW->GetAmplitudeChA();   // in MC in GetAmplitudeA stored the true Eloss
               fpHisResEloss[hitTW->GetChargeZ()-1]->Fill(recEloss-trueEloss);

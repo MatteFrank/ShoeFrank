@@ -31,8 +31,6 @@ public:
    void           SmearEnergyLoss(Double_t &energy);
    void           SmearTimeTW(Double_t energy,Double_t &time);
    void           SmearPosAlongBar(Double_t energy,Double_t &pos);
-   void           ComputePosDeltaTime(Double_t eloss, Double_t time, Double_t &pos, Double_t &timea, Double_t &timeb);
-
    
    Bool_t         Process(Double_t edep, Double_t posalongbar, Double_t layer, Double_t barId, Double_t hitId, Double_t time = 0, Int_t sensorId = 0, Int_t Z =-99, Double_t px0 = 0, Double_t py0 = 0, Double_t pz0 = 0);
    
@@ -63,6 +61,8 @@ public:
    
    Double_t       GetTimeLeft(Double_t pos, Double_t time, Double_t edep);
    Double_t       GetTimeRight(Double_t pos, Double_t time, Double_t edep);
+   Double_t       ComputePosDeltaTime(Double_t eloss, Double_t time, Double_t position);
+
    
    void           SetGain(Double_t g)   { fGain = g;          }
    void           CheckPUmanaging(Double_t time, Double_t edep, Double_t pos, Int_t chargeZ);
@@ -110,7 +110,8 @@ private:
    Double_t      fEmcC;
    Double_t      fEmcErrC;
 
-   Double_t      fElossMeasLimit;
+   Double_t      fElossMeasLimitMin;
+   Double_t      fElossMeasLimitMax;
    Double_t      fEnergyThreshold;
    Double_t      fEnergyMax;
 
@@ -133,8 +134,8 @@ private:
    Double_t      fTimeTWErr_C;
 
    // inverse of light propagation velocity
-   Double_t      fTofPropAlpha;
-   Double_t      fTofErrPropAlpha; 
+   Double_t      fInvCbarSpeed; 
+   Double_t      fInvCbarSpeedErr; 
 
   // misc
    Double_t      fSlatLength;
