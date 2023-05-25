@@ -272,12 +272,12 @@ Bool_t TATWparCal::FromDeltaTimeFile(const TString& name) {
     fPairId = TPairId((Int_t)tmp[0],(Int_t)tmp[1]); //barId(shoe format), layerId
     // fPairId = TPairId((Int_t)tmp[0]%nBarsPerLayer,(Int_t)tmp[3]); //barId(shoe format), layerId
 
-    if(FootDebugLevel(1))
+    if(FootDebugLevel(2))
       cout<< endl <<fPairId.first<<" "<<fPairId.second<<endl;   
 
     fMapDeltaTime[fPairId]=TTupleDeltaT(tmp[2],tmp[3]); // velocity of light in the bars, offset delta cable
     
-    if(FootDebugLevel(0)) {
+    if(FootDebugLevel(2)) {
       Info("FromDeltaTimeFile()","deltaTime/Offset bar_%d (%d,%d) = %2.3f %.3f", ibar, fPairId.first, fPairId.second, get<0>(fMapDeltaTime[fPairId]), get<1>(fMapDeltaTime[fPairId]));
       cout<<GetBarLightSpeed(fPairId.first,fPairId.second)<<"  "<<GetDeltaTimePosOffset(fPairId.first,fPairId.second)<<endl;
 
