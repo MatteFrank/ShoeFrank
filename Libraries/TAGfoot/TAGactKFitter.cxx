@@ -972,8 +972,14 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
-		if (m_vectorConvergedTrack.size() > 2)
-			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << " display->addEvent size " << m_vectorConvergedTrack.size() - 1 << " at position " << m_eventDisplayCounter << "\n";
+		int nTracks;
+		if( m_mapTrack.find("dummy") == m_mapTrack.end() )
+			nTracks = m_vectorConvergedTrack.size();
+		else
+			nTracks = m_vectorConvergedTrack.size() - 1;
+		
+		if (nTracks > 1)
+			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << " display->addEvent size " << nTracks << " at position " << m_eventDisplayCounter << "\n";
 		m_eventDisplayCounter++;
 		display->addEvent(m_vectorConvergedTrack);
 	}
