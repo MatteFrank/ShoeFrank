@@ -57,7 +57,6 @@ RecoRaw::RecoRaw(TString expName, Int_t runNumber, TString fileNameIn, TString f
    fActNtuHitCa(0x0),
    fActNtuHitMsd(0x0),
    fpDatRawMsd(0x0),
-   fActEvtReader(0x0),
    fSubFileFlag(IsSubFile)
   {
      if (fRunNumber == -1)  // if not set from outside, take from name

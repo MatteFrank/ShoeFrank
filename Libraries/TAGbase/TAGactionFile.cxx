@@ -70,6 +70,23 @@ Bool_t TAGactionFile::IsOpen() const
 }
 
 //------------------------------------------+-----------------------------------
+//! skip events
+//!
+//! \param[in] iEvent event index
+void TAGactionFile::SkipEvents(Int_t nEvents)
+{
+   return;
+}
+
+//------------------------------------------+-----------------------------------
+//! Number of events
+//!
+Int_t TAGactionFile::NEvents()
+{
+   return -1;
+}
+
+//------------------------------------------+-----------------------------------
 //! SetupChannel for DAQ reader only
 //!
 //! \param[in] p_data data descriptor

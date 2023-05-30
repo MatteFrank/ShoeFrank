@@ -54,9 +54,8 @@ RecoMC::RecoMC(TString expName, Int_t runNumber, TString fileNameIn, TString fil
    fActNtuHitIt(0x0),
    fActNtuHitMsd(0x0),
    fActNtuHitTw(0x0),
-   fActNtuHitCa(0x0),
-   fActEvtReader(0x0)
-{  
+   fActNtuHitCa(0x0)
+{
   if (!TAGrecoManager::GetPar()->IsReadRootObj())
     fEvtStruct = new EVENT_STRUCT;
 }
