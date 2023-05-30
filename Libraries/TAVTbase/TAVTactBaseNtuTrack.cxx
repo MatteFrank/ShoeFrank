@@ -121,20 +121,51 @@ void TAVTactBaseNtuTrack::CreateHistogram()
 
    if (GetFlagMC()){
       Int_t primary_charge = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
-      fpHisTrackMultiplicity_frag = new TH1F(Form("%sTrackMultiplicity_frag", fPrefix.Data()), Form("%s - Track multiplicity of clusters when there if fragmentation (MC)", fTitleDev.Data()), 5, -0.5, 4.5);
+      fpHisTrackMultiplicity_frag = new TH1F(Form("%sTrackMultiplicity_frag", fPrefix.Data()), Form("%s - Track multiplicity of clusters when there if fragmentation (MC)", fTitleDev.Data()), 10, -0.5, 9.5);
       AddHistogram(fpHisTrackMultiplicity_frag );
-      fpHisTrackMultiplicity_primary  = new TH1F(Form("%sTrackMultiplicity_primary", fPrefix.Data()), Form("%s - Track multiplicity of clusters if no fragmentation (MC)", fTitleDev.Data()), 5, -0.5, 4.5);
+      fpHisTrackMultiplicity_primary  = new TH1F(Form("%sTrackMultiplicity_primary", fPrefix.Data()), Form("%s - Track multiplicity of clusters if no fragmentation (MC)", fTitleDev.Data()), 10, -0.5, 9.5);
       AddHistogram(fpHisTrackMultiplicity_primary);
-      fpReconstructedTracks = new TH1F(Form("%sReconstructedTracks", fPrefix.Data()), "Counts of Reconstructed tracks; charge; events;", primary_charge, 0.5, primary_charge+0.5);
+      fpReconstructedTracks = new TH1F(Form("%sReconstructedTracks", fPrefix.Data()), "Counts of Reconstructed tracks; Z; events;", primary_charge, 0.5, primary_charge+0.5);
       AddHistogram(fpReconstructedTracks);
-      fpTrackEfficiency = new TH1F(Form("%sTrackEfficiency", fPrefix.Data()), "Efficiency of reconstructed tracks; ""\epsilon""(Z); events;", primary_charge, 0.5, primary_charge+0.5);
+      fpTrackEfficiency = new TH1F(Form("%sTrackEfficiency", fPrefix.Data()), "Efficiency of reconstructed tracks; Z; eff;", primary_charge, 0.5, primary_charge+0.5);
       AddHistogram(fpTrackEfficiency);
-      fpTrackEfficiencyFake = new TH1F(Form("%sTrackEfficiencyFake", fPrefix.Data()), "Efficiency of reconstructed tracks out of the selected ones; ""\epsilon""(Z); events;", primary_charge, 0.5, primary_charge+0.5);
+      fpTrackEfficiencyFake = new TH1F(Form("%sTrackEfficiencyFake", fPrefix.Data()), "Efficiency of reconstructed tracks out of the selected ones; Z; eff;", primary_charge, 0.5, primary_charge+0.5);
       AddHistogram(fpTrackEfficiencyFake);
-      fpTrackPurity = new TH1F(Form("%sTrackPurity", fPrefix.Data()), "Purity in track reconstruction; purity; events;", primary_charge, 0.5, primary_charge +0.5);
+      fpTrackPurityTrack = new TH1F(Form("%sTrackPurityTrack", fPrefix.Data()), "Purity of reconstructed tracks out of the selected ones; Z; eff;", primary_charge, 0.5, primary_charge+0.5);
+      AddHistogram(fpTrackPurityTrack);
+
+          fpTrackPurity = new TH1F(Form("%sTrackPurityCluster", fPrefix.Data()), "Purity of clusters in track reconstruction; Z; purity;", primary_charge, 0.5, primary_charge + 0.5);
       AddHistogram(fpTrackPurity);
-      fpTrackClones = new TH1F(Form("%sTrackClones", fPrefix.Data()), "Track clones among all the reconstructed; ratio; events;", primary_charge, 0.5, primary_charge + 0.5);
+      fpTrackClones = new TH1F(Form("%sTrackClones", fPrefix.Data()), "Track clones among all the reconstructed; Z; eff;", primary_charge, 0.5, primary_charge + 0.5);
       AddHistogram(fpTrackClones);
+
+      fpBadTrackPosZ = new TH1F(Form("%sBadTrackPosZ", fPrefix.Data()), "Origin in Z axis of bad tracks; posizion Z; events;", 1600, -500, 300);
+      AddHistogram(fpBadTrackPosZ);
+      fpBadTrackCharge = new TH1F(Form("%sBadTrackCharge", fPrefix.Data()), "Charge of the bad track particle; Z; events;", primary_charge, 0.5, primary_charge + 0.5);
+      AddHistogram(fpBadTrackCharge);
+      fpBadTrackFlukaID = new TH1F(Form("%sBadTrackFlukaID", fPrefix.Data()), "Fluka Id of the bad track particle; id; events;", 35, -10+0.5, 25 + 0.5);
+      AddHistogram(fpBadTrackFlukaID);
+      fpBadTrackMothID = new TH1F(Form("%sBadTrackMothID", fPrefix.Data()), "MOther Id of the bad track particle; id; events;", 22, -2+ 0.5, 20 + 0.5);
+      AddHistogram(fpBadTrackMothID);
+      fpBadTrackInitP = new TH1F(Form("%sBadTrackInitP", fPrefix.Data()), "Magnitude of momentum of bad track particle; p (mag); events;", 1200, 0, 400);
+      AddHistogram(fpBadTrackInitP);
+            
+            
+      //angular resolution
+      for (Int_t i = 0; i < primary_charge; ++i)
+      {
+         fpHisThetaRes[i] = new TH1F(Form("%sTrackThetaRes%d", fPrefix.Data(), i + 1), Form("%s - theta track resolution for Z= %d", fTitleDev.Data(), i + 1), 200, -1, 1);
+         AddHistogram(fpHisThetaRes[i]);
+      }
+
+      //position res of the clusters
+      for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i)
+      {
+         fpTrackClusResX[i] = new TH1F(Form("%sTrackedClusResX%d", fPrefix.Data(), i + 1), Form("%s -Position X resolution of the claster of sensor %d; X [cm]; ;", fTitleDev.Data(), i + 1), 1000, -0.01, 0.01);
+         AddHistogram(fpTrackClusResX[i]);
+         fpTrackClusResY[i] = new TH1F(Form("%sTrackedClusResY%d", fPrefix.Data(), i + 1), Form("%s -Position  Y resolution of the claster of sensor %d; Y [cm];;", fTitleDev.Data(), i + 1), 1000, -0.01, 0.01);
+         AddHistogram(fpTrackClusResY[i]);
+      }
             }
 
 
@@ -158,20 +189,20 @@ Bool_t TAVTactBaseNtuTrack::Action()
 
    // TStopwatch watch;
    // watch.Start();
-   FindTiltedTracks();
+   //FindTiltedTracks();
 
 
-   // //looking straight
-   // FindStraightTracks();
+   //looking straight
+   FindStraightTracks();
 
-   // //looking inclined line
-   //     if (!FindTiltedTracks())
-   // { // it is never false with TAVTactNtuTrackF::FindTiltedTracks()
-   //   if (ValidHistogram())
-	// 	 FillHistogramm();
-	//   fpNtuTrack->SetBit(kValid);
-	//   return true;
-   // }
+   //looking inclined line
+       if (!FindTiltedTracks())
+   { // it is never false with TAVTactNtuTrackF::FindTiltedTracks()
+     if (ValidHistogram())
+		 FillHistogramm();
+	  fpNtuTrack->SetBit(kValid);
+	  return true;
+   }
 
    if (FindVertices()){    //it is always false
 	  FindTiltedTracks();
@@ -486,11 +517,17 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
      for (Int_t j = 0; j < track->GetClustersN(); ++j){     // for every cluster
          TAVTcluster *clus = (TAVTcluster *)track->GetCluster(j);
          good_clus = true;
-         if (clus->GetMcTracksN()>1){   // i study only tracks with clusters well reconstructed
-            good_clus = false;
-            break;
+         // if (clus->GetMcTracksN()>1){   // i study only tracks with clusters well reconstructed   TO CHANGE HERE
+         //    good_clus = false;
+         //    break;
+         // }
+         //id_vec.push_back(clus->GetMcTrackIdx(0));
+
+      for (Int_t i = 0; i < clus->GetMcTracksN();i++)     //nb: every cluster can be done of pixels of different particle_id
+         {
+            id_vec.push_back(clus->GetMcTrackIdx(i));
          }
-         id_vec.push_back(clus->GetMcTrackIdx(0));
+            
 
      }
      if (good_clus == false) continue;
@@ -506,23 +543,25 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
      // retrieve the MCId of the most frequent particle
      int max = -1;
      Int_t max_id = -1;
-     for (auto &x : m)
-     {
+         for (auto &x : m)
+     { 
          if (x.second > max){
             max = x.second;
+            //if (x.second >= 3)
             max_id = stoi(x.first); //string to int
          }
      }
 
      
 
-     // define the charge of the track as the one of the most probable MCparticle
-     int charge_track = pNtuEve->GetTrack(max_id)->GetCharge();
+     // define the charge of the track as the one of the most probable MCparticle     TO BE CHANGED 
+     int charge_track = -1;
+     if (max_id == -666) charge_track = -1; // if the cluster is made of noisy pixels (id = -666)
+     else charge_track = pNtuEve->GetTrack(max_id)->GetCharge();
      m_nRecoTracks[charge_track]++;
      m_nClone[charge_track][max_id]++;
      if (m_nClone[charge_track][max_id]>1){
-         n_clones[charge_track] += 1;
-         cout << "wowowo" << endl;
+         n_clones[charge_track] = m_nClone[charge_track][max_id];
      } 
 
      //TAMCpart *particle = pNtuEve->GetTrack(max_id);
@@ -530,25 +569,102 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
          m_nRecoTracks_matched[charge_track]++;
          m_nCorrectClus[charge_track]+=m[to_string(max_id)];
          m_nTotalClus[charge_track] += track->GetClustersN();
-     }
-   }
-   m_nClone.clear(); //refresh at every event
-       // // clone of tracks
-       // for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++)
-       // {
-       //   for (std::map<int, int>::iterator it = m_nClone[i].begin(); it != m_nClone[i].end(); ++it)
-       //   {
-       //       if (it->second > 1)
-       //       {
-       //          n_clones[i] += it->second;
-       //       }
-       //   }
-       //   m_nClone[i].clear();
-       // }
-       // m_nClone.clear();
 
-       //----- loop on every MCpart
-       for (Int_t i = 0; i < pNtuEve->GetTracksN(); ++i) // for every mc part
+         // -------------------------study of angular resolution
+
+         //theta of track from vtx frame to global frame in deg
+         Float_t track_theta = fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ()).Theta() * TMath::RadToDeg();
+         
+         //theta of the MCparticle after crossing the target
+         TAMCpart *mcpart = pNtuEve->GetTrack(max_id);
+         Int_t charge = mcpart->GetCharge();
+         pNtuReg = static_cast<TAMCntuRegion *>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"), "TAMCntuRegion")->Object());
+         Int_t nCross = pNtuReg->GetRegionsN();
+         Float_t mcpart_theta = -1 ;  
+         for (int iCross = 0; iCross < nCross; iCross++)
+         {
+            TAMCregion *cross = pNtuReg->GetRegion(iCross);
+            Int_t OldReg = cross->GetOldCrossN();
+            Int_t NewReg = cross->GetCrossN();
+            Int_t target_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetRegTarget();
+            TString regairone("AIR1");
+            Int_t after_target_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetCrossReg(regairone);
+
+            if (((cross->GetTrackIdx() - 1) == max_id) && OldReg == target_region && NewReg == after_target_region)
+            { // if it is not the particle I want to check, continue the loop
+            mcpart_theta = cross->GetMomentum().Theta() * TMath::RadToDeg();
+            break;
+            } else
+            continue;
+         }
+          if (charge > 0 && charge < 9 && mcpart_theta>-1)
+             fpHisThetaRes[charge - 1]->Fill(track_theta - mcpart_theta);
+
+         
+         // //clus position resolution
+         //  //pNtuHit = new TAGdataDsc(FootDataDscMcName(kVTX), new TAMCntuHit());
+          pNtuHit = static_cast<TAMCntuHit *>(gTAGroot->FindDataDsc(FootDataDscMcName(kVTX), "TAMCntuHit")->Object());
+           for (Int_t i = 0; i < track->GetClustersN(); ++i)
+           {
+              TAGcluster *cluster = (TAGcluster *)track->GetCluster(i);
+              Int_t idx = cluster->GetSensorIdx();
+
+              TVector3 clus_pos = fpFootGeo->FromVTLocalToGlobal(cluster->GetPositionG());
+              Int_t hit_id = cluster->GetMcIndex(0); // i take the first hit
+              TAMChit *hit = pNtuHit->GetHit(hit_id);
+              TVector3 hit_pos = hit->GetInPosition();
+              Int_t hit_idx = hit->GetSensorId();
+
+              fpTrackClusResX[idx]->Fill(clus_pos.X() - hit_pos.X());
+              fpTrackClusResY[idx]->Fill(clus_pos.Y() - hit_pos.Y());
+          }
+    
+
+     } else{ // study of bad reco tracks
+              // cout << "track " << i << "(out of " << pNtuTrack->GetTracksN() << " ) of event " <<gTAGroot->CurrentEventNumber() << "is fake "<< endl;
+              // for (auto &x : m)
+              // {
+              //    cout << "id = "<< x.first << " n° "<< x.second << endl;
+              //    TAMCpart *bad_particle = pNtuEve->GetTrack(stoi(x.first));
+              //    cout << "charge: " << bad_particle->GetCharge() << endl;
+              //    cout << "Init pos Z: " << bad_particle->GetInitPos().Z() << endl;
+              //    cout << "fluka id :"<< bad_particle ->GetFlukaID() << endl;
+              //    cout << "mother id :"<< bad_particle->GetMotherID() << endl;
+              //    cout << "final position : "<< bad_particle ->GetFinalPos().Z() << endl;
+              // }
+
+              if (max_id == -666)
+                 fpBadTrackCharge->Fill(-1); // if it is from simulated random noise
+              else {
+         TAMCpart *bad_particle = pNtuEve->GetTrack(max_id);
+         Int_t charge =  bad_particle -> GetCharge();
+         TVector3 Init_pos = bad_particle->GetInitPos();
+         fpBadTrackPosZ->Fill(Init_pos.Z());
+         fpBadTrackCharge->Fill(charge);
+         fpBadTrackFlukaID->Fill(bad_particle->GetFlukaID());
+         fpBadTrackMothID->Fill(bad_particle->GetMotherID());
+         fpBadTrackInitP->Fill(bad_particle->GetInitP().Mag() );
+         }
+      }
+   }
+   m_nClone.clear(); // refresh at every event
+
+   // // clone of tracks
+   // for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++)
+   // {
+   //   for (std::map<int, int>::iterator it = m_nClone[i].begin(); it != m_nClone[i].end(); ++it)
+   //   {
+   //       if (it->second > 1)
+   //       {
+   //          n_clones[i] += it->second;
+   //       }
+   //   }
+   //   m_nClone[i].clear();
+   // }
+   // m_nClone.clear();
+
+   //----- loop on every MCpart
+   for (Int_t i = 0; i < pNtuEve->GetTracksN(); ++i) // for every mc part
    {
      TAMCpart *particle = pNtuEve->GetTrack(i);
       if (isVTMatched(i)) {
@@ -574,31 +690,42 @@ void TAVTactBaseNtuTrack::PrintEfficiency()
      for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++){ //! hard coded
      fpReconstructedTracks->SetBinContent(i, m_nRecoTracks[i]);
 
-     float n_reco = (float)m_nRecoTracks_matched[i];
-     float n_fake = (float)m_nRecoTracks[i] - (float)m_nRecoTracks_matched[i];
-     float n_mc = (float)m_nMCTracks[i];
+     float n_goodreco = (float)m_nRecoTracks_matched[i];
+     float n_badreco = (float)m_nRecoTracks[i] - (float)m_nRecoTracks_matched[i];
+     float n_ref = (float)m_nMCTracks[i];
      float n_CorrectClus = (float)m_nCorrectClus[i];
      float n_TotalClus = (float)m_nTotalClus[i];
-     //cout << "Z="<<i<<endl<<"n_reco: "<< n_reco << " n_fake " << n_fake << " n_mc " << n_mc << " n_clus "<<n_clus << endl;
+     //cout << "Z="<<i<<endl<<"n_goodreco: "<< n_goodreco << " n_badreco " << n_badreco << " n_ref " << n_ref << " n_clus "<<n_clus << endl;
 
      // recognition efficiency: reconstructed tracks in the set of the MC possible one
      float eff = 0;     
      float eff_err = 0;
-     if (n_mc >0) eff =(float) n_reco / n_mc;
-     if (n_mc > 0) eff_err = TMath::Sqrt(eff * abs(1 - eff) / n_mc); // associate error as sqrt(eff(1 - eff) / Ntot) -- binomial distribution
+     if (n_ref >0) eff =(float) n_goodreco / n_ref;
+     if (n_ref > 0) eff_err = TMath::Sqrt(eff * abs(1 - eff) / n_ref); // associate error as sqrt(eff(1 - eff) / Ntot) -- binomial distribution
      fpTrackEfficiency->SetBinContent(i, eff);
      fpTrackEfficiency->SetBinError(i, eff_err);
 
      // fake yield
      float eff_fake = 0;
      float eff_fake_err =0;
-     if ((float)m_nRecoTracks[i]>0) eff_fake = n_fake / (float)m_nRecoTracks[i];
+     if ((float)m_nRecoTracks[i]>0) eff_fake = n_badreco / (float)m_nRecoTracks[i];
      if ((float)m_nRecoTracks[i]>0) eff_fake_err = TMath::Sqrt(eff_fake * abs(1 - eff_fake) / (float)m_nRecoTracks[i]);
 
      fpTrackEfficiencyFake->SetBinContent(i, eff_fake);
      fpTrackEfficiencyFake->SetBinError(i, eff_fake_err);
-        
-     // purity of track
+
+     // track purity
+     float purity_track = 0;
+     float purity_track_err = 0;
+     if ((float)m_nRecoTracks[i] > 0)
+         purity_track = n_goodreco / (float)m_nRecoTracks[i];
+     if ((float)m_nRecoTracks[i] > 0)
+         purity_track_err = TMath::Sqrt(purity_track * abs(1 - purity_track) / (float)m_nRecoTracks[i]);
+
+     fpTrackPurityTrack->SetBinContent(i, purity_track);
+     fpTrackPurityTrack->SetBinError(i, purity_track_err);
+
+     // purity of clusters
      float purity = 0;
      float purity_err = 0;
      if ((float)m_nRecoTracks_matched[i]>0) purity = n_CorrectClus / n_TotalClus;
@@ -638,8 +765,13 @@ bool TAVTactBaseNtuTrack::isVTMatched(Int_t Id_part){ // check if the particle g
      }
 
      TAMCpart *particle = pNtuEve->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
+     Int_t particle_ID = cross->GetTrackIdx() - 1;                     // TrackID
      Int_t target_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetRegTarget();
      Int_t primary_charge = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
+     TString regvtxname("VTXP3");
+     Int_t last_vtx_plane_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetCrossReg(regvtxname);
+     TString regname("AIR1");
+     Int_t RegAirAfterVtx = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetCrossReg(regname);
      auto Mid = particle->GetMotherID();
      double mass = particle->GetMass(); // Get TRpaid-1
      auto Reg = particle->GetRegion();
@@ -653,13 +785,14 @@ bool TAVTactBaseNtuTrack::isVTMatched(Int_t Id_part){ // check if the particle g
      Float_t theta_tr = particle->GetInitP().Theta() * (180 / TMath::Pi()); // in deg
      Float_t charge_tr = particle->GetCharge();
 
-     if (Mid == 0 &&             // if the particle is a primary fragment
-         Reg == target_region && // born in the target
-         particle->GetCharge() > 0 &&
+     if (
+         (particle_ID == 0                // if the particle is a primary OR
+         || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
+         ) &&  particle->GetCharge() > 0 &&
          particle->GetCharge() <= primary_charge && // with reasonable charge
          // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
-         theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-         OldReg == 62 && NewReg == 2    // it crosses the last plane of the vertex
+         // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
+         OldReg == last_vtx_plane_region && NewReg == RegAirAfterVtx // it crosses the last plane of the vertex
 
      )
       return true;

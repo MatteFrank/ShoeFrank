@@ -12,9 +12,11 @@
 #include "TAVTparameters.hxx"
 #include "TAMCntuPart.hxx"
 #include "TAMCntuRegion.hxx"
+#include "TAMCntuHit.hxx"
 
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
+#include "TAGparGeo.hxx"
 
 class TAGgeoTrafo;
 class TABMtrack;
@@ -99,11 +101,21 @@ protected:
    TH1F*            fpHisTrackMultiplicity_primary;     ///< multiplicity of clusters of different MC particles in a reconstructed track if no fragmentation
    TH1F *           fpReconstructedTracks;
    TH1F *           fpTrackEfficiency;
+   TH1F *           fpTrackPurityTrack;
    TH1F *           fpTrackEfficiencyFake;
    TH1F *           fpTrackPurity;
    TH1F * fpTrackClones;
+   TH1F * fpBadTrackPosZ;
+   TH1F *fpBadTrackCharge;
+   TH1F *fpBadTrackFlukaID;
+   TH1F *fpBadTrackMothID;
+   TH1F *fpBadTrackInitP;
+   //Int_t primary_charget = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
+   TH1F *fpHisThetaRes[8]; ///< theta angle resolution of the track wrt to MC part   ! hard coded
+   TH1F *fpTrackClusResX[MaxTrkSens]; ///< Resolution of each tracked clus wrt MC part
+   TH1F *fpTrackClusResY[MaxTrkSens]; ///< Resolution of each tracked clus wrt MC part
 
-       Bool_t flagMC; ///< if the dataset is MC
+   Bool_t flagMC; ///< if the dataset is MC
 
    ClassDef(TAVTactBaseNtuTrack, 0)
 
@@ -116,8 +128,10 @@ protected:
    map<int, map<int,int>> m_nClone;   ///< Map of total number of clone id for the same charge in a single event; the key is [particle charge][specific ID]
    map<int, int> n_clones;             ///< Map of total number of clone id for the same charge ; the key is [particle charge]
 
-       private : TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object
+   private : 
+   TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object
    TAMCntuRegion *pNtuReg; ///< Ptr to TAMCntuReg object
+   TAMCntuHit *pNtuHit;    ///< Ptr to TAMCntuHit object
 };
 
 #endif
