@@ -369,33 +369,37 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
 	  TVector3 impact    = track->Intersection(posZ);
      TVector3 impactLoc =  pGeoMap->Detector2Sensor(idx, impact);
 
+
 //------- pull X
      Double_t dxOverdm = posZ;
      //Double_t dxOverdq = 1.;
      Double_t fitErrorX2 = dxOverdm * dxOverdm* track->GetCovMatrixU()(1,1) + track->GetCovMatrixU()(0,0) + 2.*dxOverdm*track->GetCovMatrixU()(0,1);
      Double_t fitErrorX = sqrt(fitErrorX2);
      Double_t resX = cluster->GetPositionG()(0) - track->Intersection(posZ).X();
+     
+       if (fitErrorX2 < (cluster->GetPosError().X() * cluster->GetPosError().X()))
+       {
+          Double_t pullX = resX / sqrt(cluster->GetPosError().X() * cluster->GetPosError().X() - fitErrorX2);
+          if (track->GetClustersN() == 4) fpHisPullX[idx]->Fill(pullX);
+       }   
+       else
+          cout << "negative difference between sigma in cluster measurement in x!" << endl;
 
-     if (fitErrorX2 < cluster->GetPosError().X() * cluster->GetPosError().X())
-      {
-       Double_t pullX = resX / sqrt(cluster->GetPosError().X() * cluster->GetPosError().X() - fitErrorX2);
-       fpHisPullX[idx]->Fill(pullX);
-      } else cout << "negative difference between sigma in cluster measurement in x!" << endl;
+       //------- pull Y
+       Double_t dyOverdm = posZ;
+       // Double_t dyOverdq = 1.;
+       Double_t fitErrorY2 = dyOverdm * dyOverdm * track->GetCovMatrixV()(1, 1) + track->GetCovMatrixV()(0, 0) + 2. * dyOverdm * track->GetCovMatrixV()(0, 1);
+       Double_t fitErrorY = sqrt(fitErrorY2);
+       Double_t resY = cluster->GetPositionG()(1) - track->Intersection(posZ).Y();
 
-//------- pull Y
-     Double_t dyOverdm = posZ;
-     //Double_t dyOverdq = 1.;
-     Double_t fitErrorY2 = dyOverdm * dyOverdm* track->GetCovMatrixV()(1,1) + track->GetCovMatrixV()(0,0) + 2.*dyOverdm*track->GetCovMatrixV()(0,1);
-     Double_t fitErrorY = sqrt(fitErrorY2);
-     Double_t resY = cluster->GetPositionG()(1) - track->Intersection(posZ).Y();
-
-     if (fitErrorY2 < cluster->GetPosError().Y() * cluster->GetPosError().Y())
-      {
-       Double_t pullY = resY / sqrt(cluster->GetPosError().Y() * cluster->GetPosError().Y() - fitErrorY2);
-       fpHisPullY[idx]->Fill(pullY);
-      }  else cout << "negative difference between sigma in cluster measurement in y!" << endl;
-
-
+       if (fitErrorY2 < (cluster->GetPosError().Y() * cluster->GetPosError().Y()))
+       {
+          Double_t pullY = resY / sqrt(cluster->GetPosError().Y() * cluster->GetPosError().Y() - fitErrorY2);
+          if (track->GetClustersN() == 4) fpHisPullY[idx]->Fill(pullY);
+       }
+       else
+          cout << "negative difference between sigma in cluster measurement in y!" << endl;
+     
 
 //------------  fitted position vs measured position
 
@@ -429,38 +433,43 @@ for (int i = 0; i < cluster_vt->GetPixelsN(); i++)
 
      Double_t min_dist_fit_x = track->Intersection(posZ).X() - GetParGeo()->Sensor2Detector(cluster_vt->GetSensorIdx(), cluster_vt->GetPixel(central_pixel_id_x)->GetPosition())(0);
      Double_t min_dist_fit_y = track->Intersection(posZ).Y() - GetParGeo()->Sensor2Detector(cluster_vt->GetSensorIdx(), cluster_vt->GetPixel(central_pixel_id_y)->GetPosition())(1);
-     
-     fpHisPosCompareX->Fill(min_dist_fit_x, min_dist_meas_x);
-     fpHisPosCompareY->Fill(min_dist_fit_y, min_dist_meas_y);
+     if (track->GetClustersN() == 4)
+     {
+       fpHisPosCompareX->Fill(min_dist_fit_x, min_dist_meas_x);
+       fpHisPosCompareY->Fill(min_dist_fit_y, min_dist_meas_y);
 
-     //---------position of clusters in plane
+       //---------position of clusters in plane
 
-     fpHisTrackClustPosX[idx]->Fill(cluster->GetPositionG()[0]);
-     fpHisTrackClustPosY[idx]->Fill(cluster->GetPositionG()[1]);
-     fpHisTrackClustPosErrX[idx]->Fill(cluster->GetPosError().X());
-     fpHisTrackClustPosErrY [idx]->Fill(cluster->GetPosError().Y());
-     fpHisFitClustPosX[idx]->Fill(track->Intersection(posZ).X());
-     fpHisFitClustPosY[idx]->Fill(track->Intersection(posZ).Y());
-     fpHisFitClustPosErrX[idx]->Fill(fitErrorX);
-     fpHisFitClustPosErrY[idx]->Fill(fitErrorY);
-     fpHisTrackMap[idx]->Fill(impactLoc[0], impactLoc[1]);
-     fpHisResTotX->Fill(impact[0] - cluster->GetPositionG()[0]);
-     fpHisResTotY->Fill(impact[1] - cluster->GetPositionG()[1]);
-     fpHisResX[idx]->Fill(resX);
-     fpHisResY[idx]->Fill(resY);
-     fpHisClusSensor->Fill(idx + 1);
+       fpHisTrackClustPosX[idx]->Fill(cluster->GetPositionG()[0]);
+       fpHisTrackClustPosY[idx]->Fill(cluster->GetPositionG()[1]);
+       fpHisTrackClustPosErrX[idx]->Fill(cluster->GetPosError().X());
+       fpHisTrackClustPosErrY[idx]->Fill(cluster->GetPosError().Y());
+       fpHisFitClustPosX[idx]->Fill(track->Intersection(posZ).X());
+       fpHisFitClustPosY[idx]->Fill(track->Intersection(posZ).Y());
+       fpHisFitClustPosErrX[idx]->Fill(fitErrorX);
+       fpHisFitClustPosErrY[idx]->Fill(fitErrorY);
+       fpHisTrackMap[idx]->Fill(impactLoc[0], impactLoc[1]);
+       fpHisResTotX->Fill(impact[0] - cluster->GetPositionG()[0]);
+       fpHisResTotY->Fill(impact[1] - cluster->GetPositionG()[1]);
+       fpHisResX[idx]->Fill(resX);
+       fpHisResY[idx]->Fill(resY);
+       fpHisClusSensor->Fill(idx + 1);
+     }
    }
+   
+   if (track->GetClustersN() ==4){
    fpHisChi2TotX->Fill(track->GetChi2U());
    fpHisChi2TotY->Fill(track->GetChi2V());
 
    fpHisChi2probX->Fill(track->GetPvalueU());
    fpHisChi2probY->Fill(track->GetPvalueV());
-
+   }
    TVector3 origin = track->GetOrigin();
    fpHisBeamProf->Fill(origin.X(), origin.Y());
    
    fpHisMeanPixel->Fill(track->GetMeanEltsN());
    fpHisMeanCharge->Fill(track->GetMeanCharge());
+   
 }
 
 //_____________________________________________________________________________
