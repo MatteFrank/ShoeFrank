@@ -81,7 +81,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       nameExp = name;
 
    if (FootDebugLevel(1))
-      cout << "\nCalorimeter Config File: " << fkDefaultGeoName.Data() << endl;
+      cout << "\nCalorimeter Config File: " << nameExp.Data() << endl;
 
    if (!Open(nameExp)) return false;
 

@@ -349,63 +349,57 @@ void BaseReco::SetHistogramDir()
       TDirectory* subfolder;
       
       if (prefix == "st") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TASTparGeo::GetBaseName());
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TASTparGeo"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TASTparGeo::GetBaseName());
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TASTparGeo"));
          action->SetHistogramDir(subfolder);
          
       } else if (prefix == "bm") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TABMparGeo::GetBaseName());
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TABMparGeo"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TABMparGeo::GetBaseName());
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TABMparGeo"));
          action->SetHistogramDir(subfolder);
          
       } else if (prefix == "vt") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAVTparGeo::GetBaseName());
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TAVTparGeo"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAVTparGeo::GetBaseName());
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TAVTparGeo"));
          action->SetHistogramDir(subfolder);
          
       } else if (prefix == "it") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAITparGeo::GetBaseName());
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TAITparGeo"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAITparGeo::GetBaseName());
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TAITparGeo"));
          action->SetHistogramDir(subfolder);
          
       } else if (prefix == "ms") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TAMSDparGeo::GetBaseName());
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TAMSDparGeo"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAMSDparGeo::GetBaseName());
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TAMSDparGeo"));
          action->SetHistogramDir(subfolder);
          
       } else if (prefix == "tw") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TATWparGeo::GetBaseName());
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TATWparGeo"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TATWparGeo::GetBaseName());
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TATWparGeo"));
          action->SetHistogramDir(subfolder);
          
       } else if (prefix == "ca") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(TACAparGeo::GetBaseName());
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TACAparGeo"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TACAparGeo::GetBaseName());
-         action->SetHistogramDir(subfolder);
-         
-      } else if (prefix == "da") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("DAQ");
-         if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("DAQ");
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TACAparGeo"));
          action->SetHistogramDir(subfolder);
          
       } else if (prefix == "wd") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("WD");
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TAWD"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("WD");
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TAWD"));
          action->SetHistogramDir(subfolder);
          
       } else if (prefix == "ev") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("EVT");
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TAGevent"));
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("EVT");
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TAGevent"));
          action->SetHistogramDir(subfolder);
          
       } else {
@@ -416,14 +410,14 @@ void BaseReco::SetHistogramDir()
       
 #ifdef GENFIT_FLAG
       if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman()) {
-         TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
+         TDirectory* subfolder = fActEvtWriter->File()->mkdir(FootBaseName("TAGgeoTrafo"));
          fActGlbkFitter->SetHistogramDir(subfolder);
          if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
       }
 #endif
 #ifdef TOE_FLAG
       if (TAGrecoManager::GetPar()->IncludeTOE() && !TAGrecoManager::GetPar()->IncludeKalman()) {
-         TDirectory* subfolder = fActEvtWriter->File()->mkdir(TAGgeoTrafo::GetBaseName());
+         TDirectory* subfolder = fActEvtWriter->File()->mkdir(FootBaseName("TAGgeoTrafo"));
          fActGlbTrack->SetHistogramDir(subfolder);
          if (TAGrecoManager::GetPar()->IsFromLocalReco()) return;
       }
@@ -431,7 +425,7 @@ void BaseReco::SetHistogramDir()
       
       // Global straight track
       if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(TAGgeoTrafo::GetBaseName());
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TAGgeoTrafo"));
          fActGlbTrackS->SetHistogramDir(subfolder);
       }
    }
@@ -468,7 +462,7 @@ void BaseReco::ReadParFiles()
    Float_t kinE_beam = 0.;
 
    // Read Trafo file
-   TString parFileName = fCampManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), fRunNumber);
+   TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), fRunNumber);
    fpFootGeo->FromFile(parFileName);
 
    // initialise par files for target
@@ -491,28 +485,28 @@ void BaseReco::ReadParFiles()
 
      fpParGeoSt = new TAGparaDsc(new TASTparGeo());
      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
-     TString parFileName = fCampManager->GetCurGeoFile(TASTparGeo::GetBaseName(), fRunNumber);
+     TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TASTparGeo"), fRunNumber);
      parGeo->FromFile(parFileName.Data());
 
       if(!fFlagMC) {
          fpParMapSt = new TAGparaDsc(new TASTparMap());
          TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
-         parFileName = fCampManager->GetCurConfFile(TASTparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
          parMapSt->FromFile(parFileName);
 
          fpParMapTw = new TAGparaDsc(new TATWparMap());
          TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
-         parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TATWparGeo"), fRunNumber);
          parMap->FromFile(parFileName.Data());
 
          fpParMapWD = new TAGparaDsc(new TAWDparMap());
          TAWDparMap* parMapWD = (TAWDparMap*)fpParMapWD->Object();
-         parFileName = fCampManager->GetCurMapFile(TASTparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TASTparGeo"), fRunNumber);
          parMapWD->FromFile(parFileName.Data());
 
          fpParTimeWD = new TAGparaDsc(new TAWDparTime());
          TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
-         TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber);
+         TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber);
          parTimeWD->FromFileCFD(parFileName.Data());
       }
    }
@@ -521,23 +515,23 @@ void BaseReco::ReadParFiles()
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       fpParGeoBm = new TAGparaDsc(new TABMparGeo());
       TABMparGeo* parGeo = (TABMparGeo*)fpParGeoBm->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TABMparGeo::GetBaseName(), fRunNumber);
+      TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TABMparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
       fpParConfBm = new TAGparaDsc(new TABMparConf());
       TABMparConf* parConf = (TABMparConf*)fpParConfBm->Object();
-      parFileName = fCampManager->GetCurConfFile(TABMparGeo::GetBaseName(), fRunNumber);
+      parFileName = fCampManager->GetCurConfFile(FootBaseName("TABMparGeo"), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
       fpParCalBm = new TAGparaDsc(new TABMparCal());
       TABMparCal* parCal = (TABMparCal*)fpParCalBm->Object();
-      parFileName = fCampManager->GetCurCalFile(TABMparGeo::GetBaseName(), fRunNumber);
+      parFileName = fCampManager->GetCurCalFile(FootBaseName("TABMparGeo"), fRunNumber);
       parCal->FromFile(parFileName.Data());
 
       if(!fFlagMC){
         fpParMapBm = new TAGparaDsc(new TABMparMap());
         TABMparMap*  parMapBm = (TABMparMap*)fpParMapBm->Object();
-        parFileName = fCampManager->GetCurMapFile(TABMparGeo::GetBaseName(), fRunNumber);
+        parFileName = fCampManager->GetCurMapFile(FootBaseName("TABMparGeo"), fRunNumber);
         parMapBm->FromFile(parFileName.Data(), parGeo);
       }
    }
@@ -559,12 +553,12 @@ void BaseReco::ReadParFiles()
    if (TAGrecoManager::GetPar()->IncludeVT()) {
       fpParGeoVtx = new TAGparaDsc(new TAVTparGeo());
       TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
+      TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
       fpParConfVtx = new TAGparaDsc(new TAVTparConf());
       TAVTparConf* parConf = (TAVTparConf*)fpParConfVtx->Object();
-      parFileName = fCampManager->GetCurConfFile(TAVTparGeo::GetBaseName(), fRunNumber);
+      parFileName = fCampManager->GetCurConfFile(FootBaseName("TAVTparGeo"), fRunNumber);
       parConf->FromFile(parFileName.Data());
     
       fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
@@ -572,7 +566,7 @@ void BaseReco::ReadParFiles()
       if(!fFlagMC) {
          fpParMapVtx = new TAGparaDsc(new TAVTparMap());
          TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
-         parFileName = fCampManager->GetCurMapFile(TAVTparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAVTparGeo"), fRunNumber);
          parMap->FromFile(parFileName.Data());
       }
    }
@@ -581,12 +575,12 @@ void BaseReco::ReadParFiles()
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       fpParGeoIt = new TAGparaDsc(new TAITparGeo());
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
+      TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TAITparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
       fpParConfIt = new TAGparaDsc(new TAITparConf());
       TAITparConf* parConf = (TAITparConf*)fpParConfIt->Object();
-      parFileName = fCampManager->GetCurConfFile(TAITparGeo::GetBaseName(), fRunNumber);
+      parFileName = fCampManager->GetCurConfFile(FootBaseName("TAITparGeo"), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
       if ((fFlagItrTrack = parConf->GetAnalysisPar().TrackingFlag)) {
@@ -596,7 +590,7 @@ void BaseReco::ReadParFiles()
       if(!fFlagMC) {
          fpParMapIt = new TAGparaDsc(new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
-         parFileName = fCampManager->GetCurMapFile(TAITparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAITparGeo"), fRunNumber);
          parMap->FromFile(parFileName.Data());
       }
    }
@@ -605,12 +599,12 @@ void BaseReco::ReadParFiles()
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpParGeoMsd = new TAGparaDsc(new TAMSDparGeo());
       TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+      TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
       fpParConfMsd = new TAGparaDsc(new TAMSDparConf());
       TAMSDparConf* parConf = (TAMSDparConf*)fpParConfMsd->Object();
-      parFileName = fCampManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+      parFileName = fCampManager->GetCurConfFile(FootBaseName("TAMSDparGeo"), fRunNumber);
       parConf->FromFile(parFileName.Data());
 
       if ((fFlagMsdTrack = parConf->GetAnalysisPar().TrackingFlag)) {
@@ -623,17 +617,17 @@ void BaseReco::ReadParFiles()
       if(!fFlagMC){
          fpParMapMsd = new TAGparaDsc(new TAMSDparMap());
          TAMSDparMap*  parMapMsd = (TAMSDparMap*)fpParMapMsd->Object();
-         parFileName = fCampManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAMSDparGeo"), fRunNumber);
          parMapMsd->FromFile(parFileName.Data());
 
          Bool_t energyFile = true;
-         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber, energyFile);
+         parFileName = fCampManager->GetCurCalFile(FootBaseName("TAMSDparGeo"), fRunNumber, energyFile);
          parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
 
-         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurCalFile(FootBaseName("TAMSDparGeo"), fRunNumber);
          parCalMsd->LoadPedestalMap(parFileName.Data());
       } else {
-         parFileName = fCampManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurCalFile(FootBaseName("TAMSDparGeo"), fRunNumber);
          parCalMsd->LoadPedestalMap(parFileName.Data());
       }
    }
@@ -642,12 +636,12 @@ void BaseReco::ReadParFiles()
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       fpParGeoTw = new TAGparaDsc(new TATWparGeo());
       TATWparGeo* parGeo = (TATWparGeo*)fpParGeoTw->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
+      TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TATWparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
       fpParConfTw = new TAGparaDsc(new TATWparConf());
       TATWparConf* parConf = (TATWparConf*)fpParConfTw->Object();
-      parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber);
+      parFileName = fCampManager->GetCurConfFile(FootBaseName("TATWparGeo"), fRunNumber);
       parConf->FromFile(parFileName.Data());
       
       fFlagTWbarCalib  = parConf->IsCalibBar();
@@ -658,16 +652,16 @@ void BaseReco::ReadParFiles()
       Bool_t isTof_calib = false;
 
       if(fFlagRateSmearTw && fFlagMC){
-         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber, isTof_calib, fFlagTWbarCalib, fFlagRateSmearTw);
+         parFileName = fCampManager->GetCurCalFile(FootBaseName("TATWparGeo"), fRunNumber, isTof_calib, fFlagTWbarCalib, fFlagRateSmearTw);
          parCal->FromRateFile(parFileName, fRateInitRun, fRateEndRun);
       }
       
       if(fFlagTWbarCalib) {
-         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+         parFileName = fCampManager->GetCurCalFile(FootBaseName("TATWparGeo"), fRunNumber,
                                                    isTof_calib,fFlagTWbarCalib);
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
       } else {
-         parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+         parFileName = fCampManager->GetCurCalFile(FootBaseName("TATWparGeo"), fRunNumber,
                                                    isTof_calib,fFlagTWbarCalib);
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
 
@@ -678,7 +672,7 @@ void BaseReco::ReadParFiles()
 
             if(elossTuning) {
                Info("ReadParFiles()","Eloss tuning for GSI data status:: ON");
-               parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+               parFileName = fCampManager->GetCurCalFile(FootBaseName("TATWparGeo"), fRunNumber,
                                                          false, false, true);
                parCal->FromElossTuningFile(parFileName.Data());
             } else {
@@ -688,20 +682,26 @@ void BaseReco::ReadParFiles()
       }
 
       isTof_calib = true;
-      parFileName = fCampManager->GetCurCalFile(TATWparGeo::GetBaseName(), fRunNumber,
+      parFileName = fCampManager->GetCurCalFile(FootBaseName("TATWparGeo"), fRunNumber,
                                                 isTof_calib,fFlagTWbarCalib);
       parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
 
-      parFileName = fCampManager->GetCurConfFile(TATWparGeo::GetBaseName(), fRunNumber,
+      parFileName = fCampManager->GetCurConfFile(FootBaseName("TATWparGeo"), fRunNumber,
                                                  Form("%d%s", A_beam,ion_name.Data()),
                                                  (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
+
       
       if (!parFileName.IsNull()) // should not happen
-         parCal->FromFileZID(parFileName.Data(),Z_beam);
-
+         parCal->FromFileZID(parFileName.Data(),Z_beam);      
+      
       if(fFlagMC) { // set in MC threshold and active bars from data informations
-         parFileName = fCampManager->GetCurMapFile(TATWparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TATWparGeo"), fRunNumber);
          parCal->FromBarStatusFile(parFileName.Data());
+      }
+      else { // file not needed in MC: opened only for raw data
+
+        parFileName = fCampManager->GetCurMapFile(FootBaseName("TATWparGeo"), fRunNumber,1);
+        parCal->FromDeltaTimeFile(parFileName.Data());
       }
    }
 
@@ -710,12 +710,12 @@ void BaseReco::ReadParFiles()
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fpParGeoCa = new TAGparaDsc(new TACAparGeo());
       TACAparGeo* parGeo = (TACAparGeo*)fpParGeoCa->Object();
-      TString parFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
+      TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TACAparGeo"), fRunNumber);
       parGeo->FromFile(parFileName);
 
       fpParConfCa = new TAGparaDsc(new TACAparConf());
       TACAparConf* parConf = (TACAparConf*)fpParConfCa->Object();
-      parFileName = fCampManager->GetCurConfFile(TACAparGeo::GetBaseName(), fRunNumber);
+      parFileName = fCampManager->GetCurConfFile(FootBaseName("TACAparGeo"), fRunNumber);
       parConf->FromFile(parFileName.Data());
       
       fCalClusterAlgo  = parConf->GetAnalysisPar().ClusteringAlgo;
@@ -724,21 +724,21 @@ void BaseReco::ReadParFiles()
       TACAparCal* parCal = (TACAparCal*)fpParCalCa->Object();
 
       if(fFlagMC) { // set in MC threshold and active crystals from data informations
-         parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TACAparGeo"), fRunNumber);
          parCal->FromCrysStatusFile(parFileName.Data());
 
-         parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+         parFileName = fCampManager->GetCurCalFile(FootBaseName("TACAparGeo"), fRunNumber);
          parCal->LoadEnergyCalibrationMap(parFileName.Data());
 
       } else {
         fpParMapCa = new TAGparaDsc(new TACAparMap());
         TACAparMap* parMap = (TACAparMap*)fpParMapCa->Object();
-        parFileName = fCampManager->GetCurMapFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parFileName = fCampManager->GetCurMapFile(FootBaseName("TACAparGeo"), fRunNumber);
         parMap->FromFile(parFileName.Data());
         
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber);
+        parFileName = fCampManager->GetCurCalFile(FootBaseName("TACAparGeo"), fRunNumber);
         parCal->LoadEnergyCalibrationMap(parFileName.Data());
-        parFileName = fCampManager->GetCurCalFile(TACAparGeo::GetBaseName(), fRunNumber, isCalEloss);
+        parFileName = fCampManager->GetCurCalFile(FootBaseName("TACAparGeo"), fRunNumber, isCalEloss);
         parCal->LoadCryTemperatureCalibrationMap(parFileName.Data());
       }
    }

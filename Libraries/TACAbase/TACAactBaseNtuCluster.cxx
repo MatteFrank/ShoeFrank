@@ -14,6 +14,7 @@
 #include "TACAntuHit.hxx"
 #include "TACAntuCluster.hxx"
 #include "TACAactBaseNtuCluster.hxx"
+#include "TAGnameManager.hxx"
 
 #include "TATWntuPoint.hxx"
 /*!
@@ -56,7 +57,7 @@ TACAactBaseNtuCluster::TACAactBaseNtuCluster(const char* name, TAGdataDsc* pNtuR
    fDimX = max(parGeo->GetMaxNumLines(), parGeo->GetMaxNumColumns());
    fDimY = max(parGeo->GetMaxNumLines(), parGeo->GetMaxNumColumns());
    SetupMaps(fDimY*fDimX);
-   
+
    fpNtuHit  = (TACAntuHit*) fpNtuRaw->Object();
 }
 
@@ -197,7 +198,7 @@ Bool_t TACAactBaseNtuCluster::CreateClusters()
    // Remove no valid cluster
    for (Int_t i = pNtuClus->GetClustersN()-1; i >= 0; --i) {
       cluster = pNtuClus->GetCluster(i);
-      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(TACAparGeo::GetBaseName()));
+      cluster->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TACAparGeo")));
       if (!cluster->IsValid())
          pNtuClus->GetListOfClusters()->Remove(cluster);
    }
@@ -249,7 +250,7 @@ void TACAactBaseNtuCluster::ComputePosition(TACAcluster* cluster)
          0);
      posErr += posWeightSum2;
    }
-   
+
    posErr *= 1./clusterPulseSum;
 
    cluster->SetIndexSeed(iMax);
@@ -355,7 +356,7 @@ void TACAactBaseNtuCluster::ComputeMinDist(TACAcluster* cluster)
 void TACAactBaseNtuCluster::CalibrateEnergy(TACAcluster* cluster)
 {
    Int_t nhits = cluster->GetHitsN();
-   
+
    for (Int_t i = 0; i < nhits; ++i) {
       TACAhit* hit = cluster->GetHit(i);
       Int_t crysId = hit->GetCrystalId();
@@ -365,7 +366,7 @@ void TACAactBaseNtuCluster::CalibrateEnergy(TACAcluster* cluster)
          energy = GetEnergy(charge, fTwPointZ);
       else
          energy = charge;
-      
+
       hit->SetCharge(energy);
       if(FootDebugLevel(1))
          printf("%d %f\n", fTwPointZ, energy);
@@ -381,10 +382,10 @@ void TACAactBaseNtuCluster::CalibrateEnergy(TACAcluster* cluster)
 //! \param[in] z particle charge (atomic number)
 Double_t TACAactBaseNtuCluster::GetZCurve(Double_t p0, Double_t  p1, Double_t p2, Int_t z)
 {
-   
+
    return p0 + p1*exp(-(z/p2));
-   
-   
+
+
    //calibration AValetti's analysis 22.12.22
    //return energy from ADC
 }
@@ -398,32 +399,31 @@ Double_t TACAactBaseNtuCluster::GetZCurve(Double_t p0, Double_t  p1, Double_t p2
 Double_t TACAactBaseNtuCluster::GetEnergy(Double_t rawenergy, Int_t z)
 {
    TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
-   
+
    Double_t p0 = p_parcal->GetADC2EnergyParam(0);
    Double_t p1 = p_parcal->GetADC2EnergyParam(1);
    Double_t p2 = p_parcal->GetADC2EnergyParam(2);
-   
+
    Double_t p3 = p_parcal->GetADC2EnergyParam(3);
    Double_t p4 = p_parcal->GetADC2EnergyParam(4);
    Double_t p5 = p_parcal->GetADC2EnergyParam(5);
-   
+
    Double_t p6 = p_parcal->GetADC2EnergyParam(6);
    Double_t p7 = p_parcal->GetADC2EnergyParam(7);
    Double_t p8 = p_parcal->GetADC2EnergyParam(8);
-   
+
    Double_t p9 = p_parcal->GetADC2EnergyParam(9);
    Double_t p10 = p_parcal->GetADC2EnergyParam(10);
    Double_t p11 = p_parcal->GetADC2EnergyParam(11);
-   
+
    p0 = p0*GetZCurve(p3,p4,p5,z);
    p1 = p1*GetZCurve(p6,p7,p8,z);
    p2 = p2*GetZCurve(p9,p10,p11,z);
-   
-   Double_t ac = p0-p2*rawenergy;
-   
-   return (p1 * rawenergy + sqrt( p1 * p1 * rawenergy * rawenergy + 4 * ac ))/(2 * ac);
-   
-   
+
+   return (-p1 * rawenergy - sqrt( p1 * p1 * rawenergy * rawenergy - 4 * rawenergy * ( rawenergy * p2 - p0 ) ))/(2 * ( rawenergy * p2 - p0 ));
+
+ 
+
    //calibration AValetti's analysis 22.12.22
    //return energy from ADC
 }

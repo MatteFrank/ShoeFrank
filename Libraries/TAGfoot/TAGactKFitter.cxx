@@ -519,7 +519,7 @@ void TAGactKFitter::CreateGeometry()  {
 	if (TAGrecoManager::GetPar()->IncludeST()) {
 		TGeoVolume* stVol = m_ST_geo->BuildStartCounter();
 		stVol->SetLineColor(kBlack);
-		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TASTparGeo::GetBaseName());
+		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(FootBaseName("TASTparGeo"));
 		m_TopVolume->AddNode(stVol, 1, transfo);
 	}
 
@@ -527,7 +527,7 @@ void TAGactKFitter::CreateGeometry()  {
 	if (TAGrecoManager::GetPar()->IncludeBM()) {
 		TGeoVolume* bmVol = m_BM_geo->BuildBeamMonitor();
 		bmVol->SetLineColor(kBlack);
-		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TABMparGeo::GetBaseName());
+		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(FootBaseName("TABMparGeo"));
 		m_TopVolume->AddNode(bmVol, 2, transfo);
 	}
 
@@ -561,7 +561,7 @@ void TAGactKFitter::CreateGeometry()  {
 	if (TAGrecoManager::GetPar()->IncludeVT()) {
 		TGeoVolume* vtVol  = m_VT_geo->BuildVertex(m_VT_geo->GetBaseName(), "M28", true);
 		vtVol->SetLineColor(kRed+1);
-		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAVTparGeo::GetBaseName());
+		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(FootBaseName("TAVTparGeo"));
 		m_TopVolume->AddNode(vtVol, 4, transfo);
 
 		if(m_systemsON.Contains("VT"))
@@ -618,7 +618,7 @@ void TAGactKFitter::CreateGeometry()  {
 	if (TAGrecoManager::GetPar()->IncludeIT()) {
 		TGeoVolume* itVol  = m_IT_geo->BuildInnerTracker(m_IT_geo->GetBaseName(), "Module", true);
 		itVol->SetLineColor(kRed);
-		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAITparGeo::GetBaseName());
+		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(FootBaseName("TAITparGeo"));
 		m_TopVolume->AddNode(itVol, 6, transfo);
 
 		if( m_systemsON.Contains("IT") )
@@ -676,7 +676,7 @@ void TAGactKFitter::CreateGeometry()  {
 	if (TAGrecoManager::GetPar()->IncludeMSD()) {
 		TGeoVolume* msdVol = m_MSD_geo->BuildMicroStripDetector();
 		msdVol->SetLineColor(kViolet);
-		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAMSDparGeo::GetBaseName());
+		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(FootBaseName("TAMSDparGeo"));
 		m_TopVolume->AddNode(msdVol, 7, transfo);
 
 		if( m_systemsON.Contains("MSD") )
@@ -731,7 +731,7 @@ void TAGactKFitter::CreateGeometry()  {
 	if (TAGrecoManager::GetPar()->IncludeTW()) {
 		TGeoVolume* twVol = m_TW_geo->BuildTofWall();
 		twVol->SetLineColor(kBlue);
-		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TATWparGeo::GetBaseName());
+		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(FootBaseName("TATWparGeo"));
 		m_TopVolume->AddNode(twVol, 8, transfo);
 
 
@@ -772,7 +772,7 @@ void TAGactKFitter::CreateGeometry()  {
 	if (TAGrecoManager::GetPar()->IncludeCA()) {
 		TGeoVolume* caVol = m_CA_geo->BuildCalorimeter();
 		caVol->SetLineColor(kBlack);
-		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TACAparGeo::GetBaseName());
+		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(FootBaseName("TACAparGeo"));
 		m_TopVolume->AddNode(caVol, 9, transfo);
 	}
 

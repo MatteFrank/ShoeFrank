@@ -15,6 +15,8 @@
 #include "TAGgeoTrafo.hxx"
 #include "TF1.h"
 
+#include "TAGnameManager.hxx"
+
 #include <math.h>
 
 /*!
@@ -172,7 +174,7 @@ void TAMSDcluster::SetEta(Float_t eta)
 void TAMSDcluster::SetPlaneView(Int_t v)
 {
    fPlaneView = v;
-   fDeviceType = TAGgeoTrafo::GetDeviceType(TAMSDparGeo::GetBaseName()) + fPlaneView;
+   fDeviceType = TAGgeoTrafo::GetDeviceType(FootBaseName("TAMSDparGeo")) + fPlaneView;
 }
 
 //______________________________________________________________________________

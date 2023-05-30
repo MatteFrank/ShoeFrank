@@ -71,7 +71,7 @@ public:
    TVector3        Sensor2DetectorVect(Int_t iLayer, Int_t iBar, TVector3& loc) const;
 
   
-   Float_t         GetCoordiante_sensorFrame(Int_t iLayer, Int_t iBar);
+   Float_t         GetCoordinate_sensorFrame(Int_t iLayer, Int_t iBar);
    Float_t         GetZ_sensorFrame(Int_t iLayer, Int_t iBar);
    
     // Return Scintillator full dimension.

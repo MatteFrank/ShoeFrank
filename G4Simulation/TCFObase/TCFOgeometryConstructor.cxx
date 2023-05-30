@@ -70,6 +70,7 @@
 #include "TCEMfieldSetup.hxx"
 
 #include "TAGrecoManager.hxx"
+#include "TAGnameManager.hxx"
 #include "TADIgeoField.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGroot.hxx"
@@ -110,7 +111,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    // initialise map file for calorimteer
    if (TAGrecoManager::GetPar()->IncludeCA()) {
       fpParGeoCa = new TACAparGeo();
-      TString mapFileName = fCampManager->GetCurGeoFile(TACAparGeo::GetBaseName(), fRunNumber);
+      TString mapFileName = fCampManager->GetCurGeoFile(FootBaseName("TACAparGeo"), fRunNumber);
       fpParGeoCa->FromFile(mapFileName.Data());
       fCalorimeter = new TCCAgeometryConstructor(fpParGeoCa);
    }
@@ -118,7 +119,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    // initialise map file for TOF
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       fpParGeoTw = new TATWparGeo();
-      TString mapFileName =  fCampManager->GetCurGeoFile(TATWparGeo::GetBaseName(), fRunNumber);
+      TString mapFileName =  fCampManager->GetCurGeoFile(FootBaseName("TATWparGeo"), fRunNumber);
       fpParGeoTw->FromFile(mapFileName.Data());
       fTofWall = new TCTWgeometryConstructor(fpParGeoTw);
    }
@@ -126,7 +127,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    // initialise map file for Micro Strip Detector
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       fpParGeoMsd = new TAMSDparGeo();
-      TString mapFileName = fCampManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), fRunNumber);
+      TString mapFileName = fCampManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), fRunNumber);
       fpParGeoMsd->FromFile(mapFileName.Data());
       fMicroStrip = new TCMSDgeometryConstructor(fpParGeoMsd);
    }
@@ -134,7 +135,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    // initialise map file for Inner Tracker
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       fpParGeoIt = new TAITparGeo();
-      TString mapFileName = fCampManager->GetCurGeoFile(TAITparGeo::GetBaseName(), fRunNumber);
+      TString mapFileName = fCampManager->GetCurGeoFile(FootBaseName("TAITparGeo"), fRunNumber);
       fpParGeoIt->FromFile(mapFileName.Data());
       fInnerTracker = new TCITgeometryConstructor(fpParGeoIt);
    }
@@ -142,7 +143,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    // initialise map file for vertex
    if (TAGrecoManager::GetPar()->IncludeVT()) {
       fpParGeoVtx = new TAVTparGeo();
-      TString mapFileName = fCampManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), fRunNumber);
+      TString mapFileName = fCampManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), fRunNumber);
       fpParGeoVtx->FromFile(mapFileName.Data());
       fVertex = new TCVTgeometryConstructor(fpParGeoVtx);
    }
@@ -158,7 +159,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    // initialise map file for beam monitor
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       fpParGeoBm = new TABMparGeo();
-      TString mapFileName = fCampManager->GetCurGeoFile(TABMparGeo::GetBaseName(), fRunNumber);
+      TString mapFileName = fCampManager->GetCurGeoFile(FootBaseName("TABMparGeo"), fRunNumber);
       fpParGeoBm->FromFile(mapFileName.Data());
       fBeamMonitor = new TCBMgeometryConstructor(fpParGeoBm);
    }
@@ -166,7 +167,7 @@ TCFOgeometryConstructor::TCFOgeometryConstructor(const TString expName, Int_t ru
    // initialise map file for start counter
    if (TAGrecoManager::GetPar()->IncludeST()) {
       fpParGeoSt = new TASTparGeo();
-      TString mapFileName = fCampManager->GetCurGeoFile(TASTparGeo::GetBaseName(), fRunNumber);
+      TString mapFileName = fCampManager->GetCurGeoFile(FootBaseName("TASTparGeo"), fRunNumber);
       fpParGeoSt->FromFile(mapFileName.Data());
       fStartCounter = new TCSTgeometryConstructor(fpParGeoSt);
    }

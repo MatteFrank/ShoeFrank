@@ -23,6 +23,7 @@
 #include "TAGroot.hxx"
 
 #include "TAGrecoManager.hxx"
+#include "TAGnameManager.hxx"
 
 #include "TAGcampaignManager.hxx"
 
@@ -102,7 +103,7 @@ int main (int argc, char *argv[]) {
    
     // read geomap files
     TString parFileName;
-    parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+    parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
 
     cout<<" From TCAmpaign manager! "<<parFileName.Data()<<endl;
     geoTrafo.FromFile(parFileName.Data());
@@ -111,24 +112,24 @@ int main (int argc, char *argv[]) {
     generalGeo->FromFile(parFileName.Data());
    
    if (TAGrecoManager::GetPar()->IncludeST()) {
-    parFileName = campManager->GetCurGeoFile(TASTparGeo::GetBaseName(), runNumber);
+    parFileName = campManager->GetCurGeoFile(FootBaseName("TASTparGeo"), runNumber);
     stcGeo->FromFile(parFileName.Data());
    }
    if (TAGrecoManager::GetPar()->IncludeBM()) {
-      parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+      parFileName = campManager->GetCurGeoFile(FootBaseName("TABMparGeo"), runNumber);
       bmGeo->FromFile(parFileName.Data());
    }
    if (TAGrecoManager::GetPar()->IncludeVT()) {
       vtxGeo->SetMcFlag();
-      parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
+      parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
       vtxGeo->FromFile(parFileName.Data());
    }
    if (TAGrecoManager::GetPar()->IncludeIT()) {
-      parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
+      parFileName = campManager->GetCurGeoFile(FootBaseName("TAITparGeo"), runNumber);
       itrGeo->FromFile(parFileName.Data());
    }
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+      parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
       msdGeo->FromFile(parFileName.Data());
    }
    if (TAGrecoManager::GetPar()->IncludeDI()) {
@@ -136,11 +137,11 @@ int main (int argc, char *argv[]) {
     diGeo->FromFile(parFileName.Data());
    }
    if (TAGrecoManager::GetPar()->IncludeTW()) {
-      parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
+      parFileName = campManager->GetCurGeoFile(FootBaseName("TATWparGeo"), runNumber);
       twGeo->FromFile(parFileName.Data());
    }
    if (TAGrecoManager::GetPar()->IncludeCA()) {
-    parFileName = campManager->GetCurGeoFile(TACAparGeo::GetBaseName(), runNumber);
+    parFileName = campManager->GetCurGeoFile(FootBaseName("TACAparGeo"), runNumber);
     caGeo->FromFile(parFileName.Data());
    }
   

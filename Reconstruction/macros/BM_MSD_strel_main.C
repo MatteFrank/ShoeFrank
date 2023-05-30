@@ -35,27 +35,27 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
   TAGcampaignManager* campManager = new TAGcampaignManager(expName);
   campManager->FromFile();
   geoTrafo = new TAGgeoTrafo();
-  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
   geoTrafo->FromFile(parFileName);
 
   TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
   TABMparGeo* bmpargeo   = (TABMparGeo*) bmGeo->Object();
-  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TABMparGeo"), runNumber);
   bmpargeo->FromFile(parFileName.Data());
 
   // TAGparaDsc*  bmCal  = new TAGparaDsc("bmCal", new TABMparCal());
   // TABMparCal* bmparcal = (TABMparCal*)bmCal->Object();
-  // parFileName = campManager->GetCurCalFile(TABMparGeo::GetBaseName(), runNumber);
+  // parFileName = campManager->GetCurCalFile(FootBaseName("TABMparGeo"), runNumber);
   // bmparCal->FromFile(parFileName.Data());
 
   // TAGparaDsc*  bmMap  = new TAGparaDsc("bmMap", new TABMparMap());
   // TABMparMap*  bmparmap = (TABMparMap*)bmMap->Object();
-  // parFileName = campManager->GetCurMapFile(TABMparGeo::GetBaseName(), runNumber);
+  // parFileName = campManager->GetCurMapFile(FootBaseName("TABMparGeo"), runNumber);
   // bmparMap->FromFile(parFileName.Data(), bmpargeo);
 
   TAGparaDsc* msdGeo    = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
   TAMSDparGeo* msdpargeo   = (TAMSDparGeo*) msdGeo->Object();
-  parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
+  parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
   msdpargeo->FromFile(parFileName.Data());
 
   bmNtuHit = new TABMntuHit();

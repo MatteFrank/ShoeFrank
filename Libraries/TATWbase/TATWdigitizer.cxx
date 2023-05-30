@@ -60,8 +60,9 @@ TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw ,TAGparaDsc* pParGeo, TAGparaDs
    fTimeTW_C(13.36),  // ps
    fTimeTWErr_C(0.4432),  // ps
    // Morrocchi:
-   fTofPropAlpha(67.43), // velocity^-1 of propagation of light in TW bar (ps/cm)
-   fTofErrPropAlpha(0.09),
+   // the value of the velocity of light in the bar is irrelevant: it cancels in the position done with the measurement of delta time (where is used)
+   fInvCbarSpeed(67.43), // velocity^-1 of propagation of light in TW bar (ps/cm)
+   fInvCbarSpeedErr(0.09),
    // parameters for position resolution
    fPosCstE(39.33),  // mm
    fPosErrCstE(0.03),  // mm
@@ -71,7 +72,8 @@ TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw ,TAGparaDsc* pParGeo, TAGparaDs
    fPosErrk0E(0.06),  // mm
    fSlatLength(0),
    fGain(1),
-   fElossMeasLimit(90),  // MeV. Is the maximum Eloss measured up to now...resolution beyond this value is not reliable and is set constant
+   fElossMeasLimitMax(90),  // MeV. Is the maximum Eloss measured up to now...resolution beyond this value is not reliable and is set constant
+   fElossMeasLimitMin(2),  // MeV. Is the minimum Eloss measured up to now...resolution lower than this value is not reliable and diverge. It is set constant correspondingly to this value (actually the minimum energy loss in calibration runs is ~3 MeV)
    fEnergyThreshold(0),    // Set energy loss threshold from config file
    fEnergyMax(-1)         // max energy loss in the case of multiple hits
 {
@@ -168,7 +170,7 @@ Double_t TATWdigitizer::ResExponential(Double_t* x, Double_t* par)
 }
 
 // --------------------------------------------------------------------------------------
-Double_t TATWdigitizer::GetResEnergyExp(Double_t energy)
+Double_t TATWdigitizer::GetResEnergyExp(Double_t edep)
 {
 
    // variation of the linear fit parameters
@@ -178,14 +180,15 @@ Double_t TATWdigitizer::GetResEnergyExp(Double_t energy)
    fDeResE->SetParameters(q,m);
    
    Double_t relRes;
-   if(energy<fElossMeasLimit)
-      relRes = fDeResE->Eval(energy); // percentage Eloss resolution
+   
+   if(edep<fElossMeasLimitMax)
+      relRes = fDeResE->Eval(edep); // percentage Eloss resolution
    else
       relRes = 5.2; // percentage Eloss resolution constant at the minimum because beyond Eloss = 90 MeV has not been measured
 
    // relRes = gRandom->Uniform(fDeResMin,fDeResMax)*sqrt(2);  // to be multiplied by sqrt(2) because in the Kraan paper the rel err is on the sum of the eloss front and rear
    
-   return energy*relRes/100.;
+   return edep*relRes/100.;
    
 }
 
@@ -207,7 +210,7 @@ Double_t TATWdigitizer::GetElossShiftRate()
 }
 
 // --------------------------------------------------------------------------------------
-Double_t TATWdigitizer::GetResEnergyMC(Double_t energy)
+Double_t TATWdigitizer::GetResEnergyMC(Double_t edep)
 {
 
    if(!fMClandauFluctuations) return 0.;
@@ -218,19 +221,19 @@ Double_t TATWdigitizer::GetResEnergyMC(Double_t energy)
    
    fDeResE_MC->SetParameters(A,B,C);
    
-   Double_t relRes = fDeResE_MC->Eval(energy); // percentage Eloss resolution
+   Double_t relRes = fDeResE_MC->Eval(edep); // percentage Eloss resolution
    
-   return energy*relRes/100.;
+   return edep*relRes/100.;
    
 }
 
 // --------------------------------------------------------------------------------------
-Double_t TATWdigitizer::GetResCharge(Double_t energy)
+Double_t TATWdigitizer::GetResCharge(Double_t edep)
 {
    
-   // Double_t relResEloss = GetResEnergyExp(energy);
-   Double_t resElossExp = GetResEnergyExp(energy);
-   Double_t resElossMC  = GetResEnergyMC(energy);
+   // Double_t relResEloss = GetResEnergyExp(edep);
+   Double_t resElossExp = GetResEnergyExp(edep);
+   Double_t resElossMC  = GetResEnergyMC(edep);
    Double_t relResEloss = sqrt(pow(resElossExp,2)-pow(resElossMC,2));
    
    return sqrt(2)*relResEloss;
@@ -247,7 +250,15 @@ Double_t TATWdigitizer::GetResPos(Double_t edep)
    
    fPosResE->SetParameters(A,B,C);
    
-   return fPosResE->Eval(edep);
+   Double_t posRes;
+   
+   if(edep<fElossMeasLimitMin)
+     posRes = fPosResE->Eval(fElossMeasLimitMin);  
+   else     
+     posRes = fPosResE->Eval(edep);
+
+   // return fPosResE->Eval(edep);
+   return posRes;
    
 }
 
@@ -260,16 +271,25 @@ Double_t TATWdigitizer::GetResTimeTW(Double_t edep)
    Double_t C = gRandom->Gaus(fTimeTW_C, fTimeTWErr_C);
    
    fTimeTWResE->SetParameters(A,B,C);
+
+   Double_t timeRes;
    
-   return fTimeTWResE->Eval(edep)*sqrt(2);
+   if(edep<fElossMeasLimitMin)
+     timeRes = fTimeTWResE->Eval(fElossMeasLimitMin);  
+   else     
+     timeRes = fTimeTWResE->Eval(edep);
+
+   
+   return timeRes*sqrt(2);
+   // return fTimeTWResE->Eval(edep)*sqrt(2);
    
 }
 // --------------------------------------------------------------------------------------
 Double_t TATWdigitizer::GetTimeLeft(Double_t pos, Double_t time, Double_t edep)
 {
    
-   // Double_t alpha  = gRandom->Gaus(fTofPropAlpha, fTofErrPropAlpha);
-   Double_t alpha  = fTofPropAlpha;
+   // Double_t alpha  = gRandom->Gaus(fInvCbarSpeed, fInvCbarSpeedErr);
+   Double_t alpha  = fInvCbarSpeed;
    
    // Double_t timeL  = time - pos*alpha;
    Double_t timeL  = time + (fSlatLength/2. - pos) * alpha;  // Left--> positive Pos   L/A <-------- R/B
@@ -284,8 +304,8 @@ Double_t TATWdigitizer::GetTimeLeft(Double_t pos, Double_t time, Double_t edep)
 Double_t TATWdigitizer::GetTimeRight(Double_t pos, Double_t time, Double_t edep)
 {
    
-   // Double_t alpha  = gRandom->Gaus(fTofPropAlpha, fTofErrPropAlpha);
-   Double_t alpha  = fTofPropAlpha;
+   // Double_t alpha  = gRandom->Gaus(fInvCbarSpeed, fInvCbarSpeedErr);
+   Double_t alpha  = fInvCbarSpeed;
    
    // Double_t timeR  = time + pos*alpha;
    Double_t timeR  = time + (fSlatLength/2. + pos) * alpha;  // Right--> negative Pos L/A <-------- R/B
@@ -297,21 +317,21 @@ Double_t TATWdigitizer::GetTimeRight(Double_t pos, Double_t time, Double_t edep)
 }
 //-----------------------------------------------------------------------------
 //! Method to compute the position along the bar using the time difference btw ChA e Chb for a given bar (as done in data)
-void TATWdigitizer::ComputePosDeltaTime(Double_t eloss, Double_t time, Double_t &pos, Double_t &timeA, Double_t &timeB) {
+Double_t TATWdigitizer::ComputePosDeltaTime(Double_t eloss, Double_t time, Double_t pos) {
 
     // Reconstruct the position along the bar as in data using time differences between bar edges
     // define tA and tB using position of the hit along the bar   
-    timeA = GetTimeLeft(pos, time, eloss);
-    timeB = GetTimeRight(pos, time, eloss);
+    Double_t  timeA = GetTimeLeft(pos, time, eloss);
+    Double_t  timeB = GetTimeRight(pos, time, eloss);
     
-    pos = (timeB-timeA)/(2*fTofPropAlpha);  // cm
+    pos = (timeB-timeA)/(2*fInvCbarSpeed);  // cm
 
     if(FootDebugLevel(4)) {
       printf("time A::%.1f B::%.1f\n", timeA, timeB);
       cout<<endl<<"pos_diff::"<<pos<<endl<<endl;
     }
 
-    return;
+    return pos;
 
 }
 // --------------------------------------------------------------------------------------
@@ -394,23 +414,22 @@ void  TATWdigitizer::CheckPUmanaging(Double_t time, Double_t eloss, Double_t pos
 //! Reconstruct the MC TW hit, smearing the time, the eloss and the position along the bar according to the respective experimental resolutions. For multi hits in the same bar a single hit is reconstracrted (by default) with a depoited energy given by the sum of the single energies deposited and the TW time, the charge Z and the position are the ones related to the hit with the biggest energy deposit
 Bool_t TATWdigitizer::Process(Double_t edep, Double_t posAlongBar, Double_t layer, Double_t barid, Double_t twhitID, Double_t timeTW, Int_t baridA, Int_t Z, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/){
    
-   Double_t recEloss       = edep;
-   Double_t recTimeTW      = timeTW;
-   Double_t recPosAlongBar = posAlongBar;
+   Double_t recEloss       = edep;           // MeV
+   Double_t recTimeTW      = timeTW;         // ps
+   Double_t recPosAlongBar = posAlongBar;    // cm
    
    Int_t dummyTrigType  = -1000;
 
-   Double_t posDeltaTime(-100), timeA(-1), timeB(-1);
-   ComputePosDeltaTime(edep,timeTW,recPosAlongBar,timeA,timeB); 
+   Double_t posDeltaTime = ComputePosDeltaTime(edep,timeTW,posAlongBar); 
 
-   //-----Smear Eloss Time and Pos according to experimental resolutions-----//
+   //-----Smear Eloss [MeV],  Time [ps] and Pos [cm] according to experimental resolutions-----//
    SmearTWquantities(recEloss,recTimeTW,recPosAlongBar);
 
 
    
    if( IsPileUpOff() ||  fMap[baridA] == 0 )  { // first hit in a given bar
   
-       fCurrentHit = (TATWhit*)fpNtuRaw->NewHit((Int_t)layer, (Int_t)barid, recEloss, recTimeTW, recPosAlongBar, posDeltaTime, posAlongBar, edep, timeTW, timeA ,timeB, dummyTrigType); // timeA/B is ps, and timeTW in ns !
+     fCurrentHit = (TATWhit*)fpNtuRaw->NewHit((Int_t)layer, (Int_t)barid, recEloss, recTimeTW, posDeltaTime, recPosAlongBar, posAlongBar, edep, timeTW, (Double_t)Z, (Double_t)Z, dummyTrigType); // unused quantities in MC [Charge, Time and Amplitude of ChA and B] are filled with something else
 
 
        fCurrentHit->SetChargeZ(Z);      //here set true Z charge: the rec charge is set after in TATWactNtuMC.cxx to the final hit (once pile-up has been considered)
@@ -431,13 +450,18 @@ Bool_t TATWdigitizer::Process(Double_t edep, Double_t posAlongBar, Double_t laye
          fEnergyMax = recEloss;
          
          fCurrentHit->SetTime(recTimeTW);
-         fCurrentHit->SetPosition(recPosAlongBar);
-         
-         fCurrentHit->SetTimeChA(timeA);
-         fCurrentHit->SetTimeChB(timeB);
-         
+         fCurrentHit->SetPosition(posDeltaTime);
+         // fCurrentHit->SetPosition(recPosAlongBar);
+
          fCurrentHit->SetChargeZ(Z);        // here set true Z charge: the rec charge is set later in TATWactNtuHitMC.cxx to the final hit (once multi hit edep has been added)       
 
+
+         // unused quantities in MC [Charge, Time and Amplitude of ChA and B] are filled with something else:         
+         fCurrentHit->SetChargeChA(recPosAlongBar);
+         fCurrentHit->SetChargeChB(posAlongBar);
+         fCurrentHit->SetAmplitudeChA(edep);
+         fCurrentHit->SetAmplitudeChB(timeTW);
+         
        }
        
        // for multi hit in the same bar sum the Elosses

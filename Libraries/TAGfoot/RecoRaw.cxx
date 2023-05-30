@@ -96,7 +96,7 @@ void RecoRaw::CreateRawAction()
       
       if (!fgStdAloneFlag){
          TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
-         TString parFileName = fCampManager->GetCurCalFile(TASTparGeo::GetBaseName(), fRunNumber, true);
+         TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
          parTimeWD->FromFileTcal(parFileName.Data());
       }
       
