@@ -44,6 +44,7 @@ NumberFiles: 6
 "./config/HIT2022/TATWdetector.cfg": -1
 "./config/HIT2022/TATW_BBparameters.cfg": -1
 "./config/HIT2022/TATWChannelMapXML.map": -1
+"./config/HIT2022/TATWdeltaTimeMap.map": -1
 "./calib/HIT2022/TATW_Energy_Calibration.cal": -1
 "./calib/HIT2022/TATW_Tof_Calibration.cal": -1;
 

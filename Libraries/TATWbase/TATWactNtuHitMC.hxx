@@ -86,6 +86,7 @@ private:
 
    // vector of histo with the same size of the ion beam atomic number
    vector<TH1D*>   fpHisResPos;
+   vector<TH1D*>   fpHisResPos_2;
    vector<TH1D*>   fpHisResTof;
    vector<TH1D*>   fpHisResEloss;
    vector<TH2D*>   fpHisElossTof_MC;

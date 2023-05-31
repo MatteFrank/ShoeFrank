@@ -197,7 +197,7 @@ TVector3 TATWparGeo::GetLayerPosition(Int_t iLayer)
 }
 
 //_____________________________________________________________________________
-Float_t TATWparGeo::GetCoordiante_sensorFrame(Int_t iLayer, Int_t iBar)
+Float_t TATWparGeo::GetCoordinate_sensorFrame(Int_t iLayer, Int_t iBar)
 {
    Int_t idx = iLayer*fBarsN + iBar;
    

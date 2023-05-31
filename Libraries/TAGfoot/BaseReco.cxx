@@ -689,13 +689,19 @@ void BaseReco::ReadParFiles()
       parFileName = fCampManager->GetCurConfFile(FootBaseName("TATWparGeo"), fRunNumber,
                                                  Form("%d%s", A_beam,ion_name.Data()),
                                                  (int)(kinE_beam*TAGgeoTrafo::GevToMev()));
+
       
       if (!parFileName.IsNull()) // should not happen
-         parCal->FromFileZID(parFileName.Data(),Z_beam);
-
+         parCal->FromFileZID(parFileName.Data(),Z_beam);      
+      
       if(fFlagMC) { // set in MC threshold and active bars from data informations
          parFileName = fCampManager->GetCurMapFile(FootBaseName("TATWparGeo"), fRunNumber);
          parCal->FromBarStatusFile(parFileName.Data());
+      }
+      else { // file not needed in MC: opened only for raw data
+
+        parFileName = fCampManager->GetCurMapFile(FootBaseName("TATWparGeo"), fRunNumber,1);
+        parCal->FromDeltaTimeFile(parFileName.Data());
       }
    }
 
