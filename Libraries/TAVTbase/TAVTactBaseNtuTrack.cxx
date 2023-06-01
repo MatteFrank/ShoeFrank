@@ -580,7 +580,8 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
          Int_t charge = mcpart->GetCharge();
          pNtuReg = static_cast<TAMCntuRegion *>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"), "TAMCntuRegion")->Object());
          Int_t nCross = pNtuReg->GetRegionsN();
-         Float_t mcpart_theta = -1 ;  
+         Float_t mcpart_theta = -1 ; 
+         Float_t mcpart_phi = -1; 
          for (int iCross = 0; iCross < nCross; iCross++)
          {
             TAMCregion *cross = pNtuReg->GetRegion(iCross);
@@ -593,6 +594,8 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
             if (((cross->GetTrackIdx() - 1) == max_id) && OldReg == target_region && NewReg == after_target_region)
             { // if it is not the particle I want to check, continue the loop
             mcpart_theta = cross->GetMomentum().Theta() * TMath::RadToDeg();
+            mcpart_phi = cross->GetMomentum().Phi() * TMath::RadToDeg();
+
             break;
             } else
             continue;
