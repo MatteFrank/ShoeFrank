@@ -123,7 +123,7 @@ Float_t TAGbaseTrack::GetTheta() const
 //! Get phi angle in deg
 Float_t TAGbaseTrack::GetPhi() const
 {
-   TVector3 origin = fOrigin->Unit();
+   TVector3 origin = fSlope->Unit();
    Float_t phi     = origin.Phi()*TMath::RadToDeg();
 
    return phi;
