@@ -208,7 +208,18 @@ bool TATWactNtuHitMC::Action() {
        
        Double_t edep  = hitTwMC->GetDeltaE()*TAGgeoTrafo::GevToMev();
        Double_t timeTW  = hitTwMC->GetTof()*TAGgeoTrafo::SecToPs();
-       
+
+       //***********ONLY for GSI2019 checks: simulate that campaign using GSI2021 campaign requiring that a tracks is not coming from MSD regions and CALO regions which were not present in that campaign*********//
+       TAMCpart*  track = pNtuEve->GetTrack(trackId);
+       Int_t  reg = track->GetRegion();
+
+       if(reg>=63 && reg<=80)  // the hit in TW is due to a track generated in MSD
+         continue;
+
+       if(reg>=121)  // the hit in TW is due to a track generated in CALO
+         continue;
+
+         
        Int_t Z = GetZmcTrue(pNtuEve,trackId);
        
        if(FootDebugLevel(4))
