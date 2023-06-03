@@ -141,6 +141,11 @@ void TAVTactBaseTrack::CreateHistogram()
       AddHistogram(fpHisTrackClustPosErrX[i]);
       fpHisTrackClustPosErrY[i] = new TH1F(Form("%sTrackClusPosErrY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position error in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, 0., 0.002); // ! range
       AddHistogram(fpHisTrackClustPosErrY[i]);
+      fpHisTrackClustPosErrXvsPixel[i] = new TH2F(Form("%sTrackClusPosErrXvsPixel%d", fPrefix.Data(), i + 1), Form("%s - Clus X position error vs n pixels in sensor %d;n pixels; cm", fTitleDev.Data(), i + 1),100,0,100, 1000, 0., 0.002);
+      AddHistogram(fpHisTrackClustPosErrXvsPixel[i]);
+      fpHisTrackClustPosErrYvsPixel[i] = new TH2F(Form("%sTrackClusPosErrYvsPixel%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position error vs n pixels in sensor %d;n pixels; cm", fTitleDev.Data(), i + 1),100,0,100, 1000, 0., 0.002);
+      AddHistogram(fpHisTrackClustPosErrYvsPixel[i]);
+      
 
       // fit position
       fpHisFitClustPosX[i] = new TH1F(Form("%sFitClusPosX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position by fit in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, -5, 5);
@@ -164,8 +169,8 @@ void TAVTactBaseTrack::CreateHistogram()
    AddHistogram(fpHisResTotX);
    AddHistogram(fpHisResTotY);
    
-   fpHisChi2TotX = new TH1F(Form("%sChi2TotX", fPrefix.Data()), Form("%s - Total Chi2 X", fTitleDev.Data()), 50, 0, 5);
-   fpHisChi2TotY = new TH1F(Form("%sChi2TotY", fPrefix.Data()), Form("%s - Total Chi2 Y", fTitleDev.Data()), 50, 0, 5);
+   fpHisChi2TotX = new TH1F(Form("%sChi2TotX", fPrefix.Data()), Form("%s - Total Chi2 X", fTitleDev.Data()), 1000, 0, 50);
+   fpHisChi2TotY = new TH1F(Form("%sChi2TotY", fPrefix.Data()), Form("%s - Total Chi2 Y", fTitleDev.Data()), 1000, 0, 50);
    fpHisChi2probX = new TH1F(Form("%sChi2pvalueX", fPrefix.Data()), Form("%s - p value of the fit (chi2 probability) X", fTitleDev.Data()), 100, 0, 1);
    fpHisChi2probY = new TH1F(Form("%sChi2pvalueY", fPrefix.Data()), Form("%s - p value of the fit (chi2 probability) Y", fTitleDev.Data()), 100, 0, 1);
    AddHistogram(fpHisChi2TotX);
@@ -443,7 +448,9 @@ for (int i = 0; i < cluster_vt->GetPixelsN(); i++)
        fpHisTrackClustPosX[idx]->Fill(cluster->GetPositionG()[0]);
        fpHisTrackClustPosY[idx]->Fill(cluster->GetPositionG()[1]);
        fpHisTrackClustPosErrX[idx]->Fill(cluster->GetPosError().X());
+       fpHisTrackClustPosErrXvsPixel[idx]->Fill(cluster_vt->GetPixelsN(),cluster->GetPosError().X() );
        fpHisTrackClustPosErrY[idx]->Fill(cluster->GetPosError().Y());
+       fpHisTrackClustPosErrYvsPixel[idx]->Fill(cluster_vt->GetPixelsN(),cluster->GetPosError().Y() );
        fpHisFitClustPosX[idx]->Fill(track->Intersection(posZ).X());
        fpHisFitClustPosY[idx]->Fill(track->Intersection(posZ).Y());
        fpHisFitClustPosErrX[idx]->Fill(fitErrorX);
