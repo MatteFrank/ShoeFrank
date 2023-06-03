@@ -131,7 +131,7 @@ void TAVTactBaseNtuTrack::CreateHistogram()
       AddHistogram(fpTrackEfficiency);
       fpTrackEfficiencyFake = new TH1F(Form("%sTrackEfficiencyFake", fPrefix.Data()), "Efficiency of reconstructed tracks out of the selected ones; Z; eff;", primary_charge, 0.5, primary_charge+0.5);
       AddHistogram(fpTrackEfficiencyFake);
-      fpTrackPurityTrack = new TH1F(Form("%sTrackPurityTrack", fPrefix.Data()), "Purity of reconstructed tracks out of the selected ones; Z; eff;", primary_charge, 0.5, primary_charge+0.5);
+      fpTrackPurityTrack = new TH1F(Form("%sTrackPurityTrack", fPrefix.Data()), "Purity of reconstructed tracks out of the selected ones; Z; purity;", primary_charge, 0.5, primary_charge+0.5);
       AddHistogram(fpTrackPurityTrack);
 
           fpTrackPurity = new TH1F(Form("%sTrackPurityCluster", fPrefix.Data()), "Purity of clusters in track reconstruction; Z; purity;", primary_charge, 0.5, primary_charge + 0.5);
@@ -151,11 +151,19 @@ void TAVTactBaseNtuTrack::CreateHistogram()
       AddHistogram(fpBadTrackInitP);
             
             
-      //angular resolution
+      //angular resolution and efficiency,purity
       for (Int_t i = 0; i < primary_charge; ++i)
       {
          fpHisThetaRes[i] = new TH1F(Form("%sTrackThetaRes%d", fPrefix.Data(), i + 1), Form("%s - theta track resolution for Z= %d", fTitleDev.Data(), i + 1), 200, -1, 1);
          AddHistogram(fpHisThetaRes[i]);
+         fpHisPhiRes[i] = new TH1F(Form("%sTrackPhiRes%d", fPrefix.Data(), i + 1), Form("%s - phi track resolution for Z= %d", fTitleDev.Data(), i + 1), 20000, -10, 10);
+         AddHistogram(fpHisPhiRes[i]);
+
+         fpTrackAngularEfficiency[i] = new TH1F(Form("%sTrackAngularEfficiencyZ%d", fPrefix.Data(), i + 1), Form("Angular Efficiency of reconstructed tracks for Z= %d; Angle [deg]; eff;", i + 1), 41, -0.5, 40.5);
+      AddHistogram(fpTrackAngularEfficiency[i]);
+
+      fpTrackAngularPurityTrack[i] = new TH1F(Form("%sTrackAngularPurityTrackZ%d", fPrefix.Data(), i + 1), Form("Angular Purity of reconstructed tracks out of the selected ones for Z = %d; Angle [deg]; purity;", i + 1), 41, -0.5, 40.5);
+      AddHistogram(fpTrackAngularPurityTrack[i]);
       }
 
       //position res of the clusters
@@ -166,9 +174,9 @@ void TAVTactBaseNtuTrack::CreateHistogram()
          fpTrackClusResY[i] = new TH1F(Form("%sTrackedClusResY%d", fPrefix.Data(), i + 1), Form("%s -Position  Y resolution of the claster of sensor %d; Y [cm];;", fTitleDev.Data(), i + 1), 1000, -0.01, 0.01);
          AddHistogram(fpTrackClusResY[i]);
       }
-            }
+      
 
-
+   }
 
    SetValidHistogram(kTRUE);
    return;
@@ -556,26 +564,36 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
 
      // define the charge of the track as the one of the most probable MCparticle     TO BE CHANGED 
      int charge_track = -1;
-     if (max_id == -666) charge_track = -1; // if the cluster is made of noisy pixels (id = -666)
-     else charge_track = pNtuEve->GetTrack(max_id)->GetCharge();
+     Int_t theta = -1;
+     if (max_id == -666) {
+      charge_track = -1; // if the cluster is made of noisy pixels (id = -666)
+      theta = -1;
+     }
+     else{
+      charge_track = pNtuEve->GetTrack(max_id)->GetCharge();
+      theta = (int) round(pNtuEve->GetTrack(max_id)->GetInitP().Theta() * (180 / TMath::Pi())) ;
+     }
      m_nRecoTracks[charge_track]++;
      m_nClone[charge_track][max_id]++;
      if (m_nClone[charge_track][max_id]>1){
          n_clones[charge_track] = m_nClone[charge_track][max_id];
-     } 
+     }
+     m_nRecoTracks_angle[charge_track][theta]++;   
 
      //TAMCpart *particle = pNtuEve->GetTrack(max_id);
      if (isVTMatched(max_id)){
          m_nRecoTracks_matched[charge_track]++;
+         m_nRecoTracks_matched_angle[charge_track][theta]++;
          m_nCorrectClus[charge_track]+=m[to_string(max_id)];
          m_nTotalClus[charge_track] += track->GetClustersN();
 
          // -------------------------study of angular resolution
 
-         //theta of track from vtx frame to global frame in deg
+         //angle of track from vtx frame to global frame in deg
          Float_t track_theta = fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ()).Theta() * TMath::RadToDeg();
-         
-         //theta of the MCparticle after crossing the target
+         Float_t track_phi = fpFootGeo->VecFromVTLocalToGlobal(track->GetSlopeZ()).Phi() * TMath::RadToDeg();
+
+         //angleof the MCparticle after crossing the target
          TAMCpart *mcpart = pNtuEve->GetTrack(max_id);
          Int_t charge = mcpart->GetCharge();
          pNtuReg = static_cast<TAMCntuRegion *>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"), "TAMCntuRegion")->Object());
@@ -600,12 +618,13 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
             } else
             continue;
          }
-          if (charge > 0 && charge < 9 && mcpart_theta>-1)
+          if (charge > 0 && charge < 9 && mcpart_theta>-1){
              fpHisThetaRes[charge - 1]->Fill(track_theta - mcpart_theta);
+             fpHisPhiRes[charge - 1]->Fill(track_phi - mcpart_phi);
+          }
 
          
          // //clus position resolution
-         //  //pNtuHit = new TAGdataDsc(FootDataDscMcName(kVTX), new TAMCntuHit());
           pNtuHit = static_cast<TAMCntuHit *>(gTAGroot->FindDataDsc(FootDataDscMcName(kVTX), "TAMCntuHit")->Object());
            for (Int_t i = 0; i < track->GetClustersN(); ++i)
            {
@@ -652,45 +671,47 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
    }
    m_nClone.clear(); // refresh at every event
 
-   // // clone of tracks
-   // for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++)
-   // {
-   //   for (std::map<int, int>::iterator it = m_nClone[i].begin(); it != m_nClone[i].end(); ++it)
-   //   {
-   //       if (it->second > 1)
-   //       {
-   //          n_clones[i] += it->second;
-   //       }
-   //   }
-   //   m_nClone[i].clear();
-   // }
-   // m_nClone.clear();
 
-   //----- loop on every MCpart
+
+   //----- loop on every MCpart for efficiency in Z
    for (Int_t i = 0; i < pNtuEve->GetTracksN(); ++i) // for every mc part
    {
      TAMCpart *particle = pNtuEve->GetTrack(i);
       if (isVTMatched(i)) {
          m_nMCTracks[particle->GetCharge()]++;
+         Int_t theta = (int) round(particle->GetInitP().Theta() * (180 / TMath::Pi()));  // in deg)
+         //cout << "theta : " << particle->GetInitP().Theta() * (180 / TMath::Pi()) << " rounded to : " << theta << endl;
+         m_nMCTracks_angle[particle->GetCharge()][theta]++;
       }
    }
+
+
+
+
+
+
+
+
+
    }
 
 //_____________________________________________________________________________
-//! \brief Finalize all the needed histograms for GenFit studies
+//! \brief Finalize all the needed histograms for studies
 //!
 //! Save control plots and calculate resolution. Called from outside, at the end of the event cycle
 void TAVTactBaseNtuTrack::Finalize()
 {
-   if (GetFlagMC() &&  TAGrecoManager::GetPar()->IsRegionMc())
+   if (GetFlagMC() &&  TAGrecoManager::GetPar()->IsRegionMc()){
       PrintEfficiency();
+      PrintAngularEfficiency();
+   }
 }
 
 void TAVTactBaseNtuTrack::PrintEfficiency()
 {
      float totalNum = 0.;
      float totalDen = 0.;
-     for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++){ //! hard coded
+     for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++){
      fpReconstructedTracks->SetBinContent(i, m_nRecoTracks[i]);
 
      float n_goodreco = (float)m_nRecoTracks_matched[i];
@@ -746,6 +767,40 @@ void TAVTactBaseNtuTrack::PrintEfficiency()
      fpTrackClones->SetBinError(i, clones_err);
    }
 }
+
+void TAVTactBaseNtuTrack::PrintAngularEfficiency()
+{
+
+     for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++){
+     for (int j = 0; j<=40; j++){
+
+     float n_goodreco = (float)m_nRecoTracks_matched_angle[i][j];
+     float n_badreco = (float)m_nRecoTracks_angle[i][j] - (float)m_nRecoTracks_matched_angle[i][j];
+     float n_allreco = (float)m_nRecoTracks_angle[i][j];
+     float n_ref = (float)m_nMCTracks_angle[i][j];
+     
+
+     cout << "Z=" << i << " theta = "<< j<< " good reco: " << n_goodreco << " bad reco:  "<< n_badreco << " tot: " << n_allreco << " ref: " << n_ref << endl;
+     // efficiency: reconstructed tracks in the set of the MC possible one
+     float eff = 0;     
+     float eff_err = 0;
+     if (n_ref >0) eff =(float) n_goodreco / n_ref;
+     if (n_ref > 0) eff_err = TMath::Sqrt(eff * abs(1 - eff) / n_ref); // associate error as sqrt(eff(1 - eff) / Ntot) -- binomial distribution
+     fpTrackAngularEfficiency[i-1]->SetBinContent(j+1, eff);
+     fpTrackAngularEfficiency[i-1]->SetBinError(j+1, eff_err);
+
+     // track purity
+     float purity_track = 0;
+     float purity_track_err = 0;
+     if (n_allreco > 0) purity_track = n_goodreco / n_allreco;
+     if (n_allreco >0)  purity_track_err = TMath::Sqrt(purity_track * abs(1 - purity_track) / n_allreco);
+     fpTrackAngularPurityTrack[i-1]->SetBinContent(j+1, purity_track);
+     fpTrackAngularPurityTrack[i-1]->SetBinError(j+1, purity_track_err);
+
+   }
+   }
+}
+
 
 bool TAVTactBaseNtuTrack::isVTMatched(Int_t Id_part){ // check if the particle goes throughout the detector
       pNtuReg = static_cast<TAMCntuRegion *>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"), "TAMCntuRegion")->Object());

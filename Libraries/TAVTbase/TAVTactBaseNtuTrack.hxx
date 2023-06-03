@@ -79,6 +79,7 @@ protected:
 
    
    void PrintEfficiency();
+   void PrintAngularEfficiency();
    bool isVTMatched(Int_t Id_part);
 
        protected : TAGdataDsc *fpBMntuTrack; ///< BM track pointer
@@ -112,8 +113,12 @@ protected:
    TH1F *fpBadTrackInitP;
    //Int_t primary_charget = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
    TH1F *fpHisThetaRes[8]; ///< theta angle resolution of the track wrt to MC part   ! hard coded
+   TH1F *fpHisPhiRes[8]; ///< theta angle resolution of the track wrt to MC part   ! hard coded
+   TH1F *fpTrackAngularPurityTrack[8];
+   TH1F *fpTrackAngularEfficiency[8];
    TH1F *fpTrackClusResX[MaxTrkSens]; ///< Resolution of each tracked clus wrt MC part
    TH1F *fpTrackClusResY[MaxTrkSens]; ///< Resolution of each tracked clus wrt MC part
+   
 
    Bool_t flagMC; ///< if the dataset is MC
 
@@ -127,6 +132,10 @@ protected:
    map<int, int> m_nTotalClus;   ///< Map of total number of MC clusters  associated to a VTX track; the key is the particle charge (1,2,3...)
    map<int, map<int,int>> m_nClone;   ///< Map of total number of clone id for the same charge in a single event; the key is [particle charge][specific ID]
    map<int, int> n_clones;             ///< Map of total number of clone id for the same charge ; the key is [particle charge]
+
+   map<int, map<int,int>> m_nMCTracks_angle;            ///< Map of total number of MC particles generated in the geometrical acceptance of the VTX for every charge and for every angle; the key is the key is [particle charge][theta angle]
+   map<int, map<int, int>> m_nRecoTracks_angle;         ///< Map of total number of reconstructed track candidates for every charge and for every angle;
+   map<int, map<int, int>> m_nRecoTracks_matched_angle;
 
    private : 
    TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object
