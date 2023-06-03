@@ -841,6 +841,10 @@ void BaseReco::CreateRecActionVtx()
 
          if (fFlagHisto)
             fActVtx->CreateHistogram();
+
+         if (fFlagMC) fActVtx->SetFlagMC(true);
+         else fActVtx->SetFlagMC(false);
+
       }
    }
 }
