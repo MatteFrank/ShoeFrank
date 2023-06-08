@@ -52,6 +52,9 @@ protected:
    Float_t        fChiSquare;                    ///< chisquare/ndf of track fit in 2D
    Float_t        fChiSquareU;                   ///< chisquare/ndf of track fit, U dim
    Float_t        fChiSquareV;                   ///< chisquare/ndf of track fit, V dim
+   Float_t        fChiSquareRedU;                 
+   Float_t        fChiSquareRedV;  
+   
    Float_t        fPvalueU;                      ///< pvalue of fit U dim
    Float_t        fPvalueV;                      ///< pvalue of fit U dim
    TVector3       fPosVertex;                    ///< vertex position
@@ -120,6 +123,10 @@ public:
    void SetChi2U(Float_t chi2U) { fChiSquareU = chi2U; }
    //! Set chi squareV
    void SetChi2V(Float_t chi2V){fChiSquareV = chi2V;}
+   //! Set chi squareRedU
+   void SetChi2RedU(Float_t chi2U) { fChiSquareRedU = chi2U; }
+   //! Set chi squareRedV
+   void SetChi2RedV(Float_t chi2V){fChiSquareRedV = chi2V;}
 
    void SetPvalueU(Float_t pU) { fPvalueU = pU; }
    //! Set chi squareV
@@ -185,6 +192,10 @@ public:
    Float_t        GetChi2U()                const { return fChiSquareU;              }
    //! Get chi squareV (reduced)
    Float_t        GetChi2V()                const { return fChiSquareV;              }
+   //! Get chi squareRedV (reduced)
+   Float_t        GetChi2RedV()                const { return fChiSquareRedV;              }
+   //! Get chi squareRedU (reduced)
+   Float_t        GetChi2RedU()                const { return fChiSquareRedU;              }
    //! Get chi square p value U
    Float_t GetPvalueU() const { return fPvalueU; }
    //! Get chi square p value V

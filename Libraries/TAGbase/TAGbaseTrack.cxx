@@ -62,6 +62,8 @@ TAGbaseTrack::TAGbaseTrack()
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
+   fChiSquareRedU=0.;
+   fChiSquareRedV=0.;
 }
 
 //______________________________________________________________________________
@@ -81,6 +83,8 @@ TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack &aTrack)
       fChiSquare(aTrack.GetChi2()),
       fChiSquareU(aTrack.GetChi2U()),
       fChiSquareV(aTrack.GetChi2V()),
+      fChiSquareRedU(aTrack.GetChi2RedU()),
+      fChiSquareRedV(aTrack.GetChi2RedV()),
       fPosVertex(aTrack.fPosVertex),
       fValidity(aTrack.fValidity),
       fChargeProba(new TArrayF(*aTrack.fChargeProba)),
