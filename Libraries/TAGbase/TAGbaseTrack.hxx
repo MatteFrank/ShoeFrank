@@ -50,8 +50,10 @@ protected:
    TClonesArray*  fListOfClusters;               ///< list of cluster associated to the track
 
    Float_t        fChiSquare;                    ///< chisquare/ndf of track fit in 2D
-   Float_t        fChiSquareU;                   ///< chisquare/ndf of track fit, U dim
-   Float_t        fChiSquareV;                   ///< chisquare/ndf of track fit, V dim
+   Float_t        fChiSquareRedU;                   ///< chisquare/ndf of track fit, U dim
+   Float_t        fChiSquareRedV;                   ///< chisquare/ndf of track fit, V dim
+   Float_t        fChiSquareU;                   ///< total chi2 of track fit, U dim
+   Float_t        fChiSquareV;                   ///< total chi2 of track fit, V dim
    Float_t        fPvalueU;                      ///< pvalue of fit U dim
    Float_t        fPvalueV;                      ///< pvalue of fit U dim
    TVector3       fPosVertex;                    ///< vertex position
@@ -116,6 +118,10 @@ public:
 
    //! Set chi square
    void SetChi2(Float_t chi2) { fChiSquare = chi2; }
+   //! Set chi squareU
+   void SetChi2RedU(Float_t chi2U) { fChiSquareRedU = chi2U; }
+   //! Set chi squareV
+   void SetChi2RedV(Float_t chi2V){fChiSquareRedV = chi2V;}
    //! Set chi squareU
    void SetChi2U(Float_t chi2U) { fChiSquareU = chi2U; }
    //! Set chi squareV
@@ -182,8 +188,12 @@ public:
    //! Get chi square
    Float_t        GetChi2()                 const { return fChiSquare;               }
    //! Get chi squareU (reduced)
-   Float_t        GetChi2U()                const { return fChiSquareU;              }
+   Float_t        GetChi2redU()                const { return fChiSquareRedU;              }
    //! Get chi squareV (reduced)
+   Float_t        GetChi2redV()                const { return fChiSquareRedV;              }
+   //! Get chi squareU (total)
+   Float_t        GetChi2U()                const { return fChiSquareU;              }
+   //! Get chi squareV (total)
    Float_t        GetChi2V()                const { return fChiSquareV;              }
    //! Get chi square p value U
    Float_t GetPvalueU() const { return fPvalueU; }

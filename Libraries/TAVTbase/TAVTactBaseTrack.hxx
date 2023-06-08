@@ -131,8 +131,12 @@ protected:
    TH1F*           fpHisMeanCharge;     ///< Mwean Charge per tracked cluster histogram
    TH1F*           fpHisMeanPixel;      ///< Mean number of pixels per tracked cluster histogram
    TH2F*           fpHisBeamProf;       ///< VTX Beam profile extrapolated to target histogram
+   TH1F*           fpHisChi2RedX;       ///< Reduced Chi2 in X direction histogram
+   TH1F*           fpHisChi2RedY;       ///< Reduced Chi2 in Y direction histogram
    TH1F*           fpHisChi2TotX;       ///< Total Chi2 in X direction histogram
    TH1F*           fpHisChi2TotY;       ///< Total Chi2 in Y direction histogram
+   TH1F*           fpHisChi2RedTot;       ///< reduced total Chi2  histogram
+
    TH1F*           fpHisChi2probX;      ///< Total Chi2 pvalue in X direction histogram
    TH1F*           fpHisChi2probY;      ///< Total Chi2 pvalue in Y direction histogram
    TH1F *fpHisTrackEvt;             ///< number of track per event histogram

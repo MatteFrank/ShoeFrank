@@ -169,12 +169,19 @@ void TAVTactBaseTrack::CreateHistogram()
    AddHistogram(fpHisResTotX);
    AddHistogram(fpHisResTotY);
    
-   fpHisChi2TotX = new TH1F(Form("%sChi2TotX", fPrefix.Data()), Form("%s - Total Chi2 X", fTitleDev.Data()), 1000, 0, 50);
-   fpHisChi2TotY = new TH1F(Form("%sChi2TotY", fPrefix.Data()), Form("%s - Total Chi2 Y", fTitleDev.Data()), 1000, 0, 50);
+   fpHisChi2RedX = new TH1F(Form("%sChi2RedX", fPrefix.Data()), Form("%s - Reduced Chi2 X", fTitleDev.Data()), 1000, 0, 50);
+   fpHisChi2RedY = new TH1F(Form("%sChi2RedY", fPrefix.Data()), Form("%s - Reduce Chi2 Y", fTitleDev.Data()), 1000, 0, 50);
+   fpHisChi2TotX = new TH1F(Form("%sChi2TotX", fPrefix.Data()), Form("%s - Tot Chi2 X", fTitleDev.Data()), 1000, 0, 50);
+   fpHisChi2TotY = new TH1F(Form("%sChi2TotY", fPrefix.Data()), Form("%s - Tot Chi2 Y", fTitleDev.Data()), 1000, 0, 50);
+   fpHisChi2RedTot = new TH1F(Form("%sChi2RedTot", fPrefix.Data()), Form("%s - Reduced Chi2 Total", fTitleDev.Data()), 1000, 0, 50);
+
    fpHisChi2probX = new TH1F(Form("%sChi2pvalueX", fPrefix.Data()), Form("%s - p value of the fit (chi2 probability) X", fTitleDev.Data()), 100, 0, 1);
    fpHisChi2probY = new TH1F(Form("%sChi2pvalueY", fPrefix.Data()), Form("%s - p value of the fit (chi2 probability) Y", fTitleDev.Data()), 100, 0, 1);
+   AddHistogram(fpHisChi2RedX);
+   AddHistogram(fpHisChi2RedY);
    AddHistogram(fpHisChi2TotX);
    AddHistogram(fpHisChi2TotY);
+   AddHistogram(fpHisChi2RedTot);
    AddHistogram(fpHisChi2probX);
    AddHistogram(fpHisChi2probY);
    
@@ -339,6 +346,9 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
    //   variance["dq"][1] = covMatrixV(0, 0);
    //   variance["dm"][1] = covMatrixV(1, 1);
    //   variance["dmdq"][1] = covMatrixV(0, 1);
+      //cout <<"fit result: "<< fitResultU->Chi2() << " ndf: "<< fitResultU->Ndf() << endl;
+     track->SetChi2RedU(fitResultU->Chi2() /  fitResultU->Ndf());
+     track->SetChi2RedV(fitResultV->Chi2()/  fitResultV->Ndf());
      track->SetChi2U(fitResultU->Chi2());
      track->SetChi2V(fitResultV->Chi2());
      //cout << fitResultU->Ndf() << endl;
@@ -465,9 +475,11 @@ for (int i = 0; i < cluster_vt->GetPixelsN(); i++)
    }
    
    if (track->GetClustersN() ==4){
+   fpHisChi2RedX->Fill(track->GetChi2redU());
+   fpHisChi2RedY->Fill(track->GetChi2redV());
    fpHisChi2TotX->Fill(track->GetChi2U());
    fpHisChi2TotY->Fill(track->GetChi2V());
-
+   fpHisChi2RedTot->Fill(track->GetChi2());
    fpHisChi2probX->Fill(track->GetPvalueU());
    fpHisChi2probY->Fill(track->GetPvalueV());
    }
