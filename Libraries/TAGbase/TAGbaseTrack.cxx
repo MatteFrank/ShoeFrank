@@ -35,30 +35,34 @@
 //! Class Imp
 ClassImp(TAGbaseTrack) // Description of a Track
 
-//______________________________________________________________________________
-//! Constructor
-TAGbaseTrack::TAGbaseTrack()
-:  TAGobject(),
-   fOrigin(new TVector3()),
-   fSlope(new TVector3()),
-   fOriginErr(new TVector3()),
-   fSlopeErr(new TVector3()),
-   fLength(0.0),
-   fPileup(kFALSE),
-   fType(0),
-   fTrackIdx(-1),
-   fChiSquare(0.),
-   fChiSquareU(0.),
-   fChiSquareV(0.),
-   fValidity(false),
-   fChargeProba(new TArrayF(6)),
-   fChargeWithMaxProba(0),
-   fChargeMaxProba(0.),
-   fChargeProbaNorm(new TArrayF(6)),
-   fChargeWithMaxProbaNorm(0),
-   fChargeMaxProbaNorm(0.),
-   fMeanEltsN(0),
-   fMeanCharge(0.)
+    //______________________________________________________________________________
+    //! Constructor
+    TAGbaseTrack::TAGbaseTrack()
+    : TAGobject(),
+      fOrigin(new TVector3()),
+      fSlope(new TVector3()),
+      fOriginErr(new TVector3()),
+      fSlopeErr(new TVector3()),
+      fLength(0.0),
+      fPileup(kFALSE),
+      fType(0),
+      fTrackIdx(-1),
+      fChiSquare(0.),
+      fChiSquareRedU(0.),
+      fChiSquareRedV(0.),
+      fChiSquareU(0.),
+      fChiSquareV(0.),
+      fPvalueU(0.), ///< pvalue of fit U dim
+      fPvalueV(0.),
+      fValidity(false),
+      fChargeProba(new TArrayF(6)),
+      fChargeWithMaxProba(0),
+      fChargeMaxProba(0.),
+      fChargeProbaNorm(new TArrayF(6)),
+      fChargeWithMaxProbaNorm(0),
+      fChargeMaxProbaNorm(0.),
+      fMeanEltsN(0),
+      fMeanCharge(0.)
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
@@ -79,8 +83,12 @@ TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack &aTrack)
       fType(aTrack.GetType()),
       fTrackIdx(aTrack.GetTrackIdx()),
       fChiSquare(aTrack.GetChi2()),
+      fChiSquareRedU(aTrack.GetChi2redU()),
+      fChiSquareRedV(aTrack.GetChi2redV()),
       fChiSquareU(aTrack.GetChi2U()),
       fChiSquareV(aTrack.GetChi2V()),
+      fPvalueU(aTrack.GetPvalueU()), ///< pvalue of fit U dim
+      fPvalueV(aTrack.GetPvalueV()),
       fPosVertex(aTrack.fPosVertex),
       fValidity(aTrack.fValidity),
       fChargeProba(new TArrayF(*aTrack.fChargeProba)),
@@ -303,7 +311,7 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
    Int_t   ndfU, ndfV;
    err = dhs;
    ndfU = ndfV = -2; // indeed, two parameters are fit per dimemsions (4 in all)
-   fChiSquare = fChiSquareU = fChiSquareV = 0.0;
+   fChiSquare = fChiSquareU = fChiSquareV = fChiSquareRedV = fChiSquareRedU= 0.0;
    if( GetClustersN() <=2 ) return; // return 0. for chisquare if there is less than 2 hits
 
    for (Int_t ht = 0; ht < GetClustersN(); ht++){
