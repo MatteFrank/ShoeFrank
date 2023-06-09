@@ -128,10 +128,7 @@ public:
    void SetChi2U(Float_t chi2U) { fChiSquareU = chi2U; }
    //! Set chi squareV
    void SetChi2V(Float_t chi2V){fChiSquareV = chi2V;}
-   //! Set chi squareRedU
-   void SetChi2RedU(Float_t chi2U) { fChiSquareRedU = chi2U; }
-   //! Set chi squareRedV
-   void SetChi2RedV(Float_t chi2V){fChiSquareRedV = chi2V;}
+
 
    void SetPvalueU(Float_t pU) { fPvalueU = pU; }
    //! Set chi squareV

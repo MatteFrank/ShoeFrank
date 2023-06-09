@@ -66,8 +66,6 @@ ClassImp(TAGbaseTrack) // Description of a Track
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
-   fChiSquareRedU=0.;
-   fChiSquareRedV=0.;
 }
 
 //______________________________________________________________________________
@@ -91,8 +89,6 @@ TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack &aTrack)
       fChiSquareV(aTrack.GetChi2V()),
       fPvalueU(aTrack.GetPvalueU()), ///< pvalue of fit U dim
       fPvalueV(aTrack.GetPvalueV()),
-      fChiSquareRedU(aTrack.GetChi2RedU()),
-      fChiSquareRedV(aTrack.GetChi2RedV()),
 
       fPosVertex(aTrack.fPosVertex),
       fValidity(aTrack.fValidity),
