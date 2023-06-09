@@ -110,7 +110,14 @@ protected:
    TH1F*           fpHisResX[MaxTrkSens];  ///< Residual in X histogram
    TH1F*           fpHisResY[MaxTrkSens];  ///< Residual in Y histogram
    TH1F*           fpHisPullX[MaxTrkSens];            ///< Pull in X histogram
-   TH1F*           fpHisPullY[MaxTrkSens];            ///< Pull in Y histogram
+   TH1F*           fpHisPullY[MaxTrkSens];             ///< Pull in Y histogram
+   TH1F *fpHisPullXcut[MaxTrkSens];                       ///< Pull in X histogram
+   TH1F *fpHisPullYcut[MaxTrkSens];                       ///< Pull in Y histogram
+
+   TH2F *fpHisPullXvsChiX[MaxTrkSens];    //pull vs reduced chi2 in x 
+   TH2F *fpHisPullYvsChiY[MaxTrkSens];    // pull vs reduced chi2 in y
+   TH2F *fpHisPullXvsPvalue[MaxTrkSens];    // pull vs reduced chi2 in x
+   TH2F *fpHisPullYvsPvalue[MaxTrkSens];    // pull vs reduced chi2 in y
    TH1F*           fpHisTrackClustPosX[MaxTrkSens];   ///< cluster position in X histogram
    TH1F*           fpHisTrackClustPosY[MaxTrkSens];   ///< cluster position in Y histogram
    TH1F*           fpHisTrackClustPosErrX[MaxTrkSens]; ///< cluster err position in X histogram
@@ -134,9 +141,13 @@ protected:
    TH1F*           fpHisChi2RedX;       ///< Reduced Chi2 in X direction histogram
    TH1F*           fpHisChi2RedY;       ///< Reduced Chi2 in Y direction histogram
    TH1F*           fpHisChi2TotX;       ///< Total Chi2 in X direction histogram
+   TH2F *fpHisChi2XvsTheta;             ///< Total Chi2 in X direction histogram vs theta of the track
+   TH2F *fpHisChi2YvsTheta;             ///< Total Chi2 in Y direction histogram vs theta of the track
    TH1F*           fpHisChi2TotY;       ///< Total Chi2 in Y direction histogram
    TH1F*           fpHisChi2RedTot;       ///< reduced total Chi2  histogram
 
+   TH1F *fpHisTrackClusSize[MaxTrkSens];
+   TH1F *fpHisTrackClusSizeAll[MaxTrkSens];
    TH1F*           fpHisChi2probX;      ///< Total Chi2 pvalue in X direction histogram
    TH1F*           fpHisChi2probY;      ///< Total Chi2 pvalue in Y direction histogram
    TH1F *fpHisTrackEvt;             ///< number of track per event histogram
