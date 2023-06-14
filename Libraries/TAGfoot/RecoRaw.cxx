@@ -241,7 +241,7 @@ void RecoRaw::OpenFileIn()
        fActEvtReader->Open(GetName(),option);
 
      } else
-       fActEvtReader->Open(GetName());
+       fActEvtReader->Open(GetName(),"Chain");
      
      if (fSkipEventsN > 0)
        fActEvtReader->SkipEvents(fSkipEventsN);
