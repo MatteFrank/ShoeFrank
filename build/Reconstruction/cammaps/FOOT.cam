@@ -165,4 +165,4 @@ CamNumber:    27
 CamName:    "12C_200_2023v2"
 CamDataMC:    1
 CamDate: "June 2023"
-CamSum: "Simulation data for 12C on 12C (5mm target) @ 200MeV/u with 2023 Magnets, reversed field, and new Calo geometry. TW at 175 cm"
+CamSum: "Simulation data for 12C on 12C (5mm target) @ 200MeV/u with 2023 Magnets, reversed field, and new Calo geometry, TW at 175 cm"

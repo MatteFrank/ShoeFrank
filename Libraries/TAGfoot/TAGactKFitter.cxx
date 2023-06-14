@@ -2053,7 +2053,7 @@ void TAGactKFitter::CreateHistogram()	{
 
 	//Define residual and pull histograms
 	std::pair<string, std::pair<int, int>> sensId;
-	if(TAGrecoManager::GetPar()->IncludeVT()){
+	if(TAGrecoManager::GetPar()->IncludeVT() && m_systemsON.Contains("VT")){
 		for(Int_t i=0;i<m_VT_geo->GetSensorsN();i++){
 			sensId = make_pair("VT",make_pair(i,0));
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_vtX_layer_%d",i),Form("Residual between fitted global track and measured VT cluster in VT layer %d on X view;Meas-Fit X[cm];Entries",i),600,-0.1,0.1);
@@ -2072,7 +2072,7 @@ void TAGactKFitter::CreateHistogram()	{
 			AddHistogram(h_pullVsClusSize[sensId]);
 		}
   }
-	if(TAGrecoManager::GetPar()->IncludeIT()){
+	if( m_systemsON.Contains("IT") ){
 		for(Int_t i=0;i<m_IT_geo->GetSensorsN();i++){
 			sensId = make_pair("IT",make_pair(i,0));
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_itX_layer_%d",i),Form("Residual between fitted global track and measured IT cluster in IT layer %d on X view;Meas-Fit X[cm];Entries",i),600,-0.1,0.1);
@@ -2091,7 +2091,7 @@ void TAGactKFitter::CreateHistogram()	{
 			AddHistogram(h_pullVsClusSize[sensId]);
 		}
 	}
-	if(TAGrecoManager::GetPar()->IncludeMSD()){
+	if( m_systemsON.Contains("MSD") ){
 		for(Int_t i=0;i<m_MSD_geo->GetSensorsN();i++){
 			sensId = make_pair("MSD",make_pair(i,m_SensorIDMap->GetMSDsensorView(i)));
 			char strip;
@@ -2114,7 +2114,7 @@ void TAGactKFitter::CreateHistogram()	{
 			AddHistogram(h_pullVsClusSize[sensId]);
 		}
 	}
-	if(TAGrecoManager::GetPar()->IncludeTW()){
+	if( m_systemsON.Contains("TW") ){
 		sensId = make_pair("TW",make_pair(0,0));
 		h_resoFitMeas[sensId] = new TH1F("Res_twX","Residual between fitted global track and measured TW point on X view;Meas-Fit X[cm];Entries",600,-3.,3.);
 		AddHistogram(h_resoFitMeas[sensId]);
@@ -2133,7 +2133,7 @@ void TAGactKFitter::CreateHistogram()	{
 
 	}
 
-	if(TAGrecoManager::GetPar()->IncludeMSD()){
+	if( m_systemsON.Contains("MSD") ){
 		h_MSDxCorrelation = new TH3F("h_MSDxCorrelation", "h_MSDxCorrelation;x1 [cm];x2 [cm]; x3 [cm];", 100, -1, 1, 100, -1, 1, 100, -1, 1);
 		AddHistogram(h_MSDxCorrelation);
 		h_MSDyCorrelation = new TH3F("h_MSDyCorrelation", "h_MSDyCorrelation;y1 [cm];y2 [cm]; y3 [cm];", 100, -1, 1, 100, -1, 1, 100, -1, 1);
