@@ -1388,50 +1388,21 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		float res, pull;
 		std::vector<float> msdCoords[2];
 		for(auto it : shoeTrackPointRepo){
-			if( (string)it->GetDevName() == "MSD")
+			//Cycle on X and Y
+			for(int view=0; view<=1; ++view)
 			{
-				int view = m_SensorIDMap->GetMSDsensorView(it->GetSensorIdx());
+				if( (string)it->GetDevName() == "MSD" && m_SensorIDMap->GetMSDsensorView(it->GetSensorIdx()) != view) continue;
+
 				sensId = make_pair(it->GetDevName(),make_pair(it->GetSensorIdx(),view));
 				cluster_size = it->GetElementsN();
 				res = it->GetMeasPosition()(view) - it->GetFitPosition()(view);
 				pull = res/TMath::Sqrt(pow(it->GetMeasPosError()(view), 2) - pow(it->GetFitPosError()(view), 2));
-				h_resoFitMeas[sensId]->Fill(res);
-				h_pullFitMeas[sensId]->Fill(pull);
-				h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
-				h_FitVsMeas[sensId]->Fill(res, it->GetFitPosition()(view));
-				h_resFitErr[sensId]->Fill(it->GetFitPosError()(view));
-				h_resMeasErr[sensId]->Fill(it->GetMeasPosError()(view));
-
-				msdCoords[view].push_back( it->GetFitPosition()(view));
-
-				// cout << "MSD" << it->GetSensorIdx() << "\t " << "view::" << view << "\n";
-				// cout << "meas::"; it->GetMeasPosition().Print();
-				// cout << "fit::"; it->GetFitPosition().Print();
-			}
-			else
-			{
-				sensId = make_pair(it->GetDevName(),make_pair(it->GetSensorIdx(),0));
-				cluster_size = it->GetElementsN();
-				res = it->GetMeasPosition().X() - it->GetFitPosition().X();
-				pull = res/TMath::Sqrt(pow(it->GetMeasPosError().X(), 2) - pow(it->GetFitPosError().X(), 2));
-				h_resoFitMeas[sensId]->Fill(res);
-				h_pullFitMeas[sensId]->Fill(pull);
-				if( (string)it->GetDevName() != "TW" )
-					h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
-				
-				sensId = make_pair(it->GetDevName(),make_pair(it->GetSensorIdx(),1));
-				res = it->GetMeasPosition().Y()-it->GetFitPosition().Y();
-				pull = res/TMath::Sqrt(pow(it->GetMeasPosError().Y(), 2) - pow(it->GetFitPosError().Y(), 2));
-				h_resoFitMeas[sensId]->Fill(res);
-				h_pullFitMeas[sensId]->Fill(pull);
+				h_residual[sensId]->Fill(res);
+				h_residualVsPos[sensId]->Fill(res, it->GetFitPosition()(view));
+				h_pull[sensId]->Fill(pull);
 				if( (string)it->GetDevName() != "TW" )
 					h_pullVsClusSize[sensId]->Fill(pull, cluster_size);
 			}
-		}
-		if(msdCoords[0].size() == 3 && msdCoords[1].size() == 3)
-		{
-			h_MSDxCorrelation->Fill(msdCoords[0][0], msdCoords[0][1], msdCoords[0][2]);
-			h_MSDyCorrelation->Fill(msdCoords[1][0], msdCoords[1][1], msdCoords[1][2]);
 		}
 	}
 
@@ -1846,8 +1817,8 @@ void TAGactKFitter::CalculateTrueMomentumAtTgt()
 {
 	if(TAGrecoManager::GetPar()->IsRegionMc())
 	{
-		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc("regMc", "TAMCntuRegion")->Object();
-		for(int i = 0; i < mcNtuReg->GetRegionsN(); ++i)
+		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"))->Object();
+		for(int i = 0; mcNtuReg && i < mcNtuReg->GetRegionsN(); ++i)
 		{
 			TAMCregion* mcReg = (TAMCregion*)mcNtuReg->GetRegion(i);
 			if( mcReg->GetOldCrossN() == 50 && mcReg->GetCrossN() == 2 )
@@ -2038,7 +2009,7 @@ void TAGactKFitter::CreateHistogram()	{
 		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 1000, 0.,15.));
 		AddHistogram(h_momentum_reco[i]);
 
-		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRadio%d",i), Form("Momentum Ratio %d",i), 1000, 0, 2.5));
+		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRatio%d",i), Form("Momentum Ratio %d",i), 1000, 0, 2.5));
 		AddHistogram(h_ratio_reco_true[i]);
 	}
 
@@ -2052,97 +2023,66 @@ void TAGactKFitter::CreateHistogram()	{
 	}
 
 	//Define residual and pull histograms
-	std::pair<string, std::pair<int, int>> sensId;
-	if(TAGrecoManager::GetPar()->IncludeVT() && m_systemsON.Contains("VT")){
-		for(Int_t i=0;i<m_VT_geo->GetSensorsN();i++){
-			sensId = make_pair("VT",make_pair(i,0));
-			h_resoFitMeas[sensId] = new TH1F(Form("Res_vtX_layer_%d",i),Form("Residual between fitted global track and measured VT cluster in VT layer %d on X view;Meas-Fit X[cm];Entries",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_vtX_layer_%d",i),Form("Pull for measured VT cluster in layer %d on X view;Meas-Fit Pull X;Entries",i),600,-5,5);
-			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_vtX_layer_%d",i),Form("Pull vs cluster size for VT in layer %d on X view;Meas-Fit Pull X;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
-			AddHistogram(h_pullVsClusSize[sensId]);
-
-			sensId = make_pair("VT",make_pair(i,1));
-			h_resoFitMeas[sensId] = new TH1F(Form("Res_vtY_layer_%d",i),Form("Residual between fitted global track and measured VT cluster in VT layer %d on Y view;Meas-Fit Y[cm];Entries",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_vtY_layer_%d",i),Form("Pull for measured VT cluster in layer %d on Y view;Meas-Fit Pull Y[cm];Entries",i),600,-5,5);
-			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_vtY_layer_%d",i),Form("Pull vs cluster size for VT in layer %d on Y view;Meas-Fit Pull Y;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
-			AddHistogram(h_pullVsClusSize[sensId]);
-		}
-  }
-	if( m_systemsON.Contains("IT") ){
-		for(Int_t i=0;i<m_IT_geo->GetSensorsN();i++){
-			sensId = make_pair("IT",make_pair(i,0));
-			h_resoFitMeas[sensId] = new TH1F(Form("Res_itX_layer_%d",i),Form("Residual between fitted global track and measured IT cluster in IT layer %d on X view;Meas-Fit X[cm];Entries",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_itX_layer_%d",i),Form("Pull for measured IT cluster in layer %d on X view;Meas-Fit Pull X;Entries",i),600,-5,5);
-			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_itX_layer_%d",i),Form("Pull vs cluster size for  IT in layer %d on X view;Meas-Fit Pull X;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
-			AddHistogram(h_pullVsClusSize[sensId]);
-
-			sensId = make_pair("IT",make_pair(i,1));
-			h_resoFitMeas[sensId] = new TH1F(Form("Res_itY_layer_%d",i),Form("Residual between fitted global track and measured IT cluster in IT layer %d on Y view;Meas-Fit Y[cm];Entries",i),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_itY_layer_%d",i),Form("Pull for measured IT cluster in layer %d on Y view;Meas-Fit Pull Y;Entries",i),600,-5,5);
-			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_itY_layer_%d",i),Form("Pull vs cluster size for IT in layer %d on Y view;Meas-Fit Pull Y;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
-			AddHistogram(h_pullVsClusSize[sensId]);
-		}
-	}
-	if( m_systemsON.Contains("MSD") ){
-		for(Int_t i=0;i<m_MSD_geo->GetSensorsN();i++){
-			sensId = make_pair("MSD",make_pair(i,m_SensorIDMap->GetMSDsensorView(i)));
-			char strip;
-			if( m_SensorIDMap->GetMSDsensorView(i) )
-				strip = 'Y';
-			else
-				strip = 'X';
-
-			h_resoFitMeas[sensId] = new TH1F(Form("Res_msd%c_layer_%d",strip,i),Form("Residual between fitted global track and measured MSD cluster in MSD layer %d on %c view;Meas-Fit %c [cm];Entries",i,strip,strip),600,-0.1,0.1);
-			AddHistogram(h_resoFitMeas[sensId]);
-			h_FitVsMeas[sensId] = new TH2F(Form("Res_FitVsRes_msd%c_layer_%d",strip,i),Form("Fitted global track vs measured MSD cluster in layer %d on %c view;Meas-Fit res %c;Fitted pos %c [cm]",i,strip,strip,strip),300,-0.1,0.1,300,-3,3);
-			AddHistogram(h_FitVsMeas[sensId]);
-			h_resFitErr[sensId] = new TH1F(Form("Res_FitErr_msd%c_layer_%d",strip,i),Form("Fit Error for measured MSD cluster in layer %d on %c view;Fit error %c;Entries",i,strip,strip),600,0,.02);
-			AddHistogram(h_resFitErr[sensId]);
-			h_resMeasErr[sensId] = new TH1F(Form("Res_MeasErr_msd%c_layer_%d",strip,i),Form("Meas Error for measured MSD cluster in layer %d on %c view;Meas error %c;Entries",i,strip,strip),600,0,.02);
-			AddHistogram(h_resMeasErr[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_msd%c_layer_%d",strip,i),Form("Pull for measured MSD cluster in layer %d on %c view;Meas-Fit Pull %c;Entries",i,strip,strip),600,-5,5);
-			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_msd%c_layer_%d",strip,i),Form("Pull vs cluster size for MSD in layer %d on %c view;Meas-Fit Pull %c;Cluster size [N strips]",i,strip,strip), 600,-5,5, 10, -0.5, 9.5);
-			AddHistogram(h_pullVsClusSize[sensId]);
-		}
-	}
-	if( m_systemsON.Contains("TW") ){
-		sensId = make_pair("TW",make_pair(0,0));
-		h_resoFitMeas[sensId] = new TH1F("Res_twX","Residual between fitted global track and measured TW point on X view;Meas-Fit X[cm];Entries",600,-3.,3.);
-		AddHistogram(h_resoFitMeas[sensId]);
-		h_pullFitMeas[sensId] = new TH1F("Pull_twX","Pull for measured TW point in X view;Meas-Fit Pull X;Entries",600,-5,5);
-		AddHistogram(h_pullFitMeas[sensId]);
-		// h_pullVsClusSize[sensId] = new TH2F("PullVsClusSize_twX","Pull vs cluster size for TW on X view;Meas-Fit Pull X;Cluster size", 600,-5,5, 60, -0.5, 59.5);
-		// AddHistogram(h_pullVsClusSize[sensId]);
-
-		sensId = make_pair("TW",make_pair(0,1));
-		h_resoFitMeas[sensId] = new TH1F("Res_twY","Residual between fitted global track and measured TW point on Y view;Meas-Fit Y[cm];Entries",600,-3.,3.);
-		AddHistogram(h_resoFitMeas[sensId]);
-		h_pullFitMeas[sensId] = new TH1F("Pull_twY","Pull for measured TW point in Y view;Meas-Fit Pull Y;Entries",600,-5,5);
-		AddHistogram(h_pullFitMeas[sensId]);
-		// h_pullVsClusSize[sensId] = new TH2F("PullVsClusSize_twY","Pull vs cluster size for TW on Y view;Meas-Fit Pull Y;Cluster size", 600,-5,5, 60, -0.5, 59.5);
-		// AddHistogram(h_pullVsClusSize[sensId]);
-
-	}
-
-	if( m_systemsON.Contains("MSD") ){
-		h_MSDxCorrelation = new TH3F("h_MSDxCorrelation", "h_MSDxCorrelation;x1 [cm];x2 [cm]; x3 [cm];", 100, -1, 1, 100, -1, 1, 100, -1, 1);
-		AddHistogram(h_MSDxCorrelation);
-		h_MSDyCorrelation = new TH3F("h_MSDyCorrelation", "h_MSDyCorrelation;y1 [cm];y2 [cm]; y3 [cm];", 100, -1, 1, 100, -1, 1, 100, -1, 1);
-		AddHistogram(h_MSDyCorrelation);
-	}
+	AddResidualAndPullHistograms();
 
 	SetValidHistogram(kTRUE);
 
 	return;
+}
+
+
+void TAGactKFitter::AddResidualAndPullHistograms()
+{
+	std::pair<string, std::pair<int, int>> sensId;
+	std::vector<std::string> detList = TAGparTools::Tokenize(m_systemsON.Data(), " ");
+
+	for( auto det : detList )
+	{
+		int nsensors;
+		if( det == "VT" )		nsensors = m_VT_geo->GetSensorsN();
+		else if( det == "IT" )	nsensors = m_IT_geo->GetSensorsN();
+		else if( det == "MSD" )	nsensors = m_MSD_geo->GetSensorsN();
+		else if( det == "TW" )	nsensors = 1;
+
+		for(Int_t iSensor=0; iSensor < nsensors; iSensor++)
+		{
+			// Cycle on X and Y
+			for(int iCoord=0; iCoord <= 1; ++iCoord)
+			{
+				//Skip one coordinate for MSD
+				if( det == "MSD" && iCoord != m_SensorIDMap->GetMSDsensorView(iSensor) ) continue;
+
+				sensId = make_pair(det,make_pair(iSensor,iCoord));
+				char coord = iCoord ? 'Y' : 'X';
+
+				int maxRes = 0.1;
+				if( det == "TW" ) maxRes = 5;
+
+				h_residual[sensId] = new TH1F(Form("Res_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Residual between global track and measured %s cluster in layer %d, %c view;Residual (Meas-Fit) %c [cm];Entries",det.c_str(),iSensor,coord,coord),600,-maxRes,maxRes);
+				AddHistogram(h_residual[sensId]);
+
+				h_residualVsPos[sensId] = new TH2F(Form("Res_VsFitPos_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Residual vs %s cluster position in layer %d, %c view;Residual (Meas-Fit) %c [cm];Fitted pos%c [cm]",det.c_str(),iSensor,coord,coord,coord),300,-maxRes,maxRes,300,-3,3);
+				AddHistogram(h_residualVsPos[sensId]);
+
+				h_pull[sensId] = new TH1F(Form("Pull_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Pull for %s layer %d on %c view;Pull (Meas-Fit) %c;Entries",det.c_str(),iSensor,coord,coord),600,-5,5);
+				AddHistogram(h_pull[sensId]);
+
+				if(det != "TW")
+				{
+					std::string clusUnit = "pixels";
+					int maxUnits = 80;
+					if(det == "MSD")
+					{
+						clusUnit = "strips";
+						maxUnits = 10;
+					}
+
+					h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Pull vs cluster size for %s layer %d on %c view;Meas-Fit Pull %c;Cluster size [N %s]",det.c_str(),iSensor,coord,coord,clusUnit.c_str()), 600,-5,5, maxUnits, -0.5, maxUnits-0.5);
+					AddHistogram(h_pullVsClusSize[sensId]);
+				}
+			}
+		}
+	}
 }
 
 
