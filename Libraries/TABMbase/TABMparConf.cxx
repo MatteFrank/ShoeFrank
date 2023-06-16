@@ -38,7 +38,9 @@ TABMparConf::TABMparConf()
   fRejMaxCut(36),
   fHitTimeCut(330),
   fNumIte(20),
-  fParMove(0.0001),
+  fParMoveM(0.0001),
+  fParMoveQ(0.0001),
+  fParToll(0.0001),
   fLegMBin(40),
   fLegMRange(0.1),
   fLegRBin(75),
@@ -96,9 +98,15 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   ReadItem(fNumIte);
   if(FootDebugLevel(1))
      cout<<"fNumIte="<<fNumIte<<endl;
-  ReadItem(fParMove);
+  ReadItem(fParMoveM);
   if(FootDebugLevel(1))
-     cout<<"fParMove="<<fParMove<<endl;
+     cout<<"fParMoveM="<<fParMoveM<<endl;
+  ReadItem(fParMoveQ);
+  if(FootDebugLevel(1))
+     cout<<"fParMoveQ="<<fParMoveQ<<endl;
+  ReadItem(fParToll);
+  if(FootDebugLevel(1))
+     cout<<"fParToll="<<fParToll<<endl;
   ReadItem(fLegMBin);
   if(FootDebugLevel(1))
      cout<<"fLegMBin="<<fLegMBin<<endl;
@@ -211,7 +219,8 @@ Bool_t TABMparConf::FromFileOld(const TString& name) {
       sscanf(bufConf, "F %d %f", &myArgIntmin, &myArg1);
       if(myArgIntmin>=0 && myArg1>=0.){
         fNumIte=myArgIntmin;
-        fParMove=myArg1;
+        fParMoveQ=myArg1;
+        fParMoveM=myArg1;
       }else {
 	      Error(""," Plane Map Error:: check config file!! (F)");
 	      return kTRUE;
@@ -235,7 +244,8 @@ void TABMparConf::Clear(Option_t*)
   fRejMaxCut=36;
   fHitTimeCut=330;
   fNumIte=20;
-  fParMove=0.0001;
+  fParMoveQ=0.0001;
+  fParMoveM=0.0001;
   fLegMBin=40;
   fLegMRange=0.1;
   fLegRBin=75;
@@ -266,6 +276,35 @@ Bool_t TABMparConf::CheckIsDeadCha(Int_t cha){
 //! ostream output
 void TABMparConf::ToStream(ostream& os, Option_t*) const
 {
-  os << "TABMparConf " << GetName() << endl;
+  if(false){
+  os<<"fMinHitCut="<<fMinHitCut<<endl;
+  os<<"fMinHitCut="<<fMinHitCut<<endl;
+  os<<"fMaxHitCut="<<fMaxHitCut<<endl;
+  os<<"fPlaneHitCut="<<fPlaneHitCut<<endl;
+  os<<"fChi2Cut="<<fChi2Cut<<endl;
+}
+
+  os<<"fNumIte="<<fNumIte<<endl;
+  os<<"fParMoveM="<<fParMoveM<<endl;
+  os<<"fParMoveQ="<<fParMoveQ<<endl;
+  os<<"fParToll="<<fParToll<<endl;
+  os<<"fLegMBin="<<fLegMBin<<endl;
+  os<<"fLegMRange="<<fLegMRange<<endl;
+  os<<"fLegRBin="<<fLegRBin<<endl;
+  os<<"fLegRRange="<<fLegRRange<<endl;
+  os<<"fAssHitErr="<<fAssHitErr<<endl;
+
+if(false){
+  os<<"fInvertTrack="<<fInvertTrack<<endl;
+  os<<"fHitTimeCut="<<fHitTimeCut<<endl;
+  os<<"fDeadCha= ";
+  for(Int_t i=0;i<fDeadCha.GetSize();i++)
+    os<<" "<<fDeadCha.At(i);
+  os<<endl;
+  os<<"fSmearRDrift="<<fSmearRDrift<<endl;
+  os<<"fSmearHits="<<fSmearHits<<endl;
+  os<<"fEnThresh="<<fEnThresh<<endl;  
+}
   return;
+
 }
