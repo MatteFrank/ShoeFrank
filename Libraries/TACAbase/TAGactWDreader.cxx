@@ -405,62 +405,62 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAWDntuTrigger* p_WDt
    bool foundFooter = false;
    while (iW < evt->evtSize && !foundFooter) {
       
-      if (evt->values.at(iW) == GLB_EVT_HEADER) {
-         if (FootDebugLevel(1)) printf("found glb header::%08x %08x\n", evt->values.at(iW), evt->values.at(iW+1));
+      if (evt->values[iW] == GLB_EVT_HEADER) {
+         if (FootDebugLevel(1)) printf("found glb header::%08x %08x\n", evt->values[iW], evt->values[iW+1]);
             
          iW+=5;
-         nmicro = evt->values.at(iW);
+         nmicro = evt->values[iW];
          nmicro = 1000;
             
          iW++; //
-         if (FootDebugLevel(1)) printf("word:%08x\n", evt->values.at(iW));
+         if (FootDebugLevel(1)) printf("word:%08x\n", evt->values[iW]);
 
          //found evt_header
-         if (evt->values.at(iW) == EVT_HEADER) {
-            if (FootDebugLevel(1)) printf("found evt header::%08x   %08x   %08x\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2));
+         if (evt->values[iW] == EVT_HEADER) {
+            if (FootDebugLevel(1)) printf("found evt header::%08x   %08x   %08x\n", evt->values[iW],evt->values[iW+1],evt->values[iW+2]);
                      
             iW++;
-            trig_type = (evt->values.at(iW)>>16) & 0xffff;
-            ser_evt_number =  evt->values.at(iW)& 0xffff;
+            trig_type = (evt->values[iW]>>16) & 0xffff;
+            ser_evt_number =  evt->values[iW]& 0xffff;
                            
             iW++;
-            bco_counter = (int)evt->values.at(iW);
+            bco_counter = (int)evt->values[iW];
                   
             iW++;
-            while ((evt->values.at(iW) & 0xffff)== BOARD_HEADER) {
-               board_id = (evt->values.at(iW)>>16)  & 0xffff;
-               if (FootDebugLevel(1)) printf("found board header::%08x num%d\n", evt->values.at(iW), board_id);
+            while ((evt->values[iW] & 0xffff)== BOARD_HEADER) {
+               board_id = (evt->values[iW]>>16)  & 0xffff;
+               if (FootDebugLevel(1)) printf("found board header::%08x num%d\n", evt->values[iW], board_id);
                iW++;
-               temperature = *((float*)&evt->values.at(iW));
-               if (FootDebugLevel(1)) printf("temperatrue::%08x num%d\n", evt->values.at(iW), board_id);
+               temperature = *((float*)&evt->values[iW]);
+               if (FootDebugLevel(1)) printf("temperatrue::%08x num%d\n", evt->values[iW], board_id);
                                                 
                iW++;
-               range = *((float*)&evt->values.at(iW));
+               range = *((float*)&evt->values[iW]);
                                     
                if (FootDebugLevel(1))
-               printf("range::%08x num%d\n", evt->values.at(iW), board_id);
+               printf("range::%08x num%d\n", evt->values[iW], board_id);
                         
                iW++;
                         
-               sampling_freq =  (evt->values.at(iW) >>16)& 0xffff;
-               flags = evt->values.at(iW) & 0xffff;
-               if (FootDebugLevel(1)) printf("sampling::%08x    %08x   %08x    num%d\n", evt->values.at(iW),evt->values.at(iW+1),evt->values.at(iW+2), board_id);
+               sampling_freq =  (evt->values[iW] >>16)& 0xffff;
+               flags = evt->values[iW] & 0xffff;
+               if (FootDebugLevel(1)) printf("sampling::%08x    %08x   %08x    num%d\n", evt->values[iW],evt->values[iW+1],evt->values[iW+2], board_id);
 
                iW++;
 
-               while((evt->values.at(iW) & 0xffff)== CH_HEADER) {
+               while((evt->values[iW] & 0xffff)== CH_HEADER) {
                      
                   char tmp_chstr[3]={'0','0','\0'};
-                  tmp_chstr[1] = (evt->values.at(iW)>>24)  & 0xff;
-                  tmp_chstr[0] = (evt->values.at(iW)>>16)  & 0xff;
+                  tmp_chstr[1] = (evt->values[iW]>>24)  & 0xff;
+                  tmp_chstr[0] = (evt->values[iW]>>16)  & 0xff;
                   ch_num = atoi(tmp_chstr);
                   if (FootDebugLevel(1))
-                     printf("found channel header::%08x num%d\n", evt->values.at(iW), ch_num);
+                     printf("found channel header::%08x num%d\n", evt->values[iW], ch_num);
 
                   iW++;
-                  trig_cell = (evt->values.at(iW)>>16) &0xffff;
+                  trig_cell = (evt->values[iW]>>16) &0xffff;
                                           
-                  fe_settings = ((evt->values.at(iW))&0xffff);
+                  fe_settings = ((evt->values[iW])&0xffff);
                   iW++;
 
                   int adctmp=0;
@@ -470,7 +470,7 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAWDntuTrigger* p_WDt
                   w_amp.clear();
                                           
                   for(int iSa=0;iSa<512;iSa++) {
-                     adc_sa = evt->values.at(iW);
+                     adc_sa = evt->values[iW];
                      adctmp  = (adc_sa & 0xffff);
                      w_adc.push_back(adctmp);
                      adctmp = ((adc_sa >> 16) & 0xffff);
@@ -523,58 +523,58 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAWDntuTrigger* p_WDt
                   w_amp.clear();
                }
             }
-      } else if (evt->values.at(iW) == EVT_FOOTER) {
+      } else if (evt->values[iW] == EVT_FOOTER) {
          if (FootDebugLevel(1)) printf("found footer\n");
          return nmicro;
       }
 
       vector<uint32_t> trigInfoWords;
       int tbo,nbanks;
-      if ((evt->values.at(iW) &0xffff)== TRIG_HEADER) {
-         tbo =  (evt->values.at(iW) >> 16)& 0xffff;
+      if ((evt->values[iW] &0xffff)== TRIG_HEADER) {
+         tbo =  (evt->values[iW] >> 16)& 0xffff;
          iW++;
-         nbanks =  evt->values.at(iW) & 0xffff;
+         nbanks =  evt->values[iW] & 0xffff;
          iW++;
          if (FootDebugLevel(1)) printf("found trigger board %d header, nbanks::%d\n",tbo,nbanks);
          for(int ibank=0;ibank<nbanks;ibank++) {
-            if (evt->values.at(iW) == TRGI_BANK_HEADER) {
-               if (FootDebugLevel(1)) printf("TRGI header::%08x\n",evt->values.at(iW));
-               trigInfoWords.push_back(evt->values.at(iW));
+            if (evt->values[iW] == TRGI_BANK_HEADER) {
+               if (FootDebugLevel(1)) printf("TRGI header::%08x\n",evt->values[iW]);
+               trigInfoWords.push_back(evt->values[iW]);
                iW++;
-               int size =  evt->values.at(iW);
-               trigInfoWords.push_back(evt->values.at(iW));
-               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+               int size =  evt->values[iW];
+               trigInfoWords.push_back(evt->values[iW]);
+               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values[iW]);
                iW++;
                for(int i=0;i<size;i++) {
-                  int word= evt->values.at(iW);
-                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
-                  trigInfoWords.push_back(evt->values.at(iW));
+                  int word= evt->values[iW];
+                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values[iW]);
+                  trigInfoWords.push_back(evt->values[iW]);
                   iW++;
                }
-            } else if (evt->values.at(iW) == TGEN_BANK_HEADER) {
-               if (FootDebugLevel(1)) printf("TGEN header::%08x\n",evt->values.at(iW));
-               trigInfoWords.push_back(evt->values.at(iW));
+            } else if (evt->values[iW] == TGEN_BANK_HEADER) {
+               if (FootDebugLevel(1)) printf("TGEN header::%08x\n",evt->values[iW]);
+               trigInfoWords.push_back(evt->values[iW]);
                iW++;
-               int size = evt->values.at(iW);
-               trigInfoWords.push_back(evt->values.at(iW));
-               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
+               int size = evt->values[iW];
+               trigInfoWords.push_back(evt->values[iW]);
+               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values[iW]);
                iW++;
                for(int i=0;i<size;i++) {
-                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
-                  trigInfoWords.push_back(evt->values.at(iW));
+                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values[iW]);
+                  trigInfoWords.push_back(evt->values[iW]);
                   iW++;
                }
-            } else if (evt->values.at(iW) == TRGC_BANK_HEADER) {
-               trigInfoWords.push_back(evt->values.at(iW));
-               if (FootDebugLevel(1)) printf("TRCG header::%08x\n",evt->values.at(iW));
+            } else if (evt->values[iW] == TRGC_BANK_HEADER) {
+               trigInfoWords.push_back(evt->values[iW]);
+               if (FootDebugLevel(1)) printf("TRCG header::%08x\n",evt->values[iW]);
                iW++;
-               int size = evt->values.at(iW);
-               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values.at(iW));
-               trigInfoWords.push_back(evt->values.at(iW));
+               int size = evt->values[iW];
+               if (FootDebugLevel(1)) printf("size::%08x\n",evt->values[iW]);
+               trigInfoWords.push_back(evt->values[iW]);
                iW++;
                for(int i=0;i<size;i++) {
-                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values.at(iW));
-                  trigInfoWords.push_back(evt->values.at(iW));
+                  if (FootDebugLevel(1)) printf("data::%08x\n",evt->values[iW]);
+                  trigInfoWords.push_back(evt->values[iW]);
                   iW++;
                }
             }
@@ -583,12 +583,12 @@ Int_t TAGactWDreader::DecodeWaveforms(const WDEvent* evt,  TAWDntuTrigger* p_WDt
       }
          
          
-         if (evt->values.at(iW) == EVT_FOOTER) {
+         if (evt->values[iW] == EVT_FOOTER) {
             if (FootDebugLevel(1))printf("found footer\n");
             iW++;
             foundFooter = true;
          } else {
-            printf("warning:: footer not found, event corrupted, iW::%d   last word::%08x!!\n",iW, evt->values.at(iW));
+            printf("warning:: footer not found, event corrupted, iW::%d   last word::%08x!!\n",iW, evt->values[iW]);
             break;
          }
       }
@@ -677,19 +677,19 @@ vector<double> TAGactWDreader::ADC2Volt(vector<int> v_amp, double dynamic_range)
    vector<double> v_volt;
    double v_sa;
    
-   int adcold=v_amp.at(5);
+   int adcold=v_amp[5];
    for(int iSa=0;iSa<v_amp.size();iSa++) {
       if (iSa>5 && iSa < 1020) {
-         if (fabs(v_amp.at(iSa)-adcold)>32000) {
-            if (v_amp.at(iSa)-adcold<32000)v_amp.at(iSa) += 65535;
-            if (v_amp.at(iSa)-adcold>32000)v_amp.at(iSa) -= 65535;
+         if (fabs(v_amp[iSa]-adcold)>32000) {
+            if (v_amp[iSa]-adcold<32000)v_amp[iSa] += 65535;
+            if (v_amp[iSa]-adcold>32000)v_amp[iSa] -= 65535;
          }
-         v_sa = v_amp.at(iSa)/65535.+dynamic_range-0.5;   
+         v_sa = v_amp[iSa]/65535.+dynamic_range-0.5;   
          v_volt.push_back(v_sa);
       } else {
          v_volt.push_back(0);
       }
-      adcold = v_amp.at(iSa);
+      adcold = v_amp[iSa];
    }
 
    return v_volt;
@@ -705,10 +705,10 @@ vector<double> TAGactWDreader::ADC2Volt_CLK(vector<int> v_amp) {
    double v_sa;
    
    for(int iSa=0;iSa<v_amp.size();iSa++) {
-      if (fabs(v_amp.at(iSa)>35000)) {
-         v_amp.at(iSa) -= 65536;
+      if (fabs(v_amp[iSa]>35000)) {
+         v_amp[iSa] -= 65536;
       }
-      v_sa = v_amp.at(iSa)/65536.;
+      v_sa = v_amp[iSa]/65536.;
       v_volt.push_back(v_sa);
    }
    
@@ -731,7 +731,7 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
       if (FootDebugLevel(1)) printf("ST board not defined, I can not apply time calibration!!\n");
       return false;
    } else {
-      STbo = vSTbo.at(0);
+      STbo = vSTbo[0];
    }
 
    if (!fCLKwaves.count(make_pair(STbo,16))) {
@@ -741,8 +741,8 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
    
 
    wclk_ref = fCLKwaves.find(make_pair(STbo,16))->second;
-   //  t_trig_ref = wclk_ref->GetVectRawT().at((1024-wclk_ref->GetTriggerCellId())%1024);
-   t_trig_ref = wclk_ref->GetVectRawT().at(1023);
+   //  t_trig_ref = wclk_ref->GetVectRawT()[(1024-wclk_ref->GetTriggerCellId())%1024];
+   t_trig_ref = wclk_ref->GetVectRawT()[1023];
 
    
    //clocks alignment and jitter calculation
@@ -750,12 +750,12 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
    map<pair<int,int>, TWaveformContainer*>::iterator it;
    for(it=fCLKwaves.begin(); it != fCLKwaves.end(); it++) {
       TWaveformContainer *wclk = it->second;
-      //t_trig = wclk->GetVectRawT().at((1024-wclk->GetTriggerCellId())%1024);
-      t_trig = wclk->GetVectRawT().at(1023);
+      //t_trig = wclk->GetVectRawT()[(1024-wclk->GetTriggerCellId())%1024];
+      t_trig = wclk->GetVectRawT()[1023];
       dt = t_trig_ref - t_trig;
       vector<double> calib_time;
       for(int i=0;i<wclk->GetVectRawT().size();i++) {
-         calib_time.push_back(wclk->GetVectRawT().at(i)+dt);
+         calib_time.push_back(wclk->GetVectRawT()[i]+dt);
       }
       wclk->GetVectT() = calib_time;
       double jitter = ComputeJitter(wclk);
@@ -766,24 +766,24 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
 
    //st time calibration
    for(int i=0; i<(int)fSTwaves.size();i++) {
-      TWaveformContainer *wst = fSTwaves.at(i);
+      TWaveformContainer *wst = fSTwaves[i];
       int ch_clk = (wst->GetChannelId()<8) ? 16 : 17;
       double phaseST = clk_jitter.find(make_pair(STbo,16))->second;
       double phase = clk_jitter.find(make_pair(wst->GetBoardId(),ch_clk))->second;
-      //t_trig = wst->GetVectRawT().at((1024-wst->GetTriggerCellId())%1024);
-      t_trig = wst->GetVectRawT().at(1023);
+      //t_trig = wst->GetVectRawT()[(1024-wst->GetTriggerCellId())%1024];
+      t_trig = wst->GetVectRawT()[1023];
       dt = t_trig_ref - t_trig +phaseST - phase;
       //dt = t_trig_ref - t_trig;
       //dt = - phaseST+phase;
       //cout << "jitterST::" << jitter << endl;
       vector<double> calib_time;
       for(int i=0;i<wst->GetVectRawT().size();i++) {
-         calib_time.push_back(wst->GetVectRawT().at(i)+dt);
+         calib_time.push_back(wst->GetVectRawT()[i]+dt);
          if (wst->GetChannelId()==0) {
-      //	cout << "ST isa::" << i << "   time::" << wst->m_vectRawT.at(i)+ t_trig_ref - t_trig << endl;
+      //	cout << "ST isa::" << i << "   time::" << wst->m_vectRawT[i]+ t_trig_ref - t_trig << endl;
          }
       }
-      fSTwaves.at(i)->GetVectT() = calib_time;
+      fSTwaves[i]->GetVectT() = calib_time;
    }
    
 
@@ -791,12 +791,12 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
    
    //tw time calibration
    for(int i=0; i<(int)fTWwaves.size();i++) {
-      TWaveformContainer *wtw = fTWwaves.at(i);
+      TWaveformContainer *wtw = fTWwaves[i];
       int ch_clk = (wtw->GetChannelId()<8) ? 16 : 17;
       double phaseST = clk_jitter.find(make_pair(STbo,16))->second;
       double phase = clk_jitter.find(make_pair(wtw->GetBoardId(),ch_clk))->second;
-      // t_trig = wtw->GetVectRawT().at((1024-wtw->GetTriggerCellId())%1024);
-      t_trig = wtw->GetVectRawT().at(1023);
+      // t_trig = wtw->GetVectRawT()[(1024-wtw->GetTriggerCellId())%1024];
+      t_trig = wtw->GetVectRawT()[1023];
       dt = t_trig_ref - t_trig + phaseST-phase;
       //dt = t_trig_ref - t_trig;
       // cout << "board::" << wtw->GetBoardId() << "  jitter:" << -phaseST+phase << endl;
@@ -804,45 +804,45 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
       // cout << "phase::" << phase << endl;
       vector<double> calib_time;
       for(int i=0;i<wtw->GetVectRawT().size();i++) {
-         calib_time.push_back(wtw->GetVectRawT().at(i)+dt);
+         calib_time.push_back(wtw->GetVectRawT()[i]+dt);
          if (wtw->GetChannelId()==0) {
-      //	cout << "TW isa::" << i << "   time::" << wtw->m_vectRawT.at(i)+ t_trig_ref - t_trig << endl;
+      //	cout << "TW isa::" << i << "   time::" << wtw->m_vectRawT[i]+ t_trig_ref - t_trig << endl;
          }
       }
-      fTWwaves.at(i)->GetVectT() = calib_time;
+      fTWwaves[i]->GetVectT() = calib_time;
    }
 
 
    //calo time calibration
    for(int i=0; i<(int)fCAwaves.size();i++) {
-      TWaveformContainer *wca = fCAwaves.at(i);
+      TWaveformContainer *wca = fCAwaves[i];
       int ch_clk = (wca->GetChannelId()<8) ? 16 : 17;
       double jitter = clk_jitter.find(make_pair(wca->GetBoardId(),ch_clk))->second;
-      t_trig = wca->GetVectRawT().at((1024-wca->GetTriggerCellId())%1024);
+      t_trig = wca->GetVectRawT()[(1024-wca->GetTriggerCellId())%1024];
       dt = t_trig_ref - t_trig - jitter;
       vector<double> calib_time;
       for(int i=0;i<wca->GetVectRawT().size();i++) {
-         calib_time.push_back(wca->GetVectRawT().at(i)+dt);
+         calib_time.push_back(wca->GetVectRawT()[i]+dt);
          if (wca->GetChannelId()==0) {
          }
       }
-      fCAwaves.at(i)->GetVectT() = calib_time;
+      fCAwaves[i]->GetVectT() = calib_time;
    }
    
    //Neutrons time calibration
    for(int i=0; i<(int)fNEwaves.size();i++) {
-      TWaveformContainer *wnu = fNEwaves.at(i);
+      TWaveformContainer *wnu = fNEwaves[i];
       int ch_clk = (wnu->GetChannelId()<8) ? 16 : 17;
       double jitter = clk_jitter.find(make_pair(wnu->GetBoardId(),ch_clk))->second;
-      t_trig = wnu->GetVectRawT().at((1024-wnu->GetTriggerCellId())%1024);
+      t_trig = wnu->GetVectRawT()[(1024-wnu->GetTriggerCellId())%1024];
       dt = t_trig_ref - t_trig - jitter;
       vector<double> calib_time;
       for(int i=0;i<wnu->GetVectRawT().size();i++) {
-         calib_time.push_back(wnu->GetVectRawT().at(i)+dt);
+         calib_time.push_back(wnu->GetVectRawT()[i]+dt);
          if (wnu->GetChannelId()==0) {
          }
       }
-      fNEwaves.at(i)->GetVectT() = calib_time;
+      fNEwaves[i]->GetVectT() = calib_time;
    }
 
    if (FootDebugLevel(1)) printf("WD calibration performed\n");
@@ -874,10 +874,10 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
    
    // for(int i=5;i<vtime.size()-5;i++) {
 
-   //     t1 = vtime.at(i-1);
-   //     t2 = vtime.at(i);
-   //     a1 = vamp.at(i-1);
-   //     a2 = vamp.at(i);
+   //     t1 = vtime[i-1];
+   //     t2 = vtime[i];
+   //     a1 = vamp[i-1];
+   //     a2 = vamp[i];
          
    //     if (a1<wave_0 && a2>=wave_0) {
    // 	m = (a2-a1)/(t2-t1);
@@ -891,10 +891,10 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
 
    for(int i=vtime.size()-1; i>=1; i--) {
 
-      t1 = vtime.at(i-1);
-      t2 = vtime.at(i);
-      a1 = vamp.at(i-1);
-      a2 = vamp.at(i);
+      t1 = vtime[i-1];
+      t2 = vtime[i];
+      a1 = vamp[i-1];
+      a2 = vamp[i];
       
       if (a1<wave_0 && a2>=wave_0) {
          m = (a2-a1)/(t2-t1);
@@ -914,7 +914,7 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
    int status;
 
    reverse(tzeros.begin(), tzeros.end());
-   //for(int i=0;i<nclock.size();i++)cout << "nclock::" << nclock.at(i) << endl;
+   //for(int i=0;i<nclock.size();i++)cout << "nclock::" << nclock[i] << endl;
    TGraph tmp_gr(nclock.size(),&nclock[0], &tzeros[0]);
    tmp_gr.LeastSquareLinearFit(nclock.size(), phase, period, status);
    // TCanvas c("c","",600,600);
@@ -966,39 +966,39 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACA
 
    
    for(int i=0; i<(int)fSTwaves.size(); i++) {
-      p_straw->NewHit(fSTwaves.at(i), algoST, fracST, delST);
+      p_straw->NewHit(fSTwaves[i], algoST, fracST, delST);
       if (FootDebugLevel(1)) printf("ST hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoST.data(), fracST, delST);
    }
 
    for(int i=0; i<(int)fTWwaves.size(); i++) {
-      p_twraw->NewHit(fTWwaves.at(i), algoTW, fracTW, delTW);
+      p_twraw->NewHit(fTWwaves[i], algoTW, fracTW, delTW);
       if (FootDebugLevel(1)) printf("TW hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoTW.data(), fracTW, delTW);
    }
    if (p_CAmap) {
       int nCry = p_CAmap->GetCrystalsN();
       for(int i=0; i<(int)fCAwaves.size(); i++) {
-         int board_id = fCAwaves.at(i)->GetBoardId();
-         int ch_num = fCAwaves.at(i)->GetChannelId();
+         int board_id = fCAwaves[i]->GetBoardId();
+         int ch_num = fCAwaves[i]->GetChannelId();
          int criID = p_CAmap->GetCrystalId(board_id, ch_num);
          if (criID < 0 || criID >= nCry) {
             Error("CreateHits", " CALO Hit skipped --- Not well mapped WD vs crystal ID. board: %d ch: %d -> iCry %d", board_id, ch_num, criID);
             continue;
          }
-         p_caraw->NewHit(fCAwaves.at(i), fTempCA[criID]);
+         p_caraw->NewHit(fCAwaves[i], fTempCA[criID]);
          if (FootDebugLevel(1)) printf("CA hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoCA.data(), fracCA, delCA);
       }
    }
    if (fpNEMap) {
       int nMod = p_NEmap->GetModulesN();
       for(int i=0; i<(int)fNEwaves.size(); i++) {
-         int board_id = fNEwaves.at(i)->GetBoardId();
-         int ch_num = fNEwaves.at(i)->GetChannelId();
+         int board_id = fNEwaves[i]->GetBoardId();
+         int ch_num = fNEwaves[i]->GetChannelId();
          int modID = p_NEmap->GetModuleId(board_id, ch_num);
          if (modID < 0 || modID >= nMod) {
             Error("CreateHits", " Neutron Hit skipped --- Not well mapped WD vs module ID. board: %d ch: %d -> iMod %d", board_id, ch_num, modID);
             continue;
          }
-         p_neraw->NewHit(fNEwaves.at(i));
+         p_neraw->NewHit(fNEwaves[i]);
          if (FootDebugLevel(1)) printf("NE hit created, time calculated with algo::%s, frac::%lf  del::%lf\n", algoCA.data(), fracCA, delCA);
       }
    }
@@ -1016,16 +1016,16 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACA
 void TAGactWDreader::Clear()
 {
    for(int i=0; i<fSTwaves.size(); i++) {
-      delete fSTwaves.at(i);
+      delete fSTwaves[i];
    }
    for(int i=0; i<fTWwaves.size(); i++) {
-      delete fTWwaves.at(i);
+      delete fTWwaves[i];
    }
    for(int i=0; i<fCAwaves.size(); i++) {
-      delete fCAwaves.at(i);
+      delete fCAwaves[i];
    }
    for(int i=0; i<fNEwaves.size(); i++) {
-      delete fNEwaves.at(i);
+      delete fNEwaves[i];
    }
    map<pair<int,int>, TWaveformContainer*>::iterator it;
    for(it=fCLKwaves.begin(); it != fCLKwaves.end(); it++) {
