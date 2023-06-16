@@ -219,7 +219,7 @@ void TAGFselectorBack::BackTracklets()
 				try
 				{
 					int pointID = m_SensorIDMap->GetHitIDFromMeasID(testTrack->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId());
-					float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( pointID )->GetMeanTof();
+					float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( pointID )->GetMeanTof();
 					float var = m_BeamEnergy/m_AMU;
 					float beam_speed = TAGgeoTrafo::GetLightVelocity()*TMath::Sqrt(var*(var + 2))/(var + 1);
 					TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;

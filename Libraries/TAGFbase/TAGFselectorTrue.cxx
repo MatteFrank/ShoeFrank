@@ -79,19 +79,7 @@ void TAGFselectorTrue::Categorize( ) {
 
 				TString outName, pdgName;
 
-				switch(charge)
-				{
-					case 1:	outName = "H";	break;
-					case 2:	outName = "He";	break;
-					case 3:	outName = "Li";	break;
-					case 4:	outName = "Be";	break;
-					case 5:	outName = "B";	break;
-					case 6:	outName = "C";	break;
-					case 7:	outName = "N";	break;
-					case 8:	outName = "O";	break;
-					default:
-						outName = "fail";	break;
-				}
+				outName = GetParticleNameFromCharge(charge);
 
 				//CAREFUL HERE!! Think about the possibility of throwing an error -> skip particle for the moment
 				if( outName == "fail" ) {continue;}

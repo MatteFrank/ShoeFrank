@@ -67,7 +67,7 @@ void TAGFselectorLinear::Categorize( ) {
 		int Z_Hypo = GetChargeFromTW(itTrack->second);
 		if( Z_Hypo == -1 )
 		{
-			Z_Hypo = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber;
+			Z_Hypo = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber;
 			itTrack->second->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
 		}
 		else

@@ -24,7 +24,7 @@ TAGFselectorStandard::TAGFselectorStandard() : TAGFselectorBase()
 //! \brief Base function for standard track finding/selection/categorization
 void TAGFselectorStandard::Categorize( ) {
 
-	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
+	if(!m_systemsON.Contains("VT"))
 	{
 		Error("Categorize_dataLike()", "Standard selection algorithm currently not supported without Vertex!");
 		exit(0);
@@ -68,9 +68,9 @@ void TAGFselectorStandard::Categorize( ) {
 //! The algorithm currently starts from VT tracklets and checks the number of points in them
 void TAGFselectorStandard::CategorizeVT()
 {
-	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"), "TAVTntuVertex")->Object();
+	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"))->Object();
 		//cluster test
-	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"),"TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
+	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object(); //To find the right clus Index -> TO BE CHANGED!
 
 	if(!vertexContainer || !vtntuclus)
 	{

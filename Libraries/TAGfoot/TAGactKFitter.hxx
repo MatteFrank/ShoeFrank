@@ -7,6 +7,10 @@
 #define TAGACTKFITTER_HXX
 
 #include <map>
+#include <vector>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <limits>
 
 #include <TGeoManager.h>
 #include <TGeoMedium.h>
@@ -22,19 +26,15 @@
 #include <DAF.h>
 #include <RKTrackRep.h>
 #include <Track.h>
-
 #include <Exception.h>
 #include <FieldManager.h>
 #include <StateOnPlane.h>
-
 #include <TrackPoint.h>
 #include <SpacepointMeasurement.h>
 #include <MaterialEffects.h>
 #include <TMatrixDSym.h>
 #include <TMatrixD.h>
-
 #include <EventDisplay.h>
-
 #include "RectangularFinitePlane.h"
 
 #include <TStyle.h>
@@ -44,19 +44,16 @@
 #include <TH2F.h>
 #include <TF1.h>
 #include <TGraphErrors.h>
-
 #include <TRandom3.h>
-
 #include <TVector3.h>
-#include <vector>
-
 #include <TMath.h>
+
+#include "TAGparTools.hxx"
 
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"
 #include "TABMntuTrack.hxx"
 #include "TACAparGeo.hxx"
-
 #include "TADIparGeo.hxx"
 
 #include "TASTntuRaw.hxx"
@@ -66,10 +63,6 @@
 #include "TAMCntuPart.hxx"
 #include "TAMCntuRegion.hxx"
 #include "TACAntuCluster.hxx"
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <limits>
 
 #include "TAMCntuHit.hxx"
 #include "TAITntuTrack.hxx"
@@ -87,7 +80,6 @@
 #include "TAGntuGlbTrack.hxx"
 #include "TAGF_KalmanStudies.hxx"
 #include "UpdatePDG.hxx"
-//#include "TAGactNtuGlbTrack.hxx"
 
 using namespace std;
 using namespace genfit;
@@ -95,8 +87,6 @@ using namespace genfit;
 #define build_string(expr)						\
 (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
 
-
-typedef vector<genfit::AbsMeasurement*> MeasurementVector;
 
 class TAGactKFitter : public TAGaction  {
 
@@ -117,8 +107,9 @@ public:
 
 private:
 
+	AbsKalmanFitter*	InitializeFitter(int nIter, int dPVal);
+	TAGFselectorBase*	InitializeSelector();
 	int		MakeFit(long evNum, TAGFselectorBase* selector);
-	void	MakePrefit();
 
 	void	RecordTrackInfo( Track* track, string hitSampleName );
 
@@ -138,17 +129,12 @@ private:
 
 	void	GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart );
 	void	GetRecoTrackInfo ( int i, Track* track, TVector3* KalmanPos, TVector3* KalmanMom, TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
+	void	GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
 
 	void	CalculateTrueMomentumAtTgt();
 	void 	MatchCALOclusters();
-	
-	// void GetRecoTrackInfo ( StateOnPlane* state,
-	// 										TVector3* KalmanPos, TVector3* KalmanMom,
-	// 										TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
-	void	GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
 
 	void	FillGenCounter( map<string, int> mappa );
-	
 	void	EvaluateProjectionEfficiency(Track* fitTrack);
 	void	CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselectorBase* selector);
 	void	AddResidualAndPullHistograms();
@@ -159,15 +145,10 @@ private:
 
 	KalmanFitter* m_fitter_extrapolation;				///< Kalman fitter used for forward extrapolation of tracks
 
-	KalmanFitter* m_fitter;								///< Main Kalman fitter
-	AbsKalmanFitter*  m_refFitter;						///< Kalman fitter w/ reference track()
-	AbsKalmanFitter*  m_dafRefFitter;					///< DAF (Deterministic annealing filter) with kalman ref
-	AbsKalmanFitter*  m_dafSimpleFitter;				///< DAF (Deterministic annealing filter) with simple kalman
+	AbsKalmanFitter* m_fitter;							///< Kalman fitter
 
 	TAMCntuPart*  m_trueParticleRep;					///< Ptr to TAMCntuPart object
 
-	// TAGFuploader* m_uploader;							///< GenFit Uploader
-	// TAGFselectorBase* m_selector;							///< GenFit Selector
 	TAGntuGlbTrack* m_outTrackRepo;						///< CHECK WITH MATTEO HOW TO DO THIS
 
 	TAGFdetectorMap* m_SensorIDMap;						///< GenFit detector Map for index handling
@@ -197,7 +178,6 @@ private:
 	TATWparGeo* m_TW_geo;								///< Pointer to TW parGeo
 	TACAparGeo* m_CA_geo;								///< Pointer to CA parGeo
 	TGeoVolume* m_TopVolume;							///< Top volume of geometry
-
 	TAGgeoTrafo* m_GeoTrafo;							///< GeoTrafo object
 
 	vector<Color_t> m_vecHistoColor;
@@ -266,10 +246,10 @@ private:
 	map<string, TH1F*> h_sigmaP;						///< Map of histograms for total sigma of dP distributions; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_resoP_over_Pkf;				///< Map of histograms for dP/P resolution (sigma) for each particle; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_biasP_over_Pkf;				///< Map of histograms for dP/P bias for each particle; the key is the particle name ("H", "He", "Li", ...)
-	map< pair<string,pair<int,int>>, TH1F*> h_residual;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
-	map< pair<string,pair<int,int>>, TH2F*> h_residualVsPos;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
-	map< pair<string,pair<int,int>>, TH1F*> h_pull;						///< Map of histograms for fitted and measured pulls; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
-	map< pair<string,pair<int,int>>, TH2F*> h_pullVsClusSize;					///< Map of histograms for fitted and measured pulls vs cluster size; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_residual;	///< Map of histograms for global track residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH2F*> h_residualVsPos;	///< Map of histograms for global track residulas vs measured position; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_pull;				///< Map of histograms for global track pulls; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH2F*> h_pullVsClusSize;	///< Map of histograms for global track pulls vs cluster size; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 
 	vector<TH1F*> h_momentum_true;						///< Vector of histograms for MC momentum module at the TG
 	vector<TH1F*> h_momentum_reco;						///< Vector of histograms for Fitted momentum moduel at the TG

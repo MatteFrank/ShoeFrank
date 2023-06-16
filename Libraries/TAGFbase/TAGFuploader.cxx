@@ -30,31 +30,13 @@ m_IsMC(IsMC)
 
 	if(m_IsMC)
 	{
-		m_NtracksMC = ((TAMCntuPart*)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object())->GetTracksN();
+		m_NtracksMC = ((TAMCntuPart*)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"))->Object())->GetTracksN();
 		m_measParticleMC_collection = new map< int, vector<int> >();
 	}
 	
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
 	m_debug = TAGrecoManager::GetPar()->Debug();
-	// list of detectors used for kalman
-	m_systemsON = "";
-	if( TAGrecoManager::GetPar()->KalSystems().at(0) == "all" )
-	{
-		if(TAGrecoManager::GetPar()->IncludeVT())	m_systemsON += "VT ";
-		if(TAGrecoManager::GetPar()->IncludeIT())	m_systemsON += "IT ";
-		if(TAGrecoManager::GetPar()->IncludeMSD())	m_systemsON += "MSD ";
-		if(TAGrecoManager::GetPar()->IncludeTW())	m_systemsON += "TW";
-	}
-	else
-	{
-		for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
-			if (i != 0)		m_systemsON += " ";
-			m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
-		}
-	}
-
-	switchOff_HHe = true;
 }
 
 
@@ -93,32 +75,32 @@ TAGFuploader::~TAGFuploader()
 //!
 //! \param[in,out] allHitMeas Map associating each GenFit plane with the vector of measurements obtained in it
 //! \return 1 if everything worked properly
-int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas  ) {
+int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas, const TString& GFsystemsOn ) {
 
 	m_allHitMeas = &allHitMeas;
 
 	if ( m_debug > 0 )		cout << "\n\n*******\tUploaderKalmanGF::PrepareData4Fit\t*******\n" << endl;
 
 	// Vertex -  fill fitter collections
-	if ( m_systemsON.Contains("VT") && TAGrecoManager::GetPar()->IncludeVT() ) {
+	if ( GFsystemsOn.Contains("VT") && TAGrecoManager::GetPar()->IncludeVT() ) {
 		UploadClusVT();
 		if ( m_debug > 0 )		Info( "TakeMeasHits4Fit", "Filling vertex hit collection " );
 	}
 
 	// Inner Tracker -  fill fitter collections
-	if ( m_systemsON.Contains("IT") && TAGrecoManager::GetPar()->IncludeIT() ) {
+	if ( GFsystemsOn.Contains("IT") && TAGrecoManager::GetPar()->IncludeIT() ) {
 		UploadClusIT();
 		if ( m_debug > 0 )		Info( "TakeMeasHits4Fit", "Filling Inner Tracker hit collection ");
 	}
 
 	// MSD -  fill fitter collections
-	if ( m_systemsON.Contains("MSD") && TAGrecoManager::GetPar()->IncludeMSD() ) {
+	if ( GFsystemsOn.Contains("MSD") && TAGrecoManager::GetPar()->IncludeMSD() ) {
 		UploadClusMSD();
 		if ( m_debug > 0 )		cout << endl<<endl << "Filling Strip hit collection"<<endl;
 	}
 
 	// Tof Wall-  fill fitter collections
-	if ( m_systemsON.Contains("TW") && TAGrecoManager::GetPar()->IncludeTW() ) {
+	if ( GFsystemsOn.Contains("TW") && TAGrecoManager::GetPar()->IncludeTW() ) {
 		UploadHitsTW();
 		if ( m_debug > 0 )		cout <<endl<<endl << "Filling scintillator hit collection " << endl;
 	}
@@ -140,10 +122,10 @@ int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHit
 int TAGFuploader::UploadClusVT(){
 
 	//cluster test
-	TAVTntuCluster* vtclus = (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"),"TAVTntuCluster")->Object();
+	TAVTntuCluster* vtclus = (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object();
 
 	int totClus = 0;
-	int nSensors = ( (TAVTparGeo*)gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object() )->GetSensorsN();
+	int nSensors = ( (TAVTparGeo*)gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"))->Object() )->GetSensorsN();
 
 	// loop over VT planes
 	for( int iSensor = 0; iSensor < nSensors; iSensor++){
@@ -185,10 +167,10 @@ int TAGFuploader::UploadClusVT(){
 //! \return Number of all the IT clusters found in the event
 int TAGFuploader::UploadClusIT(){
 
-	TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"),"TAITntuCluster")->Object();
+	TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"))->Object();
 
 	int totClus = 0;
-	int nSensors = ( (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object() )->GetSensorsN();
+	int nSensors = ( (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"))->Object() )->GetSensorsN();
 
 	for( int iSensor = 0; iSensor < nSensors; iSensor++){
 
@@ -230,10 +212,10 @@ int TAGFuploader::UploadClusIT(){
 //! \return Number of all the MSD clusters found in the event
 int TAGFuploader::UploadClusMSD() {
 
-	TAMSDntuCluster* msdclus = (TAMSDntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"),"TAMSDntuCluster")->Object();
+	TAMSDntuCluster* msdclus = (TAMSDntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"))->Object();
 
 	int totClus = 0;
-	int nSensors = ( (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object() )->GetSensorsN();
+	int nSensors = ( (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"))->Object() )->GetSensorsN();
 
 	for( int iSensor = 0; iSensor < nSensors; iSensor++){
 		// cout << "Sensor::" << iSensor << endl;
@@ -264,7 +246,7 @@ int TAGFuploader::UploadClusMSD() {
 	//Print out MSDpoint coordinates if in debug mode
 	if(m_debug > 1)
 	{
-		TAMSDntuPoint* msdpoint = (TAMSDntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuPoint"),"TAMSDntuPoint")->Object();
+		TAMSDntuPoint* msdpoint = (TAMSDntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuPoint"))->Object();
 		for( int iSensor = 0; iSensor < nSensors; iSensor++)
 		{
 			if(iSensor%2==1)
@@ -301,7 +283,7 @@ int TAGFuploader::UploadClusMSD() {
 int TAGFuploader::UploadHitsTW() {
 
 	// take the ntuple object already filled
-	TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"), "TATWntuPoint")->Object();
+	TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object();
 	if ( m_debug > 0 )	cout << "\nnumber of TW points read: " << ntup->GetPointsN() << "\n";
 
 	int totPoints = ntup->GetPointsN();
@@ -379,12 +361,12 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 
 	if( IsMC )
 	{	
-		TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object();
+		TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"))->Object();
 		
 		for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 
 			TAMCpart* point = m_McNtuEve->GetTrack(iPart);		
-			if ( point->GetCharge() > 0 && point->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {
+			if ( point->GetCharge() > 0 && point->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber) {
 				if ( find( chVect->begin(), chVect->end(), point->GetCharge() ) == chVect->end() ) {
 					chVect->push_back( point->GetCharge() );
 					if ( m_debug > 0 )		
@@ -396,7 +378,7 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 	else //data-like: get all possible charges from TW
 	{
 		// for(int i=1; i<= ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber; ++i)	chVect->push_back( i );
-		TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"), "TATWntuPoint")->Object();
+		TATWntuPoint* twPoint = (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object();
 
 		// save hits in the collection
 		for (int iPoint = 0; iPoint < twPoint->GetPointsN(); iPoint++) {
@@ -425,13 +407,13 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect, bool IsMC ) {
 //! \return Number of particles generated in the event
 int TAGFuploader::GetNumGenParticle_noFrag() {
 
-	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object();
+	TAMCntuPart* m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"))->Object();
 	
 	int count = 0;
 	for ( int iPart = 0; iPart < m_McNtuEve->GetTracksN(); iPart++ ) {
 
 		TAMCpart* particle = m_McNtuEve->GetTrack(iPart);		
-		if ( particle->GetCharge() > 0 && particle->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {
+		if ( particle->GetCharge() > 0 && particle->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber) {
 
 			if ( particle->GetInitPos().z() > 1 ) continue;
 			if ( particle->GetFinalPos().z() < m_GeoTrafo->FromTWLocalToGlobal(TVector3(0,0,0) ).Z() ) continue;
@@ -469,7 +451,7 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 	if ( m_debug > 1 )
 	{
 		cout << "VT meas::" << iMeas << endl;
-		TAVTparGeo* m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object();
+		TAVTparGeo* m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"))->Object();
 		cout << "Sensor pos::";
 		m_VT_geo->GetSensorPosition(m_SensorIDMap->GetSensorIDFromMeasID(iMeas)).Print();
 		cout << "VT hit loc coords::";
@@ -552,7 +534,7 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 
 	if ( m_debug > 0 )
 	{
-		TAITparGeo* m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object();
+		TAITparGeo* m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"))->Object();
 		cout << "IT meas::" << iMeas << endl;
 		cout << "Sensor pos::";
 		m_IT_geo->GetSensorPosition(m_SensorIDMap->GetSensorIDFromMeasID(iMeas)).Print();
@@ -631,7 +613,7 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 	if ( m_debug > 1 )
 	{
-		TAMSDparGeo* m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
+		TAMSDparGeo* m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"))->Object();
 		cout << "MSD Meas::" << iMeas << "\t View::" << clus->GetPlaneView() <<  endl;
 		cout << "Sensor pos::";
 		m_MSD_geo->GetSensorPosition(m_SensorIDMap->GetSensorIDFromMeasID(iMeas)).Print();
@@ -721,7 +703,7 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 		cout << "TW hit loc coords::";
 		hitPos.Print();
 		cout << "TW glob hit coords::";
-		// TATWparGeo *m_TW_geo = (TATWparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object();
+		// TATWparGeo *m_TW_geo = (TATWparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"))->Object();
 		m_GeoTrafo->FromTWLocalToGlobal(point->GetPosition()).Print();
 	}
 

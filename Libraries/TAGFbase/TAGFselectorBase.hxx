@@ -78,7 +78,7 @@ public:
 	TAGFselectorBase();
 	virtual ~TAGFselectorBase();
 
-	void SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, vector<int> *chVect,
+	void SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, TString GFsystemsOn, vector<int> *chVect,
 					  TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap,
 					  map<int, vector<int>> *measParticleMC_collection, bool isMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents);
 
@@ -88,8 +88,9 @@ public:
 	int					GetEventType();
 	TString				GetRecoTrackName(Track* tr);
 	int					GetChargeFromTW(Track* trackToCheck);
-	map<string, int>	CountParticleGenaratedAndVisible();
+	map<string, int>	CountParticleGeneratedAndVisible();
 	void				FillPlaneOccupancy(TH2I** h_PlaneOccupancy);
+	string				GetParticleNameFromCharge(int ch);
 
 protected:
 	void		CheckPlaneOccupancy();

@@ -17,12 +17,12 @@ TAGFtrackingStudies::TAGFtrackingStudies(const char* name)
 
 Bool_t TAGFtrackingStudies::Action() {
 
-	TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object();
+	TAMCntuPart*  eve = (TAMCntuPart*)   gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"))->Object();
 	TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-	TAITparGeo* itGeo = (TAITparGeo*) ( (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object() );
+	TAITparGeo* itGeo = (TAITparGeo*) ( (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"))->Object() );
 
 
-	TAVTntuTrack* vtTrk_container = (TAVTntuTrack*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuTrack"),"TAVTntuTrack")->Object();
+	TAVTntuTrack* vtTrk_container = (TAVTntuTrack*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuTrack"))->Object();
 	// vtTrk_container->GetTracksN();
 
 	vector<int> genParticleID_vec;
@@ -130,7 +130,7 @@ Bool_t TAGFtrackingStudies::Action() {
 			// newX = track->GetSlopeZ.X() * geoTrafo->FromITLocalToGlobal( itGeo->GetSensorPosition(0) ).Print(); + lastVT.X();
 			// newY = track->GetSlopeZ.Y() * 16.88 + lastVT.Y();
 
-			TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"),"TAITntuCluster")->Object();
+			TAITntuCluster* itclus = (TAITntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"))->Object();
 			TAMCntuHit* itMc =  (TAMCntuHit*) gTAGroot->FindDataDsc("itMc", "TAMCntuHit")->Object();
 			
 			TVector3 sameParticleHitPos (0,0,0);
