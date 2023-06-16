@@ -29,10 +29,10 @@ TargetSizeX:        5.0   TargetSizeY:    5.0    TargetSizeZ:  1.0
 //TargetExc:         78.0e-6
 
 
-TargetMaterial:   "Polyethy"
-TargetAtomicMass:   28.0534
-TargetDensity:      0.94
-TargetExc:         61.0e-6
+TargetMaterial:   "AIR"
+TargetAtomicMass:   15.54
+TargetDensity:      0.00129
+TargetExc:         92.11e-6
 
 TargetInserts:        0
 
