@@ -65,7 +65,7 @@ void FillClinm(Int_t runNumber)
       
    TAGparaDsc* wcMap = new TAGparaDsc("wcMap", new TAGbaseWCparMap());
    TAGbaseWCparMap* map = (TAGbaseWCparMap*) wcMap->Object();
-   TString parFileName = campManager->GetCurMapFile(TACEparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurMapFile(TAPLparGeo::GetBaseName(), runNumber);
    map->FromFile(parFileName.Data());
 
    
