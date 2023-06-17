@@ -46,7 +46,8 @@ TACEwaveDisplay::TACEwaveDisplay(const TString name, const TString expName, Int_
    fyEntry(0x0),
    fEventsN(0),
    fSTflag(0),
-   fTWflag(0)
+   fTWflag(0),
+   fPWflag(0)
 {
    fAGRoot = new TAGroot();
    
