@@ -54,6 +54,9 @@ public:
   Int_t       GetRegStrip(Int_t n);   //n=sensor (0-5)
   Int_t       GetRegModule(Int_t n);  //n=sensor (0-5)
   Int_t       GetRegMetal(Int_t n);   //n=sensor (0-5)
+
+  //! @brief Get thickness of metallic material
+  Float_t     GetMetalThickness()  const {return fMetalThickness;}
   
   // to keep interace for compilation
   string      PrintParameters();

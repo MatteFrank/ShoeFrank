@@ -115,6 +115,7 @@ public:
    void           GetCellInfo(Int_t view, Int_t plane, Int_t cellID, Double_t& h_x, Double_t& h_y, Double_t& h_z, Double_t& h_cx, Double_t& h_cy, Double_t& h_cz) const;
    //! Get the cellid index [0-35] given the layer, view and cell indices
    Int_t          GetBMNcell(Int_t ilay, Int_t iview, Int_t icell) const {return icell+iview*3+ilay*6;};
+   Double_t       PointLineDist(Double_t m, Double_t q,Double_t y, Double_t x) const{return fabs(y-m*x-q)/sqrt(1+m*m);};
 
    void           InitGeo();
    void           DefineMaterial();
@@ -153,6 +154,8 @@ public:
    string PrintParameters();
    string PrintSubtractBodiesFromAir();
 
+   //! Get the name of this class (bmGeo)
+   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
    //! Get the detector name of this class (BM)
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
    //! Get the offset in layer id (6)
@@ -202,6 +205,7 @@ private:
 
    TString         fkDefaultGeoName;  ///< Default par geo file name (./geomaps/TABMdetector.geo)
 
+   static const TString fgkDefParaName;  ///< Default par name (bmGeo)
    static const TString fgkBaseName;    ///< device base name
    static Int_t         fgkLayerOffset; ///< offset in layer id
 

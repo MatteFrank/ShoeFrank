@@ -17,6 +17,7 @@
 #pragma link C++ class TABMtrack+;
 #pragma link C++ class TABMntuTrack+;
 #pragma link C++ class TABMactNtuTrack+;
+#pragma link C++ class TABMactBaseNtuTrack+;
 #pragma link C++ class TABMparConf+;
 #pragma link C++ class TABMparCal+;
 #pragma link C++ class TABMactNtuRaw+;

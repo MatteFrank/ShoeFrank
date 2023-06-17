@@ -31,7 +31,11 @@ m_measParticleMC_collection(0x0),
 m_McNtuEve(0x0),
 m_singleVertexCounter(0x0),
 m_noVTtrackletEvents(0x0),
-m_noTWpointEvents(0x0)
+m_noTWpointEvents(0x0),
+m_VTtolerance(.5),
+m_ITtolerance(.5),
+m_MSDtolerance(.5),
+m_TWtolerance(4.)
 {
 
 	m_debug = TAGrecoManager::GetPar()->Debug();
@@ -73,12 +77,6 @@ m_noTWpointEvents(0x0)
 	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
 	m_eventType = 0;
-
-	//Set default extrapolation tolerances for each detector
-	m_VTtolerance = .5;
-	m_ITtolerance = .5;
-	m_MSDtolerance = .5;
-	m_TWtolerance = 4.;
 }
 
 
@@ -537,7 +535,9 @@ void TAGFselectorBase::FillTrackCategoryMap()
 }
 
 
-
+//! \brief Create a dummy track to display all the TW points of the event
+//! 
+//! Only called when Genfit event display is switched on
 void TAGFselectorBase::CreateDummyTrack()
 {
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
