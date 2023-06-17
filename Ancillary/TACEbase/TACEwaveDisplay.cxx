@@ -332,17 +332,17 @@ void TACEwaveDisplay::DrawMap()
       if (TAGrecoManager::GetPar()->IncludeST()) {
          samples = pDatRawSt->GetSamplesN();
          period  = pDatRawSt->GetPeriod();
-         fhOscSt->SetBins(1024, 0, samples*period*TAGgeoTrafo::PsToNs());
+         fhOscSt->SetBins(1024, 0, TMath::Nint(samples*period*TAGgeoTrafo::PsToNs()));
       }
       if (TAGrecoManager::GetPar()->IncludeTW()) {
          samples = pDatRawTw->GetSamplesN();
          period  = pDatRawTw->GetPeriod();
-         fhOscTw->SetBins(1024, 0, samples*period*TAGgeoTrafo::PsToNs());
+         fhOscTw->SetBins(1024, 0, TMath::Nint(samples*period*TAGgeoTrafo::PsToNs()));
       }
       if (TAGrecoManager::GetPar()->IncludeCA()) {
          samples = pDatRawPw->GetSamplesN();
          period  = pDatRawPw->GetPeriod();
-         fhOscPw->SetBins(1024, 0, samples*period*TAGgeoTrafo::PsToNs());
+         fhOscPw->SetBins(1024, 0, TMath::Nint(samples*period*TAGgeoTrafo::PsToNs()));
       }
       first = true;
    }
