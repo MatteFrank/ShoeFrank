@@ -22,6 +22,7 @@
 #include "TAGparaDsc.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAGcampaignManager.hxx"
 
 #include "TAGbaseWCparMap.hxx"
 #include "TAPLntuRaw.hxx"
@@ -69,7 +70,7 @@ public:
 
 public:
    //! Instance of class
-   static TACEwaveDisplay* Instance(const TString name = "./data/Run__Binary.bin", const TString expName = "CLINM");
+   static TACEwaveDisplay* Instance(const TString name = "./data/Run__Binary.bin", const TString expName = "CLINM", Int_t runNumber = 1);
   
    //! Get Reader
    TAGactionFile* GetEvtReader() {return fActEvtReader; }
@@ -82,10 +83,11 @@ private:
    static TACEwaveDisplay* fgInstance; // static instance of class
 
 private:
-   TACEwaveDisplay(const TString name, const TString expName);
+   TACEwaveDisplay(const TString name, const TString expName, Int_t runNumber);
    
 private:
    TString              fExpName;      // experiment name
+   Int_t                fRunNumber;    // run number
    TAGroot*             fAGRoot;       // pointer to TAGroot
    TAGgeoTrafo*         fpGeoTrafo;    // Global transformation
    TAGdataDsc*          fpDatRawSt;      // input data dsc
@@ -96,6 +98,7 @@ private:
    TAGdataDsc*          fpNtuRawPw;      // input data dsc
    TAGparaDsc*          fpMapWc;		// configuration dsc
    
+   TAGcampaignManager*  fCampManager;
    TAGactWCreader*      fActEvtReader;  // action for raw data
    TAPLactNtuHit*       fActNtuSt;
    TAPWactNtuHit*       fActNtuPw;

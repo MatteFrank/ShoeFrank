@@ -18,18 +18,19 @@ ClassImp(TACEwaveDisplay)
 TACEwaveDisplay* TACEwaveDisplay::fgInstance = 0x0;
 
 //__________________________________________________________
-TACEwaveDisplay* TACEwaveDisplay::Instance(const TString name, const TString expName)
+TACEwaveDisplay* TACEwaveDisplay::Instance(const TString name, const TString expName, Int_t runNumber)
 {
    if (fgInstance == 0x0)
-      fgInstance = new TACEwaveDisplay(name, expName);
+      fgInstance = new TACEwaveDisplay(name, expName, runNumber);
    
    return fgInstance;
 }
 
 //_________________________________________________________________
-TACEwaveDisplay::TACEwaveDisplay(const TString name, const TString expName)
+TACEwaveDisplay::TACEwaveDisplay(const TString name, const TString expName, Int_t runNumber)
 : TGFrame(gClient->GetRoot(), 1200, 600),
    fExpName(expName),
+   fRunNumber(runNumber),
    fpDatRawSt(0x0),
    fpDatRawTw(0x0),
    fpDatRawPw(0x0),
@@ -53,6 +54,10 @@ TACEwaveDisplay::TACEwaveDisplay(const TString name, const TString expName)
    TAGrecoManager::Instance(expName);
    TAGrecoManager::GetPar()->FromFile();
    
+   // Campaign manager
+   fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
+
    CreateActions(name);
    // Create canvas widget
    Int_t width  = Int_t(1200*0.99);
@@ -202,8 +207,9 @@ void TACEwaveDisplay::CreateActions(const TString name)
    //------ defeinition of actions --------
    fpMapWc  = new TAGparaDsc("wcMap", new TAGbaseWCparMap());
    TAGbaseWCparMap* map = (TAGbaseWCparMap*) fpMapWc->Object();
-   map->FromFile(Form("./config/WCdetector_%s.map", fExpName.Data()));
-   
+   TString parFileName = fCampManager->GetCurMapFile(TACEparGeo::GetBaseName(), fRunNumber);
+   map->FromFile(parFileName.Data());
+
    if (TAGrecoManager::GetPar()->IncludeST())
       fpDatRawSt = new TAGdataDsc("stRaw", new TAPLntuRaw());
    
