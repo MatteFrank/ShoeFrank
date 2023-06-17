@@ -207,7 +207,7 @@ void TACEwaveDisplay::CreateActions(const TString name)
    //------ defeinition of actions --------
    fpMapWc  = new TAGparaDsc("wcMap", new TAGbaseWCparMap());
    TAGbaseWCparMap* map = (TAGbaseWCparMap*) fpMapWc->Object();
-   TString parFileName = fCampManager->GetCurMapFile(TACEparGeo::GetBaseName(), fRunNumber);
+   TString parFileName = fCampManager->GetCurMapFile(TAPLparGeo::GetBaseName(), fRunNumber);
    map->FromFile(parFileName.Data());
 
    if (TAGrecoManager::GetPar()->IncludeST())
