@@ -30,9 +30,13 @@
 #include "TACEntuRaw.hxx"
 #include "TACEntuHit.hxx"
 
+#include "TAPWntuRaw.hxx"
+#include "TAPWntuHit.hxx"
+
 #include "TAGactWCreader.hxx"
 #include "TAPLactNtuHit.hxx"
 #include "TACEactNtuHit.hxx"
+#include "TAPWactNtuHit.hxx"
 
 #include <TGButton.h>
 #include <TRootEmbeddedCanvas.h>
@@ -94,6 +98,7 @@ private:
    
    TAGactWCreader*      fActEvtReader;  // action for raw data
    TAPLactNtuHit*       fActNtuSt;
+   TAPWactNtuHit*       fActNtuPw;
    TACEactNtuHit*       fActNtuTw;
 
    const TGWindow*      fkMainWindow;   // main window
@@ -111,15 +116,20 @@ private:
    
    TLine*               fLElineSt;
    TLine*               fLElineTw;
+   TLine*               fLElinePw;
    TLine*               fFALLlineSt;
    TLine*               fFALLlineTw;
+   TLine*               fFALLlinePw;
+   TLine*               fFASTlinePw;
    UInt_t               fEventsN;        // number of events
    TH1F*                fhOscSt;         // Oscillogram
    TH1F*                fhOscTw;         // Oscillogram
+   TH1F*                fhOscPw;         // Oscillogram
    Int_t                fSTflag;
    Int_t                fTWflag;
+   Int_t                fPWflag;
    
-   ClassDef(TACEwaveDisplay,1) //GUI for drawing detection element segmentation
+   ClassDef(TACEwaveDisplay,0) //GUI for drawing detection element segmentation
 };
 #endif
 

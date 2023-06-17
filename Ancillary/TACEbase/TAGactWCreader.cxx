@@ -8,6 +8,7 @@
 #include "TAGwaveCatcher.hxx"
 #include "TAPLntuRaw.hxx"
 #include "TACEntuRaw.hxx"
+#include "TAPWntuRaw.hxx"
 
 #include "TAGactWCreader.hxx"
 
@@ -26,10 +27,12 @@ ClassImp(TAGactWCreader);
 TAGactWCreader::TAGactWCreader(const char* name,
                                TAGparaDsc* p_WCmap,
                                TAGdataDsc* p_stwd,
-                               TAGdataDsc* p_twwd)
+                               TAGdataDsc* p_twwd,
+                               TAGdataDsc* p_pwwd)
  : TAGactionFile(name, "TAGactWCreader - Unpack WC raw data"),
    fpdatRawSt(p_stwd),
    fpdatRawTw(p_twwd),
+   fpdatRawPw(p_pwwd),
    fpParMapWC(p_WCmap),
    fEventsN(0),
    fDebugLevel(0),
@@ -46,6 +49,8 @@ TAGactWCreader::TAGactWCreader(const char* name,
       AddDataOut(fpdatRawSt, "TAPLntuRaw");
    if (fpdatRawTw)
       AddDataOut(fpdatRawTw, "TACEntuRaw");
+   if (fpdatRawPw)
+      AddDataOut(fpdatRawPw, "TAPWntuRaw");
 }
 
 
@@ -70,6 +75,8 @@ Bool_t TAGactWCreader::Process()
       fpdatRawSt->SetBit(kValid);
    if (fpdatRawTw)
       fpdatRawTw->SetBit(kValid);
+   if (fpdatRawPw)
+      fpdatRawPw->SetBit(kValid);
  
   return kTRUE;
 }
@@ -205,7 +212,15 @@ void TAGactWCreader::DecodeHeader()
       datRawTw->SetChannelsN(fChannelsN);
       datRawTw->SetPeriod(fPeriod);
    }
-  
+   
+   if (fpdatRawPw) {
+      TAPWntuRaw* datRawPw = (TAPWntuRaw*)fpdatRawTw->Object();
+      datRawPw->SetSoftwareVersion(fSoftwareVersion);
+      datRawPw->SetSamplesN(fSamplesN);
+      datRawPw->SetChannelsN(fChannelsN);
+      datRawPw->SetPeriod(fPeriod);
+   }
+   
    fWaves.Reserve(fSamplesN);
 }
 
@@ -223,6 +238,10 @@ Bool_t TAGactWCreader::DecodeWaveForms()
    TACEntuRaw* datRawTw = 0x0;
    if (fpdatRawTw)
       datRawTw = (TACEntuRaw*)fpdatRawTw->Object();
+   
+   TAPWntuRaw* datRawPw = 0x0;
+   if (fpdatRawPw)
+      datRawPw = (TAPWntuRaw*)fpdatRawPw->Object();
    
    if (!fInputFile.read((char*)(&fEventData), sizeof(fEventData))) return false;
    
@@ -282,6 +301,11 @@ Bool_t TAGactWCreader::DecodeWaveForms()
       
       if (parMapWC->GetChannelType(ch) == "CE") {
          TACErawHit* hit =  datRawTw->NewHit(fWaves);
+         hit->SetSamplesN(fSamplesN);
+      }
+      
+      if (parMapWC->GetChannelType(ch) == "PW") {
+         TAPWrawHit* hit =  datRawPw->NewHit(fWaves);
          hit->SetSamplesN(fSamplesN);
       }
    } // for ch
