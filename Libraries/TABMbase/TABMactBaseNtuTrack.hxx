@@ -85,7 +85,7 @@ public:
   vector<Float_t> fbincenterX;
   vector<Float_t> fbincenterY;
   vector<Float_t> flegfixvalue;
-  
+
 
   //histos
   TH1I*            fpHisNhitTotTrack;
@@ -99,8 +99,6 @@ public:
   TH1I*            fpNYtrack;
   TH1D*            fpParRes;
   TH1F*            fpParSTrel;
-  TH1I*            fpRebinR;
-  TH1I*            fpRebinM;
 
    ClassDef(TABMactBaseNtuTrack,0)
 };

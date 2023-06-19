@@ -48,12 +48,12 @@ TABMactBaseNtuTrack::TABMactBaseNtuTrack(const char* name,
   fbincenterX.clear();
   fbincenterY.clear();
   flegfixvalue.clear();
-  for(Int_t k=1;k<fLegPolSum->GetXaxis()->GetNbins();++k){  
-    fbincenterX.push_back(fLegPolSum->GetXaxis()->GetBinCenter(k));      
+  for(Int_t k=1;k<fLegPolSum->GetXaxis()->GetNbins();++k){
+    fbincenterX.push_back(fLegPolSum->GetXaxis()->GetBinCenter(k));
     flegfixvalue.push_back(sqrt(fbincenterX.back()*fbincenterX.back()+1.));
   }
   for(Int_t v=1;v<fLegPolSum->GetYaxis()->GetNbins();++v){
-    fbincenterY.push_back(fLegPolSum->GetYaxis()->GetBinCenter(v));        
+    fbincenterY.push_back(fLegPolSum->GetYaxis()->GetBinCenter(v));
   }
 }
 
@@ -90,10 +90,6 @@ void TABMactBaseNtuTrack::CreateHistogram()
   AddHistogram(fpNXtrack);
   fpNYtrack = new TH1I("bmTrackYzviewNumber","Number of tracks on YZ plane per event; Number of tracks; evts", 7, -0.5, 6.5);
   AddHistogram(fpNYtrack);
-  fpRebinM = new TH1I("bmRebinM","Number of rebins for the Slope; # slope rebins; entries",5,-0.5,4.5);
-  AddHistogram(fpRebinM);
-  fpRebinR = new TH1I("bmRebinR","Number of rebins for the constant term; # constant term rebins; entries",5,-0.5,4.5);
-  AddHistogram(fpRebinR);
 
   //control graphs
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
@@ -308,7 +304,7 @@ void TABMactBaseNtuTrack::ChargeLegendrePoly(){
 
   fLegPolSum->Reset("ICESM");
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
-  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();  
+  TABMntuHit* p_nturaw = (TABMntuHit*) fpNtuHit->Object();
   fLegPolSum->SetBins(p_bmcon->GetLegMBin(),-p_bmcon->GetLegMRange(),p_bmcon->GetLegMRange(), p_bmcon->GetLegRBin(),-p_bmcon->GetLegRRange(),p_bmcon->GetLegRRange());
 
   for(Int_t i_h = 0; i_h < p_nturaw->GetHitsN(); ++i_h) {
@@ -356,13 +352,13 @@ Int_t TABMactBaseNtuTrack::FindLegendreBestValues(){
 
   if(FootDebugLevel(2))
     cout<<"TABMactBaseNtuTrack::FindLegendreBestValues: start"<<endl;
-    
+
   Int_t x,y,z;
   TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   fLegPolSum->GetBinXYZ(fLegPolSum->GetMaximumBin(),x,y,z);
   fBestM=fLegPolSum->GetXaxis()->GetBinCenter(x);
   fBestR=fLegPolSum->GetYaxis()->GetBinCenter(y);
-  
+
 return 0;
 }
 
@@ -494,4 +490,3 @@ void TABMactBaseNtuTrack::CombineTrack(vector<TABMtrack> &ytracktr, vector<TABMt
 
   return;
 }
-

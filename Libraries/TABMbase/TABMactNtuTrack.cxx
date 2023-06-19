@@ -49,7 +49,7 @@ void TABMactNtuTrack::CreateHistogram()
 {
   TABMactBaseNtuTrack::CreateHistogram();
 
-  fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResTot);
   fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of the tracks at the target center; X[cm]; Y[cm]", 250, -3., 3.,250 , -3, 3);
   AddHistogram(fpHisMap);
@@ -334,13 +334,8 @@ void TABMactNtuTrack::EvaluatePulls(){
       }
       Double_t fitErrQua=droverdm*droverdm*Errslope+droverdq*droverdq*Errorigin+2.*droverdm*droverdq*Errcov;
       Double_t sigmaQua=p_hit->GetSigma()*p_hit->GetSigma();
-      if(sigmaQua>fitErrQua){
-        // cout<<"OK in EvaluatePulls: sigmaQua="<<sigmaQua<<"  fitErrQua="<<fitErrQua<<endl;
-        if(ValidHistogram())
-          fpFitPulls->Fill(p_hit->GetResidual()/sqrt(sigmaQua-fitErrQua), p_hit->GetRdrift());
-      }
-      else{
-        // cout<<"ERROR in EvaluatePulls: sigmaQua="<<sigmaQua<<"  fitErrQua="<<fitErrQua<<endl;
+      if(sigmaQua>fitErrQua && ValidHistogram()){
+        fpFitPulls->Fill(p_hit->GetResidual()/sqrt(sigmaQua-fitErrQua), p_hit->GetRdrift());
       }
     }
   }
@@ -444,10 +439,7 @@ return;
 void TABMactNtuTrack::ToStream(ostream& os) const{
   os<<"fpHisNhitTotTrack=  "<<fpHisNhitTotTrack->GetMean()<<"  fpHisNhitXTrack= "<<fpHisNhitXTrack->GetMean()<<"  fpHisNhitYTrack="<<fpHisNhitYTrack->GetMean()<<"  fpHisNrejhitTrack= "<<fpHisNrejhitTrack->GetMean()<<endl;
   os<<"fpNtotTrack= "<< fpNtotTrack->GetMean()<<"    fpNtotTrack(bin1)= "<<fpNtotTrack->GetBinContent(2)<<endl;
-  os<<"fpRebinR= "<<fpRebinR->GetMean()<<"    fpRebinM= "<<fpRebinM->GetMean()<<endl;
   os<<"fpFitIters=  "<<fpFitIters->GetMean()<<"   fpHisChi2Red= "<< fpHisChi2Red->GetMean()<<endl<<endl;
-  
+
 return;
 }
-
-
