@@ -47,20 +47,19 @@ using namespace genfit;
 
 class TAGFgeometryConstructor : public TObject
 {
-	TASTparGeo* m_ST_geo;								///< Pointer to ST par Geo
-	TABMparGeo* m_BM_geo;								///< Pointer to BM par Geo
-	TAGparGeo* m_TG_geo;								///< Pointer to TG par Geo
-	TADIparGeo* m_DI_geo;								///< Pointer to DI par Geo
-	TAVTparGeo* m_VT_geo;								///< Pointer to VT par Geo
-	TAITparGeo* m_IT_geo;								///< Pointer to IT par Geo
-	TAMSDparGeo* m_MSD_geo;								///< Pointer to MSD par Geo
-	TATWparGeo* m_TW_geo;								///< Pointer to TW par Geo
-	TACAparGeo* m_CA_geo;								///< Pointer to CA par Geo
-	TGeoVolume* m_TopVolume;							///< Top volume of geometry
-	TAGgeoTrafo* m_GeoTrafo;							///< GeoTrafo object
-
-	TAGFdetectorMap* m_SensorIDMap;						///< Pointer to TAGFdetectorMap object
-	TString *m_systemsON;								///< Pointer to string containing the detectors included in the kalman tracking
+	TASTparGeo* m_ST_geo;			///< Pointer to ST par Geo
+	TABMparGeo* m_BM_geo;			///< Pointer to BM par Geo
+	TAGparGeo* m_TG_geo;			///< Pointer to TG par Geo
+	TADIparGeo* m_DI_geo;			///< Pointer to DI par Geo
+	TAVTparGeo* m_VT_geo;			///< Pointer to VT par Geo
+	TAITparGeo* m_IT_geo;			///< Pointer to IT par Geo
+	TAMSDparGeo* m_MSD_geo;			///< Pointer to MSD par Geo
+	TATWparGeo* m_TW_geo;			///< Pointer to TW par Geo
+	TACAparGeo* m_CA_geo;			///< Pointer to CA par Geo
+	TGeoVolume* m_TopVolume;		///< Top volume of geometry
+	TAGgeoTrafo* m_GeoTrafo;		///< GeoTrafo object
+	TAGFdetectorMap* m_SensorIDMap;	///< Pointer to TAGFdetectorMap object
+	TString *m_systemsON;			///< Pointer to string containing the detectors included in the kalman tracking
 
 public:
 	TAGFgeometryConstructor(TAGFdetectorMap* sensorIdMap, TString* systemsOn);

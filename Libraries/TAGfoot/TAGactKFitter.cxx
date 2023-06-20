@@ -29,9 +29,20 @@ m_IsMC(false)
 	AddDataOut(outTrackRepo, "TAGntuGlbTrack");
 	m_outTrackRepo = (TAGntuGlbTrack*) fpGlobTrackRepo->Object();
 
+	// Initialize the FOOT geometry for genfit
+	m_SensorIDMap = new TAGFdetectorMap();
+	genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
+	genfit::MaterialEffects::getInstance()->setNoEffects(false);
+
+	m_GFgeometry = new TAGFgeometryConstructor(m_SensorIDMap, &m_systemsON);
+	m_GFgeometry->IncludeDetectors();
+	m_GFgeometry->CreateGeometry();
+
+	m_GeoTrafo = m_GFgeometry->GetGgeoTrafo();
+
 	//Initialize some particle-related variables
 	m_AMU = 0.9310986964; // in GeV // conversion betweem mass in GeV and atomic mass unit
-	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().Energy;
+	m_BeamEnergy = m_GFgeometry->GetGparGeo()->GetBeamPar().Energy;
 
 	m_Isotopes  = {	"H1", "H2", "H3",
 					"He3", "He4", "He6", "He8",
@@ -48,20 +59,7 @@ m_IsMC(false)
 	for ( unsigned int i=0; i<m_Particles.size(); i++ )
 		m_ParticleIndex[ m_Particles[i] ] = i;
 
-	// Initialize the FOOT geometry for genfit
-	m_SensorIDMap = new TAGFdetectorMap();
-	genfit::MaterialEffects::getInstance()->init(new genfit::TGeoMaterialInterface());
-	genfit::MaterialEffects::getInstance()->setNoEffects(false);
-
-	m_GFgeometry = new TAGFgeometryConstructor(m_SensorIDMap, &m_systemsON);
-	m_GFgeometry->IncludeDetectors();
-	m_GFgeometry->CreateGeometry();
-
-	m_GeoTrafo = m_GFgeometry->GetGgeoTrafo();
-
 	m_debug = TAGrecoManager::GetPar()->Debug();
-
-	m_mapTrack.clear();
 
 	//Initialize the track fitter
 	int nIter = 20; // max number of iterations
@@ -406,7 +404,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 
 	if ( m_debug > 0 )		cout << "Starting MakeFit " << endl;
 
-	int isConverged = 0;
+	bool isConverged = false;
 	int trackCounter = -1;
 	int NconvTracks = 0;
 
@@ -414,8 +412,9 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 	if(m_debug > 0)
 		cout << "\n  ----------------------\nEvento numero " << m_evNum << " track " << m_mapTrack.size() << endl;
 
-	// loop over all hit category
-	for ( map<TString,Track*>::iterator trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt) {
+	// loop over all tracks
+	for ( map<TString,Track*>::iterator trackIt = m_mapTrack.begin(); trackIt != m_mapTrack.end(); ++trackIt)
+	{
 		if(trackIt->first == "dummy")
 		{
 			trackIt->second->setStateSeed(TVector3(0,0,0), TVector3(0,0,10));
@@ -461,12 +460,13 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 		  	}
 		  	cout << "\n";
 	    }
+
+		//Skip track if it has less points than what we want
 		if ( fitTrack->getNumPointsWithMeasurement() < TAGrecoManager::GetPar()->MeasureN() )
 		{
 			if( m_debug > 0 )	Info("FillTrackCategoryMap()", "Skipped Track %s with %d TrackPoints with measurement!!", tok.at(2).c_str(), fitTrack->getNumPointsWithMeasurement());
 			continue;
 		}
-
 
 	    if ( TAGrecoManager::GetPar()->IsKalReverse() )
 	    	fitTrack->reverseTrackPoints();
@@ -532,11 +532,9 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			fitTrack->getFitStatus(fitTrack->getCardinalRep())->Print();
 		}
 
-		isConverged = 0;
-		if (  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged() && fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted() )
-			isConverged = 1;	// convergence check
-
-		if ( m_debug > 3 )		fitTrack->Print("C");
+		isConverged = false;
+		if (  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted() && fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged() )
+			isConverged = true;	// convergence check
 
 		// // map of the CONVERGED tracks for each category
 		if (isConverged) {
@@ -555,11 +553,8 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			m_vectorConvergedTrack.push_back( fitTrack );
 		}
 
-		// // fill a vector with the categories fitted at least onece
-		// if ( find( m_categoryFitted.begin(), m_categoryFitted.end(), (*hitSample).first ) == m_categoryFitted.end() )
-		// m_categoryFitted.push_back( (*hitSample).first );
-
-	}	// end  - loop over all hit category
+	}
+	// end  - loop over all tracks
 
 	if( TAGrecoManager::GetPar()->IsSaveHisto() )
 	{
@@ -615,15 +610,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		int trackDetID = track->getPointWithMeasurement(iMeas)->getRawMeasurement()->getDetId();
 
 		// get measurement position, position error and other info
-		TVector3 measPos, measPos_err;
-		GetMeasTrackInfo( trackHitID, &measPos, &measPos_err );
-
 		int iSensor, iClus;
 		vector<int> iPart;
-		GetMeasInfo( trackDetID, trackHitID, &iSensor, &iClus, &iPart );
+		TVector3 measPos, measPos_err;
+		GetMeasInfo( trackDetID, trackHitID, &iSensor, &iClus, &iPart, &measPos, &measPos_err );
 		string detName = m_SensorIDMap->GetDetNameFromMeasID( trackHitID );
-
-
 
 		// vector with index of the mc truth particles generating the measurement
 		for ( unsigned int ip=0; ip<iPart.size(); ip++)
@@ -643,21 +634,20 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			shoeTrackPoint->SetElementsN(0);
 			hasTwPoint = true;
 		}
-		else if(detName == "MSD")
+		else
 		{
-			TAMSDcluster* MSDclus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"))->Object() )->GetCluster( iSensor, iClus );
-			shoeTrackPoint->SetEnergyLoss(MSDclus->GetEnergyLoss());
-			shoeTrackPoint->SetElementsN(MSDclus->GetElementsN());
-		}
-		else if(detName == "IT")
-		{
-			TAITcluster* ITclus = ( (TAITntuCluster*)gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"))->Object() )->GetCluster( iSensor, iClus );
-			shoeTrackPoint->SetElementsN(ITclus->GetElementsN());
-		}
-		else if(detName == "VT")
-		{
-			TAVTcluster* VTclus = ( (TAVTntuCluster*)gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object() )->GetCluster( iSensor, iClus );
-			shoeTrackPoint->SetElementsN(VTclus->GetElementsN());
+			TAGcluster* clus;
+			if(detName == "MSD")
+			{
+				clus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"))->Object() )->GetCluster( iSensor, iClus );
+				shoeTrackPoint->SetEnergyLoss( ((TAMSDcluster*)clus)->GetEnergyLoss() );
+			}
+			else if(detName == "IT")
+				clus = ( (TAITntuCluster*)gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"))->Object() )->GetCluster( iSensor, iClus );
+			else if(detName == "VT")
+				clus = ( (TAVTntuCluster*)gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object() )->GetCluster( iSensor, iClus );
+
+			shoeTrackPoint->SetElementsN(clus->GetElementsN());
 		}
 
 		// getRecoInfo
@@ -675,15 +665,15 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//Start track variables recording
 
 	// Retrieve tracking info!
-	int nMeas 	= track->getCardinalRep()->getDim();
-	int pdgID 	= track->getCardinalRep()->getPDG();
-	int pdgCh 	= track->getCardinalRep()->getPDGCharge();
+	int nMeas = track->getNumPointsWithMeasurement();
+	int pdgID = track->getCardinalRep()->getPDG();
+	int pdgCh = track->getCardinalRep()->getPDGCharge();
 	float startMass	= std::atoi( tok.at(1).c_str() )*m_AMU;                                  //Initial mass of the fit in GeV
-	int fitCh 	= track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
+	int fitCh = track->getCardinalRep()->getCharge( track->getFittedState(0) );            // dipendono dallo stato considerato
 	double fitMass = track->getCardinalRep()->getMass( track->getFittedState(0) );           // dipendono dallo stato considerato in GeV
 
 	//Stop if the fitted charge is outside of boundaries
-	if(fitCh < 0 || fitCh > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber) {return;}
+	if(fitCh < 0 || fitCh >  m_GFgeometry->GetGparGeo()->GetBeamPar().AtomicNumber ) return;
 
 	//Vertexing for track length
 	if( m_debug > 1)	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
@@ -754,7 +744,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	TMatrixD recoMom_target_cov(3,3);
 
 	GetRecoTrackInfo(0, track, &recoPos_target, &recoMom_target, &recoPos_target_cov, &recoMom_target_cov ); //This might be unnecessary...
-
 
 	//Get length and Time-Of-Flight of the track -> Both from the first to the last point of the track!
 	float length, tof;
@@ -1123,15 +1112,16 @@ double TAGactKFitter::TrackQuality( vector<vector<int>>* mcParticleID_track ) {
 
 //----------------------------------------------------------------------------------------------------
 
-//! \brief Get additional information on a measurement
+//! \brief Get information on a measurement along a global track
 //!
 //! \param[in] detID Id of the detector
 //! \param[in] hitID Global measurement Id
 //! \param[out] iSensor Pointer to local sensor Id
 //! \param[out] iClus Pointer to local cluster Id
 //! \param[out] iPart Pointer to vector of MC particles of the cluster
-void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus, vector<int>* iPart ) {
-
+//! \param[out] pos Pointer to vector where*e to store the position error
+void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus, vector<int>* iPart, TVector3* pos, TVector3* posErr )
+{
 	// check
 	if ( detID != m_SensorIDMap->GetDetIDFromMeasID( hitID ) )
 	{
@@ -1139,57 +1129,38 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 		exit(0);
 	}
 
+	string det = m_SensorIDMap->GetDetNameFromMeasID( hitID );
 	*iSensor = m_SensorIDMap->GetSensorIDFromMeasID( hitID );
 	*iClus = m_SensorIDMap->GetHitIDFromMeasID( hitID );
 
 	if ( m_IsMC )
 		*iPart = m_measParticleMC_collection->at( hitID );
 
-}
-
-
-
-//----------------------------------------------------------------------------------------------------
-
-//! \brief Get info on the position measurement and error for an hit
-//!
-//! \param[in] hitID Global Id of the hit
-//! \param[out] pos Pointer to vector where to store the measured position
-//! \param[out] posErr Pointer to vector where to store the position error
-void TAGactKFitter::GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr ) {
-
-	string det = m_SensorIDMap->GetDetNameFromMeasID( hitID );
-
-	int iSensor = m_SensorIDMap->GetSensorIDFromMeasID( hitID );
-	int iClus = m_SensorIDMap->GetHitIDFromMeasID( hitID );
-
+	//Get information on the hit position
 	if ( det == "VT" ) {
-		TAVTcluster* clus = ( (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object() )->GetCluster( iSensor, iClus );
+		TAVTcluster* clus = ( (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object() )->GetCluster( *iSensor, *iClus );
 		*pos = m_GeoTrafo->FromVTLocalToGlobal( clus->GetPositionG() );
 		*posErr = clus->GetPosError();
 	}
 	else if ( det == "IT" ) {
-		TAITcluster* clus = ( (TAITntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"))->Object() )->GetCluster( iSensor, iClus );
+		TAITcluster* clus = ( (TAITntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAITntuCluster"))->Object() )->GetCluster( *iSensor, *iClus );
 		*pos = m_GeoTrafo->FromITLocalToGlobal( clus->GetPositionG() );
 		*posErr = clus->GetPosError();
 	}
 	else if ( det == "MSD" ) {
-		TAMSDcluster* clus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"))->Object() )->GetCluster( iSensor, iClus );
+		TAMSDcluster* clus = ( (TAMSDntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuCluster"))->Object() )->GetCluster( *iSensor, *iClus );
 		*pos = m_GeoTrafo->FromMSDLocalToGlobal( clus->GetPositionG() );
 		*posErr = clus->GetPosError();
 	}
 	else if ( det == "TW" ) {
-		TATWpoint* clus = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( iClus );
+		TATWpoint* clus = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( *iClus );
 		*pos = m_GeoTrafo->FromTWLocalToGlobal( clus->GetPositionG() );
 		*posErr = clus->GetPosErrorG();
 	}
-	else {
+	else 
 		cout << "ERROR -- TAGactKFitter::GetMeasTrackInfo -- No correct detector name found: "<< det << endl, exit(0);
-	}
 
 }
-
-
 
 //----------------------------------------------------------------------------------------------------
 
@@ -1243,8 +1214,6 @@ void TAGactKFitter::PrintPurity() {
 			continue;
 
 		k++;
-
-
 		float kk = (float)m_nConvergedTracks_matched[ *itPart ];
 		float nn = m_nConvergedTracks_all[ *itPart ];
 		float eff = (float)kk/nn;
@@ -1319,9 +1288,6 @@ void TAGactKFitter::PrintEfficiency() {
 	h_trackEfficiency->GetYaxis()->SetTitleOffset(1.1);
 	h_trackEfficiency->GetYaxis()->SetRange(0.,1.);
 	h_trackEfficiency->SetLineWidth(2); // take short ~ int
-	// h_trackEfficiency->Draw("E");
-	// mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
-	// mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
 
 	AddHistogram(h_trackSelected);
 	AddHistogram(h_trackConverged);
@@ -1401,9 +1367,6 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 	h_selectEfficiency->GetYaxis()->SetTitleOffset(1.1);
 	h_selectEfficiency->GetYaxis()->SetRange(0.,1.);
 	h_selectEfficiency->SetLineWidth(2); // take short ~ int
-	// h_selectEfficiency->Draw("E");
-	// mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.png").c_str() );
-	// mirror->SaveAs( (m_kalmanOutputDir+"/"+"TrackEfficiencyPlot.root").c_str() );
 
 	AddHistogram(h_trackProduced);
 	AddHistogram(h_selectEfficiency);
@@ -1717,7 +1680,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 {
 	int chargeFromTW = GFSelector->GetChargeFromTW( fitTrack );
 	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;
-	if( chargeFromTW < 1 || chargeFromTW > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber )
+	if( chargeFromTW < 1 || chargeFromTW > m_GFgeometry->GetGparGeo()->GetBeamPar().AtomicNumber )
 	{
 		// Info("CheckChargeHypothesis()", "Wrong evaluation of TW charge for track candidate %s. No check performed...", PartName->c_str());
 		return;

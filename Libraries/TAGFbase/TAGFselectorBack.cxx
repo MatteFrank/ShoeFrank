@@ -166,11 +166,6 @@ void TAGFselectorBack::BackTracklets()
 					int count = 0;
 					double distanceInY = m_MSDtolerance;
 
-					//RZ: TO BE CHECKED!! ADDED TO AVOID ERRORS
-					// Bool_t areLightFragments = false;
-					// if (areLightFragments) distanceInY = m_MSDtolerance*2;
-					// loop all absMeas in the found IT plane
-
 					if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
 						// if(m_debug > 0)
 						cout << "TAGFselectorBack::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
