@@ -45,7 +45,7 @@ TABMparConf::TABMparConf()
   fLegMRange(0.1),
   fLegRBin(75),
   fLegRRange(2.),
-  fAssHitErr(5.),
+  fAssHitErr(3.),
   fInvertTrack(0),
   fSmearHits(0),
   fSmearRDrift(4),
@@ -144,6 +144,8 @@ Bool_t TABMparConf::FromFile(const TString& name) {
   if(FootDebugLevel(1))
      cout<<"fSmearRDrift="<<fSmearRDrift<<endl;
   ReadItem(fSmearHits);
+  if(TAGrecoManager::GetPar()->IsElecNoiseMc())
+    fSmearHits=2;
   if(FootDebugLevel(1))
      cout<<"fSmearHits="<<fSmearHits<<endl;
   ReadItem(fEnThresh);

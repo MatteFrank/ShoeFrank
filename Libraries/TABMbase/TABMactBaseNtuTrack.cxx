@@ -70,8 +70,18 @@ TABMactBaseNtuTrack::~TABMactBaseNtuTrack(){
 //! Setup all histograms.
 void TABMactBaseNtuTrack::CreateHistogram()
 {
+  TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
+  TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
   DeleteHistogram();
 
+  fpHisSelhHitDrift = new TH1I("bmSelHitDrift","Hit elected for tracking drift distance;Drift distance [cm];N hits", 100, 0., 1.);
+  AddHistogram(fpHisSelhHitDrift);
+  fpHisSelhHitTime = new TH1I("bmSelitTime","Hit selected for tracking time;Time [ns];N hits", 400, 0., 400.);
+  AddHistogram(fpHisSelhHitTime);
+  fpHisDischHitDrift = new TH1I("bmDiscHitDrift","Hit not selected for tracking drift distance;Drift distance [cm];N hits", 100, 0., 1.);
+  AddHistogram(fpHisDischHitDrift);
+  fpHisDischHitTime = new TH1I("bmDiscHitTime","Hit not selected for tracking time;Time [ns];N hits", 400, 0., 400.);
+  AddHistogram(fpHisDischHitTime);
   fpHisTrackStatus = new TH1I("bmTrackStatus","Track status; -2=maxhitcut -1=minhitcut 0=ok 1/2=firedplane 3=hitrejected 4=noconv 5=chi2cut 6=noxztrack 7=noyztrack 8+=Error; Events", 18, -2.5, 15.5);
   AddHistogram(fpHisTrackStatus);
   fpHisNhitTotTrack = new TH1I("bmTrackNtotHitsxTrack","Number of hits x track; N hits; Events", 31, -0.5, 30.5);
@@ -92,8 +102,6 @@ void TABMactBaseNtuTrack::CreateHistogram()
   AddHistogram(fpNYtrack);
 
   //control graphs
-  TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
-  TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
   if(p_bmcal->GetResoFunc()!=nullptr){
     fpParRes=(TH1D*)(p_bmcal->GetResoFunc()->GetHistogram()->Clone("bmParResolution"));
     fpParRes->SetTitle("BM input resolution; Drift distance [cm]; Resolution [cm]");
@@ -227,6 +235,13 @@ Bool_t TABMactBaseNtuTrack::LegendreFit()
     }
     for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
       TABMhit* p_hit=p_nturaw->GetHit(i);
+      if(p_hit->GetIsSelected()<=0){
+        fpHisDischHitTime->Fill(p_hit->GetTdrift());
+        fpHisDischHitDrift->Fill(p_hit->GetRdrift());
+      }else{
+        fpHisSelhHitTime->Fill(p_hit->GetTdrift());
+        fpHisSelhHitDrift->Fill(p_hit->GetRdrift());
+      }
       if(p_hit->GetIsSelected()>0 && p_hit->GetIsFake()==0){
         fpHisTrackFakeHit->Fill(0);
       }else if(p_hit->GetIsSelected()<=0 && p_hit->GetIsFake()>0){

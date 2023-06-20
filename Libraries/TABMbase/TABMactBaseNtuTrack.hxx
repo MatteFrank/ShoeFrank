@@ -88,6 +88,10 @@ public:
 
 
   //histos
+  TH1I*            fpHisSelhHitDrift;
+  TH1I*            fpHisSelhHitTime;
+  TH1I*            fpHisDischHitDrift;
+  TH1I*            fpHisDischHitTime;
   TH1I*            fpHisNhitTotTrack;
   TH1I*            fpHisNhitXTrack;
   TH1I*            fpHisNhitYTrack;

@@ -141,7 +141,7 @@ Bool_t TABMtrack::EvaluateResChi2(TABMntuHit* p_nturaw, TABMparGeo* p_bmgeo){
 
   fChiSquareX=chi2redX/(nselhitX-2.);
   fChiSquareY=chi2redY/(nselhitY-2.);
-  fChiSquare=(chi2redX+chi2redY)/(nselhitX+nselhitY);
+  fChiSquare=(chi2redX+chi2redY)/(nselhitX+nselhitY-4.);
 
   if (FootDebugLevel(2))
       cout<<"TABMtrack::EvaluateResChi2 finished: track has been reconstructed,  chi2redX="<<fChiSquareX<<" chi2redY="<<fChiSquareY<<"  chi2red="<<fChiSquare<<endl;
