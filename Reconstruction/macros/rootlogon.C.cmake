@@ -158,5 +158,11 @@
       tmp.Prepend(" .include ");
       gROOT->ProcessLine(tmp.Data());
       gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TANE@.so");
+      
+      tmp = "@TAPXI_INCLUDE_DIR@";
+      printf("- Add %s to the include path \n",tmp.Data());
+      tmp.Prepend(" .include ");
+      gROOT->ProcessLine(tmp.Data());
+      gSystem->Load("@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/lib@TAPXI@.so");
    }
 }
