@@ -42,11 +42,11 @@ void FillVertex() {
 
    TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
-   geomap->FromFile("./geomaps/TAVTdetector_Pxi.map");
+   geomap->FromFile("./geomaps/PXI/TAVTdetector.geo");
    
    TAGparaDsc*  vtConf  = new TAGparaDsc("vtConf", new TAVTparConf());
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
-   parconf->FromFile("./config/TAVTdetector_Pxi.cfg");
+   parconf->FromFile("./config/PXI/TAVTdetector.cfg");
    
    vtActClus =  new TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo);
    vtActClus->CreateHistogram();

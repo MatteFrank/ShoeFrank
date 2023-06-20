@@ -1,0 +1,13 @@
+// Campaign file
+CamName: "PXI"
+RunNumber: 1
+NumberDevices: 2
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/PXI/FOOT.geo": -1
+
+DetectorName: "VT"
+NumberFiles: 2
+"./geomaps/PXI/TAVTdetector.geo": -1
+"./config/PXI/TAVTdetector.cfg": -1
