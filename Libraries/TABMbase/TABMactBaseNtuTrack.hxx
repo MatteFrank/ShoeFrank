@@ -7,8 +7,6 @@
 */
 /*------------------------------------------+---------------------------------*/
 
-using namespace std;
-
 #include "TAGaction.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
@@ -39,6 +37,7 @@ using namespace std;
 #include <math.h>
 #include <iostream>
 
+using namespace std;
 
 class TABMactBaseNtuTrack : public TAGaction {
 public:
