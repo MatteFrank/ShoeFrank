@@ -184,6 +184,11 @@ private:
 	// TH2D* MSDresidualOfPrediction;
 	// TH2D* ITresidualOfPrediction;
 	// TH1F* percentageOfMCTracksVTX;
+	TH2I* h_nConvTracksVsStartTracks;
+	TH2I* h_nConvTracksVsStartTracksNmeasureCut;
+	TH2I* h_nConvTracksVsStartTracksConvergeCut;
+	TH2I* h_nConvTracksVsStartTracksYesTW;
+	TH2I* h_nConvTracksVsStartTracksNoTW;
 	TH1F* h_purity;										///< Purity -- histo
 	TH1F* h_trackEfficiency;							///< Tracking efficiency -- histo
 	TH1F* h_trackQuality;								///< Track quality -- histo

@@ -405,8 +405,11 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 	if ( m_debug > 0 )		cout << "Starting MakeFit " << endl;
 
 	bool isConverged = false;
+	bool NmeasureCut = false;
+	bool convergeCut = false;
 	int trackCounter = -1;
-	int NconvTracks = 0;
+	int NconvTracks = 0, NconvTracksYesTW = 0, NconvTracksNoTW = 0;
+	int NstartTracks = 0, NstartTracksYesTW = 0, NstartTracksNoTW = 0;
 
 	m_evNum = evNum;
 	if(m_debug > 0)
@@ -425,7 +428,10 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			delete preFitter;
 			continue;
 		}
-
+		NstartTracks++;
+		int lastMeasId = trackIt->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
+		if( m_SensorIDMap->GetFitPlaneIDFromMeasID(lastMeasId) != m_SensorIDMap->GetFitPlaneTW() ) NstartTracksNoTW++;
+		else NstartTracksYesTW++;
 
 		vector<string> tok = TAGparTools::Tokenize( trackIt->first.Data() , "_" );
 		string PartName = tok.at(0);
@@ -465,6 +471,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 		if ( fitTrack->getNumPointsWithMeasurement() < TAGrecoManager::GetPar()->MeasureN() )
 		{
 			if( m_debug > 0 )	Info("FillTrackCategoryMap()", "Skipped Track %s with %d TrackPoints with measurement!!", tok.at(2).c_str(), fitTrack->getNumPointsWithMeasurement());
+			NmeasureCut = true;
 			continue;
 		}
 
@@ -532,15 +539,16 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			fitTrack->getFitStatus(fitTrack->getCardinalRep())->Print();
 		}
 
-		isConverged = false;
-		if (  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted() && fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged() )
-			isConverged = true;	// convergence check
+		// converge check
+		isConverged = fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted() && fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged();
 
 		// // map of the CONVERGED tracks for each category
 		if (isConverged) {
 
 			if ( (TAGrecoManager::GetPar()->Chi2Cut() < 0) || ( m_fitter->getRedChiSqu(fitTrack, fitTrack->getCardinalRep()) <= TAGrecoManager::GetPar()->Chi2Cut() ) ) {
 				NconvTracks++;
+				if( m_SensorIDMap->GetFitPlaneIDFromMeasID(lastMeasId) != m_SensorIDMap->GetFitPlaneTW() ) NconvTracksNoTW++;
+				else NconvTracksYesTW++;
 
 				if ( m_nConvergedTracks_all.size() < 1 || m_nConvergedTracks_all.find( PartName ) == m_nConvergedTracks_all.end() )
 					m_nConvergedTracks_all[ PartName ] = 0;
@@ -552,32 +560,30 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			}
 			m_vectorConvergedTrack.push_back( fitTrack );
 		}
-
+		else
+			convergeCut = true;
 	}
 	// end  - loop over all tracks
 
-	if( TAGrecoManager::GetPar()->IsSaveHisto() )
-	{
-		if( m_mapTrack.find("dummy") == m_mapTrack.end() )
-			h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() );
-		else
-			h_nTracksPerEv->Fill( m_vectorConvergedTrack.size() - 1);
-	}
-
 	// filling event display with converged tracks
 	if ( TAGrecoManager::GetPar()->EnableEventDisplay() && m_vectorConvergedTrack.size() > 0) {
-		int nTracks;
-		if( m_mapTrack.find("dummy") == m_mapTrack.end() )
-			nTracks = m_vectorConvergedTrack.size();
-		else
-			nTracks = m_vectorConvergedTrack.size() - 1;
-		
-		if (nTracks > 1)
-			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << " display->addEvent size " << nTracks << " at position " << m_eventDisplayCounter << "\n";
+		if (NconvTracks > 1)
+			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << " display->addEvent size " << NconvTracks << " at position " << m_eventDisplayCounter << "\n";
 		m_eventDisplayCounter++;
 		display->addEvent(m_vectorConvergedTrack);
 	}
 	m_vectorConvergedTrack.clear();
+
+	//Filling control histograms
+	if( TAGrecoManager::GetPar()->IsSaveHisto() )
+	{
+		h_nConvTracksVsStartTracks->Fill(NconvTracks, NstartTracks);
+		if(NmeasureCut) h_nConvTracksVsStartTracksNmeasureCut->Fill(NconvTracks, NstartTracks);
+		if(convergeCut) h_nConvTracksVsStartTracksConvergeCut->Fill(NconvTracks, NstartTracks);
+		h_nConvTracksVsStartTracksNoTW->Fill(NconvTracksNoTW, NstartTracksNoTW);
+		h_nConvTracksVsStartTracksYesTW->Fill(NconvTracksYesTW, NstartTracksYesTW);
+		h_nTracksPerEv->Fill( NconvTracks );
+	}
 
 	if ( m_debug > 0 )		cout << "Ready for the next track fit!\n";
 
@@ -1386,8 +1392,23 @@ void TAGactKFitter::CreateHistogram()	{
 	h_trackMC_reco_id = new TH1F("h_trackMC_reco_id", "h_trackMC_reco_id", 45, 0., 45);
 	AddHistogram(h_trackMC_reco_id);
 
-	h_nTracksPerEv= new TH1F("h_nTracksPerEv", "h_nTracksPerEv", 15, 0., 15);
+	h_nTracksPerEv= new TH1F("h_nTracksPerEv", "h_nTracksPerEv", 15, -0.5, 14.5);
 	AddHistogram(h_nTracksPerEv);
+
+	h_nConvTracksVsStartTracks = new TH2I("h_nConvTracksVsStartTracks", "h_nConvTracksVsStartTracks;nConvTracks;nStartTracks", 15, -0.5, 14.5, 15, -0.5, 14.5);
+	AddHistogram(h_nConvTracksVsStartTracks);
+
+	h_nConvTracksVsStartTracksNmeasureCut = new TH2I("h_nConvTracksVsStartTracksNmeasureCut", "h_nConvTracksVsStartTracksNmeasureCut;nConvTracks;nStartTracks", 15, -0.5, 14.5, 15, -0.5, 14.5);
+	AddHistogram(h_nConvTracksVsStartTracksNmeasureCut);
+
+	h_nConvTracksVsStartTracksConvergeCut = new TH2I("h_nConvTracksVsStartTracksConvergeCut", "h_nConvTracksVsStartTracksConvergeCut;nConvTracks;nStartTracks", 15, -0.5, 14.5, 15, -0.5, 14.5);
+	AddHistogram(h_nConvTracksVsStartTracksConvergeCut);
+
+	h_nConvTracksVsStartTracksYesTW = new TH2I("h_nConvTracksVsStartTracksYesTW", "h_nConvTracksVsStartTracksYesTW;nConvTracks;nStartTracks", 15, -0.5, 14.5, 15, -0.5, 14.5);
+	AddHistogram(h_nConvTracksVsStartTracksYesTW);
+
+	h_nConvTracksVsStartTracksNoTW = new TH2I("h_nConvTracksVsStartTracksNoTW", "h_nConvTracksVsStartTracksNoTW;nConvTracks;nStartTracks", 15, -0.5, 14.5, 15, -0.5, 14.5);
+	AddHistogram(h_nConvTracksVsStartTracksNoTW);
 
 	h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality", 55, 0, 1.1);
 	AddHistogram(h_trackQuality);
