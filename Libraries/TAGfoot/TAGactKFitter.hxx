@@ -249,6 +249,8 @@ private:
 	vector<TH1F*> h_ratio_reco_true;					///< Vector of histograms for Fitted/MC momenutm module at the TG
 
 	vector<TH2D*> h_TWprojVsTheta;
+	vector<TH2D*> h_TWprojVsThetaNoTW;
+	vector<TH2D*> h_TWprojVsThetaYesTW;
 
 	//Efficiency & Purity variables
 	map<string, int> m_nSelectedTrackCandidates;		///< Map of total number of selected track candidates; the key is the particle name ("H", "He", "Li", ...)

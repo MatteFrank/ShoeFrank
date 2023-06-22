@@ -917,9 +917,12 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		}
 
 		TVector3 guessOnTW = m_dummySelector->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
-		if( theta_deg>=15 ) h_TWprojVsTheta[15]->Fill(guessOnTW.X(), guessOnTW.Y());
-		else h_TWprojVsTheta[ floor(theta_deg) ]->Fill(guessOnTW.X(), guessOnTW.Y());
-
+		int index = theta_deg >= 15 ? 15 : floor(theta_deg);
+		
+		h_TWprojVsTheta[ index ]->Fill(guessOnTW.X(), guessOnTW.Y());
+		if( shoeOutTrack->HasTwPoint() ) h_TWprojVsThetaYesTW[ index ]->Fill(guessOnTW.X(), guessOnTW.Y());
+		else h_TWprojVsThetaNoTW[ index ]->Fill(guessOnTW.X(), guessOnTW.Y());
+		
 		h_eta->Fill ( recoMom_target.Eta() );
 		h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
 		h_dy_dz->Fill ( recoMom_target.y() / recoMom_target.z() );
@@ -1513,8 +1516,14 @@ void TAGactKFitter::CreateHistogram()	{
 
 	for (int i=0; i<16; ++i)
 	{
-		h_TWprojVsTheta.push_back(new TH2D(Form("TWproj_Theta%d-%d",i,i+1),Form("TWproj_Theta%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-30,30,400,-30,30));
+		h_TWprojVsTheta.push_back(new TH2D(Form("TWproj_Theta%d-%d",i,i+1),Form("TWproj_Theta%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-40,40,400,-40,40));
 		AddHistogram(h_TWprojVsTheta[i]);
+
+		h_TWprojVsThetaNoTW.push_back(new TH2D(Form("TWproj_ThetaNoTW%d-%d",i,i+1),Form("TWproj_ThetaNoTW%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-40,40,400,-40,40));
+		AddHistogram(h_TWprojVsThetaNoTW[i]);
+
+		h_TWprojVsThetaYesTW.push_back(new TH2D(Form("TWproj_ThetaYesTW%d-%d",i,i+1),Form("TWproj_ThetaYesTW%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-40,40,400,-40,40));
+		AddHistogram(h_TWprojVsThetaYesTW[i]);
 	}
 
 	for (int i = 0; i < 9; ++i)
@@ -1610,17 +1619,24 @@ void TAGactKFitter::AddResidualAndPullHistograms()
 //! Re-implemented from TAGaction to have a subdirectory for global track residuals and pulls
 void TAGactKFitter::SetHistogramDir(TDirectory* dir)
 {
-	TDirectory* subdir = 0x0;
-	dir->GetObject("TRKRES", subdir);
-	if( !subdir )
-		subdir = dir->mkdir("TRKRES");
+	TDirectory* subdirRes = 0x0;
+	dir->GetObject("TRKRES", subdirRes);
+	if( !subdirRes )
+		subdirRes = dir->mkdir("TRKRES");
+
+	TDirectory* subdirTWproj = 0x0;
+	dir->GetObject("TWproj", subdirTWproj);
+	if( !subdirTWproj )
+		subdirTWproj = dir->mkdir("TWproj");
 
 	if (fpHistList) {
 		for (TObjLink* lnk = fpHistList->FirstLink(); lnk; lnk=lnk->Next()) {
 			TH1* h = (TH1*)lnk->GetObject();
 			TString name(h->GetName());
 			if( name.Contains("Pull") || name.Contains("Res_") )
-				h->SetDirectory(subdir);
+				h->SetDirectory(subdirRes);
+			else if ( name.Contains("TWproj") )
+				h->SetDirectory(subdirTWproj);
 			else
 				h->SetDirectory(dir);
 		}
@@ -1629,7 +1645,7 @@ void TAGactKFitter::SetHistogramDir(TDirectory* dir)
 
 	fDirectory = dir;
 
-	if (!dir->IsWritable() || !subdir->IsWritable()) fbIsOpenFile = false;
+	if (!dir->IsWritable() || !subdirRes->IsWritable() || !subdirTWproj->IsWritable()) fbIsOpenFile = false;
 }
 
 
