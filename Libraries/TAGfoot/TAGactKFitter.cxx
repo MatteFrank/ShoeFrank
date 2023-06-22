@@ -205,6 +205,7 @@ Bool_t TAGactKFitter::Action()
 
 	//Declare selector object
 	TAGFselectorBase* GFSelector = InitializeSelector();
+	m_dummySelector = GFSelector; //RZ: Temporary!!!!
 	GFSelector->SetVariables(&m_allHitMeasGF, m_systemsON, &chVect, m_SensorIDMap, &m_mapTrack, m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents, &m_noTWpointEvents);
 
 	//Find track candidates and fit them
@@ -262,45 +263,43 @@ void TAGactKFitter::Finalize() {
 
 	if( ValidHistogram() )
 	{
-		// map<string, map<float, TH1F*> > h_dPOverP_x_bin
-		for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); ++collIt )
-			for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); ++it ) {
+		if( m_IsMC )
+		{
+			for ( map<string, map<float, TH1F*> >::iterator collIt=h_dPOverP_x_bin.begin(); collIt != h_dPOverP_x_bin.end(); ++collIt )
+				for ( map<float, TH1F*>::iterator it=(*collIt).second.begin(); it != (*collIt).second.end(); ++it ) {
+					AddHistogram( (*it).second );
+					cout << "TAGactKFitter::Finalize() -- " << (*it).second->GetTitle()<< endl;
+				}
+
+			for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); ++it )
 				AddHistogram( (*it).second );
-				cout << "TAGactKFitter::Finalize() -- " << (*it).second->GetTitle()<< endl;
+
+			for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it )
+				AddHistogram( (*it).second );
+
+			TH1F* h_deltaP_tot = new TH1F();
+			TH1F* h_sigmaP_tot = new TH1F();
+
+			int count = 0;
+			for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); ++it ) {
+				if ( count == 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
+				else 				h_deltaP_tot->Add( (*it).second, 1 );
+				AddHistogram( (*it).second );
+				count++;
 			}
+			h_deltaP_tot->SetTitle( "dP" );
+			AddHistogram( h_deltaP_tot );
 
-		// map<string, TH1F*>* h_resoP_over_Pkf
-		for ( map<string, TH1F*>::iterator it=h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); ++it )
-			AddHistogram( (*it).second );
-
-		// map<string, TH1F*>* h_biasP_over_Pkf
-		for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it )
-			AddHistogram( (*it).second );
-
-		TH1F* h_deltaP_tot = new TH1F();
-		TH1F* h_sigmaP_tot = new TH1F();
-
-		// map<string, TH1F*>* h_deltaP
-		int count = 0;
-		for ( map<string, TH1F*>::iterator it=h_deltaP.begin(); it != h_deltaP.end(); ++it ) {
-			if ( count == 0 ) 	h_deltaP_tot = (TH1F*)((*it).second)->Clone("dP");
-			else 				h_deltaP_tot->Add( (*it).second, 1 );
-			AddHistogram( (*it).second );
-			count++;
+			count=0;
+			for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); ++it ) {
+				if ( count == 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
+				else 				h_sigmaP_tot->Add( (*it).second, 1 );
+				AddHistogram( (*it).second );
+				count++;
+			}
+			h_sigmaP_tot->SetNameTitle( "errdP", "errdP" );
+			AddHistogram( h_sigmaP_tot );
 		}
-		h_deltaP_tot->SetTitle( "dP" );
-		AddHistogram( h_deltaP_tot );
-
-		// map<string, TH1F*>* h_sigmaP
-		count=0;
-		for ( map<string, TH1F*>::iterator it=h_sigmaP.begin(); it != h_sigmaP.end(); ++it ) {
-			if ( count == 0 ) 	h_sigmaP_tot = (TH1F*) (*it).second->Clone();
-			else 				h_sigmaP_tot->Add( (*it).second, 1 );
-			AddHistogram( (*it).second );
-			count++;
-		}
-		h_sigmaP_tot->SetNameTitle( "errdP", "errdP" );
-		AddHistogram( h_sigmaP_tot );
 
 		TH1F* h_numGenParticle_noFrag = new TH1F( "h_numGenParticle_noFrag", "h_numGenParticle_noFrag", 100, 0, 10000 );
 		AddHistogram( h_numGenParticle_noFrag );
@@ -404,7 +403,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 
 	if ( m_debug > 0 )		cout << "Starting MakeFit " << endl;
 
-	bool isConverged = false;
+	bool isConverged = false, isConvergedPartial = false;
 	bool NmeasureCut = false;
 	bool convergeCut = false;
 	int trackCounter = -1;
@@ -900,20 +899,26 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_theta->Fill ( recoMom_target.Theta()*TMath::RadToDeg() );
 
 		// histos wrt BM track
-		h_theta_BM->Fill ( shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg() );
-		h_phi_BM->Fill ( shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg() );
+		float theta_deg = shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg();
+		float phi_deg = shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg();
+		h_theta_BM->Fill ( theta_deg );
+		h_phi_BM->Fill ( phi_deg );
 		h_trackDirBM->Fill(TrackDir.X(), TrackDir.Y());
 
 		if( shoeOutTrack->HasTwPoint() )
 		{
-			h_theta_BMyesTw->Fill ( shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg() );
-			h_phi_BMyesTw->Fill ( shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg() );
+			h_theta_BMyesTw->Fill ( theta_deg );
+			h_phi_BMyesTw->Fill ( phi_deg );
 		}
 		else
 		{
-			h_theta_BMnoTw->Fill ( shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg() );
-			h_phi_BMnoTw->Fill ( shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg() );
+			h_theta_BMnoTw->Fill ( theta_deg );
+			h_phi_BMnoTw->Fill ( phi_deg );
 		}
+
+		TVector3 guessOnTW = m_dummySelector->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
+		if( theta_deg>=15 ) h_TWprojVsTheta[15]->Fill(guessOnTW.X(), guessOnTW.Y());
+		else h_TWprojVsTheta[ floor(theta_deg) ]->Fill(guessOnTW.X(), guessOnTW.Y());
 
 		h_eta->Fill ( recoMom_target.Eta() );
 		h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
@@ -1386,12 +1391,6 @@ void TAGactKFitter::CreateHistogram()	{
 	h_GFeventType = new TH1I("h_GFeventType", "h_GFeventType", 5, 0.5, 5.5);
 	AddHistogram(h_GFeventType);
 
-	h_trackMC_true_id = new TH1F("h_trackMC_true_id", "h_trackMC_true_id", 45, 0., 45);
-	AddHistogram(h_trackMC_true_id);
-
-	h_trackMC_reco_id = new TH1F("h_trackMC_reco_id", "h_trackMC_reco_id", 45, 0., 45);
-	AddHistogram(h_trackMC_reco_id);
-
 	h_nTracksPerEv= new TH1F("h_nTracksPerEv", "h_nTracksPerEv", 15, -0.5, 14.5);
 	AddHistogram(h_nTracksPerEv);
 
@@ -1410,8 +1409,17 @@ void TAGactKFitter::CreateHistogram()	{
 	h_nConvTracksVsStartTracksNoTW = new TH2I("h_nConvTracksVsStartTracksNoTW", "h_nConvTracksVsStartTracksNoTW;nConvTracks;nStartTracks", 15, -0.5, 14.5, 15, -0.5, 14.5);
 	AddHistogram(h_nConvTracksVsStartTracksNoTW);
 
-	h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality", 55, 0, 1.1);
-	AddHistogram(h_trackQuality);
+	if( m_IsMC )
+	{
+		h_trackMC_true_id = new TH1F("h_trackMC_true_id", "h_trackMC_true_id", 45, 0., 45);
+		AddHistogram(h_trackMC_true_id);
+
+		h_trackMC_reco_id = new TH1F("h_trackMC_reco_id", "h_trackMC_reco_id", 45, 0., 45);
+		AddHistogram(h_trackMC_reco_id);
+
+		h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality", 55, 0, 1.1);
+		AddHistogram(h_trackQuality);
+	}
 
 	h_length = new TH1F("m_length", "m_length", 400, 0, 200);
 	AddHistogram(h_length);
@@ -1422,14 +1430,17 @@ void TAGactKFitter::CreateHistogram()	{
 	h_pVal = new TH1F("m_pVal", "m_pVal", 300, 0, 3);
 	AddHistogram(h_pVal);
 
-	h_mcPosX = new TH1F("h_mcPosX", "h_mcPosX", 400, -1, 1);
-	AddHistogram(h_mcPosX);
+	if( m_IsMC )
+	{
+		h_mcPosX = new TH1F("h_mcPosX", "h_mcPosX", 400, -1, 1);
+		AddHistogram(h_mcPosX);
 
-	h_mcPosY = new TH1F("h_mcPosY", "h_mcPosY", 400, -1, 1);
-	AddHistogram(h_mcPosY);
+		h_mcPosY = new TH1F("h_mcPosY", "h_mcPosY", 400, -1, 1);
+		AddHistogram(h_mcPosY);
 
-	h_mcPosZ = new TH1F("h_mcPosZ", "h_mcPosZ", 500, -0.25, 0.25);
-	AddHistogram(h_mcPosZ);
+		h_mcPosZ = new TH1F("h_mcPosZ", "h_mcPosZ", 500, -0.25, 0.25);
+		AddHistogram(h_mcPosZ);
+	}
 
 	h_dR = new TH1F("h_dR", "h_dR", 100, 0., 20.);
 	AddHistogram(h_dR);
@@ -1473,11 +1484,14 @@ void TAGactKFitter::CreateHistogram()	{
 	h_nMeas = new TH1F("nMeas", "nMeas", 13, 0., 13.);
 	AddHistogram(h_nMeas);
 
-	h_chargeMC = new TH1F("h_chargeMC", "h_chargeMC", 9, 0, 9);
-	AddHistogram(h_chargeMC);
+	if ( m_IsMC )
+	{
+		h_chargeMC = new TH1F("h_chargeMC", "h_chargeMC", 9, 0, 9);
+		AddHistogram(h_chargeMC);
+	}
 
 	h_chargeMeas = new TH1F("h_chargeMeas", "h_chargeMeas", 9, 0, 9);
-	AddHistogram(h_chargeMC);
+	AddHistogram(h_chargeMeas);
 
 	h_chargeFlip = new TH1F("h_chargeFlip", "h_chargeFlip", 20, -5, 5);
 	AddHistogram(h_chargeFlip);
@@ -1488,21 +1502,34 @@ void TAGactKFitter::CreateHistogram()	{
 	h_chi2 = new TH1F("h_chi2", "h_chi2", 200, 0., 10.);
 	AddHistogram(h_chi2);
 
-	h_mcMom = new TH1F("h_mcMom", "h_mcMom", 150, 0., 15.);
-	AddHistogram(h_mcMom);
+	if( m_IsMC )
+	{
+		h_mcMom = new TH1F("h_mcMom", "h_mcMom", 150, 0., 15.);
+		AddHistogram(h_mcMom);
+	}
 
 	h_momentum = new TH1F("h_momentum", "h_momentum", 150, 0., 15.);
 	AddHistogram(h_momentum);
 
-	for (int i = 0; i < 9; ++i){
-		h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 1000, 0.,15.));
-		AddHistogram(h_momentum_true[i]);
+	for (int i=0; i<16; ++i)
+	{
+		h_TWprojVsTheta.push_back(new TH2D(Form("TWproj_Theta%d-%d",i,i+1),Form("TWproj_Theta%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-30,30,400,-30,30));
+		AddHistogram(h_TWprojVsTheta[i]);
+	}
 
+	for (int i = 0; i < 9; ++i)
+	{
 		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 1000, 0.,15.));
 		AddHistogram(h_momentum_reco[i]);
 
-		h_ratio_reco_true.push_back(new TH1F(Form("MomentumRatio%d",i), Form("Momentum Ratio %d",i), 1000, 0, 2.5));
-		AddHistogram(h_ratio_reco_true[i]);
+		if( m_IsMC )
+		{
+			h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 1000, 0.,15.));
+			AddHistogram(h_momentum_true[i]);
+
+			h_ratio_reco_true.push_back(new TH1F(Form("MomentumRatio%d",i), Form("Momentum Ratio %d",i), 1000, 0, 2.5));
+			AddHistogram(h_ratio_reco_true[i]);
+		}
 	}
 
 	h_PlaneOccupancy[0] = new TH2I("h_PlaneOccupancy", "h_PlaneOccupancy; FitPlane Id; # of clusters", m_SensorIDMap->GetFitPlanesN()+2, -1.5, m_SensorIDMap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
@@ -1799,20 +1826,19 @@ void TAGactKFitter::ClearData()
 //! \brief Delete all histograms
 void TAGactKFitter::ClearHistos()
 {
-	if ( m_IsMC )
-		delete h_purity;
 	delete h_trackEfficiency;
-	delete h_trackQuality;
-	delete h_trackMC_true_id;
-	delete h_trackMC_reco_id;
 	delete h_nTracksPerEv;
+	delete h_nConvTracksVsStartTracks;
+	delete h_nConvTracksVsStartTracksNmeasureCut;
+	delete h_nConvTracksVsStartTracksConvergeCut;
+	delete h_nConvTracksVsStartTracksYesTW;
+	delete h_nConvTracksVsStartTracksNoTW;
 	delete h_length;
 	delete h_tof;
 	delete h_nMeas;
 	delete h_mass;
 	delete h_chi2;
 	delete h_pVal;
-	delete h_chargeMC;
 	delete h_chargeMeas;
 	delete h_chargeFlip;
 	delete h_momentum;
@@ -1824,47 +1850,56 @@ void TAGactKFitter::ClearHistos()
 	delete h_eta;
 	delete h_dx_dz;
 	delete h_dy_dz;
-	delete h_mcMom;
-	delete h_mcPosX;
-	delete h_mcPosY;
-	delete h_mcPosZ;
 	delete h_GFeventType;
 
-	for(auto it = h_deltaP.begin(); it != h_deltaP.end(); ++it)
-		delete it->second;
-	h_deltaP.clear();
+	if ( m_IsMC )
+	{
+		delete h_purity;
+		delete h_trackMC_true_id;
+		delete h_trackMC_reco_id;
+		delete h_mcMom;
+		delete h_mcPosX;
+		delete h_mcPosY;
+		delete h_mcPosZ;
+		delete h_trackQuality;
+		delete h_chargeMC;
 
-	for(auto it = h_sigmaP.begin(); it != h_sigmaP.end(); ++it)
-		delete it->second;
-	h_sigmaP.clear();
+		for(auto it = h_deltaP.begin(); it != h_deltaP.end(); ++it)
+			delete it->second;
+		h_deltaP.clear();
 
-	for(auto it = h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); ++it)
-		delete it->second;
-	h_resoP_over_Pkf.clear();
+		for(auto it = h_sigmaP.begin(); it != h_sigmaP.end(); ++it)
+			delete it->second;
+		h_sigmaP.clear();
 
-	for(auto it = h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it)
-		delete it->second;
-	h_biasP_over_Pkf.clear();
+		for(auto it = h_resoP_over_Pkf.begin(); it != h_resoP_over_Pkf.end(); ++it)
+			delete it->second;
+		h_resoP_over_Pkf.clear();
 
-	for(auto it : h_momentum_true)
-		delete it;
-	h_momentum_true.clear();
+		for(auto it = h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it)
+			delete it->second;
+		h_biasP_over_Pkf.clear();
+
+		for(auto it : h_momentum_true)
+			delete it;
+		h_momentum_true.clear();
+
+		for(auto it : h_ratio_reco_true)
+			delete it;
+		h_ratio_reco_true.clear();
+
+		for(auto it = h_dPOverP_x_bin.begin(); it != h_dPOverP_x_bin.end(); ++it)
+		{
+			for(auto iit = it->second.begin(); iit != it->second.end(); ++iit)
+				delete iit->second;
+			it->second.clear();
+		}
+		h_dPOverP_x_bin.clear();
+	}
 
 	for(auto it : h_momentum_reco)
 		delete it;
 	h_momentum_reco.clear();
-
-	for(auto it : h_ratio_reco_true)
-		delete it;
-	h_ratio_reco_true.clear();
-
-	for(auto it = h_dPOverP_x_bin.begin(); it != h_dPOverP_x_bin.end(); ++it)
-	{
-		for(auto iit = it->second.begin(); iit != it->second.end(); ++iit)
-			delete iit->second;
-		it->second.clear();
-	}
-	h_dPOverP_x_bin.clear();
 
 	for(auto it : h_residual)
 		delete it.second;

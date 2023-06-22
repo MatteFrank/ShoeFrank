@@ -91,6 +91,7 @@ public:
 	map<string, int>	CountParticleGeneratedAndVisible();
 	void				FillPlaneOccupancy(TH2I** h_PlaneOccupancy);
 	string				GetParticleNameFromCharge(int ch);
+	virtual TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId = -1);
 
 protected:
 	void		CheckPlaneOccupancy();
@@ -101,7 +102,6 @@ protected:
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV);
 
 	void		FillTrackCategoryMap();
-	virtual TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId = -1);
 
 	int m_eventType;
 	vector<int>* m_chargeVect;								///< Vector with charge values seen by TW -> used for track representation declaration

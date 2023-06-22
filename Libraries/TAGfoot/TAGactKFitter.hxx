@@ -149,6 +149,7 @@ private:
 
 	TAGntuGlbTrack* m_outTrackRepo;						///< CHECK WITH MATTEO HOW TO DO THIS
 
+	TAGFselectorBase* m_dummySelector;
 	TAGFdetectorMap* m_SensorIDMap;						///< GenFit detector Map for index handling
 	TAGF_KalmanStudies* m_trackAnalysis;				///< GenFit custom output class
 
@@ -246,6 +247,8 @@ private:
 	vector<TH1F*> h_momentum_true;						///< Vector of histograms for MC momentum module at the TG
 	vector<TH1F*> h_momentum_reco;						///< Vector of histograms for Fitted momentum moduel at the TG
 	vector<TH1F*> h_ratio_reco_true;					///< Vector of histograms for Fitted/MC momenutm module at the TG
+
+	vector<TH2D*> h_TWprojVsTheta;
 
 	//Efficiency & Purity variables
 	map<string, int> m_nSelectedTrackCandidates;		///< Map of total number of selected track candidates; the key is the particle name ("H", "He", "Li", ...)
