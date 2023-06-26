@@ -35,30 +35,34 @@
 //! Class Imp
 ClassImp(TAGbaseTrack) // Description of a Track
 
-//______________________________________________________________________________
-//! Constructor
-TAGbaseTrack::TAGbaseTrack()
-:  TAGobject(),
-   fOrigin(new TVector3()),
-   fSlope(new TVector3()),
-   fOriginErr(new TVector3()),
-   fSlopeErr(new TVector3()),
-   fLength(0.0),
-   fPileup(kFALSE),
-   fType(0),
-   fTrackIdx(-1),
-   fChiSquare(0.),
-   fChiSquareU(0.),
-   fChiSquareV(0.),
-   fValidity(false),
-   fChargeProba(new TArrayF(6)),
-   fChargeWithMaxProba(0),
-   fChargeMaxProba(0.),
-   fChargeProbaNorm(new TArrayF(6)),
-   fChargeWithMaxProbaNorm(0),
-   fChargeMaxProbaNorm(0.),
-   fMeanEltsN(0),
-   fMeanCharge(0.)
+    //______________________________________________________________________________
+    //! Constructor
+    TAGbaseTrack::TAGbaseTrack()
+    : TAGobject(),
+      fOrigin(new TVector3()),
+      fSlope(new TVector3()),
+      fOriginErr(new TVector3()),
+      fSlopeErr(new TVector3()),
+      fLength(0.0),
+      fPileup(kFALSE),
+      fType(0),
+      fTrackIdx(-1),
+      fChiSquare(0.),
+      fChiSquareRedU(0.),
+      fChiSquareRedV(0.),
+      fChiSquareU(0.),
+      fChiSquareV(0.),
+      fPvalueU(0.), ///< pvalue of fit U dim
+      fPvalueV(0.),
+      fValidity(false),
+      fChargeProba(new TArrayF(6)),
+      fChargeWithMaxProba(0),
+      fChargeMaxProba(0.),
+      fChargeProbaNorm(new TArrayF(6)),
+      fChargeWithMaxProbaNorm(0),
+      fChargeMaxProbaNorm(0.),
+      fMeanEltsN(0),
+      fMeanCharge(0.)
 {
    fMcTrackIdx.Reset();
    fMcTrackMap.clear();
@@ -68,30 +72,35 @@ TAGbaseTrack::TAGbaseTrack()
 //! Copy constructor
 //!
 //! \param[in] aTrack track to copy
-TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack& aTrack)
-:  TAGobject(aTrack),
-   fOrigin(new TVector3(*aTrack.fOrigin)),
-   fSlope(new TVector3(*aTrack.fSlope)),
-   fOriginErr(new TVector3(*aTrack.fOriginErr)),
-   fSlopeErr(new TVector3(*aTrack.fSlopeErr)),
-   fLength(aTrack.fLength),
-   fPileup(aTrack.fPileup),
-   fType(aTrack.GetType()),
-   fTrackIdx(aTrack.GetTrackIdx()),
-   fChiSquare(aTrack.GetChi2()),
-   fChiSquareU(aTrack.GetChi2U()),
-   fChiSquareV(aTrack.GetChi2V()),
-   fPosVertex(aTrack.fPosVertex),
-   fValidity(aTrack.fValidity),
-   fChargeProba(new TArrayF(*aTrack.fChargeProba)),
-   fChargeWithMaxProba(aTrack.fChargeWithMaxProba),
-   fChargeMaxProba(aTrack.fChargeMaxProba),
-   fChargeProbaNorm(new TArrayF(*aTrack.fChargeProbaNorm)),
-   fChargeWithMaxProbaNorm(aTrack.fChargeWithMaxProbaNorm),
-   fChargeMaxProbaNorm(aTrack.fChargeMaxProbaNorm),
-   fMeanEltsN(aTrack.fMeanEltsN),
-   fMeanCharge(aTrack.fMeanCharge),
-   fMcTrackIdx(aTrack.fMcTrackIdx)
+TAGbaseTrack::TAGbaseTrack(const TAGbaseTrack &aTrack)
+    : TAGobject(aTrack),
+      fOrigin(new TVector3(*aTrack.fOrigin)),
+      fSlope(new TVector3(*aTrack.fSlope)),
+      fOriginErr(new TVector3(*aTrack.fOriginErr)),
+      fSlopeErr(new TVector3(*aTrack.fSlopeErr)),
+      fLength(aTrack.fLength),
+      fPileup(aTrack.fPileup),
+      fType(aTrack.GetType()),
+      fTrackIdx(aTrack.GetTrackIdx()),
+      fChiSquare(aTrack.GetChi2()),
+      fChiSquareRedU(aTrack.GetChi2redU()),
+      fChiSquareRedV(aTrack.GetChi2redV()),
+      fChiSquareU(aTrack.GetChi2U()),
+      fChiSquareV(aTrack.GetChi2V()),
+      fPvalueU(aTrack.GetPvalueU()), ///< pvalue of fit U dim
+      fPvalueV(aTrack.GetPvalueV()),
+
+      fPosVertex(aTrack.fPosVertex),
+      fValidity(aTrack.fValidity),
+      fChargeProba(new TArrayF(*aTrack.fChargeProba)),
+      fChargeWithMaxProba(aTrack.fChargeWithMaxProba),
+      fChargeMaxProba(aTrack.fChargeMaxProba),
+      fChargeProbaNorm(new TArrayF(*aTrack.fChargeProbaNorm)),
+      fChargeWithMaxProbaNorm(aTrack.fChargeWithMaxProbaNorm),
+      fChargeMaxProbaNorm(aTrack.fChargeMaxProbaNorm),
+      fMeanEltsN(aTrack.fMeanEltsN),
+      fMeanCharge(aTrack.fMeanCharge),
+      fMcTrackIdx(aTrack.fMcTrackIdx)
 {
    fListOfClusters = (TClonesArray*)aTrack.fListOfClusters->Clone();
 }
@@ -123,7 +132,7 @@ Float_t TAGbaseTrack::GetTheta() const
 //! Get phi angle in deg
 Float_t TAGbaseTrack::GetPhi() const
 {
-   TVector3 origin = fOrigin->Unit();
+   TVector3 origin = fSlope->Unit();
    Float_t phi     = origin.Phi()*TMath::RadToDeg();
 
    return phi;
@@ -213,6 +222,13 @@ void TAGbaseTrack::SetLineErrorValue(const TVector3& aOriginErr, const TVector3&
    SetErrorValue(aOriginErr, aSlopeErr);
 }
 
+void TAGbaseTrack::SetCovarianceMatrix(TMatrixDSym covMatrixU, TMatrixDSym covMatrixV){
+    fCovMatrixU.ResizeTo(covMatrixU);
+    fCovMatrixU = covMatrixU;
+    fCovMatrixV.ResizeTo(covMatrixV);
+    fCovMatrixV = covMatrixV;
+}
+
 //______________________________________________________________________________
 //! Calculates the Intersection of the Track with a plane
 //!
@@ -296,7 +312,7 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
    Int_t   ndfU, ndfV;
    err = dhs;
    ndfU = ndfV = -2; // indeed, two parameters are fit per dimemsions (4 in all)
-   fChiSquare = fChiSquareU = fChiSquareV = 0.0;
+   fChiSquare = fChiSquareU = fChiSquareV = fChiSquareRedV = fChiSquareRedU= 0.0;
    if( GetClustersN() <=2 ) return; // return 0. for chisquare if there is less than 2 hits
 
    for (Int_t ht = 0; ht < GetClustersN(); ht++){
@@ -307,6 +323,7 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 	  tdU = (GetCluster(ht)->GetPositionG().Px() - tUtrack)/(dhs);
 	  ndfU++;
 	  fChiSquareU += tdU * tdU;
+     
 	  dhs = err;
 
 	  // only for pixel detector
@@ -316,9 +333,10 @@ void TAGbaseTrack::MakeChiSquare(Float_t dhs)
 	  tdV = (GetCluster(ht)->GetPositionG().Py() - tVtrack)/(dhs);
 	  ndfV++;
 	  fChiSquareV += tdV * tdV;
-
+     dhs = err;
    }
-
+   //cout << "chisquare x: " << fChiSquareU << endl;
+   //cout << "ndfU: " << ndfU << endl;
    fChiSquare = (fChiSquareU+fChiSquareV) / Double_t(2*GetClustersN()-4);
    fChiSquareU /= ndfU;
    fChiSquareV /= ndfV;
