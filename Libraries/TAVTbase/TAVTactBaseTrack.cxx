@@ -260,11 +260,11 @@ Bool_t TAVTactBaseTrack::AppyCuts(TAGbaseTrack* track)
    if (track->GetClustersN() >= fRequiredClusters)
   	  valid = true;
 
-//cut in n pixels
-   for (int i = 0; i < track->GetClustersN(); i++){
-     TAGcluster *cluster = (TAGcluster *)track->GetCluster(i);
-     if (cluster->GetElementsN() < 10) valid = false;
-   }
+// //cut in n pixels
+//    for (int i = 0; i < track->GetClustersN(); i++){
+//      TAGcluster *cluster = (TAGcluster *)track->GetCluster(i);
+//      if (cluster->GetElementsN() < 10) valid = false;
+//    }
 
      return valid;
 }
