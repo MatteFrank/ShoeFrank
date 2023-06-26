@@ -118,6 +118,9 @@ protected:
    TH2F *fpHisPullYvsChiY[MaxTrkSens];    // pull vs reduced chi2 in y
    TH2F *fpHisPullXvsPvalue[MaxTrkSens];    // pull vs reduced chi2 in x
    TH2F *fpHisPullYvsPvalue[MaxTrkSens];    // pull vs reduced chi2 in y
+   TH2F *fpHisPullXvsClusSize[MaxTrkSens];      // pull vs cluster size in x
+   TH2F *fpHisPullYvsClusSize[MaxTrkSens];      // pull vs cluster size in y
+
    TH1F*           fpHisTrackClustPosX[MaxTrkSens];   ///< cluster position in X histogram
    TH1F*           fpHisTrackClustPosY[MaxTrkSens];   ///< cluster position in Y histogram
    TH1F*           fpHisTrackClustPosErrX[MaxTrkSens]; ///< cluster err position in X histogram

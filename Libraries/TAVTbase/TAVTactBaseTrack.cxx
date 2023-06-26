@@ -130,23 +130,29 @@ void TAVTactBaseTrack::CreateHistogram()
       AddHistogram(fpHisTrackClusSizeAll[i]);
 
       // pull
-      fpHisPullX[i] = new TH1F(Form("%sPullX%d", fPrefix.Data(), i + 1), Form("%s - PullX of sensor %d", fTitleDev.Data(), i + 1), 100, -5, 5);
+      fpHisPullX[i] = new TH1F(Form("%sPullX%d", fPrefix.Data(), i + 1), Form("%s - PullX of sensor %d", fTitleDev.Data(), i + 1), 1000, -50, 50);
       AddHistogram(fpHisPullX[i]);
-      fpHisPullXcut[i] = new TH1F(Form("%sPullXcut%d", fPrefix.Data(), i + 1), Form("%s - cut PullX of sensor %d", fTitleDev.Data(), i + 1), 100, -5, 5);
+      fpHisPullXcut[i] = new TH1F(Form("%sPullXcut%d", fPrefix.Data(), i + 1), Form("%s - cut PullX of sensor %d", fTitleDev.Data(), i + 1), 1000, -50, 50);
       AddHistogram(fpHisPullXcut[i]);
-      fpHisPullY[i] = new TH1F(Form("%sPullY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d", fTitleDev.Data(), i + 1), 100, -5, 5); // ! range
+      fpHisPullY[i] = new TH1F(Form("%sPullY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d", fTitleDev.Data(), i + 1), 1000, -50, 50); // ! range
       AddHistogram(fpHisPullY[i]);
-      fpHisPullYcut[i] = new TH1F(Form("%sPullYcut%d", fPrefix.Data(), i + 1), Form("%s - cut pullY of sensor %d", fTitleDev.Data(), i + 1), 100, -5, 5); // ! range
+      fpHisPullYcut[i] = new TH1F(Form("%sPullYcut%d", fPrefix.Data(), i + 1), Form("%s - cut pullY of sensor %d", fTitleDev.Data(), i + 1), 1000, -50, 50); // ! range
       AddHistogram(fpHisPullYcut[i]);
 
-      fpHisPullYvsChiY[i] = new TH2F(Form("%sPullYvsChiY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d vs reduced chi2 in y; pull; chi2 ", fTitleDev.Data(), i + 1), 100, -5, 5, 1000, 0, 20); // ! range
+      fpHisPullYvsChiY[i] = new TH2F(Form("%sPullYvsChiY%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d vs reduced chi2 in y; pull; chi2 ", fTitleDev.Data(), i + 1), 1000, -50, 50, 1000, 0, 20); // ! range
       AddHistogram(fpHisPullYvsChiY[i]);
-      fpHisPullXvsChiX[i] = new TH2F(Form("%sPullXvsChiX%d", fPrefix.Data(), i + 1), Form("%s - pullX of sensor %d vs reduced chi2 in X; pull; chi2 ", fTitleDev.Data(), i + 1), 100, -5, 5, 1000, 0, 20); // ! range
+      fpHisPullXvsChiX[i] = new TH2F(Form("%sPullXvsChiX%d", fPrefix.Data(), i + 1), Form("%s - pullX of sensor %d vs reduced chi2 in X; pull; chi2 ", fTitleDev.Data(), i + 1), 1000, -50, 50, 1000, 0, 20); // ! range
       AddHistogram(fpHisPullXvsChiX[i]);
-      fpHisPullYvsPvalue[i] = new TH2F(Form("%sPullYvsP%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d vs pvalue in y; pull; pvalue ", fTitleDev.Data(), i + 1), 100, -5, 5, 1000, 0, 1); // ! range
+      fpHisPullYvsPvalue[i] = new TH2F(Form("%sPullYvsP%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d vs pvalue in y; pull; pvalue ", fTitleDev.Data(), i + 1), 1000, -50, 50, 1000, 0, 1); // ! range
       AddHistogram(fpHisPullYvsPvalue[i]);
-      fpHisPullXvsPvalue[i] = new TH2F(Form("%sPullXvsP%d", fPrefix.Data(), i + 1), Form("%s - pullX of sensor %d vs pvalue in X; pull; pvalue ", fTitleDev.Data(), i + 1), 100, -5, 5, 1000, 0, 1); // ! range
+      fpHisPullXvsPvalue[i] = new TH2F(Form("%sPullXvsP%d", fPrefix.Data(), i + 1), Form("%s - pullX of sensor %d vs pvalue in X; pull; pvalue ", fTitleDev.Data(), i + 1), 1000, -50, 50, 1000, 0, 1); // ! range
       AddHistogram(fpHisPullXvsPvalue[i]);
+      fpHisPullXvsClusSize[i] = new TH2F(Form("%sPullXvsClusSize%d", fPrefix.Data(), i + 1), Form("%s - pullX of sensor %d vs Cluster size; pull; cluster size ", fTitleDev.Data(), i + 1), 1000, -50, 50, 100, 0., 100.); // ! range
+      AddHistogram(fpHisPullXvsClusSize[i]);
+      fpHisPullYvsClusSize[i] = new TH2F(Form("%sPullYvsClusSize%d", fPrefix.Data(), i + 1), Form("%s - pullY of sensor %d vs Cluster size; pull; cluster size ", fTitleDev.Data(), i + 1), 1000, -50, 50, 100, 0., 100.); // ! range
+      AddHistogram(fpHisPullYvsClusSize[i]);
+
+
 
       // meas position
       fpHisTrackClustPosX[i] = new TH1F(Form("%sTrackClusPosX%d", fPrefix.Data(), i + 1), Form("%s - Clus X position in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, -5, 5);
@@ -427,6 +433,7 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
             fpHisPullX[idx]->Fill(pullX);
             fpHisPullXvsChiX[idx]->Fill(pullX, track->GetChi2redU());
             fpHisPullXvsPvalue[idx]->Fill(pullX, track->GetPvalueU());
+            fpHisPullXvsClusSize[idx]->Fill(pullX,static_cast<TAVTbaseCluster *>(cluster)->GetPixelsN());
             if (track->GetPvalueU()>0.001) fpHisPullXcut[idx]->Fill(pullX);
           }
        }   
@@ -447,6 +454,7 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
             fpHisPullY[idx]->Fill(pullY);
             fpHisPullYvsChiY[idx]->Fill(pullY, track->GetChi2redV());
             fpHisPullYvsPvalue[idx]->Fill(pullY, track->GetPvalueV());
+            fpHisPullYvsClusSize[idx]->Fill(pullY, static_cast<TAVTbaseCluster *>(cluster)->GetPixelsN());
             if (track->GetPvalueV()>0.001) fpHisPullYcut[idx]->Fill(pullY);
 
             if (idx == 3){

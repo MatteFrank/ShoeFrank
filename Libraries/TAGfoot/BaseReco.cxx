@@ -825,12 +825,16 @@ void BaseReco::CreateRecActionVtx()
          Error("CreateRecActionVtx()", "No Tracking algorithm defined !");
       }
 
-      if (fFlagHisto)
-         fActTrackVtx->CreateHistogram();
+      
 
       if (fFlagMC)
          fActTrackVtx->SetFlagMC(true);
-         
+      else
+         fActTrackVtx->SetFlagMC(false);
+
+      if (fFlagHisto)
+         fActTrackVtx->CreateHistogram();
+
       if (TAGrecoManager::GetPar()->IncludeTG()) {
          const Char_t* name = FootActionDscName("TAVTactNtuVertexPD");
          if(TAGrecoManager::GetPar()->IncludeBM()) {
@@ -839,12 +843,12 @@ void BaseReco::CreateRecActionVtx()
          } else
             fActVtx = new TAVTactNtuVertexPD(name, fpNtuTrackVtx, fpNtuVtx, fpParConfVtx, fpParGeoVtx, fpParGeoG);
 
-         if (fFlagHisto)
-            fActVtx->CreateHistogram();
 
          if (fFlagMC) fActVtx->SetFlagMC(true);
          else fActVtx->SetFlagMC(false);
 
+         if (fFlagHisto)
+            fActVtx->CreateHistogram();
       }
    }
 }

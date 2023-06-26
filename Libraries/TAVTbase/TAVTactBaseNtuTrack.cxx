@@ -62,6 +62,7 @@ TAVTactBaseNtuTrack::TAVTactBaseNtuTrack(const char* name,
   fpBMntuTrack(pBMntuTrack),
   fBmTrackOk(false),
   fBmTrack(0x0),
+  flagMC(false),
   fBmTrackPos(0,0,0)
 {
 }
@@ -120,6 +121,7 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    AddHistogram(fpHisClusLeft);
 
    if (GetFlagMC()){
+      cout << "entro nei plot" << endl;
       Int_t primary_charge = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
       fpHisTrackMultiplicity_frag = new TH1F(Form("%sTrackMultiplicity_frag", fPrefix.Data()), Form("%s - Track multiplicity of clusters when there if fragmentation (MC)", fTitleDev.Data()), 10, -0.5, 9.5);
       AddHistogram(fpHisTrackMultiplicity_frag );
@@ -545,8 +547,10 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
          ++m[to_string(element)];   //moltiplicity of different particle ID in the track
      }
      
-     if (isFragment) fpHisTrackMultiplicity_frag->Fill(m.size());
-     else fpHisTrackMultiplicity_primary->Fill(m.size());
+     if (isFragment)
+     fpHisTrackMultiplicity_frag->Fill(m.size());
+     else 
+     fpHisTrackMultiplicity_primary->Fill(m.size());
 
      // retrieve the MCId of the most frequent particle
      int max = -1;
