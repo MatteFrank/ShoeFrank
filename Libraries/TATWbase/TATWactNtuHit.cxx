@@ -264,13 +264,13 @@ Bool_t TATWactNtuHit::Action()
 	    Double_t AmplitudeB  = hitb->GetAmplitude();
 	    Double_t TimeB    = hitb->GetTime();
 
-	    // get raw energy
+	    // get raw energy (not calibrated)
 	    Double_t rawEnergy = GetRawEnergy(hita,hitb);
 
-	    // get raw time in ns
-	    Double_t rawTime    = GetRawTime(hita,hitb) - STtrigTime;
+	    // get raw tof in ns (not calibrated)
+	    Double_t rawToF    = GetRawTime(hita,hitb) - STtrigTime;
 
-	    // get position from the TOF between the two channels
+	    // get position along the bar from the time difference between the two edges
 	    Double_t posAlongBar = GetPosition(hita,hitb,Layer,ShoeBarId);
 
 	    // get the PosId (0-399) of the cross btw horizontal and vertical bars
@@ -281,30 +281,34 @@ Bool_t TATWactNtuHit::Action()
 	    // get calibrated energy in MeV
 	    Double_t Energy = GetEnergy(rawEnergy,Layer,PosId,BarId);
 
-	    // get time calibrated time in ns
-	    Double_t Time = GetTime(rawTime,Layer,PosId,BarId);
+	    // get Tof calibrated in ns
+	    Double_t ToF = GetToF(rawToF,Layer,PosId,BarId);
 	    	    
 	    
 	    if(FootDebugLevel(1)) {
 	      if(posAlongBar<-22 || posAlongBar>22) {
 		cout<<"layer::"<<Layer<<"  barId::"<<BarId<<"  shoeId::"<<ShoeBarId<<"  posId::"<<PosId<<"  pos::"<<posAlongBar<<endl;
-		cout<<"eloss::"<<Energy<<" chA::"<<ChargeA<<"  chB::"<<ChargeB<<" Time::"<<Time<<" timeA::"<<TimeA<<" timeB::"<<TimeB<<endl;
+		cout<<"eloss::"<<Energy<<" chA::"<<ChargeA<<"  chB::"<<ChargeB<<" ToF::"<<ToF<<" timeA::"<<TimeA<<" timeB::"<<TimeB<<endl;
 	      cout<<"Eraw::"<<rawEnergy<<" posId::"<<PosId<<" layer::"<<Layer<<endl;
 	      }
 	    }
 
 
-	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,Time,posAlongBar,ChargeA,ChargeB,AmplitudeA,AmplitudeB,TimeA,TimeB,TrigType);
+	    fCurrentHit = (TATWhit*)p_nturaw->NewHit(Layer,ShoeBarId,Energy,rawToF,posAlongBar,ChargeA,ChargeB,AmplitudeA,AmplitudeB,TimeA,TimeB,TrigType);
 
-	    Int_t Zrec = f_parcal->GetChargeZ(Energy,Time,Layer);
+	    Int_t Zrec = f_parcal->GetChargeZ(Energy,ToF,Layer);
 	    fCurrentHit->SetChargeZ(Zrec);
-	    // ToF set as Time
-	    fCurrentHit->SetToF(Time);
+	    // Set ToF
+	    fCurrentHit->SetToF(ToF);
+            // Set Valid Hit
+            if(rawEnergy<0)
+              fCurrentHit->SetValid(false);
+
 
 	    if (ValidHistogram()) {
 	      fpHisDeTot->Fill(Energy);
-	      fpHisTimeTot->Fill(Time);
-	      fpHisElossTof_layer[Layer]->Fill(Time,Energy);
+	      fpHisTimeTot->Fill(ToF);
+	      fpHisElossTof_layer[Layer]->Fill(ToF,Energy);
 
 	      if(Layer==1)fpHisChargeFront->Fill(rawEnergy);
 	      if(Layer==0)fpHisChargeRear->Fill(rawEnergy);
@@ -314,8 +318,8 @@ Bool_t TATWactNtuHit::Action()
 		if(Layer==1)fpHisChargeBar9Front->Fill(rawEnergy);
 		if(Layer==0)fpHisChargeBar9Rear->Fill(rawEnergy);
 		
-		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 0)fpHisDeltaTimeRawCenterFront->Fill(rawTime);
-		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 1)fpHisDeltaTimeRawCenterRear->Fill(rawTime);
+		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 0)fpHisDeltaTimeRawCenterFront->Fill(rawToF);
+		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 1)fpHisDeltaTimeRawCenterRear->Fill(rawToF);
 		fpHisAmpA[Layer]->Fill(AmplitudeA);
 		fpHisAmpB[Layer]->Fill(AmplitudeB);
 		fpHisAmpA_vs_Eloss[Layer]->Fill(Energy,AmplitudeA);
@@ -324,8 +328,8 @@ Bool_t TATWactNtuHit::Action()
 
 	      if(Zrec>0 && Zrec<fZbeam+1) {
 		fpHisEloss_Z[Layer][Zrec-1]->Fill(Energy);
-		fpHisTof_Z[Zrec-1]->Fill(Time);
-		fpHisElossTof_Z[Zrec-1]->Fill(Time,Energy);
+		fpHisTof_Z[Zrec-1]->Fill(ToF);
+		fpHisElossTof_Z[Zrec-1]->Fill(ToF,Energy);
 	      }
 	    }
 	  }
@@ -424,7 +428,7 @@ Double_t TATWactNtuHit::GetRawTime(TATWrawHit*a,TATWrawHit*b)
 
 //________________________________________________________________
 
-Double_t  TATWactNtuHit::GetTime(Double_t RawTime, Int_t layerId, Int_t posId, Int_t barId)
+Double_t  TATWactNtuHit::GetToF(Double_t rawToF, Int_t layerId, Int_t posId, Int_t barId)
 {
 
   if ( posId<0 || posId>=nBarCross || (layerId!=LayerX && layerId!=LayerY) )
@@ -448,9 +452,9 @@ Double_t  TATWactNtuHit::GetTime(Double_t RawTime, Int_t layerId, Int_t posId, I
   }
   
   if(FootDebugLevel(1))
-    cout<<"rawTime::"<<RawTime<<" deltaT::"<<deltaT<<" deltaT2::"<<deltaT2<<" TOF::"<<RawTime-deltaT<<endl;
+    cout<<"rawTime::"<<rawToF<<" deltaT::"<<deltaT<<" deltaT2::"<<deltaT2<<" TOF::"<<rawToF-deltaT<<endl;
   
-  return RawTime - deltaT;
+  return rawToF - deltaT;
 
 }
 //________________________________________________________________

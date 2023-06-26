@@ -99,7 +99,7 @@ private:
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);
 
   Double_t GetEnergy(Double_t RawEnergy,Int_t layer,Int_t posId, Int_t barId);
-  Double_t GetTime(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
+  Double_t GetToF(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
 
   Double_t GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b);
 

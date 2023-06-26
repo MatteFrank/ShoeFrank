@@ -122,7 +122,9 @@ public:
    Int_t           GetChargeZ(Float_t edep, Float_t tof, Int_t layer); //const;
    Int_t           GetBisecChargeZ() const {return fZraw;}
    Float_t         GetDistBB(int ichg) const { return f_dist_Z[ichg-1];}
+   // Get Light speed per bar in [cm/ns]
    Double_t        GetBarLightSpeed(Int_t ilayer, Int_t ibar);
+   // Get offset per bar in [cm] for position from delta Time
    Double_t        GetDeltaTimePosOffset(Int_t ilayer, Int_t ibar);
    Double_t        GetElossThreshold(Int_t ilayer, Int_t ibar);
    TH1D*           GetRate(){ return fHisRate;}
