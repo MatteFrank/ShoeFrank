@@ -780,10 +780,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		cout << "TAGactKFitter::RecordTrackInfo:: DONE chisquare = " << chisquare  << endl;
 	}
 
-	// track->getFitStatus( track->getCardinalRep() )->isFitConverged();
-	// track->getFitStatus( track->getCardinalRep() )->getNFailedPoints();
-	// track->getFitStatus( track->getCardinalRep() )->isFitConvergedFully();
-
 	// update at target position
 	recoPos_target = state_target_point.getPos();
 	recoMom_target = state_target_point.getMom();
@@ -899,29 +895,60 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_theta->Fill ( recoMom_target.Theta()*TMath::RadToDeg() );
 
 		// histos wrt BM track
-		float theta_deg = shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg();
-		float phi_deg = shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg();
-		h_theta_BM->Fill ( theta_deg );
-		h_phi_BM->Fill ( phi_deg );
-		h_trackDirBM->Fill(TrackDir.X(), TrackDir.Y());
-
-		if( shoeOutTrack->HasTwPoint() )
+		if ( shoeOutTrack->GetTgtThetaBm() >= 0 )
 		{
-			h_theta_BMyesTw->Fill ( theta_deg );
-			h_phi_BMyesTw->Fill ( phi_deg );
-		}
-		else
-		{
-			h_theta_BMnoTw->Fill ( theta_deg );
-			h_phi_BMnoTw->Fill ( phi_deg );
-		}
+			float theta_deg = shoeOutTrack->GetTgtThetaBm()*TMath::RadToDeg();
+			float phi_deg = shoeOutTrack->GetTgtPhiBm()*TMath::RadToDeg();
+			h_theta_BM->Fill ( theta_deg );
+			h_phi_BM->Fill ( phi_deg );
+			h_trackDirBM->Fill(TrackDir.X(), TrackDir.Y());
 
-		TVector3 guessOnTW = m_dummySelector->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
-		int index = theta_deg >= 15 ? 15 : floor(theta_deg);
-		
-		h_TWprojVsTheta[ index ]->Fill(guessOnTW.X(), guessOnTW.Y());
-		if( shoeOutTrack->HasTwPoint() ) h_TWprojVsThetaYesTW[ index ]->Fill(guessOnTW.X(), guessOnTW.Y());
-		else h_TWprojVsThetaNoTW[ index ]->Fill(guessOnTW.X(), guessOnTW.Y());
+			if( shoeOutTrack->HasTwPoint() )
+			{
+				h_theta_BMyesTw->Fill ( theta_deg );
+				h_phi_BMyesTw->Fill ( phi_deg );
+			}
+			else
+			{
+				h_theta_BMnoTw->Fill ( theta_deg );
+				h_phi_BMnoTw->Fill ( phi_deg );
+			}
+
+			TVector3 guessOnTW = ((TAGFselectorBase*) m_dummySelector)->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
+			int index = theta_deg >= 15 ? 15 : floor(theta_deg);
+			
+			//TW projection
+			h_TWprojVsTheta[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+			h_TWprojVsThetaTot->Fill(guessOnTW.X(), guessOnTW.Y());
+			if( shoeOutTrack->HasTwPoint() )
+			{
+				h_TWprojVsThetaTotYesTW->Fill(guessOnTW.X(), guessOnTW.Y());
+				h_TWprojVsThetaYesTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+				float zTW = shoeOutTrack->GetTwChargeZ();
+				zTW = guessOnTW.Y() < 0 ? -zTW : zTW;
+				h_TWprojZTot->Fill(zTW);
+				h_TWprojZvsTheta[index]->Fill(zTW);
+			}
+			else
+			{
+				h_TWprojVsThetaTotNoTW->Fill(guessOnTW.X(), guessOnTW.Y());
+				h_TWprojVsThetaNoTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+			}
+
+			//TG projection
+			h_TGprojVsTheta[index]->Fill(recoPos_target.X(), recoPos_target.Y());
+			h_TGprojVsThetaTot->Fill(recoPos_target.X(), recoPos_target.Y());
+			if( shoeOutTrack->HasTwPoint() )
+			{
+				h_TGprojVsThetaTotYesTW->Fill(recoPos_target.X(), recoPos_target.Y());
+				h_TGprojVsThetaYesTW[index]->Fill(recoPos_target.X(), recoPos_target.Y());
+			}
+			else
+			{
+				h_TGprojVsThetaTotNoTW->Fill(recoPos_target.X(), recoPos_target.Y());
+				h_TGprojVsThetaNoTW[index]->Fill(recoPos_target.X(), recoPos_target.Y());
+			}
+		}
 		
 		h_eta->Fill ( recoMom_target.Eta() );
 		h_dx_dz->Fill ( recoMom_target.x() / recoMom_target.z() );
@@ -1514,6 +1541,39 @@ void TAGactKFitter::CreateHistogram()	{
 	h_momentum = new TH1F("h_momentum", "h_momentum", 150, 0., 15.);
 	AddHistogram(h_momentum);
 
+	h_TGprojVsThetaTot = new TH2D("TGproj_ThetaTot","TGproj_ThetaTot;X_proj [cm];Y_proj [cm]",400,-5,5,400,-5,5);
+	AddHistogram(h_TGprojVsThetaTot);
+
+	h_TGprojVsThetaTotYesTW = new TH2D("TGproj_ThetaTotYesTW","TGproj_ThetaTotYesTW;X_proj [cm];Y_proj [cm]",400,-5,5,400,-5,5);
+	AddHistogram(h_TGprojVsThetaTotYesTW);
+
+	h_TGprojVsThetaTotNoTW = new TH2D("TGproj_ThetaTotNoTW","TGproj_ThetaTotNoTW;X_proj [cm];Y_proj [cm]",400,-5,5,400,-5,5);
+	AddHistogram(h_TGprojVsThetaTotNoTW);
+
+	for (int i=0; i<16; ++i)
+	{
+		h_TGprojVsTheta.push_back(new TH2D(Form("TGproj_Theta%d-%d",i,i+1),Form("TGproj_Theta%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-5,5,400,-5,5));
+		AddHistogram(h_TGprojVsTheta[i]);
+
+		h_TGprojVsThetaNoTW.push_back(new TH2D(Form("TGproj_ThetaNoTW%d-%d",i,i+1),Form("TGproj_ThetaNoTW%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-5,5,400,-5,5));
+		AddHistogram(h_TGprojVsThetaNoTW[i]);
+
+		h_TGprojVsThetaYesTW.push_back(new TH2D(Form("TGproj_ThetaYesTW%d-%d",i,i+1),Form("TGproj_ThetaYesTW%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-5,5,400,-5,5));
+		AddHistogram(h_TGprojVsThetaYesTW[i]);
+	}
+
+	h_TWprojVsThetaTot = new TH2D("TWproj_ThetaTot","TWproj_ThetaTot;X_proj [cm];Y_proj [cm]",400,-40,40,400,-40,40);
+	AddHistogram(h_TWprojVsThetaTot);
+
+	h_TWprojVsThetaTotYesTW = new TH2D("TWproj_ThetaTotYesTW","TWproj_ThetaTotYesTW;X_proj [cm];Y_proj [cm]",400,-40,40,400,-40,40);
+	AddHistogram(h_TWprojVsThetaTotYesTW);
+
+	h_TWprojVsThetaTotNoTW = new TH2D("TWproj_ThetaTotNoTW","TWproj_ThetaTotNoTW;X_proj [cm];Y_proj [cm]",400,-40,40,400,-40,40);
+	AddHistogram(h_TWprojVsThetaTotNoTW);
+
+	h_TWprojZTot = new TH1D("TWproj_ZTot","TWproj_ZTot;Z*sign(Y_proj)",17,-8.5,8.5);
+	AddHistogram(h_TWprojZTot);
+
 	for (int i=0; i<16; ++i)
 	{
 		h_TWprojVsTheta.push_back(new TH2D(Form("TWproj_Theta%d-%d",i,i+1),Form("TWproj_Theta%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-40,40,400,-40,40));
@@ -1524,6 +1584,9 @@ void TAGactKFitter::CreateHistogram()	{
 
 		h_TWprojVsThetaYesTW.push_back(new TH2D(Form("TWproj_ThetaYesTW%d-%d",i,i+1),Form("TWproj_ThetaYesTW%d-%d;X_proj [cm];Y_proj [cm]",i,i+1),400,-40,40,400,-40,40));
 		AddHistogram(h_TWprojVsThetaYesTW[i]);
+
+		h_TWprojZvsTheta.push_back(new TH1D(Form("TWproj_ZvsTheta%d-%d",i,i+1),Form("TWproj_ZvsTheta%d-%d;Z*sign(Y_proj)",i,i+1),17,-8.5,8.5));
+		AddHistogram(h_TWprojZvsTheta[i]);
 	}
 
 	for (int i = 0; i < 9; ++i)
@@ -1591,7 +1654,7 @@ void TAGactKFitter::AddResidualAndPullHistograms()
 				h_residualVsPos[sensId] = new TH2F(Form("Res_VsFitPos_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Residual vs %s cluster position in layer %d, %c view;Residual (Meas-Fit) %c [cm];Fitted pos%c [cm]",det.c_str(),iSensor,coord,coord,coord),300,-maxRes,maxRes,300,-3,3);
 				AddHistogram(h_residualVsPos[sensId]);
 
-				h_pull[sensId] = new TH1F(Form("Pull_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Pull for %s layer %d on %c view;Pull (Meas-Fit) %c;Entries",det.c_str(),iSensor,coord,coord),600,-5,5);
+				h_pull[sensId] = new TH1F(Form("Pull_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Pull for %s layer %d on %c view;Pull (Meas-Fit) %c;Entries",det.c_str(),iSensor,coord,coord),1000,-15,15);
 				AddHistogram(h_pull[sensId]);
 
 				if(det != "TW")
@@ -1604,7 +1667,7 @@ void TAGactKFitter::AddResidualAndPullHistograms()
 						maxUnits = 10;
 					}
 
-					h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Pull vs cluster size for %s layer %d on %c view;Meas-Fit Pull %c;Cluster size [N %s]",det.c_str(),iSensor,coord,coord,clusUnit.c_str()), 600,-5,5, maxUnits, -0.5, maxUnits-0.5);
+					h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Pull vs cluster size for %s layer %d on %c view;Meas-Fit Pull %c;Cluster size [N %s]",det.c_str(),iSensor,coord,coord,clusUnit.c_str()), 1000,-15,15, maxUnits, -0.5, maxUnits-0.5);
 					AddHistogram(h_pullVsClusSize[sensId]);
 				}
 			}
@@ -1629,6 +1692,11 @@ void TAGactKFitter::SetHistogramDir(TDirectory* dir)
 	if( !subdirTWproj )
 		subdirTWproj = dir->mkdir("TWproj");
 
+	TDirectory* subdirTGproj = 0x0;
+	dir->GetObject("TGproj", subdirTGproj);
+	if( !subdirTGproj )
+		subdirTGproj = dir->mkdir("TGproj");
+
 	if (fpHistList) {
 		for (TObjLink* lnk = fpHistList->FirstLink(); lnk; lnk=lnk->Next()) {
 			TH1* h = (TH1*)lnk->GetObject();
@@ -1637,6 +1705,8 @@ void TAGactKFitter::SetHistogramDir(TDirectory* dir)
 				h->SetDirectory(subdirRes);
 			else if ( name.Contains("TWproj") )
 				h->SetDirectory(subdirTWproj);
+			else if ( name.Contains("TGproj") )
+				h->SetDirectory(subdirTGproj);
 			else
 				h->SetDirectory(dir);
 		}

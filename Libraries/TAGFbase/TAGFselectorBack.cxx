@@ -19,7 +19,7 @@ TAGFselectorBack::TAGFselectorBack() : TAGFselectorBase()
 {
 	m_VTtolerance = .1;
 	m_ITtolerance = .1;
-	m_MSDtolerance = .1;
+	m_MSDtolerance = .5;
 	m_TWtolerance = 4.;
 }
 
@@ -30,7 +30,7 @@ TAGFselectorBack::TAGFselectorBack() : TAGFselectorBase()
 //! \brief Main function of backtracking algorithm
 void TAGFselectorBack::Categorize( ) {
 
-	if (!TAGrecoManager::GetPar()->IncludeTW() || !TAGrecoManager::GetPar()->IncludeMSD())
+	if (! m_systemsON.Contains("TW") || ! m_systemsON.Contains("MSD"))
 	{
 		Error("Categorize_Backtracking()", "TW and MSD are needed for backtracking!");
 		exit(0);
@@ -44,7 +44,7 @@ void TAGFselectorBack::Categorize( ) {
 	if (m_debug > 1)
 		Info("Categorize_Backtracking()", "BackTracklets created!");
 
-	if (TAGrecoManager::GetPar()->IncludeIT())
+	if ( m_systemsON.Contains("IT"))
 	{
 		if (m_debug > 1)
 			Info("Categorize_Backtracking()", "Start of IT cycle!");
@@ -53,7 +53,7 @@ void TAGFselectorBack::Categorize( ) {
 			Info("Categorize_Backtracking()", "End of IT cycle!");
 	}
 
-	if (TAGrecoManager::GetPar()->IncludeVT())
+	if ( m_systemsON.Contains("VT"))
 	{
 		if (m_debug > 1)
 			Info("Categorize_Backtracking()", "Start of VT cycle!");
