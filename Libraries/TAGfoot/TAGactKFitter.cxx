@@ -1999,17 +1999,17 @@ void TAGactKFitter::CreateHistogram()	{
 			sensId = make_pair("VT",make_pair(i,0));
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_vtX_layer_%d",i),Form("Residual between fitted global track and measured VT cluster in VT layer %d on X view;Meas-Fit X[cm];Entries",i),600,-0.1,0.1);
 			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_vtX_layer_%d",i),Form("Pull for measured VT cluster in layer %d on X view;Meas-Fit Pull X;Entries",i),600,-5,5);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_vtX_layer_%d",i),Form("Pull for measured VT cluster in layer %d on X view;Meas-Fit Pull X;Entries",i),1000,-20,20);
 			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_vtX_layer_%d",i),Form("Pull vs cluster size for VT in layer %d on X view;Meas-Fit Pull X;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_vtX_layer_%d",i),Form("Pull vs cluster size for VT in layer %d on X view;Meas-Fit Pull X;Cluster size [N pixels]",i), 1000,-20,20, 60, -0.5, 59.5);
 			AddHistogram(h_pullVsClusSize[sensId]);
 
 			sensId = make_pair("VT",make_pair(i,1));
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_vtY_layer_%d",i),Form("Residual between fitted global track and measured VT cluster in VT layer %d on Y view;Meas-Fit Y[cm];Entries",i),600,-0.1,0.1);
 			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_vtY_layer_%d",i),Form("Pull for measured VT cluster in layer %d on Y view;Meas-Fit Pull Y[cm];Entries",i),600,-5,5);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_vtY_layer_%d",i),Form("Pull for measured VT cluster in layer %d on Y view;Meas-Fit Pull Y[cm];Entries",i),1000,-20,20);
 			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_vtY_layer_%d",i),Form("Pull vs cluster size for VT in layer %d on Y view;Meas-Fit Pull Y;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_vtY_layer_%d",i),Form("Pull vs cluster size for VT in layer %d on Y view;Meas-Fit Pull Y;Cluster size [N pixels]",i), 1000,-20,20, 60, -0.5, 59.5);
 			AddHistogram(h_pullVsClusSize[sensId]);
 		}
   }
@@ -2018,17 +2018,17 @@ void TAGactKFitter::CreateHistogram()	{
 			sensId = make_pair("IT",make_pair(i,0));
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_itX_layer_%d",i),Form("Residual between fitted global track and measured IT cluster in IT layer %d on X view;Meas-Fit X[cm];Entries",i),600,-0.1,0.1);
 			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_itX_layer_%d",i),Form("Pull for measured IT cluster in layer %d on X view;Meas-Fit Pull X;Entries",i),600,-5,5);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_itX_layer_%d",i),Form("Pull for measured IT cluster in layer %d on X view;Meas-Fit Pull X;Entries",i),1000,-20,20);
 			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_itX_layer_%d",i),Form("Pull vs cluster size for  IT in layer %d on X view;Meas-Fit Pull X;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_itX_layer_%d",i),Form("Pull vs cluster size for  IT in layer %d on X view;Meas-Fit Pull X;Cluster size [N pixels]",i), 1000,-20,20, 60, -0.5, 59.5);
 			AddHistogram(h_pullVsClusSize[sensId]);
 
 			sensId = make_pair("IT",make_pair(i,1));
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_itY_layer_%d",i),Form("Residual between fitted global track and measured IT cluster in IT layer %d on Y view;Meas-Fit Y[cm];Entries",i),600,-0.1,0.1);
 			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_itY_layer_%d",i),Form("Pull for measured IT cluster in layer %d on Y view;Meas-Fit Pull Y;Entries",i),600,-5,5);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_itY_layer_%d",i),Form("Pull for measured IT cluster in layer %d on Y view;Meas-Fit Pull Y;Entries",i),1000,-20,20);
 			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_itY_layer_%d",i),Form("Pull vs cluster size for IT in layer %d on Y view;Meas-Fit Pull Y;Cluster size [N pixels]",i), 600,-5,5, 60, -0.5, 59.5);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_itY_layer_%d",i),Form("Pull vs cluster size for IT in layer %d on Y view;Meas-Fit Pull Y;Cluster size [N pixels]",i), 1000,-20,20, 60, -0.5, 59.5);
 			AddHistogram(h_pullVsClusSize[sensId]);
 		}
 	}
@@ -2043,9 +2043,9 @@ void TAGactKFitter::CreateHistogram()	{
 
 			h_resoFitMeas[sensId] = new TH1F(Form("Res_msd%c_layer_%d",strip,i),Form("Residual between fitted global track and measured MSD cluster in MSD layer %d on %c view;Meas-Fit %c [cm];Entries",i,strip,strip),600,-0.1,0.1);
 			AddHistogram(h_resoFitMeas[sensId]);
-			h_pullFitMeas[sensId] = new TH1F(Form("Pull_msd%c_layer_%d",strip,i),Form("Pull for measured MSD cluster in layer %d on %c view;Meas-Fit Pull %c;Entries",i,strip,strip),600,-5,5);
+			h_pullFitMeas[sensId] = new TH1F(Form("Pull_msd%c_layer_%d",strip,i),Form("Pull for measured MSD cluster in layer %d on %c view;Meas-Fit Pull %c;Entries",i,strip,strip),1000,-20,20);
 			AddHistogram(h_pullFitMeas[sensId]);
-			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_msd%c_layer_%d",strip,i),Form("Pull vs cluster size for MSD in layer %d on %c view;Meas-Fit Pull %c;Cluster size [N strips]",i,strip,strip), 600,-5,5, 10, -0.5, 9.5);
+			h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_msd%c_layer_%d",strip,i),Form("Pull vs cluster size for MSD in layer %d on %c view;Meas-Fit Pull %c;Cluster size [N strips]",i,strip,strip), 1000,-20,20, 10, -0.5, 9.5);
 			AddHistogram(h_pullVsClusSize[sensId]);
 		}
 	}
@@ -2053,17 +2053,17 @@ void TAGactKFitter::CreateHistogram()	{
 		sensId = make_pair("TW",make_pair(0,0));
 		h_resoFitMeas[sensId] = new TH1F("Res_twX","Residual between fitted global track and measured TW point on X view;Meas-Fit X[cm];Entries",600,-3.,3.);
 		AddHistogram(h_resoFitMeas[sensId]);
-		h_pullFitMeas[sensId] = new TH1F("Pull_twX","Pull for measured TW point in X view;Meas-Fit Pull X;Entries",600,-5,5);
+		h_pullFitMeas[sensId] = new TH1F("Pull_twX","Pull for measured TW point in X view;Meas-Fit Pull X;Entries",1000,-20,20);
 		AddHistogram(h_pullFitMeas[sensId]);
-		// h_pullVsClusSize[sensId] = new TH2F("PullVsClusSize_twX","Pull vs cluster size for TW on X view;Meas-Fit Pull X;Cluster size", 600,-5,5, 60, -0.5, 59.5);
+		// h_pullVsClusSize[sensId] = new TH2F("PullVsClusSize_twX","Pull vs cluster size for TW on X view;Meas-Fit Pull X;Cluster size", 1000,-20,20, 60, -0.5, 59.5);
 		// AddHistogram(h_pullVsClusSize[sensId]);
 
 		sensId = make_pair("TW",make_pair(0,1));
 		h_resoFitMeas[sensId] = new TH1F("Res_twY","Residual between fitted global track and measured TW point on Y view;Meas-Fit Y[cm];Entries",600,-3.,3.);
 		AddHistogram(h_resoFitMeas[sensId]);
-		h_pullFitMeas[sensId] = new TH1F("Pull_twY","Pull for measured TW point in Y view;Meas-Fit Pull Y;Entries",600,-5,5);
+		h_pullFitMeas[sensId] = new TH1F("Pull_twY","Pull for measured TW point in Y view;Meas-Fit Pull Y;Entries",1000,-20,20);
 		AddHistogram(h_pullFitMeas[sensId]);
-		// h_pullVsClusSize[sensId] = new TH2F("PullVsClusSize_twY","Pull vs cluster size for TW on Y view;Meas-Fit Pull Y;Cluster size", 600,-5,5, 60, -0.5, 59.5);
+		// h_pullVsClusSize[sensId] = new TH2F("PullVsClusSize_twY","Pull vs cluster size for TW on Y view;Meas-Fit Pull Y;Cluster size", 1000,-20,20, 60, -0.5, 59.5);
 		// AddHistogram(h_pullVsClusSize[sensId]);
 
 	}
