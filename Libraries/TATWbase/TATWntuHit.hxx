@@ -58,11 +58,15 @@ public:
            Int_t trigType);
   ~TATWhit() {};
    
-   void   Clear(Option_t* option = "C");
+   void      Clear(Option_t* option = "C");
+  
    //! Validity check if bar is part of LayerY (a vertical bar of rear layer)
-   bool IsColumn() { return ( fLayer == (Int_t)LayerY ? true : false ); };
+   Bool_t    IsColumn() { return ( fLayer == (Int_t)LayerY ? true : false ); };
    //! Validity check if bar is part of LayerX (a horizontal bar of front layer)
-   bool IsRow()    { return ( fLayer == (Int_t)LayerX ? true : false ); };
+   Bool_t    IsRow()    { return ( fLayer == (Int_t)LayerX ? true : false ); };
+   //! Check if TW hit is valid (In DATA: both q_A and B >0. In MC: properly reconstructed and over threshold)
+   Bool_t    IsValid()                 const   { return fIsValid;           }
+
    
    //    All the Get methods
    //! Get BarId [0-19] for a given layer
@@ -75,11 +79,11 @@ public:
    Double_t  GetTime()                 const   { return fTime;              }
    //! Get ToF in ns
    Double_t  GetToF()                  const   { return fTimeofflight;      }
-   //! Get position along the bar
+   //! Get position along the bar in cm
    Double_t  GetPosition()             const   { return fCoordinate;        }
    //! Get nuclear charge number Z
    Int_t     GetChargeZ()              const   { return fChargeZ;           }
-   //! Get the charge at the bar channel A (for MC it provides the position along the bar computed by time difference)
+   //! Get the charge at the bar channel A (for MC it provides the true MC position  along the bar smeared by the experimental resolution of the position computed by time difference)
    Double_t  GetChargeChA()            const   { return fChargeA;           }
    //! Get the charge at the bar channel B (for MC it provides the true MC position along the bar)
    Double_t  GetChargeChB()            const   { return fChargeB;           }
@@ -87,16 +91,14 @@ public:
    Double_t  GetAmplitudeChA()         const   { return fAmplitudeA;        }
    //! Get the amplitude at the bar channel B (for MC it provides the true TW time)
    Double_t  GetAmplitudeChB()         const   { return fAmplitudeB;        }
-   //! Get the time at the bar channel A
+   //! Get the time at the bar channel A (for MC true Z)
    Double_t  GetTimeChA()              const   { return fTimeA;             }
-   //! Get the time at the bar channel B
+   //! Get the time at the bar channel B (for MC true Z)
    Double_t  GetTimeChB()              const   { return fTimeB;             }
-   //! Check if TW hit is valid (properly reconstructed and over threshold)
-   Bool_t    IsValid()                 const   { return fIsValid;           }
    //! Get the trigger type Id for the decoded run
    Int_t     GetTrigType()             const {return fTrigType;}
   
-   // MC track id
+  // MC track id
    Int_t     GetMcIndex(Int_t index)    const   { return fMCindex[index];      }
    Int_t     GetMcTrackIdx(Int_t index) const   { return fMCtrackId[index];    }
    Int_t     GetMcTracksN()             const   { return fMCtrackId.GetSize(); }

@@ -236,13 +236,14 @@ void RecoRaw::OpenFileIn()
 
    } else {
 
-     if(IsSubFileEnabled()) {
-       Option_t* option = "subFileNumber";
-       fActEvtReader->Open(GetName(),option);
+     Option_t* option = "";
+     if(IsSubFileEnabled())
+        option = "subFileNumber";
+     else
+        option = "chain";
+      
+     fActEvtReader->Open(GetName(),option);
 
-     } else
-       fActEvtReader->Open(GetName());
-     
      if (fSkipEventsN > 0)
        fActEvtReader->SkipEvents(fSkipEventsN);
 

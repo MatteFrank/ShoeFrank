@@ -24,6 +24,7 @@
 //! Class Imp
 ClassImp(TATWparCal);
 
+TString TATWparCal::fgkDeltaTime = "./config/TATWdeltaTimeMap.map";
 TString TATWparCal::fgkBarStatus = "./config/TATWbarsMapStatus.map";
 TString TATWparCal::fgkBBparamName = "./config/TATW_BBparameters.cfg";
 
@@ -249,6 +250,51 @@ Bool_t TATWparCal::FromFileZID(const TString& name, Int_t Zbeam) {
 //
 ////------------------------------------------+-----------------------------------
 
+Bool_t TATWparCal::FromDeltaTimeFile(const TString& name) {
+ 
+    
+  TString nameExp;
+  
+  if (name.IsNull())
+    nameExp = fgkDeltaTime;
+  else
+    nameExp = name;
+
+  if (!Open(nameExp)) return false;
+
+  Info("FromDeltaTimeFile()", "Open file %s for calibration of the position along the TW bars with the delta Time\n", name.Data());
+   
+  Double_t* tmp = new Double_t[4];
+  for (Int_t ibar = 0; ibar < (Int_t)nBars; ibar++) { // Loop over the bars
+
+    // read parameters
+    ReadItem(tmp, 4, ' ');
+    fPairId = TPairId((Int_t)tmp[0],(Int_t)tmp[1]); //barId(shoe format), layerId
+    // fPairId = TPairId((Int_t)tmp[0]%nBarsPerLayer,(Int_t)tmp[3]); //barId(shoe format), layerId
+
+    if(FootDebugLevel(2))
+      cout<< endl <<fPairId.first<<" "<<fPairId.second<<endl;   
+
+    fMapDeltaTime[fPairId]=TTupleDeltaT(tmp[2],tmp[3]); // velocity of light in the bars in [cm/ns], offset delta cable in [cm]
+    
+    if(FootDebugLevel(2)) {
+      Info("FromDeltaTimeFile()","deltaTime/Offset bar_%d (%d,%d) = %2.3f %.3f", ibar, fPairId.first, fPairId.second, get<0>(fMapDeltaTime[fPairId]), get<1>(fMapDeltaTime[fPairId]));
+      cout<<GetBarLightSpeed(fPairId.first,fPairId.second)<<"  "<<GetDeltaTimePosOffset(fPairId.first,fPairId.second)<<endl;
+
+    }    
+    
+  }
+  
+  delete[] tmp;
+
+  Close();
+  
+  return kFALSE;
+}
+
+//
+////------------------------------------------+-----------------------------------
+
 Bool_t TATWparCal::FromBarStatusFile(const TString& name) {
  
     
@@ -270,12 +316,12 @@ Bool_t TATWparCal::FromBarStatusFile(const TString& name) {
     ReadItem(tmp, 4, ' ');
     fPairId = TPairId((Int_t)tmp[0],(Int_t)tmp[1]);
 
-    if(FootDebugLevel(4))
+    if(FootDebugLevel(2))
       cout<< endl <<fPairId.first<<" "<<fPairId.second<<endl;   
 
     fMapInfoBar[fPairId]=TBarsTuple(tmp[2],(Bool_t)tmp[3]);
     
-    if(FootDebugLevel(4)) {
+    if(FootDebugLevel(2)) {
       cout << " TW bar status: "<< Form("status/Thr bar_%d (%d,%d) = %.3f %d", ibar, fPairId.first, fPairId.second, get<0>(fMapInfoBar[fPairId]), get<1>(fMapInfoBar[fPairId])) << endl;
       cout<<GetElossThreshold(fPairId.first,fPairId.second)<<"  "<<IsTWbarActive(fPairId.first,fPairId.second)<<endl;
     }    
@@ -291,6 +337,40 @@ Bool_t TATWparCal::FromBarStatusFile(const TString& name) {
 
 
 //
+////------------------------------------------+-----------------------------------
+Double_t TATWparCal::GetBarLightSpeed(Int_t layer, Int_t bar)
+{
+
+  TPairId barId = std::make_pair(layer,bar);
+  
+  if ( fMapDeltaTime.find(barId) != fMapDeltaTime.end() )
+
+    return get<0>(fMapDeltaTime[barId]);
+
+  else {
+
+    Error("GetBarLightSpeed","No pair layer (%d), bar (%d) found!! Set Bar Light Speed to -1",layer,bar);
+    return -1;
+  }
+}
+
+////------------------------------------------+-----------------------------------
+Double_t TATWparCal::GetDeltaTimePosOffset(Int_t layer, Int_t bar)
+{
+
+  TPairId barId = std::make_pair(layer,bar);
+  
+  if ( fMapDeltaTime.find(barId) != fMapDeltaTime.end() )
+
+    return get<1>(fMapDeltaTime[barId]);
+
+  else {
+
+    Error("GetDeltaTimePosOffset","No pair layer (%d), bar (%d) found!! Set Delta Time Pos Offset to -1",layer,bar);
+    return -1;
+  }
+}
+
 ////------------------------------------------+-----------------------------------
 Double_t TATWparCal::GetElossThreshold(Int_t layer, Int_t bar)
 {

@@ -79,7 +79,9 @@ public:
   Int_t     GetPointMatchMCtrkID()  const  { return fId;               }
   Int_t     GetChargeZ()      const  { return fChargeZ;                }
   Double_t  GetChargeZProba() const  { return fChargeZProba;           }
+
   Bool_t    IsValid()         const;
+
   
   void      SetPosition(TVector3& pos);
   void      SetPositionG(TVector3& pos);

@@ -37,9 +37,9 @@ cellid= 33  T0_time= -416
 cellid= 34  T0_time= -421
 cellid= 35  T0_time= -418
 
-Resolution_function:  ([p0]+[p1]*x+[p2]*pow(x,2)+[p3]*pow(x,3)+[p4]*pow(x,4))
+Resolution_function:  ([p0]+[p1]*x+[p2]*x*x+[p3]*x*x*x+[p4]*x*x*x*x)
 Resolution_number_of_parameters:  5
-0.0408520958  -0.2236666983  1.3392039630  -3.2405449795  2.4421541499
+0.00177405   0.215497   -0.520817   -0.0249558   0.497701   
 
 STrel_function:  [p0]*x+[p1]*x*x+[p2]*x*x*x+[p3]*x*x*x*x
 STrel_number_of_parameters:  4

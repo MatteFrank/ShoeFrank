@@ -29,6 +29,8 @@
 typedef std::pair<Int_t,Int_t> TPairId;
 typedef std::tuple<Float_t,Int_t> TBarsTuple;
 typedef std::map<TPairId,TBarsTuple> TMapInfoBar;
+typedef std::tuple<Double_t,Double_t> TTupleDeltaT;
+typedef std::map<TPairId,TTupleDeltaT> TMapDeltaT;
 
 
 class TATWparCal : public TAGparTools {
@@ -57,9 +59,10 @@ private:
    
    BarsParameter_t fBarsParameter;
    
-   TPairId fPairId;
-   TBarsTuple fBarsTuple;
+   TPairId     fPairId;
+   TBarsTuple  fBarsTuple;
    TMapInfoBar fMapInfoBar;
+   TMapDeltaT  fMapDeltaTime;
    
    TATWcalibrationMap *fMapCal;
    
@@ -82,6 +85,7 @@ private:
 private:
    static TString fgkBBparamName;  // default BBparameters for Z identification with TW
    static TString fgkBarStatus;    // bar status file
+   static TString fgkDeltaTime;    // delta Time and offset calibration file
 
 private:
    void       RetrieveBeamQuantities();
@@ -107,6 +111,7 @@ public:
    Bool_t          FromRateFile(const TString& name = "", Int_t initRun=-1, Int_t endRun=-1);
    Bool_t          FromElossTuningFile(const TString& name = "");
    Bool_t          FromFileZID(const TString& name = "", Int_t zbeam=-1);
+   Bool_t          FromDeltaTimeFile(const TString& name = "");
    Bool_t          FromBarStatusFile(const TString& name = "");
    Bool_t          IsElossTuningON()  {return f_isElossTuningON;}
    Bool_t          IsPosCalibration() {return f_isPosCalibration;}
@@ -117,6 +122,10 @@ public:
    Int_t           GetChargeZ(Float_t edep, Float_t tof, Int_t layer); //const;
    Int_t           GetBisecChargeZ() const {return fZraw;}
    Float_t         GetDistBB(int ichg) const { return f_dist_Z[ichg-1];}
+   // Get Light speed per bar in [cm/ns]
+   Double_t        GetBarLightSpeed(Int_t ilayer, Int_t ibar);
+   // Get offset per bar in [cm] for position from delta Time
+   Double_t        GetDeltaTimePosOffset(Int_t ilayer, Int_t ibar);
    Double_t        GetElossThreshold(Int_t ilayer, Int_t ibar);
    TH1D*           GetRate(){ return fHisRate;}
    

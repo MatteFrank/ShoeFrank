@@ -31,6 +31,7 @@ set( with_dictionnaries
    TABMtrack
    TABMntuTrack
    TABMactNtuTrack
+   TABMactBaseNtuTrack
    TABMparConf
    TABMparCal
    TABMactNtuRaw

@@ -69,9 +69,6 @@ private:
   Int_t           fZbeam;
   Int_t           fEvtCnt;
   
-  Float_t         fTofPropAlpha;    // inverse of light propagation velocity
-  Float_t         fTofErrPropAlpha;
-
   TH1F*           fpHisDeTot;       // Total energy loss
   TH1F*           fpHisTimeTot;     // Total time of flight
   
@@ -102,11 +99,11 @@ private:
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);
 
   Double_t GetEnergy(Double_t RawEnergy,Int_t layer,Int_t posId, Int_t barId);
-  Double_t GetTime(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
+  Double_t GetToF(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
 
   Double_t GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b);
 
-  Double_t GetPosition(TATWrawHit*a,TATWrawHit*b);
+  Double_t GetPosition(TATWrawHit*a,TATWrawHit*b,Int_t layer,Int_t bar);
 
   Int_t    GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos);
   Int_t    GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos);

@@ -181,7 +181,7 @@ ClassImp(TAGcampaign);
 
 map<Int_t, TString> TAGcampaign::fgTWcalFileType = {{0, "TATW_Energy"},{1, "TATW_Tof"}, {2, "TATWEnergy"} };
 map<Int_t, TString> TAGcampaign::fgCAcalFileType = {{0, "TACA_Energy"},{1, "TACA_Temperature"}};
-map<Int_t, TString> TAGcampaign::fgTWmapFileType = {{0, "TATWChannel"},{1, "TATWbars"} };
+map<Int_t, TString> TAGcampaign::fgTWmapFileType = {{0, "TATWChannel"},{1, "TATWbars"},{2, "TATWdeltaTime"} };
 map<Int_t, TString> TAGcampaign::fgTWcfgFileType = {{0, "TATWdetector"},{1, "TATW_BBparameters"} };
 
 //_____________________________________________________________________________

@@ -21,3 +21,7 @@ NumberFiles: 2
 DetectorName: "CE"
 NumberFiles: 1
 "./geomaps/TIIM2023/TACEdetector.geo": -1
+
+DetectorName: "PW"
+NumberFiles: 1
+"./geomaps/TIIM2023/TAPWdetector.geo": -1

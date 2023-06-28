@@ -25,6 +25,27 @@ class TABMparConf : public TAGparTools {
                     TABMparConf();
     virtual         ~TABMparConf();
 
+    void SetChi2Cut(Float_t invalue)               {fChi2Cut=invalue;};
+    void SetPlaneHitCut(Int_t invalue)             {fPlaneHitCut=invalue;};
+    void SetMinHitCut(Int_t invalue)               {fMinHitCut=invalue;};
+    void SetMaxHitCut(Int_t invalue)               {fMaxHitCut=invalue;};
+    void SetRejmaxCut(Int_t invalue)               {fRejMaxCut=invalue;};
+    void SetHitTimeCut(Float_t invalue)            {fHitTimeCut=invalue;};
+    void SetNumIte(Int_t invalue)                  {fNumIte=invalue;};
+    void SetParMoveM(Float_t invalue)              {fParMoveM=invalue;};
+    void SetParMoveQ(Float_t invalue)              {fParMoveQ=invalue;};
+    void SetParToll(Float_t invalue)               {fParToll=invalue;};
+    void SetSmearHits(Int_t invalue)               {fSmearHits=invalue;};
+    void SetSmearRDrift(Int_t invalue)             {fSmearRDrift=invalue;};
+    void SetRDriftErr(Float_t invalue)             {fRDriftErr=invalue;};
+    void SetLegMBin(Int_t invalue)                 {fLegMBin=invalue;};
+    void SetLegMRange(Float_t invalue)             {fLegMRange=invalue;};
+    void SetLegRBin(Int_t invalue)                 {fLegRBin=invalue;};
+    void SetLegRRange(Float_t invalue)             {fLegRRange=invalue;};
+    void SetAssHitErr(Float_t invalue)             {fAssHitErr=invalue;};
+    void SetInvertTrack(Int_t invalue)             {fInvertTrack=invalue;};
+    void SetEnThresh(Float_t invalue)              {fEnThresh=invalue;};
+
     //!Get the reduced chi2 cut applied on the reconstructed tracks, this will be used for the track status flag of TABMtrack
     Float_t GetChi2Cut()                const{return fChi2Cut;};
     //!Get the minimum number of planes with at least 1 hit on each view per event requested by the tracking algorithm to proceed (3)
@@ -39,23 +60,27 @@ class TABMparConf : public TAGparTools {
     Float_t GetHitTimeCut()             const{return fHitTimeCut;};
     //!Get the maximum number of iterations allowed for the chi2 minimization algorithm (100)
     Int_t GetNumIte()                   const{return fNumIte;};
-    //!Get the stepsize adopted for the chi2 minimization algorithm (0.001)
-    Float_t GetParMove()                const{return fParMove;};
+    //!Get the stepsize adopted for the chi2 minimization algorithm (0.01)
+    Float_t GetParMoveM()                const{return fParMoveM;};
+    //!Get the stepsize adopted for the chi2 minimization algorithm (0.01)
+    Float_t GetParMoveQ()                const{return fParMoveQ;};
+    //!Get the stepsize adopted for the chi2 minimization algorithm (0.01)
+    Float_t GetParToll()                const{return fParToll;};
     //!Get the flag for the smearing of the number of hits in the MC simulations (false)
     Int_t GetSmearHits()                const{return fSmearHits;};
     //!Get the flag for the smearing of the drift distances in the MC simulations (4=gaussian)
     Int_t GetSmearRDrift()              const{return fSmearRDrift;};
     //!Get the default drift distance uncertainty (150 microns), it is used if the input function isn't loaded
     Float_t GetRdriftErr()              const{return fRDriftErr;};
-    //!Get the number of bins for the M parameter in the Legendre polynomy reconstruction algorithm (40)
+    //!Get the number of bins for the M parameter in the Legendre polynomy reconstruction algorithm (50)
     Int_t GetLegMBin()                  const{return fLegMBin;};
-    //!Get the number of bins for the R parameter in the Legendre polynomy reconstruction algorithm (75)
+    //!Get the number of bins for the R parameter in the Legendre polynomy reconstruction algorithm (100)
     Int_t GetLegRBin()                  const{return fLegRBin;};
-    //!Get the range for the M parameter in the Legendre polynomy reconstruction algorithm (0.1)
+    //!Get the range for the M parameter in the Legendre polynomy reconstruction algorithm (0.05)
     Float_t GetLegMRange()              const{return fLegMRange;};
     //!Get the range for the R parameter in the Legendre polynomy reconstruction algorithm (2.)
     Float_t GetLegRRange()              const{return fLegRRange;};
-    //!Get the number of sigma deviation accepted to associate a hit to a track hypothesis  (5.)
+    //!Get the number of sigma deviation accepted to associate a hit to a track hypothesis  (3.)
     Float_t GetAssHitErr()              const{return fAssHitErr;};
     //!Get the track inversion flag used to invert the BM tracks on X and/or Y view (0 by default, 2=y axis inversion for GSI2021)
     Int_t   GetInvertTrack()            const{return fInvertTrack;};
@@ -85,7 +110,9 @@ class TABMparConf : public TAGparTools {
 
     // fitter parameters
     Int_t     fNumIte;            ///< number of iteration for the fit (100)
-    Float_t   fParMove;           ///< change of parameters stepsize (0.001)
+    Float_t   fParMoveM;           ///< change of parameters stepsize (0.001)
+    Float_t   fParMoveQ;           ///< change of parameters stepsize (0.001)
+    Float_t   fParToll;           ///< Minuit minimizer tollerance (0.001)
     Int_t     fLegMBin;           ///< number of bin in the m th2d legendre tracking
     Float_t   fLegMRange;         ///< half range for the m th2d in the legendre tracking
     Int_t     fLegRBin;           ///< number of bin in the r th2d legendre tracking

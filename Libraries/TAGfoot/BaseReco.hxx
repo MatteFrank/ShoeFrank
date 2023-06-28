@@ -78,6 +78,7 @@
 
 #include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuClusterMT.hxx"
+#include "TAVTactNtuClusterMTP.hxx"
 #include "TAITactNtuCluster.hxx"
 #include "TAITactNtuClusterMT.hxx"
 #include "TAMSDactNtuCluster.hxx"

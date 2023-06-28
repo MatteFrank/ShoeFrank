@@ -27,8 +27,8 @@
 
 ClassImp(TAPLparGeo);
 
-const TString TAPLparGeo::fgkBaseName    = "ST";
-const TString TAPLparGeo::fgkDefParaName = "stGeo";
+const TString TAPLparGeo::fgkBaseName    = "PL";
+const TString TAPLparGeo::fgkDefParaName = "plGeo";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

@@ -40,6 +40,7 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TH1F.h>
+#include <TH3F.h>
 #include <TH2F.h>
 #include <TF1.h>
 #include <TGraphErrors.h>
@@ -63,6 +64,7 @@
 #include "TAIThit.hxx"
 #include "TAMSDntuRaw.hxx"
 #include "TAMCntuPart.hxx"
+#include "TAMCntuRegion.hxx"
 #include "TACAntuCluster.hxx"
 
 #include <sys/types.h>
@@ -75,7 +77,7 @@
 #include "TAVTtrack.hxx"
 #include "TAITtrack.hxx"
 
-
+#include "TAGactTreeWriter.hxx"
 #include "TAGFuploader.hxx"
 #include "TAGFselectorTrue.hxx"
 #include "TAGFselectorStandard.hxx"
@@ -107,6 +109,7 @@ public:
 	Bool_t Action();
 
 	virtual	void   CreateHistogram();
+	virtual void   SetHistogramDir(TDirectory* dir);
 
 	void Finalize();
 
@@ -136,6 +139,7 @@ private:
 	void	GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart );
 	void	GetRecoTrackInfo ( int i, Track* track, TVector3* KalmanPos, TVector3* KalmanMom, TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
 
+	void	CalculateTrueMomentumAtTgt();
 	void 	MatchCALOclusters();
 	
 	// void GetRecoTrackInfo ( StateOnPlane* state,
@@ -178,6 +182,7 @@ private:
 	map<string, int> m_ParticleIndex;					///< Map w/ indexing of possible particles
 	vector<string> m_Isotopes;							///< Fixed list of possible isotopes
 	map<string, int> m_IsotopesIndex;					///< Map w/ indexing of possible isotopes
+	map<int, TVector3> m_trueMomentumAtTgt;
 
 	EventDisplay* display;								///< GenFit event display
 
@@ -250,6 +255,8 @@ private:
 	TH1F* h_mcPosY;										///< MC Y position at the TG -- histo
 	TH1F* h_mcPosZ;										///< MC Z position at the TG -- histo
 	TH2I* h_PlaneOccupancy[6];
+	TH3F* h_MSDxCorrelation;
+	TH3F* h_MSDyCorrelation;
 
 	TH1I* h_GFeventType;								///< Event categorization seen by the GF selector
 
@@ -259,8 +266,11 @@ private:
 	map<string, TH1F*> h_resoP_over_Pkf;				///< Map of histograms for dP/P resolution (sigma) for each particle; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_biasP_over_Pkf;				///< Map of histograms for dP/P bias for each particle; the key is the particle name ("H", "He", "Li", ...)
 	map< pair<string,pair<int,int>>, TH1F*> h_resoFitMeas;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH2F*> h_FitVsMeas;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 	map< pair<string,pair<int,int>>, TH1F*> h_pullFitMeas;						///< Map of histograms for fitted and measured pulls; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 	map< pair<string,pair<int,int>>, TH2F*> h_pullVsClusSize;					///< Map of histograms for fitted and measured pulls vs cluster size; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_resFitErr;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_resMeasErr;						///< Map of histograms for fitted and measured residuals; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 
 	vector<TH1F*> h_momentum_true;						///< Vector of histograms for MC momentum module at the TG
 	vector<TH1F*> h_momentum_reco;						///< Vector of histograms for Fitted momentum moduel at the TG
