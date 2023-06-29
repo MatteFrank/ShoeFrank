@@ -24,7 +24,7 @@ public:
    TADItrackPropagator(TADIgeoField* field);
    
    // Extrapole vertex and momentum to a given Z
-   Bool_t	ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, TVector3& vOut, TVector3& pOut);
+   Bool_t	ExtrapoleZ(TVector3& v, TVector3& p, Double_t normP, Double_t posZ, TVector3& vOut, TVector3& pOut);
    
    //! Get field
    TVector3 GetFieldB(TVector3 vertex) const { return fField->GetField(vertex); }
@@ -38,6 +38,9 @@ public:
    Int_t    GetPartA()                 const { return fA;                  }
    //! Get step
    Double_t GetStep()                  const { return fStep;               }
+   //! Get tolerance
+   Double_t GetToterance()             const { return fToterance;          }
+   
 
    // Setter
    //! Set A for particle
@@ -46,6 +49,9 @@ public:
    void SetPartZ(Double_t Z)                 { fZ = Z;                     }
    //! Set step
    void SetStep(Double_t step)               { fStep = step;               }
+   //! Set tolerance
+   void SetToterance(Double_t tol)           { fToterance = tol;            }
+   
    
 private:
    TADIgeoField* fField;     ///< magnetic field
@@ -56,6 +62,7 @@ private:
    Int_t      fZ;            ///< Z of particle
    Int_t      fA;            ///< A of particle
    Double_t   fStep;         ///< Step size
+   Double_t   fToterance;    ///< Toterance step
 
 private:
    // Solving Lorentz equation
