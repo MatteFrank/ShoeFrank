@@ -24,7 +24,7 @@ public:
    TADItrackPropagator(TADIgeoField* field);
    
    // Extrapole vertex and momentum to a given Z
-   Bool_t	ExtrapoleZ(TVector3& pos, TVector3& beta, Double_t p, Double_t posZ, TVector3& vOut, TVector3& pOut);
+   Bool_t	ExtrapoleZ(TVector3& pos, TVector3& beta, Double_t posZ, TVector3& vOut, TVector3& pOut);
    
    //! Get field
    TVector3 GetFieldB(TVector3 vertex) const { return fField->GetField(vertex); }
