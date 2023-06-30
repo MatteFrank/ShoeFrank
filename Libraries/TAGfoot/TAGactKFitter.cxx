@@ -1846,7 +1846,7 @@ void TAGactKFitter::CalculateTrueMomentumAtTgt()
 {
 	if(TAGrecoManager::GetPar()->IsRegionMc())
 	{
-		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc("regMc", "TAMCntuRegion")->Object();
+		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"), "TAMCntuRegion")->Object();
 		for(int i = 0; i < mcNtuReg->GetRegionsN(); ++i)
 		{
 			TAMCregion* mcReg = (TAMCregion*)mcNtuReg->GetRegion(i);
