@@ -24,7 +24,7 @@ public:
    TADItrackPropagator(TADIgeoField* field);
    
    // Extrapole vertex and momentum to a given Z
-   Bool_t	ExtrapoleZ(TVector3& v, TVector3& p, Double_t normP, Double_t posZ, TVector3& vOut, TVector3& pOut);
+   Bool_t	ExtrapoleZ(TVector3& pos, TVector3& beta, Double_t p, Double_t posZ, TVector3& vOut, TVector3& pOut);
    
    //! Get field
    TVector3 GetFieldB(TVector3 vertex) const { return fField->GetField(vertex); }
@@ -57,7 +57,7 @@ private:
    TADIgeoField* fField;     ///< magnetic field
    Double_t   fTrackLength;  ///< track length
    Double_t   fNormP;        ///< Norm of momentum
-   TVector3   fDerivative;   ///< First derivative
+   TVector3   fBeta;         ///< Beta
    TVector3   fPosition;     ///< Position
    Int_t      fZ;            ///< Z of particle
    Int_t      fA;            ///< A of particle
@@ -71,7 +71,8 @@ private:
    void RungeKutta4();
    
 private:
-   static const Double_t fgkConvFactor;  ///< Conversion factor for light velocity
+   static const Double_t fgkConvFactor;    ///< Conversion factor for light velocity
+   static const Double_t fgkDefStepValue;  ///< Default step value
 };
 
 #endif
