@@ -92,7 +92,7 @@ void TADItrackPropagator::RungeKutta4()
    
    Bool_t toMuch = false;
    if (err > fToterance) {
-      fStep *=  0.9*TMath::Power(fToterance/err, 1./5.);
+      fStep *= 0.9*TMath::Power(fToterance/err, 1./5.);
       toMuch = true;
    }
    
@@ -122,16 +122,16 @@ TVector3 TADItrackPropagator::SolveLorentz(TVector3 beta, TVector3 field)
 //______________________________________________________________________________
 //! Runge Kutta propagation
 //!
-//! \param[in] position1 initial position
-//! \param[in] beta1 nitial beta
+//! \param[in] position initial position
+//! \param[in] beta nitial beta
 //! \param[in] step step  value
-void TADItrackPropagator::RungeKutta4(TVector3& position1, TVector3& beta1, Double_t step)
+void TADItrackPropagator::RungeKutta4(TVector3& position, TVector3& beta, Double_t step)
 {
-   TVector3 K1_1 = SolveLorentz(beta1,                GetFieldB(position1) );
-   TVector3 K2_1 = SolveLorentz(beta1 + step/2.*K1_1, GetFieldB(position1 + step/2. * beta1 + K1_1 * (step*step/8.)));
-   TVector3 K3_1 = SolveLorentz(beta1 + step/2.*K2_1, GetFieldB(position1 + step/2. * beta1 + K1_1 * (step*step/4.)));
-   TVector3 K4_1 = SolveLorentz(beta1 + step*K3_1,    GetFieldB(position1 + step*beta1 + K2_1 * (step*step/2.)));
+   TVector3 K1 = SolveLorentz(beta,                GetFieldB(position) );
+   TVector3 K2 = SolveLorentz(beta + step/2. * K1, GetFieldB(position + step/2. * beta + K1 * (step*step/8.)));
+   TVector3 K3 = SolveLorentz(beta + step/2. * K2, GetFieldB(position + step/2. * beta + K1 * (step*step/4.)));
+   TVector3 K4 = SolveLorentz(beta + step    * K3, GetFieldB(position + step    * beta + K2 * (step*step/2.)));
    
-   beta1     = beta1     + step/6.*(K1_1 + 2*K2_1 + 2*K3_1 + K4_1);
-   position1 = position1 + step * beta1 + (K1_1 + K2_1 + K3_1) * (step*step/6.);
+   beta     = beta     + step/6. * (K1 + 2*K2 + 2*K3 + K4);
+   position = position + step    * beta + (K1 + K2 + K3) * (step*step/6.);
 }
