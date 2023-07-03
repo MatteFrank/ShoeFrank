@@ -70,6 +70,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void RecoGlbTrkLoopSetVariables(); //Set Reco variables, to be done for each glbal track
   void MCGlbTrkLoopSetVariables(); //Set MC variables, to be done for each glbal track
   void MCParticleStudies();        // Loop on MC particles
+  void FillMCPartYields();
+  bool isGoodReco(Int_t Id_part);
 
   //useful formulas
   TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ){
@@ -127,7 +129,9 @@ class GlobalRecoAnaGSI : public RecoRaw {
 
   //MC quantities: true=production, cross=target, cross_calo=at calo enterance
   Int_t Z_true;
+  Int_t MC_id;
   Double_t Ek_true;
+  Double_t Ek_tot;
   Double_t M_true;
   Double_t Tof_true;
   Double_t Tof_startmc;

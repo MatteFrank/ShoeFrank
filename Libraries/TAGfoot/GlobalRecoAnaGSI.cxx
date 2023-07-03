@@ -121,23 +121,35 @@ void GlobalRecoAnaGSI::LoopEvent() {
         if (fFlagMC)
         {
           MCGlbTrkLoopSetVariables();
+          if (isGoodReco(MC_id)){
+          FillYieldMC("yield-N_GoodReco", Z_true, Th_true, Ek_tot);   // N_GoodReco
+          }
+          FillYieldMC("yield-N_AllReco", Z_true, Th_true, Ek_tot); // N_AllReco 
         }
+
+         
+
 
         // Set the reconstructed quantities
         RecoGlbTrkLoopSetVariables();
-        // Evaluate the measured mass
 
-        // fill the yields plots
-        if (fFlagMC)
-          FillMCGlbTrkYields();
-        else
-          FillDataGlbTrkYields();
+
+        // // fill the yields plots
+        // if (fFlagMC){
+        //   FillMCGlbTrkYields();
+
+        // }
+        // else
+        //   FillDataGlbTrkYields();
         ntracks++;
 
       } //********* end loop on global tracks ****************
 
-      if (fFlagMC)
-        MCParticleStudies();
+      if (fFlagMC){
+        //MCParticleStudies(); 
+        //***** loop on every tamcparticle:
+        FillMCPartYields();  //N_ref
+      }
 
       ++currEvent;
       if (currEvent == nTotEv)
@@ -184,33 +196,34 @@ for (int i = 0; i<mass_nbin; i++) {
 
 // Cross section recostruction histos MC
 if(fFlagMC){
-BookYield ("yield-trkMC", true);
 
-// Cross section recostruction histos MC + GHOST HITS FIXED
-BookYield ("yield-trkGHfixMC", true);
+BookYield("yield-N_ref", true);
+BookYield("yield-N_GoodReco", true);
+BookYield("yield-N_AllReco", true);
 
-// Cross section recostruction histos MC + ALL TW HITS FIXED
-BookYield ("yield-trkcutsMC", true);
+// BookYield("yield-trkMC", true);
 
-// Cross section recostruction histos from REAL DATA
-BookYield ("yield-trkReco");
+// // Cross section recostruction histos MC + GHOST HITS FIXED
+// BookYield ("yield-trkGHfixMC", true);
 
-// Cross section TRUE histos
-BookYield ("yield-true_cut");
+// // Cross section recostruction histos MC + ALL TW HITS FIXED
+// BookYield ("yield-trkcutsMC", true);
 
-// Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
-BookYield ("yield-true_DET");
+// // Cross section recostruction histos from REAL DATA
+// BookYield ("yield-trkReco");
 
-// Cross section TRUE histos reco real
-TString name = GetTitle();
-Int_t pos = name.Last('.');
-string name_ = "yield-trkREAL";
-name_ += name[pos-1];
-BookYield (name_.c_str());
+// // Cross section TRUE histos
+// BookYield ("yield-true_cut");
 
+// // Cross section TRUE histos DETECTABLE (PARTICLES WHICH REACH THE TW)
+// BookYield ("yield-true_DET");
 
-
-
+// // Cross section TRUE histos reco real
+// TString name = GetTitle();
+// Int_t pos = name.Last('.');
+// string name_ = "yield-trkREAL";
+// name_ += name[pos-1];
+// BookYield (name_.c_str());
 } else {
 
 // Cross section recostruction histos from REAL DATA
@@ -791,9 +804,12 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
     Z_true = pNtuMcTrk->GetCharge();
     P_true = pNtuMcTrk->GetInitP(); // also MS contribution in target!
     M_true = pNtuMcTrk->GetMass();
-    Ek_true = (sqrt(pow(pNtuMcTrk->GetMass(), 2) + pow((pNtuMcTrk->GetInitP()).Mag(), 2)) - pNtuMcTrk->GetMass()) / M_true;
-
+    Ek_tot = (sqrt(pow(pNtuMcTrk->GetMass(), 2) + pow((pNtuMcTrk->GetInitP()).Mag(), 2)) - pNtuMcTrk->GetMass());
+    Ek_tot = Ek_tot * fpFootGeo->GevToMev();
+    Ek_true = Ek_tot / M_true;
     // study of crossing regions
+    MC_id = fGlbTrack->GetMcMainTrackId();
+
     if (TAGrecoManager::GetPar()->IsRegionMc())
     {
       for (int icr = 0; icr < GetNtuMcReg()->GetRegionsN(); icr++)
@@ -847,3 +863,134 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
 
   return;
 }
+
+void GlobalRecoAnaGSI::FillMCPartYields()
+{
+  if (TAGrecoManager::GetPar()->IsRegionMc() == false)
+  {
+    cout << "IsRegionMc() needed for the analysis!";
+    exit;
+  }
+  TAMCntuRegion *pNtuReg = GetNtuMcReg();
+  Int_t nCross = pNtuReg->GetRegionsN();
+
+  for (int iCross = 0; iCross < nCross; iCross++)
+  {
+    TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
+    TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
+    Int_t OldReg = cross->GetOldCrossN();
+    Int_t NewReg = cross->GetCrossN();
+    Double_t time_cross = cross->GetTime();
+    TVector3 mom_cross = cross->GetMomentum();                                                                                // retrieves P at crossing
+    Double32_t Mass = cross->GetMass();                                                                                       // retrieves Mass of track
+    Double_t ekin_cross = pow(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2) + pow(Mass, 2), 0.5) - Mass; // Kinetic energy at crossing
+    Double_t beta_cross = pow(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2), 0.5) / (ekin_cross + Mass);
+
+    // if ((cross->GetTrackIdx() - 1) != Id_part)
+    // { // if it is not the particle I want to check, continue the loop
+    //   continue;
+    // }
+
+    TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
+    Int_t particle_ID = cross->GetTrackIdx() - 1;                     // TrackID
+    Int_t target_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetRegTarget();
+    Int_t primary_charge = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
+    TString regvtxname("VTXP3");
+    Int_t last_vtx_plane_region = GetParGeoG()->GetCrossReg(regvtxname);
+    Int_t AirAfterTW_region = GetParGeoG()->GetRegAirTW();
+    TString regname("AIR1");
+    Int_t RegAirAfterVtx = GetParGeoG()->GetCrossReg(regname);
+    auto Mid = particle->GetMotherID();
+    double mass = particle->GetMass(); // Get TRpaid-1
+    auto Reg = particle->GetRegion();
+    auto finalPos = particle->GetFinalPos();
+    int baryon = particle->GetBaryon();
+    TVector3 initMom = particle->GetInitP();
+    double InitPmod = sqrt(pow(initMom(0), 2) + pow(initMom(1), 2) + pow(initMom(2), 2));
+    Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
+    Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
+    Float_t Ek_true = Ek_tr_tot / (double)baryon;                          // MeV/n
+    Float_t theta_tr = particle->GetInitP().Theta() * (180 / TMath::Pi()); // in deg
+    Float_t charge_tr = particle->GetCharge();
+
+    if (
+        (particle_ID == 0                      // if the particle is a primary OR
+         || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
+         ) &&
+        particle->GetCharge() > 0 &&
+        particle->GetCharge() <= primary_charge && // with reasonable charge
+        // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
+        // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
+        (OldReg > 80 && OldReg < 121) && NewReg == AirAfterTW_region // it crosses the two planes of the TW and go beyond
+
+    )
+      FillYieldMC("yield-N_ref", charge_tr, theta_tr, Ek_tr_tot);
+  }
+
+
+  }
+
+  bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
+  {
+  if (TAGrecoManager::GetPar()->IsRegionMc() == false)
+  {
+    cout << "IsRegionMc() needed for the analysis!";
+    exit;
+  }
+  TAMCntuRegion *pNtuReg = GetNtuMcReg();
+  Int_t nCross = pNtuReg->GetRegionsN();
+
+  for (int iCross = 0; iCross < nCross; iCross++)
+  {
+    TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
+    TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
+    Int_t OldReg = cross->GetOldCrossN();
+    Int_t NewReg = cross->GetCrossN();
+    Double_t time_cross = cross->GetTime();
+    TVector3 mom_cross = cross->GetMomentum();                                                                                // retrieves P at crossing
+    Double32_t Mass = cross->GetMass();                                                                                       // retrieves Mass of track
+    Double_t ekin_cross = pow(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2) + pow(Mass, 2), 0.5) - Mass; // Kinetic energy at crossing
+    Double_t beta_cross = pow(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2), 0.5) / (ekin_cross + Mass);
+
+    if ((cross->GetTrackIdx() - 1) != Id_part)
+    { // if it is not the particle I want to check, continue the loop
+       continue;
+    }
+
+    TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
+    Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
+    Int_t target_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetRegTarget();
+    Int_t primary_charge = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
+    TString regvtxname("VTXP3");
+    Int_t last_vtx_plane_region = GetParGeoG()->GetCrossReg(regvtxname);
+    Int_t AirAfterTW_region = GetParGeoG()->GetRegAirTW();
+    TString regname("AIR1");
+    Int_t RegAirAfterVtx = GetParGeoG()->GetCrossReg(regname);
+    auto Mid = particle->GetMotherID();
+    double mass = particle->GetMass(); // Get TRpaid-1
+    auto Reg = particle->GetRegion();
+    auto finalPos = particle->GetFinalPos();
+    int baryon = particle->GetBaryon();
+    TVector3 initMom = particle->GetInitP();
+    double InitPmod = sqrt(pow(initMom(0), 2) + pow(initMom(1), 2) + pow(initMom(2), 2));
+    Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
+    Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
+    Float_t Ek_true = Ek_tr_tot / (double)baryon;                          // MeV/n
+    Float_t theta_tr = particle->GetInitP().Theta() * (180 / TMath::Pi()); // in deg
+    Float_t charge_tr = particle->GetCharge();
+
+    if (
+        (particle_ID == 0                      // if the particle is a primary OR
+         || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
+         ) &&
+        particle->GetCharge() > 0 &&
+        particle->GetCharge() <= primary_charge && // with reasonable charge
+        // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
+        // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
+        (OldReg > 80 && OldReg < 121) && NewReg == AirAfterTW_region // it crosses the two planes of the TW and go beyond
+
+    )
+      return true;
+  }
+  return false;
+  }
