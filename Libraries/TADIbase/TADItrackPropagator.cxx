@@ -129,8 +129,8 @@ void TADItrackPropagator::RungeKutta4(TVector3& position1, TVector3& beta1, Doub
 {
    TVector3 K1_1 = SolveLorentz(beta1,                GetFieldB(position1) );
    TVector3 K2_1 = SolveLorentz(beta1 + step/2.*K1_1, GetFieldB(position1 + step/2. * beta1 + K1_1 * (step*step/8.)));
-   TVector3 K3_1 = SolveLorentz(beta1 + step/2.*K2_1, GetFieldB(position1 + step/2. * beta1 + K2_1 * (step*step/8.)));
-   TVector3 K4_1 = SolveLorentz(beta1 + step*K3_1,    GetFieldB(position1 + step*beta1 + K3_1 * (step*step/2.)));
+   TVector3 K3_1 = SolveLorentz(beta1 + step/2.*K2_1, GetFieldB(position1 + step/2. * beta1 + K1_1 * (step*step/4.)));
+   TVector3 K4_1 = SolveLorentz(beta1 + step*K3_1,    GetFieldB(position1 + step*beta1 + K2_1 * (step*step/2.)));
    
    beta1     = beta1     + step/6.*(K1_1 + 2*K2_1 + 2*K3_1 + K4_1);
    position1 = position1 + step * beta1 + (K1_1 + K2_1 + K3_1) * (step*step/6.);
