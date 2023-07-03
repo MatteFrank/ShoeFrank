@@ -69,6 +69,9 @@ private:
    TVector3 SolveLorentz(TVector3 u, TVector3 field);
    // Runge-Kutta fourth computing
    void RungeKutta4();
+   // Runge-Kutta for a given step
+   void RungeKutta4(TVector3& position, TVector3& beta, Double_t step);
+
    
 private:
    static const Double_t fgkConvFactor;    ///< Conversion factor for light velocity

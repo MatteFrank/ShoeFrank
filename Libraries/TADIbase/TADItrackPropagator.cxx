@@ -17,7 +17,7 @@
 */
 
 const  Double_t TADItrackPropagator::fgkConvFactor   = 0.299792458e-3;// (MeV/c)/G/cm
-const  Double_t TADItrackPropagator::fgkDefStepValue = 0.01;
+const  Double_t TADItrackPropagator::fgkDefStepValue = 0.1;
 
 //______________________________________________________________________________
 //! Constructor
@@ -38,8 +38,8 @@ TADItrackPropagator::TADItrackPropagator(TADIgeoField* field)
 // __________________________________________________________________________
 //! Propagate in Z-direction charged particle with momentum p to vertex v.
 //!
-//! \param[in] v initial position
-//! \param[in] p initial momentum
+//! \param[in] pos initial position
+//! \param[in] beta0 nitial beta
 //! \param[in] posZ Z position
 //! \param[out] vOut final position
 //! \param[out] pOut final momentum
@@ -77,48 +77,61 @@ void TADItrackPropagator::RungeKutta4()
    TVector3 beta1     = fBeta;
    TVector3 position1 = fPosition;
    
-   TVector3 K1 = SolveLorentz(fBeta,               GetFieldB(fPosition) );
-   TVector3 K2 = SolveLorentz(fBeta + fStep/2.*K1, GetFieldB(fPosition + fStep/2. * fBeta + K1 * (fStep*fStep/8.)));
-   TVector3 K3 = SolveLorentz(fBeta + fStep/2.*K2, GetFieldB(fPosition + fStep/2. * fBeta + K1 * (fStep*fStep/4.)));
-   TVector3 K4 = SolveLorentz(fBeta + fStep*K3,    GetFieldB(fPosition + fStep*fBeta + K2 * (fStep*fStep/2.)));
+   TVector3 beta2     = fBeta;
+   TVector3 position2 = fPosition;
    
-   TVector3 beta = fBeta + fStep/6.*(K1 + 2*K2 + 2*K3 + K4);
-   TVector3 position   = fPosition + fStep * fBeta + (K1 + K2 + K3) * (fStep*fStep/6.);
+   // mormnal step
+   RungeKutta4(fPosition, fBeta, fStep);
    
-   fBeta     = beta;
-   fPosition = position;
-
-      
    // divide step by 2
    Double_t step = fStep/2.;
-   for (Int_t i = 0; i < 2; ++i) {
-      TVector3 K1_1 = SolveLorentz(beta1,                GetFieldB(position1) );
-      TVector3 K2_1 = SolveLorentz(beta1 + step/2.*K1_1, GetFieldB(position1 + step/2. * beta1 + K1_1 * (step*step/8.)));
-      TVector3 K3_1 = SolveLorentz(beta1 + step/2.*K2_1, GetFieldB(position1 + step/2. * beta1 + K2_1 * (step*step/8.)));
-      TVector3 K4_1 = SolveLorentz(beta1 + step*K3_1,    GetFieldB(position1 + step*beta1 + K3_1 * (step*step/2.)));
-      
-      beta1 = beta1 + step/6.*(K1_1 + 2*K2_1 + 2*K3_1 + K4_1);
-      position1   = position1 + step * beta1 + (K1_1 + K2_1 + K3_1) * (step*step/6.);
-   }
+   for (Int_t i = 0; i < 2; ++i)
+      RungeKutta4(position1, beta1, step);
 
    Double_t err = TMath::Sqrt( (fPosition[0]-position1[0])*(fPosition[0]-position1[0]) + (fPosition[1]-position1[1])*(fPosition[1]-position1[1]) );
    
-   if (err > fToterance)
+   Bool_t toMuch = false;
+   if (err > fToterance) {
       fStep *=  0.9*TMath::Power(fToterance/err, 1./5.);
+      toMuch = true;
+   }
    
+   // multiply step by 2
+   step = fStep*2.;
+   RungeKutta4(position2, beta2, step);
+
+   Double_t err2 = TMath::Sqrt( (fPosition[0]-position2[0])*(fPosition[0]-position2[0]) + (fPosition[1]-position2[1])*(fPosition[1]-position2[1]) );
+
+   if (err2 < fToterance && toMuch == false)
+      fStep  = step;
+      
    fTrackLength += fStep;
 }
 
 //______________________________________________________________________________
 //! Solver for Lorentz equation
 //!
-//! \param[in] v  position vector
+//! \param[in] beta  position vector
 //! \param[in] field field vector
 //! \return new position
 TVector3 TADItrackPropagator::SolveLorentz(TVector3 beta, TVector3 field)
 {
-   TVector3 temp = (fZ/fNormP)*beta.Cross(field)*fgkConvFactor;
-   
-   return temp;
+   return (fZ/fNormP)*beta.Cross(field)*fgkConvFactor;
 }
 
+//______________________________________________________________________________
+//! Runge Kutta propagation
+//!
+//! \param[in] position1 initial position
+//! \param[in] beta1 nitial beta
+//! \param[in] step step  value
+void TADItrackPropagator::RungeKutta4(TVector3& position1, TVector3& beta1, Double_t step)
+{
+   TVector3 K1_1 = SolveLorentz(beta1,                GetFieldB(position1) );
+   TVector3 K2_1 = SolveLorentz(beta1 + step/2.*K1_1, GetFieldB(position1 + step/2. * beta1 + K1_1 * (step*step/8.)));
+   TVector3 K3_1 = SolveLorentz(beta1 + step/2.*K2_1, GetFieldB(position1 + step/2. * beta1 + K2_1 * (step*step/8.)));
+   TVector3 K4_1 = SolveLorentz(beta1 + step*K3_1,    GetFieldB(position1 + step*beta1 + K3_1 * (step*step/2.)));
+   
+   beta1     = beta1     + step/6.*(K1_1 + 2*K2_1 + 2*K3_1 + K4_1);
+   position1 = position1 + step * beta1 + (K1_1 + K2_1 + K3_1) * (step*step/6.);
+}
