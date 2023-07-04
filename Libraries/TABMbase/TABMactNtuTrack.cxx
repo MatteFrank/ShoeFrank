@@ -30,7 +30,7 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
 
   //new chi2 ROOT based
   fpFunctor= new ROOT::Math::Functor(this,&TABMactNtuTrack::EvaluateChi2,2);
-  fpMinimizer = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Fumili2");
+  fpMinimizer = ROOT::Math::Factory::CreateMinimizer("", "");
 
 }
 
