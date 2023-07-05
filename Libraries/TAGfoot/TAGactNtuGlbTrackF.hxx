@@ -68,7 +68,7 @@ private:
    // Find MSD cluster for a given track
    void       FindMsdCluster(TAGtrack* track);
    // Find TW cluster for a given track
-   void       FindTwCluster(TAGtrack* track, Bool_t update = true);
+   void       FindTwCluster(TAGtrack* track, Int_t iClus);
    // Find CAL cluster for a given track
    void       FindCaCluster(TAGtrack* track);
 

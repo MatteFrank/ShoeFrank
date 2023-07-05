@@ -158,9 +158,9 @@ TAGactNtuGlbTrackF::TAGactNtuGlbTrackF(const char* name,
      fLastPlaneMsd = fSensorThickItr;
 
    // beam loss in target
-   fBeamEnergyTarget = pGeoMapG->GetBeamPar().Energy;
    Float_t bA = pGeoMapG->GetBeamPar().AtomicMass;
    Float_t bz = pGeoMapG->GetBeamPar().AtomicNumber;
+   fBeamEnergyTarget = pGeoMapG->GetBeamPar().Energy*bA;
 
    TString matTgt   = pGeoMapG->GetTargetPar().Material;
    Float_t thickTgt = pGeoMapG->GetTargetPar().Size[2]/2.; // in average
@@ -361,7 +361,7 @@ Bool_t TAGactNtuGlbTrackF::FindTracks()
             FindMsdCluster(track);
          
          if (TAGrecoManager::GetPar()->IncludeTW())
-            FindTwCluster(track);
+            FindTwCluster(track, iClus);
          
          if (TAGrecoManager::GetPar()->IncludeCA())
             FindCaCluster(track);
@@ -405,7 +405,7 @@ TAGtrack* TAGactNtuGlbTrackF::FillVtxTracks(TAVTtrack* vtTrack)
    TAGparGeo* pGeoMapG = (TAGparGeo*)  fpGeoMapG->Object();
 
    // first guess of momentum
-   Double_t Ec   = pGeoMapG->GetBeamPar().Energy*1000; //MeV/u
+   Double_t Ec   = pGeoMapG->GetBeamPar().Energy*2; //GeV/u
    Double_t mass = TAGgeoTrafo::GetMassFactorMeV()*fPartA;
    Double_t fac  = TMath::Sqrt(2*mass*Ec*fPartA + Ec*Ec*fPartA*fPartA);
    
@@ -447,7 +447,6 @@ TAGtrack* TAGactNtuGlbTrackF::FillVtxTracks(TAVTtrack* vtTrack)
    
    UpdateParam(track);
    
-   // first gues with TW
    TAVTparGeo* pGeoMapVt = (TAVTparGeo*) fpGeoMapVtx->Object();
    
    // Compute particle after half target
@@ -501,7 +500,7 @@ void TAGactNtuGlbTrackF::FindItrCluster(TAGtrack* track)
       for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
          TAITcluster* aCluster = (TAITcluster*)list->At(iClus);
          
-         if( aCluster->Found()) continue; // skip cluster already found
+      //   if( aCluster->Found()) continue; // skip cluster already found
          
          // from IT local to FOOT global
          TVector3 posG = aCluster->GetPositionG();
@@ -542,7 +541,7 @@ void TAGactNtuGlbTrackF::FindItrCluster(TAGtrack* track)
 
          if(FootDebugLevel(1)) {
             posG = fpFootGeo->FromITLocalToGlobal(posG);
-            printf("ITR %g %g\n", aDistance, minDistance);
+            printf("ITR%d %g\n", iSensor, minDistance);
             printf("pos: ");
             posG.Print();
             printf("inter: ");
@@ -609,7 +608,7 @@ void TAGactNtuGlbTrackF::FindMsdCluster(TAGtrack* track)
       for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
          TAMSDpoint* aCluster = (TAMSDpoint*)list->At(iClus);
          
-         if( aCluster->Found()) continue; // skip cluster already found
+       //  if( aCluster->Found()) continue; // skip cluster already found
          
          // from IT local to FOOT global
          TVector3 posG = aCluster->GetPositionG();
@@ -638,7 +637,7 @@ void TAGactNtuGlbTrackF::FindMsdCluster(TAGtrack* track)
          
          if(FootDebugLevel(1)) {
             posG = fpFootGeo->FromMSDLocalToGlobal(posG);
-            printf("MSD %g %g\n", aDistance, minDistance);
+            printf("MSD%d %g\n", iStation, minDistance);
             printf("pos: ");
             posG.Print();
             printf("inter: ");
@@ -691,7 +690,7 @@ void TAGactNtuGlbTrackF::FindMsdCluster(TAGtrack* track)
 //! Find TW cluster for a given global track
 //!
 //! \param[in] track a given track
-void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Bool_t update)
+void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Int_t iClus)
 {
    TAGntuGlbTrack* pNtuTrack = (TAGntuGlbTrack*) fpNtuTrack->Object();
    TATWntuPoint*   pNtuRec   = (TATWntuPoint*)   fpNtuRecTw->Object();
@@ -706,16 +705,14 @@ void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Bool_t update)
    Double_t searchDist = fSearchClusDistTof;
    TVector3 bestInter;
 
-   if (!update)
-      searchDist = fSearchClusDistTof*2;
+   searchDist = fSearchClusDistTof*2;
       
    TATWpoint* bestCluster = 0x0;
    Int_t nClusters = pNtuRec->GetPointsN();
 
-   for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
       TATWpoint* aCluster =  pNtuRec->GetPoint(iClus);
       
-      if( aCluster->Found()) continue; // skip cluster already found
+      if( aCluster->Found()) return ; // skip cluster already found
       
       // from TW local to FOOT global
       TVector3 posG = aCluster->GetPositionG();
@@ -743,22 +740,17 @@ void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Bool_t update)
          bestCluster = aCluster;
          bestInter   = inter;
       }
-   } // end loop on sensor clusters
    
    // if a cluster has been found, add the cluster
    if( bestCluster ) {
       
-      Float_t Z = bestCluster->GetChargeZ();
-      track->SetTwChargeZ(Z);
-      
-      if (update) {
-         // from IT local to FOOT global
+      // from IT local to FOOT global
          TVector3 posG = bestCluster->GetPositionG();
          TVector3 errG = bestCluster->GetPosErrorG();
       
          if(FootDebugLevel(1)) {
             posG = fpFootGeo->FromTWLocalToGlobal(posG);
-            printf("TW %g %g\n", aDistance, minDistance);
+            printf("TW %g\n",  minDistance);
             printf("pos: ");
             posG.Print();
             printf("inter: ");
@@ -781,7 +773,7 @@ void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Bool_t update)
 
          if(FootDebugLevel(1))
             printf("TW\n");
-      }
+
    }
    
    // Compute particle after ToF Wall
