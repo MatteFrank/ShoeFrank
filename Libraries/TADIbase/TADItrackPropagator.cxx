@@ -18,6 +18,7 @@
 
 const  Double_t TADItrackPropagator::fgkConvFactor   = 0.299792458e-3;// (MeV/c)/G/cm
 const  Double_t TADItrackPropagator::fgkDefStepValue = 0.1;
+         Bool_t TADItrackPropagator::fgVarStepFlag  = false;
 
 //______________________________________________________________________________
 //! Constructor
@@ -122,27 +123,29 @@ void TADItrackPropagator::RungeKutta4()
    // mormnal step
    RungeKutta4(fPosition, fBeta, fStep);
    
-   // divide step by 2
-   Double_t step = fStep/2.;
-   for (Int_t i = 0; i < 2; ++i)
-      RungeKutta4(position1, beta1, step);
-
-   Double_t err = TMath::Sqrt( (fPosition[0]-position1[0])*(fPosition[0]-position1[0]) + (fPosition[1]-position1[1])*(fPosition[1]-position1[1]) );
-   
-   Bool_t toMuch = false;
-   if (err > fToterance) {
-      fStep *= 0.9*TMath::Power(fToterance/err, 1./5.);
-      toMuch = true;
+   if (fgVarStepFlag) {
+      // divide step by 2
+      Double_t step = fStep/2.;
+      for (Int_t i = 0; i < 2; ++i)
+         RungeKutta4(position1, beta1, step);
+      
+      Double_t err = TMath::Sqrt( (fPosition[0]-position1[0])*(fPosition[0]-position1[0]) + (fPosition[1]-position1[1])*(fPosition[1]-position1[1]) );
+      
+      Bool_t toMuch = false;
+      if (err > fToterance) {
+         fStep *= 0.9*TMath::Power(fToterance/err, 1./5.);
+         toMuch = true;
+      }
+      
+      // multiply step by 2
+      step = fStep*2.;
+      RungeKutta4(position2, beta2, step);
+      
+      Double_t err2 = TMath::Sqrt( (fPosition[0]-position2[0])*(fPosition[0]-position2[0]) + (fPosition[1]-position2[1])*(fPosition[1]-position2[1]) );
+      
+      if (err2 < fToterance && toMuch == false)
+         fStep  = step;
    }
-   
-   // multiply step by 2
-   step = fStep*2.;
-   RungeKutta4(position2, beta2, step);
-
-   Double_t err2 = TMath::Sqrt( (fPosition[0]-position2[0])*(fPosition[0]-position2[0]) + (fPosition[1]-position2[1])*(fPosition[1]-position2[1]) );
-
-   if (err2 < fToterance && toMuch == false)
-      fStep  = step;
       
    fTrackLength += fStep;
 }

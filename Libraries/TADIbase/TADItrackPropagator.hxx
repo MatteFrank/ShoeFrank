@@ -78,6 +78,7 @@ private:
 private:
    static const Double_t fgkConvFactor;    ///< Conversion factor for light velocity
    static const Double_t fgkDefStepValue;  ///< Default step value
+   static Bool_t fgVarStepFlag;            ///< Variable steo size flag
 };
 
 #endif
