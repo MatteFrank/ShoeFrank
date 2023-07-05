@@ -158,14 +158,20 @@ void TAVTactBaseNtuTrack::CreateHistogram()
       {
          fpHisThetaRes[i] = new TH1F(Form("%sTrackThetaRes%d", fPrefix.Data(), i + 1), Form("%s - theta track resolution for Z= %d", fTitleDev.Data(), i + 1), 200, -1, 1);
          AddHistogram(fpHisThetaRes[i]);
-         fpHisPhiRes[i] = new TH1F(Form("%sTrackPhiRes%d", fPrefix.Data(), i + 1), Form("%s - phi track resolution for Z= %d", fTitleDev.Data(), i + 1), 20000, -10, 10);
+         fpHisPhiRes[i] = new TH1F(Form("%sTrackPhiRes%d", fPrefix.Data(), i + 1), Form("%s - phi track resolution for Z= %d", fTitleDev.Data(), i + 1), 200, -10, 10);
          AddHistogram(fpHisPhiRes[i]);
 
-         fpTrackAngularEfficiency[i] = new TH1F(Form("%sTrackAngularEfficiencyZ%d", fPrefix.Data(), i + 1), Form("Angular Efficiency of reconstructed tracks for Z= %d; Angle [deg]; eff;", i + 1), 41, -0.5, 40.5);
-      AddHistogram(fpTrackAngularEfficiency[i]);
+         fpTrackThetaEfficiency[i] = new TH1F(Form("%sTrackThetaEfficiencyZ%d", fPrefix.Data(), i + 1), Form("polar Efficiency of reconstructed tracks for Z= %d; Angle [deg]; eff;", i + 1), 41, -0.5, 40.5);
+         AddHistogram(fpTrackThetaEfficiency[i]);
 
-      fpTrackAngularPurityTrack[i] = new TH1F(Form("%sTrackAngularPurityTrackZ%d", fPrefix.Data(), i + 1), Form("Angular Purity of reconstructed tracks out of the selected ones for Z = %d; Angle [deg]; purity;", i + 1), 41, -0.5, 40.5);
-      AddHistogram(fpTrackAngularPurityTrack[i]);
+         fpTrackThetaPurityTrack[i] = new TH1F(Form("%sTrackThetaPurityTrackZ%d", fPrefix.Data(), i + 1), Form("polar Purity of reconstructed tracks out of the selected ones for Z = %d; Angle [deg]; purity;", i + 1), 41, -0.5, 40.5);
+         AddHistogram(fpTrackThetaPurityTrack[i]);
+
+         fpTrackPhiEfficiency[i] = new TH1F(Form("%sTrackPhiEfficiencyZ%d", fPrefix.Data(), i + 1), Form("polar Efficiency of reconstructed tracks for Z= %d; Angle [deg]; eff;", i + 1), 500, -180, 180);
+         AddHistogram(fpTrackPhiEfficiency[i]);
+
+         fpTrackPhiPurityTrack[i] = new TH1F(Form("%sTrackPhiPurityTrackZ%d", fPrefix.Data(), i + 1), Form("polar Purity of reconstructed tracks out of the selected ones for Z = %d; Angle [deg]; purity;", i + 1), 500, -180, 180);
+         AddHistogram(fpTrackPhiPurityTrack[i]);
       }
 
       //position res of the clusters
@@ -569,25 +575,30 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
      // define the charge of the track as the one of the most probable MCparticle     TO BE CHANGED 
      int charge_track = -1;
      Int_t theta = -1;
+     Int_t phi = -99;
      if (max_id == -666) {
       charge_track = -1; // if the cluster is made of noisy pixels (id = -666)
       theta = -1;
+      phi = -99;
      }
      else{
       charge_track = pNtuEve->GetTrack(max_id)->GetCharge();
       theta = (int) round(pNtuEve->GetTrack(max_id)->GetInitP().Theta() * (180 / TMath::Pi())) ;
+      phi = (int)round(pNtuEve->GetTrack(max_id)->GetInitP().Theta() * (180 / TMath::Pi()));
      }
      m_nRecoTracks[charge_track]++;
      m_nClone[charge_track][max_id]++;
      if (m_nClone[charge_track][max_id]>1){
          n_clones[charge_track] = m_nClone[charge_track][max_id];
      }
-     m_nRecoTracks_angle[charge_track][theta]++;   
+     m_nRecoTracks_theta[charge_track][theta]++;
+     m_nRecoTracks_phi[charge_track][phi]++;
 
      //TAMCpart *particle = pNtuEve->GetTrack(max_id);
      if (isVTMatched(max_id)){
          m_nRecoTracks_matched[charge_track]++;
-         m_nRecoTracks_matched_angle[charge_track][theta]++;
+         m_nRecoTracks_matched_theta[charge_track][theta]++;
+         m_nRecoTracks_matched_phi[charge_track][phi]++;
          m_nCorrectClus[charge_track]+=m[to_string(max_id)];
          m_nTotalClus[charge_track] += track->GetClustersN();
 
@@ -684,8 +695,11 @@ void TAVTactBaseNtuTrack::EvaluateTrack()
       if (isVTMatched(i)) {
          m_nMCTracks[particle->GetCharge()]++;
          Int_t theta = (int) round(particle->GetInitP().Theta() * (180 / TMath::Pi()));  // in deg)
+         Int_t phi = (int)round(particle->GetInitP().Phi() * (180 / TMath::Pi()));
          //cout << "theta : " << particle->GetInitP().Theta() * (180 / TMath::Pi()) << " rounded to : " << theta << endl;
-         m_nMCTracks_angle[particle->GetCharge()][theta]++;
+         //cout << "phi : " << particle->GetInitP().Phi() * (180 / TMath::Pi()) << " rounded to : " << phi << endl;
+         m_nMCTracks_theta[particle->GetCharge()][theta]++;
+         m_nMCTracks_phi[particle->GetCharge()][phi]++;
       }
    }
 
@@ -776,31 +790,61 @@ void TAVTactBaseNtuTrack::PrintAngularEfficiency()
 {
 
      for (int i = 1; i <= ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber; i++){
-     for (int j = 0; j<=40; j++){
+     
+     for (int j = 0; j<=40; j++){    // from 0 to 40 deg    polar angle
 
-     float n_goodreco = (float)m_nRecoTracks_matched_angle[i][j];
-     float n_badreco = (float)m_nRecoTracks_angle[i][j] - (float)m_nRecoTracks_matched_angle[i][j];
-     float n_allreco = (float)m_nRecoTracks_angle[i][j];
-     float n_ref = (float)m_nMCTracks_angle[i][j];
+     float n_goodreco = (float)m_nRecoTracks_matched_theta[i][j];
+     float n_badreco = (float)m_nRecoTracks_theta[i][j] - (float)m_nRecoTracks_matched_theta[i][j];
+     float n_allreco = (float)m_nRecoTracks_theta[i][j];
+     float n_ref = (float)m_nMCTracks_theta[i][j];
      
 
-     cout << "Z=" << i << " theta = "<< j<< " good reco: " << n_goodreco << " bad reco:  "<< n_badreco << " tot: " << n_allreco << " ref: " << n_ref << endl;
+     //cout << "Z=" << i << " theta = "<< j<< " good reco: " << n_goodreco << " bad reco:  "<< n_badreco << " tot: " << n_allreco << " ref: " << n_ref << endl;
      // efficiency: reconstructed tracks in the set of the MC possible one
      float eff = 0;     
      float eff_err = 0;
      if (n_ref >0) eff =(float) n_goodreco / n_ref;
      if (n_ref > 0) eff_err = TMath::Sqrt(eff * abs(1 - eff) / n_ref); // associate error as sqrt(eff(1 - eff) / Ntot) -- binomial distribution
-     fpTrackAngularEfficiency[i-1]->SetBinContent(j+1, eff);
-     fpTrackAngularEfficiency[i-1]->SetBinError(j+1, eff_err);
+     fpTrackThetaEfficiency[i-1]->SetBinContent(j+1, eff);
+     fpTrackThetaEfficiency[i-1]->SetBinError(j+1, eff_err);
 
      // track purity
      float purity_track = 0;
      float purity_track_err = 0;
      if (n_allreco > 0) purity_track = n_goodreco / n_allreco;
      if (n_allreco >0)  purity_track_err = TMath::Sqrt(purity_track * abs(1 - purity_track) / n_allreco);
-     fpTrackAngularPurityTrack[i-1]->SetBinContent(j+1, purity_track);
-     fpTrackAngularPurityTrack[i-1]->SetBinError(j+1, purity_track_err);
+     fpTrackThetaPurityTrack[i - 1]->SetBinContent(j + 1, purity_track);
+     fpTrackThetaPurityTrack[i - 1]->SetBinError(j + 1, purity_track_err);
+   }
 
+   for (int j = -180; j < 180; j++) // from -180 to 180 deg    azimutal angle
+   { 
+
+     float n_goodreco = (float)m_nRecoTracks_matched_phi[i][j];
+     float n_badreco = (float)m_nRecoTracks_phi[i][j] - (float)m_nRecoTracks_matched_phi[i][j];
+     float n_allreco = (float)m_nRecoTracks_phi[i][j];
+     float n_ref = (float)m_nMCTracks_phi[i][j];
+
+     // cout << "Z=" << i << " theta = "<< j<< " good reco: " << n_goodreco << " bad reco:  "<< n_badreco << " tot: " << n_allreco << " ref: " << n_ref << endl;
+     //  efficiency: reconstructed tracks in the set of the MC possible one
+     float eff = 0;
+     float eff_err = 0;
+     if (n_ref > 0)
+         eff = (float)n_goodreco / n_ref;
+     if (n_ref > 0)
+         eff_err = TMath::Sqrt(eff * abs(1 - eff) / n_ref); // associate error as sqrt(eff(1 - eff) / Ntot) -- binomial distribution
+     fpTrackPhiEfficiency[i - 1]->SetBinContent(j + 1, eff);
+     fpTrackPhiEfficiency[i - 1]->SetBinError(j + 1, eff_err);
+
+     // track purity
+     float purity_track = 0;
+     float purity_track_err = 0;
+     if (n_allreco > 0)
+         purity_track = n_goodreco / n_allreco;
+     if (n_allreco > 0)
+         purity_track_err = TMath::Sqrt(purity_track * abs(1 - purity_track) / n_allreco);
+     fpTrackPhiPurityTrack[i - 1]->SetBinContent(j + 1, purity_track);
+     fpTrackPhiPurityTrack[i - 1]->SetBinError(j + 1, purity_track_err);
    }
    }
 }

@@ -13,4 +13,6 @@ MESSAGE("${PROJECT_NAME}:")
 #
 add_subdirectory(TAPLbase)
 add_subdirectory(TACEbase)
+add_subdirectory(TAPWbase)
 add_subdirectory(TANEbase)
+add_subdirectory(TAPXIbase)

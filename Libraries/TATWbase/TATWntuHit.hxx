@@ -64,7 +64,7 @@ public:
    Bool_t    IsColumn() { return ( fLayer == (Int_t)LayerY ? true : false ); };
    //! Validity check if bar is part of LayerX (a horizontal bar of front layer)
    Bool_t    IsRow()    { return ( fLayer == (Int_t)LayerX ? true : false ); };
-   //! Check if TW hit is valid (properly reconstructed and over threshold)
+   //! Check if TW hit is valid (In DATA: both q_A and B >0. In MC: properly reconstructed and over threshold)
    Bool_t    IsValid()                 const   { return fIsValid;           }
 
    
@@ -79,7 +79,7 @@ public:
    Double_t  GetTime()                 const   { return fTime;              }
    //! Get ToF in ns
    Double_t  GetToF()                  const   { return fTimeofflight;      }
-   //! Get position along the bar
+   //! Get position along the bar in cm
    Double_t  GetPosition()             const   { return fCoordinate;        }
    //! Get nuclear charge number Z
    Int_t     GetChargeZ()              const   { return fChargeZ;           }

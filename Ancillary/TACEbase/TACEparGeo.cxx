@@ -28,8 +28,8 @@
 
 ClassImp(TACEparGeo);
 
-const TString TACEparGeo::fgkBaseName    = "TW";
-const TString TACEparGeo::fgkDefParaName = "twGeo";
+const TString TACEparGeo::fgkBaseName    = "CE";
+const TString TACEparGeo::fgkDefParaName = "pwGeo";
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

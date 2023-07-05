@@ -12,13 +12,12 @@
 #include "TMath.h"
 #include "TVectorD.h"
 #include "TVector3.h"
+#include "TVector2.h"
 #include "TF1.h"
 
 #include <TDecompChol.h>
 
 #include "math.h"
-
-#define BM_trackpar 4
 
 using namespace std;
 
@@ -42,17 +41,22 @@ class TABMtrack : public TObject {
     void SetOrigin(TVector3 r0in)                       { fOrigin=r0in;}
     void SetOriginX(Double_t x)                         { fOrigin.SetX(x);}
     void SetOriginY(Double_t y)                         { fOrigin.SetY(y);}
+    void SetErrOriginX(Double_t x)                      { fErrOrigin.SetX(x);}
+    void SetErrOriginY(Double_t y)                      { fErrOrigin.SetY(y);}
     void SetSlope(Double_t x,Double_t y, Double_t z)    { fSlope.SetXYZ(x,y,z);}
     void SetSlope(TVector3 pin)                         { fSlope=pin;}
     void SetSlopeX(Double_t x)                          { fSlope.SetX(x);}
     void SetSlopeY(Double_t y)                          { fSlope.SetY(y);}
+    void SetSlopeYError(Double_t y)                     { fErrSlope.SetY(y);}
+    void SetSlopeXError(Double_t x)                     { fErrSlope.SetX(x);}
+    void SetErrCovX(Double_t x)                         { fErrCov.SetX(x);}
+    void SetErrCovY(Double_t y)                         { fErrCov.SetY(y);}
     void SetChiSquare(Double_t chi2_in)                 { fChiSquare=chi2_in;}
     void SetChiSquareX(Double_t chi2x_in)               { fChiSquareX=chi2x_in;}
     void SetChiSquareY(Double_t chi2y_in)               { fChiSquareY=chi2y_in;}
     void SetGhost(Int_t gho_in)                         { fGhost=gho_in;}
     void SetTrackIdX(Int_t trk_in)                      { fTrackIdX=trk_in;}
     void SetTrackIdY(Int_t trk_in)                      { fTrackIdY=trk_in;}
-    // void NewSet(TVectorD ftrackpar);//set fSlope and fOrigin, used for the FIRST tracking
 
     //Getters
     Int_t  GetHitsNx()            const {return fNHitX;}
@@ -63,16 +67,19 @@ class TABMtrack : public TObject {
     Double_t GetChiSquareY()      const {return fChiSquareY;}
     Int_t GetIsConv()             const {return fIsConv;}
     TVector3 GetOrigin()          const {return fOrigin;}
+    TVector2 GetErrOrigin()       const {return fErrOrigin;}
     TVector3 GetSlope()           const {return fSlope;}
+    TVector2 GetErrSlope()        const {return fErrSlope;}
+    TVector2 GetErrCov()          const {return fErrCov;}
     Int_t GetIsGhost()            const {return fGhost;}
     Int_t GetTrackIdX()           const {return fTrackIdX;}
     Int_t GetTrackIdY()           const {return fTrackIdY;}
 
     //others
     void PrintTrackPosDir();
-    // TVector3 PointAtLocalZ(double zloc) const;
     TVector3 Intersection(Float_t zloc) const;
     Int_t mergeTrack(const TABMtrack &otherview);
+    Bool_t EvaluateResChi2(TABMntuHit* p_nturaw, TABMparGeo* p_bmgeo);
 
 private:
     Int_t         fNHitX;	              //number of associated hits (different from nwire because of hits in the same cell)
@@ -86,7 +93,9 @@ private:
     Int_t         fGhost;               //to be checked with the vertex: -1=not set, 0=not fGhost, 1=fGhost
     Int_t         fTrackIdX;            //track id for the XZ view (view==1)
     Int_t         fTrackIdY;            //track id for the YZ view (view==0)
-
+    TVector2      fErrSlope;            //Error on Slope as estimated by the fit
+    TVector2      fErrOrigin;           //Error on origin as estimated by the fit
+    TVector2      fErrCov;              //covariance matrix mixing element
     ClassDef(TABMtrack,2)
 
 };

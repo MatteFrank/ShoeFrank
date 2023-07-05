@@ -15,6 +15,9 @@ TABMtrack::TABMtrack():
 {
   fSlope.SetXYZ(1.,1.,1.);
   fOrigin.SetXYZ(0.,0.,0.);
+  fErrOrigin.Set(0.,0.);
+  fErrSlope.Set(0.,0.);
+  fErrCov.Set(0.,0.);
  }
 
 //------------------------------------------+-----------------------------------
@@ -29,6 +32,9 @@ void TABMtrack::Dump() const
   cout<<"new tracking: fNHitX="<<fNHitX<<"  fNHitY="<<fNHitY<<"  fChiSquare="<<fChiSquare<<"  fChiSquareX="<<fChiSquareX<<"  fChiSquareY="<<fChiSquareY<<"  fIsConv="<<fIsConv<<"  fGhost="<<fGhost<<"  fTrackIdX="<<fTrackIdX<<"  fTrackIdY="<<fTrackIdY<<endl;
   cout<<"fSlope=("<<fSlope.X()<<", "<<fSlope.Y()<<", "<<fSlope.Z()<<")"<<endl;
   cout<<"fOrigin=("<<fOrigin.X()<<", "<<fOrigin.Y()<<", "<<fOrigin.Z()<<")"<<endl;
+  cout<<"fErrOrigin=("<<fErrOrigin.X()<<", "<<fErrOrigin.Y()<<")"<<endl;
+  cout<<"fErrSlope=("<<fErrSlope.X()<<", "<<fErrSlope.Y()<<")"<<endl;
+  cout<<"fErrCovX="<<fErrCov.X()<<"  fErrCovY="<<fErrCov.Y()<<endl;
 }
 
 /*-----------------------------------------------------------------*/
@@ -48,7 +54,9 @@ void TABMtrack::Clean()
   fTrackIdY=-1;
   fOrigin.SetXYZ(0.,0.,0.);
   fSlope.SetXYZ(1.,1.,1.);
-
+  fErrOrigin.Set(0.,0.);
+  fErrSlope.Set(0.,0.);
+  fErrCov.Set(0.,0.);
 }
 
 TABMtrack::TABMtrack(const TABMtrack &tr_in){
@@ -63,6 +71,9 @@ TABMtrack::TABMtrack(const TABMtrack &tr_in){
   fTrackIdY=tr_in.fTrackIdY;
   fOrigin=tr_in.fOrigin;
   fSlope=tr_in.fSlope;
+  fErrOrigin=tr_in.fErrOrigin;
+  fErrSlope=tr_in.fErrSlope;
+  fErrCov=tr_in.fErrCov;
 }
 
 TABMtrack& TABMtrack::operator=(TABMtrack const& in){
@@ -78,6 +89,9 @@ TABMtrack& TABMtrack::operator=(TABMtrack const& in){
     this->fTrackIdY=in.fTrackIdY;
     this->fSlope=in.fSlope;
     this->fOrigin=in.fOrigin;
+    this->fErrOrigin=in.fErrOrigin;
+    this->fErrSlope=in.fErrSlope;
+    this->fErrCov=in.fErrCov;
   }
   return *this;
 }
@@ -94,31 +108,43 @@ void TABMtrack::PrintTrackPosDir(){
   return;
 }
 
-Int_t TABMtrack::mergeTrack(const TABMtrack &otherview){
-  if((fChiSquareX>=0 && otherview.fChiSquareX>=0) || (fChiSquareY>=0 && otherview.fChiSquareY>=0)){
-    cout<<"TABMtrack::mergeTrack: ERROR!!!: current track fChiSquareX="<<fChiSquareX<<"  fChiSquareY="<<fChiSquareY<<endl<<"input track fChiSquareX="<<otherview.fChiSquareX<<"  fChiSquareY="<<otherview.fChiSquareY<<endl;
-    return -1;
-  }
-  if(otherview.fIsConv!=1)
-    return 1;
-  if(fIsConv!=1)
-    return 2;
+Int_t TABMtrack::mergeTrack(const TABMtrack &yviewtrack){
 
-  if(fChiSquareX<0){
-    fChiSquareX=otherview.fChiSquareX;
-    fChiSquare=(fChiSquareY*(fNHitY-2.)+otherview.fChiSquareX*(otherview.fNHitX-2.))/(fNHitY+otherview.fNHitX-4.);
-    fSlope.SetX(otherview.fSlope.X());
-    fOrigin.SetX(otherview.fOrigin.X());
-    fNHitX=otherview.fNHitX;
-    fTrackIdX=otherview.fTrackIdX;
-  }else{
-    fChiSquareY=otherview.fChiSquareY;
-    fChiSquare=(fChiSquareX*(fNHitX-2.)+otherview.fChiSquareY*(otherview.fNHitY-2.))/(fNHitX+otherview.fNHitY-4.);
-    fSlope.SetY(otherview.fSlope.Y());
-    fOrigin.SetY(otherview.fOrigin.Y());
-    fNHitY=otherview.fNHitY;
-    fTrackIdY=otherview.fTrackIdY;
-  }
+    fSlope.SetY(yviewtrack.fSlope.Y());
+    fOrigin.SetY(yviewtrack.fOrigin.Y());
+    fNHitY=yviewtrack.fNHitY;
+    fTrackIdY=yviewtrack.fTrackIdY;
 
   return 0;
+}
+
+Bool_t TABMtrack::EvaluateResChi2(TABMntuHit* p_nturaw, TABMparGeo* p_bmgeo){
+
+  Float_t res, chi2redX=0., chi2redY=0.;
+  Int_t nselhitX=0, nselhitY=0;
+  for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
+    TABMhit* p_hit=p_nturaw->GetHit(i);
+    if(p_hit->GetIsSelected()==fTrackIdX){
+      ++nselhitX;
+      res=p_hit->GetRdrift()-p_bmgeo->PointLineDist(fSlope.X()/fSlope.Z(),fOrigin.X(),p_hit->GetWirePos().X(), p_hit->GetWirePos().Z());
+      p_hit->SetResidual(res);
+      p_hit->SetChi2(res*res/p_hit->GetSigma()/p_hit->GetSigma());
+      chi2redX+=p_hit->GetChi2();
+    }else if(p_hit->GetIsSelected()==fTrackIdY){
+      ++nselhitY;
+      res=p_hit->GetRdrift()-p_bmgeo->PointLineDist(fSlope.Y()/fSlope.Z(),fOrigin.Y(),p_hit->GetWirePos().Y(), p_hit->GetWirePos().Z());
+      p_hit->SetResidual(res);
+      p_hit->SetChi2(res*res/p_hit->GetSigma()/p_hit->GetSigma());
+      chi2redY+=p_hit->GetChi2();
+    }
+  }
+
+  fChiSquareX=chi2redX/(nselhitX-2.);
+  fChiSquareY=chi2redY/(nselhitY-2.);
+  fChiSquare=(chi2redX+chi2redY)/(nselhitX+nselhitY-4.);
+
+  if (FootDebugLevel(2))
+      cout<<"TABMtrack::EvaluateResChi2 finished: track has been reconstructed,  chi2redX="<<fChiSquareX<<" chi2redY="<<fChiSquareY<<"  chi2red="<<fChiSquare<<endl;
+
+  return kFALSE;
 }

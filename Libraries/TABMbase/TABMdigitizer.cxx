@@ -36,8 +36,9 @@ TABMdigitizer::TABMdigitizer(TABMntuHit* pNtuRaw, TABMparGeo* parGeo, TABMparCon
 {
   fpEffDist=new TF1("EffVsRdrift",this,&TABMdigitizer::EffFunc, 0., 0.78,3,"TABMdigitizer","EffFunc");
   fpEffDist->SetParameters(1.00072,-0.000162505,10.9375);
-  fpParCal->ResetStrelFunc();
-  fpParCon->ResetHitTimeCutMC();
+  
+  //~ fpParCal->ResetStrelFunc();
+  //~ fpParCon->ResetHitTimeCutMC();
 }
 
 // --------------------------------------------------------------------------------------

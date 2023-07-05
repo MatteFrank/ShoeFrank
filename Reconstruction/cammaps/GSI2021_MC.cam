@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "GSI2021_MC"
-RunNumber: 100;200;201;400;401
+RunNumber: 100;200;201;202;400;401;402
 NumberDevices: 9
 
 DetectorName: "DI"
@@ -9,7 +9,7 @@ NumberFiles: 1
 
 DetectorName: "FOOT"
 NumberFiles: 2
-"./geomaps/GSI2021_MC/FOOT.geo": 100;200;201;400;401
+"./geomaps/GSI2021_MC/FOOT.geo": 100;200;201;202;400;401;402
 "./geomaps/GSI2021_MC/FOOT.reg": -1
 
 DetectorName: "ST"
@@ -24,7 +24,7 @@ NumberFiles: 3
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/GSI2021_MC/TAGdetector.geo": 100;101;200;201;400;401
+"./geomaps/GSI2021_MC/TAGdetector.geo": 100;101;200;201;202;400;401;402
 
 DetectorName: "VT"
 NumberFiles: 2

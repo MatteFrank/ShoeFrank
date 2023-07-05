@@ -17,6 +17,9 @@
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGparGeo.hxx"
+#include "TAGnameManager.hxx"
+
+
 
 class TAGgeoTrafo;
 class TABMtrack;
@@ -111,11 +114,13 @@ protected:
    TH1F *fpBadTrackFlukaID;
    TH1F *fpBadTrackMothID;
    TH1F *fpBadTrackInitP;
-   //Int_t primary_charget = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
+   // Int_t primary_charget = (static const int)((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
    TH1F *fpHisThetaRes[8]; ///< theta angle resolution of the track wrt to MC part   ! hard coded
    TH1F *fpHisPhiRes[8]; ///< theta angle resolution of the track wrt to MC part   ! hard coded
-   TH1F *fpTrackAngularPurityTrack[8];
-   TH1F *fpTrackAngularEfficiency[8];
+   TH1F *fpTrackThetaEfficiency[8];
+   TH1F *fpTrackThetaPurityTrack[8];
+   TH1F *fpTrackPhiEfficiency[8];
+   TH1F *fpTrackPhiPurityTrack[8];
    TH1F *fpTrackClusResX[MaxTrkSens]; ///< Resolution of each tracked clus wrt MC part
    TH1F *fpTrackClusResY[MaxTrkSens]; ///< Resolution of each tracked clus wrt MC part
    
@@ -133,9 +138,13 @@ protected:
    map<int, map<int,int>> m_nClone;   ///< Map of total number of clone id for the same charge in a single event; the key is [particle charge][specific ID]
    map<int, int> n_clones;             ///< Map of total number of clone id for the same charge ; the key is [particle charge]
 
-   map<int, map<int,int>> m_nMCTracks_angle;            ///< Map of total number of MC particles generated in the geometrical acceptance of the VTX for every charge and for every angle; the key is the key is [particle charge][theta angle]
-   map<int, map<int, int>> m_nRecoTracks_angle;         ///< Map of total number of reconstructed track candidates for every charge and for every angle;
-   map<int, map<int, int>> m_nRecoTracks_matched_angle;
+   map<int, map<int,int>> m_nMCTracks_theta;            ///< Map of total number of MC particles generated in the geometrical acceptance of the VTX for every charge and for every angle; the key is the key is [particle charge][theta angle]
+   map<int, map<int, int>> m_nRecoTracks_theta;         ///< Map of total number of reconstructed track candidates for every charge and for every angle;
+   map<int, map<int, int>> m_nRecoTracks_matched_theta;
+
+   map<int, map<int, int>> m_nMCTracks_phi;   ///< Map of total number of MC particles generated in the geometrical acceptance of the VTX for every charge and for every angle; the key is the key is [particle charge][theta angle]
+   map<int, map<int, int>> m_nRecoTracks_phi; ///< Map of total number of reconstructed track candidates for every charge and for every angle;
+   map<int, map<int, int>> m_nRecoTracks_matched_phi;
 
    private : 
    TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object

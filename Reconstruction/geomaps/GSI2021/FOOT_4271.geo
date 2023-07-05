@@ -8,8 +8,8 @@ TargetPosX: 0. TargetPosY: 0. TargetPosZ: 0.
 TargetAngX: 0. TargetAngX: 0. TargetAngX: 0.
 
 BmBaseName: "BM"
-BMPosX: -0.046351  BMPosY: 0.005228  BMPosZ: -19.9
-BMAngX: -0.066103  BMAngY: 0.024920  BMAngZ: 0.
+BMVTPosX: -0.124778  BMVTPosY: 0.00826415  BMVTPosZ: -19.9
+BMVTAngX: -0.0892508  BMVTAngY: 0.0177463  BMVTAngZ: 0
 
 VertexBaseName: "VT"
 VTPosX: -0.146955  VTPosY:  0.055152  VTPosZ: 2.1
@@ -28,7 +28,7 @@ MSDPosX: -0.095882  MSDPosY:  0.101585  MSDPosZ: 44.65
 MSDAngX:  0.038047  MSDAngY: -1.035668  MSDAngZ:  0.
 
 TofWallBaseName: "TW"
-TofWallPosX: -0.850  TofWallPosY: -1.150  TofWallPosZ: 193.5
+TofWallPosX: -0.95  TofWallPosY: -1.25  TofWallPosZ: 193.5
 TofWallAngX:  0.     TofWallAngY:  0.     TofWallAngZ:   0.
 
 CaloBaseName: "CA"

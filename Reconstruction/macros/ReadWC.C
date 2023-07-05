@@ -1,7 +1,5 @@
-// Macro to read catania raw data
+// Macro to read WC format
 // Ch. Finck, sept 11.
-
-
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
 
@@ -27,9 +25,14 @@
 #include "TACEntuRaw.hxx"
 #include "TACEntuHit.hxx"
 
+#include "TAPWparGeo.hxx"
+#include "TAPWntuRaw.hxx"
+#include "TAPWntuHit.hxx"
+
 #include "TAGactWCreader.hxx"
 #include "TAPLactNtuHit.hxx"
 #include "TACEactNtuHit.hxx"
+#include "TAPWactNtuHit.hxx"
 
 #include "TAGcampaignManager.hxx"
 
@@ -42,6 +45,7 @@ TAGactTreeWriter*   outFile     = 0x0;
 TAGactWCreader*     wcFile      = 0x0;
 TAPLactNtuHit*      stActNtu    = 0x0;
 TACEactNtuHit*      twActNtu    = 0x0;
+TAPWactNtuHit*      twActNtu    = 0x0;
 
 // tree flag
 Bool_t treeFlag = true;
@@ -55,10 +59,13 @@ void FillClinm(Int_t runNumber)
    
    TAGdataDsc* twRaw = 0x0;
    TAGdataDsc* twNtu = 0x0;
+   
+   TAGdataDsc* pwRaw = 0x0;
+   TAGdataDsc* pwNtu = 0x0;
       
    TAGparaDsc* wcMap = new TAGparaDsc("wcMap", new TAGbaseWCparMap());
    TAGbaseWCparMap* map = (TAGbaseWCparMap*) wcMap->Object();
-   TString parFileName = campManager->GetCurMapFile(TACEparGeo::GetBaseName(), runNumber);
+   TString parFileName = campManager->GetCurMapFile(TAPLparGeo::GetBaseName(), runNumber);
    map->FromFile(parFileName.Data());
 
    
@@ -78,7 +85,15 @@ void FillClinm(Int_t runNumber)
       twActNtu->CreateHistogram();
    }
    
-   wcFile = new TAGactWCreader("wcFile", wcMap, stRaw, twRaw);
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
+      pwRaw    = new TAGdataDsc("pwRaw", new TAPWntuRaw());
+      pwNtu    = new TAGdataDsc("pwNtu", new TAPWntuHit());
+      
+      pwActNtu = new TAPWactNtuHit("pwActNtu", pwNtu, pwRaw);
+      pwActNtu->CreateHistogram();
+   }
+   
+   wcFile = new TAGactWCreader("wcFile", wcMap, stRaw, twRaw, pwRaw);
    
    if (treeFlag) {
       if (oscFlag) {
@@ -87,12 +102,18 @@ void FillClinm(Int_t runNumber)
          
          if (TAGrecoManager::GetPar()->IncludeTW())
             outFile->SetupElementBranch(twRaw, TACEntuRaw::GetBranchName());
+         
+         if (TAGrecoManager::GetPar()->IncludeCA())
+            outFile->SetupElementBranch(pwRaw, TAPWntuRaw::GetBranchName());
       }
       if (TAGrecoManager::GetPar()->IncludeST())
          outFile->SetupElementBranch(stNtu, TAPLntuHit::GetBranchName());
       
       if (TAGrecoManager::GetPar()->IncludeTW())
          outFile->SetupElementBranch(twNtu, TACEntuHit::GetBranchName());
+      
+      if (TAGrecoManager::GetPar()->IncludeCA())
+         outFile->SetupElementBranch(pwNtu, TAPWntuHit::GetBranchName());
    }
 }
 
@@ -119,9 +140,11 @@ void ReadWC(TString name = "Run_1200plas_1500plasnew_backTipex_2plas_coinc_24.6M
    tagr.AddRequiredItem(wcFile);
    if (TAGrecoManager::GetPar()->IncludeST())
       tagr.AddRequiredItem(stActNtu);
-      if (TAGrecoManager::GetPar()->IncludeTW())
+   if (TAGrecoManager::GetPar()->IncludeTW())
       tagr.AddRequiredItem(twActNtu);
-   
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      tagr.AddRequiredItem(pwActNtu);
+
    tagr.AddRequiredItem(outFile);
    tagr.Print();
    
@@ -135,8 +158,10 @@ void ReadWC(TString name = "Run_1200plas_1500plasnew_backTipex_2plas_coinc_24.6M
    
    if (TAGrecoManager::GetPar()->IncludeST())
       stActNtu->SetHistogramDir(outFile->File());
-      if (TAGrecoManager::GetPar()->IncludeTW())
+   if (TAGrecoManager::GetPar()->IncludeTW())
       twActNtu->SetHistogramDir(outFile->File());
+   if (TAGrecoManager::GetPar()->IncludeCA())
+      pwActNtu->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;
    tagr.BeginEventLoop();

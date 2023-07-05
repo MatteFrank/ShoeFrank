@@ -23,7 +23,8 @@ public:
    explicit        TAGactWCreader(const char* name = "",
                                   TAGparaDsc* p_WCmap = 0x0,
                                   TAGdataDsc* p_stwd = 0x0,
-                                  TAGdataDsc* p_twwd = 0x0);
+                                  TAGdataDsc* p_twwd = 0x0,
+                                  TAGdataDsc* p_pwwd = 0x0);
    
    virtual        ~TAGactWCreader();
    void            CreateHistogram();
@@ -35,6 +36,7 @@ private:
    ifstream        fInputFile;
    TAGdataDsc*     fpdatRawSt;		    // output data dsc
    TAGdataDsc*     fpdatRawTw;          // output data dsc
+   TAGdataDsc*     fpdatRawPw;          // output data dsc
    TAGparaDsc*     fpParMapWC;		    // parameter dsc
    Int_t           fEventsN;
    Int_t           fDebugLevel;
