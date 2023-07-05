@@ -27,6 +27,7 @@
 #pragma link C++ class GlobalToeReco;
 
 #pragma link C++ class TAGactNtuGlbTrackS;
+#pragma link C++ class TAGactNtuGlbTrackF;
 #pragma link C++ class TAGactFlatTreeWriter;
 #pragma link C++ class TAGactDscTreeWriter;
 

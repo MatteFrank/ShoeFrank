@@ -12,6 +12,8 @@
 #include "Riostream.h"
 
 #include "TAGobject.hxx"
+#include "TADIgeoField.hxx"
+#include "TAGntuGlbTrack.hxx"
 #include "TVector3.h"
 
 
@@ -23,8 +25,11 @@ class TADItrackPropagator : public TAGobject {
 public:
    TADItrackPropagator(TADIgeoField* field);
    
-   // Extrapole vertex and momentum to a given Z
+   // Extrapole vertex and momentum to a given position in Z
    Bool_t	ExtrapoleZ(TVector3& pos, TVector3& beta, Double_t posZ, TVector3& vOut, TVector3& pOut);
+   
+   // Extrapole global track to next point
+   TVector3&   ExtrapoleZ(TAGtrack* track, Double_t posZ, TVector3& pOut);
    
    //! Get field
    TVector3 GetFieldB(TVector3 vertex) const { return fField->GetField(vertex); }
@@ -41,7 +46,6 @@ public:
    //! Get tolerance
    Double_t GetToterance()             const { return fToterance;          }
    
-
    // Setter
    //! Set A for particle
    void SetPartA(Double_t A)                 { fA = A;                     }
@@ -51,8 +55,7 @@ public:
    void SetStep(Double_t step)               { fStep = step;               }
    //! Set tolerance
    void SetToterance(Double_t tol)           { fToterance = tol;            }
-   
-   
+      
 private:
    TADIgeoField* fField;     ///< magnetic field
    Double_t   fTrackLength;  ///< track length
@@ -72,7 +75,6 @@ private:
    // Runge-Kutta for a given step
    void RungeKutta4(TVector3& position, TVector3& beta, Double_t step);
 
-   
 private:
    static const Double_t fgkConvFactor;    ///< Conversion factor for light velocity
    static const Double_t fgkDefStepValue;  ///< Default step value

@@ -36,7 +36,7 @@ TADItrackPropagator::TADItrackPropagator(TADIgeoField* field)
 }
 
 // __________________________________________________________________________
-//! Propagate in Z-direction charged particle with momentum p to vertex v.
+//! Propagate in Z-direction charged particle with velocity beta to position Z
 //!
 //! \param[in] pos initial position
 //! \param[in] beta0 nitial beta
@@ -68,6 +68,45 @@ Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& pos, TVector3& beta0, Double_t 
    pOut = gamma*fA*mass*beta;
    
    return kTRUE;
+}
+
+// __________________________________________________________________________
+//! Propagate track to last point  to position Z
+//!
+//! \param[in] global track
+//! \param[in] posZ Z position
+//! \param[out] vOut final position
+//! \param[out] pOut final momentum
+TVector3& TADItrackPropagator::ExtrapoleZ(TAGtrack* track, Double_t posZ, TVector3& pOut)
+{
+   fA = track->GetMass();
+   fZ = track->GetTwChargeZ();
+   Double_t mass = TAGgeoTrafo::GetMassFactorMeV()*fA;
+
+   const TAGpoint* point = track->GetLastPoint();
+   TVector3 pos    = point->GetPosition();
+   TVector3 mom    = point->GetMomentum();
+
+   Double_t fac    = TMath::Sqrt(1./(1 + (mass*mass)/(mom.Mag2())));
+   TVector3 beta0  = mom*fac;
+   
+   // Propagate particle with momentum p to posZ with an initial position pos and velocity beta0.
+   fNormP       = mom.Mag();
+   fPosition    = pos;
+   fBeta        = beta0;
+   fTrackLength = 0;
+   fStep        = fgkDefStepValue;
+   
+   while(fPosition.Z() <= posZ)
+      RungeKutta4();
+   
+   // new momentum
+   // pc = gamma*mv = gamma*mc^2*beta
+   TVector3 beta = fBeta;
+   Double_t gamma = 1./TMath::Sqrt(1-beta.Mag2());
+   pOut = gamma*mass*beta;
+   
+   return fPosition;
 }
 
 //______________________________________________________________________________
