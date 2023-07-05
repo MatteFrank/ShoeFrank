@@ -111,34 +111,47 @@ void GlobalRecoAnaGSI::LoopEvent() {
         wdTrig = (TAWDntuTrigger *)fpNtuWDtrigInfo->GenerateObject(); // trigger from hardware
       }
 
-
-
+      m_nClone.clear();
       //*********************************************************************************** begin loop on global tracks **********************************************
       for (int it = 0; it < nt; it++)
       {
         fGlbTrack = myGlb->GetTrack(it);
+        if (!fGlbTrack->HasTwPoint()) {
+          ntracks++;
+          continue;
+        }
+        // Set the reconstructed quantities
+        RecoGlbTrkLoopSetVariables();
 
         if (fFlagMC)
         {
           MCGlbTrkLoopSetVariables();
-          if (isGoodReco(MC_id)){
-          FillYieldMC("yield-N_GoodReco", Z_true, Th_true, Ek_tot);   // N_GoodReco
+
+          //study of MC clones: different glb tracks with the same MC ID
+          m_nClone[Z_true][TrkIdMC]++;
+          if (m_nClone[Z_true][TrkIdMC] > 1)
+            n_clones[Z_true] = m_nClone[Z_true][TrkIdMC];
+
+          if (isGoodReco(TrkIdMC))
+          {
+            FillYieldMC("yield-N_GoodReco", Z_true, Th_true, Ek_tot); // N_GoodReco
           }
-          FillYieldMC("yield-N_AllReco", Z_true, Th_true, Ek_tot); // N_AllReco 
+          FillYieldMC("yield-N_AllReco", Z_true, Th_true, Ek_tot); // N_AllReco
+
+          FillYieldReco("yield-N_recoTracks", Z_meas, 0, Th_recoBM); // all reconstructed tracks
         }
 
          
 
 
-        // Set the reconstructed quantities
-        RecoGlbTrkLoopSetVariables();
+        
 
 
-        // // fill the yields plots
+        // //fill the yields plots
         // if (fFlagMC){
-        //   FillMCGlbTrkYields();
-
+        // FillMCGlbTrkYields();
         // }
+
         // else
         //   FillDataGlbTrkYields();
         ntracks++;
@@ -147,7 +160,7 @@ void GlobalRecoAnaGSI::LoopEvent() {
 
       if (fFlagMC){
         //MCParticleStudies(); 
-        //***** loop on every tamcparticle:
+        //***** loop on every TAMCparticle:
         FillMCPartYields();  //N_ref
       }
 
@@ -197,9 +210,10 @@ for (int i = 0; i<mass_nbin; i++) {
 // Cross section recostruction histos MC
 if(fFlagMC){
 
-BookYield("yield-N_ref", true);
-BookYield("yield-N_GoodReco", true);
-BookYield("yield-N_AllReco", true);
+BookYield("yield-N_ref", false);
+BookYield("yield-N_GoodReco", false);
+BookYield("yield-N_AllReco", false);
+BookYield("yield-N_recoTracks", false);
 
 // BookYield("yield-trkMC", true);
 
@@ -279,11 +293,11 @@ void GlobalRecoAnaGSI::FillMCGlbTrkYields(){
     }
   }
 
-  //-------------------------------------------------------------
-  //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + GHOST HITS FIX : i don't want not fragmented primary
-  if (N_TrkIdMC_TW == 1)
-    if (Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
-      FillYieldReco("yield-trkGHfixMC",Z_true,Z_meas,Th_true );
+  // //-------------------------------------------------------------
+  // //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + GHOST HITS FIX : i don't want not fragmented primary
+  // if (N_TrkIdMC_TW == 1)
+  //   if (Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
+  //     FillYieldReco("yield-trkGHfixMC",Z_true,Z_meas,Th_true );
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAWDntuTrigger )
@@ -501,6 +515,8 @@ void GlobalRecoAnaGSI::BeforeEventLoop(){
     cout << "target z=" << GetParGeoG()->GetTargetPar().Size.Z() << endl;
     cout << "target A=" << GetParGeoG()->GetTargetPar().AtomicMass << endl;
   }
+
+  n_clones.clear();
   return;
 }
 
@@ -520,13 +536,17 @@ void GlobalRecoAnaGSI::AfterEventLoop(){
     ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * recoEvents);
     cout << "Reconstructed events: " << recoEvents << endl;
 
-   
+  if (fFlagMC){
+      h = new TH1D("trkclone", "number of tracks with the same mc id", 8, 0.5, 8.5);
+      for (int i = 1; i <= primary_cha; i++){
+      ((TH1D *)gDirectory->Get("trkclone"))->SetBinContent(i, n_clones[i]);
+      }
+  } 
+
 
   gTAGroot->EndEventLoop();
 
-  if(fFlagMC)
-    //StudyThetaReso(); //to be fixed!!!
-  //PrintNCharge();
+
 
   cout <<"Writing..." << endl;
   file_out->Write();
@@ -661,7 +681,7 @@ void GlobalRecoAnaGSI:: BookYield (string path, bool enableMigMatr) {
       gDirectory->mkdir(path.c_str());
       gDirectory->cd(path.c_str());
 
-      h = new TH1D("theta_","",200, 0 ,90.);
+      h = new TH1D("theta_","",180, 0 ,90.);
       if (enableMigMatr)
       h2 = new TH2D("migMatrix_Z", "migMatrix_Z; Z_{true}; Z_{reco}",8,0.5,8.5,8,0.5,8.5);
 
@@ -798,7 +818,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
 
   TrkIdMC = fGlbTrack->GetMcMainTrackId(); // associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity)
   if (TrkIdMC != -1)
-  { // TODO: what happens when TrkIdMC is -1?????
+  {
     TAMCpart *pNtuMcTrk = GetNtuMcTrk()->GetTrack(TrkIdMC);
 
     Z_true = pNtuMcTrk->GetCharge();
@@ -806,9 +826,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
     M_true = pNtuMcTrk->GetMass();
     Ek_tot = (sqrt(pow(pNtuMcTrk->GetMass(), 2) + pow((pNtuMcTrk->GetInitP()).Mag(), 2)) - pNtuMcTrk->GetMass());
     Ek_tot = Ek_tot * fpFootGeo->GevToMev();
-    Ek_true = Ek_tot / M_true;
-    // study of crossing regions
-    MC_id = fGlbTrack->GetMcMainTrackId();
+    Ek_true = Ek_tot / pNtuMcTrk->GetBaryon();
 
     if (TAGrecoManager::GetPar()->IsRegionMc())
     {
@@ -910,9 +928,8 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
     Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
     Float_t Ek_true = Ek_tr_tot / (double)baryon;                          // MeV/n
-    Float_t theta_tr = particle->GetInitP().Theta() * (180 / TMath::Pi()); // in deg
+    Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
-
     if (
         (particle_ID == 0                      // if the particle is a primary OR
          || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
@@ -921,10 +938,12 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         particle->GetCharge() <= primary_charge && // with reasonable charge
         // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
         // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-        (OldReg > 80 && OldReg < 121) && NewReg == AirAfterTW_region // it crosses the two planes of the TW and go beyond
+        (OldReg >= GetParGeoTw()->GetRegStrip(0, 0) && OldReg <= GetParGeoTw()->GetRegStrip(1, GetParGeoTw()->GetNBars() - 1)) && NewReg == AirAfterTW_region // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
 
     )
+    {
       FillYieldMC("yield-N_ref", charge_tr, theta_tr, Ek_tr_tot);
+    }
   }
 
 
@@ -978,7 +997,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     Float_t Ek_true = Ek_tr_tot / (double)baryon;                          // MeV/n
     Float_t theta_tr = particle->GetInitP().Theta() * (180 / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
-
+    
     if (
         (particle_ID == 0                      // if the particle is a primary OR
          || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
@@ -987,10 +1006,9 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         particle->GetCharge() <= primary_charge && // with reasonable charge
         // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
         // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-        (OldReg > 80 && OldReg < 121) && NewReg == AirAfterTW_region // it crosses the two planes of the TW and go beyond
-
+        (OldReg >= GetParGeoTw()->GetRegStrip(0, 0) && OldReg <= GetParGeoTw()->GetRegStrip(1, GetParGeoTw()->GetNBars() - 1)) && NewReg == AirAfterTW_region // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     )
-      return true;
+       return true;
   }
   return false;
   }

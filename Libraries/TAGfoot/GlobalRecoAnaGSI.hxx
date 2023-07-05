@@ -142,10 +142,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   TVector3 P_cross;  //target exit momentum
   Double_t Ek_cross_calo;  //crossing out from TW
 
-  Int_t TrkIdMC;
-  // for TW multiple hits studies
-  Int_t N_TrkIdMC_TW;
-  Int_t TrkIdMC_TW;
+  Int_t TrkIdMC;   //MC id of the glb track
 
   //setting variables maybe we should use a config file?
   Double_t purity_cut;      //minumum purity value for a track to be defined as pure
@@ -170,8 +167,10 @@ class GlobalRecoAnaGSI : public RecoRaw {
 
   vector<vector<Int_t>> fGlbTrkVec; //store the global track detector point index, 0=VTX, 1=IT, 2=MSD, 3=TW, 4=CALO, for each global track
   vector<vector<vector<Int_t>>> fEvtGlbTrkVec; //store collection of fGlbTrkVec for each event
-
-  //nuisance variables
+  map<int, map<int, int>> m_nClone;            ///< Map of total number of clone id for the same charge in a single event; the key is [particle charge][specific ID]
+  map<int, int> n_clones;                      ///< Map of total number of clone id for the same charge ; the key is [particle charge]
+  
+  // nuisance variables
   TH1D *h;
   TH2D *h2;
   TH3D *h3;
