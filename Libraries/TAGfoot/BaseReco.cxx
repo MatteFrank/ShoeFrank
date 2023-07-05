@@ -547,7 +547,7 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
-      if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
+      if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman() || TAGrecoManager::GetPar()->IncludeStraight()) {
          TAGparaDsc* fieldDsc = new TAGparaDsc(new TADIgeoField(parGeo));
          fField = (TADIgeoField*)fieldDsc->Object();
       }
@@ -777,7 +777,6 @@ void BaseReco::CreateRecAction()
       CreateRecActionGlbGF();
 
    if (TAGrecoManager::GetPar()->IncludeStraight()) {
-      
       if (!TAGrecoManager::GetPar()->IncludeDI())
          CreateRecActionGlbS();
       else

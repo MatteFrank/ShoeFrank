@@ -88,7 +88,7 @@ TVector3& TADItrackPropagator::ExtrapoleZ(TAGtrack* track, Double_t posZ, TVecto
    TVector3 mom    = point->GetMomentum();
 
    Double_t fac    = TMath::Sqrt(1./(1 + (mass*mass)/(mom.Mag2())));
-   TVector3 beta0  = mom*fac;
+   TVector3 beta0  = mom.Unit()*fac;
    
    // Propagate particle with momentum p to posZ with an initial position pos and velocity beta0.
    fNormP       = mom.Mag();

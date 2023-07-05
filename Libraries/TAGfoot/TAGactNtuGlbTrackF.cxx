@@ -405,12 +405,14 @@ TAGtrack* TAGactNtuGlbTrackF::FillVtxTracks(TAVTtrack* vtTrack)
    TAGparGeo* pGeoMapG = (TAGparGeo*)  fpGeoMapG->Object();
 
    // first guess of momentum
-   Int_t    A    = pGeoMapG->GetBeamPar().AtomicMass;
    Double_t Ec   = pGeoMapG->GetBeamPar().Energy*1000; //MeV/u
-   Double_t mass = TAGgeoTrafo::GetMassFactorMeV()*A;
-   Double_t fac  = TMath::Sqrt(2*mass*Ec*A + Ec*Ec*A*A);
-
+   Double_t mass = TAGgeoTrafo::GetMassFactorMeV()*fPartA;
+   Double_t fac  = TMath::Sqrt(2*mass*Ec*fPartA + Ec*Ec*fPartA*fPartA);
+   
    TAGtrack* track = new TAGtrack();
+   track->SetMass(fPartA);
+   track->SetTwChargeZ(fPartZ);
+   
    Int_t nClus = vtTrack->GetClustersN();
    
    TAVTcluster* cluster0 = (TAVTcluster*)vtTrack->GetCluster(0);
@@ -421,7 +423,7 @@ TAGtrack* TAGactNtuGlbTrackF::FillVtxTracks(TAVTtrack* vtTrack)
    TVector3 errG0 = cluster0->GetPosErrorG();
    TVector3 errG1 = cluster1->GetPosErrorG();
    
-   TVector3 posG  = (posG1-posG0).Unit();
+   TVector3 posG  = (posG0-posG1).Unit();
    TVector3 momG  = posG*fac;
 
    TVector3 momErrG(TMath::Sqrt(errG0[0]*errG0[0]+errG1[0]*errG1[0]), TMath::Sqrt(errG0[1]*errG0[1]+errG1[1]*errG1[1]),
@@ -475,9 +477,11 @@ void TAGactNtuGlbTrackF::FindItrCluster(TAGtrack* track)
    TAITntuCluster* pNtuClus  = (TAITntuCluster*) fpNtuClusItr->Object();
    TAITparGeo*     pGeoMap   = (TAITparGeo*)     fpGeoMapItr->Object();
 
-   Double_t minDistance  = 1.e9;
+   Double_t minDistance = 1.e9;
    Double_t aDistance;
    TVector3 mom;
+   TVector3 tmp(0,0,0); // see later momen error computing
+
    Int_t nSensor = pGeoMap->GetSensorsN();
 
    Int_t addedCluster = 0;
@@ -492,6 +496,7 @@ void TAGactNtuGlbTrackF::FindItrCluster(TAGtrack* track)
       // loop on all clusters of this sensor and keep the nearest one
       minDistance = fSearchClusDistItr;
       TAITcluster* bestCluster = 0x0;
+      TVector3 bestInter;
       
       for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
          TAITcluster* aCluster = (TAITcluster*)list->At(iClus);
@@ -501,7 +506,7 @@ void TAGactNtuGlbTrackF::FindItrCluster(TAGtrack* track)
          // from IT local to FOOT global
          TVector3 posG = aCluster->GetPositionG();
          posG = fpFootGeo->FromITLocalToGlobal(posG);
-         
+      
          // track intersection with the sensor
          TVector3 inter = fpTrackProp->ExtrapoleZ(track, posG.Z(), mom);
          
@@ -522,6 +527,7 @@ void TAGactNtuGlbTrackF::FindItrCluster(TAGtrack* track)
          if( aDistance < minDistance ) {
             minDistance = aDistance;
             bestCluster = aCluster;
+            bestInter  = inter;
          }
       } // end loop on sensor clusters
       
@@ -536,7 +542,7 @@ void TAGactNtuGlbTrackF::FindItrCluster(TAGtrack* track)
 
          posG = fpFootGeo->FromITLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(FootBaseName("TAITparGeo"), posG, errG, posG, errG);
+         TAGpoint* point = track->AddPoint(FootBaseName("TAITparGeo"), posG, errG, bestInter, errG, mom, tmp);
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TAITparGeo")));
          point->SetSensorIdx(iSensor);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
@@ -576,6 +582,8 @@ void TAGactNtuGlbTrackF::FindMsdCluster(TAGtrack* track)
    Double_t minDistance = 1.e9;
    Double_t aDistance;
    TVector3 mom;
+   TVector3 tmp(0,0,0);
+
    Int_t nSensor = pGeoMap->GetSensorsN()/2.;
    
    TVector3 prePosG;
@@ -590,8 +598,8 @@ void TAGactNtuGlbTrackF::FindMsdCluster(TAGtrack* track)
       
       // loop on all clusters of this sensor and keep the nearest one
       minDistance = fSearchClusDistMsd*4;
-
       TAMSDpoint* bestCluster = 0x0;
+      TVector3 bestInter;
       
       for( Int_t iClus = 0; iClus < nClusters; ++iClus ) { // loop on sensor clusters
          TAMSDpoint* aCluster = (TAMSDpoint*)list->At(iClus);
@@ -611,6 +619,7 @@ void TAGactNtuGlbTrackF::FindMsdCluster(TAGtrack* track)
          if( aDistance < minDistance ) {
             minDistance = aDistance;
             bestCluster = aCluster;
+            bestInter   = inter;
          }
       } // end loop on sensor clusters
       
@@ -624,7 +633,7 @@ void TAGactNtuGlbTrackF::FindMsdCluster(TAGtrack* track)
          
          posG = fpFootGeo->FromMSDLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(FootBaseName("TAMSDparGeo"), posG, errG, posG, errG);
+         TAGpoint* point = track->AddPoint(FootBaseName("TAMSDparGeo"), posG, errG, bestInter, errG, mom, tmp);
          point->SetSensorIdx(iStation);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
@@ -681,9 +690,11 @@ void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Bool_t update)
    Double_t minDistance = 1.e9;
    Double_t aDistance;
    TVector3 mom;
+   TVector3 tmp(0,0,0);
 
    // loop on all clusters and keep the nearest one
-   Double_t  searchDist = fSearchClusDistTof;
+   Double_t searchDist = fSearchClusDistTof;
+   TVector3 bestInter;
 
    if (!update)
       searchDist = fSearchClusDistTof*2;
@@ -720,6 +731,7 @@ void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Bool_t update)
       if( aDistance < minDistance ) {
          minDistance = aDistance;
          bestCluster = aCluster;
+         bestInter   = inter;
       }
    } // end loop on sensor clusters
    
@@ -736,7 +748,7 @@ void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Bool_t update)
       
          posG = fpFootGeo->FromTWLocalToGlobal(posG);
          
-         TAGpoint* point = track->AddPoint(FootBaseName("TATWparGeo"), posG, errG, posG, errG);
+         TAGpoint* point = track->AddPoint(FootBaseName("TATWparGeo"), posG, errG, bestInter, errG, mom, tmp);
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TATWparGeo")));
          point->SetSensorIdx(0);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
@@ -775,10 +787,12 @@ void TAGactNtuGlbTrackF::FindCaCluster(TAGtrack* track)
    Double_t minDistance = 1.e9;
    Double_t aDistance;
    TVector3 mom;
+   TVector3 tmp(0,0,0);
 
    // loop on all clusters and keep the nearest one
-   Double_t  searchDist = fSearchClusDistTof*4;
-   
+   Double_t searchDist = fSearchClusDistTof*4;
+   TVector3 bestInter;
+
    TACAcluster* bestCluster = 0x0;
    Int_t nClusters = pNtuClus->GetClustersN();
    
@@ -802,6 +816,7 @@ void TAGactNtuGlbTrackF::FindCaCluster(TAGtrack* track)
       if( aDistance < minDistance ) {
          minDistance = aDistance;
          bestCluster = aCluster;
+         bestInter   = inter;
       }
    } // end loop on sensor clusters
    
@@ -814,7 +829,7 @@ void TAGactNtuGlbTrackF::FindCaCluster(TAGtrack* track)
          
       posG = fpFootGeo->FromCALocalToGlobal(posG);
          
-      TAGpoint* point = track->AddPoint(FootBaseName("TACAparGeo"), posG, errG, posG, errG);
+      TAGpoint* point = track->AddPoint(FootBaseName("TACAparGeo"), posG, errG, bestInter, errG, mom, tmp);
       point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TACAparGeo")));
       point->SetSensorIdx(0);
       point->SetClusterIdx(bestCluster->GetClusterIdx());
