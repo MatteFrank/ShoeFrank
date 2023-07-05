@@ -52,13 +52,12 @@ GlobalRecoAnaGSI::GlobalRecoAnaGSI(TString expName, Int_t runNumber, TString fil
   nTotEv=innTotEv;
 
   outfile = fileNameout;
-
+  
   Th_true = -999.; //from TAMCparticle
   Th_meas = -999.; //from TWpoint
   Th_reco = -999.; //from global tracking
   Th_recoBM = -999.; //from global tracking wrt BM direction
-
-
+  Th_BM = -999;   // angle wrt to track before impining on tg ( mc version of th_recoBM)
 }
 
 GlobalRecoAnaGSI::~GlobalRecoAnaGSI()
@@ -134,9 +133,9 @@ void GlobalRecoAnaGSI::LoopEvent() {
 
           if (isGoodReco(TrkIdMC))
           {
-            FillYieldMC("yield-N_GoodReco", Z_true, Th_true, Ek_tot); // N_GoodReco
+            FillYieldMC("yield-N_GoodReco", Z_true, Th_BM, Ek_tot); // N_GoodReco
           }
-          FillYieldMC("yield-N_AllReco", Z_true, Th_true, Ek_tot); // N_AllReco
+          FillYieldMC("yield-N_AllReco", Z_true, Th_BM, Ek_tot); // N_AllReco
 
           FillYieldReco("yield-N_recoTracks", Z_meas, 0, Th_recoBM); // all reconstructed tracks
         }
@@ -815,6 +814,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   Tof_startmc = -1.;
   Beta_true = -1.;
   P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
+  P_beforeTG.SetXYZ(-999., -999., -999.);
 
   TrkIdMC = fGlbTrack->GetMcMainTrackId(); // associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity)
   if (TrkIdMC != -1)
@@ -830,11 +830,18 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
 
     if (TAGrecoManager::GetPar()->IsRegionMc())
     {
-      for (int icr = 0; icr < GetNtuMcReg()->GetRegionsN(); icr++)
+      for (int icr = 0; icr < GetNtuMcReg()->GetRegionsN(); icr++)   //loop on MC regions
       {
       TAMCregion *fpNtuMcReg = GetNtuMcReg()->GetRegion(icr);
-      if ((fpNtuMcReg->GetTrackIdx() - 1) == TrkIdMC)
+      
+      // particle entering from target
+      if (fpNtuMcReg->GetCrossN() == GetParGeoG()->GetRegTarget() && fpNtuMcReg->GetOldCrossN() == GetParGeoG()->GetRegAirPreTW())
       {
+          P_beforeTG = fpNtuMcReg->GetMomentum();
+      }
+
+      if ((fpNtuMcReg->GetTrackIdx() - 1) == TrkIdMC)
+      {   
           // particle exit from target
           if (fpNtuMcReg->GetCrossN() == GetParGeoG()->GetRegAirPreTW() && fpNtuMcReg->GetOldCrossN() == GetParGeoG()->GetRegTarget())
           {
@@ -874,7 +881,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
       }
 
       Th_true = P_true.Theta() * 180. / TMath::Pi();
-      // cout << "theta true: "<< Th_true <<endl;
+      Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
       Th_cross = P_cross.Theta() * TMath::RadToDeg();
     }
   }

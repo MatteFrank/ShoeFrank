@@ -138,9 +138,11 @@ class GlobalRecoAnaGSI : public RecoRaw {
   Double_t Beta_true;
   TVector3 P_true;
   Double_t Th_true;
+  Double_t Th_BM;
   Double_t Th_cross; //target exit angle
   TVector3 P_cross;  //target exit momentum
-  Double_t Ek_cross_calo;  //crossing out from TW
+  TVector3 P_beforeTG; // target entering momentum
+      Double_t Ek_cross_calo; // crossing out from TW
 
   Int_t TrkIdMC;   //MC id of the glb track
 
@@ -169,7 +171,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   vector<vector<vector<Int_t>>> fEvtGlbTrkVec; //store collection of fGlbTrkVec for each event
   map<int, map<int, int>> m_nClone;            ///< Map of total number of clone id for the same charge in a single event; the key is [particle charge][specific ID]
   map<int, int> n_clones;                      ///< Map of total number of clone id for the same charge ; the key is [particle charge]
-  
+
   // nuisance variables
   TH1D *h;
   TH2D *h2;
