@@ -925,7 +925,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				h_TWprojVsThetaTotYesTW->Fill(guessOnTW.X(), guessOnTW.Y());
 				h_TWprojVsThetaYesTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
 				float zTW = shoeOutTrack->GetTwChargeZ();
-				zTW = guessOnTW.Y() < 0 ? -zTW : zTW;
+				zTW = guessOnTW.Y() < 1.1 ? -zTW : zTW;
 				h_TWprojZTot->Fill(zTW);
 				h_TWprojZvsTheta[index]->Fill(zTW);
 			}
