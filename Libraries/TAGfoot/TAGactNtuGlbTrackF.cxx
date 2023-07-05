@@ -540,15 +540,20 @@ void TAGactNtuGlbTrackF::FindItrCluster(TAGtrack* track)
          TVector3 posG = bestCluster->GetPositionG();
          TVector3 errG = bestCluster->GetPosErrorG();
 
-         posG = fpFootGeo->FromITLocalToGlobal(posG);
+         if(FootDebugLevel(1)) {
+            posG = fpFootGeo->FromITLocalToGlobal(posG);
+            printf("ITR %g %g\n", aDistance, minDistance);
+            printf("pos: ");
+            posG.Print();
+            printf("inter: ");
+            bestInter.Print();
+         }
          
          TAGpoint* point = track->AddPoint(FootBaseName("TAITparGeo"), posG, errG, bestInter, errG, mom, tmp);
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TAITparGeo")));
          point->SetSensorIdx(iSensor);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          FillMcTrackId(bestCluster, point);
-
-         UpdateParam(track);
          
          if(FootDebugLevel(1))
             printf("ITR Sensor %d\n", iSensor);
@@ -631,15 +636,20 @@ void TAGactNtuGlbTrackF::FindMsdCluster(TAGtrack* track)
          TVector3 posG = bestCluster->GetPositionG();
          TVector3 errG = bestCluster->GetPosErrorG();
          
-         posG = fpFootGeo->FromMSDLocalToGlobal(posG);
+         if(FootDebugLevel(1)) {
+            posG = fpFootGeo->FromMSDLocalToGlobal(posG);
+            printf("MSD %g %g\n", aDistance, minDistance);
+            printf("pos: ");
+            posG.Print();
+            printf("inter: ");
+            bestInter.Print();
+         }
          
          TAGpoint* point = track->AddPoint(FootBaseName("TAMSDparGeo"), posG, errG, bestInter, errG, mom, tmp);
          point->SetSensorIdx(iStation);
          point->SetClusterIdx(bestCluster->GetClusterIdx());
          point->SetEnergyLoss(bestCluster->GetEnergyLoss());
          FillMcTrackId(bestCluster, point);
-
-         UpdateParam(track);
          
          // Compute particle after each plane
          Float_t thick    = fSensorThickMsd/TMath::Cos(track->GetTgtTheta());
@@ -746,7 +756,14 @@ void TAGactNtuGlbTrackF::FindTwCluster(TAGtrack* track, Bool_t update)
          TVector3 posG = bestCluster->GetPositionG();
          TVector3 errG = bestCluster->GetPosErrorG();
       
-         posG = fpFootGeo->FromTWLocalToGlobal(posG);
+         if(FootDebugLevel(1)) {
+            posG = fpFootGeo->FromTWLocalToGlobal(posG);
+            printf("TW %g %g\n", aDistance, minDistance);
+            printf("pos: ");
+            posG.Print();
+            printf("inter: ");
+            bestInter.Print();
+         }
          
          TAGpoint* point = track->AddPoint(FootBaseName("TATWparGeo"), posG, errG, bestInter, errG, mom, tmp);
          point->SetDeviceType(TAGgeoTrafo::GetDeviceType(FootBaseName("TATWparGeo")));
