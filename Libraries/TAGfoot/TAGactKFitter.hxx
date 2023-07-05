@@ -108,7 +108,7 @@ public:
 
 private:
 
-	AbsKalmanFitter*	InitializeFitter(int nIter, int dPVal);
+	AbsKalmanFitter*	InitializeFitter(int nIter, double dPVal);
 	TAGFselectorBase*	InitializeSelector();
 	int		MakeFit(long evNum, TAGFselectorBase* selector);
 

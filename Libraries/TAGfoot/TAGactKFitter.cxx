@@ -340,7 +340,7 @@ void TAGactKFitter::Finalize() {
 //! \param[in] nIter Maximum number of iterations of the fitter
 //! \param[in] dPVal Minimum P-value modification cut for fit stop after n-th iteration
 //! \return Pointer to the initialized fitter
-AbsKalmanFitter* TAGactKFitter::InitializeFitter(int nIter, int dPVal)
+AbsKalmanFitter* TAGactKFitter::InitializeFitter(int nIter, double dPVal)
 {
 	AbsKalmanFitter* fitter;
 
@@ -557,10 +557,11 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 				if(m_debug > 0) cout << "DONE\n";
 
 			}
-			m_vectorConvergedTrack.push_back( fitTrack );
 		}
 		else
 			convergeCut = true;
+
+		m_vectorConvergedTrack.push_back( fitTrack );
 	}
 	// end  - loop over all tracks
 
