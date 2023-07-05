@@ -184,7 +184,7 @@ Bool_t TAGactKFitter::Action()
 	TAGFuploader* GFUploader = new TAGFuploader( m_SensorIDMap, m_IsMC );
 	GFUploader->TakeMeasHits4Fit( m_allHitMeasGF, m_systemsON );
 	vector<int> chVect;
-	GFUploader->GetPossibleCharges( &chVect, m_IsMC );
+	GFUploader->GetPossibleCharges( &chVect );
 
 	//Get true information if running on MC
 	if ( m_IsMC ) {
@@ -356,7 +356,7 @@ AbsKalmanFitter* TAGactKFitter::InitializeFitter(int nIter, double dPVal)
 	else
 	{
 		Error("TAGactKFitter()", "Undexpected value for Kalman Mode! Given %s", TAGrecoManager::GetPar()->KalMode().c_str());
-		exit(0);
+		exit(42);
 	}
 
 	return fitter;
@@ -372,7 +372,7 @@ TAGFselectorBase* TAGactKFitter::InitializeSelector()
 	if (TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle")
 	{
 		if (!m_IsMC)
-			Error("TAGactKFitter::InitializeSelector()", "Asked TrueParticle tracking but running not on MC."), exit(0);
+			Error("TAGactKFitter::InitializeSelector()", "Asked TrueParticle tracking but running not on MC."), exit(42);
 		selector = new TAGFselectorTrue();
 	}
 	else if (TAGrecoManager::GetPar()->PreselectStrategy() == "Standard")
@@ -382,10 +382,10 @@ TAGFselectorBase* TAGactKFitter::InitializeSelector()
 	else if (TAGrecoManager::GetPar()->PreselectStrategy() == "Backtracking")
 		selector = new TAGFselectorBack();
 	else
-		Error("TAGactKFitter::InitializeSelector()", "TAGrecoManager::GetPar()->PreselectStrategy() not defined"), exit(0);
+		Error("TAGactKFitter::InitializeSelector()", "TAGrecoManager::GetPar()->PreselectStrategy() not defined"), exit(42);
 
 	if( !selector )
-		Error("TAGactKFitter::InitializeSelector()", "Error in TAGFselector construction, aborting..."), exit(0);
+		Error("TAGactKFitter::InitializeSelector()", "Error in TAGFselector construction, aborting..."), exit(42);
 	
 	return selector;
 }
@@ -444,7 +444,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			if ( !UpdatePDG::GetPDG()->IsParticleDefined( tok.at(0) + tok.at(1) ) )
 			{
 				Error("MakeFit()", "Category %s%s not found in UpdatePDG!" , tok.at(0).c_str(), tok.at(1).c_str());
-				throw -1;
+				exit(42);
 			}
 		}
 
@@ -1168,7 +1168,7 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 	if ( detID != m_SensorIDMap->GetDetIDFromMeasID( hitID ) )
 	{
 		Error("GetMeasInfo()", "Detector ID not matching between GENFIT (%d) and SensorIDmap (%d)", detID, m_SensorIDMap->GetDetIDFromMeasID( hitID ));
-		exit(0);
+		exit(42);
 	}
 
 	string det = m_SensorIDMap->GetDetNameFromMeasID( hitID );
@@ -1200,7 +1200,7 @@ void TAGactKFitter::GetMeasInfo( int detID, int hitID, int* iSensor, int* iClus,
 		*posErr = clus->GetPosErrorG();
 	}
 	else 
-		cout << "ERROR -- TAGactKFitter::GetMeasTrackInfo -- No correct detector name found: "<< det << endl, exit(0);
+		cout << "ERROR -- TAGactKFitter::GetMeasTrackInfo -- No correct detector name found: "<< det << endl, exit(42);
 
 }
 

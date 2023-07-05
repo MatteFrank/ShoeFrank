@@ -95,7 +95,7 @@ Bool_t TAGFtrackingStudies::Action() {
 		if 		( odd == 0 && even != 0  )		mcStustFlag = 0;	// good
 		else if ( odd == 1 )					mcStustFlag = 1;	// loose
 		else if ( odd > 1 )						mcStustFlag = 2;	// bad
-		else 									cout << "Error" << endl, exit(0);
+		else 									cout << "Error" << endl, exit(42);
 		m_histo_mcGoodTrk->Fill( mcStustFlag );
 
 		// evaluating mean cluster size 

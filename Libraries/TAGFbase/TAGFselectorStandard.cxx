@@ -27,7 +27,7 @@ void TAGFselectorStandard::Categorize( ) {
 	if(!m_systemsON.Contains("VT"))
 	{
 		Error("Categorize_dataLike()", "Standard selection algorithm currently not supported without Vertex!");
-		exit(0);
+		exit(42);
 	}
 	else
 	{
@@ -246,10 +246,7 @@ void TAGFselectorStandard::CategorizeIT()	{
 				// TVector3 guessOnIT = ExtrapolateToOuterTracker(itTrack->second, *iPlane);
 
 				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
-				{
-					Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", *iPlane);
-					throw -1;
-				}
+					Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", *iPlane), exit(42);
 
 				TVector3 guessOnPlaneIT = m_GeoTrafo->FromGlobalToITLocal( tmpExtrap ); //RZ: IsInActive controls local or global variables????
 				guessOnPlaneIT = m_IT_geo->Detector2Sensor(sensorId, guessOnPlaneIT); //Move to local coords
@@ -443,7 +440,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 			// cout << "TAGFselectorStandard::CategorizeMSD()     MSDcheck4\n";
-				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
+				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR MSD" <<endl, exit(42);
 
 				//RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit;
@@ -637,7 +634,7 @@ void TAGFselectorStandard::CategorizeTW()
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
 			if (  m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != planeTW )
-				cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR TW" <<endl, exit(0);
+				cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR TW" <<endl, exit(42);
 
 			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
 					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );

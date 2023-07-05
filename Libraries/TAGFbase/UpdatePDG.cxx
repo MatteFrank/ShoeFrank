@@ -26,7 +26,7 @@ UpdatePDG* UpdatePDG::Instance()  {
     m_pInstance = new UpdatePDG();
   }
   else {
-    cout << "ERROR::UpdatePDG::Instance  -->  already instanced, cannot instance twice!!!" << endl, exit(0);
+    cout << "ERROR::UpdatePDG::Instance  -->  already instanced, cannot instance twice!!!" << endl, exit(42);
   }
   
   return m_pInstance;
@@ -39,7 +39,7 @@ UpdatePDG* UpdatePDG::Instance()  {
 UpdatePDG* UpdatePDG::GetPDG()  {
   
   if (!m_pInstance) 
-    cout << "ERROR::UpdatePDG::GetPDG()  -->  called a get before UpdatePDG object istance." << endl, exit(0);
+    cout << "ERROR::UpdatePDG::GetPDG()  -->  called a get before UpdatePDG object istance." << endl, exit(42);
   
   return m_pInstance;
 }
@@ -86,7 +86,7 @@ void UpdatePDG::MakePdgDatabase() {
 			"O13", "O14", "O15", "O16" };
   if ( (int)nameVector.size() != nNewParticles ) 	{
     cout << "ERROR::UpdatePDG::MakePdgDatabase  -->  particle collection name size not match "<< nameVector.size() <<endl;
-    exit(0);
+    exit(42);
   }
   
   // particle mass
@@ -115,7 +115,7 @@ void UpdatePDG::MakePdgDatabase() {
   for ( unsigned int i=0; i<TAGrecoManager::GetPar()->MCParticles().size(); i++) {
     if ( find( nameVector.begin(), nameVector.end(), TAGrecoManager::GetPar()->MCParticles()[i] ) == nameVector.end() ) {
       cout << "ERROR::UpdatePDG::MakePdgDatabase()  -->  required " << TAGrecoManager::GetPar()->MCParticles()[i] << " particle from input parameter not defined" << endl;
-      exit(0);
+      exit(42);
     }
   }
   
@@ -225,7 +225,7 @@ int UpdatePDG::GetPdgCodeMainIsotope(int partCharge)  {
 
   if(partName == "None")  {
     // Error("GetPdgCodeMainIsotope()", "Particle charge is out of range! Charge::%d", partCharge);
-    cout << "GetPgdCodeMainIsotope() --> Particle charge is out of range! Charge::" << partCharge << endl; exit(0);
+    cout << "GetPgdCodeMainIsotope() --> Particle charge is out of range! Charge::" << partCharge << endl; exit(42);
     return -999;
   }
   else  {

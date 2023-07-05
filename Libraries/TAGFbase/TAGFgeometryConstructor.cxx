@@ -35,20 +35,14 @@ void TAGFgeometryConstructor::IncludeDetectors()
 {
 	// check kalman detectors set in param file are correct
 	if (TAGrecoManager::GetPar()->KalSystems().size() == 0)
-	{
-		Error("IncludeDetectors()", "KalSystems parameter not set properly! Size is 0.");
-		throw -1;
-	}
+		Error("IncludeDetectors()", "KalSystems parameter not set properly! Size is 0."), exit(42);
 
 	else if ( !(TAGrecoManager::GetPar()->KalSystems().size() == 1 && TAGrecoManager::GetPar()->KalSystems().at(0) == "all") )
 	{
 		for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ )
 		{
 			if ( !m_SensorIDMap->IsDetectorInMap( TAGrecoManager::GetPar()->KalSystems().at(i) ) )
-			{
-				Error("IncludeDetectors()", "KalSystems parameter not set properly! Detector '%s' not found in global map.", TAGrecoManager::GetPar()->KalSystems().at(i).c_str());
-				throw -1;
-			}
+				Error("IncludeDetectors()", "KalSystems parameter not set properly! Detector '%s' not found in global map.", TAGrecoManager::GetPar()->KalSystems().at(i).c_str()), exit(42);
 		}
 	}
 

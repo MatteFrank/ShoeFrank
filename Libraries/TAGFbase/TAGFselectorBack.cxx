@@ -33,7 +33,7 @@ void TAGFselectorBack::Categorize( ) {
 	if (! m_systemsON.Contains("TW") || ! m_systemsON.Contains("MSD"))
 	{
 		Error("Categorize_Backtracking()", "TW and MSD are needed for backtracking!");
-		exit(0);
+		exit(42);
 	}
 
 	if (m_debug > 1)
@@ -174,7 +174,7 @@ void TAGFselectorBack::BackTracklets()
 
 					for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 
-						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != MSDnPlane )	cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
+						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != MSDnPlane )	cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR MSD" <<endl, exit(42);
 
 						//RZ: CHECK -> AVOID ERRORS
 						double distanceFromHit;
@@ -297,10 +297,7 @@ void TAGFselectorBack::CategorizeIT_back()
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); ++iPlane )
 			{
 				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
-				{
-					Error("CategorizeIT_back()", "Sensor not found for Genfit plane %d!", *iPlane);
-					throw -1;
-				}
+					Error("CategorizeIT_back()", "Sensor not found for Genfit plane %d!", *iPlane), exit(42);
 
 				if ( m_allHitMeas->find( *iPlane ) == m_allHitMeas->end() )   {
 					if( m_debug > 1 )
@@ -405,7 +402,7 @@ void TAGFselectorBack::CategorizeVT_back()
 			{
 				// cout << "VT plane::" << VTplane << endl;
 				if (m_SensorIDMap->GetFitPlaneIDFromMeasID((*it)->getHitId()) != VTplane)
-					cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR VT" << endl, exit(0);
+					cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR VT" << endl, exit(42);
 
 				// RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit = TMath::Sqrt( pow(guessOnVT.x() - (*it)->getRawHitCoords()(0), 2) + pow(guessOnVT.y() - (*it)->getRawHitCoords()(1), 2) );
@@ -463,14 +460,12 @@ TVector3 TAGFselectorBack::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 	// int pointId = 1;
 	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(1, trackToFit->getTrackRep(repId));
 	if (tp == nullptr) {
-		// Error("ExtrapolateToOuterTracker()", "Track has no TrackPoint with fitterInfo");
-		// exit(0);
 		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
 	if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasBackwardUpdate() ) == false) {
 		Error("ExtrapolateToOuterTracker()", "TrackPoint has no backward update");
-		exit(0);
+		exit(42);
 	}
 
 	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

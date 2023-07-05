@@ -612,14 +612,12 @@ TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 		repId = trackToFit->getCardinalRepId();
 	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(-1, trackToFit->getTrackRep(repId));
 	if (tp == nullptr) {
-		// Error("ExtrapolateToOuterTracker()", "Track has no TrackPoint with fitterInfo");
-		// exit(0);
 		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
 	if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasForwardUpdate() ) == false) {
 		Error("ExtrapolateToOuterTracker()", "TrackPoint has no forward update");
-		exit(0);
+		exit(42);
 	}
 
 	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -667,7 +665,7 @@ bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::
 	// num of total hits
 	testHitNumberLimit = testHit_VT + testHit_IT + testHit_MSD + testHit_TW;
 	if ( testHitNumberLimit == 0 ) 		
-		cout << "ERROR --> TAGFselector::PrefitRequirements :: m_systemsON mode is wrong!!!" << endl, exit(0);
+		cout << "ERROR --> TAGFselector::PrefitRequirements :: m_systemsON mode is wrong!!!" << endl, exit(42);
 
 	// // test the total number of hits ->  speed up the test
 	// if ( (int)((*element).second.size()) != testHitNumberLimit ) {
@@ -742,8 +740,7 @@ TString TAGFselectorBase::GetRecoTrackName(Track* tr)
 		if(it->second == tr)
 			return it->first;
 	}
-	Error("GetRecoTrackName()", "Track not found in Category Map!!");
-	throw -1;
+	Error("GetRecoTrackName()", "Track not found in Category Map!!"), exit(42);
 }
 
 

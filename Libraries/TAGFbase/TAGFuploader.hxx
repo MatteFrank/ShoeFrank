@@ -56,7 +56,7 @@ class TAGFuploader {
 
 public:
 	
-	explicit TAGFuploader ( TAGFdetectorMap* aSensorIDmap, bool IsMC );
+	explicit TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
 	virtual ~TAGFuploader();
 	
 	int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas, const TString& GFsystemsOn );
