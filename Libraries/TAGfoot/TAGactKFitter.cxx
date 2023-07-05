@@ -557,11 +557,11 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 				if(m_debug > 0) cout << "DONE\n";
 
 			}
+			m_vectorConvergedTrack.push_back( fitTrack );
 		}
 		else
 			convergeCut = true;
 
-		m_vectorConvergedTrack.push_back( fitTrack );
 	}
 	// end  - loop over all tracks
 
