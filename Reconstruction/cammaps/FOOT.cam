@@ -172,3 +172,9 @@ CamName:    "PXI"
 CamDataMC:    0
 CamDate: "2023"
 CamSum: "Test for PXI data"
+
+CamNumber:    29
+CamName:    "MPIX2023"
+CamDataMC:    0
+CamDate: "2023"
+CamSum: "Test for MonopPix2 data"
