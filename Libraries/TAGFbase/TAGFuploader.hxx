@@ -56,11 +56,11 @@ class TAGFuploader {
 
 public:
 	
-	explicit TAGFuploader ( TAGFdetectorMap* aSensorIDmap );
+	explicit TAGFuploader ( TAGFdetectorMap* aSensorIDmap, bool IsMC );
 	virtual ~TAGFuploader();
 	
 	int TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHitMeas, const TString& GFsystemsOn );
-	void GetPossibleCharges( vector<int>* chVect, bool IsMC );
+	void GetPossibleCharges( vector<int>* chVect );
 	int GetNumGenParticle_noFrag();
 
 	map< int, vector<int> >* TakeMeasParticleMC_Collection();

@@ -357,7 +357,7 @@ int TAGFuploader::GetTWTrackFixed ( TATWpoint* point ) {
 //! \brief Get all the possible charges measured by the TOF-Wall in the event
 //!
 //! \param[out] chVect Pointer to vector where to store the possible charge values
-void TAGFuploader::GetPossibleCharges( vector<int>* chVec) {
+void TAGFuploader::GetPossibleCharges( vector<int>* chVect) {
 
 	if( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )
 	{	

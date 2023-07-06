@@ -207,6 +207,7 @@ Bool_t TAGactKFitter::Action()
 	TAGFselectorBase* GFSelector = InitializeSelector();
 	m_dummySelector = GFSelector; //RZ: Temporary!!!!
 	GFSelector->SetVariables(&m_allHitMeasGF, m_systemsON, &chVect, m_SensorIDMap, &m_mapTrack, m_measParticleMC_collection, m_IsMC, &m_singleVertexCounter, &m_noVTtrackletEvents, &m_noTWpointEvents);
+	GFSelector->SetExtrapolationHistogram(h_extrapDist);
 
 	//Find track candidates and fit them
 	if (GFSelector->FindTrackCandidates() >= 0)
@@ -1535,11 +1536,11 @@ void TAGactKFitter::CreateHistogram()	{
 
 	if( m_IsMC )
 	{
-		h_mcMom = new TH1F("h_mcMom", "h_mcMom", 150, 0., 15.);
+		h_mcMom = new TH1F("h_mcMom", "h_mcMom", 200, 0., 16.);
 		AddHistogram(h_mcMom);
 	}
 
-	h_momentum = new TH1F("h_momentum", "h_momentum", 150, 0., 15.);
+	h_momentum = new TH1F("h_momentum", "h_momentum", 200, 0., 16.);
 	AddHistogram(h_momentum);
 
 	h_TGprojVsThetaTot = new TH2D("TGproj_ThetaTot","TGproj_ThetaTot;X_proj [cm];Y_proj [cm]",400,-5,5,400,-5,5);
@@ -1592,12 +1593,12 @@ void TAGactKFitter::CreateHistogram()	{
 
 	for (int i = 0; i < 9; ++i)
 	{
-		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 1000, 0.,15.));
+		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 1000, 0.,16.));
 		AddHistogram(h_momentum_reco[i]);
 
 		if( m_IsMC )
 		{
-			h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 1000, 0.,15.));
+			h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 1000, 0.,16.));
 			AddHistogram(h_momentum_true[i]);
 
 			h_ratio_reco_true.push_back(new TH1F(Form("MomentumRatio%d",i), Form("Momentum Ratio %d",i), 1000, 0, 2.5));
@@ -1605,12 +1606,12 @@ void TAGactKFitter::CreateHistogram()	{
 		}
 	}
 
-	h_PlaneOccupancy[0] = new TH2I("h_PlaneOccupancy", "h_PlaneOccupancy; FitPlane Id; # of clusters", m_SensorIDMap->GetFitPlanesN()+2, -1.5, m_SensorIDMap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
+	h_PlaneOccupancy[0] = new TH2I("h_PlaneOccupancy", "h_PlaneOccupancy; FitPlane Id; # of clusters", m_SensorIDMap->GetFitPlanesN()+2, -1.5, m_SensorIDMap->GetFitPlanesN()+0.5, 51, -0.5, 50.5);
 	AddHistogram(h_PlaneOccupancy[0]);
 
 	for(int iEv=1; iEv<=5; iEv++)
 	{
-		h_PlaneOccupancy[iEv] = new TH2I(Form("h_PlaneOccupancyType%d", iEv), Form("h_PlaneOccupancyType%d; FitPlane Id; # of clusters", iEv), m_SensorIDMap->GetFitPlanesN()+2, -1.5, m_SensorIDMap->GetFitPlanesN()+0.5, 41, -0.5, 40.5);
+		h_PlaneOccupancy[iEv] = new TH2I(Form("h_PlaneOccupancyType%d", iEv), Form("h_PlaneOccupancyType%d; FitPlane Id; # of clusters", iEv), m_SensorIDMap->GetFitPlanesN()+2, -1.5, m_SensorIDMap->GetFitPlanesN()+0.5, 51, -0.5, 50.5);
 		AddHistogram(h_PlaneOccupancy[iEv]);
 	}
 
@@ -1628,6 +1629,7 @@ void TAGactKFitter::AddResidualAndPullHistograms()
 	std::pair<string, std::pair<int, int>> sensId;
 	std::vector<std::string> detList = TAGparTools::Tokenize(m_systemsON.Data(), " ");
 
+	//Cycle on detectors
 	for( auto det : detList )
 	{
 		int nsensors;
@@ -1646,8 +1648,12 @@ void TAGactKFitter::AddResidualAndPullHistograms()
 
 				sensId = make_pair(det,make_pair(iSensor,iCoord));
 				char coord = iCoord ? 'Y' : 'X';
-				float maxRes = 0.1;
-				if( det == "TW" ) maxRes = 5;
+				float maxRes = 0.1, maxExtrap = 0.6;
+				if( det == "TW" )
+				{
+					maxRes = 5;
+					maxExtrap = 5;
+				}
 
 				h_residual[sensId] = new TH1F(Form("Res_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Residual between global track and measured %s cluster in layer %d, %c view;Residual (Meas-Fit) %c [cm];Entries",det.c_str(),iSensor,coord,coord),600,-maxRes,maxRes);
 				AddHistogram(h_residual[sensId]);
@@ -1671,6 +1677,9 @@ void TAGactKFitter::AddResidualAndPullHistograms()
 					h_pullVsClusSize[sensId] = new TH2F(Form("PullVsClusSize_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Pull vs cluster size for %s layer %d on %c view;Meas-Fit Pull %c;Cluster size [N %s]",det.c_str(),iSensor,coord,coord,clusUnit.c_str()), 1000,-15,15, maxUnits, -0.5, maxUnits-0.5);
 					AddHistogram(h_pullVsClusSize[sensId]);
 				}
+
+				h_extrapDist[sensId] = new TH1F(Form("ExtrapDist_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Extrapolation distance between forward global track and measured %s cluster in layer %d, %c view;Extrapolation distance (Meas-Forward extrap) %c [cm];Entries",det.c_str(),iSensor,coord,coord),600,-maxExtrap,maxExtrap);
+				AddHistogram(h_extrapDist[sensId]);
 			}
 		}
 	}
@@ -1698,6 +1707,11 @@ void TAGactKFitter::SetHistogramDir(TDirectory* dir)
 	if( !subdirTGproj )
 		subdirTGproj = dir->mkdir("TGproj");
 
+	TDirectory* subdirExtrap = 0x0;
+	dir->GetObject("EXTR", subdirExtrap);
+	if( !subdirExtrap )
+		subdirExtrap = dir->mkdir("EXTR");
+
 	if (fpHistList) {
 		for (TObjLink* lnk = fpHistList->FirstLink(); lnk; lnk=lnk->Next()) {
 			TH1* h = (TH1*)lnk->GetObject();
@@ -1708,6 +1722,8 @@ void TAGactKFitter::SetHistogramDir(TDirectory* dir)
 				h->SetDirectory(subdirTWproj);
 			else if ( name.Contains("TGproj") )
 				h->SetDirectory(subdirTGproj);
+			else if ( name.Contains("ExtrapDist") )
+				h->SetDirectory(subdirExtrap);
 			else
 				h->SetDirectory(dir);
 		}
@@ -1716,7 +1732,8 @@ void TAGactKFitter::SetHistogramDir(TDirectory* dir)
 
 	fDirectory = dir;
 
-	if (!dir->IsWritable() || !subdirRes->IsWritable() || !subdirTWproj->IsWritable()) fbIsOpenFile = false;
+	if (!dir->IsWritable() || !subdirRes->IsWritable() || !subdirTWproj->IsWritable() || !subdirTGproj->IsWritable() || !subdirExtrap->IsWritable())
+		fbIsOpenFile = false;
 }
 
 

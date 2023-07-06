@@ -126,7 +126,6 @@ private:
 	double	TrackQuality( vector<vector<int>>* mcParticleID_track );
 
 	void	GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart, TVector3* pos, TVector3* posErr);
-	// void	GetMeasTrackInfo( int hitID, TVector3* pos, TVector3* posErr );
 	void	GetRecoTrackInfo ( int i, Track* track, TVector3* KalmanPos, TVector3* KalmanMom, TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
 
 	void	CalculateTrueMomentumAtTgt();
@@ -142,11 +141,9 @@ private:
 	TAGdataDsc*  fpGlobTrackRepo;						///< Ntuple of fitted tracks -> OUTPUT
 
 	KalmanFitter* m_fitter_extrapolation;				///< Kalman fitter used for forward extrapolation of tracks
-
 	AbsKalmanFitter* m_fitter;							///< Kalman fitter
 
 	TAMCntuPart*  m_trueParticleRep;					///< Ptr to TAMCntuPart object
-
 	TAGntuGlbTrack* m_outTrackRepo;						///< CHECK WITH MATTEO HOW TO DO THIS
 
 	TAGFselectorBase* m_dummySelector;
@@ -166,30 +163,26 @@ private:
 	map<int, TVector3> m_trueMomentumAtTgt;
 
 	EventDisplay* display;								///< GenFit event display
-
-	TAGFgeometryConstructor* m_GFgeometry;			///< GenFit geometry creator object
+	TAGFgeometryConstructor* m_GFgeometry;				///< GenFit geometry creator object
 	TAGgeoTrafo* m_GeoTrafo;							///< GeoTrafo object
 
 	TString m_systemsON;								///< String w/ list of systems on in the campaign
-	// string m_kalmanOutputDir;
 
 	double m_AMU;										///< Conversion between mass in GeV and atomic mass unit
 	double m_BeamEnergy;								///< Kinetic energy per nucleon of the primary beam in GeV
 
 	int m_debug;										///< Global debug level
-
 	long m_evNum;										///< Event number
-
 	int m_numGenParticle_noFrag;						///< Number of generated particle in the MC event that didn't fragment between the TG and TW
 
 	// TH2D* MSDresidualOfPrediction;
 	// TH2D* ITresidualOfPrediction;
 	// TH1F* percentageOfMCTracksVTX;
-	TH2I* h_nConvTracksVsStartTracks;
-	TH2I* h_nConvTracksVsStartTracksNmeasureCut;
-	TH2I* h_nConvTracksVsStartTracksConvergeCut;
-	TH2I* h_nConvTracksVsStartTracksYesTW;
-	TH2I* h_nConvTracksVsStartTracksNoTW;
+	TH2I* h_nConvTracksVsStartTracks;					///< Number of track candidates vs fitted tracks -- histo
+	TH2I* h_nConvTracksVsStartTracksNmeasureCut;		///< Number of track candidates vs fitted tracks for events where at least one track is lost because of the cut on minimum track points -- histo
+	TH2I* h_nConvTracksVsStartTracksConvergeCut;		///< Number of track candidates vs fitted tracks for events where at least one track is lost because of the cut on fit convergence -- histo
+	TH2I* h_nConvTracksVsStartTracksYesTW;				///< Number of track candidates vs fitted tracks with a TW point -- histo
+	TH2I* h_nConvTracksVsStartTracksNoTW;				///< Number of track candidates vs fitted tracks without a TW point -- histo
 	TH1F* h_purity;										///< Purity -- histo
 	TH1F* h_trackEfficiency;							///< Tracking efficiency -- histo
 	TH1F* h_trackQuality;								///< Track quality -- histo
@@ -216,10 +209,10 @@ private:
 	TH1F* h_theta_BM;									///< Fitted track polar angle at the TG wrt to BM track -- histo
 	TH1F* h_phi_BM;										///< Fitted track azimuthal angle at the TG wrt to BM track -- histo
 	TH2F* h_trackDirBM;									///< Fitted tracks X-Y coordinates of emission direction wrt BM track -- histo
-	TH1F* h_theta_BMnoTw;									///< Fitted track polar angle at the TG wrt to BM track when global track does not have a TW point -- histo
-	TH1F* h_phi_BMnoTw;										///< Fitted track azimuthal angle at the TG wrt to BM track when global track does not have a TW point -- histo
-	TH1F* h_theta_BMyesTw;									///< Fitted track polar angle at the TG wrt to BM track when global track has a TW point -- histo
-	TH1F* h_phi_BMyesTw;									///< Fitted track azimuthal angle at the TG wrt to BM track when global track has a TW point -- histo
+	TH1F* h_theta_BMnoTw;								///< Fitted track polar angle at the TG wrt to BM track when global track does not have a TW point -- histo
+	TH1F* h_phi_BMnoTw;									///< Fitted track azimuthal angle at the TG wrt to BM track when global track does not have a TW point -- histo
+	TH1F* h_theta_BMyesTw;								///< Fitted track polar angle at the TG wrt to BM track when global track has a TW point -- histo
+	TH1F* h_phi_BMyesTw;								///< Fitted track azimuthal angle at the TG wrt to BM track when global track has a TW point -- histo
 	TH1F* h_eta;										///< Fitted track eta =  at the TG -- histo
 	TH1F* h_dx_dz;										///< Fitted track slope at the TG in the X direction -- histo
 	TH1F* h_dy_dz;										///< Fitted track slope at the TG in the Y direction -- histo
@@ -228,9 +221,7 @@ private:
 	TH1F* h_mcPosX;										///< MC X position at the TG -- histo
 	TH1F* h_mcPosY;										///< MC Y position at the TG -- histo
 	TH1F* h_mcPosZ;										///< MC Z position at the TG -- histo
-	TH2I* h_PlaneOccupancy[6];
-	TH3F* h_MSDxCorrelation;
-	TH3F* h_MSDyCorrelation;
+	TH2I* h_PlaneOccupancy[6];							///< Plane occupancy (number of clusters vs FitPlane) for different GF event types; used for debug and background rejection -- histo
 
 	TH1I* h_GFeventType;								///< Event categorization seen by the GF selector
 
@@ -243,26 +234,27 @@ private:
 	map< pair<string,pair<int,int>>, TH2F*> h_residualVsPos;	///< Map of histograms for global track residulas vs measured position; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 	map< pair<string,pair<int,int>>, TH1F*> h_pull;				///< Map of histograms for global track pulls; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 	map< pair<string,pair<int,int>>, TH2F*> h_pullVsClusSize;	///< Map of histograms for global track pulls vs cluster size; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+	map< pair<string,pair<int,int>>, TH1F*> h_extrapDist;		///< Map of histograms for global track extrapolation distance for all sensors; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 
 	vector<TH1F*> h_momentum_true;						///< Vector of histograms for MC momentum module at the TG
 	vector<TH1F*> h_momentum_reco;						///< Vector of histograms for Fitted momentum moduel at the TG
 	vector<TH1F*> h_ratio_reco_true;					///< Vector of histograms for Fitted/MC momenutm module at the TG
 
-	TH2D* h_TWprojVsThetaTot;
-	TH2D* h_TWprojVsThetaTotYesTW;
-	TH2D* h_TWprojVsThetaTotNoTW;
-	TH1D* h_TWprojZTot;
-	vector<TH2D*> h_TWprojVsTheta;
-	vector<TH2D*> h_TWprojVsThetaNoTW;
-	vector<TH2D*> h_TWprojVsThetaYesTW;
-	vector<TH1D*> h_TWprojZvsTheta;
+	TH2D* h_TWprojVsThetaTot;							///< X-Y projection of fitted global tracks @ TW -- histo
+	TH2D* h_TWprojVsThetaTotYesTW;						///< X-Y projection of fitted global tracks with a TW point @ TW -- histo
+	TH2D* h_TWprojVsThetaTotNoTW;						///< X-Y projection of fitted global tracks without a TW point @ TW -- histo
+	TH1D* h_TWprojZTot;									///< Z of particles with global track projection above and below the "beam center" on the TW -- histo
+	vector<TH2D*> h_TWprojVsTheta;						///< X-Y projection of fitted global tracks @ TW as a function of global track theta -- histo
+	vector<TH2D*> h_TWprojVsThetaNoTW;					///< X-Y projection of fitted global tracks with a TW point @ TW as a function of global track theta -- histo
+	vector<TH2D*> h_TWprojVsThetaYesTW;					///< X-Y projection of fitted global tracks without a TW point @ TW as a function of global track theta -- histo
+	vector<TH1D*> h_TWprojZvsTheta;						///< Z of particles with global track projection above and below the "beam center" on the TW as a function of global track theta -- histo
 
-	TH2D* h_TGprojVsThetaTot;
-	TH2D* h_TGprojVsThetaTotYesTW;
-	TH2D* h_TGprojVsThetaTotNoTW;
-	vector<TH2D*> h_TGprojVsTheta;
-	vector<TH2D*> h_TGprojVsThetaNoTW;
-	vector<TH2D*> h_TGprojVsThetaYesTW;
+	TH2D* h_TGprojVsThetaTot;							///< X-Y projection of fitted global tracks @ TG -- histo
+	TH2D* h_TGprojVsThetaTotYesTW;						///< X-Y projection of fitted global tracks with a TW point @ TG -- histo
+	TH2D* h_TGprojVsThetaTotNoTW;						///< X-Y projection of fitted global tracks without a TW point @ TG -- histo
+	vector<TH2D*> h_TGprojVsTheta;						///< X-Y projection of fitted global tracks @ TG as a function of global track theta -- histo
+	vector<TH2D*> h_TGprojVsThetaNoTW;					///< X-Y projection of fitted global tracks with a TW point @ TG as a function of global track theta -- histo
+	vector<TH2D*> h_TGprojVsThetaYesTW;					///< X-Y projection of fitted global tracks without a TW point @ TG as a function of global track theta -- histo
 
 	//Efficiency & Purity variables
 	map<string, int> m_nSelectedTrackCandidates;		///< Map of total number of selected track candidates; the key is the particle name ("H", "He", "Li", ...)
