@@ -9,7 +9,7 @@ set(LIBNAME ${PROJECT_NAME})
 #
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAPL})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TAVT})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 #
@@ -21,6 +21,7 @@ set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 set( with_dictionnaries
    TAMPparGeo
    TAMPparConf
+   TAMPactAscReader
 )
 
 set( without_dictionnaries
@@ -30,7 +31,7 @@ set( without_dictionnaries
 #
 include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${TAG_INCLUDE_DIR})
-include_directories(${TAPL_INCLUDE_DIR})
+include_directories(${TAVT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #
 link_directories(${ROOT_LIBRARY_DIR})

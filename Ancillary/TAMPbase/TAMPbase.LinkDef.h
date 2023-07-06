@@ -6,5 +6,6 @@
 
 #pragma link C++ class TAMPparGeo;
 #pragma link C++ class TAMPparConf;
+#pragma link C++ class TAMPactAscReader;
 
 #endif
