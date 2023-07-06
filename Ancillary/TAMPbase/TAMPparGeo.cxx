@@ -187,14 +187,6 @@ Bool_t TAMPparGeo::FromFile(const TString& name)
          cout  << "  Pixel material density:  "<< fTypeParameter[t].PixMatDensity << endl;
    }
    
-   ReadItem(fSupportInfo);
-   if(FootDebugLevel(1))
-      cout  << "  Info flag for support:  "<< fSupportInfo << endl;
-   
-   // read info for support only for IT
-   if (fSupportInfo)
-      ReadSupportInfo();   
-   
    if(FootDebugLevel(1))
       cout << endl << "Reading Sensor Parameters " << endl;
    
