@@ -5,5 +5,6 @@
 #pragma link off all functions;
 
 #pragma link C++ class TAMPparGeo;
+#pragma link C++ class TAMPparConf;
 
 #endif
