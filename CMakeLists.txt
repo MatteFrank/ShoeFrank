@@ -110,6 +110,7 @@ Set(TATOE "TATOEbase")
 Set(TAGF  "TAGFbase")
 Set(TAFO  "TAGfoot")
 
+Set(TAMP "TAMPbase")
 Set(TAPL "TAPLbase")
 Set(TACE "TACEbase")
 Set(TAPW "TAPWbase")
