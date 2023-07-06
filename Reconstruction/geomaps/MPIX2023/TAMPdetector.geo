@@ -7,11 +7,11 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameters of the Sensors
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-Sensors:              2
-Types:                3
+Sensors:              7
+Types:                2
 
-// M28
-TypeName:          "M28"
+// Monopix2
+TypeName:          "MPX2"
 TypeNumber:           0
 PixelsNu:           960
 PixelsNv:           928
@@ -19,11 +19,18 @@ PitchU:            20.7
 PitchV:            20.7
 TotalSizeX:       22710   TotalSizeY:   23220   TotalSizeZ:    50
 fEpiSizeX:        22710   EpiSizeY:     20220   EpiSizeZ:      14
-PixThickness:       6.4
-TotalThickness:    20.4
+EpiOffsetX:       0.0356   EpiOffsetY:   0.32800  EpiOffsetZ:    0.0000
+EpiMat:            "Si"
+EpiMatDensity:    2.329
+EpiMatExc:        174.5e-6
+PixThickness:     0.00064
+PixMat:          "SiO2/Al"
+PixMatDensities: "2.65/2.70"
+PixMatProp:      "0.89/0.11"
+PixMatDensity:      2.3
 
-// M18
-TypeName:          "M18"
+// Adenium
+TypeName:          "Adenium"
 TypeNumber:           1
 PixelsNu:           512
 PixelsNv:           512
@@ -31,51 +38,85 @@ PitchU:            10.0
 PitchV:            10.0
 TotalSizeX:        5130   TotalSizeY:   5130    TotalSizeZ:    50
 fEpiSizeX:         5120   EpiSizeY:     5120    EpiSizeZ:      14
-PixThickness:       6.4
-TotalThickness:    20.4
+EpiOffsetX:       0.0356   EpiOffsetY:   0.32800  EpiOffsetZ:    0.0000
+EpiMat:            "Si"
+EpiMatDensity:    2.329
+EpiMatExc:        174.5e-6
+PixThickness:     0.00064
+PixMat:          "SiO2/Al"
+PixMatDensities: "2.65/2.70"
+PixMatProp:      "0.89/0.11"
+PixMatDensity:      2.3
 
-// M22
-TypeName:          "M22"
-TypeNumber:           2
-PixelsNu:            64
-PixelsNv:            64
-PitchU:            33.0
-PitchV:            22.0
-TotalSizeX:        2112   TotalSizeY:   2112    TotalSizeZ:    50
-fEpiSizeX:         2112   EpiSizeY:     2112    EpiSizeZ:      14
-PixThickness:       6.4
-TotalThickness:    20.4
 
-// Misc
-TargetInfo:           1
-TargetStatus:         0
-TargetSizeX:      80000   TargetSizeY:    360    TargetSizeZ:  70000
-TargetMaterial:     "12C"
-BeamInfo:             1
-BeamSize:            -1
-BeamShape:          "Gaussian"
-BeamPosX:           0.1100   BeamPosY:  0.1600    BeamPosZ:     -8.0
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Detector Planes used in the run
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 1  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- 
-Inputs:            1
-Type:              1
-PositionsX:        0.0523  PositionsY:    -0.0144  PositionsZ:   11.52
-Tilt1:           180.0000  Tilt2:          0.000   Tilt3:         0.000
-AlignementU:      -1.40
-AlignementV:     -59.51
-AlignementTilt:   -0.278
 
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 1  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+Inputs:           1
+Type:             1
+PositionsX:       0.000  PositionsY:     0.000  PositionsZ:     0
+Tilt1:            0.000  Tilt2:          0.000   Tilt3:         0.000
+AlignementU:      0.00
+AlignementV:      0.00
+AlignementTilt:   0.00
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 2  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            2
 Type:              1
-PositionsX:        0.0437  PositionsY:   -0.0160  PositionsZ:   11.68
+PositionsX:        0.0437  PositionsY:   -0.000  PositionsZ:     2.604
 Tilt1:             0.0000  Tilt2:         0.000   Tilt3:         0.000
 AlignementU:       0.00
 AlignementV:       0.00
-AlignementTilt:    0.000
+AlignementTilt:    0.00
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 3  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+Inputs:           3
+Type:             1
+PositionsX:       0.000  PositionsY:     0.000  PositionsZ:     5.203
+Tilt1:            0.000  Tilt2:          0.000   Tilt3:         0.000
+AlignementU:      0.00
+AlignementV:      0.00
+AlignementTilt:   0.00
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 4  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+Inputs:           4
+Type:             0
+PositionsX:       0.000  PositionsY:     0.000  PositionsZ:     8.269
+Tilt1:            0.000  Tilt2:          0.000   Tilt3:         0.000
+AlignementU:      0.00
+AlignementV:      0.00
+AlignementTilt:   0.00
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 5  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+Inputs:            5
+Type:              1
+PositionsX:        0.000  PositionsY:     0.000  PositionsZ:    12.657
+Tilt1:             0.000  Tilt2:          0.000   Tilt3:         0.000
+AlignementU:      0.00
+AlignementV:      0.00
+AlignementTilt:   0.00
+
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 6  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+Inputs:            6
+Type:              1
+PositionsX:        0.0437  PositionsY:   -0.000  PositionsZ:    15.272
+Tilt1:             0.0000  Tilt2:         0.000   Tilt3:         0.000
+AlignementU:       0.00
+AlignementV:       0.00
+AlignementTilt:    0.00
+
+// -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 7  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+Inputs:           7
+Type:             1
+PositionsX:       0.000  PositionsY:     0.000  PositionsZ:    17.898
+Tilt1:            0.000  Tilt2:          0.000   Tilt3:         0.000
+AlignementU:      0.00
+AlignementV:      0.00
+AlignementTilt:   0.00
+
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // End of Mapping File
