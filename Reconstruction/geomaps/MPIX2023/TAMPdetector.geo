@@ -13,13 +13,13 @@ Types:                2
 // Monopix2
 TypeName:          "MPX2"
 TypeNumber:           0
-PixelsNu:           960
-PixelsNv:           928
-PitchU:            20.7
-PitchV:            20.7
-TotalSizeX:       22710   TotalSizeY:   23220   TotalSizeZ:    50
-fEpiSizeX:        22710   EpiSizeY:     20220   EpiSizeZ:      14
-EpiOffsetX:       0.0356   EpiOffsetY:   0.32800  EpiOffsetZ:    0.0000
+PixelsNu:           512
+PixelsNv:           512
+PitchU:            33.04
+PitchV:            33.04
+TotalSizeX:       16916.5 TotalSizeY:   16916.5 TotalSizeZ:    300
+fEpiSizeX:        16916.5 EpiSizeY:     16916.5 EpiSizeZ:      14
+EpiOffsetX:       0.0     EpiOffsetY:   0.0     EpiOffsetZ:    0.0000
 EpiMat:            "Si"
 EpiMatDensity:    2.329
 EpiMatExc:        174.5e-6
@@ -32,13 +32,13 @@ PixMatDensity:      2.3
 // Adenium
 TypeName:          "Adenium"
 TypeNumber:           1
-PixelsNu:           512
+PixelsNu:          1024
 PixelsNv:           512
-PitchU:            10.0
-PitchV:            10.0
-TotalSizeX:        5130   TotalSizeY:   5130    TotalSizeZ:    50
-fEpiSizeX:         5120   EpiSizeY:     5120    EpiSizeZ:      14
-EpiOffsetX:       0.0356   EpiOffsetY:   0.32800  EpiOffsetZ:    0.0000
+PitchU:            29.24
+PitchV:            26.88
+TotalSizeX:        29941.8   TotalSizeY:   13762.6    TotalSizeZ:    300
+fEpiSizeX:         29941.8   EpiSizeY:     13762.6    EpiSizeZ:      14
+EpiOffsetX:        0.0       EpiOffsetY:   0.0        EpiOffsetZ:    0.0000
 EpiMat:            "Si"
 EpiMatDensity:    2.329
 EpiMatExc:        174.5e-6
