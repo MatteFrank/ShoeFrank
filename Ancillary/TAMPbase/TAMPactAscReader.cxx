@@ -109,7 +109,6 @@ Bool_t TAMPactAscReader::GetEvent()
 
       do {
          ok = DecodeSensor();
-         printf("%d\n", ok);
       } while(ok);
          
       if (fRawFileAscii.eof())
@@ -120,8 +119,8 @@ Bool_t TAMPactAscReader::GetEvent()
    fEventSize = fIndex;
    
    if(FootDebugLevel(3)) {
-      for (Int_t i = 0; i < fEventSize; ++i)
-         printf("Data %08x\n", fData[i]);
+      for (UInt_t i = 0; i < fData.size(); ++i)
+         printf("Data %u\n", fData[i]);
       printf("\n");
    }
    
@@ -147,7 +146,6 @@ Bool_t TAMPactAscReader::DecodeSensor()
    
    // read sensor number
    Char_t tmp[255];
-   //oldpos = fRawFileAscii.tellg();  // stores the position
    fRawFileAscii.getline(tmp, 255);
    TString line = tmp;
    if (line.Contains("Adenium_") || line.Contains("Monopix2_")) {
@@ -156,7 +154,6 @@ Bool_t TAMPactAscReader::DecodeSensor()
       UInt_t sensorId = name.Atoi();
       fData.push_back(sensorId);
    } else {
-    //  fRawFileAscii.seekg(oldpos);
       return false;
    }
    
@@ -164,26 +161,25 @@ Bool_t TAMPactAscReader::DecodeSensor()
       oldpos = fRawFileAscii.tellg();  // stores the position
       fRawFileAscii.getline(tmp, 255);
       line = tmp;
-      printf("%s\n", tmp);
       if (line.Contains(keyEvent)) return false;
       
       Int_t pos = line.First(' ');
       TString sPix(line(pos+1, line.Length()-pos));
       sscanf(sPix.Data(), "%u, %u, %u, %u, %f", &pixel.col, &pixel.line, &pixel.le, &pixel.fe, &pixel.ts);
-      //   vec.push_back(pixel);
+      vec.push_back(pixel);
    } while (!line.Contains(keyDetector));
    
-//   UInt_t size = vec.size();
-//   if (size > 0) {
-//      fData.push_back(size);
-//
-//      for (auto & pix : vec) {
-//         fData.push_back(pix.col);
-//         fData.push_back(pix.line);
-//         fData.push_back(pix.le);
-//         fData.push_back(pix.fe);
-//      }
-//   }
+   UInt_t size = vec.size();
+   if (size > 0) {
+      fData.push_back(size);
+
+      for (auto & pix : vec) {
+         fData.push_back(pix.col);
+         fData.push_back(pix.line);
+         fData.push_back(pix.le);
+         fData.push_back(pix.fe);
+      }
+   }
    
    // go back one line
    fRawFileAscii.seekg(oldpos);
