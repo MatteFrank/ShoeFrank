@@ -88,6 +88,8 @@ protected:
 
 protected:
    static const Int_t   fgkDefSensorsN;   ///< default number of sensors
+   static const TString fgkBaseName;      ///< base mame
+   static const TString fgkDefParaName;   ///< par name
    
 protected:
    //! Fill sensor map
@@ -211,6 +213,10 @@ public:
    TypeParameter_t& GetTypePar(Int_t idx)     { return fTypeParameter[idx];   }
 
 public:
+   //! Get base name
+   static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
+   //! Get default para name
+   static const Char_t* GetDefParaName() { return fgkDefParaName.Data(); }
    //! Get default number of sensors
    static Int_t         GetDefSensorsN()      { return fgkDefSensorsN;        }
    
