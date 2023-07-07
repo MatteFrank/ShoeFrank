@@ -56,6 +56,8 @@ Bool_t TAMPparMap::FromFile(const TString& name)
       return kTRUE;
    }
    
+   Info("FromFile()", "Open file %s for geometry\n", name.Data());
+
    while (incF.getline(bufConf, 200, '\n')) {
       if(strchr(bufConf,'#')) continue;
       
