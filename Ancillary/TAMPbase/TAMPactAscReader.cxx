@@ -27,8 +27,12 @@ ClassImp(TAMPactAscReader);
 //! \param[in] pGeoMap geometry parameter descriptor
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pParMap mapping parameter descriptor
-TAMPactAscReader::TAMPactAscReader(const char* name)
-: TAGaction(name, "toto")
+TAMPactAscReader::TAMPactAscReader(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
+: TAGactionFile(name, "Monopix2 - raw data reader"),
+   fpNtuRaw(pNtuRaw),
+   fpGeoMap(pGeoMap),
+   fpConfig(pConfig),
+   fpParMap(pParMap)
 {
    Int_t size = 5000;
    fData.reserve(size);
@@ -44,10 +48,10 @@ TAMPactAscReader::~TAMPactAscReader()
 //! Action.
 Bool_t TAMPactAscReader::Action()
 {
-   if (!GetEvent()) return kTRUE;
+   GetEvent();
    
    SetBit(kValid);
-  // fpNtuRaw->SetBit(kValid);
+   fpNtuRaw->SetBit(kValid);
    
    return kTRUE;
 }
@@ -81,7 +85,9 @@ Bool_t TAMPactAscReader::GetEvent()
    UInt_t data;
    TString line;
    
-   do {
+   Bool_t ok = true;
+
+
       //3 lines skipped
       fRawFileAscii.getline(tmp, 255);
       fRawFileAscii.getline(tmp, 255);
@@ -94,19 +100,21 @@ Bool_t TAMPactAscReader::GetEvent()
       
       TString sEventNb(line(0, pos-1));
       data = sEventNb.Atoi();
+
       fData.push_back(data);
       fIndex++;
-      
       // sensor number
+     
+      ok = true;
+
       do {
-            line = DecodeSensor();
-      } while (line.Contains(keyDetector));
-      
+         ok = DecodeSensor();
+         printf("%d\n", ok);
+      } while(ok);
+         
       if (fRawFileAscii.eof())
-         break;
-      
-   } while (!line.Contains(keyEvent));
-   
+         return true;
+
    if (fRawFileAscii.eof()) return false;
    
    fEventSize = fIndex;
@@ -123,56 +131,64 @@ Bool_t TAMPactAscReader::GetEvent()
 
 //------------------------------------------+-----------------------------------
 //! Decode sensor
-TString TAMPactAscReader::DecodeSensor()
+Bool_t TAMPactAscReader::DecodeSensor()
 {
    TString keyDetector("--- ");
-   // read sensor number
-   Char_t tmp[255];
-   fRawFileAscii.getline(tmp, 255);
-   TString line = tmp;
-   if (line.Contains("Adenium_")) {
-      Int_t pos = line.First("_");
-      TString name(pos+1, 5);
-      UInt_t sensorId = name.Atoi();
-      fData.push_back(sensorId);
-   }
-   
+   TString keyEvent("=== ");
    struct Pixel_t{
       UInt_t col, line;
       UInt_t le, fe;
       Float_t ts;
-   } ;
+   };
    
    Pixel_t pixel;
    vector<Pixel_t> vec;
    streampos oldpos;
    
+   // read sensor number
+   Char_t tmp[255];
+   //oldpos = fRawFileAscii.tellg();  // stores the position
+   fRawFileAscii.getline(tmp, 255);
+   TString line = tmp;
+   if (line.Contains("Adenium_") || line.Contains("Monopix2_")) {
+      Int_t pos = line.First("_");
+      TString name(pos+1, 3);
+      UInt_t sensorId = name.Atoi();
+      fData.push_back(sensorId);
+   } else {
+    //  fRawFileAscii.seekg(oldpos);
+      return false;
+   }
+   
    do {
       oldpos = fRawFileAscii.tellg();  // stores the position
       fRawFileAscii.getline(tmp, 255);
       line = tmp;
-      if (line.Contains(keyDetector)) break;
-          
+      printf("%s\n", tmp);
+      if (line.Contains(keyEvent)) return false;
+      
       Int_t pos = line.First(' ');
       TString sPix(line(pos+1, line.Length()-pos));
       sscanf(sPix.Data(), "%u, %u, %u, %u, %f", &pixel.col, &pixel.line, &pixel.le, &pixel.fe, &pixel.ts);
-      vec.push_back(pixel);
+      //   vec.push_back(pixel);
    } while (!line.Contains(keyDetector));
    
-   UInt_t size = vec.size();
-   fData.push_back(size);
-
-   for (auto & pix : vec) {
-      fData.push_back(pix.col);
-      fData.push_back(pix.line);
-      fData.push_back(pix.le);
-      fData.push_back(pix.fe);
-   }
+//   UInt_t size = vec.size();
+//   if (size > 0) {
+//      fData.push_back(size);
+//
+//      for (auto & pix : vec) {
+//         fData.push_back(pix.col);
+//         fData.push_back(pix.line);
+//         fData.push_back(pix.le);
+//         fData.push_back(pix.fe);
+//      }
+//   }
    
    // go back one line
    fRawFileAscii.seekg(oldpos);
-   
-   return line;
+
+   return true;
 }
 
 //------------------------------------------+-----------------------------------
