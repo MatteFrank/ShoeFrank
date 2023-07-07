@@ -81,8 +81,8 @@ void TAMPparMap::Clear(Option_t*)
 }
 
 //------------------------------------------+-----------------------------------
-//! Get channel type
-TString TAMPparMap::GetChannelType(int channel)
+//! Get channel
+Int_t TAMPparMap::GetChannel(TString detector)
 {
-   return fChannelMap.find(channel)->second;
+   return fChannelMap.find(detector)->second;
 }

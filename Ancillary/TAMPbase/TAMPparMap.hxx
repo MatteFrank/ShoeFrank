@@ -26,7 +26,7 @@ public:
    
    virtual void    Clear(Option_t* opt="");
    
-   TString GetChannelType(int channelId);
+   Int_t         GetChannel(TString detector);
    
 private:
    map <TString, int> fChannelMap;
