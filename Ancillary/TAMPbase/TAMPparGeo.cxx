@@ -29,18 +29,20 @@ using namespace std;
 
 /*!
   \class TAMPparGeo
-  \brief Map and Geometry parameters for VTX
+  \brief Map and Geometry parameters for Monopix2
 */
 
 //! Class Imp
 ClassImp(TAMPparGeo);
 
-const Int_t TAMPparGeo::fgkDefSensorsN = 32;
+const Int_t   TAMPparGeo::fgkDefSensorsN = 32;
+const TString TAMPparGeo::fgkBaseName    = "MP";
+const TString TAMPparGeo::fgkDefParaName = "mpGeo";
 
 //______________________________________________________________________________
 //! Standard constructor
 TAMPparGeo::TAMPparGeo()
- : TAGparTools(),
+ : TAVTbaseParGeo(),
    fIonisation(new TAGionisMaterials()),
    fSensorsN(0),
    fkDefaultGeoName(""),

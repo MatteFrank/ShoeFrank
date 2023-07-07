@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-#include "TAGaction.hxx"
+#include "TAGactionFile.hxx"
 
 /*!
  \file TAMPactAscReader.hxx
@@ -14,10 +14,14 @@
 class TAGdataDsc;
 
 using namespace std;
-class TAMPactAscReader : public TAGaction {
+class TAMPactAscReader : public TAGactionFile {
 public:
    
-   explicit TAMPactAscReader(const char* name=0);
+   explicit TAMPactAscReader(const char* name     = 0,
+                             TAGdataDsc* p_datraw = 0,
+                             TAGparaDsc* p_geomap = 0,
+                             TAGparaDsc* p_config = 0,
+                             TAGparaDsc* pParMap  = 0);
    virtual  ~TAMPactAscReader();
    
    // Action
@@ -30,10 +34,14 @@ public:
    virtual void    Close();
    
    // decode event
-   TString DecodeSensor();
+   Bool_t DecodeSensor();
 
 private:
    ifstream          fRawFileAscii;     ///< file streamm
+   TAGdataDsc*       fpNtuRaw;               ///< output data dsc
+   TAGparaDsc*       fpGeoMap;               ///< geo para dsc
+   TAGparaDsc*       fpConfig;               ///< config para dsc
+   TAGparaDsc*       fpParMap;               ///< map para dsc
    Int_t             fRunNumber;        ///< run number
    vector<UInt_t>    fData;             ///< vector
    Int_t             fEventSize;        /// event data size
