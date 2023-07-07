@@ -1890,32 +1890,32 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials* Material)
 
    if (fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL14",
-                          "1.", Form("%d",magnetic), "", "") << endl;
+                          "1.", "", "", "") << endl;
    } else if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL9",
-                          "1.", Form("%d",magnetic), "", "") << endl;
+                          "1.", "", "", "") << endl;
    } else if (fConfigTypeGeo.CompareTo("FIVE_MOD") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL1",
-                          "1.", Form("%d",magnetic), "", "") << endl;
+                          "1.", "", "", "") << endl;
    } else if (fConfigTypeGeo.CompareTo("SEVEN_MOD") == 0 ||
               fConfigTypeGeo.CompareTo("SEVEN_MOD_HIT22") == 0 ||
               fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL2",
-                          "1.", Form("%d",magnetic), "", "") << endl;
+                          "1.", "", "", "") << endl;
    } else
       outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0",
-                          "", "", Form("%d",magnetic), "", "") << endl;
+                          "", "", "", "", "") << endl;
 
    outstr << PrintCard("ASSIGNMA", flkmat, "CAL000", Form("CAL%03d", fCrystalsN-1),
-                       "1.", Form("%d",magnetic), "", "") << endl;
+                       "1.", "", "", "") << endl;
 
    if (fModulesN == 1) {
       outstr << PrintCard("ASSIGNMA", "AIR", "ACAL_00",
-                          "", "", Form("%d",magnetic), "", "") << endl;
+                          "", "", "", "", "") << endl;
    }
    if (fModulesN > 1) {
       outstr << PrintCard("ASSIGNMA", "AIR", "ACAL_00", Form("ACAL_%02d", fModulesN-1),
-                          "1.", Form("%d",magnetic), "", "") << endl;
+                          "1.", "", "", "") << endl;
    }
 
    return outstr.str();
