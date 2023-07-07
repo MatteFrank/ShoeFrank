@@ -14,7 +14,7 @@
 #include "TObject.h"
 #include "TString.h"
 
-#include "TAGparTools.hxx"
+#include "TAVTbaseParGeo.hxx"
 
 
 class TGeoHMatrix;
@@ -22,7 +22,7 @@ class TGeoVolume;
 class TAGionisMaterials;
 //##############################################################################
 
-class TAMPparGeo : public TAGparTools {
+class TAMPparGeo : public TAVTbaseParGeo {
       
 protected:
    //! pointer for ionisation property

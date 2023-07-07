@@ -42,7 +42,7 @@ const TString TAMPparGeo::fgkDefParaName = "mpGeo";
 //______________________________________________________________________________
 //! Standard constructor
 TAMPparGeo::TAMPparGeo()
- : TAGparTools(),
+ : TAVTbaseParGeo(),
    fIonisation(new TAGionisMaterials()),
    fSensorsN(0),
    fkDefaultGeoName(""),
