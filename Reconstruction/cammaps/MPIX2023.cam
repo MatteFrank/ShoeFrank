@@ -8,7 +8,7 @@ NumberFiles: 1
 "./geomaps/MPIX2023/FOOT.geo": -1
 
 DetectorName: "MP"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/MPIX2023/TAMPdetector.geo": -1
 "./config/MPIX2023/TAMPdetector.cfg": -1
 "./config/MPIX2023/TAMPdetector.map": -1
