@@ -410,12 +410,12 @@ string TAGparGeo::PrintStandardBodies( )
    TVector3  centerTW = fpFootGeo->GetTWCenter();
    TVector3  centerMSD = fpFootGeo->GetMSDCenter();
    TVector3  centerTG =  fpFootGeo->GetTGCenter();
-   if(TAGrecoManager::GetPar()->IncludeMSD()) {
-     //     zplane =  centerMSD.Z() + ( centerTW.Z()-centerMSD.Z() ) /2.;
-     zplane =  centerMSD.Z() + 15.;
-   } else {
-     zplane =  centerTG.Z() + ( centerTW.Z()-centerTG.Z() ) /2.;
-   }
+   //   if(TAGrecoManager::GetPar()->IncludeMSD()) {
+     //     zplane =  centerMSD.Z() + 15.;
+   zplane =  50. + centerTG.Z();
+     //   } else {
+     //     zplane =  centerTG.Z() + ( centerTW.Z()-centerTG.Z() ) /2.;
+     //   }
    //needed to subdivide air in two because when the calo is present too many bodies
    //are subtracted to air and fluka complains
    if(TAGrecoManager::GetPar()->IncludeCA())
