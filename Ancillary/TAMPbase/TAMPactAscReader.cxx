@@ -57,9 +57,11 @@ void TAMPactAscReader::CreateHistogram()
    TAMPparGeo* pGeoMap = (TAMPparGeo*) fpGeoMap->Object();
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
-      fpHisPixelMap[i] = new TH2F(Form("mpPixelMap%d", i+1), Form("Monopix2 - pixel map for sensor %d", i+1),
-                                  pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(),
-                                  pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
+      Int_t type       = pGeoMap->GetSensorPar(i).TypeIdx;
+      TString typeName = pGeoMap->GetTypePar(type).TypeName;
+      fpHisPixelMap[i] = new TH2F(Form("mpPixelMap%d", i+1), Form("%s - pixel map for sensor %d", typeName.Data(), i+1),
+                                  pGeoMap->GetPixelsNy(type), 0, pGeoMap->GetPixelsNy(type),
+                                  pGeoMap->GetPixelsNx(type), 0, pGeoMap->GetPixelsNx(type));
       fpHisPixelMap[i]->SetStats(kFALSE);
       AddHistogram(fpHisPixelMap[i]);
    }
@@ -141,7 +143,6 @@ Bool_t TAMPactAscReader::GetEvent()
 //! Decode sensor
 Bool_t TAMPactAscReader::DecodeSensor()
 {
-   
    TAMPparMap* pParMap = (TAMPparMap*)fpParMap->Object();
 
    UInt_t aCol, aLine;
@@ -158,10 +159,7 @@ Bool_t TAMPactAscReader::DecodeSensor()
    TString line = tmp;
    if (line.Contains(fgkKeyDetector)) {
       TString line = TAGparTools::Remove(tmp, fgkKeyDetector[0], true);
-      printf("[%s]\n", line.Data());
-
       sensorId = pParMap->GetChannel(line);
-      printf("%d\n", sensorId);
    } else {
       return false;
    }
@@ -254,12 +252,12 @@ void TAMPactAscReader::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t 
    TAMPparGeo*  pGeoMap = (TAMPparGeo*)  fpGeoMap->Object();
    TAMPparConf* pConfig = (TAMPparConf*) fpConfig->Object();
    
-   //if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
+   if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
    
    TAVThit* pixel = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
-   
-   double v = pGeoMap->GetPositionV(aLine);
-   double u = pGeoMap->GetPositionU(aColumn);
+   Int_t type = pGeoMap->GetSensorPar(iSensor).TypeIdx;
+   double v   = pGeoMap->GetPositionV(aLine, type);
+   double u   = pGeoMap->GetPositionU(aColumn, type);
    TVector3 pos(u,v,0);
    pixel->SetPosition(pos);
    
