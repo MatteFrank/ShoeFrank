@@ -66,13 +66,13 @@ EnableElecNoiseMc:   n
 ############   END - Options for reconstruction   ################
 
 IncludeDI:			   n
-IncludeST:			   y
-IncludeBM:			   y
-IncludeTG:			   y
+IncludeST:			   n
+IncludeBM:			   n
+IncludeTG:			   n
 IncludeVT:			   y
 IncludeIT:			   n
-IncludeMSD:			   y
-IncludeTW:			   y
-IncludeCA:			   y
+IncludeMSD:			   n
+IncludeTW:			   n
+IncludeCA:			   n
 
 FLUKA version: pro
