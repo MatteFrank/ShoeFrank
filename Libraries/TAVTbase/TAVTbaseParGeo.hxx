@@ -120,43 +120,43 @@ public:
    Int_t GetSubLayersN()               const { return fSubLayersN;     }
 
    //! Get type name of sensor
-   const Char_t* GetTypeName()         const { return fTypeName.Data();}
+   virtual const Char_t* GetTypeName()         const { return fTypeName.Data();}
    //! Get type of sensor
-   Int_t GetType()                     const { return fTypeNumber;     }
+   virtual Int_t GetType()                     const { return fTypeNumber;     }
    
    //! Get number of pixel in X
-   Int_t GetPixelsNx()                 const { return fPixelsNx;       }
+   virtual Int_t GetPixelsNx()                 const { return fPixelsNx;       }
    //! Get number of pixel in Y
-   Int_t GetPixelsNy()                 const { return fPixelsNy;       }
+   virtual Int_t GetPixelsNy()                 const { return fPixelsNy;       }
    //! Get pitch size in X
-   Float_t GetPitchX()                 const { return fPitchX;         }
+   virtual Float_t GetPitchX()                 const { return fPitchX;         }
    //! Get pitch size in Y
-   Float_t GetPitchY()                 const { return fPitchY;         }
+   virtual Float_t GetPitchY()                 const { return fPitchY;         }
    
    //! Get total size of sensor
-   TVector3 GetTotalSize()             const { return fTotalSize;      }
+   virtual TVector3 GetTotalSize()             const { return fTotalSize;      }
 
    //! Get epitaxial size of sensor
-   TVector3 GetEpiSize()               const { return fEpiSize;        }
+   virtual TVector3 GetEpiSize()               const { return fEpiSize;        }
    //! Get epitaxial offset
-   TVector3 GetEpiOffset()             const { return fEpiOffset;      }
+   virtual TVector3 GetEpiOffset()             const { return fEpiOffset;      }
    //! Get epitaxial material
-   TString GetEpiMaterial()            const { return fEpiMat;         }
+   virtual TString GetEpiMaterial()            const { return fEpiMat;         }
    //! Get epitaxial density
-   Float_t GetEpiMatDensity()          const { return fEpiMatDensity;  }
+   virtual Float_t GetEpiMatDensity()          const { return fEpiMatDensity;  }
    //! Get epitaxial excitation
-   Float_t GetEpiMatExc()              const { return fEpiMatExc;      }
+   virtual Float_t GetEpiMatExc()              const { return fEpiMatExc;      }
 
    //! Get pixel thickness
-   Float_t GetPixThickness()           const { return fPixThickness;   }
+   virtual Float_t GetPixThickness()           const { return fPixThickness;   }
    //! Get pixel material
-   TString GetPixMaterial()            const { return fPixMat;         }
+   virtual TString GetPixMaterial()            const { return fPixMat;         }
    //! Get pixel coponent densities
-   TString GetPixMatDensities()        const { return fPixMatDensities;}
+   virtual TString GetPixMatDensities()        const { return fPixMatDensities;}
    //! Get pixel material proportion
-   TString GetPixMatProp()             const { return fPixMatProp;     }
+   virtual TString GetPixMatProp()             const { return fPixMatProp;     }
    //! Get pixel density
-   Float_t GetPixMatDensity()          const { return fPixMatDensity;  }
+   virtual Float_t GetPixMatDensity()          const { return fPixMatDensity;  }
    
    //! Get MC flag
    Bool_t GetMcFlag()                  const { return fFlagMC;         }
