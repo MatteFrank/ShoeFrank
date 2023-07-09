@@ -35,32 +35,22 @@ using namespace std;
 //! Class Imp
 ClassImp(TAMPparGeo);
 
-const Int_t   TAMPparGeo::fgkDefSensorsN = 32;
 const TString TAMPparGeo::fgkBaseName    = "MP";
 const TString TAMPparGeo::fgkDefParaName = "mpGeo";
 
 //______________________________________________________________________________
 //! Standard constructor
 TAMPparGeo::TAMPparGeo()
- : TAVTbaseParGeo(),
-   fIonisation(new TAGionisMaterials()),
-   fSensorsN(0),
-   fkDefaultGeoName(""),
-   fLayersN(fSensorsN),
-   fSubLayersN(fSensorsN),
-   fFlagMC(false),
-   fFlagIt(false),
-   fSensPerLayer(0),
-   fSensorArray(0x0)
+ : TAVTbaseParGeo()
 {
+   for (Int_t i = 0; i < 10; ++i)
+      fSensorTypesN[i] = 0;
 }
 
 //______________________________________________________________________________
 //! Destructor
 TAMPparGeo::~TAMPparGeo()
 {
-   delete fIonisation;
-   delete [] fSensorArray;
 }
 
 //_____________________________________________________________________________
@@ -206,6 +196,10 @@ Bool_t TAMPparGeo::FromFile(const TString& name)
       if(FootDebugLevel(1))
          cout  << "   Type of Sensor: " <<  fSensorParameter[p].TypeIdx << endl;
       
+      fSensorTypesN[fSensorParameter[p].TypeIdx]++;
+      pair<Int_t, Int_t> id(fSensorTypesN[fSensorParameter[p].TypeIdx]-1,  fSensorParameter[p].TypeIdx);
+      fMapIdxType[id] = p;
+      
       // read sensor position
       ReadVector3(fSensorParameter[p].Position);
       if (fFlagMC && !fFlagIt)
@@ -288,20 +282,6 @@ Bool_t TAMPparGeo::FromFile(const TString& name)
    return true;
 }
 
-//_____________________________________________________________________________
-//! Get sensor position
-//!
-//! \param[in] iSensor a given sensor
-TVector3 TAMPparGeo::GetSensorPosition(Int_t iSensor)
-{
-   TGeoHMatrix* hm = GetTransfo(iSensor);
-   if (hm) {
-	  TVector3 local(0,0,0);
-	  fCurrentPosition =  Sensor2Detector(iSensor,local);
-   }
-   return fCurrentPosition;
-}
-
 // Mapping
 //_____________________________________________________________________________
 //! Get index number from line and column numbers
@@ -370,190 +350,3 @@ Int_t TAMPparGeo::GetLine(Float_t y, Int_t type) const
    return fTypeParameter[type].PixelsNy - line - 1;
 }
 
-// transformation
-//_____________________________________________________________________________
-//! Transformation from detector to sensor framework
-//!
-//! \param[in] detID sensor id
-//! \param[in] xg X position in detector framework
-//! \param[in] yg Y position in detector framework
-//! \param[in] zg Z position in detector framework
-//! \param[out] xl X position in sensor framework
-//! \param[out] yl Y position in sensor framework
-//! \param[out] zl Z position in sensor framework
-void TAMPparGeo::Detector2Sensor(Int_t detID,
-									Double_t xg, Double_t yg, Double_t zg, 
-									Double_t& xl, Double_t& yl, Double_t& zl) const
-{  
-   if (detID < 0 || detID > GetSensorsN()) {
-	  Warning("Detector2Sensor()","Wrong detector id number: %d ", detID); 
-	  return ;
-   }
-   
-   MasterToLocal(detID, xg, yg, zg, xl, yl, zl);
-}   
-
-//_____________________________________________________________________________
-//! Transformation from detector to sensor framework
-//!
-//! \param[in] detID sensor id
-//! \param[in] glob position in detector framework
-//! \return position in sensor framework
-TVector3 TAMPparGeo::Detector2Sensor(Int_t detID, TVector3& glob) const
-{
-   if (detID < 0 || detID > GetSensorsN()) {
-	  Warning("Detector2Sensor()","Wrong detector id number: %d ", detID); 
-	  return TVector3(0,0,0);
-   }
-   
-   return MasterToLocal(detID, glob);
-}
-
-//_____________________________________________________________________________
-//! Transformation from detector to sensor framework for vector (no translation)
-//!
-//! \param[in] detID sensor id
-//! \param[in] glob position in detector framework
-//! \return position in sensor framework
-TVector3 TAMPparGeo::Detector2SensorVect(Int_t detID, TVector3& glob) const
-{
-   if (detID < 0 || detID > GetSensorsN()) {
-	  Warning("Detector2SensorVect()","Wrong detector id number: %d ", detID); 
-	  return TVector3(0,0,0);
-   }
-   
-   return MasterToLocalVect(detID, glob);
-}   
-
-//_____________________________________________________________________________
-//! Transformation from sensor to detector framework
-//!
-//! \param[in] detID sensor id
-//! \param[in] xl X position in sensor framework
-//! \param[in] yl Y position in sensor framework
-//! \param[in] zl Z position in sensor framework
-//! \param[out] xg X position in detector framework
-//! \param[out] yg Y position in detector framework
-//! \param[out] zg Z position in detector framework
-void TAMPparGeo::Sensor2Detector(Int_t detID,
-									Double_t xl, Double_t yl, Double_t zl, 
-									Double_t& xg, Double_t& yg, Double_t& zg) const
-{
-   if (detID < 0 || detID > GetSensorsN()) {
-	  Warning("Sensor2Detector()","Wrong detector id number: %d ", detID); 
-	  return;
-   }
-   
-   LocalToMaster(detID, xl, yl, zl, xg, yg, zg);
-}   
-
-//_____________________________________________________________________________
-//! Transformation from sensor to detector framework
-//!
-//! \param[in] detID sensor id
-//! \param[in] loc position in sensor framework
-//! \return position in detector framework
-TVector3 TAMPparGeo::Sensor2Detector(Int_t detID, TVector3& loc) const
-{
-   if (detID < 0 || detID > GetSensorsN()) {
-	  Warning("Sensor2Detector()","Wrong detector id number: %d ", detID); 
-	  TVector3(0,0,0);
-   }
-   
-   return LocalToMaster(detID, loc);
-}
-
-
-//_____________________________________________________________________________
-//! Transformation from sensor to detector framework for vector (no translation)
-//!
-//! \param[in] detID sensor id
-//! \param[in] loc position in sensor framework
-//! \return position in detector framework
-TVector3 TAMPparGeo::Sensor2DetectorVect(Int_t detID, TVector3& loc) const
-{
-   if (detID < 0 || detID > GetSensorsN()) {
-	  Warning("Sensor2DetectorVect()","Wrong detector id number: %d ", detID); 
-	  TVector3(0,0,0);
-   }
-
-   return LocalToMasterVect(detID, loc);
-}
-
-//_____________________________________________________________________________
-//! Fill array of sensor number per layer and position layer
-void TAMPparGeo::FillSensorMap()
-{
-   map<float, vector<size_t> >::iterator itr = fSensorMap.begin();
-   vector<size_t> v;
-   Int_t iLayer = 0;
-   
-   while (itr != fSensorMap.end()) {
-      if (FootDebugLevel(2))
-         cout << itr->first << endl;
-      v = itr->second;
-      std::copy(v.begin(), v.end(), &fSensorArray[iLayer*fSensPerLayer]);
-      iLayer++;
-      itr++;
-   }
-}
-
-//_____________________________________________________________________________
-//! Get number of sensors for a given layer
-//!
-//! \param[in] iLayer a given layer
-std::size_t* TAMPparGeo::GetSensorsPerLayer(Int_t iLayer)
-{
-   return &fSensorArray[iLayer*fSensPerLayer];
-}
-
-//_____________________________________________________________________________
-//! Get position in Z direction for a given layer
-//!
-//! \param[in] layer a given layer
-Float_t TAMPparGeo::GetLayerPosZ(Int_t layer)
-{
-   map<float, vector<size_t> >::iterator itr = fSensorMap.begin();
-   Int_t iLayer = 0;
-   
-   while (itr != fSensorMap.end()) {
-      if (FootDebugLevel(2))
-         cout << itr->first << endl;
-      
-      if (iLayer++ == layer)
-         return itr->first;
-      itr++;
-   }
-   
-   return -99;
-}
-
-//_____________________________________________________________________________
-//! Define envelop of the detector
-void TAMPparGeo::DefineMaxMinDimension()
-{
-   TVector3 posAct(0, 0, 0);
-   TVector3 EnvDim(0,0,0);
-   TVector3 shift(0,0,0);
-   
-   TVector3 minPosition(10e10, 10e10, 10e10);
-   TVector3 maxPosition(-10e10, -10e10, -10e10);
-   
-   Int_t nSens = GetSensorsN();
-   for (Int_t iS = 0; iS < nSens; iS++) {
-      posAct = GetSensorPar(iS).Position;
-      
-      for(Int_t i = 0; i < 3; i++) {
-         shift[i] = TMath::Abs(shift[i]);
-         minPosition[i] = (minPosition[i] <= posAct[i]) ? minPosition[i] : posAct[i];
-         maxPosition[i] = (maxPosition[i] >= posAct[i]) ? maxPosition[i] : posAct[i];
-      }
-   }
-   
-   fMinPosition = minPosition;
-   fMaxPosition = maxPosition;
-      
-   for(Int_t i = 0; i< 3; ++i)
-      fSizeBox[i] = (fMaxPosition[i] - fMinPosition[i]);
-   fSizeBox += GetTotalSize(0);
-}
