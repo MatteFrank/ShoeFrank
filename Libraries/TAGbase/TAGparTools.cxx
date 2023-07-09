@@ -875,3 +875,21 @@ vector<TString> TAGparTools::Tokenize(const TString line, const Char_t delimiter
    
    return list;
 }
+
+//____________________________________________________________________________
+//! Tokenize string
+//!
+//! \param[in] line string
+//! \param[in] c string to removed
+//! \param[in] blank erase blank also flag
+//! \return a string vector
+TString TAGparTools::Remove(const char* line, const Char_t c, Bool_t blank)
+{
+   string my_str = line;
+   my_str.erase(remove(my_str.begin(), my_str.end(), c), my_str.end()); //remove c from string
+   
+   if (blank)
+      my_str.erase(remove(my_str.begin(), my_str.end(), ' '), my_str.end()); //remove blank from string
+
+   return TString(my_str.data());
+}
