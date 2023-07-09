@@ -172,7 +172,7 @@ Bool_t TAMPactAscReader::DecodeSensor()
       
       Int_t pos = line.First(' ');
       TString sPix(line(pos+1, line.Length()-pos));
-      sscanf(sPix.Data(), "%u, %u, %u, %u, %f", &aLine, &aCol, &le, &fe, &ts);
+      sscanf(sPix.Data(), "%u, %u, %u, %u, %f", &aCol, &aLine, &le, &fe, &ts);
       
       Int_t ToT = -1;
       if (fe-le < 1)
@@ -180,6 +180,8 @@ Bool_t TAMPactAscReader::DecodeSensor()
       else
          ToT = fe-le;
          
+      if (ToT < 1) ToT = 1;
+      
       AddPixel(sensorId, ToT, aLine, aCol);
                
    } while (!line.Contains(fgkKeyDetector));
