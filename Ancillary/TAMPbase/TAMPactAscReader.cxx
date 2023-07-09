@@ -2,11 +2,15 @@
  \file TAMPactAscReader.cxx
  \brief    Read raw data from single VTX file ()ascii format) from new firmware
  */
+#include "TH2F.h"
 
 #include "TAGrecoManager.hxx"
 #include "TAGroot.hxx"
 #include "TAMPparGeo.hxx"
 #include "TAMPparConf.hxx"
+#include "TAMPparMap.hxx"
+
+#include "TAVTntuHit.hxx"
 
 #include "TAMPactAscReader.hxx"
 
@@ -17,6 +21,9 @@
 
 //! Class Imp
 ClassImp(TAMPactAscReader);
+
+const TString TAMPactAscReader::fgkKeyEvent    = "===";
+const TString TAMPactAscReader::fgkKeyDetector = "---";
 
 
 //------------------------------------------+-----------------------------------
@@ -34,14 +41,30 @@ TAMPactAscReader::TAMPactAscReader(const char* name, TAGdataDsc* pNtuRaw, TAGpar
    fpConfig(pConfig),
    fpParMap(pParMap)
 {
-   Int_t size = 5000;
-   fData.reserve(size);
 }
 
 //------------------------------------------+-----------------------------------
 //! Destructor.
 TAMPactAscReader::~TAMPactAscReader()
 {   
+}
+
+//------------------------------------------+-----------------------------------
+//! Setup all histograms.
+void TAMPactAscReader::CreateHistogram()
+{
+   DeleteHistogram();
+   TAMPparGeo* pGeoMap = (TAMPparGeo*) fpGeoMap->Object();
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisPixelMap[i] = new TH2F(Form("mpPixelMap%d", i+1), Form("Monopix2 - pixel map for sensor %d", i+1),
+                                  pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy(),
+                                  pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
+      fpHisPixelMap[i]->SetStats(kFALSE);
+      AddHistogram(fpHisPixelMap[i]);
+   }
+   
+   SetValidHistogram(kTRUE);
 }
 
 //------------------------------------------+-----------------------------------
@@ -60,20 +83,15 @@ Bool_t TAMPactAscReader::Action()
 //! Get next event.
 Bool_t TAMPactAscReader::GetEvent()
 {
-   fData.clear();
    Char_t tmp[255];
    fIndex = 0;
-
-   // lokking for header
-   TString keyEvent("=== ");
-   TString keyDetector("--- ");
 
    // search beginning of event
    do {
       fRawFileAscii.getline(tmp, 255);
       TString line = tmp;
       
-      if (line.Contains(keyEvent)) {
+      if (line.Contains(fgkKeyEvent)) {
          fIndex++;
          break;
       }
@@ -86,73 +104,64 @@ Bool_t TAMPactAscReader::GetEvent()
    TString line;
    
    Bool_t ok = true;
-
-
-      //3 lines skipped
-      fRawFileAscii.getline(tmp, 255);
-      fRawFileAscii.getline(tmp, 255);
-      fRawFileAscii.getline(tmp, 255);
-      
-      // event number
-      fRawFileAscii.getline(tmp, 255);
-      line = tmp;
-      Int_t pos = line.First(":");
-      
-      TString sEventNb(line(0, pos-1));
-      data = sEventNb.Atoi();
-
-      fData.push_back(data);
-      fIndex++;
-      // sensor number
-     
-      ok = true;
-
-      do {
-         ok = DecodeSensor();
-      } while(ok);
-         
-      if (fRawFileAscii.eof())
-         return true;
-
+   
+   
+   //3 lines skipped
+   fRawFileAscii.getline(tmp, 255);
+   fRawFileAscii.getline(tmp, 255);
+   fRawFileAscii.getline(tmp, 255);
+   
+   // event number
+   fRawFileAscii.getline(tmp, 255);
+   line = tmp;
+   Int_t pos = line.First(":");
+   
+   TString sEventNb(line(0, pos-1));
+   data = sEventNb.Atoi();
+   
+   fIndex++;
+   
+   ok = true;
+   
+   do {
+      ok = DecodeSensor();
+   } while(ok);
+   
+   if (fRawFileAscii.eof())
+      return true;
+   
    if (fRawFileAscii.eof()) return false;
    
    fEventSize = fIndex;
    
-   if(FootDebugLevel(3)) {
-      for (UInt_t i = 0; i < fData.size(); ++i)
-         printf("Data %u\n", fData[i]);
-      printf("\n");
-   }
-   
    return true;
-
 }
 
 //------------------------------------------+-----------------------------------
 //! Decode sensor
 Bool_t TAMPactAscReader::DecodeSensor()
 {
-   TString keyDetector("--- ");
-   TString keyEvent("=== ");
-   struct Pixel_t{
-      UInt_t col, line;
-      UInt_t le, fe;
-      Float_t ts;
-   };
    
-   Pixel_t pixel;
-   vector<Pixel_t> vec;
+   TAMPparMap* pParMap = (TAMPparMap*)fpParMap->Object();
+
+   UInt_t aCol, aLine;
+   UInt_t le, fe;
+   Float_t ts;
+
    streampos oldpos;
    
    // read sensor number
    Char_t tmp[255];
    fRawFileAscii.getline(tmp, 255);
+ 
+   UInt_t sensorId = -1;
    TString line = tmp;
-   if (line.Contains("Adenium_") || line.Contains("Monopix2_")) {
-      Int_t pos = line.First("_");
-      TString name(pos+1, 3);
-      UInt_t sensorId = name.Atoi();
-      fData.push_back(sensorId);
+   if (line.Contains(fgkKeyDetector)) {
+      TString line = TAGparTools::Remove(tmp, fgkKeyDetector[0], true);
+      printf("[%s]\n", line.Data());
+
+      sensorId = pParMap->GetChannel(line);
+      printf("%d\n", sensorId);
    } else {
       return false;
    }
@@ -161,26 +170,22 @@ Bool_t TAMPactAscReader::DecodeSensor()
       oldpos = fRawFileAscii.tellg();  // stores the position
       fRawFileAscii.getline(tmp, 255);
       line = tmp;
-      if (line.Contains(keyEvent)) return false;
+      if (line.Contains(fgkKeyEvent)) return false;
       
       Int_t pos = line.First(' ');
       TString sPix(line(pos+1, line.Length()-pos));
-      sscanf(sPix.Data(), "%u, %u, %u, %u, %f", &pixel.col, &pixel.line, &pixel.le, &pixel.fe, &pixel.ts);
-      vec.push_back(pixel);
-   } while (!line.Contains(keyDetector));
-   
-   UInt_t size = vec.size();
-   if (size > 0) {
-      fData.push_back(size);
-
-      for (auto & pix : vec) {
-         fData.push_back(pix.col);
-         fData.push_back(pix.line);
-         fData.push_back(pix.le);
-         fData.push_back(pix.fe);
-      }
-   }
-   
+      sscanf(sPix.Data(), "%u, %u, %u, %u, %f", &aLine, &aCol, &le, &fe, &ts);
+      
+      Int_t ToT = -1;
+      if (fe-le < 1)
+         ToT = le;
+      else
+         ToT = fe-le;
+         
+      AddPixel(sensorId, ToT, aLine, aCol);
+               
+   } while (!line.Contains(fgkKeyDetector));
+      
    // go back one line
    fRawFileAscii.seekg(oldpos);
 
@@ -228,6 +233,51 @@ void TAMPactAscReader::Close()
 {
       fRawFileAscii.close();
 }
+
+
+// --------------------------------------------------------------------------------------
+//! Add pixel to container
+//!
+//! \param[in] iSensor sensor index
+//! \param[in] value pixel value
+//! \param[in] aLine line id
+//! \param[in] aColumn column id
+void TAMPactAscReader::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
+{
+   // Add a pixel to the vector of pixels
+   // require the following info
+   // - input = number of the sensors
+   // - value = analog value of this pixel
+   // - line & column = position of the pixel in the matrix
+   
+   TAVTntuHit*  pNtuRaw = (TAVTntuHit*)  fpNtuRaw->Object();
+   TAMPparGeo*  pGeoMap = (TAMPparGeo*)  fpGeoMap->Object();
+   TAMPparConf* pConfig = (TAMPparConf*) fpConfig->Object();
+   
+   //if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
+   
+   TAVThit* pixel = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   
+   double v = pGeoMap->GetPositionV(aLine);
+   double u = pGeoMap->GetPositionU(aColumn);
+   TVector3 pos(u,v,0);
+   pixel->SetPosition(pos);
+   
+   if (ValidHistogram())
+      FillHistoPixel(iSensor, aLine, aColumn);
+}
+
+// --------------------------------------------------------------------------------------
+//! Fill histogram related to pixel
+//!
+//! \param[in] planeId sensor index
+//! \param[in] aLine line id
+//! \param[in] aColumn column id
+void TAMPactAscReader::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn)
+{
+   fpHisPixelMap[planeId]->Fill(aLine, aColumn);
+}
+
 
 // --------------------------------------------------------------------------------------
 //! Set run number from file
