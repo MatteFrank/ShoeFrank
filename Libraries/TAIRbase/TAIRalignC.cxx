@@ -142,7 +142,8 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
       
       devsNtot += parConfVtx->GetSensorsN();
 
-      fpNtuClusVtx   = new TAGdataDsc("vtClus", new TAVTntuCluster());
+      Int_t sensorsN = geomapVtx->GetSensorsN();
+      fpNtuClusVtx   = new TAGdataDsc("vtClus", new TAVTntuCluster(sensorsN));
       fInfile->SetupBranch(fpNtuClusVtx);
    }
    

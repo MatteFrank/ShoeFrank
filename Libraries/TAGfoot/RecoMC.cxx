@@ -130,7 +130,9 @@ void RecoMC::CreateRawAction()
       if (TAGrecoManager::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcVt, FootBranchMcName(kVTX));
       
-      fpNtuHitVtx = new TAGdataDsc(new TAVTntuHit());
+      TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      fpNtuHitVtx = new TAGdataDsc(new TAVTntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAVTactNtuHitMC");
       fActNtuHitVtx = new TAVTactNtuHitMC(name, fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fEvtStruct);
       if (fFlagHisto)

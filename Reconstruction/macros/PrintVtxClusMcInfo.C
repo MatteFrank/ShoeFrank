@@ -30,6 +30,8 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
    TAGparaDsc* parGeoVtx = new TAGparaDsc(TAVTparGeo::GetDefParaName(), new TAVTparGeo());
    TAVTparGeo* parGeo = (TAVTparGeo*)parGeoVtx->Object();
    parGeo->FromFile();
+   Int_t vtSensorsN = parGeo->GetSensorsN();
+
    
    TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
    TAITparGeo* iparGeo = (TAITparGeo*)parGeoIt->Object();
@@ -47,7 +49,7 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
    TFile *f = new TFile(nameFile.Data());
    tree = (TTree*)f->Get("tree");
    
-   TAVTntuCluster *vtClus = new TAVTntuCluster();
+   TAVTntuCluster *vtClus = new TAVTntuCluster(vtSensorsN);
    vtClus->SetParGeo(parGeo);
    tree->SetBranchAddress(TAVTntuCluster::GetBranchName(), &vtClus);
    

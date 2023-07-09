@@ -83,7 +83,8 @@ void FillMCVertex(Int_t runNumber) {
    TAGparGeo* geomapg = (TAGparGeo*)tgGeo->Object();
    TString parFileName = campManager->GetCurGeoFile(TAGparGeo::GetBaseName(), runNumber);
    geomapg->FromFile(parFileName.Data());
-   
+   Int_t sensorsN = geomap->GetSensorsN();
+
    TAGparaDsc* vtGeo    = new TAGparaDsc("vtGeo", new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
    parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
@@ -92,8 +93,8 @@ void FillMCVertex(Int_t runNumber) {
    vtEve  = new TAGdataDsc("vtEve", new TAMCntuPart());
    TAGdataDsc* vtMc   = new TAGdataDsc("vtMc", new TAMCntuHit());
    
-   TAGdataDsc* vtNtu    = new TAGdataDsc("vtHit", new TAVTntuHit());
-   TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
+   TAGdataDsc* vtNtu    = new TAGdataDsc("vtHit", new TAVTntuHit(sensorsN));
+   TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster(sensorsN));
    TAGdataDsc* vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
    vtVtx    = new TAGdataDsc("vtVtx", new TAVTntuVertex());
    

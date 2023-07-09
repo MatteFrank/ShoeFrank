@@ -24,18 +24,12 @@ ClassImp(TAVTntuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAVTntuHit::TAVTntuHit()
+TAVTntuHit::TAVTntuHit(Int_t sensorsN)
 : TAGdata(),
+  fSensorsN(sensorsN),
   fListOfPixels(0x0),
-  fpGeoMap(0x0),
   fValid(true)
 {
-   fpGeoMap = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object();
-   if (!fpGeoMap) {
-      Error("TAVTntuHit()", "Para desciptor vtGeo does not exist");
-      exit(0);
-   }
-
    SetupClones();
 }
 
@@ -52,7 +46,7 @@ TAVTntuHit::~TAVTntuHit()
 //! \param[in] iSensor sensor index
 Int_t TAVTntuHit::GetPixelsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  || iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  || iSensor < fSensorsN) {
       TClonesArray*list = GetListOfPixels(iSensor);
       return list->GetEntriesFast();
    } else  {
@@ -67,7 +61,7 @@ Int_t TAVTntuHit::GetPixelsN(Int_t iSensor) const
 //! \param[in] iSensor sensor index
 TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor)
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fSensorsN) {
       TClonesArray* list = (TClonesArray*)fListOfPixels->At(iSensor);
       return list;
    } else {
@@ -82,7 +76,7 @@ TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor)
 //! \param[in] iSensor sensor index
 TClonesArray* TAVTntuHit::GetListOfPixels(Int_t iSensor) const
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fSensorsN) {
       TClonesArray* list = (TClonesArray*)fListOfPixels->At(iSensor);
       return list;
    } else {
@@ -130,7 +124,7 @@ void TAVTntuHit::SetupClones()
    if (fListOfPixels) return;
    fListOfPixels = new TObjArray();
    
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < fSensorsN; ++i) {
       TClonesArray* arr = new TClonesArray("TAVThit", 500);
       arr->SetOwner(true);
       fListOfPixels->AddAt(arr, i);
@@ -145,7 +139,7 @@ void TAVTntuHit::SetupClones()
 //! \param[in] opt option for clearing (not used)
 void TAVTntuHit::Clear(Option_t*)
 {
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < fSensorsN; ++i) {
       TClonesArray* list = GetListOfPixels(i);
       list->Clear("C");
    }
@@ -161,7 +155,7 @@ void TAVTntuHit::Clear(Option_t*)
 //! \param[in] aColumn column number
 TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn)
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fSensorsN) {
       TClonesArray &pixelArray = *GetListOfPixels(iSensor);
       std::pair<int, int> idx(aLine, aColumn);
       
@@ -190,7 +184,7 @@ TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
 //! \param[in] option option for printout
 void TAVTntuHit::ToStream(ostream& os, Option_t* option) const
 {
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < fSensorsN; ++i) {
       
       os << "TAVTntuHit " << GetName()
       << Form("  nPixels=%3d", GetPixelsN(i))

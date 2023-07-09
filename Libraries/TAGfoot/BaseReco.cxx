@@ -809,7 +809,10 @@ void BaseReco::CreateRecActionVtx()
          fpNtuVtx = new TAGdataDsc(new TAVTntuVertex());
    }
 
-  fpNtuClusVtx  = new TAGdataDsc(new TAVTntuCluster());
+  TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
+  Int_t sensorsN = parGeo->GetSensorsN();
+   
+  fpNtuClusVtx  = new TAGdataDsc(new TAVTntuCluster(sensorsN));
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
    const Char_t* name = FootActionDscName("TAVTactNtuCluster");

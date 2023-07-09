@@ -111,9 +111,8 @@ void ConvertNtuple::CreateRecActionVtx()
       if (TAGrecoManager::GetPar()->IncludeTG())
          fpNtuVtx = new TAGdataDsc(new TAVTntuVertex());
    }
-   
-   fpNtuClusVtx = new TAGdataDsc(new TAVTntuCluster());
-   GetNtuClusterVtx()->SetParGeo(GetParGeoVtx());
+   Int_t sensorsN = GetParGeoVtx()->GetSensorsN();
+   fpNtuClusVtx = new TAGdataDsc(new TAVTntuCluster(sensorsN));
 }
 
 //__________________________________________________________

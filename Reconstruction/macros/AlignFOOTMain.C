@@ -119,8 +119,9 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuVertex->ClassName()), &vtxNtuVertex);
     vtxNtuTrack = new TAVTntuTrack();
     tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuTrack->ClassName()), &vtxNtuTrack);
-    vtxNtuCluster = new TAVTntuCluster();
-    vtxNtuCluster->SetParGeo(vtparGeo);
+    Int_t sensorsN = vtparGeo->GetSensorsN();
+    vtxNtuCluster = new TAVTntuCluster(sensorsN);
+     
     tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuCluster->ClassName()), &vtxNtuCluster);
     if(IncludeMC){
       vtMc = new TAMCntuHit();

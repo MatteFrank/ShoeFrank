@@ -1268,7 +1268,8 @@ void GlobalRecoAna::SetupTree(){
   }
 
   if(TAGrecoManager::GetPar()->IncludeVT()){
-    fpNtuClusVtx = new TAGdataDsc("vtclus",new TAVTntuCluster());
+    Int_t sensorsN = GetParGeoVtx()->GetSensorsN();
+    fpNtuClusVtx = new TAGdataDsc("vtclus",new TAVTntuCluster(sensorsN));
     fpNtuTrackVtx = new TAGdataDsc("vttrack",new TAVTntuTrack());
     fpNtuVtx = new TAGdataDsc("vtvtx",new TAVTntuVertex());
     gTAGroot->AddRequiredItem("vtclus");

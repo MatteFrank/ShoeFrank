@@ -144,7 +144,9 @@ void RecoRaw::CreateRawAction()
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
-      fpNtuHitVtx   = new TAGdataDsc(new TAVTntuHit());
+      TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      fpNtuHitVtx   = new TAGdataDsc(new TAVTntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAVTactNtuHit");
       if (fgStdAloneFlag) {
          fActVmeReaderVtx  = new TAVTactVmeReader(name, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
