@@ -36,12 +36,12 @@
 #endif
 
 // main
-TAGcampaignManager* campManager = 0x0;
+TAGcampaignManager* campManager  = 0x0;
 TAGactTreeWriter*   outFile      = 0x0;
-TAMPactAscReader*    daqActReader = 0x0;
+TAMPactAscReader*   daqActReader = 0x0;
 
-TAVTactNtuCluster* mpActClus = 0x0;
-TAVTactNtuTrackF*   mpActTrck = 0x0;
+TAVTactNtuCluster*  mpActClus    = 0x0;
+TAVTactNtuTrackF*   mpActTrck    = 0x0;
 
 void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = false)
 {
@@ -144,9 +144,6 @@ int main (int argc, char *argv[])  {
    tagr.AddRequiredItem(outFile);
 
    tagr.Print();
-   
-   Int_t posi = in.First('/');
-   Int_t posf = in.Last('.');
    
    TString outFileName = out;
 
