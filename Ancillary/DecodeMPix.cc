@@ -80,7 +80,6 @@ void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = fal
       if (trackFlag)
          outFile->SetupElementBranch(mpTrck, "mptrack.");
    }
-
 }
 
 int main (int argc, char *argv[])  {
@@ -150,7 +149,8 @@ int main (int argc, char *argv[])  {
    if (outFile->Open(outFileName.Data(), "RECREATE")) return 0;
    daqActReader->SetHistogramDir(outFile->File());
    mpActClus->SetHistogramDir(outFile->File());
-   mpActTrck->SetHistogramDir(outFile->File());
+   if (trackFlag)
+      mpActTrck->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;
    tagr.BeginEventLoop();
