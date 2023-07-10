@@ -79,12 +79,7 @@ TCLINMbaseEventAction::TCLINMbaseEventAction(TCLINMrunAction* runAction, TCGbase
 : G4UserEventAction(),
   fEventNumber(-1),
   fStCollId(-1),
-  fBmCollId(-1),
-  fVtxCollId(-1),
-  fItCollId(-1),
-  fMsdCollId(-1),
   fTwCollId(-1),
-  fCaCollId(-1),
   fDetName(""),
   fFillTree(true),
   fInelasticOnly(false)
@@ -97,7 +92,7 @@ TCLINMbaseEventAction::TCLINMbaseEventAction(TCLINMrunAction* runAction, TCGbase
    if (FootMcDebugLevel(1))
       G4cout<<"Construct event action "<<G4endl;
 
-   fFootGeomConstructor = (TCLINMgeometryConstructor*)footGeomConstructor;
+   fGeomConstructor = (TCLINMgeometryConstructor*)footGeomConstructor;
    fRunAction           = (TCLINMrunAction*)runAction;
    fpGeoTrafo           = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 }
@@ -168,29 +163,9 @@ void TCLINMbaseEventAction::ConstructCollection()
    if (TAGrecoManager::GetPar()->IncludeST()) {
       fStCollId = SDman->GetCollectionID(TCSTgeometryConstructor::GetSDname());
    }
-   
-   if (TAGrecoManager::GetPar()->IncludeBM()) {
-      fBmCollId = SDman->GetCollectionID(TCBMgeometryConstructor::GetSDname());
-   }
-   
-   if (TAGrecoManager::GetPar()->IncludeVT()) {
-      fVtxCollId = SDman->GetCollectionID(TCVTgeometryConstructor::GetSDname());
-   }
-   
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      fItCollId = SDman->GetCollectionID(TCITgeometryConstructor::GetSDname());
-   }
-   
-   if (TAGrecoManager::GetPar()->IncludeMSD()) {
-      fMsdCollId = SDman->GetCollectionID(TCMSDgeometryConstructor::GetSDname());
-   }
-   
+      
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       fTwCollId = SDman->GetCollectionID(TCTWgeometryConstructor::GetSDname());
-   }
-   
-   if (TAGrecoManager::GetPar()->IncludeCA()) {
-      fCaCollId = SDman->GetCollectionID(TCCAgeometryConstructor::GetSDname());
    }
 }
 

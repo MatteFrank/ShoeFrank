@@ -84,47 +84,15 @@ public:
    G4Material*  GetWorldMaterial()         { return fWorldMaterial;   }
    //! Get geometry parameter for STC
    TASTparGeo*  GetParGeoIr()              { return fpParGeoSt;       }
-   //! Get geometry parameter for BM
-   TABMparGeo*  GetParGeoBm()              { return fpParGeoBm;       }
-   //! Get geometry parameter for VTX
-   TAVTparGeo*  GetParGeoVtx()             { return fpParGeoVtx;      }
-   //! Get geometry parameter for ITR
-   TAITparGeo*  GetParGeoIt()              { return fpParGeoIt;       }
-   //! Get geometry parameter for dipole
-   TADIparGeo*  GetParGeoEm()              { return fpParGeoEm;       }
-   //! Get geometry parameter for MSD
-   TAMSDparGeo* GetParGeoMsd()             { return fpParGeoMsd;      }
-   //! Get geometry parameter for CAL
-   TACAparGeo*  GetParGeoCa()              { return fpParGeoCa;       }
    //! Get geometry parameter for TW
    TATWparGeo*  GetParGeoTw()              { return fpParGeoTw;       }
    
-   // Construct field
-   void ConstructSDandField();
-
 private:
    TCSTgeometryConstructor*  fStartCounter;  ///< STC geometry constructor
-   TCBMgeometryConstructor*  fBeamMonitor;   ///< BM geometry constructor
-   TCVTgeometryConstructor*  fVertex;        ///< VTX geometry constructor
-   TCITgeometryConstructor*  fInnerTracker;  ///< ITR geometry constructor
-   TCMSDgeometryConstructor* fMicroStrip;    ///< MSD geometry constructor
-   TCCAgeometryConstructor*  fCalorimeter;   ///< CAL geometry constructor
    TCTWgeometryConstructor*  fTofWall;       ///< TW geometry constructor
-   TCEMgeometryConstructor*  fMagnet;        ///< Dipole geometry constructor
    
-   TCEMfield*                fField;         ///< Field map
-   TADIgeoField*             fFieldImpl;     ///< field map implementation
-   TCEMfieldSetup*           fFieldSetup;    ///< Field map setup
-
    TASTparGeo*               fpParGeoSt;     ///< STC geometry parameters
-   TABMparGeo*               fpParGeoBm;     ///< BM geometry parameters
-   TAVTparGeo*               fpParGeoVtx;    ///< VTX geometry parameters
-   TAITparGeo*               fpParGeoIt;     ///< ITR geometry parameters
-   TADIparGeo*               fpParGeoEm;     ///< Dipole geometry parameters
-   TAMSDparGeo*              fpParGeoMsd;    ///< MSD geometry parameters
-   TACAparGeo*               fpParGeoCa;     ///< CAL geometry parameters
    TATWparGeo*               fpParGeoTw;     ///< TW geometry parameters
-
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

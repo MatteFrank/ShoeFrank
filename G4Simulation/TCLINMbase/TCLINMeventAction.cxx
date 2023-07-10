@@ -91,28 +91,11 @@ void TCLINMeventAction::EndOfEventAction(const G4Event* evt)
 //! \param[in] evt a given event
 void TCLINMeventAction::Collect(const G4Event* evt)
 {
-   
    if (fStCollId >= 0)
       GetHitPerPlane(evt, fStCollId);
    
-    if (fBmCollId >= 0)
-      GetHitPerPlane(evt, fBmCollId);
-   
-    if (fVtxCollId >= 0)
-      GetHitPerPlane(evt, fVtxCollId);
-
-   if (fItCollId >= 0)
-      GetHitPerPlane(evt, fItCollId);
-   
-   if (fMsdCollId >= 0)
-      GetHitPerPlane(evt, fMsdCollId);
-   
    if (fTwCollId >= 0)
       GetHitPerPlane(evt, fTwCollId);
-   
-   if (fCaCollId >= 0)
-      GetHitPerPlane(evt, fCaCollId);
-   
 }
 
 
@@ -271,35 +254,6 @@ void TCLINMeventAction::FillHits(TAMCevent* event, TCGmcHit* mcHit)
                     TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
     }
 
-    if (fBmCollId >= 0  && fDetName==TCBMgeometryConstructor::GetSDname()) {
-        TVector3 pos(vin[0],vin[1],vin[2]);
-        TVector3 posL = fFootGeomConstructor->GetGeoTrafo()->FromGlobalToBMLocal(pos);
-        Int_t layer = (int)sensorId/2;
-        Int_t view  = sensorId%2;
-        Int_t cell  = fFootGeomConstructor->GetParGeoBm()->GetCell(pos,layer,view);
-        view = -view;
-        event->AddBMN(trackIdx,layer, view, cell, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]),
-                    TVector3(pin[0],pin[1],pin[2]), TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
-    }
-
-    if (fVtxCollId >= 0 && fDetName==TCVTgeometryConstructor::GetSDname()) {
-        Int_t layer = sensorId;
-        event->AddVTX(trackIdx, layer,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]),
-                    TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
-    }
-
-    if (fItCollId >= 0 && fDetName==TCITgeometryConstructor::GetSDname()) {
-        Int_t layer = sensorId;
-        event->AddITR(trackIdx, layer, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]),
-                    TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackId);
-    }
-
-    if (fMsdCollId >= 0 && fDetName==TCMSDgeometryConstructor::GetSDname()) {
-        Int_t layer  = sensorId;
-        event->AddMSD(trackIdx, layer, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]),
-                    TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackId);
-    }
-
     if (fTwCollId >= 0 && fDetName==TCTWgeometryConstructor::GetSDname()) {
         Int_t barId = sensorId % TATWparGeo::GetLayerOffset();
         Int_t view  = sensorId /  TATWparGeo::GetLayerOffset();
@@ -307,11 +261,6 @@ void TCLINMeventAction::FillHits(TAMCevent* event, TCGmcHit* mcHit)
                    TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
     }
 
-    if (fCaCollId >= 0 && fDetName==TCCAgeometryConstructor::GetSDname()) {
-        Int_t crystalId = sensorId;
-        event->AddCAL(trackIdx, crystalId,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]),
-                    TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackId);
-    }
 
    static Int_t crossIdOld = 0;
    if (TAGrecoManager::GetPar()->IsRegionMc()) {

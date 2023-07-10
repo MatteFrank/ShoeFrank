@@ -54,16 +54,11 @@ public:
     G4bool IsInelasticOnly()           { return fInelasticOnly; }
 
 protected:
-    TCLINMrunAction*           fRunAction;             ///< run action for FOOT
-    TCLINMgeometryConstructor* fFootGeomConstructor;   ///< geometry for FOOT
+    TCLINMrunAction*           fRunAction;             ///< run action for CLINM
+    TCLINMgeometryConstructor* fGeomConstructor;   ///< geometry for CLINM
     Int_t                    fEventNumber;           ///< event number
     Int_t                    fStCollId;              ///< Id of ST collection
-    Int_t                    fBmCollId;              ///< Id of BM collection
-    Int_t                    fVtxCollId;             ///< Id of Vtx collection
-    Int_t                    fItCollId;              ///< Id of IT collection
-    Int_t                    fMsdCollId;             ///< Id of MSD collection
     Int_t                    fTwCollId;              ///< Id of ToF collection
-    Int_t                    fCaCollId;              ///< Id of Calo collection
     TString                  fDetName;               ///< Detector name
     TSignalHandler*          fEventInterruptHandler; ///< Event loop interripter handler
     TAMCntuPart*             fMcEvent;               ///< MC info

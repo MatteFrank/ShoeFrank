@@ -110,7 +110,7 @@ void TCLINMrunAction::SetContainers()
    Int_t run          = gTAGroot->CurrentRunNumber();
    const Char_t* name = gTAGroot->CurrentCampaignName();
   
-   fpTree = new TTree("EventTree", "FOOT");
+   fpTree = new TTree("EventTree", "CLINM");
    fpEventMC = new TAMCevent();
    fpEventMC->SetBranches(fpTree);
    TAGrecoManager::GetPar()->EnableRootObject();
