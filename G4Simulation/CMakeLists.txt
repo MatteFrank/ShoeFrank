@@ -127,6 +127,7 @@ add_subdirectory(TCMSDbase)
 add_subdirectory(TCCAbase)
 add_subdirectory(TCTWbase)
 add_subdirectory(TCFObase)
+add_subdirectory(TCLINMbase)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
