@@ -111,6 +111,14 @@ int main (int argc, char *argv[])  {
       }
    }
    
+   Int_t frequency = 1;
+   
+   if (nTotEv >= 100000)      frequency = 10000;
+   else if (nTotEv >= 10000)  frequency = 1000;
+   else if (nTotEv >= 1000)   frequency = 100;
+   else if (nTotEv >= 100)    frequency = 10;
+   else if (nTotEv >= 10)     frequency = 1;
+   
    TApplication::CreateApplication();
    TAGrecoManager::Instance(exp);
    TAGrecoManager::GetPar()->FromFile();
@@ -160,11 +168,11 @@ int main (int argc, char *argv[])  {
    Int_t nEvents = 0;
    while (tagr.NextEvent() ){
 
-      if (nEvents == nTotEv)
+      if (++nEvents == nTotEv)
          break;
-      if (++nEvents % 100 == 0)
-		printf("Event: %d\n", nEvents); 
-   
+      
+      if (nEvents % frequency == 0)
+         printf("Event: %d\n", nEvents);
    }
    
    tagr.EndEventLoop();

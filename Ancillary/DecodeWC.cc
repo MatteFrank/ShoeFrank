@@ -203,10 +203,8 @@ int main (int argc, char *argv[])  {
    Int_t nEvents = 0;
    while (tagr.NextEvent() ){
       
-      if (++nEvents == nTotEv) {
+      if (++nEvents == nTotEv)
          break;
-      }
-      
    }
    
    tagr.EndEventLoop();
