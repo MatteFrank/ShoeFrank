@@ -43,6 +43,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${ROOT_LIBRARY_DIR})
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
+#----------------------------------------------------------------------------
+# Copy macro
+#
+if (FILECOPY)
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/macros/  DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/  PATTERN "*.cmake" EXCLUDE)
+endif(FILECOPY)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries
