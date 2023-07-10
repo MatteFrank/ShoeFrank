@@ -55,3 +55,15 @@ target_link_libraries(DecodeMPix ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LI
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS DecodeMPix DESTINATION bin)
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(DecodeWC DecodeWC.cc)
+#
+target_link_libraries(DecodeWC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS DecodeWC DESTINATION bin)
