@@ -79,7 +79,8 @@ protected:
    Int_t          fClustersN;         ///< number of cluster
 
    TH1F*          fpHisPixelTot;	        ///< Total number of pixels per cluster
-   TH1F*          fpHisPixel[MaxSens];	  ///< number of pixels per cluster per sensor
+   TH1F*          fpHisPixel[MaxSens];   ///< number of pixels per cluster per sensor
+   TH1F*          fpHisCharge[MaxSens];  ///< charge per cluster per sensor
    TH2F*          fpHisClusMap[MaxSens]; ///< cluster map per sensor
    
    TString        fPrefix;            ///< prefix of histogram

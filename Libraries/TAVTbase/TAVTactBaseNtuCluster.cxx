@@ -82,6 +82,12 @@ void TAVTactBaseNtuCluster::CreateHistogram()
    }
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisCharge[i] = new TH1F(Form("%sClusCharge%d",fPrefix.Data(), i+1), Form("%s - charge per clusters for sensor %d", fTitleDev.Data(), i+1), 1000, 0., 1000.);
+      AddHistogram(fpHisCharge[i]);
+   }
+   
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 		 fpHisClusMap[i] = new TH2F(Form("%sClusMap%d", fPrefix.Data(), i+1), Form("%s - clusters map for sensor %d", fTitleDev.Data(), i+1),
 									100, -pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2.,
 									100, -pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2., pGeoMap->GetPitchY()*pGeoMap->GetPixelsNx()/2.);
@@ -258,6 +264,7 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
       if (ValidHistogram()) {
          if (cluster->GetPixelsN() > 0) {
             fpHisPixelTot->Fill(cluster->GetPixelsN());
+            fpHisCharge[iSensor]->Fill(cluster->GetCharge());
             fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
             fpHisClusMap[iSensor]->Fill(cluster->GetPositionG()[0], cluster->GetPositionG()[1]);
          }
