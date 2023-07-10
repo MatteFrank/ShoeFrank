@@ -108,11 +108,9 @@ void ReadMPix(TString filename = "dataRaw/run000675.txt", Int_t nMaxEvts = 2000,
    
    Int_t posi = filename.First('/');
    Int_t posf = filename.Last('.');
-
-   
    TString outFileName = filename(posi+1, posf-posi-1);
-
    outFileName.Append(".root");
+   
    if (outFile->Open(outFileName.Data(), "RECREATE")) return;
    daqActReader->SetHistogramDir(outFile->File());
    mpActClus->SetHistogramDir(outFile->File());
