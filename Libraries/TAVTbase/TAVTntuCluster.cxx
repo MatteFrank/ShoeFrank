@@ -24,7 +24,7 @@ TAVTntuCluster::TAVTntuCluster(Int_t sensorsN)
   fListOfClusters(0x0)
 {
    if (sensorsN == 0) {
-      Warning("TAVTntuHit()", "Size of hit array not set, set to %d\n", TAVTparGeo::GetDefSensorsN());
+      Warning("TAVTntuCluster()", "Size of hit array not set, set to %d\n", TAVTparGeo::GetDefSensorsN());
       fSensorsN = TAVTparGeo::GetDefSensorsN();
    }
    

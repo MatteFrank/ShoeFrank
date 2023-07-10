@@ -137,7 +137,7 @@ TAMSDntuPoint::TAMSDntuPoint(Int_t stationsN)
    fListOfPoints(0x0)
 {
    if (stationsN == 0) {
-      Warning("TAMSDntuHit()", "Size of hit array not set, set to %d\n", TAMSDparGeo::GetDefSensorsN());
+      Warning("TAMSDntuPoint()", "Size of hit array not set, set to %d\n", TAMSDparGeo::GetDefSensorsN());
       fStationsN = TAMSDparGeo::GetDefSensorsN();
    }
    

@@ -102,7 +102,7 @@ TAMSDntuRaw::TAMSDntuRaw(Int_t sensorsN)
    fListOfStrips(0x0)
 {
    if (sensorsN == 0) {
-      Warning("TAMSDntuHit()", "Size of hit array not set, set to %d\n", TAMSDparGeo::GetDefSensorsN());
+      Warning("TAMSDntuRaw()", "Size of hit array not set, set to %d\n", TAMSDparGeo::GetDefSensorsN());
       fSensorsN = TAMSDparGeo::GetDefSensorsN();
    }
    
