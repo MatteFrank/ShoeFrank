@@ -121,7 +121,7 @@ int main (int argc, char *argv[])  {
    TString out("");
    TString exp("");
    
-   Int_t runNb = -1;
+   Int_t runNb = 1;
    Int_t nTotEv = 1e7;
    Bool_t oscFlag = false;
 
@@ -137,12 +137,12 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" Decoder help:"<<endl;
          cout<<" Ex: Decoder [opts] "<<endl;
-         cout << "usage: DecodeWC -in dataRaw/Run_6_config1_200MeVu_12C_Data_5_26_2023_Binary.bin -out toto.root -exp TIIM2023 -run 1 -nev 10000" <<endl;
+         cout << "usage: DecodeWC -in dataRaw/Run_6_config1_200MeVu_12C_Data_5_26_2023_Binary.bin [-out toto.root] -exp TIIM2023 [-run 1] -nev 10000" <<endl;
          cout<<" possible opts are:"<<endl;
          cout<<"      -in path/file  : [def=""] raw input file"<<endl;
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
-         cout<<"      -run value     : [def=-1] Run number"<<endl;
+         cout<<"      -run value     : [def=1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          cout<<"      -osc           : save oscillograms in tree"<<endl;
 
@@ -185,6 +185,13 @@ int main (int argc, char *argv[])  {
    tagr.Print();
 
    TString outputRootFile  = out;
+   if (out.IsNull()) {
+      Int_t posi = in.First('/');
+      Int_t posf = in.Last('.');
+      outputRootFile = in(posi+1, posf-posi-1);
+      outputRootFile.Append(".root");
+      printf("Output root file not set, put %s as output file\n", outputRootFile.Data());
+   }
    
    if (outFile->Open(outputRootFile.Data(), "RECREATE")) return 0;
    

@@ -88,7 +88,7 @@ int main (int argc, char *argv[])  {
    TString out("");
    TString exp("");
    
-   Int_t runNb = -1;
+   Int_t runNb = 1;
    Int_t nTotEv = 1e7;
    
    for (int i = 0; i < argc; i++){
@@ -100,12 +100,12 @@ int main (int argc, char *argv[])  {
 
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" DecodeMPix help:"<<endl;
-         cout<<" Ex: DecodeMPix -in dataRaw/run000675.txt -out toto.root -nev 2000 -exp MPIX2023 -run 1  "<<endl;
+         cout<<" Ex: DecodeMPix -in dataRaw/run000675.txt [-out toto.root] -nev 2000 -exp MPIX2023 [-run 1]  "<<endl;
          cout<<" possible opts are:"<<endl;
          cout<<"      -in path/file  : [def=""] raw input file"<<endl;
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
-         cout<<"      -run value     : [def=-1] Run number"<<endl;
+         cout<<"      -run value     : [def=1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
          return 1;
       }
@@ -154,6 +154,14 @@ int main (int argc, char *argv[])  {
    
    TString outFileName = out;
 
+   if (out.IsNull()) {
+      Int_t posi = in.First('/');
+      Int_t posf = in.Last('.');
+      outFileName = in(posi+1, posf-posi-1);
+      outFileName.Append(".root");
+      printf("Output root file not set, put %s as output file\n", outFileName.Data());
+   }
+   
    if (outFile->Open(outFileName.Data(), "RECREATE")) return 0;
    daqActReader->SetHistogramDir(outFile->File());
    mpActClus->SetHistogramDir(outFile->File());
