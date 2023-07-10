@@ -1,6 +1,7 @@
 
-// Macro to reconstruct from raw data
-// Ch. Finck, sept 11.
+// Exdcutable to read back Monopix2
+// DecodeMPix -in dataRaw/run000675.txt -out toto.root -nev 2000 -exp MPIX2023 -run 1
+// Ch. Finck, July 23.
 
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
@@ -42,7 +43,7 @@ TAMPactAscReader*    daqActReader = 0x0;
 TAVTactNtuCluster* mpActClus = 0x0;
 TAVTactNtuTrackF*   mpActTrck = 0x0;
 
-void FillMonopix(Int_t runNumber)
+void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = false)
 {
    TAGparaDsc* mpMap    = new TAGparaDsc("mpMap", new TAMPparMap());
    TAMPparMap* map   = (TAMPparMap*) mpMap->Object();
@@ -67,16 +68,18 @@ void FillMonopix(Int_t runNumber)
    daqActReader  = new TAMPactAscReader("daqActReader", mpNtu, mpGeo, mpConf, mpMap);
    daqActReader->CreateHistogram();
 
-
    mpActClus =  new TAVTactNtuCluster("mpActClus", mpNtu, mpClus, mpConf, mpGeo);
    mpActClus->CreateHistogram();
 
    mpActTrck = new TAVTactNtuTrackF("mpActTrck", mpClus, mpTrck, mpConf, mpGeo);
    mpActTrck->CreateHistogram();
    
-//   outFile->SetupElementBranch(mpNtu, "mprh.");
-//   outFile->SetupElementBranch(mpClus, "mpclus.");
-//   outFile->SetupElementBranch(mpTrck, "mptrack.");
+   if (treeFlag) {
+      outFile->SetupElementBranch(mpNtu, "mprh.");
+      outFile->SetupElementBranch(mpClus, "mpclus.");
+      if (trackFlag)
+         outFile->SetupElementBranch(mpTrck, "mptrack.");
+   }
 
 }
 
@@ -97,8 +100,8 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
 
       if(strcmp(argv[i],"-help") == 0)  {
-         cout<<" Decoder help:"<<endl;
-         cout<<" Ex: Decoder [opts] "<<endl;
+         cout<<" DecodeMPix help:"<<endl;
+         cout<<" Ex: DecodeMPix -in dataRaw/run000675.txt -out toto.root -nev 2000 -exp MPIX2023 -run 1  "<<endl;
          cout<<" possible opts are:"<<endl;
          cout<<"      -in path/file  : [def=""] raw input file"<<endl;
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
@@ -114,6 +117,12 @@ int main (int argc, char *argv[])  {
    TAGrecoManager::GetPar()->FromFile();
    TAGrecoManager::GetPar()->Print();
    
+   // saving in tree
+   Bool_t treeFlag = TAGrecoManager::GetPar()->IsSaveTree();
+
+   // saving in tree
+   Bool_t trackFlag = TAGrecoManager::GetPar()->IsTracking();
+   
    TAGroot tagr;
    
    campManager = new TAGcampaignManager(exp);
@@ -125,12 +134,13 @@ int main (int argc, char *argv[])  {
    
    outFile = new TAGactTreeWriter("outFile");
 
-   FillMonopix(runNb);
+   FillMonopix(runNb, treeFlag, trackFlag);
    daqActReader->Open(in);
    
    tagr.AddRequiredItem(daqActReader);
    tagr.AddRequiredItem(mpActClus);
-   //tagr.AddRequiredItem(mpActTrck);
+   if (trackFlag)
+      tagr.AddRequiredItem(mpActTrck);
    tagr.AddRequiredItem(outFile);
 
    tagr.Print();
