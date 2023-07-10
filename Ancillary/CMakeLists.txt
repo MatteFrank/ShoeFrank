@@ -51,7 +51,7 @@ if (FILECOPY)
 endif(FILECOPY)
 
 #----------------------------------------------------------------------------
-# Add the executable, and link it to the Genfit and root libraries
+# Add the executable, and link it to root libraries
 #
 add_executable(DecodeMPix DecodeMpix.cc)
 #
@@ -63,7 +63,7 @@ target_link_libraries(DecodeMPix ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LI
 install(TARGETS DecodeMPix DESTINATION bin)
 
 #----------------------------------------------------------------------------
-# Add the executable, and link it to the Genfit and root libraries
+# Add the executable, and link it to root libraries
 #
 add_executable(DecodeWC DecodeWC.cc)
 #
@@ -75,7 +75,7 @@ target_link_libraries(DecodeWC ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBR
 install(TARGETS DecodeWC DESTINATION bin)
 
 #----------------------------------------------------------------------------
-# Add the executable, and link it to the Genfit and root libraries
+# Add the executable, and link it to root libraries
 #
 add_executable(DecodePix DecodeMpix.cc)
 #
