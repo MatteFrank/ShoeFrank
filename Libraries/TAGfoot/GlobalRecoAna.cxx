@@ -1295,10 +1295,13 @@ void GlobalRecoAna::SetupTree(){
     }
   }
   if(TAGrecoManager::GetPar()->IncludeMSD()){
-    fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
+     Int_t sensorsN = GetParGeoMsd()->GetSensorsN();
+     Int_t stationsN = GetParGeoMsd()->GetStationsN();
+
+    fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster(sensorsN));
     gTAGroot->AddRequiredItem("msdclus");
     myReader->SetupBranch(fpNtuClusMsd);
-    fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint());
+    fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint(stationsN));
     gTAGroot->AddRequiredItem("msdpoint");
     myReader->SetupBranch(fpNtuRecMsd);
     if(fFlagMC){

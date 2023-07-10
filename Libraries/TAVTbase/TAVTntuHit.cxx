@@ -30,6 +30,11 @@ TAVTntuHit::TAVTntuHit(Int_t sensorsN)
   fListOfPixels(0x0),
   fValid(true)
 {
+   if (sensorsN == 0) {
+      Warning("TAVTntuHit()", "Size of hit array not set, set to %d\n", TAVTparGeo::GetDefSensorsN());
+      fSensorsN = TAVTparGeo::GetDefSensorsN();
+   }
+   
    SetupClones();
 }
 

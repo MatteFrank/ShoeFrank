@@ -81,11 +81,11 @@ public:
 class TAMSDntuPoint : public TAGdata {
 
 private:
-  TAMSDparGeo*         fGeometry;     //! geometry parameter
-  TObjArray*           fListOfPoints; ///< list of points
+  Int_t             fStationsN;        ///< number of sensors
+  TObjArray*        fListOfPoints; ///< list of points
 
 public:
-  TAMSDntuPoint();
+  TAMSDntuPoint(Int_t stationsN = 0);
   virtual ~TAMSDntuPoint();
 
   TAMSDpoint*         NewPoint( int iStation, double x, double y, TVector3 position);
@@ -97,8 +97,6 @@ public:
   TClonesArray*       GetListOfPoints(int iStation) const;
 
   TAMSDpoint*         GetPoint( int iStation, int iPoint ) const ;
-
-  void                SetParGeo(TAMSDparGeo* par) { fGeometry = par; }
 
   virtual void        Clear(Option_t* opt="");
 

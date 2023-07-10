@@ -96,15 +96,16 @@ ClassImp(TAMSDntuRaw)
 
 //______________________________________________________________________________
 //! Detector
-TAMSDntuRaw::TAMSDntuRaw() 
-: TAGdata(),
-  fListOfStrips(0x0)
+TAMSDntuRaw::TAMSDntuRaw(Int_t sensorsN)
+ : TAGdata(),
+   fSensorsN(sensorsN),
+   fListOfStrips(0x0)
 {
-   fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
-   if (!fpGeoMap) {
-      Error("TAMSDntuRaw()", "Para desciptor %s does not exist", FootParaDscName("TAMSDparGeo"));
-      exit(0);
+   if (sensorsN == 0) {
+      Warning("TAMSDntuHit()", "Size of hit array not set, set to %d\n", TAMSDparGeo::GetDefSensorsN());
+      fSensorsN = TAMSDparGeo::GetDefSensorsN();
    }
+   
    SetupClones();
 }
 
@@ -122,7 +123,7 @@ TAMSDntuRaw::~TAMSDntuRaw()
 //! \param[in] iSensor sensor id
 Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN())
+   if (iSensor >= 0  && iSensor < fSensorsN)
 	  return GetStrips(iSensor)->GetEntriesFast();
    else {
 	  Error("GetStripsN()","Wrong sensor number %d\n", iSensor);
@@ -136,7 +137,7 @@ Int_t TAMSDntuRaw::GetStripsN(Int_t iSensor) const
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuRaw::GetStrips(Int_t iSensor) const
 { 
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN())
+   if (iSensor >= 0  && iSensor < fSensorsN)
 	  return (TClonesArray*)fListOfStrips->At(iSensor);
    else {
 	  Error("GetStrips()","Wrong sensor number %d\n", iSensor);
@@ -184,7 +185,7 @@ TAMSDrawHit* TAMSDntuRaw::GetStrip(Int_t iSensor, Int_t iStrip)
 //! \param[in] value raw measured charge
 TAMSDrawHit* TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double_t value)
 {
-   if (sensor >= 0  && sensor < fpGeoMap->GetSensorsN()) {
+   if (sensor >= 0  && sensor < fSensorsN) {
 	  TClonesArray &stripArray = *GetStrips(sensor);
 	  return new(stripArray[stripArray.GetEntriesFast()]) TAMSDrawHit(sensor, view, strip, value);
    } else {
@@ -198,8 +199,8 @@ TAMSDrawHit* TAMSDntuRaw::AddStrip(Int_t sensor, Int_t view, Int_t strip, Double
 void TAMSDntuRaw::SetupClones()
 {
    if (fListOfStrips) return;
-   fListOfStrips = new TObjArray();
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   fListOfStrips = new TObjArray(fSensorsN);
+   for (Int_t i = 0; i < fSensorsN; ++i) {
 	  TClonesArray* arr = new TClonesArray("TAMSDrawHit");
 	  arr->SetOwner(true); 
 	  fListOfStrips->AddAt(arr,i);
@@ -214,7 +215,7 @@ void TAMSDntuRaw::Clear(Option_t* /*opt*/)
 {
    TAGdata::Clear();
    
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i){      
+   for (Int_t i = 0; i < fSensorsN; ++i){
       TClonesArray* list = GetStrips(i);
       list->Clear("C");
    }
@@ -227,7 +228,7 @@ void TAMSDntuRaw::Clear(Option_t* /*opt*/)
 //! \param[in] option option for printout
 void TAMSDntuRaw::ToStream(ostream& os, Option_t* option) const
 {
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < fSensorsN; ++i) {
 	  os << "TAMSDntuRaw " << GetName()
 	     << Form("  nhit=%3d", GetStripsN(i))
 	     << endl;

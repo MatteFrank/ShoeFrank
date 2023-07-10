@@ -31,16 +31,17 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
    TAVTparGeo* parGeo = (TAVTparGeo*)parGeoVtx->Object();
    parGeo->FromFile();
    Int_t vtSensorsN = parGeo->GetSensorsN();
-
    
    TAGparaDsc* parGeoIt = new TAGparaDsc(TAITparGeo::GetDefParaName(), new TAITparGeo());
    TAITparGeo* iparGeo = (TAITparGeo*)parGeoIt->Object();
    iparGeo->FromFile();
-   
+   Int_t itSensorsN = iparGeo->GetSensorsN();
+
    TAGparaDsc* parGeoMsd = new TAGparaDsc(TAMSDparGeo::GetDefParaName(), new TAMSDparGeo());
    TAMSDparGeo* msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
    msdparGeo->FromFile();
-   
+   Int_t msSensorsN = msdparGeo->GetSensorsN();
+
    TAGparaDsc* parGeoTW = new TAGparaDsc(TATWparGeo::GetDefParaName(), new TATWparGeo());
    TATWparGeo* twparGeo = (TATWparGeo*)parGeoTW->Object();
    twparGeo->FromFile();
@@ -53,10 +54,10 @@ void PrintVtxClusMcInfo(TString nameFile = "12C_400_vtx_Out.root", Int_t nentrie
    vtClus->SetParGeo(parGeo);
    tree->SetBranchAddress(TAVTntuCluster::GetBranchName(), &vtClus);
    
-   TAITntuCluster *itClus = new TAITntuCluster();
+   TAITntuCluster *itClus = new TAITntuCluster(itSensorsN);
    tree->SetBranchAddress(TAITntuCluster::GetBranchName(), &itClus);
    
-   TAMSDntuCluster *msdClus = new TAMSDntuCluster();
+   TAMSDntuCluster *msdClus = new TAMSDntuCluster(msSensorsN);
    tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), &msdClus);
    
    TAMCntuPart *eve = new TAMCntuPart();

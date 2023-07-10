@@ -14,14 +14,12 @@ class TAITparGeo;
 class TAITntuHit : public TAGdata {
    
 protected:
-   TObjArray*        fListOfPixels;      ///< List of pixels
-   //! geometry parameter
-   TAITparGeo*       fpGeoMap;           //! do not store
-   //! pixel map
+    Int_t             fSensorsN;        ///< number of sensors
+    TObjArray*        fListOfPixels;      ///< List of pixels
     std::map<pair<int, int>, int > fMap; //! do not store
    
 public:
-   TAITntuHit();
+   TAITntuHit(Int_t sensorsN = 0);
    virtual          ~TAITntuHit();
    
    // Get hit for a given sensor

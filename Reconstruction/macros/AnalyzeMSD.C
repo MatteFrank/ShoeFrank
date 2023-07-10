@@ -98,6 +98,8 @@ void AnalyzeMSD(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.
    parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
 
+   Int_t sensorsN = geomap->GetSensorsN();
+   Int_t stationsN = geomap->GetStationsN();
    // TAGparaDsc *msdConf = new TAGparaDsc("msdConf", new TAMSDparConf());
    // TAMSDparConf *confmap = (TAMSDparConf *)msdConf->Object();
    // parFileName = campManager->GetCurConfFile(FootBaseName("TAMSDparGeo"), runNumber);
@@ -137,11 +139,11 @@ void AnalyzeMSD(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.
    else
      maxentries=nentries;
 
-   TAMSDntuRaw * msdnturaw= new TAMSDntuRaw();
+   TAMSDntuRaw * msdnturaw= new TAMSDntuRaw(sensorsN);
    tree->SetBranchAddress(TAMSDntuRaw::GetBranchName(), &msdnturaw);
    cout<<TAMSDntuRaw::GetBranchName()<<endl;
    
-   TAMSDntuCluster * msdntuclus= new TAMSDntuCluster();
+   TAMSDntuCluster * msdntuclus= new TAMSDntuCluster(sensorsN);
    tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), &msdntuclus);
    
    TAMSDntuTrack *msdntutrack= new TAMSDntuTrack();

@@ -861,7 +861,10 @@ void BaseReco::CreateRecActionVtx()
 //! Create ITR reconstruction actions
 void BaseReco::CreateRecActionIt()
 {
-   fpNtuClusIt = new TAGdataDsc(new TAITntuCluster());
+   TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
+   Int_t sensorsN = parGeo->GetSensorsN();
+   fpNtuClusIt = new TAGdataDsc(new TAITntuCluster(sensorsN));
+   
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
    const Char_t* name = FootActionDscName("TAITactNtuCluster");
@@ -897,8 +900,12 @@ void BaseReco::CreateRecActionIt()
 //! Create MSD reconstruction actions
 void BaseReco::CreateRecActionMsd()
 {
-   fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
-   fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint());
+   TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
+   Int_t sensorsN = parGeo->GetSensorsN();
+   Int_t stationsN = parGeo->GetStationsN();
+
+   fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster(sensorsN));
+   fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint(stationsN));
 
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 

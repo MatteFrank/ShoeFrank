@@ -14,24 +14,21 @@ class TAMSDparGeo;
 class TAMSDntuHit : public TAGdata {
    
 protected:
-   //using TObjArray here
+   Int_t             fSensorsN;        ///< number of sensors
    TObjArray*        fListOfStrips;    ///< list of strips
-   TAMSDparGeo*      fpGeoMap;         //! geometry parameter, do not store
    
    std::map<pair<int, int>, int > fMap; //! map
    
 public:
-   TAMSDntuHit();
+   TAMSDntuHit(Int_t sensorsN = 0);
    virtual           ~TAMSDntuHit();
    
    TAMSDhit*          GetStrip(Int_t iSensor, Int_t iStrip);
    const TAMSDhit*    GetStrip(Int_t iSensor, Int_t iStrip) const;
 
-
    TClonesArray*      GetListOfStrips(Int_t iSensor);
    TClonesArray*      GetListOfStrips(Int_t iSensor) const;
    
-
    Int_t              GetStripsN(Int_t iSensor) const;
    
    TAMSDhit*          NewStrip(Int_t sensor, Double_t value, Int_t aView, Int_t aStrip);

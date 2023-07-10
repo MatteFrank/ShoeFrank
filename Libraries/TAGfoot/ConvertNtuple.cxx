@@ -119,8 +119,8 @@ void ConvertNtuple::CreateRecActionVtx()
 //! Create ITR reconstruction containers
 void ConvertNtuple::CreateRecActionIt()
 {
-   fpNtuClusIt = new TAGdataDsc(new TAITntuCluster());
-   GetNtuClusterIt()->SetParGeo(GetParGeoIt());
+   Int_t sensorsN = GetParGeoIt()->GetSensorsN();
+   fpNtuClusIt = new TAGdataDsc(new TAITntuCluster(sensorsN));
    
    if (fFlagItrTrack && fFlagTrack)
       fpNtuTrackIt = new TAGdataDsc(new TAITntuTrack());
@@ -130,11 +130,12 @@ void ConvertNtuple::CreateRecActionIt()
 //! Create MSD reconstruction containers
 void ConvertNtuple::CreateRecActionMsd()
 {
-   fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
-   GetNtuClusterMsd()->SetParGeo(GetParGeoMsd());
-   
-   fpNtuRecMsd  = new TAGdataDsc(new TAMSDntuPoint());
-   GetNtuPointMsd()->SetParGeo(GetParGeoMsd());
+   TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
+   Int_t sensorsN = parGeo->GetSensorsN();
+   Int_t stationsN = parGeo->GetStationsN();
+
+   fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster(sensorsN));   
+   fpNtuRecMsd  = new TAGdataDsc(new TAMSDntuPoint(stationsN));
    
    if (fFlagMsdTrack && fFlagTrack)
       fpNtuTrackMsd = new TAGdataDsc(new TAMSDntuTrack());

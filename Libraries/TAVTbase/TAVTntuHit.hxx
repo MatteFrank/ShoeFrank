@@ -24,7 +24,7 @@ protected:
     std::map<pair<int, int>, int > fMap; //! pixel map
     
 public:
-   TAVTntuHit(Int_t sensorsN);
+   TAVTntuHit(Int_t sensorsN = 0);
    virtual          ~TAVTntuHit();
    
    //! Check validity

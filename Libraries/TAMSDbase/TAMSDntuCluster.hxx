@@ -26,11 +26,11 @@ class TAMSDparGeo;
 class TAMSDntuCluster : public TAGdata {
    
 protected:
-  TAMSDparGeo*        fGeometry;        //! do NOT stored this pointer !
-  TObjArray*          fListOfClusters;  ///< list of clusters
+  Int_t              fSensorsN;        ///< number of sensors
+  TObjArray*         fListOfClusters;  ///< list of clusters
 
 public:
-  TAMSDntuCluster();
+  TAMSDntuCluster(Int_t sensorsN = 0);
   virtual           ~TAMSDntuCluster();
   
   TAMSDcluster*       GetCluster(Int_t iSensor, Int_t i);
@@ -44,8 +44,6 @@ public:
   TAMSDcluster*       NewCluster(Int_t iSensor);
   TAMSDcluster*       NewCluster(TAMSDcluster* clus, Int_t iSensor);
   
-  void                SetParGeo(TAMSDparGeo* par) { fGeometry = par; }
-
   virtual void        SetupClones();
   virtual void        Clear(Option_t* opt="");
   

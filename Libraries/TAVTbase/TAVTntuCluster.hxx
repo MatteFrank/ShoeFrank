@@ -34,7 +34,7 @@ protected:
    TObjArray*        fListOfClusters;  ///< list of clusters
 
 public:
-   TAVTntuCluster(Int_t sensorsN);
+   TAVTntuCluster(Int_t sensorsN = 0);
    virtual          ~TAVTntuCluster();
    
    // Get cluster

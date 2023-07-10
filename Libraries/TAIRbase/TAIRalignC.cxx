@@ -160,8 +160,8 @@ TAIRalignC::TAIRalignC(const TString name, const TString expName, Int_t runNumbe
       parConfMsd->FromFile(parFile.Data());
       
       devsNtot += parConfMsd->GetSensorsN()/2;
-      
-      fpNtuClusMsd  = new TAGdataDsc(new TAMSDntuPoint());
+      Int_t stationsN = geomapMsd->GetStationsN();
+      fpNtuClusMsd  = new TAGdataDsc(new TAMSDntuPoint(stationsN));
       fInfile->SetupBranch(fpNtuClusMsd);
    }
 

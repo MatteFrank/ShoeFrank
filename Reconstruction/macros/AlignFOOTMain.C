@@ -81,16 +81,20 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   vtparGeo = (TAVTparGeo*)parGeoVtx->Object();
   parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
   vtparGeo->FromFile(parFileName);
+   Int_t sensorsNvt = vtparGeo->GetSensorsN();
 
   TAGparaDsc* parGeoIt = new TAGparaDsc(new TAITparGeo());
   itparGeo = (TAITparGeo*)parGeoIt->Object();
   parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
   itparGeo->FromFile(parFileName);
+  Int_t sensorsNit = itparGeo->GetSensorsN();
 
   TAGparaDsc* parGeoMsd = new TAGparaDsc(new TAMSDparGeo());
   msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
   parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
   msdparGeo->FromFile(parFileName);
+  Int_t sensorsNms = msdparGeo->GetSensorsN();
+  Int_t stationsNms = msdparGeo->GetStationsN();
 
   TAGparaDsc* parGeoTw = new TAGparaDsc(new TATWparGeo());
   twparGeo = (TATWparGeo*)parGeoTw->Object();
@@ -130,7 +134,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   }
 
   if(IncludeIT){
-    itClus = new TAITntuCluster();
+    itClus = new TAITntuCluster(sensorsNit);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(itClus->ClassName()), &itClus);
     if(IncludeMC){
       itMc = new TAMCntuHit();
@@ -139,7 +143,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   }
 
   if(IncludeMSD){
-    msdntuclus= new TAMSDntuCluster();
+    msdntuclus= new TAMSDntuCluster(sensorsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntuclus->ClassName()), &msdntuclus);
     if(IncludeMC){
       msdMc = new TAMCntuHit();
@@ -148,13 +152,13 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   }
 
   if(IncludeMSD){
-    msdntuclus= new TAMSDntuCluster();
+    msdntuclus= new TAMSDntuCluster(sensorsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntuclus->ClassName()), &msdntuclus);
     msdntutrack= new TAMSDntuTrack();
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntutrack->ClassName()), &msdntutrack);
-    msdNtuPoint= new TAMSDntuPoint();
+    msdNtuPoint= new TAMSDntuPoint(stationsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuPoint->ClassName()), &msdNtuPoint);
-    msdNtuHit= new TAMSDntuHit();
+    msdNtuHit= new TAMSDntuHit(sensorsN);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuHit->ClassName()), &msdNtuHit);
   }
 
