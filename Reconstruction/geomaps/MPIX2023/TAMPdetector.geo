@@ -65,7 +65,7 @@ AlignementTilt:   0.00
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 2  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            2
 Type:              1
-PositionsX:        0.0437  PositionsY:   -0.000  PositionsZ:     2.604
+PositionsX:        0.0000  PositionsY:   -0.000  PositionsZ:     2.604
 Tilt1:             0.0000  Tilt2:         0.000   Tilt3:         0.000
 AlignementU:       0.00
 AlignementV:       0.00
@@ -102,7 +102,7 @@ AlignementTilt:   0.00
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 6  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            6
 Type:              1
-PositionsX:        0.0437  PositionsY:   -0.000  PositionsZ:    15.272
+PositionsX:        0.0000  PositionsY:   -0.000  PositionsZ:    15.272
 Tilt1:             0.0000  Tilt2:         0.000   Tilt3:         0.000
 AlignementU:       0.00
 AlignementV:       0.00
