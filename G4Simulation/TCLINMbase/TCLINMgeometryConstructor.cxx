@@ -155,8 +155,6 @@ G4VPhysicalVolume* TCLINMgeometryConstructor::Construct()
       new G4PVPlacement(rot, trans, log, "StartCounter", fLogWorld, false, 0);
    }
    
-
-   
    // ToF wall
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       
@@ -179,6 +177,30 @@ G4VPhysicalVolume* TCLINMgeometryConstructor::Construct()
        regTW->AddRootLogicalVolume(log);
 
       new G4PVPlacement(rot, trans, log, "TofWall", fLogWorld, false, 0);
+   }
+
+   // Calorimeter
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
+      
+      G4LogicalVolume* log  = fPhoswich->Construct();
+      TVector3 ang          = fpFootGeo->GetCAAngles()*TMath::DegToRad(); // in radians
+      G4RotationMatrix* rot = new G4RotationMatrix;
+      rot->rotateX(ang[0]);
+      rot->rotateY(ang[1]);
+      rot->rotateZ(ang[2]);
+      
+      TVector3 caCenter2      = fpFootGeo->GetCACenter()*cm;
+      G4ThreeVector caCenter(caCenter2[0], caCenter2[1], caCenter2[2]);
+      
+      //To rotate the box wrt hall origin
+      G4ThreeVector trans = (*rot)*(caCenter);
+      rot->invert(); // inversion ??
+
+       G4Region *regCA = new G4Region("Calorimeter");
+       log->SetRegion(regCA);
+       regCA->AddRootLogicalVolume(log);
+
+      new G4PVPlacement(rot, trans, log, "Calorimeter", fLogWorld, false, 0);
    }
 
     return pWorld;
