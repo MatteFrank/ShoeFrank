@@ -131,6 +131,8 @@ protected:
    TH1F*           fpHisFitClustPosErrY[MaxTrkSens];///< cluster err position by fit in Y histogram
    TH2F* fpHisTrackClustPosErrYvsPixel[MaxTrkSens];
    TH2F* fpHisTrackClustPosErrXvsPixel[MaxTrkSens];
+   TH2F* fpHisPixelMap[MaxTrkSens];
+   TH2F* fpHisNrowsVsNCols[MaxTrkSens];
 
 
    TH2F*           fpHisPosCompareX;          ///< Comparison of difference of position with the central hitted pixel

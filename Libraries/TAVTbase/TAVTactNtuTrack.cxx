@@ -113,7 +113,7 @@ Bool_t TAVTactNtuTrack::FindTiltedTracks()
 		 } else {
 			if (fBmTrack) {
             if (fBmTrackOk) {
-               lineOrigin.SetXYZ(fBmTrackPos.X(), fBmTrackPos.Y(), 0);
+               lineOrigin.SetXYZ(fBmTrackPos.X(), fBmTrackPos.Y(), fBmTrackPos.Z());
                lineOrigin = fpFootGeo->FromBMLocalToGlobal(lineOrigin);// go to FOOT global
             } else
 				  lineOrigin.SetXYZ(0, 0, 0); 

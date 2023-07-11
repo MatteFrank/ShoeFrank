@@ -1536,11 +1536,11 @@ void TAGactKFitter::CreateHistogram()	{
 
 	if( m_IsMC )
 	{
-		h_mcMom = new TH1F("h_mcMom", "h_mcMom", 200, 0., 16.);
+		h_mcMom = new TH1F("h_mcMom", "h_mcMom", 200, 0., 17.);
 		AddHistogram(h_mcMom);
 	}
 
-	h_momentum = new TH1F("h_momentum", "h_momentum", 200, 0., 16.);
+	h_momentum = new TH1F("h_momentum", "h_momentum", 200, 0., 17.);
 	AddHistogram(h_momentum);
 
 	h_TGprojVsThetaTot = new TH2D("TGproj_ThetaTot","TGproj_ThetaTot;X_proj [cm];Y_proj [cm]",400,-5,5,400,-5,5);
@@ -1593,12 +1593,12 @@ void TAGactKFitter::CreateHistogram()	{
 
 	for (int i = 0; i < 9; ++i)
 	{
-		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 1000, 0.,16.));
+		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 1000, 0.,17.));
 		AddHistogram(h_momentum_reco[i]);
 
 		if( m_IsMC )
 		{
-			h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 1000, 0.,16.));
+			h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 1000, 0.,17.));
 			AddHistogram(h_momentum_true[i]);
 
 			h_ratio_reco_true.push_back(new TH1F(Form("MomentumRatio%d",i), Form("Momentum Ratio %d",i), 1000, 0, 2.5));
@@ -1655,10 +1655,10 @@ void TAGactKFitter::AddResidualAndPullHistograms()
 					maxExtrap = 5;
 				}
 
-				h_residual[sensId] = new TH1F(Form("Res_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Residual between global track and measured %s cluster in layer %d, %c view;Residual (Meas-Fit) %c [cm];Entries",det.c_str(),iSensor,coord,coord),600,-maxRes,maxRes);
+				h_residual[sensId] = new TH1F(Form("Res_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Residual between global track and measured %s cluster in layer %d, %c view;Residual (Meas-Fit) %c [cm];Entries",det.c_str(),iSensor,coord,coord),1000,-maxRes,maxRes);
 				AddHistogram(h_residual[sensId]);
 
-				h_residualVsPos[sensId] = new TH2F(Form("Res_VsFitPos_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Residual vs %s cluster position in layer %d, %c view;Residual (Meas-Fit) %c [cm];Fitted pos%c [cm]",det.c_str(),iSensor,coord,coord,coord),300,-maxRes,maxRes,300,-3,3);
+				h_residualVsPos[sensId] = new TH2F(Form("Res_VsFitPos_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Residual vs %s cluster position in layer %d, %c view;Residual (Meas-Fit) %c [cm];Fitted pos%c [cm]",det.c_str(),iSensor,coord,coord,coord),1000,-maxRes,maxRes,300,-3,3);
 				AddHistogram(h_residualVsPos[sensId]);
 
 				h_pull[sensId] = new TH1F(Form("Pull_%s_%c_layer_%d",det.c_str(),coord,iSensor),Form("Pull for %s layer %d on %c view;Pull (Meas-Fit) %c;Entries",det.c_str(),iSensor,coord,coord),1000,-15,15);

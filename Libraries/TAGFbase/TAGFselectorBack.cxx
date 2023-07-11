@@ -207,6 +207,8 @@ void TAGFselectorBack::BackTracklets()
 
 				if( testTrack->getNumPointsWithMeasurement() < 5 )
 				{
+					if (m_debug > 0)
+						cout << "Too few points in back-tracklet candidate" << endl;
 					delete testTrack;
 					continue;
 				}

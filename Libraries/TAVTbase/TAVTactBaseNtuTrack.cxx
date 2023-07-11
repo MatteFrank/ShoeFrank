@@ -266,7 +266,8 @@ void TAVTactBaseNtuTrack::CheckBM()
 	  fBmTrack = pBMtrack->GetTrack(0);
 
    if (fBmTrack && fpFootGeo) {
-	  fBmTrackPos  = fBmTrack->Intersection(fpFootGeo->GetVTCenter().Z()-fpFootGeo->GetBMCenter().Z());
+	//   fBmTrackPos  = fBmTrack->Intersection(fpFootGeo->GetVTCenter().Z()-fpFootGeo->GetBMCenter().Z());
+     fBmTrackPos = fBmTrack->Intersection(fpFootGeo->FromGlobalToBMLocal(fpFootGeo->GetTGCenter()).Z());
 	  Float_t chi2 = fBmTrack->GetChiSquare();
 	  if (ValidHistogram())
 		 fpHisBmChi2->Fill(chi2);
@@ -491,7 +492,7 @@ void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 
 	  origin  = fpFootGeo->FromVTLocalToGlobal(origin);
 	  TVector3 res = origin - bmTrackPos;
-	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.Y());
+	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.X());
 	  fpHisVtxResY->Fill(origin.Y(), bmTrackPos.Y());
    }
 }

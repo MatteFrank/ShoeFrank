@@ -183,6 +183,11 @@ void TAVTactBaseTrack::CreateHistogram()
       fpHisFitClustPosErrY[i] = new TH1F(Form("%sFitClusPosErrY%d", fPrefix.Data(), i + 1), Form("%s - Clus Y position error by fit  in sensor %d;[cm]; Counts", fTitleDev.Data(), i + 1), 1000, 0., 0.002); // ! range
       AddHistogram(fpHisFitClustPosErrY[i]);
 
+      fpHisPixelMap[i] = new TH2F(Form("%sTrackPixelMap%d", fPrefix.Data(), i+1) , Form("%s -Tracked clusters pixel map for sensor %d", fTitleDev.Data(), i+1),pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx(),pGeoMap->GetPixelsNy(), 0, pGeoMap->GetPixelsNy());
+      AddHistogram(fpHisPixelMap[i]);
+      fpHisNrowsVsNCols[i] = new TH2F(Form("%snRowsVsnCols%d", fPrefix.Data(), i+1) , Form("%s -nRows vs nCols for sensor %d;nRows;nCols", fTitleDev.Data(), i+1), 51, -0.5, 50.5, 51, -0.5, 50.5);
+      AddHistogram(fpHisNrowsVsNCols[i]);
+
    }
    
    fpHisMeanPixel = new TH1F(Form("%sMeanClusPix", fPrefix.Data()), Form("%s - mean pixels per tracked clusters", fTitleDev.Data()), 100, -0.5, 99.5);
@@ -419,6 +424,8 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
      TVector3 impactLoc =  pGeoMap->Detector2Sensor(idx, impact);
      TVector3 impactGlb = fpFootGeo->FromVTLocalToGlobal(impact);
 
+      TVector2 clusSize = static_cast<TAVTbaseCluster *>(cluster)->ComputeSize();
+      fpHisNrowsVsNCols[idx]->Fill(clusSize.X(), clusSize.Y());
      //------- pull X
      Double_t dxOverdm = posZ;
      //Double_t dxOverdq = 1.;
@@ -440,12 +447,12 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
        else
           cout << "negative difference between sigma in cluster measurement in x!" << endl;
 
-       //------- pull Y
-       Double_t dyOverdm = posZ;
-       // Double_t dyOverdq = 1.;
-       Double_t fitErrorY2 = dyOverdm * dyOverdm * track->GetCovMatrixV()(1, 1) + track->GetCovMatrixV()(0, 0) + 2. * dyOverdm * track->GetCovMatrixV()(0, 1);
-       Double_t fitErrorY = sqrt(fitErrorY2);
-       Double_t resY = cluster->GetPositionG()(1) - track->Intersection(posZ).Y();
+      //------- pull Y
+      Double_t dyOverdm = posZ;
+      // Double_t dyOverdq = 1.;
+      Double_t fitErrorY2 = dyOverdm * dyOverdm * track->GetCovMatrixV()(1, 1) + track->GetCovMatrixV()(0, 0) + 2. * dyOverdm * track->GetCovMatrixV()(0, 1);
+      Double_t fitErrorY = sqrt(fitErrorY2);
+      Double_t resY = cluster->GetPositionG()(1) - track->Intersection(posZ).Y();
 
        if (fitErrorY2 < (cluster->GetPosError().Y() * cluster->GetPosError().Y()))
        {
@@ -502,6 +509,8 @@ for (int i = 0; i < cluster_vt->GetPixelsN(); i++)
           min_dist_meas_y = curr_dist_y;
           central_pixel_id_y = i;
        }
+       if(track->GetClustersN() == 4)
+         fpHisPixelMap[idx]->Fill(pixel->GetPixelLine(), pixel->GetPixelColumn());
      }
 
 
