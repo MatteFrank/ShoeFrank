@@ -660,9 +660,8 @@ string TAGparGeo::PrintPhysics()
    if(TAGrecoManager::GetPar()->IncludeDI()){
      //      str << PrintCard("MGNFIELD","0.1","0.00001","","0.","0.","0.","") << endl;
      str << PrintCard("MGNFIELD","0.1","0.00001","0.1","0.","0.","0.","") << endl;
-   }
-   if(TAGrecoManager::GetPar()->IncludeCA())
      str << PrintCard("STEPSIZE","0.001","0.01","AIR1","AIR1","","","") << endl;
+   }
 
    return str.str();
 }
