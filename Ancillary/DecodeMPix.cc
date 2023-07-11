@@ -75,10 +75,10 @@ void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = fal
    mpActTrck->CreateHistogram();
    
    if (treeFlag) {
-      outFile->SetupElementBranch(mpNtu, "mprh.");
-      outFile->SetupElementBranch(mpClus, "mpclus.");
+      outFile->SetupElementBranch(mpNtu);
+      outFile->SetupElementBranch(mpClus);
       if (trackFlag)
-         outFile->SetupElementBranch(mpTrck, "mptrack.");
+         outFile->SetupElementBranch(mpTrck);
    }
 }
 
@@ -159,7 +159,7 @@ int main (int argc, char *argv[])  {
       Int_t posf = in.Last('.');
       outFileName = in(posi+1, posf-posi-1);
       outFileName.Append(".root");
-      printf("Output root file not set, put %s as output file\n", outFileName.Data());
+      Info("Main()","Output root file not set, put %s as output file\n", outFileName.Data());
    }
    
    if (outFile->Open(outFileName.Data(), "RECREATE")) return 0;
