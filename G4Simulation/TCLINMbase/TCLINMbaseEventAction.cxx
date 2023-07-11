@@ -36,15 +36,8 @@
 #include "TFile.h"
 
 /*! \class TCLINMbaseEventAction
- \brief Base event action class for FOOT
+ \brief Base event action class for CLINM
  
- include hit class
- Endo of event:
- collection hits: all hits of this collections contains the information about what happened in the sensitive volume (epitaxial layer)
- each hit represents a step and in the epi layer there may have been many
- than the position to send to CmosDigitizer is the PosIn of the first hits and the pos out of the last hits
- the energy deposited is the sum of the energy deposited in each step
- All positon in microns and all energy in eV
  */
 
 /*! \class TAGeventInterruptHandler
