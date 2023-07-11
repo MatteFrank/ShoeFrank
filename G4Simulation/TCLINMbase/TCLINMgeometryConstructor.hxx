@@ -69,20 +69,20 @@ public:
    //! Get world material
    G4Material*  GetWorldMaterial()         { return fWorldMaterial;   }
    //! Get geometry parameter for STC
-   TAPLparGeo*  GetParGeoIr()              { return fpParGeoSt;       }
+   TAPLparGeo*  GetParGeoPl()              { return fpParGeoPl;       }
    //! Get geometry parameter for TW
-   TACEparGeo*  GetParGeoTw()              { return fpParGeoTw;       }
+   TACEparGeo*  GetParGeoCe()              { return fpParGeoCe;       }
    //! Get geometry parameter for CAL
-   TAPWparGeo*  GetParGeoCa()              { return fpParGeoCa;       }
+   TAPWparGeo*  GetParGeoPw()              { return fpParGeoPw;       }
    
 private:
-   TCPLgeometryConstructor*  fStartCounter;  ///< STC geometry constructor
-   TCCEgeometryConstructor*  fTofWall;       ///< TW geometry constructor
-   TCPWgeometryConstructor*  fCalorimeter;   ///< CAL geometry constructor
+   TCPLgeometryConstructor*  fPlastic;    ///< Plastic geometry constructor
+   TCCEgeometryConstructor*  fCeBr3;      ///< CeBr3 geometry constructor
+   TCPWgeometryConstructor*  fPhoswich;   ///< PW geometry constructor
    
-   TAPLparGeo*               fpParGeoSt;     ///< STC geometry parameters
-   TACEparGeo*               fpParGeoTw;     ///< TW geometry parameters
-   TAPWparGeo*               fpParGeoCa;     ///< CAL geometry parameters
+   TAPLparGeo*               fpParGeoPl;  ///< Pl geometry parameters
+   TACEparGeo*               fpParGeoCe;  ///< Ce geometry parameters
+   TAPWparGeo*               fpParGeoPw;  ///< PW geometry parameters
 
 };
 

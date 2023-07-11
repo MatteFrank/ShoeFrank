@@ -81,34 +81,34 @@ using namespace CLHEP;
 //! \param[in] runNumber run number
 TCLINMgeometryConstructor::TCLINMgeometryConstructor(const TString expName, Int_t runNumber)
 : TCGbaseGeometryConstructor(expName, runNumber),
-  fStartCounter(0x0),
-  fTofWall(0x0),
-  fpParGeoSt(0x0),
-  fpParGeoTw(0x0),
-  fpParGeoCa(0x0)
+  fPlastic(0x0),
+  fCeBr3(0x0),
+  fpParGeoPl(0x0),
+  fpParGeoCe(0x0),
+  fpParGeoPw(0x0)
 {
    // initialise map file for start counter
    if (TAGrecoManager::GetPar()->IncludeST()) {
-      fpParGeoSt = new TAPLparGeo();
+      fpParGeoPl = new TAPLparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TAPLparGeo::GetBaseName(), fRunNumber);
-      fpParGeoSt->FromFile(mapFileName.Data());
-      fStartCounter = new TCPLgeometryConstructor(fpParGeoSt);
+      fpParGeoPl->FromFile(mapFileName.Data());
+      fPlastic = new TCPLgeometryConstructor(fpParGeoPl);
    }
    
    // initialise map file for TOF
    if (TAGrecoManager::GetPar()->IncludeTW()) {
-      fpParGeoTw = new TACEparGeo();
+      fpParGeoCe = new TACEparGeo();
       TString mapFileName =  fCampManager->GetCurGeoFile(TACEparGeo::GetBaseName(), fRunNumber);
-      fpParGeoTw->FromFile(mapFileName.Data());
-      fTofWall = new TCCEgeometryConstructor(fpParGeoTw);
+      fpParGeoCe->FromFile(mapFileName.Data());
+      fCeBr3 = new TCCEgeometryConstructor(fpParGeoCe);
    }
    
    // initialise map file for calorimteer
    if (TAGrecoManager::GetPar()->IncludeCA()) {
-      fpParGeoCa = new TAPWparGeo();
+      fpParGeoPw = new TAPWparGeo();
       TString mapFileName = fCampManager->GetCurGeoFile(TAPWparGeo::GetBaseName(), fRunNumber);
-      fpParGeoCa->FromFile(mapFileName.Data());
-      fCalorimeter = new TCPWgeometryConstructor(fpParGeoCa);
+      fpParGeoPw->FromFile(mapFileName.Data());
+      fPhoswich = new TCPWgeometryConstructor(fpParGeoPw);
    }
  }
 
@@ -116,13 +116,13 @@ TCLINMgeometryConstructor::TCLINMgeometryConstructor(const TString expName, Int_
 //! Destructor
 TCLINMgeometryConstructor::~TCLINMgeometryConstructor()
 {
-   if (fStartCounter) delete fStartCounter;
-   if (fTofWall)      delete fTofWall;
-   if (fCalorimeter)  delete fCalorimeter;
+   if (fPlastic)  delete fPlastic;
+   if (fCeBr3)    delete fCeBr3;
+   if (fPhoswich) delete fPhoswich;
    
-   if (fpParGeoSt)    delete fpParGeoSt;
-   if (fpParGeoTw)    delete fpParGeoTw;
-   if (fpParGeoCa)    delete fpParGeoCa;
+   if (fpParGeoPl)    delete fpParGeoPl;
+   if (fpParGeoCe)    delete fpParGeoCe;
+   if (fpParGeoPw)    delete fpParGeoPw;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -134,7 +134,7 @@ G4VPhysicalVolume* TCLINMgeometryConstructor::Construct()
    // Start Counter
    if (TAGrecoManager::GetPar()->IncludeST()) {
       
-      G4LogicalVolume* log  = fStartCounter->Construct();
+      G4LogicalVolume* log  = fPlastic->Construct();
       TVector3 ang          = fpFootGeo->GetSTAngles()*TMath::DegToRad(); // in radians
       G4RotationMatrix* rot = new G4RotationMatrix;
       rot->rotateX(ang[0]);
@@ -160,7 +160,7 @@ G4VPhysicalVolume* TCLINMgeometryConstructor::Construct()
    // ToF wall
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       
-      G4LogicalVolume* log  = fTofWall->Construct();
+      G4LogicalVolume* log  = fCeBr3->Construct();
       TVector3 ang          = fpFootGeo->GetTWAngles()*TMath::DegToRad(); // in radians
       G4RotationMatrix* rot = new G4RotationMatrix;
       rot->rotateX(ang[0]);
