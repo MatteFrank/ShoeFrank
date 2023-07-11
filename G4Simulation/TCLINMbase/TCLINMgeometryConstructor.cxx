@@ -83,6 +83,7 @@ TCLINMgeometryConstructor::TCLINMgeometryConstructor(const TString expName, Int_
 : TCGbaseGeometryConstructor(expName, runNumber),
   fPlastic(0x0),
   fCeBr3(0x0),
+  fPhoswich(0x0),
   fpParGeoPl(0x0),
   fpParGeoCe(0x0),
   fpParGeoPw(0x0)
