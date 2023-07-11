@@ -1,15 +1,14 @@
 # CMake for Qapivi/rec/TAVTbase
 # Ch. Finck
 #
-project (TCLINMbase)
+project (TCPWbase)
 #
 MESSAGE("  G4Simulation/${PROJECT_NAME}:")
 #
 #
 set(LIBNAME ${PROJECT_NAME})
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TCST} ${TCPL} ${TCCE} ${TCPW})
-
+set( EXTRA_INTERNAL_LIBRARIES ${TCG})
 #
 # headers / dictionnary / sources 
 # 
@@ -17,11 +16,8 @@ set( EXTRA_INTERNAL_LIBRARIES ${TCST} ${TCPL} ${TCCE} ${TCPW})
 # manual method : base file name separated in two lists with different treatment.
 #
 set( Qapivi_file
-    TCLINMgeometryConstructor
-    TCLINMbaseEventAction
-    TCLINMeventAction
-    TCLINMrunAction
-    TCLINMtrackingAction
+   TCPWgeometryConstructor
+   TCPWsensitiveDetector
 )
 
 # add includes : root + current + dependencies 
@@ -34,11 +30,6 @@ foreach( f ${Qapivi_file} )
 endforeach()
 
 include_directories(${TCG_INCLUDE_DIR})
-include_directories(${TCPL_INCLUDE_DIR})
-include_directories(${TCCE_INCLUDE_DIR})
-include_directories(${TCPW_INCLUDE_DIR})
-
-message("[${TCPL_INCLUDE_DIR}]")
 
 #----------------------------------------------------------------------------
 #
@@ -52,7 +43,7 @@ add_dependencies(${LIBNAME} ${SIM_REC_LIBRARIES})
 #
 set_target_properties(${LIBNAME} PROPERTIES SUFFIX ".so")
 #
-target_link_libraries( ${LIBNAME}  ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} ${ANC_LIBRARIES} ${REC_LIBRARIES} ${EXTRA_INTERNAL_LIBRARIES})
+target_link_libraries( ${LIBNAME}  ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} ${REC_LIBRARIES} ${EXTRA_INTERNAL_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Install libraries

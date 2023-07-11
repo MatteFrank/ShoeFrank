@@ -58,16 +58,9 @@
 #include "G4Region.hh"
 
 #include "TCGtargetConstructor.hxx"
-#include "TCSTgeometryConstructor.hxx"
-#include "TCBMgeometryConstructor.hxx"
-#include "TCVTgeometryConstructor.hxx"
-#include "TCITgeometryConstructor.hxx"
-#include "TCEMgeometryConstructor.hxx"
-#include "TCMSDgeometryConstructor.hxx"
-#include "TCCAgeometryConstructor.hxx"
-#include "TCTWgeometryConstructor.hxx"
-#include "TCEMfield.hxx"
-#include "TCEMfieldSetup.hxx"
+#include "TCPLgeometryConstructor.hxx"
+#include "TCCEgeometryConstructor.hxx"
+#include "TCPWgeometryConstructor.hxx"
 
 #include "TAGrecoManager.hxx"
 #include "TAGnameManager.hxx"
@@ -91,22 +84,31 @@ TCLINMgeometryConstructor::TCLINMgeometryConstructor(const TString expName, Int_
   fStartCounter(0x0),
   fTofWall(0x0),
   fpParGeoSt(0x0),
-  fpParGeoTw(0x0)
+  fpParGeoTw(0x0),
+  fpParGeoCa(0x0)
 {
    // initialise map file for start counter
    if (TAGrecoManager::GetPar()->IncludeST()) {
-      fpParGeoSt = new TASTparGeo();
-      TString mapFileName = fCampManager->GetCurGeoFile(FootBaseName("TASTparGeo"), fRunNumber);
+      fpParGeoSt = new TAPLparGeo();
+      TString mapFileName = fCampManager->GetCurGeoFile(TAPLparGeo::GetBaseName(), fRunNumber);
       fpParGeoSt->FromFile(mapFileName.Data());
-      fStartCounter = new TCSTgeometryConstructor(fpParGeoSt);
+      fStartCounter = new TCPLgeometryConstructor(fpParGeoSt);
    }
    
    // initialise map file for TOF
    if (TAGrecoManager::GetPar()->IncludeTW()) {
-      fpParGeoTw = new TATWparGeo();
-      TString mapFileName =  fCampManager->GetCurGeoFile(FootBaseName("TATWparGeo"), fRunNumber);
+      fpParGeoTw = new TACEparGeo();
+      TString mapFileName =  fCampManager->GetCurGeoFile(TACEparGeo::GetBaseName(), fRunNumber);
       fpParGeoTw->FromFile(mapFileName.Data());
-      fTofWall = new TCTWgeometryConstructor(fpParGeoTw);
+      fTofWall = new TCCEgeometryConstructor(fpParGeoTw);
+   }
+   
+   // initialise map file for calorimteer
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
+      fpParGeoCa = new TAPWparGeo();
+      TString mapFileName = fCampManager->GetCurGeoFile(TAPWparGeo::GetBaseName(), fRunNumber);
+      fpParGeoCa->FromFile(mapFileName.Data());
+      fCalorimeter = new TCPWgeometryConstructor(fpParGeoCa);
    }
  }
 
@@ -116,9 +118,11 @@ TCLINMgeometryConstructor::~TCLINMgeometryConstructor()
 {
    if (fStartCounter) delete fStartCounter;
    if (fTofWall)      delete fTofWall;
+   if (fCalorimeter)  delete fCalorimeter;
    
    if (fpParGeoSt)    delete fpParGeoSt;
    if (fpParGeoTw)    delete fpParGeoTw;
+   if (fpParGeoCa)    delete fpParGeoCa;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

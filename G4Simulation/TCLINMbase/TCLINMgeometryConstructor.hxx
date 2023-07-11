@@ -42,30 +42,16 @@
 #include "globals.hh"
 #include "G4String.hh"
 
-#include "TASTparGeo.hxx"
-#include "TABMparGeo.hxx"
-#include "TAVTparGeo.hxx"
-#include "TAITparGeo.hxx"
-#include "TAITparGeo.hxx"
-#include "TADIparGeo.hxx"
-#include "TAMSDparGeo.hxx"
-#include "TACAparGeo.hxx"
-#include "TATWparGeo.hxx"
+#include "TAPLparGeo.hxx"
+#include "TACEparGeo.hxx"
+#include "TAPWparGeo.hxx"
 
 
 class G4Material;
 class TCEMfield;
-class TCSTgeometryConstructor;
-class TCBMgeometryConstructor;
-class TCVTgeometryConstructor;
-class TCITgeometryConstructor;
-class TCEMgeometryConstructor;
-class TCMSDgeometryConstructor;
-class TCTWgeometryConstructor;
-class TCCAgeometryConstructor;
-class TCLINMfield;
-class TADIgeoField;
-class TCEMfieldSetup;
+class TCPLgeometryConstructor;
+class TCCEgeometryConstructor;
+class TCPWgeometryConstructor;
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -83,16 +69,21 @@ public:
    //! Get world material
    G4Material*  GetWorldMaterial()         { return fWorldMaterial;   }
    //! Get geometry parameter for STC
-   TASTparGeo*  GetParGeoIr()              { return fpParGeoSt;       }
+   TAPLparGeo*  GetParGeoIr()              { return fpParGeoSt;       }
    //! Get geometry parameter for TW
-   TATWparGeo*  GetParGeoTw()              { return fpParGeoTw;       }
+   TACEparGeo*  GetParGeoTw()              { return fpParGeoTw;       }
+   //! Get geometry parameter for CAL
+   TAPWparGeo*  GetParGeoCa()              { return fpParGeoCa;       }
    
 private:
-   TCSTgeometryConstructor*  fStartCounter;  ///< STC geometry constructor
-   TCTWgeometryConstructor*  fTofWall;       ///< TW geometry constructor
+   TCPLgeometryConstructor*  fStartCounter;  ///< STC geometry constructor
+   TCCEgeometryConstructor*  fTofWall;       ///< TW geometry constructor
+   TCPWgeometryConstructor*  fCalorimeter;   ///< CAL geometry constructor
    
-   TASTparGeo*               fpParGeoSt;     ///< STC geometry parameters
-   TATWparGeo*               fpParGeoTw;     ///< TW geometry parameters
+   TAPLparGeo*               fpParGeoSt;     ///< STC geometry parameters
+   TACEparGeo*               fpParGeoTw;     ///< TW geometry parameters
+   TAPWparGeo*               fpParGeoCa;     ///< CAL geometry parameters
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

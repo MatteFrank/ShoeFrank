@@ -19,13 +19,9 @@
 
 #include "TCLINMgeometryConstructor.hxx"
 
-#include "TCSTgeometryConstructor.hxx"
-#include "TCBMgeometryConstructor.hxx"
-#include "TCVTgeometryConstructor.hxx"
-#include "TCITgeometryConstructor.hxx"
-#include "TCMSDgeometryConstructor.hxx"
-#include "TCTWgeometryConstructor.hxx"
-#include "TCCAgeometryConstructor.hxx"
+#include "TCPLgeometryConstructor.hxx"
+#include "TCCEgeometryConstructor.hxx"
+#include "TCPWgeometryConstructor.hxx"
 
 #include "TCGmcHit.hxx"
 #include "TAMCntuPart.hxx"
@@ -78,8 +74,9 @@ Bool_t TAGeventInterruptHandler::Notify()
 TCLINMbaseEventAction::TCLINMbaseEventAction(TCLINMrunAction* runAction, TCGbaseGeometryConstructor* footGeomConstructor)
 : G4UserEventAction(),
   fEventNumber(-1),
-  fStCollId(-1),
-  fTwCollId(-1),
+  fPlCollId(-1),
+  fCeCollId(-1),
+  fPwCollId(-1),
   fDetName(""),
   fFillTree(true),
   fInelasticOnly(false)
@@ -161,11 +158,15 @@ void TCLINMbaseEventAction::ConstructCollection()
    G4SDManager * SDman = G4SDManager::GetSDMpointer();
 
    if (TAGrecoManager::GetPar()->IncludeST()) {
-      fStCollId = SDman->GetCollectionID(TCSTgeometryConstructor::GetSDname());
+      fPlCollId = SDman->GetCollectionID(TCPLgeometryConstructor::GetSDname());
    }
       
    if (TAGrecoManager::GetPar()->IncludeTW()) {
-      fTwCollId = SDman->GetCollectionID(TCTWgeometryConstructor::GetSDname());
+      fCeCollId = SDman->GetCollectionID(TCCEgeometryConstructor::GetSDname());
+   }
+   
+   if (TAGrecoManager::GetPar()->IncludeCA()) {
+      fPwCollId = SDman->GetCollectionID(TCPWgeometryConstructor::GetSDname());
    }
 }
 

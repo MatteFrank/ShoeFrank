@@ -13,8 +13,11 @@ set(FOOT_SRC "${CMAKE_SOURCE_DIR}/Libraries")
 set(FOOT_REC "${CMAKE_SOURCE_DIR}/Reconstruction")
 set(REC_INCLUDE_DIR ${FOOT_SRC}/TAGbase ${FOOT_SRC}/TADIbase ${FOOT_SRC}/TAMCbase ${FOOT_SRC}/TASTbase ${FOOT_SRC}/TABMbase ${FOOT_SRC}/TAVTbase ${FOOT_SRC}/TAITbase ${FOOT_SRC}/TAMSDbase ${FOOT_SRC}/TACAbase ${FOOT_SRC}/TATWbase ${FOOT_SRC}/TAEDbase ${FOOT_SRC}/TAGfoot)
 
+set(FOOT_ANC "${CMAKE_SOURCE_DIR}/Ancillary")
+set(ANC_INCLUDE_DIR ${FOOT_ANC}/TAMPbase ${FOOT_ANC}/TAPXIbase ${FOOT_ANC}/TAPWbase ${FOOT_ANC}/TANEbase ${FOOT_ANC}/TAPLbase ${FOOT_ANC}/TACEbase)
 
 set(REC_LIBRARIES -lTAGbase -lTADIbase -lTAMCbase -lTASTbase -lTABMbase -lTAMCbase -lTAVTbase -lTAITbase -lTAMSDbase -lTACAbase -lTATWbase -lTAEDbase  -lTAGfoot -L${BUILD_REC}/lib)
+set(ANC_LIBRARIES -lTAMPbase -lTAPXIbase -lTAPWbase -lTASTbase -lTANEbase -lTAPLbase -lTACEbase -L${BUILD_REC}/lib)
 
 set(SIM_REC_LIBRARIES TAGbase TADIbase TAMCbase TASTbase TABMbase TAMCbase TAVTbase TAITbase TAMSDbase TACAbase TATWbase TAEDbase TAGfoot)
 set(REC_LIBRARY_DIR ${FOOT_SRC}/lib)

@@ -17,21 +17,13 @@
 
 #include "TCLINMgeometryConstructor.hxx"
 
-#include "TCSTgeometryConstructor.hxx"
-#include "TCBMgeometryConstructor.hxx"
-#include "TCVTgeometryConstructor.hxx"
-#include "TCITgeometryConstructor.hxx"
-#include "TCMSDgeometryConstructor.hxx"
-#include "TCTWgeometryConstructor.hxx"
-#include "TCCAgeometryConstructor.hxx"
+#include "TCPLgeometryConstructor.hxx"
+#include "TCCEgeometryConstructor.hxx"
+#include "TCPWgeometryConstructor.hxx"
 
-#include "TASTparGeo.hxx"
-#include "TABMparGeo.hxx"
-#include "TAVTparGeo.hxx"
-#include "TAITparGeo.hxx"
-#include "TAMSDparGeo.hxx"
-#include "TATWparGeo.hxx"
-#include "TACAparGeo.hxx"
+#include "TAPLparGeo.hxx"
+#include "TACEparGeo.hxx"
+#include "TAPWparGeo.hxx"
 
 #include "TAMCevent.hxx"
 #include "TCGmcHit.hxx"
@@ -91,11 +83,15 @@ void TCLINMeventAction::EndOfEventAction(const G4Event* evt)
 //! \param[in] evt a given event
 void TCLINMeventAction::Collect(const G4Event* evt)
 {
-   if (fStCollId >= 0)
-      GetHitPerPlane(evt, fStCollId);
+   if (fPlCollId >= 0)
+      GetHitPerPlane(evt, fPlCollId);
    
-   if (fTwCollId >= 0)
-      GetHitPerPlane(evt, fTwCollId);
+   if (fCeCollId >= 0)
+      GetHitPerPlane(evt, fCeCollId);
+   
+   if (fPwCollId >= 0)
+      GetHitPerPlane(evt, fPwCollId);
+   
 }
 
 
@@ -249,18 +245,23 @@ void TCLINMeventAction::FillHits(TAMCevent* event, TCGmcHit* mcHit)
   
     event->AddEvent(fEventNumber);
 
-    if (fStCollId >= 0 && fDetName==TCSTgeometryConstructor::GetSDname()){
+    if (fPlCollId >= 0 && fDetName==TCPLgeometryConstructor::GetSDname()){
         event->AddSTC(trackIdx, TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]),
                     TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
     }
 
-    if (fTwCollId >= 0 && fDetName==TCTWgeometryConstructor::GetSDname()) {
-        Int_t barId = sensorId % TATWparGeo::GetLayerOffset();
-        Int_t view  = sensorId /  TATWparGeo::GetLayerOffset();
+    if (fCeCollId >= 0 && fDetName==TCCEgeometryConstructor::GetSDname()) {
+       Int_t barId = sensorId;
+       Int_t view  = 0;
         event->AddTW(trackIdx, barId, view,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]),
                    TVector3(pou[0],pou[1],pou[2]), edep, al, time, trackId);
     }
 
+    if (fPwCollId >= 0 && fDetName==TCPWgeometryConstructor::GetSDname()) {
+        Int_t crystalId = sensorId;
+        event->AddCAL(trackIdx, crystalId,TVector3(vin[0],vin[1],vin[2]), TVector3(vou[0],vou[1],vou[2]), TVector3(pin[0],pin[1],pin[2]),
+                    TVector3(pou[0],pou[1],pou[2]),edep, al, time, trackId);
+    }
 
    static Int_t crossIdOld = 0;
    if (TAGrecoManager::GetPar()->IsRegionMc()) {
