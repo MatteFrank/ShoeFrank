@@ -9,5 +9,6 @@
 #pragma link C++ class TAMPparMap;
 
 #pragma link C++ class TAMPactAscReader;
+#pragma link C++ class TAMPalignC;
 
 #endif
