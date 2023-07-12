@@ -519,8 +519,8 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
 string TAVTparGeo::PrintVTPhysics()
 {
    stringstream str;
-   str << PrintCard("STEPSIZE","0.000001","0.0001",fvPixRegion.at(0),fvPixRegion.at(fvPixRegion.size()-1),"","","") << endl;
-   str << PrintCard("STEPSIZE","0.000001","0.0001",fvEpiRegion.at(0),fvEpiRegion.at(fvEpiRegion.size()-1),"","","") << endl;
-   str << PrintCard("STEPSIZE","0.000001","0.0001",fvModRegion.at(0),fvModRegion.at(fvModRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0003",fvPixRegion.at(0),fvPixRegion.at(fvPixRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0005",fvEpiRegion.at(0),fvEpiRegion.at(fvEpiRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0015",fvModRegion.at(0),fvModRegion.at(fvModRegion.size()-1),"","","") << endl;
    return str.str();
 }
