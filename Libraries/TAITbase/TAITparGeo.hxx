@@ -53,9 +53,9 @@ private:
    //! Fluka kapton region
    vector<string> fvKaptonRegion; //! Fluka kapton region
     //! Fluka epoxy body
-   vector<string> fvEpoxyRegion;  //! Fluka epoxy body
+   vector<string> fvEpoxyRegion;  //! Fluka epoxy region
    //! Fluka aluminum body
-   vector<string> fvAlRegion;     //! Fluka aluminum body
+   vector<string> fvAlRegion;     //! Fluka aluminum region
 
 protected:
    static const TString fgkBaseNameIt;      ///< IT base name
@@ -161,6 +161,8 @@ public:
    virtual string PrintRegions();
    // Fluka assignment material
    virtual string PrintAssignMaterial(TAGmaterials *Material);
+   // Fluka assignment material
+   virtual string PrintITPhysics();
    // Fluka bodies subtraction
    virtual string PrintSubtractBodiesFromAir();
    

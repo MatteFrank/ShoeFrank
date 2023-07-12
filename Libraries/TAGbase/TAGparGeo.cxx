@@ -659,17 +659,8 @@ string TAGparGeo::PrintPhysics()
 
    if(TAGrecoManager::GetPar()->IncludeDI()){
      //      str << PrintCard("MGNFIELD","0.1","0.00001","","0.","0.","0.","") << endl;
-     if(TAGrecoManager::GetPar()->IncludeIT()){
-      str << PrintCard("STEPSIZE","0.001","0.01","AIR1","AIR1","","","") << endl;
-      str << PrintCard("STEPSIZE","0.000001","0.0001","ITRP0","ITRP31","","","") << endl;
-      str << PrintCard("STEPSIZE","0.000001","0.0001","ITRK00","ITRK115","","","") << endl;
-      str << PrintCard("STEPSIZE","0.000001","0.0001","ITRA00","ITRA114","","","") << endl;
-      str << PrintCard("STEPSIZE","0.000001","0.0001","ITRY00","ITRY112","","","") << endl;
-      str << PrintCard("STEPSIZE","0.000001","0.0001","ITRE00","ITRE31","","","") << endl;
-      str << PrintCard("STEPSIZE","0.000001","0.0001","ITRM0","ITRM31","","","") << endl;
-      str << PrintCard("STEPSIZE","0.000001","0.001","ITRF00","ITRF12","","","") << endl;
-     }
      str << PrintCard("MGNFIELD","0.1","0.00001","0.1","0.","0.","0.","") << endl;
+     str << PrintCard("STEPSIZE","0.001","0.01","AIR1","AIR1","","","") << endl;
    }
 
    return str.str();
