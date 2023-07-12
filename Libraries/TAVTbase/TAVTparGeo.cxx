@@ -512,3 +512,15 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
 
   return ss.str();
 }
+
+//_____________________________________________________________________________
+//! Print stepsize in Fluka for each it region
+//!
+string TAVTparGeo::PrintVTPhysics()
+{
+   stringstream str;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvPixRegion.at(0),fvPixRegion.at(fvPixRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvEpiRegion.at(0),fvEpiRegion.at(fvEpiRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvModRegion.at(0),fvModRegion.at(fvModRegion.size()-1),"","","") << endl;
+   return str.str();
+}
