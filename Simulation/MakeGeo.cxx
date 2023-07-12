@@ -280,6 +280,8 @@ int main (int argc, char *argv[]) {
       outfile << vtxGeo->PrintVTPhysics();
     if(TAGrecoManager::GetPar()->IncludeIT())
       outfile << itrGeo->PrintITPhysics();
+    if(TAGrecoManager::GetPar()->IncludeMSD())
+      outfile << msdGeo->PrintMSDPhysics();
 
     outfile << geomat.str();
 
