@@ -31,19 +31,20 @@
 
 #include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuTrackF.hxx"
+#include "TAVTactNtuTrack.hxx"
 #include "TAGrecoManager.hxx"
 
 #endif
 
 // main
-TAGcampaignManager* campManager  = 0x0;
-TAGactTreeWriter*   outFile      = 0x0;
-TAMPactAscReader*   daqActReader = 0x0;
+TAGcampaignManager*  campManager  = 0x0;
+TAGactTreeWriter*    outFile      = 0x0;
+TAMPactAscReader*    daqActReader = 0x0;
 
-TAVTactNtuCluster*  mpActClus    = 0x0;
-TAVTactNtuTrackF*   mpActTrck    = 0x0;
+TAVTactNtuCluster*   mpActClus    = 0x0;
+TAVTactBaseNtuTrack* mpActTrck    = 0x0;
 
-void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = false)
+void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = false,  Bool_t trackS = false)
 {
    TAGparaDsc* mpMap    = new TAGparaDsc("mpMap", new TAMPparMap());
    TAMPparMap* map   = (TAMPparMap*) mpMap->Object();
@@ -71,7 +72,11 @@ void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = fal
    mpActClus =  new TAVTactNtuCluster("mpActClus", mpNtu, mpClus, mpConf, mpGeo);
    mpActClus->CreateHistogram();
 
-   mpActTrck = new TAVTactNtuTrackF("mpActTrck", mpClus, mpTrck, mpConf, mpGeo);
+   if (trackS)
+      mpActTrck = new TAVTactNtuTrack("mpActTrck", mpClus, mpTrck, mpConf, mpGeo);
+   else
+      mpActTrck = new TAVTactNtuTrackF("mpActTrck", mpClus, mpTrck, mpConf, mpGeo);
+
    mpActTrck->CreateHistogram();
    
    if (treeFlag) {
@@ -82,14 +87,15 @@ void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = fal
    }
 }
 
-int main (int argc, char *argv[])  {
-   
+int main (int argc, char *argv[])
+{
    TString in("");
    TString out("");
    TString exp("");
    
    Int_t runNb = 1;
    Int_t nTotEv = 1e7;
+   Bool_t trackS = false;
    
    for (int i = 0; i < argc; i++){
       if(strcmp(argv[i],"-out") == 0)   { out =TString(argv[++i]);  }   // Raw file name for output
@@ -97,6 +103,7 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
+      if(strcmp(argv[i],"-trkS") == 0)  { trackS = true;            }   // Enable Std tracking algo
 
       if(strcmp(argv[i],"-help") == 0)  {
          cout<<" DecodeMPix help:"<<endl;
@@ -107,6 +114,8 @@ int main (int argc, char *argv[])  {
          cout<<"      -nev value     : [def=10^7] Numbers of events to process"<<endl;
          cout<<"      -run value     : [def=1] Run number"<<endl;
          cout<<"      -exp name      : [def=""] experient name for config/geomap extention"<<endl;
+         cout<<"      -trkS          : enable Std tracking algo"<<endl;
+
          return 1;
       }
    }
@@ -141,7 +150,7 @@ int main (int argc, char *argv[])  {
    
    outFile = new TAGactTreeWriter("outFile");
 
-   FillMonopix(runNb, treeFlag, trackFlag);
+   FillMonopix(runNb, treeFlag, trackFlag, trackS);
    daqActReader->Open(in);
    
    tagr.AddRequiredItem(daqActReader);
