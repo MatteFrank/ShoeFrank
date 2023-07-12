@@ -276,6 +276,8 @@ int main (int argc, char *argv[]) {
 
     outfile << generalGeo->PrintBeam();
     outfile << generalGeo->PrintPhysics();
+    if(TAGrecoManager::GetPar()->IncludeVT())
+      outfile << vtxGeo->PrintVTPhysics();
     if(TAGrecoManager::GetPar()->IncludeIT())
       outfile << itrGeo->PrintITPhysics();
 
