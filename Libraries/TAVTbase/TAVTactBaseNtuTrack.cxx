@@ -323,7 +323,16 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 
 		 lineOrigin.SetXYZ(cluster->GetPosition()[0], cluster->GetPosition()[1], 0); // parallel lines
 		 lineOrigin = pGeoMap->Sensor2Detector(curPlane, lineOrigin);
-		 lineSlope.SetXYZ(0, 0, 1);
+       //Create slope parallel to Z axis in the global reference frame
+       if( fBmTrack )
+      {
+         lineSlope = fBmTrack->GetSlope();
+         lineSlope = fpFootGeo->VecFromBMLocalToGlobal(lineSlope);
+      }
+      else
+         lineSlope.SetXYZ(0, 0, 1);
+
+      lineSlope = fpFootGeo->VecFromGlobalToVTLocal(lineSlope);
 
 		 track->SetLineValue(lineOrigin, lineSlope);
 

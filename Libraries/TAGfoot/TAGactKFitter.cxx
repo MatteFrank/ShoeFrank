@@ -604,6 +604,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	bool hasTwPoint = false;
 	vector<TAGpoint*> shoeTrackPointRepo;
 	Int_t TwChargeZ = -1;
+	TVector3 glbPosAtTW(0,0,0);
 	Float_t TwTof = -1;
 	vector<string> tok = TAGparTools::Tokenize( fitTrackName , "_" );
 	string PartName = tok.at(0);
@@ -637,6 +638,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			TATWpoint* point = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( iClus );
 			TwChargeZ = point->GetChargeZ();
 			TwTof = point->GetToF();
+			glbPosAtTW = m_GeoTrafo->FromTWLocalToGlobal(point->GetPositionG());
 			shoeTrackPoint->SetEnergyLoss(point->GetEnergyLoss());
 			shoeTrackPoint->SetElementsN(0);
 			hasTwPoint = true;
@@ -879,7 +881,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			{
 				h_chargeMC->Fill( mcCharge );
 				h_trackQuality->Fill( trackQuality );
-				shoeOutTrack->SetQuality( trackQuality );
 				h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
 				h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
 				h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag()/particle->GetInitP().Mag() );	// check if not present
@@ -904,6 +905,23 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			h_theta_BM->Fill ( theta_deg );
 			h_phi_BM->Fill ( phi_deg );
 			h_trackDirBM->Fill(TrackDir.X(), TrackDir.Y());
+
+			if( static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc(FootActionDscName("TABMntuTrack"))->Object())->GetTracksN() > 0 && shoeOutTrack->HasTwPoint() )
+			{
+				TABMtrack* bmTrack = static_cast<TABMntuTrack*> (gTAGroot->FindDataDsc(FootActionDscName("TABMntuTrack"))->Object() )->GetTrack(0);
+				TVector3 BMorigin = bmTrack->GetOrigin();
+				TVector3 BMslope = bmTrack->GetSlope();
+				BMorigin = m_GeoTrafo->FromBMLocalToGlobal(BMorigin);
+				BMslope = m_GeoTrafo->VecFromBMLocalToGlobal(BMslope);
+
+				float posZtgt = m_GeoTrafo->FromTGLocalToGlobal(TVector3(0,0,0)).Z();
+				posZtgt = m_GeoTrafo->FromGlobalToBMLocal(TVector3(0,0,posZtgt)).Z();
+				TVector3 BMextrapAtTgt = m_GeoTrafo->FromBMLocalToGlobal( bmTrack->Intersection(posZtgt) );
+
+				TVector3 vec_track = glbPosAtTW - BMextrapAtTgt;
+				double thetaTW = vec_track.Angle(BMslope)*TMath::RadToDeg();
+				h_thetaGlbVsThetaTW->Fill(theta_deg, thetaTW);
+			}
 
 			if( shoeOutTrack->HasTwPoint() )
 			{
@@ -1492,6 +1510,9 @@ void TAGactKFitter::CreateHistogram()	{
 	h_trackDirBM = new TH2F("h_trackDirBM", "h_trackDirBM;X;Y", 1001,-1,1,1001,-1,1);
 	AddHistogram(h_trackDirBM);
 
+	h_thetaGlbVsThetaTW = new TH2F("h_thetaGlbVsThetaTW", "h_thetaGlbVsThetaTW;theta Glb [deg];theta BM-TW [deg]", 200, 0, 12, 200, 0 ,12);
+	AddHistogram(h_thetaGlbVsThetaTW);
+
 	h_theta_BMnoTw = new TH1F("h_theta_BMnoTw", "h_theta_BMnoTw (global track has no TW point);Track #theta wrt BM [deg]; Entries", 200, 0, 15);
 	AddHistogram(h_theta_BMnoTw);
 
@@ -1950,6 +1971,7 @@ void TAGactKFitter::ClearHistos()
 	delete h_phi;
 	delete h_theta;
 	delete h_theta_BM;
+	delete h_thetaGlbVsThetaTW;
 	delete h_phi_BM;
 	delete h_eta;
 	delete h_dx_dz;

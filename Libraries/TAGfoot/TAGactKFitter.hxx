@@ -207,6 +207,7 @@ private:
 	TH1F* h_phi;										///< Fitted track azimuthal angle at the TG -- histo
 	TH1F* h_theta;										///< Fitted track polar angle at the TG -- histo
 	TH1F* h_theta_BM;									///< Fitted track polar angle at the TG wrt to BM track -- histo
+	TH2F* h_thetaGlbVsThetaTW;							///< Fitted track polar angle at the TG wrt to BM track -- histo
 	TH1F* h_phi_BM;										///< Fitted track azimuthal angle at the TG wrt to BM track -- histo
 	TH2F* h_trackDirBM;									///< Fitted tracks X-Y coordinates of emission direction wrt BM track -- histo
 	TH1F* h_theta_BMnoTw;								///< Fitted track polar angle at the TG wrt to BM track when global track does not have a TW point -- histo
