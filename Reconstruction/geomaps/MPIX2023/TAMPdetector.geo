@@ -15,10 +15,10 @@ TypeName:          "MPX2"
 TypeNumber:           0
 PixelsNu:           512
 PixelsNv:           512
-PitchU:            33.04
-PitchV:            33.04
-TotalSizeX:       16916.5 TotalSizeY:   16916.5 TotalSizeZ:    300
-fEpiSizeX:        16916.5 EpiSizeY:     16916.5 EpiSizeZ:      14
+PitchU:            0.003304
+PitchV:            0.003304
+TotalSizeX:       16916.5 TotalSizeY:   16916.5 TotalSizeZ:    0.0300
+fEpiSizeX:        16916.5 EpiSizeY:     16916.5 EpiSizeZ:      0.0014
 EpiOffsetX:       0.0     EpiOffsetY:   0.0     EpiOffsetZ:    0.0000
 EpiMat:            "Si"
 EpiMatDensity:    2.329
@@ -34,10 +34,10 @@ TypeName:          "Adenium"
 TypeNumber:           1
 PixelsNu:          1024
 PixelsNv:           512
-PitchU:            29.24
-PitchV:            26.88
-TotalSizeX:        29941.8   TotalSizeY:   13762.6    TotalSizeZ:    300
-fEpiSizeX:         29941.8   EpiSizeY:     13762.6    EpiSizeZ:      14
+PitchU:            0.002924
+PitchV:            0.002688
+TotalSizeX:        29941.8   TotalSizeY:   13762.6    TotalSizeZ:    0.0300
+fEpiSizeX:         29941.8   EpiSizeY:     13762.6    EpiSizeZ:      0.0014
 EpiOffsetX:        0.0       EpiOffsetY:   0.0        EpiOffsetZ:    0.0000
 EpiMat:            "Si"
 EpiMatDensity:    2.329
