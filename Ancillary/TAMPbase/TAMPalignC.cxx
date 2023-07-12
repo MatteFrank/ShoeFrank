@@ -19,8 +19,6 @@
 #include "TAGdataDsc.hxx"
 #include "TAGgeoTrafo.hxx"
 
-#include "TAMPparGeo.hxx"
-#include "TAVTparConf.hxx"
 #include "TAVTntuCluster.hxx"
 
 #include "TAMPparGeo.hxx"
@@ -44,7 +42,7 @@
 //! Class Imp
 ClassImp(TAMPalignC);
 
-TAMPalignC* TAMPalignC::fgInstance = 0x0;
+TAMPalignC* TAMPalignC::fgInstance   = 0x0;
       Int_t TAMPalignC::fgkPreciseIt = 5;
 //__________________________________________________________
 //! Instance
@@ -110,23 +108,22 @@ TAMPalignC::TAMPalignC(const TString name, const TString expName, Int_t runNumbe
    fClusterArray  = new TObjArray();
    fClusterArray->SetOwner(false);
    
-   fInfile        = new TAGactTreeReader("inFile");
+   fInfile = new TAGactTreeReader("inFile");
    
-   if (fWeighted != -1) {
-      fpGeoMapG    = new TAGparaDsc(new TAGparGeo());
-      TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
-      TString parFile = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
-      geomapG->FromFile(parFile.Data());
-      fpDiff      = new TADItrackEmProperties();
-   }
+   fpGeoMapG = new TAGparaDsc(new TAGparGeo());
+   TAGparGeo* geomapG   = (TAGparGeo*) fpGeoMapG->Object();
+   TString parFile = fCampManager->GetCurGeoFile(TAGparGeo::GetBaseName(), fRunNumber);
+   geomapG->FromFile(parFile.Data());
+   fpDiff = new TADItrackEmProperties();
+
    
    // MP
-   fpGeoMapMp    = new TAGparaDsc(new TAMPparGeo());
-   TAMPparGeo* geomapMp   = (TAMPparGeo*) fpGeoMapMp->Object();
-   TString parFile = fCampManager->GetCurGeoFile(TAMPparGeo::GetBaseName(), fRunNumber);
+   fpGeoMapMp = new TAGparaDsc(new TAMPparGeo());
+   TAMPparGeo* geomapMp = (TAMPparGeo*) fpGeoMapMp->Object();
+   parFile = fCampManager->GetCurGeoFile(TAMPparGeo::GetBaseName(), fRunNumber);
    geomapMp->FromFile(parFile.Data());
    
-   fpConfigMp    = new TAGparaDsc(new TAMPparConf());
+   fpConfigMp = new TAGparaDsc(new TAMPparConf());
    parFile = fCampManager->GetCurConfFile(TAMPparGeo::GetBaseName(), fRunNumber);
    TAMPparConf* parConfMp = (TAMPparConf*) fpConfigMp->Object();
    parConfMp->FromFile(parFile.Data());
@@ -280,10 +277,14 @@ void TAMPalignC::FillPosition()
 //! \param[in] parGeo base geometry parameters
 void TAMPalignC::FillPosition(TAVTbaseParGeo* parGeo)
 {
+   TAGgeoTrafo* geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
+
    Int_t sensorsN = parGeo->GetSensorsN();
    
    for (Int_t i = 0; i < sensorsN; i++) {
       TVector3 posSens = parGeo->GetSensorPosition(i);
+      posSens = geoTrafo->FromVTLocalToGlobal(posSens);
+      
       fZposition[i] = posSens.Z()*TAGgeoTrafo::CmToMm();
       fThickDect[i] = parGeo->GetTotalSize()[2]*TAGgeoTrafo::CmToMm();
    }
@@ -330,8 +331,7 @@ void TAMPalignC::LoopEvent(Int_t nEvts)
    printf("Number of total entries: %d \n", fInfile->NEvents());
    printf("Number of events: %d \n", nEvts);
    
-   if (fWeighted != -1)
-      if(!DefineWeights()) return;
+   if(!DefineWeights()) return;
    
    fAlign->DefineConstant(fWeightQ, fZposition);
    fEvents1 = 0;
@@ -476,8 +476,6 @@ Bool_t TAMPalignC::Align(Bool_t rough)
       TClonesArray* list = (TClonesArray*)fClusterArray->At(i);
       nCluster = list->GetEntriesFast();
 
-//      printf("%d %d\n", i, nCluster);
-
       if (nCluster < 1) return false;
       for (Int_t j = 0; j < nCluster; j++){
          TAGcluster* cluster = (TAGcluster*)list->At(j);
@@ -573,6 +571,8 @@ Bool_t TAMPalignC::FillHistograms()
       
       iPlane = fSecArray[i];
       TClonesArray* list = (TClonesArray*)fClusterArray->At(iPlane);
+      if (list == 0x0) continue;
+      
       nCluster = list->GetEntriesFast();
       
       if (nCluster < 1) return false;

@@ -85,18 +85,15 @@ private:
    void    Reset();
       
 private:
-   TAGroot*             fAGRoot;        ///< pointer to TAGroot
-   TAGcampaignManager*  fCampManager;   ///< Campaign manager
-   const TString        fFileName;      ///< input file
-   Int_t                fRunNumber;     ///< Run number
-   TAGgeoTrafo*         fGeoTrafo;      ///< FOOT global transformation
-   Bool_t               fFlagVtx;       ///< VTX presence flag
-   Bool_t               fFlagIt;        ///< ITR presence flag
-   Bool_t               fFlagMsd;       ///< MSD presence flag
-   TAGdataDsc*          fpNtuClusVtx;	 ///< Cluster VTX
-   TAGparaDsc*          fpConfigMp;	 ///< configuration dsc
-   TAGparaDsc*          fpGeoMapMp;    ///< geometry para dsc
-   TAGparaDsc*          fpGeoMapG;      ///< geometry para dsc
+   TAGroot*              fAGRoot;        ///< pointer to TAGroot
+   TAGcampaignManager*   fCampManager;   ///< Campaign manager
+   const TString         fFileName;      ///< input file
+   Int_t                 fRunNumber;     ///< Run number
+   TAGgeoTrafo*          fGeoTrafo;      ///< FOOT global transformation
+   TAGdataDsc*           fpNtuClusVtx;	 ///< Cluster VTX
+   TAGparaDsc*           fpConfigMp;	 ///< configuration dsc
+   TAGparaDsc*           fpGeoMapMp;    ///< geometry para dsc
+   TAGparaDsc*            fpGeoMapG;      ///< geometry para dsc
    TADItrackEmProperties* fpDiff;		 ///< diffusion parameters
    TAGactTreeReader*    fInfile;        ///< action for reading cluster
    TAIRntuAlignC*       fAlign;         ///< pointer to align para
