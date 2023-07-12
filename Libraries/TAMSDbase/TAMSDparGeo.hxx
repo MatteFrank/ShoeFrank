@@ -65,6 +65,8 @@ public:
   string      PrintRegions();
   string      PrintAssignMaterial(TAGmaterials *Material);
   string      PrintSubtractBodiesFromAir();
+   // Fluka Transport settings
+  string      PrintMSDPhysics();
 
 private:
   Int_t          fStripsN;          ///< Number of strips
