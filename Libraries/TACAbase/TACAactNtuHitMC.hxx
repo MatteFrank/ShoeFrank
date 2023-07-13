@@ -54,18 +54,12 @@ class TACAactNtuHitMC : public TAGaction {
    TH1F*           fpHisMass;                          ///< MC mass histogram
    TH1F*           fpHisTime;                          ///< MC time histogram
    TH1F*           fpHisRange;                         ///< MC range histogram
-   TH1F*           fpHisIonEk[MAX_ANUMBER];            ///< MC kenetic energy histogram
-   TH1F*           fpHisIondE[MAX_ANUMBER];            ///< MC energy loss histogram
-   TH1F*           fpHisEnPerCry[MaxCry];            ///< energy loss per crystal histogram
-   TH1F*           fpHisEnVsPositionPerCry[MaxCry];  ///< energy loss per positon crystal histogram
 
-   TH2F*           fpHisCryHitVsEnDep;                 ///< hit vs energy loss histogram
    TH2F*           fpHisRangeVsMass;                   ///< range vs mass histogram
-   TH2F*           fpHisCryHitVsZ;                     ///< hit vs atomic charge histogram
-   TH2F*           fpHisEnDepVsZ;                      ///< energy loss vs atomic charge histogram
-   TH2F*           fpHisHitMapXY;                      ///< Hit map histogram
-   TH2F*           fpHisHitMapZYin;                    ///< Hit ZY in map histogram
-   TH2F*           fpHisHitMapZYout;                   ///< Hit ZY out map histogram
+   TH2F*           fpHisHitMapXY;                      ///< MC Hit map histogram
+   TH2F*           fpHisHitMap;                        ///< Hit map histogram
+   TH2F*           fpHisHitMapZYin;                    ///< MC Hit ZY in map histogram
+   TH2F*           fpHisHitMapZYout;                   ///< MC Hit ZY out map histogram
    TH2I*           fpHisParticleVsRegion;              ///< particle vs region histogram
 
   private:

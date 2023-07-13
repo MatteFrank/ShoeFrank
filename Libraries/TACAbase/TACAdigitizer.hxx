@@ -21,7 +21,7 @@ using namespace std;
 class TACAdigitizer : public TAGbaseDigitizer {
    
 public:
-   TACAdigitizer(TACAntuHit* p_datraw);
+   TACAdigitizer(TACAntuHit* p_datraw,  TACAparCal* p_parcal);
    ~TACAdigitizer();
    
    void           SetFunctions();
@@ -40,14 +40,9 @@ public:
    //! Clear map
    void           ClearMap()              { fMap.clear();       }
 
-public:
-   //! Get energy threshold
-   static Float_t GetThreshold()          { return fgThreshold; }
-   //! Set energy threshold
-   static void    SetThreshold(Float_t t) { fgThreshold = t;    }
-
 private:
    TACAntuHit*   fpNtuRaw;      ///< input raw data container
+   TACAparCal*   fpParCal;      ///< calibration parameter
    TF1*          fDeResE;       ///< histogram of resolution energy
    
    Float_t       fResPar0;      ///< resolution energy parameter 0
@@ -59,9 +54,6 @@ private:
    
    TACAhit*      fCurrentHit;   ///< current hit
    map<int, TACAhit*> fMap;     //! map for pilepup
-
-private:
-   static Float_t fgThreshold;  ///< default threshold value
 
 };
 #endif

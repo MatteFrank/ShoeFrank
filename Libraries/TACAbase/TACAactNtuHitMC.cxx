@@ -98,120 +98,57 @@ void TACAactNtuHitMC::CreateHistogram()
    }
 
    // 0
-   fpHisDeTotMc = new TH1F("caDeTotMc", "Energy deposition per event; Energy;", 1500, 0, energyBeam );
+   fpHisDeTotMc = new TH1F("caDeTotMc", "Energy deposition per event; Energy;", 500, 0, 10 );
    AddHistogram(fpHisDeTotMc);
 
    // 1
-   fpHisDeTot = new TH1F("caDeTot", "Energy deposition per event (smeared); Energy;", 1500, 0, energyBeam );
+   fpHisDeTot = new TH1F("caDeTot", "Energy deposition per event (smeared); Energy;", 500, 0, 10 );
    AddHistogram(fpHisDeTot);
 
    // 2
-   fpHisHitMapXY = new TH2F("caHitMapXY", " Energy deposition position; X; Y",
+   fpHisHitMapXY = new TH2F("caHitMapMc", "MC Hit Map",
                             nBinCry, -calosize.X()/2., calosize.X()/2., nBinCry, -calosize.Y()/2., calosize.Y()/2.);
    AddHistogram(fpHisHitMapXY);
 
+   
+   // 2
+   fpHisHitMap = new TH2F("caHitMap", " Hit map",
+                            nBinCry, -calosize.X()/2., calosize.X()/2., nBinCry, -calosize.Y()/2., calosize.Y()/2.);
+   AddHistogram(fpHisHitMap);
+   
+   
    // 3
-   fpHisHitMapZYin = new TH2F("caHitMapZYin", " Energy deposition position; Z; Y",
+   fpHisHitMapZYin = new TH2F("caHitMapZYinMc", " Energy deposition position; Z; Y",
                               (int)calosize.Z(), -calosize.Z()/2., calosize.Z()/2., nBinCry*3, -calosize.Y()/2., calosize.Y()/2.);
    AddHistogram(fpHisHitMapZYin);
 
    // 4
-   fpHisHitMapZYout = new TH2F("caHitMapZYout", " Energy deposition position; Z; Y",
+   fpHisHitMapZYout = new TH2F("caHitMapZYoutMc", " Energy deposition position; Z; Y",
                                (int)calosize.Z(), -calosize.Z()/2., calosize.Z()/2,nBinCry*3, -calosize.Y()/2., calosize.Y()/2.);
    AddHistogram(fpHisHitMapZYout);
 
    // 5
-   fpHisMass = new TH1F("caMass", "Calorimeter - Mass particles; [GeV]", 211,-0.5,209.5);
+   fpHisMass = new TH1F("caMassMc", "Calorimeter - Mass particles; [GeV]", 20, 0.5, 20.5);
    AddHistogram(fpHisMass);
 
    // 6
-   fpHisTime = new TH1F("caTime", "Time of Calorimeter; Time [ns];",100, 0, 30);
+   fpHisTime = new TH1F("caTimeMc", "Time of Calorimeter; Time [ns];",100, 0, 30);
    AddHistogram(fpHisTime);
 
-   fpHisRange = new TH1F("caRange", "Range inside crystal; Range [cm];", 240, -calosize.Z()/2., calosize.Z()/2.);
+   fpHisRange = new TH1F("caRangeMc", "Range inside crystal; Range [cm];", 240, 0., calosize.Z());
    AddHistogram(fpHisRange);
 
    // 7
    fpHisNeutrondE = new TH1F("caDeNeutron", "En Dep Neutron; En [GeV];",400, 0., 0.1);
    AddHistogram(fpHisNeutrondE);
 
-   // 8
-   // fpHisParticleVsRegion = new TH2I("caParticleVsRegion",
-   //                                  "Type of particles vs crystal ID; Particle ID; CAL crystal ID",
-   //                                  272, -200, 70,
-   //                                  nCrystal, 0, nCrystal-1);
-   fpHisParticleVsRegion = new TH2I("caParticleVsRegion",
+   fpHisParticleVsRegion = new TH2I("caParticleVsRegionMc",
                                     "Type of particles vs crystal ID; Region; Particle",
                                     500, 1, 501, 90, 0, 90);
    AddHistogram(fpHisParticleVsRegion);
 
-
-   // TAxis* xaxis = fpHisParticleVsRegion->GetXaxis();
-   // for( int i=-6; i<0; i++ ) xaxis->SetBinLabel( xaxis->FindFixBin(i), TAMCparTools::GetFlukaPartName(i));
-   // for( int i=1; i<17; i++ ) xaxis->SetBinLabel( xaxis->FindFixBin(i), TAMCparTools::GetFlukaPartName(i));
-   // xaxis->LabelsOption("v"); // "v" draw labels vertical
-   // xaxis->SetLabelSize(0.02);
-   // TAxis* yaxis = fpHisParticleVsRegion->GetYaxis();
-   // yaxis->SetLabelSize(0.02);
-   // AddHistogram(fpHisParticleVsRegion);
-
-   // fpHisParticleVsRegion = new TH2F("caHisParticleVsRegion",
-   //                                  "")
-
-
-   // 9
-   fpHisCryHitVsEnDep = new TH2F("caCryHitVsEnDep", "En Dep Vs #CryHit; #Hit; En Dep [GeV]", 40, 0, 40, 400, 0, 4);
-   AddHistogram(fpHisCryHitVsEnDep);
-
-   fpHisRangeVsMass = new TH2F("caRangeVsMass", "Range Vs Mass; Range [cm]; Mass", 240, -calosize.Z()/2., calosize.Z()/2., 211,-0.5,209.5);
+   fpHisRangeVsMass = new TH2F("caRangeVsMassMc", "Range Vs Mass; Range [cm]; Mass", 240, 0, calosize.Z(), 20, 0.5, 20.5);
    AddHistogram(fpHisRangeVsMass);
-
-   // 10
-   fpHisCryHitVsZ = new TH2F("caCryHitVsZ", "Z Vs #CryHit; #Hit; Z", 40, 0, 40, nNucleonBeam/2+1, 0, nNucleonBeam/2+1);
-   AddHistogram(fpHisCryHitVsZ);
-
-   // 11
-   fpHisEnDepVsZ = new TH2F("caEnDepVsZ", "En Dep Vs Z; Z; En Dep [GeV]", nNucleonBeam/2, 0, nNucleonBeam/2, 400, 0, 4);
-   AddHistogram(fpHisEnDepVsZ);
-
-   // 12-20
-   // for(int z=0; z<nNucleonBeam/2; z++) {
-   for(int z=0; z<=nNucleonBeam; z++) {
-      TGeoElement * elem = table.GetElement(z+1);
-      fpHisIonEk[z] = new TH1F(Form( "caDeIonSpectrum%d", z+1),
-                                Form( "^{%d}%s ; Ekin [GeV]; Events Norm", elem->N(), elem->GetName() ),
-                                600, 0, 6);
-      AddHistogram(fpHisIonEk[z]);
-   }
-
-   // 21-29
-   for(int z=0; z<=nNucleonBeam; z++) {
-      // for(int z=0; z<6; z++) {
-      TGeoElement * elem = table.GetElement(z+1);
-      fpHisIondE[z] = new TH1F(Form( "caDeIon%d", z+1),
-                                Form( "^{%d}%s ; EDep [GeV]; Events Norm", elem->N(), elem->GetName() ),
-                                400, 0, energyBeam*nNucleonBeam);
-      AddHistogram(fpHisIondE[z]);
-   }
-
-
-   //30 - 30+nCrystal
-   for (int i=0; i<nCrystal; i++){
-      fpHisEnPerCry[i] = new TH1F(Form( "caEnPerCry%d", i),
-                                  Form( "Cry %d ; Ekin [GeV]; Events Norm", i),
-                                  1000, 0., 5.);
-      AddHistogram(fpHisEnPerCry[i]);
-   }
-
-
-   // //30 - 30+nCrystal
-   // for (int i=0; i<nCrystal; i++){
-   //    fpHisEnVsPositionPerCry[i] = new TH1F(Form( "caEnVsPositionPerCry%d", i),
-   //                            Form( "Cry %d ; Pos [cm]; Energy [MeV]", i),
-   //                            1200, 0., 24.);
-   //    AddHistogram(fpHisEnVsPositionPerCry[i]);
-   // }
-
 
    SetValidHistogram(kTRUE);
 }
@@ -221,8 +158,9 @@ void TACAactNtuHitMC::CreateHistogram()
 void TACAactNtuHitMC::CreateDigitizer()
 {
    TACAntuHit* pNtuRaw = (TACAntuHit*) fpNtuRaw->Object();
+   TACAparCal* parCal  = (TACAparCal*) fpCalMap->Object();
 
-   fDigitizer = new TACAdigitizer(pNtuRaw);
+   fDigitizer = new TACAdigitizer(pNtuRaw, parCal);
 }
 
 //------------------------------------------+-----------------------------------
@@ -258,9 +196,7 @@ Bool_t TACAactNtuHitMC::Action()
       // Get particle index
       Int_t trackId = hitMC->GetTrackIdx()-1;
       Int_t cryId   = hitMC->GetCrystalId();
-      Float_t edep  = hitMC->GetDeltaE()*TAGgeoTrafo::GevToMev();;
-      // Float_t p0    = parCal->GetElossParam(cryId, 0);  //??calibration not needed for MC
-      // Float_t p1    = parCal->GetElossParam(cryId, 1);
+      Float_t edep  = hitMC->GetDeltaE();
 
       TVector3 posIn(hitMC->GetInPosition());
       TVector3 posOut(hitMC->GetOutPosition());
@@ -287,73 +223,43 @@ Bool_t TACAactNtuHitMC::Action()
       double py   = track->GetInitP().Y();
       double pz   = track->GetInitP().Z();
 
+      if (z < 1) continue;
       if (ValidHistogram()) {
-         fpHisHitMapXY    ->Fill(posInLoc.X(), posInLoc.Y());
-         fpHisHitMapZYin  ->Fill(posInLoc.Z(), posInLoc.Y());
-         fpHisHitMapZYout ->Fill(posOutLoc.Z(), posOutLoc.Y());
-         fpHisParticleVsRegion ->Fill(reg, z);
+         fpHisMass->Fill(mass);
+         fpHisDeTotMc->Fill(edep);
+         fpHisHitMapXY->Fill(posInLoc.X(), posInLoc.Y());
+         fpHisHitMapZYin->Fill(posInLoc.Z(), posInLoc.Y());
+         fpHisHitMapZYout->Fill(posOutLoc.Z(), posOutLoc.Y());
+         fpHisParticleVsRegion->Fill(reg, z);
+         fpHisRange->Fill(z0_f-z0_i);
+         fpHisRangeVsMass->Fill(z0_f-z0_i,mass);
       }
-
-      // Fill fDigitizer with energy in MeV
+      
+      // Fill fDigitizer with energy in GeV
       fDigitizer->Process(edep, posInLoc[0], posInLoc[1], posInLoc[2], posOutLoc[2], 0, cryId);
       TACAhit* hit = fDigitizer->GetCurrentHit();
       if (hit){
          hit->AddMcTrackIdx(trackId, i);
-         // hit->SetPosition(posInLoc);
-         // TVector3 hitpos(posInLoc[0], posInLoc[1], posOutLoc[2]-posInLoc[2]);
-         // hit->SetPosition(hitpos);
          Float_t thick = -parGeo->GetCrystalThick();
          TVector3 positionCry(0, 0, thick);
 
          positionCry = parGeo->Crystal2Detector(cryId, positionCry);
          hit->SetPosition(positionCry);
-
-         // Float_t charge = hit->GetCharge()*p1 + p0;   // no sense
-
       }
-
-      // Select Neutrons
-      if (fluID == 8) {
-         if (ValidHistogram())
-            fpHisNeutrondE->Fill(edep);
-      }
-
-      // Select Heavy-Ions
-      if ( fluID <= -2 || fluID == 1 ) {
-
-         // Select Heavy-Ions with charge from 2 to 8 and Protons (z=1)
-         if ( (z > 1 && z <= tagParGeo->GetBeamPar().AtomicMass) || fluID == 1 ) {
-
-            double tof = 0.;
-            double p = sqrt( px*px + py*py + pz*pz);
-            double ek = sqrt( p*p + mass*mass ) - mass;
-
-            if (z == 1 && fluID != 1) continue;  // skip triton, deuteron
-            if (z == 2 && fluID == -5) continue; // skip He3
-
-            if (ValidHistogram()) {
-               fpHisIondE[z-1]->Fill(edep);
-               fpHisIonEk[z-1]->Fill(ek);
-               // // fpHisTime              ->Fill(time);
-               fpHisEnDepVsZ->Fill(z,edep);
-               fpHisRange->Fill(z0_f-z0_i);
-               fpHisRangeVsMass->Fill(z0_f-z0_i,mass);
-            }
-         }
-
-         const char* flukaName = TAMCparTools::GetFlukaPartName(fluID);
-         if( fluID == -2 ) { // shift HEAVYION by z
-            fluID = -40 - z;
-            // check out of range
-            if( fluID < -200 ) cout << "fluID " << fluID <<endl;
-         }
-
-      }
-
    }//end of mc loop on calo hits
+   
+   // histograms
+   TACAntuHit* ntuRaw  = (TACAntuHit*) fpNtuRaw->Object();
 
-   TACAparCal* parCal = (TACAparCal*) fpCalMap->Object();
-   fDigitizer->SmearEnergy(parCal);
+   for (Int_t i = 0; i < ntuRaw->GetHitsN(); ++i) {
+      TACAhit* hit = ntuRaw->GetHit(i);
+      Float_t charge = hit->GetCharge();
+      TVector3 pos = hit->GetPosition();
+      if (ValidHistogram()) {
+         fpHisDeTot->Fill(charge);
+         fpHisHitMap->Fill(pos.X(), pos.Y());
+      }
+   }
 
    if (fEventStruct != 0x0) {
      fpNtuMC->SetBit(kValid);

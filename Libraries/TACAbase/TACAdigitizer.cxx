@@ -17,15 +17,14 @@
  \brief digitizer for calorimeter hits **
  */
 
-Float_t TACAdigitizer::fgThreshold = 80; // MeV
-
 // --------------------------------------------------------------------------------------
 //! Constructor
 //!
 //! \param[in] pNtuRaw hit container
-TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw)
+TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw, TACAparCal* p_parcal)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
+   fpParCal(p_parcal),
    fResPar0(1.03978e+01),
    fResErrPar0(3.28955e-01),
    fResPar1(1.03392e+02),
@@ -98,8 +97,17 @@ Float_t TACAdigitizer::GetResEnergy(Float_t edep)
 //! \param[in] pz0 momentum in z direction
 Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
+   Double_t thres = fpParCal->GetCrystalThres(id);
 
- //  if ((edep<0.) || (TMath::Abs(edep - edep+s)>7.)) edep = 0.; // what for ?
+   edep *= TAGgeoTrafo::GevToMev();
+   edep = gRandom->Gaus(edep, GetResEnergy(edep));
+   edep *= TAGgeoTrafo::MevToGev();
+   
+   if (edep < thres) {
+      fpNtuRaw->AddNDrop();
+      return true;
+   }
+   
    if (edep<0.) edep = 0.;
 
    if (fMap[id] == 0) { //if in the Map of Hits the element id-esimo was empty fill with a NewHit(...)
