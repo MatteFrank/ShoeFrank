@@ -62,6 +62,8 @@ public:
    virtual string PrintRegions();
    // Fluka material assignment
    virtual string PrintAssignMaterial(TAGmaterials *Material);
+   // Fluka Transport settings
+   virtual string PrintVTPhysics();
    // Fluka air substraction
    virtual string PrintSubtractBodiesFromAir();
    

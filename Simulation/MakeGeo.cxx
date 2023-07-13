@@ -276,8 +276,14 @@ int main (int argc, char *argv[]) {
 
     outfile << generalGeo->PrintBeam();
     outfile << generalGeo->PrintPhysics();
-    if(TAGrecoManager::GetPar()->IncludeIT())
-      outfile << itrGeo->PrintITPhysics();
+    if(TAGrecoManager::GetPar()->IncludeDI()) {
+      if(TAGrecoManager::GetPar()->IncludeVT())
+	outfile << vtxGeo->PrintVTPhysics();
+      if(TAGrecoManager::GetPar()->IncludeIT())
+	outfile << itrGeo->PrintITPhysics();
+      if(TAGrecoManager::GetPar()->IncludeMSD())
+	outfile << msdGeo->PrintMSDPhysics();
+    }
 
     outfile << geomat.str();
 
