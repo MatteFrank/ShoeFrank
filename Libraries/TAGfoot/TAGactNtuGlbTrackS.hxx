@@ -146,6 +146,10 @@ private:
    TH1F*           fpHisMeanCharge;     ///< Mwean Charge per tracked cluster
    TH2F*           fpHisTwDeCaE;        ///< TW-deltaE vs CA-E
    TH2F*           fpHisMsdDeCaE;       ///< MSD-deltaE vs CA-E
+   TH1F*           fpHisLength;         ///< Total track length
+   TH1F*           fpHisBeta;           ///< Beta value
+   TH1F*           fpHisGamma;          ///< Gamma value
+   TH1F*           fpHisEkin;           ///< Kenetic energy
 
 private:
    static Bool_t fgBmMatched;           ///< vertex matched with BM flag

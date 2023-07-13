@@ -253,12 +253,24 @@ void TAGactNtuGlbTrackS::CreateHistogram()
    fpHisMsdDeCaE->SetStats(kFALSE);
    AddHistogram(fpHisMsdDeCaE);
 
-   fpHisMass = new TH1F(Form("%sMass", prefix.Data()), Form("%s - Mass distribution", titleDev.Data()), 500, 0, 0.05);
+   fpHisMass = new TH1F(Form("%sMass", prefix.Data()), Form("%s - Mass distribution", titleDev.Data()), 300, 0, 30 );
    AddHistogram(fpHisMass);
 
    fpHisZ = new TH1F(Form("%sZ", prefix.Data()), Form("%s - Z distribution", titleDev.Data()), 10, -0.5, 9.5);
    AddHistogram(fpHisZ);
 
+   fpHisEkin = new TH1F(Form("%sEkin", prefix.Data()), Form("%s - Ekin distribution", titleDev.Data()), 500, 0, 7 );
+   AddHistogram(fpHisEkin);
+   
+   fpHisBeta = new TH1F(Form("%sBeta", prefix.Data()), Form("%s - Beta distribution", titleDev.Data()), 500, 0, 1 );
+   AddHistogram(fpHisBeta);
+ 
+   fpHisGamma = new TH1F(Form("%sGamma", prefix.Data()), Form("%s - Gamma distribution", titleDev.Data()), 500, 0, 10 );
+   AddHistogram(fpHisGamma);
+   
+   fpHisLength = new TH1F(Form("%sLength", prefix.Data()), Form("%s - Track length distribution", titleDev.Data()), 500, 0, 250 );
+   AddHistogram(fpHisLength);
+   
    SetValidHistogram(kTRUE);
 }
 
@@ -814,7 +826,7 @@ void TAGactNtuGlbTrackS::FindCaCluster(TAGtrack* track)
       FillMcTrackId(bestCluster, point);
 
       Float_t Ek = bestCluster->GetEnergy();
-      track->SetFitEnergy(Ek*TAGgeoTrafo::MevToGev());
+      track->SetFitEnergy(Ek);
       
       bestCluster->SetFound();
       if (fgCaTwUpdate)
@@ -835,26 +847,32 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
    if (Z < 1) return;
 
    // compute beta
-   Double_t tof    = track->GetTwTof();
-   TVector3 posTw  = fpFootGeo->GetTWCenter();
-   TVector3 pos    = track->Intersection(posTw[2]);
-   
-   Double_t length = pos.Mag();
-   
+   Double_t tof   = track->GetTwTof();
+//   tof *= 0.8;
+   TVector3 posTw = fpFootGeo->GetTWCenter();
+   TVector3 pos1  = track->Intersection(0);
+   TVector3 pos2  = track->Intersection(posTw[2]);
+
+   Double_t length = (pos2-pos1).Mag();
    Double_t beta   = length/tof;
    beta /= TAGgeoTrafo::GetLightVelocity(); //cm/ns
    
    // compute mass
    Double_t Ekin = track->GetFitEnergy(); // should come from Calo
-  // Ekin += fPartEnergy; // add energy loss (neglecting loss in air)
+   Ekin += fPartEnergy; // add energy loss (neglecting loss in air)
+ //  Ekin *= 1.07;
    Double_t gamma = 1./TMath::Sqrt(1-beta*beta);
-   Double_t mass  = Ekin/(gamma-1);
+   Double_t mass  = Ekin/(gamma-1)/TAGgeoTrafo::GetMassFactor();
    track->SetMass(mass);
    
    if(FootDebugLevel(1))
       printf("Charge %.0f Mass %f\n", Z, mass);
    
    if (ValidHistogram()) {
+      fpHisLength->Fill(length);
+      fpHisBeta->Fill(beta);
+      fpHisGamma->Fill(gamma);
+      fpHisEkin->Fill(Ekin);
       fpHisMass->Fill(mass);
       fpHisZ->Fill(Z);
    }
