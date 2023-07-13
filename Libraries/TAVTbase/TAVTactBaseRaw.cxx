@@ -245,7 +245,7 @@ void TAVTactBaseRaw::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn)
 //!
 //! \param[in] iSensor sensor index
 //! \param[in] frame Mimosa sensor data structure
-Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw* frame)
+Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw* frame,Int_t iFrame)
 {
    // Read the information of a frame for a given sensor
    // We use extensively the structure definined by Gille Clauss
@@ -336,7 +336,7 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw* frame)
             // create a new pixel only if we are reading an event
             // and if the line is in the proper limit
             if (!lineStatus->F.Ovf) {
-               AddPixel(iSensor, 1, lineStatus->F.LineAddr, state->F.ColAddr+iPixel);
+               AddPixel(iSensor, 1, lineStatus->F.LineAddr, state->F.ColAddr+iPixel, iFrame);
                if(FootDebugLevel(3))
                   printf("sensor %d, line %d, col %d\n", iSensor, lineStatus->F.LineAddr, state->F.ColAddr+iPixel);
             }
@@ -359,7 +359,7 @@ Bool_t TAVTactBaseRaw::DecodeFrame(Int_t iSensor, MI26_FrameRaw* frame)
 //! \param[in] value pixel value
 //! \param[in] aLine line id
 //! \param[in] aColumn column id
-void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
+void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber)
 {
    // Add a pixel to the vector of pixels
    // require the following info
@@ -373,7 +373,7 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    
    if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
      
-   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn, frameNumber);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);

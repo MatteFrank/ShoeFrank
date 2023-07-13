@@ -113,13 +113,13 @@ protected:
    virtual void  ResetFrames();
    
    // Add pixel to list
-   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
+   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber);
    
    // Get Sensor number
    virtual  Int_t  GetSensor(UInt_t key);
 
    // decode frame
-   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame = 0x0);
+   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame = 0x0, Int_t iFrame=0);
 
    // Fill histogram frame
    virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data = 0x0);
