@@ -65,7 +65,7 @@ TAGbaseWD::~TAGbaseWD()
 //------------------------------------------+-----------------------------------
 double TAGbaseWD::ComputeBaseline(TWaveformContainer *w)
 {
-  return TMath::Mean(w->GetVectA().begin()+2, w->GetVectA().begin()+27);
+  return TMath::Median(25, &w->GetVectA()[2]);
 }
 
 //------------------------------------------+-----------------------------------
@@ -236,15 +236,12 @@ double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac)
   while(!foundthreshold && i_thr<w->GetVectA().size()-1 && i_thr>1){
     double a1 = w->GetVectA()[i_thr];
     double a2 = w->GetVectA()[i_thr+1];
-    if(AbsoluteThreshold>a2 && AbsoluteThreshold<=a1)
-    {
-      double t1 = w->GetVectT()[i_thr];
-      double t2 = w->GetVectT()[i_thr+1];
-      double m = (a2-a1)/(t2-t1);
-      double q = a1 - m*t1;
-      t_arr = (AbsoluteThreshold-q)/m;
-      foundthreshold =true;
-    }
+    double t1 = w->GetVectT()[i_thr];
+    double t2 = w->GetVectT()[i_thr+1];
+    double m = (a2-a1)/(t2-t1);
+    double q = a1 - m*t1;
+    t_arr = (AbsoluteThreshold-q)/m;
+    if(AbsoluteThreshold>a2 && AbsoluteThreshold<=a1)foundthreshold =true;
     i_thr--;
   }
   
@@ -279,7 +276,7 @@ double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac)
     if(i>=0 && i<size){
       amplitudes.push_back(w->GetVectA()[i]);
       times.push_back(w->GetVectT()[i]);
-      //cout << "t" <<i << "   ::" << w->GetVectT()[i) << endl;
+      //cout << "t" <<i << "   ::" << w->GetVectT()[i] << endl;
     }
   }
 
