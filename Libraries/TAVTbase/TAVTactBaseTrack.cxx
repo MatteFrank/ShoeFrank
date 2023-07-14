@@ -86,6 +86,8 @@ TAVTactBaseTrack::TAVTactBaseTrack(const char* name,
       fTitleDev = "Interaction Region";
    else if (fPrefix.Contains("ms"))
       fTitleDev = "Micro Strip Detector";
+   else if (fPrefix.Contains("mp"))
+      fTitleDev = "Monopix2";
    else
       printf("Wrong prefix for histograms !");
 

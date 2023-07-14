@@ -48,13 +48,15 @@ void FillVertex()
    TAGparaDsc* vtGeo    = new TAGparaDsc(new TAVTparGeo());
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
    geomap->FromFile("./geomaps/GSI/TAVTdetector.geo");
+   Int_t sensorsN = geomap->GetSensorsN();
+
    
    TAGparaDsc*  vtConf  = new TAGparaDsc(new TAVTparConf());
    TAVTparConf* parconf = (TAVTparConf*) vtConf->Object();
    parconf->FromFile("./config/GSI/TAVTdetector.cfg");
    
-   TAGdataDsc* vtNtu    = new TAGdataDsc(new TAVTntuHit());
-   TAGdataDsc* vtClus   = new TAGdataDsc(new TAVTntuCluster());
+   TAGdataDsc* vtNtu    = new TAGdataDsc(new TAVTntuHit(sensorsN));
+   TAGdataDsc* vtClus   = new TAGdataDsc(new TAVTntuCluster(sensorsN));
    TAGdataDsc* vtTrck   = new TAGdataDsc(new TAVTntuTrack());
    
    

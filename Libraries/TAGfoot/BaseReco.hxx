@@ -101,6 +101,7 @@
 #include "TAVTactNtuVertex.hxx"
 
 #include "TAGactNtuGlbTrackS.hxx"
+#include "TAGactNtuGlbTrackF.hxx"
 #ifdef TOE_FLAG
 #include "TAGactNtuGlbTrack.hxx"
 #endif
@@ -458,7 +459,8 @@ protected:
    TAGactNtuGlbTrack*    fActGlbTrack;   ///< Global tracking action
 #endif
    TAGactNtuGlbTrackS*   fActGlbTrackS;  ///< action for straight tracks
-  
+   TAGactNtuGlbTrackF*   fActGlbTrackF;  ///< action for global tracks
+
 #ifdef GENFIT_FLAG
    TAGactKFitter*        fActGlbkFitter; ///< Global tracking kalman Fitter
    TAGFtrackingStudies*  fActGlbTrackStudies;    ///< Global tracking studies with GenFit
@@ -508,7 +510,9 @@ protected:
    void CreateRecActionGlbGF();
    // Create reconstruction action for global straight tracks
    void CreateRecActionGlbS();
-
+   // Create reconstruction action for global tracks
+   void CreateRecActionGlbF();
+   
 protected:
    static Bool_t fgSaveMcFlag;    ///< MC saving flag
 

@@ -45,7 +45,7 @@ TAGactTreeWriter*   outFile     = 0x0;
 TAGactWCreader*     wcFile      = 0x0;
 TAPLactNtuHit*      stActNtu    = 0x0;
 TACEactNtuHit*      twActNtu    = 0x0;
-TAPWactNtuHit*      twActNtu    = 0x0;
+TAPWactNtuHit*      pwActNtu    = 0x0;
 
 // tree flag
 Bool_t treeFlag = true;

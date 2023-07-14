@@ -130,7 +130,10 @@ void RecoMC::CreateRawAction()
       if (TAGrecoManager::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcVt, FootBranchMcName(kVTX));
       
-      fpNtuHitVtx = new TAGdataDsc(new TAVTntuHit());
+      TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      
+      fpNtuHitVtx = new TAGdataDsc(new TAVTntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAVTactNtuHitMC");
       fActNtuHitVtx = new TAVTactNtuHitMC(name, fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fEvtStruct);
       if (fFlagHisto)
@@ -142,7 +145,10 @@ void RecoMC::CreateRawAction()
       if (TAGrecoManager::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcIt, FootBranchMcName(kITR));
       
-      fpNtuHitIt = new TAGdataDsc(new TAITntuHit());
+      TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+
+      fpNtuHitIt = new TAGdataDsc(new TAITntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAITactNtuHitMC");
       fActNtuHitIt = new TAITactNtuHitMC(name, fpNtuMcIt, fpNtuMcTrk, fpNtuHitIt, fpParGeoIt, fpParConfIt, fEvtStruct);
       if (fFlagHisto)
@@ -154,8 +160,10 @@ void RecoMC::CreateRawAction()
       if (TAGrecoManager::GetPar()->IsReadRootObj())
         fActEvtReader->SetupBranch(fpNtuMcMsd, FootBranchMcName(kMSD));
       
+      TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
 
-      fpNtuHitMsd = new TAGdataDsc(new TAMSDntuHit());
+      fpNtuHitMsd = new TAGdataDsc(new TAMSDntuHit(sensorsN));
       fActNtuHitMsd = new TAMSDactNtuHitMC("msdActNtu", fpNtuMcMsd, fpNtuMcTrk, fpNtuHitMsd, fpParGeoMsd, fpParCalMsd, fEvtStruct);
 
       if (fFlagHisto)

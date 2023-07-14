@@ -27,12 +27,11 @@ class TAVTbaseParGeo;
 class TAITntuCluster : public TAGdata {
    
 protected:
-   //! Geometry parameter
-   TAVTbaseParGeo*    fGeometry;         //! do NOT stored this pointer !
+   Int_t              fSensorsN;        ///< number of sensors
    TObjArray*         fListOfClusters;   ///< List of clusters
 
 public:
-   TAITntuCluster();
+   TAITntuCluster(Int_t sensorsN = 0);
    virtual          ~TAITntuCluster();
    
    // Get cluster
@@ -51,9 +50,6 @@ public:
    TAITcluster*       NewCluster(Int_t iSensor);
    // Create new cluster from a existing one
    TAITcluster*       NewCluster(TAITcluster* clus, Int_t iSensor);
-
-   //! Set par geo pointer
-   void               SetParGeo(TAVTbaseParGeo* par) { fGeometry = par; }
 
    //  Setup clones
    virtual void       SetupClones();

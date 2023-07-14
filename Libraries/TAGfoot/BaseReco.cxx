@@ -124,6 +124,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fActGlbkFitter(0x0),
 #endif
    fActGlbTrackS(0x0),
+   fActGlbTrackF(0x0),
    fFlagOut(true),
    fFlagFlatTree(false),
    fFlagTree(false),
@@ -426,9 +427,12 @@ void BaseReco::SetHistogramDir()
 #endif
       
       // Global straight track
-      if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI()) {
+      if (TAGrecoManager::GetPar()->IncludeStraight()) {
          TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TAGgeoTrafo"));
-         fActGlbTrackS->SetHistogramDir(subfolder);
+         if (!TAGrecoManager::GetPar()->IncludeDI())
+            fActGlbTrackS->SetHistogramDir(subfolder);
+         else
+            fActGlbTrackF->SetHistogramDir(subfolder);
       }
    }
 }
@@ -545,7 +549,7 @@ void BaseReco::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(TADIparGeo::GetBaseName(), fRunNumber);
       parGeo->FromFile(parFileName.Data());
 
-      if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) {
+      if (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman() || TAGrecoManager::GetPar()->IncludeStraight()) {
          TAGparaDsc* fieldDsc = new TAGparaDsc(new TADIgeoField(parGeo));
          fField = (TADIgeoField*)fieldDsc->Object();
       }
@@ -774,8 +778,12 @@ void BaseReco::CreateRecAction()
    if (!TAGrecoManager::GetPar()->IncludeTOE() && TAGrecoManager::GetPar()->IncludeKalman())
       CreateRecActionGlbGF();
 
-   if (TAGrecoManager::GetPar()->IncludeStraight() && !TAGrecoManager::GetPar()->IncludeDI())
-       CreateRecActionGlbS();
+   if (TAGrecoManager::GetPar()->IncludeStraight()) {
+      if (!TAGrecoManager::GetPar()->IncludeDI())
+         CreateRecActionGlbS();
+      else
+         CreateRecActionGlbF();
+   }
 }
 
 //__________________________________________________________
@@ -803,7 +811,10 @@ void BaseReco::CreateRecActionVtx()
          fpNtuVtx = new TAGdataDsc(new TAVTntuVertex());
    }
 
-  fpNtuClusVtx  = new TAGdataDsc(new TAVTntuCluster());
+  TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
+  Int_t sensorsN = parGeo->GetSensorsN();
+   
+  fpNtuClusVtx  = new TAGdataDsc(new TAVTntuCluster(sensorsN));
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
    const Char_t* name = FootActionDscName("TAVTactNtuCluster");
@@ -863,7 +874,10 @@ void BaseReco::CreateRecActionVtx()
 //! Create ITR reconstruction actions
 void BaseReco::CreateRecActionIt()
 {
-   fpNtuClusIt = new TAGdataDsc(new TAITntuCluster());
+   TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
+   Int_t sensorsN = parGeo->GetSensorsN();
+   fpNtuClusIt = new TAGdataDsc(new TAITntuCluster(sensorsN));
+   
   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
    const Char_t* name = FootActionDscName("TAITactNtuCluster");
@@ -899,8 +913,12 @@ void BaseReco::CreateRecActionIt()
 //! Create MSD reconstruction actions
 void BaseReco::CreateRecActionMsd()
 {
-   fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
-   fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint());
+   TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
+   Int_t sensorsN = parGeo->GetSensorsN();
+   Int_t stationsN = parGeo->GetStationsN();
+
+   fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster(sensorsN));
+   fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint(stationsN));
 
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
 
@@ -1055,6 +1073,20 @@ void BaseReco::CreateRecActionGlbS()
       
       if (fFlagHisto)
          fActGlbTrackS->CreateHistogram();
+   }
+}
+
+//__________________________________________________________
+//! Create global  track reconstruction action
+void BaseReco::CreateRecActionGlbF()
+{
+   if(fFlagTrack) {
+      fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
+      const Char_t* name = FootActionDscName("TAGactNtuGlbTrackF");
+      fActGlbTrackF = new TAGactNtuGlbTrackF(name, fpNtuVtx, fpNtuClusIt, fpNtuRecMsd, fpNtuRecTw, fpNtuClusCa, fpNtuGlbTrack, fpParGeoVtx, fpParGeoIt, fpParGeoMsd, fpParGeoTw, fpParGeoG, fField);
+      
+      if (fFlagHisto)
+         fActGlbTrackF->CreateHistogram();
    }
 }
 

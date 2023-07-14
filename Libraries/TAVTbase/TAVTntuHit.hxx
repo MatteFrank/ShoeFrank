@@ -14,17 +14,17 @@ class TAVTparGeo;
 class TAVTntuHit : public TAGdata {
    
 protected:
+   // number of sensors
+   Int_t             fSensorsN;        ///< number of sensors
    //using TObjArray here
    TObjArray*        fListOfPixels;    ///< list of pixels
-   //! geometry parameter
-   TAVTparGeo*       fpGeoMap;         //! do not store
-   //! Valididty flag
-   Bool_t            fValid;           /// validity flag
+   // Valididty flag
+   Bool_t            fValid;           ///< validity flag
    
     std::map<pair<int, int>, int > fMap; //! pixel map
     
 public:
-   TAVTntuHit();
+   TAVTntuHit(Int_t sensorsN = 0);
    virtual          ~TAVTntuHit();
    
    //! Check validity
@@ -56,7 +56,7 @@ public:
    // To stream
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
    
-   ClassDef(TAVTntuHit,2)
+   ClassDef(TAVTntuHit,3)
 };
 
 #endif

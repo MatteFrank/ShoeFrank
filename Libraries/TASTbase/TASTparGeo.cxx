@@ -252,8 +252,10 @@ string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material)
     if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
         
-    outstr << PrintCard("ASSIGNMA", flkmat, "STC", "", "", Form("%d",magnetic), "", "") << endl;
-    outstr << PrintCard("ASSIGNMA", "Mylar", "STCMYL1", "STCMYL2", "1.", Form("%d",magnetic), "", "") << endl;
+    //    outstr << PrintCard("ASSIGNMA", flkmat, "STC", "", "", Form("%d",magnetic), "", "") << endl;
+    //    outstr << PrintCard("ASSIGNMA", "Mylar", "STCMYL1", "STCMYL2", "1.", Form("%d",magnetic), "", "") << endl;
+    outstr << PrintCard("ASSIGNMA", flkmat, "STC", "", "", "", "", "") << endl;
+    outstr << PrintCard("ASSIGNMA", "Mylar", "STCMYL1", "STCMYL2", "1.", "", "", "") << endl;
         
   }
   

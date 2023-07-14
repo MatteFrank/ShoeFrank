@@ -144,7 +144,9 @@ void RecoRaw::CreateRawAction()
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
-      fpNtuHitVtx   = new TAGdataDsc(new TAVTntuHit());
+      TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      fpNtuHitVtx   = new TAGdataDsc(new TAVTntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAVTactNtuHit");
       if (fgStdAloneFlag) {
          fActVmeReaderVtx  = new TAVTactVmeReader(name, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
@@ -158,8 +160,11 @@ void RecoRaw::CreateRawAction()
       }
    }
 
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      fpNtuHitIt   = new TAGdataDsc(new TAITntuHit());
+   if (TAGrecoManager::GetPar()->IncludeIT()) {      
+      TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      
+      fpNtuHitIt   = new TAGdataDsc(new TAITntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAITactNtuHit");
       fActNtuHitIt = new TAITactNtuHit(name, fpNtuHitIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
       if (fFlagHisto)
@@ -167,14 +172,16 @@ void RecoRaw::CreateRawAction()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()  && !fgStdAloneFlag) {
-      
-      fpDatRawMsd   = new TAGdataDsc(new TAMSDntuRaw());
+      TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+
+      fpDatRawMsd   = new TAGdataDsc(new TAMSDntuRaw(sensorsN));
       const Char_t* name = FootActionDscName("TAMSDactNtuRaw");
       fActDatRawMsd = new TAMSDactNtuRaw(name, fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd, fpParConfMsd);
       if (fFlagHisto)
          fActDatRawMsd->CreateHistogram();
-
-      fpNtuHitMsd   = new TAGdataDsc(new TAMSDntuHit());
+      
+      fpNtuHitMsd   = new TAGdataDsc(new TAMSDntuHit(sensorsN));
       name = FootActionDscName("TAMSDactNtuHit");
       fActNtuHitMsd = new TAMSDactNtuHit(name, fpDatRawMsd, fpNtuHitMsd, fpParGeoMsd, fpParConfMsd, fpParCalMsd);
       if (fFlagHisto)

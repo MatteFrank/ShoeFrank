@@ -1289,7 +1289,8 @@ void GlobalRecoAna::SetupTree(){
   }
 
   if(TAGrecoManager::GetPar()->IncludeVT()){
-    fpNtuClusVtx = new TAGdataDsc("vtclus",new TAVTntuCluster());
+    Int_t sensorsN = GetParGeoVtx()->GetSensorsN();
+    fpNtuClusVtx = new TAGdataDsc("vtclus",new TAVTntuCluster(sensorsN));
     fpNtuTrackVtx = new TAGdataDsc("vttrack",new TAVTntuTrack());
     fpNtuVtx = new TAGdataDsc("vtvtx",new TAVTntuVertex());
     gTAGroot->AddRequiredItem("vtclus");
@@ -1315,10 +1316,13 @@ void GlobalRecoAna::SetupTree(){
     }
   }
   if(TAGrecoManager::GetPar()->IncludeMSD()){
-    fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
+     Int_t sensorsN = GetParGeoMsd()->GetSensorsN();
+     Int_t stationsN = GetParGeoMsd()->GetStationsN();
+
+    fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster(sensorsN));
     gTAGroot->AddRequiredItem("msdclus");
     myReader->SetupBranch(fpNtuClusMsd);
-    fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint());
+    fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint(stationsN));
     gTAGroot->AddRequiredItem("msdpoint");
     myReader->SetupBranch(fpNtuRecMsd);
     if(fFlagMC){

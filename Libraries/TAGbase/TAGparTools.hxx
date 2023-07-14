@@ -131,6 +131,8 @@ public:
    static vector<TString> Tokenize(const TString line, const Char_t delimiter = '"');
    // Normalize (remove double blank)
    static TString Normalize(const char* line);
+   // Remove characters in a string
+   static TString Remove(const char* line, const Char_t c, Bool_t blank = false);
    
 protected:
    static Int_t fgPrecisionLevel; ///< Precision level for cout

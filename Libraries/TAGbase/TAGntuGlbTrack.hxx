@@ -212,6 +212,9 @@ public:
    //! Get  point
    TAGpoint*        GetPoint(Int_t index)         { return (TAGpoint*)fListOfPoints->At(index); }
 
+   //! Get  last point
+   const TAGpoint*  GetLastPoint()          const { return (TAGpoint*)fListOfPoints->At(fListOfPoints->GetLast()); }
+   
    // Get MC info
    TArrayI          GetMcTrackIdx();
 

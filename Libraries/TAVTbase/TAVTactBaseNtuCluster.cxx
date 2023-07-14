@@ -50,6 +50,8 @@ TAVTactBaseNtuCluster::TAVTactBaseNtuCluster(const char* name,
       fTitleDev = "Vertex";
    else if (fPrefix.Contains("it"))
       fTitleDev = "Inner Tracker";
+   else if (fPrefix.Contains("mp"))
+      fTitleDev = "Monopix2";
    else
       printf("Wrong prefix for histograms !");
 
@@ -79,6 +81,12 @@ void TAVTactBaseNtuCluster::CreateHistogram()
 	  fpHisPixel[i] = new TH1F(Form("%sClusPixel%d",fPrefix.Data(), i+1), Form("%s - # pixels per clusters for sensor %d", fTitleDev.Data(), i+1), 100, 0., 100.);
 	  AddHistogram(fpHisPixel[i]);
    }
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisCharge[i] = new TH1F(Form("%sClusCharge%d",fPrefix.Data(), i+1), Form("%s - charge per clusters for sensor %d", fTitleDev.Data(), i+1), 1000, 0., 1000.);
+      AddHistogram(fpHisCharge[i]);
+   }
+   
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 		 fpHisClusMap[i] = new TH2F(Form("%sClusMap%d", fPrefix.Data(), i+1), Form("%s - clusters map for sensor %d", fTitleDev.Data(), i+1),
@@ -356,6 +364,7 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
       if (ValidHistogram()) {
          if (cluster->GetPixelsN() > 0) {
             fpHisPixelTot->Fill(cluster->GetPixelsN());
+            fpHisCharge[iSensor]->Fill(cluster->GetCharge());
             fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
             fpHisClusMap[iSensor]->Fill(cluster->GetPositionG()[0], cluster->GetPositionG()[1]);
          }

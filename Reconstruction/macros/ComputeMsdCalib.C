@@ -77,6 +77,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    TAMSDparGeo *geomap = (TAMSDparGeo *)msdGeo->Object();
    parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
+   Int_t sensorsN = geomap->GetSensorsN();
 
    TAGparaDsc *msdConf = new TAGparaDsc("msdConf", new TAMSDparConf());
    TAMSDparConf *confmap = (TAMSDparConf *)msdConf->Object();
@@ -92,8 +93,8 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    parCalMsd->LoadPedestalMap(parFileName.Data());
 
    TAGdataDsc *msdDaq = new TAGdataDsc("msdDaq", new TAGdaqEvent());
-   TAGdataDsc *msdDat = new TAGdataDsc("msdDat", new TAMSDntuRaw());
-   TAGdataDsc *msdHit = new TAGdataDsc("msdHit", new TAMSDntuHit());
+   TAGdataDsc *msdDat = new TAGdataDsc("msdDat", new TAMSDntuRaw(sensorsN));
+   TAGdataDsc *msdHit = new TAGdataDsc("msdHit", new TAMSDntuHit(sensorsN));
 
    daqActReaderMSD = new TAGactDaqReader("daqActReader", msdDaq);
 

@@ -432,10 +432,10 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
    fPartSigmaTheta  = TMath::Sqrt(thetaTgt*thetaTgt + thetaVtx*thetaVtx);
 
    if(FootDebugLevel(1))
-   for (Int_t i = 0; i < nClus; ++i) {
-      TAVTcluster* cluster = (TAVTcluster*)vtTrack->GetCluster(i);
-      printf("VTX Sensor %d charge %.0f\n", cluster->GetSensorIdx(), fPartZ);
-   }
+      for (Int_t i = 0; i < nClus; ++i) {
+         TAVTcluster* cluster = (TAVTcluster*)vtTrack->GetCluster(i);
+         printf("VTX Sensor %d charge %.0f\n", cluster->GetSensorIdx(), fPartZ);
+      }
 
    if(FootDebugLevel(2))
       printf("VTX theta %g sensors %d charge %.0f\n", fPartSigmaTheta*TMath::RadToDeg(), nClus, fPartZ);
