@@ -136,7 +136,7 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       TATWparGeo* pGeoMapTw  = (TATWparGeo*)  fpGeoMapTof->Object();
-      fWallThickTw = pGeoMapTw->GetBarThick()*2;
+      fWallThickTw = pGeoMapTw->GetBarThick()*2; // 2 planes
    }
    
    if (TAGrecoManager::GetPar()->IncludeIT()) {
@@ -148,7 +148,7 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
    
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
       TAMSDparGeo* pGeoMapMs = (TAMSDparGeo*) fpGeoMapMsd->Object();
-      fSensorThickMsd = pGeoMapMs->GetTotalSize()[2];
+      fSensorThickMsd = pGeoMapMs->GetTotalSize()[2]*2; // thickness of station
       fLastPlaneMsd   = pGeoMapMs->GetLayerPosZ(pGeoMapMs->GetSensorsN()-1);
       fLastPlaneMsd   = fpFootGeo->FromMSDLocalToGlobal(TVector3(0,0,fLastPlaneMsd))[2];
       
@@ -156,14 +156,18 @@ TAGactNtuGlbTrackS::TAGactNtuGlbTrackS(const char* name,
      fLastPlaneMsd = fSensorThickItr;
 
    // beam loss in target
-   fBeamEnergyTarget = pGeoMapG->GetBeamPar().Energy;
-   Float_t bA = pGeoMapG->GetBeamPar().AtomicMass;
-   Float_t bz = pGeoMapG->GetBeamPar().AtomicNumber;
+   fBeamEnergyTarget  = pGeoMapG->GetBeamPar().Energy;
+   fBeamA             = pGeoMapG->GetBeamPar().AtomicMass;
+   fBeamZ             = pGeoMapG->GetBeamPar().AtomicNumber;
 
-   TString matTgt   = pGeoMapG->GetTargetPar().Material;
-   Float_t thickTgt = pGeoMapG->GetTargetPar().Size[2]/2.; // in average
+   TString matTgt     = pGeoMapG->GetTargetPar().Material;
+   Float_t thickTgt   = pGeoMapG->GetTargetPar().Size[2]/2.; // in average
    
-   fBeamEnergyTarget = fEmProperties->GetEnergyLoss(matTgt, thickTgt, fBeamEnergyTarget, bA, bz);
+   Float_t de         = fEmProperties->GetEnergyLoss(fBeamEnergyTarget, fBeamZ, matTgt, thickTgt);
+   fPartEloss         = de;
+   fElossTarget       = de;
+   fBeamEnergyTarget -= de/fBeamA;
+   fBeamEnergy        = fBeamEnergyTarget;
 }
 
 //------------------------------------------+-----------------------------------
@@ -410,6 +414,8 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
    // first gues with TW
    TAVTparGeo* pGeoMapVt = (TAVTparGeo*) fpGeoMapVtx->Object();
    TAGparGeo* pGeoMapG   = (TAGparGeo*)  fpGeoMapG->Object();
+   fBeamEnergy           =  fBeamEnergyTarget;
+   fPartEloss            = fElossTarget;
 
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       FindTwCluster(track, false);
@@ -432,15 +438,25 @@ TAGtrack* TAGactNtuGlbTrackS::FillVtxTracks(TAVTtrack* vtTrack)
    // Compute particle after half target
    TString matTgt   = pGeoMapG->GetTargetPar().Material;
    Float_t thickTgt = pGeoMapG->GetTargetPar().Size[2]/2.; // in average
-   fPartEnergy      = fEmProperties->GetEnergyLoss(matTgt, thickTgt, fBeamEnergyTarget, fPartA, fPartZ);
-   Float_t thetaTgt = fEmProperties->GetSigmaTheta(matTgt, thickTgt, fBeamEnergyTarget, fPartA, fPartZ);
+   Float_t de       = fEmProperties->GetEnergyLoss(fBeamEnergy, fPartZ, matTgt, thickTgt);
+   Float_t thetaTgt = fEmProperties->GetSigmaTheta(matTgt, thickTgt, fBeamEnergy, fPartA, fPartZ);
+   fPartEloss     += de;
+   fBeamEnergy -= de/fBeamA;
+   
+   if(FootDebugLevel(1))
+      printf("Tgt %f %g %g %g\n", fPartZ, fBeamEnergy, fPartEloss, de*1000);
    
    // Compute particle after vertex
    Float_t thickVtx = fSensorThickVtx*nClus;
    TString matEpi   = pGeoMapVt->GetEpiMaterial();
-   Float_t thetaVtx = fEmProperties->GetSigmaTheta(matEpi, thickVtx, fPartEnergy, fPartA, fPartZ);
-   fPartEnergy      = fEmProperties->GetEnergyLoss(matEpi, thickVtx, fPartEnergy, fPartA, fPartZ);
+   Float_t thetaVtx = fEmProperties->GetSigmaTheta(matEpi, thickVtx, fPartEloss, fPartA, fPartZ);
+   Float_t dev       = fEmProperties->GetEnergyLoss(fBeamEnergy, fPartZ, matEpi, thickVtx);
+   fPartEloss     += dev;
+   fBeamEnergy -= dev/fBeamA;
    
+   if(FootDebugLevel(1))
+      printf("VT %g %g %g\n", fBeamEnergy, fPartEloss, dev*1000);
+
    fPartSigmaTheta  = TMath::Sqrt(thetaTgt*thetaTgt + thetaVtx*thetaVtx);
 
    if(FootDebugLevel(1))
@@ -562,8 +578,14 @@ void TAGactNtuGlbTrackS::FindItrCluster(TAGtrack* track)
    if (addedCluster == 0) addedCluster = 1;
    Float_t thick    = fSensorThickItr*addedCluster/TMath::Cos(track->GetTgtTheta());
    TString matEpi   = pGeoMap->GetEpiMaterial();
-   Float_t theta    = fEmProperties->GetSigmaTheta(matEpi, thick, fPartEnergy, fPartA, fPartZ);
-   fPartEnergy      = fEmProperties->GetEnergyLoss(matEpi, thick, fPartEnergy, fPartA, fPartZ);
+   Float_t theta    = fEmProperties->GetSigmaTheta(matEpi, thick, fBeamEnergy, fPartA, fPartZ);
+   Float_t dev      = fEmProperties->GetEnergyLoss(fBeamEnergy, fPartZ, matEpi, thick);
+   fPartEloss     += dev;
+   fBeamEnergy     -= dev/fBeamA;
+   
+   if(FootDebugLevel(1))
+      printf("IT %g %g %g\n", fBeamEnergy, fPartEloss, dev*1000);
+
    fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
 
    if(FootDebugLevel(2))
@@ -641,8 +663,14 @@ void TAGactNtuGlbTrackS::FindMsdCluster(TAGtrack* track)
          // Compute particle after each plane
          Float_t thick    = fSensorThickMsd/TMath::Cos(track->GetTgtTheta());
          TString matEpi   = pGeoMap->GetEpiMaterial();
-         Float_t theta    = fEmProperties->GetSigmaTheta(matEpi, thick, fPartEnergy, fPartA, fPartZ);
-         fPartEnergy      = fEmProperties->GetEnergyLoss(matEpi, thick, fPartEnergy, fPartA, fPartZ);
+         Float_t theta    = fEmProperties->GetSigmaTheta(matEpi, thick, fBeamEnergy, fPartA, fPartZ);
+         Float_t dev      = fEmProperties->GetEnergyLoss(fBeamEnergy, fPartZ, matEpi, thick);
+         fPartEloss     += dev;
+         fBeamEnergy -= dev/fBeamA;
+         
+         if(FootDebugLevel(1))
+            printf("MSD %g %g %g\n", fBeamEnergy, fPartEloss, dev*1000);
+         
          fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
          
          if(FootDebugLevel(2))
@@ -761,11 +789,19 @@ void TAGactNtuGlbTrackS::FindTwCluster(TAGtrack* track, Bool_t update)
    }
    
    // Compute particle after ToF Wall
-   Float_t thick    = fWallThickTw/TMath::Cos(track->GetTgtTheta());
-   TString mat      = pGeoMap->GetBarMat();
-   Float_t theta    = fEmProperties->GetSigmaTheta(mat, thick, fPartEnergy, fPartA, fPartZ);
-   fPartEnergy      = fEmProperties->GetEnergyLoss(mat, thick, fPartEnergy, fPartA, fPartZ);
-   fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
+   if (update) {
+      Float_t thick    = fWallThickTw/TMath::Cos(track->GetTgtTheta());
+      TString mat      = pGeoMap->GetBarMat();
+      Float_t theta    = fEmProperties->GetSigmaTheta(mat, thick, fBeamEnergy, fPartA, fPartZ);
+      fPartSigmaTheta  = TMath::Sqrt(fPartSigmaTheta*fPartSigmaTheta + theta*theta);
+      
+      Float_t dev      = fEmProperties->GetEnergyLoss(fBeamEnergy, fPartZ, mat, thick);
+      fPartEloss     += dev;
+      fBeamEnergy     -= dev/fBeamA;
+      
+      if(FootDebugLevel(1))
+         printf("TW %g %g %g\n", fBeamEnergy, fPartEloss, dev*1000);
+   }
 }
 
 //_____________________________________________________________________________
@@ -848,19 +884,26 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
 
    // compute beta
    Double_t tof   = track->GetTwTof();
-//   tof *= 0.8;
+   tof *= 0.8;
    TVector3 posTw = fpFootGeo->GetTWCenter();
    TVector3 pos1  = track->Intersection(0);
    TVector3 pos2  = track->Intersection(posTw[2]);
 
    Double_t length = (pos2-pos1).Mag();
    Double_t beta   = length/tof;
-   beta /= TAGgeoTrafo::GetLightVelocity(); //cm/ns
+   beta           /= TAGgeoTrafo::GetLightVelocity(); //cm/ns
    
    // compute mass
    Double_t Ekin = track->GetFitEnergy(); // should come from Calo
-   Ekin += fPartEnergy; // add energy loss (neglecting loss in air)
+   Float_t dev   = fEmProperties->GetEnergyLoss(fBeamEnergy, fPartZ, "AIR", length);
+   fPartEloss   += dev;
+   fBeamEnergy  -= dev/fBeamA;
+   
+   Ekin += fPartEloss; // add energy loss (neglecting loss in air)
  //  Ekin *= 1.07;
+   if(FootDebugLevel(1))
+      printf("AIR %d %g %g %g\n", (int)fPartZ, Ekin, fPartEloss, dev*1000);
+
    Double_t gamma = 1./TMath::Sqrt(1-beta*beta);
    Double_t mass  = Ekin/(gamma-1)/TAGgeoTrafo::GetMassFactor();
    track->SetMass(mass);

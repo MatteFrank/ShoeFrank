@@ -115,10 +115,14 @@ private:
    Float_t         fLastPlaneMsd;       ///< Last plane id for MSD
 
    Float_t         fPartSigmaTheta;     ///< Scattering angle
-   Float_t         fPartEnergy;         ///< Particle energy
+   Float_t         fPartEloss;          ///< Particle energy loss
+   Float_t         fElossTarget;        ///< Energy loss in target
    Float_t         fPartA;              ///< Particle A
    Float_t         fPartZ;              ///< Particle Z
    Float_t         fBeamEnergyTarget;   ///< Beam energy at target
+   Float_t         fBeamEnergy;         ///< Beam energy
+   Float_t         fBeamA;              ///< Beam atomic mass
+   Float_t         fBeamZ;              ///< Beam atomic number
 
    TADItrackEmProperties* fEmProperties; ///< EM properties
    
