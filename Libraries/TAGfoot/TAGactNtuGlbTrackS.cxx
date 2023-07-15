@@ -884,7 +884,7 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
 
    // compute beta
    Double_t tof   = track->GetTwTof();
-   tof *= 0.8;
+ //  tof *= 0.8;
    TVector3 posTw = fpFootGeo->GetTWCenter();
    TVector3 pos1  = track->Intersection(0);
    TVector3 pos2  = track->Intersection(posTw[2]);
@@ -900,7 +900,6 @@ void TAGactNtuGlbTrackS::ComputeMass(TAGtrack* track)
    fBeamEnergy  -= dev/fBeamA;
    
    Ekin += fPartEloss; // add energy loss (neglecting loss in air)
- //  Ekin *= 1.07;
    if(FootDebugLevel(1))
       printf("AIR %d %g %g %g\n", (int)fPartZ, Ekin, fPartEloss, dev*1000);
 
