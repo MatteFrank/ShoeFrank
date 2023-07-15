@@ -76,122 +76,143 @@ void GlobalRecoAna::LoopEvent() {
   }
   else currEvent=0;
 
-//*********************************************************************************** begin loop on every event **********************************************
+  Int_t frequency = 1;
+  if (nTotEv >= 100000)
+  frequency = 10000;
+  else if (nTotEv >= 10000)
+  frequency = 1000;
+  else if (nTotEv >= 1000)
+  frequency = 100;
+  else if (nTotEv >= 100)
+  frequency = 10;
+  else if (nTotEv >= 10)
+  frequency = 1;
+
+  //*********************************************************************************** begin loop on every event **********************************************
   while(gTAGroot->NextEvent()) { //for every event
     //fFlagMC = false;     //N.B.: for MC FAKE REAL
-    if (currEvent % 100 == 0 || FootDebugLevel(1))
-      cout <<"current Event: " <<currEvent<<endl;
-    DiffApp_trkIdx = false;
-    SelectionCuts();
 
+  if (currEvent % frequency == 0 || FootDebugLevel(1))
+    cout << "Load Event: " << currEvent << endl;
 
+  DiffApp_trkIdx = false;
+  SelectionCuts();
 
-    ClustersPositionStudy();
+  ClustersPositionStudy();
 
-    int evtcutstatus=ApplyEvtCuts();
-    ((TH1D*)gDirectory->Get("Evtcutstatus"))->Fill(evtcutstatus);
-    if(evtcutstatus){
-      ++currEvent;
-      continue;
-    }
-
-
-    Int_t nt =  myGlb->GetTracksN(); //number of reconstructed tracks for every event
-    ((TH1D*)gDirectory->Get("ntrk"))->Fill(nt);
-    if (nt > 0) recoEvents++;
-
-          TAWDntuTrigger *wdTrig = 0x0;
-    if (fFlagMC ==false){
-      wdTrig = (TAWDntuTrigger*)fpNtuWDtrigInfo->GenerateObject();    //trigger from hardware
-      FragTriggerStudies();
-    }
-
-    if (fFlagMC ==true && nt >0){
-    //initialize Trk Id to 0
-      TrkIdMC = -1;
-      N_TrkIdMC_TW =-1;
-      TrkIdMC_TW = -1;
-    }
-
-    //TW ghost hits studies, needed for the following yield measurements
-    if (fFlagMC == true )
-      TrackVsMCStudy();
-
-    //*********************************************************************************** begin loop on global tracks **********************************************
-    for(int it=0;it<nt;it++) { // for every track
-      int trkstatus=ApplyTrkCuts();
-      ((TH1D*)gDirectory->Get("Trkcutstatus"))->Fill(trkstatus);
-      if(trkstatus){
-        ntracks++;
-        continue;
+  int evtcutstatus = ApplyEvtCuts();
+  ((TH1D *)gDirectory->Get("Evtcutstatus"))->Fill(evtcutstatus);
+  if (evtcutstatus)
+  {
+    ++currEvent;
+    continue;
       }
 
-      isPrimaryInEvent = false;
-      fGlbTrack = myGlb->GetTrack(it);
+      Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
+      ((TH1D *)gDirectory->Get("ntrk"))->Fill(nt);
+      if (nt > 0)
+        recoEvents++;
 
-      //fEvtGlbTrkVec.clear(); //!
-      //ComputeMCtruth(TrkIdMC, Z_true, P_true, P_cross, Ek_true);
-
-      if(fFlagMC){
-        MCGlbTrkLoopSetVariables();
-        //GlbTrackPurityStudy();
+      TAWDntuTrigger *wdTrig = 0x0;
+      if (fFlagMC == false)
+      {
+        wdTrig = (TAWDntuTrigger *)fpNtuWDtrigInfo->GenerateObject(); // trigger from hardware
+        FragTriggerStudies();
       }
 
-      //Set the reconstructed quantities
-      RecoGlbTrkLoopSetVariables();
-      //Evaluate the measured mass
-      if(fFlagMC){
-      ThetaTrueVSThetaRecoPlots();
-      }
-
-      EvaluateMass();
-
-      if(FootDebugLevel(1)){
-        cout<<"GlobalRecoAna::Z_meas="<<Z_meas<<"  P_meas="<<P_meas<<"  primary_tof="<<primary_tof<<"  Tof_meas="<<Tof_meas<<"  Beta_meas="<<Beta_meas<<"  M_meas="<<M_meas<<"  Ek_meas="<<Ek_meas<<endl;
-        cout<<"MassPb="<<mass_ana->GetMassPb()<<"  MassPe="<<mass_ana->GetMassPe()<<"  MassBe="<<mass_ana->GetMassBe()<<endl;
-      }
-
-      //some specific studies
-      EkBinningStudies();
-      FillUnfoldingPlots();
-
-      //fill the yields plots
-      if(fFlagMC)
-        FillMCGlbTrkYields();
-      else
-        FillDataGlbTrkYields();
-
-      //fill the plots related to glb tracks
-      FillTrkPlots();
-
-      ntracks++;
-      if (Z_meas==primary_cha)
-        isPrimaryInEvent = true;  // needed in AlignmentStudy()
-
-      //re-initialize trk ID to 0 ; needed in TWStudy
-      if(fFlagMC){
+      if (fFlagMC == true && nt > 0)
+      {
+        // initialize Trk Id to 0
         TrkIdMC = -1;
-        N_TrkIdMC_TW =-1;
+        N_TrkIdMC_TW = -1;
         TrkIdMC_TW = -1;
       }
 
-    } //********* end loop on global tracks ****************
+      // TW ghost hits studies, needed for the following yield measurements
+      if (fFlagMC == true)
+        TrackVsMCStudy();
 
-    //Studies dedicated to MC dataset
-    if(fFlagMC)
-      MCParticleStudies();
+      //*********************************************************************************** begin loop on global tracks **********************************************
+      for (int it = 0; it < nt; it++)
+      { // for every track
+        int trkstatus = ApplyTrkCuts();
+        ((TH1D *)gDirectory->Get("Trkcutstatus"))->Fill(trkstatus);
+        if (trkstatus)
+        {
+          ntracks++;
+          continue;
+        }
 
-    //studies dedicated to alignment
-    if (fFlagMC == false)
-      AlignmentStudy();
+        isPrimaryInEvent = false;
+        fGlbTrack = myGlb->GetTrack(it);
 
-    // FullCALOanal();
+        // fEvtGlbTrkVec.clear(); //!
+        // ComputeMCtruth(TrkIdMC, Z_true, P_true, P_cross, Ek_true);
 
-    ++currEvent;
-    if (currEvent == nTotEv)
-      break;
+        if (fFlagMC)
+        {
+          MCGlbTrkLoopSetVariables();
+          // GlbTrackPurityStudy();
+        }
 
-  }//end of loop event
+        // Set the reconstructed quantities
+        RecoGlbTrkLoopSetVariables();
+        // Evaluate the measured mass
+        if (fFlagMC)
+        {
+          ThetaTrueVSThetaRecoPlots();
+        }
+
+        EvaluateMass();
+
+        if (FootDebugLevel(1))
+        {
+          cout << "GlobalRecoAna::Z_meas=" << Z_meas << "  P_meas=" << P_meas << "  primary_tof=" << primary_tof << "  Tof_meas=" << Tof_meas << "  Beta_meas=" << Beta_meas << "  M_meas=" << M_meas << "  Ek_meas=" << Ek_meas << endl;
+          cout << "MassPb=" << mass_ana->GetMassPb() << "  MassPe=" << mass_ana->GetMassPe() << "  MassBe=" << mass_ana->GetMassBe() << endl;
+        }
+
+        // some specific studies
+        EkBinningStudies();
+        FillUnfoldingPlots();
+
+        // fill the yields plots
+        if (fFlagMC)
+          FillMCGlbTrkYields();
+        else
+          FillDataGlbTrkYields();
+
+        // fill the plots related to glb tracks
+        FillTrkPlots();
+
+        ntracks++;
+        if (Z_meas == primary_cha)
+          isPrimaryInEvent = true; // needed in AlignmentStudy()
+
+        // re-initialize trk ID to 0 ; needed in TWStudy
+        if (fFlagMC)
+        {
+          TrkIdMC = -1;
+          N_TrkIdMC_TW = -1;
+          TrkIdMC_TW = -1;
+        }
+
+      } //********* end loop on global tracks ****************
+
+      // Studies dedicated to MC dataset
+      if (fFlagMC)
+        MCParticleStudies();
+
+      // studies dedicated to alignment
+      if (fFlagMC == false)
+        AlignmentStudy();
+
+      // FullCALOanal();
+
+      ++currEvent;
+      if (currEvent == nTotEv)
+        break;
+
+    } // end of loop event
 
   return;
 }

@@ -32,11 +32,12 @@ class TAVTbaseHit : public TAGobject {
 protected:
 	Int_t              fSensorId;                 ///< number of the sensor
 	TVector3           fPosition;                 ///< pixel position in the detector frame
-
+   
    Int_t              fPixelIndex;               ///< index of the pixel
 	Int_t              fPixelLine;                ///< line in the matrix
 	Int_t              fPixelColumn;              ///< column in the matrix
 	Int_t              fLayer;                    ///< layer number
+   TArrayI            fFrame;
 
 	Double32_t         fRawValue;                 ///< the rawvalue
 	Double32_t         fPulseHeight;              ///< pulseheight on pixel
@@ -67,37 +68,42 @@ public:
     //! Set valid frame
     void               SetValidFrames(Bool_t ok)       { fValidFrames = ok;       }
    //! Set pile up
-   void               SetPileUp(Bool_t ok=true)        { fPileUp = ok;            }
+   void                SetPileUp(Bool_t ok=true)       { fPileUp = ok;            }
 
-    // Getter methods
-    //! Get pixel index
-    Int_t              GetPixelIndex()   const         { return  fPixelIndex;     }
-    //! Get pixel line
-    Int_t              GetPixelLine()    const         { return  fPixelLine;      }
-    //! Get pixel column
-    Int_t              GetPixelColumn()  const         { return  fPixelColumn;    }
-    //! Get layer
-    Int_t              GetLayer()        const         { return  fLayer;          }
-    //! Get sensor ID
-    Int_t              GetSensorId()     const         { return  fSensorId;       }
+   // Getter methods
+   //! Get pixel index
+   Int_t              GetPixelIndex()   const         { return  fPixelIndex;     }
+   //! Get pixel line
+   Int_t              GetPixelLine()    const         { return  fPixelLine;      }
+   //! Get pixel column
+   Int_t              GetPixelColumn()  const         { return  fPixelColumn;    }
+   //! Get layer
+   Int_t              GetLayer()        const         { return  fLayer;          }
+   //! Get sensor ID
+   Int_t              GetSensorId()     const         { return  fSensorId;       }
    
-    //! Get raw value
-    Double_t           GetRawValue()     const         { return  fRawValue;       }
-    //! Get pulse height
-    Double_t           GetPulseHeight()  const         { return  fPulseHeight;    }
-    //! Check valid frames
-    Bool_t             IsValidFrames()   const         { return fValidFrames;     }
-    //! Check pile up
-    Bool_t             IsPileUp()        const         { return fPileUp;          }
-    //! Get position
-    TVector3&          GetPosition()                   { return fPosition;        }
+   Int_t              GetFrameOnSize()  const         { return  fFrame.GetSize();}
    
-    // Compute distance from a given position
-    Double_t           Distance( const TVector3&     aPosition);
-    // Compute distance in U direction from a given position
-    Double_t           DistanceU( const TVector3&     aPosition);
-    // Compute distance in V direction from a given position
-    Double_t           DistanceV( const TVector3&     aPosition);
+   Int_t              GetFrameOn(Int_t index)   const         { return  fFrame[index];}
+   
+   
+   //! Get raw value
+   Double_t           GetRawValue()     const         { return  fRawValue;       }
+   //! Get pulse height
+   Double_t           GetPulseHeight()  const         { return  fPulseHeight;    }
+   //! Check valid frames
+   Bool_t             IsValidFrames()   const         { return fValidFrames;     }
+   //! Check pile up
+   Bool_t             IsPileUp()        const         { return fPileUp;          }
+   //! Get position
+   TVector3&          GetPosition()                   { return fPosition;        }
+   
+   // Compute distance from a given position
+   Double_t           Distance( const TVector3&     aPosition);
+   // Compute distance in U direction from a given position
+   Double_t           DistanceU( const TVector3&     aPosition);
+   // Compute distance in V direction from a given position
+   Double_t           DistanceV( const TVector3&     aPosition);
 
    //! Get MC index
    Int_t      GetMcIndex(Int_t index)    const   { return fMCindex[index];       }
@@ -109,7 +115,10 @@ public:
    // Add MC track Id
    void       AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
 
-    ClassDef(TAVTbaseHit,5)                            // Pixel or Pixel of a Detector Plane
+   void       AddFrameOn(Int_t iFrame);
+
+
+   ClassDef(TAVTbaseHit,5)                            // Pixel or Pixel of a Detector Plane
 };
 
 //##############################################################################

@@ -42,6 +42,7 @@ set( with_dictionnaries
    TAGactDscTreeWriter
    GlobalReco
    GlobalRecoAna
+   GlobalRecoAnaGSI
    GlobalRecoMassAna   
    GlobalToeReco
 )

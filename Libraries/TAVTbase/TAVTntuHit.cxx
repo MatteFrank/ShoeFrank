@@ -158,7 +158,7 @@ void TAVTntuHit::Clear(Option_t*)
 //! \param[in] value pixel value
 //! \param[in] aLine line number
 //! \param[in] aColumn column number
-TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn)
+TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn, Int_t iFrame)
 {
    if (iSensor >= 0  && iSensor < fSensorsN) {
       TClonesArray &pixelArray = *GetListOfPixels(iSensor);
@@ -168,12 +168,14 @@ TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
       if ( fMap[idx] == iSensor+1) {
          TAVThit* pixel = new TAVThit(iSensor, value, aLine, aColumn);
          TAVThit* curPixel = (TAVThit*)pixelArray.FindObject(pixel);
+         curPixel->AddFrameOn(iFrame);
          delete pixel;
          return curPixel;
          
       } else {
          fMap[idx] = iSensor+1;
          TAVThit* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAVThit(iSensor, value, aLine, aColumn);
+         pixel->AddFrameOn(iFrame);
          return pixel;
       }
    } else {

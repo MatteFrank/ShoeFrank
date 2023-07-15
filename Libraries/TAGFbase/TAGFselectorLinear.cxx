@@ -26,10 +26,7 @@ void TAGFselectorLinear::Categorize( ) {
 
 
 	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
-	{
-		Error("Categorize_dataLike()", "Linear selection algorithm currently not supported without Vertex!");
-		throw -1;
-	}
+		Error("Categorize_dataLike()", "Linear selection algorithm currently not supported without Vertex!"), exit(42);
 	else
 	{
 		if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
@@ -67,7 +64,7 @@ void TAGFselectorLinear::Categorize( ) {
 		int Z_Hypo = GetChargeFromTW(itTrack->second);
 		if( Z_Hypo == -1 )
 		{
-			Z_Hypo = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber;
+			Z_Hypo = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber;
 			itTrack->second->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
 		}
 		else
@@ -131,7 +128,7 @@ void TAGFselectorLinear::CategorizeMSD()
 			if( !m_SensorIDMap->GetSensorID(MSDnPlane, &sensorId) )
 			{
 				Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", MSDnPlane);
-				throw -1;
+				exit(42);
 			}
 			//Skip if no measurement found
 			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
@@ -153,7 +150,7 @@ void TAGFselectorLinear::CategorizeMSD()
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 
-				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorLinear::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
+				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorLinear::Categorize_dataLike() --> ERROR MSD" <<endl, exit(42);
 
 				//RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit;
@@ -231,7 +228,7 @@ void TAGFselectorLinear::CategorizeTW()
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
 			if (  m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != planeTW )
-				cout << "TAGFselectorLinear::Categorize_dataLike() --> ERROR TW" <<endl, exit(0);
+				cout << "TAGFselectorLinear::Categorize_dataLike() --> ERROR TW" <<endl, exit(42);
 
 			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
 					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );

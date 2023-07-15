@@ -78,9 +78,11 @@ public:
 	TAGFselectorBase();
 	virtual ~TAGFselectorBase();
 
-	void SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, vector<int> *chVect,
+	void SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, TString GFsystemsOn, vector<int> *chVect,
 					  TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap,
 					  map<int, vector<int>> *measParticleMC_collection, bool isMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents);
+
+	void SetExtrapolationHistogram(map< pair<string,pair<int,int>>, TH1F*>& extrapDist) {h_extrapDist = extrapDist;}
 
 	int FindTrackCandidates();
 	virtual void Categorize() { return; }
@@ -88,8 +90,10 @@ public:
 	int					GetEventType();
 	TString				GetRecoTrackName(Track* tr);
 	int					GetChargeFromTW(Track* trackToCheck);
-	map<string, int>	CountParticleGenaratedAndVisible();
+	map<string, int>	CountParticleGeneratedAndVisible();
 	void				FillPlaneOccupancy(TH2I** h_PlaneOccupancy);
+	string				GetParticleNameFromCharge(int ch);
+	virtual TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId = -1);
 
 protected:
 	void		CheckPlaneOccupancy();
@@ -100,7 +104,6 @@ protected:
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV);
 
 	void		FillTrackCategoryMap();
-	virtual TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId = -1);
 
 	int m_eventType;
 	vector<int>* m_chargeVect;								///< Vector with charge values seen by TW -> used for track representation declaration
@@ -112,6 +115,8 @@ protected:
 	map<int, Track*> m_trackTempMap;						///< Temporary map where to store tracks during selection
 	map<int, TVector3> m_trackSlopeMap;						///< Map of track slopes @ VT
 	map< int, vector<int> >* m_measParticleMC_collection;	///< Map of MC particles associated w/ global measurement index
+	map< pair<string,pair<int,int>>, TH1F*> h_extrapDist;	///< Map of histograms for global track extrapolation distance for all sensors; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
+
 
 	map<string, vector<int>> m_PlaneOccupancy;
 	vector<string> m_detectors;

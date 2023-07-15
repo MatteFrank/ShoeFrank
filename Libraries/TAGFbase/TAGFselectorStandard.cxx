@@ -24,10 +24,10 @@ TAGFselectorStandard::TAGFselectorStandard() : TAGFselectorBase()
 //! \brief Base function for standard track finding/selection/categorization
 void TAGFselectorStandard::Categorize( ) {
 
-	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
+	if(!m_systemsON.Contains("VT"))
 	{
 		Error("Categorize_dataLike()", "Standard selection algorithm currently not supported without Vertex!");
-		exit(0);
+		exit(42);
 	}
 	else
 	{
@@ -68,9 +68,9 @@ void TAGFselectorStandard::Categorize( ) {
 //! The algorithm currently starts from VT tracklets and checks the number of points in them
 void TAGFselectorStandard::CategorizeVT()
 {
-	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"), "TAVTntuVertex")->Object();
+	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"))->Object();
 		//cluster test
-	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"),"TAVTntuCluster")->Object(); //To find the right clus Index -> TO BE CHANGED!
+	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object(); //To find the right clus Index -> TO BE CHANGED!
 
 	if(!vertexContainer || !vtntuclus)
 	{
@@ -242,14 +242,12 @@ void TAGFselectorStandard::CategorizeIT()	{
 			// RZ: there is a potentially bad issue here with the bending plane!!! the intersection might be in another sensor since it is done with a linear extrapolation. Would it be better to only check the y? how much do we risk of f-ing this up?
 
 			Int_t sensorId;
+			std::pair<string, std::pair<int, int>> sensId;
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); ++iPlane ) {
 				// TVector3 guessOnIT = ExtrapolateToOuterTracker(itTrack->second, *iPlane);
 
 				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
-				{
-					Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", *iPlane);
-					throw -1;
-				}
+					Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", *iPlane), exit(42);
 
 				TVector3 guessOnPlaneIT = m_GeoTrafo->FromGlobalToITLocal( tmpExtrap ); //RZ: IsInActive controls local or global variables????
 				guessOnPlaneIT = m_IT_geo->Detector2Sensor(sensorId, guessOnPlaneIT); //Move to local coords
@@ -299,7 +297,14 @@ void TAGFselectorStandard::CategorizeIT()	{
 					AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> ( m_allHitMeas->at(sensorMatch).at(indexOfMinY) ))->clone();
 					(itTrack->second)->insertMeasurement( hitToAdd );
 					addedMeas++;
-					
+
+					//Fill extrapolation distance histos
+					int iSensor;
+					m_SensorIDMap->GetSensorID(sensorMatch, &iSensor);
+					sensId = make_pair("IT",make_pair(iSensor,0));
+					h_extrapDist[sensId]->Fill(guessOnPlaneIT.X() - hitToAdd->getRawHitCoords()(0));
+					sensId = make_pair("IT",make_pair(iSensor,1));
+					h_extrapDist[sensId]->Fill(guessOnPlaneIT.Y() - hitToAdd->getRawHitCoords()(1));
 				}
 			}	// end loop on IT planes
 		} // end loop over z
@@ -443,7 +448,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 			// cout << "TAGFselectorStandard::CategorizeMSD()     MSDcheck4\n";
-				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
+				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR MSD" <<endl, exit(42);
 
 				//RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit;
@@ -480,6 +485,13 @@ void TAGFselectorStandard::CategorizeMSD()	{
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(sensorMatch).at(indexOfMinY)))->clone();
 				(itTrack->second)->insertMeasurement( hitToAdd );
 				findMSD++;
+
+				//Fill extrapolation distance histos
+				int iSensor;
+				int iCoord = static_cast<PlanarMeasurement*>(hitToAdd)->getYview() ? 1 : 0;
+				m_SensorIDMap->GetSensorID(sensorMatch, &iSensor);
+				std::pair<string, std::pair<int, int>> sensId = make_pair("MSD",make_pair(iSensor,iCoord));
+				h_extrapDist[sensId]->Fill(guessOnMSD.X() - hitToAdd->getRawHitCoords()(0));
 			}
 
 		} // end loop MSD planes
@@ -637,10 +649,9 @@ void TAGFselectorStandard::CategorizeTW()
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
 			if (  m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != planeTW )
-				cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR TW" <<endl, exit(0);
+				cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR TW" <<endl, exit(42);
 
-			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
-					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );
+			double distanceFromHit = sqrt( pow(guessOnTW.X() - (*it)->getRawHitCoords()(0),2) + pow(guessOnTW.Y() - (*it)->getRawHitCoords()(1), 2) );
 			
 			if( m_debug > 0) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< "\n";
 
@@ -655,8 +666,15 @@ void TAGFselectorStandard::CategorizeTW()
 		if (indexOfMin != -1)	{
 			AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(planeTW).at(indexOfMin)))->clone();
 			(itTrack->second)->insertMeasurement( hitToAdd );
+
+			//Fill extrapolation distance histos
+			int iSensor;
+			m_SensorIDMap->GetSensorID(planeTW, &iSensor);
+			std::pair<string, std::pair<int, int>> sensId = make_pair("TW",make_pair(iSensor,0));
+			h_extrapDist[sensId]->Fill(guessOnTW.X() - hitToAdd->getRawHitCoords()(0));
+			sensId = make_pair("TW",make_pair(iSensor,1));
+			h_extrapDist[sensId]->Fill(guessOnTW.Y() - hitToAdd->getRawHitCoords()(1));
 		}
 	}
 	delete m_fitter_extrapolation;
-	
 }

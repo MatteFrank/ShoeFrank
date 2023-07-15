@@ -32,47 +32,29 @@ m_McNtuEve(0x0),
 m_singleVertexCounter(0x0),
 m_noVTtrackletEvents(0x0),
 m_noTWpointEvents(0x0),
+m_systemsON(""),
 m_VTtolerance(.5),
 m_ITtolerance(.5),
 m_MSDtolerance(.5),
 m_TWtolerance(4.)
 {
-
 	m_debug = TAGrecoManager::GetPar()->Debug();
 
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
 	if(TAGrecoManager::GetPar()->IncludeVT())
-		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object();
+		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"))->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeIT())
-		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object();
+		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"))->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeMSD())
-		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
+		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"))->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeTW())
-		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object();
+		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"))->Object();
 
-	m_systemsON = "";
-	if( TAGrecoManager::GetPar()->KalSystems().at(0) == "all" )
-	{
-		if(TAGrecoManager::GetPar()->IncludeVT())	m_systemsON += "VT ";
-		if(TAGrecoManager::GetPar()->IncludeIT())	m_systemsON += "IT ";
-		if(TAGrecoManager::GetPar()->IncludeMSD())	m_systemsON += "MSD ";
-		if(TAGrecoManager::GetPar()->IncludeTW())	m_systemsON += "TW ";
-	}
-	else
-	{
-		for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
-			if (i != 0)		m_systemsON += " ";
-			m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
-		}
-	}
-
-	m_detectors = TAGparTools::Tokenize( m_systemsON.Data() , " " );
-
-	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().Energy;
+	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().Energy;
 
 	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
@@ -117,6 +99,7 @@ TAGFselectorBase::~TAGFselectorBase()
 //! \brief Set all the needed variables for track selection
 //!
 //! \param[in] allHitMeas Pointer to the map containing all the measurements in GenFit format; the key is the GenFit FitPlane index
+//! \param[in] GFsystemsOn String containing all systems included in the track selection algorithm
 //! \param[in] chargeVect Pointer to vector of possible charges in the event (either measured from TW or MC truth)
 //! \param[in] SensorIDmap Pointer to TAGFdetectorMap of the campaign
 //! \param[in,out] trackCategoryMap Pointer to the map of selected tracks that have to be sent to the KFitter action
@@ -125,7 +108,7 @@ TAGFselectorBase::~TAGFselectorBase()
 //! \param[in] singleVertexCounter Pointer to variable counting events with exactly one vertex
 //! \param[in] noVTtrackletEvents Pointer to variable counting events with no valid VT tracklet for track extrapolation
 //! \param[in] noVTtrackletEvents Pointer to variable counting events with no valid TW point for track extrapolation
-void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, vector<int> *chargeVect, TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool IsMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents)
+void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, TString GFsystemsOn, vector<int> *chargeVect, TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool IsMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents)
 {
 	m_allHitMeas = allHitMeas;
 	m_chargeVect = chargeVect;
@@ -137,8 +120,11 @@ void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMe
 	m_noVTtrackletEvents = noVTtrackletEvents;
 	m_noTWpointEvents = noTWpointEvents;
 
+	m_systemsON = GFsystemsOn;
+	m_detectors = TAGparTools::Tokenize( m_systemsON.Data() , " " );
+
 	if (m_IsMC)
-      m_McNtuEve = (TAMCntuPart *)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object();
+      m_McNtuEve = (TAMCntuPart *)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"))->Object();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -149,7 +135,6 @@ void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMe
 //! \return 0 if there were no errors
 int TAGFselectorBase::FindTrackCandidates()
 {
-
 	CheckPlaneOccupancy();
 
 	if (FillTrackRepVector() != 0)
@@ -198,11 +183,11 @@ int TAGFselectorBase::FillTrackRepVector()
 //!
 //! This function if used for Selection Efficiency evaluation
 //! \return Map containing the name of MC particles seen in the event ("H", "He", "Li"...) and their number
-map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
+map<string, int> TAGFselectorBase::CountParticleGeneratedAndVisible()
 {
 
 	if(m_debug > 0) 
-		cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+		cout << "TAGFselector::CountParticleGeneratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 
 	map<string, int> genCount_vector;
 	// m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object();
@@ -215,23 +200,10 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 		float mass = particle->GetMass();
 
 
-		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)	continue;
+		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber)	continue;
 
 		string outName, pdgName;
-
-		switch(particleCh)	{
-
-			case 1:	outName = "H";	break;
-			case 2:	outName = "He";	break;
-			case 3:	outName = "Li";	break;
-			case 4:	outName = "Be";	break;
-			case 5:	outName = "B";	break;
-			case 6:	outName = "C";	break;
-			case 7:	outName = "N";	break;
-			case 8:	outName = "O";	break;
-			default:
-				outName = "fail";	break;
-		}
+		outName = GetParticleNameFromCharge(particleCh);
 
 		//CAREFUL HERE!! Think about the possibility of throwing an error -> skip particle for the moment
 		if( outName == "fail" ) {continue;}
@@ -271,7 +243,6 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 						if( iPlane == m_SensorIDMap->GetFitPlaneTW() )	foundHitTW++;
 					}
 				}
-
 
 				if (match == 0)		continue;
 
@@ -494,11 +465,8 @@ void TAGFselectorBase::FillTrackCategoryMap()
 		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" && m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
 		{
 			if(m_debug > 0)
-				Info("FillTrackCategoryMap()", "Found track candidate (%d) with no TW point! Skipping...", itTrack->first);
-			// continue;
+				Info("FillTrackCategoryMap()", "Track candidate %d no TW point!", itTrack->first);
 		}
-
-		//Add possibility to have tracks ending before TW!!!!
 
 		int measCharge = itTrack->second->getCardinalRep()->getPDGCharge();
 		int measMass;
@@ -507,21 +475,10 @@ void TAGFselectorBase::FillTrackCategoryMap()
 		else
 			measMass = round( itTrack->second->getCardinalRep()->getMass( (itTrack->second)->getFittedState(-1) )/m_AMU );
 
-		switch(measCharge)
-		{
-			case 1:	outName = "H";	break;
-			case 2:	outName = "He";	break;
-			case 3:	outName = "Li";	break;
-			case 4:	outName = "Be";	break;
-			case 5:	outName = "B";	break;
-			case 6:	outName = "C";	break;
-			case 7:	outName = "N";	break;
-			case 8:	outName = "O";	break;
-			default:
-				outName = "fail";	break;
-		}
 
 		if ( m_debug > 1 )	Info("FillTrackCategoryMap()", "Track with measured charge %d and mass %d!!", measCharge, measMass);
+
+		outName = GetParticleNameFromCharge(measCharge);
 
 		if( outName == "fail" )
 		{
@@ -579,7 +536,7 @@ int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
 
 			int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
 
-			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"), "TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
+			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
 
 			charge = twpoint->GetChargeZ();
 			break;
@@ -603,7 +560,7 @@ int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
 
 	// 		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
 	// 		{
-	// 			if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)
+	// 			if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber)
 	// 				continue;
 	// 			ChargeOccMap[ m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() ] = 1;
 	// 		}
@@ -655,14 +612,12 @@ TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 		repId = trackToFit->getCardinalRepId();
 	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(-1, trackToFit->getTrackRep(repId));
 	if (tp == nullptr) {
-		// Error("ExtrapolateToOuterTracker()", "Track has no TrackPoint with fitterInfo");
-		// exit(0);
 		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
 	if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasForwardUpdate() ) == false) {
 		Error("ExtrapolateToOuterTracker()", "TrackPoint has no forward update");
-		exit(0);
+		exit(42);
 	}
 
 	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -710,7 +665,7 @@ bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::
 	// num of total hits
 	testHitNumberLimit = testHit_VT + testHit_IT + testHit_MSD + testHit_TW;
 	if ( testHitNumberLimit == 0 ) 		
-		cout << "ERROR --> TAGFselector::PrefitRequirements :: m_systemsON mode is wrong!!!" << endl, exit(0);
+		cout << "ERROR --> TAGFselector::PrefitRequirements :: m_systemsON mode is wrong!!!" << endl, exit(42);
 
 	// // test the total number of hits ->  speed up the test
 	// if ( (int)((*element).second.size()) != testHitNumberLimit ) {
@@ -785,6 +740,29 @@ TString TAGFselectorBase::GetRecoTrackName(Track* tr)
 		if(it->second == tr)
 			return it->first;
 	}
-	Error("GetRecoTrackName()", "Track not found in Category Map!!");
-	throw -1;
+	Error("GetRecoTrackName()", "Track not found in Category Map!!"), exit(42);
+}
+
+
+//! \brief Get the name of a particle from its charge
+//! \param[in] ch Charge of the particle
+//! \return Name of the particle
+string TAGFselectorBase::GetParticleNameFromCharge(int ch)
+{
+	std::string name;
+	switch(ch)
+	{
+		case 1:	name = "H";	break;
+		case 2:	name = "He";	break;
+		case 3:	name = "Li";	break;
+		case 4:	name = "Be";	break;
+		case 5:	name = "B";	break;
+		case 6:	name = "C";	break;
+		case 7:	name = "N";	break;
+		case 8:	name = "O";	break;
+		default:
+			name = "fail";	break;
+	}
+
+	return name;
 }

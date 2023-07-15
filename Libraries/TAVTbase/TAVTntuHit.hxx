@@ -47,7 +47,7 @@ public:
    Int_t             GetPixelsN(Int_t iSensor) const;
    
    // New pixel
-   TAVThit*          NewPixel(Int_t sensor, Double_t value, Int_t aLine, Int_t aColumn);
+   TAVThit*          NewPixel(Int_t sensor,  Double_t value, Int_t aLine, Int_t aColumn, Int_t frame = 0);
    
    // Set up clone
    virtual void      SetupClones();

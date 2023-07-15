@@ -19,7 +19,7 @@ TAGFselectorBack::TAGFselectorBack() : TAGFselectorBase()
 {
 	m_VTtolerance = .1;
 	m_ITtolerance = .1;
-	m_MSDtolerance = .1;
+	m_MSDtolerance = .5;
 	m_TWtolerance = 4.;
 }
 
@@ -30,10 +30,10 @@ TAGFselectorBack::TAGFselectorBack() : TAGFselectorBase()
 //! \brief Main function of backtracking algorithm
 void TAGFselectorBack::Categorize( ) {
 
-	if (!TAGrecoManager::GetPar()->IncludeTW() || !TAGrecoManager::GetPar()->IncludeMSD())
+	if (! m_systemsON.Contains("TW") || ! m_systemsON.Contains("MSD"))
 	{
 		Error("Categorize_Backtracking()", "TW and MSD are needed for backtracking!");
-		exit(0);
+		exit(42);
 	}
 
 	if (m_debug > 1)
@@ -44,7 +44,7 @@ void TAGFselectorBack::Categorize( ) {
 	if (m_debug > 1)
 		Info("Categorize_Backtracking()", "BackTracklets created!");
 
-	if (TAGrecoManager::GetPar()->IncludeIT())
+	if ( m_systemsON.Contains("IT"))
 	{
 		if (m_debug > 1)
 			Info("Categorize_Backtracking()", "Start of IT cycle!");
@@ -53,7 +53,7 @@ void TAGFselectorBack::Categorize( ) {
 			Info("Categorize_Backtracking()", "End of IT cycle!");
 	}
 
-	if (TAGrecoManager::GetPar()->IncludeVT())
+	if ( m_systemsON.Contains("VT"))
 	{
 		if (m_debug > 1)
 			Info("Categorize_Backtracking()", "Start of VT cycle!");
@@ -166,11 +166,6 @@ void TAGFselectorBack::BackTracklets()
 					int count = 0;
 					double distanceInY = m_MSDtolerance;
 
-					//RZ: TO BE CHECKED!! ADDED TO AVOID ERRORS
-					// Bool_t areLightFragments = false;
-					// if (areLightFragments) distanceInY = m_MSDtolerance*2;
-					// loop all absMeas in the found IT plane
-
 					if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
 						// if(m_debug > 0)
 						cout << "TAGFselectorBack::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
@@ -179,7 +174,7 @@ void TAGFselectorBack::BackTracklets()
 
 					for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 
-						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != MSDnPlane )	cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
+						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != MSDnPlane )	cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR MSD" <<endl, exit(42);
 
 						//RZ: CHECK -> AVOID ERRORS
 						double distanceFromHit;
@@ -212,6 +207,8 @@ void TAGFselectorBack::BackTracklets()
 
 				if( testTrack->getNumPointsWithMeasurement() < 5 )
 				{
+					if (m_debug > 0)
+						cout << "Too few points in back-tracklet candidate" << endl;
 					delete testTrack;
 					continue;
 				}
@@ -219,7 +216,7 @@ void TAGFselectorBack::BackTracklets()
 				try
 				{
 					int pointID = m_SensorIDMap->GetHitIDFromMeasID(testTrack->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId());
-					float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc("twPoint","TATWntuPoint")->Object() )->GetPoint( pointID )->GetMeanTof();
+					float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( pointID )->GetMeanTof();
 					float var = m_BeamEnergy/m_AMU;
 					float beam_speed = TAGgeoTrafo::GetLightVelocity()*TMath::Sqrt(var*(var + 2))/(var + 1);
 					TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
@@ -302,10 +299,7 @@ void TAGFselectorBack::CategorizeIT_back()
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); ++iPlane )
 			{
 				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
-				{
-					Error("CategorizeIT_back()", "Sensor not found for Genfit plane %d!", *iPlane);
-					throw -1;
-				}
+					Error("CategorizeIT_back()", "Sensor not found for Genfit plane %d!", *iPlane), exit(42);
 
 				if ( m_allHitMeas->find( *iPlane ) == m_allHitMeas->end() )   {
 					if( m_debug > 1 )
@@ -410,7 +404,7 @@ void TAGFselectorBack::CategorizeVT_back()
 			{
 				// cout << "VT plane::" << VTplane << endl;
 				if (m_SensorIDMap->GetFitPlaneIDFromMeasID((*it)->getHitId()) != VTplane)
-					cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR VT" << endl, exit(0);
+					cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR VT" << endl, exit(42);
 
 				// RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit = TMath::Sqrt( pow(guessOnVT.x() - (*it)->getRawHitCoords()(0), 2) + pow(guessOnVT.y() - (*it)->getRawHitCoords()(1), 2) );
@@ -468,14 +462,12 @@ TVector3 TAGFselectorBack::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 	// int pointId = 1;
 	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(1, trackToFit->getTrackRep(repId));
 	if (tp == nullptr) {
-		// Error("ExtrapolateToOuterTracker()", "Track has no TrackPoint with fitterInfo");
-		// exit(0);
 		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
 	if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasBackwardUpdate() ) == false) {
 		Error("ExtrapolateToOuterTracker()", "TrackPoint has no backward update");
-		exit(0);
+		exit(42);
 	}
 
 	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
