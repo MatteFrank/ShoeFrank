@@ -116,6 +116,10 @@ void TACAactNtuHitMC::CreateHistogram()
                             nBinCry, -calosize.X()/2., calosize.X()/2., nBinCry, -calosize.Y()/2., calosize.Y()/2.);
    AddHistogram(fpHisHitMap);
    
+   // 2
+   fpHisRawHitMap = new TH2F("caHitRawMap", " Raw Hit map",
+                          nBinCry, 0, nBinCry, nBinCry, 0, nBinCry);
+   AddHistogram(fpHisRawHitMap);
    
    // 3
    fpHisHitMapZYin = new TH2F("caHitMapZYinMc", " Energy deposition position; Z; Y",
@@ -258,6 +262,10 @@ Bool_t TACAactNtuHitMC::Action()
       if (ValidHistogram()) {
          fpHisDeTot->Fill(charge);
          fpHisHitMap->Fill(pos.X(), pos.Y());
+         Int_t id = hit->GetCrystalId();
+         Int_t line = parGeo->GetCrystalLine(id);
+         Int_t col  = parGeo->GetCrystalCol(id);
+         fpHisRawHitMap->Fill(line, col);
       }
    }
 

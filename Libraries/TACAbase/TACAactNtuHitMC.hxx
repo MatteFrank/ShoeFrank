@@ -58,6 +58,7 @@ class TACAactNtuHitMC : public TAGaction {
    TH2F*           fpHisRangeVsMass;                   ///< range vs mass histogram
    TH2F*           fpHisHitMapXY;                      ///< MC Hit map histogram
    TH2F*           fpHisHitMap;                        ///< Hit map histogram
+   TH2F*           fpHisRawHitMap;                     ///< Raw Hit map row and col histogram
    TH2F*           fpHisHitMapZYin;                    ///< MC Hit ZY in map histogram
    TH2F*           fpHisHitMapZYout;                   ///< MC Hit ZY out map histogram
    TH2I*           fpHisParticleVsRegion;              ///< particle vs region histogram
