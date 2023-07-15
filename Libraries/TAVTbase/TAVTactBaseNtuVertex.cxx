@@ -24,7 +24,6 @@
 #include "TADItrackEmProperties.hxx"
 #include "TAVTactBaseNtuVertex.hxx"
 
-
 /*!
  \class TAVTactBaseNtuVertex
  \brief Base class to NTuplize VTX vertex
@@ -106,21 +105,8 @@ void TAVTactBaseNtuVertex::CreateHistogram()
    Float_t liml = -pGeoMapG->GetTargetPar().Size[2] - fpFootGeo->GetVTCenter()[2];
    Float_t limu =  pGeoMapG->GetTargetPar().Size[2] - fpFootGeo->GetVTCenter()[2];
 
-   fpHisPosZ = new TH1F("vtVtxPosZ", "Vertex position at Z", 100, -1, 1);
+   fpHisPosZ = new TH1F("vtVtxPosZ", "Vertex position at Z", 100, liml, limu);
    AddHistogram(fpHisPosZ);
-
-   if (GetFlagMC()){
-
-   fpHisResZ = new TH1F("vtVtxResZ", "Vertex resolution at Z; cm", 200, -0.1, 0.1);
-   AddHistogram(fpHisResZ);
-
-   fpHisResX = new TH1F("vtVtxResX", "Vertex resolution at X; cm", 200, -0.005, 0.005);
-   AddHistogram(fpHisResX);
-
-   fpHisResY = new TH1F("vtVtxResY", "Vertex resolution at Y: cm", 200, -0.005, 0.005);
-   AddHistogram(fpHisResY);
-
-   }
 
    TVector3 size(pGeoMap->GetPitchX()*pGeoMap->GetPixelsNx(), pGeoMap->GetPitchY()*pGeoMap->GetPixelsNy(), 0);
 

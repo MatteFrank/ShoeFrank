@@ -313,8 +313,6 @@ void BaseReco::LoopEvent(Int_t nEvents)
 //! Actions after loop event
 void BaseReco::AfterEventLoop()
 {
-
-  fActTrackVtx->Finalize();
 #ifdef GENFIT_FLAG
       if (TAGrecoManager::GetPar()->IncludeKalman()) fActGlbkFitter->Finalize();
 #endif
@@ -842,13 +840,6 @@ void BaseReco::CreateRecActionVtx()
          Error("CreateRecActionVtx()", "No Tracking algorithm defined !");
       }
 
-      
-
-      if (fFlagMC)
-         fActTrackVtx->SetFlagMC(true);
-      else
-         fActTrackVtx->SetFlagMC(false);
-
       if (fFlagHisto)
          fActTrackVtx->CreateHistogram();
 
@@ -859,10 +850,6 @@ void BaseReco::CreateRecActionVtx()
 
          } else
             fActVtx = new TAVTactNtuVertexPD(name, fpNtuTrackVtx, fpNtuVtx, fpParConfVtx, fpParGeoVtx, fpParGeoG);
-
-
-         if (fFlagMC) fActVtx->SetFlagMC(true);
-         else fActVtx->SetFlagMC(false);
 
          if (fFlagHisto)
             fActVtx->CreateHistogram();
