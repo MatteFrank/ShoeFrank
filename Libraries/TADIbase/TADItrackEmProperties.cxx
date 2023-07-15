@@ -13,6 +13,7 @@
 #include "TADItrackEmProperties.hxx"
 #include "TAGgeoTrafo.hxx"
 
+
 //##############################################################################
 
 /*!
@@ -131,6 +132,20 @@ Float_t TADItrackEmProperties::GetEnergyLoss(const TString& mat, Float_t thickne
 }
 
 //_____________________________________________________________________________
+//! Calculation of dE  with Bethe-Bloch formula
+//!
+//! \param[in] energy beam energy MeV/u
+//! \param[in] Zbeam atomic number of beam
+//! \param[in] mat target material name
+//! \param[in] thick target mean excitation energy
+Float_t TADItrackEmProperties::GetEnergyLoss(Float_t energy, Float_t Zbeam, const TString& mat, Float_t thick)
+{
+   energy *= TAGgeoTrafo::GevToMev();
+   Double_t rho = GetDensity(mat);     // mean density g/cm3
+   return GetdEdX(energy, Zbeam, mat)*rho*thick*TAGgeoTrafo::MevToGev();
+}
+
+//_____________________________________________________________________________
 //! Calculation of the energy loss in the material layer (thickness in [cm])
 //!
 //! \param[in] mat material name of target
@@ -170,8 +185,6 @@ Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Doubl
 {
    // Inspired from Alessio's ChargeBetheBloch formula
    Double_t K       = fgkElossK;
-   Double_t rho     = GetDensity(mat);     // mean density g/cm3
-
    Double_t Zmed    = GetZ(mat); // raw number not effective A
    Double_t Amed    = GetA(mat); // raw number not effective Z
    
@@ -195,6 +208,29 @@ Float_t TADItrackEmProperties::GetdEdX(const TString& mat, Double_t beta,  Doubl
 }
 
 //_____________________________________________________________________________
+//! Calculation of dE/dx [MeV.cm^2/g] with Bethe-Bloch formula
+//!
+//! \param[in] energy beam energy MeV/u
+//! \param[in] atomicNumber atomic number of beam
+//! \param[in] mat target material name
+Float_t TADItrackEmProperties::GetdEdX(Float_t energy, Float_t atomicNumber, const TString& mat)
+{
+   Double_t Zmed  = GetZ(mat); // raw number not effective A
+   Double_t Amed  = GetA(mat); // raw number not effective Z
+   Float_t tgtZA  = Zmed/Amed;
+   Float_t tgtExc = GetMeanExcitationEnergy(mat);
+   Float_t cstK  = fgkElossK;
+   Float_t beta  = sqrt(1.0 - (1.0/(energy/TAGgeoTrafo::AmuToMev() +1.0))*(1.0/(energy/TAGgeoTrafo::AmuToMev() +1.0)));
+   Float_t gamma = 1./TMath::Sqrt(1.0-(beta*beta));
+   Float_t Zeff  = atomicNumber*(1.0-TMath::Exp(-125.0*beta*TMath::Power(atomicNumber, -2.0/3.0)));
+   Float_t term1 = cstK*(tgtZA)*Zeff*Zeff/(beta*beta);
+   Float_t term2 = TMath::Log(2.0*TAGgeoTrafo::GetElectronMassMeV()*(gamma*gamma)*(beta*beta)/tgtExc);
+   Float_t LET   = term1*(term2 - (beta*beta));
+   
+   return LET;
+}
+
+//_____________________________________________________________________________
 //! Calculation of the impact*c [MeV]
 //!
 //! \param[in] energy energy of beam (MeV)
@@ -210,7 +246,7 @@ Float_t TADItrackEmProperties::GetPCC(Float_t energy, Float_t massNumber)
 //_____________________________________________________________________________
 //! Calculation of beta
 //!
-//! \param[in] energy energy of beam (MeV)
+//! \param[in] energy energy of beam (MeV/u)
 Float_t TADItrackEmProperties::GetBeta(Float_t energy)
 {
    Float_t massFac = TAGgeoTrafo::GetMassFactorMeV();
@@ -363,7 +399,7 @@ Float_t TADItrackEmProperties::GetA(TGeoMixture* mix)
    } else {
       Float_t A = 0;
       for(Int_t i = 0; i < mix->GetNelements(); ++i)
-         A += mix->GetAmixt()[i]*mix->GetNmixt()[i];
+         A += mix->GetAmixt()[i]*mix->GetWmixt()[i];
       return A;
    }
 }
@@ -380,7 +416,7 @@ Float_t TADItrackEmProperties::GetZ(TGeoMixture* mix)
    } else {
       Float_t Z = 0;
       for(Int_t i = 0; i < mix->GetNelements(); ++i)
-         Z += mix->GetZmixt()[i]*mix->GetNmixt()[i];
+         Z += mix->GetZmixt()[i]*mix->GetWmixt()[i];
       return Z;
    }
 }
