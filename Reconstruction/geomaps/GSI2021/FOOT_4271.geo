@@ -28,7 +28,7 @@ MSDPosX: -0.095882  MSDPosY:  0.101585  MSDPosZ: 44.65
 MSDAngX:  0.038047  MSDAngY: -1.035668  MSDAngZ:  0.
 
 TofWallBaseName: "TW"
-TofWallPosX: -0.95  TofWallPosY: -1.25  TofWallPosZ: 193.5
+TofWallPosX: -0.97  TofWallPosY: -0.91  TofWallPosZ: 193.5
 TofWallAngX:  0.     TofWallAngY:  0.     TofWallAngZ:   0.
 
 CaloBaseName: "CA"
