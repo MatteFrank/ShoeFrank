@@ -386,6 +386,11 @@ Double_t TATWactNtuHit::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId
     return rawenergy;
   }
 
+  if(FootDebugLevel(4)) {
+    Info("GetEnergy()","posId::%d, barId::%d, layId::%d, rawEnergy::%.2f",posId,barId,layerId,rawenergy);
+    Info("GetEnergy()","Parameters read from energy calibration map file: p0::%.2f, p1::%.2f",p0,p1);
+  }
+  
   // correct using the Birk's Law
   Ecal = rawenergy / (p0 - rawenergy * p1);
   

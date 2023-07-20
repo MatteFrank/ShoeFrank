@@ -9,7 +9,7 @@
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 BeamSize:            0.48
 BeamShape:         "Gaussian"
-BeamEnergy:          0.8   //! GeV total
+BeamEnergy:          0.56   //! GeV total
 BeamAtomicMass:       4    //! A Beam
 BeamAtomicNumber:     2    //! Z Beam
 BeamMaterial:        "He"   //! Beam Material
