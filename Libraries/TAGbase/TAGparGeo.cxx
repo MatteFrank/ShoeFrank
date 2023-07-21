@@ -223,6 +223,12 @@ Bool_t TAGparGeo::FromFile(const TString& name)
          << Form("%f %f %f", fInsertParameter[p].Position[0], fInsertParameter[p].Position[1], fInsertParameter[p].Position[2]) << endl;
    }
 
+   if(fBeamParameter.Material.EqualTo("He")) {
+     cout<<"Total Energy::"<<fBeamParameter.Energy<<" GeV"<<endl;
+     fBeamParameter.Energy = fBeamParameter.Energy/fBeamParameter.AtomicMass;
+     cout<<"Energy per nucleon::"<<fBeamParameter.Energy<<" GeV/u"<<endl;
+   }
+   
    // Close file
    Close();
 

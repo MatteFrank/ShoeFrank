@@ -86,8 +86,10 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
       if (energyBeam != energyType)
          Error("Checks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
       
+      beamType.ToUpper();
       if (beam != beamType)
-         Error("Checks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
+        Error("Checks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
+      
       
       if (strncmp(target.Data(), targetType.Data(), min(targetType.Length(), target.Length()))  && targetType != "None")
          Error("Checks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
