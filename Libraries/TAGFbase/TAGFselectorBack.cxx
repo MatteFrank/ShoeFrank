@@ -17,8 +17,8 @@
 //! \brief Default constructor
 TAGFselectorBack::TAGFselectorBack() : TAGFselectorBase()
 {
-	m_VTtolerance = .1;
-	m_ITtolerance = .1;
+	m_VTtolerance = .5;
+	m_ITtolerance = .5;
 	m_MSDtolerance = .5;
 	m_TWtolerance = 4.;
 }
@@ -199,6 +199,19 @@ void TAGFselectorBack::BackTracklets()
 
 						AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(MSDnPlane).at(indexOfMinY)))->clone();
 						testTrack->insertMeasurement( hitToAdd, testTrack->getNumPointsWithMeasurement()-1 );
+
+						//Fill extrapolation distance histos
+						if( h_extrapDist.size() > 0 )
+						{
+							int iSensor;
+							int iCoord = static_cast<PlanarMeasurement*>(hitToAdd)->getYview() ? 1 : 0;
+							m_SensorIDMap->GetSensorID(MSDnPlane, &iSensor);
+							std::pair<string, std::pair<int, int>> sensId = make_pair("MSD",make_pair(iSensor,iCoord));
+							h_extrapDist[sensId]->Fill(guessOnMSD(iCoord) - hitToAdd->getRawHitCoords()(0));
+
+						}
+
+
 					}
 
 				} // end loop MSD planes
@@ -255,8 +268,11 @@ void TAGFselectorBack::BackTracklets()
 				}
 				catch(genfit::Exception& e)
 				{
-					std::cerr << e.what() << '\n';
-					std::cerr << "Exception for backward tracklet fitting! Skipping..." << std::endl;
+					if( FootDebugLevel(1) )
+					{
+						std::cerr << e.what() << '\n';
+						std::cerr << "Exception for backward tracklet fitting! Skipping..." << std::endl;
+					}
 					continue;
 				}
 				
@@ -420,13 +436,25 @@ void TAGFselectorBack::CategorizeVT_back()
 				count++;
 			}
 
-			// insert measurementi in GF Track
+			// insert measurement in GF Track
 			if (indexOfMinDist != -1)
 			{
 				// cout << "Found point!!" << endl;
 				AbsMeasurement *hitToAdd = (static_cast<genfit::PlanarMeasurement *>(m_allHitMeas->at(VTplane).at(indexOfMinDist)))->clone();
 				(itTrack->second)->insertMeasurement(hitToAdd, 0);
 
+				//Fill extrapolation distance histos
+				if( h_extrapDist.size() > 0 )
+				{
+					int iSensor;
+					m_SensorIDMap->GetSensorID(VTplane, &iSensor);
+					std::pair<string, std::pair<int, int>> sensId = make_pair("VT",make_pair(iSensor,0));
+					h_extrapDist[sensId]->Fill(guessOnVT.X() - hitToAdd->getRawHitCoords()(0));
+					sensId = make_pair("VT",make_pair(iSensor,1));
+					h_extrapDist[sensId]->Fill(guessOnVT.Y() - hitToAdd->getRawHitCoords()(1));
+				}
+
+				//Re-set the track seed w/ new point
 				guessOnVT = m_SensorIDMap->GetFitPlane(VTplane)->toLab( TVector2((hitToAdd)->getRawHitCoords()(0), (hitToAdd)->getRawHitCoords()(1)) );
 				guessOnVT.SetZ(guessOnVT.Z()*0.99);
 
@@ -434,6 +462,7 @@ void TAGFselectorBack::CategorizeVT_back()
 				// guessOnVT.Print(); momGuessOnVT.Print();
 				(itTrack->second)->setStateSeed(guessOnVT,momGuessOnVT);
 				m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
+
 			}
 		}
 		// (itTrack->second)->reverseTrack();

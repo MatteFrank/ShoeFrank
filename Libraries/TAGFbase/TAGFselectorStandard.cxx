@@ -299,12 +299,15 @@ void TAGFselectorStandard::CategorizeIT()	{
 					addedMeas++;
 
 					//Fill extrapolation distance histos
-					int iSensor;
-					m_SensorIDMap->GetSensorID(sensorMatch, &iSensor);
-					sensId = make_pair("IT",make_pair(iSensor,0));
-					h_extrapDist[sensId]->Fill(guessOnPlaneIT.X() - hitToAdd->getRawHitCoords()(0));
-					sensId = make_pair("IT",make_pair(iSensor,1));
-					h_extrapDist[sensId]->Fill(guessOnPlaneIT.Y() - hitToAdd->getRawHitCoords()(1));
+					if( h_extrapDist.size() > 0 )
+					{
+						int iSensor;
+						m_SensorIDMap->GetSensorID(sensorMatch, &iSensor);
+						sensId = make_pair("IT",make_pair(iSensor,0));
+						h_extrapDist[sensId]->Fill(guessOnPlaneIT.X() - hitToAdd->getRawHitCoords()(0));
+						sensId = make_pair("IT",make_pair(iSensor,1));
+						h_extrapDist[sensId]->Fill(guessOnPlaneIT.Y() - hitToAdd->getRawHitCoords()(1));
+					}
 				}
 			}	// end loop on IT planes
 		} // end loop over z
@@ -402,8 +405,11 @@ void TAGFselectorStandard::CategorizeMSD()	{
 			}
 			catch (genfit::Exception& e)
 			{
-				std::cerr << e.what();
-				std::cerr << "MSD extrapolation: Exception, next rep\n";
+				if( FootDebugLevel(1) )
+				{
+					std::cerr << e.what();
+					std::cerr << "MSD extrapolation: Exception, next rep\n";
+				}
 				continue;
 			}
 			delete testTrack;
@@ -487,11 +493,14 @@ void TAGFselectorStandard::CategorizeMSD()	{
 				findMSD++;
 
 				//Fill extrapolation distance histos
-				int iSensor;
-				int iCoord = static_cast<PlanarMeasurement*>(hitToAdd)->getYview() ? 1 : 0;
-				m_SensorIDMap->GetSensorID(sensorMatch, &iSensor);
-				std::pair<string, std::pair<int, int>> sensId = make_pair("MSD",make_pair(iSensor,iCoord));
-				h_extrapDist[sensId]->Fill(guessOnMSD.X() - hitToAdd->getRawHitCoords()(0));
+				if( h_extrapDist.size() > 0 )
+				{
+					int iSensor;
+					int iCoord = static_cast<PlanarMeasurement*>(hitToAdd)->getYview() ? 1 : 0;
+					m_SensorIDMap->GetSensorID(sensorMatch, &iSensor);
+					std::pair<string, std::pair<int, int>> sensId = make_pair("MSD",make_pair(iSensor,iCoord));
+					h_extrapDist[sensId]->Fill(guessOnMSD.X() - hitToAdd->getRawHitCoords()(0));
+				}
 			}
 
 		} // end loop MSD planes
@@ -578,7 +587,8 @@ void TAGFselectorStandard::SetTrackSeedNoMSD()
 			}
 			catch (genfit::Exception& e)
 			{
-				std::cerr << e.what();
+				if( FootDebugLevel(1) )
+					std::cerr << e.what();
 				continue;
 			}
 			delete testTrack;
@@ -634,8 +644,11 @@ void TAGFselectorStandard::CategorizeTW()
 		}
 		catch(genfit::Exception& ex)
 		{
-			std::cerr << ex.what();
-			std::cerr << "Exception, skip track candidate\n";
+			if( FootDebugLevel(1) )
+			{
+				std::cerr << ex.what();
+				std::cerr << "Exception, skip track candidate\n";
+			}
 			continue;
 		}
 
@@ -668,12 +681,15 @@ void TAGFselectorStandard::CategorizeTW()
 			(itTrack->second)->insertMeasurement( hitToAdd );
 
 			//Fill extrapolation distance histos
-			int iSensor;
-			m_SensorIDMap->GetSensorID(planeTW, &iSensor);
-			std::pair<string, std::pair<int, int>> sensId = make_pair("TW",make_pair(iSensor,0));
-			h_extrapDist[sensId]->Fill(guessOnTW.X() - hitToAdd->getRawHitCoords()(0));
-			sensId = make_pair("TW",make_pair(iSensor,1));
-			h_extrapDist[sensId]->Fill(guessOnTW.Y() - hitToAdd->getRawHitCoords()(1));
+			if( h_extrapDist.size() > 0 )
+			{
+				int iSensor;
+				m_SensorIDMap->GetSensorID(planeTW, &iSensor);
+				std::pair<string, std::pair<int, int>> sensId = make_pair("TW",make_pair(iSensor,0));
+				h_extrapDist[sensId]->Fill(guessOnTW.X() - hitToAdd->getRawHitCoords()(0));
+				sensId = make_pair("TW",make_pair(iSensor,1));
+				h_extrapDist[sensId]->Fill(guessOnTW.Y() - hitToAdd->getRawHitCoords()(1));
+			}
 		}
 	}
 	delete m_fitter_extrapolation;

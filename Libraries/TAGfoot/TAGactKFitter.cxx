@@ -528,8 +528,11 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			delete preFitter;
 		}
 		catch (genfit::Exception& e) {
-			std::cerr << e.what();
-			std::cerr << "Exception, next track\n";
+			if( FootDebugLevel(1) )
+			{
+				std::cerr << e.what();
+				std::cerr << "Exception, next track\n";
+			}
 			continue;
     	}
 
@@ -558,10 +561,10 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 				if(m_debug > 0) cout << "DONE\n";
 
 			}
-			m_vectorConvergedTrack.push_back( fitTrack );
 		}
 		else
 			convergeCut = true;
+		m_vectorConvergedTrack.push_back( fitTrack );
 
 	}
 	// end  - loop over all tracks
@@ -694,6 +697,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	{
 		targetMeas = TVector3(0,0,0); //RZ: DUMMY!!!
 	}
+	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Backtracking" )
+	{
+		targetMeas = TVector3(0,0,0); //RZ: DUMMY!!!
+	}
 	else
 	{
 		TAVTvertex* vtx = ((TAVTntuVertex*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"))->Object() )->GetVertex( std::atoi(tok.at(2).c_str())/1000 ); //Find the vertex associated to the track using the fitTrackName (1000*iVtx + iTracklet)
@@ -739,8 +746,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		}
 		catch (genfit::Exception& e)
 		{
-			std::cerr << e.what();
-			std::cerr << "Exception, particle is too slow to escape TW. Setting final energy to 0\n";
+			if( FootDebugLevel(1) )
+			{
+				std::cerr << e.what();
+				std::cerr << "Exception, particle is too slow to escape TW. Setting final energy to 0\n";
+			}
 			state_TW = track->getFittedState(-1);
 			energyOutTw = 0;
 		}
@@ -934,25 +944,34 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				h_phi_BMnoTw->Fill ( phi_deg );
 			}
 
-			TVector3 guessOnTW = ((TAGFselectorBase*) m_dummySelector)->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
 			int index = theta_deg >= 15 ? 15 : floor(theta_deg);
 			
-			//TW projection
-			h_TWprojVsTheta[index]->Fill(guessOnTW.X(), guessOnTW.Y());
-			h_TWprojVsThetaTot->Fill(guessOnTW.X(), guessOnTW.Y());
-			if( shoeOutTrack->HasTwPoint() )
+			//TW projection -> try statement needed to avoid tracks dying way before TW
+			try 
 			{
-				h_TWprojVsThetaTotYesTW->Fill(guessOnTW.X(), guessOnTW.Y());
-				h_TWprojVsThetaYesTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
-				float zTW = shoeOutTrack->GetTwChargeZ();
-				zTW = guessOnTW.Y() < 1.1 ? -zTW : zTW;
-				h_TWprojZTot->Fill(zTW);
-				h_TWprojZvsTheta[index]->Fill(zTW);
+				TVector3 guessOnTW = ((TAGFselectorBase*) m_dummySelector)->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
+				
+				h_TWprojVsTheta[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+				h_TWprojVsThetaTot->Fill(guessOnTW.X(), guessOnTW.Y());
+				if( shoeOutTrack->HasTwPoint() )
+				{
+					h_TWprojVsThetaTotYesTW->Fill(guessOnTW.X(), guessOnTW.Y());
+					h_TWprojVsThetaYesTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+					float zTW = shoeOutTrack->GetTwChargeZ();
+					zTW = guessOnTW.Y() < 1.1 ? -zTW : zTW;
+					h_TWprojZTot->Fill(zTW);
+					h_TWprojZvsTheta[index]->Fill(zTW);
+				}
+				else
+				{
+					h_TWprojVsThetaTotNoTW->Fill(guessOnTW.X(), guessOnTW.Y());
+					h_TWprojVsThetaNoTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+				}
 			}
-			else
+			catch( genfit::Exception & ex )
 			{
-				h_TWprojVsThetaTotNoTW->Fill(guessOnTW.X(), guessOnTW.Y());
-				h_TWprojVsThetaNoTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+				if ( FootDebugLevel(2) )
+					Info("RecordTrackInfo()", "Extrapolation to TW failed for track %s! Skipping TW projection plots...", fitTrackName.c_str());
 			}
 
 			//TG projection

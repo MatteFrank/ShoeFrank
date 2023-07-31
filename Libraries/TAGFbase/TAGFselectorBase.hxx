@@ -71,7 +71,7 @@
 using namespace std;
 using namespace genfit;
 
-class TAGFselectorBase
+class TAGFselectorBase : public TObject
 {
 
 public:
@@ -143,6 +143,8 @@ protected:
 	uint *m_singleVertexCounter;							///< Counter for single vertex events
 	uint *m_noVTtrackletEvents;								///< Counter for events w/ no valid tracklet
 	uint *m_noTWpointEvents;								///< Counter for events w/ no valid TW point
+
+	ClassDef(TAGFselectorBase,0);
 };
 
 #endif

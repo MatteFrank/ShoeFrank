@@ -615,7 +615,7 @@ TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
-	if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasForwardUpdate() ) == false) {
+	if ( !(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasForwardUpdate() ) ) {
 		Error("ExtrapolateToOuterTracker()", "TrackPoint has no forward update");
 		exit(42);
 	}

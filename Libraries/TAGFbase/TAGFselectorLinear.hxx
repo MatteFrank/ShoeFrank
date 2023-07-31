@@ -23,6 +23,8 @@ public:
 protected:
 	virtual void CategorizeMSD() override;
 	virtual void CategorizeTW() override;
+
+	ClassDef(TAGFselectorLinear,0);
 };
 
 #endif

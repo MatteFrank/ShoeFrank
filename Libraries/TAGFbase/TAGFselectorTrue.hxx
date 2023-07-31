@@ -21,6 +21,7 @@ public:
 
 	virtual void		Categorize() override;
 
+	ClassDef(TAGFselectorTrue,0);
 };
 
 #endif
