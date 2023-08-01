@@ -38,8 +38,6 @@ m_ITtolerance(.5),
 m_MSDtolerance(.5),
 m_TWtolerance(4.)
 {
-	m_debug = TAGrecoManager::GetPar()->Debug();
-
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
 	if(TAGrecoManager::GetPar()->IncludeVT())
@@ -56,7 +54,7 @@ m_TWtolerance(4.)
 
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().Energy;
 
-	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
+	if( FootDebugLevel(1) )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
 	m_eventType = 0;
 }
@@ -169,7 +167,7 @@ int TAGFselectorBase::FillTrackRepVector()
 	}
 	for(int i = 0; i < m_chargeVect->size(); ++i)
 	{
-		if ( m_debug > 0 ) cout << "TAGFselectorBase::FillTrackRepVector() -- charge: " << m_chargeVect->at(i) << "\n";
+		if ( FootDebugLevel(0) ) cout << "TAGFselectorBase::FillTrackRepVector() -- charge: " << m_chargeVect->at(i) << "\n";
 
 		AbsTrackRep* rep = new RKTrackRep( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( m_chargeVect->at(i) ) );
 		m_trackRepVec.push_back( rep );
@@ -186,7 +184,7 @@ int TAGFselectorBase::FillTrackRepVector()
 map<string, int> TAGFselectorBase::CountParticleGeneratedAndVisible()
 {
 
-	if(m_debug > 0) 
+	if(FootDebugLevel(0)) 
 		cout << "TAGFselector::CountParticleGeneratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 
 	map<string, int> genCount_vector;
@@ -212,7 +210,7 @@ map<string, int> TAGFselectorBase::CountParticleGeneratedAndVisible()
 
 		//CAREFUL HERE!!!!!!!!! FOOT TAGrecoManager file does not have Hydrogen and Helium isotopes!!!! Also think about throwing an error here...
 		if ( !TAGrecoManager::GetPar()->Find_MCParticle( pdgName ) ) 	{
-			if(m_debug > 0)  cout << "Found Particle not in MC list: " << pdgName << " num=" << iPart << "\n";
+			if(FootDebugLevel(0))  cout << "Found Particle not in MC list: " << pdgName << " num=" << iPart << "\n";
 			continue;
 
 		}
@@ -285,10 +283,10 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	}
 
 	//Cycle on FitPlanes
-	if(m_debug > 0) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+	if(FootDebugLevel(0)) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
 	{
-		if(m_debug > 0) cout << "Plane::" << iPlane << "\n";
+		if(FootDebugLevel(0)) cout << "Plane::" << iPlane << "\n";
 
 		//Skip plane if no hit was found
 		if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()){continue;}
@@ -409,7 +407,7 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	}
 
 	//Print in debug mode
-	if( m_debug > 1)// || (m_eventType != 1 && m_eventType != 5))
+	if( FootDebugLevel(1))// || (m_eventType != 1 && m_eventType != 5))
 	{
 		cout << "EVENT::" << gTAGroot->CurrentEventId().EventNumber() << "\tTYPE::" << m_eventType << endl;
 		for(auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
@@ -464,7 +462,7 @@ void TAGFselectorBase::FillTrackCategoryMap()
 		int MeasId = itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
 		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" && m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
 		{
-			if(m_debug > 0)
+			if(FootDebugLevel(0))
 				Info("FillTrackCategoryMap()", "Track candidate %d no TW point!", itTrack->first);
 		}
 
@@ -476,7 +474,7 @@ void TAGFselectorBase::FillTrackCategoryMap()
 			measMass = round( itTrack->second->getCardinalRep()->getMass( (itTrack->second)->getFittedState(-1) )/m_AMU );
 
 
-		if ( m_debug > 1 )	Info("FillTrackCategoryMap()", "Track with measured charge %d and mass %d!!", measCharge, measMass);
+		if ( FootDebugLevel(1) )	Info("FillTrackCategoryMap()", "Track with measured charge %d and mass %d!!", measCharge, measMass);
 
 		outName = GetParticleNameFromCharge(measCharge);
 
@@ -669,7 +667,7 @@ bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::
 
 	// // test the total number of hits ->  speed up the test
 	// if ( (int)((*element).second.size()) != testHitNumberLimit ) {
-	// 	if ( m_debug > 0 )		cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << "\n";
+	// 	if ( FootDebugLevel(0) )		cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << "\n";
 	// 	return false;
 	// }
 
@@ -687,13 +685,13 @@ bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::
 			if ( planeId == m_SensorIDMap->GetFitPlaneTW() )	nHitTW++;
 	}
 
-	if ( m_debug > 0 )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<"\n";
+	if ( FootDebugLevel(0) )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<"\n";
 
 	// test the num of hits per each detector
 	// if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD != testHit_MSD ) {
 
 	if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD < 4 ){
-	    if ( m_debug > 0 ) {
+	    if ( FootDebugLevel(0) ) {
 		    cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : " <<
 				    "\n\n\t nVTX = " << nHitVT << "  Nexp = " << testHit_VT <<
 				    "\n\n\t nITR = " << nHitIT << "  Nexp = " << testHit_IT <<

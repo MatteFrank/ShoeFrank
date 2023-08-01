@@ -71,7 +71,7 @@
 using namespace std;
 using namespace genfit;
 
-class TAGFselectorBase : public TObject
+class TAGFselectorBase : public TAGobject
 {
 
 public:
@@ -130,7 +130,6 @@ protected:
 	TAMCntuPart* m_McNtuEve;								///< MC eve for efficiency/quality checks
 
 	Bool_t m_IsMC; 											///< flag for MC variables
-	int m_debug;											///< Global debug value
 	TString m_systemsON;									///< String w/ systems on in the campaign
 
 	float m_VTtolerance;									///< VT selector extrapolation tolerance 

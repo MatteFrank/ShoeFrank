@@ -19,7 +19,7 @@
 //! 
 //! The class converts clusters/points in GenFit format
 //! \param[in] aSensorIDmap Pointer to the TAGFdetectorMap object that handles the GenFit geometry
-TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap, bool IsMC ) :
+TAGFuploader::TAGFuploader ( TAGFdetectorMap* aSensorIDmap, bool IsMC ) : TAGobject(),
 m_allHitMeas(0x0),
 m_measParticleMC_collection(0x0),
 m_NtracksMC(0),
@@ -35,8 +35,6 @@ m_IsMC(IsMC)
 	}
 	
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-
-	m_debug = TAGrecoManager::GetPar()->Debug();
 }
 
 
@@ -79,33 +77,33 @@ int TAGFuploader::TakeMeasHits4Fit(  map< int, vector<AbsMeasurement*> > &allHit
 
 	m_allHitMeas = &allHitMeas;
 
-	if ( m_debug > 0 )		cout << "\n\n*******\tUploaderKalmanGF::PrepareData4Fit\t*******\n" << endl;
+	if ( FootDebugLevel(0) )		cout << "\n\n*******\tUploaderKalmanGF::PrepareData4Fit\t*******\n" << endl;
 
 	// Vertex -  fill fitter collections
 	if ( GFsystemsOn.Contains("VT") && TAGrecoManager::GetPar()->IncludeVT() ) {
 		UploadClusVT();
-		if ( m_debug > 0 )		Info( "TakeMeasHits4Fit", "Filling vertex hit collection " );
+		if ( FootDebugLevel(0) )		Info( "TakeMeasHits4Fit", "Filling vertex hit collection " );
 	}
 
 	// Inner Tracker -  fill fitter collections
 	if ( GFsystemsOn.Contains("IT") && TAGrecoManager::GetPar()->IncludeIT() ) {
 		UploadClusIT();
-		if ( m_debug > 0 )		Info( "TakeMeasHits4Fit", "Filling Inner Tracker hit collection ");
+		if ( FootDebugLevel(0) )		Info( "TakeMeasHits4Fit", "Filling Inner Tracker hit collection ");
 	}
 
 	// MSD -  fill fitter collections
 	if ( GFsystemsOn.Contains("MSD") && TAGrecoManager::GetPar()->IncludeMSD() ) {
 		UploadClusMSD();
-		if ( m_debug > 0 )		cout << endl<<endl << "Filling Strip hit collection"<<endl;
+		if ( FootDebugLevel(0) )		cout << endl<<endl << "Filling Strip hit collection"<<endl;
 	}
 
 	// Tof Wall-  fill fitter collections
 	if ( GFsystemsOn.Contains("TW") && TAGrecoManager::GetPar()->IncludeTW() ) {
 		UploadHitsTW();
-		if ( m_debug > 0 )		cout <<endl<<endl << "Filling scintillator hit collection " << endl;
+		if ( FootDebugLevel(0) )		cout <<endl<<endl << "Filling scintillator hit collection " << endl;
 	}
 
-	if(m_debug > 0) cout << "TAGFuploader::TakeMeasHits4Fit  ->  " << m_allHitMeas->size() << endl;
+	if(FootDebugLevel(0)) cout << "TAGFuploader::TakeMeasHits4Fit  ->  " << m_allHitMeas->size() << endl;
 
 	return 1;
 }
@@ -132,7 +130,7 @@ int TAGFuploader::UploadClusVT(){
 
 		int nclus = vtclus->GetClustersN(iSensor);
 
-		if (m_debug > 1) Info( "UploadClusVT()", "found %i  in sensor %i", nclus, iSensor );
+		if (FootDebugLevel(1)) Info( "UploadClusVT()", "found %i  in sensor %i", nclus, iSensor );
 
 		if (nclus == 0) continue;
 		totClus += nclus;
@@ -140,10 +138,10 @@ int TAGFuploader::UploadClusVT(){
 		// loop over Clusters
 		for( int iClus = 0; iClus < nclus; ++iClus ) {
 
-			if (m_debug > 1)	      Info( "UploadClusVT()", "entered cycle clusVT of sensor %d", iSensor );
+			if (FootDebugLevel(1))	      Info( "UploadClusVT()", "entered cycle clusVT of sensor %d", iSensor );
 
 			TAVTcluster* clus = vtclus->GetCluster(iSensor, iClus);
-			if(m_debug > 1 && iClus != clus->GetClusterIdx())
+			if(FootDebugLevel(1) && iClus != clus->GetClusterIdx())
 			{
 				Warning("UploadClusVT()","VT INDEX MISMATCH!! Index::%d  Idx::%d", iClus, clus->GetClusterIdx());
 			}
@@ -176,14 +174,14 @@ int TAGFuploader::UploadClusIT(){
 
 		int nclus = itclus->GetClustersN(iSensor);
 
-		if (m_debug > 1)	std::cout << "found " << nclus << " in sensor " << iSensor << "\n";
+		if (FootDebugLevel(1))	std::cout << "found " << nclus << " in sensor " << iSensor << "\n";
 
 		if (nclus == 0) continue;
 		totClus += nclus;
 
 		for( int iClus = 0; iClus < nclus; ++iClus ) {
 
-			if (m_debug > 1)      std::cout << "entered cycle clusIT of sensor " << iSensor << std::endl;
+			if (FootDebugLevel(1))      std::cout << "entered cycle clusIT of sensor " << iSensor << std::endl;
 
 			TAITcluster* clus = itclus->GetCluster(iSensor, iClus);
 			if(iClus != clus->GetClusterIdx())
@@ -221,14 +219,14 @@ int TAGFuploader::UploadClusMSD() {
 		// cout << "Sensor::" << iSensor << endl;
 		int nclus = msdclus->GetClustersN(iSensor);
 
-		if (m_debug > 1)	std::cout << "found " << nclus << " in sensor " << iSensor << "\n";
+		if (FootDebugLevel(1))	std::cout << "found " << nclus << " in sensor " << iSensor << "\n";
 
 		if (nclus == 0) continue;
 		totClus += nclus;
 
 		for(Int_t iClus = 0; iClus < nclus; ++iClus){
 
-			if (m_debug > 1)	      std::cout << "entered cycle clusMSD of sensor " << iSensor << std::endl;
+			if (FootDebugLevel(1))	      std::cout << "entered cycle clusMSD of sensor " << iSensor << std::endl;
 
 			TAMSDcluster* clus = msdclus->GetCluster(iSensor, iClus);
 			if(iClus != clus->GetClusterIdx())
@@ -244,7 +242,7 @@ int TAGFuploader::UploadClusMSD() {
 	}
 
 	//Print out MSDpoint coordinates if in debug mode
-	if(m_debug > 1)
+	if(FootDebugLevel(1))
 	{
 		TAMSDntuPoint* msdpoint = (TAMSDntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TAMSDntuPoint"))->Object();
 		for( int iSensor = 0; iSensor < nSensors; iSensor++)
@@ -284,11 +282,11 @@ int TAGFuploader::UploadHitsTW() {
 
 	// take the ntuple object already filled
 	TATWntuPoint* ntup = (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object();
-	if ( m_debug > 0 )	cout << "\nnumber of TW points read: " << ntup->GetPointsN() << "\n";
+	if ( FootDebugLevel(0) )	cout << "\nnumber of TW points read: " << ntup->GetPointsN() << "\n";
 
 	int totPoints = ntup->GetPointsN();
 
-	if(totPoints < 1 && m_debug > 0)
+	if(totPoints < 1 && FootDebugLevel(0))
 		Warning("TAGFuploader()", "Found %d points in TW for event %d", totPoints, gTAGroot->CurrentEventId().EventNumber());
 
 	// save hits in the collection
@@ -299,7 +297,7 @@ int TAGFuploader::UploadHitsTW() {
 		//HACK to prevent fake points (try)
 		if ( point->GetToF() > 15 )
 		{
-			if(m_debug > 0) Warning("UploadHitsTW()", "Found point with high TOF:: %lf", point->GetToF());
+			if(FootDebugLevel(0)) Warning("UploadHitsTW()", "Found point with high TOF:: %lf", point->GetToF());
 			continue;
 		}
 
@@ -369,7 +367,7 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect) {
 			if ( point->GetCharge() > 0 && point->GetCharge() <= ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber) {
 				if ( find( chVect->begin(), chVect->end(), point->GetCharge() ) == chVect->end() ) {
 					chVect->push_back( point->GetCharge() );
-					if ( m_debug > 0 )		
+					if ( FootDebugLevel(0) )		
 						cout << "TAGFuploader::GetPossibleCharges  " << point->GetCharge() << "\n";
 				}
 			}
@@ -386,7 +384,7 @@ void TAGFuploader::GetPossibleCharges( vector<int>* chVect) {
 			TATWpoint* point = twPoint->GetPoint( iPoint );
 			int tmp_ch = point->GetChargeZ();
 
-			if ( m_debug > 1 ) cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
+			if ( FootDebugLevel(1) ) cout << "TAGFuploader::GetPossibleCharges  " << tmp_ch << endl;
 			
 			if ( tmp_ch > -1)
 			{
@@ -439,7 +437,7 @@ int TAGFuploader::GetNumGenParticle_noFrag() {
 //! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 
-	if ( m_debug > 0 )		cout << "\nPrepare4Vertex::Entered\n";
+	if ( FootDebugLevel(0) )		cout << "\nPrepare4Vertex::Entered\n";
 
 	TMatrixDSym hitCov(3);
 	TMatrixDSym planarCov(2);
@@ -448,7 +446,7 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 	// get pixel coord
 	TVector3 hitPos = clus->GetPosition();
 
-	if ( m_debug > 1 )
+	if ( FootDebugLevel(1) )
 	{
 		cout << "VT meas::" << iMeas << endl;
 		TAVTparGeo* m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"))->Object();
@@ -501,13 +499,13 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 	hit->setPlane( m_SensorIDMap->GetFitPlane(planeID), planeID ); 
 	(*m_allHitMeas)[ planeID ].push_back(hit);
 
-	if( m_debug > 1 )
+	if( FootDebugLevel(1) )
 	{
 		cout << "toLab::";
 		(m_SensorIDMap->GetFitPlane(planeID)->toLab(TVector2(clus->GetPosition().X(),clus->GetPosition().Y()))).Print(); 
 	}
 
-	if ( m_debug > 0 )  cout << "\nPrepare4Vertex::Exiting\n";
+	if ( FootDebugLevel(0) )  cout << "\nPrepare4Vertex::Exiting\n";
 }
 
 
@@ -524,7 +522,7 @@ void TAGFuploader::Prepare4Vertex( TAVTcluster* clus, int iMeas ) {
 //! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 
-	if ( m_debug > 0 )	  cout << "\nPrepare4InnerTracker::Entered\n";
+	if ( FootDebugLevel(0) )	  cout << "\nPrepare4InnerTracker::Entered\n";
 
 	TMatrixDSym planarCov(2);
 	TVectorD planarCoords(2);
@@ -532,7 +530,7 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 	// get pixel coord
 	TVector3 hitPos = clus->GetPosition();
 
-	if ( m_debug > 0 )
+	if ( FootDebugLevel(0) )
 	{
 		TAITparGeo* m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"))->Object();
 		cout << "IT meas::" << iMeas << endl;
@@ -577,14 +575,14 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 
-	if( m_debug > 1 )
+	if( FootDebugLevel(1) )
 	{
 		cout << "toLab::";
 		(m_SensorIDMap->GetFitPlane(sensorID)->toLab(TVector2(clus->GetPosition().X(),clus->GetPosition().Y()))).Print(); 
 	}
 
 
-	if ( m_debug > 0 )			cout << "\nPrepare4InnerTracker::Exiting\n";
+	if ( FootDebugLevel(0) )			cout << "\nPrepare4InnerTracker::Exiting\n";
 
 }
 
@@ -602,7 +600,7 @@ void TAGFuploader::Prepare4InnerTracker( TAITcluster* clus, int iMeas ) {
 //! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
-	if ( m_debug > 0 )	 cout << "\nPrepare4Strip::Entered\n";
+	if ( FootDebugLevel(0) )	 cout << "\nPrepare4Strip::Entered\n";
 
 	TMatrixDSym planarCov(1);
 	TVectorD planarCoords(1);
@@ -611,7 +609,7 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	// get pixel local coord
 	TVector3 hitPos = clus->GetPosition();
 
-	if ( m_debug > 1 )
+	if ( FootDebugLevel(1) )
 	{
 		TAMSDparGeo* m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"))->Object();
 		cout << "MSD Meas::" << iMeas << "\t View::" << clus->GetPlaneView() <<  endl;
@@ -664,7 +662,7 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 	// if (isYView) hit->setStripV();
 	if (isYView) hit->setYview();
 	hit->setPlane( m_SensorIDMap->GetFitPlane(sensorID), sensorID );
-	if( m_debug > 1 )
+	if( FootDebugLevel(1) )
 	{
 		cout << "toLab::";
 		(m_SensorIDMap->GetFitPlane(sensorID)->toLab(TVector2(clus->GetPositionF(),0))).Print(); 
@@ -672,7 +670,7 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 
-	if ( m_debug > 0 )	  cout << "\nPrepare4Strip::Exiting\n";
+	if ( FootDebugLevel(0) )	  cout << "\nPrepare4Strip::Exiting\n";
 
 }
 
@@ -690,7 +688,7 @@ void TAGFuploader::Prepare4Strip( TAMSDcluster* clus, int iMeas ) {
 //! \param[in] iMeas Global measurement Id
 void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 
-	if ( m_debug > 0 )	  cout << "\nPrepare4TofWall::Entered\n";
+	if ( FootDebugLevel(0) )	  cout << "\nPrepare4TofWall::Entered\n";
 
 	TMatrixDSym planarCov(2);
 	TVectorD planarCoords(2);
@@ -698,7 +696,7 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	// get point local coords
 	TVector3 hitPos = point->GetPosition();
 
-	if ( m_debug > 1 )
+	if ( FootDebugLevel(1) )
 	{
 		cout << "TW hit loc coords::";
 		hitPos.Print();
@@ -712,14 +710,14 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	planarCoords(1) = hitPos.y();
 	TVector3 pixReso = point->GetPosErrorG();
 
-	if (m_debug > 1)
+	if (FootDebugLevel(1))
 	pixReso.Print();
 
 	planarCov.UnitMatrix();
 	for (int k = 0; k < 2; k++)
 	{
 	planarCov[k][k] = pixReso(k)*pixReso(k);
-	if(m_debug > 1) 
+	if(FootDebugLevel(1)) 
 		cout << pixReso(k)*pixReso(k) << endl;
 	}
 
@@ -741,7 +739,7 @@ void TAGFuploader::Prepare4TofWall( TATWpoint* point, int iMeas) {
 	hit->setPlane(m_SensorIDMap->GetFitPlane(sensorID), sensorID);      
 	(*m_allHitMeas)[ sensorID ].push_back(hit);
 
-	if ( m_debug > 0 )	  cout << "\nPrepare4TofWall::Exiting\n";
+	if ( FootDebugLevel(0) )	  cout << "\nPrepare4TofWall::Exiting\n";
 
 }
 

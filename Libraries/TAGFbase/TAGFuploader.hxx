@@ -52,7 +52,8 @@
 using namespace std;
 using namespace genfit;
 
-class TAGFuploader {
+class TAGFuploader : public TAGobject
+{
 
 public:
 	
@@ -86,10 +87,10 @@ private:
 	map< int, vector<AbsMeasurement*> >* m_allHitMeas;		///< Container for GenFit AbsMeasurements, FitPlane index to vector of respective measurements
 	map< int, vector<int> >* m_measParticleMC_collection;	///< Maps global measurement index to MC particles in the cluster/point
 
-	int m_debug;											///< Global debug value
-
 	bool m_IsMC;
 	uint m_NtracksMC;
+
+	ClassDef(TAGFuploader,0);
 };
 
 #endif

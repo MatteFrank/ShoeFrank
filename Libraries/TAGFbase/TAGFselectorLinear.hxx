@@ -18,11 +18,11 @@ public:
 
 	TAGFselectorLinear();
 
-	virtual void	Categorize() override;
+	virtual void	Categorize();
 
 protected:
-	virtual void CategorizeMSD() override;
-	virtual void CategorizeTW() override;
+	virtual void CategorizeMSD();
+	virtual void CategorizeTW();
 
 	ClassDef(TAGFselectorLinear,0);
 };

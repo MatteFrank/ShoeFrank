@@ -45,7 +45,7 @@
 using namespace std;
 using namespace genfit;
 
-class TAGFgeometryConstructor : public TObject
+class TAGFgeometryConstructor : public TAGobject
 {
 	TASTparGeo* m_ST_geo;			///< Pointer to ST par Geo
 	TABMparGeo* m_BM_geo;			///< Pointer to BM par Geo

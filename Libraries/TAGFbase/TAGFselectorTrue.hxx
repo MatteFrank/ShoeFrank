@@ -19,7 +19,7 @@ public:
 
 	TAGFselectorTrue();
 
-	virtual void		Categorize() override;
+	virtual void		Categorize();
 
 	ClassDef(TAGFselectorTrue,0);
 };

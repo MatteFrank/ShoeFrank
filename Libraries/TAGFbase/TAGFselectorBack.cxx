@@ -36,29 +36,29 @@ void TAGFselectorBack::Categorize( ) {
 		exit(42);
 	}
 
-	if (m_debug > 1)
+	if (FootDebugLevel(1))
 		Info("Categorize_Backtracking()", "Backtracking START!!");
 
 	BackTracklets();
 
-	if (m_debug > 1)
+	if (FootDebugLevel(1))
 		Info("Categorize_Backtracking()", "BackTracklets created!");
 
 	if ( m_systemsON.Contains("IT"))
 	{
-		if (m_debug > 1)
+		if (FootDebugLevel(1))
 			Info("Categorize_Backtracking()", "Start of IT cycle!");
 		CategorizeIT_back();
-		if (m_debug > 1)
+		if (FootDebugLevel(1))
 			Info("Categorize_Backtracking()", "End of IT cycle!");
 	}
 
 	if ( m_systemsON.Contains("VT"))
 	{
-		if (m_debug > 1)
+		if (FootDebugLevel(1))
 			Info("Categorize_Backtracking()", "Start of VT cycle!");
 		CategorizeVT_back();
-		if (m_debug > 1)
+		if (FootDebugLevel(1))
 			Info("Categorize_Backtracking()", "End of VT cycle!");
 	}
 
@@ -73,7 +73,7 @@ void TAGFselectorBack::BackTracklets()
 {
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
 	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-		if(m_debug > 0)
+		if(FootDebugLevel(0))
 			cout << "TAGFselectorBack::BackTracklets() -- no measurement found in TW layer for event " << gTAGroot->CurrentEventId().EventNumber() << "! Skipping...\n";
 		return;
 	}
@@ -87,9 +87,11 @@ void TAGFselectorBack::BackTracklets()
 		//LOCAL COORDS!!!!
 		float xTW = (*itTW)->getRawHitCoords()(0);
 		float yTW = (*itTW)->getRawHitCoords()(1);
-		float zTW = 0;// m_SensorIDMap->GetFitPlane(m_SensorIDMap->GetFitPlaneTW())->getO().Z();
+		float zTW = 0;
 		TVector3 globPosTW = m_GeoTrafo->FromTWLocalToGlobal(TVector3(xTW, yTW, zTW));
-		int MSDPlane1 = m_SensorIDMap->GetMinFitPlane("MSD");
+
+		//Get central couple of MSD planes in order to start back tracklet creation from there
+		int MSDPlane1 = m_SensorIDMap->GetMinFitPlane("MSD") + ((m_SensorIDMap->GetMaxFitPlane("MSD") - m_SensorIDMap->GetMinFitPlane("MSD"))/4)*2;
 		int MSDPlane2 = MSDPlane1+1;
 		float xMSD = -100., yMSD = -100.;
 		float zMSD = m_SensorIDMap->GetFitPlane(MSDPlane1)->getO().Z();
@@ -143,7 +145,7 @@ void TAGFselectorBack::BackTracklets()
 				
 				TVector3 pos(xMSD, yMSD, zMSD*0.99);
 				TVector3 mom((globPosTW.x() - xMSD)/(globPosTW.z() - zMSD), (globPosTW.y() - yMSD)/(globPosTW.z() -zMSD) ,1);
-				if(m_debug > 1)
+				if(FootDebugLevel(1))
 				{
 					cout << "BACKTRACKLET CANDIDATE::" << (*itTW)->getHitId() << "\t" << (*itMSD1)->getHitId() << "\t" << (*itMSD2)->getHitId() << endl;
 					cout << Z_Hypo << "\t" << A_Hypo << endl;
@@ -151,12 +153,14 @@ void TAGFselectorBack::BackTracklets()
 					cout << "Mom::"; mom.Print();
 				}
 
-				// if(mom.Theta() > angularCoverage)
-				// if(mom.Phi() !compatible w/ x,y coordinates quadrant)
-
-
-				for ( int MSDnPlane = MSDPlane2+1; MSDnPlane <= m_SensorIDMap->GetMaxFitPlane("MSD"); MSDnPlane++ )
+				// Extrapolate to other planes
+				for ( int MSDnPlane = m_SensorIDMap->GetMinFitPlane("MSD"); MSDnPlane <= m_SensorIDMap->GetMaxFitPlane("MSD"); MSDnPlane++ )
 				{
+					//Skip the seed planes
+					if( MSDnPlane == MSDPlane1|| MSDnPlane == MSDPlane2 )
+						continue;
+
+					//Extrapolate to current MSD plane
 					TVector3 guessOnMSD = m_GeoTrafo->FromGlobalToMSDLocal( pos + mom*(m_SensorIDMap->GetFitPlane(MSDnPlane)->getO().Z() - pos.Z()));
 					
 					if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) ) //RZ: should be ok since X,Y local coordinates of MSD are currently in the detector frame
@@ -167,8 +171,8 @@ void TAGFselectorBack::BackTracklets()
 					double distanceInY = m_MSDtolerance;
 
 					if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
-						// if(m_debug > 0)
-						cout << "TAGFselectorBack::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
+						if(FootDebugLevel(0))
+							cout << "TAGFselectorBack::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
 						continue;
 					}
 
@@ -218,14 +222,18 @@ void TAGFselectorBack::BackTracklets()
 
 				// cout << "Found testTrack with " << testTrack->getNumPointsWithMeasurement() << " points" << endl;
 
+
+
+				//Check for a minimum number of clusters in the track candidate
 				if( testTrack->getNumPointsWithMeasurement() < 5 )
 				{
-					if (m_debug > 0)
-						cout << "Too few points in back-tracklet candidate" << endl;
+					if ( FootDebugLevel(0) )
+						Info("BackTracklets()", "Too few points in back-tracklet candidate");
 					delete testTrack;
 					continue;
 				}
 
+				//Fit the track candidate for backward extrapolation in next steps
 				try
 				{
 					int pointID = m_SensorIDMap->GetHitIDFromMeasID(testTrack->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId());
@@ -236,33 +244,25 @@ void TAGFselectorBack::BackTracklets()
 					float beta = (m_GeoTrafo->GetTWCenter().Z() - m_GeoTrafo->GetTGCenter().Z())/(TOF*TAGgeoTrafo::GetLightVelocity());
 					mom.SetMag(mass_Hypo*beta/TMath::Sqrt(1 - pow(beta,2)));
 					
-					// mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo )*0.95);
 					testTrack->setStateSeed(pos, mom);
-
 					m_fitter_extrapolation->processTrackWithRep(testTrack, testTrack->getCardinalRep() );
-
 					StateOnPlane tempState = testTrack->getFittedState(-1);
-
-					// cout << "TW::"; tempState.getPos().Print();
 
 					TVector2 TWcoords(xTW, yTW);
 
-					// cout << "dist::" << (tempState.getPos().XYvector() - TWcoords).Mod() << endl;
-
 					if( (tempState.getPos().XYvector() - TWcoords).Mod() > 3 )
 					{
-						if( m_debug > 0 )
+						if( FootDebugLevel(0) )
 							Info("BackTracklets()", "Found wrong MSD-TW point association! Removing track...");
 						delete testTrack;
 						continue;
 					}
 
+					// //Check if track falls inside TG... Is it that precise at this stage???
 					// tempState = testTrack->getFittedState(0);
-
 					// testTrack->getCardinalRep()->extrapolateToPoint( tempState, TVector3(0,0,0));
-					
-					// //Check if 
 					// cout << "TGT::"; tempState.getPos().Print();
+
 					m_trackTempMap[TrackCounter] = testTrack;
 					TrackCounter++;
 				}
@@ -318,14 +318,14 @@ void TAGFselectorBack::CategorizeIT_back()
 					Error("CategorizeIT_back()", "Sensor not found for Genfit plane %d!", *iPlane), exit(42);
 
 				if ( m_allHitMeas->find( *iPlane ) == m_allHitMeas->end() )   {
-					if( m_debug > 1 )
+					if( FootDebugLevel(1) )
 						Info("CategorizeIT_back()", "Plane %d of IT has no clusters. Skipping...", *iPlane);
 					continue;
 				}
 
 				TVector3 momGuessOnIT_dummy;
 				guessOnIT = ExtrapolateToOuterTracker(itTrack->second, *iPlane, momGuessOnIT_dummy);
-				if( m_debug > 1 )
+				if( FootDebugLevel(1) )
 				{
 					cout<<"PosGuess::";guessOnIT.Print();
 					cout<<"MomGuess::";momGuessOnIT_dummy.Print();
@@ -333,7 +333,7 @@ void TAGFselectorBack::CategorizeIT_back()
 
 				if ( !m_SensorIDMap->GetFitPlane( *iPlane )->isInActiveY( guessOnIT.Y() ) )
 				{
-					if(m_debug > 1)
+					if( FootDebugLevel(1) )
 						cout << "Extrapolation to IT not in active region of sensor " << *iPlane << endl;
 					continue;
 				}
@@ -341,7 +341,7 @@ void TAGFselectorBack::CategorizeIT_back()
 				int count = 0;
 				for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( *iPlane ).begin(); it != m_allHitMeas->at( *iPlane ).end(); ++it)
 				{
-					if( m_debug > 1 )
+					if( FootDebugLevel(1) )
 						cout << "Plane::" << *iPlane << "\tguessX::" << guessOnIT.X() << "\trawCoordsX::" << (*it)->getRawHitCoords()(0)  << "\tdistX::" << fabs(guessOnIT.X() - (*it)->getRawHitCoords()(0)) << "\tguessY::" << guessOnIT.Y() << "\trawCoordsY::" << (*it)->getRawHitCoords()(1)  << "\tdistY::" << fabs(guessOnIT.Y() - (*it)->getRawHitCoords()(1)) <<endl;
 
 					// find hit at minimum distance
@@ -366,7 +366,7 @@ void TAGFselectorBack::CategorizeIT_back()
 				guessOnIT = m_SensorIDMap->GetFitPlane(sensorMatch)->toLab( TVector2((hitToAdd)->getRawHitCoords()(0), (hitToAdd)->getRawHitCoords()(1)) );
 				guessOnIT.SetZ(guessOnIT.Z()*0.99);
 
-				if(m_debug > 0)
+				if(FootDebugLevel(0))
 				{
 					cout << "****SEED****"<<endl;
 					guessOnIT.Print(); momGuessOnIT.Print();
@@ -411,7 +411,7 @@ void TAGFselectorBack::CategorizeVT_back()
 
 			if (m_allHitMeas->find(VTplane) == m_allHitMeas->end())
 			{
-				if (m_debug > 0)
+				if (FootDebugLevel(0))
 					Info("CategorizeVT_back()", "No measurement found in VTplane %d", VTplane);
 				continue;
 			}

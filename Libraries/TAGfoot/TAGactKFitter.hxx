@@ -171,7 +171,6 @@ private:
 	double m_AMU;										///< Conversion between mass in GeV and atomic mass unit
 	double m_BeamEnergy;								///< Kinetic energy per nucleon of the primary beam in GeV
 
-	int m_debug;										///< Global debug level
 	long m_evNum;										///< Event number
 	int m_numGenParticle_noFrag;						///< Number of generated particle in the MC event that didn't fragment between the TG and TW
 

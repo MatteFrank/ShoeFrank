@@ -32,7 +32,7 @@
 
 using namespace std;
 
-class TAGF_KalmanStudies {
+class TAGF_KalmanStudies : public TAGobject {
 
 public:
 
@@ -55,7 +55,6 @@ public:
 private:
 
 
-	int m_debug;
 	float m_resoP_step;
 	string m_kalmanOutputDir;
 
