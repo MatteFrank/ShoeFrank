@@ -109,13 +109,13 @@ void TAGF_KalmanStudies::FillMomentumInfo( TVector3 meas, TVector3 expected, TMa
 // Called from outside!
 void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, map<string, map<float, TH1F*> >* h_dPOverP_x_bin ) {
 
-	if ( FootDebugLevel(0) )		
+	if ( FootDebugLevel(1) )		
 		cout << "TAGF_KalmanStudies::PrintMomentumResidual -- Start!!!!  " << endl;
 
 	double dP = meas.Mag() - expected.Mag();
 	double err = EvalError( meas, cov );
 
-	if ( FootDebugLevel(0) )
+	if ( FootDebugLevel(1) )
 	{
 		cout << "dp= " <<meas.Mag() << "-"<<expected.Mag() << "   err= " << err<< endl;
 		cout << " residuo= "<< dP / err <<endl;
@@ -154,14 +154,14 @@ void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected
 		TH1F* h = new TH1F( name.c_str(), name.c_str(), 400 , -1., 1. );
 		(*h_dPOverP_x_bin)[ hitSampleName ][ binCenter ] = h;
 	}
-	if ( FootDebugLevel(0) ) cout << "Filling h_dPOverP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP/expected.Mag() << endl;
+	if ( FootDebugLevel(1) ) cout << "Filling h_dPOverP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP/expected.Mag() << endl;
 
 	// fill the h_dPOverP_x_bin
 	// h_dPOverP_x_bin->at(binCenter)->Fill( dP/expected.Mag() );
 	// h_dPOverP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/expected.Mag() );
 	( ((*h_dPOverP_x_bin).at( hitSampleName )).at(binCenter) )->Fill( dP/expected.Mag() );
 
-	if ( FootDebugLevel(1) )		
+	if ( FootDebugLevel(2) )		
 		cout << "TAGF_KalmanStudies::PrintMomentumResidual -- End!!!!  " << ( ((*h_dPOverP_x_bin).at( hitSampleName )).at(binCenter) )->GetTitle() << endl;
 }
 
@@ -182,7 +182,7 @@ void TAGF_KalmanStudies::EvaluateAndFill_MomentumResolution( map<string, map<flo
 		float resoP_max = (*(*collIt).second.rbegin()).first + m_resoP_step*0.5;
 		float nfbin = (resoP_max-resoP_min)/m_resoP_step;
 
-		// if ( FootDebugLevel(0) ) 
+		// if ( FootDebugLevel(1) ) 
 			cout << "in TAGF_KalmanStudies::EvaluateMomentumResolution-> " << (*collIt).first << " resoP_min/max " << resoP_min << " " << resoP_max << " nfbin " << nfbin << endl;
 		//if ( modf( (resoP_max-resoP_min)/m_resoP_step, &nfbin ) == 0.0 )
 
@@ -316,7 +316,7 @@ void TAGF_KalmanStudies::EvaluateAndFill_MomentumResolution( map<string, map<flo
 // 	}
 
 
-// 	if ( FootDebugLevel(0) ) cout << "Filling h_dP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP << endl;
+// 	if ( FootDebugLevel(1) ) cout << "Filling h_dP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP << endl;
 // 	h_dP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP );
 
 // 	// fill the h_dPOverP_x_bin
@@ -334,7 +334,7 @@ void TAGF_KalmanStudies::EvaluateAndFill_MomentumResolution( map<string, map<flo
 // 		h_dPOverP_x_bin[ hitSampleName ][ binCenter ] = h;
 // 	}
 
-// 	if ( FootDebugLevel(0) ) cout << "Filling h_dPOverP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP/expected << endl;
+// 	if ( FootDebugLevel(1) ) cout << "Filling h_dPOverP_x_bin " << hitSampleName << " of bincenter " << binCenter << " with " << dP/expected << endl;
 // 	// h_dPOverP_x_bin[ hitSampleName ][ binCenter ]->Fill( dP/expected.Mag() );
 // 	( (h_dPOverP_x_bin.at( hitSampleName )).at(binCenter) )->Fill( dP/expected );
 
