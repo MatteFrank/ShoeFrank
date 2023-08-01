@@ -182,13 +182,12 @@ void TAGFselectorBack::BackTracklets()
 
 						//RZ: CHECK -> AVOID ERRORS
 						double distanceFromHit;
-						// string strip;
 
 						if ( ! static_cast<PlanarMeasurement*>(*it)->getYview() )
 							distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
 						else
 							distanceFromHit = fabs(guessOnMSD.Y() - (*it)->getRawHitCoords()(0));
-						// cout << "Plane::" << MSDnPlane << "\tguess::" << guessOnMSD.X() << "\trawHitCoords::" << (*it)->getRawHitCoords()(0) << "\tdist::" << distanceFromHit<<endl;
+						cout << "Plane::" << MSDnPlane << "\tguess::" << guessOnMSD.X() << "\trawHitCoords::" << (*it)->getRawHitCoords()(0) << "\tdist::" << distanceFromHit<<endl;
 
 						// find hit at minimum distance
 						if ( distanceFromHit < distanceInY ){
@@ -363,6 +362,17 @@ void TAGFselectorBack::CategorizeIT_back()
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> ( m_allHitMeas->at(sensorMatch).at(indexOfMinY) ))->clone();
 				(itTrack->second)->insertMeasurement( hitToAdd, 0);
 
+				//Fill extrapolation distance histos
+				if( h_extrapDist.size() > 0 )
+				{
+					int iSensor;
+					m_SensorIDMap->GetSensorID(sensorMatch, &iSensor);
+					std::pair<string, std::pair<int, int>> sensId = make_pair("IT",make_pair(iSensor,0));
+					h_extrapDist[sensId]->Fill(guessOnIT.X() - hitToAdd->getRawHitCoords()(0));
+					sensId = make_pair("IT",make_pair(iSensor,1));
+					h_extrapDist[sensId]->Fill(guessOnIT.Y() - hitToAdd->getRawHitCoords()(1));
+				}
+
 				guessOnIT = m_SensorIDMap->GetFitPlane(sensorMatch)->toLab( TVector2((hitToAdd)->getRawHitCoords()(0), (hitToAdd)->getRawHitCoords()(1)) );
 				guessOnIT.SetZ(guessOnIT.Z()*0.99);
 
@@ -373,6 +383,7 @@ void TAGFselectorBack::CategorizeIT_back()
 				}
 				(itTrack->second)->setStateSeed(guessOnIT,momGuessOnIT);
 				m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
+			
 			}
 
 		} // end loop over z
