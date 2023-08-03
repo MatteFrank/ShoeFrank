@@ -425,7 +425,7 @@ string TAGparGeo::PrintStandardBodies( )
    //needed to subdivide air in two because when the calo is present too many bodies
    //are subtracted to air and fluka complains
    if(TAGrecoManager::GetPar()->IncludeCA())
-      ss << "XYP airpla     " << zplane << endl;
+     ss << "XYP airpla    " << zplane << "." << endl;
 
    return ss.str();
 }
