@@ -123,4 +123,10 @@ void TAGFselectorTrue::Categorize( ) {
 		} //End of loop on measurements per sensor
 	
 	} //End of loop on sensors
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of TrueParticle tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
 }

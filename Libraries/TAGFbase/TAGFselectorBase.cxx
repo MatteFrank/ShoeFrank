@@ -788,6 +788,20 @@ string TAGFselectorBase::GetParticleNameFromCharge(int ch)
 }
 
 
+void TAGFselectorBase::PrintCurrentTracksMC()
+{
+	for( auto itTrack : m_trackTempMap )
+	{
+		cout << "Track::" << itTrack.first << "\tMC Ids::";
+		for( int i = 0; i < (itTrack.second)->getNumPointsWithMeasurement(); ++i )
+			cout << ListMCparticlesOfHit( (itTrack.second)->getPointWithMeasurement(i)->getRawMeasurement()->getHitId() ) << " ";
+		cout << "\n";
+	}
+	cout << "\n";
+}
+
+
+
 //! \brief List the MC particle Ids of a hit (function used for debug purposes!)
 //!
 //! \param[in] HitId Global Id of the hit

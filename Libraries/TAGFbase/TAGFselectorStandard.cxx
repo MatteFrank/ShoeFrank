@@ -202,6 +202,12 @@ void TAGFselectorStandard::CategorizeVT()
 		// Warning("CategorizeVT()","No valid VT tracklet found in the event!");
 		(*m_noVTtrackletEvents)++;
 	}
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of VT tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
 }
 
 
@@ -312,6 +318,12 @@ void TAGFselectorStandard::CategorizeIT()	{
 			}	// end loop on IT planes
 		} // end loop over z
 	}	// end loop on GF Track candidates
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of IT tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
 
 	// delete m_fitter_extrapolation;
 }
@@ -506,8 +518,14 @@ void TAGFselectorStandard::CategorizeMSD()	{
 		} // end loop MSD planes
 
 	}// end loop on GF Track candidates
-	delete m_fitter_extrapolation;
 
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of MSD tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
+
+	delete m_fitter_extrapolation;
 }
 
 
@@ -692,5 +710,12 @@ void TAGFselectorStandard::CategorizeTW()
 			}
 		}
 	}
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of IT tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
+
 	delete m_fitter_extrapolation;
 }

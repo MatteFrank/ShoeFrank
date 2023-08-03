@@ -283,18 +283,10 @@ void TAGFselectorBack::BackTracklets()
 	}
 	delete m_fitter_extrapolation;
 
-	if( FootDebugLevel(1) )
+	if( m_IsMC && FootDebugLevel(1) )
 	{
 		cout << "End of TW-MSD tracking -> found these tracks\n";
-		for( auto itTrack : m_trackTempMap )
-		{
-			cout << "Track::" << itTrack.first << "\tMC Ids::";
-			for( int i = 0; i < (itTrack.second)->getNumPointsWithMeasurement(); ++i )
-				cout << ListMCparticlesOfHit( (itTrack.second)->getPointWithMeasurement(i)->getRawMeasurement()->getHitId() ) << " ";
-		
-			cout << "\n";
-		}
-		cout << "\n";
+		PrintCurrentTracksMC();
 	}
 
 	return;
@@ -426,18 +418,10 @@ void TAGFselectorBack::CategorizeIT_back()
 		m_trackTempMap.erase(trackId);
 	}
 
-	if( FootDebugLevel(1) )
+	if( m_IsMC && FootDebugLevel(1) )
 	{
 		cout << "End of IT tracking -> found these tracks\n";
-		for( auto itTrack : m_trackTempMap )
-		{
-			cout << "Track::" << itTrack.first << "\tMC Ids::";
-			for( int i = 0; i < (itTrack.second)->getNumPointsWithMeasurement(); ++i )
-				cout << ListMCparticlesOfHit( (itTrack.second)->getPointWithMeasurement(i)->getRawMeasurement()->getHitId() ) << " ";
-		
-			cout << "\n";
-		}
-		cout << "\n";
+		PrintCurrentTracksMC();
 	}
 
 	delete m_fitter_extrapolation;
@@ -532,18 +516,10 @@ void TAGFselectorBack::CategorizeVT_back()
 
 	delete m_fitter_extrapolation;
 
-	if( FootDebugLevel(1) )
+	if( m_IsMC && FootDebugLevel(1) )
 	{
 		cout << "End of VT tracking -> found these tracks\n";
-		for( auto itTrack : m_trackTempMap )
-		{
-			cout << "Track::" << itTrack.first << " ";
-			for( int i = 0; i < (itTrack.second)->getNumPointsWithMeasurement(); ++i )
-				cout << ListMCparticlesOfHit( (itTrack.second)->getPointWithMeasurement(i)->getRawMeasurement()->getHitId() ) << " ";
-		
-			cout << "\n";
-		}
-		cout << "\n";
+		PrintCurrentTracksMC();
 	}
 
 	return;
