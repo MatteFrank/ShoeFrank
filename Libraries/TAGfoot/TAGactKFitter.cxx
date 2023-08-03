@@ -59,8 +59,6 @@ m_IsMC(false)
 	for ( unsigned int i=0; i<m_Particles.size(); i++ )
 		m_ParticleIndex[ m_Particles[i] ] = i;
 
-	m_debug = TAGrecoManager::GetPar()->Debug();
-
 	//Initialize the track fitter
 	int nIter = 20; // max number of iterations
 	double dPVal = 1.E-3; // convergence criterion
@@ -164,7 +162,7 @@ void TAGactKFitter::FillGenCounter( map< string, int > mappa )	{
 //! \return True if the action was successful
 Bool_t TAGactKFitter::Action()
 {
-	if(m_debug > 0) cout << "TAGactKFitter::Action()  ->  start!" << endl;
+	if(FootDebugLevel(1)) cout << "TAGactKFitter::Action()  ->  start!" << endl;
 
 	ClearData();
 	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
@@ -172,7 +170,7 @@ Bool_t TAGactKFitter::Action()
 	//Check if ST signaled a pile-up -> if so, skip the event
 	if ( !m_IsMC && ((TASTntuRaw*)gTAGroot->FindDataDsc(FootActionDscName("TASTntuRaw"))->Object())->GetSuperHit()->GetPileUp() )
 	{
-		if( m_debug > 0 )
+		if( FootDebugLevel(1) )
 			Info("Action()", "Event %ld flagged as pile-up from the SC! Skipping...", evNum);
 
 		m_SCpileUpEvts++;
@@ -196,7 +194,7 @@ Bool_t TAGactKFitter::Action()
 	}
 
 	//Print the number of hits in each GF plane
-	if(m_debug > 0)	{
+	if(FootDebugLevel(1))	{
 		cout << "TAGactKFitter::Action()  ->  " << m_allHitMeasGF.size() << endl;
 		cout << "Plane\tN. hits" << endl;
 		for(auto it = m_allHitMeasGF.begin(); it != m_allHitMeasGF.end(); ++it)
@@ -235,7 +233,7 @@ Bool_t TAGactKFitter::Action()
 	delete GFUploader;
 	delete GFSelector;
 
-	if(m_debug > 0) cout << "TAGactKFitter::Action()  -> end! " << endl;
+	if(FootDebugLevel(1)) cout << "TAGactKFitter::Action()  -> end! " << endl;
 	fpGlobTrackRepo->SetBit(kValid);
 	return true;
 }
@@ -324,7 +322,7 @@ void TAGactKFitter::Finalize() {
 		display->open();
 	}
 
-	if( m_IsMC && m_debug > 0 )
+	if( m_IsMC && FootDebugLevel(1) )
 	{
 		cout << "Check quality of charge hypothesis\nPlaneId\tNClus\tNGood" << endl;
 		for(int i=0; i< m_NClusGood.size(); ++i)
@@ -402,7 +400,7 @@ TAGFselectorBase* TAGactKFitter::InitializeSelector()
 //! \return Number of fitted tracks in the event
 int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 
-	if ( m_debug > 0 )		cout << "Starting MakeFit " << endl;
+	if ( FootDebugLevel(1) )		cout << "Starting MakeFit " << endl;
 
 	bool isConverged = false, isConvergedPartial = false;
 	bool NmeasureCut = false;
@@ -412,7 +410,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 	int NstartTracks = 0, NstartTracksYesTW = 0, NstartTracksNoTW = 0;
 
 	m_evNum = evNum;
-	if(m_debug > 0)
+	if(FootDebugLevel(1))
 		cout << "\n  ----------------------\nEvento numero " << m_evNum << " track " << m_mapTrack.size() << endl;
 
 	// loop over all tracks
@@ -436,7 +434,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 		vector<string> tok = TAGparTools::Tokenize( trackIt->first.Data() , "_" );
 		string PartName = tok.at(0);
 
-		if(m_debug > 0) cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << "\n";
+		if(FootDebugLevel(1)) cout << "Track candidate: "<<trackCounter<< "  "<< PartName << " " << trackIt->first.Data() << "\n";
 
 		// check if the category is defined in UpdatePDG  -->  also done in GetPdgCode()
 		// This check has to be done only when using the TrueParticle selection -> Naming is different for data-Like!
@@ -455,7 +453,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 		trackCounter++;
 
 	    // check of fitTrack filling
-	    if ( m_debug > 0 ) {
+	    if ( FootDebugLevel(2) ) {
 		    cout << " check of fitTrack filling " << endl;
 		    for (unsigned int iMeas = 0; iMeas < fitTrack->getNumPointsWithMeasurement(); ++iMeas){
 
@@ -470,7 +468,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 		//Skip track if it has less points than what we want
 		if ( fitTrack->getNumPointsWithMeasurement() < TAGrecoManager::GetPar()->MeasureN() )
 		{
-			if( m_debug > 0 )	Info("FillTrackCategoryMap()", "Skipped Track %s with %d TrackPoints with measurement!!", tok.at(2).c_str(), fitTrack->getNumPointsWithMeasurement());
+			if( FootDebugLevel(1) )	Info("FillTrackCategoryMap()", "Skipped Track %s with %d TrackPoints with measurement!!", tok.at(2).c_str(), fitTrack->getNumPointsWithMeasurement());
 			NmeasureCut = true;
 			continue;
 		}
@@ -480,7 +478,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 
 	    //check
 	    fitTrack->checkConsistency();
-	    if ( m_debug > 2 )	    fitTrack->Print();
+	    if ( FootDebugLevel(2) )	    fitTrack->Print();
 
 		if( m_IsMC )	EvaluateProjectionEfficiency(fitTrack);
 
@@ -500,7 +498,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			m_nSelectedTrackCandidates[ PartName ] = 0;
 		m_nSelectedTrackCandidates[ PartName ]++;
 
-		if(m_debug > 0)	{
+		if(FootDebugLevel(1))	{
 			cout << "PROCESSING TRACK!!!!!\n";
 			cout << fitTrack->getCardinalRep()->getPDG() << "\t" << fitTrack->getCardinalRep()->getPDGCharge()<< "\n";
 			fitTrack->getCardinalRep()->Print();
@@ -513,7 +511,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 	    	KalmanFitter* preFitter = new KalmanFitter(1, dPVal);
 	    	preFitter->processTrackWithRep( fitTrack, fitTrack->getCardinalRep() );
 
-			if(m_debug > 0)
+			if(FootDebugLevel(1))
 			{
 				cout << "Track reps\n";
 				for(int i = 0; i < fitTrack->getNumReps(); ++i)
@@ -528,12 +526,15 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			delete preFitter;
 		}
 		catch (genfit::Exception& e) {
-			std::cerr << e.what();
-			std::cerr << "Exception, next track\n";
+			if( FootDebugLevel(2) )
+			{
+				std::cerr << e.what();
+				std::cerr << "Exception, next track\n";
+			}
 			continue;
     	}
 
-		if(m_debug > 0)
+		if(FootDebugLevel(1))
 		{
 			cout << "TRACK PROCESSED!!!!!\n";
 			fitTrack->getFitStatus(fitTrack->getCardinalRep())->Print();
@@ -555,7 +556,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 				m_nConvergedTracks_all[ PartName ]++;
 
 				RecordTrackInfo( fitTrack, newTrackName );
-				if(m_debug > 0) cout << "DONE\n";
+				if(FootDebugLevel(1)) cout << "DONE\n";
 
 			}
 			m_vectorConvergedTrack.push_back( fitTrack );
@@ -572,6 +573,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << " display->addEvent size " << NconvTracks << " at position " << m_eventDisplayCounter << "\n";
 		m_eventDisplayCounter++;
 		display->addEvent(m_vectorConvergedTrack);
+		// cout << "hmmmmmmmmmmmmmmmmm" << endl;
 	}
 	m_vectorConvergedTrack.clear();
 
@@ -586,7 +588,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 		h_nTracksPerEv->Fill( NconvTracks );
 	}
 
-	if ( m_debug > 0 )		cout << "Ready for the next track fit!\n";
+	if ( FootDebugLevel(1) )		cout << "Ready for the next track fit!\n";
 
 	return NconvTracks;
 }
@@ -599,7 +601,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 //! \param[in] fitTrackName Name of the fitted track (example He_4_2001 -> tracklet 1 of VTX 2, with Helium 4 as starting particle hypothesis)
 void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
-	if(m_debug > 0)		cout << "RECORD START" << endl;
+	if(FootDebugLevel(1))		cout << "RECORD START" << endl;
 	TAGtrack* shoeOutTrack(0x0);
 	bool hasTwPoint = false;
 	vector<TAGpoint*> shoeTrackPointRepo;
@@ -685,12 +687,16 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	if(fitCh < 0 || fitCh >  m_GFgeometry->GetGparGeo()->GetBeamPar().AtomicNumber ) return;
 
 	//Vertexing for track length
-	if( m_debug > 1)	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
+	if( FootDebugLevel(2))	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
 
 	//Extrapolate to VTX
 	//RZ: Issue!!!!! When trueparticle is active this extrapolation breaks
 	TVector3 targetMeas;
 	if( TAGrecoManager::GetPar()->PreselectStrategy() == "TrueParticle" )
+	{
+		targetMeas = TVector3(0,0,0); //RZ: DUMMY!!!
+	}
+	else if ( TAGrecoManager::GetPar()->PreselectStrategy() == "Backtracking" )
 	{
 		targetMeas = TVector3(0,0,0); //RZ: DUMMY!!!
 	}
@@ -704,7 +710,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	StateOnPlane state_target_point = track->getFittedState(0);
 	double extL_Tgt = track->getCardinalRep()->extrapolateToPoint( state_target_point, targetMeas );
 
-	if(m_debug > 1)
+	if(FootDebugLevel(2))
 	{
 		cout << "Vertex" << std::atoi(tok.at(2).c_str())/1000  << " has position:"; targetMeas.Print();
 		cout << "Extrap to point state::"; state_target_point.Print();
@@ -739,8 +745,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		}
 		catch (genfit::Exception& e)
 		{
-			std::cerr << e.what();
-			std::cerr << "Exception, particle is too slow to escape TW. Setting final energy to 0\n";
+			if( FootDebugLevel(2) )
+			{
+				std::cerr << e.what();
+				std::cerr << "Exception, particle is too slow to escape TW. Setting final energy to 0\n";
+			}
 			state_TW = track->getFittedState(-1);
 			energyOutTw = 0;
 		}
@@ -764,7 +773,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	double energyAtTgt = TMath::Sqrt( pow(track->getCardinalRep()->getMomMag(state_target_point), 2) + pow(fitMass, 2) ) - fitMass; //Energy at Tgt
 
 
-	if(m_debug > 1)
+	if(FootDebugLevel(2))
 	{
 		cout << "fitCh::" << fitCh << "\tfitMass::" << fitMass << endl;
 		cout << "Energy at target::" << energyAtTgt << endl;
@@ -778,7 +787,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	double chisquare 	= track->getFitStatus( track->getCardinalRep() )->getChi2();
 	double pVal 		= track->getFitStatus( track->getCardinalRep() )->getPVal();
 
-	if(m_debug > 1)
+	if(FootDebugLevel(2))
 	{
 		cout << "TAGactKFitter::RecordTrackInfo:: DONE chi2 = " << chi2  << endl;
 		cout << "TAGactKFitter::RecordTrackInfo:: DONE chisquare = " << chisquare  << endl;
@@ -851,10 +860,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				h_mcPosY->Fill( mcPos.Y() );
 				h_mcPosZ->Fill( mcPos.Z() );
 			}
-			if(m_debug > 0)
+			if(FootDebugLevel(1))
 			{
 				cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
-				cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
+				cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos z= "<< recoPos_target.z() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
 			}
 
 			m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
@@ -862,7 +871,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
 
 			trackQuality = TrackQuality( &mcParticleID_track );
-			if(m_debug > 0) cout << "trackQuality::" << trackQuality << "\n";
+			if(FootDebugLevel(1)) cout << "trackQuality::" << trackQuality << "\n";
 
 
 			if ( mcCharge == fitCh && trackQuality > 0.7 ) {
@@ -873,7 +882,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			}
 			else
 			{
-				if(m_debug > 0)	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
+				if(FootDebugLevel(1))	cout << "NOT MATCHED => evt::" << (long)gTAGroot->CurrentEventId().EventNumber() << "\tfitCh::" << fitCh << "\tmcCh::" << mcCharge << "\ttrQ::" << trackQuality << "\n";
 			}
 
 			shoeOutTrack->SetQuality( trackQuality );
@@ -887,7 +896,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			}
 		}
 
-		if(m_debug > 1)	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
+		if(FootDebugLevel(2))	cout << "TAGactKFitter::RecordTrackInfo:: DONE MC = "<< endl;
 	}
 
 	//Histogram filling
@@ -934,25 +943,34 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				h_phi_BMnoTw->Fill ( phi_deg );
 			}
 
-			TVector3 guessOnTW = ((TAGFselectorBase*) m_dummySelector)->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
 			int index = theta_deg >= 15 ? 15 : floor(theta_deg);
 			
-			//TW projection
-			h_TWprojVsTheta[index]->Fill(guessOnTW.X(), guessOnTW.Y());
-			h_TWprojVsThetaTot->Fill(guessOnTW.X(), guessOnTW.Y());
-			if( shoeOutTrack->HasTwPoint() )
+			//TW projection -> try statement needed to avoid tracks dying way before TW
+			try 
 			{
-				h_TWprojVsThetaTotYesTW->Fill(guessOnTW.X(), guessOnTW.Y());
-				h_TWprojVsThetaYesTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
-				float zTW = shoeOutTrack->GetTwChargeZ();
-				zTW = guessOnTW.Y() < 1.1 ? -zTW : zTW;
-				h_TWprojZTot->Fill(zTW);
-				h_TWprojZvsTheta[index]->Fill(zTW);
+				TVector3 guessOnTW = m_dummySelector->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
+				
+				h_TWprojVsTheta[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+				h_TWprojVsThetaTot->Fill(guessOnTW.X(), guessOnTW.Y());
+				if( shoeOutTrack->HasTwPoint() )
+				{
+					h_TWprojVsThetaTotYesTW->Fill(guessOnTW.X(), guessOnTW.Y());
+					h_TWprojVsThetaYesTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+					float zTW = shoeOutTrack->GetTwChargeZ();
+					zTW = guessOnTW.Y() < 1.1 ? -zTW : zTW;
+					h_TWprojZTot->Fill(zTW);
+					h_TWprojZvsTheta[index]->Fill(zTW);
+				}
+				else
+				{
+					h_TWprojVsThetaTotNoTW->Fill(guessOnTW.X(), guessOnTW.Y());
+					h_TWprojVsThetaNoTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+				}
 			}
-			else
+			catch( genfit::Exception & ex )
 			{
-				h_TWprojVsThetaTotNoTW->Fill(guessOnTW.X(), guessOnTW.Y());
-				h_TWprojVsThetaNoTW[index]->Fill(guessOnTW.X(), guessOnTW.Y());
+				if ( FootDebugLevel(2) )
+					Info("RecordTrackInfo()", "Extrapolation to TW failed for track %s! Skipping TW projection plots...", fitTrackName.c_str());
 			}
 
 			//TG projection
@@ -1012,7 +1030,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		}
 	}
 
-	if(m_debug > 0)	cout << "TAGactKFitter::RecordTrackInfo:: DONE HISTOGRAM FILL "  << endl;
+	if(FootDebugLevel(1))	cout << "TAGactKFitter::RecordTrackInfo:: DONE HISTOGRAM FILL "  << endl;
 
     //! Get the accumulated X/X0 (path / radiation length) of the material crossed in the last extrapolation.
     // virtual double getRadiationLenght() const = 0;
@@ -1031,7 +1049,7 @@ void TAGactKFitter::MatchCALOclusters()
 	TACAntuCluster* caNtuCluster = (TACAntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TACAntuCluster"))->Object() ;
 	if( caNtuCluster->GetClustersN() < 1 )
 	{
-		if( m_debug > 1)
+		if( FootDebugLevel(2))
 			Info("MatchCALOClusters()", "No CALO clusters to match in event %ld", (long)gTAGroot->CurrentEventId().EventNumber());
 		return;
 	}
@@ -1056,7 +1074,7 @@ void TAGactKFitter::MatchCALOclusters()
 		twDir *= 1/twDir.Z();
 		posDistMatch = m_CALOextrapTolerance;
 
-		if( m_debug > 1 )
+		if( FootDebugLevel(2) )
 		{
 			cout << "TW_POS::"; twPos.Print();
 			cout << "TW_DIR::"; twDir.Print();
@@ -1065,7 +1083,7 @@ void TAGactKFitter::MatchCALOclusters()
 		for( int i=0; i<caNtuCluster->GetClustersN(); ++i )
 		{
 			clus = caNtuCluster->GetCluster(i);
-			if(m_debug > 1)
+			if(FootDebugLevel(2))
 			{
 				cout << "CLUS_ID::" << i << endl;
 				cout << "POS::"; clus->GetPosition().Print();
@@ -1081,7 +1099,7 @@ void TAGactKFitter::MatchCALOclusters()
 			extrapPos = twPos + extrapDistZ*twDir;
 			posDist = (extrapPos - caPos).Mag();
 
-			if( m_debug > 1 )
+			if( FootDebugLevel(2) )
 			{
 				cout << "Extrap length::" << extrapDistZ << endl;
 				cout << "Extrap pos::"; extrapPos.Print();
@@ -1090,7 +1108,7 @@ void TAGactKFitter::MatchCALOclusters()
 
 			if( posDist < posDistMatch)
 			{
-				if(m_debug > 1)
+				if(FootDebugLevel(2))
 					cout << "MATCHED ID::" << i << endl;
 
 				posDistMatch = posDist;
@@ -1279,7 +1297,7 @@ void TAGactKFitter::PrintPurity() {
 		float nn = m_nConvergedTracks_all[ *itPart ];
 		float eff = (float)kk/nn;
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
-		if ( m_debug > -1 )		cout << "Purity " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
+		cout << "Purity " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
 
 		totalNum+=kk;
 		totalDen+=nn;
@@ -1292,7 +1310,7 @@ void TAGactKFitter::PrintPurity() {
 		h_purity->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
-	if ( m_debug > -1 )		cout << "Total Purity " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
+	cout << "Total Purity " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
 
 	AddHistogram(h_trackMatched);
 	AddHistogram(h_purity);
@@ -1327,7 +1345,7 @@ void TAGactKFitter::PrintEfficiency() {
 		float nn = m_nSelectedTrackCandidates[ *itPart ];
 		float eff = (float)kk/nn;
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
-		if ( m_debug > -1 )		cout << "Efficiency " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
+		cout << "Efficiency " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
 
 		totalNum+=kk;
 		totalDen+=nn;
@@ -1341,7 +1359,7 @@ void TAGactKFitter::PrintEfficiency() {
 		h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
-	if ( m_debug > -1 )		cout << "Total Efficiency " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
+	cout << "Total Efficiency " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
 
 	h_trackEfficiency->SetTitle(0);
 	h_trackEfficiency->SetStats(0);
@@ -1407,7 +1425,7 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 		float nn = m_genCount_vector[ *itPart ];
 		float eff = (float)kk/nn;
 		float variance = ( (kk+1)*(kk+2)/((nn+2)*(nn+3)) ) - ( (kk+1)*(kk+1)/((nn+2)*(nn+2)) );
-		if ( m_debug > -1 )		cout << "Efficiency Selection " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
+		cout << "Efficiency Selection " << *itPart << " = " << eff << "  " << int(kk) << " " << int(nn) << endl;
 
 		totalNum+=kk;
 		totalDen+=nn;
@@ -1420,7 +1438,7 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 		h_selectEfficiency->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
-	if ( m_debug > -1 )		cout << "Total Efficiency Selection " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
+	cout << "Total Efficiency Selection " << " = " << totalNum/totalDen << "  " << int(totalNum) << " " << int(totalDen) << endl;
 
 	h_selectEfficiency->SetTitle(0);
 	h_selectEfficiency->SetStats(0);
@@ -1477,7 +1495,7 @@ void TAGactKFitter::CreateHistogram()	{
 	h_tof = new TH1F("m_tof", "m_tof", 200, 0, 20);
 	AddHistogram(h_tof);
 
-	h_pVal = new TH1F("m_pVal", "m_pVal", 300, 0, 3);
+	h_pVal = new TH1F("m_pVal", "m_pVal", 300, -0.1, 1.1);
 	AddHistogram(h_pVal);
 
 	if( m_IsMC )
@@ -1809,7 +1827,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 	int MeasId, PlaneId;
 	int chargeHypo, chargeMC;
 
-	if(m_debug > 0)	cout << "Check of charge hypo: " << endl;
+	if(FootDebugLevel(1))	cout << "Check of charge hypo: " << endl;
 
 	for(int i=0; i<fitTrack->getNumPointsWithMeasurement(); ++i)
 	{
@@ -1831,7 +1849,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 				// if(!particle) continue;
 				chargeMC = particle->GetCharge();
 			}
-			if(m_debug > 0)	
+			if(FootDebugLevel(1))	
 				cout << "Plane::" << PlaneId << "\tChargeHypo::" << chargeHypo << "\tMCCharge::" << chargeMC << "\tMeasId::" << MeasId << "\tMCTrackId::" << *itTrackMC << "\tflagGood::" << good << endl;
 
 			if(chargeHypo == chargeMC && !good)
@@ -1852,7 +1870,7 @@ void TAGactKFitter::EvaluateProjectionEfficiency(Track* fitTrack)
 void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselectorBase* GFSelector)
 {
 	int chargeFromTW = GFSelector->GetChargeFromTW( fitTrack );
-	if(m_debug > 0 ) cout << "Charge From TW::" << chargeFromTW << endl;
+	if(FootDebugLevel(1) ) cout << "Charge From TW::" << chargeFromTW << endl;
 	if( chargeFromTW < 1 || chargeFromTW > m_GFgeometry->GetGparGeo()->GetBeamPar().AtomicNumber )
 	{
 		// Info("CheckChargeHypothesis()", "Wrong evaluation of TW charge for track candidate %s. No check performed...", PartName->c_str());
@@ -1864,7 +1882,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 	//Charge hypo != form TW --> change PartName and reset seed
 	if(chargeFromTW != fitTrack->getCardinalRep()->getPDGCharge())
 	{
-		if(m_debug > 0)	Info("EvaluateProjectionEfficiency()", "Charge Hypo (%d) wrong, changing to measured from TW (%d)", int(fitTrack->getCardinalRep()->getPDGCharge()), chargeFromTW);
+		if(FootDebugLevel(1))	Info("EvaluateProjectionEfficiency()", "Charge Hypo (%d) wrong, changing to measured from TW (%d)", int(fitTrack->getCardinalRep()->getPDGCharge()), chargeFromTW);
 		for(int i=0; i<fitTrack->getNumReps(); ++i)
 		{
 			if(fitTrack->getTrackRep(i)->getPDGCharge() == chargeFromTW)
@@ -1900,10 +1918,10 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 	TVector3 pos, mom;
 	TVectorD seed = fitTrack->getStateSeed();
 	pos.SetX(seed(0)); pos.SetY(seed(1)); pos.SetZ(seed(2));
-	if(m_debug > 1)	pos.Print();
+	if(FootDebugLevel(2))	pos.Print();
 
 	mom.SetX(seed(3)); mom.SetY(seed(4)); mom.SetZ(seed(5));
-	if(m_debug > 1)	mom.Print();
+	if(FootDebugLevel(2))	mom.Print();
 
 	// mom.SetMag(TMath::Sqrt( pow(m_BeamEnergy*A_Hypo,2) + 2*mass_Hypo*m_BeamEnergy*A_Hypo ));
 	// cout << "momBefore::" << mom.Mag() << endl;
@@ -1915,7 +1933,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack, TAG
 	float beta = (m_GeoTrafo->GetTWCenter().Z() - m_GeoTrafo->GetTGCenter().Z())/(TOF*TAGgeoTrafo::GetLightVelocity());
 	mom.SetMag(mass_Hypo*beta/TMath::Sqrt(1 - pow(beta,2)));
 
-	if(m_debug > 1)	mom.Print();
+	if(FootDebugLevel(2))	mom.Print();
 
 	fitTrack->setStateSeed(pos,mom);
 

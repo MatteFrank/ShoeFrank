@@ -38,8 +38,6 @@ m_ITtolerance(.5),
 m_MSDtolerance(.5),
 m_TWtolerance(4.)
 {
-	m_debug = TAGrecoManager::GetPar()->Debug();
-
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
 	if(TAGrecoManager::GetPar()->IncludeVT())
@@ -56,7 +54,7 @@ m_TWtolerance(4.)
 
 	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().Energy;
 
-	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
+	if( FootDebugLevel(2) )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
 	m_eventType = 0;
 }
@@ -169,7 +167,7 @@ int TAGFselectorBase::FillTrackRepVector()
 	}
 	for(int i = 0; i < m_chargeVect->size(); ++i)
 	{
-		if ( m_debug > 0 ) cout << "TAGFselectorBase::FillTrackRepVector() -- charge: " << m_chargeVect->at(i) << "\n";
+		if ( FootDebugLevel(1) ) cout << "TAGFselectorBase::FillTrackRepVector() -- charge: " << m_chargeVect->at(i) << "\n";
 
 		AbsTrackRep* rep = new RKTrackRep( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( m_chargeVect->at(i) ) );
 		m_trackRepVec.push_back( rep );
@@ -186,7 +184,7 @@ int TAGFselectorBase::FillTrackRepVector()
 map<string, int> TAGFselectorBase::CountParticleGeneratedAndVisible()
 {
 
-	if(m_debug > 0) 
+	if(FootDebugLevel(1)) 
 		cout << "TAGFselector::CountParticleGeneratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 
 	map<string, int> genCount_vector;
@@ -212,7 +210,7 @@ map<string, int> TAGFselectorBase::CountParticleGeneratedAndVisible()
 
 		//CAREFUL HERE!!!!!!!!! FOOT TAGrecoManager file does not have Hydrogen and Helium isotopes!!!! Also think about throwing an error here...
 		if ( !TAGrecoManager::GetPar()->Find_MCParticle( pdgName ) ) 	{
-			if(m_debug > 0)  cout << "Found Particle not in MC list: " << pdgName << " num=" << iPart << "\n";
+			if(FootDebugLevel(1))  cout << "Found Particle not in MC list: " << pdgName << " num=" << iPart << "\n";
 			continue;
 
 		}
@@ -285,11 +283,8 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	}
 
 	//Cycle on FitPlanes
-	if(m_debug > 0) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
 	{
-		if(m_debug > 0) cout << "Plane::" << iPlane << "\n";
-
 		//Skip plane if no hit was found
 		if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()){continue;}
 
@@ -409,7 +404,7 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	}
 
 	//Print in debug mode
-	if( m_debug > 1)// || (m_eventType != 1 && m_eventType != 5))
+	if( FootDebugLevel(2))// || (m_eventType != 1 && m_eventType != 5))
 	{
 		cout << "EVENT::" << gTAGroot->CurrentEventId().EventNumber() << "\tTYPE::" << m_eventType << endl;
 		for(auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
@@ -464,7 +459,7 @@ void TAGFselectorBase::FillTrackCategoryMap()
 		int MeasId = itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
 		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" && m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
 		{
-			if(m_debug > 0)
+			if(FootDebugLevel(1))
 				Info("FillTrackCategoryMap()", "Track candidate %d no TW point!", itTrack->first);
 		}
 
@@ -476,7 +471,7 @@ void TAGFselectorBase::FillTrackCategoryMap()
 			measMass = round( itTrack->second->getCardinalRep()->getMass( (itTrack->second)->getFittedState(-1) )/m_AMU );
 
 
-		if ( m_debug > 1 )	Info("FillTrackCategoryMap()", "Track with measured charge %d and mass %d!!", measCharge, measMass);
+		if ( FootDebugLevel(2) )	Info("FillTrackCategoryMap()", "Track with measured charge %d and mass %d!!", measCharge, measMass);
 
 		outName = GetParticleNameFromCharge(measCharge);
 
@@ -602,35 +597,60 @@ int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
 //!
 //! \param[in] trackToFit Pointer to track to extrapolate
 //! \param[in] whichPlane Index of the FitPlane where to extrapolate the track
-//! \param[in] repId Index of the track representation to use for the extrapolation
+//! \param[in,out] mom reference to vector for storing particle momentum at extrapolated state
+//! \param[in] backExtrap Flag that signals if the extrapolation has to be performed in the backward direction (default = false)
+//! \param[in] repId Index of the track representation to use for the extrapolation (default = -1, i.e. cardinal representation)
 //! \return Extrapolated position vector in the FitPlane local reference frame
-TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId)
+TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, TVector3& mom, bool backExtrap, int repId)
 {
 
 	//+++++++++++++++++++++++++++++++++++++++
 	if(repId == -1)
 		repId = trackToFit->getCardinalRepId();
-	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(-1, trackToFit->getTrackRep(repId));
+	
+	// Get first point if extrapolation goes backward or last point if forward
+	int pointId = backExtrap ? 1 : -1;
+	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(pointId, trackToFit->getTrackRep(repId));
 	if (tp == nullptr) {
 		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
-	if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasForwardUpdate() ) == false) {
-		Error("ExtrapolateToOuterTracker()", "TrackPoint has no forward update");
+	//Get fitter info
+	KalmanFitterInfo* fitInfo = static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)));
+
+	// Check if point has backward/forward update
+	bool hasUpdate = backExtrap ? fitInfo->hasBackwardUpdate() : fitInfo->hasForwardUpdate();
+	if ( !hasUpdate ) {
+		string dir = backExtrap ? "backward" : "forward";
+		Error("ExtrapolateToOuterTracker()", "TrackPoint has no %s update", dir.c_str());
 		exit(42);
 	}
 
-	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	KalmanFittedStateOnPlane kfTest;
-	kfTest = *(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep( repId )))->getForwardUpdate());
+	//RZ: Get update of fitted state and extrpolate to the plane
+	KalmanFittedStateOnPlane* stateToCopy = backExtrap ? fitInfo->getBackwardUpdate() : fitInfo->getForwardUpdate();
+	KalmanFittedStateOnPlane kfTest = *stateToCopy;
 	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
 
 	TVector3 posi((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());
+	mom = kfTest.getMom();
 
 	return posi;
 }
 
+
+//! \brief Extrapolate a track to a GenFit FitPlane
+//!
+//! Function overload for when particle momentum at extrapolated state is not needed in output
+//! \param[in] trackToFit Pointer to track to extrapolate
+//! \param[in] whichPlane Index of the FitPlane where to extrapolate the track
+//! \param[in] backExtrap Flag that signals if the extrapolation has to be performed in the backward direction (default = false)
+//! \param[in] repId Index of the track representation to use for the extrapolation
+//! \return Extrapolated position vector in the FitPlane local reference frame
+TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, bool backExtrap, int repId)
+{
+	TVector3 mom;
+	return ExtrapolateToOuterTracker(trackToFit, whichPlane, mom, backExtrap, repId);
+}
 
 
 //----------------------------------------------------------------------------------------------------
@@ -669,7 +689,7 @@ bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::
 
 	// // test the total number of hits ->  speed up the test
 	// if ( (int)((*element).second.size()) != testHitNumberLimit ) {
-	// 	if ( m_debug > 0 )		cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << "\n";
+	// 	if ( FootDebugLevel(1) )		cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << "\n";
 	// 	return false;
 	// }
 
@@ -687,13 +707,13 @@ bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::
 			if ( planeId == m_SensorIDMap->GetFitPlaneTW() )	nHitTW++;
 	}
 
-	if ( m_debug > 0 )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<"\n";
+	if ( FootDebugLevel(1) )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<"\n";
 
 	// test the num of hits per each detector
 	// if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD != testHit_MSD ) {
 
 	if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD < 4 ){
-	    if ( m_debug > 0 ) {
+	    if ( FootDebugLevel(1) ) {
 		    cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : " <<
 				    "\n\n\t nVTX = " << nHitVT << "  Nexp = " << testHit_VT <<
 				    "\n\n\t nITR = " << nHitIT << "  Nexp = " << testHit_IT <<
@@ -765,4 +785,27 @@ string TAGFselectorBase::GetParticleNameFromCharge(int ch)
 	}
 
 	return name;
+}
+
+
+//! \brief List the MC particle Ids of a hit (function used for debug purposes!)
+//!
+//! \param[in] HitId Global Id of the hit
+//! \return MC particle Ids of the hit as a string
+string TAGFselectorBase::ListMCparticlesOfHit(int HitId)
+{
+	TString output = "";
+	if( !m_measParticleMC_collection || m_measParticleMC_collection->size() < 1 || m_measParticleMC_collection->find(HitId) == m_measParticleMC_collection->end() )
+	{
+		Info("ListMCparticlesOfHit()", "Problem in function for hit %d", HitId);
+		return output.Data();
+	}
+	
+	vector <int> mcIds = m_measParticleMC_collection->at(HitId);
+	output += "[";
+	for (auto id : mcIds)
+		output += Form("%d,",id);
+	output.Remove(TString::kTrailing, ',');
+	output+="]";
+	return output.Data();
 }

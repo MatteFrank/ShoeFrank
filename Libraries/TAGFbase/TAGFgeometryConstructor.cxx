@@ -62,7 +62,7 @@ void TAGFgeometryConstructor::IncludeDetectors()
 			*m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
 		}
 	}
-	if ( FootDebugLevel(1) )	cout << "TAGFgeometryConstructor::IncludeDetectors() -- Detector systems for Kalman:  " << *m_systemsON << endl;
+	if ( FootDebugLevel(2) )	cout << "TAGFgeometryConstructor::IncludeDetectors() -- Detector systems for Kalman:  " << *m_systemsON << endl;
 
 	// print-out of the particle hypothesis used for the fit
 	cout << "TAGactKFitter::IncludeDetectors() -- TAGrecoManager::GetPar()->MCParticles()";
@@ -77,7 +77,7 @@ void TAGFgeometryConstructor::IncludeDetectors()
 void TAGFgeometryConstructor::CreateGeometry()
 {
 
-	if( FootDebugLevel(1) )	cout << "TAGFgeometryConstructor::CreateGeometry() -- START" << endl;
+	if( FootDebugLevel(2) )	cout << "TAGFgeometryConstructor::CreateGeometry() -- START" << endl;
 
 	// take geometry objects
 	if (TAGrecoManager::GetPar()->IncludeST())

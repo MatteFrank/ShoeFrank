@@ -2680,7 +2680,7 @@ void GlobalRecoAna::AlignmentStudy(){
       }
       else if( !m_IsMC && !vtxPD->IsBmMatched() )
       {
-        if(m_debug > 0)
+        if(FootDebugLevel(0))
         {
           Info("CategorizeVT()", "In event %d: vertex %d found but not matched with BM tracks; Skipping...",gTAGroot->CurrentEventId().EventNumber(), iVtx);
         }

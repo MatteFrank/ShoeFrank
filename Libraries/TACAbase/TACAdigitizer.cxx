@@ -30,7 +30,8 @@ TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw, TACAparCal* p_parcal)
    fResPar1(1.03392e+02),
    fResErrPar1(4.27932e+00),
    fResPar2(3.90060e-01),
-   fResErrPar2(4.94583e-03)
+   fResErrPar2(4.94583e-03),
+   fCurrentHit(0x0)
 {
    SetFunctions();
    SetParFunction();

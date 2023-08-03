@@ -19,7 +19,7 @@ public:
 
 	TAGFselectorStandard();
 
-	virtual void	Categorize() override;
+	virtual void	Categorize();
 
 protected:
 
@@ -30,6 +30,7 @@ protected:
 	virtual void	SetTrackSeedNoMSD();
 	virtual void	CategorizeTW();
 
+	ClassDef(TAGFselectorStandard,0);
 };
 
 #endif

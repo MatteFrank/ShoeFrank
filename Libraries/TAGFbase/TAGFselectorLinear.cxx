@@ -29,31 +29,31 @@ void TAGFselectorLinear::Categorize( ) {
 		Error("Categorize_dataLike()", "Linear selection algorithm currently not supported without Vertex!"), exit(42);
 	else
 	{
-		if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
+		if( FootDebugLevel(2) ) cout << "******* START OF VT CYCLE *********\n";
 		CategorizeVT();
-		if( m_debug > 1 )cout << "******** END OF VT CYCLE **********\n";
+		if( FootDebugLevel(2) )cout << "******** END OF VT CYCLE **********\n";
 	}
 
 	if( m_systemsON.Contains("IT") )
 	{
-		if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
+		if( FootDebugLevel(2) ) cout << "******* START OF IT CYCLE *********\n";
 		CategorizeIT();
-		if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
+		if( FootDebugLevel(2) ) cout << "******** END OF IT CYCLE **********\n";
 	}
 
 	
 	if( m_systemsON.Contains("MSD") )
 	{
-		if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
+		if( FootDebugLevel(2) ) cout << "******* START OF MSD CYCLE *********\n";
 		CategorizeMSD();
-		if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
+		if( FootDebugLevel(2) ) cout << "******** END OF MSD CYCLE **********\n";
 	}
 
 	if( m_systemsON.Contains("TW") )
 	{
-		if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
+		if( FootDebugLevel(2) ) cout << "******* START OF TW CYCLE *********\n";
 		CategorizeTW();
-		if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
+		if( FootDebugLevel(2) ) cout << "******** END OF TW CYCLE **********\n";
 	}
 
 	double dPVal = 1.E-3; // convergence criterion
@@ -117,7 +117,7 @@ void TAGFselectorLinear::CategorizeMSD()
 		TVector3 pos = TVector3( firstTrackMeas->getRawHitCoords()(0), firstTrackMeas->getRawHitCoords()(1), 0);
 		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
 		
-		if(m_debug > 0)
+		if(FootDebugLevel(1))
 		{
 			cout << "***POS SEED***\nVTX: "; pos.Print();
 		}
@@ -132,7 +132,7 @@ void TAGFselectorLinear::CategorizeMSD()
 			}
 			//Skip if no measurement found
 			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
-				if(m_debug > 0) cout << "TAGFselectorLinear::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
+				if(FootDebugLevel(1)) cout << "TAGFselectorLinear::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
 				continue;
 			}
 
@@ -169,7 +169,7 @@ void TAGFselectorLinear::CategorizeMSD()
 
 				// find hit at minimum distance
 				if ( distanceFromHit < minDistFromHit ){
-					if(m_debug > 0) cout << "MSDcheck\tPlane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << "\n";
+					if(FootDebugLevel(1)) cout << "MSDcheck\tPlane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << "\n";
 					minDistFromHit = distanceFromHit;
 					indexOfMinY = count;
 				}
@@ -203,7 +203,7 @@ void TAGFselectorLinear::CategorizeTW()
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
 	//RZ -> See if this check can be done outside this cycle... it seems a much more general skip
 	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-		if(m_debug > 0) cout << "TAGFselectorLinear::CategorizeTW() -- no measurement found in TW layer\n";
+		if(FootDebugLevel(1)) cout << "TAGFselectorLinear::CategorizeTW() -- no measurement found in TW layer\n";
 		return;
 	}
 
@@ -218,7 +218,7 @@ void TAGFselectorLinear::CategorizeTW()
 		TVector3 guessOnTW =  m_GeoTrafo->FromGlobalToTWLocal( pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z()) );
 		// guessOnTW = m_TW_geo->Detector2Sensor( 0, guessOnTW );
 
-		if( m_debug > 1) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
+		if( FootDebugLevel(2)) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
 
 		//calculate distance TW point
 		double TWdistance = m_TWtolerance;
@@ -233,7 +233,7 @@ void TAGFselectorLinear::CategorizeTW()
 			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
 					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );
 			
-			if( m_debug > 0) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< "\n";
+			if( FootDebugLevel(1)) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< "\n";
 
 			if ( distanceFromHit < TWdistance )	{
 				double distInX = guessOnTW.X() - (*it)->getRawHitCoords()(0);

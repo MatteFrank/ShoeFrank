@@ -71,7 +71,7 @@
 using namespace std;
 using namespace genfit;
 
-class TAGFselectorBase
+class TAGFselectorBase : public TAGobject
 {
 
 public:
@@ -93,7 +93,8 @@ public:
 	map<string, int>	CountParticleGeneratedAndVisible();
 	void				FillPlaneOccupancy(TH2I** h_PlaneOccupancy);
 	string				GetParticleNameFromCharge(int ch);
-	virtual TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId = -1);
+	TVector3			ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, TVector3& mom, bool backExtrap = false, int repId = -1);
+	TVector3			ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, bool backExtrap = false, int repId = -1);
 
 protected:
 	void		CheckPlaneOccupancy();
@@ -104,6 +105,7 @@ protected:
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV);
 
 	void		FillTrackCategoryMap();
+	string		ListMCparticlesOfHit(int HitId);
 
 	int m_eventType;
 	vector<int>* m_chargeVect;								///< Vector with charge values seen by TW -> used for track representation declaration
@@ -130,7 +132,6 @@ protected:
 	TAMCntuPart* m_McNtuEve;								///< MC eve for efficiency/quality checks
 
 	Bool_t m_IsMC; 											///< flag for MC variables
-	int m_debug;											///< Global debug value
 	TString m_systemsON;									///< String w/ systems on in the campaign
 
 	float m_VTtolerance;									///< VT selector extrapolation tolerance 
@@ -143,6 +144,8 @@ protected:
 	uint *m_singleVertexCounter;							///< Counter for single vertex events
 	uint *m_noVTtrackletEvents;								///< Counter for events w/ no valid tracklet
 	uint *m_noTWpointEvents;								///< Counter for events w/ no valid TW point
+
+	ClassDef(TAGFselectorBase,0);
 };
 
 #endif
