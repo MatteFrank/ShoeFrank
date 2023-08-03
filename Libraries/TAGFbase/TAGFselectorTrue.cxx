@@ -96,7 +96,7 @@ void TAGFselectorTrue::Categorize( ) {
 				//Set a unique ID for the particle that will be used in the map of Genfit tracks to fit
 				outName += Form("_%d_%d", int(round(mass/m_AMU)), *itTrackMC);
 
-				if ( FootDebugLevel(1) ) cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<< *itTrackMC << "  charge="<<charge << "  mass="<<mass<< "\n";
+				if ( FootDebugLevel(1) ) cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<< *itTrackMC << "  charge="<<charge << "  mass="<<mass<< "  p=" << momV.Mag() <<"\n";
 
 				if(m_trackCategoryMap->find(outName) == m_trackCategoryMap->end())
 				{

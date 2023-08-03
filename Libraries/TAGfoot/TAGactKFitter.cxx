@@ -453,7 +453,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 		trackCounter++;
 
 	    // check of fitTrack filling
-	    if ( FootDebugLevel(1) ) {
+	    if ( FootDebugLevel(2) ) {
 		    cout << " check of fitTrack filling " << endl;
 		    for (unsigned int iMeas = 0; iMeas < fitTrack->getNumPointsWithMeasurement(); ++iMeas){
 
@@ -573,6 +573,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* GFSelector) {
 			cout << "Event::" << (long)gTAGroot->CurrentEventId().EventNumber() << " display->addEvent size " << NconvTracks << " at position " << m_eventDisplayCounter << "\n";
 		m_eventDisplayCounter++;
 		display->addEvent(m_vectorConvergedTrack);
+		// cout << "hmmmmmmmmmmmmmmmmm" << endl;
 	}
 	m_vectorConvergedTrack.clear();
 
@@ -862,7 +863,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			if(FootDebugLevel(1))
 			{
 				cout << "\n\nTAGactKFitter::RecordTrackInfo:: True Pos z = "<< mcPos.z() << "     p = "<< mcMom.Mag() << "  " << fitTrackName<< endl;
-				cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos = "<< recoPos_target.Mag() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
+				cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos z= "<< recoPos_target.z() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
 			}
 
 			m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
@@ -947,7 +948,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			//TW projection -> try statement needed to avoid tracks dying way before TW
 			try 
 			{
-				TVector3 guessOnTW = ((TAGFselectorBase*) m_dummySelector)->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
+				TVector3 guessOnTW = m_dummySelector->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTW());
 				
 				h_TWprojVsTheta[index]->Fill(guessOnTW.X(), guessOnTW.Y());
 				h_TWprojVsThetaTot->Fill(guessOnTW.X(), guessOnTW.Y());

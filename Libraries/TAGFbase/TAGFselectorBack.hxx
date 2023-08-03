@@ -28,7 +28,7 @@ private:
 	void		CategorizeIT_back();
 	void		CategorizeVT_back();
 
-	TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, TVector3& mom, int repId = -1);
+	// TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, TVector3& mom, int repId = -1);
 
 	ClassDef(TAGFselectorBack,0);
 };

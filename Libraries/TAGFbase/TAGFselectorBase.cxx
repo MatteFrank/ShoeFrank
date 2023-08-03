@@ -283,11 +283,8 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	}
 
 	//Cycle on FitPlanes
-	if(FootDebugLevel(1)) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
 	{
-		if(FootDebugLevel(1)) cout << "Plane::" << iPlane << "\n";
-
 		//Skip plane if no hit was found
 		if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()){continue;}
 
@@ -600,35 +597,60 @@ int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
 //!
 //! \param[in] trackToFit Pointer to track to extrapolate
 //! \param[in] whichPlane Index of the FitPlane where to extrapolate the track
-//! \param[in] repId Index of the track representation to use for the extrapolation
+//! \param[in,out] mom reference to vector for storing particle momentum at extrapolated state
+//! \param[in] backExtrap Flag that signals if the extrapolation has to be performed in the backward direction (default = false)
+//! \param[in] repId Index of the track representation to use for the extrapolation (default = -1, i.e. cardinal representation)
 //! \return Extrapolated position vector in the FitPlane local reference frame
-TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId)
+TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, TVector3& mom, bool backExtrap, int repId)
 {
 
 	//+++++++++++++++++++++++++++++++++++++++
 	if(repId == -1)
 		repId = trackToFit->getCardinalRepId();
-	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(-1, trackToFit->getTrackRep(repId));
+	
+	// Get first point if extrapolation goes backward or last point if forward
+	int pointId = backExtrap ? 1 : -1;
+	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(pointId, trackToFit->getTrackRep(repId));
 	if (tp == nullptr) {
 		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
-	if ( !(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasForwardUpdate() ) ) {
-		Error("ExtrapolateToOuterTracker()", "TrackPoint has no forward update");
+	//Get fitter info
+	KalmanFitterInfo* fitInfo = static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)));
+
+	// Check if point has backward/forward update
+	bool hasUpdate = backExtrap ? fitInfo->hasBackwardUpdate() : fitInfo->hasForwardUpdate();
+	if ( !hasUpdate ) {
+		string dir = backExtrap ? "backward" : "forward";
+		Error("ExtrapolateToOuterTracker()", "TrackPoint has no %s update", dir.c_str());
 		exit(42);
 	}
 
-	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	KalmanFittedStateOnPlane kfTest;
-	kfTest = *(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep( repId )))->getForwardUpdate());
+	//RZ: Get update of fitted state and extrpolate to the plane
+	KalmanFittedStateOnPlane* stateToCopy = backExtrap ? fitInfo->getBackwardUpdate() : fitInfo->getForwardUpdate();
+	KalmanFittedStateOnPlane kfTest = *stateToCopy;
 	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
 
 	TVector3 posi((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());
+	mom = kfTest.getMom();
 
 	return posi;
 }
 
+
+//! \brief Extrapolate a track to a GenFit FitPlane
+//!
+//! Function overload for when particle momentum at extrapolated state is not needed in output
+//! \param[in] trackToFit Pointer to track to extrapolate
+//! \param[in] whichPlane Index of the FitPlane where to extrapolate the track
+//! \param[in] backExtrap Flag that signals if the extrapolation has to be performed in the backward direction (default = false)
+//! \param[in] repId Index of the track representation to use for the extrapolation
+//! \return Extrapolated position vector in the FitPlane local reference frame
+TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, bool backExtrap, int repId)
+{
+	TVector3 mom;
+	return ExtrapolateToOuterTracker(trackToFit, whichPlane, mom, backExtrap, repId);
+}
 
 
 //----------------------------------------------------------------------------------------------------
@@ -763,4 +785,27 @@ string TAGFselectorBase::GetParticleNameFromCharge(int ch)
 	}
 
 	return name;
+}
+
+
+//! \brief List the MC particle Ids of a hit (function used for debug purposes!)
+//!
+//! \param[in] HitId Global Id of the hit
+//! \return MC particle Ids of the hit as a string
+string TAGFselectorBase::ListMCparticlesOfHit(int HitId)
+{
+	TString output = "";
+	if( !m_measParticleMC_collection || m_measParticleMC_collection->size() < 1 || m_measParticleMC_collection->find(HitId) == m_measParticleMC_collection->end() )
+	{
+		Info("ListMCparticlesOfHit()", "Problem in function for hit %d", HitId);
+		return output.Data();
+	}
+	
+	vector <int> mcIds = m_measParticleMC_collection->at(HitId);
+	output += "[";
+	for (auto id : mcIds)
+		output += Form("%d,",id);
+	output.Remove(TString::kTrailing, ',');
+	output+="]";
+	return output.Data();
 }
