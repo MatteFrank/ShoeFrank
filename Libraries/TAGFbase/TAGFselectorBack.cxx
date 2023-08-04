@@ -400,13 +400,18 @@ void TAGFselectorBack::CategorizeIT_back()
 				(itTrack->second)->setStateSeed(guessOnIT,momGuessOnIT);
 				m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
 			
+				if( itTrack->second->getFitStatus(itTrack->second->getCardinalRep())->getNFailedPoints() != 0 )
+				{
+					tracksToRemove.push_back(itTrack->first);
+					break;
+				}
 				ITpointsAdded++;
 			}
 
 		} // end loop over z
 
 		//Save tracks w/ no point in IT in order to delete them
-		if(ITpointsAdded == 0)
+		if(ITpointsAdded == 0 && std::find(tracksToRemove.begin(), tracksToRemove.end(), itTrack->first) == tracksToRemove.end())
 			tracksToRemove.push_back(itTrack->first);
 	}	// end loop on GF Track candidates
 
@@ -438,6 +443,7 @@ void TAGFselectorBack::CategorizeVT_back()
 	KalmanFitter *m_fitter_extrapolation = new KalmanFitter(1);
 	m_fitter_extrapolation->setMaxIterations(1);
 
+	vector<int> tracksToRemove;
 	for(auto itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
 	{
 		m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
@@ -508,6 +514,11 @@ void TAGFselectorBack::CategorizeVT_back()
 				// guessOnVT.Print(); momGuessOnVT.Print();
 				(itTrack->second)->setStateSeed(guessOnVT,momGuessOnVT);
 				m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
+				if( itTrack->second->getFitStatus(itTrack->second->getCardinalRep())->getNFailedPoints() != 0 )
+				{
+					tracksToRemove.push_back(itTrack->first);
+					break;
+				}
 
 			}
 		}
