@@ -687,7 +687,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	if(fitCh < 0 || fitCh >  m_GFgeometry->GetGparGeo()->GetBeamPar().AtomicNumber ) return;
 
 	//Vertexing for track length
-	if( FootDebugLevel(2))	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
+	if( FootDebugLevel(2))	cout << "Track length before vertexing::" << track->getKalmanFitStatus(track->getCardinalRep())->getTrackLen() << endl;
 
 	//Extrapolate to VTX
 	//RZ: Issue!!!!! When trueparticle is active this extrapolation breaks
@@ -708,7 +708,16 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 
 	StateOnPlane state_target_point = track->getFittedState(0);
-	double extL_Tgt = track->getCardinalRep()->extrapolateToPoint( state_target_point, targetMeas );
+	double extL_Tgt = 0;
+	try
+	{
+		extL_Tgt = track->getCardinalRep()->extrapolateToPoint( state_target_point, targetMeas );
+	}
+	catch(const genfit::Exception& e)
+	{
+		std::cerr << e.what() << "\n";
+		state_target_point = track->getFittedState(0);
+	}
 
 	if(FootDebugLevel(2))
 	{
@@ -716,7 +725,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		cout << "Extrap to point state::"; state_target_point.Print();
 		cout << "Distance point-vtx::" << (state_target_point.getPos() - targetMeas).Mag() << endl;
 		cout << "Extrapolation length::" << extL_Tgt << endl;
-		cout << "Track length after vertexing::" << fabs(extL_Tgt) + track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
+		cout << "Track length after vertexing::" << fabs(extL_Tgt) + track->getKalmanFitStatus(track->getCardinalRep())->getTrackLen() << endl;
 	}
 	//End VTX; 
 
@@ -835,6 +844,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//MC additional variables if running on simulations
 	int trackMC_id = -1;
 	double trackQuality = -1;
+	int mcCharge;
 	if ( m_IsMC ) {
 
 		TVector3 mcMom, mcPos;
@@ -850,7 +860,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			else
 				mcMom = m_trueMomentumAtTgt[trackMC_id];
 			mcPos = particle->GetInitPos();
-			int mcCharge = particle->GetCharge();
+			mcCharge = particle->GetCharge();
 
 			if( ValidHistogram() )
 			{
@@ -1006,6 +1016,24 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_momentum->Fill( recoMom_target.Mag() );
 		h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
 
+		if( shoeOutTrack->HasTwPoint() )
+		{
+			int pointID = m_SensorIDMap->GetHitIDFromMeasID(track->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId());
+			float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( pointID )->GetMeanTof();
+			float var = m_BeamEnergy/m_AMU;
+			float beam_speed = TAGgeoTrafo::GetLightVelocity()*TMath::Sqrt(var*(var + 2))/(var + 1);
+			TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
+			
+			float beta = shoeOutTrack->GetLength()/(TOF*TAGgeoTrafo::GetLightVelocity());
+			// recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetTwChargeZ() );
+			float recomass = recoMom_target.Mag()*sqrt(1 - pow(beta,2))/(beta*m_AMU);
+			// cout << "TOF::" << TOF << " "
+
+			h_RecoMass.at(0)->Fill( recomass );
+			h_RecoMass.at( shoeOutTrack->GetTwChargeZ() )->Fill( recomass );
+			// h_RecoMass.at( mcCharge )->Fill( recomass );
+		}
+		
 		//Fill residual and pull plots
 		std::pair<string, std::pair<int,int>> sensId;
 		int cluster_size;
@@ -1581,6 +1609,14 @@ void TAGactKFitter::CreateHistogram()	{
 
 	h_momentum = new TH1F("h_momentum", "h_momentum", 200, 0., 17.);
 	AddHistogram(h_momentum);
+
+	h_RecoMass.push_back( new TH1F("h_RecoMass", "h_RecoMass;Mass [A.M.U.];Entries", 300, 0, 17) );
+	AddHistogram(h_RecoMass[0]);
+	for( int iZ = 1; iZ <= 8; ++iZ )
+	{
+		h_RecoMass.push_back( new TH1F(Form("h_RecoMass_Z%d",iZ), Form("h_RecoMass_Z%d;Mass [A.M.U.];Entries",iZ), 300, 0, 17) );
+		AddHistogram(h_RecoMass[h_RecoMass.size() - 1]);
+	}
 
 	h_TGprojVsThetaTot = new TH2D("TGproj_ThetaTot","TGproj_ThetaTot;X_proj [cm];Y_proj [cm]",400,-5,5,400,-5,5);
 	AddHistogram(h_TGprojVsThetaTot);

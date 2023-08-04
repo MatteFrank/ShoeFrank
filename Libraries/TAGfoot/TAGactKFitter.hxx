@@ -240,6 +240,8 @@ private:
 	vector<TH1F*> h_momentum_reco;						///< Vector of histograms for Fitted momentum moduel at the TG
 	vector<TH1F*> h_ratio_reco_true;					///< Vector of histograms for Fitted/MC momenutm module at the TG
 
+	vector<TH1F*> h_RecoMass;
+
 	TH2D* h_TWprojVsThetaTot;							///< X-Y projection of fitted global tracks @ TW -- histo
 	TH2D* h_TWprojVsThetaTotYesTW;						///< X-Y projection of fitted global tracks with a TW point @ TW -- histo
 	TH2D* h_TWprojVsThetaTotNoTW;						///< X-Y projection of fitted global tracks without a TW point @ TW -- histo

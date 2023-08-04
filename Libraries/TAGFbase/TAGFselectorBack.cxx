@@ -209,8 +209,7 @@ void TAGFselectorBack::BackTracklets()
 						{
 							int iCoord = static_cast<PlanarMeasurement*>(hitToAdd)->getYview() ? 1 : 0;
 							std::pair<string, std::pair<int, int>> sensId = make_pair("MSD",make_pair(iSensor,iCoord));
-							h_extrapDist[sensId]->Fill(guessOnMSD(iCoord) - hitToAdd->getRawHitCoords()(0));
-
+							h_extrapDist[sensId]->Fill(guessOnMSD.X() - hitToAdd->getRawHitCoords()(0));
 						}
 					}
 				} // end loop MSD planes
