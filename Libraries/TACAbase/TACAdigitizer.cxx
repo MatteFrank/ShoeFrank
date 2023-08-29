@@ -17,6 +17,8 @@
  \brief digitizer for calorimeter hits **
  */
 
+Float_t TACAdigitizer::emin_res = 41; //MeV
+
 // --------------------------------------------------------------------------------------
 //! Constructor
 //!
@@ -79,7 +81,12 @@ Double_t TACAdigitizer::ResEnergy(Double_t* x, Double_t* par)
 //! \param[in] edep energy loss
 Float_t TACAdigitizer::GetResEnergy(Float_t edep)
 {
-   return fDeResE->Eval(edep)*edep;
+   Float_t width;
+
+    if(edep<emin_res) width =  fDeResE->Eval(emin_res)*edep;
+    else     width = fDeResE->Eval(edep)*edep;
+
+   return width;
 }
 
 //------------------------------------------+-----------------------------------

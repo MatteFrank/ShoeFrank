@@ -55,6 +55,9 @@ private:
    TACAhit*      fCurrentHit;   ///< current hit
    map<int, TACAhit*> fMap;     //! map for pilepup
 
+private:
+   static Float_t emin_res;  ///< default threshold value  
+
 };
 #endif
 
