@@ -239,9 +239,11 @@ void TAGFselectorBack::BackTracklets()
 					
 					testTrack->setStateSeed(pos, mom);
 					m_fitter_extrapolation->processTrackWithRep(testTrack, testTrack->getCardinalRep() );
+					if( testTrack->getFitStatus(testTrack->getCardinalRep())->getNFailedPoints() != 0 )
+						throw genfit::Exception("Fit failed for backtracklet!", __LINE__, __FILE__);
+
 					TVector3 TWguessGlb = testTrack->getFittedState(-1).getPos();
 					TVector2 TWguessLoc = m_SensorIDMap->GetFitPlane( m_SensorIDMap->GetFitPlaneTW() )->LabToPlane( TWguessGlb );
-
 					TVector2 TWcoords(xTW, yTW);
 
 					if( FootDebugLevel(2) )
@@ -451,19 +453,21 @@ void TAGFselectorBack::CategorizeVT_back()
 
 		for(int VTplane = maxVTplane; VTplane != minVTplane-1; VTplane--)
 		{
-			TVector3 momGuessOnVT;
-			TVector3 guessOnVT = ExtrapolateToOuterTracker(itTrack->second, VTplane, momGuessOnVT, true);
-
-			int indexOfMinDist = -1;
-			int count = 0;
-			double minDist = m_VTtolerance;
-
+			//Skip if there is no measurement
 			if (m_allHitMeas->find(VTplane) == m_allHitMeas->end())
 			{
 				if (FootDebugLevel(1))
 					Info("CategorizeVT_back()", "No measurement found in VTplane %d", VTplane);
 				continue;
 			}
+
+			// Extrapolate
+			TVector3 momGuessOnVT;
+			TVector3 guessOnVT = ExtrapolateToOuterTracker(itTrack->second, VTplane, momGuessOnVT, true);
+
+			int indexOfMinDist = -1;
+			int count = 0;
+			double minDist = m_VTtolerance;
 
 			for (vector<AbsMeasurement *>::iterator it = m_allHitMeas->at(VTplane).begin(); it != m_allHitMeas->at(VTplane).end(); ++it)
 			{
@@ -476,7 +480,6 @@ void TAGFselectorBack::CategorizeVT_back()
 
 				if( FootDebugLevel(2) )
 					cout << "Hit::" << (*it)->getHitId() << " " << ListMCparticlesOfHit( (*it)->getHitId() ) << "\tguessX::" << guessOnVT.X() << "\trawHitX::" << (*it)->getRawHitCoords()(0) << "\tdistX::" << fabs(guessOnVT.X() - (*it)->getRawHitCoords()(0)) << "\tguessY::" << guessOnVT.Y() << "\trawHitY::" << (*it)->getRawHitCoords()(1) << "\tdistY::" << fabs(guessOnVT.Y() - (*it)->getRawHitCoords()(1)) << "\tdist::" << distanceFromHit<<endl;
-
 
 				// find hit at minimum distance
 				if (distanceFromHit < minDist)
