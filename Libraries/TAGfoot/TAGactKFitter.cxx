@@ -1025,7 +1025,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
 			
 			float beta = shoeOutTrack->GetLength()/(TOF*TAGgeoTrafo::GetLightVelocity());
-			// recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetTwChargeZ() );
+			// recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetFitChargeZ() );
 			float recomass = recoMom_target.Mag()*sqrt(1 - pow(beta,2))/(beta*m_AMU);
 			// cout << "TOF::" << TOF << " "
 
@@ -1331,10 +1331,12 @@ void TAGactKFitter::PrintPurity() {
 		totalDen+=nn;
 
 		h_trackMatched->SetBinContent(k, kk);
+		h_trackMatched->SetBinError(k, TMath::Sqrt(kk));
 
 		h_purity->SetBinContent(k, eff);
 		h_purity->SetBinError(k, sqrt(variance));
 
+		h_trackMatched->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 		h_purity->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
@@ -1379,11 +1381,15 @@ void TAGactKFitter::PrintEfficiency() {
 		totalDen+=nn;
 
 		h_trackConverged->SetBinContent(k, kk);
+		h_trackConverged->SetBinError(k, TMath::Sqrt(kk));
 		h_trackSelected->SetBinContent(k, nn);
+		h_trackSelected->SetBinError(k, TMath::Sqrt(nn));
 
 		h_trackEfficiency->SetBinContent(k, eff);
 		h_trackEfficiency->SetBinError(k, sqrt(variance));
 
+		h_trackConverged->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
+		h_trackSelected->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 		h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
@@ -1610,11 +1616,11 @@ void TAGactKFitter::CreateHistogram()	{
 	h_momentum = new TH1F("h_momentum", "h_momentum", 200, 0., 17.);
 	AddHistogram(h_momentum);
 
-	h_RecoMass.push_back( new TH1F("h_RecoMass", "h_RecoMass;Mass [A.M.U.];Entries", 300, 0, 17) );
+	h_RecoMass.push_back( new TH1F("h_RecoMass", "h_RecoMass;Mass [A.M.U.];Entries", 400, 0, 20) );
 	AddHistogram(h_RecoMass[0]);
 	for( int iZ = 1; iZ <= 8; ++iZ )
 	{
-		h_RecoMass.push_back( new TH1F(Form("h_RecoMass_Z%d",iZ), Form("h_RecoMass_Z%d;Mass [A.M.U.];Entries",iZ), 300, 0, 17) );
+		h_RecoMass.push_back( new TH1F(Form("h_RecoMass_Z%d",iZ), Form("h_RecoMass_Z%d;Mass [A.M.U.];Entries",iZ), 400, 0, 20) );
 		AddHistogram(h_RecoMass[h_RecoMass.size() - 1]);
 	}
 
