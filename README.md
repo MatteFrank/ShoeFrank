@@ -1,11 +1,11 @@
 # SHOE (Software for Hadrontherapy Optimization Experiment)
-
+<img src="docs/FOOT_logo.png" align="right" width="200" hspace="100">
 This is the repository for the official simulation and analysis software of the FOOT  experiment.
 
 Useful links:
 - FOOT [webpage](https://web.infn.it/foot/en/home/)
 - SHOE [TWiki](http://arpg-serv.ing2.uniroma1.it/twiki/bin/view/Main/FOOTSoftware) containing also the installation guide
-- SHOE [Doxygen manual](http://arpg-serv.ing2.uniroma1.it/FOOTshoe/shoe/html/index.html) with classes and methods documentation
+- SHOE [Doxygen manual](https://asarti.baltig-pages.infn.it/shoe/) with classes and methods documentation
 - FOOT [Indico page](https://agenda.infn.it/category/903/):
   - FOOT [Analysis and Reconstruction Meeting](https://agenda.infn.it/category/1858/), status and update meeting about SHOE 
   - FOOT [Physics Meeting](https://agenda.infn.it/category/1375/), report on ongoing physics analysis
