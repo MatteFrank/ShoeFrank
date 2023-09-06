@@ -185,6 +185,9 @@ private:
 	TH1F* h_purity;										///< Purity -- histo
 	TH1F* h_trackEfficiency;							///< Tracking efficiency -- histo
 	TH1F* h_trackQuality;								///< Track quality -- histo
+	TH2F* h_trackQualityVsChi2;							///< Track quality vs chi2 -- histo
+	TH2F* h_trackQualityVsNhits;						///< Track quality vs N hits in the track -- histo
+	std::vector<TH1F*> h_trackQuality_Z;				///< Track quality for each Z -- histo
 
 	TH1F* h_trackMC_true_id;							///< MC true particle Id -- histo
 	TH1F* h_trackMC_reco_id;							///< Fitted particle Id -- histo
@@ -195,6 +198,7 @@ private:
 	TH1F* h_nMeas;										///< Number of measurements per track -- histo
 	TH1F* h_mass;										///< Fitted mass -- histo
 	TH1F* h_chi2;										///< Chi2 -- histo
+	std::vector<TH1F*> h_chi2_Z;						///< Chi2 as a function of Z -- histo
 	TH1F* h_pVal;										///< P-value -- histo
 
 	TH1F* h_chargeMC;									///< MC charge -- histo
@@ -206,6 +210,7 @@ private:
 	TH1F* h_phi;										///< Fitted track azimuthal angle at the TG -- histo
 	TH1F* h_theta;										///< Fitted track polar angle at the TG -- histo
 	TH1F* h_theta_BM;									///< Fitted track polar angle at the TG wrt to BM track -- histo
+	std::vector <TH1F*> h_theta_BM_Z;					///< Fitted track polar angle at the TG wrt to BM track for all Z separately -- histo
 	TH2F* h_thetaGlbVsThetaTW;							///< Fitted track polar angle at the TG wrt to BM track -- histo
 	TH1F* h_phi_BM;										///< Fitted track azimuthal angle at the TG wrt to BM track -- histo
 	TH2F* h_trackDirBM;									///< Fitted tracks X-Y coordinates of emission direction wrt BM track -- histo
