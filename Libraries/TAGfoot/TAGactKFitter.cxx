@@ -276,6 +276,9 @@ void TAGactKFitter::Finalize() {
 			for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it )
 				AddHistogram( (*it).second );
 
+			for ( map<string, TH2F*>::iterator it=h_dPOverP_vs_P.begin(); it != h_dPOverP_vs_P.end(); ++it )
+				AddHistogram( (*it).second );
+
 			TH1F* h_deltaP_tot = new TH1F();
 			TH1F* h_sigmaP_tot = new TH1F();
 
@@ -891,7 +894,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 			m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
 
-			m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
+			m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin, &h_dPOverP_vs_P );
 
 			trackQuality = TrackQuality( &mcParticleID_track );
 			if(FootDebugLevel(1)) cout << "trackQuality::" << trackQuality << "\n";
