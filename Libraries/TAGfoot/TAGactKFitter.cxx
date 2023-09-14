@@ -824,6 +824,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			// trackMC_id = track->getMcTrackId();     //???????
 			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
 			mcCharge = particle->GetCharge();
+		}
 	}
 	recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetFitChargeZ() );
 	//Set additional variables
