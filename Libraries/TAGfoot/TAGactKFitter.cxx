@@ -805,6 +805,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	// update at target position
 	recoPos_target = state_target_point.getPos();
 	recoMom_target = state_target_point.getMom();
+
 	// recoMom_target_cov;  maybe still at VTX...
 
 	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, (long)gTAGroot->CurrentEventId().EventNumber(),
@@ -812,6 +813,19 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 										&recoPos_target, &recoMom_target, &recoPos_target_cov,
 										&recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov,
 										&recoMom_TW_cov, &shoeTrackPointRepo);
+
+	int mcCharge = 0;
+	int trackMC_id = -1;
+	if( m_IsMC )
+	{
+		trackMC_id = FindMostFrequent( &mcParticleID_track );
+		if(trackMC_id != -666) 
+		{
+			// trackMC_id = track->getMcTrackId();     //???????
+			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
+			mcCharge = particle->GetCharge();
+	}
+	recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetFitChargeZ() );
 	//Set additional variables
 	shoeOutTrack->SetTrackId(std::atoi(tok.at(2).c_str()));
 	shoeOutTrack->SetHasTwPoint(hasTwPoint);
@@ -842,9 +856,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 
 	//MC additional variables if running on simulations
-	int trackMC_id = -1;
 	double trackQuality = -1;
-	int mcCharge = 0;
 	if ( m_IsMC ) {
 
 		TVector3 mcMom, mcPos;
@@ -1035,7 +1047,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
 			
 			float beta = shoeOutTrack->GetLength()/(TOF*TAGgeoTrafo::GetLightVelocity());
-			recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetFitChargeZ() );
+			// recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetFitChargeZ() );
 			float recomass = recoMom_target.Mag()*sqrt(1 - pow(beta,2))/(beta*m_AMU);
 			// cout << "TOF::" << TOF << " "
 
