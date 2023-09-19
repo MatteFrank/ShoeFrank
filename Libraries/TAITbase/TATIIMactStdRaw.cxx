@@ -103,7 +103,7 @@ Bool_t TATIIMactStdRaw::GetEvent()
          return true;
       }
       
-      sscanf(line.Data(), "%llu %d %d %d %d", &timeStamp, &fTriggerNumber, &aLine, &aCol, &value);
+      sscanf(line.Data(), "%llu %d %d %d %d", &timeStamp, &fTriggerNumber, &aCol, &aLine, &value);
       
       fData.push_back(timeStamp >> 32);
       fIndex++;
@@ -111,9 +111,9 @@ Bool_t TATIIMactStdRaw::GetEvent()
       fIndex++;
       fData.push_back(fTriggerNumber);
       fIndex++;
-      fData.push_back(aLine);
-      fIndex++;
       fData.push_back(aCol);
+      fIndex++;
+      fData.push_back(aLine);
       fIndex++;
       fData.push_back(value);
       fIndex++;

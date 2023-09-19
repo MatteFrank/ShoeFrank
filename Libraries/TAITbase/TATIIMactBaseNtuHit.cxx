@@ -83,10 +83,10 @@ Bool_t TATIIMactBaseNtuHit::DecodeEvent()
          tmp  = fData[fIndex++];
          tmp  = fData[fIndex++];
          fTriggerNumber  = fData[fIndex++];
-         aLine  = fData[fIndex++];
-         aCol = fData[fIndex++];
+         aCol  = fData[fIndex++];
+         aLine = fData[fIndex++];
          value = fData[fIndex++];
-         AddPixel(i, value, aLine, aCol);
+         AddPixel(i, value, aCol, aLine);
          
         if(FootDebugLevel(3))
             printf("trg:# %u line: %u col: %u value: %u\n", fTriggerNumber, aLine, aCol, value);
