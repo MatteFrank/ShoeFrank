@@ -113,7 +113,7 @@ protected:
    virtual void  ResetFrames();
    
    // Add pixel to list
-   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber);
+   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber = 0);
    
    // Get Sensor number
    virtual  Int_t  GetSensor(UInt_t key);
