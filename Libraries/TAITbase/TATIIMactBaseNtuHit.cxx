@@ -26,7 +26,7 @@ ClassImp(TATIIMactBaseNtuHit);
 const UInt_t TATIIMactBaseNtuHit::fgkBoardKey[]  = {0xfafa0110, 0xfafa0111, 0xfafa0112, 0xfafa0113, 0xfafa0114, 0xfafa0115, 0xfafa0116, 0xfafa0117};
 const UInt_t TATIIMactBaseNtuHit::fgkBoardTail[] = {0xabcd0110, 0xabcd0111, 0xabcd0112, 0xabcd0113, 0xabcd0114, 0xabcd0115, 0xabcd0116, 0xabcd0117};
 const UInt_t TATIIMactBaseNtuHit::fgkEventKey    =  0x80088007;
-const UInt_t TATIIMactBaseNtuHit::fgkEventTail   =  0xaaa8aaa7;
+const UInt_t TATIIMactBaseNtuHit::fgkEventTail   =  0xdeadbeaf;
 
 
 //------------------------------------------+-----------------------------------
