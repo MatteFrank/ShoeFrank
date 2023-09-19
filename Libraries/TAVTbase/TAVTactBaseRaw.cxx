@@ -228,9 +228,9 @@ void TAVTactBaseRaw::FillHistoEvt(Int_t iSensor)
 //! \param[in] planeId sensor index
 //! \param[in] aLine line id
 //! \param[in] aColumn column id
-void TAVTactBaseRaw::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn)
+void TAVTactBaseRaw::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn, Float_t value)
 {
-   fpHisPixelMap[planeId]->Fill(aLine, aColumn);
+   fpHisPixelMap[planeId]->Fill(aLine, aColumn, value);
    
    fpHisRateMap[planeId]->Fill(aColumn);
    

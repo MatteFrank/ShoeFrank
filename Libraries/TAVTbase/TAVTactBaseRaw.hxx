@@ -128,7 +128,7 @@ protected:
    virtual void FillHistoEvt(Int_t iSensor);
    
    // Fill histogram pixel
-   virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn);
+   virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn, Float_t value = 1.);
    
    //! Fill DAQ event
    virtual void FillDaqEvent() { return; }

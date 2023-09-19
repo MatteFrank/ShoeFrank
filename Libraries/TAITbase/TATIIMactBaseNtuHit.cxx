@@ -128,5 +128,5 @@ void TATIIMactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int
    pixel->SetValidFrames(fFrameOk);
    
    if (ValidHistogram())
-      FillHistoPixel(iSensor, aLine, aColumn);
+      FillHistoPixel(iSensor, aLine, aColumn, value);
 }

@@ -264,7 +264,7 @@ void TAMPactAscReader::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t 
    pixel->SetPosition(pos);
    
    if (ValidHistogram())
-      FillHistoPixel(iSensor, aLine, aColumn);
+      FillHistoPixel(iSensor, aLine, aColumn, value);
 }
 
 // --------------------------------------------------------------------------------------
@@ -273,9 +273,9 @@ void TAMPactAscReader::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t 
 //! \param[in] planeId sensor index
 //! \param[in] aLine line id
 //! \param[in] aColumn column id
-void TAMPactAscReader::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn)
+void TAMPactAscReader::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn, Float_t value)
 {
-   fpHisPixelMap[planeId]->Fill(aLine, aColumn);
+   fpHisPixelMap[planeId]->Fill(aLine, aColumn, value);
 }
 
 
