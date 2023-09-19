@@ -135,13 +135,15 @@ void TAVTbaseHit::AddMcTrackIdx(Int_t trackId,Int_t mcId)
    fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
 }
 
+//______________________________________________________________________________
+//! Add frame id
+//!
+//! \param[in] iFrame frame id
 void TAVTbaseHit::AddFrameOn(Int_t iFrame)
 {
-   
    fFrame.Set(fFrame.GetSize()+1);
    fFrame[fFrame.GetSize()-1] = iFrame;
 }
-
 
 //______________________________________________________________________________
 //! Equal with a given hit
