@@ -37,7 +37,7 @@ protected:
 	Int_t              fPixelLine;                ///< line in the matrix
 	Int_t              fPixelColumn;              ///< column in the matrix
 	Int_t              fLayer;                    ///< layer number
-   TArrayI            fFrame;
+   TArrayI            fFrame;                    ///< frame number array
 
 	Double32_t         fRawValue;                 ///< the rawvalue
 	Double32_t         fPulseHeight;              ///< pulseheight on pixel
