@@ -30,7 +30,7 @@ ClassImp(TATIIMactStdRaw);
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pParMap mapping parameter descriptor
 TATIIMactStdRaw::TATIIMactStdRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TAITactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
+: TATIIMactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
 {
 
 }
@@ -62,20 +62,24 @@ Bool_t TATIIMactStdRaw::GetEvent()
    Char_t tmp[255];
    fIndex = 0;
 
+   UInt_t aCol = 0;
+   UInt_t aLine = 0;
+   UInt_t value = 0;
+   ULong64_t timeStamp;
+   
    // lokking for header
-   TString key  = Form("%x", DEITREvent::GetItrHeader());
-   TString tail = Form("%x", DEITREvent::GetItrTail());
+   TString key  = Form("%x", fgkEventKey);
+   TString tail = Form("%x", fgkEventTail);
 
    do {
-      fRawFileAscii >> tmp;
+      fRawFileAscii.getline(tmp, 255, '\n');
       TString line = tmp;
-      line.ToLower();
       
       if (line.Contains(key)) {
          if(FootDebugLevel(1))
-            printf("sensor header %s\n", tmp);
+            printf("Event header %s\n", tmp);
          
-         fData.push_back(DEITREvent::GetItrHeader());
+         fData.push_back(fgkEventKey);
          fIndex++;
          break;
       }
@@ -85,21 +89,38 @@ Bool_t TATIIMactStdRaw::GetEvent()
    
    // look for trailer
    UInt_t data;
-   
+
    do {
-      fRawFileAscii >> tmp;
+      fRawFileAscii.getline(tmp, 255, '\n');
+      
       TString line = tmp;
       line.ToLower();
-      sscanf(line.Data(), "%x", &data);
-      fData.push_back(data);
-      fIndex++;
-      
+
       if (line.Contains(tail)) {
          if(FootDebugLevel(1))
-            printf("sensor tail   %s\n", tmp);
-         break;
+            printf("event tail   %s\n", tmp);
+         fEventSize = fIndex;
+         return true;
       }
       
+      sscanf(line.Data(), "%llu %d %d %d %d", &timeStamp, &fTriggerNumber, &aLine, &aCol, &value);
+      
+      fData.push_back(timeStamp >> 32);
+      fIndex++;
+      fData.push_back(timeStamp & 0xFFFFFFFF);
+      fIndex++;
+      fData.push_back(fTriggerNumber);
+      fIndex++;
+      fData.push_back(aLine);
+      fIndex++;
+      fData.push_back(aCol);
+      fIndex++;
+      fData.push_back(value);
+      fIndex++;
+
+      if(FootDebugLevel(3))
+         printf("Trig#: %d TS#: %llu line: %u col: %u value: %u\n", fTriggerNumber, timeStamp, aLine, aCol, value);
+
       if (line.Contains(key)) {
          Int_t pos =  (int) fRawFileAscii.tellg();
          fRawFileAscii.seekg(pos-1);

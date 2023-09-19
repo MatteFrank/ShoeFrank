@@ -36,20 +36,8 @@ protected:
    // Find vertex data
    Bool_t DecodeEvent();
       
-   // Get the starting point of each event
-   Bool_t GetEvtHeader();
-   
-   // Get the starting point of each board
-   Bool_t GetBoardHeader(Int_t iBoard);
-
-   // Get the starting point of each frame
-   Bool_t GetSensorHeader(Int_t iSensor, Int_t datalink);
-   
-   // Get frame and returns frameRaw
-   Bool_t GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data = 0x0);
-   
    // Add pixel to list
-   void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
+   void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber = 0);
    
 protected:
    //! Board key
