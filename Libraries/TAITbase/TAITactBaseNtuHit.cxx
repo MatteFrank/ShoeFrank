@@ -251,7 +251,7 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
 //! \param[in] value pixel value
 //! \param[in] aLine line id
 //! \param[in] aColumn column id
-void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
+void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn, Int_t /*frameNumber*/)
 {
    // Add a pixel to the vector of pixels
    // require the following info
