@@ -50,7 +50,6 @@ Bool_t TATIIMactStdRaw::Action()
    if (GetEvent())
       DecodeEvent();
    
-
    if (fRawFileAscii.eof()) {
       if (fDaqFileChain) {
          Close();
