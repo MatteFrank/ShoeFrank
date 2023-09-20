@@ -919,7 +919,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				h_trackQualityVsNhits->Fill( trackQuality, shoeOutTrack->GetPointsN() );
 				h_trackQualityVsChi2->Fill( trackQuality, chi2 );
 				if( shoeOutTrack->HasTwPoint() )
-					if(mccharge > 0 && mccharge < 9)
+					if(mcCharge > 0 && mcCharge < 9)
 						h_trackQuality_Z[mcCharge-1]->Fill( trackQuality );
 					// h_trackQuality_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( trackQuality );
 				h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
@@ -967,7 +967,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			if( shoeOutTrack->HasTwPoint() )
 			{
 				h_theta_BMyesTw->Fill ( theta_deg );
-				if(mccharge > 0 && mccharge < 9)
+				if(mcCharge > 0 && mcCharge < 9)
 					h_theta_BM_Z[mcCharge-1]->Fill( theta_deg );
 				// h_theta_BM_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( theta_deg );
 				h_phi_BMyesTw->Fill ( phi_deg );
@@ -1032,7 +1032,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_chi2->Fill( chi2 );
 		if( shoeOutTrack->HasTwPoint() )
 		{
-			if(mccharge > 0 && mccharge < 9)
+			if(mcCharge > 0 && mcCharge < 9)
 				h_chi2_Z[mcCharge-1]->Fill( chi2 );
 		}
 			// h_chi2_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( chi2 );
