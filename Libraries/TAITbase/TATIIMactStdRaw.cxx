@@ -30,7 +30,9 @@ ClassImp(TATIIMactStdRaw);
 //! \param[in] pConfig configuration parameter descriptor
 //! \param[in] pParMap mapping parameter descriptor
 TATIIMactStdRaw::TATIIMactStdRaw(const char* name, TAGdataDsc* pNtuRaw, TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pParMap)
-: TATIIMactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap)
+: TATIIMactBaseNtuHit(name, pNtuRaw, pGeoMap, pConfig, pParMap),
+  fDaqFileIndex(-1),
+  fDaqFileChain(false)
 {
 
 }
@@ -47,6 +49,15 @@ Bool_t TATIIMactStdRaw::Action()
 {
    if (GetEvent())
       DecodeEvent();
+   
+
+   if (fRawFileAscii.eof()) {
+      if (fDaqFileChain) {
+         Close();
+         if(Open(fCurFileName, "chain") == -1) return false;
+      } else
+         return false;
+   }
    
    SetBit(kValid);
    fpNtuRaw->SetBit(kValid);
@@ -153,29 +164,42 @@ Bool_t TATIIMactStdRaw::GetEvent()
 //! \param[in] opt open file options
 //! \param[in] treeName name of tree in file
 //! \param[in] dscBranch flag for object descriptor
-Int_t TATIIMactStdRaw::Open(const TString& name, Option_t* opt, const TString /*treeName*/, Bool_t /*dscBranch*/)
+Int_t TATIIMactStdRaw::Open(const TString& name, Option_t* option, const TString /*treeName*/, Bool_t /*dscBranch*/)
 {
-   TString inputFileName;
-      
-   Bool_t valid = false;
+   fCurFileName = name;
    
-   // Close any previous open file
-   if( fRawFileAscii.is_open() && !fRawFileAscii.eof()) {
-      valid = true;
-   } else {
-      fRawFileAscii.close();
-      inputFileName = name;
+   TString opt(option);
+   opt.ToLower();
+   
+   if (opt.Contains("chain")) {
+      fDaqFileChain = true;
+      fDaqFileIndex++;
+   }
       
-      fRawFileAscii.open(inputFileName.Data());
-      if( fRawFileAscii.fail() ) { // end the reading if file opening failed
-         cout << endl << "TATIIMactStdRaw::Open(), cannot open file " << inputFileName.Data() << endl;
-         valid = false;
-      } else {
-         valid = true;
-      }
+   // all hard coded for the moment
+   if (fDaqFileChain) {
+      if (name.EndsWith(".dat")) {
+         Int_t pos = name.Last('.');
+         pos -= 1;
+         TString tmp = name(0, pos);
+         fCurFileName = tmp + Form("%d", fDaqFileIndex) + ".dat";
+      } else
+         Error("Open()", "wrong file extension file, must be .dat");
    }
    
-   return valid;
+   Int_t b_bad = 0;
+   
+   Info("Open","File: %s with option::%s", fCurFileName.Data(), opt.Data());
+   
+   fRawFileAscii.open(fCurFileName.Data());
+   if( fRawFileAscii.fail() ) { // end the reading if file opening failed
+      Warning("Open()", "Cannot open next file %s, stop reading", name.Data());
+      b_bad = -1;
+   } else {
+      b_bad = 0;
+   }
+   
+   return b_bad;
 }
 
 //------------------------------------------+-----------------------------------
