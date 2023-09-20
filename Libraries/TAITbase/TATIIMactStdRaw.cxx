@@ -76,7 +76,6 @@ Bool_t TATIIMactStdRaw::GetEvent()
    UInt_t aCol = 0;
    UInt_t aLine = 0;
    UInt_t value = 0;
-   ULong64_t timeStamp;
    
    // lokking for header
    TString key  = Form("%x", fgkEventKey);
@@ -134,7 +133,7 @@ Bool_t TATIIMactStdRaw::GetEvent()
       fIndex++;
 
       if(FootDebugLevel(3))
-         printf("Trig#: %d TS#: %llu col: %u line: %u value: %u\n", fTriggerNumber, timeStamp, aCol, aLine, value);
+         printf("Trig#: %d TS#: %llu col: %u line: %u value: %u\n", fTriggerNumber, fTimeStamp, aCol, aLine, value);
 
       if (line.Contains(key)) {
          Int_t pos =  (int) fRawFileAscii.tellg();

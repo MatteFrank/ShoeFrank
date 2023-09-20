@@ -88,7 +88,6 @@ Bool_t TATIIMactBaseNtuHit::DecodeEvent()
          if(FootDebugLevel(3))
             printf("trg:# %u col: %u line: %u value: %u\n", fTriggerNumber, aCol, aLine, value);
       } while (fIndex < fEventSize);
-      
    }
    
    return true;
@@ -116,7 +115,7 @@ void TATIIMactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int
    
    if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
    
-   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   TAIThit* pixel = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);
