@@ -98,15 +98,18 @@ Bool_t TATIIMactStdRaw::GetEvent()
    if (fRawFileAscii.eof()) return false;
    
    // TS
+   fRawFileAscii.getline(tmp, 255, '\n');// skip comment
    fRawFileAscii.getline(tmp, 255, '\n');
    TString line1 = tmp;
    fTimeStamp = line1.Atoll();
    
    // Trigger
+   fRawFileAscii.getline(tmp, 255, '\n');// skip comment
    fRawFileAscii.getline(tmp, 255, '\n');
    line1 = tmp;
    fTriggerNumber = line1.Atof();
    
+   fRawFileAscii.getline(tmp, 255, '\n');// skip comment
    // look for trailer
    UInt_t data;
 
