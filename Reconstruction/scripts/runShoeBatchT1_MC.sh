@@ -394,7 +394,7 @@ arguments             = \$(ClusterID) \$(ProcId)
 error                 = ${mergeJobFileName_base}.err
 output                = ${mergeJobFileName_base}.out
 log                   = ${mergeJobFileName_base}.log
-reqeust_cpus          = 8
+request_cpus          = 8
 +JobFlavour           = "workday"
 queue
 EOF
