@@ -98,6 +98,16 @@ Bool_t TATIIMactStdRaw::GetEvent()
    
    if (fRawFileAscii.eof()) return false;
    
+   // TS
+   fRawFileAscii.getline(tmp, 255, '\n');
+   TString line1 = tmp;
+   fTimeStamp = line1.Atoll();
+   
+   // Trigger
+   fRawFileAscii.getline(tmp, 255, '\n');
+   line1 = tmp;
+   fTriggerNumber = line1.Atof();
+   
    // look for trailer
    UInt_t data;
 
@@ -114,14 +124,8 @@ Bool_t TATIIMactStdRaw::GetEvent()
          return true;
       }
       
-      sscanf(line.Data(), "%llu %d %d %d %d", &timeStamp, &fTriggerNumber, &aCol, &aLine, &value);
+      sscanf(line.Data(), "%d %d %d", &aCol, &aLine, &value);
       
-      fData.push_back(timeStamp >> 32);
-      fIndex++;
-      fData.push_back(timeStamp & 0xFFFFFFFF);
-      fIndex++;
-      fData.push_back(fTriggerNumber);
-      fIndex++;
       fData.push_back(aCol);
       fIndex++;
       fData.push_back(aLine);
@@ -130,7 +134,7 @@ Bool_t TATIIMactStdRaw::GetEvent()
       fIndex++;
 
       if(FootDebugLevel(3))
-         printf("Trig#: %d TS#: %llu line: %u col: %u value: %u\n", fTriggerNumber, timeStamp, aLine, aCol, value);
+         printf("Trig#: %d TS#: %llu col: %u line: %u value: %u\n", fTriggerNumber, timeStamp, aCol, aLine, value);
 
       if (line.Contains(key)) {
          Int_t pos =  (int) fRawFileAscii.tellg();

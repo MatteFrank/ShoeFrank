@@ -31,10 +31,11 @@ public:
    virtual void    Close();
    
 private:
-   ifstream        fRawFileAscii;     ///< file streamm
+   ifstream        fRawFileAscii;   ///< file streamm
    TString         fCurFileName;    ///< Current file name
    Int_t           fDaqFileIndex;   ///< current DAQ file index
    Bool_t          fDaqFileChain;   ///< chaining files in reading
+   ULong64_t       fTimeStamp;      ///< time stamp
    
 private:
    // Get Event

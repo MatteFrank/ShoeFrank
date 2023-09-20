@@ -80,16 +80,13 @@ Bool_t TATIIMactBaseNtuHit::DecodeEvent()
       fIndex++;
       
       do {
-         tmp  = fData[fIndex++];
-         tmp  = fData[fIndex++];
-         fTriggerNumber  = fData[fIndex++];
          aCol  = fData[fIndex++];
          aLine = fData[fIndex++];
          value = fData[fIndex++];
          AddPixel(i, value, aCol, aLine);
          
-        if(FootDebugLevel(3))
-            printf("trg:# %u line: %u col: %u value: %u\n", fTriggerNumber, aLine, aCol, value);
+         if(FootDebugLevel(3))
+            printf("trg:# %u col: %u line: %u value: %u\n", fTriggerNumber, aCol, aLine, value);
       } while (fIndex < fEventSize);
       
    }
