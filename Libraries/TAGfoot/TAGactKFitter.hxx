@@ -48,7 +48,7 @@
 #include <TVector3.h>
 #include <TMath.h>
 
-#include "TAGparTools.hxx"
+#include "TAGparGeo.hxx"
 
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"

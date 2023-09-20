@@ -871,7 +871,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		{
 			// trackMC_id = track->getMcTrackId();     //???????
 			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
-			if( particle->GetMotherID() == 0 )
+			if( m_trueMomentumAtTgt.find(trackMC_id) == m_trueMomentumAtTgt.end() || particle->GetMotherID() == 0 )
 				mcMom = particle->GetInitP();
 			else
 				mcMom = m_trueMomentumAtTgt[trackMC_id];
@@ -1444,11 +1444,13 @@ void TAGactKFitter::CalculateTrueMomentumAtTgt()
 {
 	if(TAGrecoManager::GetPar()->IsRegionMc())
 	{
+		Int_t target_region = m_GFgeometry->GetGparGeo()->GetRegTarget();
+		Int_t air_region = m_GFgeometry->GetGparGeo()->GetRegAirPreTW();
 		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"))->Object();
 		for(int i = 0; mcNtuReg && i < mcNtuReg->GetRegionsN(); ++i)
 		{
 			TAMCregion* mcReg = (TAMCregion*)mcNtuReg->GetRegion(i);
-			if( mcReg->GetOldCrossN() == 50 && mcReg->GetCrossN() == 2 )
+			if( mcReg->GetOldCrossN() == target_region && mcReg->GetCrossN() == air_region )
 				m_trueMomentumAtTgt[ mcReg->GetTrackIdx() - 1 ] = mcReg->GetMomentum();
 		}
 	}
