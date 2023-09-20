@@ -278,18 +278,15 @@ if [[ $mergeFilesOpt -eq 1 ]]; then
 #!/bin/bash
 
 source /opt/exp_software/foot/root_shoe_foot.sh
+SCRATCH="\$(pwd)"
 
 #While loop that checks if all files have been processed
 while true; do
     nCompletedFiles=\$(ls ${outFile_base}*.root | wc -l)
 
 	if [ \${nCompletedFiles} -eq ${nJobs} ]; then
-        outputFileName="${outMergedFile}"
-        if [[ $fullStat -eq 1 ]]; then
-            outputFileName="\${outputFileName::-5}_temp.root"
-        fi
 
-        command="\${outputFileName}"
+        command="\${SCRATCH}/Merge_temp.root"
 
         for iFile in \$(seq 1 $nJobs); do
             command="\${command} ${outFile_base}\${iFile}.root"
@@ -299,10 +296,9 @@ while true; do
             command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
         fi
         
-        hadd -f \${command}
-        if [[ $fullStat -eq 1 ]]; then
-            mv \${outputFileName} ${outMergedFile}
-        fi
+        hadd -j -f \${command}
+        mv \${SCRATCH}/Merge_temp.root ${outMergedFile}
+
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
 	else
@@ -321,6 +317,7 @@ arguments             = \$(ClusterID) \$(ProcId)
 error                 = ${mergeJobFileName_base}.err
 output                = ${mergeJobFileName_base}.out
 log                   = ${mergeJobFileName_base}.log
+request_cpus          = 8
 +JobFlavour           = "longlunch"
 queue
 EOF
@@ -365,19 +362,21 @@ if [[ ! $fileNumber -eq 0 ]]; then
 #!/bin/bash
 
 source /opt/exp_software/foot/root_shoe_foot.sh
+SCRATCH="\$(pwd)"
 
 #While loop that checks if all files have been processed
 while true; do
     nCompletedFiles=\$(ls ${outFolder}/*/${baseMergedSingleFile} | wc -l)
 
     if [ \${nCompletedFiles} -eq ${fileNumber} ]; then
-        command="${fullStatOutput}"
+        command="\${SCRATCH}/Merge_temp.root"
 
         for iFile in \$(seq 1 $fileNumber); do
             command="\${command} ${outFolder}/\${iFile}/${baseMergedSingleFile}"
         done
 
-        hadd -f \${command}
+        hadd -j -f \${command}
+        mv \${SCRATCH}/Merge_temp.root ${fullStatOutput}
         break
     else
         echo "Processed \${nCompletedFiles}/${fileNumber} files. Waiting.."
@@ -395,6 +394,7 @@ arguments             = \$(ClusterID) \$(ProcId)
 error                 = ${mergeJobFileName_base}.err
 output                = ${mergeJobFileName_base}.out
 log                   = ${mergeJobFileName_base}.log
+reqeust_cpus          = 8
 +JobFlavour           = "workday"
 queue
 EOF

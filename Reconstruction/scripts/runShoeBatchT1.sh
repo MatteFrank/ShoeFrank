@@ -247,19 +247,21 @@ EOF
 
 source /opt/exp_software/foot/root_shoe_foot.sh
 echo "Merging files of run ${runNumber}!!"
+SCRATCH="\$(pwd)"
 
 #While loop that checks if all files have been processed
 while true; do
     nCompletedFiles=\$(ls ${outFile_base}*.root | wc -l)
 
 	if [ \${nCompletedFiles} -eq ${nFiles} ]; then
-        command="${outMergedFile}"
+        command="\${SCRATCH}/Merge_temp.root"
 
         for iFile in \$(seq 1 $nFiles); do
             command="\${command} ${outFile_base}\${iFile}.root"
         done
         command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
-        hadd -f \${command}
+        hadd -j -f \${command}
+        mv \${SCRATCH}/Merge_temp.root ${outMergedFile}
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
 	else
@@ -278,6 +280,7 @@ arguments             = \$(ClusterID) \$(ProcId)
 error                 = ${mergeJobFileName_base}.err
 output                = ${mergeJobFileName_base}.out
 log                   = ${mergeJobFileName_base}.log
+request_cpus          = 8
 +JobFlavour           = "longlunch"
 queue
 EOF
