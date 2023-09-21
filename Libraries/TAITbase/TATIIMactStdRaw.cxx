@@ -115,9 +115,8 @@ Bool_t TATIIMactStdRaw::GetEvent()
    fTriggerNumber = line1.Atof();
    
    fRawFileAscii.getline(tmp, 255, '\n');// skip comment
+   
    // look for trailer
-   UInt_t data;
-
    do {
       fRawFileAscii.getline(tmp, 255, '\n');
       
