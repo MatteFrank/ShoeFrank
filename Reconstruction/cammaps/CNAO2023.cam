@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "CNAO2023"
-RunNumber: 5100-5500;
+RunNumber: 5700-6000;
 NumberDevices: 10
 
 DetectorName: "FOOT"
