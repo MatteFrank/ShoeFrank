@@ -10,6 +10,7 @@
 #include "TAGroot.hxx"
 #include "TAITparGeo.hxx"
 #include "TAITparConf.hxx"
+#include "TAITntuHit.hxx"
 
 #include "TATIIMactStdRaw.hxx"
 
@@ -47,6 +48,8 @@ TATIIMactStdRaw::~TATIIMactStdRaw()
 //! Action.
 Bool_t TATIIMactStdRaw::Action()
 {
+   TAITntuHit*  pNtuRaw = (TAITntuHit*)  fpNtuRaw->Object();
+
    if (GetEvent())
       DecodeEvent();
    
@@ -58,6 +61,9 @@ Bool_t TATIIMactStdRaw::Action()
          return false;
    }
    
+   pNtuRaw->SetTimeStamp(fTimeStamp);
+   pNtuRaw->SetTriggerNumber(fTriggerNumber);
+
    SetBit(kValid);
    fpNtuRaw->SetBit(kValid);
    
