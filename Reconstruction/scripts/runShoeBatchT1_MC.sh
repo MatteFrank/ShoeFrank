@@ -209,7 +209,6 @@ echo
 export _condor_SCHEDD_HOST=sn-02.cr.cnaf.infn.it
 
 outFile_base="${outFolder}/output_${campaign}_run${runNumber}_Job"
-tempFile_base="${outFolder}/temp_${campaign}_run${runNumber}_Job"
 
 #Cycle on jobs and launch them
 for jobCounter in $(seq 1 $nJobs);
@@ -218,7 +217,6 @@ do
     jobFilename="${HTCfolder}/runShoeInBatchMC_${campaign}_${runNumber}_${jobCounter}.sh"
     jobFilename_base=${jobFilename::-3}
 
-    outFile_temp="${tempFile_base}${jobCounter}.root"
     outFile="${outFile_base}${jobCounter}.root"
     skipEv=$(( $nEvPerFile * ($jobCounter - 1) ))
 
@@ -226,25 +224,24 @@ do
     cat <<EOF > $jobFilename
 #!/bin/bash
 
-cd ${SHOE_PATH}
+SCRATCH="\$(pwd)"
+outFile_temp="\${SCRATCH}/temp_${campaign}_${runNumber}_${jobCounter}.root"
 
 source /opt/exp_software/foot/root_shoe_foot.sh 
 source ${SHOE_PATH}/build/setupFOOT.sh
-
 cd ${SHOE_PATH}/build/Reconstruction
 
-../bin/DecodeGlb -in ${inFile} -out ${outFile_temp} -exp ${campaign} -run ${runNumber} -nsk ${skipEv} -nev ${nEvPerFile} -mc
+../bin/DecodeGlb -in ${inFile} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -nsk ${skipEv} -nev ${nEvPerFile} -mc
 retVal=\$?
 if [ \$retVal -eq 0 ]; then
     if [ $jobCounter -eq 1 ]; then
-        rootcp ${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
+        rootcp \${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
     fi
-    rootrm ${outFile_temp}:runinfo
-    mv ${outFile_temp} ${outFile}
+    rootrm \${outFile_temp}:runinfo
+    mv \${outFile_temp} ${outFile}
 else
     echo "Unexpected error in processing of file ${inFile} with options nsk=${skipEv} and nev=${nEvPerFile}"
 fi
-
 EOF
 
     # Create submit file for job
