@@ -93,6 +93,7 @@ protected:
    TH1F*             fpHisFrameCnt[MaxSens];      ///< frame counter histogram
    TH1F*             fpHisFrameErrors[MaxSens];   ///< frame error counter histogram
    TH1F*             fpHisBCOofTrigger;           ///< Bunch crossing trigger histogram
+   TH1F*             fpHisSensorHit;              ///< Hits per sensor
 
 protected:
    //! Header key

@@ -143,6 +143,9 @@ void TAVTactBaseRaw::CreateHistogram()
    fpHisBCOofTrigger = new TH1F(Form("%sBCOofTrigger", fPrefix.Data()), Form("%s - BCOofTrigger difference", fTitleDev.Data()), 200000, 0, 200000);
    AddHistogram(fpHisBCOofTrigger);
 
+   fpHisSensorHit = new TH1F(Form("%sSensorHit", fPrefix.Data()), Form("%s - Hits per sensor", fTitleDev.Data()),  pGeoMap->GetSensorsN(), 0,  pGeoMap->GetSensorsN());
+   AddHistogram(fpHisSensorHit);
+      
    SetValidHistogram(kTRUE);
    return;
 }
@@ -238,6 +241,8 @@ void TAVTactBaseRaw::FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn, F
       if (aColumn >= 258*i && aColumn < (i+1)*258)
          fpHisRateMapQ[planeId]->Fill(i+1);
    }
+
+   fpHisSensorHit->Fill(planeId);
 }
 
 // --------------------------------------------------------------------------------------
