@@ -328,6 +328,30 @@ void BaseReco::AfterEventLoop()
 //!  Open output file
 void BaseReco::OpenFileOut()
 {
+   TString name = GetTitle();
+   
+   if (TAGrecoManager::GetPar()->IncludeTW()) {
+      TATWparConf* parConf = (TATWparConf*)fpParConfTw->Object();
+      Bool_t isZmc         = parConf->IsZmc();
+      Bool_t isZmatching   = parConf->IsZmatching();
+      Bool_t isCalibBar    = parConf->IsCalibBar();
+      
+      Int_t pos = name.Last('.');
+      
+      TString prefix(name(0,pos));
+      
+      if (isCalibBar)
+         prefix += "_TWbar.root";
+      
+      if (isZmatching)
+         prefix += "_TWZmatch.root";
+      
+      if (isZmc)
+         prefix += "_TWZmc.root";
+
+      name = prefix;
+   }
+   
    fActEvtWriter->Open(GetTitle(), "RECREATE");
    
    if (fFlagHisto)
