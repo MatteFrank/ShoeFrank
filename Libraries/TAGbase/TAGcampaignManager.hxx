@@ -149,7 +149,7 @@ public:
    const Char_t*        GetCurCalFile(const TString& detName, Int_t runNumber = -1,
                                       Bool_t isTofCalib = false, Bool_t isTofBarCalib = false,
                                       Bool_t elossTuning = false, Bool_t rate=false)
-  { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib, elossTuning,rate);  }
+  { return fCurCampaign->GetCalFile(detName, runNumber, isTofCalib, isTofBarCalib, elossTuning, rate);  }
    //! Get detector on flag
    Bool_t               IsDetectorOn(const TString& detName)                         { return fCurCampaign->IsDetectorOn(detName);           }
    

@@ -333,23 +333,31 @@ void BaseReco::OpenFileOut()
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       TATWparConf* parConf = (TATWparConf*)fpParConfTw->Object();
       Bool_t isZmc         = parConf->IsZmc();
+      Bool_t isNoPileUp    = parConf->IsNoPileUp();
       Bool_t isZmatching   = parConf->IsZmatching();
       Bool_t isCalibBar    = parConf->IsCalibBar();
+      Bool_t isRateSmearMc = parConf->IsRateSmearMc();
       
       Int_t pos = name.Last('.');
       
       TString prefix(name(0,pos));
       
       if (isCalibBar)
-         prefix += "_TWbar.root";
+         prefix += "_TWBarCalib";
       
-      if (isZmatching)
-         prefix += "_TWZmatch.root";
+      if (!isZmatching)
+         prefix += "_noTWZmatch";
       
       if (isZmc)
-         prefix += "_TWZmc.root";
+         prefix += "_noTWPileUp_Ztrue";
 
-      name = prefix;
+      if (!isZmc && isNoPileUp) 
+        prefix += "_noTWPileUp_Zrec";
+     
+      if (isRateSmearMc)
+         prefix += "_isRateSmearMc";
+
+      name = prefix + ".root";
    }
    
    fActEvtWriter->Open(name.Data(), "RECREATE");
@@ -678,9 +686,10 @@ void BaseReco::ReadParFiles()
       fpParCalTw = new TAGparaDsc(new TATWparCal());
       TATWparCal* parCal = (TATWparCal*)fpParCalTw->Object();
       Bool_t isTof_calib = false;
+      Bool_t elossTuning = false;
 
       if(fFlagRateSmearTw && fFlagMC){
-         parFileName = fCampManager->GetCurCalFile(FootBaseName("TATWparGeo"), fRunNumber, isTof_calib, fFlagTWbarCalib, fFlagRateSmearTw);
+        parFileName = fCampManager->GetCurCalFile(FootBaseName("TATWparGeo"), fRunNumber, isTof_calib, fFlagTWbarCalib, elossTuning, fFlagRateSmearTw);
          parCal->FromRateFile(parFileName, fRateInitRun, fRateEndRun);
       }
       
@@ -693,7 +702,6 @@ void BaseReco::ReadParFiles()
                                                    isTof_calib,fFlagTWbarCalib);
          parCal->FromCalibFile(parFileName.Data(),isTof_calib,fFlagTWbarCalib);
 
-         Bool_t elossTuning = false;
 
          if( !((TString)fCampManager->GetCurCampaign()->GetName()).CompareTo("GSI")) {
             elossTuning = true;
@@ -701,7 +709,7 @@ void BaseReco::ReadParFiles()
             if(elossTuning) {
                Info("ReadParFiles()","Eloss tuning for GSI data status:: ON");
                parFileName = fCampManager->GetCurCalFile(FootBaseName("TATWparGeo"), fRunNumber,
-                                                         false, false, true);
+                                                         false, false, elossTuning);
                parCal->FromElossTuningFile(parFileName.Data());
             } else {
                Info("ReadParFiles()","Eloss tuning for GSI data status:: OFF\n");
