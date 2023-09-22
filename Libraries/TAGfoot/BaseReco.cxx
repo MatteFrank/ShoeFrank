@@ -352,7 +352,7 @@ void BaseReco::OpenFileOut()
       name = prefix;
    }
    
-   fActEvtWriter->Open(GetTitle(), "RECREATE");
+   fActEvtWriter->Open(name.Data(), "RECREATE");
    
    if (fFlagHisto)
       SetHistogramDir();
