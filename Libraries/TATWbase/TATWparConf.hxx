@@ -35,7 +35,7 @@ class TATWparConf : public TAGparTools
    //! Is Calibration per bar
    Bool_t    IsCalibBar()    const { return fEnableCalibBar;  }
    //! Is rate smearing in MC
-   Bool_t    IsRateSmearMc() const { return fEnableCalibBar;  }
+   Bool_t    IsRateSmearMc() const { return fEnableRateSmearMc;  }
    //! Number of bars
    Int_t     GetBarsN()      const { return fBarsN;           }
 
