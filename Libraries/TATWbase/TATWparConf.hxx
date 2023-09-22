@@ -27,17 +27,17 @@ class TATWparConf : public TAGparTools
     virtual         ~TATWparConf();
 
    //! Is Z from MC
-   Bool_t    IsZmc()         const { return fEnableZmc;       }
+   Bool_t    IsZmc()         const { return fEnableZmc;         }
    //! Is no pileup flag
-   Bool_t    IsNoPileUp()    const { return fEnableNoPileUp;  }
+   Bool_t    IsNoPileUp()    const { return fEnableNoPileUp;    }
    //! Is Z matching
-   Bool_t    IsZmatching()   const { return fEnableZmatching; }
+   Bool_t    IsZmatching()   const { return fEnableZmatching;   }
    //! Is Calibration per bar
-   Bool_t    IsCalibBar()    const { return fEnableCalibBar;  }
+   Bool_t    IsCalibBar()    const { return fEnableCalibBar;    }
    //! Is rate smearing in MC
-   Bool_t    IsRateSmearMc() const { return fEnableRateSmearMc;  }
+   Bool_t    IsRateSmearMc() const { return fEnableRateSmearMc; }
    //! Number of bars
-   Int_t     GetBarsN()      const { return fBarsN;           }
+   Int_t     GetBarsN()      const { return fBarsN;             }
 
    Bool_t    FromFile(const TString& name);
 
