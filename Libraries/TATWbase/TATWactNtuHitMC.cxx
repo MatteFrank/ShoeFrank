@@ -85,6 +85,10 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    
    fMapPU.clear();
    fVecPuOff.clear();
+
+   for(int ilayer=0; ilayer<(int)nLayers; ilayer++)
+     fpHisElossTof_MC[ilayer].clear();
+   
 }
 
 //------------------------------------------+-----------------------------------
@@ -113,7 +117,7 @@ void TATWactNtuHitMC::CreateHistogram()
 
      fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),3000,0.,30.,480,0.,120.);
      AddHistogram(fpHisElossTof_MCtrue[ilayer]);
-
+         
      fpHisZID_MCrec[ilayer] = new TH2I(Form("twZID_%s",LayerName[(TLayer)ilayer].data()),Form("twZID_%s",LayerName[(TLayer)ilayer].data()), fZbeam+3,-2.5,(int)fZbeam+0.5, fZbeam+2,-1.5,(int)fZbeam+0.5);
      AddHistogram(fpHisZID_MCrec[ilayer]);
      
@@ -122,10 +126,19 @@ void TATWactNtuHitMC::CreateHistogram()
           
    }
       
+   
+   for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
+     for(int iZ=1; iZ < fZbeam+1; iZ++) {
+
+       fpHisElossTof_MC[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),3000,0.,30.,480,0.,120.));
+       AddHistogram(fpHisElossTof_MC[ilayer][iZ-1]);
+     }
+   }
+   
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
 
-     fpHisElossTof_MC.push_back(new TH2D(Form("twdE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_%d",iZ),3000,0.,30.,480,0.,120.));
-     AddHistogram(fpHisElossTof_MC[iZ-1]);
+    //  fpHisElossTof_MC.push_back(new TH2D(Form("twdE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_Z%d_MCtrue",iZ),3000,0.,30.,480,0.,120.));
+    //  AddHistogram(fpHisElossTof_MC[iZ-1]);
          
      fpHisElossTof.push_back(new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),3000,0.,30.,480,0.,120.));
      AddHistogram(fpHisElossTof[iZ-1]);
@@ -379,7 +392,8 @@ void TATWactNtuHitMC::StudyPerformancesZID(TAMChit *hitTwMC, TAMCntuHit *ntuHitS
        fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
      
        if( Zrec>0 && Zrec < fZbeam+1 )
-         fpHisElossTof_MC[Zrec-1]->Fill(trueTof,edep);
+         fpHisElossTof_MC[layer][Zrec-1]->Fill(trueTof,edep);
+         // fpHisElossTof_MC[Zrec-1]->Fill(trueTof,edep);
     
        if(!fIsZtrueMC) {
          

@@ -22,7 +22,8 @@ fi
 FLUVER=`grep version $FLUPRO/Version.tag`
 FLUVER20=`echo $FLUVER | grep 2020`
 FLUVER21=`echo $FLUPRO | grep 2021`
-if [ -z "$FLUVER20" ] && [ -z "$FLUVER21" ]; then
+FLUVER23=`echo $FLUPRO | grep 2023`
+if [ -z "$FLUVER20" ] && [ -z "$FLUVER21" ] && [ -x "$FLUVER23" ]; then
     echo "Unrecognized FLUKA version"
     if [ "$TARGET_MACHINE" = "Darwin" ] ; then
 	say "fluka version is unrecognizable"
