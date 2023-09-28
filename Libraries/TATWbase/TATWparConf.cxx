@@ -35,6 +35,7 @@ TATWparConf::TATWparConf()
    fEnableNoPileUp(false),
    fEnableZmatching(false),
    fEnableCalibBar(false),
+   fEnableRateSmearMc(false),   
    fBarsN(0)
 {
   fkDefaultParName = "./config/TATWdetector.cfg";
@@ -82,10 +83,15 @@ Bool_t TATWparConf::FromFile(const TString& name)
       cout<<"Enable Z matching: "<< fEnableZmatching <<endl;
    
    ReadItem(tmp);
+   fEnableCalibBar = tmp;
+   if(FootDebugLevel(1))
+      cout<<"Enable TW bar calibration: "<< fEnableCalibBar <<endl;
+
+   ReadItem(tmp);
    fEnableRateSmearMc = tmp;
    if(FootDebugLevel(1))
       cout<<"Enable rate smearing in MC: "<< fEnableRateSmearMc <<endl;
-   
+
    ReadItem(fBarsN);
    if(FootDebugLevel(1))
       cout<<"Number of bars: "<< fBarsN <<endl;

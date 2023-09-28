@@ -45,7 +45,7 @@ protected:
    Bool_t GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data);
    
    // Add pixel to list
-   void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
+   void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber = 0);
    
 protected:
    //! Board key

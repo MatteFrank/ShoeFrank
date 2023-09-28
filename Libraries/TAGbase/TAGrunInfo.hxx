@@ -70,6 +70,9 @@ public:
    //! Get run number
    Short_t         RunNumber()                 const { return fiRun;        }
 
+   //! Check if two maps are identical, except for the runnumber
+   Int_t IsEqualExceptRunnumber(const TAGrunInfo& right);
+
    // Clear
    virtual void    Clear(Option_t* opt="");
    // To stream

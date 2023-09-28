@@ -168,3 +168,37 @@ bool operator==(const TAGrunInfo& lhs, const TAGrunInfo& rhs)
 {
    return lhs.fsCam==rhs.fsCam && lhs.fiRun==rhs.fiRun;
    }
+
+//------------------------------------------+-----------------------------------
+//! check if current runinfo and right are the same, 
+//!
+//! \param[in] right check item
+//! \return 1 if the two runinfos are exactly the same
+//! \return 0 if the two runinfos differ only for the runnumber
+//! \return -1 if the two runinfo are different
+Int_t TAGrunInfo::IsEqualExceptRunnumber(const TAGrunInfo& right)
+{
+   if(fsCam!=right.fsCam) return -1;
+   if(fGlobalParameter.FromLocalReco    !=right.fGlobalParameter.FromLocalReco) return -1;
+   if(fGlobalParameter.EnableTree       != right.fGlobalParameter.EnableTree)   return -1;
+   if(fGlobalParameter.EnableHisto      != right.fGlobalParameter.EnableHisto)   return -1;
+   if(fGlobalParameter.EnableSaveHits   != right.fGlobalParameter.EnableSaveHits)   return -1;
+   if(fGlobalParameter.EnableTracking   != right.fGlobalParameter.EnableTracking)   return -1;
+   if(fGlobalParameter.EnableRootObject != right.fGlobalParameter.EnableRootObject)   return -1;
+   if(fGlobalParameter.EnableRegionMc   != right.fGlobalParameter.EnableRegionMc)   return -1;
+   if(fGlobalParameter.EnableElecNoiseMc!= right.fGlobalParameter.EnableElecNoiseMc)   return -1;
+   if(fGlobalParameter.IncludeKalman    != right.fGlobalParameter.IncludeKalman)   return -1;
+   if(fGlobalParameter.IncludeTOE       != right.fGlobalParameter.IncludeTOE)   return -1;
+   if(fGlobalParameter.IncludeDI        != right.fGlobalParameter.IncludeDI)   return -1;
+   if(fGlobalParameter.IncludeST        != right.fGlobalParameter.IncludeST)   return -1;
+   if(fGlobalParameter.IncludeBM        != right.fGlobalParameter.IncludeBM)   return -1;
+   if(fGlobalParameter.IncludeTG        != right.fGlobalParameter.IncludeTG)   return -1;
+   if(fGlobalParameter.IncludeVT        != right.fGlobalParameter.IncludeVT)   return -1;
+   if(fGlobalParameter.IncludeIT        != right.fGlobalParameter.IncludeIT)   return -1;
+   if(fGlobalParameter.IncludeMSD       != right.fGlobalParameter.IncludeMSD)   return -1;
+   if(fGlobalParameter.IncludeTW        != right.fGlobalParameter.IncludeTW)   return -1;
+   if(fGlobalParameter.IncludeCA        != right.fGlobalParameter.IncludeCA)   return -1;
+   if(fCrossMap!= right.fCrossMap)  return -1;
+   if(fiRun!= right.fiRun)    return 0;
+   return 1;
+}

@@ -117,7 +117,7 @@ private:
    TACAparGeo*    fGeometry;
 
 
-   double  *       fTempCh;
+   float  *       fTempCh;
    UShort_t **     fAmpCh;     // waveform for each channel/crystal
 
    double          fRange;
@@ -150,7 +150,7 @@ CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap, TAGparaDsc* p
 
    int nCry = fGeometry->GetCrystalsN();
 
-   fTempCh = new double [nCry];
+   fTempCh = new float [nCry];
    fAmpCh = new UShort_t* [nCry];
 
    for (int cryID=0; cryID<nCry; ++cryID) {

@@ -174,7 +174,7 @@ Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
          fTimeStamp     = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("sensor %d: trig#: %d evt#: %d\n", iSensor, fTriggerNumber, fEventNumber);
+            printf("datalink: %d sensor: %d trig#: %d evt#: %d\n", datalink, iSensor, fTriggerNumber, fEventNumber);
          
          if(ValidHistogram()) {
             Int_t planeId = pParMap->GetPlaneId(iSensor, datalink);
@@ -229,7 +229,7 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
    fDataSize = fIndex - fgkFrameHeaderSize - startIdx;
 
    if(FootDebugLevel(3)) {
-      printf("Sensor %d Board %d\n", iSensor, datalink);
+      printf("Sensor %d datalink %d\n", iSensor, datalink);
       printf("%08x\n", data->Header);
       printf("%08x\n", data->TriggerCnt);
       printf("%08x\n", data->TimeStamp);
@@ -251,7 +251,7 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
 //! \param[in] value pixel value
 //! \param[in] aLine line id
 //! \param[in] aColumn column id
-void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
+void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn, Int_t /*frameNumber*/)
 {
    // Add a pixel to the vector of pixels
    // require the following info
@@ -274,5 +274,5 @@ void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t
    pixel->SetValidFrames(fFrameOk);
    
    if (ValidHistogram())
-      FillHistoPixel(iSensor, aLine, aColumn);
+      FillHistoPixel(iSensor, aLine, aColumn, value);
 }

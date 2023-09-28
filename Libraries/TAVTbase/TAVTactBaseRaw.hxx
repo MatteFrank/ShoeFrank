@@ -93,6 +93,7 @@ protected:
    TH1F*             fpHisFrameCnt[MaxSens];      ///< frame counter histogram
    TH1F*             fpHisFrameErrors[MaxSens];   ///< frame error counter histogram
    TH1F*             fpHisBCOofTrigger;           ///< Bunch crossing trigger histogram
+   TH1F*             fpHisSensorHit;              ///< Hits per sensor
 
 protected:
    //! Header key
@@ -113,7 +114,7 @@ protected:
    virtual void  ResetFrames();
    
    // Add pixel to list
-   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber);
+   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber = 0);
    
    // Get Sensor number
    virtual  Int_t  GetSensor(UInt_t key);
@@ -128,7 +129,7 @@ protected:
    virtual void FillHistoEvt(Int_t iSensor);
    
    // Fill histogram pixel
-   virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn);
+   virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn, Float_t value = 1.);
    
    //! Fill DAQ event
    virtual void FillDaqEvent() { return; }

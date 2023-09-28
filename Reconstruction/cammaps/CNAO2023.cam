@@ -1,0 +1,70 @@
+// Campaign file
+CamName: "CNAO2023"
+RunNumber: 5700-6000;
+NumberDevices: 10
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/CNAO2023/FOOT.geo": 5100; 5449;
+
+DetectorName: "DI"
+NumberFiles: 1
+"./geomaps/CNAO2023/TADIdetector.geo": -1
+
+DetectorName: "ST"
+NumberFiles: 5
+"./geomaps/CNAO2023/TASTdetector.geo": -1
+"./config/CNAO2023/TASTdetector.cfg": -1
+"./config/CNAO2023/WDChannelMap.map": -1
+"./calib/CNAO2023/WDpar.cal": -1;
+"./calib/CNAO2023/WDTimeCalibration/tcalib.dat": 5100 ;
+
+
+DetectorName: "BM"
+NumberFiles: 4
+"./geomaps/CNAO2023/TABMdetector.geo": -1
+"./config/CNAO2023/TABMdetector.cfg": -1
+"./config/CNAO2023/TABMdetector.map": -1
+"./calib/CNAO2023/TABM_T0_Calibration.cal": 5100; 5449;
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/CNAO2023/TAGdetector.geo": 5100; 5449;
+
+DetectorName: "VT"
+NumberFiles: 3
+"./geomaps/CNAO2023/TAVTdetector.geo": -1
+"./config/CNAO2023/TAVTdetector.cfg": -1
+"./config/CNAO2023/TAVTdetector.map": -1
+
+DetectorName: "IT"
+NumberFiles: 3
+"./geomaps/CNAO2023/TAITdetector.geo": -1
+"./config/CNAO2023/TAITdetector.cfg": -1
+"./config/CNAO2023/TAITdetector.map": -1
+
+DetectorName: "MSD"
+NumberFiles: 5
+"./geomaps/CNAO2023/TAMSDdetector.geo": -1
+"./config/CNAO2023/TAMSDdetector.cfg": -1
+"./config/CNAO2023/TAMSDdetector.map": 5100;
+"./calib/CNAO2023/TAMSD_Pedestal.cal": 5100;
+"./calib/CNAO2023/TAMSD_Energy_Calibration.cal": -1
+
+DetectorName: "TW"
+NumberFiles: 7
+"./geomaps/CNAO2023/TATWdetector.geo": -1
+"./config/CNAO2023/TATWdetector.cfg": -1
+"./config/CNAO2023/TATW_BBparameters.cfg": -1
+"./config/CNAO2023/TATWChannelMapXML.map": -1
+"./config/CNAO2023/TATWdeltaTimeMap.map": -1
+"./calib/CNAO2023/TATW_Energy_Calibration.cal": -1
+"./calib/CNAO2023/TATW_Tof_Calibration.cal": -1;
+
+DetectorName: "CA"
+NumberFiles: 5
+"./geomaps/CNAO2023/TACAdetector.geo": -1
+"./config/CNAO2023/TACAdetector.map": 5100; 5162; 5225
+"./config/CNAO2023/TACAdetector.cfg": -1
+"./calib/CNAO2023/TACA_Energy_Calibration.cal": -1
+"./calib/CNAO2023/TACA_Temperature_Calibration_perCry.cal": -1

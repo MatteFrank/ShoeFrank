@@ -15,7 +15,9 @@ class TAITntuHit : public TAGdata {
    
 protected:
     Int_t             fSensorsN;        ///< number of sensors
-    TObjArray*        fListOfPixels;      ///< List of pixels
+    UInt_t            fTriggerNumber;   ///< trigger number
+    ULong64_t         fTimeStamp;       ///< time stamp
+    TObjArray*        fListOfPixels;    ///< list of pixels
     std::map<pair<int, int>, int > fMap; //! do not store
    
 public:
@@ -38,6 +40,16 @@ public:
    // New pixel
    TAIThit*          NewPixel(Int_t sensor, Double_t value, Int_t aLine, Int_t aColumn);
    
+   //! Get trigger number
+   Int_t             GetTriggerNumber()    const { return fTriggerNumber; }
+   //! Set trigger number
+   void              SetTriggerNumber(Int_t nb)  { fTriggerNumber = nb;   }
+   
+   //! Get time stamp
+   ULong64_t         GetTimeStamp()        const { return fTimeStamp;     }
+   //! Set time stamp
+   void              SetTimeStamp(ULong64_t nb)  { fTimeStamp = nb;       }
+   
    // Set up clone
    virtual void      SetupClones();
    // Clear
@@ -45,7 +57,7 @@ public:
    // To stream
    virtual void      ToStream(ostream& os=cout, Option_t* option="") const;
    
-   ClassDef(TAITntuHit,1)
+   ClassDef(TAITntuHit,2)
 };
 
 #endif

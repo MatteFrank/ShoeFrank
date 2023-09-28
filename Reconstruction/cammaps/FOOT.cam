@@ -178,3 +178,15 @@ CamName:    "MPIX2023"
 CamDataMC:    0
 CamDate: "2023"
 CamSum: "Test for MonopPix2 data"
+
+CamNumber:    30
+CamName:    "CNAO2023"
+CamDataMC:    0
+CamDate: "November 2023"
+CamSum: "Test experiment at CNAO with ST+VT+IT+MSD+TW+CAL+Magnets @ 200,400 MeV/u"
+
+CamNumber:    31
+CamName:    "CNAO2023_MC"
+CamDataMC:    1
+CamDate: "September 2023"
+CamSum: "Simulation data for the test experiment at CNAO with ST+VT+IT+MSD+TW+CAL+Magnets @ 200,400 MeV/u; C and C2H4 target"
