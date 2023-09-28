@@ -207,7 +207,8 @@ if [ \$retVal -eq 0 ]; then
         rootcp \${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
     fi
     rootrm \${outFile_temp}:runinfo
-    mv \${outFile_temp} ${outFile}
+    mv \${outFile_temp} ${outFolder}
+    mv ${outFolder}/\$(basename \${outFile_temp}) ${outFile}
 else
     echo "Unexpected error in processing of file ${file}"
 fi

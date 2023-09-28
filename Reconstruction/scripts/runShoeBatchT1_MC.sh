@@ -238,7 +238,8 @@ if [ \$retVal -eq 0 ]; then
         rootcp \${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
     fi
     rootrm \${outFile_temp}:runinfo
-    mv \${outFile_temp} ${outFile}
+    mv \${outFile_temp} ${outFolder}
+    mv ${outFolder}/\$(basename \${outFile_temp}) ${outFile}
 else
     echo "Unexpected error in processing of file ${inFile} with options nsk=${skipEv} and nev=${nEvPerFile}"
 fi
@@ -294,7 +295,8 @@ while true; do
         fi
         
         hadd -j -f \${command}
-        mv \${SCRATCH}/Merge_temp.root ${outMergedFile}
+        mv \${SCRATCH}/Merge_temp.root \$(dirname ${outMergedFile})
+        mv \$(dirname ${outMergedFile})/Merge_temp.root ${outMergedFile}
 
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
