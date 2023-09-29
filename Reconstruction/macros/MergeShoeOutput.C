@@ -47,35 +47,43 @@
 // main
 //! \param[in] nameFileList name of the file with the list of .root files to be merged
 //! \param[in] forced set to true to skip all the runinfo checks
-void MergeShoeOutput(TString nameFileList = "filelist.txt", bool forced = false)
+//! \param[in] nameOut Name of the output rootfile
+void MergeShoeOutput(TString nameFileList = "filelist.txt", bool forced = false, TString nameOut = "mergedTree.root")
 
 {
-
-    TString nameOut("mergedTree.root");
     string line;
     ifstream myfile(nameFileList.Data());
     TTree::SetMaxTreeSize( 1000000000000LL ); // 1 TB
     if (myfile.is_open())
     {   
-        // gDebug = 5;
-        string filename;
+        vector<TString> fileList;
+
         TFile *file_out = new TFile(nameOut, "RECREATE");
         int processedfile = 0;
         TFileMerger *merger=new TFileMerger();
         merger->OutputFile(nameOut);
         // merger->AddObjectNames("runinfo");    
         TAGrunInfo *firstruninfo;   
-        vector<Short_t> runnumbers;     
+        vector<Short_t> runnumbers;    
         while (myfile.good() && !myfile.eof())
         {
-            //   getline(myfile,filename);
-            myfile >> filename;
-            cout << "processedfile=" << processedfile << "  adding:" << filename << endl;
-            TString currfilename(filename);
+            TString currfilename;
+            myfile >> currfilename;
+            if( std::find(fileList.begin(), fileList.end(), currfilename) != fileList.end() )
+            {
+                cout << "File " << currfilename.Data() << " found twice in list. Skipping" << endl;
+                continue;
+            }
+            fileList.push_back(currfilename);
+            //Check added to avoid getting empty readings, like endlines
+            if( currfilename.Length()<3 )
+                continue;
+
+            cout << "processedfile=" << processedfile << "  adding:" << currfilename.Data() << endl;
             TFile *file_in = new TFile(currfilename);
             if (file_in->IsOpen() == false)
             {
-                cout << "ERROR: I cannot open the input file:" << filename << " I'll skip this file" << endl;
+                cout << "ERROR: I cannot open the input file:" << currfilename.Data() << " I'll skip this file" << endl;
                 continue;
             }
             TAGrunInfo *currruninfo = (TAGrunInfo *)(file_in->Get("runinfo;1"));
@@ -102,7 +110,7 @@ void MergeShoeOutput(TString nameFileList = "filelist.txt", bool forced = false)
                 tree = (TTree *)file_in->Get("EventTree");
                 if (tree == nullptr)
                 {
-                    cout << "ERROR: your input file: " << filename << " do not contains a tree, I'll skip this file" << endl;
+                    cout << "ERROR: your input file: " << currfilename << " do not contains a tree, I'll skip this file" << endl;
                     continue;
                 }
             }
