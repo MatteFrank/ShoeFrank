@@ -741,7 +741,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	{
 		// getRecoInfo
 		GetRecoTrackInfo(-1, track, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
-		
+
 		StateOnPlane state_TW = track->getFittedState(-1);
 
 		TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_GFgeometry->GetTWparGeo()->GetLayerPosition(1)).z() + 0.5 );
@@ -817,19 +817,6 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 										&recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov,
 										&recoMom_TW_cov, &shoeTrackPointRepo);
 
-	int mcCharge = 0;
-	int trackMC_id = -1;
-	if( m_IsMC )
-	{
-		trackMC_id = FindMostFrequent( &mcParticleID_track );
-		if(trackMC_id != -666) 
-		{
-			// trackMC_id = track->getMcTrackId();     //???????
-			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
-			mcCharge = particle->GetCharge();
-		}
-	}
-	recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetFitChargeZ() );
 	//Set additional variables
 	shoeOutTrack->SetTrackId(std::atoi(tok.at(2).c_str()));
 	shoeOutTrack->SetHasTwPoint(hasTwPoint);
@@ -860,6 +847,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 
 	//MC additional variables if running on simulations
+	int mcCharge = 0;
+	int trackMC_id = -1;
 	double trackQuality = -1;
 	if ( m_IsMC ) {
 
@@ -919,8 +908,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				h_trackQualityVsNhits->Fill( trackQuality, shoeOutTrack->GetPointsN() );
 				h_trackQualityVsChi2->Fill( trackQuality, chi2 );
 				if( shoeOutTrack->HasTwPoint() )
-					if(mcCharge > 0 && mcCharge < 9)
-						h_trackQuality_Z[mcCharge-1]->Fill( trackQuality );
+					if(shoeOutTrack->GetTwChargeZ() > 0 && shoeOutTrack->GetTwChargeZ() < 9)
+						h_trackQuality_Z[shoeOutTrack->GetTwChargeZ() - 1]->Fill( trackQuality );
 					// h_trackQuality_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( trackQuality );
 				h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
 				h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
@@ -967,8 +956,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			if( shoeOutTrack->HasTwPoint() )
 			{
 				h_theta_BMyesTw->Fill ( theta_deg );
-				if(mcCharge > 0 && mcCharge < 9)
-					h_theta_BM_Z[mcCharge-1]->Fill( theta_deg );
+				if(shoeOutTrack->GetTwChargeZ() > 0 && shoeOutTrack->GetTwChargeZ() < 9)
+					h_theta_BM_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( theta_deg );
 				// h_theta_BM_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( theta_deg );
 				h_phi_BMyesTw->Fill ( phi_deg );
 			}
@@ -1030,15 +1019,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_nMeas->Fill ( nMeas );
 		h_mass->Fill( fitMass );
 		h_chi2->Fill( chi2 );
-		if( shoeOutTrack->HasTwPoint() )
-		{
-			if(mcCharge > 0 && mcCharge < 9)
-				h_chi2_Z[mcCharge-1]->Fill( chi2 );
-		}
-			// h_chi2_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( chi2 );
+		if( shoeOutTrack->HasTwPoint() && shoeOutTrack->GetTwChargeZ() > 0 && shoeOutTrack->GetTwChargeZ() < 9)
+			h_chi2_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( chi2 );
 
 		h_chargeMeas->Fill( fitCh );
-		h_chargeFlip->Fill( pdgCh - fitCh );
+		h_chargeFlip->Fill( fitCh, shoeOutTrack->GetTwChargeZ() );
 
 		h_length->Fill( length );
 		h_tof->Fill( tof );
@@ -1054,15 +1039,15 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			float var = m_BeamEnergy/m_AMU;
 			float beam_speed = TAGgeoTrafo::GetLightVelocity()*TMath::Sqrt(var*(var + 2))/(var + 1);
 			TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
-			
 			float beta = shoeOutTrack->GetLength()/(TOF*TAGgeoTrafo::GetLightVelocity());
-			// recoMom_target.SetMag( recoMom_target.Mag()*mcCharge/shoeOutTrack->GetFitChargeZ() );
+			if( shoeOutTrack->GetTwChargeZ() != shoeOutTrack->GetFitChargeZ() )
+				recoMom_target.SetMag( recoMom_target.Mag()*shoeOutTrack->GetTwChargeZ()/shoeOutTrack->GetFitChargeZ() );
 			float recomass = recoMom_target.Mag()*sqrt(1 - pow(beta,2))/(beta*m_AMU);
 			// cout << "TOF::" << TOF << " "
 
 			h_RecoMass.at(0)->Fill( recomass );
-			// h_RecoMass.at( shoeOutTrack->GetTwChargeZ() )->Fill( recomass );
-			h_RecoMass.at( mcCharge )->Fill( recomass );
+			if( shoeOutTrack->GetTwChargeZ() < 10 )
+				h_RecoMass.at( shoeOutTrack->GetTwChargeZ() )->Fill( recomass );
 		}
 		
 		//Fill residual and pull plots
@@ -1649,7 +1634,7 @@ void TAGactKFitter::CreateHistogram()	{
 	h_chargeMeas = new TH1F("h_chargeMeas", "h_chargeMeas;Measured Z;Entries", 9, 0, 9);
 	AddHistogram(h_chargeMeas);
 
-	h_chargeFlip = new TH1F("h_chargeFlip", "h_chargeFlip", 20, -5, 5);
+	h_chargeFlip = new TH2F("h_chargeFlip", "h_chargeFlip;Z fit;Z TW", 10, -0.5, 9.5, 10, -0.5, 9.5);
 	AddHistogram(h_chargeFlip);
 
   	h_mass = new TH1F("h_mass", "h_mass;Mass [A.M.U.];Enries", 100, 0., 20.);

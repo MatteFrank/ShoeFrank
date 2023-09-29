@@ -203,7 +203,7 @@ private:
 
 	TH1F* h_chargeMC;									///< MC charge -- histo
 	TH1F* h_chargeMeas;									///< Fitted charge -- histo
-	TH1F* h_chargeFlip;									///< Charge flip (MC - Reco) -- histo
+	TH2F* h_chargeFlip;									///< Charge flip (Fit vs Reco) -- histo
 	TH1F* h_momentum;									///< Fitted momentum module at the TG -- histo
 
 	TH1F* h_dR;											///< Fitted track dR =  at the target -- histo
