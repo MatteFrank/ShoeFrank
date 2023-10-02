@@ -276,6 +276,7 @@ if [[ $mergeFilesOpt -eq 1 ]]; then
 #!/bin/bash
 
 source /opt/exp_software/foot/root_shoe_foot.sh
+source ${SHOE_PATH}/build/setupFOOT.sh
 SCRATCH="\$(pwd)"
 
 #While loop that checks if all files have been processed
@@ -361,6 +362,7 @@ if [[ ! $fileNumber -eq 0 ]]; then
 #!/bin/bash
 
 source /opt/exp_software/foot/root_shoe_foot.sh
+source ${SHOE_PATH}/build/setupFOOT.sh
 SCRATCH="\$(pwd)"
 
 #While loop that checks if all files have been processed

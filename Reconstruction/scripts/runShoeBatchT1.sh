@@ -244,6 +244,8 @@ EOF
 #!/bin/bash
 
 source /opt/exp_software/foot/root_shoe_foot.sh
+source ${SHOE_PATH}/build/setupFOOT.sh
+
 echo "Merging files of run ${runNumber}!!"
 SCRATCH="\$(pwd)"
 
