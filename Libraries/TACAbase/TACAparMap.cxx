@@ -68,7 +68,7 @@ Bool_t TACAparMap::FromFile(const TString& name)
       Int_t moduleId    = TMath::Nint(para[1]);
       Int_t channelId   = TMath::Nint(para[2]);
       Int_t boardId     = TMath::Nint(para[3]);
-      Int_t activeCrys  = TMath::Nint(para[4]);
+      Int_t activeCrys  = (TMath::Nint(para[4]) == 1) ? true : false;
       
       pair<int, int> idx(boardId, channelId);
       fCrysId[idx] = crysId;
@@ -76,6 +76,7 @@ Bool_t TACAparMap::FromFile(const TString& name)
       fModuleId.push_back(moduleId);
       fBoardId.push_back(boardId);
       fChannelId.push_back(channelId);
+      fActiveCry.push_back(activeCrys);
 
       if (FootDebugLevel(1))
          printf("%2d\t %2d\t %2d\t B%3d\t %d\n", crysId, moduleId, channelId, boardId, activeCrys);

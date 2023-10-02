@@ -111,11 +111,11 @@ TAGactWDreader::TAGactWDreader(const char* name,
    deltatimerate=0.;
    
    if (fpCAMap) {
-     int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
-     fTempCA = new double [nCry];
-     for (int cryID=0; cryID<nCry; ++cryID) {
-       fTempCA[cryID] = 0;
-     }
+      int nCry = ((TACAparMap*)fpCAMap->Object())->GetCrystalsN();
+      fTempCA = new double [nCry];
+      for (int cryID=0; cryID<nCry; ++cryID) {
+         fTempCA[cryID] = 0;
+      }
    }
 }
    
@@ -134,9 +134,9 @@ Int_t TAGactWDreader::Open(const TString& fname) {
 
    fWDstream = fopen(fname.Data(),"r");
    if (fWDstream==NULL) {
-      cout<<"ERROR in TAGactWDreader::cannot open the file="<<fname.Data()<<endl;
+      cout << "ERROR in TAGactWDreader::cannot open the file=" << fname.Data() << endl;
    } else {
-      cout<<"TAGactWDReader::file "<<fname.Data()<<" opened"<<endl;
+      cout << "TAGactWDReader::file " << fname.Data() << " opened" << endl;
    }
 
    return kTRUE;
@@ -186,28 +186,25 @@ Bool_t TAGactWDreader::Action()
    TAGdaqEvent*         p_datdaq;
    if (!fgStdAloneFlag) p_datdaq = (TAGdaqEvent*)  fpDatDaq->Object();
 
-   TAWDparTime*    p_WDtim = (TAWDparTime*)   fpWDTim->Object();
-   TAWDparMap*     p_WDmap = (TAWDparMap*)   fpWDMap->Object();
-   TASTntuRaw*          p_stwd  = (TASTntuRaw*)   fpStWd->Object();
-   TATWntuRaw*          p_twwd  = (TATWntuRaw*)   fpTwWd->Object();
-   TAWDntuTrigger*       p_WDtrigInfo = (TAWDntuTrigger*)   fpWDtrigInfo->Object();
+   TAWDparTime*     p_WDtim = (TAWDparTime*) fpWDTim->Object();
+   TAWDparMap*      p_WDmap = (TAWDparMap*)  fpWDMap->Object();
+   TASTntuRaw*      p_stwd  = (TASTntuRaw*)  fpStWd->Object();
+   TATWntuRaw*      p_twwd  = (TATWntuRaw*)  fpTwWd->Object();
+   TAWDntuTrigger*  p_WDtrigInfo = (TAWDntuTrigger*) fpWDtrigInfo->Object();
 
-   TACAntuRaw*          p_cawd  = 0x0;
+   TACAntuRaw*  p_cawd  = 0x0;
    if (fpCaWd)
-      p_cawd = (TACAntuRaw*)   fpCaWd->Object();
-   TACAparMap*          p_CAmap = 0x0;
+      p_cawd = (TACAntuRaw*) fpCaWd->Object();
+   TACAparMap*  p_CAmap = 0x0;
    if (fpCAMap)
-      p_CAmap =  (TACAparMap*)   fpCAMap->Object();
+      p_CAmap =  (TACAparMap*) fpCAMap->Object();
 
-   TANEntuRaw*          p_newd  = 0x0;
+   TANEntuRaw*  p_newd  = 0x0;
    if (fpNeWd)
-      p_newd = (TANEntuRaw*)   fpNeWd->Object();
-
-
- 
+      p_newd = (TANEntuRaw*) fpNeWd->Object();
 
   
-  Int_t nmicro;
+   Int_t nmicro;
   
    Clear();
 
@@ -217,71 +214,67 @@ Bool_t TAGactWDreader::Action()
       //decoding fragment and filling the datRaw class
       const WDEvent* evt = static_cast<const WDEvent*> (p_datdaq->GetFragment("WDEvent"));
       if (evt) 
-	nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
+      nmicro = DecodeWaveforms(evt,  p_WDtrigInfo, p_WDtim, p_WDmap);
       
       TrgEvent*  trgEvent  = p_datdaq->GetTrgEvent();
       if (trgEvent) {
 
-	nAcqEventsRate++;
-	Double_t trigID = p_WDtrigInfo->GetTriggerID();
-	nSTcounts = (p_WDtrigInfo->GetTriggersCounter())[42];
-	nTWcounts = (p_WDtrigInfo->GetTriggersCounter())[20];
-	nCAcounts = (p_WDtrigInfo->GetTriggersCounter())[30];
-	nSTcountsrate += nSTcounts-nSTcounts_prev;
-	nTWcountsrate += nTWcounts-nTWcounts_prev;
-	nCAcountsrate += nCAcounts-nCAcounts_prev;
-	
-	time = trgEvent->time_sec+trgEvent->time_usec*1E-6;
-	deltatimeev = (trgEvent->eventNumber==0) ? 0 : time-time_prev;
-	runtime+=deltatimeev;
-	deltatimerate+=deltatimeev;
+         nAcqEventsRate++;
+         Double_t trigID = p_WDtrigInfo->GetTriggerID();
+         nSTcounts = (p_WDtrigInfo->GetTriggersCounter())[42];
+         nTWcounts = (p_WDtrigInfo->GetTriggersCounter())[20];
+         nCAcounts = (p_WDtrigInfo->GetTriggersCounter())[30];
+         nSTcountsrate += nSTcounts-nSTcounts_prev;
+         nTWcountsrate += nTWcounts-nTWcounts_prev;
+         nCAcountsrate += nCAcounts-nCAcounts_prev;
+         
+         time = trgEvent->time_sec+trgEvent->time_usec*1E-6;
+         deltatimeev = (trgEvent->eventNumber==0) ? 0 : time-time_prev;
+         runtime+=deltatimeev;
+         deltatimerate+=deltatimeev;
 
-	if(ValidHistogram()) {
-	  hTriggerID->Fill(trigID);
-	  hDAQRateVsTime->Fill(runtime);
-	  hSTRateVsTime->Fill(runtime,nSTcounts-nSTcounts_prev);
-	  hTWRateVsTime->Fill(runtime,nTWcounts-nTWcounts_prev);
-	  hCARateVsTime->Fill(runtime,nCAcounts-nCAcounts_prev);
-	  
-	  if(deltatimeev>0){
-	    hSTRate->Fill((nSTcounts-nSTcounts_prev)/deltatimeev);
-	    hTWRate->Fill((nTWcounts-nTWcounts_prev)/deltatimeev);
-	    hCARate->Fill((nCAcounts-nCAcounts_prev)/deltatimeev);
-	  }
-	  
-	  
-	  if(deltatimerate>0.1){
-	    hDAQRate->Fill(nAcqEventsRate/deltatimerate);
-	    hDAQVsST->Fill(nSTcountsrate/deltatimerate, nAcqEventsRate/deltatimerate);
-	    hRatioDAQ_ST->Fill(nAcqEventsRate/(Double_t)nSTcountsrate);
-	    hSTRate100->Fill(nSTcountsrate/deltatimerate);
-	    hTWRate100->Fill(nTWcountsrate/deltatimerate);
-	    hCARate100->Fill(nCAcountsrate/deltatimerate);
-	    deltatimerate=0;
-	    nAcqEventsRate=0;
-	    nSTcountsrate=0;
-	    nTWcountsrate=0;
-	    nCAcountsrate=0;
-	  }
-	
-	  time_prev = time;
-	  nSTcounts_prev = nSTcounts;
-	  nTWcounts_prev = nTWcounts;
-	  nCAcounts_prev = nTWcounts;
-	}
+         if (ValidHistogram()) {
+            hTriggerID->Fill(trigID);
+            hDAQRateVsTime->Fill(runtime);
+            hSTRateVsTime->Fill(runtime,nSTcounts-nSTcounts_prev);
+            hTWRateVsTime->Fill(runtime,nTWcounts-nTWcounts_prev);
+            hCARateVsTime->Fill(runtime,nCAcounts-nCAcounts_prev);
+            
+            if (deltatimeev>0){
+               hSTRate->Fill((nSTcounts-nSTcounts_prev)/deltatimeev);
+               hTWRate->Fill((nTWcounts-nTWcounts_prev)/deltatimeev);
+               hCARate->Fill((nCAcounts-nCAcounts_prev)/deltatimeev);
+            }
+
+            if (deltatimerate>0.1){
+               hDAQRate->Fill(nAcqEventsRate/deltatimerate);
+               hDAQVsST->Fill(nSTcountsrate/deltatimerate, nAcqEventsRate/deltatimerate);
+               hRatioDAQ_ST->Fill(nAcqEventsRate/(Double_t)nSTcountsrate);
+               hSTRate100->Fill(nSTcountsrate/deltatimerate);
+               hTWRate100->Fill(nTWcountsrate/deltatimerate);
+               hCARate100->Fill(nCAcountsrate/deltatimerate);
+               deltatimerate=0;
+               nAcqEventsRate=0;
+               nSTcountsrate=0;
+               nTWcountsrate=0;
+               nCAcountsrate=0;
+            }
+            
+            time_prev = time;
+            nSTcounts_prev = nSTcounts;
+            nTWcounts_prev = nTWcounts;
+            nCAcounts_prev = nTWcounts;
+         }
       }
-
-      
 
       if (fgArduinoTempCA && fpCaWd) {
-	const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
-	if (evtA)
-	  DecodeArduinoTempCA(evtA);
+         const ArduinoEvent* evtA = static_cast<const ArduinoEvent*> (p_datdaq->GetFragment("ArduinoEvent"));
+         if (evtA)
+            DecodeArduinoTempCA(evtA);
       }
-
       
    } else {
-     nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap);
+      nmicro = ReadStdAloneEvent(eof, p_WDtrigInfo, p_WDtim, p_WDmap);
    }
 
    WaveformsTimeCalibration();
@@ -353,6 +346,7 @@ Int_t TAGactWDreader::DecodeArduinoTempCA(const ArduinoEvent* evt)
             // not connected channels will read 1023
             if (tempADC < 1023) {
                int iCry = p_CAmap->GetArduinoCrystalId(boardID, muxnum, ch);
+               if (iCry >= 0 && !(p_CAmap->IsActive(iCry))) continue; // skip not active crystals
                if (iCry < 0 || iCry >= nCry) { 
                   Error("TAGactWDreader", " --- Not well mapped Arduino vs crystal ID. Board: %d mux: %d  ch: %d -> criID %d", boardID, muxnum, ch, iCry);
                   continue;
@@ -780,7 +774,7 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
       for(int i=0;i<wst->GetVectRawT().size();i++) {
          calib_time.push_back(wst->GetVectRawT()[i]+dt);
          if (wst->GetChannelId()==0) {
-      //	cout << "ST isa::" << i << "   time::" << wst->m_vectRawT[i]+ t_trig_ref - t_trig << endl;
+         // cout << "ST isa::" << i << "   time::" << wst->m_vectRawT[i]+ t_trig_ref - t_trig << endl;
          }
       }
       fSTwaves[i]->GetVectT() = calib_time;
@@ -806,7 +800,7 @@ Bool_t TAGactWDreader::WaveformsTimeCalibration()
       for(int i=0;i<wtw->GetVectRawT().size();i++) {
          calib_time.push_back(wtw->GetVectRawT()[i]+dt);
          if (wtw->GetChannelId()==0) {
-      //	cout << "TW isa::" << i << "   time::" << wtw->m_vectRawT[i]+ t_trig_ref - t_trig << endl;
+         // cout << "TW isa::" << i << "   time::" << wtw->m_vectRawT[i]+ t_trig_ref - t_trig << endl;
          }
       }
       fTWwaves[i]->GetVectT() = calib_time;
@@ -880,12 +874,12 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk)
    //     a2 = vamp[i];
          
    //     if (a1<wave_0 && a2>=wave_0) {
-   // 	m = (a2-a1)/(t2-t1);
-   // 	q = a1 - m*t1;
-   // 	tzerocrossing = (wave_0-q/m);
-   // 	tzeros.push_back(tzerocrossing);
-   // 	ncycles++;
-   // 	nclock.push_back((double)ncycles);
+   //        m = (a2-a1)/(t2-t1);
+   //        q = a1 - m*t1;
+   //        tzerocrossing = (wave_0-q/m);
+   //        tzeros.push_back(tzerocrossing);
+   //        ncycles++;
+   //        nclock.push_back((double)ncycles);
    //     }
    // }
 
@@ -980,6 +974,7 @@ Bool_t TAGactWDreader::CreateHits(TASTntuRaw* p_straw, TATWntuRaw* p_twraw, TACA
          int board_id = fCAwaves[i]->GetBoardId();
          int ch_num = fCAwaves[i]->GetChannelId();
          int criID = p_CAmap->GetCrystalId(board_id, ch_num);
+         if (criID >= 0 && !(p_CAmap->IsActive(criID))) continue; // skip not active crystals
          if (criID < 0 || criID >= nCry) {
             Error("CreateHits", " CALO Hit skipped --- Not well mapped WD vs crystal ID. board: %d ch: %d -> iCry %d", board_id, ch_num, criID);
             continue;
@@ -1129,7 +1124,7 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAWDntuTrigger *p_WDtri
             flags = word & 0xffff;
             if (FootDebugLevel(1)) printf("sampling::%08x  num%d\n", word, board_id);
 
-            while(fread(&word, 4, 1, fWDstream) !=0 && (word & 0xffff)== CH_HEADER) {	
+            while(fread(&word, 4, 1, fWDstream) !=0 && (word & 0xffff)== CH_HEADER) {
 
                char tmp_chstr[3]={'0','0','\0'};
                tmp_chstr[1] = (word>>24)  & 0xff;
@@ -1147,7 +1142,7 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAWDntuTrigger *p_WDtri
                ret = fread(usa, 4,NSAMPLING/2,fWDstream);
                for (int iSa=0; iSa<NSAMPLING/2; iSa++) {
                   adc_sa = usa[iSa];
-                  adctmp  = (adc_sa & 0xffff);	  
+                  adctmp  = (adc_sa & 0xffff);
                   w_adc[2*iSa]=adctmp;
                   adctmp = ((adc_sa >> 16) & 0xffff);
                   w_adc[2*iSa+1]=adctmp;
@@ -1301,6 +1296,7 @@ Int_t TAGactWDreader::ReadStdAloneEvent(bool &endoffile, TAWDntuTrigger *p_WDtri
                      // not connected channel will read 1023
                      if (tempADC < 1023) {
                         int iCry = p_CAmap->GetArduinoCrystalId(boardID, muxnum, ch);
+                        if (iCry >= 0 && !(p_CAmap->IsActive(iCry))) continue; // skip not active crystals
                         if (iCry < 0 || iCry >= nCry) { 
                            Error("ReadStdAloneEvent", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d -> iCry %d", boardID, muxnum, ch, iCry);
                            continue;
