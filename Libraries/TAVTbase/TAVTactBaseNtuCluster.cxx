@@ -338,7 +338,7 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
             fpHisPixelTot->Fill(cluster->GetPixelsN());
             fpHisCharge[iSensor]->Fill(cluster->GetCharge());
             fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
-            fpHisClusMap[iSensor]->Fill(cluster->GetPositionG()[0], cluster->GetPositionG()[1]);
+            fpHisClusMap[iSensor]->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
          }
       }
       cluster->SetValid(true);
