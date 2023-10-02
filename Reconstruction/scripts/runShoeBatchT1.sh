@@ -260,7 +260,7 @@ while true; do
             command="\${command} ${outFile_base}\${iFile}.root"
         done
         command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
-        hadd -j -f \${command}
+        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
         mv \${SCRATCH}/Merge_temp.root ${outMergedFile}
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break

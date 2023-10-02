@@ -295,7 +295,7 @@ while true; do
             command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
         fi
         
-        hadd -j -f \${command}
+        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
         mv \${SCRATCH}/Merge_temp.root \$(dirname ${outMergedFile})
         mv \$(dirname ${outMergedFile})/Merge_temp.root ${outMergedFile}
 
@@ -376,7 +376,7 @@ while true; do
             command="\${command} ${outFolder}/\${iFile}/${baseMergedSingleFile}"
         done
 
-        hadd -j -f \${command}
+        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
         mv \${SCRATCH}/Merge_temp.root ${fullStatOutput}
         break
     else
