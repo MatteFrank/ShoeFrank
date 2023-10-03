@@ -377,7 +377,11 @@ while true; do
         done
 
         LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
-        mv \${SCRATCH}/Merge_temp.root ${fullStatOutput}
+        retVal=\$?
+        if [ \$retVal -eq 0 ]; then
+            mv \${SCRATCH}/Merge_temp.root ${fullStatOutput}
+            rm ${outFolder}/*/${baseMergedSingleFile}
+        fi
         break
     else
         echo "Processed \${nCompletedFiles}/${fileNumber} files. Waiting.."
