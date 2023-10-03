@@ -92,8 +92,8 @@ Bool_t TACAactNtuHit::Action()
 
       // here needed mapping file
       Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
-       if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation 
-        Error("Action", " --- Not well mapped WD vs crystal ID. board: %d  ch: %d -> crysId %d", bo_num, ch_num, crysId);
+      if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation
+         Error("Action", " --- Not well mapped WD vs crystal ID. board: %d  ch: %d -> crysId %d", bo_num, ch_num, crysId);
          continue;
       }
 
@@ -135,6 +135,7 @@ Double_t TACAactNtuHit::ADC2Temp(Double_t adc, Int_t crysId)
 
    TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
+   // Get parameter for crysId
    Double_t p0_SH = p_parcal->GetADC2TempParam(crysId, 0);
    Double_t p1_SH = p_parcal->GetADC2TempParam(crysId, 1);
    Double_t p2_SH = p_parcal->GetADC2TempParam(crysId, 2);

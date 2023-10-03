@@ -37,6 +37,8 @@ public:
    Int_t           GetChannelId(Int_t cryId)       { return fChannelId[cryId]; }
    //! Get module id
    Int_t           GetModuleId(Int_t cryId)        { return fModuleId[cryId];  }
+   //! Get module id
+   Bool_t          IsActive(Int_t cryId)           { return fActiveCry[cryId];  }
 
 private:
    Int_t                      fCrystalsN;        ///< number of crystal
@@ -45,8 +47,9 @@ private:
    vector<Int_t>              fModuleId;         ///< module id vector
    vector<Int_t>              fBoardId;          ///< board id vector
    vector<Int_t>              fChannelId;        ///< channel id vector
-   
-   ClassDef(TACAparMap,1)
+   vector<Bool_t>             fActiveCry;        ///< if active vector
+
+   ClassDef(TACAparMap, 2)
 };
 
 #endif

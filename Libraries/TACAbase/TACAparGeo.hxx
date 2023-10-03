@@ -186,11 +186,14 @@ private:
    vector<TVector3>    fListOfCrysAng;     ///< list of angles for crystal
    vector<TVector3>    fListOfModAng;      ///< list of angles for module
 
+   Int_t               fDummyModulesN;     ///< Number of dummy/empty modules
+   vector<int>         fListDummyModules;  ///< list of dummy/empty modules ID
+   
    map<int, pair<int, int> > fMapIndexes;  ///< index map for line/column numbers
    Int_t               fNumLine;           ///< line index
    Int_t               fNumCol;            ///< column index
 
-   ClassDef(TACAparGeo, 2)
+   ClassDef(TACAparGeo, 3)
 };
 
 
