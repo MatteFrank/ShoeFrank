@@ -190,3 +190,10 @@ CamName:    "CNAO2023_MC"
 CamDataMC:    1
 CamDate: "September 2023"
 CamSum: "Simulation data for the test experiment at CNAO with ST+VT+IT+MSD+TW+CAL+Magnets @ 200,400 MeV/u; C and C2H4 target"
+
+CamNumber:    32
+CamName:    "16O_200_2023v2"
+CamDataMC:    1
+CamDate: "Oct 2023"
+CamSum: "Simulation data for 16O on 12C (5mm target) @ 200MeV/u with 2023 Magnets, reversed field, and new Calo geometry, TW at 175 cm"
+
