@@ -127,6 +127,8 @@ void GlobalRecoAnaGSI::LoopEvent()
         if (m_nClone[Z_true][TrkIdMC] > 1)
           n_clones[Z_true] = m_nClone[Z_true][TrkIdMC];
 
+
+        // ===================TWMATCH 
         TAMCpart *particle = myMcNtuPart->GetTrack(TrkIdMC);
         if ((std::find(vecTwTrkId.begin(), vecTwTrkId.end(), TrkIdMC) != vecTwTrkId.end()) // if main track id in twpoint id
             // && (particle->GetInitPos().Z() < 40.6 ||        particle->GetInitPos().Z() > 41))     // a hard coded way to take out fragm from 1 layer of msd...
@@ -147,13 +149,23 @@ void GlobalRecoAnaGSI::LoopEvent()
           // if (Z_true > 0. && Z_true <= primary_cha)
           MigMatrixPlots("MigMatrixTW", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-          if (Z_meas > 0. && Z_meas <= primary_cha)
+          if (Z_true > 0. && Z_true <= primary_cha)
           {
             FillYieldReco("yield-N_TW_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
           }
           if (Z_true > 0. && Z_true <= primary_cha)
           {
             FillYieldReco("yield-N_TW_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+          }
+
+          if (Z_meas > 0. && Z_meas <= primary_cha)
+          {
+            FillYieldReco("yield-N_TW_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+          }
+
+          if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+          {
+            FillYieldReco("yield-N_TW_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
           }
 
           // if (initTWPosition< 40){
@@ -166,32 +178,219 @@ void GlobalRecoAnaGSI::LoopEvent()
 
         }
         else
-          ChargeStudies("Z8_TW_noTWmatch", 8, fGlbTrack);
+        ChargeStudies("Z8_TW_noTWmatch", 8, fGlbTrack);
 
-        ChargeStudies("Z8_all", 8, fGlbTrack);
+        // // ===================VT MATCH
+        bool VTMatch = true;
+        bool VTZ8Match = true;
 
-        if (isGoodReco(TrkIdMC))
+        for (int i = 0; i < vecVtZMC.size(); i++)
         {
+          if (std::find(vecVtZMC.at(i).begin(), vecVtZMC.at(i).end(), 8) != vecVtZMC.at(i).end()) // if the cluster of the VTX contains Z=8
+            VTZ8Match = VTZ8Match && true; 
+          else
+            VTZ8Match = VTZ8Match && false;
+        }
+
+        if (VTZ8Match == true) {   // if a primary entered the first layer of the msd and did not fragmented up to its last plane...
+          if (Z_meas > 7)    // ... and the charge reconstructed in TW is higher than 7
+            VTMatch = true;  // --> it means there is no fragmentation between VTX and up to TW
+          else
+            VTMatch = false;
+        }
+
+        if ((std::find(vecVtZMC.at(0).begin(), vecVtZMC.at(0).end(), 8) != vecVtZMC.at(0).end()) && (VTZ8Match == false)) 
+        // if the first cluster was a Z=8 but then some fragmentation happened...
+        {
+          VTMatch = false;
+        }
+
+        if (VTMatch == true)
+        {
+
+          if (isGoodReco(TrkIdMC))
+          {
+            if (Z_true > 0. && Z_true <= primary_cha)
+            {
+              FillYieldMC("yield-N_VTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+            }
+          }
+          if (Z_true > 0. && Z_true <= primary_cha)
+            FillYieldMC("yield-N_VTAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+
+          // if (Z_true > 0. && Z_true <= primary_cha)
+          MigMatrixPlots("MigMatrixVT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+
           if (Z_true > 0. && Z_true <= primary_cha)
           {
-            FillYieldMC("yield-N_GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+            FillYieldReco("yield-N_VT_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
           }
-        }
-        if (Z_true > 0. && Z_true <= primary_cha)
-          FillYieldMC("yield-N_AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+          if (Z_true > 0. && Z_true <= primary_cha)
+          {
+            FillYieldReco("yield-N_VT_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+          }
 
-        // if (Z_true > 0. && Z_true <= primary_cha)
-        MigMatrixPlots("MigMatrix", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+          if (Z_meas > 0. && Z_meas <= primary_cha)
+          {
+            FillYieldReco("yield-N_VT_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+          }
 
-        if (Z_meas > 0. && Z_meas <= primary_cha)
-        {
-          FillYieldReco("yield-N_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
+          if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+          {
+            FillYieldReco("yield-N_VT_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
+          }
+
+          // if (initTWPosition< 40){
+          //   FillYieldReco("yield-N_TWCutZ_reco_Th_Reco", Z_meas, Th_recoBM);
+          //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
+          // }
+
+          ChargeStudies("Z8_VTmatch", 8, fGlbTrack);
         }
-        if (Z_true > 0. && Z_true <= primary_cha)
+        else
+          ChargeStudies("Z8_VT_nomatch", 8, fGlbTrack);
+
+        // // ===================MSD MATCH
+        bool MSDMatch = true;
+        bool MsdZ8Match = true;
+
+        for (int i = 0; i < vecMsdZMC.size(); i++)
         {
-          FillYieldReco("yield-N_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+          if (std::find(vecMsdZMC.at(i).begin(), vecMsdZMC.at(i).end(), 8) != vecMsdZMC.at(i).end()) // if the cluster of the MSD contains Z=8
+            MsdZ8Match = MsdZ8Match && true; 
+          else
+            MsdZ8Match = MsdZ8Match && false;
         }
-      }
+
+        if (MsdZ8Match == true ){  // if a primary entered the first layer of the msd and did not fragmented up to its last plane...
+            if (Z_meas > 7)   // ... and the charge reconstructed in TW is higher than 7
+              MSDMatch = true; // --> it means there is no fragmentation between VTX and up to TW
+            else
+              MSDMatch = false;
+          }
+
+          if ((std::find(vecMsdZMC.at(0).begin(), vecMsdZMC.at(0).end(), 8) != vecMsdZMC.at(0).end()) && (MsdZ8Match == false)) // if the first cluster was a Z=8 but then some fragmentation happened...
+          {
+            MSDMatch = false;
+          }
+
+            if (MSDMatch == true)
+            {
+
+              if (isGoodReco(TrkIdMC))
+              {
+                if (Z_true > 0. && Z_true <= primary_cha)
+                {
+                  FillYieldMC("yield-N_MSDGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                }
+              }
+              if (Z_true > 0. && Z_true <= primary_cha)
+                FillYieldMC("yield-N_MSDAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+
+              // if (Z_true > 0. && Z_true <= primary_cha)
+              MigMatrixPlots("MigMatrixMSD", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+
+              if (Z_true > 0. && Z_true <= primary_cha)
+              {
+                FillYieldReco("yield-N_MSD_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
+              }
+              if (Z_true > 0. && Z_true <= primary_cha)
+              {
+                FillYieldReco("yield-N_MSD_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+              }
+
+              if (Z_meas > 0. && Z_meas <= primary_cha)
+              {
+                FillYieldReco("yield-N_MSD_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+              }
+
+              if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+              {
+                FillYieldReco("yield-N_MSD_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
+              }
+
+              // if (initTWPosition< 40){
+              //   FillYieldReco("yield-N_TWCutZ_reco_Th_Reco", Z_meas, Th_recoBM);
+              //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
+              // }
+
+              ChargeStudies("Z8_MSDmatch", 8, fGlbTrack);
+            }
+            else
+              ChargeStudies("Z8_MSD_nomatch", 8, fGlbTrack);
+
+            // // ===================ALL TRACKS with TRACK QUALITY = 1
+            if (fGlbTrack->GetQuality() == 1)
+            {
+              if (isGoodReco(TrkIdMC))
+              {
+                if (Z_true > 0. && Z_true <= primary_cha)
+                {
+                  FillYieldMC("yield-N_Q1GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                }
+              }
+              if (Z_true > 0. && Z_true <= primary_cha)
+                FillYieldMC("yield-N_Q1AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+
+              // if (Z_true > 0. && Z_true <= primary_cha)
+              MigMatrixPlots("MigMatrixQ1", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+
+              if (Z_meas > 0. && Z_meas <= primary_cha)
+              {
+                FillYieldReco("yield-NQ1_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
+              }
+              if (Z_true > 0. && Z_true <= primary_cha)
+              {
+                FillYieldReco("yield-NQ1_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+              }
+
+              if (Z_meas > 0. && Z_meas <= primary_cha)
+              {
+                FillYieldReco("yield-NQ1_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+              }
+
+              if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+              {
+                FillYieldReco("yield-NQ1_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with real theta (for purity purposes)
+              }
+              ChargeStudies("Z8_Q1all", 8, fGlbTrack);
+            }
+
+            //// ===================ALL TRACKS
+            ChargeStudies("Z8_all", 8, fGlbTrack);
+
+            if (isGoodReco(TrkIdMC))
+            {
+              if (Z_true > 0. && Z_true <= primary_cha)
+              {
+                FillYieldMC("yield-N_GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+              }
+            }
+            if (Z_true > 0. && Z_true <= primary_cha)
+              FillYieldMC("yield-N_AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+
+            // if (Z_true > 0. && Z_true <= primary_cha)
+            MigMatrixPlots("MigMatrix", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+
+            if (Z_meas > 0. && Z_meas <= primary_cha)
+            {
+              FillYieldReco("yield-N_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
+            }
+            if (Z_true > 0. && Z_true <= primary_cha)
+            {
+              FillYieldReco("yield-N_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+            }
+
+            if (Z_meas > 0. && Z_meas <= primary_cha)
+            {
+              FillYieldReco("yield-N_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+            }
+
+            if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+            {
+              FillYieldReco("yield-N_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with real theta (for purity purposes)
+            }
+          }
 
       ntracks++;
 
@@ -251,22 +450,58 @@ void GlobalRecoAnaGSI::Booking()
 
     BookYield("yield-N_ref", false);
 
+    //no cuts
     BookYield("yield-N_GoodReco", true);
     BookYield("yield-N_AllReco", true);
-    BookYield("yield-N_TW_Z_reco_Th_Reco", false);
-    BookYield("yield-N_TW_Z_true_Th_Reco", false);
-
-    BookMigMatrix("MigMatrix", true);
-
-    BookYield("yield-N_TWGoodReco", true);
-    BookYield("yield-N_TWAllReco", true);
     BookYield("yield-N_Z_reco_Th_Reco", false);
     BookYield("yield-N_Z_true_Th_Reco", false);
-    // BookYield("yield-N_TWposCutrecoTracks", false);
+    BookYield("yield-N_Z_meas_Th_True", false);
+    BookYield("yield-N_Z_measEqualTrue_Th_True", false);
+    BookMigMatrix("MigMatrix", true);
+    BookChargeStudies("Z8_all");
+
+    //tw mc cuts
+    BookYield("yield-N_TW_Z_reco_Th_Reco", false);
+    BookYield("yield-N_TW_Z_true_Th_Reco", false);
+    BookYield("yield-N_TWGoodReco", true);
+    BookYield("yield-N_TWAllReco", true);
+    BookYield("yield-N_TW_Z_meas_Th_True", false);
+    BookYield("yield-N_TW_Z_measEqualTrue_Th_True", false);
     BookMigMatrix("MigMatrixTW", true);
     BookChargeStudies("Z8_TWmatch");
     BookChargeStudies("Z8_TW_noTWmatch");
-    BookChargeStudies("Z8_all");
+
+    //vt mc cuts
+    BookYield("yield-N_VT_Z_reco_Th_Reco", false);
+    BookYield("yield-N_VT_Z_true_Th_Reco", false);
+    BookYield("yield-N_VTGoodReco", true);
+    BookYield("yield-N_VTAllReco", true);
+    BookYield("yield-N_VT_Z_meas_Th_True", false);
+    BookYield("yield-N_VT_Z_measEqualTrue_Th_True", false);
+    BookMigMatrix("MigMatrixVT", true);
+    BookChargeStudies("Z8_VTmatch");
+    BookChargeStudies("Z8_VT_nomatch");
+
+    // MSD mc cuts
+    BookYield("yield-N_MSD_Z_reco_Th_Reco", false);
+    BookYield("yield-N_MSD_Z_true_Th_Reco", false);
+    BookYield("yield-N_MSDGoodReco", true);
+    BookYield("yield-N_MSDAllReco", true);
+    BookYield("yield-N_MSD_Z_meas_Th_True", false);
+    BookYield("yield-N_MSD_Z_measEqualTrue_Th_True", false);
+    BookMigMatrix("MigMatrixMSD", true);
+    BookChargeStudies("Z8_MSDmatch");
+    BookChargeStudies("Z8_MSD_nomatch");
+    
+    //track quality 1
+    BookYield("yield-NQ1_Z_reco_Th_Reco", false);
+    BookYield("yield-NQ1_Z_true_Th_Reco", false);
+    BookYield("yield-N_Q1GoodReco", true);
+    BookYield("yield-N_Q1AllReco", true);
+    BookYield("yield-NQ1_Z_meas_Th_True", false);
+    BookYield("yield-NQ1_Z_measEqualTrue_Th_True", false);
+    BookMigMatrix("MigMatrixQ1", true);
+    BookChargeStudies("Z8_Q1all");
   }
   else
   {
@@ -852,7 +1087,7 @@ void GlobalRecoAnaGSI::RecoGlbTrkLoopSetVariables()
 
   // take the vector direction of the fragment in global SdR wrt target
   TVector3 TgtMomentum = fGlbTrack->GetTgtMomentum().Unit();
-  // take the direction of the beam in global SdR
+  // take the direction ofpush_back the beam in global SdR
   TVector3 BMslope = fpFootGeo->VecFromBMLocalToGlobal(myBMNtuTrk->GetTrack(0)->GetSlope());
   // take the angle between these 2 vectors
   // Th_recoBM = BMslope.Angle( TgtMomentum )*TMath::RadToDeg();
@@ -880,14 +1115,87 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   P_beforeTG.SetXYZ(-999., -999., -999.);
   TrkIdMC = fGlbTrack->GetMcMainTrackId(); // associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity)
   TATWpoint *twpoint = (TATWpoint *)fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
-  initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
-  Z_true_TW = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetCharge();
+  TAGpoint *vtcluster;
+  TAGpoint *msdcluster;
+  TAGpoint *point;
 
-  // all mc track id of TW point
-  vecTwTrkId.clear();
-  for (int i = 0; i < twpoint->GetMcTracksN(); i++)
+  // cout << " track with " << fGlbTrack->GetPointsN ()<< " points " << endl;
+  // for (int i = 0; i < 4; i++) // i put all charges of a vtx cluster in the vector
+  // {
+  //   vecVtZMC[i].clear();
+  //   vtcluster = fGlbTrack->GetPoint(i);
+  //   cout << "vtz point: "<< i << " is " << vtcluster -> GetDevName() << endl; 
+  //   for (int j = 0; j < vtcluster->GetMcTracksN(); j++)
+  //   {
+  //     TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(vtcluster->GetMcTrackIdx(j));
+  //     vecVtZMC[i].push_back(particleMC->GetCharge());
+  //   }
+  // }
+
+
+
+
+  // for (int i = 4; i<10; i++)  // i put all charges of a msd cluster in the vector
+  // {
+  //   vecMsdZMC[i-4].clear();
+  //   msdcluster = fGlbTrack->GetPoint(i);
+  //   cout << "msd point: " << i << " is " << msdcluster->GetDevName() << endl;
+  //   for (int j = 0; j < msdcluster->GetMcTracksN(); j++)
+  //   {
+  //     TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(msdcluster->GetMcTrackIdx(j));
+  //     vecMsdZMC[i-4].push_back(particleMC->GetCharge());
+  //   }
+  // }
+  vecVtZMC.clear();
+  vecMsdZMC.clear();
+  for (int i = 0; i < fGlbTrack->GetPointsN(); i++) // for all the points of a track...
   {
-    vecTwTrkId.push_back(twpoint->GetMcTrackIdx(i));
+  point  = fGlbTrack->GetPoint(i);
+
+  if ((string) point -> GetDevName() == "VT") { //... i take the vt cluster
+    vector<Int_t> vecVT_z; // vector of all Z of a cluster of the vtx
+    vecVT_z.clear();
+    for (int j = 0; j < point->GetMcTracksN(); j++)
+    {
+      
+      TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(point->GetMcTrackIdx(j));
+      vecVT_z.push_back(particleMC->GetCharge());     // i take all the charges of a cluster
+    }
+    vecVtZMC.push_back(vecVT_z); // and i put all in a vector
+  }
+
+  if ((string)point->GetDevName() == "MSD")
+  {
+    //cout << " it is a MSD" << endl;
+    vector<Int_t> vecMSD_z; // vector of all Z of a cluster of the vtx
+    vecMSD_z.clear();
+    for (int j = 0; j < point->GetMcTracksN(); j++)
+    {
+
+      TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(point->GetMcTrackIdx(j));
+      vecMSD_z.push_back(particleMC->GetCharge());
+    }
+    vecMsdZMC.push_back(vecMSD_z);
+  }
+
+
+}
+
+// if (vecVtZMC.size() < 4)
+//   cout << "my vector of vector VT of charghe has size " << vecVtZMC.size() << endl;
+// if (vecMsdZMC.size() < 6){
+//   cout << "my vector of vector MSD of charghe has size " << vecMsdZMC.size() << endl;
+//   cout << "vector 0 has " << vecMsdZMC.at(0).size() << " elements "<<endl;
+// }
+
+initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
+Z_true_TW = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetCharge();
+
+// all mc track id of TW point
+vecTwTrkId.clear();
+for (int i = 0; i < twpoint->GetMcTracksN(); i++)
+{
+  vecTwTrkId.push_back(twpoint->GetMcTrackIdx(i));
   }
   TrkIdMC_TW = twpoint->GetMcTrackIdx(0); // associo l'IdMC alla particella che ha attraversato il TW --> in questo modo bypasso il problema di frammentazione secondaria
   //  for (int i = 0; i < fGlbTrack->GetPointsN(); i++){
@@ -1037,7 +1345,8 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         particle->GetCharge() <= primary_charge && // with reasonable charge
         // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
         // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-        (OldReg >= GetParGeoTw()->GetRegStrip(0, 0) && OldReg <= GetParGeoTw()->GetRegStrip(1, GetParGeoTw()->GetNBars() - 1)) && NewReg == AirAfterTW_region // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
+        (OldReg >= GetParGeoTw()->GetRegStrip(0, 0) && OldReg <= GetParGeoTw()->GetRegStrip(1, GetParGeoTw()->GetNBars() - 1)) && NewReg == AirAfterTW_region 
+        // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     )
     {
       // I want to measure the angle of emission of this particle:  i need to loop again the regions
@@ -1149,7 +1458,7 @@ void GlobalRecoAnaGSI::ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTr
     string path_ = "";
     for (int i = 0; i < fGlbTrack->GetPointsN(); i++)
     {
-      auto point = fGlbTrack->GetPoint(i);
+      TAGpoint* point = fGlbTrack->GetPoint(i);
       string path_ = path + "/trackMCid";
       ((TH2D *)gDirectory->Get(path_.c_str()))->Fill(i, point->GetMcTrackIdx(0));
       path_ = path + "/trackMCid_multiplicity";

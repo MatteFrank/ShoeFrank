@@ -154,6 +154,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
   Int_t TrkIdMC;   //MC id of the glb track
   Int_t TrkIdMC_TW; //MC id of the twpoint
   vector<Int_t> vecTwTrkId; // vector of all MC id of the twpoint
+  vector<vector<Int_t>> vecVtZMC; // vector of all MC charge of the 4 vt hits
+  vector<vector<Int_t>> vecMsdZMC; // vector of all MC charge of the 6 msd clus
 
   //setting variables maybe we should use a config file?
   Double_t purity_cut;      //minumum purity value for a track to be defined as pure
