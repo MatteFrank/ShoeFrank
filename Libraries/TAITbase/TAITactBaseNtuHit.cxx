@@ -178,7 +178,7 @@ Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t sensor, Int_t datalink)
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];
          
-    //     if(FootDebugLevel(3))
+         if(FootDebugLevel(3))
             printf("datalink: %d sensor: %d trig#: %d evt#: %d\n", datalink, sensor, fTriggerNumber, fEventNumber);
          
          if(ValidHistogram()) {
