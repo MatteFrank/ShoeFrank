@@ -560,6 +560,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAWDparMap *p_WDMap) {
 
                   // Get the crystal ID for the corresponding board - channel
                   int criID = ((TACAparMap*)fpCAParMap->Object())->GetCrystalId(board_id, ch_num);
+                  if (criID >= 0 && !(((TACAparMap*)fpCAParMap->Object())->IsActive(criID)) ) continue; // skip not active crystals
                   if (criID >=0 && criID < nCry) {
                      if (FootDebugLevel(1)) printf("      copy waveform for crystal:%d\n", criID);
                      uint adc5 = w_adc[5];
@@ -629,6 +630,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAWDparMap *p_WDMap) {
                      // not connected channels will read 1023 value
                      if (tempADC < 1023) {
                         int iCry = ((TACAparMap*)fpCAParMap->Object())->GetArduinoCrystalId(boardID, muxnum, ch);
+                        if (iCry >= 0 && !(((TACAparMap*)fpCAParMap->Object())->IsActive(iCry)) ) continue; // skip not active crystals
                         if (iCry < 0 || iCry >= nCry) {
                            Error("CAactRaw2Ntu", " --- Not well mapped Arduino vs crystal ID. board: %d mux: %d  ch: %d -> iCry %d ADC %f", boardID, muxnum, ch, iCry, tempADC);
                            continue;

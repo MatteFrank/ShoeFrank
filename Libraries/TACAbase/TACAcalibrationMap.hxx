@@ -67,12 +67,12 @@ public:
   //! Calibration map iterator end
   TCalibrationMapType::iterator end()                { return fCalibrationMap.end();           }
 
-  //! Get cystal number
+  //! Get crystal number
   Int_t    GetCrystalsN()                      const { return fCalibrationMap.size();          }
     
-   Double_t GetADC2EnergyParam(UInt_t parId);
+  Double_t GetADC2EnergyParam(UInt_t parId);
    
-   Double_t GetChargeEqParam(UInt_t cryId);
+  Double_t GetChargeEqParam(UInt_t cryId);
 
   Double_t GetADC2TempParam(Int_t cryId, UInt_t parId);
  

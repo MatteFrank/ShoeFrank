@@ -105,6 +105,7 @@ protected:
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV);
 
 	void		FillTrackCategoryMap();
+	void		PrintCurrentTracksMC();
 	string		ListMCparticlesOfHit(int HitId);
 
 	int m_eventType;

@@ -190,6 +190,12 @@ void TAGFselectorLinear::CategorizeMSD()
 
 	}// end loop on GF Track candidates
 
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of MSD tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
+
 	return;
 }
 
@@ -249,6 +255,12 @@ void TAGFselectorLinear::CategorizeTW()
 			AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (m_allHitMeas->at(planeTW).at(indexOfMin)))->clone();
 			(itTrack->second)->insertMeasurement( hitToAdd );
 		}
+	}
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of TW tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
 	}
 
 	return;

@@ -276,6 +276,9 @@ void TAGactKFitter::Finalize() {
 			for ( map<string, TH1F*>::iterator it=h_biasP_over_Pkf.begin(); it != h_biasP_over_Pkf.end(); ++it )
 				AddHistogram( (*it).second );
 
+			for ( map<string, TH2F*>::iterator it=h_dPOverP_vs_P.begin(); it != h_dPOverP_vs_P.end(); ++it )
+				AddHistogram( (*it).second );
+
 			TH1F* h_deltaP_tot = new TH1F();
 			TH1F* h_sigmaP_tot = new TH1F();
 
@@ -687,7 +690,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	if(fitCh < 0 || fitCh >  m_GFgeometry->GetGparGeo()->GetBeamPar().AtomicNumber ) return;
 
 	//Vertexing for track length
-	if( FootDebugLevel(2))	cout << "Track length before vertexing::" << track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
+	if( FootDebugLevel(2))	cout << "Track length before vertexing::" << track->getKalmanFitStatus(track->getCardinalRep())->getTrackLen() << endl;
 
 	//Extrapolate to VTX
 	//RZ: Issue!!!!! When trueparticle is active this extrapolation breaks
@@ -708,7 +711,16 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 
 	StateOnPlane state_target_point = track->getFittedState(0);
-	double extL_Tgt = track->getCardinalRep()->extrapolateToPoint( state_target_point, targetMeas );
+	double extL_Tgt = 0;
+	try
+	{
+		extL_Tgt = track->getCardinalRep()->extrapolateToPoint( state_target_point, targetMeas );
+	}
+	catch(const genfit::Exception& e)
+	{
+		std::cerr << e.what() << "\n";
+		state_target_point = track->getFittedState(0);
+	}
 
 	if(FootDebugLevel(2))
 	{
@@ -716,7 +728,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		cout << "Extrap to point state::"; state_target_point.Print();
 		cout << "Distance point-vtx::" << (state_target_point.getPos() - targetMeas).Mag() << endl;
 		cout << "Extrapolation length::" << extL_Tgt << endl;
-		cout << "Track length after vertexing::" << fabs(extL_Tgt) + track->getTrackLen(track->getCardinalRep(), 0, -1) << endl;
+		cout << "Track length after vertexing::" << fabs(extL_Tgt) + track->getKalmanFitStatus(track->getCardinalRep())->getTrackLen() << endl;
 	}
 	//End VTX; 
 
@@ -729,7 +741,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	{
 		// getRecoInfo
 		GetRecoTrackInfo(-1, track, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov, &recoMom_TW_cov );
-		
+
 		StateOnPlane state_TW = track->getFittedState(-1);
 
 		TVector3 origin_( 0, 0, m_GeoTrafo->FromTWLocalToGlobal(m_GFgeometry->GetTWparGeo()->GetLayerPosition(1)).z() + 0.5 );
@@ -796,6 +808,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	// update at target position
 	recoPos_target = state_target_point.getPos();
 	recoMom_target = state_target_point.getMom();
+
 	// recoMom_target_cov;  maybe still at VTX...
 
 	shoeOutTrack = m_outTrackRepo->NewTrack( fitTrackName, (long)gTAGroot->CurrentEventId().EventNumber(),
@@ -803,6 +816,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 										&recoPos_target, &recoMom_target, &recoPos_target_cov,
 										&recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov,
 										&recoMom_TW_cov, &shoeTrackPointRepo);
+
 	//Set additional variables
 	shoeOutTrack->SetTrackId(std::atoi(tok.at(2).c_str()));
 	shoeOutTrack->SetHasTwPoint(hasTwPoint);
@@ -833,6 +847,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 
 	//MC additional variables if running on simulations
+	int mcCharge = 0;
 	int trackMC_id = -1;
 	double trackQuality = -1;
 	if ( m_IsMC ) {
@@ -845,12 +860,12 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		{
 			// trackMC_id = track->getMcTrackId();     //???????
 			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
-			if( particle->GetMotherID() == 0 )
+			if( m_trueMomentumAtTgt.find(trackMC_id) == m_trueMomentumAtTgt.end() || particle->GetMotherID() == 0 )
 				mcMom = particle->GetInitP();
 			else
 				mcMom = m_trueMomentumAtTgt[trackMC_id];
 			mcPos = particle->GetInitPos();
-			int mcCharge = particle->GetCharge();
+			mcCharge = particle->GetCharge();
 
 			if( ValidHistogram() )
 			{
@@ -868,7 +883,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 
 			m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
 
-			m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin );
+			m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin, &h_dPOverP_vs_P );
 
 			trackQuality = TrackQuality( &mcParticleID_track );
 			if(FootDebugLevel(1)) cout << "trackQuality::" << trackQuality << "\n";
@@ -890,6 +905,12 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			{
 				h_chargeMC->Fill( mcCharge );
 				h_trackQuality->Fill( trackQuality );
+				h_trackQualityVsNhits->Fill( trackQuality, shoeOutTrack->GetPointsN() );
+				h_trackQualityVsChi2->Fill( trackQuality, chi2 );
+				if( shoeOutTrack->HasTwPoint() )
+					if(shoeOutTrack->GetTwChargeZ() > 0 && shoeOutTrack->GetTwChargeZ() < 9)
+						h_trackQuality_Z[shoeOutTrack->GetTwChargeZ() - 1]->Fill( trackQuality );
+					// h_trackQuality_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( trackQuality );
 				h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
 				h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
 				h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag()/particle->GetInitP().Mag() );	// check if not present
@@ -935,6 +956,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			if( shoeOutTrack->HasTwPoint() )
 			{
 				h_theta_BMyesTw->Fill ( theta_deg );
+				if(shoeOutTrack->GetTwChargeZ() > 0 && shoeOutTrack->GetTwChargeZ() < 9)
+					h_theta_BM_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( theta_deg );
+				// h_theta_BM_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( theta_deg );
 				h_phi_BMyesTw->Fill ( phi_deg );
 			}
 			else
@@ -995,9 +1019,11 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_nMeas->Fill ( nMeas );
 		h_mass->Fill( fitMass );
 		h_chi2->Fill( chi2 );
+		if( shoeOutTrack->HasTwPoint() && shoeOutTrack->GetTwChargeZ() > 0 && shoeOutTrack->GetTwChargeZ() < 9)
+			h_chi2_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( chi2 );
 
 		h_chargeMeas->Fill( fitCh );
-		h_chargeFlip->Fill( pdgCh - fitCh );
+		h_chargeFlip->Fill( fitCh, shoeOutTrack->GetTwChargeZ() );
 
 		h_length->Fill( length );
 		h_tof->Fill( tof );
@@ -1006,6 +1032,24 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_momentum->Fill( recoMom_target.Mag() );
 		h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
 
+		if( shoeOutTrack->HasTwPoint() )
+		{
+			int pointID = m_SensorIDMap->GetHitIDFromMeasID(track->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId());
+			float TOF = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( pointID )->GetMeanTof();
+			float var = m_BeamEnergy/m_AMU;
+			float beam_speed = TAGgeoTrafo::GetLightVelocity()*TMath::Sqrt(var*(var + 2))/(var + 1);
+			TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
+			float beta = shoeOutTrack->GetLength()/(TOF*TAGgeoTrafo::GetLightVelocity());
+			if( shoeOutTrack->GetTwChargeZ() != shoeOutTrack->GetFitChargeZ() )
+				recoMom_target.SetMag( recoMom_target.Mag()*shoeOutTrack->GetTwChargeZ()/shoeOutTrack->GetFitChargeZ() );
+			float recomass = recoMom_target.Mag()*sqrt(1 - pow(beta,2))/(beta*m_AMU);
+			// cout << "TOF::" << TOF << " "
+
+			h_RecoMass.at(0)->Fill( recomass );
+			if( shoeOutTrack->GetTwChargeZ() < 10 )
+				h_RecoMass.at( shoeOutTrack->GetTwChargeZ() )->Fill( recomass );
+		}
+		
 		//Fill residual and pull plots
 		std::pair<string, std::pair<int,int>> sensId;
 		int cluster_size;
@@ -1303,10 +1347,12 @@ void TAGactKFitter::PrintPurity() {
 		totalDen+=nn;
 
 		h_trackMatched->SetBinContent(k, kk);
+		h_trackMatched->SetBinError(k, TMath::Sqrt(kk));
 
 		h_purity->SetBinContent(k, eff);
 		h_purity->SetBinError(k, sqrt(variance));
 
+		h_trackMatched->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 		h_purity->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
@@ -1351,11 +1397,15 @@ void TAGactKFitter::PrintEfficiency() {
 		totalDen+=nn;
 
 		h_trackConverged->SetBinContent(k, kk);
+		h_trackConverged->SetBinError(k, TMath::Sqrt(kk));
 		h_trackSelected->SetBinContent(k, nn);
+		h_trackSelected->SetBinError(k, TMath::Sqrt(nn));
 
 		h_trackEfficiency->SetBinContent(k, eff);
 		h_trackEfficiency->SetBinError(k, sqrt(variance));
 
+		h_trackConverged->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
+		h_trackSelected->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 		h_trackEfficiency->GetXaxis()->SetBinLabel(k, (*itPart).c_str() );
 	}
 
@@ -1379,11 +1429,13 @@ void TAGactKFitter::CalculateTrueMomentumAtTgt()
 {
 	if(TAGrecoManager::GetPar()->IsRegionMc())
 	{
+		Int_t target_region = m_GFgeometry->GetGparGeo()->GetRegTarget();
+		Int_t air_region = m_GFgeometry->GetGparGeo()->GetRegAirPreTW();
 		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"))->Object();
 		for(int i = 0; mcNtuReg && i < mcNtuReg->GetRegionsN(); ++i)
 		{
 			TAMCregion* mcReg = (TAMCregion*)mcNtuReg->GetRegion(i);
-			if( mcReg->GetOldCrossN() == 50 && mcReg->GetCrossN() == 2 )
+			if( mcReg->GetOldCrossN() == target_region && mcReg->GetCrossN() == air_region )
 				m_trueMomentumAtTgt[ mcReg->GetTrackIdx() - 1 ] = mcReg->GetMomentum();
 		}
 	}
@@ -1456,10 +1508,10 @@ void TAGactKFitter::PrintSelectionEfficiency() {
 //! \brief Declare the GenFit histograms
 void TAGactKFitter::CreateHistogram()	{
 
-	h_GFeventType = new TH1I("h_GFeventType", "h_GFeventType", 5, 0.5, 5.5);
+	h_GFeventType = new TH1I("h_GFeventType", "h_GFeventType;Event type;Entries", 5, 0.5, 5.5);
 	AddHistogram(h_GFeventType);
 
-	h_nTracksPerEv= new TH1F("h_nTracksPerEv", "h_nTracksPerEv", 15, -0.5, 14.5);
+	h_nTracksPerEv= new TH1F("h_nTracksPerEv", "h_nTracksPerEv;nTracks;Entries", 15, -0.5, 14.5);
 	AddHistogram(h_nTracksPerEv);
 
 	h_nConvTracksVsStartTracks = new TH2I("h_nConvTracksVsStartTracks", "h_nConvTracksVsStartTracks;nConvTracks;nStartTracks", 15, -0.5, 14.5, 15, -0.5, 14.5);
@@ -1485,38 +1537,50 @@ void TAGactKFitter::CreateHistogram()	{
 		h_trackMC_reco_id = new TH1F("h_trackMC_reco_id", "h_trackMC_reco_id", 45, 0., 45);
 		AddHistogram(h_trackMC_reco_id);
 
-		h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality", 55, 0, 1.1);
+		h_trackQuality = new TH1F("m_trackQuality", "m_trackQuality;Track quality;Entries", 55, 0, 1.1);
 		AddHistogram(h_trackQuality);
+
+		h_trackQualityVsNhits = new TH2F("m_trackQualityVsNhits", "m_trackQualityVsNhits;Track quality;N hits in track", 55, 0, 1.1, 16, -0.5, 15.5);
+		AddHistogram(h_trackQualityVsNhits);
+
+		h_trackQualityVsChi2 = new TH2F("m_trackQualityVsChi2", "m_trackQualityVsChi2;Track quality;#chi^{2}/n_{dof}", 55, 0, 1.1, 400, 0., 20.);
+		AddHistogram(h_trackQualityVsChi2);
+
+		for( int iZ = 1; iZ <= 9; ++iZ )
+		{
+			h_trackQuality_Z.push_back( new TH1F(Form("h_trackQuality_Z%d",iZ), Form("h_trackQuality_Z%d;Track quality;Entries",iZ), 55, 0, 1.1) );
+			AddHistogram(h_trackQuality_Z[h_trackQuality_Z.size() - 1]);
+		}
 	}
 
-	h_length = new TH1F("m_length", "m_length", 400, 0, 200);
+	h_length = new TH1F("m_length", "m_length;Track length [cm];Entries", 400, 0, 200);
 	AddHistogram(h_length);
 
-	h_tof = new TH1F("m_tof", "m_tof", 200, 0, 20);
+	h_tof = new TH1F("m_tof", "m_tof;Track fitted TOF [ns];Entries", 200, 0, 20);
 	AddHistogram(h_tof);
 
-	h_pVal = new TH1F("m_pVal", "m_pVal", 300, -0.1, 1.1);
+	h_pVal = new TH1F("m_pVal", "m_pVal;p-value of track fit;Entries", 300, -0.1, 1.1);
 	AddHistogram(h_pVal);
 
 	if( m_IsMC )
 	{
-		h_mcPosX = new TH1F("h_mcPosX", "h_mcPosX", 400, -1, 1);
+		h_mcPosX = new TH1F("h_mcPosX", "h_mcPosX;MC position X at target [cm];Entries", 400, -1, 1);
 		AddHistogram(h_mcPosX);
 
-		h_mcPosY = new TH1F("h_mcPosY", "h_mcPosY", 400, -1, 1);
+		h_mcPosY = new TH1F("h_mcPosY", "h_mcPosY;MC position Y at target [cm];Entries", 400, -1, 1);
 		AddHistogram(h_mcPosY);
 
-		h_mcPosZ = new TH1F("h_mcPosZ", "h_mcPosZ", 500, -0.25, 0.25);
+		h_mcPosZ = new TH1F("h_mcPosZ", "h_mcPosZ;MC position Z at target [cm];Entries", 500, -0.25, 0.25);
 		AddHistogram(h_mcPosZ);
 	}
 
 	h_dR = new TH1F("h_dR", "h_dR", 100, 0., 20.);
 	AddHistogram(h_dR);
 
-	h_phi = new TH1F("h_phi", "h_phi", 80, -4, 4);
+	h_phi = new TH1F("h_phi", "h_phi;Track #phi at target [rad];Entries", 80, -4, 4);
 	AddHistogram(h_phi);
 
-	h_theta = new TH1F("h_theta", "h_theta", 200, 0, 15);
+	h_theta = new TH1F("h_theta", "h_theta;Track #theta in FOOT frame [deg];Entries;", 200, 0, 15);
 	AddHistogram(h_theta);
 
 	h_theta_BM = new TH1F("h_theta_BM", "h_theta_BM;Track #theta wrt BM [deg]; Entries", 200, 0, 15);
@@ -1525,7 +1589,7 @@ void TAGactKFitter::CreateHistogram()	{
 	h_phi_BM = new TH1F("h_phi_BM", "h_phi_BM;Track #phi wrt BM [deg]; Entries", 100, -190, 190);
 	AddHistogram(h_phi_BM);
 
-	h_trackDirBM = new TH2F("h_trackDirBM", "h_trackDirBM;X;Y", 1001,-1,1,1001,-1,1);
+	h_trackDirBM = new TH2F("h_trackDirBM", "h_trackDirBM;dX/dZ;dY/dZ", 1001,-1,1,1001,-1,1);
 	AddHistogram(h_trackDirBM);
 
 	h_thetaGlbVsThetaTW = new TH2F("h_thetaGlbVsThetaTW", "h_thetaGlbVsThetaTW;theta Glb [deg];theta BM-TW [deg]", 200, 0, 12, 200, 0 ,12);
@@ -1543,44 +1607,63 @@ void TAGactKFitter::CreateHistogram()	{
 	h_phi_BMyesTw = new TH1F("h_phi_BMyesTw", "h_phi_BMyesTw (global track has a TW point);Track #phi wrt BM [deg]; Entries", 100, -190, 190);
 	AddHistogram(h_phi_BMyesTw);
 
+	for( int iZ = 1; iZ <= 9; ++iZ )
+	{
+		h_theta_BM_Z.push_back( new TH1F(Form("h_theta_BM_Z%d",iZ), Form("h_theta_BM_Z%d;Track #theta wrt BM for Z=%d [deg];Entries",iZ,iZ), 200, 0, 15) );
+		AddHistogram(h_theta_BM_Z[h_theta_BM_Z.size() - 1]);
+	}
+
 	h_eta = new TH1F("h_eta", "h_eta", 100, 0., 20.);
 	AddHistogram(h_eta);
 
-	h_dx_dz = new TH1F("h_dx_dz", "h_dx_dz", 110, 0., 0.3);
+	h_dx_dz = new TH1F("h_dx_dz", "h_dx_dz;Track slope X at TG", 110, 0., 0.3);
 	AddHistogram(h_dx_dz);
 
-	h_dy_dz = new TH1F("h_dy_dz", "h_dy_dz", 110, 0., 0.3);
+	h_dy_dz = new TH1F("h_dy_dz", "h_dy_dz;Track slope Y at TG", 110, 0., 0.3);
 	AddHistogram(h_dy_dz);
 
-	h_nMeas = new TH1F("nMeas", "nMeas", 13, 0., 13.);
+	h_nMeas = new TH1F("nMeas", "nMeas;N points in track;Entries", 13, 0., 13.);
 	AddHistogram(h_nMeas);
 
 	if ( m_IsMC )
 	{
-		h_chargeMC = new TH1F("h_chargeMC", "h_chargeMC", 9, 0, 9);
+		h_chargeMC = new TH1F("h_chargeMC", "h_chargeMC;MC Z;Entries", 9, 0, 9);
 		AddHistogram(h_chargeMC);
 	}
 
-	h_chargeMeas = new TH1F("h_chargeMeas", "h_chargeMeas", 9, 0, 9);
+	h_chargeMeas = new TH1F("h_chargeMeas", "h_chargeMeas;Measured Z;Entries", 9, 0, 9);
 	AddHistogram(h_chargeMeas);
 
-	h_chargeFlip = new TH1F("h_chargeFlip", "h_chargeFlip", 20, -5, 5);
+	h_chargeFlip = new TH2F("h_chargeFlip", "h_chargeFlip;Z fit;Z TW", 10, -0.5, 9.5, 10, -0.5, 9.5);
 	AddHistogram(h_chargeFlip);
 
-  	h_mass = new TH1F("h_mass", "h_mass", 100, 0., 20.);
+  	h_mass = new TH1F("h_mass", "h_mass;Mass [A.M.U.];Enries", 100, 0., 20.);
 	AddHistogram(h_mass);
 
-	h_chi2 = new TH1F("h_chi2", "h_chi2", 200, 0., 10.);
+	h_chi2 = new TH1F("h_chi2", "h_chi2;#chi^{2}/n_{dof};Entries", 400, 0., 20.);
 	AddHistogram(h_chi2);
+	for( int iZ = 1; iZ <= 9; ++iZ )
+	{
+		h_chi2_Z.push_back( new TH1F(Form("h_chi2_Z%d",iZ), Form("h_chi2_Z%d;#chi^{2}/n_{dof};Entries",iZ), 400, 0, 20) );
+		AddHistogram(h_chi2_Z[h_chi2_Z.size() - 1]);
+	}
 
 	if( m_IsMC )
 	{
-		h_mcMom = new TH1F("h_mcMom", "h_mcMom", 200, 0., 17.);
+		h_mcMom = new TH1F("h_mcMom", "h_mcMom;Momentum MC at TG [GeV/c];Entries", 200, 0., 17.);
 		AddHistogram(h_mcMom);
 	}
 
-	h_momentum = new TH1F("h_momentum", "h_momentum", 200, 0., 17.);
+	h_momentum = new TH1F("h_momentum", "h_momentum;Momentum reco at TG [GeV/c];Entries", 200, 0., 17.);
 	AddHistogram(h_momentum);
+
+	h_RecoMass.push_back( new TH1F("h_RecoMass", "h_RecoMass;Mass reco [A.M.U.];Entries", 400, 0, 20) );
+	AddHistogram(h_RecoMass[0]);
+	for( int iZ = 1; iZ <= 9; ++iZ )
+	{
+		h_RecoMass.push_back( new TH1F(Form("h_RecoMass_Z%d",iZ), Form("h_RecoMass_Z%d;Mass reco [A.M.U.];Entries",iZ), 400, 0, 20) );
+		AddHistogram(h_RecoMass[h_RecoMass.size() - 1]);
+	}
 
 	h_TGprojVsThetaTot = new TH2D("TGproj_ThetaTot","TGproj_ThetaTot;X_proj [cm];Y_proj [cm]",400,-5,5,400,-5,5);
 	AddHistogram(h_TGprojVsThetaTot);
@@ -1632,15 +1715,15 @@ void TAGactKFitter::CreateHistogram()	{
 
 	for (int i = 0; i < 9; ++i)
 	{
-		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d",i), 1000, 0.,17.));
+		h_momentum_reco.push_back(new TH1F(Form("RecoMomentum%d",i), Form("Reco Momentum %d;Momentum [GeV];Entries",i), 1000, 0.,17.));
 		AddHistogram(h_momentum_reco[i]);
 
 		if( m_IsMC )
 		{
-			h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d",i), 1000, 0.,17.));
+			h_momentum_true.push_back(new TH1F(Form("TrueMomentum%d",i), Form("True Momentum %d;Momentum [GeV];Entries",i), 1000, 0.,17.));
 			AddHistogram(h_momentum_true[i]);
 
-			h_ratio_reco_true.push_back(new TH1F(Form("MomentumRatio%d",i), Form("Momentum Ratio %d",i), 1000, 0, 2.5));
+			h_ratio_reco_true.push_back(new TH1F(Form("MomentumRatio%d",i), Form("Momentum Ratio %d;p ratio reco/true;Entries",i), 1000, 0, 2.5));
 			AddHistogram(h_ratio_reco_true[i]);
 		}
 	}

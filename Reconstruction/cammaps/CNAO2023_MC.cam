@@ -1,11 +1,11 @@
 // Campaign file
 CamName: "CNAO2023_MC"
-RunNumber: 1
+RunNumber: 1;2;3
 NumberDevices: 10
 
 DetectorName: "FOOT"
 NumberFiles: 2
-"./geomaps/CNAO2023_MC/FOOT.geo": -1
+"./geomaps/CNAO2023_MC/FOOT.geo": 1;2;3
 "./geomaps/CNAO2023_MC/FOOT.reg": -1
 
 DetectorName: "DI"
@@ -25,7 +25,7 @@ NumberFiles: 3
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/CNAO2023_MC/TAGdetector.geo": -1
+"./geomaps/CNAO2023_MC/TAGdetector.geo": 1;2;3
 
 DetectorName: "VT"
 NumberFiles: 2

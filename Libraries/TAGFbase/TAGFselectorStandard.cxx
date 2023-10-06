@@ -79,11 +79,6 @@ void TAGFselectorStandard::CategorizeVT()
 	}
 
 	int vertexNumber = vertexContainer->GetVertexN();
-	// if( vertexNumber != 1 )
-	// {
-	// 	Info("CategorizeVT()", "Too many vertices in event. skipping ...");
-	// 	return;
-	// }
 	if( vertexNumber == 1)
 		(*m_singleVertexCounter)++;
 
@@ -138,9 +133,6 @@ void TAGFselectorStandard::CategorizeVT()
 				int index=0;
 				while( clusIdPerSensor != vtntuclus->GetCluster(sensor, index)->GetClusterIdx() )
 					index++;
-
-				// if ( m_allHitMeas->find( plane ) == m_allHitMeas->end() )	continue;
-				// if ( m_allHitMeas->at(plane).find( index ) == m_allHitMeas->at(plane).end() )	continue;
 
 				AbsMeasurement* hitToAdd = (static_cast<genfit::PlanarMeasurement*> (  m_allHitMeas->at(plane).at(index) ))->clone();
 				fitTrack_->insertMeasurement( hitToAdd );
@@ -199,8 +191,16 @@ void TAGFselectorStandard::CategorizeVT()
 
 	if(m_trackTempMap.size() == 0)
 	{
-		// Warning("CategorizeVT()","No valid VT tracklet found in the event!");
+		if( FootDebugLevel(1) )
+			Warning("CategorizeVT()","No valid VT tracklet found in the event!");
 		(*m_noVTtrackletEvents)++;
+		return;
+	}
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of VT tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
 	}
 }
 
@@ -312,6 +312,12 @@ void TAGFselectorStandard::CategorizeIT()	{
 			}	// end loop on IT planes
 		} // end loop over z
 	}	// end loop on GF Track candidates
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of IT tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
 
 	// delete m_fitter_extrapolation;
 }
@@ -506,8 +512,14 @@ void TAGFselectorStandard::CategorizeMSD()	{
 		} // end loop MSD planes
 
 	}// end loop on GF Track candidates
-	delete m_fitter_extrapolation;
 
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of MSD tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
+
+	delete m_fitter_extrapolation;
 }
 
 
@@ -632,7 +644,6 @@ void TAGFselectorStandard::CategorizeTW()
 
 	// Extrapolate to TW
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
-	m_fitter_extrapolation->setMaxIterations(1);
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack) 
 	{
 		m_fitter_extrapolation->processTrackWithRep(itTrack->second, itTrack->second->getCardinalRep() );
@@ -692,5 +703,12 @@ void TAGFselectorStandard::CategorizeTW()
 			}
 		}
 	}
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of IT tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
+
 	delete m_fitter_extrapolation;
 }

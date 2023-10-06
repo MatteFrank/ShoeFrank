@@ -54,6 +54,7 @@ TACAparGeo::TACAparGeo()
   fIonisation(new TAGionisMaterials())
 {
    fkDefaultGeoName = "./geomaps/TACAdetector.geo";
+   fDummyModulesN = 0;
 }
 
 //______________________________________________________________________________
@@ -179,7 +180,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 
    ReadItem(fModAirFlukaPositionZ);
    if (FootDebugLevel(1))
-      cout  << "   AIR region around module PositionZ : " <<  fModAirFlukaPositionZ << endl;
+      cout << "   AIR region around module PositionZ : " <<  fModAirFlukaPositionZ << endl;
 
    // Calorimeter dimensions and position of box around
    ReadVector3(fCaloSize);
@@ -188,7 +189,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       << fCaloSize[0] << " " << fCaloSize[1] << " " << fCaloSize[2] << endl;
    ReadItem(fCaloBoxPositionZ);
    if (FootDebugLevel(1))
-      cout  << "   AIR region around detector PositionZ : " <<  fCaloBoxPositionZ << endl;
+      cout << "   AIR region around detector PositionZ : " <<  fCaloBoxPositionZ << endl;
 
    TVector3 position;
    TVector3 tilt;
@@ -196,10 +197,10 @@ Bool_t TACAparGeo::FromFile(const TString& name)
    // ------- Crystals
    ReadItem(fCrystalsN);
    if (FootDebugLevel(1))
-      cout  << "Number of crystals: " <<  fCrystalsN << endl;
+      cout << "Number of crystals: " <<  fCrystalsN << endl;
    ReadItem(fModulesN);
    if (FootDebugLevel(1))
-      cout  << "Number of modules: " <<  fModulesN << endl;
+      cout << "Number of modules: " <<  fModulesN << endl;
 
    // Set number of matrices
    SetupMatrices(fCrystalsN + fModulesN);
@@ -211,7 +212,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 
       ReadItem(idCry);
       if (FootDebugLevel(1))
-         cout  << "Crystal id " << idCry << endl;
+         cout << "Crystal id " << idCry << endl;
 
       // read  position
       ReadVector3(position);
@@ -221,7 +222,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 
       ReadVector3(tilt);
       if (FootDebugLevel(1))
-         cout  << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
+         cout << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
       fListOfCrysAng[idCry] = tilt;
 
@@ -256,7 +257,7 @@ Bool_t TACAparGeo::FromFile(const TString& name)
 
       ReadVector3(tilt);
       if (FootDebugLevel(1))
-         cout  << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
+         cout << "   tilt: " << tilt[0] << " " << tilt[1] << " " << tilt[2] << endl;
 
       fListOfModAng[nModule] = tilt;
 
@@ -271,6 +272,19 @@ Bool_t TACAparGeo::FromFile(const TString& name)
       transfo  = trans;
       transfo *= rot;
       AddTransMatrix(new TGeoHMatrix(transfo), fCrystalsN + nModule);
+   }
+
+   ReadItem(fDummyModulesN);
+   if (fDummyModulesN > 0) {
+      fListDummyModules.resize(fDummyModulesN);
+      if (FootDebugLevel(1))
+         cout << "Number of dummy modules:  " << fDummyModulesN << endl;
+      for (Int_t imod = 0; imod < fDummyModulesN; ++imod) {
+         ReadItem(nModule);
+         if (FootDebugLevel(1))
+            cout  << "    Dummy Module id "<< nModule << endl;
+         fListDummyModules.push_back(nModule);
+      }
    }
 
    ComputeCrystalIndexes();
@@ -433,7 +447,14 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
    const Char_t* matSupName = fSupportMat.Data();
    TGeoMedium*   medSup     = (TGeoMedium *)gGeoManager->GetListOfMedia()->FindObject(matSupName);
 
+   int iimod = -1;
    for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
+      if ( (iCry)%9 == 0 )  iimod++;
+      // Skip  crystal in dummy modules
+      if ( fDummyModulesN > 0 && 
+           std::find(std::begin(fListDummyModules), std::end(fListDummyModules), iimod) != std::end(fListDummyModules))
+           continue;
+
       TGeoCombiTrans* hm = GetCombiTransfo(iCry);
       if (hm) {
          TGeoVolume *caloCristal = gGeoManager->MakeTrd2(GetDefaultCrysName(iCry), medBGO, xdim1, xdim2, ydim1, ydim2, zdim);
@@ -441,11 +462,14 @@ TGeoVolume*  TACAparGeo::BuildCalorimeter(const char *caName)
          caloCristal->SetFillColor(fgkDefaultCryCol);
          caloCristal->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
          detector->AddNode(caloCristal, iCry, hm);
-
       }
    }
 
    for (Int_t imod = 0; imod < fModulesN; ++imod) {
+      // Skip dummy modules
+      if ( fDummyModulesN > 0 && 
+           std::find(std::begin(fListDummyModules), std::end(fListDummyModules), imod) != std::end(fListDummyModules))
+           continue;
       TGeoCombiTrans* hm = GetCombiTransfo(fCrystalsN+imod);
       if (hm) {
          TGeoVolume *support = gGeoManager->MakeTrd2("modSup", medSup, xdim1s, xdim2s, ydim1s, ydim2s, zdims);
@@ -790,7 +814,8 @@ string TACAparGeo::PrintBodies()
       outstr << SPrintParallelPla( imod, hm, plaName, fModAirFlukaSize, dir );
    }
 
-   if (fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0) {
+   if ( fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0 ||
+        fConfigTypeGeo.CompareTo("CNAO_2023") == 0) {
       // 
       TString plaName = "MP";
       int dir[2];
@@ -1180,7 +1205,8 @@ TString TACAparGeo::PrintModuleAirRegions()
       iCry = im * fgkCrystalsNperModule;
 
       if (fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
-          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0  ) {
+          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0  ||
+          fConfigTypeGeo.CompareTo("CNAO_2023") == 0 ) {
          for (Int_t ir=0; ir<nRows; ir++) {
             line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_3 -P%03d_4 +P%03d_5 +P%03d_6\n",
                      im, im, iCry+1, iCry+2, iCry+2, iCry+2);
@@ -1206,7 +1232,8 @@ TString TACAparGeo::PrintModuleAirRegions()
 
       iCry = im * fgkCrystalsNperModule;
       if (fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
-          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0  ) {
+          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0 ||
+          fConfigTypeGeo.CompareTo("CNAO_2023") == 0  ) {
          // central
          line.Form(" | +AP%03d_1 +AP%03d_2 -P%03d_6 -P%03d_5 +P%03d_4 +P%03d_3\n",
                   im, im, iCry+1, iCry+4, iCry+1, iCry+1);
@@ -1266,7 +1293,8 @@ TString TACAparGeo::PrintModuleAirRegions()
       // Fill everything outside crystals
       iCry = im * fgkCrystalsNperModule;
       if (fConfigTypeGeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
-          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0  ) {
+          fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0 ||
+          fConfigTypeGeo.CompareTo("CNAO_2023") == 0) {
          line.Form(" | +AP%03d_1 +AP%03d_2 +AP%03d_3 -P%03d_3 +P%03d_5 +P%03d_6\n",
                   im, im, im, iCry+5, iCry+5, iCry+5);
          modRegion += line.Data();
@@ -1528,178 +1556,457 @@ string TACAparGeo::PrintSubtractBodiesFromAir()
    }
 
    // FULL Detector (New version)
-   if (fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0) {
-      // 
-      // Central rows of 3 modules
-      int id = 0;
-      line.Form(" +air_cal +MP001 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 1;
-      line.Form(" +air_cal +MP001 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();
-      id = 2;
-      line.Form(" +air_cal +MP001 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();
+   if ( fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0 ||
+        fConfigTypeGeo.CompareTo("CNAO_2023") == 0) {
+      // Here we do not use parenteses, otherwise FLUKA complain
+      // *** Too many terms in parenthesis expansion ***
 
-      id = 4;
-      line.Form("AIRCAL1    5 | +air_cal -MP001 +MP005 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();
-      id = 5;
-      line.Form(" +air_cal -MP001 +MP005 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();
-      id = 6;
-      line.Form(" +air_cal -MP001 +MP005 +MP000 +MP002 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();
+      // Central rows of 3 modules 
+      // AIRCAL0
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP001 +MP000 +MP002 -AP000_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP001 +MP000 +MP002 -AP000_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 +MP001 +MP000 +MP002 -AP001_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP001 +MP000 +MP002 -AP002_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
 
-      id = 10;
-      line.Form("AIRCAL2    5 | +air_cal -MP005 -MP018 +MP017 -MP020 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 11;
-      line.Form(" +air_cal -MP005 -MP018 +MP017 -MP020 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 12;
-      line.Form(" +air_cal -MP005 -MP018 +MP017 -MP020 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
+      outstr << "AIRCAL1     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal -MP001 +MP005 +MP000 +MP002 -AP004_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal -MP001 +MP005 +MP000 +MP002 -AP004_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 -MP001 +MP005 +MP000 +MP002 -AP005_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 -MP001 +MP005 +MP000 +MP002 -AP006_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
 
-      id = 17;
-      line.Form("AIRCAL3    5 | +air_cal +MP018 -MP025 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 18;
-      line.Form(" +air_cal +MP018 -MP025 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 19;
-      line.Form(" +air_cal +MP018 -MP025 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();  
+      outstr << "AIRCAL2     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal -MP005 -MP018 +MP017 -MP020 -AP010_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal -MP005 -MP018 +MP017 -MP020 -AP010_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 -MP005 -MP018 +MP017 -MP020 -AP011_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 -MP005 -MP018 +MP017 -MP020 -AP012_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
 
-      id = 24;
-      line.Form("AIRCAL4    5 | +air_cal +MP025 -MP031 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 25;
-      line.Form(" +air_cal +MP025 -MP031 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 26;
-      line.Form(" +air_cal +MP025 -MP031 +MP017 -MP020  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data(); 
+      outstr << "AIRCAL3     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP018 -MP025 +MP017 -MP020 -AP017_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP018 -MP025 +MP017 -MP020 -AP017_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 +MP018 -MP025 +MP017 -MP020 -AP018_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP018 -MP025 +MP017 -MP020 -AP019_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
 
-      id = 30;
-      line.Form("AIRCAL5    5 | +air_cal -MP035 +MP031 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 31;
-      line.Form(" +air_cal -MP035 +MP031 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 32;
-      line.Form(" +air_cal -MP035 +MP031 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data(); 
+      outstr << "AIRCAL4     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP025 -MP031 +MP017 -MP020 -AP024_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP025 -MP031 +MP017 -MP020 -AP024_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 +MP025 -MP031 +MP017 -MP020 -AP025_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP025 -MP031 +MP017 -MP020 -AP026_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+ 
+      outstr << "AIRCAL5     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal -MP035 +MP031 +MP034 +MP036 -AP030_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal -MP035 +MP031 +MP034 +MP036 -AP030_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 -MP035 +MP031 +MP034 +MP036 -AP031_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 -MP035 +MP031 +MP034 +MP036 -AP032_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+ 
+      outstr << "AIRCAL6     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP035 +MP034 +MP036 -AP034_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP035 +MP034 +MP036 -AP034_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 +MP035 +MP034 +MP036 -AP035_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP035 +MP034 +MP036 -AP036_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+ 
+      outstr << "AIRCAL7     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal -MP016 +MP008 -MP029 -AP008_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal -MP016 +MP008 -MP029 -AP008_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 -MP016 +MP008 -MP029 -AP015_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 -MP016 +MP008 -MP029 -AP022_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal -MP016 -MP003 -MP029 -AP008_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 -MP016 -MP003 -MP029 -AP015_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 -MP016 -MP003 -MP029 -AP022_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal -MP016 +MP008 +MP022 -AP008_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 -MP016 +MP008 +MP022 -AP015_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 -MP016 +MP008 +MP022 -AP022_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal -MP016 -MP003 +MP022 -AP008_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 -MP016 -MP003 +MP022 -AP015_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 -MP016 -MP003 +MP022 -AP022_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
 
-      id = 34;
-      line.Form("AIRCAL6    5 | +air_cal +MP035 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 35;
-      line.Form(" +air_cal +MP035 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 36;
-      line.Form(" +air_cal +MP035 +MP034 +MP036  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data(); 
+      outstr << "AIRCAL8     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP016 -MP017 -MP003 -MP029 -MP005 -MP031 -AP009_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP016 -MP017 -MP003 -MP029 -MP005 -MP031 -AP009_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 +MP016 -MP017 -MP003 -MP029 -MP005 -MP031 -AP016_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP016 -MP017 -MP003 -MP029 -MP005 -MP031 -AP023_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP016 -MP017 -MP003 -MP029 -MP000 -MP031 -AP009_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP016 -MP017 -MP003 -MP029 -MP000 -MP031 -AP016_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP016 -MP017 -MP003 -MP029 -MP000 -MP031 -AP023_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP016 -MP017 -MP003 -MP029 -MP005 -MP034 -AP009_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP016 -MP017 -MP003 -MP029 -MP005 -MP034 -AP016_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP016 -MP017 -MP003 -MP029 -MP005 -MP034 -AP023_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP016 -MP017 -MP003 -MP029 -MP000 -MP034 -AP009_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP016 -MP017 -MP003 -MP029 -MP000 -MP034 -AP016_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP016 -MP017 -MP003 -MP029 -MP000 -MP034 -AP023_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
 
+      outstr << "AIRCAL9     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP020 -MP021 -MP007 -MP033 -MP005 -MP031 -AP013_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP020 -MP021 -MP007 -MP033 -MP005 -MP031 -AP013_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 +MP020 -MP021 -MP007 -MP033 -MP005 -MP031 -AP020_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP020 -MP021 -MP007 -MP033 -MP005 -MP031 -AP027_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP020 -MP021 -MP007 -MP033 -MP002 -MP031 -AP013_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP020 -MP021 -MP007 -MP033 -MP002 -MP031 -AP020_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP020 -MP021 -MP007 -MP033 -MP002 -MP031 -AP027_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP020 -MP021 -MP007 -MP033 -MP005 -MP036 -AP013_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP020 -MP021 -MP007 -MP033 -MP005 -MP036 -AP020_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP020 -MP021 -MP007 -MP033 -MP005 -MP036 -AP027_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP020 -MP021 -MP007 -MP033 -MP002 -MP036 -AP013_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP020 -MP021 -MP007 -MP033 -MP002 -MP036 -AP020_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP020 -MP021 -MP007 -MP033 -MP002 -MP036 -AP027_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
 
-      // 4 block of 3 side modules
-      id = 8;
-      line.Form("AIRCAL7    5 | +air_cal -MP016 -(-MP008 +MP003) -(+MP029 -MP022) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 15;
-      line.Form(" +air_cal -MP016 -(-MP008 +MP003) -(+MP029 -MP022) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 22;
-      line.Form(" +air_cal -MP016 -(-MP008 +MP003) -(+MP029 -MP022) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();   
-
-      id = 9;
-      line.Form("AIRCAL8    5 | +air_cal +MP016 -MP017 -MP003 -MP029 -(+MP005 +MP000) -(+MP031 +MP034) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 16;
-      line.Form(" +air_cal +MP016 -MP017 -MP003 -MP029 -(+MP005 +MP000) -(+MP031 +MP034) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 23;
-      line.Form(" +air_cal +MP016 -MP017 -MP003 -MP029 -(+MP005 +MP000) -(+MP031 +MP034) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();
-
-      id = 13;
-      line.Form("AIRCAL9    5 | +air_cal +MP020 -MP021 -MP007 -MP033 -(+MP005 +MP002) -(+MP031 +MP036) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 20;
-      line.Form(" +air_cal +MP020 -MP021 -MP007 -MP033 -(+MP005 +MP002) -(+MP031 +MP036) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 27;
-      line.Form(" +air_cal +MP020 -MP021 -MP007 -MP033 -(+MP005 +MP002) -(+MP031 +MP036) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();
-
-      id = 14;
-      line.Form("AIRCAL10   5 | +air_cal +MP021 -(-MP014 +MP007) -(-MP028 +MP033)  -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 21;
-      line.Form(" +air_cal +MP021 -(-MP014 +MP007) -(-MP028 +MP033) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();      
-      id = 28;
-      line.Form(" +air_cal +MP021 -(-MP014 +MP007) -(-MP028 +MP033) -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data();
+      outstr << "AIRCAL10     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP021 +MP014 -MP033 -AP014_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP021 +MP014 -MP033 -AP014_%d\n", i);
+                  outstr << line.Data(); 
+               }
+               line.Form("                 +MP021 +MP014 -MP033 -AP021_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP021 +MP014 -MP033 -AP028_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP021 -MP007 -MP033 -AP014_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP021 -MP007 -MP033 -AP021_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP021 -MP007 -MP033 -AP028_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP021 +MP014 +MP028 -AP014_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP021 +MP014 +MP028 -AP021_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP021 +MP014 +MP028 -AP028_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               line.Form("              |  +air_cal +MP021 -MP007 +MP028 -AP014_%d\n", i);
+               outstr << line.Data();
+               line.Form("                 +MP021 -MP007 +MP028 -AP021_%d\n", k);
+               outstr << line.Data();
+               line.Form("                 +MP021 -MP007 +MP028 -AP028_%d\n", l);
+               outstr << line.Data();
+            }
+            outstr << "*" << endl;
+         }
+      }
 
       // 4 digonal modules
-      id = 3;
-      line.Form("AIRCAL11   5 |  +air_cal +MP003 -MP000 -MP008 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data(); 
+      outstr << "AIRCAL11     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP003 -MP000 -MP008 -AP003_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP003 -MP000 -MP008 -AP003_%d\n", i);
+                  outstr << line.Data(); 
+               }
+            }
+            outstr << "*" << endl;
+         }
+      }
 
-      id = 7;
-      line.Form("AIRCAL12   5 |  +air_cal +MP007 -MP002 -MP014 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data(); 
+      outstr << "AIRCAL12     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP007 -MP002 -MP014 -AP007_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP007 -MP002 -MP014 -AP007_%d\n", i);
+                  outstr << line.Data(); 
+               }
+            }
+            outstr << "*" << endl;
+         }
+      }
+      
 
-      id = 29;
-      line.Form("AIRCAL13   5 |  +air_cal +MP029 -MP034 -MP022 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data(); 
+      outstr << "AIRCAL13     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP029 -MP034 -MP022 -AP029_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP029 -MP034 -MP022 -AP029_%d\n", i);
+                  outstr << line.Data(); 
+               }
+            }
+            outstr << "*" << endl;
+         }
+      }
 
-      id = 33;
-      line.Form("AIRCAL14   5 |  +air_cal +MP033 -MP036 -MP028 -(AP%03d_1 + AP%03d_2 +AP%03d_3 +AP%03d_4 +AP%03d_5 +AP%03d_6)\n",
-                id, id, id, id, id, id);
-      outstr << line.Data(); 
+      outstr << "AIRCAL14     5";
+      for (int l=1; l<7; l++) {
+         for (int k=1; k<7; k++) {
+            for (int i=1; i<7; i++) {
+               if (i==1 && k==1 && l==1) {
+                  line.Form(" |  +air_cal +MP033 -MP036 -MP028 -AP033_%d\n", i);
+                  outstr << line.Data(); 
+               } else {
+                  line.Form("              |  +air_cal +MP033 -MP036 -MP028 -AP033_%d\n", i);
+                  outstr << line.Data(); 
+               }
+            }
+            outstr << "*" << endl;
+         }
+      }
 
    }
 
-   // FULL Detector
+   // FULL Detector (old version, never builded)
    if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
       // 4 top modules
       int id = 29;
@@ -1888,7 +2195,8 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials* Material)
       magnetic = true;
 
 
-   if (fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0) {
+   if ( fConfigTypeGeo.CompareTo("FULL_DET_V1") == 0 ||
+        fConfigTypeGeo.CompareTo("CNAO_2023") == 0) {
       outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0", "AIRCAL14",
                           "1.", "", "", "") << endl;
    } else if (fConfigTypeGeo.CompareTo("FULL_DET") == 0) {
@@ -1906,8 +2214,22 @@ string TACAparGeo::PrintAssignMaterial(TAGmaterials* Material)
       outstr << PrintCard("ASSIGNMA", "AIR", "AIRCAL0",
                           "", "", "", "", "") << endl;
 
-   outstr << PrintCard("ASSIGNMA", flkmat, "CAL000", Form("CAL%03d", fCrystalsN-1),
-                       "1.", "", "", "") << endl;
+   if ( fDummyModulesN > 0 ) { // this option is present only for campaing after
+      int iimod = -1;          // CNAO_2023
+      for (Int_t iCry = 0; iCry < fCrystalsN; ++iCry) {
+         if ( (iCry)%9 == 0 )  iimod++;
+         // fill crystal with AIR in dummy modules
+         if ( std::find(std::begin(fListDummyModules), std::end(fListDummyModules), iimod) != std::end(fListDummyModules))
+            outstr << PrintCard("ASSIGNMA", "AIR", Form("CAL%03d", iCry), "",
+                          "", "", "", "") << endl;
+         else
+            outstr << PrintCard("ASSIGNMA", flkmat, Form("CAL%03d", iCry), "",
+                          "", "", "", "") << endl;
+      }
+   } else {
+      outstr << PrintCard("ASSIGNMA", flkmat, "CAL000", Form("CAL%03d", fCrystalsN-1),
+                          "1.", "", "", "") << endl;
+   }
 
    if (fModulesN == 1) {
       outstr << PrintCard("ASSIGNMA", "AIR", "ACAL_00",
@@ -1936,6 +2258,7 @@ void TACAparGeo::Clear(Option_t*)
 void TACAparGeo::ToStream(ostream& os, Option_t*) const
 {
    os << "TACAparGeo " << GetName() << endl
+      << " Setup: " << fConfigTypeGeo.Data()  << endl
       << " Number of crystals: " <<  fCrystalsN << endl;
    //  os << "p 8p   ref_x   ref_y   ref_z   hor_x   hor_y   hor_z"
    //     << "   ver_x   ver_y   ver_z  width" << endl;

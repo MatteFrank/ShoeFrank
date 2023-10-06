@@ -48,7 +48,7 @@
 #include <TVector3.h>
 #include <TMath.h>
 
-#include "TAGparTools.hxx"
+#include "TAGparGeo.hxx"
 
 #include "TASTparGeo.hxx"
 #include "TABMparGeo.hxx"
@@ -185,6 +185,9 @@ private:
 	TH1F* h_purity;										///< Purity -- histo
 	TH1F* h_trackEfficiency;							///< Tracking efficiency -- histo
 	TH1F* h_trackQuality;								///< Track quality -- histo
+	TH2F* h_trackQualityVsChi2;							///< Track quality vs chi2 -- histo
+	TH2F* h_trackQualityVsNhits;						///< Track quality vs N hits in the track -- histo
+	std::vector<TH1F*> h_trackQuality_Z;				///< Track quality for each Z -- histo
 
 	TH1F* h_trackMC_true_id;							///< MC true particle Id -- histo
 	TH1F* h_trackMC_reco_id;							///< Fitted particle Id -- histo
@@ -195,17 +198,19 @@ private:
 	TH1F* h_nMeas;										///< Number of measurements per track -- histo
 	TH1F* h_mass;										///< Fitted mass -- histo
 	TH1F* h_chi2;										///< Chi2 -- histo
+	std::vector<TH1F*> h_chi2_Z;						///< Chi2 as a function of Z -- histo
 	TH1F* h_pVal;										///< P-value -- histo
 
 	TH1F* h_chargeMC;									///< MC charge -- histo
 	TH1F* h_chargeMeas;									///< Fitted charge -- histo
-	TH1F* h_chargeFlip;									///< Charge flip (MC - Reco) -- histo
+	TH2F* h_chargeFlip;									///< Charge flip (Fit vs Reco) -- histo
 	TH1F* h_momentum;									///< Fitted momentum module at the TG -- histo
 
 	TH1F* h_dR;											///< Fitted track dR =  at the target -- histo
 	TH1F* h_phi;										///< Fitted track azimuthal angle at the TG -- histo
 	TH1F* h_theta;										///< Fitted track polar angle at the TG -- histo
 	TH1F* h_theta_BM;									///< Fitted track polar angle at the TG wrt to BM track -- histo
+	std::vector <TH1F*> h_theta_BM_Z;					///< Fitted track polar angle at the TG wrt to BM track for all Z separately -- histo
 	TH2F* h_thetaGlbVsThetaTW;							///< Fitted track polar angle at the TG wrt to BM track -- histo
 	TH1F* h_phi_BM;										///< Fitted track azimuthal angle at the TG wrt to BM track -- histo
 	TH2F* h_trackDirBM;									///< Fitted tracks X-Y coordinates of emission direction wrt BM track -- histo
@@ -226,6 +231,7 @@ private:
 	TH1I* h_GFeventType;								///< Event categorization seen by the GF selector
 
 	map<string, map<float, TH1F*> > h_dPOverP_x_bin;	///< Map of the histograms for dP/P; the key of the external map is the name of the particle ("H", "He", "Li", ...), while the key for the internal map is the central P_MC value of the histogram
+	map<string, TH2F* > h_dPOverP_vs_P;		///< Map of the histograms for dP/P; the key of the external map is the name of the particle ("H", "He", "Li", ...), while the key for the internal map is the central P_MC value of the histogram
 	map<string, TH1F*> h_deltaP;						/// Map of total dP histograms; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_sigmaP;						///< Map of histograms for total sigma of dP distributions; the key is the particle name ("H", "He", "Li", ...)
 	map<string, TH1F*> h_resoP_over_Pkf;				///< Map of histograms for dP/P resolution (sigma) for each particle; the key is the particle name ("H", "He", "Li", ...)
@@ -239,6 +245,8 @@ private:
 	vector<TH1F*> h_momentum_true;						///< Vector of histograms for MC momentum module at the TG
 	vector<TH1F*> h_momentum_reco;						///< Vector of histograms for Fitted momentum moduel at the TG
 	vector<TH1F*> h_ratio_reco_true;					///< Vector of histograms for Fitted/MC momenutm module at the TG
+
+	vector<TH1F*> h_RecoMass;
 
 	TH2D* h_TWprojVsThetaTot;							///< X-Y projection of fitted global tracks @ TW -- histo
 	TH2D* h_TWprojVsThetaTotYesTW;						///< X-Y projection of fitted global tracks with a TW point @ TW -- histo

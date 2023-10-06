@@ -17,6 +17,7 @@
 #include <TStyle.h>
 #include "TCanvas.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include <TF1.h>
 #include <TVector3.h>
 #include <vector>
@@ -42,14 +43,11 @@ public:
 	double EvalError( TVector3 mom, TVector3 err );
 	double EvalError( TVector3 mom, TMatrixD cov );
 
-	void FillMomentumInfo( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, 
-							map<string, TH1F*> *h_deltaP, map<string, TH1F*> *h_sigmaP );
+	void FillMomentumInfo( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, map<string, TH1F*> *h_deltaP, map<string, TH1F*> *h_sigmaP );
 
-	void Fill_MomentumResidual( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, 
-							map<string, map<float, TH1F*> > * h_dPOverP_x_bin );
+	void Fill_MomentumResidual( TVector3 meas, TVector3 expected, TMatrixD cov, string hitSampleName, map<string, map<float, TH1F*> > * h_dPOverP_x_bin, map<string, TH2F*>* h_dPOverP_vs_P);
 
-	void EvaluateAndFill_MomentumResolution( map<string, map<float, TH1F*> > *h_dPOverP_x_bin, 
-							map<string, TH1F*>* h_resoP_over_Pkf, map<string, TH1F*> *h_biasP_over_Pkf );
+	void EvaluateAndFill_MomentumResolution( map<string, map<float, TH1F*> > *h_dPOverP_x_bin, map<string, TH1F*>* h_resoP_over_Pkf, map<string, TH1F*> *h_biasP_over_Pkf );
 
 
 private:

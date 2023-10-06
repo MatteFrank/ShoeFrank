@@ -209,8 +209,7 @@ void TAGFselectorBack::BackTracklets()
 						{
 							int iCoord = static_cast<PlanarMeasurement*>(hitToAdd)->getYview() ? 1 : 0;
 							std::pair<string, std::pair<int, int>> sensId = make_pair("MSD",make_pair(iSensor,iCoord));
-							h_extrapDist[sensId]->Fill(guessOnMSD(iCoord) - hitToAdd->getRawHitCoords()(0));
-
+							h_extrapDist[sensId]->Fill(guessOnMSD.X() - hitToAdd->getRawHitCoords()(0));
 						}
 					}
 				} // end loop MSD planes
@@ -240,9 +239,11 @@ void TAGFselectorBack::BackTracklets()
 					
 					testTrack->setStateSeed(pos, mom);
 					m_fitter_extrapolation->processTrackWithRep(testTrack, testTrack->getCardinalRep() );
+					if( testTrack->getFitStatus(testTrack->getCardinalRep())->getNFailedPoints() != 0 )
+						throw genfit::Exception("Fit failed for backtracklet!", __LINE__, __FILE__);
+
 					TVector3 TWguessGlb = testTrack->getFittedState(-1).getPos();
 					TVector2 TWguessLoc = m_SensorIDMap->GetFitPlane( m_SensorIDMap->GetFitPlaneTW() )->LabToPlane( TWguessGlb );
-
 					TVector2 TWcoords(xTW, yTW);
 
 					if( FootDebugLevel(2) )
@@ -283,18 +284,10 @@ void TAGFselectorBack::BackTracklets()
 	}
 	delete m_fitter_extrapolation;
 
-	if( FootDebugLevel(1) )
+	if( m_IsMC && FootDebugLevel(1) )
 	{
 		cout << "End of TW-MSD tracking -> found these tracks\n";
-		for( auto itTrack : m_trackTempMap )
-		{
-			cout << "Track::" << itTrack.first << "\tMC Ids::";
-			for( int i = 0; i < (itTrack.second)->getNumPointsWithMeasurement(); ++i )
-				cout << ListMCparticlesOfHit( (itTrack.second)->getPointWithMeasurement(i)->getRawMeasurement()->getHitId() ) << " ";
-		
-			cout << "\n";
-		}
-		cout << "\n";
+		PrintCurrentTracksMC();
 	}
 
 	return;
@@ -408,13 +401,18 @@ void TAGFselectorBack::CategorizeIT_back()
 				(itTrack->second)->setStateSeed(guessOnIT,momGuessOnIT);
 				m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
 			
+				if( itTrack->second->getFitStatus(itTrack->second->getCardinalRep())->getNFailedPoints() != 0 )
+				{
+					tracksToRemove.push_back(itTrack->first);
+					break;
+				}
 				ITpointsAdded++;
 			}
 
 		} // end loop over z
 
 		//Save tracks w/ no point in IT in order to delete them
-		if(ITpointsAdded == 0)
+		if(ITpointsAdded == 0 && std::find(tracksToRemove.begin(), tracksToRemove.end(), itTrack->first) == tracksToRemove.end())
 			tracksToRemove.push_back(itTrack->first);
 	}	// end loop on GF Track candidates
 
@@ -426,18 +424,10 @@ void TAGFselectorBack::CategorizeIT_back()
 		m_trackTempMap.erase(trackId);
 	}
 
-	if( FootDebugLevel(1) )
+	if( m_IsMC && FootDebugLevel(1) )
 	{
 		cout << "End of IT tracking -> found these tracks\n";
-		for( auto itTrack : m_trackTempMap )
-		{
-			cout << "Track::" << itTrack.first << "\tMC Ids::";
-			for( int i = 0; i < (itTrack.second)->getNumPointsWithMeasurement(); ++i )
-				cout << ListMCparticlesOfHit( (itTrack.second)->getPointWithMeasurement(i)->getRawMeasurement()->getHitId() ) << " ";
-		
-			cout << "\n";
-		}
-		cout << "\n";
+		PrintCurrentTracksMC();
 	}
 
 	delete m_fitter_extrapolation;
@@ -454,6 +444,7 @@ void TAGFselectorBack::CategorizeVT_back()
 	KalmanFitter *m_fitter_extrapolation = new KalmanFitter(1);
 	m_fitter_extrapolation->setMaxIterations(1);
 
+	vector<int> tracksToRemove;
 	for(auto itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
 	{
 		m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
@@ -462,19 +453,21 @@ void TAGFselectorBack::CategorizeVT_back()
 
 		for(int VTplane = maxVTplane; VTplane != minVTplane-1; VTplane--)
 		{
-			TVector3 momGuessOnVT;
-			TVector3 guessOnVT = ExtrapolateToOuterTracker(itTrack->second, VTplane, momGuessOnVT, true);
-
-			int indexOfMinDist = -1;
-			int count = 0;
-			double minDist = m_VTtolerance;
-
+			//Skip if there is no measurement
 			if (m_allHitMeas->find(VTplane) == m_allHitMeas->end())
 			{
 				if (FootDebugLevel(1))
 					Info("CategorizeVT_back()", "No measurement found in VTplane %d", VTplane);
 				continue;
 			}
+
+			// Extrapolate
+			TVector3 momGuessOnVT;
+			TVector3 guessOnVT = ExtrapolateToOuterTracker(itTrack->second, VTplane, momGuessOnVT, true);
+
+			int indexOfMinDist = -1;
+			int count = 0;
+			double minDist = m_VTtolerance;
 
 			for (vector<AbsMeasurement *>::iterator it = m_allHitMeas->at(VTplane).begin(); it != m_allHitMeas->at(VTplane).end(); ++it)
 			{
@@ -487,7 +480,6 @@ void TAGFselectorBack::CategorizeVT_back()
 
 				if( FootDebugLevel(2) )
 					cout << "Hit::" << (*it)->getHitId() << " " << ListMCparticlesOfHit( (*it)->getHitId() ) << "\tguessX::" << guessOnVT.X() << "\trawHitX::" << (*it)->getRawHitCoords()(0) << "\tdistX::" << fabs(guessOnVT.X() - (*it)->getRawHitCoords()(0)) << "\tguessY::" << guessOnVT.Y() << "\trawHitY::" << (*it)->getRawHitCoords()(1) << "\tdistY::" << fabs(guessOnVT.Y() - (*it)->getRawHitCoords()(1)) << "\tdist::" << distanceFromHit<<endl;
-
 
 				// find hit at minimum distance
 				if (distanceFromHit < minDist)
@@ -524,6 +516,11 @@ void TAGFselectorBack::CategorizeVT_back()
 				// guessOnVT.Print(); momGuessOnVT.Print();
 				(itTrack->second)->setStateSeed(guessOnVT,momGuessOnVT);
 				m_fitter_extrapolation->processTrackWithRep(itTrack->second, (itTrack->second)->getCardinalRep());
+				if( itTrack->second->getFitStatus(itTrack->second->getCardinalRep())->getNFailedPoints() != 0 )
+				{
+					tracksToRemove.push_back(itTrack->first);
+					break;
+				}
 
 			}
 		}
@@ -532,18 +529,10 @@ void TAGFselectorBack::CategorizeVT_back()
 
 	delete m_fitter_extrapolation;
 
-	if( FootDebugLevel(1) )
+	if( m_IsMC && FootDebugLevel(1) )
 	{
 		cout << "End of VT tracking -> found these tracks\n";
-		for( auto itTrack : m_trackTempMap )
-		{
-			cout << "Track::" << itTrack.first << " ";
-			for( int i = 0; i < (itTrack.second)->getNumPointsWithMeasurement(); ++i )
-				cout << ListMCparticlesOfHit( (itTrack.second)->getPointWithMeasurement(i)->getRawMeasurement()->getHitId() ) << " ";
-		
-			cout << "\n";
-		}
-		cout << "\n";
+		PrintCurrentTracksMC();
 	}
 
 	return;
