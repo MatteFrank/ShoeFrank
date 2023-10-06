@@ -23,8 +23,8 @@
 //! Class imp
 ClassImp(TAITactBaseNtuHit);
 
-const UInt_t TAITactBaseNtuHit::fgkBoardKey[]  = {0xfafa0110, 0xfafa0111, 0xfafa0112, 0xfafa0113, 0xfafa0114, 0xfafa0115, 0xfafa0116, 0xfafa0117};
-const UInt_t TAITactBaseNtuHit::fgkBoardTail[] = {0xabcd0110, 0xabcd0111, 0xabcd0112, 0xabcd0113, 0xabcd0114, 0xabcd0115, 0xabcd0116, 0xabcd0117};
+const UInt_t TAITactBaseNtuHit::fgkDataLinkKey[]  = {0xfafa0110, 0xfafa0111, 0xfafa0112, 0xfafa0113, 0xfafa0114, 0xfafa0115, 0xfafa0116, 0xfafa0117};
+const UInt_t TAITactBaseNtuHit::fgkDataLinkTail[] = {0xabcd0110, 0xabcd0111, 0xabcd0112, 0xabcd0113, 0xabcd0114, 0xabcd0115, 0xabcd0116, 0xabcd0117};
 
 
 //------------------------------------------+-----------------------------------
@@ -74,7 +74,7 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
    
   do {
       // IT board
-      Int_t l = GetBoardHeader();
+      Int_t l = GetDataLinkHeader();
       
      if (l == -1) return false;
      
@@ -134,29 +134,31 @@ Bool_t TAITactBaseNtuHit::GetItrHeader()
 // --------------------------------------------------------------------------------------
 //! Find sensor header
 //!
-//! \param[in] iBoard board index
-Int_t TAITactBaseNtuHit::GetBoardHeader()
+//! \param[in] iDataLink board index
+Int_t TAITactBaseNtuHit::GetDataLinkHeader()
 {
+   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
+
    do {
-      Int_t iBoard = -1;
+      Int_t dataLink = -1;
       
-      for (Int_t i = 0; i < 7; ++i) {
-         if (fData[fIndex] == GetBoardKey(i)) {
-            iBoard = i;
+      for (Int_t i = 0; i < pParMap->GetDataLinksN(); ++i) {
+         if (fData[fIndex] == GetDataLinkKey(i)) {
+            dataLink = i;
             break;
          }
       }
-      if (fData[fIndex] == GetBoardKey(iBoard)) {
+      
+      if (fData[fIndex] == GetDataLinkKey(dataLink)) {
          fIndex++;
-         fBoardTrigger = fData[++fIndex];
+         fDataLinkTrigger = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("Board %d (0x%x): trig#: %d\n", iBoard, fData[fIndex-2], fBoardTrigger);
+            printf("DataLink %d (0x%x): trig#: %d\n", dataLink, fData[fIndex-2], fDataLinkTrigger);
          
-         return iBoard;
+         return dataLink;
       }
    } while (fIndex++ < fEventSize);
-   
    
    return -1;
 }
@@ -166,21 +168,21 @@ Int_t TAITactBaseNtuHit::GetBoardHeader()
 //!
 //! \param[in] iSensor sensor index
 //! \param[in] datalink board index
-Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
+Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t sensor, Int_t datalink)
 {
    TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
 
    do {
-      if (fData[fIndex] == GetSensorKey(iSensor)) {
+      if (fData[fIndex] == GetSensorKey(sensor)) {
          fEventNumber   = fData[++fIndex];
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];
          
-         if(FootDebugLevel(3))
-            printf("datalink: %d sensor: %d trig#: %d evt#: %d\n", datalink, iSensor, fTriggerNumber, fEventNumber);
+    //     if(FootDebugLevel(3))
+            printf("datalink: %d sensor: %d trig#: %d evt#: %d\n", datalink, sensor, fTriggerNumber, fEventNumber);
          
          if(ValidHistogram()) {
-            Int_t planeId = pParMap->GetPlaneId(iSensor, datalink);
+            Int_t planeId = pParMap->GetPlaneId(sensor, datalink);
             FillHistoEvt(planeId);
          }
 
