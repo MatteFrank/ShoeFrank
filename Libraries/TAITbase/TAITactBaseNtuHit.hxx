@@ -39,7 +39,7 @@ protected:
    Int_t GetBoardHeader();
 
    // Get the starting point of each frame
-   Int_t GetSensorHeader(Int_t datalink);
+   Bool_t GetSensorHeader( Int_t iSensor,Int_t datalink);
    
    // Get frame and returns frameRaw
    Bool_t GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data);
