@@ -21,12 +21,12 @@ public:
  
 public:
    //! Get board header
-   static  UInt_t  GetBoardKey(Int_t idx)    { return fgkBoardKey[idx];  }
+   static  UInt_t  GetDataLinkKey(Int_t idx)    { return fgkDataLinkKey[idx];  }
    //! Get board tail
-   static  UInt_t  GetBoardTail(Int_t idx)   { return fgkBoardTail[idx]; }
+   static  UInt_t  GetDataLinkTail(Int_t idx)   { return fgkDataLinkTail[idx]; }
    
 protected:
-   Int_t  fBoardTrigger;             ///< Board size
+   Int_t  fDataLinkTrigger;             ///< DataLink size
 
 protected:
    // Find vertex data
@@ -36,10 +36,10 @@ protected:
    Bool_t GetItrHeader();
    
    // Get the starting point of each board
-   Bool_t GetBoardHeader(Int_t iBoard);
+   Int_t GetDataLinkHeader();
 
    // Get the starting point of each frame
-   Bool_t GetSensorHeader(Int_t iSensor, Int_t datalink);
+   Bool_t GetSensorHeader( Int_t iSensor,Int_t datalink);
    
    // Get frame and returns frameRaw
    Bool_t GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw* data);
@@ -48,9 +48,9 @@ protected:
    void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber = 0);
    
 protected:
-   //! Board key
-   static const UInt_t fgkBoardKey[];     ///< Key header array per board
-   static const UInt_t fgkBoardTail[];    ///< Key tailer array per board
+   //! DataLink key
+   static const UInt_t fgkDataLinkKey[];     ///< Key header array per data link
+   static const UInt_t fgkDataLinkTail[];    ///< Key tailer array per data link
    
    ClassDef(TAITactBaseNtuHit,0)
 };

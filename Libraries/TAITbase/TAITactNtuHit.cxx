@@ -69,7 +69,6 @@ Bool_t TAITactNtuHit::Action()
       if (evt) {
          fData      = evt->values;
          fEventSize = evt->evtSize;
-         fDataLink  = evt->channelID - (dataITR | (0x30+i));
          if (fEventSize == 0) return true;;
          DecodeEvent();
       }
