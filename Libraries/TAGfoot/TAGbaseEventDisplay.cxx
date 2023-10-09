@@ -128,8 +128,8 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       fItClusDisplay = new TAEDcluster("Inner Tracker Cluster");
       fItClusDisplay->SetMaxEnergy(fMaxEnergy);
-      fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
-      fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
+      fItClusDisplay->SetDefWidth(fQuadDefWidth/2.);
+      fItClusDisplay->SetDefHeight(fQuadDefHeight/2.);
       fItClusDisplay->SetPickable(true);
 
       if (fFlagItrTrack) {
