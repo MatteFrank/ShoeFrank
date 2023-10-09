@@ -65,7 +65,7 @@ public:
   void EvaluatePulls();
   void EvaluateMauroPulls();
 
-  void ToStream(ostream& os=cout) const;
+  void ToStream(ostream& os=cout, Option_t* option="") const;
   
   //for calibration only
   void FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &meanTimeReso, Double_t &meanDistReso);          //Fit the calibration plots and writhe the output
