@@ -86,10 +86,13 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
         
         ResetFrames();
         
+        Int_t framenumber = 0;
         // loop over frame (3 max)
-        while (GetFrame(i,l, data)) {
-           DecodeFrame(planeId, data);
+        while (GetFrame(i, l, data)) {
+           DecodeFrame(planeId, data, framenumber);
+           framenumber++;
         }
+        
         fPrevEventNumber[planeId]   = fEventNumber;
         fPrevTriggerNumber[planeId] = fTriggerNumber;
         fPrevTimeStamp[planeId]     = fTimeStamp;
@@ -256,7 +259,7 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
 //! \param[in] value pixel value
 //! \param[in] aLine line id
 //! \param[in] aColumn column id
-void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn, Int_t /*frameNumber*/)
+void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber)
 {
    // Add a pixel to the vector of pixels
    // require the following info
@@ -270,7 +273,7 @@ void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t
    
    if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
    
-   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn, frameNumber);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);

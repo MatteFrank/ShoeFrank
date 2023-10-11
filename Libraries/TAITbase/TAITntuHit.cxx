@@ -165,7 +165,8 @@ void TAITntuHit::Clear(Option_t*)
 //! \param[in] value pixel value
 //! \param[in] aLine line number
 //! \param[in] aColumn column number
-TAIThit* TAITntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn)
+//! \param[in] iFrame frame number
+TAIThit* TAITntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn, Int_t iFrame)
 {
    if (iSensor >= 0 && iSensor <fSensorsN) {
       TClonesArray &pixelArray = *GetListOfPixels(iSensor);
@@ -175,12 +176,14 @@ TAIThit* TAITntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
       if ( fMap[idx] == iSensor+1) {
          TAIThit* pixel = new TAIThit(iSensor, value, aLine, aColumn);
          TAIThit* curPixel = (TAIThit*)pixelArray.FindObject(pixel);
+         curPixel->AddFrameOn(iFrame);
          delete pixel;
          return curPixel;
          
       } else {
          fMap[idx] = iSensor+1;
          TAIThit* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAIThit(iSensor, value, aLine, aColumn);
+         pixel->AddFrameOn(iFrame);
          return pixel;
       }
    } else {

@@ -38,7 +38,8 @@ public:
    Int_t             GetPixelsN(Int_t iSensor) const;
    
    // New pixel
-   TAIThit*          NewPixel(Int_t sensor, Double_t value, Int_t aLine, Int_t aColumn);
+   TAIThit*           NewPixel(Int_t sensor,  Double_t value, Int_t aLine, Int_t aColumn, Int_t frame = 0);
+
    
    //! Get trigger number
    Int_t             GetTriggerNumber()    const { return fTriggerNumber; }

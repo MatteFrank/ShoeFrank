@@ -60,7 +60,7 @@ protected:
    Int_t             fPrevEventNumber[MaxSens];   ///< previous number of the event
    Int_t             fTriggerNumber;         ///< number of the trigger
    Int_t             fPrevTriggerNumber[MaxSens]; ///< previous number of the trigger
-   Int_t             fTimeStamp;             ///< time stamp per frame
+   ULong64_t         fTimeStamp;             ///< time stamp per frame
    Int_t             fPrevTimeStamp[MaxSens];     ///< time stamp per frame
    Int_t             fFrameCount;            ///< number of frame
    Int_t             fTriggerNumberFrame;    ///< number of the trigger

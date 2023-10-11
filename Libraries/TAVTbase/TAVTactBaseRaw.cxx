@@ -100,42 +100,59 @@ void TAVTactBaseRaw::CreateHistogram()
                                   pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
       fpHisPixelMap[i]->SetStats(kFALSE);
       AddHistogram(fpHisPixelMap[i]);
-   
+   }
       
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisRateMap[i] = new TH1F(Form("%sRateMap%d", fPrefix.Data(), i+1), Form("%s - rate per line for sensor %d", fTitleDev.Data(), i+1),
                                  pGeoMap->GetPixelsNx(), 0, pGeoMap->GetPixelsNx());
       AddHistogram(fpHisRateMap[i]);
-      
+   }
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisRateMapQ[i] = new TH1F(Form("%sRateMapQ%d", fPrefix.Data(), i+1), Form("%s - rate per quadrant for sensor %d", fTitleDev.Data(), i+1), 10, 0, 5);
       AddHistogram(fpHisRateMapQ[i]);
-	  
+   }
+
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisEvtLength[i] = new TH1F(Form("%sEvtLength%d", fPrefix.Data(), i+1), Form("%s - event length sensor %d", fTitleDev.Data(), i+1), 1000, 0, 10000);
       AddHistogram(fpHisEvtLength[i]);
-      
+   }
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisTriggerEvt[i] = new TH1F(Form("%sTriggerEvt%d", fPrefix.Data(), i+1), Form("%s - Trigger difference in event sensor %d vs sensor 1",
                                                                                       fTitleDev.Data(), i+1),  40, -19.5, 20.5);
       AddHistogram(fpHisTriggerEvt[i]);
-      
+   }
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisEvtNumber[i] = new TH1F(Form("%sNumberEvt%d", fPrefix.Data(), i+1), Form("%s -  Event number difference per event sensor %d", fTitleDev.Data(),
                                                                                     i+1), 40, -19.5, 20.5);
       AddHistogram(fpHisEvtNumber[i]);
-      
+   }
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisTimeStampEvt[i] = new TH1F(Form("%sTimeStampEvt%d", fPrefix.Data(), i+1), Form("%s -  Time stamp difference per event sensor %d", fTitleDev.Data(),
                                                                                           i+1), 1000, -200, 200);
       AddHistogram(fpHisTimeStampEvt[i]);
-  
+   }
+
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisTriggerFrame[i] = new TH1F(Form("%sTriggerFrame%d", fPrefix.Data(), i+1), Form("%s - Trigger difference in sensor %d", fTitleDev.Data(), i+1),  20,
                                       -9.5, 10.5);
       AddHistogram(fpHisTriggerFrame[i]);
+   }
       
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisTimeStampFrame[i] = new TH1F(Form("%sTimeStampFrame%d", fPrefix.Data(), i+1), Form("%s - Time stamp difference in sensor% d", fTitleDev.Data(),
                                                                                               i+1),  1000, -20000, 20000);
       AddHistogram(fpHisTimeStampFrame[i]);
-      
-      fpHisFrameCnt[i] = new TH1F(Form("%sFrameCnt%d", fPrefix.Data(), i+1), Form("%s - Frame cnt difference in sensor %d", fTitleDev.Data(), i+1),  510,
-                                  -9.5, 500.5);
-      AddHistogram(fpHisFrameCnt[i]);
+   }
    
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisFrameCnt[i] = new TH1F(Form("%sFrameCnt%d", fPrefix.Data(), i+1), Form("%s - Frame cnt difference in sensor %d", fTitleDev.Data(), i+1), 40, -19.5, 20.5);
+      AddHistogram(fpHisFrameCnt[i]);
+   }
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
       fpHisFrameErrors[i] = new TH1F(Form("%sErrorsFrame%d", fPrefix.Data(), i+1), Form("%s - Frame errors in sensor %d", fTitleDev.Data(), i+1), 4, 0.5, 4.5);
       AddHistogram(fpHisFrameErrors[i]);
    }

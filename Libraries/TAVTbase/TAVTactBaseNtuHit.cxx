@@ -79,7 +79,6 @@ Bool_t TAVTactBaseNtuHit::DecodeEvent()
       while (GetFrame(i, data)) {
          DecodeFrame(planeId, data, framenumber);
          framenumber++;
-
       }
       
       fPrevEventNumber[planeId]   = fEventNumber;

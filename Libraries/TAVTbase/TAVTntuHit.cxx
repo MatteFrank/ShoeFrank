@@ -158,6 +158,7 @@ void TAVTntuHit::Clear(Option_t*)
 //! \param[in] value pixel value
 //! \param[in] aLine line number
 //! \param[in] aColumn column number
+//! \param[in] iFrame frame number
 TAVThit* TAVTntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn, Int_t iFrame)
 {
    if (iSensor >= 0  && iSensor < fSensorsN) {
