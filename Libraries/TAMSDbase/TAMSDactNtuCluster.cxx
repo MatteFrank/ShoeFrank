@@ -85,6 +85,45 @@ void TAMSDactNtuCluster::CreateHistogram()
     AddHistogram(fpHisClusMap[i]);
   }
   
+  fpHisNClusTot = new TH1F(Form("%sNClusTot", prefix.Data()), Form("%s - total # cluster ", titleDev.Data()), 5, 0.5,5.5 );
+  AddHistogram(fpHisNClusTot);
+
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+    fpHisNClus[i] = new TH1F(Form("%sNClus%d", prefix.Data(), i+1), Form("%s - # of cluster for sensor %d", titleDev.Data(), i+1), 5, 0.5,5.5);  
+    AddHistogram(fpHisNClus[i]);
+  }
+  
+  fpHisEta = new TH1F(Form("%sClusEtaTot",prefix.Data()), Form("%s - total cluster eta ", titleDev.Data()), 100, 0., 1.);
+  AddHistogram(fpHisEta);
+
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+    fpHisSignalMap[i]= new TH2F(Form("%sSignalMap%d", prefix.Data(),i+1), Form("%s - map signal-eta for sensor %d", titleDev.Data(),i+1),40, 0., 1., 100, 0., 100 );
+    AddHistogram(fpHisSignalMap[i]);
+  }
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+    fpHisSignalMap_corr[i]= new TH2F(Form("%sSignalMap_corr%d", prefix.Data(),i+1), Form("%s - corrected map signal-eta for sensor %d", titleDev.Data(),i+1),40, 0., 1., 100, 0., 100 );
+    AddHistogram(fpHisSignalMap_corr[i]);
+  }
+
+  fpHisClusChargeTotGain = new TH1F(Form("%sClusChargeTotGain",prefix.Data()), Form("%s - total cluster charge with gain", titleDev.Data()), 1000, 0., 5000);
+  AddHistogram(fpHisClusChargeTotGain);
+
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+     fpHisRootADC[i] = new TH1F(Form("%sfpHisRootADC%d",prefix.Data(), i+1), Form("%s - sqrt of cluster charge for sensor %d", titleDev.Data(), i+1), 700, 0., 70);
+     AddHistogram(fpHisRootADC[i]);
+  }
+
+  fpHisRootADCTot = new TH1F(Form("%sfpHisRootADCTot",prefix.Data()), Form("%s - sqrt of cluster adc Tot", titleDev.Data()), 700, 0., 70);
+  AddHistogram(fpHisRootADCTot); 
+  
+  for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+     fpHisRootADC_corr[i] = new TH1F(Form("%sfpHisRootADC_corr%d",prefix.Data(), i+1), Form("%s - sqrt of cluster charge corrected for sensor  %d", titleDev.Data(), i+1), 700, 0., 70);
+     AddHistogram(fpHisRootADC_corr[i]);
+  }
+  
+  fpHisRootADCTot_corr = new TH1F(Form("%sfpHisRootADCTot_corr",prefix.Data()), Form("%s - total sqrt of cluster adc corrected ", titleDev.Data()), 700, 0., 70);
+  AddHistogram(fpHisRootADCTot_corr); 
+
   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
      fpHisClusCharge[i] = new TH1F(Form("%sClusCharge%d",prefix.Data(), i+1), Form("%s - cluster charge for sensor %d", titleDev.Data(), i+1), 1000, 0., 5000);
      AddHistogram(fpHisClusCharge[i]);
@@ -117,6 +156,7 @@ Bool_t TAMSDactNtuCluster::Action()
     if (fListOfStrips->GetEntriesFast() == 0) continue;
     ok += FindClusters(i);
    //TODO: add check for clusters containing noisy strips to manipulate them (noisy strips are now simply skipped in the clusterization)
+    CorrectCLuster(i);
   }
   
   if(ok)
@@ -125,6 +165,59 @@ Bool_t TAMSDactNtuCluster::Action()
   return ok;
 }
 
+//______________________________________________________________________________
+//! Correct signal cluster
+//!
+//! \param[in] iSensor plane id
+void TAMSDactNtuCluster::CorrectCLuster(Int_t iSensor){
+
+  TAMSDntuCluster* pNtuClus = (TAMSDntuCluster*) fpNtuClus->Object();
+  int Ncluster=pNtuClus->GetClustersN(iSensor);
+
+  //loop in clusters
+  for (Int_t i = 0; i< pNtuClus->GetClustersN(iSensor); ++i) {
+
+    TAMSDcluster* cluster = pNtuClus->GetCluster(iSensor, i);
+    int strips= cluster->GetStripsN(); //get number  strips per cluster           
+    Float_t eta = cluster->GetEta();
+    Float_t e_loss=cluster->GetEnergyLoss();
+
+    //fill clusters info
+    if (ValidHistogram()) {
+      if (cluster->GetStripsN()> 0) {
+        if(strips>1) fpHisEta->Fill(eta);
+        fpHisNClusTot->Fill(Ncluster); //total number of cluster
+        fpHisNClus[iSensor]->Fill(Ncluster); //number of cluster per sensor
+      }
+    }
+
+    //Gain factors of VA Signal// for eta map   
+    ComputeClusterGain(cluster, iSensor);
+    fpHisClusChargeTotGain->Fill(cluster->GetEnergyLoss());
+    
+    //Correct cluster energy
+    ComputePosition(cluster);
+    ComputeEta(cluster);
+    if (fpCalib && !fFlagMC)
+      ComputeCorrEnergy2D(cluster);
+    if (ApplyCuts(cluster)){
+        // histogramms
+      cluster->SetValid();
+      if(ValidHistogram()){
+        if (cluster->GetStripsN() > 0) {
+        //map adc-signal for eta
+        Float_t eta = cluster->GetEta();
+        SignalMap[eta] = sqrt(cluster->GetEnergyLoss());
+        fpHisSignalMap[iSensor]->Fill(eta,sqrt(cluster->GetEnergyLoss()));
+        SignalMap_corr[eta] = sqrt(cluster->GetEnergyLossCorr());
+        fpHisSignalMap_corr[iSensor]->Fill(eta,sqrt(cluster->GetEnergyLossCorr()));
+        fpHisRootADCTot_corr->Fill(sqrt(cluster->GetEnergyLossCorr()));
+        fpHisRootADC_corr[iSensor]->Fill(sqrt(cluster->GetEnergyLossCorr()));
+        }
+      }
+    }     
+  }
+}
 //______________________________________________________________________________
 //! Find Clusters
 //!
@@ -192,8 +285,14 @@ void TAMSDactNtuCluster::FillMaps()
     TAMSDhit* strip = (TAMSDhit*)fListOfStrips->At(i);
     Int_t stripId  = strip->GetStrip();
     if (!CheckLine(stripId)) continue;
-    if (strip->IsNoisy()) continue;
     
+    bool free_noise=true;
+    if(!free_noise){
+      if (strip->IsNoisy()) {
+      continue;
+      }
+    }
+ 
     TAGactNtuCluster1D::FillMaps(stripId, map_idx);
     map_idx++;
   }
@@ -256,6 +355,8 @@ Bool_t TAMSDactNtuCluster::CreateClusters(Int_t iSensor)
               fpHisClusCharge[iSensor]->Fill(cluster->GetEnergyLoss());
               fpHisClusChargeTot->Fill(cluster->GetEnergyLoss());
               fpHisClusMap[iSensor]->Fill(cluster->GetPositionF());
+              fpHisRootADCTot->Fill(sqrt(cluster->GetEnergyLoss()));
+              fpHisRootADC[iSensor]->Fill(sqrt(cluster->GetEnergyLoss()));
            }
         }
      }
@@ -286,6 +387,7 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntriesFast(); ++i) {
     TAMSDhit* strip   = (TAMSDhit*)fCurListOfStrips->At(i);
+    if(strip->IsNoisy()) continue;  //skip noisy strips in position calculation
     tCorrection      += strip->GetPosition()*strip->GetEnergyLoss();
     tStrip           += strip->GetStrip()*strip->GetEnergyLoss();
     tClusterPulseSum += strip->GetEnergyLoss();
@@ -296,6 +398,7 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
    
   for (Int_t i = 0; i < fCurListOfStrips->GetEntriesFast(); ++i) {
     TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i);
+    if(strip->IsNoisy()) continue;  //skip noisy strips in position calculation
     tCorrection2 = strip->GetEnergyLoss()*(strip->GetPosition()-pos)*(strip->GetPosition()-pos);
     posErr += tCorrection2;
   }
@@ -372,6 +475,68 @@ void TAMSDactNtuCluster::ComputeCorrEnergy(TAMSDcluster* cluster)
   eCorrection = p_parcal->GetElossParam(fCurrentEta);
 
   cluster->SetEnergyLossCorr(fCurrentEnergy / eCorrection);
+}
+
+//_____________________________________________________________________________
+//! Compute cluster energy gain
+//!
+//! \param[in] cluster a given cluster
+void TAMSDactNtuCluster::ComputeClusterGain(TAMSDcluster* cluster, Int_t iSensor)
+{
+  vector<double> sensors;
+  vector<double> VAS;
+  vector<double> gains;
+
+  //read gain from cal
+  ifstream filedati("../../build/Reconstruction/gfile/FOOT_VA_GAIN.txt", ios::in);
+  //gain = p_parcal->GetElossParam2D(fCurrentEta, fCurrentEnergy);  
+    
+  string Detector, VA, Correction;
+  double sensor,vas,gain;
+  filedati>> Detector>>VA>>Correction;
+  while(filedati>> sensor>>vas>>gain){ 
+    sensors.push_back(sensor);
+    VAS.push_back(vas);
+    gains.push_back(gain);
+  }
+  
+  for (int i_vec=0;i_vec<sensors.size();i_vec+=10){
+    
+    if(iSensor == sensors[i_vec]){
+      //loop in strips in cluster
+      for (Int_t i_strip = 0; i_strip < 1; i_strip++){
+        TAMSDhit* strip = (TAMSDhit*)fCurListOfStrips->At(i_strip);
+        Int_t stripId = strip->GetStrip();
+        int count = 0;
+        int min_strip = 0;
+        int max_strip = min_strip + CN_CH;
+        while(min_strip<641){
+          if(stripId>min_strip && stripId<max_strip){
+            cluster->SetEnergyLoss(cluster->GetEnergyLoss()/gains[i_vec+count]);
+            break;
+          }  
+          min_strip += CN_CH;
+          max_strip += CN_CH;
+          count++;
+        }
+      }
+    }
+  }
+}
+
+//_____________________________________________________________________________
+//! Compute the cluster energy correction using eta map
+//!
+//! \param[in] cluster a given cluster
+void TAMSDactNtuCluster::ComputeCorrEnergy2D(TAMSDcluster* cluster)
+{
+  Float_t eCorrection = 1.;
+
+  TAMSDparCal* p_parcal = (TAMSDparCal*) fpCalib->Object();
+
+  eCorrection = p_parcal->GetElossParam2D(fCurrentEta, fCurrentEnergy);
+
+  cluster->SetEnergyLossCorr(fCurrentEnergy*(pow(eCorrection,2)));  
 }
 
 //_____________________________________________________________________________

@@ -28,6 +28,7 @@ public:
     struct ElossParameter_t {
         vector<double> eta;         ///< eta vector
         vector<double> correction;  ///< correction vector
+        vector<double> signals;    //R.Z//  ///eta signal vector
     };
 
 private:
@@ -43,6 +44,7 @@ public:
   void                      LoadEnergyCalibrationMap(TString Filename);
   void                      LoadPedestalMap(TString Filename);
   Double_t                  GetElossParam(Float_t eta);
+  Double_t                  GetElossParam2D(Float_t eta, Float_t signal);
 
   //! Get energy loss parameters
   ElossParameter_t          GetElossParameters()                             { return fEloss;                                 }

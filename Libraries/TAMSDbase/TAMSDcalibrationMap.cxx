@@ -44,8 +44,7 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
    // parameters for energy calibration p0 and p1
    if(fin.is_open()){
       char line[200];
-      
-      double eta, eta_corr;
+      double eta, eta_corr, signal;
       
       // loop over all the strips
       while (fin.getline(line, 200, '\n')) {
@@ -56,11 +55,12 @@ void TAMSDcalibrationMap::LoadEnergyCalibrationMap(TString FileName)
             continue;
          }
          
-         sscanf(line, "%lf %lf",&eta, &eta_corr);
+         sscanf(line, "%lf %lf %lf",&eta,&signal, &eta_corr);
          if(FootDebugLevel(1))
-            Info("LoadEnergyCalibrationMap()","%lf %lf\n",eta, eta_corr);
+            Info("LoadEnergyCalibrationMap()","%lf %lf %lf\n",eta, signal, eta_corr);
          fEloss.eta.push_back(eta);
-         fEloss.correction.push_back(eta_corr);          
+         fEloss.correction.push_back(eta_corr);  
+         fEloss.signals.push_back(signal);  
       }
    } else
       Info("LoadEnergyCalibrationMap()","File Calibration Energy %s not open!!",FileName.Data());
@@ -153,4 +153,27 @@ Double_t TAMSDcalibrationMap::GetElossParam(Float_t eta)
    }
 
    return fEloss.correction[eta_bin-1];
+}
+
+//! Get energy loss parameter using corretion map
+//! 
+//! \param[in] eta eta value
+//! \param[in] signal cluster signal value
+Double_t TAMSDcalibrationMap::GetElossParam2D(Float_t eta, Float_t signal)
+{  
+
+   int eta_bin = -1;
+   for (int i = 0; i < fEloss.eta.size(); i++) {
+      if (eta < fEloss.eta[i]) {
+         for(int i_sig = 0; i_sig < 800; i_sig++){
+            if(sqrt(signal)<fEloss.signals[i+i_sig]){
+               eta_bin = i+i_sig;
+               break;
+            }
+         }
+         break;
+      }
+   }
+   if(fEloss.correction[eta_bin-1]!=0) return fEloss.correction[eta_bin-1];
+   else return 1;
 }

@@ -38,7 +38,8 @@ public:
   Double_t GetPedestalThreshold(Int_t sensorId, TAMSDcalibrationMap::PedParameter_t const& pedestal_p, Bool_t seed);
 
   Double_t GetElossParam(Float_t eta);
-   
+  Double_t GetElossParam2D(Float_t eta, Float_t signal);
+  
    //! Get pedestal seed level
    //! \param[in] sensorId plane id
    Double_t                  GetPedestalSeedLevel(Int_t sensorId)  { return fMapCal->GetPedestalSeedLevel(sensorId); }

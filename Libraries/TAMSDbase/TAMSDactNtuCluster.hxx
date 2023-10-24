@@ -29,6 +29,9 @@ public:
    // Find cluster charge, noise & position
    virtual Bool_t  FindClusters(Int_t iSensor);
    
+   // Correct singla in cluster
+   void CorrectCLuster(Int_t iSensor);
+   
    // Apply basic cuts
    virtual Bool_t  ApplyCuts(TAMSDcluster* /*cluster*/);
    
@@ -59,6 +62,8 @@ public:
 
    // Get object in list
    TAGobject*  GetHitObject(Int_t idx) const;
+   map<Float_t, Float_t> SignalMap; /// cluster signal map-eta
+   map<Float_t, Float_t> SignalMap_corr; //cluster signal map-eta corrected
 
 private:
    TAGdataDsc*     fpNtuRaw;		      ///< input data dsc
@@ -76,11 +81,21 @@ private:
    TClonesArray*   fCurListOfStrips;   ///< list of strips in current cluster
    Int_t           fClustersN;         ///< number of clusters
    
-   TH1F*          fpHisStripTot;	            ///< Total number of strips per cluster
-   TH1F*          fpHisStrip[MaxPlane];	   ///< number of strips per cluster per sensor
-   TH1F*          fpHisClusMap[MaxPlane];    ///< cluster map per sensor
-   TH1F*          fpHisClusCharge[MaxPlane]; ///< cluster charge per sensor
-   TH1F*          fpHisClusChargeTot;        ///< Total cluster charge for all sensors
+   TH1F*          fpHisStripTot;	                  ///< Total number of strips per cluster
+   TH1F*          fpHisStrip[MaxPlane];	         ///< number of strips per cluster per sensor
+   TH1F*          fpHisClusMap[MaxPlane];          ///< cluster map per sensor
+   TH1F*          fpHisNClus[MaxPlane];            ///< number of cluster per sensor
+   TH2F*          fpHisSignalMap[MaxPlane];        ///< cluster signal map per sensor
+   TH2F*          fpHisSignalMap_corr[MaxPlane];   ///< corrected cluster signal map per sensor
+   TH1F*          fpHisEta;                        ///< cluster eta
+   TH1F*          fpHisNClusTot;                   ///< cluster signal map per sensor
+   TH1F*          fpHisClusChargeTotGain;          ///< Total cluster signal with gain 
+   TH1F*          fpHisRootADC[MaxPlane];          ///< sqrt of cluster signal per sensor
+   TH1F*          fpHisRootADC_corr[MaxPlane];     ///< corrected sqrt of cluster signal per sensor
+   TH1F*          fpHisRootADCTot;                 ///< Total sqrt of cluster signal per sensor
+   TH1F*          fpHisRootADCTot_corr;            ///< Total corrected sqrt of cluster signal per sensor
+   TH1F*          fpHisClusCharge[MaxPlane];       ///< cluster charge per sensor
+   TH1F*          fpHisClusChargeTot;              ///< Total cluster charge for all sensors
 
 private:
    // Compute position
@@ -89,6 +104,10 @@ private:
    void    ComputeEta(TAMSDcluster* cluster);
    // Compute corrected energy of cluster
    void    ComputeCorrEnergy(TAMSDcluster* cluster);
+   //Compute Gain of cluster
+   void    ComputeClusterGain(TAMSDcluster* cluster, Int_t iSensor);
+   //Compute corrected energy of cluster with eta map
+   void    ComputeCorrEnergy2D(TAMSDcluster* cluster);
 
    // Search cluster
    void    SearchCluster();

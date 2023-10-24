@@ -113,4 +113,10 @@ Double_t TAMSDparCal::GetElossParam(Float_t eta)
    return fMapCal->GetElossParam(eta);
 }
 
+//! \param[in] eta eta value
+//! \param[in] signal signal cluster value
+Double_t TAMSDparCal::GetElossParam2D(Float_t eta, Float_t signal)
+{
+   return fMapCal->GetElossParam2D(eta, signal);
+}
 
