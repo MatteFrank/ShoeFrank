@@ -25,7 +25,7 @@ NumberFiles: 4
 "./geomaps/CNAO2023/TABMdetector.geo": -1
 "./config/CNAO2023/TABMdetector.cfg": -1
 "./config/CNAO2023/TABMdetector.map": -1
-"./calib/CNAO2023/TABM_T0_Calibration.cal": 5100; 5449;
+"./calib/CNAO2023/TABM_T0_Calibration.cal": -1;
 
 DetectorName: "TG"
 NumberFiles: 1
@@ -47,8 +47,8 @@ DetectorName: "MSD"
 NumberFiles: 5
 "./geomaps/CNAO2023/TAMSDdetector.geo": -1
 "./config/CNAO2023/TAMSDdetector.cfg": -1
-"./config/CNAO2023/TAMSDdetector.map": 5100;
-"./calib/CNAO2023/TAMSD_Pedestal.cal": 5100;
+"./config/CNAO2023/TAMSDdetector.map": -1;
+"./calib/CNAO2023/TAMSD_Pedestal.cal": -1;
 "./calib/CNAO2023/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
