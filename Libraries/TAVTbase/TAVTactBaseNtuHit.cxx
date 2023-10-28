@@ -62,6 +62,7 @@ Bool_t TAVTactBaseNtuHit::DecodeEvent()
    MI26_FrameRaw* data = new MI26_FrameRaw;
 
    TAVTparMap*  pParMap = (TAVTparMap*)  fpParMap->Object();
+   TAVTparConf*  pParConf = (TAVTparConf*)  fpConfig->Object();
 
    // Vertex header
    if (!GetVtxHeader()) return false;
@@ -69,6 +70,7 @@ Bool_t TAVTactBaseNtuHit::DecodeEvent()
    // loop over boards
    for (Int_t i = 0; i < pParMap->GetSensorsN(); ++i) {
       
+      if (pParConf->GetStatus(i) == -1) continue;
       Int_t planeId = pParMap->GetPlaneId(i);
 
       if (!GetSensorHeader(i)) return false;
