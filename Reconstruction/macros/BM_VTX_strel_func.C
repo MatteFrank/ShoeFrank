@@ -32,7 +32,7 @@
 #include "TAVTtrack.hxx"
 #include "TAVTntuVertex.hxx"
 
-
+#include "TAGnameManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #endif

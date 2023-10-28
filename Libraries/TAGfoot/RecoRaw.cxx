@@ -100,9 +100,11 @@ void RecoRaw::CreateRawAction()
          parTimeWD->FromFileTcal(parFileName.Data());
       }
       
-      TACAparConf* parConf = (TACAparConf*)fpParConfCa->Object();
-      if (parConf->GetAnalysisPar().EnableArduinoTemp)
-         TAGactWDreader::EnableArduinoTempCA();
+      if(TAGrecoManager::GetPar()->IncludeCA()){
+        TACAparConf* parConf = (TACAparConf*)fpParConfCa->Object();
+        if (parConf->GetAnalysisPar().EnableArduinoTemp)
+          TAGactWDreader::EnableArduinoTempCA();
+      }
 
       const Char_t* name = FootActionDscName("TAGactWDreader");
       fActWdRaw  = new TAGactWDreader(name, fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,

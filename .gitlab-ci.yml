@@ -1,0 +1,25 @@
+image: ubuntu:20.04
+
+before_script:
+  - hwclock --hctosys 
+
+stages:          # List of stages for jobs, and their order of execution
+  - deploy
+
+pages:
+  stage: deploy
+  rules:
+    # This ensures that only pushes to the default branch will trigger
+    # a pages deploy
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y doxygen git
+    - git clone https://github.com/jothepro/doxygen-awesome-css.git -b v2.1.0
+    - doxygen docs/Doxyfile
+    - sed -i -- 's/docs\/FOOT/FOOT/g' docs_temp/html/index.html
+    - mv docs_temp/html/ public/
+  artifacts:
+    paths:
+      # The folder that contains the files to be exposed at the Page URL
+      - public
