@@ -83,7 +83,8 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
 
         if (!GetSensorHeader(i, l)) continue;
         Int_t planeId = pParMap->GetPlaneId(i, l);
-        
+        if (planeId == -1) continue;
+
         ResetFrames();
         
         Int_t framenumber = 0;
