@@ -104,11 +104,11 @@ void TATWactNtuHit::CreateHistogram()
   fpHisChargeRear = new TH1F("twChargeRear", "TW - Charge Rear", 10000, 0., 50.);
   AddHistogram(fpHisChargeRear);
 
-  fpHisChargeBar9Front = new TH1F("twChargeBar9Front", "TW - ChargeBar9 Front", 10000, 0., 50.);
-  AddHistogram(fpHisChargeBar9Front);
+  fpHisChargeCentralBarFront = new TH1F("twChargeCentralBarFront", "TW - ChargeCentralBar Front", 10000, 0., 50.);
+  AddHistogram(fpHisChargeCentralBarFront);
 
-  fpHisChargeBar9Rear = new TH1F("twChargeBar9Rear", "TW - ChargeBar9 Rear", 10000, 0., 50.);
-  AddHistogram(fpHisChargeBar9Rear);
+  fpHisChargeCentralBarRear = new TH1F("twChargeCentralBarRear", "TW - ChargeCentralBar Rear", 10000, 0., 50.);
+  AddHistogram(fpHisChargeCentralBarRear);
 
   
   fpHisDeltaTimeRawCenterFront = new TH1F("twDeltaTimeCenterFront", "raw time of flight", 5000, -50., 50);
@@ -310,16 +310,19 @@ Bool_t TATWactNtuHit::Action()
 	      fpHisTimeTot->Fill(ToF);
 	      fpHisElossTof_layer[Layer]->Fill(ToF,Energy);
 
-	      if(Layer==1)fpHisChargeFront->Fill(rawEnergy);
-	      if(Layer==0)fpHisChargeRear->Fill(rawEnergy);
+	      if(Layer==(Int_t)LayerX) fpHisChargeFront->Fill(rawEnergy);
+	      if(Layer==(Int_t)LayerY) fpHisChargeRear->Fill(rawEnergy);
 	      
-	      if(ShoeBarId==9) {  // only for central bars for trigger purposes
+	      if(ShoeBarId>=CentralBarsID[0] && ShoeBarId<=CentralBarsID[2]) {  // only for central bars for trigger purposes
 		
-		if(Layer==1)fpHisChargeBar9Front->Fill(rawEnergy);
-		if(Layer==0)fpHisChargeBar9Rear->Fill(rawEnergy);
+		if(Layer==(Int_t)LayerX) fpHisChargeCentralBarFront->Fill(rawEnergy);
+		if(Layer==(Int_t)LayerY) fpHisChargeCentralBarRear->Fill(rawEnergy);
 		
-		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 0)fpHisDeltaTimeRawCenterFront->Fill(rawToF);
-		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == 1)fpHisDeltaTimeRawCenterRear->Fill(rawToF);
+		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == (Int_t)LayerX)
+                  fpHisDeltaTimeRawCenterFront->Fill(rawToF);
+		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == (Int_t)LayerY)
+                  fpHisDeltaTimeRawCenterRear->Fill(rawToF);
+                
 		fpHisAmpA[Layer]->Fill(AmplitudeA);
 		fpHisAmpB[Layer]->Fill(AmplitudeB);
 		fpHisAmpA_vs_Eloss[Layer]->Fill(Energy,AmplitudeA);
