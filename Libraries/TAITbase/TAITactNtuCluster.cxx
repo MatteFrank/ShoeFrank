@@ -129,6 +129,7 @@ Bool_t TAITactNtuCluster::CreateClusters(Int_t iSensor)
       if (!cluster->IsValid())
          pNtuClus->GetListOfClusters(iSensor)->Remove(cluster);
    }
+   pNtuClus->GetListOfClusters(iSensor)->Compress();
    
    if (pNtuClus->GetClustersN(iSensor))
       return true;
