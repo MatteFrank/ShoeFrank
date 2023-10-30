@@ -38,6 +38,7 @@
 
 #include "RecoRaw.hxx"
 #include "GlobalToeReco.hxx"
+#include "GlobalReco.hxx"
 
 //! Class Imp
 ClassImp(TAGeventDisplay)
@@ -88,10 +89,16 @@ TAGeventDisplay::~TAGeventDisplay()
 void TAGeventDisplay::SetReco()
 {
    Bool_t lrc = TAGrecoManager::GetPar()->IsFromLocalReco();
-   
+   Bool_t toe = TAGrecoManager::GetPar()->IncludeTOE();
+   Bool_t gf  = TAGrecoManager::GetPar()->IncludeKalman();
+
    if (fType == 0) {
       if (lrc) {
-         fReco = new GlobalToeReco(fExpName, fRunNumber);
+         if (toe)
+            fReco = new GlobalToeReco(fExpName, fRunNumber);
+         if (gf)
+            fReco = new GlobalReco(fExpName, fRunNumber);
+
          fReco->EnableReadL0Hits();
       } else
          fReco = new RecoRaw(fExpName, fRunNumber);

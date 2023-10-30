@@ -234,8 +234,15 @@ Bool_t TAGactWDreader::Action()
          deltatimerate+=deltatimeev;
 
          if (ValidHistogram()) {
-            hTriggerID->Fill(trigID);
-            hDAQRateVsTime->Fill(runtime);
+
+	   
+	   hTriggerID->Fill(trigID);
+	   for(int iTrig=0;iTrig<NMAXTRIG;iTrig++){
+	     if((p_WDtrigInfo->GetTriggersStatus())[iTrig]){
+	       hTriggerIDstatus->Fill(iTrig);
+	     }
+	   }
+	   hDAQRateVsTime->Fill(runtime);
             hSTRateVsTime->Fill(runtime,nSTcounts-nSTcounts_prev);
             hTWRateVsTime->Fill(runtime,nTWcounts-nTWcounts_prev);
             hCARateVsTime->Fill(runtime,nCAcounts-nCAcounts_prev);
@@ -600,12 +607,15 @@ void TAGactWDreader::CreateHistogram()
    char histoname[100]="";
    if(FootDebugLevel(1))
      cout<<"I have created the WD histo. "<<endl;
-   
-   
+      
    strcpy(histoname,"wdTriggerID");
    hTriggerID = new TH1F(histoname, histoname, 64, -0.5, 63.5);
    AddHistogram(hTriggerID);
 
+   strcpy(histoname,"wdTriggerIDstatus");
+   hTriggerIDstatus = new TH1F(histoname, histoname, 64, -0.5, 63.5);
+   AddHistogram(hTriggerIDstatus);
+   
    strcpy(histoname,"wdDAQRate");
    hDAQRate = new TH1F(histoname, histoname, 1000,0,2000);
    AddHistogram(hDAQRate);

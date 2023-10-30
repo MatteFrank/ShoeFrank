@@ -102,6 +102,7 @@ private:
   
 
   TH1F *hTriggerID;
+  TH1F *hTriggerIDstatus;
   TH1F *hDAQRate;
   TH1F *hSTRate;
   TH1F *hSTRate100;

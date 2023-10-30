@@ -158,7 +158,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntutrack->ClassName()), &msdntutrack);
     msdNtuPoint= new TAMSDntuPoint(stationsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuPoint->ClassName()), &msdNtuPoint);
-    msdNtuHit= new TAMSDntuHit(sensorsN);
+    msdNtuHit= new TAMSDntuHit(sensorsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuHit->ClassName()), &msdNtuHit);
   }
 
