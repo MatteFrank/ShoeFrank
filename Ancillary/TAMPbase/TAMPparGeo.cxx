@@ -99,7 +99,7 @@ Bool_t TAMPparGeo::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout << endl << "Sensors number "<< fSensorsN << endl;
    
-   fSensorArray = new size_t[fgkDefSensorsN];
+   fSensorArray = new size_t[fSensorsN];
    
    ReadItem(fTypesN);
    if(FootDebugLevel(1))

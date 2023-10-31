@@ -52,7 +52,8 @@
 //! Class Imp
 ClassImp(TAVTparGeo);
 
-const TString TAVTparGeo::fgkBaseName      = "VT";
+const TString TAVTparGeo::fgkBaseName    = "VT";
+const Int_t   TAVTparGeo::fgkDefSensorsN = 4;
 
 //______________________________________________________________________________
 //! Standard constructor

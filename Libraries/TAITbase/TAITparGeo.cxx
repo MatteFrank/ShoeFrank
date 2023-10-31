@@ -31,6 +31,7 @@ const TString TAITparGeo::fgkBaseNameIt      = "IT";
 const Int_t   TAITparGeo::fgkDefSensPerLayer = 8;
 const Int_t   TAITparGeo::fgkDefSensPerBoard = 4;
 const Int_t   TAITparGeo::fgkDefLayersN      = 2;
+const Int_t   TAITparGeo::fgkDefSensorsN     = 32;
 
 //_____________________________________________________________________________
 //! Constructor

@@ -49,6 +49,8 @@ Bool_t TAVTbaseParMap::FromFile(const TString& name)
    if (!Open(nameExp))
       return false;
    
+   Info("FromFile()", "Open file %s for mapping\n", name.Data());
+
    ReadItem(fDataLinksN);
    
    for (Int_t l = 0; l < fDataLinksN; ++l) { // Loop on each data link

@@ -79,9 +79,6 @@ protected:
    Int_t      fSensPerLayer; ///< number of sensor per layer
    std::size_t*    fSensorArray;  ///< Array of sensor
    std::map<float, std::vector<std::size_t>> fSensorMap; ///< map sensor
-
-protected:
-   static const Int_t   fgkDefSensorsN;   ///< default number of sensors
    
 protected:
    //! Fill sensor map
@@ -199,10 +196,6 @@ public:
    
    //! Get Sensor parameter
    SensorParameter_t& GetSensorPar(Int_t idx) { return fSensorParameter[idx]; }
-   
-public:
-   //! Get default number of sensors
-   static Int_t         GetDefSensorsN()      { return fgkDefSensorsN;        }
    
    ClassDef(TAVTbaseParGeo,1)
 };

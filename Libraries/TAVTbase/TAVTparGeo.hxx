@@ -26,6 +26,7 @@ class TAVTparGeo : public TAVTbaseParGeo {
 
 protected:
    static const TString fgkBaseName;    ///< Vtx base name
+   static const Int_t   fgkDefSensorsN;   ///< default number of sensors
 
 public:
    TAVTparGeo();
@@ -84,6 +85,8 @@ protected:
 public:
    //! Get base name
    static const Char_t* GetBaseName()    { return fgkBaseName.Data();    }
+   //! Get default number of sensors
+   static Int_t         GetDefSensorsN() { return fgkDefSensorsN;        }
 
    ClassDef(TAVTparGeo,1)
 };

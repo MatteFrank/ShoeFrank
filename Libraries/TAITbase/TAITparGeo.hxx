@@ -62,7 +62,8 @@ protected:
    static const Int_t   fgkDefSensPerLayer; ///< Def number of sensors per layer
    static const Int_t   fgkDefSensPerBoard; ///< Def number of sensors per plume module
    static const Int_t   fgkDefLayersN;      ///< Def number of layers
-   
+   static const Int_t   fgkDefSensorsN;     ///< default number of sensors
+
 private:
    Float_t GetPassiveLayerPosZ(Int_t layer);
 
@@ -171,6 +172,8 @@ public:
    static const Char_t* GetBaseName()    { return fgkBaseNameIt.Data();    }
    //! Get default number of sensors per board
    static Int_t GetDefSensPerBoard()     {return fgkDefSensPerBoard;       }
+   //! Get default number of sensors
+   static Int_t         GetDefSensorsN() { return fgkDefSensorsN;        }
 
    ClassDef(TAITparGeo,1)
 };

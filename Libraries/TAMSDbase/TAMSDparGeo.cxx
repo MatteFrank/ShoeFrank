@@ -17,7 +17,8 @@
 #include "TAMSDparGeo.hxx"
 #include "TAGroot.hxx"
 
-const TString TAMSDparGeo::fgkBaseName      = "MSD";
+const TString TAMSDparGeo::fgkBaseName    = "MSD";
+const Int_t   TAMSDparGeo::fgkDefSensorsN = 6;
 
 /*!
  \class TAMSDparGeo
