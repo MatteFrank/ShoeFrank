@@ -235,7 +235,7 @@ EOF
 
         # Submit job
         chmod 754 ${jobFilename}
-        condor_submit -spool ${filename_sub}
+        condor_submit -spool ${filename_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 &
     done
 
     #Merge files if requested!!
@@ -279,8 +279,7 @@ while true; do
         command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
         LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
 
-        out="Merge_${campaign}_${runNumber}.root"
-        fileOut=\${out/.root/\${suffix}}
+        fileOut="Merge_${campaign}_${runNumber}\${suffix}}
         mv \${SCRATCH}/Merge_temp.root ${outFolder}/\${fileOut}
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
@@ -291,7 +290,7 @@ while true; do
 done
 EOF
 
-    # Create submit file for merge job
+        # Create submit file for merge job
         merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
@@ -307,6 +306,12 @@ EOF
 
         # Submit merge job
         chmod 754 ${mergeJobFileName}
-        condor_submit -spool ${merge_sub}
+        condor_submit -spool ${merge_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 &
+        echo "Submitted jobs for run ${runNumber}"
+        
+        if [ ${runNumber} -eq ${lastRunNumber} ]; then
+            echo "All runs submitted!"
+            exit 1
+        fi
     fi
 done
