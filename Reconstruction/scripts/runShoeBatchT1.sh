@@ -194,7 +194,7 @@ do
 #!/bin/bash
 
 SCRATCH="\$(pwd)"
-outFile_temp="\${SCRATCH}/temp_${campaign}_${runNumber}_${jobCounter}.root"
+outFile_temp="\${SCRATCH}/temp_${campaign}_run${runNumber}_Job${jobCounter}.root"
 
 source /opt/exp_software/foot/root_shoe_foot.sh 
 source ${SHOE_PATH}/build/setupFOOT.sh
@@ -203,12 +203,17 @@ cd ${SHOE_PATH}/build/Reconstruction
 ../bin/DecodeGlb -in ${file} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -subfile
 retVal=\$?
 if [ \$retVal -eq 0 ]; then
+    out_list=(\$(ls \${SCRATCH}/*.root))
+    if [ ! -f \${outFile_temp} ]; then
+        outFile_temp=\${out_list[0]}
+    fi
+    
     if [ $jobCounter -eq 1 ]; then
         rootcp \${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
     fi
     rootrm \${outFile_temp}:runinfo
-    mv \${outFile_temp} ${outFolder}
-    mv ${outFolder}/\$(basename \${outFile_temp}) ${outFile}
+    outFile=\${outFile_temp/temp/output}
+    mv \${outFile_temp} ${outFolder}/\$(basename \${outFile})
 else
     echo "Unexpected error in processing of file ${file}"
 fi
@@ -230,7 +235,7 @@ EOF
 
         # Submit job
         chmod 754 ${jobFilename}
-        condor_submit -spool ${filename_sub}
+        condor_submit -spool ${filename_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 &
     done
 
     #Merge files if requested!!
@@ -256,12 +261,26 @@ while true; do
 	if [ \${nCompletedFiles} -eq ${nFiles} ]; then
         command="\${SCRATCH}/Merge_temp.root"
 
+        suffix=".root"
+        if [ ! -f ${outFile_base}${nFiles}.root ]; then
+            base="${outFile_base}${nFiles}"
+            out_list=(\$(ls \${base}*))
+            if [ \${#out_list[@]} -neq 1 ]; then
+                echo "Unexpected error in processing of run ${runNumber}: wrong number of output files (1) after processing"
+            else
+                outFile_temp=\${out_list[0]}
+                suffix=\$(cut -c \$((\${#base}+1))-\${#outFile_temp} <<< \${outFile_temp})
+            fi
+        fi
+
         for iFile in \$(seq 1 $nFiles); do
-            command="\${command} ${outFile_base}\${iFile}.root"
+            command="\${command} ${outFile_base}\${iFile}\${suffix}"
         done
         command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
         LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
-        mv \${SCRATCH}/Merge_temp.root ${outMergedFile}
+
+        fileOut="Merge_${campaign}_${runNumber}\${suffix}}
+        mv \${SCRATCH}/Merge_temp.root ${outFolder}/\${fileOut}
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
 	else
@@ -271,7 +290,7 @@ while true; do
 done
 EOF
 
-    # Create submit file for merge job
+        # Create submit file for merge job
         merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
@@ -287,6 +306,12 @@ EOF
 
         # Submit merge job
         chmod 754 ${mergeJobFileName}
-        condor_submit -spool ${merge_sub}
+        condor_submit -spool ${merge_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 &
+        echo "Submitted jobs for run ${runNumber}"
+        
+        if [ ${runNumber} -eq ${lastRunNumber} ]; then
+            echo "All runs submitted!"
+            exit 1
+        fi
     fi
 done

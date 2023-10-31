@@ -5,7 +5,7 @@ NumberDevices: 10
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/CNAO2023/FOOT.geo": 5100; 5449;
+"./geomaps/CNAO2023/FOOT.geo": -1
 
 DetectorName: "DI"
 NumberFiles: 1

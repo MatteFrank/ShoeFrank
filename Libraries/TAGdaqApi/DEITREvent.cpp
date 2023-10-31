@@ -15,7 +15,7 @@
 
 const u_int DEITREvent::m_itrHeader = 0xfafafafa;
 const u_int DEITREvent::m_itrTail   = 0xabcdabcd;
-const u_int DEITREvent::m_maxSize   = 2047;
+const u_int DEITREvent::m_maxSize   = 131072;
 
 
 //------------------------------------------+-----------------------------------
