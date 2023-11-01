@@ -265,8 +265,8 @@ while true; do
         if [ ! -f ${outFile_base}${nFiles}.root ]; then
             base="${outFile_base}${nFiles}"
             out_list=(\$(ls \${base}*))
-            if [ \${#out_list[@]} -neq 1 ]; then
-                echo "Unexpected error in processing of run ${runNumber}: wrong number of output files (1) after processing"
+            if [ \${#out_list[@]} -ne 1 ]; then
+                echo "Unexpected error in processing of run ${runNumber}: wrong number of output files after processing"
             else
                 outFile_temp=\${out_list[0]}
                 suffix=\$(cut -c \$((\${#base}+1))-\${#outFile_temp} <<< \${outFile_temp})
