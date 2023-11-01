@@ -41,7 +41,7 @@ DetectorName: "IT"
 NumberFiles: 3
 "./geomaps/CNAO2023/TAITdetector.geo": -1
 "./config/CNAO2023/TAITdetector.cfg": -1
-"./config/CNAO2023/TAITdetector.map": 6000; 6122;
+"./config/CNAO2023/TAITdetector.map": -1
 
 DetectorName: "MSD"
 NumberFiles: 5
