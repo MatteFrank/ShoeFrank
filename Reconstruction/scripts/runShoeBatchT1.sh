@@ -279,7 +279,7 @@ while true; do
         command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
         LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
 
-        fileOut="Merge_${campaign}_${runNumber}\${suffix}}
+        fileOut="Merge_${campaign}_${runNumber}\${suffix}"
         mv \${SCRATCH}/Merge_temp.root ${outFolder}/\${fileOut}
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
