@@ -44,4 +44,4 @@ Resolution_number_of_parameters: 5
 
 STrel_function: ([p0]*x+[p1]*x*x+[p2]*x*x*x+[p3]*x*x*x*x)
 STrel_number_of_parameters:  4
-0.0073697   -3.98333e-05   1.16193e-07   -1.20181e-10 
+0.00681948   -3.08028e-05   6.9095e-08   -4.82073e-11 

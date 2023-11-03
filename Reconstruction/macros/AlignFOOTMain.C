@@ -136,18 +136,11 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   if(IncludeIT){
     itClus = new TAITntuCluster(sensorsNit);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(itClus->ClassName()), &itClus);
+    itntutrack= new TAITntuTrack();
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(itntutrack->ClassName()), &itntutrack);
     if(IncludeMC){
       itMc = new TAMCntuHit();
       tree->SetBranchAddress(FootBranchMcName(kITR), &itMc);
-    }
-  }
-
-  if(IncludeMSD){
-    msdntuclus= new TAMSDntuCluster(sensorsNms);
-    tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntuclus->ClassName()), &msdntuclus);
-    if(IncludeMC){
-      msdMc = new TAMCntuHit();
-      tree->SetBranchAddress(FootBranchMcName(kMSD), &msdMc);
     }
   }
 
@@ -160,6 +153,10 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuPoint->ClassName()), &msdNtuPoint);
     msdNtuHit= new TAMSDntuHit(sensorsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuHit->ClassName()), &msdNtuHit);
+    if(IncludeMC){
+      msdMc = new TAMCntuHit();
+      tree->SetBranchAddress(FootBranchMcName(kMSD), &msdMc);
+    }    
   }
 
   if(IncludeTW){
@@ -210,6 +207,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   vector<beamtrk> bmtrk;
   vector<beamtrk> vttrk;
   vector<beamtrk> msdtrk;
+  vector<beamtrk> ittrk;
 
   TFile *file_out = new TFile(nameOut,"RECREATE");
   Booking(file_out);
@@ -230,14 +228,20 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
       BeamMonitor();
     if(IncludeVT)
       Vertex();
+    if(IncludeIT)
+      InnerTracker();      
     if(IncludeMSD)
       MSD();
     if(IncludeTW)
       TofWall();
     if(IncludeDAQ)
       DataAcquisition();
-    if(IncludeBM && IncludeVT)
+    if(IncludeBM && IncludeVT){
       VTXSYNC(); //to check the VTX and the BM synchronization
+      BMVTstudies();
+    }
+    if(IncludeGLB)
+      GLBTRKstudies();
 
     if(IncludeTW && (IncludeVT || IncludeMSD))
       FillTWalign(); //Align the TW with the VT or MSD tracks
@@ -245,7 +249,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     if((IncludeBM && IncludeVT) || (IncludeBM && IncludeMSD) || (IncludeVT && IncludeMSD))
       FillCorr();
 
-    FillTrackVect(bmtrk, vttrk, msdtrk); //fill the tracks in GLOBAL FRAME adopted for alignment
+    FillTrackVect(bmtrk, vttrk, msdtrk, ittrk); //fill the tracks in GLOBAL FRAME adopted for alignment
   }//Loop on events
 
   TString foldername;
@@ -257,6 +261,8 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     AlignWrtTarget(vttrk,foldername);
     foldername="MSD";
     AlignWrtTarget(msdtrk,foldername);
+    foldername="IT";
+    AlignWrtTarget(ittrk,foldername);
   }
 
   if(alignVs){
@@ -266,6 +272,10 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     //here the VT is fixed, the MSD will be shifted and tilted
     foldername="MSDVT";
     AlignDetaVsDetb(msdtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("MSD"), geoTrafo->GetDeviceAngle("MSD"));
+    //here the IT is fixed, the MSD will be shifted and tilted
+    foldername="ITVT";
+    AlignDetaVsDetb(ittrk, vttrk, foldername, geoTrafo->GetDeviceCenter("IT"), geoTrafo->GetDeviceAngle("IT"));
+    
   }
 
 
