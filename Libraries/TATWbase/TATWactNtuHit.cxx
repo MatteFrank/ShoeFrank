@@ -98,27 +98,40 @@ void TATWactNtuHit::CreateHistogram()
   fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, -50., 50);
   AddHistogram(fpHisTimeTot);
 
-  fpHisChargeFront = new TH1F("twChargeFront", "TW - Charge Front", 10000, 0., 50.);
-  AddHistogram(fpHisChargeFront);
+  // fpHisChargeFront = new TH1F("twChargeFront", "TW - Charge Front", 10000, 0., 50.);
+  // AddHistogram(fpHisChargeFront);
 
-  fpHisChargeRear = new TH1F("twChargeRear", "TW - Charge Rear", 10000, 0., 50.);
-  AddHistogram(fpHisChargeRear);
+  // fpHisChargeRear = new TH1F("twChargeRear", "TW - Charge Rear", 10000, 0., 50.);
+  // AddHistogram(fpHisChargeRear);
 
-  fpHisChargeCentralBarFront = new TH1F("twChargeCentralBarFront", "TW - ChargeCentralBar Front", 10000, 0., 50.);
-  AddHistogram(fpHisChargeCentralBarFront);
+  // fpHisChargeCentralBarFront = new TH1F("twChargeCentralBarFront", "TW - ChargeCentralBar Front", 10000, 0., 50.);
+  // AddHistogram(fpHisChargeCentralBarFront);
 
-  fpHisChargeCentralBarRear = new TH1F("twChargeCentralBarRear", "TW - ChargeCentralBar Rear", 10000, 0., 50.);
-  AddHistogram(fpHisChargeCentralBarRear);
+  // fpHisChargeCentralBarRear = new TH1F("twChargeCentralBarRear", "TW - ChargeCentralBar Rear", 10000, 0., 50.);
+  // AddHistogram(fpHisChargeCentralBarRear);
 
   
-  fpHisDeltaTimeRawCenterFront = new TH1F("twDeltaTimeCenterFront", "raw time of flight", 5000, -50., 50);
-  AddHistogram(fpHisDeltaTimeRawCenterFront);
+  // fpHisDeltaTimeRawCenterFront = new TH1F("twDeltaTimeCenterFront", "raw time of flight", 5000, -50., 50);
+  // AddHistogram(fpHisDeltaTimeRawCenterFront);
 
-  fpHisDeltaTimeRawCenterRear = new TH1F("twDeltaTimeCenterRear", "raw time of flight", 5000, -50., 50);
-  AddHistogram(fpHisDeltaTimeRawCenterRear);
+  // fpHisDeltaTimeRawCenterRear = new TH1F("twDeltaTimeCenterRear", "raw time of flight", 5000, -50., 50);
+  // AddHistogram(fpHisDeltaTimeRawCenterRear);
 
   
   for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
+
+    fpHisCharge[ilayer] = new TH1F(Form("twCharge_%s",LayerName[(TLayer)ilayer].data()), Form("twCharge_%s",LayerName[(TLayer)ilayer].data()), 10000, 0., 50.);
+    AddHistogram(fpHisCharge[ilayer]);
+
+    fpHisChargeCentralBar[ilayer] = new TH1F(Form("twChargeCentralBar_%s",LayerName[(TLayer)ilayer].data()), Form("twChargeCentralBar_%s",LayerName[(TLayer)ilayer].data()), 10000, 0., 50.);
+    AddHistogram(fpHisChargeCentralBar[ilayer]);
+        
+    fpHisDeltaTimeRawCentralBar[ilayer] = new TH1F(Form("twDeltaTimeRawCentralBar_%s",LayerName[(TLayer)ilayer].data()), Form("twDeltaTimeRawCentralBar_%s",LayerName[(TLayer)ilayer].data()), 5000, -50., 50);
+    AddHistogram(fpHisDeltaTimeRawCentralBar[ilayer]);
+
+    fpHisBarsID[ilayer] = new TH1I(Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()), Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()),20, 0., 20);
+    AddHistogram(fpHisBarsID[ilayer]);
+  
     fpHisElossTof_layer[ilayer] = new TH2D(Form("twdE_vs_Tof_%s",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s",LayerName[(TLayer)ilayer].data()),3000,0.,30.,480,0.,120.);
     AddHistogram(fpHisElossTof_layer[ilayer]);
 
@@ -310,19 +323,15 @@ Bool_t TATWactNtuHit::Action()
 	      fpHisTimeTot->Fill(ToF);
 	      fpHisElossTof_layer[Layer]->Fill(ToF,Energy);
 
-	      if(Layer==(Int_t)LayerX) fpHisChargeFront->Fill(rawEnergy);
-	      if(Layer==(Int_t)LayerY) fpHisChargeRear->Fill(rawEnergy);
+              fpHisBarsID[Layer]->Fill(ShoeBarId);
+
+	      fpHisCharge[Layer]->Fill(rawEnergy);
 	      
 	      if(ShoeBarId>=CentralBarsID[0] && ShoeBarId<=CentralBarsID[2]) {  // only for central bars for trigger purposes
 		
-		if(Layer==(Int_t)LayerX) fpHisChargeCentralBarFront->Fill(rawEnergy);
-		if(Layer==(Int_t)LayerY) fpHisChargeCentralBarRear->Fill(rawEnergy);
-		
-		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == (Int_t)LayerX)
-                  fpHisDeltaTimeRawCenterFront->Fill(rawToF);
-		if(AmplitudeA>0.4 && AmplitudeB>0.4 && Layer == (Int_t)LayerY)
-                  fpHisDeltaTimeRawCenterRear->Fill(rawToF);
-                
+                fpHisChargeCentralBar[Layer]->Fill(rawEnergy);
+                fpHisDeltaTimeRawCentralBar[Layer]->Fill(rawToF);
+
 		fpHisAmpA[Layer]->Fill(AmplitudeA);
 		fpHisAmpB[Layer]->Fill(AmplitudeB);
 		fpHisAmpA_vs_Eloss[Layer]->Fill(Energy,AmplitudeA);

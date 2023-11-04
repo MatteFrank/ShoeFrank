@@ -72,20 +72,18 @@ private:
   TH1F*           fpHisDeTot;       // Total energy loss
   TH1F*           fpHisTimeTot;     // Total time of flight
   
-  TH1F*           fpHisChargeFront;
-  TH1F*           fpHisChargeRear;
-  TH1F*           fpHisChargeCentralBarFront;
-  TH1F*           fpHisChargeCentralBarRear;
+  TH1F*           fpHisCharge[nLayers];
+  TH1F*           fpHisChargeCentralBar[nLayers];
+  TH1F*           fpHisDeltaTimeRawCentralBar[nLayers];
   TH1F*           fpHisAmpA[nLayers];     // Total time of flight
   TH1F*           fpHisAmpB[nLayers];     // Total time of flight
   TH2F*           fpHisAmpA_vs_Eloss[nLayers];     // Total time of flight
   TH2F*           fpHisAmpB_vs_Eloss[nLayers];     // Total time of flight
-  TH1F            *fpHisDeltaTimeRawCenterFront;
-  TH1F            *fpHisDeltaTimeRawCenterRear;
 
   Bool_t          f_debug;
 
   
+  TH1I*           fpHisBarsID[nLayers];
   TH2D*           fpHisElossTof_layer[nLayers];
   vector<TH2D*>   fpHisElossTof_Z;
   vector<TH1D*>   fpHisEloss_Z[nLayers];
