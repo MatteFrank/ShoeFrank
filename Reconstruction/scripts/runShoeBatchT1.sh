@@ -235,7 +235,7 @@ EOF
 
         # Submit job
         chmod 754 ${jobFilename}
-        condor_submit -spool ${filename_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 &
+        condor_submit -spool ${filename_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1
     done
 
     #Merge files if requested!!
@@ -306,7 +306,7 @@ EOF
 
         # Submit merge job
         chmod 754 ${mergeJobFileName}
-        condor_submit -spool ${merge_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 &
+        condor_submit -spool ${merge_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 
         echo "Submitted jobs for run ${runNumber}"
         
         if [ ${runNumber} -eq ${lastRunNumber} ]; then
