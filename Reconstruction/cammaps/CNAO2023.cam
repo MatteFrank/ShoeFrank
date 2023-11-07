@@ -48,7 +48,7 @@ NumberFiles: 5
 "./geomaps/CNAO2023/TAMSDdetector.geo": -1
 "./config/CNAO2023/TAMSDdetector.cfg": -1
 "./config/CNAO2023/TAMSDdetector.map": -1;
-"./calib/CNAO2023/TAMSD_Pedestal.cal": -1;
+"./calib/CNAO2023/TAMSD_Pedestal.cal": 6240; 6242; 6244; 6246;
 "./calib/CNAO2023/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"

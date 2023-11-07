@@ -32,6 +32,7 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
   if(expName.EndsWith("/")) //fix a bug present in shoe
     expName.Remove(expName.Length()-1);
   Int_t runNumber=runinfo->RunNumber();
+  cout<<"expName="<<expName<<"  runNumber="<<runNumber<<endl;  
   TAGrecoManager::Instance(expName);
   TAGcampaignManager* campManager = new TAGcampaignManager(expName);
   campManager->FromFile();
@@ -39,12 +40,13 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
   geoTrafo->FromFile(parFileName);
 
-  TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetBaseName(), new TABMparGeo());
+  TAGparaDsc* bmGeo    = new TAGparaDsc(new TABMparGeo());
   TABMparGeo* bmpargeo   = (TABMparGeo*) bmGeo->Object();
   parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  cout<<"bmgeofile from: "<<parFileName.Data()<<endl;
   bmpargeo->FromFile(parFileName.Data());
 
-  TAGparaDsc*  bmConf  = new TAGparaDsc(TABMparGeo::GetBaseName(), new TABMparConf());
+  TAGparaDsc*  bmConf  = new TAGparaDsc(new TABMparConf());
   bmparconf = (TABMparConf*)bmConf->Object();
   parFileName = campManager->GetCurConfFile(TABMparGeo::GetBaseName(), runNumber);
   bmparconf->FromFile(parFileName.Data());
