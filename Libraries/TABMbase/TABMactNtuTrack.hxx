@@ -82,6 +82,10 @@ public:
   TH2F*            fpHisMapTW;
   TH2F*            fpHisMylar12d;
 
+  TH1F*            fpHisTGYview;
+  TH1F*            fpHisTGXview;
+  TH1F*            fpHisXeventTGYview;
+  TH1F*            fpHisXeventTGXview;
   TH1F*            fpHisAngleX;
   TH1F*            fpHisAngleY;
   TH1F*            fpHisChi2Red;

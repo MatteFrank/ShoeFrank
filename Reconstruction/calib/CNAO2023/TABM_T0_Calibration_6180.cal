@@ -39,7 +39,7 @@ i= 35  t0= -284
 
 Resolution_function:  ([p0]+[p1]*x+[p2]*x*x+[p3]*x*x*x+[p4]*x*x*x*x)
 Resolution_number_of_parameters: 5
-0.0120769   -0.0870719   0.422187   -0.882696   0.640147   
+0.0120769   -0.0870719   0.422187   -0.882696   0.640147
 
 STrel_function: ([p0]*x+[p1]*x*x+[p2]*x*x*x+[p3]*x*x*x*x+[p4]*x*x*x*x*x)
 STrel_number_of_parameters:  5
