@@ -143,6 +143,7 @@ void BookingBMVTX(TFile* f_out, Int_t doalign){
 
   //strel plots
   h2 = new TH2D("NewStrel","BM tdrift vs VTX rdrift;BM tdrift [ns];VTX rdrift [cm]",200,0.,400.,200,0.,1.);
+  h2 = new TH2D("NewStrelCleaned","BM tdrift vs VTX rdrift cleaned;BM tdrift [ns];VTX rdrift [cm]",200,0.,400.,200,0.,1.);
   h = new TH1D("MyNewStrel","BM tdrift vs VTX rdrift from my gaussian fit;BM tdrift [ns];VTX rdrift [cm]",strelNbin+1,0.,bmparconf->GetHitTimeCut()*(strelNbin+1)/strelNbin);
   h2 = new TH2D("bmvt_rdrift_residual","BM rdrift - VT rdrift;Residual [cm];BM rdrift [cm]",400,-0.3,0.3,100,0.,1.);
   h = new TH1D("bm_notsel_rdrift","VT track rdrift for not selected bm hits;rdrift [cm];Number of hits",100,0.,1.);
@@ -238,6 +239,8 @@ void FillStrel(TAVTtrack* vttrack, TABMparGeo* bmpargeo){
       double vtdrift=bmpargeo->FindRdrift(vtposbm, vtslpbm, bmpargeo->GetWirePos(bmhit->GetView(), bmhit->GetPlane(), wireid), bmpargeo->GetWireDir(bmhit->GetView()), true);
       if(vtdrift<0.95){
         ((TH1D*)gDirectory->Get("NewStrel"))->Fill(bmhit->GetTdrift(), vtdrift);
+        if(fabs(bmhit->GetRdrift() - vtdrift)<0.15)
+          ((TH1D*)gDirectory->Get("NewStrelCleaned"))->Fill(bmhit->GetTdrift(), vtdrift);
         Int_t timebin=bmhit->GetTdrift()/bmparconf->GetHitTimeCut()*strelNbin;
         if(timebin<strelNbin)
           ((TH1D*)gDirectory->Get(Form("strel_bin_%d",timebin)))->Fill(vtdrift);
@@ -371,10 +374,11 @@ void PostLoopAnalysis(){
   cout<<"BM VTX X slope correlation factor= "<<((TH2D*)gDirectory->Get("slope_mxx_bmvtx"))->GetCorrelationFactor()<<endl;
   cout<<"BM VTX Y slope correlation factor= "<<((TH2D*)gDirectory->Get("slope_myy_bmvtx"))->GetCorrelationFactor()<<endl;
 
+  //newstrel
   TProfile *prof_newstrel=((TH2D*)gDirectory->Get("NewStrel"))->ProfileX();
   prof_newstrel->SetLineColor(3);
   prof_newstrel->Draw();
-  TF1 poly ("poly","pol4", 0, 200);
+  TF1 poly ("poly","pol4", 0, bmparconf->GetHitTimeCut());
   poly.FixParameter(0,0);
   prof_newstrel->Fit("poly","QRB+");
   poly.SetName("fitted_Newstrel");
@@ -384,14 +388,35 @@ void PostLoopAnalysis(){
   for(int i=0;i<poly.GetNpar();i++)
     cout<<poly.GetParameter(i)<<"  ";
   cout<<endl;
+  
+  //newstrel cleaned
+  TProfile *prof_newstrelclean=((TH2D*)gDirectory->Get("NewStrelCleaned"))->ProfileX();
+  prof_newstrelclean->SetLineColor(3);
+  prof_newstrelclean->Draw();
+  TF1 polyclean ("polyclean","pol6", 0, bmparconf->GetHitTimeCut());
+  polyclean.FixParameter(0,0);
+  prof_newstrel->Fit("polyclean","QRB+");
+  polyclean.SetName("fitted_Newstrelclean");
+  polyclean.Write();
+  cout<<"New_STrel_function from profilex:  "<<polyclean.GetFormula()->GetExpFormula().Data()<<endl;
+  cout<<"STrel_number_of_parameters:  "<<polyclean.GetNpar()<<endl;
+  for(int i=0;i<polyclean.GetNpar();i++)
+    cout<<polyclean.GetParameter(i)<<"  ";
+  cout<<endl;
+  
+
 
   TF1 *gaus=new TF1("gaus","gaus", 0., 1.);
   vector<vector<Double_t>> mynewstrel;
   vector<Double_t> pointvalue(3,0);  //0=time, 1=rdrift, 2=rdrift error
   Double_t xgraph[strelNbin], ygraph[strelNbin], xerrgraph[strelNbin], yerrgraph[strelNbin], lastadded=-1;
   for(Int_t i=0;i<strelNbin;i++){
-    gaus->SetParameters(((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->GetEntries(),((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->GetMean(), ((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->GetStdDev());
-    ((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->Fit("gaus","QB+");
+    TH1D* h=((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)));
+    gaus->SetParameters(h->Integral(h->GetMaximumBin()-15,h->GetMaximumBin()+15),h->GetXaxis()->GetBinCenter(h->GetMaximumBin()), 0.05);
+    //~ gaus->SetRange(((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->GetMean()-0.1,((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->GetMean()+0.1);
+
+    gaus->SetRange(h->GetXaxis()->GetBinCenter(h->GetMaximumBin())-0.05,h->GetXaxis()->GetBinCenter(h->GetMaximumBin())+0.05);
+    ((TH1D*)gDirectory->Get(Form("strel_bin_%d",i)))->Fit("gaus","QBR+");
     pointvalue.at(0)=((Double_t (i))/strelNbin*bmparconf->GetHitTimeCut() );
     pointvalue.at(1)=(gaus->GetParameter(1));
     pointvalue.at(2)=(gaus->GetParError(1));
@@ -408,7 +433,7 @@ void PostLoopAnalysis(){
   }
   ((TH1D*)gDirectory->Get("MyNewStrel"))->SetBinContent(strelNbin+1,0.8);
   ((TH1D*)gDirectory->Get("MyNewStrel"))->SetBinError(strelNbin+1,0.01);
-  TF1 mypoly ("mypoly","pol4", 0, 200);
+  TF1 mypoly ("mypoly","pol4", 0, bmparconf->GetHitTimeCut());
   mypoly.FixParameter(0,0.);
   ((TH1D*)gDirectory->Get("MyNewStrel"))->Fit("mypoly","QB+");
   mypoly.SetName("Myfitted_Newstrel");
@@ -419,7 +444,7 @@ void PostLoopAnalysis(){
     cout << std::setprecision(10) <<mypoly.GetParameter(i)<<"  ";
   cout<<endl;
 
-  TF1 mygraphpoly ("mygraphpoly","pol4", 0, 200);
+  TF1 mygraphpoly ("mygraphpoly","pol4", 0, bmparconf->GetHitTimeCut());
   mygraphpoly.FixParameter(0,0);
   xgraph[strelNbin-1]=bmparconf->GetHitTimeCut();
   ygraph[strelNbin-1]=0.8; //manually force the last strel point
