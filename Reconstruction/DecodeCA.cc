@@ -117,7 +117,7 @@ private:
    TACAparGeo*    fGeometry;
 
 
-   float  *       fTempCh;
+   UShort_t *      fTempCh;
    UShort_t **     fAmpCh;     // waveform for each channel/crystal
 
    double          fRange;
@@ -150,7 +150,7 @@ CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap, TAGparaDsc* p
 
    int nCry = fGeometry->GetCrystalsN();
 
-   fTempCh = new float [nCry];
+   fTempCh = new UShort_t [nCry];
    fAmpCh = new UShort_t* [nCry];
 
    for (int cryID=0; cryID<nCry; ++cryID) {
@@ -432,6 +432,8 @@ float CAactRaw2Ntu::ADC2Temp(double adc, int cryId) {
      Double_t p1_SH = p_parcal->GetADC2TempParam(cryId, 1);
      Double_t p2_SH = p_parcal->GetADC2TempParam(cryId, 2);
 
+     //cout<< p0_SH<<" | "<<p1_SH<<" | "<<p2_SH<<" | "<<cryId<<endl;
+
      // the NTC (negative temperature coefficient) sensor
 
      const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate
@@ -445,6 +447,7 @@ float CAactRaw2Ntu::ADC2Temp(double adc, int cryId) {
      // which after calibration could be replaced by three constants for each crystal:
 
      Double_t temp = 1./ (p0_SH + p1_SH * log(Rt) + p2_SH * pow(log(Rt), 3)) - 273.15;
+     //cout<<"TEMP: "<<temp<<endl;
 
      return temp;
 }
@@ -599,7 +602,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAWDparMap *p_WDMap) {
          ret = fread(&word, 4, 1, fWDstream);
          int eventSize = word & 0xffff;
          if (FootDebugLevel(1))
-            cout << "    event Size:" << eventSize << endl;
+            cout << "    event Size:" << eventSize <<endl;
 
          int nWordRead=0;
          // if event no empty, read the boards (80 channel each),  5 mux x 16 channel
@@ -625,7 +628,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAWDparMap *p_WDMap) {
 
                   for (int ch=0; ch<16; ++ch) {
                      ret = fread(&word, 4, 1, fWDstream); ++nWordRead;
-                     double tempADC =  *((float*)&word); // average over 8 measurements
+                     double tempADC = word; // average over 8 measurements
 
                      // not connected channels will read 1023 value
                      if (tempADC < 1023) {
@@ -637,7 +640,7 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAWDparMap *p_WDMap) {
                         }
                         double temp = ADC2Temp(tempADC, iCry);
                         if (FootDebugLevel(1))
-                           cout << "      cryID:" << iCry << "  ADC:" << tempADC  << " T:" << temp  << endl;
+                           cout << "      cryID:" << iCry << "  ADC:" << tempADC  << " T:" << temp  <<"   "<< word << endl;
 
                         fTempCh[iCry] = temp;
                      //} else {  // DEBUG
@@ -737,7 +740,7 @@ int main (int argc, char *argv[])  {
    parFileName = campManager->GetCurCalFile(TACAparGeo::GetBaseName(), runNb, isCalEloss);
    parCalCA->LoadCryTemperatureCalibrationMap(parFileName.Data());
 
-  
+
    CAactRaw2Ntu * caDatReader = new CAactRaw2Ntu(pParMapCa, pParMapWD, pParCalCalo);
    if (!caDatReader->Open(in)) return -1;
    caDatReader->SetInitName(in);

@@ -379,13 +379,14 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
       {
          ped_graph[sen]->SetPoint(ch, ch, pedestals[sen][ch]);
          sig_graph[sen]->SetPoint(ch, ch, sigma[sen][ch]);
-         bool status = (bool)(sigma[sen][ch] < mean_sigma - (3 * rms_sigma)  || sigma[sen][ch] > mean_sigma + (3 * rms_sigma));
+         bool noisy = (bool)(sigma[sen][ch] < mean_sigma - (3 * rms_sigma)  || sigma[sen][ch] > mean_sigma + (3 * rms_sigma));
+         bool status = (bool)(sigma[sen][ch] < 1.8  || sigma[sen][ch] > 5);
          
-         if (status)
+         if (noisy || status)
          {
             symbols[sen].push_back(ch);
          }
-         fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], status);
+         fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], noisy || status);
       }
    }
 

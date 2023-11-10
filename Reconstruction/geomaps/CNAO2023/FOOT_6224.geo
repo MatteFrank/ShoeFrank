@@ -1,6 +1,6 @@
 // X,Y,Z and angles
 StartBaseName: "ST"
-StartPosX: 0. StartPosY: 0. StartPosZ: -75.925
+StartPosX: 0. StartPosY: 0. StartPosZ: -45.675
 StartAngX: 0. StartAngY: 0. StartAngZ: 0.
 
 TargetBaseName: "TG"
@@ -8,29 +8,29 @@ TargetPosX: 0. TargetPosY: 0. TargetPosZ: 0.
 TargetAngX: 0. TargetAngY: 0. TargetAngZ: 0.
 
 BmBaseName: "BM"
-BMVTPosX: -0.065555  BMVTPosY: -0.134427  BMVTPosZ: -12.850000
+BMVTPosX: -0.065555  BMVTPosY: -0.134427  BMVTPosZ: -12.6
 BMVTAngX: -0.470872  BMVTAngY: -0.239166  BMVTAngZ: 0.
 
 VertexBaseName: "VT"
-VertexPosX: 0. VertexPosY:   0. VertexPosZ: 1.5
+VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.60
 VertexAngX: 0. VertexAngY:   0. VertexAngZ: 0.
 
 MagnetsBaseName: "DI"
-MagnetsPosX: 0. MagnetsPosY:   0. MagnetsPosZ: 16.5
+MagnetsPosX: 0. MagnetsPosY:   0. MagnetsPosZ: 19.25
 MagnetsAngX: 0. MagnetsAngY:   0. MagnetsAngZ: 0.
 
 InnerTrackerBaseName: "IT"
-InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 19.
+InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 19.25
 InnerTrackerAngX: 0. InnerTrackerAngY: 0. InnerTrackerAngZ: 0.
 
 MicroStripBaseName: "MSD"
-MicroStripPosX: 1.9 MicroStripPosY: 0. MicroStripPosZ: 40.9
+MicroStripPosX: 1.9 MicroStripPosY: 0. MicroStripPosZ: 41.15
 MicroStripAngX: 0. MicroStripAngY: 0. MicroStripAngZ: 0.
 
 TofWallBaseName: "TW"
-TofWallPosX: 7.1 TofWallPosY: -1.2 TofWallPosZ: 169.75
+TofWallPosX: 10.5 TofWallPosY: -1.0 TofWallPosZ: 170.0
 TofWallAngX: 0. TofWallAngY:  0. TofWallAngZ: 0.
 
 CaloBaseName: "CA"
-CaloPosX: +11. CaloPosY: 0. CaloPosZ: 198.31
+CaloPosX: 9.5 CaloPosY: -1. CaloPosZ: 199.41
 CaloAngX: 0. CaloAngY:  0. CaloAngZ: 0.
