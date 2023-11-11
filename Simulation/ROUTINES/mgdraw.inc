@@ -270,7 +270,7 @@ c     recording with the info on the interaction point
 c     
       integer idfluka(maxnump)
       integer numint, maxint
-      parameter (MAXINT=8000)
+      parameter (MAXINT=10000)
       double precision xint(maxint),yint(maxint),zint(maxint)
       integer intpa(maxint),intcode(maxint)
       common /particle_stack/xint,yint,zint,intpa,intcode,

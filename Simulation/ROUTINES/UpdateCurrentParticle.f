@@ -175,8 +175,11 @@ c
      &         write(*,*) '--------- UpdateCurrPart : Icode 2 =',icode
             endif
             if(idbflg.gt.0 .AND. idbflg.lt.4) then
-       write(*,*)'UpdateCurrentParticle ptrack = 0 searching for father'
+               write(*,*)
+     &        'UpdateCurrentParticle ptrack = 0 searching for father'
             endif
+            if (numint .GT. maxint)
+     &         write(*,*) 'UPDATE: numint>maxint',ncase,numint,maxint
             do ii = 1,numint
                if(idbflg.gt.0 .AND. idbflg.lt.4) then
                   write(*,*)'int= ',ii, 'x int= ',xint(ii),yint(ii),
@@ -250,6 +253,7 @@ c
             if(nump.eq.maxnump) then
                write(*,*)'Error: UpdateCurrPart:'
                write(*,*)'Max particle number exceeded : ev= ',ncase
+               write(*,*)'nump, maxnump: ',nump,maxnump,jtrack
                return
             endif
 c

@@ -41,7 +41,8 @@ c
       numev = ncase
       tarfrag = 0
 c
-      do ii = 1,min(nump,maxnump)
+      do ii = 1,maxnump
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing nump'
          idpa(ii)   = 0
          igen(ii)   = 0
          icha(ii)   = 0
@@ -73,7 +74,8 @@ c
 c
 c
 c
-      do ii = 1,min(numint,maxint)
+      do ii = 1,maxint
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing numint'
          xint(ii)    = 0
          yint(ii)    = 0
          zint(ii)    = 0
@@ -86,6 +88,7 @@ c     start counter
 c
       nSTC = 0
       do ii = 1,maxSTC
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing stc'
          idSTC(ii)    = 0
          xinSTC(ii)   = 0.  
          xoutSTC(ii)  = 0. 
@@ -108,6 +111,7 @@ c     beam monitor
 c
       nBMN = 0
       do ii = 1,maxBMN
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing bm'
          idBMN(ii)     = 0
          iviewBMN(ii)  = 0
          ilayBMN(ii)   = 0
@@ -133,6 +137,7 @@ c     vertex
 c
       nVTX = 0
       do ii = 1,maxVTX
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing vtx'
          idVTX(ii)    = 0
          ilayVTX(ii)  = 0
          xinVTX(ii)   = 0.  
@@ -156,6 +161,7 @@ c     inner tracker
 c
       nITR = 0
       do ii = 1,maxITR
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing itr'
          idITR(ii)    = 0
          isensITR(ii)= 0
 c         iplumeITR(ii)= 0
@@ -182,6 +188,7 @@ c     second drift chamber
 c
       nMSD = 0
       do ii = 1,maxMSD
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing msd'
          idMSD(ii)     = 0
          ilayMSD(ii)   = 0
          xinMSD(ii)    = 0.  
@@ -205,6 +212,7 @@ c     scintillator
 c      
       nSCN = 0
       do ii= 1, maxSCN
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing scn'
          idSCN(ii)     = 0
          istripSCN(ii) = 0
          iviewSCN(ii)   = 0
@@ -229,6 +237,7 @@ c     calorimeter
 c      
       nCAL = 0
       do ii= 1, maxCAL
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing cal'
          idCAL(ii)    = 0
          icryCAL(ii)    = 0
          xinCAL(ii)   = 0.
@@ -252,6 +261,7 @@ c     crossings
 c      
       nCROSS = 0
       do ii= 1, nmaxCROSS
+         if (ncase.eq.1 .AND. ii.eq.1) write(*,*) 'zeroing cross'
          idCROSS(ii)       = 0
          nregCROSS(ii)     = 0
          nregoldCROSS(ii)  = 0

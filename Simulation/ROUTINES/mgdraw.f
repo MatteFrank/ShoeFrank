@@ -1006,6 +1006,8 @@ c      if ( icode .eq.  100) return
 *  |
 *  +-------------------------------------------------------------------*
       numint = numint +1
+      if (numint.GT.maxint)
+     &     write(*,*) 'MGDRAW: numint>maxint',ncase,numint,maxint
       xint(numint) = xsco
       yint(numint) = ysco
       zint(numint) = zsco
