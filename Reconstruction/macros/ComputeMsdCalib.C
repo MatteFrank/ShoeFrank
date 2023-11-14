@@ -153,7 +153,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    vector<vector<float>> sigma(sensors, vector<float>(NChannels, 0));
 
    FILE *calfile;
-   char overwrite[3];
+   char overwrite[3] = "N";
    TString calfile_name = "./calib/" + expName + "/TAMSD_Pedestal.cal";
 
    cout << "\nComputing MSD calibration file for campaign " << expName << " with run " << dec << runNumber << endl;
@@ -172,8 +172,12 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
             calfile_name = "./calib/" + expName + "/TAMSD_Pedestal_" + runNumber + ".cal";
          }
       }
+      else
+      {
+         calfile_name = "./calib/" + expName + "/TAMSD_Pedestal_" + runNumber + ".cal";
+      }
    }
-
+   
    double high_threshold, low_threshold;
    if(!fast)
    {
