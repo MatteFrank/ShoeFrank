@@ -17,7 +17,7 @@ NumberFiles: 5
 "./config/CNAO2023/TASTdetector.cfg": -1
 "./config/CNAO2023/WDChannelMap.map": -1
 "./calib/CNAO2023/WDpar.cal": -1;
-"./calib/CNAO2023/WDTimeCalibration/tcalib.dat": 5100 ;
+"./calib/CNAO2023/WDTimeCalibration/tcalib.dat": 5956; 6167;
 
 
 DetectorName: "BM"
