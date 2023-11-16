@@ -36,6 +36,7 @@ public:
       vector<string> DetectorOut; ///< Dectector not present
       Int_t          TotalEvts;   ///< Total event niumber
       TString        Comments;    ///< Comments
+      TString        MagnetFlag;  ///< Magnet on (yes, no)
    };
    
    /*!
@@ -50,6 +51,7 @@ public:
       Int_t     Duration;    ///< Run duration
       Int_t     DaqRate;     ///< DAQ rate niumber in run
       Int_t     RunType;     ///< Run type
+      TString   Comments;    ///< Comments
    };
 
 private:

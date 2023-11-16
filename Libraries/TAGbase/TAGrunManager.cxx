@@ -194,7 +194,7 @@ Bool_t TAGrunManager::FromFile(TString ifile)
 void TAGrunManager::DecodeTypeLine(TString& line)
 {
    TypeParameter_t typeParameter;
-   
+   typeParameter.MagnetFlag = "no";
    vector<TString> list = TAGparTools::Tokenize(line);
    
    Int_t idx;
@@ -272,6 +272,12 @@ void TAGrunManager::DecodeTypeLine(TString& line)
                printf("Comments: %s\n", typeParameter.Comments.Data());
             break;
             
+         case 9:
+            typeParameter.MagnetFlag = list[i];
+            if(FootDebugLevel(1))
+               printf("Magnet ON: %s\n", typeParameter.MagnetFlag.Data());
+            break;
+            
          default:
             break;
       }
@@ -287,6 +293,8 @@ void TAGrunManager::DecodeTypeLine(TString& line)
 void TAGrunManager::DecodeRunLine(TString& line)
 {
    RunParameter_t runParameter;
+   
+   runParameter.Comments = "None";
    
    vector<TString> list = TAGparTools::Tokenize(line);
    
@@ -329,6 +337,12 @@ void TAGrunManager::DecodeRunLine(TString& line)
             
             if(FootDebugLevel(1))
                printf("daqEvts: %d duration: %d daqRate: %d runType: %d\n", daqEvts, duration, daqRate, runType);
+            
+         case 4:
+            runParameter.Comments = list[i];
+            if(FootDebugLevel(1))
+               printf("Comments: %s\n", runParameter.Comments.Data());
+            break;
             
          default:
             break;
@@ -380,6 +394,7 @@ ostream& operator<< (std::ostream& out, const TAGrunManager::TypeParameter_t& ty
          out << " MeV/u" << endl;
       
       out  << "  Type Target:          " << type.Target.Data() << endl;
+      out  << "  Magnet ON:            " << type.MagnetFlag.Data() << endl;
       out  << "  Target Size:          "  <<  Form("%4.2f", type.TargetSize) << " cm" << endl;
       out  << "  Total Events:         " << TAGrunManager::SmartPrint(type.TotalEvts) << endl;
       out  << "  DetectorOut:         ";
@@ -411,6 +426,7 @@ ostream& operator<< (ostream& out, const TAGrunManager::RunParameter_t& run)
    out << Form("  Daq events:           %s\n",TAGrunManager::SmartPrint(run.DaqEvts).Data());
    out << Form("  Duration:             %d s [%02dh:%02dm:%02ds]\n", duration, hours, minutes, seconds);
    out << Form("  Daq Rate:             %d Hz\n", run.DaqRate);
+   out << Form("  Comments:             %s\n", run.Comments.Data());
    
    return  out;
 }
