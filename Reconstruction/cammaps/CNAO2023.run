@@ -13,7 +13,7 @@ RunNumber: 5957-6313;
 11	   "Alignment with magnet"	      "MargaritaMajority"     "12C"       200	   "None"	0.0      220410	      "None"         "Also bkg study"  "Yes"
 12	   "TW calibration"	            "MargaritaMajority"     "12C"       200	   "Poly"   1.0	   296001	      "VT IT"        "None"            "No"
 13	   "Cosmics"	                  "CALOalone"             "None"	     0	   "None"	0.0      674059         "None"         "None"            "No"
-15	   "Carbon target & frag"	      "Fragmentation"         "12C"       200	   "Carbon" 0.5	   1921722        "None"         "None"            "Yes"
+15	   "Background & frag"	         "Fragmentation"         "12C"       200	   "None"   0.0	   479822         "None"         "None"            "Yes"
 20	   "Tracker test"	               "MargaritaMajority"     "12C"       200	   "None"   0.0	   115045         "None"         "None"            "No"
 21	   "Tracker test"	               "MargaritaMajority"     "12C"       200	   "Al"     2.0 	   437618         "None          "None"            "No"
 22	   "Tracker test"	               "MargaritaMajority"     "p"         125	   "Al"  	2.0      367227         "None"         "None"            "No"
