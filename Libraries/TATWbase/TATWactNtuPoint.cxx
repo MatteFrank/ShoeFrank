@@ -395,13 +395,12 @@ Bool_t TATWactNtuPoint::FindPoints()
              fpHisDeltaTof[Z-1]->Fill(point->GetColumnHit()->GetTime()-point->GetRowHit()->GetTime());
 
              // difference between the reconstructed TWpoint position and the true MC position along the bar in X and Y
- //GetChargeChB in MC provides the true MC position along the bar (in case of multi-hit it is the one related to the hit with greatest energy deposit)
-             fpHisDeltaPosX[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetChargeChB() );
-             fpHisDeltaPosY[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetChargeChB() );
+             fpHisDeltaPosX[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetPosition() );
+             fpHisDeltaPosY[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetPosition() );
 
              if(fmapLessHits.size()>1) { // case of more than one hit bar in front and rear
-               fpHisDeltaPosX_mult[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetChargeChB() );
-               fpHisDeltaPosY_mult[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetChargeChB() );
+               fpHisDeltaPosX_mult[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetPosition() );
+               fpHisDeltaPosY_mult[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetPosition() );
              }             
 
            }
@@ -422,10 +421,10 @@ Bool_t TATWactNtuPoint::FindPoints()
      Int_t nPoints = pNtuPoint->GetPointsN();
      for( Int_t i = 0; i < nPoints; ++i ) {
        TATWpoint* aPoint =  pNtuPoint->GetPoint(i);
-       TVector3 posG = aPoint->GetPositionGlb();
-       // TVector3 posG = aPoint->GetPositionG();
+       TVector3 posGlb = aPoint->GetPositionGlb();
+       TVector3 posLoc = fgeoTrafo->FromGlobalToTWLocal(posGlb);
        
-       fpHisPointMap->Fill(posG[0], posG[1]);
+       fpHisPointMap->Fill(posLoc[0], posLoc[1]);
      }
    }
    
