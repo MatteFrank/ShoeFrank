@@ -4,6 +4,7 @@ This is the repository for the official simulation and analysis software of the 
 
 Useful links:
 - FOOT [webpage](https://web.infn.it/foot/en/home/)
+- FOOT [TWiki](http://arpg-serv.ing2.uniroma1.it/twiki/bin/view/Main/FOOTHome) containing also campaigns
 - SHOE [TWiki](http://arpg-serv.ing2.uniroma1.it/twiki/bin/view/Main/FOOTSoftware) containing also the installation guide
 - SHOE [Doxygen manual](https://asarti.baltig-pages.infn.it/shoe/) with classes and methods documentation
 - FOOT [Indico page](https://agenda.infn.it/category/903/):

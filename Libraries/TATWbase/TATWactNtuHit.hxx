@@ -69,16 +69,16 @@ private:
   Int_t           fZbeam;
   Int_t           fEvtCnt;
   
-  TH1F*           fpHisDeTot;       // Total energy loss
-  TH1F*           fpHisTimeTot;     // Total time of flight
-  
+  TH1F*           fpHisPos[nLayers];      // Position along the bar for all bars
+  TH1F*           fpHisRawTof[nLayers];   // Raw time of flight for all bars
   TH1F*           fpHisCharge[nLayers];
+  
   TH1F*           fpHisChargeCentralBar[nLayers];
-  TH1F*           fpHisDeltaTimeRawCentralBar[nLayers];
-  TH1F*           fpHisAmpA[nLayers];     // Total time of flight
-  TH1F*           fpHisAmpB[nLayers];     // Total time of flight
-  TH2F*           fpHisAmpA_vs_Eloss[nLayers];     // Total time of flight
-  TH2F*           fpHisAmpB_vs_Eloss[nLayers];     // Total time of flight
+  TH1F*           fpHisRawTofCentralBar[nLayers];
+  TH1F*           fpHisAmpA[nLayers];    
+  TH1F*           fpHisAmpB[nLayers];    
+  TH2F*           fpHisAmpA_vs_Eloss[nLayers];
+  TH2F*           fpHisAmpB_vs_Eloss[nLayers];
 
   Bool_t          f_debug;
 
