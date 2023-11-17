@@ -8,12 +8,12 @@ TargetPosX: 0. TargetPosY: 0. TargetPosZ: 0.
 TargetAngX: 0. TargetAngY: 0. TargetAngZ: 0.
 
 BmBaseName: "BM"
-BMVTPosX: -0.065555  BMVTPosY: -0.134427  BMVTPosZ: -12.6
-BMVTAngX: -0.470872  BMVTAngY: -0.239166  BMVTAngZ: 0.
+BMVTPosX: -0.177192  BMVTPosY: -0.289021  BMVTPosZ: -12.6
+BMVTAngX: -0.110233  BMVTAngY: 0.315068   BMVTAngZ: 0.
 
 VertexBaseName: "VT"
-VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.60
-VertexAngX: 0. VertexAngY:   0. VertexAngZ: 0.
+VTPosX: 0.043162  VTPosY: -0.234990  VertexPosZ: 2.60
+VTAngX: 0.305761  VTAngY: 0.617598 VertexAngZ: 0.
 
 MagnetsBaseName: "DI"
 MagnetsPosX: 0. MagnetsPosY:   0. MagnetsPosZ: 19.25
@@ -28,7 +28,7 @@ MicroStripPosX: 1.9 MicroStripPosY: 0. MicroStripPosZ: 41.15
 MicroStripAngX: 0. MicroStripAngY: 0. MicroStripAngZ: 0.
 
 TofWallBaseName: "TW"
-TofWallPosX: 10.5 TofWallPosY: -1.0 TofWallPosZ: 170.0
+TofWallPosX: 9.  TofWallPosY: -2.4  TofWallPosZ: 170.0
 TofWallAngX: 0. TofWallAngY:  0. TofWallAngZ: 0.
 
 CaloBaseName: "CA"
