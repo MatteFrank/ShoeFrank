@@ -15,7 +15,7 @@ BeamAtomicNumber:     6    //! Z Beam
 BeamMaterial:        "C"   //! Beam Material
 BeamPartNumber:       1    // particles in Beam
 BeamPosX:            0.0000   BeamPosY:     0.0000    BeamPosZ:      -63.0
-BeamSpreadX:         0.0000   BeamSpreadY:  0.0000    BeamSpread:      0.0
+BeamSpreadX:         0.699976 BeamSpreadY:  0.867772  BeamSpread:      0.0
 BeamDiv:             0.0000
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
