@@ -423,6 +423,7 @@ ostream& operator<< (ostream& out, const TAGrunManager::RunParameter_t& run)
    minutes        = minutes  % 60;
    
    out << Form("\nCurrent run number:     %d\n", run.RunId);
+   out << Form("  Type:                 %d\n", run.RunType);
    out << Form("  Daq events:           %s\n",TAGrunManager::SmartPrint(run.DaqEvts).Data());
    out << Form("  Duration:             %d s [%02dh:%02dm:%02ds]\n", duration, hours, minutes, seconds);
    out << Form("  Daq Rate:             %d Hz\n", run.DaqRate);
@@ -482,6 +483,41 @@ void TAGrunManager::Print(Option_t* opt) const
 }
 
 //------------------------------------------+-----------------------------------
+//! Print all runs
+//!
+//! \param[in] type type number
+void TAGrunManager::PrintRuns() const
+{
+   for(auto iterator = fRunParameter.begin(); iterator != fRunParameter.end(); ++iterator ) {
+      RunParameter_t run = iterator->second;
+      printf("%4d\t \"%s\"\t \"%s\"\t %6d\t %5d\t %4d\t\t %2d\t\t \"%s\"\n", run.RunId, run.StartTime.Data(), run.StopTime.Data(),
+             run.DaqEvts, run.Duration, run.DaqRate, run.RunType, run.Comments.Data());
+   }
+}
+
+//------------------------------------------+-----------------------------------
+//! Compute rates and durarion when not present
+//!
+void TAGrunManager::ComputeRates()
+{
+   struct tm tm1;
+   struct tm tm2;
+
+   for(auto iterator = fRunParameter.begin(); iterator != fRunParameter.end(); ++iterator ) {
+      RunParameter_t& run = iterator->second;
+      const char *time_start = run.StartTime.Data();
+      const char *time_stop = run.StopTime.Data();
+      strptime(time_start, "%Y-%m-%d %H:%M:%S", &tm1);
+      strptime(time_stop,  "%Y-%m-%d %H:%M:%S", &tm2);
+      time_t t1 = mktime(&tm1);
+      time_t t2 = mktime(&tm2);
+      double diff = difftime(t2, t1);
+      run.Duration = (int)diff;
+      run.DaqRate = int(run.DaqEvts/diff);
+   }
+}
+
+//------------------------------------------+-----------------------------------
 //! Get current run parameter
 //!
 //! \param[in] idx index in the run array
@@ -509,4 +545,16 @@ const TAGrunManager::RunParameter_t& TAGrunManager::GetRunPar(Int_t idx) const
    }
    
    return fRunParameter.at(idx);
+}
+
+//------------------------------------------+-----------------------------------
+//! Print runs for a given type
+//!
+//! \param[in] type type number
+void TAGrunManager::GetRunsPerType(Int_t type) const
+{
+   for(auto iterator = fRunParameter.begin(); iterator != fRunParameter.end(); ++iterator ) {
+      if (iterator->second.RunType == type)
+         cout << iterator->second;
+   }
 }
