@@ -101,12 +101,6 @@ void TATWactNtuPoint::CreateHistogram()
      fpHisDeltaPosY.push_back( new TH1F(Form("twDeltaPosY_Z%d",iZ),Form("DeltaPosY_Z%d",iZ),400,-20.,20) );
      AddHistogram(fpHisDeltaPosY[iZ-1]);
 
-     fpHisDeltaPosX_mult.push_back( new TH1F(Form("twDeltaPosX_mult_Z%d",iZ),Form("DeltaPosX_mult_Z%d",iZ),400,-20.,20) );
-     AddHistogram(fpHisDeltaPosX_mult[iZ-1]);
-
-     fpHisDeltaPosY_mult.push_back( new TH1F(Form("twDeltaPosY_mult_Z%d",iZ),Form("DeltaPosY_mult_Z%d",iZ),400,-20.,20) );
-     AddHistogram(fpHisDeltaPosY_mult[iZ-1]);
-
      fpHisElossMean.push_back( new TH1F(Form("twElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),480,0,120) );
      AddHistogram(fpHisElossMean[iZ-1]);
      
@@ -397,11 +391,6 @@ Bool_t TATWactNtuPoint::FindPoints()
              // difference between the reconstructed TWpoint position and the true MC position along the bar in X and Y
              fpHisDeltaPosX[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetPosition() );
              fpHisDeltaPosY[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetPosition() );
-
-             if(fmapLessHits.size()>1) { // case of more than one hit bar in front and rear
-               fpHisDeltaPosX_mult[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetPosition() );
-               fpHisDeltaPosY_mult[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetPosition() );
-             }             
 
            }
            
