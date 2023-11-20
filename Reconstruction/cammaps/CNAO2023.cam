@@ -35,7 +35,7 @@ DetectorName: "VT"
 NumberFiles: 3
 "./geomaps/CNAO2023/TAVTdetector.geo": -1
 "./config/CNAO2023/TAVTdetector.cfg": 6061;6113
-"./config/CNAO2023/TAVTdetector.map": 6000; 6113;
+"./config/CNAO2023/TAVTdetector.map": 6061; 6123;
 
 DetectorName: "IT"
 NumberFiles: 3
