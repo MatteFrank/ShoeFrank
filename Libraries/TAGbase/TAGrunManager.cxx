@@ -83,11 +83,11 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
       Float_t tgtSizeType = GetCurrentType().TargetSize;
       TString comType     = GetCurrentType().Comments;
       
-      if (energyBeam != energyType)
+      if (energyBeam != energyType && energyType != 0)
          Error("Checks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
       
       beamType.ToUpper();
-      if (beam != beamType)
+      if (beam != beamType && beamType != "NONE")
         Error("Checks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
       
       
