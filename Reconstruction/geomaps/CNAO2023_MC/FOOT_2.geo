@@ -28,7 +28,7 @@ MicroStripPosX: 1.9 MicroStripPosY: 0. MicroStripPosZ: 41.15
 MicroStripAngX: 0. MicroStripAngY: 0. MicroStripAngZ: 0.
 
 TofWallBaseName: "TW"
-TofWallPosX: 10.5 TofWallPosY: -1. TofWallPosZ: 170.0
+TofWallPosX: 10.04 TofWallPosY: -0.9 TofWallPosZ: 169.75
 TofWallAngX: 0. TofWallAngY:  0. TofWallAngZ: 0.
 
 CaloBaseName: "CA"

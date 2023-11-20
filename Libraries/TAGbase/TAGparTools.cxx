@@ -62,11 +62,11 @@ void TAGparTools::ReadItem(Char_t& item)
 void TAGparTools::ReadItem(TString& item)
 {
    Int_t pos = -1;
-   Char_t buf[1024];
+   Char_t buf[2048];
    TString key;
    while (pos == -1) {
       if (fFileStream.eof()) break;
-	  fFileStream.getline(buf, 1024);
+	  fFileStream.getline(buf, 2048);
      if (buf[0] == '/') continue;
      if (buf[0] == '#') continue;
 	  key = buf;
