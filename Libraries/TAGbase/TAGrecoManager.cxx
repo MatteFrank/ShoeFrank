@@ -22,6 +22,10 @@ map<TString, TString> TAGrecoManager::fgkDectFullName = {{"ST", "Start Counter"}
                                                          {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "MicroStrip Detector"}, {"TW", "ToF Wall"},
                                                          {"CA", "Calorimeter"}};
 
+map<TString, TString> TAGrecoManager::fgkDect3LetName = {{"ST", "STC"}, {"BM", "BMN"}, {"DI", "DIP"}, {"TG", "TGT"},
+                                                         {"VT", "VTX"}, {"IT", "ITR"}, {"MSD", "MSD"}, {"TW", "TOF"},
+                                                         {"CA", "CAL"}};
+
 const TString TAGrecoManager::fgkDefParName = "FootGlobal.par";
 
 //! Class Imp
