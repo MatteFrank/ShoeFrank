@@ -26,7 +26,7 @@ void TAGFselectorStandard::Categorize( ) {
 
 	if(!m_systemsON.Contains("VT"))
 	{
-		Error("Categorize_dataLike()", "Standard selection algorithm currently not supported without Vertex!");
+		Error("Categorize()", "Standard selection algorithm currently not supported without Vertex!");
 		exit(42);
 	}
 	else
@@ -166,7 +166,7 @@ void TAGFselectorStandard::CategorizeVT()
 			}	// end cluster loop
 
 			if (fitTrack_->getNumPointsWithMeasurement() > 4 || fitTrack_->getNumPointsWithMeasurement() < 3){
-				Warning("Categorize_dataLike()", "Track with %d measurements found in VTX => rejected!", fitTrack_->getNumPointsWithMeasurement());
+				Warning("Categorize()", "Track with %d measurements found in VTX => rejected!", fitTrack_->getNumPointsWithMeasurement());
 				delete fitTrack_;
 				continue;
 			}
@@ -460,7 +460,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 			// cout << "TAGFselectorStandard::CategorizeMSD()     MSDcheck4\n";
-				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR MSD" <<endl, exit(42);
+				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorStandard::Categorize() --> ERROR MSD" <<endl, exit(42);
 
 				//RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit;
@@ -673,7 +673,7 @@ void TAGFselectorStandard::CategorizeTW()
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
 			if (  m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != planeTW )
-				cout << "TAGFselectorStandard::Categorize_dataLike() --> ERROR TW" <<endl, exit(42);
+				cout << "TAGFselectorStandard::Categorize() --> ERROR TW" <<endl, exit(42);
 
 			double distanceFromHit = sqrt( pow(guessOnTW.X() - (*it)->getRawHitCoords()(0),2) + pow(guessOnTW.Y() - (*it)->getRawHitCoords()(1), 2) );
 			
