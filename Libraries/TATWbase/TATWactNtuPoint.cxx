@@ -101,12 +101,6 @@ void TATWactNtuPoint::CreateHistogram()
      fpHisDeltaPosY.push_back( new TH1F(Form("twDeltaPosY_Z%d",iZ),Form("DeltaPosY_Z%d",iZ),400,-20.,20) );
      AddHistogram(fpHisDeltaPosY[iZ-1]);
 
-     fpHisDeltaPosX_mult.push_back( new TH1F(Form("twDeltaPosX_mult_Z%d",iZ),Form("DeltaPosX_mult_Z%d",iZ),400,-20.,20) );
-     AddHistogram(fpHisDeltaPosX_mult[iZ-1]);
-
-     fpHisDeltaPosY_mult.push_back( new TH1F(Form("twDeltaPosY_mult_Z%d",iZ),Form("DeltaPosY_mult_Z%d",iZ),400,-20.,20) );
-     AddHistogram(fpHisDeltaPosY_mult[iZ-1]);
-
      fpHisElossMean.push_back( new TH1F(Form("twElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),480,0,120) );
      AddHistogram(fpHisElossMean[iZ-1]);
      
@@ -395,14 +389,8 @@ Bool_t TATWactNtuPoint::FindPoints()
              fpHisDeltaTof[Z-1]->Fill(point->GetColumnHit()->GetTime()-point->GetRowHit()->GetTime());
 
              // difference between the reconstructed TWpoint position and the true MC position along the bar in X and Y
- //GetChargeChB in MC provides the true MC position along the bar (in case of multi-hit it is the one related to the hit with greatest energy deposit)
-             fpHisDeltaPosX[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetChargeChB() );
-             fpHisDeltaPosY[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetChargeChB() );
-
-             if(fmapLessHits.size()>1) { // case of more than one hit bar in front and rear
-               fpHisDeltaPosX_mult[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetChargeChB() );
-               fpHisDeltaPosY_mult[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetChargeChB() );
-             }             
+             fpHisDeltaPosX[Z-1]->Fill( posLoc.X() - point->GetRowHit()->GetPosition() );
+             fpHisDeltaPosY[Z-1]->Fill( posLoc.Y() - point->GetColumnHit()->GetPosition() );
 
            }
            
@@ -422,10 +410,10 @@ Bool_t TATWactNtuPoint::FindPoints()
      Int_t nPoints = pNtuPoint->GetPointsN();
      for( Int_t i = 0; i < nPoints; ++i ) {
        TATWpoint* aPoint =  pNtuPoint->GetPoint(i);
-       TVector3 posG = aPoint->GetPositionGlb();
-       // TVector3 posG = aPoint->GetPositionG();
+       TVector3 posGlb = aPoint->GetPositionGlb();
+       TVector3 posLoc = fgeoTrafo->FromGlobalToTWLocal(posGlb);
        
-       fpHisPointMap->Fill(posG[0], posG[1]);
+       fpHisPointMap->Fill(posLoc[0], posLoc[1]);
      }
    }
    

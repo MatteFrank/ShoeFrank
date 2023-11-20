@@ -92,44 +92,24 @@ void TATWactNtuHit::CreateHistogram()
 
   DeleteHistogram();
    
-  fpHisDeTot = new TH1F("twDeTot", "TW - Total Energy Loss", 480, 0., 120.);
-  AddHistogram(fpHisDeTot);
-   
-  fpHisTimeTot = new TH1F("twTimeTot", "TW - Total Time Of Flight", 5000, -50., 50);
-  AddHistogram(fpHisTimeTot);
-
-  // fpHisChargeFront = new TH1F("twChargeFront", "TW - Charge Front", 10000, 0., 50.);
-  // AddHistogram(fpHisChargeFront);
-
-  // fpHisChargeRear = new TH1F("twChargeRear", "TW - Charge Rear", 10000, 0., 50.);
-  // AddHistogram(fpHisChargeRear);
-
-  // fpHisChargeCentralBarFront = new TH1F("twChargeCentralBarFront", "TW - ChargeCentralBar Front", 10000, 0., 50.);
-  // AddHistogram(fpHisChargeCentralBarFront);
-
-  // fpHisChargeCentralBarRear = new TH1F("twChargeCentralBarRear", "TW - ChargeCentralBar Rear", 10000, 0., 50.);
-  // AddHistogram(fpHisChargeCentralBarRear);
-
-  
-  // fpHisDeltaTimeRawCenterFront = new TH1F("twDeltaTimeCenterFront", "raw time of flight", 5000, -50., 50);
-  // AddHistogram(fpHisDeltaTimeRawCenterFront);
-
-  // fpHisDeltaTimeRawCenterRear = new TH1F("twDeltaTimeCenterRear", "raw time of flight", 5000, -50., 50);
-  // AddHistogram(fpHisDeltaTimeRawCenterRear);
-
-  
   for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
 
     fpHisCharge[ilayer] = new TH1F(Form("twCharge_%s",LayerName[(TLayer)ilayer].data()), Form("twCharge_%s",LayerName[(TLayer)ilayer].data()), 10000, 0., 50.);
     AddHistogram(fpHisCharge[ilayer]);
 
+    fpHisPos[ilayer] = new TH1F(Form("twPos_%s",LayerName[(TLayer)ilayer].data()), Form("twPos_%s",LayerName[(TLayer)ilayer].data()), 800, -20., 20.);
+    AddHistogram(fpHisPos[ilayer]);
+    
+    fpHisRawTof[ilayer] = new TH1F(Form("twRawTof_%s",LayerName[(TLayer)ilayer].data()), Form("twRawTof_%s",LayerName[(TLayer)ilayer].data()), 5000, -50., 50);
+    AddHistogram(fpHisRawTof[ilayer]);
+
     fpHisChargeCentralBar[ilayer] = new TH1F(Form("twChargeCentralBar_%s",LayerName[(TLayer)ilayer].data()), Form("twChargeCentralBar_%s",LayerName[(TLayer)ilayer].data()), 10000, 0., 50.);
     AddHistogram(fpHisChargeCentralBar[ilayer]);
         
-    fpHisDeltaTimeRawCentralBar[ilayer] = new TH1F(Form("twDeltaTimeRawCentralBar_%s",LayerName[(TLayer)ilayer].data()), Form("twDeltaTimeRawCentralBar_%s",LayerName[(TLayer)ilayer].data()), 5000, -50., 50);
-    AddHistogram(fpHisDeltaTimeRawCentralBar[ilayer]);
+    fpHisRawTofCentralBar[ilayer] = new TH1F(Form("twRawTofCentralBar_%s",LayerName[(TLayer)ilayer].data()), Form("twRawTofCentralBar_%s",LayerName[(TLayer)ilayer].data()), 5000, -50., 50);
+    AddHistogram(fpHisRawTofCentralBar[ilayer]);
 
-    fpHisBarsID[ilayer] = new TH1I(Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()), Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()),20, 0., 20);
+    fpHisBarsID[ilayer] = new TH1I(Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()), Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()),20, -0.5, 19.5);
     AddHistogram(fpHisBarsID[ilayer]);
   
     fpHisElossTof_layer[ilayer] = new TH2D(Form("twdE_vs_Tof_%s",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s",LayerName[(TLayer)ilayer].data()),3000,0.,30.,480,0.,120.);
@@ -283,6 +263,11 @@ Bool_t TATWactNtuHit::Action()
 	    // get raw tof in ns (not calibrated)
 	    Double_t rawToF    = GetRawTime(hita,hitb) - STtrigTime;
 
+            if(FootDebugLevel(1)) {
+              if(ChargeA<0 || ChargeB<0 || TimeA<0 || TimeB<0 || AmplitudeA<0 || AmplitudeB<0)
+                cout<<"rawEnergy::"<<rawEnergy<<" chA::"<<ChargeA<<"  chB::"<<ChargeB<<" AmpA::"<<AmplitudeA<<"  AmpB::"<<AmplitudeB<<" rawToF::"<<rawToF<<" timeA::"<<TimeA<<" timeB::"<<TimeB<<endl;
+            }
+                          
 	    // get position along the bar from the time difference between the two edges
 	    Double_t posAlongBar = GetPosition(hita,hitb,Layer,ShoeBarId);
 
@@ -299,11 +284,9 @@ Bool_t TATWactNtuHit::Action()
 	    	    
 	    
 	    if(FootDebugLevel(1)) {
-	      if(posAlongBar<-22 || posAlongBar>22) {
-		cout<<"layer::"<<Layer<<"  barId::"<<BarId<<"  shoeId::"<<ShoeBarId<<"  posId::"<<PosId<<"  pos::"<<posAlongBar<<endl;
-		cout<<"eloss::"<<Energy<<" chA::"<<ChargeA<<"  chB::"<<ChargeB<<" ToF::"<<ToF<<" timeA::"<<TimeA<<" timeB::"<<TimeB<<endl;
-	      cout<<"Eraw::"<<rawEnergy<<" posId::"<<PosId<<" layer::"<<Layer<<endl;
-	      }
+              cout<<LayerName[(TLayer)Layer].data()<<"  barId::"<<BarId<<"  shoeId::"<<ShoeBarId<<"  posId::"<<PosId<<"  pos::"<<posAlongBar<<endl;
+              cout<<"Eloss::"<<Energy<<"Eraw::"<<rawEnergy<<" chA::"<<ChargeA<<"  chB::"<<ChargeB<<" AmpA::"<<AmplitudeA<<" AmpB::"<<AmplitudeB<<endl;
+	      cout<<"ToF::"<<ToF<<" RawToF"<<rawToF<<" timeA::"<<TimeA<<" timeB::"<<TimeB<<endl;
 	    }
 
 
@@ -314,23 +297,24 @@ Bool_t TATWactNtuHit::Action()
 	    // Set ToF
 	    fCurrentHit->SetToF(ToF);
             // Set Valid Hit
-            if(rawEnergy<0)
-              fCurrentHit->SetValid(false);
+              if(ChargeA<0 || ChargeB<0 || TimeA<0 || TimeB<0 || AmplitudeA<0 || AmplitudeB<0)
+                fCurrentHit->SetValid(false);
 
 
-	    if (ValidHistogram()) {
-	      fpHisDeTot->Fill(Energy);
-	      fpHisTimeTot->Fill(ToF);
-	      fpHisElossTof_layer[Layer]->Fill(ToF,Energy);
+	    if (ValidHistogram() && fCurrentHit->IsValid()) {
 
               fpHisBarsID[Layer]->Fill(ShoeBarId);
 
 	      fpHisCharge[Layer]->Fill(rawEnergy);
+	      fpHisPos[Layer]->Fill(posAlongBar);
+	      fpHisRawTof[Layer]->Fill(rawToF);
+
+	      fpHisElossTof_layer[Layer]->Fill(ToF,Energy);
 	      
 	      if(ShoeBarId>=CentralBarsID[0] && ShoeBarId<=CentralBarsID[2]) {  // only for central bars for trigger purposes
 		
                 fpHisChargeCentralBar[Layer]->Fill(rawEnergy);
-                fpHisDeltaTimeRawCentralBar[Layer]->Fill(rawToF);
+                fpHisRawTofCentralBar[Layer]->Fill(rawToF);
 
 		fpHisAmpA[Layer]->Fill(AmplitudeA);
 		fpHisAmpB[Layer]->Fill(AmplitudeB);
