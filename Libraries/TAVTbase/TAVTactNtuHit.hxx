@@ -28,7 +28,9 @@ public:
    void   SetTStolerance(UInt_t ts) { fgTStolerance = ts;   }
    //! Get tolerance for time stamp
    UInt_t GetTStolerance()          { return fgTStolerance; }
-
+   //! Set flag for time stamp resynchronisation
+   void   EnableTSresync()          { fgTSresync = true;    }
+   
 protected:
    TAGdataDsc*         fpDatDaq;		     ///< input data dsc
    UInt_t              fFirstBcoTrig;    ///< First BCO trigger number
@@ -39,7 +41,8 @@ protected:
 private:
    static UInt_t       fgTStolerance;    ///< Tolerance for time stamp
    static Int_t        fgTSnegTolerance; ///< Negative tolerance for time stamp
-   
+   static Bool_t       fgTSresync;       ///< Flag for time stamp resynchronisation
+
    ClassDef(TAVTactNtuHit,0)
 };
 
