@@ -26,7 +26,7 @@ void TAGFselectorLinear::Categorize( ) {
 
 
 	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
-		Error("Categorize_dataLike()", "Linear selection algorithm currently not supported without Vertex!"), exit(42);
+		Error("Categorize()", "Linear selection algorithm currently not supported without Vertex!"), exit(42);
 	else
 	{
 		if( FootDebugLevel(2) ) cout << "******* START OF VT CYCLE *********\n";
@@ -150,7 +150,7 @@ void TAGFselectorLinear::CategorizeMSD()
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 
-				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorLinear::Categorize_dataLike() --> ERROR MSD" <<endl, exit(42);
+				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorLinear::Categorize() --> ERROR MSD" <<endl, exit(42);
 
 				//RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit;
@@ -234,7 +234,7 @@ void TAGFselectorLinear::CategorizeTW()
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
 			if (  m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != planeTW )
-				cout << "TAGFselectorLinear::Categorize_dataLike() --> ERROR TW" <<endl, exit(42);
+				cout << "TAGFselectorLinear::Categorize() --> ERROR TW" <<endl, exit(42);
 
 			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
 					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );

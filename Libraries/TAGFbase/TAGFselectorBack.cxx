@@ -179,7 +179,7 @@ void TAGFselectorBack::BackTracklets()
 
 					for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 
-						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != MSDnPlane )	cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR MSD" <<endl, exit(42);
+						if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != MSDnPlane )	cout << "TAGFselectorBack::Categorize() --> ERROR MSD" <<endl, exit(42);
 
 						// Check distance of hit from extrapolation: works w/ 1st coordinate because its local
 						double distanceFromHit = fabs(guessOnMSD.X() - (*it)->getRawHitCoords()(0));
@@ -472,7 +472,7 @@ void TAGFselectorBack::CategorizeVT_back()
 			for (vector<AbsMeasurement *>::iterator it = m_allHitMeas->at(VTplane).begin(); it != m_allHitMeas->at(VTplane).end(); ++it)
 			{
 				if (m_SensorIDMap->GetFitPlaneIDFromMeasID((*it)->getHitId()) != VTplane)
-					cout << "TAGFselectorBack::Categorize_dataLike() --> ERROR VT" << endl, exit(42);
+					cout << "TAGFselectorBack::Categorize() --> ERROR VT" << endl, exit(42);
 
 				// RZ: On VT, distance on non-bending plane (Y) works best apparently!
 				// double distanceFromHit = TMath::Sqrt( pow(guessOnVT.x() - (*it)->getRawHitCoords()(0), 2) + pow(guessOnVT.y() - (*it)->getRawHitCoords()(1), 2) );
