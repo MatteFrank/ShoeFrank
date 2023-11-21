@@ -151,7 +151,7 @@ root -l $inFile <<-EOF > /dev/null 2>&1
 std::ofstream ofs("${HTCfolder}/temp_evts.txt")
 std::ofstream ofsCamp("${HTCfolder}/temp_campaign.txt")
 std::ofstream ofsRun("${HTCfolder}/temp_runNumber.txt")
-ofs << EventTree->GetEntries()
+ofs << tree->GetEntries()
 ofsCamp << runinfo->CampaignName()
 ofsRun << runinfo->RunNumber()
 EOF
