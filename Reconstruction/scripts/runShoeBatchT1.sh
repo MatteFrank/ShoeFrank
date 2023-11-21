@@ -145,9 +145,8 @@ do
     outMergedFile="${outFolder}/Merge_${campaign}_${runNumber}.root"
 
     #Count number of files == nJobs
-    path=$inFolder'/data*'$runNumber'*'
-    listOfFiles=($(ls $path))
-    nFiles=${#listOfFiles[@]}
+    inputFilesRegex=$inFolder'/data*'$runNumber'*'
+    nFiles=($(ls -1 $inputFilesRegex | wc -l))
 
     if [ $nFiles -eq 0 ]; then
         echo "No files found for run ${runNumber} in folder ${inFolder}!"
@@ -180,27 +179,24 @@ do
 
     outFile_base="${outFolder}/output_${campaign}_run${runNumber}_Job"
 
-    #Cycle on files
-    jobCounter=0
-    for file in "${listOfFiles[@]}"; do
-        jobCounter=$((jobCounter+1))
-        jobFilename="${HTCfolder}/runShoeInBatch_${campaign}_${runNumber}_${jobCounter}.sh"
-        jobFilename_base=${jobFilename::-3}
+    #Create executable
+    # - par[1] = process Id -> condor $(Process) variable + 1
+    # - par[2] = input file full path
+    jobExec="${HTCfolder}/runShoeInBatch_${campaign}_${runNumber}.sh"
+    jobExec_base=${jobExec::-3}
 
-        outFile="${outFile_base}${jobCounter}.root"
-
-        # Create executable file for job
-        cat <<EOF > $jobFilename
+    # Create executable file for job
+    cat <<EOF > $jobExec
 #!/bin/bash
 
 SCRATCH="\$(pwd)"
-outFile_temp="\${SCRATCH}/temp_${campaign}_run${runNumber}_Job${jobCounter}.root"
+outFile_temp="\${SCRATCH}/temp_${campaign}_run${runNumber}_Job\${1}.root"
 
 source /opt/exp_software/foot/root_shoe_foot.sh 
 source ${SHOE_PATH}/build/setupFOOT.sh
 cd ${SHOE_PATH}/build/Reconstruction
 
-../bin/DecodeGlb -in ${file} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -subfile
+../bin/DecodeGlb -in \${2} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -subfile
 retVal=\$?
 if [ \$retVal -eq 0 ]; then
     out_list=(\$(ls \${SCRATCH}/*.root))
@@ -208,44 +204,47 @@ if [ \$retVal -eq 0 ]; then
         outFile_temp=\${out_list[0]}
     fi
     
-    if [ $jobCounter -eq 1 ]; then
+    if [ \${1} -eq 1 ]; then
         rootcp \${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
     fi
     rootrm \${outFile_temp}:runinfo
     outFile=\${outFile_temp/temp/output}
     mv \${outFile_temp} ${outFolder}/\$(basename \${outFile})
 else
-    echo "Unexpected error in processing of file ${file}"
+    echo "Unexpected error in processing of file \${2}"
 fi
 EOF
 
-        # Create submit file for job
-        filename_sub="${HTCfolder}/submitShoe_${campaign}_${runNumber}_${jobCounter}.sub"
+    # Create submit file for job
+    filename_sub="${HTCfolder}/submitShoe_${campaign}_${runNumber}.sub"
 
-        cat <<EOF > $filename_sub
-executable            = ${jobFilename}
-arguments             = \$(ClusterID) \$(ProcId)
-error                 = ${jobFilename_base}.err
-output                = ${jobFilename_base}.out
-log                   = ${jobFilename_base}.log
-max_retries           = 5
-+JobFlavour           = "longlunch"
-queue
+    cat <<EOF > $filename_sub
+plusone = \$(Process) + 1
+FileNum = \$INT(plusone,%d)
+
+executable            = ${jobExec}
+arguments             = \$(FileNum) \$(inputFileName)
+error                 = ${jobExec_base}_Job\$(FileNum).err
+output                = ${jobExec_base}_Job\$(FileNum).out
+log                   = ${jobExec_base}_Job\$(FileNum).log
+
+queue inputFileName from (
+$(ls -1 $inputFilesRegex)
+)
 EOF
 
-        # Submit job
-        chmod 754 ${jobFilename}
-        condor_submit -spool ${filename_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1
-    done
+    # Submit all jobs for current run
+    chmod 754 ${jobExec}
+    condor_submit -spool ${filename_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1
 
     #Merge files if requested!!
-    if [[ $mergeFilesOpt -eq 1 ]]; then
+    if [[ $mergeFilesOpt -eq 1 && $nFiles -ge 1 ]]; then
         ##Create merge job -> merge all single output files in the correct order
         echo "Creating job for file merging!"
-        mergeJobFileName="${HTCfolder}/MergeFiles_${campaign}_${runNumber}.sh"
-        mergeJobFileName_base=${mergeJobFileName::-3}
+        mergeJobExec="${HTCfolder}/MergeFiles_${campaign}_${runNumber}.sh"
+        mergeJobExec_base=${mergeJobExec::-3}
 
-        cat <<EOF > $mergeJobFileName
+        cat <<EOF > $mergeJobExec
 #!/bin/bash
 
 source /opt/exp_software/foot/root_shoe_foot.sh
@@ -294,18 +293,16 @@ EOF
         merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
-executable            = ${mergeJobFileName}
-arguments             = \$(ClusterID) \$(ProcId)
-error                 = ${mergeJobFileName_base}.err
-output                = ${mergeJobFileName_base}.out
-log                   = ${mergeJobFileName_base}.log
+executable            = ${mergeJobExec}
+error                 = ${mergeJobExec_base}.err
+output                = ${mergeJobExec_base}.out
+log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
-+JobFlavour           = "longlunch"
 queue
 EOF
 
         # Submit merge job
-        chmod 754 ${mergeJobFileName}
+        chmod 754 ${mergeJobExec}
         condor_submit -spool ${merge_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 
         echo "Submitted jobs for run ${runNumber}"
         
