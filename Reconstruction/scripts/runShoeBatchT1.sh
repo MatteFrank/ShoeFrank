@@ -124,6 +124,10 @@ fi
 
 if [ ! -d "$outFolder" ]; then
     mkdir $outFolder
+    if [ $? -ne 0 ]; then
+        echo "Failed to create output directory. Exiting"
+        exit 0
+    fi
     echo "Directory ${outFolder} did not exist, created now!"
 fi
 
@@ -172,6 +176,10 @@ do
 
     if [ ! -d $HTCfolder ]; then
         mkdir $HTCfolder
+        if [ $? -ne 0 ]; then
+            echo "Failed to create condor files directory. Exiting"
+            exit 0
+        fi
         echo "Directory ${HTCfolder} did not exist, created now!"
     fi
 
@@ -199,8 +207,8 @@ source ${SHOE_PATH}/build/setupFOOT.sh
 cd ${SHOE_PATH}/build/Reconstruction
 
 ../bin/DecodeGlb -in \${2} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -subfile
-retVal=\$?
-if [ \$retVal -eq 0 ]; then
+
+if [ \$? -eq 0 ]; then
     out_list=(\$(ls \${SCRATCH}/*.root))
     if [ ! -f \${outFile_temp} ]; then
         outFile_temp=\${out_list[0]}

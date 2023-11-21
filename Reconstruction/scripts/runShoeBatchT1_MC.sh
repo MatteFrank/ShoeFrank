@@ -136,6 +136,10 @@ fi
 
 if [ ! -d "$outFolder" ]; then
     mkdir $outFolder
+    if [ $? -ne 0 ]; then
+        echo "Failed to create output directory. Exiting"
+        exit 0
+    fi
     echo "Directory ${outFolder} did not exist, created now!"
 fi
 
@@ -149,12 +153,6 @@ if [[ ! $fileNumber -eq 0 ]]; then
     outFolder=${outFolder}"/"${fileNumber}
 fi
 
-if [ ! -d "$outFolder" ]; then
-    mkdir $outFolder
-    echo "Directory ${outFolder} did not exist, created now!"
-fi
-
-
 #Check that run number has been properly set
 if [[ $runNumber -le 0 ]]; then
     echo "Run number not set properly!"
@@ -166,6 +164,10 @@ HTCfolder="${outFolder}/HTCfiles"
 
 if [ ! -d $HTCfolder ]; then
     mkdir $HTCfolder
+    if [ $? -ne 0 ]; then
+        echo "Failed to create condor files directory. Exiting"
+        exit 0
+    fi
     echo "Directory ${HTCfolder} did not exist, created now!"
 fi
 
@@ -173,12 +175,12 @@ fi
 source /opt/exp_software/foot/root_shoe_foot.sh > /dev/null 2>&1
 
 root -l $inFile <<-EOF > /dev/null 2>&1
-std::ofstream ofs("dummy_evts.txt")
+std::ofstream ofs("${HTCfolder}/temp_evts.txt")
 ofs << EventTree->GetEntries()
 EOF
 
-nTotEv=$(cat dummy_evts.txt)
-rm dummy_evts.txt
+nTotEv=$(cat ${HTCfolder}/temp_evts.txt)
+rm ${HTCfolder}/temp_*.txt
 
 # Set number of events per job and find number of jobs
 nEvPerFile=20000
@@ -230,8 +232,8 @@ source ${SHOE_PATH}/build/setupFOOT.sh
 cd ${SHOE_PATH}/build/Reconstruction
 
 ../bin/DecodeGlb -in ${inFile} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -nsk \${2} -nev ${nEvPerFile} -mc
-retVal=\$?
-if [ \$retVal -eq 0 ]; then
+
+if [ \$? -eq 0 ]; then
     if [ \${1} -eq 1 ]; then
         rootcp \${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
     fi
