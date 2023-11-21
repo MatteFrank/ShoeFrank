@@ -53,7 +53,7 @@ endif(FILECOPY)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to root libraries
 #
-add_executable(DecodeMPix DecodeMpix.cc)
+add_executable(DecodeMPix DecodeMPix.cc)
 #
 target_link_libraries(DecodeMPix ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
