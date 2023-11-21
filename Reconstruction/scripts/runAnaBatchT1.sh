@@ -98,6 +98,7 @@ fi
 
 #Check if output file has been set and initialize output folder
 if [ -z "$outFile" ]; then
+    echo "Output file not set, changing to default values for output directory"
     outFolder=$(dirname $inFile)
 else
     outFolder=$(dirname $outFile)
@@ -126,6 +127,7 @@ fi
 
 #Set output merged file name if not set before -> default value
 if [ -z "$outFile" ]; then
+    echo "Output file not set, changing to default name"
     outFile="${outFolder}/MergeAna_${campaign}_${runNumber}.root"
 fi
 
@@ -144,6 +146,7 @@ fi
 #Find number of events, campaign name and run number in the MC file using root
 source /opt/exp_software/foot/root_shoe_foot.sh > /dev/null 2>&1
 
+cd ${SHOE_PATH}/build/Reconstruction
 root -l $inFile <<-EOF > /dev/null 2>&1
 std::ofstream ofs("${HTCfolder}/temp_evts.txt")
 std::ofstream ofsCamp("${HTCfolder}/temp_campaign.txt")
@@ -152,11 +155,11 @@ ofs << EventTree->GetEntries()
 ofsCamp << runinfo->CampaignName()
 ofsRun << runinfo->RunNumber()
 EOF
+cd - > /dev/null 2>&1
 
 nTotEv=$(cat ${HTCfolder}/temp_evts.txt)
 campaign=$(cat ${HTCfolder}/temp_campaign.txt)
 runNumber=$(cat ${HTCfolder}/temp_runNumber.txt)
-rm ${HTCfolder}/temp_*.txt
 
 if [ -z $campaign ]; then
     echo "Campaign name not read correctly from input file. Check runinfo object"
@@ -167,6 +170,9 @@ if [ -z $runNumber ]; then
     echo "Run number not read correctly from input file. Check runinfo object"
     exit 0
 fi
+
+#Remove temporary files
+rm ${HTCfolder}/temp_*.txt
 
 #Remove slash from extracted campaign if present
 if [[ ${campaign: -1} == "/" ]]; then
