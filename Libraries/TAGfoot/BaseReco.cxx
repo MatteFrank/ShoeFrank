@@ -365,6 +365,8 @@ void BaseReco::OpenFileOut()
       name = prefix + ".root";
    }
    
+   Info("OpenFileOut()", "Output file name %s\n", name.Data());
+
    fActEvtWriter->Open(name.Data(), "RECREATE");
    
    if (fFlagHisto)
@@ -386,7 +388,7 @@ TString BaseReco::GetFileOutName()
    }
    
    name += ".root";
-   
+      
    return name;
 }
 
