@@ -64,14 +64,19 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void FillMCGlbTrkYields();    //fill MC quantitites
   void FillDataGlbTrkYields();  //fill reconstructed quantities
   void FillTrkPlots(); //fill plots
-  void FillYieldReco(string folderName, Int_t Z,Int_t Z_meas, Double_t Th, Double_t Ek=0.);
-  void FillYieldMC(string folderName, Int_t charge_tr, Double_t theta_tr, Double_t Ek=0.);
+  void FillYieldReco(string folderName, Int_t Z,Double_t Th);  // fill histos with reconstructed values
+  void FillYieldMC(string folderName, Int_t Z_true,Int_t Z_meas, Double_t Th_true, Double_t Th_meas, bool migMatr); // fill histos with MC values
+  void MigMatrixPlots(string folderName, Int_t Z_true,Int_t Z_meas, Double_t Th_true, Double_t Th_meas, bool migMatr); // fill histos with MC values
   void BookYield(string path, bool enableMigMatr= false);
-  void RecoGlbTrkLoopSetVariables(); //Set Reco variables, to be done for each glbal track
+  void BookMigMatrix(string path, bool enableMigMatr= false);
+  void BookChargeStudies(string path);
+
+  void RecoGlbTrkLoopSetVariables(); // Set Reco variables, to be done for each glbal track
   void MCGlbTrkLoopSetVariables(); //Set MC variables, to be done for each glbal track
   void MCParticleStudies();        // Loop on MC particles
   void FillMCPartYields();
   bool isGoodReco(Int_t Id_part);
+  void ChargeStudies(string path,Int_t charge, TAGtrack *fGlbTrack);
 
   //useful formulas
   TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ){
@@ -129,6 +134,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
 
   //MC quantities: true=production, cross=target, cross_calo=at calo enterance
   Int_t Z_true;
+  Int_t Z_true_TW;
   Int_t MC_id;
   Double_t Ek_true;
   Double_t Ek_tot;
@@ -138,11 +144,18 @@ class GlobalRecoAnaGSI : public RecoRaw {
   Double_t Beta_true;
   TVector3 P_true;
   Double_t Th_true;
+  Double_t Th_BM;
   Double_t Th_cross; //target exit angle
   TVector3 P_cross;  //target exit momentum
-  Double_t Ek_cross_calo;  //crossing out from TW
+  TVector3 P_beforeTG; // target entering momentum
+      Double_t Ek_cross_calo; // crossing out from TW
 
+  Double_t initTWPosition;
   Int_t TrkIdMC;   //MC id of the glb track
+  Int_t TrkIdMC_TW; //MC id of the twpoint
+  vector<Int_t> vecTwTrkId; // vector of all MC id of the twpoint
+  vector<vector<Int_t>> vecVtZMC; // vector of all MC charge of the 4 vt hits
+  vector<vector<Int_t>> vecMsdZMC; // vector of all MC charge of the 6 msd clus
 
   //setting variables maybe we should use a config file?
   Double_t purity_cut;      //minumum purity value for a track to be defined as pure
@@ -170,6 +183,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   map<int, map<int, int>> m_nClone;            ///< Map of total number of clone id for the same charge in a single event; the key is [particle charge][specific ID]
   map<int, int> n_clones;                      ///< Map of total number of clone id for the same charge ; the key is [particle charge]
   
+
   // nuisance variables
   TH1D *h;
   TH2D *h2;
