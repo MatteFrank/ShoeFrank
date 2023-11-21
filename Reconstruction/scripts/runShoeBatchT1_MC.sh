@@ -217,6 +217,8 @@ jobExec_base=${jobExec::-3}
 # Create executable
 # - par[1] = Process Id -> condor $(Process) variable + 1
 # - par[2] = Number of events to skip in current process
+#
+# This executable processes a portion of the current input file, i.e. "nEvPerFile" events from a certain event onwards
 cat <<EOF > $jobExec
 #!/bin/bash
 
@@ -242,6 +244,7 @@ fi
 EOF
 
 # Create single submit file for all jobs
+# Spawn "nJobs" jobs to a single cluster with one submit file
 filename_sub="${HTCfolder}/submitShoeMC_${campaign}_${runNumber}.sub"
 
 cat <<EOF > $filename_sub
@@ -260,7 +263,7 @@ queue $nJobs
 EOF
 
 
-# Submit SHOE jobs
+# Submit SHOE processing jobs
 chmod 754 ${jobExec}
 condor_submit -spool ${filename_sub}
 
@@ -307,7 +310,7 @@ while true; do
 done
 EOF
 
-    # Create submit file for merge job
+    # Create submit file for merge job, set to lower priority wrt file processing
     merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
     cat <<EOF > $merge_sub
@@ -316,6 +319,7 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
+priority              = -2
 queue
 EOF
 
@@ -387,7 +391,7 @@ while true; do
 done
 EOF
 
-        # Create submit file for full statistics merge job
+        # Create submit file for full statistics merge job, set to lower priority wrt single file merge
         merge_sub="${outFolder}/submitMergeFullStat_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
@@ -396,6 +400,7 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
+priority              = -5
 queue
 EOF
 

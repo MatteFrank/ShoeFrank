@@ -182,10 +182,12 @@ do
     #Create executable
     # - par[1] = process Id -> condor $(Process) variable + 1
     # - par[2] = input file full path
+    #
+    # The exectuable launches SHOE on a file of the current run and returns the output file
     jobExec="${HTCfolder}/runShoeInBatch_${campaign}_${runNumber}.sh"
     jobExec_base=${jobExec::-3}
 
-    # Create executable file for job
+    # Create executable file for jobs
     cat <<EOF > $jobExec
 #!/bin/bash
 
@@ -215,7 +217,8 @@ else
 fi
 EOF
 
-    # Create submit file for job
+    # Create submit file for jobs and submit them to one single cluster for all input files
+    # This submission calls the above executable once per input file thorugh the "queue" command
     filename_sub="${HTCfolder}/submitShoe_${campaign}_${runNumber}.sub"
 
     cat <<EOF > $filename_sub
@@ -235,7 +238,7 @@ EOF
 
     # Submit all jobs for current run
     chmod 754 ${jobExec}
-    condor_submit -spool ${filename_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1
+    condor_submit -spool ${filename_sub}
 
     #Merge files if requested!!
     if [[ $mergeFilesOpt -eq 1 && $nFiles -ge 1 ]]; then
@@ -289,7 +292,7 @@ while true; do
 done
 EOF
 
-        # Create submit file for merge job
+        # Create submit file for merge job, set to lower priority wrt file processing
         merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
@@ -298,12 +301,13 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
+priority              = -5
 queue
 EOF
 
         # Submit merge job
         chmod 754 ${mergeJobExec}
-        condor_submit -spool ${merge_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 
+        condor_submit -spool ${merge_sub}
         echo "Submitted jobs for run ${runNumber}"
         
         if [ ${runNumber} -eq ${lastRunNumber} ]; then
