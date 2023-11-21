@@ -380,11 +380,24 @@ TString BaseReco::GetFileOutName()
    TString name = Form("run_%08d", fRunNumber);
    vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
    
+   Int_t detectorsN = 0;
+   
    for (auto it : dec) {
       TString det = TAGrecoManager::GetDect3LetName(it);
       det.ToLower();
       if (det == "tgt") continue;
-      name += Form("_%s", det.Data());
+      detectorsN++;
+   }
+   
+   if (detectorsN >= 7)
+      name += "_all";
+   else {
+      for (auto it : dec) {
+         TString det = TAGrecoManager::GetDect3LetName(it);
+         det.ToLower();
+         if (det == "tgt") continue;
+         name += Form("_%s", det.Data());
+      }
    }
    
    name += ".root";

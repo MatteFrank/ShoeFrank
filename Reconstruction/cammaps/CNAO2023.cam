@@ -9,7 +9,7 @@ NumberFiles: 1
 
 DetectorName: "DI"
 NumberFiles: 1
-"./geomaps/CNAO2023/TADIdetector.geo": 5956; 6092; 6094; 6117; 6306; 6308; 6309; 6310; 
+"./geomaps/CNAO2023/TADIdetector.geo": 5956; 6092; 6094; 6117; 6306; 6308; 6309; 6310;
 
 DetectorName: "ST"
 NumberFiles: 5
