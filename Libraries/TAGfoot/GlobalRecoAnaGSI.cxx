@@ -1643,8 +1643,6 @@ void GlobalRecoAnaGSI::FillMCPartYields()
   }
 }
 
-  return;
-}
 
 bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
 {
