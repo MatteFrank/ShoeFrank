@@ -85,6 +85,9 @@ void GlobalRecoAnaGSI::LoopEvent()
   { // for every event
     // fFlagMC = false;     //N.B.: for MC FAKE REAL
 
+    if (currEvent == nTotEv)
+      break;
+
     if (currEvent % frequency == 0 || FootDebugLevel(1))
       cout << "Load Event: " << currEvent << endl;
 
@@ -619,8 +622,6 @@ void GlobalRecoAnaGSI::LoopEvent()
     }
 
     ++currEvent;
-    if (currEvent == nTotEv)
-      break;
   } // end of loop event
 
   return;
