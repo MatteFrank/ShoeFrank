@@ -386,11 +386,10 @@ TString BaseReco::GetFileOutName()
       TString det = TAGrecoManager::GetDect3LetName(it);
       det.ToLower();
       if (det == "tgt") continue;
-      if (det == "dip") continue;
       detectorsN++;
    }
    
-   if (detectorsN == 7)
+   if (detectorsN >= 7)
       name += "_all";
    else {
       for (auto it : dec) {
