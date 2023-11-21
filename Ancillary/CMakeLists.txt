@@ -77,7 +77,7 @@ install(TARGETS DecodeWC DESTINATION bin)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to root libraries
 #
-add_executable(DecodePix Decodepix.cc)
+add_executable(DecodePix DecodePix.cc)
 #
 target_link_libraries(DecodePix ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
 
