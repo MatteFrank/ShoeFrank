@@ -330,6 +330,11 @@ void BaseReco::OpenFileOut()
 {
    TString name = GetTitle();
    
+   TString tmp = name;
+   tmp.ToLower();
+   if (tmp == "auto")
+      name = GetFileOutName();
+   
    if (TAGrecoManager::GetPar()->IncludeTW()) {
       TATWparConf* parConf = (TATWparConf*)fpParConfTw->Object();
       Bool_t isZmc         = parConf->IsZmc();
@@ -360,10 +365,31 @@ void BaseReco::OpenFileOut()
       name = prefix + ".root";
    }
    
+   Info("OpenFileOut()", "Output file name %s\n", name.Data());
+
    fActEvtWriter->Open(name.Data(), "RECREATE");
    
    if (fFlagHisto)
       SetHistogramDir();
+}
+
+//__________________________________________________________
+//! Generate output file name
+TString BaseReco::GetFileOutName()
+{
+   TString name = Form("run_%08d", fRunNumber);
+   vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
+   
+   for (auto it : dec) {
+      TString det = TAGrecoManager::GetDect3LetName(it);
+      det.ToLower();
+      if (det == "tgt") continue;
+      name += Form("_%s", det.Data());
+   }
+   
+   name += ".root";
+      
+   return name;
 }
 
 //__________________________________________________________

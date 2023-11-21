@@ -512,6 +512,8 @@ protected:
    void CreateRecActionGlbS();
    // Create reconstruction action for global tracks
    void CreateRecActionGlbF();
+   // Generate output file name
+   TString  GetFileOutName();
    
 protected:
    static Bool_t fgSaveMcFlag;    ///< MC saving flag

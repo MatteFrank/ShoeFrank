@@ -143,7 +143,7 @@ void TAVTactBaseTrack::CreateHistogram()
    fpHisTrackClus = new TH1F(Form("%sTrackClus", fPrefix.Data()), Form("%s - Number of clusters per track", fTitleDev.Data()), 9, -0.5, 8.5);
    AddHistogram(fpHisTrackClus);
    
-   fpHisClusSensor = new TH1F(Form("%sClusSensor", fPrefix.Data()), Form("%s - Number of tracked clusters per sensor", fTitleDev.Data()), 9, -0.5, 8.5);
+   fpHisClusSensor = new TH1F(Form("%sClusSensor", fPrefix.Data()), Form("%s - Number of tracked clusters per sensor", fTitleDev.Data()),  pGeoMap->GetSensorsN()+1, -0.5,  pGeoMap->GetSensorsN()+0.5);
    AddHistogram(fpHisClusSensor);
    
    fpHisTheta = new TH1F(Form("%sTrackTheta", fPrefix.Data()), Form("%s - Track polar distribution", fTitleDev.Data()), 500, 0, 90);
