@@ -52,7 +52,8 @@
 //! Class Imp
 ClassImp(TAVTparGeo);
 
-const TString TAVTparGeo::fgkBaseName      = "VT";
+const TString TAVTparGeo::fgkBaseName    = "VT";
+const Int_t   TAVTparGeo::fgkDefSensorsN = 4;
 
 //______________________________________________________________________________
 //! Standard constructor
@@ -511,4 +512,16 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
   }
 
   return ss.str();
+}
+
+//_____________________________________________________________________________
+//! Print stepsize in Fluka for each it region
+//!
+string TAVTparGeo::PrintVTPhysics()
+{
+   stringstream str;
+   str << PrintCard("STEPSIZE","0.000001","0.0003",fvPixRegion.at(0),fvPixRegion.at(fvPixRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0005",fvEpiRegion.at(0),fvEpiRegion.at(fvEpiRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0015",fvModRegion.at(0),fvModRegion.at(fvModRegion.size()-1),"","","") << endl;
+   return str.str();
 }

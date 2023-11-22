@@ -19,6 +19,7 @@
 #include "TAEDglbTrack.hxx"
 #include "TAEDglbTrackList.hxx"
 #include "TAEDbaseInterface.hxx"
+#include "TAGnameManager.hxx"
 #include "BaseReco.hxx"
 
 class TEveDigitSet;

@@ -155,7 +155,7 @@ Bool_t TAVTactVmeSingleReader::Process()
          // loop over frame (3 max)
          for (Int_t k = 0; k < 3; ++k) {
             if (GetFrame(i, data))
-               DecodeFrame(i, data);
+               DecodeFrame(i,data);
          }
 
          memset(fDataEvent, 0, size);

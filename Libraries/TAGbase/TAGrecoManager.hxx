@@ -220,6 +220,7 @@ private:
 private:
 	static TAGrecoManager*       fgInstance;      ///< Instance
    static map<TString, TString> fgkDectFullName; ///< full name detector map
+   static map<TString, TString> fgkDect3LetName; ///< 3 letters name detector map
    static const TString         fgkDefParName;   ///< Default parameter name
 
 private:
@@ -305,8 +306,10 @@ public:
    // Clear debug level per classname
    static void   ClearClassDebugLevel(const char* className);
    
-   ClassDef(TAGrecoManager,3)
-
+   //! Return 3 letters  detectors
+   static TString GetDect3LetName(TString name) { return fgkDect3LetName[name]; }
+   
+   ClassDef(TAGrecoManager,4)
 };
 
 #define FootDebug(level, func, message, ...) TAGrecoManager::Debug(level, ClassName(), func, message, __VA_ARGS__)

@@ -115,10 +115,14 @@ private:
    Float_t         fLastPlaneMsd;       ///< Last plane id for MSD
 
    Float_t         fPartSigmaTheta;     ///< Scattering angle
-   Float_t         fPartEnergy;         ///< Particle energy
+   Float_t         fPartEloss;          ///< Particle energy loss
+   Float_t         fElossTarget;        ///< Energy loss in target
    Float_t         fPartA;              ///< Particle A
    Float_t         fPartZ;              ///< Particle Z
    Float_t         fBeamEnergyTarget;   ///< Beam energy at target
+   Float_t         fBeamEnergy;         ///< Beam energy
+   Float_t         fBeamA;              ///< Beam atomic mass
+   Float_t         fBeamZ;              ///< Beam atomic number
 
    TADItrackEmProperties* fEmProperties; ///< EM properties
    
@@ -146,6 +150,10 @@ private:
    TH1F*           fpHisMeanCharge;     ///< Mwean Charge per tracked cluster
    TH2F*           fpHisTwDeCaE;        ///< TW-deltaE vs CA-E
    TH2F*           fpHisMsdDeCaE;       ///< MSD-deltaE vs CA-E
+   TH1F*           fpHisLength;         ///< Total track length
+   TH1F*           fpHisBeta;           ///< Beta value
+   TH1F*           fpHisGamma;          ///< Gamma value
+   TH1F*           fpHisEkin;           ///< Kenetic energy
 
 private:
    static Bool_t fgBmMatched;           ///< vertex matched with BM flag

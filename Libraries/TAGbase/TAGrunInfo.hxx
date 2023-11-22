@@ -70,6 +70,9 @@ public:
    //! Get run number
    Short_t         RunNumber()                 const { return fiRun;        }
 
+   //! Check if two maps are identical, except for the runnumber
+   Int_t IsEqualExceptRunnumber(const TAGrunInfo& right);
+
    // Clear
    virtual void    Clear(Option_t* opt="");
    // To stream
@@ -90,6 +93,7 @@ public:
    Int_t           GetRegion(TString &regName) const {return (fCrossMap.find(regName)==fCrossMap.end()) ? -1 : fCrossMap.at(regName);}
    //! Import crossing map
    void            ImportCrossMap(const TAGrunInfo& right){fCrossMap=right.fCrossMap;};
+   const char*     GetName() const;
 
 private:
    static TString    fgkObjectName;    ///< name in TFile

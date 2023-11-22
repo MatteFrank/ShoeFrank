@@ -1105,13 +1105,13 @@ string TABMparGeo::PrintAssignMaterial(TAGmaterials *Material) {
       if(TAGrecoManager::GetPar()->IncludeDI())
 	magnetic = true;
 
-      outstr << PrintCard("ASSIGNMA", flkmatFWire, "BMN_SHI", "", "", Form("%d",magnetic), "", "") << endl;//shield has the same mat as field wires
-      outstr << PrintCard("ASSIGNMA", flkmatFWire, "BMN_FWI", "", "", Form("%d",magnetic), "", "") << endl;
-      outstr << PrintCard("ASSIGNMA", flkmatSWire, "BMN_SWI", "", "", Form("%d",magnetic), "", "") << endl;
-      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_GAS", "", "", Form("%d",magnetic), "", "") << endl;
-      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_C000", "BMN_C017", "1.", Form("%d",magnetic), "", "") << endl;
-      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_C100", "BMN_C117", "1.", Form("%d",magnetic), "", "") << endl;
-      outstr << PrintCard("ASSIGNMA", flkmatFoil, "BMN_MYL0", "BMN_MYL1", "1.", Form("%d",magnetic), "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatFWire, "BMN_SHI", "", "", "", "", "") << endl;//shield has the same mat as field wires
+      outstr << PrintCard("ASSIGNMA", flkmatFWire, "BMN_FWI", "", "", "", "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatSWire, "BMN_SWI", "", "", "", "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_GAS", "", "", "", "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_C000", "BMN_C017", "1.", "", "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatGas, "BMN_C100", "BMN_C117", "1.", "", "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmatFoil, "BMN_MYL0", "BMN_MYL1", "1.", "", "", "") << endl;
 
     }
 

@@ -16,7 +16,9 @@
    units: B (Gaus), pos (cm), momentum (MeV/c)
 */
 
-const  Double_t TADItrackPropagator::fgkConvFactor = 0.299792458;
+const  Double_t TADItrackPropagator::fgkConvFactor   = 0.299792458e-3;// (MeV/c)/G/cm
+const  Double_t TADItrackPropagator::fgkDefStepValue = 0.1;
+         Bool_t TADItrackPropagator::fgVarStepFlag  = false;
 
 //______________________________________________________________________________
 //! Constructor
@@ -25,74 +27,153 @@ TADItrackPropagator::TADItrackPropagator(TADIgeoField* field)
    fField(field),
    fTrackLength(0.),
    fNormP(0.),
-   fDerivative(0,0,0),
+   fBeta(0,0,0),
    fPosition(0,0,0),
    fZ(-99),
    fA(-1),
-   fStep(0.1)
+   fStep(fgkDefStepValue),
+   fToterance(1.e-5)
 {
 }
 
 // __________________________________________________________________________
-//! Propagate in Z-direction charged particle with momentum p to vertex v.
+//! Propagate in Z-direction charged particle with velocity beta to position Z
 //!
-//! \param[in] v initial position
-//! \param[in] p initial momentum
+//! \param[in] pos initial position
+//! \param[in] beta0 nitial beta
 //! \param[in] posZ Z position
 //! \param[out] vOut final position
 //! \param[out] pOut final momentum
-Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& v, TVector3& p, Double_t posZ, TVector3& vOut, TVector3& pOut)
+Bool_t TADItrackPropagator::ExtrapoleZ(TVector3& pos, TVector3& beta0, Double_t posZ, TVector3& vOut, TVector3& pOut)
 {
-   // Propagate particle with momentum p to pos Z with an initial position v.
-   fNormP       = p.Mag();
-   fPosition    = v;
-   fDerivative  = TVector3(0, 0, 1);
+   Double_t mass = TAGgeoTrafo::GetMassFactorMeV();
+
+   // Propagate particle with momentum p to posZ with an initial position pos and velocity beta0.
+   Double_t gamma0 = 1./TMath::Sqrt(1-beta0.Mag2());
+   fNormP       = gamma0*fA*mass*beta0.Mag();
+   fPosition    = pos;
+   fBeta        = beta0;
    fTrackLength = 0;
+   fStep        = fgkDefStepValue;
    
-   while(fPosition.Z() <= posZ && fPosition.Z() >= 0){
+   while(fPosition.Z() <= posZ)
       RungeKutta4();
-      fTrackLength += fStep;
-   }
    
    // new position
    vOut = fPosition;
    
    // new momentum
-   // p = gamma*mv = gamma*mc^2*(beta)/c
-   Double_t mass = TAGgeoTrafo::GetMassFactorMeV();
-   TVector3 beta  = fDerivative*(1./TMath::Ccgs());
+   // pc = gamma*mv = gamma*mc^2*beta
+   TVector3 beta = fBeta;
    Double_t gamma = 1./TMath::Sqrt(1-beta.Mag2());
    pOut = gamma*fA*mass*beta;
    
    return kTRUE;
 }
 
+// __________________________________________________________________________
+//! Propagate track to last point  to position Z
+//!
+//! \param[in] global track
+//! \param[in] posZ Z position
+//! \param[out] vOut final position
+//! \param[out] pOut final momentum
+TVector3& TADItrackPropagator::ExtrapoleZ(TAGtrack* track, Double_t posZ, TVector3& pOut)
+{
+   fA = track->GetMass();
+   fZ = track->GetTwChargeZ();
+   Double_t mass = TAGgeoTrafo::GetMassFactorMeV()*fA;
+
+   const TAGpoint* point = track->GetLastPoint();
+   TVector3 pos    = point->GetPosition();
+   TVector3 mom    = point->GetMomentum();
+
+   Double_t fac    = TMath::Sqrt(1./(1 + (mass*mass)/(mom.Mag2())));
+   TVector3 beta0  = mom.Unit()*fac;
+   
+   // Propagate particle with momentum p to posZ with an initial position pos and velocity beta0.
+   fNormP       = mom.Mag();
+   fPosition    = pos;
+   fBeta        = beta0;
+   fTrackLength = 0;
+   fStep        = fgkDefStepValue;
+   
+   while(fPosition.Z() <= posZ)
+      RungeKutta4();
+   
+   // new momentum
+   // pc = gamma*mv = gamma*mc^2*beta
+   TVector3 beta = fBeta;
+   Double_t gamma = 1./TMath::Sqrt(1-beta.Mag2());
+   pOut = gamma*mass*beta;
+   
+   return fPosition;
+}
+
 //______________________________________________________________________________
 //! Runge Kutta propagation
 void TADItrackPropagator::RungeKutta4()
 {
-   TVector3 K1 = SolveLorentz(fDerivative,               GetFieldB(fPosition) );
-   TVector3 K2 = SolveLorentz(fDerivative + fStep/2.*K1, GetFieldB(fPosition + fStep/2. * fDerivative));
-   TVector3 K3 = SolveLorentz(fDerivative + fStep/2.*K2, GetFieldB(fPosition + fStep/2. * fDerivative + K1 * (fStep*fStep/4.)));
-   TVector3 K4 = SolveLorentz(fDerivative + fStep*K3,    GetFieldB(fPosition + fStep*fDerivative + K2 * (fStep*fStep/2.)));
+   TVector3 beta1     = fBeta;
+   TVector3 position1 = fPosition;
    
-   TVector3 derivative = fDerivative + fStep/6.*(K1 + 2*K2 + 2*K3 + K4);
-   TVector3 position   = fPosition + fStep * fDerivative + (K1 + K2 + K3) * (fStep*fStep/6.);
+   TVector3 beta2     = fBeta;
+   TVector3 position2 = fPosition;
    
-   fDerivative = derivative;
-   fPosition   = position;
+   // mormnal step
+   RungeKutta4(fPosition, fBeta, fStep);
+   
+   if (fgVarStepFlag) {
+      // divide step by 2
+      Double_t step = fStep/2.;
+      for (Int_t i = 0; i < 2; ++i)
+         RungeKutta4(position1, beta1, step);
+      
+      Double_t err = TMath::Sqrt( (fPosition[0]-position1[0])*(fPosition[0]-position1[0]) + (fPosition[1]-position1[1])*(fPosition[1]-position1[1]) );
+      
+      Bool_t toMuch = false;
+      if (err > fToterance) {
+         fStep *= 0.9*TMath::Power(fToterance/err, 1./5.);
+         toMuch = true;
+      }
+      
+      // multiply step by 2
+      step = fStep*2.;
+      RungeKutta4(position2, beta2, step);
+      
+      Double_t err2 = TMath::Sqrt( (fPosition[0]-position2[0])*(fPosition[0]-position2[0]) + (fPosition[1]-position2[1])*(fPosition[1]-position2[1]) );
+      
+      if (err2 < fToterance && toMuch == false)
+         fStep  = step;
+   }
+      
+   fTrackLength += fStep;
 }
 
 //______________________________________________________________________________
 //! Solver for Lorentz equation
 //!
-//! \param[in] v  position vector
+//! \param[in] beta  position vector
 //! \param[in] field field vector
 //! \return new position
-TVector3 TADItrackPropagator::SolveLorentz(TVector3 u, TVector3 field)
+TVector3 TADItrackPropagator::SolveLorentz(TVector3 beta, TVector3 field)
 {
-   TVector3 temp = (fZ/fNormP)*u.Cross(field)*fgkConvFactor;
-   
-   return temp;
+   return (fZ/fNormP)*beta.Cross(field)*fgkConvFactor;
 }
 
+//______________________________________________________________________________
+//! Runge Kutta propagation
+//!
+//! \param[in] position initial position
+//! \param[in] beta nitial beta
+//! \param[in] step step  value
+void TADItrackPropagator::RungeKutta4(TVector3& position, TVector3& beta, Double_t step)
+{
+   TVector3 K1 = SolveLorentz(beta,                GetFieldB(position) );
+   TVector3 K2 = SolveLorentz(beta + step/2. * K1, GetFieldB(position + step/2. * beta + K1 * (step*step/8.)));
+   TVector3 K3 = SolveLorentz(beta + step/2. * K2, GetFieldB(position + step/2. * beta + K1 * (step*step/4.)));
+   TVector3 K4 = SolveLorentz(beta + step    * K3, GetFieldB(position + step    * beta + K2 * (step*step/2.)));
+   
+   beta     = beta     + step/6. * (K1 + 2*K2 + 2*K3 + K4);
+   position = position + step    * beta + (K1 + K2 + K3) * (step*step/6.);
+}

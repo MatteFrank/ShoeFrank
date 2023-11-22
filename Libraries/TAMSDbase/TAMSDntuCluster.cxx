@@ -23,11 +23,16 @@ ClassImp(TAMSDntuCluster);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAMSDntuCluster::TAMSDntuCluster() 
+TAMSDntuCluster::TAMSDntuCluster(Int_t sensorsN)
 : TAGdata(),
-  fGeometry(0x0),
+  fSensorsN(sensorsN),
   fListOfClusters(0x0)
 {
+   if (sensorsN == 0) {
+      Warning("TAMSDntuCluster()", "Size of hit array not set, set to %d\n", TAMSDparGeo::GetDefSensorsN());
+      fSensorsN = TAMSDparGeo::GetDefSensorsN();
+   }
+     
   SetupClones();
 }
 
@@ -44,7 +49,7 @@ TAMSDntuCluster::~TAMSDntuCluster()
 //! \param[in] iSensor sensor id
 Int_t TAMSDntuCluster::GetClustersN(Int_t iSensor) const
 {
-  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fSensorsN) {
     TClonesArray*list = GetListOfClusters(iSensor);
     return list->GetEntriesFast();   
   } else 
@@ -57,7 +62,7 @@ Int_t TAMSDntuCluster::GetClustersN(Int_t iSensor) const
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor)
 {
-  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fSensorsN) {
     TClonesArray* list = (TClonesArray*)fListOfClusters->At(iSensor);
     return list;
   } else 
@@ -70,7 +75,7 @@ TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor)
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuCluster::GetListOfClusters(Int_t iSensor) const
 {
-  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fSensorsN) {
     TClonesArray* list = (TClonesArray*)fListOfClusters->At(iSensor);
     return list;
     
@@ -109,12 +114,10 @@ const TAMSDcluster* TAMSDntuCluster::GetCluster(Int_t iSensor, Int_t iCluster) c
 //------------------------------------------+-----------------------------------
 //! Setup clones.
 void TAMSDntuCluster::SetupClones()
-{
-  fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
-  
+{  
   if (fListOfClusters) return;
-  fListOfClusters    = new TObjArray();
-  for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {
+  fListOfClusters    = new TObjArray(fSensorsN);
+  for (Int_t i = 0; i < fSensorsN; ++i) {
     TClonesArray* arr = new TClonesArray("TAMSDcluster");
     arr->SetOwner(true);
     fListOfClusters->AddAt(arr, i);
@@ -126,7 +129,7 @@ void TAMSDntuCluster::SetupClones()
 //! Clear event.
 void TAMSDntuCluster::Clear(Option_t*)
 {
-  for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {
+  for (Int_t i = 0; i < fSensorsN; ++i) {
     TClonesArray* list = GetListOfClusters(i);
     list->Delete();
   }   
@@ -138,7 +141,7 @@ void TAMSDntuCluster::Clear(Option_t*)
 //! \param[in] iSensor sensor id
 TAMSDcluster* TAMSDntuCluster::NewCluster(Int_t iSensor)
 {
-  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fSensorsN) {
     TClonesArray &clusterArray = *GetListOfClusters(iSensor);
     TAMSDcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAMSDcluster();
     cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
@@ -156,7 +159,7 @@ TAMSDcluster* TAMSDntuCluster::NewCluster(Int_t iSensor)
 //! \param[in] iSensor sensor id
 TAMSDcluster* TAMSDntuCluster::NewCluster(TAMSDcluster* clus, Int_t iSensor)
 {
-  if (iSensor >= 0  && iSensor < fGeometry->GetSensorsN()) {
+  if (iSensor >= 0  && iSensor < fSensorsN) {
     TClonesArray &clusterArray = *GetListOfClusters(iSensor);
     TAMSDcluster* cluster = new(clusterArray[clusterArray.GetEntriesFast()]) TAMSDcluster(*clus);
     cluster->SetClusterIdx(clusterArray.GetEntriesFast()-1);
@@ -174,7 +177,7 @@ TAMSDcluster* TAMSDntuCluster::NewCluster(TAMSDcluster* clus, Int_t iSensor)
 //! \param[in] option option for printout
 void TAMSDntuCluster::ToStream(ostream& os, Option_t* option) const
 {
-  for (Int_t i = 0; i < fGeometry->GetSensorsN(); ++i) {
+  for (Int_t i = 0; i < fSensorsN; ++i) {
     os << "TAMSDntuCluster " << GetName()
        << Form("  nClus=%3d", GetClustersN(i))
        << endl;

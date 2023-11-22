@@ -34,8 +34,6 @@
 #include "TAVTntuTrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTactBaseNtuTrack.hxx"
-#include <algorithm>
-#include <TStopwatch.h>
 
 /*!
  \class TAVTactBaseNtuTrack
@@ -62,7 +60,6 @@ TAVTactBaseNtuTrack::TAVTactBaseNtuTrack(const char* name,
   fpBMntuTrack(pBMntuTrack),
   fBmTrackOk(false),
   fBmTrack(0x0),
-  flagMC(false),
   fBmTrackPos(0,0,0)
 {
 }
@@ -202,29 +199,19 @@ Bool_t TAVTactBaseNtuTrack::Action()
    TAVTntuTrack* pNtuTrack = (TAVTntuTrack*) fpNtuTrack->Object();
    pNtuTrack->Clear();
 
-   // TStopwatch watch;
-   // watch.Start();
-   //FindTiltedTracks();
-
-
-   //looking straight
+   // looking straight
    FindStraightTracks();
 
-   //looking inclined line
-       if (!FindTiltedTracks())
-   { // it is never false with TAVTactNtuTrackF::FindTiltedTracks()
-     if (ValidHistogram())
+   // looking inclined line
+   if (!FindTiltedTracks()){
+	  if (ValidHistogram())
 		 FillHistogramm();
 	  fpNtuTrack->SetBit(kValid);
 	  return true;
    }
 
-   if (FindVertices()){    //it is always false
+   if (FindVertices())
 	  FindTiltedTracks();
-   }
-
-   // if (pNtuTrack->GetTracksN() >2)
-   //   cout << watch.RealTime() << endl;
 
    if(FootDebugLevel(1)) {
 	  printf("%s %d tracks found\n", this->GetName(), pNtuTrack->GetTracksN()); //print name of action since it's used for all trackers
@@ -234,8 +221,6 @@ Bool_t TAVTactBaseNtuTrack::Action()
 	  }
    }
 
-   if ((GetFlagMC() && TAGrecoManager::GetPar()->IsRegionMc()))
-     EvaluateTrack(); // study of the purity of the reconstructed tracks
 
    if (ValidHistogram())
 	  FillHistogramm();
@@ -265,7 +250,8 @@ void TAVTactBaseNtuTrack::CheckBM()
 	  fBmTrack = pBMtrack->GetTrack(0);
 
    if (fBmTrack && fpFootGeo) {
-	  fBmTrackPos  = fBmTrack->Intersection(fpFootGeo->GetVTCenter().Z()-fpFootGeo->GetBMCenter().Z());
+	//   fBmTrackPos  = fBmTrack->Intersection(fpFootGeo->GetVTCenter().Z()-fpFootGeo->GetBMCenter().Z());
+     fBmTrackPos = fBmTrack->Intersection(fpFootGeo->FromGlobalToBMLocal(fpFootGeo->GetTGCenter()).Z());
 	  Float_t chi2 = fBmTrack->GetChiSquare();
 	  if (ValidHistogram())
 		 fpHisBmChi2->Fill(chi2);
@@ -321,7 +307,16 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 
 		 lineOrigin.SetXYZ(cluster->GetPosition()[0], cluster->GetPosition()[1], 0); // parallel lines
 		 lineOrigin = pGeoMap->Sensor2Detector(curPlane, lineOrigin);
-		 lineSlope.SetXYZ(0, 0, 1);
+       //Create slope parallel to Z axis in the global reference frame
+       if( fBmTrack )
+      {
+         lineSlope = fBmTrack->GetSlope();
+         lineSlope = fpFootGeo->VecFromBMLocalToGlobal(lineSlope);
+      }
+      else
+         lineSlope.SetXYZ(0, 0, 1);
+
+      lineSlope = fpFootGeo->VecFromGlobalToVTLocal(lineSlope);
 
 		 track->SetLineValue(lineOrigin, lineSlope);
 
@@ -362,7 +357,7 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 		 // Apply cuts
 		 if (AppyCuts(track)) {
 			track->SetTrackIdx(GetTracksN());
-			//track->MakeChiSquare();    //i put it in update param
+			track->MakeChiSquare();
 			track->SetType(0);
          AddNewTrack(track);
 			TVector3 orig(0,0,0);
@@ -490,7 +485,7 @@ void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 
 	  origin  = fpFootGeo->FromVTLocalToGlobal(origin);
 	  TVector3 res = origin - bmTrackPos;
-	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.Y());
+	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.X());
 	  fpHisVtxResY->Fill(origin.Y(), bmTrackPos.Y());
    }
 }

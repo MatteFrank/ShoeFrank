@@ -30,7 +30,7 @@ TABMactNtuTrack::TABMactNtuTrack(const char* name,
 
   //new chi2 ROOT based
   fpFunctor= new ROOT::Math::Functor(this,&TABMactNtuTrack::EvaluateChi2,2);
-  fpMinimizer = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Fumili2");
+  fpMinimizer = ROOT::Math::Factory::CreateMinimizer("", "");
 
 }
 
@@ -55,8 +55,16 @@ void TABMactNtuTrack::CreateHistogram()
   AddHistogram(fpHisMap);
   fpHisMapTW = new TH2F("bmTrackTWMap","BM - Position of the tracks at the TW center; X[cm]; Y[cm]", 500, -10., 10.,500 , -10, 10);
   AddHistogram(fpHisMapTW);
+  fpHisTGXview = new TH1F("bmTrackTGXview","BM - Position of the tracks on the TG center plane X view; X[cm]; Number of tracks",600 , -3., 3.);
+  AddHistogram(fpHisTGXview);
+  fpHisTGYview = new TH1F("bmTrackTGYview","BM - Position of the tracks on the TG center plane Y view; Y[cm]; Number of tracks", 600 , -3., 3.);
+  AddHistogram(fpHisTGYview);
+  fpHisXeventTGXview = new TH1F("bmHisXeventTGXview","BM - Position of the tracks on the TG center plane X view; Event; X[cm]",60000 , 0., 60000.);
+  AddHistogram(fpHisXeventTGXview);
+  fpHisXeventTGYview = new TH1F("bmHisXeventTGYview","BM - Position of the tracks on the TG center plane Y view; Event; Y[cm]", 60000 , 0., 60000.);
+  AddHistogram(fpHisXeventTGYview);  
   fpHisMylar12d = new TH2F("bmTrackCenter","BM - Position of the tracks on the BM center plane; X[cm]; Y[cm]", 500, -3., 3.,500 , -3., 3.);
-  AddHistogram(fpHisMylar12d);
+  AddHistogram(fpHisMylar12d);  
   fpHisAngleX = new TH1F("bmTrackAngleX","BM track XZ Angular spread; XZ Angle [rad]; Events", 200, -0.3, 0.3);
   AddHistogram(fpHisAngleX);
   fpHisAngleY = new TH1F("bmTrackAngleY","BM track YZ Angular spread; YZ Angle [rad]; Events", 200, -0.3, 0.3);
@@ -194,6 +202,12 @@ Bool_t TABMactNtuTrack::Action()
       pos = savedtracktr->Intersection(geoTrafo->FromGlobalToBMLocal(geoTrafo->FromTWLocalToGlobal(TVector3(0,0,0))).Z());
       fpHisMapTW->Fill(pos.X(), pos.Y());
       fpHisMylar12d->Fill(savedtracktr->GetOrigin().X(), savedtracktr->GetOrigin().Y());
+      fpHisTGXview->Fill(savedtracktr->GetOrigin().X());
+      fpHisTGYview->Fill(savedtracktr->GetOrigin().Y());
+      if(gTAGroot->CurrentEventNumber()>0 && gTAGroot->CurrentEventNumber()<60000){
+        fpHisXeventTGXview->SetBinContent(gTAGroot->CurrentEventNumber(), savedtracktr->GetOrigin().X());
+        fpHisXeventTGYview->SetBinContent(gTAGroot->CurrentEventNumber(), savedtracktr->GetOrigin().Y());      
+      }
       fpHisAngleX->Fill(savedtracktr->GetSlope().X()/savedtracktr->GetSlope().Z());
       fpHisAngleY->Fill(savedtracktr->GetSlope().Y()/savedtracktr->GetSlope().Z());
       fpHisChi2Red->Fill(savedtracktr->GetChiSquare());
@@ -436,7 +450,8 @@ return;
 }
 
 
-void TABMactNtuTrack::ToStream(ostream& os) const{
+void TABMactNtuTrack::ToStream(ostream& os,  Option_t* /*option*/) const
+{
   os<<"fpHisNhitTotTrack=  "<<fpHisNhitTotTrack->GetMean()<<"  fpHisNhitXTrack= "<<fpHisNhitXTrack->GetMean()<<"  fpHisNhitYTrack="<<fpHisNhitYTrack->GetMean()<<"  fpHisNrejhitTrack= "<<fpHisNrejhitTrack->GetMean()<<endl;
   os<<"fpNtotTrack= "<< fpNtotTrack->GetMean()<<"    fpNtotTrack(bin1)= "<<fpNtotTrack->GetBinContent(2)<<endl;
   os<<"fpFitIters=  "<<fpFitIters->GetMean()<<"   fpHisChi2Red= "<< fpHisChi2Red->GetMean()<<endl<<endl;

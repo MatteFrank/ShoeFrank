@@ -39,7 +39,7 @@ ClassImp(TAVTactBaseNtuHitMC);
 
 //Float_t TAVTactBaseNtuHitMC::fgPoissonPar      = 1.736; // ajust for GSI (not enough, for memory)
 Int_t   TAVTactBaseNtuHitMC::fgPileupEventsN   = 100;
-Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -666;
+Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.

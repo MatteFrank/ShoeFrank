@@ -1,0 +1,18 @@
+// Campaign file
+CamName: "MPIX2023"
+RunNumber: 1
+NumberDevices: 3
+
+DetectorName: "FOOT"
+NumberFiles: 1
+"./geomaps/MPIX2023/MPIX.geo": -1
+
+DetectorName: "TG"
+NumberFiles: 1
+"./geomaps/MPIX2023/TAGdetector.geo": -1
+
+DetectorName: "MP"
+NumberFiles: 3
+"./geomaps/MPIX2023/TAMPdetector.geo": -1
+"./config/MPIX2023/TAMPdetector.cfg": -1
+"./config/MPIX2023/TAMPdetector.map": -1

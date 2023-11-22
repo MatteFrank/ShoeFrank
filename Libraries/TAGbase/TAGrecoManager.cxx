@@ -22,6 +22,10 @@ map<TString, TString> TAGrecoManager::fgkDectFullName = {{"ST", "Start Counter"}
                                                          {"VT", "Vertex"}, {"IT", "Inner Tracker"}, {"MSD", "MicroStrip Detector"}, {"TW", "ToF Wall"},
                                                          {"CA", "Calorimeter"}};
 
+map<TString, TString> TAGrecoManager::fgkDect3LetName = {{"ST", "STC"}, {"BM", "BMN"}, {"DI", "DIP"}, {"TG", "TGT"},
+                                                         {"VT", "VTX"}, {"IT", "ITR"}, {"MSD", "MSD"}, {"TW", "TOF"},
+                                                         {"CA", "CAL"}};
+
 const TString TAGrecoManager::fgkDefParName = "FootGlobal.par";
 
 //! Class Imp
@@ -186,7 +190,15 @@ Bool_t TAGrecoManager::GlobalChecks(Bool_t flagMC)
          Info("GlobalChecks()", "Make global reconstruction with TOE");
 
       if (globalRecoGF)
-         Info("GlobalChecks()", "Make global reconstruction with GenFit");
+      {
+         if ( !IsTracking() )
+         {
+            Error("GlobalChecks()", "Asked for global reconstruction with GenFit but Tracking not set! Check value of EnableTracking parameter");
+            return false;
+         }
+         else
+            Info("GlobalChecks()", "Make global reconstruction with GenFit");
+      }
 
       if (fromLocalRecoG && !fromLocalReco) {
          Error("GlobalChecks()", "FootGlobal::fromLocalReco set but raw data found in root file !");

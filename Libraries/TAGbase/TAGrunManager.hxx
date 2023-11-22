@@ -6,6 +6,7 @@
  */
 /*------------------------------------------+---------------------------------*/
 #include <map>
+#include <ctime>
 #include <TArrayI.h>
 #include <TString.h>
 #include <TMath.h>
@@ -36,6 +37,7 @@ public:
       vector<string> DetectorOut; ///< Dectector not present
       Int_t          TotalEvts;   ///< Total event niumber
       TString        Comments;    ///< Comments
+      TString        MagnetFlag;  ///< Magnet on (yes, no)
    };
    
    /*!
@@ -50,6 +52,7 @@ public:
       Int_t     Duration;    ///< Run duration
       Int_t     DaqRate;     ///< DAQ rate niumber in run
       Int_t     RunType;     ///< Run type
+      TString   Comments;    ///< Comments
    };
 
 private:
@@ -64,9 +67,9 @@ private:
    RunParameter_t  fCurRun;         ///< Current run parameter
    Bool_t          fIsFileRead;     ///< Flag when file is read
 
-   map<int, TypeParameter_t> fTypeParameter; ///< Run type parameter
-   map<int, RunParameter_t>  fRunParameter; ///< Run type parameter
-   map<int, int>             fEvtCounter; ///< Run type parameter
+   map<int, TypeParameter_t> fTypeParameter; ///< Run type parameter map
+   map<int, RunParameter_t>  fRunParameter;  ///< Run  parameter map
+   map<int, int>             fEvtCounter;    ///< event counts map
 
 public:
    TAGrunManager(const TString exp = "", Int_t runNumber = -1);
@@ -113,6 +116,15 @@ public:
 
    // Print out informations
    void                 Print(Option_t* opt = "") const;
+   
+   // Print runs for a given type
+   void                 GetRunsPerType(Int_t type) const;
+
+   // Print runs
+   void                 PrintRuns() const;
+   
+   // Compute rates if not persent
+   void                 ComputeRates();
    
    // output stream for TypeParameter_t
    friend ostream&      operator<< (ostream& out,  const TypeParameter_t& type);

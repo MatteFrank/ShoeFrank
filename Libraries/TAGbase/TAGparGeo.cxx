@@ -223,6 +223,12 @@ Bool_t TAGparGeo::FromFile(const TString& name)
          << Form("%f %f %f", fInsertParameter[p].Position[0], fInsertParameter[p].Position[1], fInsertParameter[p].Position[2]) << endl;
    }
 
+   if(fBeamParameter.Material.EqualTo("He")) {
+     cout<<"Total Energy::"<<fBeamParameter.Energy<<" GeV"<<endl;
+     fBeamParameter.Energy = fBeamParameter.Energy/fBeamParameter.AtomicMass;
+     cout<<"Energy per nucleon::"<<fBeamParameter.Energy<<" GeV/u"<<endl;
+   }
+   
    // Close file
    Close();
 
@@ -409,11 +415,17 @@ string TAGparGeo::PrintStandardBodies( )
 
    TVector3  centerTW = fpFootGeo->GetTWCenter();
    TVector3  centerMSD = fpFootGeo->GetMSDCenter();
-   zplane =  centerMSD.Z() + ( centerTW.Z()-centerMSD.Z() ) /2.;
+   TVector3  centerTG =  fpFootGeo->GetTGCenter();
+   //   if(TAGrecoManager::GetPar()->IncludeMSD()) {
+     //     zplane =  centerMSD.Z() + 15.;
+   zplane =  50. + centerTG.Z();
+     //   } else {
+     //     zplane =  centerTG.Z() + ( centerTW.Z()-centerTG.Z() ) /2.;
+     //   }
    //needed to subdivide air in two because when the calo is present too many bodies
    //are subtracted to air and fluka complains
    if(TAGrecoManager::GetPar()->IncludeCA())
-      ss << "XYP airpla     " << zplane << endl;
+     ss << "XYP airpla    " << zplane << "." << endl;
 
    return ss.str();
 }
@@ -566,7 +578,7 @@ string TAGparGeo::PrintTargAssignMaterial(TAGmaterials* Material)
       if(TAGrecoManager::GetPar()->IncludeDI())
          magnetic = true;
 
-      outstr << PrintCard("ASSIGNMA", flkmat, "TARGET", "", "", Form("%d",magnetic), "", "") << endl;
+      outstr << PrintCard("ASSIGNMA", flkmat, "TARGET", "", "","", "", "") << endl;
 
    }
 
@@ -587,7 +599,7 @@ string TAGparGeo::PrintStandardAssignMaterial()
    ss << PrintCard("ASSIGNMA","AIR","AIR1","","",TString::Format("%d",magnetic),"","") << endl;
 
    if(TAGrecoManager::GetPar()->IncludeCA())
-      ss << PrintCard("ASSIGNMA","AIR","AIR2","","",TString::Format("%d",magnetic),"","") << endl;
+      ss << PrintCard("ASSIGNMA","AIR","AIR2","","","","","") << endl;
 
    return ss.str();
 }
@@ -652,7 +664,9 @@ string TAGparGeo::PrintPhysics()
    str << PrintCard("PAIRBREM","-3.","","","BLCKHOLE","@LASTMAT","","") << endl;
 
    if(TAGrecoManager::GetPar()->IncludeDI()){
-      str << PrintCard("MGNFIELD","0.1","0.00001","","0.","0.","0.","") << endl;
+     //      str << PrintCard("MGNFIELD","0.1","0.00001","","0.","0.","0.","") << endl;
+     str << PrintCard("MGNFIELD","0.1","0.00001","0.1","0.","0.","0.","") << endl;
+     str << PrintCard("STEPSIZE","0.001","0.01","AIR1","AIR1","","","") << endl;
    }
 
    return str.str();

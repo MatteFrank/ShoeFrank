@@ -647,8 +647,10 @@ string TATWparGeo::PrintAssignMaterial(TAGmaterials *Material)
     if (fvRegion.size()==0 )
       cout << "Error: TW regions vector not correctly filled!"<<endl;
 
+    //    ss << PrintCard("ASSIGNMA", flkmat, fvRegion.at(0), fvRegion.back(),
+    //		    "1.", Form("%d",magnetic), "", "") << endl;
     ss << PrintCard("ASSIGNMA", flkmat, fvRegion.at(0), fvRegion.back(),
-		    "1.", Form("%d",magnetic), "", "") << endl;
+		    "1.", "", "", "") << endl;
     
   }
 

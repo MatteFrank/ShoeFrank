@@ -35,8 +35,6 @@ using namespace std;
 //! Class Imp
 ClassImp(TAVTbaseParGeo);
 
-const Int_t TAVTbaseParGeo::fgkDefSensorsN = 32;
-
 //______________________________________________________________________________
 //! Standard constructor
 TAVTbaseParGeo::TAVTbaseParGeo()
@@ -104,7 +102,7 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout << endl << "Sensors number "<< fSensorsN << endl;
    
-   fSensorArray = new size_t[fgkDefSensorsN];
+   fSensorArray = new size_t[fSensorsN];
    
    ReadStrings(fTypeName);
    if(FootDebugLevel(1))

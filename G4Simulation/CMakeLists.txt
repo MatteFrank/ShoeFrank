@@ -52,6 +52,11 @@ Set(TCCA  "TCCAbase")
 Set(TCTW  "TCTWbase")
 Set(TCFO  "TCFObase")
 
+Set(TCPL  "TCPLbase")
+Set(TCCE  "TCCEbase")
+Set(TCPW  "TCPWbase")
+Set(TCLINM "TCLINMbase")
+
 #----------------------------------------------------------------------------
 # Set includes
 #
@@ -65,6 +70,11 @@ set(TCMSD_INCLUDE_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/${TCMSD}")
 set(TCCA_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/${TCCA}")
 set(TCTW_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/${TCTW}")
 set(TCFO_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/${TCFO}")
+
+set(TCPL_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/${TCPL}")
+set(TCCE_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/${TCCE}")
+set(TCPW_INCLUDE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/${TCPW}")
+set(TCLINM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${TCLINM}")
 
 #----------------------------------------------------------------------------
 # Copy geomaps + config file and vis geant macros in working sim directory
@@ -88,13 +98,14 @@ file(COPY ${CMAKE_BINARY_DIR}/Reconstruction/rootlogon.C DESTINATION ${CMAKE_BIN
 #----------------------------------------------------------------------------
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${REC_LIBRARIES} ${TCG} ${TCST} ${TCBM} ${TCEM} ${TCVT} ${TCIT} ${TCCA} ${TCTW} ${TCMSD} ${TCFO})
+set( EXTRA_INTERNAL_LIBRARIES ${REC_LIBRARIES} ${ANC_LIBRARIES} ${TCG} ${TCST} ${TCBM} ${TCEM} ${TCVT} ${TCIT} ${TCCA} ${TCTW} ${TCMSD} ${TCFO})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES} ${Geant4_LIBRARIES})
 
 # add includes : root + current + dependencies
 #
 include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${REC_INCLUDE_DIR})
+include_directories(${ANC_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -112,6 +123,11 @@ include_directories(${TCCA_INCLUDE_DIR})
 include_directories(${TCTW_INCLUDE_DIR})
 include_directories(${TCMSD_INCLUDE_DIR})
 include_directories(${TCFO_INCLUDE_DIR})
+include_directories(${TCPL_INCLUDE_DIR})
+include_directories(${TCCE_INCLUDE_DIR})
+include_directories(${TCPW_INCLUDE_DIR})
+include_directories(${TCLINM_INCLUDE_DIR})
+
 
 
 #----------------------------------------------------------------------------
@@ -127,6 +143,10 @@ add_subdirectory(TCMSDbase)
 add_subdirectory(TCCAbase)
 add_subdirectory(TCTWbase)
 add_subdirectory(TCFObase)
+add_subdirectory(TCPLbase)
+add_subdirectory(TCCEbase)
+add_subdirectory(TCPWbase)
+add_subdirectory(TCLINMbase)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries

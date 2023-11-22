@@ -32,15 +32,14 @@ ClassImp(TAITntuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAITntuHit::TAITntuHit()
+TAITntuHit::TAITntuHit(Int_t sensorsN)
 : TAGdata(),
-  fListOfPixels(0x0),
-  fpGeoMap(0x0)
+  fSensorsN(sensorsN),
+  fListOfPixels(0x0)
 {
-   fpGeoMap = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object();
-   if (!fpGeoMap) {
-      Error("TAITntuHit()", "Para desciptor vtGeo does not exist");
-      exit(0);
+   if (sensorsN == 0) {
+      Warning("TAITntuHit()", "Size of hit array not set, set to %d\n", TAITparGeo::GetDefSensorsN());
+      fSensorsN = TAITparGeo::GetDefSensorsN();
    }
 
    SetupClones();
@@ -59,7 +58,7 @@ TAITntuHit::~TAITntuHit()
 //! \param[in] iSensor sensor index
 Int_t TAITntuHit::GetPixelsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor <fSensorsN) {
       TClonesArray*list = GetListOfPixels(iSensor);
       return list->GetEntriesFast();
    } else  {
@@ -74,7 +73,7 @@ Int_t TAITntuHit::GetPixelsN(Int_t iSensor) const
 //! \param[in] iSensor sensor index
 TClonesArray* TAITntuHit::GetListOfPixels(Int_t iSensor)
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor <fSensorsN) {
       TClonesArray* list = (TClonesArray*)fListOfPixels->At(iSensor);
       return list;
    } else {
@@ -89,7 +88,7 @@ TClonesArray* TAITntuHit::GetListOfPixels(Int_t iSensor)
 //! \param[in] iSensor sensor index
 TClonesArray* TAITntuHit::GetListOfPixels(Int_t iSensor) const
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor <fSensorsN) {
       TClonesArray* list = (TClonesArray*)fListOfPixels->At(iSensor);
       return list;
    } else {
@@ -135,9 +134,9 @@ const TAIThit* TAITntuHit::GetPixel(Int_t iSensor, Int_t iPixel) const
 void TAITntuHit::SetupClones()
 {
    if (fListOfPixels) return;
-   fListOfPixels = new TObjArray(fpGeoMap->GetSensorsN());
+   fListOfPixels = new TObjArray(fSensorsN);
    
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i <fSensorsN; ++i) {
       TClonesArray* arr = new TClonesArray("TAIThit", 500);
       arr->SetOwner(true);
       fListOfPixels->AddAt(arr, i);
@@ -152,7 +151,7 @@ void TAITntuHit::SetupClones()
 //! \param[in] opt option for clearing (not used)
 void TAITntuHit::Clear(Option_t*)
 {
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i <fSensorsN; ++i) {
       TClonesArray* list = GetListOfPixels(i);
       list->Clear("C");
    }
@@ -166,9 +165,10 @@ void TAITntuHit::Clear(Option_t*)
 //! \param[in] value pixel value
 //! \param[in] aLine line number
 //! \param[in] aColumn column number
-TAIThit* TAITntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn)
+//! \param[in] iFrame frame number
+TAIThit* TAITntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t aColumn, Int_t iFrame)
 {
-   if (iSensor >= 0 && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0 && iSensor <fSensorsN) {
       TClonesArray &pixelArray = *GetListOfPixels(iSensor);
       std::pair<int, int> idx(aLine, aColumn);
       
@@ -176,12 +176,14 @@ TAIThit* TAITntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
       if ( fMap[idx] == iSensor+1) {
          TAIThit* pixel = new TAIThit(iSensor, value, aLine, aColumn);
          TAIThit* curPixel = (TAIThit*)pixelArray.FindObject(pixel);
+         curPixel->AddFrameOn(iFrame);
          delete pixel;
          return curPixel;
          
       } else {
          fMap[idx] = iSensor+1;
          TAIThit* pixel = new(pixelArray[pixelArray.GetEntriesFast()]) TAIThit(iSensor, value, aLine, aColumn);
+         pixel->AddFrameOn(iFrame);
          return pixel;
       }
    } else {
@@ -197,7 +199,7 @@ TAIThit* TAITntuHit::NewPixel(Int_t iSensor, Double_t value, Int_t aLine, Int_t 
 //! \param[in] option option for printout
 void TAITntuHit::ToStream(ostream& os, Option_t* option) const
 {
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i <fSensorsN; ++i) {
       
       os << "TAITntuHit " << GetName()
       << Form("  nPixels=%3d", GetPixelsN(i))

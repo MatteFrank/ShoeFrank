@@ -69,6 +69,9 @@ protected:
    TH2F*          fpHisClusMap;      ///< cluster map per sensor
    
    TH1F*          fpHisHitTwMatch;   ///< Number of hit that match a TW point
+   TH1F*          fpHisChargeTwMatch; ///< Total charge per cluster matched with TW
+   TH2F*          fpHisClusMapTwMatch;      ///< cluster map per sensor matched with TW
+
    TH1F*          fpHisResTwMag;     ///< Minimal distance in position with TW
    TH2F*          fpHisTwDeCaE;      ///< TW-deltaE vs CA-E
 

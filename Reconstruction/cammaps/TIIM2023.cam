@@ -1,11 +1,11 @@
 // Campaign file
 CamName: "TIIM2023"
 RunNumber: 0-1; 10-11
-NumberDevices: 4
+NumberDevices: 5
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/TIIM2023/FOOT.geo": -1
+"./geomaps/TIIM2023/TIIMM.geo": -1
 
 DetectorName: "IT"
 NumberFiles: 3

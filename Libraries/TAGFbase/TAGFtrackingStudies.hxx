@@ -99,8 +99,6 @@ using namespace genfit;
   (static_cast<ostringstream*>(&(ostringstream().flush() << expr))->str())
 
 
-typedef vector<genfit::AbsMeasurement*> MeasurementVector;
-
 class TAGFtrackingStudies : public TAGaction {
 
 public:

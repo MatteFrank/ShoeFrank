@@ -31,6 +31,7 @@ const TString TAITparGeo::fgkBaseNameIt      = "IT";
 const Int_t   TAITparGeo::fgkDefSensPerLayer = 8;
 const Int_t   TAITparGeo::fgkDefSensPerBoard = 4;
 const Int_t   TAITparGeo::fgkDefLayersN      = 2;
+const Int_t   TAITparGeo::fgkDefSensorsN     = 32;
 
 //_____________________________________________________________________________
 //! Constructor
@@ -1167,4 +1168,20 @@ string TAITparGeo::PrintAssignMaterial(TAGmaterials* material)
   }
 
   return ss.str();
+}
+
+//_____________________________________________________________________________
+//! Print stepsize in Fluka for each it region
+//!
+string TAITparGeo::PrintITPhysics()
+{
+   stringstream str;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvPixRegion.at(0),fvPixRegion.at(fvPixRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvKaptonRegion.at(0),fvKaptonRegion.at(fvKaptonRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvAlRegion.at(0),fvAlRegion.at(fvAlRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvEpoxyRegion.at(0),fvEpoxyRegion.at(fvEpoxyRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvEpiRegion.at(0),fvEpiRegion.at(fvEpiRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0001",fvModRegion.at(0),fvModRegion.at(fvModRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.001",fvFoamRegion.at(0),fvFoamRegion.at(fvFoamRegion.size()-1),"","","") << endl;
+   return str.str();
 }

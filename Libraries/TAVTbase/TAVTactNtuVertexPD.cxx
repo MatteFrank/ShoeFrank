@@ -308,31 +308,6 @@ Bool_t TAVTactNtuVertexPD::SetVertex()
       ntuVertex->NewVertex(*vtx);
     }
 
-     if (ValidHistogram() && GetFlagMC()) {
-        pNtuEve = static_cast<TAMCntuPart *>(gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object());
-        //cout << "vertex made of "<< vtx->GetTracksN() << " tracks " << endl;
-//         for (int i =0; i<vtx->GetTracksN(); i++){
-//             TAVTtrack* track = vtx->GetTrack(i);
-//             //cout << "track "<< i << " mc id size:" <<track->GetMcTracksN() << endl;
-//             //cout << "track mc id: " << track->GetMcTrackIdx(0) << endl;
-//             TAMCpart *mcpart = pNtuEve->GetTrack(track->GetMcTrackIdx(0));
-//    //cout << "mother id: "<< mcpart->GetMotherID()<< endl; 
-// cout << "Z pos: "<<  mcpart->GetInitPos().Z() << endl;
-// cout << "X pos: "<<  mcpart->GetInitPos().X() << endl;
-// cout << "Y pos: "<<  mcpart->GetInitPos().Y() << endl;
-//         }
-        TAVTtrack* track = vtx->GetTrack(0); //supposing all the tracks belong to the same interaction!
-        TAMCpart *mcpart = pNtuEve->GetTrack(track->GetMcTrackIdx(0)); //supposing all the clusters of the track belong to the same particle!
-        TVector3 vtx_pos = fpFootGeo->FromVTLocalToGlobal(vtx->GetPosition());
-        // cout << "pos Z vtx - mc : " << vtx_pos.Z() <<" - "<< mcpart->GetInitPos().Z() << endl;
-        // cout << "pos X vtx - mc : " << vtx_pos.X()  <<" - "<< mcpart->GetInitPos().X() << endl;
-        // cout << "pos Y vtx - mc : " << vtx_pos.Y()  <<" - "<< mcpart->GetInitPos().Y() << endl;
-        fpHisResZ ->Fill (mcpart->GetInitPos().Z() - vtx_pos.Z() );
-        fpHisResX ->Fill (mcpart->GetInitPos().X() - vtx_pos.X() );
-        fpHisResY ->Fill (mcpart->GetInitPos().Y() - vtx_pos.Y() );
-
-     }
-
     delete vtx;
     return true;
 }

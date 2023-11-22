@@ -65,7 +65,7 @@ TAGbaseWD::~TAGbaseWD()
 //------------------------------------------+-----------------------------------
 double TAGbaseWD::ComputeBaseline(TWaveformContainer *w)
 {
-  return TMath::Mean(w->GetVectA().begin()+2, w->GetVectA().begin()+27);
+  return TMath::Median(25, &w->GetVectA()[2]);
 }
 
 //------------------------------------------+-----------------------------------
@@ -83,10 +83,10 @@ double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr)
   double mean=0.0008816;
 
   for (int j = 10; j<60; j++){ 
-    a1 = tmp_amp.at(j);
-    a2 = tmp_amp.at(j+1);
-    t1 = tmp_time.at(j);
-    t2 = tmp_time.at(j+1);
+    a1 = tmp_amp[j];
+    a2 = tmp_amp[j+1];
+    t1 = tmp_time[j];
+    t2 = tmp_time[j+1];
     prod=a1*a2;
     if(prod<0){
       m = (a2-a1)/(t2-t1);
@@ -96,7 +96,7 @@ double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr)
     }else{
       dq = 0.5*(a1+a2)*(t2-t1);
     }
-    if(tmp_amp.at(j)<(mean+thr)){
+    if(tmp_amp[j]<(mean+thr)){
       pedestal+=dq;
     }
   }
@@ -128,10 +128,10 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr)
   double mean= 0.0008816;
 
   for (int j = 0; j<tmp_amp.size()-1; j++){
-    a1 = tmp_amp.at(j);
-    a2 = tmp_amp.at(j+1);
-    t1 = tmp_time.at(j);
-    t2 = tmp_time.at(j+1);
+    a1 = tmp_amp[j];
+    a2 = tmp_amp[j+1];
+    t1 = tmp_time[j];
+    t2 = tmp_time[j+1];
     prod=a1*a2;
     if(a1>fBaseline+thr)continue;
     if(prod<0){
@@ -143,7 +143,7 @@ double TAGbaseWD::ComputeCharge(TWaveformContainer *w, double thr)
       dq = 0.5*(a1+a2)*(t2-t1);
     }
 
-    if(tmp_amp.at(j)<(mean+thr)){
+    if(tmp_amp[j]<(mean+thr)){
       charge+=dq;
     }
 
@@ -169,7 +169,7 @@ double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, do
   if(peak_bin<0 || peak_bin>time.size()-1){
     return -10000;
   }
-  double timepeak = time.at(peak_bin);
+  double timepeak = time[peak_bin];
   double tmin= timepeak+tleft;
   double tmax = timepeak+tright;
 
@@ -192,9 +192,9 @@ double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, do
   int minimum_bin= TMath::LocMin(amp_sum_cfd.size()-2, &amp_sum_cfd[2]);
   int bin_zero_crossing=minimum_bin;
   bool foundZeroCrossing=false;
-  double tmp_a=amp_sum_cfd.at(minimum_bin);
+  double tmp_a=amp_sum_cfd[minimum_bin];
   while(!foundZeroCrossing){
-    tmp_a=amp_sum_cfd.at(bin_zero_crossing);
+    tmp_a=amp_sum_cfd[bin_zero_crossing];
     if(tmp_a>0)foundZeroCrossing=true;
     if(bin_zero_crossing == amp_sum_cfd.size()-1 || bin_zero_crossing==1){
       break;
@@ -208,10 +208,10 @@ double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, do
   double m,q;
   double t1,t2,a1,a2;
   if(foundZeroCrossing){
-    t1 = time_cfd.at(bin_zero_crossing-1);
-    t2 = time_cfd.at(bin_zero_crossing);
-    a1 = amp_sum_cfd.at(bin_zero_crossing-1);
-    a2 = amp_sum_cfd.at(bin_zero_crossing);
+    t1 = time_cfd[bin_zero_crossing-1];
+    t2 = time_cfd[bin_zero_crossing];
+    a1 = amp_sum_cfd[bin_zero_crossing-1];
+    a2 = amp_sum_cfd[bin_zero_crossing];
     m = (a2-a1)/(t2-t1);
     q = a2 - m*t2;
     tarr = -q/m;
@@ -227,7 +227,6 @@ double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac)
 {
   // evaluate the absolute threshold
   Double_t AbsoluteThreshold=-frac*fAmplitude+fBaseline;
-
   
   int i_ampmin = TMath::LocMin(w->GetVectA().size(),&(w->GetVectA())[0]);
   Int_t i_thr = i_ampmin;
@@ -235,10 +234,10 @@ double TAGbaseWD::ComputeTimeSimpleCFD(TWaveformContainer *w, double frac)
   double t_arr=-1000;
   bool foundthreshold = false;
   while(!foundthreshold && i_thr<w->GetVectA().size()-1 && i_thr>1){
-    double a1 = w->GetVectA().at(i_thr);
-    double a2 = w->GetVectA().at(i_thr+1);
-    double t1 = w->GetVectT().at(i_thr);
-    double t2 = w->GetVectT().at(i_thr+1);
+    double a1 = w->GetVectA()[i_thr];
+    double a2 = w->GetVectA()[i_thr+1];
+    double t1 = w->GetVectT()[i_thr];
+    double t2 = w->GetVectT()[i_thr+1];
     double m = (a2-a1)/(t2-t1);
     double q = a1 - m*t1;
     t_arr = (AbsoluteThreshold-q)/m;
@@ -261,8 +260,8 @@ double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac)
 
   //found the threshold bin
   while(!foundthreshold && i_thr>=0 && i_thr< w->GetVectA().size()){
-    double a1 = w->GetVectA().at(i_thr);
-    double a2 = w->GetVectA().at(i_thr+1);
+    double a1 = w->GetVectA()[i_thr];
+    double a2 = w->GetVectA()[i_thr+1];
     if(AbsoluteThreshold>a2 && AbsoluteThreshold<=a1){
       foundthreshold =true;
     }else{
@@ -275,9 +274,9 @@ double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac)
   int size = (int)w->GetVectA().size();
   for(int i=i_thr-1;i<=i_thr+2;i++){
     if(i>=0 && i<size){
-      amplitudes.push_back(w->GetVectA().at(i));
-      times.push_back(w->GetVectT().at(i));
-      //cout << "t" <<i << "   ::" << w->GetVectT().at(i) << endl;
+      amplitudes.push_back(w->GetVectA()[i]);
+      times.push_back(w->GetVectT()[i]);
+      //cout << "t" <<i << "   ::" << w->GetVectT()[i] << endl;
     }
   }
 
@@ -286,10 +285,10 @@ double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac)
   double xy=0,x=0,y=0, xsq=0;
   double N=(double)times.size();
   for(int i=0;i<times.size();i++){
-    x+=times.at(i)/N;
-    y+=amplitudes.at(i)/N;
-    xy+=times.at(i)*amplitudes.at(i)/N;
-    xsq+=times.at(i)*times.at(i)/N;
+    x+=times[i]/N;
+    y+=amplitudes[i]/N;
+    xy+=times[i]*amplitudes[i]/N;
+    xsq+=times[i]*times[i]/N;
   }
 
   m = (xy-x*y)/(xsq-x*x);

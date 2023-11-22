@@ -110,6 +110,7 @@ Set(TATOE "TATOEbase")
 Set(TAGF  "TAGFbase")
 Set(TAFO  "TAGfoot")
 
+Set(TAMP "TAMPbase")
 Set(TAPL "TAPLbase")
 Set(TACE "TACEbase")
 Set(TAPW "TAPWbase")
@@ -145,6 +146,7 @@ set(TACE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TACE}")
 set(TAPW_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TAPW}")
 set(TANE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TANE}")
 set(TAPXI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TAPXI}")
+set(TAMP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TAMP}")
 
 #----------------------------------------------------------------------------
 #  Print Geant4 directory and find REC part of FOOT

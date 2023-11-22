@@ -83,11 +83,13 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
       Float_t tgtSizeType = GetCurrentType().TargetSize;
       TString comType     = GetCurrentType().Comments;
       
-      if (energyBeam != energyType)
+      if (energyBeam != energyType && energyType != 0)
          Error("Checks()", "Beam energy in TAGdetector file (%d) different as given by run manager (%d)", energyBeam, energyType);
       
-      if (beam != beamType)
-         Error("Checks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
+      beamType.ToUpper();
+      if (beam != beamType && beamType != "NONE")
+        Error("Checks()", "Beam name in TAGdetector file (%s) different as given by run manager (%s)", beam.Data(), beamType.Data());
+      
       
       if (strncmp(target.Data(), targetType.Data(), min(targetType.Length(), target.Length()))  && targetType != "None")
          Error("Checks()", "Target name in TAGdetector file (%s) different as given by run manager (%s)", target.Data(), targetType.Data());
@@ -192,7 +194,7 @@ Bool_t TAGrunManager::FromFile(TString ifile)
 void TAGrunManager::DecodeTypeLine(TString& line)
 {
    TypeParameter_t typeParameter;
-   
+   typeParameter.MagnetFlag = "no";
    vector<TString> list = TAGparTools::Tokenize(line);
    
    Int_t idx;
@@ -270,6 +272,12 @@ void TAGrunManager::DecodeTypeLine(TString& line)
                printf("Comments: %s\n", typeParameter.Comments.Data());
             break;
             
+         case 9:
+            typeParameter.MagnetFlag = list[i];
+            if(FootDebugLevel(1))
+               printf("Magnet ON: %s\n", typeParameter.MagnetFlag.Data());
+            break;
+            
          default:
             break;
       }
@@ -285,6 +293,8 @@ void TAGrunManager::DecodeTypeLine(TString& line)
 void TAGrunManager::DecodeRunLine(TString& line)
 {
    RunParameter_t runParameter;
+   
+   runParameter.Comments = "None";
    
    vector<TString> list = TAGparTools::Tokenize(line);
    
@@ -327,6 +337,12 @@ void TAGrunManager::DecodeRunLine(TString& line)
             
             if(FootDebugLevel(1))
                printf("daqEvts: %d duration: %d daqRate: %d runType: %d\n", daqEvts, duration, daqRate, runType);
+            
+         case 4:
+            runParameter.Comments = list[i];
+            if(FootDebugLevel(1))
+               printf("Comments: %s\n", runParameter.Comments.Data());
+            break;
             
          default:
             break;
@@ -378,6 +394,7 @@ ostream& operator<< (std::ostream& out, const TAGrunManager::TypeParameter_t& ty
          out << " MeV/u" << endl;
       
       out  << "  Type Target:          " << type.Target.Data() << endl;
+      out  << "  Magnet ON:            " << type.MagnetFlag.Data() << endl;
       out  << "  Target Size:          "  <<  Form("%4.2f", type.TargetSize) << " cm" << endl;
       out  << "  Total Events:         " << TAGrunManager::SmartPrint(type.TotalEvts) << endl;
       out  << "  DetectorOut:         ";
@@ -406,9 +423,11 @@ ostream& operator<< (ostream& out, const TAGrunManager::RunParameter_t& run)
    minutes        = minutes  % 60;
    
    out << Form("\nCurrent run number:     %d\n", run.RunId);
+   out << Form("  Type:                 %d\n", run.RunType);
    out << Form("  Daq events:           %s\n",TAGrunManager::SmartPrint(run.DaqEvts).Data());
    out << Form("  Duration:             %d s [%02dh:%02dm:%02ds]\n", duration, hours, minutes, seconds);
    out << Form("  Daq Rate:             %d Hz\n", run.DaqRate);
+   out << Form("  Comments:             %s\n", run.Comments.Data());
    
    return  out;
 }
@@ -464,6 +483,41 @@ void TAGrunManager::Print(Option_t* opt) const
 }
 
 //------------------------------------------+-----------------------------------
+//! Print all runs
+//!
+//! \param[in] type type number
+void TAGrunManager::PrintRuns() const
+{
+   for(auto iterator = fRunParameter.begin(); iterator != fRunParameter.end(); ++iterator ) {
+      RunParameter_t run = iterator->second;
+      printf("%4d\t \"%s\"\t \"%s\"\t %6d\t %5d\t %4d\t\t %2d\t\t \"%s\"\n", run.RunId, run.StartTime.Data(), run.StopTime.Data(),
+             run.DaqEvts, run.Duration, run.DaqRate, run.RunType, run.Comments.Data());
+   }
+}
+
+//------------------------------------------+-----------------------------------
+//! Compute rates and durarion when not present
+//!
+void TAGrunManager::ComputeRates()
+{
+   struct tm tm1;
+   struct tm tm2;
+
+   for(auto iterator = fRunParameter.begin(); iterator != fRunParameter.end(); ++iterator ) {
+      RunParameter_t& run = iterator->second;
+      const char *time_start = run.StartTime.Data();
+      const char *time_stop = run.StopTime.Data();
+      strptime(time_start, "%Y-%m-%d %H:%M:%S", &tm1);
+      strptime(time_stop,  "%Y-%m-%d %H:%M:%S", &tm2);
+      time_t t1 = mktime(&tm1);
+      time_t t2 = mktime(&tm2);
+      double diff = difftime(t2, t1);
+      run.Duration = (int)diff;
+      run.DaqRate = int(run.DaqEvts/diff);
+   }
+}
+
+//------------------------------------------+-----------------------------------
 //! Get current run parameter
 //!
 //! \param[in] idx index in the run array
@@ -491,4 +545,16 @@ const TAGrunManager::RunParameter_t& TAGrunManager::GetRunPar(Int_t idx) const
    }
    
    return fRunParameter.at(idx);
+}
+
+//------------------------------------------+-----------------------------------
+//! Print runs for a given type
+//!
+//! \param[in] type type number
+void TAGrunManager::GetRunsPerType(Int_t type) const
+{
+   for(auto iterator = fRunParameter.begin(); iterator != fRunParameter.end(); ++iterator ) {
+      if (iterator->second.RunType == type)
+         cout << iterator->second;
+   }
 }

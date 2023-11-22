@@ -123,8 +123,7 @@ Bool_t TAVTactNtuTrackF::FindTiltedTracks()
                  TAGcluster* clus = track->GetCluster(i);
                  fMapClus[clus] = 0;
               }
-                if (curPlane == pGeoMap->GetSensorsN()-1)  //GU
-                   fMapClus[lastCluster] = 1;    //GU
+               
 				  delete track;
 				  continue;
 			   }

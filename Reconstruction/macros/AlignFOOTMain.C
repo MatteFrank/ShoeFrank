@@ -81,16 +81,20 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   vtparGeo = (TAVTparGeo*)parGeoVtx->Object();
   parFileName = campManager->GetCurGeoFile(TAVTparGeo::GetBaseName(), runNumber);
   vtparGeo->FromFile(parFileName);
+   Int_t sensorsNvt = vtparGeo->GetSensorsN();
 
   TAGparaDsc* parGeoIt = new TAGparaDsc(new TAITparGeo());
   itparGeo = (TAITparGeo*)parGeoIt->Object();
   parFileName = campManager->GetCurGeoFile(TAITparGeo::GetBaseName(), runNumber);
   itparGeo->FromFile(parFileName);
+  Int_t sensorsNit = itparGeo->GetSensorsN();
 
   TAGparaDsc* parGeoMsd = new TAGparaDsc(new TAMSDparGeo());
   msdparGeo = (TAMSDparGeo*)parGeoMsd->Object();
   parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
   msdparGeo->FromFile(parFileName);
+  Int_t sensorsNms = msdparGeo->GetSensorsN();
+  Int_t stationsNms = msdparGeo->GetStationsN();
 
   TAGparaDsc* parGeoTw = new TAGparaDsc(new TATWparGeo());
   twparGeo = (TATWparGeo*)parGeoTw->Object();
@@ -119,8 +123,9 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuVertex->ClassName()), &vtxNtuVertex);
     vtxNtuTrack = new TAVTntuTrack();
     tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuTrack->ClassName()), &vtxNtuTrack);
-    vtxNtuCluster = new TAVTntuCluster();
-    vtxNtuCluster->SetParGeo(vtparGeo);
+    Int_t sensorsN = vtparGeo->GetSensorsN();
+    vtxNtuCluster = new TAVTntuCluster(sensorsN);
+     
     tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuCluster->ClassName()), &vtxNtuCluster);
     if(IncludeMC){
       vtMc = new TAMCntuHit();
@@ -129,8 +134,10 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   }
 
   if(IncludeIT){
-    itClus = new TAITntuCluster();
+    itClus = new TAITntuCluster(sensorsNit);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(itClus->ClassName()), &itClus);
+    itntutrack= new TAITntuTrack();
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(itntutrack->ClassName()), &itntutrack);
     if(IncludeMC){
       itMc = new TAMCntuHit();
       tree->SetBranchAddress(FootBranchMcName(kITR), &itMc);
@@ -138,23 +145,18 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   }
 
   if(IncludeMSD){
-    msdntuclus= new TAMSDntuCluster();
-    tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntuclus->ClassName()), &msdntuclus);
-    if(IncludeMC){
-      msdMc = new TAMCntuHit();
-      tree->SetBranchAddress(FootBranchMcName(kMSD), &msdMc);
-    }
-  }
-
-  if(IncludeMSD){
-    msdntuclus= new TAMSDntuCluster();
+    msdntuclus= new TAMSDntuCluster(sensorsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntuclus->ClassName()), &msdntuclus);
     msdntutrack= new TAMSDntuTrack();
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdntutrack->ClassName()), &msdntutrack);
-    msdNtuPoint= new TAMSDntuPoint();
+    msdNtuPoint= new TAMSDntuPoint(stationsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuPoint->ClassName()), &msdNtuPoint);
-    msdNtuHit= new TAMSDntuHit();
+    msdNtuHit= new TAMSDntuHit(sensorsNms);
     tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuHit->ClassName()), &msdNtuHit);
+    if(IncludeMC){
+      msdMc = new TAMCntuHit();
+      tree->SetBranchAddress(FootBranchMcName(kMSD), &msdMc);
+    }    
   }
 
   if(IncludeTW){
@@ -205,6 +207,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
   vector<beamtrk> bmtrk;
   vector<beamtrk> vttrk;
   vector<beamtrk> msdtrk;
+  vector<beamtrk> ittrk;
 
   TFile *file_out = new TFile(nameOut,"RECREATE");
   Booking(file_out);
@@ -225,14 +228,20 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
       BeamMonitor();
     if(IncludeVT)
       Vertex();
+    if(IncludeIT)
+      InnerTracker();      
     if(IncludeMSD)
       MSD();
     if(IncludeTW)
       TofWall();
     if(IncludeDAQ)
       DataAcquisition();
-    if(IncludeBM && IncludeVT)
+    if(IncludeBM && IncludeVT){
       VTXSYNC(); //to check the VTX and the BM synchronization
+      BMVTstudies();
+    }
+    if(IncludeGLB)
+      GLBTRKstudies();
 
     if(IncludeTW && (IncludeVT || IncludeMSD))
       FillTWalign(); //Align the TW with the VT or MSD tracks
@@ -240,7 +249,7 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     if((IncludeBM && IncludeVT) || (IncludeBM && IncludeMSD) || (IncludeVT && IncludeMSD))
       FillCorr();
 
-    FillTrackVect(bmtrk, vttrk, msdtrk); //fill the tracks in GLOBAL FRAME adopted for alignment
+    FillTrackVect(bmtrk, vttrk, msdtrk, ittrk); //fill the tracks in GLOBAL FRAME adopted for alignment
   }//Loop on events
 
   TString foldername;
@@ -252,6 +261,8 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     AlignWrtTarget(vttrk,foldername);
     foldername="MSD";
     AlignWrtTarget(msdtrk,foldername);
+    foldername="IT";
+    AlignWrtTarget(ittrk,foldername);
   }
 
   if(alignVs){
@@ -261,6 +272,10 @@ void AlignFOOTMain(TString nameFile = "", Int_t nentries = 0, Bool_t alignStraig
     //here the VT is fixed, the MSD will be shifted and tilted
     foldername="MSDVT";
     AlignDetaVsDetb(msdtrk, vttrk, foldername, geoTrafo->GetDeviceCenter("MSD"), geoTrafo->GetDeviceAngle("MSD"));
+    //here the IT is fixed, the MSD will be shifted and tilted
+    foldername="ITVT";
+    AlignDetaVsDetb(ittrk, vttrk, foldername, geoTrafo->GetDeviceCenter("IT"), geoTrafo->GetDeviceAngle("IT"));
+    
   }
 
 

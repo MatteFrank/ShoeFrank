@@ -50,6 +50,8 @@ TAVTactBaseNtuCluster::TAVTactBaseNtuCluster(const char* name,
       fTitleDev = "Vertex";
    else if (fPrefix.Contains("it"))
       fTitleDev = "Inner Tracker";
+   else if (fPrefix.Contains("mp"))
+      fTitleDev = "Monopix2";
    else
       printf("Wrong prefix for histograms !");
 
@@ -79,6 +81,12 @@ void TAVTactBaseNtuCluster::CreateHistogram()
 	  fpHisPixel[i] = new TH1F(Form("%sClusPixel%d",fPrefix.Data(), i+1), Form("%s - # pixels per clusters for sensor %d", fTitleDev.Data(), i+1), 100, 0., 100.);
 	  AddHistogram(fpHisPixel[i]);
    }
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisCharge[i] = new TH1F(Form("%sClusCharge%d",fPrefix.Data(), i+1), Form("%s - charge per clusters for sensor %d", fTitleDev.Data(), i+1), 1000, 0., 1000.);
+      AddHistogram(fpHisCharge[i]);
+   }
+   
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 		 fpHisClusMap[i] = new TH2F(Form("%sClusMap%d", fPrefix.Data(), i+1), Form("%s - clusters map for sensor %d", fTitleDev.Data(), i+1),
@@ -180,7 +188,6 @@ Bool_t TAVTactBaseNtuCluster::ApplyCuts(TAVTbaseCluster* cluster)
 void TAVTactBaseNtuCluster::ComputePosition()
 {
    ComputeCoGPosition();
-   //EstimateMedian();  //median as estimator
 }
 
 //______________________________________________________________________________
@@ -208,11 +215,10 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
    
    for (Int_t i = 0; i < fCurListOfPixels->GetEntriesFast(); ++i) {
       TAVThit* pixel = (TAVThit*)fCurListOfPixels->At(i);
-      //cout << "pixel: " << i << pixel->GetPosition()(0) << endl;
       tCorTemp.SetXYZ(pixel->GetPosition()(0)*pixel->GetPulseHeight(), pixel->GetPosition()(1)*pixel->GetPulseHeight(), pixel->GetPosition()(2));
       tCorrection  += tCorTemp;
       fClusterPulseSum  += pixel->GetPulseHeight();
-     }
+	  }
    
    pos = tCorrection*(1./fClusterPulseSum);
    
@@ -241,19 +247,11 @@ void TAVTactBaseNtuCluster::EstimateMedian()
    if (!fCurListOfPixels)
      return;
 
-   //TVector3 tCorrection, tCorrection2, tCorTemp;
-   //TVector3 pos, posErr;
    vector<double> x_distrib,y_distrib;
    vector<double> x_distrib_dev, y_distrib_dev;
 
    vector<int> x_id, y_id;
 
-   //tCorrection.SetXYZ(0., 0., 0.);
-   //tCorrection2.SetXYZ(0., 0., 0.);
-
-   //fClusterPulseSum = 0.;
-
-   //fpClusDistribX = new TH1F("xdistrib","x pixels distribution",100,-4,4)
 
    for (Int_t i = 0; i < fCurListOfPixels->GetEntriesFast(); ++i)
    {
@@ -266,10 +264,7 @@ void TAVTactBaseNtuCluster::EstimateMedian()
    sort(x_distrib.begin(), x_distrib.end());
    sort(y_distrib.begin(), y_distrib.end());
    sort(x_id.begin(), x_id.end());
-       // cout << "median: " << x_distrib[x_distrib.size()/2] << endl;
-
-       // std::nth_element(x_distrib.begin(), x_distrib.begin() + x_distrib.size() / 2, x_distrib.end());   //sort the positions
-       // std::nth_element(y_distrib.begin(), y_distrib.begin() + y_distrib.size() / 2, y_distrib.end());   // sort the positions
+   
    auto x_median{0.0}, y_median{0.0};
    
    if (x_distrib.size() % 2 == 0) //if even
@@ -283,27 +278,12 @@ void TAVTactBaseNtuCluster::EstimateMedian()
    
    double rms_x{0}, rms_y{0};
 
-   // cout << "size cluster: " << x_id.size() << endl;
-   // cout << "min: " << x_id[0] << " max: " << x_id[x_id.size() - 1] << endl;
-   // cout << "n of pixel in range: " << (x_id[x_id.size() - 1] - x_id[0])+1 << endl;
-   // TH1F *h_x = new TH1F("h_x", "distribution of x position of hits in cluster", (x_id[x_id.size() - 1] - x_id[0])+3, x_id[0] - 1, x_id[x_id.size() - 1] + 2);
-
    for (auto elem_x : x_distrib)
    {
      x_distrib_dev.push_back(abs(elem_x - x_median)); // residuals (deviations) from the data's median
      rms_x += ((elem_x - x_median) * (elem_x - x_median)); //mean square
-     //h_x->Fill(elem_x);
-     //cout << elem_x << endl;
-   }
 
-   // for (auto elem_x_id : x_id){
-   //   h_x->Fill(elem_x_id);
-   //   cout << elem_x_id << endl;
-   // }
-   
-   // TCanvas *c = new TCanvas();
-   // h_x->Draw();
-   // c->Print("hist.png");
+   }
 
    for (auto elem_y : y_distrib)
    {
@@ -356,8 +336,9 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
       if (ValidHistogram()) {
          if (cluster->GetPixelsN() > 0) {
             fpHisPixelTot->Fill(cluster->GetPixelsN());
+            fpHisCharge[iSensor]->Fill(cluster->GetCharge());
             fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
-            fpHisClusMap[iSensor]->Fill(cluster->GetPositionG()[0], cluster->GetPositionG()[1]);
+            fpHisClusMap[iSensor]->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
          }
       }
       cluster->SetValid(true);

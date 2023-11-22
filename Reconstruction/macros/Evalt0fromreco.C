@@ -129,8 +129,8 @@ void Evalt0fromreco(TString in_filename="reco.root",Bool_t t0eval=false, Bool_t 
       TF1 *strelfunc=new TF1("BMNewSTrel","pol4",0.,oldstrel->GetXaxis()->GetXmax());
       strelfunc->FixParameter(0,0);
       fpNewSTrel->Fit(strelfunc,"QR+");
-      cout<<"Resolution_function:  "<<strelfunc->GetFormula()->GetExpFormula().Data()<<endl;
-      cout<<"Resolution_number_of_parameters:  "<<strelfunc->GetNpar()<<endl;
+      cout<<"Strel_function:  "<<strelfunc->GetFormula()->GetExpFormula().Data()<<endl;
+      cout<<"STrel_number_of_parameters:  "<<strelfunc->GetNpar()<<endl;
       for(Int_t i=0;i<strelfunc->GetNpar();i++)
         cout<<strelfunc->GetParameter(i)<<"   ";
       cout<<endl;

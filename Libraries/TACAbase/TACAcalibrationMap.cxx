@@ -31,9 +31,8 @@ TACAcalibrationMap::TACAcalibrationMap()
 //! \param[in] FileName input file
 void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
 {
-if (gSystem->AccessPathName(FileName.c_str()))
-   {
-      Error("LoadTemperatureCalibrationMap()","File %s doesn't exist",FileName.c_str());
+   if (gSystem->AccessPathName(FileName.c_str())) {
+      Error("LoadTemperatureCalibrationMap()", "File %s doesn't exist", FileName.c_str());
    }
    
    ///////// read the file with Charge calibration
@@ -44,7 +43,7 @@ if (gSystem->AccessPathName(FileName.c_str()))
    // parameters for energy calibration p0 and p1
    Int_t nCrystals = 0;
    
-   if(fin_Q.is_open()){
+   if (fin_Q.is_open()) {
       
       int  cnt(0);
       char line[200];
@@ -61,7 +60,7 @@ if (gSystem->AccessPathName(FileName.c_str()))
       // loop over all the slat crosses ( nBarCross*nLayers ) for two TW layers
       while (fin_Q.getline(line, 108, '\n')) {
          
-         if(strchr(line,'/') || strchr(line,'#'))  {
+         if (strchr(line,'/') || strchr(line,'#')) {
             if(FootDebugLevel(1))
                Info("LoadTempCalibrationMap()","Skip comment line:: %s\n",line);
             continue;
@@ -94,7 +93,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
    
    Int_t nCrystals = 0;
    
-   if(!fin_Q.is_open()) {
+   if (!fin_Q.is_open()) {
       Info("LoadEnergyCalibrationMap()","File Calibration Energy %s not open!!",FileName.data());
       return;
    }
@@ -111,7 +110,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
       if(line[0] == '#' && line[1] == '#')
          break;
 
-      if(strchr(line,'/') || strchr(line,'#'))  {
+      if(strchr(line,'/') || strchr(line,'#')) {
          if(FootDebugLevel(1))
             Info("LoadEnergyCalibrationMap()","Skip comment line:: %s\n",line);
          continue;
@@ -156,19 +155,19 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
 //! \param[in] FileName input file
 void TACAcalibrationMap::ExportToFile(std::string FileName)
 {
-  TAGxmlParser x;
-  XMLNodePointer_t main=x.CreateMainNode("CALIBRATION");
-  x.AddElementWithContent(TString::Format("DATE").Data(),main," ");
-  x.AddElementWithContent(TString::Format("DESCRIPTION").Data(),main," ");
-  for (auto it=fCalibrationMap.begin();it!=fCalibrationMap.end();++it)
-  {
-    Int_t cryId=it->first;
-    XMLNodePointer_t b=x.AddElement(TString::Format("CRY").Data(),main);
-    x.AddElementWithContent("CRY_ID",b, TString::Format("%d",cryId).Data());
-    x.AddElementWithContent("T",b,TString::Format("%f",fCalibrationMap[cryId][0]).Data());
-    x.AddElementWithContent("EQ",b,TString::Format("%f",fCalibrationMap[cryId][0]).Data());
-  }
-  x.ExportToFile(FileName,main);
+   TAGxmlParser x;
+   XMLNodePointer_t main=x.CreateMainNode("CALIBRATION");
+   x.AddElementWithContent(TString::Format("DATE").Data(),main," ");
+   x.AddElementWithContent(TString::Format("DESCRIPTION").Data(),main," ");
+   for (auto it=fCalibrationMap.begin();it!=fCalibrationMap.end();++it)
+   {
+      Int_t cryId=it->first;
+      XMLNodePointer_t b=x.AddElement(TString::Format("CRY").Data(),main);
+      x.AddElementWithContent("CRY_ID",b, TString::Format("%d",cryId).Data());
+      x.AddElementWithContent("T",b,TString::Format("%f",fCalibrationMap[cryId][0]).Data());
+      x.AddElementWithContent("EQ",b,TString::Format("%f",fCalibrationMap[cryId][0]).Data());
+   }
+   x.ExportToFile(FileName,main);
 }
 
 //_______________________________________________
@@ -177,11 +176,11 @@ void TACAcalibrationMap::ExportToFile(std::string FileName)
 //! \param[in] cryId crystal id
 bool TACAcalibrationMap::Exists(Int_t cryId)
 {
-  if (fCalibrationMap.count(cryId)==0)
-  {
-    return false;
-  }
-  return true;
+   if (fCalibrationMap.count(cryId)==0)
+   {
+      return false;
+   }
+   return true;
 }
 
 //_______________________________________________

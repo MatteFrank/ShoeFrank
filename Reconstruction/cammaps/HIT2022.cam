@@ -1,11 +1,11 @@
 // Campaign file
 CamName: "HIT2022"
-RunNumber: 100;101;200;201;210; 4536-4938;
+RunNumber: 4536-4938;
 NumberDevices: 8
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/HIT2022/FOOT.geo": 100;101;200;201;210;
+"./geomaps/HIT2022/FOOT.geo": -1
 
 DetectorName: "DI"
 NumberFiles: 1
@@ -28,7 +28,7 @@ NumberFiles: 4
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/HIT2022/TAGdetector.geo": 100;101;200;201;210
+"./geomaps/HIT2022/TAGdetector.geo": 4742;4766;4801;4828;
 
 DetectorName: "MSD"
 NumberFiles: 5
@@ -46,7 +46,7 @@ NumberFiles: 7
 "./config/HIT2022/TATWChannelMapXML.map": -1
 "./config/HIT2022/TATWdeltaTimeMap.map": -1
 "./calib/HIT2022/TATW_Energy_Calibration.cal": -1
-"./calib/HIT2022/TATW_Tof_Calibration.cal": -1;
+"./calib/HIT2022/TATW_Tof_Calibration.cal": -1
 
 DetectorName: "CA"
 NumberFiles: 5

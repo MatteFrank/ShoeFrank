@@ -70,14 +70,16 @@ Bool_t TAVTactBaseNtuHit::DecodeEvent()
    for (Int_t i = 0; i < pParMap->GetSensorsN(); ++i) {
       
       Int_t planeId = pParMap->GetPlaneId(i);
+      if (planeId == -1) continue;
 
       if (!GetSensorHeader(i)) return false;
       
       ResetFrames();
-      
+      Int_t framenumber = 0;
       // loop over frame (3 max)
       while (GetFrame(i, data)) {
-         DecodeFrame(planeId, data);
+         DecodeFrame(planeId, data, framenumber);
+         framenumber++;
       }
       
       fPrevEventNumber[planeId]   = fEventNumber;

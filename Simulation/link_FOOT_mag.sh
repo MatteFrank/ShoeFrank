@@ -22,8 +22,9 @@ fi
 FLUVER=`grep version $FLUPRO/Version.tag`
 FLUVER20=`echo $FLUVER | grep 2020`
 FLUVER21=`echo $FLUPRO | grep 2021`
-if [ -n "$FLUVER21" ]; then
-    echo "FLUKA version is a 2021 one"
+FLUVER23=`echo $FLUPRO | grep 2023`
+if [ -n "$FLUVER21" ] | [ -n "$FLUKA23"]; then
+    echo "FLUKA version is a 2021 or 2023 one"
     echo $FLUVER
     cd ROUTINES
     $FLUPRO/flutil/fff  PRO/usrini.f

@@ -288,6 +288,8 @@ public:
    static           Float_t GetMassFactor()          { return fgkMassFactor;    }
    //! Get conversion factor Amu to GeV
    static           Float_t AmuToGev()               { return fgkAmuToGev;  }
+   //! Get conversion factor Amu to MeV
+   static           Float_t AmuToMev()               { return fgkAmuToGev*fgkGevToMev;  }
 
    //! Get Electron mass in MeV (510.9 MeV/c^2)
    static           Float_t GetElectronMassMeV()     { return fgkElectronMass;  }

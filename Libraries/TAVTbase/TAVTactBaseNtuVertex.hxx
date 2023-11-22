@@ -16,10 +16,6 @@
 #include "TAVTntuTrack.hxx"
 
 
-#include "TAMCntuPart.hxx"
-#include "TAGnameManager.hxx"
-#include "TAGparGeo.hxx"
-
 class TH2F;
 class TH1F;
 class TABMtrack;
@@ -46,10 +42,6 @@ public:
     virtual  Bool_t  ComputeVertex() = 0;
     //! Set BM track container
     void     SetBMntuTrack(TAGdataDsc* bmTrack) { fpBMntuTrack = bmTrack; }
-
-    void SetFlagMC(Bool_t is_MC) { flagMC = is_MC; }
-    Bool_t GetFlagMC() { return flagMC; }
-
       
 protected:
     TAGgeoTrafo*    fpFootGeo;       ///< geo trafo
@@ -71,14 +63,9 @@ protected:
     Double_t        fScatterAng;      ///< Scattering angle
 
     TH1F*           fpHisPosZ;        ///< Vertex postion Z histogram
-    TH1F*           fpHisResZ;        ///< Vertex residual Z histogram
-    TH1F*           fpHisResX;        ///< Vertex residual X histogram
-    TH1F*           fpHisResY;        ///< Vertex residual Y histogram
     TH2F*           fpHisPosXY;       ///< Vertex postion X-Y histogram
     TH1F*           fpHisBmMatchX;    ///< Vertex BM matching in postion X histogram
     TH1F*           fpHisBmMatchY;    ///< Vertex BM matching in postion Y histogram
-
-    Bool_t flagMC; ///< if the dataset is MC
     
 protected:
    static Bool_t    fgCheckBmMatching; ///< Flag to enable checking with BM track matching
@@ -104,9 +91,6 @@ protected:
     Int_t    SearchNucReac(TAVTtrack* track0);
 
     ClassDef(TAVTactBaseNtuVertex,0)
-
-protected : 
-   TAMCntuPart *pNtuEve; ///< Ptr to TAMCntuPart object    
 };
 
 #endif

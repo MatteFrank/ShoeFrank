@@ -36,7 +36,7 @@ class TABMparCal : public TAGparTools {
     //! Get the BM space time relations expressed as space [cm] as a function of drift time [ns]
     TF1*  GetSTrelFunc()                const{return fpSTrel;};
     //! Get the drift distance [cm] given the drift time [tdrift in ns]
-    Double_t  STrelEval(Float_t tdrift) {return fpSTrel->Eval(tdrift);};
+    Double_t  STrelEval(Float_t tdrift) {return min(fpSTrel->Eval(tdrift), 0.8);};
     //! Get the detector resolution [cm] given the drift distance [dist in cm]
     Float_t   ResoEval(Float_t dist){return (dist>0 && dist<0.8) ? fpResoFunc->Eval(dist) : 0.15;};
 

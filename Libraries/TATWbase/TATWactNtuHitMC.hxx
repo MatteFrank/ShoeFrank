@@ -89,8 +89,9 @@ private:
    vector<TH1D*>   fpHisResPos_2;
    vector<TH1D*>   fpHisResTof;
    vector<TH1D*>   fpHisResEloss;
-   vector<TH2D*>   fpHisElossTof_MC;
+   // vector<TH2D*>   fpHisElossTof_MC;
    vector<TH2D*>   fpHisElossTof;
+   vector<TH2D*>   fpHisElossTof_MC[nLayers];  //! Eloss vs Tof for each Z and each TW layer for ZID tuning
    vector<TH1F*>   fpHisDistZ_MC;
    vector<TH1F*>   fpHisDistZ;
   

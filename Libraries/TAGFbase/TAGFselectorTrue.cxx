@@ -29,7 +29,7 @@ void TAGFselectorTrue::Categorize( ) {
 	int flukaID, charge;
 	double mass;
 
-	if(m_debug > 0)
+	if(FootDebugLevel(1))
 	{
 		cout << "MC particles:\n\n";
 		for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
@@ -42,16 +42,16 @@ void TAGFselectorTrue::Categorize( ) {
 	}
 
 	//Cycle on FitPlanes
-	if(m_debug > 1) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+	if(FootDebugLevel(2)) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
 	{
 
-		if(m_debug > 1) cout << "Plane::" << iPlane << "\n";
+		if(FootDebugLevel(2)) cout << "Plane::" << iPlane << "\n";
 		
 		//Skip plane if no hit was found
 		if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()){continue;}
 
-		if(m_debug > 0) cout << "Cycle on hits\n";
+		if(FootDebugLevel(1)) cout << "Cycle on hits\n";
 
 		int foundHit = 0;
 	
@@ -61,7 +61,7 @@ void TAGFselectorTrue::Categorize( ) {
 			int MeasGlobId = (*itHit)->getHitId();
 
 			//Cycle on all the MC particles that created that cluster/measurement
-			if(m_debug > 1) cout << "Cycle on MC particles with GlobId::" << MeasGlobId << "\n";
+			if(FootDebugLevel(2)) cout << "Cycle on MC particles with GlobId::" << MeasGlobId << "\n";
 
 
 			TVector3 posV;		//global coord [cm]
@@ -71,7 +71,7 @@ void TAGFselectorTrue::Categorize( ) {
 			{
 				if(*itTrackMC == -666)
 				{
-					if(m_debug > 0)
+					if(FootDebugLevel(1))
 						cout << "Pile-up particle from VT!" << endl;
 					continue;
 				}
@@ -79,19 +79,7 @@ void TAGFselectorTrue::Categorize( ) {
 
 				TString outName, pdgName;
 
-				switch(charge)
-				{
-					case 1:	outName = "H";	break;
-					case 2:	outName = "He";	break;
-					case 3:	outName = "Li";	break;
-					case 4:	outName = "Be";	break;
-					case 5:	outName = "B";	break;
-					case 6:	outName = "C";	break;
-					case 7:	outName = "N";	break;
-					case 8:	outName = "O";	break;
-					default:
-						outName = "fail";	break;
-				}
+				outName = GetParticleNameFromCharge(charge);
 
 				//CAREFUL HERE!! Think about the possibility of throwing an error -> skip particle for the moment
 				if( outName == "fail" ) {continue;}
@@ -101,18 +89,18 @@ void TAGFselectorTrue::Categorize( ) {
 				//CAREFUL HERE!!!!!!!!! FOOT TAGrecoManager file does not have Hydrogen and Helium isotopes!!!! Also think about throwing an error here...
 				if ( !TAGrecoManager::GetPar()->Find_MCParticle( pdgName.Data() ) ) 
 				{
-					if(m_debug > 0) cout << "Found Particle not in MC list: " << pdgName << "\n";
+					if(FootDebugLevel(1)) cout << "Found Particle not in MC list: " << pdgName << "\n";
 					continue;
 				}
 
 				//Set a unique ID for the particle that will be used in the map of Genfit tracks to fit
 				outName += Form("_%d_%d", int(round(mass/m_AMU)), *itTrackMC);
 
-				if ( m_debug > 0 ) cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<< *itTrackMC << "  charge="<<charge << "  mass="<<mass<< "\n";
+				if ( FootDebugLevel(1) ) cout << "\tSelected Category: " << outName << "  flukaID=" << flukaID << "  partID="<< *itTrackMC << "  charge="<<charge << "  mass="<<mass<< "  p=" << momV.Mag() <<"\n";
 
 				if(m_trackCategoryMap->find(outName) == m_trackCategoryMap->end())
 				{
-					if(m_debug > 0) {
+					if(FootDebugLevel(1)) {
 						cout << "Found new particle!! " << outName << "\n";
 						posV.Print();
 						momV.Print();
@@ -135,4 +123,10 @@ void TAGFselectorTrue::Categorize( ) {
 		} //End of loop on measurements per sensor
 	
 	} //End of loop on sensors
+
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of TrueParticle tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
 }

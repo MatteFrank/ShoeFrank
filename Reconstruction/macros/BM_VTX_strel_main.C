@@ -32,21 +32,23 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
   if(expName.EndsWith("/")) //fix a bug present in shoe
     expName.Remove(expName.Length()-1);
   Int_t runNumber=runinfo->RunNumber();
+  cout<<"expName="<<expName<<"  runNumber="<<runNumber<<endl;  
   TAGrecoManager::Instance(expName);
   TAGcampaignManager* campManager = new TAGcampaignManager(expName);
   campManager->FromFile();
   geoTrafo = new TAGgeoTrafo();
-  TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
+  TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
   geoTrafo->FromFile(parFileName);
 
-  TAGparaDsc* bmGeo    = new TAGparaDsc(TABMparGeo::GetDefParaName(), new TABMparGeo());
+  TAGparaDsc* bmGeo    = new TAGparaDsc(new TABMparGeo());
   TABMparGeo* bmpargeo   = (TABMparGeo*) bmGeo->Object();
-  parFileName = campManager->GetCurGeoFile(FootBaseName("TABMparGeo"), runNumber);
+  parFileName = campManager->GetCurGeoFile(TABMparGeo::GetBaseName(), runNumber);
+  cout<<"bmgeofile from: "<<parFileName.Data()<<endl;
   bmpargeo->FromFile(parFileName.Data());
 
-  TAGparaDsc*  bmConf  = new TAGparaDsc("bmConf", new TABMparConf());
+  TAGparaDsc*  bmConf  = new TAGparaDsc(new TABMparConf());
   bmparconf = (TABMparConf*)bmConf->Object();
-  parFileName = campManager->GetCurConfFile(FootBaseName("TABMparGeo"), runNumber);
+  parFileName = campManager->GetCurConfFile(TABMparGeo::GetBaseName(), runNumber);
   bmparconf->FromFile(parFileName.Data());
 
   // TAGparaDsc*  bmCal  = new TAGparaDsc("bmCal", new TABMparCal());
@@ -60,14 +62,14 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
   // bmparMap->FromFile(parFileName.Data(), bmpargeo);
 
   bmNtuHit = new TABMntuHit();
-  tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmNtuHit);
-  TBranch *bmBraNtuHit=tree->GetBranch(TABMntuHit::GetBranchName());
+  tree->SetBranchAddress(TAGnameManager::GetBranchName(bmNtuHit->ClassName()), &bmNtuHit);
+  TBranch *bmBraNtuHit=tree->GetBranch(TAGnameManager::GetBranchName(bmNtuHit->ClassName()));
   bmNtuTrack = new TABMntuTrack();
-  tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmNtuTrack);
-  TBranch *bmBraNtuTrack=tree->GetBranch(TABMntuTrack::GetBranchName());
+  tree->SetBranchAddress(TAGnameManager::GetBranchName(bmNtuTrack->ClassName()), &bmNtuTrack);
+  TBranch *bmBraNtuTrack=tree->GetBranch(TAGnameManager::GetBranchName(bmNtuTrack->ClassName()));
   vtNtuTrack = new TAVTntuTrack();
-  tree->SetBranchAddress(TAVTntuTrack::GetBranchName(), &vtNtuTrack);
-  TBranch *vtBraNtuTrack=tree->GetBranch(TAVTntuTrack::GetBranchName());
+  tree->SetBranchAddress(TAGnameManager::GetBranchName(vtNtuTrack->ClassName()), &vtNtuTrack);
+  TBranch *vtBraNtuTrack=tree->GetBranch(TAGnameManager::GetBranchName(vtNtuTrack->ClassName()));
 
   //used for alignment:
   vector<TVector3> vtxslopevec;
@@ -100,10 +102,10 @@ void BM_VTX_strel_main(TString in_filename = "", Int_t nentries = 0, Int_t doali
     bmBraNtuTrack->GetEntry(evnum);
     vtBraNtuTrack->GetEntry(evnum);
 
-    FillSeparated(); //here I inverted the vtx SlopeZ.Y and origin.Y
+    FillSeparated();
 
-    // if(vtNtuTrack->GetTracksN() == 1 && bmNtuTrack->GetTracksN()==1){
-    if(vtNtuTrack->GetTracksN() >0 && bmNtuTrack->GetTracksN()==1){
+    if(vtNtuTrack->GetTracksN() == 1 && bmNtuTrack->GetTracksN()==1){
+    //~ if(vtNtuTrack->GetTracksN() >0 && bmNtuTrack->GetTracksN()==1){
       FillCombined(vtxslopevec, vtxoriginvec, bmslopevec, bmoriginvec, bmpargeo);
     }else{
       if(vtNtuTrack->GetTracksN()!=1)

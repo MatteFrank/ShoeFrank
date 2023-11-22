@@ -109,57 +109,19 @@ protected:
       
    TH1F*           fpHisResX[MaxTrkSens];  ///< Residual in X histogram
    TH1F*           fpHisResY[MaxTrkSens];  ///< Residual in Y histogram
-   TH1F*           fpHisPullX[MaxTrkSens];            ///< Pull in X histogram
-   TH1F*           fpHisPullY[MaxTrkSens];             ///< Pull in Y histogram
-   TH1F *fpHisPullXcut[MaxTrkSens];                       ///< Pull in X histogram
-   TH1F *fpHisPullYcut[MaxTrkSens];                       ///< Pull in Y histogram
-
-   TH2F *fpHisPullXvsChiX[MaxTrkSens];    //pull vs reduced chi2 in x 
-   TH2F *fpHisPullYvsChiY[MaxTrkSens];    // pull vs reduced chi2 in y
-   TH2F *fpHisPullXvsPvalue[MaxTrkSens];    // pull vs reduced chi2 in x
-   TH2F *fpHisPullYvsPvalue[MaxTrkSens];    // pull vs reduced chi2 in y
-   TH2F *fpHisPullXvsClusSize[MaxTrkSens];      // pull vs cluster size in x
-   TH2F *fpHisPullYvsClusSize[MaxTrkSens];      // pull vs cluster size in y
-
-   TH1F*           fpHisTrackClustPosX[MaxTrkSens];   ///< cluster position in X histogram
-   TH1F*           fpHisTrackClustPosY[MaxTrkSens];   ///< cluster position in Y histogram
-   TH1F*           fpHisTrackClustPosErrX[MaxTrkSens]; ///< cluster err position in X histogram
-   TH1F*           fpHisTrackClustPosErrY[MaxTrkSens]; ///< cluster err position in Y histogram
-   TH1F*           fpHisFitClustPosX[MaxTrkSens];   ///< cluster position in X histogram by fit
-   TH1F*           fpHisFitClustPosY[MaxTrkSens];   ///< cluster position in Y histogram by fit
-   TH1F*           fpHisFitClustPosErrX[MaxTrkSens];///< cluster err position by fit in X histogram
-   TH1F*           fpHisFitClustPosErrY[MaxTrkSens];///< cluster err position by fit in Y histogram
-   TH2F* fpHisTrackClustPosErrYvsPixel[MaxTrkSens];
-   TH2F* fpHisTrackClustPosErrXvsPixel[MaxTrkSens];
-
-
-   TH2F*           fpHisPosCompareX;          ///< Comparison of difference of position with the central hitted pixel
-   TH2F*           fpHisPosCompareY;                    ///< Comparison of difference of position with the central hitted pixel
    TH1F*           fpHisResTotX;        ///< Total Residual in X histogram
    TH1F*           fpHisResTotY;        ///< Total Residual in Y histogram
    TH2F*           fpHisTrackMap[MaxTrkSens];  ///< track map per sensor histogram
    TH1F*           fpHisMeanCharge;     ///< Mwean Charge per tracked cluster histogram
    TH1F*           fpHisMeanPixel;      ///< Mean number of pixels per tracked cluster histogram
    TH2F*           fpHisBeamProf;       ///< VTX Beam profile extrapolated to target histogram
-   TH1F*           fpHisChi2RedX;       ///< Reduced Chi2 in X direction histogram
-   TH1F*           fpHisChi2RedY;       ///< Reduced Chi2 in Y direction histogram
    TH1F*           fpHisChi2TotX;       ///< Total Chi2 in X direction histogram
-   TH2F *fpHisChi2XvsTheta;             ///< Total Chi2 in X direction histogram vs theta of the track
-   TH2F *fpHisChi2YvsTheta;             ///< Total Chi2 in Y direction histogram vs theta of the track
    TH1F*           fpHisChi2TotY;       ///< Total Chi2 in Y direction histogram
-   TH1F*           fpHisChi2RedTot;       ///< reduced total Chi2  histogram
-
-   TH1F *fpHisTrackClusSize[MaxTrkSens];
-   TH1F *fpHisTrackClusSizeAll[MaxTrkSens];
-   TH1F*           fpHisChi2probX;      ///< Total Chi2 pvalue in X direction histogram
-   TH1F*           fpHisChi2probY;      ///< Total Chi2 pvalue in Y direction histogram
-   TH1F *fpHisTrackEvt;             ///< number of track per event histogram
+   TH1F*           fpHisTrackEvt;       ///< number of track per event histogram
    TH1F*           fpHisTrackClus;      ///< number of clusters per track histogram
    TH1F*           fpHisClusSensor;     ///< number of tracked clusters per sensor histogram
    TH1F*           fpHisTheta;          ///< Polar angular distribution histogram
    TH1F*           fpHisPhi;            ///< Azimutal angular distribution histogram
-
-
   
    TString         fPrefix;             ///< prefix of histogram
    TString         fTitleDev;           ///< device name for histogram title

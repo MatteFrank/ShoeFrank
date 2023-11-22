@@ -147,12 +147,13 @@ void FillMCVertex(Int_t runNumber) {
    TAVTparGeo* geomap   = (TAVTparGeo*) vtGeo->Object();
    parFileName = campManager->GetCurGeoFile(FootBaseName("TAVTparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
-   
+   Int_t sensorsN = geomap->GetSensorsN();
+
    vtEve  = new TAGdataDsc("vtEve", new TAMCntuPart());
    TAGdataDsc* vtMc   = new TAGdataDsc("vtMc", new TAMCntuHit());
    
-   TAGdataDsc* vtNtu    = new TAGdataDsc("vtHit", new TAVTntuHit());
-   TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster());
+   TAGdataDsc* vtNtu    = new TAGdataDsc("vtHit", new TAVTntuHit(sensorsN));
+   TAGdataDsc* vtClus   = new TAGdataDsc("vtClus", new TAVTntuCluster(sensorsN));
    vtTrck   = new TAGdataDsc("vtTrck", new TAVTntuTrack());
    vtVtx    = new TAGdataDsc("vtVtx", new TAVTntuVertex());
    
@@ -177,10 +178,11 @@ void FillMCInnerTracker(Int_t runNumber) {
    TAITparGeo* geomap   = (TAITparGeo*) itGeo->Object();
    TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAITparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
-   
+   Int_t sensorsN = geomap->GetSensorsN();
+
    TAGdataDsc* itMc     = new TAGdataDsc("itMc", new TAMCntuHit());
-   TAGdataDsc* itNtu    = new TAGdataDsc("itHit", new TAITntuHit());
-   itClus   = new TAGdataDsc("itClus", new TAITntuCluster());
+   TAGdataDsc* itNtu    = new TAGdataDsc("itHit", new TAITntuHit(sensorsN));
+   itClus   = new TAGdataDsc("itClus", new TAITntuCluster(sensorsN));
    
    itConf  = new TAGparaDsc("itConf", new TAITparConf());
    TAITparConf* parconf = (TAITparConf*) itConf->Object();
@@ -199,10 +201,11 @@ void FillMCMsd(Int_t runNumber) {
    TAMSDparGeo* geomap = (TAMSDparGeo*) msdGeo->Object();
    TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
-   
+   Int_t sensorsN = geomap->GetSensorsN();
+
    TAGdataDsc* msdMc     = new TAGdataDsc("msdMc", new TAMCntuHit());
-   TAGdataDsc* msdNtu    = new TAGdataDsc("msdNtu", new TAMSDntuHit());
-   msdClus   = new TAGdataDsc("msdClus", new TAMSDntuCluster());
+   TAGdataDsc* msdNtu    = new TAGdataDsc("msdNtu", new TAMSDntuHit(sensorsN));
+   msdClus   = new TAGdataDsc("msdClus", new TAMSDntuCluster(sensorsN));
    
    TAGparaDsc*  msdConf  = new TAGparaDsc("msdConf", new TAMSDparConf());
    TAMSDparConf* parconf = (TAMSDparConf*) msdConf->Object();

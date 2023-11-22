@@ -85,6 +85,9 @@ void GlobalRecoAnaGSI::LoopEvent()
   { // for every event
     // fFlagMC = false;     //N.B.: for MC FAKE REAL
 
+    if (currEvent == nTotEv)
+      break;
+
     if (currEvent % frequency == 0 || FootDebugLevel(1))
       cout << "Load Event: " << currEvent << endl;
 
@@ -736,8 +739,6 @@ void GlobalRecoAnaGSI::LoopEvent()
     }
 
     ++currEvent;
-    if (currEvent == nTotEv)
-      break;
   } // end of loop event
 
   return;
@@ -1710,11 +1711,11 @@ for (int i = 0; i < twpoint->GetMcTracksN(); i++)
 
 void GlobalRecoAnaGSI::FillMCPartYields()
 {
-  if (TAGrecoManager::GetPar()->IsRegionMc() == false)
-  {
-    cout << "IsRegionMc() needed for the analysis!";
-    exit;
+  if (TAGrecoManager::GetPar()->IsRegionMc() == false) {
+    Error("FillMCPartYields","IsRegionMc() needed for the analysis!");
+    return;
   }
+   
   TAMCntuRegion *pNtuReg = GetNtuMcReg();
   Int_t nCross = pNtuReg->GetRegionsN();
 
@@ -1813,13 +1814,14 @@ void GlobalRecoAnaGSI::FillMCPartYields()
   }
 }
 
+
 bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
 {
-  if (TAGrecoManager::GetPar()->IsRegionMc() == false)
-  {
-    cout << "IsRegionMc() needed for the analysis!";
-    exit;
-  }
+    if (TAGrecoManager::GetPar()->IsRegionMc() == false) {
+      Error("isGoodReco","IsRegionMc() needed for the analysis!");
+      return false;
+    }
+
   TAMCntuRegion *pNtuReg = GetNtuMcReg();
   Int_t nCross = pNtuReg->GetRegionsN();
 

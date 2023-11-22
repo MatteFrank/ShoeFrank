@@ -85,11 +85,11 @@ class TAMSDparGeo;
 class TAMSDntuRaw : public TAGdata {
    
 protected:
+   Int_t        fSensorsN;        ///< number of sensors
    TObjArray*   fListOfStrips;  ///< list of strips
-   TAMSDparGeo* fpGeoMap;       //!
 
 public:
-   TAMSDntuRaw();
+   TAMSDntuRaw(Int_t sensorsN = 0);
    ~TAMSDntuRaw();
    
    //! Get list of strips
