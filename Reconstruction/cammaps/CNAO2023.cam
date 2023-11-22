@@ -25,7 +25,7 @@ NumberFiles: 4
 "./geomaps/CNAO2023/TABMdetector.geo": -1
 "./config/CNAO2023/TABMdetector.cfg": -1
 "./config/CNAO2023/TABMdetector.map": -1
-"./calib/CNAO2023/TABM_T0_Calibration.cal": 5956; 6140;
+"./calib/CNAO2023/TABM_T0_Calibration.cal": 5956; 6140;n 6170; 6180; 6224; 6228; 6230; 6232; 6272; 6311;
 
 DetectorName: "TG"
 NumberFiles: 1
