@@ -147,32 +147,32 @@ void GlobalRecoAnaGSI::LoopEvent()
 
           if (isGoodReco(TrkIdMC))
           {
-            if (Z_true > 0. && Z_true <= primary_cha)
+            if (Z_true > 0. && Z_true <= fPrimaryCharge)
             {
               FillYieldMC("yield-N_TWGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
             }
           }
-          if (Z_true > 0. && Z_true <= primary_cha)
+          if (Z_true > 0. && Z_true <= fPrimaryCharge)
             FillYieldMC("yield-N_TWAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-          // if (Z_true > 0. && Z_true <= primary_cha)
+          // if (Z_true > 0. && Z_true <= fPrimaryCharge)
           MigMatrixPlots("MigMatrixTW", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-          if (Z_true > 0. && Z_true <= primary_cha)
+          if (Z_true > 0. && Z_true <= fPrimaryCharge)
           {
             FillYieldReco("yield-N_TW_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
           }
-          if (Z_true > 0. && Z_true <= primary_cha)
+          if (Z_true > 0. && Z_true <= fPrimaryCharge)
           {
             FillYieldReco("yield-N_TW_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
           }
 
-          if (Z_meas > 0. && Z_meas <= primary_cha)
+          if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
           {
             FillYieldReco("yield-N_TW_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
           }
 
-          if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+          if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
           {
             FillYieldReco("yield-N_TW_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
           }
@@ -219,32 +219,32 @@ void GlobalRecoAnaGSI::LoopEvent()
 
           if (isGoodReco(TrkIdMC))
           {
-            if (Z_true > 0. && Z_true <= primary_cha)
+            if (Z_true > 0. && Z_true <= fPrimaryCharge)
             {
               FillYieldMC("yield-N_VTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
             }
           }
-          if (Z_true > 0. && Z_true <= primary_cha)
+          if (Z_true > 0. && Z_true <= fPrimaryCharge)
             FillYieldMC("yield-N_VTAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-          // if (Z_true > 0. && Z_true <= primary_cha)
+          // if (Z_true > 0. && Z_true <= fPrimaryCharge)
           MigMatrixPlots("MigMatrix_VT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-          if (Z_true > 0. && Z_true <= primary_cha)
+          if (Z_true > 0. && Z_true <= fPrimaryCharge)
           {
             FillYieldReco("yield-N_VT_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
           }
-          if (Z_true > 0. && Z_true <= primary_cha)
+          if (Z_true > 0. && Z_true <= fPrimaryCharge)
           {
             FillYieldReco("yield-N_VT_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
           }
 
-          if (Z_meas > 0. && Z_meas <= primary_cha)
+          if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
           {
             FillYieldReco("yield-N_VT_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
           }
 
-          if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+          if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
           {
             FillYieldReco("yield-N_VT_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
           }
@@ -288,32 +288,32 @@ void GlobalRecoAnaGSI::LoopEvent()
 
               if (isGoodReco(TrkIdMC))
               {
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_MSDGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                 }
               }
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 FillYieldMC("yield-N_MSDAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-              // if (Z_true > 0. && Z_true <= primary_cha)
+              // if (Z_true > 0. && Z_true <= fPrimaryCharge)
               MigMatrixPlots("MigMatrixMSD", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_MSD_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
               }
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_MSD_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
               }
 
-              if (Z_meas > 0. && Z_meas <= primary_cha)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_MSD_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
               }
 
-              if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
               {
                 FillYieldReco("yield-N_MSD_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
               }
@@ -337,32 +337,32 @@ void GlobalRecoAnaGSI::LoopEvent()
 
               if (isGoodReco(TrkIdMC))
               {
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_VTX_MSDGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                 }
               }
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 FillYieldMC("yield-N_VTX_MSDAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-              // if (Z_true > 0. && Z_true <= primary_cha)
+              // if (Z_true > 0. && Z_true <= fPrimaryCharge)
               MigMatrixPlots("MigMatrixVTX_MSD", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_VTX_MSD_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
               }
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_VTX_MSD_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
               }
 
-              if (Z_meas > 0. && Z_meas <= primary_cha)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_VTX_MSD_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
               }
 
-              if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
               {
                 FillYieldReco("yield-N_VTX_MSD_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
               }
@@ -383,32 +383,32 @@ void GlobalRecoAnaGSI::LoopEvent()
             {
               if (isGoodReco(TrkIdMC))
               {
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_Q1GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                 }
               }
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 FillYieldMC("yield-N_Q1AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-              // if (Z_true > 0. && Z_true <= primary_cha)
+              // if (Z_true > 0. && Z_true <= fPrimaryCharge)
               MigMatrixPlots("MigMatrixQ1", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-              if (Z_meas > 0. && Z_meas <= primary_cha)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
               {
                 FillYieldReco("yield-NQ1_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
               }
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
               {
                 FillYieldReco("yield-NQ1_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
               }
 
-              if (Z_meas > 0. && Z_meas <= primary_cha)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
               {
                 FillYieldReco("yield-NQ1_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
               }
 
-              if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
               {
                 FillYieldReco("yield-NQ1_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with real theta (for purity purposes)
               }
@@ -440,32 +440,32 @@ void GlobalRecoAnaGSI::LoopEvent()
             {
               if (isGoodReco(TrkIdMC))
               {
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_Chi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                 }
               }
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 FillYieldMC("yield-N_Chi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-              // if (Z_true > 0. && Z_true <= primary_cha)
+              // if (Z_true > 0. && Z_true <= fPrimaryCharge)
               MigMatrixPlots("MigMatrixChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-              if (Z_meas > 0. && Z_meas <= primary_cha)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_Chi2_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
               }
-              if (Z_true > 0. && Z_true <= primary_cha)
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_Chi2_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
               }
 
-              if (Z_meas > 0. && Z_meas <= primary_cha)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
               {
                 FillYieldReco("yield-N_Chi2_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
               }
 
-              if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+              if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
               {
                 FillYieldReco("yield-N_Chi2_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with real theta (for purity purposes)
               }
@@ -478,32 +478,32 @@ void GlobalRecoAnaGSI::LoopEvent()
               {
                 if (isGoodReco(TrkIdMC))
                 {
-                  if (Z_true > 0. && Z_true <= primary_cha)
+                  if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   {
                     FillYieldMC("yield-N_MChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                   }
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_MChi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
+                // if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 MigMatrixPlots("MigMatrixMChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-                if (Z_meas > 0. && Z_meas <= primary_cha)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MChi2_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MChi2_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MChi2_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
                 {
                   FillYieldReco("yield-N_MChi2_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with real theta (for purity purposes)
                 }
@@ -517,32 +517,32 @@ void GlobalRecoAnaGSI::LoopEvent()
 
                 if (isGoodReco(TrkIdMC))
                 {
-                  if (Z_true > 0. && Z_true <= primary_cha)
+                  if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   {
                     FillYieldMC("yield-N_VTChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                   }
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_VTChi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
+                // if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 MigMatrixPlots("MigMatrixVTChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_VTChi2_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_VTChi2_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_VTChi2_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
                 {
                   FillYieldReco("yield-N_VTChi2_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
                 }
@@ -564,32 +564,32 @@ void GlobalRecoAnaGSI::LoopEvent()
 
                 if (isGoodReco(TrkIdMC))
                 {
-                  if (Z_true > 0. && Z_true <= primary_cha )
+                  if (Z_true > 0. && Z_true <= fPrimaryCharge )
                   {
                     FillYieldMC("yield-N_MVTChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                   }
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_MVTChi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
+                // if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 MigMatrixPlots("MigMatrixMVTChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MVTChi2_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MVTChi2_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MVTChi2_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
                 {
                   FillYieldReco("yield-N_MVTChi2_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
                 }
@@ -618,32 +618,32 @@ void GlobalRecoAnaGSI::LoopEvent()
 
                 if (isGoodReco(TrkIdMC))
                 {
-                  if (Z_true > 0. && Z_true <= primary_cha )
+                  if (Z_true > 0. && Z_true <= fPrimaryCharge )
                   {
                     FillYieldMC("yield-N_MChi2TWTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                   }
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_MChi2TWTAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
+                // if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 MigMatrixPlots("MigMatrixMChi2TWT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MChi2TWT_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MChi2TWT_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_MChi2TWT_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
                 {
                   FillYieldReco("yield-N_MChi2TWT_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
                 }
@@ -677,32 +677,32 @@ void GlobalRecoAnaGSI::LoopEvent()
 
               if (isGoodReco(TrkIdMC))
               {
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
                 }
             }
-            if (Z_true > 0. && Z_true <= primary_cha)
+            if (Z_true > 0. && Z_true <= fPrimaryCharge)
               FillYieldMC("yield-N_AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-            // if (Z_true > 0. && Z_true <= primary_cha)
+            // if (Z_true > 0. && Z_true <= fPrimaryCharge)
             MigMatrixPlots("MigMatrix", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-            if (Z_meas > 0. && Z_meas <= primary_cha)
+            if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
             {
               FillYieldReco("yield-N_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
             }
-            if (Z_true > 0. && Z_true <= primary_cha)
+            if (Z_true > 0. && Z_true <= fPrimaryCharge)
             {
               FillYieldReco("yield-N_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
             }
 
-            if (Z_meas > 0. && Z_meas <= primary_cha)
+            if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
             {
               FillYieldReco("yield-N_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
             }
 
-            if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+            if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
             {
               FillYieldReco("yield-N_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with real theta (for purity purposes)
             }
@@ -933,7 +933,7 @@ void GlobalRecoAnaGSI::FillMCGlbTrkYields()
 
   //-------------------------------------------------------------
   //--Yield for CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA
-  if (Z_true > 0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
+  if (Z_true > 0. && Z_true <= fPrimaryCharge /*&& TriggerCheckMC() == true*/)
     FillYieldReco("yield-trkMC", Z_true, Th_true);
 
   //-------------------------------------------------------------
@@ -950,7 +950,7 @@ void GlobalRecoAnaGSI::FillMCGlbTrkYields()
       { // if there is no ghost hits in the TW
         if (tmp_poi->GetMcTrackIdx(0) == fGlbTrack->GetMcMainTrackId())
         { // if there is match of MCId
-          if (Z_true > 0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
+          if (Z_true > 0. && Z_true <= fPrimaryCharge /*&& TriggerCheckMC() == true*/)
           {
             FillYieldReco("yield-trkcutsMC", Z_true, Th_true);
             //((TH1D *)gDirectory->Get("ThReco_fragMC"))->Fill(Th_recoBM);
@@ -963,17 +963,17 @@ void GlobalRecoAnaGSI::FillMCGlbTrkYields()
   // //-------------------------------------------------------------
   // //--CROSS SECTION fragmentation- RECO PARAMETERS FROM MC DATA + GHOST HITS FIX : i don't want not fragmented primary
   // if (N_TrkIdMC_TW == 1)
-  //   if (Z_true >0. && Z_true <= primary_cha /*&& TriggerCheckMC() == true*/)
+  //   if (Z_true >0. && Z_true <= fPrimaryCharge /*&& TriggerCheckMC() == true*/)
   //     FillYieldReco("yield-trkGHfixMC",Z_true,Z_meas,Th_true );
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation for trigger efficiency   (comparing triggercheck with TAWDntuTrigger )
-  if (Z_meas > 0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/)
+  if (Z_meas > 0. && Z_meas <= fPrimaryCharge /*&& TriggerCheck() == true*/)
     FillYieldReco("yield-trkReco", Z_meas, Th_recoBM);
 
   //-------------------------------------------------------------
   //--CROSS SECTION reco
-  if (Z_meas > 0. && Z_meas <= primary_cha /*&& TriggerCheck() == true*/)
+  if (Z_meas > 0. && Z_meas <= fPrimaryCharge /*&& TriggerCheck() == true*/)
   {
 
     TString name = GetTitle();
@@ -994,7 +994,7 @@ void GlobalRecoAnaGSI::FillDataGlbTrkYields()
 
   //-------------------------------------------------------------
   //--CROSS SECTION fragmentation- RECO PARAMETERS FROM REAL DATA : i don't want not fragmented primary
-  if (Z_meas > 0. && Z_meas <= primary_cha /*&& wdTrig -> GetTriggersStatus()[1] == 1*/) // fragmentation hardware trigger ON
+  if (Z_meas > 0. && Z_meas <= fPrimaryCharge /*&& wdTrig -> GetTriggersStatus()[1] == 1*/) // fragmentation hardware trigger ON
   //&& TriggerCheck(fGlbTrack) == true  //NB.: for MC FAKE REAL
   {
     // cout << "inside " <<endl;
@@ -1027,78 +1027,78 @@ void GlobalRecoAnaGSI::SetupTree()
   if (TAGrecoManager::GetPar()->IncludeVT())
   {
     fpNtuClusVtx = new TAGdataDsc("vtclus", new TAVTntuCluster());
-    fpNtuTrackVtx = new TAGdataDsc("vttrack", new TAVTntuTrack());
+    // fpNtuTrackVtx = new TAGdataDsc("vttrack", new TAVTntuTrack());
     fpNtuVtx = new TAGdataDsc("vtvtx", new TAVTntuVertex());
     gTAGroot->AddRequiredItem("vtclus");
     gTAGroot->AddRequiredItem("vttrack");
     gTAGroot->AddRequiredItem("vtvtx");
     myReader->SetupBranch(fpNtuClusVtx);
-    myReader->SetupBranch(fpNtuTrackVtx);
+    // myReader->SetupBranch(fpNtuTrackVtx);
     myReader->SetupBranch(fpNtuVtx);
-    if (fFlagMC)
-    {
-      fpNtuMcVt = new TAGdataDsc(FootDataDscMcName(kVTX), new TAMCntuHit());
-      gTAGroot->AddRequiredItem("mcvt");
-      myReader->SetupBranch(fpNtuMcVt, FootBranchMcName(kVTX));
-    }
+    // if (fFlagMC)
+    // {
+    //   fpNtuMcVt = new TAGdataDsc(FootDataDscMcName(kVTX), new TAMCntuHit());
+    //   gTAGroot->AddRequiredItem("mcvt");
+    //   myReader->SetupBranch(fpNtuMcVt, FootBranchMcName(kVTX));
+    // }
   }
-  if (TAGrecoManager::GetPar()->IncludeIT())
-  {
-    fpNtuClusIt = new TAGdataDsc(new TAITntuCluster());
-    gTAGroot->AddRequiredItem("itclus");
-    myReader->SetupBranch(fpNtuClusIt);
-    if (fFlagMC)
-    {
-      fpNtuMcIt = new TAGdataDsc(FootDataDscMcName(kITR), new TAMCntuHit());
-      gTAGroot->AddRequiredItem("mcit");
-      myReader->SetupBranch(fpNtuMcIt, FootBranchMcName(kITR));
-    }
-  }
-  if (TAGrecoManager::GetPar()->IncludeMSD())
-  {
-    fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
-    gTAGroot->AddRequiredItem("msdclus");
-    myReader->SetupBranch(fpNtuClusMsd);
-    fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint());
-    gTAGroot->AddRequiredItem("msdpoint");
-    myReader->SetupBranch(fpNtuRecMsd);
-    if (fFlagMC)
-    {
-      fpNtuMcMsd = new TAGdataDsc(FootDataDscMcName(kMSD), new TAMCntuHit());
-      gTAGroot->AddRequiredItem("mcmsd");
-      myReader->SetupBranch(fpNtuMcMsd, FootBranchMcName(kMSD));
-    }
-  }
+  // if (TAGrecoManager::GetPar()->IncludeIT())
+  // {
+  //   fpNtuClusIt = new TAGdataDsc(new TAITntuCluster());
+  //   gTAGroot->AddRequiredItem("itclus");
+  //   myReader->SetupBranch(fpNtuClusIt);
+  //   if (fFlagMC)
+  //   {
+  //     fpNtuMcIt = new TAGdataDsc(FootDataDscMcName(kITR), new TAMCntuHit());
+  //     gTAGroot->AddRequiredItem("mcit");
+  //     myReader->SetupBranch(fpNtuMcIt, FootBranchMcName(kITR));
+  //   }
+  // }
+  // if (TAGrecoManager::GetPar()->IncludeMSD())
+  // {
+  //   fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster());
+  //   gTAGroot->AddRequiredItem("msdclus");
+  //   myReader->SetupBranch(fpNtuClusMsd);
+  //   fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint());
+  //   gTAGroot->AddRequiredItem("msdpoint");
+  //   myReader->SetupBranch(fpNtuRecMsd);
+  //   if (fFlagMC)
+  //   {
+  //     fpNtuMcMsd = new TAGdataDsc(FootDataDscMcName(kMSD), new TAMCntuHit());
+  //     gTAGroot->AddRequiredItem("mcmsd");
+  //     myReader->SetupBranch(fpNtuMcMsd, FootBranchMcName(kMSD));
+  //   }
+  // }
   if (TAGrecoManager::GetPar()->IncludeTW())
   {
     fpNtuRecTw = new TAGdataDsc(new TATWntuPoint());
     gTAGroot->AddRequiredItem("twpt");
     myReader->SetupBranch(fpNtuRecTw);
 
-    if (fFlagMC == false)
+    if ( !fFlagMC )
     {
       fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       gTAGroot->AddRequiredItem("WDtrigInfo");
       myReader->SetupBranch(fpNtuWDtrigInfo);
     }
-    if (fFlagMC)
-    {
-      fpNtuMcTw = new TAGdataDsc(FootDataDscMcName(kTW), new TAMCntuHit());
-      gTAGroot->AddRequiredItem("mctw");
-      myReader->SetupBranch(fpNtuMcTw, FootBranchMcName(kTW));
-    }
+    // if (fFlagMC)
+    // {
+    //   fpNtuMcTw = new TAGdataDsc(FootDataDscMcName(kTW), new TAMCntuHit());
+    //   gTAGroot->AddRequiredItem("mctw");
+    //   myReader->SetupBranch(fpNtuMcTw, FootBranchMcName(kTW));
+    // }
   }
   if (TAGrecoManager::GetPar()->IncludeCA())
   {
     fpNtuClusCa = new TAGdataDsc(new TACAntuCluster());
     gTAGroot->AddRequiredItem("caclus");
     myReader->SetupBranch(fpNtuClusCa);
-    if (fFlagMC)
-    {
-      fpNtuMcCa = new TAGdataDsc(FootDataDscMcName(kCAL), new TAMCntuHit());
-      gTAGroot->AddRequiredItem("mcca");
-      myReader->SetupBranch(fpNtuMcCa, FootBranchMcName(kCAL));
-    }
+    // if (fFlagMC)
+    // {
+    //   fpNtuMcCa = new TAGdataDsc(FootDataDscMcName(kCAL), new TAMCntuHit());
+    //   gTAGroot->AddRequiredItem("mcca");
+    //   myReader->SetupBranch(fpNtuMcCa, FootBranchMcName(kCAL));
+    // }
   }
 
   if (fFlagMC)
@@ -1168,24 +1168,38 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
   }
 
   // set variables
-  primary_cha = GetParGeoG()->GetBeamPar().AtomicNumber;
+  fPrimaryCharge = GetParGeoG()->GetBeamPar().AtomicNumber;
   Double_t beam_mass_number = GetParGeoG()->GetBeamPar().AtomicMass * TAGgeoTrafo::GetMassFactorMeV();                                                              // primary mass number in mev
   Double_t beam_energy = GetParGeoG()->GetBeamPar().Energy * GetParGeoG()->GetBeamPar().AtomicMass * TAGgeoTrafo::GevToMev();                                       // Total kinetic energy (MeV)
   Double_t beam_speed = sqrt(beam_energy * beam_energy + 2. * beam_mass_number * beam_energy) / (beam_mass_number + beam_energy) * TAGgeoTrafo::GetLightVelocity(); // cm/ns
   primary_tof = (fpFootGeo->GetTGCenter().Z() - fpFootGeo->GetSTCenter().Z()) / beam_speed;                                                                         // ns
   Booking();
   pure_track_xcha.clear();
-  pure_track_xcha.resize(primary_cha + 1, std::make_pair(0, 0));
+  pure_track_xcha.resize(fPrimaryCharge + 1, std::make_pair(0, 0));
   Ntg = GetParGeoG()->GetTargetPar().Density * TMath::Na() * GetParGeoG()->GetTargetPar().Size.Z() / GetParGeoG()->GetTargetPar().AtomicMass;
 
   if (FootDebugLevel(1))
   {
-    cout << "primary_cha=" << primary_cha << "  beam_mass_number=" << beam_mass_number << "  beam_energy=" << beam_energy << "  beam_speed=" << beam_speed << "  primary_tof=" << primary_tof << endl;
+    cout << "fPrimaryCharge=" << fPrimaryCharge << "  beam_mass_number=" << beam_mass_number << "  beam_energy=" << beam_energy << "  beam_speed=" << beam_speed << "  primary_tof=" << primary_tof << endl;
     cout << "N_target=" << Ntg << endl;
     cout << "target density=" << GetParGeoG()->GetTargetPar().Density << endl;
     cout << "target z=" << GetParGeoG()->GetTargetPar().Size.Z() << endl;
     cout << "target A=" << GetParGeoG()->GetTargetPar().AtomicMass << endl;
   }
+
+  //Set fixed region values
+  fRegTG = GetParGeoG()->GetRegTarget();
+  TString regvtxname("VTXP3");
+  fRegLastVTplane = GetParGeoG()->GetCrossReg(regvtxname);
+  TString regname("AIR1");
+  fRegAirAfterVT = GetParGeoG()->GetCrossReg(regname);
+  fRegFirstTWbar = GetParGeoTw()->GetRegStrip(0, 0);
+  fRegFirstTWbarLay0 = GetParGeoTw()->GetRegStrip(1, 0);
+  fRegLastTWbar = GetParGeoTw()->GetRegStrip(1, GetParGeoTw()->GetNBars() - 1);
+  fRegFirstCAcrys = GetParGeoCa()->GetRegCrystal(0);
+  fRegLastCAcrys = GetParGeoCa()->GetRegCrystal(GetParGeoCa()->GetCrystalsN() - 1);
+  fRegAirBeforeTW = GetParGeoG()->GetRegAirPreTW();
+  fRegAirAfterTW = GetParGeoG()->GetRegAirTW();
 
   n_clones.clear();
   return;
@@ -1214,7 +1228,7 @@ void GlobalRecoAnaGSI::AfterEventLoop()
   if (fFlagMC)
   {
     h = new TH1D("trkclone", "number of tracks with the same mc id", 8, 0.5, 8.5);
-    for (int i = 1; i <= primary_cha; i++)
+    for (int i = 1; i <= fPrimaryCharge; i++)
     {
       ((TH1D *)gDirectory->Get("trkclone"))->SetBinContent(i, n_clones[i]);
     }
@@ -1226,7 +1240,7 @@ void GlobalRecoAnaGSI::AfterEventLoop()
   file_out->Write();
 
   cout << "Closing..." << endl;
-  file_out->Close();
+  // file_out->Close();
 
   return;
 }
@@ -1284,7 +1298,7 @@ void GlobalRecoAnaGSI::MigMatrixPlots(string folderName, Int_t Z_true, Int_t Z_m
     path = folderName + "/migMatrix_theta";
     ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Th_meas, Th_true);
 
-    if (Z_true > 0. && Z_true <= primary_cha)
+    if (Z_true > 0. && Z_true <= fPrimaryCharge)
     {
       path = folderName + "/Z_" + to_string(int(Z_true) - 1) + "#" + to_string(int(Z_true) - 0.5) + "_" + to_string(int(Z_true) + 0.5) + "/migMatrix_theta_Z_" + to_string(Z_true - 1);
       ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Th_meas, Th_true);
@@ -1318,7 +1332,7 @@ void GlobalRecoAnaGSI::BookMigMatrix(string path, bool enableMigMatr)
     h2 = new TH2D("migMatrix_theta", "migMatrix_theta; \\theta_{reco} ; \\theta_{true} ", 20, 0., 12., 20, 0., 12.);
   }
 
-  for (int iz = 1; iz <= primary_cha; iz++)
+  for (int iz = 1; iz <= fPrimaryCharge; iz++)
   {
     string name = "Z_" + to_string(iz - 1) + "#" + to_string(iz - 0.5) + "_" + to_string(iz + 0.5);
     gDirectory->mkdir(name.c_str());
@@ -1361,7 +1375,7 @@ void GlobalRecoAnaGSI::BookYield(string path, bool enableMigMatr)
   if (enableMigMatr)
     h2 = new TH2D("migMatrix_Z", "migMatrix_Z;Z_{reco};  Z_{true} ", 8, 0.5, 8.5, 8, 0.5, 8.5);
 
-  for (int iz = 1; iz <= primary_cha; iz++)
+  for (int iz = 1; iz <= fPrimaryCharge; iz++)
   {
     string name = "Z_" + to_string(iz - 1) + "#" + to_string(iz - 0.5) + "_" + to_string(iz + 0.5);
     gDirectory->mkdir(name.c_str());
@@ -1421,30 +1435,30 @@ void GlobalRecoAnaGSI::MCParticleStudies()
     //! finalPos.Z() > 90 IN 16O_400
 
     // TO BE CHECKED
-    //  Int_t TG_region = -1;         //! hard coded
+    //  Int_t fRegTG = -1;         //! hard coded
     //  if(fExpName.IsNull())
-    //  TG_region = 59; // true in newgeom setup
+    //  fRegTG = 59; // true in newgeom setup
     //  else if(!fExpName.CompareTo("GSI/") || !GlobalRecoAna::fExpName.CompareTo("GSI_MC/"))
-    //  TG_region = 48;  //  GSI-2019
+    //  fRegTG = 48;  //  GSI-2019
     //  else if(!fExpName.CompareTo("CNAO2020/"))
-    //  TG_region = 50;  //  CNAO-2020
+    //  fRegTG = 50;  //  CNAO-2020
     //  else if(!fExpName.CompareTo("GSI2021_MC/"))
-    //  TG_region = 50; //   GSI2021_MC
+    //  fRegTG = 50; //   GSI2021_MC
 
     //-------------  MC TOTAL CROSS SECTION
     // if the particle is generated in the target and it is the fragment of a primary
     // if Z<8 and A<30, so if it is a fragment (not the primitive projectile, nor detector fragments)
     // ifenough energy/n to go beyond the target
-    if (Mid == 0 && Reg == GetParGeoG()->GetRegTarget() && particle->GetCharge() > 0 && particle->GetCharge() <= primary_cha && Ek_true > 100)
+    if (Mid == 0 && Reg == fRegTG && particle->GetCharge() > 0 && particle->GetCharge() <= fPrimaryCharge && Ek_true > 100)
       FillYieldMC("yield-true_cut", charge_tr, charge_tr, theta_tr, theta_tr, false);
 
     //-------------  MC FIDUCIAL CROSS SECTION (<8 deg)
-    if (Mid == 0 && Reg == GetParGeoG()->GetRegTarget() && particle->GetCharge() > 0 && particle->GetCharge() <= primary_cha && Ek_true > 100 && theta_tr <= 8.)
+    if (Mid == 0 && Reg == fRegTG && particle->GetCharge() > 0 && particle->GetCharge() <= fPrimaryCharge && Ek_true > 100 && theta_tr <= 8.)
       FillYieldMC("yield-true_DET", charge_tr, charge_tr, theta_tr, theta_tr, false);
 
     //-------------  MC FIDUCIAL CROSS SECTION (<2 deg)
     /*
-    if (  Mid==0 && Reg == GetParGeoG()->GetRegTarget() && particle->GetCharge()>0 && particle->GetCharge()<=primary_cha && Ek_true>100
+    if (  Mid==0 && Reg == fRegTG && particle->GetCharge()>0 && particle->GetCharge()<=fPrimaryCharge && Ek_true>100
     && theta_tr <= 2.  //  myangle // angular aperture < 8 deg
     )
     FillYieldMC("yield-true_DET2",charge_tr,theta_tr,Ek_tr_tot);
@@ -1459,7 +1473,7 @@ void GlobalRecoAnaGSI::MCParticleStudies()
     for (int icr = 0; icr < GetNtuMcReg()->GetRegionsN(); icr++)
     {
       TAMCregion *fpNtuMcReg = GetNtuMcReg()->GetRegion(icr);
-      if (fpNtuMcReg->GetCharge() > 0 && fpNtuMcReg->GetMass() > 0 && fpNtuMcReg->GetOldCrossN() == GetParGeoG()->GetRegTarget() && fpNtuMcReg->GetCrossN() == GetParGeoG()->GetRegAirPreTW())
+      if (fpNtuMcReg->GetCharge() > 0 && fpNtuMcReg->GetMass() > 0 && fpNtuMcReg->GetOldCrossN() == fRegTG && fpNtuMcReg->GetCrossN() == fRegAirBeforeTW)
       { // a particle exit from the target
         exitfragnum++;
         if (fpNtuMcReg->GetMomentum().Theta() * TMath::RadToDeg() < 10)
@@ -1651,7 +1665,7 @@ for (int i = 0; i < twpoint->GetMcTracksN(); i++)
         TAMCregion *fpNtuMcReg = GetNtuMcReg()->GetRegion(icr);
 
         // particle entering into target
-        if (fpNtuMcReg->GetCrossN() == GetParGeoG()->GetRegTarget() && fpNtuMcReg->GetOldCrossN() == GetParGeoG()->GetRegAirPreTW())
+        if (fpNtuMcReg->GetCrossN() == fRegTG && fpNtuMcReg->GetOldCrossN() == fRegAirBeforeTW)
         {
           if ((fpNtuMcReg->GetTrackIdx() - 1) == 0) // it has to be the primary
             P_beforeTG = fpNtuMcReg->GetMomentum();
@@ -1660,19 +1674,19 @@ for (int i = 0; i < twpoint->GetMcTracksN(); i++)
         if ((fpNtuMcReg->GetTrackIdx() - 1) == TrkIdMC)
         {
           // particle exit from target
-          if (fpNtuMcReg->GetCrossN() == GetParGeoG()->GetRegAirPreTW() && fpNtuMcReg->GetOldCrossN() == GetParGeoG()->GetRegTarget())
+          if (fpNtuMcReg->GetCrossN() == fRegAirBeforeTW && fpNtuMcReg->GetOldCrossN() == fRegTG)
           {
             P_cross = fpNtuMcReg->GetMomentum();
             Tof_startmc = fpNtuMcReg->GetTime() * fpFootGeo->SecToNs();
           }
           // particle crossing in the first TW layer
-          if (fpNtuMcReg->GetCrossN() <= GetParGeoTw()->GetRegStrip(1, GetParGeoTw()->GetNBars() - 1) && fpNtuMcReg->GetCrossN() >= GetParGeoTw()->GetRegStrip(1, 0))
+          if (fpNtuMcReg->GetCrossN() <= fRegLastTWbar && fpNtuMcReg->GetCrossN() >= fRegFirstTWbarLay0)
           {
             Tof_true = fpNtuMcReg->GetTime() * fpFootGeo->SecToNs();
             Beta_true = fpNtuMcReg->GetMomentum().Mag() / sqrt(fpNtuMcReg->GetMass() * fpNtuMcReg->GetMass() + fpNtuMcReg->GetMomentum().Mag() * fpNtuMcReg->GetMomentum().Mag());
           }
           // particle crossing in the calo
-          if (fpNtuMcReg->GetCrossN() >= GetParGeoCa()->GetRegCrystal(0) && fpNtuMcReg->GetCrossN() <= GetParGeoCa()->GetRegCrystal(GetParGeoCa()->GetCrystalsN() - 1))
+          if (fpNtuMcReg->GetCrossN() >= fRegFirstCAcrys && fpNtuMcReg->GetCrossN() <= fRegLastCAcrys)
           {
             // if(fpNtuMcReg->GetCrossN()==GetParGeoG()->GetRegAirTW() && fpNtuMcReg->GetOldCrossN()<=GetParGeoTw()->GetRegStrip(0,GetParGeoTw()->GetNBars()-1) && fpNtuMcReg->GetOldCrossN()>=GetParGeoTw()->GetRegStrip(0,0)){//
             Double_t M_cross_calo = fpNtuMcReg->GetMass();
@@ -1746,13 +1760,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     // particle description
     TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
     Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
-    Int_t target_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetRegTarget();
-    Int_t primary_charge = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
-    TString regvtxname("VTXP3");
-    Int_t last_vtx_plane_region = GetParGeoG()->GetCrossReg(regvtxname);
-    Int_t AirAfterTW_region = GetParGeoG()->GetRegAirTW();
-    TString regname("AIR1");
-    Int_t RegAirAfterVtx = GetParGeoG()->GetCrossReg(regname);
+    Int_t target_region = fRegTG;
     auto Mid = particle->GetMotherID();
     double mass = particle->GetMass(); // Get TRpaid-1
     auto Reg = particle->GetRegion();
@@ -1771,10 +1779,10 @@ void GlobalRecoAnaGSI::FillMCPartYields()
          || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
          ) &&
         particle->GetCharge() > 0 &&
-        particle->GetCharge() <= primary_charge && // with reasonable charge
+        particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
         // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
         // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-        (OldReg >= GetParGeoTw()->GetRegStrip(0, 0) && OldReg <= GetParGeoTw()->GetRegStrip(1, GetParGeoTw()->GetNBars() - 1)) && NewReg == AirAfterTW_region 
+        (OldReg >= fRegFirstTWbar && OldReg <= fRegLastTWbar) && NewReg == fRegAirAfterTW 
         // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     )
     {
@@ -1788,7 +1796,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         Int_t NewReg = cross->GetCrossN();
 
         // particle entering into target
-        if (NewReg == GetParGeoG()->GetRegTarget() && OldReg == GetParGeoG()->GetRegAirPreTW())
+        if (NewReg == fRegTG && OldReg == fRegAirBeforeTW)
         {
           P_beforeTG = cross->GetMomentum();
         }
@@ -1796,7 +1804,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         if ((cross->GetTrackIdx() - 1) == particle_ID)
         {
           // particle exit from target
-          if (NewReg == GetParGeoG()->GetRegAirPreTW() && OldReg == GetParGeoG()->GetRegTarget())
+          if (NewReg == fRegAirBeforeTW && OldReg == fRegTG)
           {
             P_cross = cross->GetMomentum();
           }
@@ -1804,7 +1812,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
       }
 
       Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
-      if (charge_tr > 0 && charge_tr <= primary_cha)
+      if (charge_tr > 0 && charge_tr <= fPrimaryCharge)
         FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
 
       Th_BM = -999;
@@ -1844,13 +1852,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
 
     TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
     Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
-    Int_t target_region = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetRegTarget();
-    Int_t primary_charge = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
-    TString regvtxname("VTXP3");
-    Int_t last_vtx_plane_region = GetParGeoG()->GetCrossReg(regvtxname);
-    Int_t AirAfterTW_region = GetParGeoG()->GetRegAirTW();
-    TString regname("AIR1");
-    Int_t RegAirAfterVtx = GetParGeoG()->GetCrossReg(regname);
+    Int_t target_region = fRegTG;
     auto Mid = particle->GetMotherID();
     double mass = particle->GetMass(); // Get TRpaid-1
     auto Reg = particle->GetRegion();
@@ -1869,10 +1871,10 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
          || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
          ) &&
         particle->GetCharge() > 0 &&
-        particle->GetCharge() <= primary_charge && // with reasonable charge
+        particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
         // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
         // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-        (OldReg >= GetParGeoTw()->GetRegStrip(0, 0) && OldReg <= GetParGeoTw()->GetRegStrip(1, GetParGeoTw()->GetNBars() - 1)) && NewReg == AirAfterTW_region // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
+        (OldReg >= fRegFirstTWbar && OldReg <= fRegLastTWbar) && NewReg == fRegAirAfterTW // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     )
       return true;
   }
