@@ -141,6 +141,7 @@ private:
    static const TString fgkDefaultActName;  ///< Default action name
    static const TString fgkDefaultFolder;   ///< Default campaign folder
    static const TString fgkDefaultExt;      ///< Default extension name
+   static       Bool_t  fgCheckDetOut;      ///< Flag for checking detecor out
    
 public:
    //! Get default action name
@@ -149,6 +150,8 @@ public:
    static const Char_t* GetDefaultFolder()  { return fgkDefaultFolder.Data();  }
    //! Get default extension name
    static const Char_t* GetDefaultExt()     { return fgkDefaultExt.Data();     }
+   //! Enable echking of decteor out w/r to FootGlobal.par file
+   static void EnbaleCheckDetOut()          { fgCheckDetOut = true;            }
    
    // Smart print
    static  TString SmartPrint(Int_t nb, Int_t sep = 1000);

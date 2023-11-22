@@ -23,7 +23,7 @@ ClassImp(TAGrunManager);
 const TString TAGrunManager::fgkDefaultActName = "actRunMan";
 const TString TAGrunManager::fgkDefaultFolder  = "./cammaps/";
 const TString TAGrunManager::fgkDefaultExt     = ".run";
-
+       Bool_t TAGrunManager::fgCheckDetOut     = false;
 
 //_____________________________________________________________________________
 //! Constructor
@@ -97,14 +97,16 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
       if (tgtSize != tgtSizeType && targetType != "None")
          Error("Checks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
       
-      // Check if a detetcor is off in a given run
-      vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
-      for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
-         TString str = *it;
-         
-         if (IsDetectorOff(str)) {
-            Error("Checks()", "the detector %s is NOT referenced in this run", str.Data());
-            return false;
+      if (fgCheckDetOut) {
+         // Check if a detetcor is off in a given run
+         vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
+         for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+            TString str = *it;
+            
+            if (IsDetectorOff(str)) {
+               Error("Checks()", "the detector %s is NOT referenced in this run", str.Data());
+               return false;
+            }
          }
       }
    }
