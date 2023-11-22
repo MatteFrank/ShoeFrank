@@ -623,9 +623,9 @@ string TAGparGeo::PrintBeam()
    }
 
    str << PrintCard("BEAM",TString::Format("%f",-(GetBeamPar().Energy)), "",
-            TString::Format("%f",GetBeamPar().AngDiv),
-            TString::Format("%f",-GetBeamPar().Size),
-            TString::Format("%f",-GetBeamPar().Size),
+		    TString::Format("%f",GetBeamPar().AngDiv),
+		    TString::Format("%f",-GetBeamPar().AngSpread.X()),
+		    TString::Format("%f",-GetBeamPar().AngSpread.Y()),
             "1.0",part_type) << endl;
    if(part_type == "HEAVYION")
       str << PrintCard("HI-PROPE",TString::Format("%d",GetBeamPar().AtomicNumber),
