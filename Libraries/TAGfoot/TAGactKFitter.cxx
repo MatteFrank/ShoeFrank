@@ -794,7 +794,7 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 
 	if ( m_debug > 0 )		cout << "Starting MakeFit " << endl;
 
-	int isConverged = 0;
+	bool isConverged = false;
 	int trackCounter = -1;
 	int NconvTracks = 0;
 
@@ -933,9 +933,9 @@ int TAGactKFitter::MakeFit( long evNum , TAGFselectorBase* m_selector) {
 			fitTrack->getFitStatus(fitTrack->getCardinalRep())->Print();
 		}
 
-		isConverged = 0;
-		if (  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged() &&   fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted() )
-			isConverged = 1;	// convergence check
+
+		isConverged =  fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitConverged() &&   fitTrack->getFitStatus(fitTrack->getCardinalRep())->isFitted();
+	// convergence check
 
 		if ( m_debug > 3 )		fitTrack->Print("C");
 
@@ -1846,7 +1846,7 @@ void TAGactKFitter::CalculateTrueMomentumAtTgt()
 {
 	if(TAGrecoManager::GetPar()->IsRegionMc())
 	{
-		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc("regMc", "TAMCntuRegion")->Object();
+		TAMCntuRegion *mcNtuReg = (TAMCntuRegion *)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"), "TAMCntuRegion")->Object();
 		for(int i = 0; i < mcNtuReg->GetRegionsN(); ++i)
 		{
 			TAMCregion* mcReg = (TAMCregion*)mcNtuReg->GetRegion(i);
