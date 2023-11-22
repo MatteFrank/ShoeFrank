@@ -121,7 +121,6 @@ void TAVTactBaseNtuTrack::CreateHistogram()
    AddHistogram(fpHisClusLeft);
 
    if (GetFlagMC()){
-      cout << "entro nei plot" << endl;
       Int_t primary_charge = ((TAGparGeo *)gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object())->GetBeamPar().AtomicNumber;
       fpHisTrackMultiplicity_frag = new TH1F(Form("%sTrackMultiplicity_frag", fPrefix.Data()), Form("%s - Track multiplicity of clusters when there if fragmentation (MC)", fTitleDev.Data()), 10, -0.5, 9.5);
       AddHistogram(fpHisTrackMultiplicity_frag );
@@ -780,7 +779,7 @@ void TAVTactBaseNtuTrack::PrintEfficiency()
      float clones_err = 0;
      if ((float)m_nRecoTracks[i]>0) clones_ratio = n_clones[i] / (float)m_nRecoTracks[i];
      if ((float)m_nRecoTracks[i]>0) clones_err = TMath::Sqrt(clones_ratio * abs(1 - clones_ratio) / (float)m_nRecoTracks[i]);
-     cout << "clones ratio: " << i << " " << clones_ratio << " of " << n_clones[i] << " / " << m_nRecoTracks[i] <<endl;
+     //cout << "clones ratio: " << i << " " << clones_ratio << " of " << n_clones[i] << " / " << m_nRecoTracks[i] <<endl;
      fpTrackClones->SetBinContent(i, clones_ratio);
      fpTrackClones->SetBinError(i, clones_err);
    }
