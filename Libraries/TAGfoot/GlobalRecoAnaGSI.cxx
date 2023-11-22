@@ -100,7 +100,7 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
     if (nt > 0)
-       recoEvents++;
+       recoEvents++;    //! modifica
 
     // TAWDntuTrigger *wdTrig = 0x0;
     // if (fFlagMC == false)
@@ -109,7 +109,11 @@ void GlobalRecoAnaGSI::LoopEvent()
     // }
 
     m_nClone.clear();
+    
     //*********************************************************************************** begin loop on global tracks **********************************************
+    bool moreTWpoints = CheckTwPointInMoreTracks();
+    //if ) cout << "event " << currEvent << " has more tw points in tracks " << endl;
+    
     for (int it = 0; it < nt; it++)
     {
       fGlbTrack = myGlb->GetTrack(it);
@@ -122,8 +126,10 @@ void GlobalRecoAnaGSI::LoopEvent()
       RecoGlbTrkLoopSetVariables();
 
       if (fFlagMC)
-      {
+      { 
+        
         MCGlbTrkLoopSetVariables();
+        
 
         // study of MC clones: different glb tracks with the same MC ID
         m_nClone[Z_true][TrkIdMC]++;
@@ -468,27 +474,6 @@ void GlobalRecoAnaGSI::LoopEvent()
 
               //// =================== RECO CHI2 cut + multitrack
 
-              res = 0;
-              res_temp = 0;
-              for (int i = 0; i < fGlbTrack->GetPointsN(); i++)
-              {
-                auto point = fGlbTrack->GetPoint(i);
-                if ((string)point->GetDevName() == "MSD")
-                {
-                  if (point->GetSensorIdx() % 2 == 0) // if it is the sensor x of the msd
-                    res_temp = point->GetMeasPosition().X() - point->GetFitPosition().X();
-                  else
-                    res_temp = point->GetMeasPosition().Y() - point->GetFitPosition().Y();
-                }
-
-                if ((string)point->GetDevName() == "VT")
-                {
-                  res_temp = (point->GetMeasPosition() - point->GetFitPosition()).Mag();
-                }
-                if (res_temp > res)
-                  res = res_temp;
-              }
-
               if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt>1)
               {
                 if (isGoodReco(TrkIdMC))
@@ -572,8 +557,121 @@ void GlobalRecoAnaGSI::LoopEvent()
               else
                 ChargeStudies("Z8_VTChi2_nomatch", 8, fGlbTrack);
 
-  
-  
+              // // =================== MC VTX + Chi2 cuts + multitrack
+
+              if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1)
+              {
+
+                if (isGoodReco(TrkIdMC))
+                {
+                  if (Z_true > 0. && Z_true <= primary_cha )
+                  {
+                    FillYieldMC("yield-N_MVTChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                  }
+                }
+                if (Z_true > 0. && Z_true <= primary_cha)
+                  FillYieldMC("yield-N_MVTChi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+
+                // if (Z_true > 0. && Z_true <= primary_cha)
+                MigMatrixPlots("MigMatrixMVTChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+
+                if (Z_true > 0. && Z_true <= primary_cha)
+                {
+                  FillYieldReco("yield-N_MVTChi2_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
+                }
+                if (Z_true > 0. && Z_true <= primary_cha)
+                {
+                  FillYieldReco("yield-N_MVTChi2_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+                }
+
+                if (Z_meas > 0. && Z_meas <= primary_cha)
+                {
+                  FillYieldReco("yield-N_MVTChi2_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+                }
+
+                if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+                {
+                  FillYieldReco("yield-N_MVTChi2_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
+                }
+
+                // if (initTWPosition< 40){
+                //   FillYieldReco("yield-N_TWCutZ_reco_Th_Reco", Z_meas, Th_recoBM);
+                //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
+                // }
+
+                ChargeStudies("Z8_MVTChi2_match", 8, fGlbTrack);
+              }
+              else
+                ChargeStudies("Z8_MVTChi2_nomatch", 8, fGlbTrack);
+
+
+
+
+
+
+
+
+ // // =================== Chi2 cuts + multitrack + NO TW in multitracks
+
+              if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && (moreTWpoints == false ))
+              {
+
+                if (isGoodReco(TrkIdMC))
+                {
+                  if (Z_true > 0. && Z_true <= primary_cha )
+                  {
+                    FillYieldMC("yield-N_MChi2TWTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                  }
+                }
+                if (Z_true > 0. && Z_true <= primary_cha)
+                  FillYieldMC("yield-N_MChi2TWTAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+
+                // if (Z_true > 0. && Z_true <= primary_cha)
+                MigMatrixPlots("MigMatrixMChi2TWT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+
+                if (Z_true > 0. && Z_true <= primary_cha)
+                {
+                  FillYieldReco("yield-N_MChi2TWT_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
+                }
+                if (Z_true > 0. && Z_true <= primary_cha)
+                {
+                  FillYieldReco("yield-N_MChi2TWT_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+                }
+
+                if (Z_meas > 0. && Z_meas <= primary_cha)
+                {
+                  FillYieldReco("yield-N_MChi2TWT_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+                }
+
+                if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+                {
+                  FillYieldReco("yield-N_MChi2TWT_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
+                }
+
+                // if (initTWPosition< 40){
+                //   FillYieldReco("yield-N_TWCutZ_reco_Th_Reco", Z_meas, Th_recoBM);
+                //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
+                // }
+
+                ChargeStudies("Z8_MChi2TWT_match", 8, fGlbTrack);
+              }
+              else
+                ChargeStudies("Z8_MChi2TWT_nomatch", 8, fGlbTrack);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               //// ===================ALL TRACKS
               ChargeStudies("Z8_all", 8, fGlbTrack);
 
@@ -614,7 +712,26 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     } //********* end loop on global tracks ****************
 
-    if (fFlagMC)
+    //cout << "TWPoint ID in the event: "<< endl;
+    
+    //   for (int i = 0; i < vectTwId.size(); i++)
+    //   {
+    //     cout << vectTwId.at(i) << " ";
+    //   }
+    // cout << endl;
+    
+
+    // for (  Int_t id : vectTwId ) ++m_twId[id];
+    // for (auto const& e : m_twId)
+    // {
+    //   if (e.second >1){
+    //     cout << "event: " << currEvent << endl;
+    //     cout << e.first << " : " << e.second << std::endl;
+    //   }
+    // }
+
+
+        if (fFlagMC)
     {
       // MCParticleStudies();
       //***** loop on every TAMCparticle:
@@ -741,6 +858,18 @@ void GlobalRecoAnaGSI::Booking()
     BookMigMatrix("MigMatrixChi2", true);
     BookChargeStudies("Z8_Chi2all");
 
+
+    // chi2 cuts on track + multitrack
+    BookYield("yield-N_MChi2_Z_reco_Th_Reco", false);
+    BookYield("yield-N_MChi2_Z_true_Th_Reco", false);
+    BookYield("yield-N_MChi2GoodReco", true);
+    BookYield("yield-N_MChi2AllReco", true);
+    BookYield("yield-N_MChi2_Z_meas_Th_True", false);
+    BookYield("yield-N_MChi2_Z_measEqualTrue_Th_True", false);
+    BookMigMatrix("MigMatrixMChi2", true);
+    BookChargeStudies("Z8_MChi2all");
+
+
     // VT +  chi2 cuts on track
     BookYield("yield-N_VTChi2_Z_reco_Th_Reco", false);
     BookYield("yield-N_VTChi2_Z_true_Th_Reco", false);
@@ -752,15 +881,29 @@ void GlobalRecoAnaGSI::Booking()
     BookChargeStudies("Z8_VTChi2_match");
     BookChargeStudies("Z8_VTChi2_nomatch");
 
-    // chi2 cuts on track + multitrack filter
-    BookYield("yield-N_MChi2_Z_reco_Th_Reco", false);
-    BookYield("yield-N_MChi2_Z_true_Th_Reco", false);
-    BookYield("yield-N_MChi2GoodReco", true);
-    BookYield("yield-N_MChi2AllReco", true);
-    BookYield("yield-N_MChi2_Z_meas_Th_True", false);
-    BookYield("yield-N_MChi2_Z_measEqualTrue_Th_True", false);
-    BookMigMatrix("MigMatrixMChi2", true);
-    BookChargeStudies("Z8_MChi2all");
+    // VT +  chi2 + multitrack cuts on track
+    BookYield("yield-N_MVTChi2_Z_reco_Th_Reco", false);
+    BookYield("yield-N_MVTChi2_Z_true_Th_Reco", false);
+    BookYield("yield-N_MVTChi2GoodReco", true);
+    BookYield("yield-N_MVTChi2AllReco", true);
+    BookYield("yield-N_MVTChi2_Z_meas_Th_True", false);
+    BookYield("yield-N_MVTChi2_Z_measEqualTrue_Th_True", false);
+    BookMigMatrix("MigMatrixMVTChi2", true);
+    BookChargeStudies("Z8_MVTChi2_match");
+    BookChargeStudies("Z8_MVTChi2_nomatch");
+
+
+    // chi2 + multitrack cuts on track  + no more tw points in tracks
+    BookYield("yield-N_MChi2TWT_Z_reco_Th_Reco", false);
+    BookYield("yield-N_MChi2TWT_Z_true_Th_Reco", false);
+    BookYield("yield-N_MChi2TWTGoodReco", true);
+    BookYield("yield-N_MChi2TWTAllReco", true);
+    BookYield("yield-N_MChi2TWT_Z_meas_Th_True", false);
+    BookYield("yield-N_MChi2TWT_Z_measEqualTrue_Th_True", false);
+    BookMigMatrix("MigMatrixMChi2TWT", true);
+    BookChargeStudies("Z8_MChi2TWT_match");
+    BookChargeStudies("Z8_MChi2TWT_nomatch");
+
   }
   else
   {
@@ -1360,6 +1503,28 @@ void GlobalRecoAnaGSI::RecoGlbTrkLoopSetVariables()
   return;
 }
 
+
+bool GlobalRecoAnaGSI::CheckTwPointInMoreTracks(){
+  vectTwId.clear();
+  Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
+  for (int it = 0; it < nt; it++)
+  {
+    fGlbTrack = myGlb->GetTrack(it);
+    if (!fGlbTrack->HasTwPoint())
+    {
+      continue;
+    }
+
+  TAGpoint *twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
+  
+  if ((std::find(vectTwId.begin(), vectTwId.end(), twpoint -> GetClusterIdx()) != vectTwId.end())) // if twpoin id already in the vector
+    return true;
+    else  vectTwId.push_back(twpoint -> GetClusterIdx());
+
+  }
+  return false;
+}
+
 void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
 {
 
@@ -1377,6 +1542,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   TAGpoint *vtcluster;
   TAGpoint *msdcluster;
   TAGpoint *point;
+
 
   // cout << " track with " << fGlbTrack->GetPointsN ()<< " points " << endl;
   // for (int i = 0; i < 4; i++) // i put all charges of a vtx cluster in the vector
@@ -1407,6 +1573,10 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   // }
   vecVtZMC.clear();
   vecMsdZMC.clear();
+
+
+
+
   for (int i = 0; i < fGlbTrack->GetPointsN(); i++) // for all the points of a track...
   {
   point  = fGlbTrack->GetPoint(i);
