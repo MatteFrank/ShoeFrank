@@ -263,11 +263,12 @@ void BaseReco::BeforeEventLoop()
    GlobalSettings();
    
    ReadParFiles();
-   CreateRawAction();
-   CreateRecAction();
-
+   
    CampaignChecks();
 
+   CreateRawAction();
+   CreateRecAction();
+   
    AddRequiredItem();
 
    OpenFileIn();

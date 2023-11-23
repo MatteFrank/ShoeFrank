@@ -23,7 +23,6 @@ ClassImp(TAGrunManager);
 const TString TAGrunManager::fgkDefaultActName = "actRunMan";
 const TString TAGrunManager::fgkDefaultFolder  = "./cammaps/";
 const TString TAGrunManager::fgkDefaultExt     = ".run";
-       Bool_t TAGrunManager::fgCheckDetOut     = false;
 
 //_____________________________________________________________________________
 //! Constructor
@@ -97,18 +96,30 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
       if (tgtSize != tgtSizeType && targetType != "None")
          Error("Checks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
       
-      if (fgCheckDetOut) {
          // Check if a detetcor is off in a given run
          vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
          for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
             TString str = *it;
             
             if (IsDetectorOff(str)) {
-               Error("Checks()", "the detector %s is NOT referenced in this run", str.Data());
-               return false;
+               Warning("Checks()", "the detector %s is NOT referenced in this run, Disbale it", str.Data());
+               if (str == "ST")
+                  TAGrecoManager::GetPar()->IncludeST(false);
+               if (str == "BM")
+                  TAGrecoManager::GetPar()->IncludeBM(false);
+               if (str == "VT")
+                  TAGrecoManager::GetPar()->IncludeVT(false);
+               if (str == "IT")
+                  TAGrecoManager::GetPar()->IncludeIT(false);
+               if (str == "MSD")
+                  TAGrecoManager::GetPar()->IncludeMSD(false);
+               if (str == "TW")
+                  TAGrecoManager::GetPar()->IncludeTW(false);
+               if (str == "CA")
+                  TAGrecoManager::GetPar()->IncludeCA(false);
             }
          }
-      }
+      printf("\n");
    }
    
    return true;
@@ -346,6 +357,11 @@ void TAGrunManager::DecodeRunLine(TString& line)
                printf("Comments: %s\n", runParameter.Comments.Data());
             break;
             
+         case 5:
+            runParameter.DetectorOut =  TAGparTools::Tokenize(list[i].Data(), " " );
+            if(FootDebugLevel(1))
+               printf("DetectorOut: %s\n", list[i].Data());
+            
          default:
             break;
       }
@@ -399,11 +415,6 @@ ostream& operator<< (std::ostream& out, const TAGrunManager::TypeParameter_t& ty
       out  << "  Magnet ON:            " << type.MagnetFlag.Data() << endl;
       out  << "  Target Size:          "  <<  Form("%4.2f", type.TargetSize) << " cm" << endl;
       out  << "  Total Events:         " << TAGrunManager::SmartPrint(type.TotalEvts) << endl;
-      out  << "  DetectorOut:         ";
-      for (Int_t j = 0; j < (int) type.DetectorOut.size(); ++j)
-         out  << " " << type.DetectorOut[j].data();
-      
-      out << endl;
       out  << "  Comments:             " << type.Comments.Data() << endl;
       
       out  << endl;
@@ -430,7 +441,11 @@ ostream& operator<< (ostream& out, const TAGrunManager::RunParameter_t& run)
    out << Form("  Duration:             %d s [%02dh:%02dm:%02ds]\n", duration, hours, minutes, seconds);
    out << Form("  Daq Rate:             %d Hz\n", run.DaqRate);
    out << Form("  Comments:             %s\n", run.Comments.Data());
-   
+   out  << "  DetectorOut:         ";
+   for (Int_t j = 0; j < (int) run.DetectorOut.size(); ++j)
+      out  << " " << run.DetectorOut[j].data();
+   out << endl;
+
    return  out;
 }
 
@@ -441,7 +456,7 @@ ostream& operator<< (ostream& out, const TAGrunManager::RunParameter_t& run)
 //! \param[in] detName detector name
 Bool_t TAGrunManager::IsDetectorOff(const TString& detName)
 {
-   for ( vector<string>::iterator it = fCurType.DetectorOut.begin(); it != fCurType.DetectorOut.end(); ++it) {
+   for ( vector<string>::iterator it = fCurRun.DetectorOut.begin(); it != fCurRun.DetectorOut.end(); ++it) {
       string tmp = *it;
       TString name = tmp.data();
       if (name.Contains(detName.Data()))
@@ -490,11 +505,40 @@ void TAGrunManager::Print(Option_t* opt) const
 //! \param[in] type type number
 void TAGrunManager::PrintRuns() const
 {
+
    for(auto iterator = fRunParameter.begin(); iterator != fRunParameter.end(); ++iterator ) {
       RunParameter_t run = iterator->second;
-      printf("%4d\t \"%s\"\t \"%s\"\t %6d\t %5d\t %4d\t\t %2d\t\t \"%s\"\n", run.RunId, run.StartTime.Data(), run.StopTime.Data(),
-             run.DaqEvts, run.Duration, run.DaqRate, run.RunType, run.Comments.Data());
+      
+      TString out;
+      for (auto& it: run.DetectorOut)
+         out += Form("%s ", it.data());
+      
+      printf("%4d\t \"%s\"\t \"%s\"\t %6d\t %5d\t %4d\t %2d\t \"%s\"\t \"%s\"\n", run.RunId, run.StartTime.Data(), run.StopTime.Data(),
+             run.DaqEvts, run.Duration, run.DaqRate, run.RunType, run.Comments.Data(), out.Data());
    }
+}
+
+//------------------------------------------+-----------------------------------
+//! Return inof run line
+//!
+//! \param[in] RunId run number
+TString TAGrunManager::GetRunLine(Int_t runId) const
+{
+   auto itr = fRunParameter.find(runId);
+   if (itr == fRunParameter.end()) {
+      return TString("");
+   }
+
+   RunParameter_t run = fRunParameter.at(runId);
+   
+   TString outDet;
+   for (auto& it: run.DetectorOut)
+      outDet += Form("%s ", it.data());
+   
+   TString out = Form("%4d\t \"%s\"\t \"%s\"\t %6d\t %5d\t %4d\t %2d\t \"%s\"\t  \"%s\"", run.RunId, run.StartTime.Data(), run.StopTime.Data(),
+          run.DaqEvts, run.Duration, run.DaqRate, run.RunType, run.Comments.Data(), outDet.Data());
+   
+   return out;
 }
 
 //------------------------------------------+-----------------------------------
