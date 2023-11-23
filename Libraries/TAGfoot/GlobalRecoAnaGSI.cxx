@@ -1030,7 +1030,7 @@ void GlobalRecoAnaGSI::SetupTree()
     // fpNtuTrackVtx = new TAGdataDsc("vttrack", new TAVTntuTrack());
     fpNtuVtx = new TAGdataDsc("vtvtx", new TAVTntuVertex());
     gTAGroot->AddRequiredItem("vtclus");
-    gTAGroot->AddRequiredItem("vttrack");
+    // gTAGroot->AddRequiredItem("vttrack");
     gTAGroot->AddRequiredItem("vtvtx");
     myReader->SetupBranch(fpNtuClusVtx);
     // myReader->SetupBranch(fpNtuTrackVtx);
@@ -1071,15 +1071,15 @@ void GlobalRecoAnaGSI::SetupTree()
   // }
   if (TAGrecoManager::GetPar()->IncludeTW())
   {
-    fpNtuRecTw = new TAGdataDsc(new TATWntuPoint());
-    gTAGroot->AddRequiredItem("twpt");
-    myReader->SetupBranch(fpNtuRecTw);
+    // fpNtuRecTw = new TAGdataDsc(new TATWntuPoint());
+    // gTAGroot->AddRequiredItem("twpt");
+    // myReader->SetupBranch(fpNtuRecTw);
 
     if ( !fFlagMC )
     {
-      fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
-      gTAGroot->AddRequiredItem("WDtrigInfo");
-      myReader->SetupBranch(fpNtuWDtrigInfo);
+    //   fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
+    //   gTAGroot->AddRequiredItem("WDtrigInfo");
+    //   myReader->SetupBranch(fpNtuWDtrigInfo);
     }
     // if (fFlagMC)
     // {
@@ -1090,9 +1090,9 @@ void GlobalRecoAnaGSI::SetupTree()
   }
   if (TAGrecoManager::GetPar()->IncludeCA())
   {
-    fpNtuClusCa = new TAGdataDsc(new TACAntuCluster());
-    gTAGroot->AddRequiredItem("caclus");
-    myReader->SetupBranch(fpNtuClusCa);
+    // fpNtuClusCa = new TAGdataDsc(new TACAntuCluster());
+    // gTAGroot->AddRequiredItem("caclus");
+    // myReader->SetupBranch(fpNtuClusCa);
     // if (fFlagMC)
     // {
     //   fpNtuMcCa = new TAGdataDsc(FootDataDscMcName(kCAL), new TAMCntuHit());
@@ -1152,9 +1152,9 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
   // myVtNtuClus = (TAVTntuCluster*)fpNtuClusVtx->GenerateObject();
   myVtNtuVtx = (TAVTntuVertex *)fpNtuVtx->GenerateObject();
 
-  myTWNtuPt = (TATWntuPoint *)fpNtuRecTw->GenerateObject();
-  myMSDNtuHit = (TAMSDntuHit *)fpNtuRecTw->GenerateObject();
-  pCaNtuClu = (TACAntuCluster *)fpNtuClusCa->GenerateObject();
+  // myTWNtuPt = (TATWntuPoint *)fpNtuRecTw->GenerateObject();
+  // myMSDNtuHit = (TAMSDntuHit *)fpNtuRecTw->GenerateObject();
+  // pCaNtuClu = (TACAntuCluster *)fpNtuClusCa->GenerateObject();
   myBMNtuTrk = (TABMntuTrack *)fpNtuTrackBm->GenerateObject();
 
   if (fFlagMC)
@@ -1162,10 +1162,10 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
     myMcNtuEvent = (TAMCntuEvent *)fpNtuMcEvt->GenerateObject();
     myMcNtuPart = (TAMCntuPart *)fpNtuMcTrk->GenerateObject();
   }
-  else
-  {
-    wdTrig = (TAWDntuTrigger *)fpNtuWDtrigInfo->GenerateObject();
-  }
+  // else
+  // {
+  //   wdTrig = (TAWDntuTrigger *)fpNtuWDtrigInfo->GenerateObject();
+  // }
 
   // set variables
   fPrimaryCharge = GetParGeoG()->GetBeamPar().AtomicNumber;
