@@ -70,7 +70,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookYield(string path, bool enableMigMatr= false);
   void BookMigMatrix(string path, bool enableMigMatr= false);
   void BookChargeStudies(string path);
-  bool CheckTwPointInMoreTracks(); // check if more than one glb track has the same tw point
+  vector<bool> CheckTwPointInMoreTracks(); // check if more than one glb track has the same tw point
     void RecoGlbTrkLoopSetVariables(); // Set Reco variables, to be done for each glbal track
     void MCGlbTrkLoopSetVariables();   // Set MC variables, to be done for each glbal track
     void MCParticleStudies();          // Loop on MC particles
@@ -156,7 +156,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
     vector<Int_t> vecTwTrkId;        // vector of all MC id of the twpoint
     vector<vector<Int_t>> vecVtZMC;  // vector of all MC charge of the 4 vt hits
     vector<vector<Int_t>> vecMsdZMC; // vector of all MC charge of the 6 msd clus
-    vector<Int_t> vectTwId;          // vector of the twpoint reco ID
+    vector<bool> hasSameTwPoint;     //vector of bool of tracks with the same tw point in the same event
+
     std::map<Int_t, Int_t> m_twId;
 
     // setting variables maybe we should use a config file?

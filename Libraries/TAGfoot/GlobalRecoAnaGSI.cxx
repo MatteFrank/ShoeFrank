@@ -109,9 +109,11 @@ void GlobalRecoAnaGSI::LoopEvent()
     // }
 
     m_nClone.clear();
-    
-    //*********************************************************************************** begin loop on global tracks **********************************************
-    bool moreTWpoints = CheckTwPointInMoreTracks();
+
+    hasSameTwPoint.clear();
+    hasSameTwPoint = CheckTwPointInMoreTracks();
+
+    //*********************************************************************************** begin loop on global tracks *********************************************
     //if ) cout << "event " << currEvent << " has more tw points in tracks " << endl;
     
     for (int it = 0; it < nt; it++)
@@ -201,7 +203,7 @@ void GlobalRecoAnaGSI::LoopEvent()
             VTZ8Match = VTZ8Match && false;
         }
 
-        if (VTZ8Match == true) {   // if a primary entered the first layer of the msd and did not fragmented up to its last plane...
+        if (VTZ8Match == true) {   // if a primary entered the first layer of the vtx and did not fragmented up to its last plane...
           if (Z_meas > 7)    // ... and the charge reconstructed in TW is higher than 7
             VTMatch = true;  // --> it means there is no fragmentation between VTX and up to TW
           else
@@ -613,7 +615,7 @@ void GlobalRecoAnaGSI::LoopEvent()
 
  // // =================== Chi2 cuts + multitrack + NO TW in multitracks
 
-              if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && (moreTWpoints == false ))
+              if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false)
               {
 
                 if (isGoodReco(TrkIdMC))
@@ -1226,7 +1228,7 @@ void GlobalRecoAnaGSI::AfterEventLoop()
   file_out->Write();
 
   cout << "Closing..." << endl;
-  file_out->Close();
+  //file_out->Close();
 
   return;
 }
@@ -1504,25 +1506,36 @@ void GlobalRecoAnaGSI::RecoGlbTrkLoopSetVariables()
 }
 
 
-bool GlobalRecoAnaGSI::CheckTwPointInMoreTracks(){
-  vectTwId.clear();
+vector<bool> GlobalRecoAnaGSI::CheckTwPointInMoreTracks(){
+  vector<Int_t> vectTwId;          // vector of the twpoint reco ID
+  vector<Int_t> vecSameTWid;       // vector of the twpoint reco ID wich are the same in more than a track
+  vector<bool> hasSameTWid;        // vector of bool of tracks with same tw point
   Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
+  
   for (int it = 0; it < nt; it++)
   {
     fGlbTrack = myGlb->GetTrack(it);
     if (!fGlbTrack->HasTwPoint())
     {
+      vectTwId.push_back(-1);
       continue;
     }
 
   TAGpoint *twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
   
-  if ((std::find(vectTwId.begin(), vectTwId.end(), twpoint -> GetClusterIdx()) != vectTwId.end())) // if twpoin id already in the vector
-    return true;
-    else  vectTwId.push_back(twpoint -> GetClusterIdx());
-
+  if ((std::find(vectTwId.begin(), vectTwId.end(), twpoint -> GetClusterIdx()) != vectTwId.end())) // if twpoint id is already in the vector
+    vecSameTWid.push_back(twpoint -> GetClusterIdx());
+  vectTwId.push_back(twpoint->GetClusterIdx());
   }
-  return false;
+
+  for (auto allTWid : vectTwId)
+  {
+      if ((std::find(vecSameTWid.begin(), vecSameTWid.end(), allTWid) != vecSameTWid.end()))
+        hasSameTWid.push_back(1);
+      else hasSameTWid.push_back(0);
+  }
+
+  return hasSameTWid;
 }
 
 void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
