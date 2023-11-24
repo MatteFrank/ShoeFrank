@@ -96,29 +96,29 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
       if (tgtSize != tgtSizeType && targetType != "None")
          Error("Checks()", "Target size in TAGdetector file (%.1f) different as given by run manager (%.1f)", tgtSize, tgtSizeType);
       
-         // Check if a detetcor is off in a given run
-         vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
-         for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
-            TString str = *it;
-            
-            if (IsDetectorOff(str)) {
-               Warning("Checks()", "the detector %s is NOT referenced in this run, Disbale it", str.Data());
-               if (str == "ST")
-                  TAGrecoManager::GetPar()->IncludeST(false);
-               if (str == "BM")
-                  TAGrecoManager::GetPar()->IncludeBM(false);
-               if (str == "VT")
-                  TAGrecoManager::GetPar()->IncludeVT(false);
-               if (str == "IT")
-                  TAGrecoManager::GetPar()->IncludeIT(false);
-               if (str == "MSD")
-                  TAGrecoManager::GetPar()->IncludeMSD(false);
-               if (str == "TW")
-                  TAGrecoManager::GetPar()->IncludeTW(false);
-               if (str == "CA")
-                  TAGrecoManager::GetPar()->IncludeCA(false);
-            }
+      // Check if a detetcor is off in a given run
+      vector<TString> list = TAGrecoManager::GetPar()->DectIncluded();
+      for (vector<TString>::const_iterator it = list.begin(); it != list.end(); ++it) {
+         TString str = *it;
+         
+         if (IsDetectorOff(str)) {
+            Warning("Checks()", "the detector %s is NOT referenced in this run, Disbale it", str.Data());
+            if (str == "ST")
+               TAGrecoManager::GetPar()->IncludeST(false);
+            if (str == "BM")
+               TAGrecoManager::GetPar()->IncludeBM(false);
+            if (str == "VT")
+               TAGrecoManager::GetPar()->IncludeVT(false);
+            if (str == "IT")
+               TAGrecoManager::GetPar()->IncludeIT(false);
+            if (str == "MSD")
+               TAGrecoManager::GetPar()->IncludeMSD(false);
+            if (str == "TW")
+               TAGrecoManager::GetPar()->IncludeTW(false);
+            if (str == "CA")
+               TAGrecoManager::GetPar()->IncludeCA(false);
          }
+      }
       printf("\n");
    }
    
