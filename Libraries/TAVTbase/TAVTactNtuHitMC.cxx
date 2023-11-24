@@ -191,12 +191,6 @@ void TAVTactNtuHitMC::DigitizeHit(Int_t sensorId, Float_t de, TVector3& posIn, T
    TAMCpart*  track = pNtuEve->GetTrack(trackIdx);
    Int_t  Z = track->GetCharge();
    
-   
-   Float_t smear = gRandom->Uniform(0, 100.);
-   
-   if (sensorId == 2 && smear > 34) return;
-
-   
    if (!fDigitizer->Process(de, posIn[0], posIn[1], posIn[2], posOut[2], 0, sensorId, Z)) return;
    FillPixels(sensorId, idx, trackIdx);
    
@@ -236,7 +230,6 @@ void TAVTactNtuHitMC::FillPixels(Int_t sensorId, Int_t hitId, Int_t trackIdx, Bo
          
          Float_t smear = gRandom->Uniform(0, 1.);
          Float_t eff   = GetQuadrantEff(sensorId, col);
-         
          if (smear > eff) continue;
          
          Double_t value = digiMap[it->first];
