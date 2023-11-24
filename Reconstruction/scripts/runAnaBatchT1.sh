@@ -340,7 +340,7 @@ arguments             = \$(dir)
 error                 = ${mergeSingleDirExec_base}_\$(dir).err
 output                = ${mergeSingleDirExec_base}_\$(dir).out
 log                   = ${mergeSingleDirExec_base}_\$(dir).log
-priority              = -5
+priority              = 0
 
 queue dir from (
 $(cat ${outFolder}/dirs.txt)
@@ -393,7 +393,7 @@ executable            = ${mergeJobExec}
 error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
-priority              = -10
+priority              = -5
 queue
 EOF
 
