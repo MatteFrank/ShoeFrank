@@ -74,6 +74,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParGeoTw(0x0),
    fField(0x0),
    fpParCalBm(0x0),
+   fpParCalVtx(0x0),
    fpParCalMsd(0x0),
    fpParCalTw(0x0),
    fpParCalCa(0x0),
@@ -644,6 +645,11 @@ void BaseReco::ReadParFiles()
          TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
          parFileName = fCampManager->GetCurMapFile(FootBaseName("TAVTparGeo"), fRunNumber);
          parMap->FromFile(parFileName.Data());
+      } else {
+         fpParCalVtx = new TAGparaDsc(new TAVTparCal());
+         TAVTparCal* parCal = (TAVTparCal*)fpParCalVtx->Object();
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAVTparCal"), fRunNumber);
+         parCal->FromFile(parFileName.Data());
       }
    }
 
