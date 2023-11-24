@@ -643,12 +643,12 @@ void BaseReco::ReadParFiles()
       if(!fFlagMC) {
          fpParMapVtx = new TAGparaDsc(new TAVTparMap());
          TAVTparMap* parMap = (TAVTparMap*)fpParMapVtx->Object();
-         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAVTparGeo"), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAVTparMap"), fRunNumber);
          parMap->FromFile(parFileName.Data());
       } else {
          fpParCalVtx = new TAGparaDsc(new TAVTparCal());
          TAVTparCal* parCal = (TAVTparCal*)fpParCalVtx->Object();
-         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAVTparCal"), fRunNumber);
+         parFileName = fCampManager->GetCurCalFile(FootBaseName("TAVTparCal"), fRunNumber);
          parCal->FromFile(parFileName.Data());
       }
    }
@@ -672,7 +672,7 @@ void BaseReco::ReadParFiles()
       if(!fFlagMC) {
          fpParMapIt = new TAGparaDsc(new TAITparMap());
          TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
-         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAITparGeo"), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAITparMap"), fRunNumber);
          parMap->FromFile(parFileName.Data());
       }
    }
