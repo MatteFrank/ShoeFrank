@@ -85,7 +85,7 @@ void GlobalRecoAnaGSI::LoopEvent()
   { // for every event
     // fFlagMC = false;     //N.B.: for MC FAKE REAL
 
-    if (currEvent == nTotEv)
+    if (currEvent >= nTotEv)
       break;
 
     if (currEvent % frequency == 0 || FootDebugLevel(1))
@@ -208,7 +208,7 @@ void GlobalRecoAnaGSI::LoopEvent()
             VTMatch = false;
         }
 
-        if ((std::find(vecVtZMC.at(0).begin(), vecVtZMC.at(0).end(), 8) != vecVtZMC.at(0).end()) && (VTZ8Match == false)) 
+        if ( vecVtZMC.size() > 0 && (std::find(vecVtZMC.at(0).begin(), vecVtZMC.at(0).end(), 8) != vecVtZMC.at(0).end()) && (VTZ8Match == false)) 
         // if the first cluster was a Z=8 but then some fragmentation happened...
         {
           VTMatch = false;
@@ -278,7 +278,7 @@ void GlobalRecoAnaGSI::LoopEvent()
               MSDMatch = false;
           }
 
-          if ((std::find(vecMsdZMC.at(0).begin(), vecMsdZMC.at(0).end(), 8) != vecMsdZMC.at(0).end()) && (MsdZ8Match == false)) // if the first cluster was a Z=8 but then some fragmentation happened...
+          if (vecMsdZMC.size() > 0 && (std::find(vecMsdZMC.at(0).begin(), vecMsdZMC.at(0).end(), 8) != vecMsdZMC.at(0).end()) && (MsdZ8Match == false)) // if the first cluster was a Z=8 but then some fragmentation happened...
           {
             MSDMatch = false;
           }
