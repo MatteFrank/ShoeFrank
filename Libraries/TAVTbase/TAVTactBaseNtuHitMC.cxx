@@ -14,7 +14,7 @@
 
 
 #include "TAVTparGeo.hxx"
-
+#include "TAVTparCal.hxx"
 #include "TAVTparConf.hxx"
 
 #include "TAVTntuHit.hxx"
@@ -46,10 +46,11 @@ Int_t   TAVTactBaseNtuHitMC::fgMcNoiseId       = -99;
 //!
 //! \param[in] name action name
 //! \param[in] pGeoMap geometry parameter descriptor
-TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap, TAGparaDsc* pConfig)
+TAVTactBaseNtuHitMC::TAVTactBaseNtuHitMC(const char* name,  TAGparaDsc* pGeoMap, TAGparaDsc* pConfig, TAGparaDsc* pCalib)
  : TAGaction(name, "TAVTactBaseNtuHitMC - NTuplize hit MC data"),
    fpGeoMap(pGeoMap),
    fpConfig(pConfig),
+   fpCalib(pCalib),
 	fNoisyPixelsN(0),
    fPileup(false),
    fSigmaNoiseLevel(-1)
@@ -234,4 +235,25 @@ void TAVTactBaseNtuHitMC::FillPileup(vector<RawMcHit_t>& storedEvtInfo, TAMChit*
    mcHit.tkid = -666;// trackIdx;
    mcHit.htid = hitIdx;
    storedEvtInfo.push_back(mcHit);
+}
+
+//______________________________________________________________________________
+//! Fill pile up information in the structre when pileup active
+//!
+//! \param[in] col column number
+Float_t TAVTactBaseNtuHitMC::GetQuadrantEff(Int_t sensorId, Int_t aColumn)
+{
+   TAVTparGeo* pGeoMap  = (TAVTparGeo*) fpGeoMap->Object();
+   TAVTparCal* pCalMap  = (TAVTparCal*) fpCalib->Object();
+   
+   Int_t sizeQ = pGeoMap->GetPixelsNy()/4;
+   Int_t quad = -1;
+   for (Int_t i = 0; i < 4; ++i) {
+      if (aColumn >= sizeQ*i && aColumn < (i+1)*sizeQ)
+         quad = i;
+   }
+
+   Float_t eff = pCalMap->GetEffPar(sensorId).QuadEff[quad];
+   
+   return eff;
 }

@@ -44,6 +44,7 @@
 #include "TADIgeoField.hxx"
 
 #include "TABMparCal.hxx"
+#include "TAVTparCal.hxx"
 #include "TAMSDparCal.hxx"
 #include "TATWparCal.hxx"
 #include "TACAparCal.hxx"
@@ -381,6 +382,7 @@ protected:
    TAGparaDsc*           fpParGeoCa;      ///< CAL geometry parameter
    
    TAGparaDsc*           fpParCalBm;      ///< BM calibration parameter
+   TAGparaDsc*           fpParCalVtx;     ///< VTX calibration parameter
    TAGparaDsc*           fpParCalMsd;     ///< MSD calibration parameter
    TAGparaDsc*           fpParCalTw;      ///< TW calibration parameter
    TAGparaDsc*           fpParCalCa;      ///< CAL calibration parameter

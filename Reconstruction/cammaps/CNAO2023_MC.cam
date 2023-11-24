@@ -28,9 +28,10 @@ NumberFiles: 1
 "./geomaps/CNAO2023_MC/TAGdetector.geo": 1;2;3
 
 DetectorName: "VT"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/CNAO2023_MC/TAVTdetector.geo": -1
 "./config/CNAO2023_MC/TAVTdetector.cfg": -1
+"./calib/CNAO2023_MC/TAVTdetector.cal": -1
 
 DetectorName: "IT"
 NumberFiles: 2

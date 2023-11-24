@@ -251,7 +251,7 @@ EOF
     condor_submit -spool ${filename_sub}
 
     #Merge files if requested!!
-    if [[ $mergeFilesOpt -eq 1 && $nFiles -ge 1 ]]; then
+    if [[ $mergeFilesOpt -eq 1 ]]; then
         ##Create merge job -> merge all single output files in the correct order
         echo "Creating job for file merging!"
         mergeJobExec="${HTCfolder}/MergeFiles_${campaign}_${runNumber}.sh"

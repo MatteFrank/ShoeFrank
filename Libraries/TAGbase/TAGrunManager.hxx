@@ -53,6 +53,7 @@ public:
       Int_t     DaqRate;     ///< DAQ rate niumber in run
       Int_t     RunType;     ///< Run type
       TString   Comments;    ///< Comments
+      vector<string> DetectorOut; ///< Dectector not present
    };
 
 private:
@@ -120,6 +121,9 @@ public:
    // Print runs for a given type
    void                 GetRunsPerType(Int_t type) const;
 
+   // Return inof run line
+   TString              GetRunLine(Int_t runId) const;
+
    // Print runs
    void                 PrintRuns() const;
    
@@ -141,7 +145,6 @@ private:
    static const TString fgkDefaultActName;  ///< Default action name
    static const TString fgkDefaultFolder;   ///< Default campaign folder
    static const TString fgkDefaultExt;      ///< Default extension name
-   static       Bool_t  fgCheckDetOut;      ///< Flag for checking detecor out
    
 public:
    //! Get default action name
@@ -150,8 +153,6 @@ public:
    static const Char_t* GetDefaultFolder()  { return fgkDefaultFolder.Data();  }
    //! Get default extension name
    static const Char_t* GetDefaultExt()     { return fgkDefaultExt.Data();     }
-   //! Enable echking of decteor out w/r to FootGlobal.par file
-   static void EnbaleCheckDetOut()          { fgCheckDetOut = true;            }
    
    // Smart print
    static  TString SmartPrint(Int_t nb, Int_t sep = 1000);
