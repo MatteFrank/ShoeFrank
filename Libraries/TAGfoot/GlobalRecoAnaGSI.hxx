@@ -34,6 +34,17 @@ using namespace std;
 
 class GlobalRecoAnaGSI : public RecoRaw {
 
+  Int_t fRegTG;
+  Int_t fRegLastVTplane;
+  Int_t fRegAirAfterVT;
+  Int_t fRegAirBeforeTW;
+  Int_t fRegAirAfterTW;
+  Int_t fRegFirstTWbar;
+  Int_t fRegFirstTWbarLay0;
+  Int_t fRegLastTWbar;
+  Int_t fRegFirstCAcrys;
+  Int_t fRegLastCAcrys;
+
   public:
   GlobalRecoAnaGSI(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t nTotEv);
   ~GlobalRecoAnaGSI();
@@ -86,7 +97,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
 
     // useful analysis variables
     Double_t atomassu = 0.931494; // atomic mass unit in GeV/c^2
-    Int_t primary_cha;            // charge of primary particle
+    Int_t fPrimaryCharge;            // charge of primary particle
     Double_t primary_tof;         // TOF of the primary particle from ST to target (ns), evaluated from Beam initial energy value
     Double_t Ntg;                 // Number of particles per unit surface within the target = density*Na*thickness/A
 

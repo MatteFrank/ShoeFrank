@@ -73,6 +73,8 @@
 
 ################ SCRIPT START ######################
 
+echo "Start job submission!"
+
 INPUT_BASE_PATH="/storage/gpfs_data/foot/shared/SimulatedData"
 OUTPUT_BASE_PATH="/storage/gpfs_data/foot/${USER}"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"

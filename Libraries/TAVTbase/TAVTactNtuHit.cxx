@@ -27,6 +27,8 @@ ClassImp(TAVTactNtuHit);
 
 UInt_t TAVTactNtuHit::fgTStolerance    =  800;
  Int_t TAVTactNtuHit::fgTSnegTolerance = -200;
+Bool_t TAVTactNtuHit::fgTSresync       = false;
+
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
@@ -111,29 +113,31 @@ Bool_t TAVTactNtuHit::Action()
    if (ValidHistogram())
       fpHisBCOofTrigger->Fill(evtNumber, diff);
    
-   if (TMath::Abs(float(diff)) > fgTStolerance && diff > 0) {
-      Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);
-      fQueueEvtsN++;
-      pNtuRaw->SetValid(false);
-   }
-   
-   if (diff < fgTSnegTolerance) {
-      Warning("Action()", "BCOofTrigger difference lower than %d (%d) for %d time(s), resynchronizing", fgTSnegTolerance, diff, fQueueEvtsN+1);
-      fQueueEvtsN++;
-      first = false;
-      pNtuRaw->SetValid(false);
-   }
-   
-   if (diff < -1)
-      Warning("Action()", "BCOofTrigger negative difference (%d)", diff);
-
-   if (fQueueEvtsN > 0) {
-      if (fQueueEvtsN - fQueueEvt.size() == 0)
-         fQueueEvt.pop();
-      evtp = new DECardEvent(*evt0);
-      fQueueEvt.push(evtp);
-   }
+   if (fgTSresync) {
+      if (TMath::Abs(float(diff)) > fgTStolerance && diff > 0) {
+         Warning("Action()", "BCOofTrigger difference higher than %u (%d) for %d time(s), resynchronizing", fgTStolerance, diff, fQueueEvtsN+1);
+         fQueueEvtsN++;
+         pNtuRaw->SetValid(false);
+      }
       
+      if (diff < fgTSnegTolerance) {
+         Warning("Action()", "BCOofTrigger difference lower than %d (%d) for %d time(s), resynchronizing", fgTSnegTolerance, diff, fQueueEvtsN+1);
+         fQueueEvtsN++;
+         first = false;
+         pNtuRaw->SetValid(false);
+      }
+      
+      if (diff < -1)
+         Warning("Action()", "BCOofTrigger negative difference (%d)", diff);
+      
+      if (fQueueEvtsN > 0) {
+         if (fQueueEvtsN - fQueueEvt.size() == 0)
+            fQueueEvt.pop();
+         evtp = new DECardEvent(*evt0);
+         fQueueEvt.push(evtp);
+      }
+   }
+   
    fPrevBcoTrig = bcoTrig;
    
    return kTRUE;

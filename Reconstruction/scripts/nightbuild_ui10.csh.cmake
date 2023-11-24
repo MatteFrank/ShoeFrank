@@ -83,8 +83,8 @@ echo " "
 echo "Run reconstruction of MC data"
 \cp ./config/GSI2021_MC/TAMSDdetector.cfg TAMSDdetector_old.cfg
 \cp ./config/GSI2021_MC/FootGlobal.par FootGlobal_old.par
-sed 's/TrackingFlag:               0/TrackingFlag:               1/' ./config/GSI2021/TAMSDdetector.cfg > TAMSDdetector_new.cfg
-sed 's/IncludeStraight: n/IncludeStraight: y/' ./config/GSI2021/FootGlobal.par > FootGlobal_new.par
+sed 's/TrackingFlag:               0/TrackingFlag:               1/' ./config/GSI2021_MC/TAMSDdetector.cfg > TAMSDdetector_new.cfg
+sed 's/IncludeStraight: n/IncludeStraight: y/' ./config/GSI2021_MC/FootGlobal.par > FootGlobal_new.par
 \mv  TAMSDdetector_new.cfg ./config/GSI2021_MC/TAMSDdetector.cfg
 \mv   FootGlobal_new.par ./config/GSI2021_MC/FootGlobal.par
 DecodeGlb -in $FOOTMCDATA/GSI2021/16O_C_400_1_shoereg.root -out runGSI2021_MC_400_Plots_1kEvts.root -nev 1000 -exp GSI2021_MC -run 400 -mc
