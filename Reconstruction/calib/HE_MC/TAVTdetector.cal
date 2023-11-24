@@ -16,5 +16,5 @@ charge 6: 204771 18.5    0.83    0.004
 sensorsN: 4
 sensor 1: 1.   1.   1.   1.
 sensor 2: 1.   1.   1.   1.
-sensor 3: 0.5  0.5  1.   1.
+sensor 3: 1.   1.   1.   1.
 sensor 4: 1.   1.   1.   1.
