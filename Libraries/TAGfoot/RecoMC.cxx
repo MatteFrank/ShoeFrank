@@ -135,7 +135,7 @@ void RecoMC::CreateRawAction()
       
       fpNtuHitVtx = new TAGdataDsc(new TAVTntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAVTactNtuHitMC");
-      fActNtuHitVtx = new TAVTactNtuHitMC(name, fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fEvtStruct);
+      fActNtuHitVtx = new TAVTactNtuHitMC(name, fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fpParCalVtx, fEvtStruct);
       if (fFlagHisto)
          fActNtuHitVtx->CreateHistogram();
    }

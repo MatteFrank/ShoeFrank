@@ -19,8 +19,8 @@
 class TAVTbaseParCal : public TAGparTools {
       
 protected:
-   TF1*     fLandau[6];              ///< Landau functions
-   TF1*     fLandauNorm[6];          ///< Landau normalized functions
+   TF1*     fLandau[8];              ///< Landau functions
+   TF1*     fLandauNorm[8];          ///< Landau normalized functions
    TF1*     fLandauTot;              ///< Landau functions
    TArrayF* fChargeProba;            ///< Charge proba array
    TArrayF* fChargeProbaNorm;        ///< Normalized Charge proba array
@@ -28,6 +28,8 @@ protected:
    Float_t  fChargeMaxProba;         ///< Maximum charge
    Int_t    fChargeWithMaxProbaNorm; ///< Charge with the maximum proba normalized
    Float_t  fChargeMaxProbaNorm;     ///< Maximum charge normalized
+   Int_t    fChargesN;               ///< number of charge states
+   Int_t    fSensorsN;               ///< number of sensors
 
    /*!
     \struct LandauParameter_t
@@ -40,13 +42,17 @@ protected:
 	  Float_t Sigma;    ///< sigma of Landau
 	  Float_t Quench;   ///< quenching factor of Landau
    };
+
+   LandauParameter_t  fLandauParameter[8]; ///< Landau parameters
+
+   struct EffParameter_t : public  TObject {
+      Int_t   SensorId;   ///< sensorId
+      Float_t QuadEff[4]; ///< quadrant efficiencies
+   };
    
-   LandauParameter_t  fLandauParameter[6]; ///< Landau parameters
+   EffParameter_t  fEffParameter[32]; ///< Efficiency parameters
 
    TString fkDefaultCalName;   ///< default detector charge calibration file
-
-private:
-   static Int_t   fgkChargesN; ///< number of charge states
    
 private:
    //! Set function
@@ -66,9 +72,6 @@ public:
    // Stream output
    virtual void       ToStream(ostream& os = cout, Option_t* option = "") const;
    
-   //! Get Lnadau parameter
-   LandauParameter_t& GetLandauPar(Int_t idx) {return fLandauParameter[idx];}
-   
    // Get charge probabilities for a given number of pixel
    const TArrayF*     GetChargeProba(Float_t pixelsN);
    
@@ -76,28 +79,35 @@ public:
    const TArrayF*     GetChargeProbaNorm(Float_t pixelsN);
    
    //! Get charge with max probability 
-   Int_t              GetChargeWithMaxProba()     const { return fChargeWithMaxProba; }
+   Int_t              GetChargeWithMaxProba()     const { return fChargeWithMaxProba;     }
    
    //! Get charge max probability 
-   Float_t            GetChargeMaxProba()         const { return fChargeMaxProba; }
+   Float_t            GetChargeMaxProba()         const { return fChargeMaxProba;         }
    
    //! Get charge with max probability (Normalized)
    Int_t              GetChargeWithMaxProbaNorm() const { return fChargeWithMaxProbaNorm; }
    
    //! Get charge max probability (Normalized)
-   Float_t            GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm; }
+   Float_t            GetChargeMaxProbaNorm()     const { return fChargeMaxProbaNorm;     }
    
    //! Get Pointer to Landau Norm
-   TF1*               GetLandauNormFunc(Int_t idx) const { return fLandauNorm[idx]; }
+   TF1*               GetLandauNormFunc(Int_t idx) const { return fLandauNorm[idx];       }
    
    //! Get Pointer to Landau
-   TF1*               GetLandauFunc(Int_t idx)    const { return fLandau[idx]; }
+   TF1*               GetLandauFunc(Int_t idx)    const { return fLandau[idx];            }
 
    //! Get Pointer to total Landau (z < 6) 
-   TF1*               GetLandauTot()              const { return fLandauTot; }
+   TF1*               GetLandauTot()              const { return fLandauTot;              }
 
    //! return defaut cal name
    const Char_t*      GetDefaultCalName()         const { return fkDefaultCalName.Data(); }
+   
+   //! Get Lnadau parameter
+   LandauParameter_t& GetLandauPar(Int_t idx)           { return fLandauParameter[idx];   }
+   
+   //! Get efficiency parameter per sensor
+   EffParameter_t& GetEffPar(Int_t idx)                 { return fEffParameter[idx];      }
+   
 
    // Quenched Landau function
    Double_t           QLandau(Double_t *x, Double_t *par);
@@ -108,7 +118,7 @@ public:
    // Total quenched Landau function
    Double_t           QLandauTot(Double_t *x, Double_t *par);
    
-   ClassDef(TAVTbaseParCal,1)
+   ClassDef(TAVTbaseParCal,2)
 };
 
 #endif

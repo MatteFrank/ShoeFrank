@@ -393,6 +393,7 @@ void TAVTactBaseRaw::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aC
    TAVTparGeo*  pGeoMap = (TAVTparGeo*)  fpGeoMap->Object();
    TAVTparConf* pConfig = (TAVTparConf*) fpConfig->Object();
    
+   if (pConfig->GetStatus(iSensor) == -1) return;
    if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
      
    TAVThit* pixel   = (TAVThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn, frameNumber);

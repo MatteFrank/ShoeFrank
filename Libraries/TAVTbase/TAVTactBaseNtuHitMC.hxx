@@ -39,7 +39,7 @@ protected:
    
 
 public:
-   explicit TAVTactBaseNtuHitMC(const char* name=0, TAGparaDsc* p_geomap = 0, TAGparaDsc* pConfig=0);
+   explicit TAVTactBaseNtuHitMC(const char* name=0, TAGparaDsc* p_geomap = 0, TAGparaDsc* pConfig=0, TAGparaDsc* pCalib=0);
    //! Destructor 
    virtual ~TAVTactBaseNtuHitMC() {};
    
@@ -73,6 +73,7 @@ public:
 protected:
    TAGparaDsc*     fpGeoMap;           ///< geometry para dsc
    TAGparaDsc*     fpConfig;           ///< config para dsc
+   TAGparaDsc*     fpCalib;            ///< calib para dsc
    TAGgeoTrafo*    fpGeoTrafo;         ///< Gobal transformation
    TAVTbaseDigitizer*  fDigitizer;     ///< cluster size digitizer
    Int_t           fNoisyPixelsN;      ///< number of noisy pixels
@@ -99,6 +100,8 @@ protected:
    void            FillPileup(vector<RawMcHit_t>& /*storedEvtInfo*/, TAMChit* /*hit*/, Int_t /*hitIdx*/);
    // Compute noise level
    void            ComputeNoiseLevel();
+   //! Get quadrant efficiency
+   Float_t         GetQuadrantEff(Int_t sensorId, Int_t col);
    
    //! Fill noisy pixels
    virtual void    FillNoise(Int_t /*sensorId*/)                    { return; }
@@ -106,6 +109,7 @@ protected:
    virtual void    CreateDigitizer()                                { return; }
    //! Fill pixels
    virtual void    FillPixels( Int_t /*sensorId*/, Int_t /*mcId*/, Int_t /*trackId*/, Bool_t /*pileup*/ ) { return; }
+  
 
 protected:
    static Int_t    fgPileupEventsN;    ///< number of pileup events to be stored
