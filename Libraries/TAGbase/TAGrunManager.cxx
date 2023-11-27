@@ -104,7 +104,7 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
          TString str = *it;
          
          if (IsDetectorOff(str)) {
-            Warning("Checks()", "the detector %s is NOT referenced in this run, Disbale it", str.Data());
+            Warning("Checks()", "the detector %s is NOT referenced in this run, Disable it", str.Data());
             if (str == "ST")
                TAGrecoManager::GetPar()->IncludeST(false);
             if (str == "BM")
