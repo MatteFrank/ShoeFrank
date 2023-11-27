@@ -95,9 +95,9 @@ void RecoRaw::CreateRawAction()
       fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       
       if (!fgStdAloneFlag){
-         TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
-         TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
-         parTimeWD->FromFileTcal(parFileName.Data());
+	  TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
+	  TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
+	  parTimeWD->FromFileTcal(parFileName.Data());
       }
       
       if(TAGrecoManager::GetPar()->IncludeCA()){
@@ -231,8 +231,12 @@ Bool_t RecoRaw::GoEvent(Int_t iEvent)
 //! Open input file
 void RecoRaw::OpenFileIn()
 {
+
+
+  ((TAGactDscTreeWriter*)fActEvtWriter)->SetStdAlone(fgStdAloneFlag);
    if (fgStdAloneFlag) {
-      if (TAGrecoManager::GetPar()->IncludeVT())
+
+     if (TAGrecoManager::GetPar()->IncludeVT())
          fActVmeReaderVtx->Open(GetName());
       
       if (TAGrecoManager::GetPar()->IncludeBM())

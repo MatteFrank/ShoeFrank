@@ -109,6 +109,12 @@ void TATWactNtuHit::CreateHistogram()
     fpHisRawTofCentralBar[ilayer] = new TH1F(Form("twRawTofCentralBar_%s",LayerName[(TLayer)ilayer].data()), Form("twRawTofCentralBar_%s",LayerName[(TLayer)ilayer].data()), 5000, -50., 50);
     AddHistogram(fpHisRawTofCentralBar[ilayer]);
 
+    fpHisRawTofBothCentralBarVsEloss[ilayer] = new TH2F(Form("twRawTofBothCentralBarVsEloss_%s",LayerName[(TLayer)ilayer].data()), Form("twRawTofBothCentralBarVsEloss_%s",LayerName[(TLayer)ilayer].data()), 5000, -50., 50, 490,0,120.);
+    AddHistogram(fpHisRawTofBothCentralBarVsEloss[ilayer]);
+
+    fpHisRawTofBothCentralBarVsElossVsSTRiseTime[ilayer] = new TH3F(Form("twRawTofBothCentralBarVsElossVsSTRiseTime_%s",LayerName[(TLayer)ilayer].data()), Form("twRawTofBothCentralBarVsElossVsSTRiseTime_%s",LayerName[(TLayer)ilayer].data()), 75,0.5,2.5,5000,-50., 50, 490,0,120.);
+    AddHistogram(fpHisRawTofBothCentralBarVsElossVsSTRiseTime[ilayer]);
+
     fpHisBarsID[ilayer] = new TH1I(Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()), Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()),20, -0.5, 19.5);
     AddHistogram(fpHisBarsID[ilayer]);
   
@@ -128,6 +134,9 @@ void TATWactNtuHit::CreateHistogram()
     AddHistogram(fpHisAmpB_vs_Eloss[ilayer]);    
     
   }
+
+  fpHisDeltaTimeFrontRear = new TH2F("twDeltaTimeFrontRear","twDeltaTimeFrontRear", 2000, -5., 5.,480,0,120.);
+  AddHistogram(fpHisDeltaTimeFrontRear);
   
   for(int iZ=1; iZ < fZbeam+1; iZ++) {
     
@@ -216,7 +225,11 @@ Bool_t TATWactNtuHit::Action()
    // create map to store hits for calibration purpose
    map< Int_t,vector<TATWhit*> > hitMap;
    hitMap.clear();
-   
+
+   Bool_t hitcenter[nLayers]={false,false};
+   Double_t rawtof_bothcentral[nLayers]={-99999.,-99999.};
+   Double_t energy_bothcentral[nLayers]={-99999.,-99999.};
+
    // loop over all the bars
    for (auto it=chmap->begin();it!=chmap->end();++it) {
       //
@@ -297,10 +310,18 @@ Bool_t TATWactNtuHit::Action()
 	    // Set ToF
 	    fCurrentHit->SetToF(ToF);
             // Set Valid Hit
-              if(ChargeA<0 || ChargeB<0 || TimeA<0 || TimeB<0 || AmplitudeA<0 || AmplitudeB<0)
-                fCurrentHit->SetValid(false);
+	    if(ChargeA<0 || ChargeB<0 || TimeA<0 || TimeB<0 || AmplitudeA<0 || AmplitudeB<0)
+	      fCurrentHit->SetValid(false);
+	    
+	    
+	    if(ShoeBarId==CentralBarsID[1] && Energy>2) {  // only for central bar (9-29) studies  //threshold ad minchiam to consider zero suppression
+	      rawtof_bothcentral[Layer] = rawToF; 
+	      hitcenter[Layer] = true;
+	      energy_bothcentral[Layer]= Energy;
+	    }
 
 
+	      
 	    if (ValidHistogram() && fCurrentHit->IsValid()) {
 
               fpHisBarsID[Layer]->Fill(ShoeBarId);
@@ -322,6 +343,9 @@ Bool_t TATWactNtuHit::Action()
 		fpHisAmpB_vs_Eloss[Layer]->Fill(Energy,AmplitudeB);
 	      }
 
+
+	      
+
 	      if(Zrec>0 && Zrec<fZbeam+1) {
 		fpHisEloss_Z[Layer][Zrec-1]->Fill(Energy);
 		fpHisTof_Z[Zrec-1]->Fill(ToF);
@@ -333,6 +357,15 @@ Bool_t TATWactNtuHit::Action()
     }
     
 
+   if (ValidHistogram() && hitcenter[0] && hitcenter[1]) {
+     for(int iL=0;iL<nLayers;iL++){
+       fpHisRawTofBothCentralBarVsEloss[iL]->Fill(rawtof_bothcentral[iL],energy_bothcentral[iL]);
+       fpHisRawTofBothCentralBarVsElossVsSTRiseTime[iL]->Fill(p_STnturaw->GetRiseTime(), rawtof_bothcentral[iL],energy_bothcentral[iL]);
+     }
+     fpHisDeltaTimeFrontRear->Fill(rawtof_bothcentral[0] - rawtof_bothcentral[1],energy_bothcentral[0]);
+   }
+
+   
   fpNtuRaw->SetBit(kValid);
 
   return kTRUE;

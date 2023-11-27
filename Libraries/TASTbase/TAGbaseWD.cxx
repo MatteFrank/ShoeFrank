@@ -20,6 +20,9 @@
 */
 
 
+#define FIRSTVALIDSAMPLE 5
+#define NSIDESAMPLES 30
+
 ClassImp(TAGbaseWD);
 
 using namespace std;
@@ -33,11 +36,16 @@ TAGbaseWD::TAGbaseWD()
    fPedestal(0),
    fBaseline(0),
    fAmplitude(0),
+   fDeltaClk(-9999.),
    fBoardId(0),
+   fRiseTime(-999.),
    fTriggerTypeId(0),
    fTriggerCellId(-1000),
    fMcId(-999)
 {
+
+  
+  
 }
 
 //------------------------------------------+-----------------------------------
@@ -54,6 +62,12 @@ TAGbaseWD::TAGbaseWD(TWaveformContainer *W)
   fPedestal = -9999999999;
   fBaseline = -9999999999;
   fMcId = -999;
+  fDeltaClk=W->GetDeltaClk();
+  fRiseTime = -999.;
+
+  fSidebandValues.insert(fSidebandValues.end(), W->GetVectA().begin()+FIRSTVALIDSAMPLE, W->GetVectA().begin()+NSIDESAMPLES);
+
+  
 }
 
 //------------------------------------------+-----------------------------------
@@ -65,7 +79,7 @@ TAGbaseWD::~TAGbaseWD()
 //------------------------------------------+-----------------------------------
 double TAGbaseWD::ComputeBaseline(TWaveformContainer *w)
 {
-  return TMath::Median(25, &w->GetVectA()[2]);
+  return TMath::Median(NSIDESAMPLES, &w->GetVectA()[FIRSTVALIDSAMPLE]);
 }
 
 //------------------------------------------+-----------------------------------
@@ -82,7 +96,7 @@ double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr)
   double pedestal_tot=0;
   double mean=0.0008816;
 
-  for (int j = 10; j<60; j++){ 
+  for (int j = FIRSTVALIDSAMPLE; j<NSIDESAMPLES; j++){ 
     a1 = tmp_amp[j];
     a2 = tmp_amp[j+1];
     t1 = tmp_time[j];
@@ -100,7 +114,7 @@ double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr)
       pedestal+=dq;
     }
   }
-  pedestal_tot= -(pedestal*tmp_amp.size()/50);
+  pedestal_tot= -(pedestal*tmp_amp.size()/(double)(NSIDESAMPLES));
 
   return pedestal_tot;
 }
@@ -108,7 +122,7 @@ double TAGbaseWD::ComputePedestal(TWaveformContainer *w, double thr)
 //------------------------------------------+-----------------------------------
 double TAGbaseWD::ComputeAmplitude(TWaveformContainer *w)
 {
-  return  -((TMath::MinElement(w->GetVectA().size()-5, &w->GetVectA()[5])) - fBaseline);
+  return  -((TMath::MinElement(w->GetVectA().size()-5, &w->GetVectA()[FIRSTVALIDSAMPLE])) - fBaseline);
 }
 
 //------------------------------------------+-----------------------------------
@@ -190,17 +204,20 @@ double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, do
 
   
   int minimum_bin= TMath::LocMin(amp_sum_cfd.size()-2, &amp_sum_cfd[2]);
-  int bin_zero_crossing=minimum_bin;
+  int maximum_bin= TMath::LocMax(amp_sum_cfd.size()-2, &amp_sum_cfd[2]);
+  int bin_zero_crossing= (maximum_bin>0) ? maximum_bin : 1;
+  //  int bin_zero_crossing=minimum_bin;
   bool foundZeroCrossing=false;
-  double tmp_a=amp_sum_cfd[minimum_bin];
-  while(!foundZeroCrossing){
-    tmp_a=amp_sum_cfd[bin_zero_crossing];
-    if(tmp_a>0)foundZeroCrossing=true;
-    if(bin_zero_crossing == amp_sum_cfd.size()-1 || bin_zero_crossing==1){
-      break;
+  do{
+    double a1 = amp_sum_cfd[bin_zero_crossing];
+    double a2 = amp_sum_cfd[bin_zero_crossing-1];
+    if(a1*a2<0){
+      foundZeroCrossing=true;
+    }else{
+      bin_zero_crossing--;
+      //    bin_zero_crossing++;
     }
-    bin_zero_crossing++;
-  }
+  }while(!foundZeroCrossing && bin_zero_crossing>0);
 
 
   // I compute the zero-crossing time
@@ -218,7 +235,25 @@ double TAGbaseWD::ComputeTime(TWaveformContainer *w, double frac, double del, do
   }else{
     tarr=-1000;
   }
+
   
+   // TCanvas c("c","",600,600);
+   // c.cd();
+   // wsum_cfd.Draw("APL");
+   // wsum_cfd.SetMarkerSize(0.5);
+   // wsum_cfd.SetMarkerStyle(22);
+   // wsum_cfd.SetMarkerColor(kBlue);
+   // wsum_cfd.GetXaxis()->SetRangeUser(0,300);
+   // TGraph min;
+   // min.SetPoint(0,tarr,0);
+   // min.SetMarkerStyle(29);
+   // min.SetMarkerSize(1.5);
+   // min.SetMarkerColor(kRed);
+   // min.Draw("Psame");
+   // c.Print(Form("waveform_ch%d_superhit%d.png", w->GetChannelId(),w->GetNEvent()));
+
+
+   
   return tarr;
 }
 
@@ -297,4 +332,42 @@ double TAGbaseWD::ComputeTimeTangentCFD(TWaveformContainer *w, double frac)
   double t_arr = -q/m;
 
   return t_arr;
+}
+
+
+
+//------------------------------------------+-----------------------------------
+double TAGbaseWD::ComputeRiseTime(TWaveformContainer *w)
+{
+  // evaluate the absolute threshold
+  Double_t AbsoluteThreshold_low=-0.10*fAmplitude+fBaseline;
+  Double_t AbsoluteThreshold_up=-0.90*fAmplitude+fBaseline;
+  
+  int i_ampmin = TMath::LocMin(w->GetVectA().size(),&(w->GetVectA())[0]);
+  Int_t i_thr = i_ampmin;
+
+
+  bool foundthreshold_low = false;
+  bool foundthreshold_up = false;
+  double tup=10000000000, tlow=-10000000000;
+  while(!(foundthreshold_up && foundthreshold_low) && i_thr<w->GetVectA().size()-1 && i_thr>1){
+    double a1 = w->GetVectA()[i_thr];
+    double a2 = w->GetVectA()[i_thr+1];
+    double t1 = w->GetVectT()[i_thr];
+    double t2 = w->GetVectT()[i_thr+1];
+    double m = (a2-a1)/(t2-t1);
+    double q = a1 - m*t1;
+    if(AbsoluteThreshold_up>a2 && AbsoluteThreshold_up<=a1){
+      foundthreshold_up =true;
+      tup = (AbsoluteThreshold_up-q)/m;
+    }
+    if(AbsoluteThreshold_low>a2 && AbsoluteThreshold_low<=a1){
+      foundthreshold_low =true;
+      tlow = (AbsoluteThreshold_low-q)/m;
+    }
+
+    i_thr--;
+  }
+  
+  return tup-tlow;
 }
