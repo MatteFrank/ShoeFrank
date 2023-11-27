@@ -1,5 +1,5 @@
 /*!
-  \file TAWDparMap.cxx
+z  \file TAWDparMap.cxx
   \brief   Implementation of TAWDparMap.
 */
 
@@ -41,7 +41,7 @@ Bool_t TAWDparMap::FromFile(const TString& name)
   
   char bufConf[1024];
   int board(0), channel(0);
-  char detector[10]="";
+  char detector[20]="";
   char isenabled;
 
   ifstream incF;
@@ -59,24 +59,32 @@ Bool_t TAWDparMap::FromFile(const TString& name)
       //do nothing
     }else if(strchr(bufConf,'B')) {
       sscanf(bufConf, "B%d",&board);
-      //      printf("Board%d\n",board);
+      // printf("Board%d\n",board);
       for(int iCh=0;iCh<18;iCh++){
         incF.getline(bufConf, 200, '\n');
         sscanf(bufConf, "%d\t%c\t%s", &channel, &isenabled, detector);
-        //printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
+	//  printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
         key = make_pair(board, iCh);
-        fChmap[key] = detector;
-        if(fBolist.count(detector)){
-          vector<int> tmplist = fBolist.find(detector)->second;
-          if(find(tmplist.begin(), tmplist.end(),board)==tmplist.end())
-            fBolist[detector].push_back(board);
-        }else{
-          fBolist[detector].push_back(board);
-        }
+        fChmap[key] = string(detector);
+	if(strcmp(detector,"EMPTY")==0 || (strcmp(detector,"CLK")==0))continue;
+        if(fBolist.count(string(detector))){
+          vector<int> tmplist = fBolist.find(string(detector))->second;
+          if(find(tmplist.begin(), tmplist.end(),board)==tmplist.end()){
+            fBolist[string(detector)].push_back(board);
+	    fNboards++;
+	  }
+	}else{
+          fBolist[string(detector)].push_back(board);
+	  fNboards++;
+	}
       }
     }
   }
 
+
+
+
+  
   return kFALSE;
 }
 
@@ -84,6 +92,7 @@ Bool_t TAWDparMap::FromFile(const TString& name)
 //! Clear event.
 void TAWDparMap::Clear(Option_t*)
 {
+  fBolist.clear();
   TAGpara::Clear();
 }
 
@@ -100,12 +109,11 @@ string TAWDparMap::GetChannelType(int board, int channel)
 }
 
 //------------------------------------------+-----------------------------------
-vector<int> TAWDparMap::GetBoards(string det)
+vector<int>& TAWDparMap::GetBoards(string det)
 {
-  if(fBolist.count(det)){
-    return fBolist.find(det)->second;
-  }else{
-    return vector<int>();
-  }
+
+  return fBolist.find(det)->second;
+
   
 }
+

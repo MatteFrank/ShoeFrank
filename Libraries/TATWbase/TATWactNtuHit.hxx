@@ -10,6 +10,7 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TH3.h"
 
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
@@ -75,6 +76,9 @@ private:
   
   TH1F*           fpHisChargeCentralBar[nLayers];
   TH1F*           fpHisRawTofCentralBar[nLayers];
+  TH2F*           fpHisRawTofBothCentralBarVsEloss[nLayers];
+  TH3F*           fpHisRawTofBothCentralBarVsElossVsSTRiseTime[nLayers];
+  TH2F*           fpHisDeltaTimeFrontRear;
   TH1F*           fpHisAmpA[nLayers];    
   TH1F*           fpHisAmpB[nLayers];    
   TH2F*           fpHisAmpA_vs_Eloss[nLayers];

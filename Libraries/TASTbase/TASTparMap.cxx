@@ -31,7 +31,6 @@ TASTparMap::TASTparMap()
 
   fTDchaID =    tdchaID;   
   fTDboaID =    tdboaID;   
-
   fReso.clear();
 }
 
@@ -110,6 +109,8 @@ Bool_t TASTparMap::FromFile(const TString& name)
          }
       }
    }
+
+
    
    return kFALSE;
 }

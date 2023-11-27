@@ -34,6 +34,7 @@ public:
   void SetTriggerCellId(Int_t t)  { fTriggerCellId = t;     }
   void SetChannelId(Int_t c)      { fChannelId = c;         }
   void SetBoardId(Int_t b)        { fBoardId = b;           }
+  void SetDeltaClk(double b)      { fDeltaClk = b;          }
   void SetNEvent(int value)       { fNEvent = value;        }
   void SetEmptyFlag(bool value)   { fIsEmptyFlag = value;   }
   void SetHighlevelDebug(bool b)  { fHighlevelDebug = b;    }
@@ -43,6 +44,7 @@ public:
   Int_t GetChannelId()      const { return fChannelId;      }
   Int_t GetBoardId()        const { return fBoardId;        }
   Int_t GetNEvent()         const { return fNEvent;         }
+  double GetDeltaClk()      const { return fDeltaClk;         }
   Bool_t IsEmpty()          const { return fIsEmptyFlag;    }
   Bool_t IsHighlevelDebug() const { return fHighlevelDebug; }
 
@@ -62,6 +64,7 @@ private:
   vector<double> fVectT;
   vector<double> fVectRawT;
   vector<double> fVectA;
+  double fDeltaClk;
 };
 
 #endif
