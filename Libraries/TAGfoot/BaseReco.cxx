@@ -205,11 +205,13 @@ void BaseReco::CampaignChecks()
       exit(0);
    
    // Run Condition Checks
-   if (fpParGeoG) {
-      TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-      if (!fRunManager->ConditionChecks(fRunNumber, parGeo))
-         exit(0);
-   }
+   TAGparGeo* parGeo = 0x0;
+   if (fpParGeoG)
+      parGeo = (TAGparGeo*)fpParGeoG->Object();
+   
+   if (!fRunManager->ConditionChecks(fRunNumber, parGeo))
+      exit(0);
+   
 }
 
 //__________________________________________________________
