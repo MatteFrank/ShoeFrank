@@ -174,13 +174,10 @@ void TAGactDscTreeWriter::SetDescriptors()
 Int_t TAGactDscTreeWriter::Open(const TString& name, Option_t* option, const TString treeName, Bool_t /*dscBranch*/)
 {
    if (TAGrecoManager::GetPar()->IsSaveTree()) {
-     cout <<"savetree" << endl;
      SetDescriptors();
-     cout <<"branches" << endl;
       SetTreeBranches();
    }
 
-   cout <<"cazzzoaosdkos" << endl;
    TAGactTreeWriter::Open(name, option);
    
    return 0;
@@ -190,11 +187,8 @@ Int_t TAGactDscTreeWriter::Open(const TString& name, Option_t* option, const TSt
 //! Set tree branches for writing in output file
 void TAGactDscTreeWriter::SetTreeBranches()
 {
-   if (TAGrecoManager::GetPar()->IncludeST()) {
-
+   if (TAGrecoManager::GetPar()->IncludeST())
      SetupElementBranch(fpNtuHitSt);
-     cout << "sto qui" << endl;
-   }
    
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       if (fFlagHits)
@@ -242,7 +236,6 @@ void TAGactDscTreeWriter::SetTreeBranches()
          SetupElementBranch(fpNtuHitTw);
       
       SetupElementBranch(fpNtuRecTw);
-      cout << "sto qui2" << endl;
    }
    
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
@@ -263,9 +256,8 @@ void TAGactDscTreeWriter::SetTreeBranches()
       if (fFlagTrack && !fFlagRecCutter)
          SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
    }
-         cout << "sto qui3" << endl;
+   
    if (fFlagMC) {
-           cout << "sono mc" << endl;
       if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
          if (fSaveMcFlag) {
             SetupElementBranch(fpNtuMcEvt);
@@ -308,11 +300,8 @@ void TAGactDscTreeWriter::SetTreeBranches()
          SetupElementBranch(fpNtuMcCa, FootBranchMcName(kCAL));
       
    } else {
-     cout << "stdalone::" << fStdAloneFlag << endl;
       if (!fStdAloneFlag)
          SetupElementBranch(fpNtuEvt);
-
-      cout << "sto qui4" << endl;
       
       if (TAGrecoManager::GetPar()->IncludeST()) {
          if (fFlagHits)
