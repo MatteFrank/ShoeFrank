@@ -675,24 +675,34 @@ void TAGactWDreader::CreateHistogram()
    hRatioDAQ_ST = new TH1F(histoname, histoname, 1000,0,1);
    AddHistogram(hRatioDAQ_ST);
 
+
+
    vector<int> boardlist;   
-   boardlist.insert(boardlist.end(), (p_WDmap->GetBoards("ST")).begin(), (p_WDmap->GetBoards("ST")).end());
-   boardlist.insert(boardlist.end(), (p_WDmap->GetBoards("TW")).begin(), (p_WDmap->GetBoards("TW")).end());
-   boardlist.insert(boardlist.end(), (p_WDmap->GetBoards("CA")).begin(), (p_WDmap->GetBoards("CA")).end());
+   if(p_WDmap->GetBoardMap().count("ST")){
+     boardlist.insert(boardlist.end(), (p_WDmap->GetBoards("ST")).begin(), (p_WDmap->GetBoards("ST")).end());
+   }
+   if(p_WDmap->GetBoardMap().count("TW")){
+     boardlist.insert(boardlist.end(), (p_WDmap->GetBoards("TW")).begin(), (p_WDmap->GetBoards("TW")).end());
+   }
+   if(p_WDmap->GetBoardMap().count("CA")){
+     boardlist.insert(boardlist.end(), (p_WDmap->GetBoards("CA")).begin(), (p_WDmap->GetBoards("CA")).end());
+   }
    int nBoards = boardlist.size();
    
    for(int iBo=0;iBo<nBoards;iBo++){
-     
-     snprintf(histoname,100,"deltaClk16_board%d",boardlist.at(iBo));
-     hBoardTimeCalib[make_pair(boardlist.at(iBo),16)] = new TH1F(histoname, histoname, 1000,-10,10);
-     AddHistogram(hBoardTimeCalib.find(make_pair(boardlist.at(iBo),16))->second);
-     
-     snprintf(histoname,100,"deltaClk17_board%d",boardlist.at(iBo));
-     hBoardTimeCalib[make_pair(boardlist.at(iBo),17)] = new TH1F(histoname, histoname, 1000,-10,10);
-     AddHistogram(hBoardTimeCalib.find(make_pair(boardlist.at(iBo),17))->second);
+     if(hBoardTimeCalib.count(make_pair(boardlist.at(iBo),16))){
+       snprintf(histoname,100,"deltaClk16_board%d",boardlist.at(iBo));
+       hBoardTimeCalib[make_pair(boardlist.at(iBo),16)] = new TH1F(histoname, histoname, 1000,-10,10);
+       AddHistogram(hBoardTimeCalib.find(make_pair(boardlist.at(iBo),16))->second);
+     }
+     if(hBoardTimeCalib.count(make_pair(boardlist.at(iBo),17)))  {
+       snprintf(histoname,100,"deltaClk17_board%d",boardlist.at(iBo));
+       hBoardTimeCalib[make_pair(boardlist.at(iBo),17)] = new TH1F(histoname, histoname, 1000,-10,10);
+       AddHistogram(hBoardTimeCalib.find(make_pair(boardlist.at(iBo),17))->second);
+     }
    }
 
-   
+
    SetValidHistogram(kTRUE);
 }
 

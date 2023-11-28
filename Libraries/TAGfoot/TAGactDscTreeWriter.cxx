@@ -193,7 +193,6 @@ void TAGactDscTreeWriter::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeST()) {
 
      SetupElementBranch(fpNtuHitSt);
-     cout << "sto qui" << endl;
    }
    
    if (TAGrecoManager::GetPar()->IncludeBM()) {
@@ -242,7 +241,6 @@ void TAGactDscTreeWriter::SetTreeBranches()
          SetupElementBranch(fpNtuHitTw);
       
       SetupElementBranch(fpNtuRecTw);
-      cout << "sto qui2" << endl;
    }
    
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) return;
@@ -263,9 +261,8 @@ void TAGactDscTreeWriter::SetTreeBranches()
       if (fFlagTrack && !fFlagRecCutter)
          SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
    }
-         cout << "sto qui3" << endl;
+
    if (fFlagMC) {
-           cout << "sono mc" << endl;
       if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
          if (fSaveMcFlag) {
             SetupElementBranch(fpNtuMcEvt);
@@ -308,11 +305,10 @@ void TAGactDscTreeWriter::SetTreeBranches()
          SetupElementBranch(fpNtuMcCa, FootBranchMcName(kCAL));
       
    } else {
-     cout << "stdalone::" << fStdAloneFlag << endl;
+
       if (!fStdAloneFlag)
          SetupElementBranch(fpNtuEvt);
 
-      cout << "sto qui4" << endl;
       
       if (TAGrecoManager::GetPar()->IncludeST()) {
          if (fFlagHits)

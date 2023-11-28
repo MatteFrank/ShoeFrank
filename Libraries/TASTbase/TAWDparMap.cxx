@@ -24,6 +24,8 @@ ClassImp(TAWDparMap);
 TAWDparMap::TAWDparMap()
 {
   TAWDparMap::Clear();
+
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -63,7 +65,7 @@ Bool_t TAWDparMap::FromFile(const TString& name)
       for(int iCh=0;iCh<18;iCh++){
         incF.getline(bufConf, 200, '\n');
         sscanf(bufConf, "%d\t%c\t%s", &channel, &isenabled, detector);
-	//  printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
+	//printf("bo::%d %d\t%c\t%s\n", board, iCh, isenabled, detector);
         key = make_pair(board, iCh);
         fChmap[key] = string(detector);
 	if(strcmp(detector,"EMPTY")==0 || (strcmp(detector,"CLK")==0))continue;
@@ -108,12 +110,20 @@ string TAWDparMap::GetChannelType(int board, int channel)
   }
 }
 
+
+
 //------------------------------------------+-----------------------------------
 vector<int>& TAWDparMap::GetBoards(string det)
 {
-
   return fBolist.find(det)->second;
-
-  
+    
 }
 
+
+
+map<string, vector<int>> TAWDparMap::GetBoardMap(){
+
+  return fBolist;
+
+
+}
