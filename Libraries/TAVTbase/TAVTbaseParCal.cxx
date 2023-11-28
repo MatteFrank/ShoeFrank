@@ -24,7 +24,7 @@
 //! Class Imp
 ClassImp(TAVTbaseParCal);
 
-Bool_t TAVTbaseParCal::fgkLandauOn = true;
+Bool_t TAVTbaseParCal::fgkLandauOn = false;
 
 //------------------------------------------+-----------------------------------
 //! Standard constructor
