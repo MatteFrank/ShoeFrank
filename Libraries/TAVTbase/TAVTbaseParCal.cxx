@@ -69,6 +69,8 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
    
+   Info("FromFile()", "Open file %s for calibration\n", name.Data());
+
    ReadItem(fChargesN);
    if(FootDebugLevel(1))
       printf("ChargesN: %d\n", fChargesN);
