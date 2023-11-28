@@ -307,7 +307,7 @@ void TAGactDscTreeWriter::SetTreeBranches()
          if (fFlagHits)
             SetupElementBranch(fpDatRawSt);
          
-	 SetupElementBranch(fpWDtrigger);
+         SetupElementBranch(fpWDtrigger);
       }
       
       if (TAGrecoManager::GetPar()->IncludeBM())
