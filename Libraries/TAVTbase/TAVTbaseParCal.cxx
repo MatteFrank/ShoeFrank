@@ -24,6 +24,7 @@
 //! Class Imp
 ClassImp(TAVTbaseParCal);
 
+Bool_t TAVTbaseParCal::fgkLandauOn = true;
 
 //------------------------------------------+-----------------------------------
 //! Standard constructor
@@ -43,11 +44,13 @@ TAVTbaseParCal::~TAVTbaseParCal()
 {
    delete fChargeProba;
    delete fChargeProbaNorm;
-   for (Int_t p = 0; p < fChargesN; p++) {
-	  delete fLandau[p];
-	  delete fLandauNorm[p];
+   if (fgkLandauOn) {
+      for (Int_t p = 0; p < fChargesN; p++) {
+         delete fLandau[p];
+         delete fLandauNorm[p];
+      }
+      delete fLandauTot;
    }
-   //delete fLandauTot;
 }
 
 //------------------------------------------+-----------------------------------
@@ -86,7 +89,8 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
 		      << Form("%d %f %f %f %f", fLandauParameter[p].Charge, fLandauParameter[p].Constant, 
 				 fLandauParameter[p].MPV, fLandauParameter[p].Sigma, fLandauParameter[p].Quench) << endl;
    }
-   
+   delete[] tmp;
+
    if (!Eof()) {
       ReadItem(fSensorsN);
       if(FootDebugLevel(1))
@@ -109,12 +113,11 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
             << Form("%d %f %f %f %f", fEffParameter[p].SensorId, fEffParameter[p].QuadEff[0],
                     fEffParameter[p].QuadEff[1], fEffParameter[p].QuadEff[2], fEffParameter[p].QuadEff[3]) << endl;
       }
+      delete[] tmp;
    }
    
-   
-   delete[] tmp;
-   
-   SetFunction();
+   if (fgkLandauOn)
+      SetFunction();
    
    return true;
 }
