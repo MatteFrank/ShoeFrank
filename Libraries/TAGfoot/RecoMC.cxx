@@ -243,10 +243,12 @@ TString RecoMC::GetFileOutName()
    
    if (pos == -1)
       pos = 0;
+   else
+      pos++;
    
    Int_t pos1 = tmp.Last('_');
    
-   TString name = tmp(pos+1, pos1-pos-1);
+   TString name = tmp(pos, pos1-pos-1);
    
    name.Prepend("run_");
    
