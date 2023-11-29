@@ -47,6 +47,10 @@ public:
    virtual Bool_t GoEvent(Int_t iEvent);
 
 protected:
+   // Generate output file name
+   TString  GetFileOutName();
+   
+protected:
    EVENT_STRUCT*         fEvtStruct;   ///< Fluka structure
   
    TAMCactNtuPart*       fActNtuMcTrk;  ///< action for MC tracks

@@ -514,8 +514,9 @@ protected:
    void CreateRecActionGlbS();
    // Create reconstruction action for global tracks
    void CreateRecActionGlbF();
-   // Generate output file name
-   TString  GetFileOutName();
+   
+   //! Generate output file name
+   virtual TString  GetFileOutName() { return TString(""); }
    
 protected:
    static Bool_t fgSaveMcFlag;    ///< MC saving flag

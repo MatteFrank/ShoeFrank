@@ -232,3 +232,47 @@ void RecoMC::CloseFileIn()
 {
    fActEvtReader->Close();
 }
+
+//__________________________________________________________
+//! Generate output file name
+TString RecoMC::GetFileOutName()
+{
+ 
+   TString tmp = GetName();
+   Int_t pos = tmp.Last('/');
+   
+   if (pos == -1)
+      pos = 0;
+   
+   Int_t pos1 = tmp.Last('_');
+   
+   TString name = tmp(pos+1, pos1-pos-1);
+   
+   name.Prepend("run_");
+   
+   vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
+   
+   Int_t detectorsN = 0;
+   
+   for (auto it : dec) {
+      TString det = TAGrecoManager::GetDect3LetName(it);
+      det.ToLower();
+      if (det == "tgt") continue;
+      detectorsN++;
+   }
+   
+   if (detectorsN >= 7)
+      name += "_all";
+   else {
+      for (auto it : dec) {
+         TString det = TAGrecoManager::GetDect3LetName(it);
+         det.ToLower();
+         if (det == "tgt") continue;
+         name += Form("_%s", det.Data());
+      }
+   }
+   
+   name += ".root";
+   
+   return name;
+}
