@@ -232,8 +232,9 @@ Bool_t RecoRaw::GoEvent(Int_t iEvent)
 void RecoRaw::OpenFileIn()
 {
 
-
-  ((TAGactDscTreeWriter*)fActEvtWriter)->SetStdAlone(fgStdAloneFlag);
+   if (fFlagOut && !fFlagFlatTree)
+      ((TAGactDscTreeWriter*)fActEvtWriter)->SetStdAlone(fgStdAloneFlag);
+   
    if (fgStdAloneFlag) {
 
      if (TAGrecoManager::GetPar()->IncludeVT())
