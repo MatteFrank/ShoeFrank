@@ -237,7 +237,6 @@ void RecoMC::CloseFileIn()
 //! Generate output file name
 TString RecoMC::GetFileOutName()
 {
- 
    TString tmp = GetName();
    Int_t pos = tmp.Last('/');
    
@@ -247,9 +246,7 @@ TString RecoMC::GetFileOutName()
       pos++;
    
    Int_t pos1 = tmp.Last('_');
-   
    TString name = tmp(pos, pos1-pos-1);
-   
    name.Prepend("run_");
    
    vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
