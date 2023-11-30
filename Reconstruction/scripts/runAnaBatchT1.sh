@@ -342,6 +342,9 @@ output                = ${mergeSingleDirExec_base}_\$(dir).out
 log                   = ${mergeSingleDirExec_base}_\$(dir).log
 priority              = 0
 
+periodic_hold = time() - jobstartdate > 10800
+periodic_hold_reason = "Merge for directory \$(dir) exceeded maximum runtime allowed, check presence of files in the output folder"
+
 queue dir from (
 $(cat ${outFolder}/dirs.txt)
 )
@@ -394,6 +397,10 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 priority              = -5
+
+periodic_hold = time() - jobstartdate > 7200
+periodic_hold_reason = "Final merge of file ${inFile} exceeded maximum runtime allowed, check presence of files in the output folder"
+
 queue
 EOF
 

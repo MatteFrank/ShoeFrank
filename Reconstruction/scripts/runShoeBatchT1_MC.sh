@@ -324,6 +324,10 @@ output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
 priority              = -2
+
+periodic_hold = time() - jobstartdate > 7200
+periodic_hold_reason = "Merge of output from ${inFile} exceeded maximum runtime allowed, check presence of single files in the output folder"
+
 queue
 EOF
 
@@ -405,6 +409,10 @@ output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
 priority              = -5
+
+periodic_hold = time() - jobstartdate > 7200
+periodic_hold_reason = "Merge of full stat output exceeded maximum runtime allowed, check presence of files in the output folder"
+
 queue
 EOF
 
