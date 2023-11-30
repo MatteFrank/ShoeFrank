@@ -24,6 +24,7 @@ TATWrawHit::TATWrawHit(TWaveformContainer *W, string algo, double frac, double d
   fPedestal = ComputePedestal(W,0.0);
   fChg = ComputeCharge(W, 0.0);
   fAmplitude = ComputeAmplitude(W);
+  fRiseTime = TAGbaseWD::ComputeRiseTime(W);
   if(algo=="hwCFD"){
     fTime = ComputeTime(W,frac,del,-30,20);
   }else if(algo=="simpleCFD"){
@@ -74,6 +75,7 @@ double TATWrawHit::ComputeBaseline(TWaveformContainer *w){
 double TATWrawHit::ComputePedestal(TWaveformContainer *w, double thr){
   return  TAGbaseWD::ComputePedestal(w, thr);
 }
+
 
 
 

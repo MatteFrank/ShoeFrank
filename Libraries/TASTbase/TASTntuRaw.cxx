@@ -48,8 +48,9 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double d
   //  cout << "cha::" << W->GetChannelId() << "  fCGH::" << fChg << endl;
   fAmplitude = ComputeAmplitude(W);
   fPileUp = false;
+  fRiseTime = ComputeRiseTime(W);
   if(algo=="hwCFD"){
-    fTime = ComputeTime(W,frac,del,-10,10);
+    fTime = ComputeTime(W,frac,del,-15,15);
   }else if(algo=="simpleCFD"){
     fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
   }else if(algo=="zarrCFD"){
@@ -272,10 +273,20 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double
   int TrigType = vW.at(0)->GetTrigType();
   int TriggerCellId = vW.at(0)->GetTriggerCellId();
 
- 
+  // double w[8]={1.47712, 0.826405, 1.25693, 1.1648, 1.2258, 0.996501, 0.86235, 0.190099};  
+  // for(int i=0;i<vW.size();i++){
+  //   int ch = vW.at(i)->GetChannelId();
+  //   for(int isa=0; isa<vW.at(i)->GetVectA().size(); isa++){
+  //     vW.at(i)->GetVectA()[isa]*=w[ch];
+  //   }
+  // }
+
+  
   vector<double> time(&vW.at(0)->GetVectT()[5], &vW.at(0)->GetVectT()[1018]);
   vector<double> amp(&vW.at(0)->GetVectA()[5], &vW.at(0)->GetVectA()[1018]);
- 
+
+
+  
   //I sum the signals
     for(int i=1;i<vW.size();i++){
     // vector<double> tmpamp = vW.at(i)->GetVectA();
@@ -289,7 +300,9 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double
         time_up++;
         amp_up++;
       }
+      
       amp[isa] += *(amp_up-1) + ( time[isa] - *(time_up-1))*(*amp_up - *(amp_up-1))/(*time_up - *(time_up-1));
+
       // amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
     }
   }
@@ -303,9 +316,13 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double
   wsum->GetVectRawT() = time;
   wsum->SetNEvent(vW.at(0)->GetNEvent());
   
-  fSuperHit = new TASTrawHit(wsum,algo, frac, del);
+  fSuperHit = new TASTrawHit(wsum, algo, frac, del);
   fSuperHit -> CheckForPileUp(wsum , wsum->GetNEvent()); //check for Pile up
 
+
+
+
+   
   delete wsum;
 }
 

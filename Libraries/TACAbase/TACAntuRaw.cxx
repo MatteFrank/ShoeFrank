@@ -42,7 +42,8 @@ TACArawHit::TACArawHit(TWaveformContainer *W, double temp = 25)
   fAmplitude = ComputeAmplitude(W);
   fTime = ComputeTimeTangentCFD(W,0.3);
   fTimeOth = TAGbaseWD::ComputeTimeSimpleCFD(W,0.3);
-
+  fRiseTime = ComputeRiseTime(W);
+  
 }
 
 //------------------------------------------+-----------------------------------

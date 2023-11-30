@@ -32,8 +32,8 @@ public:
   Double_t       GetCharge()                const   { return fCharge;           }
   //! Get the ST edep (in DATA is not calibrated and in MC is the true edep)
   Double_t       GetDe()                    const   { return fDe;               }
-  //! Validity check for the ST hit reconstruction: not valid if under a default energy threshold
-  Bool_t         IsValid()                  const   { return fIsValid;          }
+  //! Get the ST rise time for resolution studies
+    Bool_t         IsValid()                  const   { return fIsValid;          }
 
   inline void SetTime(double value)                 { fTime = value;            }
   inline void SetCharge(double value)               { fCharge = value;          }
@@ -48,7 +48,7 @@ public:
   void           Clear(Option_t* option = "C");
   void           AddMcTrackIdx(Int_t trackIdx, Int_t mcId = -1);
    
-
+//! Validity check for the ST hit reconstruction: not valid if under a default energy threshold
   void           SetValid(Bool_t t)                 { fIsValid   = t;           }
   
 private:
@@ -57,6 +57,7 @@ private:
   Double32_t      fDe;       ///< energy loss. Not calibrated in DATA. In MC here it is stored the true MC quantity
   Double32_t      fTime;     ///< time of ST in ns
   bool            fPileUp;
+
   
   TArrayI         fMCindex;                  // Id of the hit created in the simulation
   TArrayI         fMcTrackIdx;               // Index of the track created in the simulationOB
@@ -86,25 +87,28 @@ public:
    virtual void      Clear(Option_t* opt="");
    void              SetupClones();
    
-   void SetCharge(double value)         { fCharge = value;      }
-   void SetTriggerTime(double value)    { fTrigTime = value;    }
-   void SetTriggerTimeOth(double value) { fTrigTimeOth = value; }
-   void SetTrigType(int value)          { fTrigType=value;      }
+   void              SetCharge(double value)         { fCharge = value;      }
+   void              SetTriggerTime(double value)    { fTrigTime = value;    }
+   void              SetTriggerTimeOth(double value) { fTrigTimeOth = value; }
+   void              SetTrigType(int value)          { fTrigType=value;      }
+   void              SetRiseTime(Double_t value)     { fRiseTime = value;    }
+
   
-   double GetCharge()             const { return fCharge;       }
-   double GetTriggerTime()        const { return fTrigTime;     }
-   double GetTriggerTimeOth()     const { return fTrigTimeOth;  }
-   int    GetTrigType()           const { return fTrigType;     }
-
-
+   double            GetCharge()             const   { return fCharge;       }
+   double            GetTriggerTime()        const   { return fTrigTime;     }
+   double            GetTriggerTimeOth()     const   { return fTrigTimeOth;  }
+   int               GetTrigType()           const   { return fTrigType;     }
+   Double_t          GetRiseTime()           const   { return fRiseTime;     }
+  
 private:
   TClonesArray* fListOfHits;			    // hits
   Double32_t    fTrigTime;
   Double32_t    fTrigTimeOth;
   Double32_t    fCharge;
   int           fTrigType;
-   
-   ClassDef(TASTntuHit,2)
+  Double32_t    fRiseTime;
+
+   ClassDef(TASTntuHit,3)
 };
 
 

@@ -95,9 +95,9 @@ void RecoRaw::CreateRawAction()
       fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       
       if (!fgStdAloneFlag){
-         TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
-         TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
-         parTimeWD->FromFileTcal(parFileName.Data());
+	  TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
+	  TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
+	  parTimeWD->FromFileTcal(parFileName.Data());
       }
       
       if(TAGrecoManager::GetPar()->IncludeCA()){
@@ -231,8 +231,13 @@ Bool_t RecoRaw::GoEvent(Int_t iEvent)
 //! Open input file
 void RecoRaw::OpenFileIn()
 {
+
+   if (fFlagOut && !fFlagFlatTree)
+      ((TAGactDscTreeWriter*)fActEvtWriter)->SetStdAlone(fgStdAloneFlag);
+   
    if (fgStdAloneFlag) {
-      if (TAGrecoManager::GetPar()->IncludeVT())
+
+     if (TAGrecoManager::GetPar()->IncludeVT())
          fActVmeReaderVtx->Open(GetName());
       
       if (TAGrecoManager::GetPar()->IncludeBM())
@@ -294,4 +299,36 @@ void RecoRaw::SetRunNumberFromFile()
    Warning("SetRunNumber()", "Run number not set!, taking number from file: %d", fRunNumber);
    
    gTAGroot->SetRunNumber(fRunNumber);
+}
+
+//__________________________________________________________
+//! Generate output file name
+TString RecoRaw::GetFileOutName()
+{
+   TString name = Form("run_%08d", fRunNumber);
+   vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
+   
+   Int_t detectorsN = 0;
+   
+   for (auto it : dec) {
+      TString det = TAGrecoManager::GetDect3LetName(it);
+      det.ToLower();
+      if (det == "tgt") continue;
+      detectorsN++;
+   }
+   
+   if (detectorsN >= 7)
+      name += "_all";
+   else {
+      for (auto it : dec) {
+         TString det = TAGrecoManager::GetDect3LetName(it);
+         det.ToLower();
+         if (det == "tgt") continue;
+         name += Form("_%s", det.Data());
+      }
+   }
+   
+   name += ".root";
+   
+   return name;
 }

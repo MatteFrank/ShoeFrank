@@ -73,6 +73,7 @@ TASTntuHit::TASTntuHit()
   fTrigTime=-1000;
   fTrigTimeOth=-1000;
   fTrigType=-1000;
+  fRiseTime = -9999;
   
   SetupClones();
 }

@@ -205,11 +205,13 @@ void BaseReco::CampaignChecks()
       exit(0);
    
    // Run Condition Checks
-   if (fpParGeoG) {
-      TAGparGeo* parGeo = (TAGparGeo*)fpParGeoG->Object();
-      if (!fRunManager->ConditionChecks(fRunNumber, parGeo))
-         exit(0);
-   }
+   TAGparGeo* parGeo = 0x0;
+   if (fpParGeoG)
+      parGeo = (TAGparGeo*)fpParGeoG->Object();
+   
+   if (!fRunManager->ConditionChecks(fRunNumber, parGeo))
+      exit(0);
+   
 }
 
 //__________________________________________________________
@@ -373,38 +375,6 @@ void BaseReco::OpenFileOut()
    
    if (fFlagHisto)
       SetHistogramDir();
-}
-
-//__________________________________________________________
-//! Generate output file name
-TString BaseReco::GetFileOutName()
-{
-   TString name = Form("run_%08d", fRunNumber);
-   vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
-   
-   Int_t detectorsN = 0;
-   
-   for (auto it : dec) {
-      TString det = TAGrecoManager::GetDect3LetName(it);
-      det.ToLower();
-      if (det == "tgt") continue;
-      detectorsN++;
-   }
-   
-   if (detectorsN >= 7)
-      name += "_all";
-   else {
-      for (auto it : dec) {
-         TString det = TAGrecoManager::GetDect3LetName(it);
-         det.ToLower();
-         if (det == "tgt") continue;
-         name += Form("_%s", det.Data());
-      }
-   }
-   
-   name += ".root";
-      
-   return name;
 }
 
 //__________________________________________________________

@@ -29,6 +29,7 @@ TWaveformContainer::TWaveformContainer()
   fHighlevelDebug = false; //it can be set only hard-coding this variable
   Clear();
   fNEvent=0;
+  fDeltaClk=-9999;
 }
 
 //------------------------------------------+-----------------------------------
@@ -43,6 +44,7 @@ void TWaveformContainer::Clear()
   fVectA.clear();
   fIsEmptyFlag = true;
   fNEvent=0;
+  fDeltaClk=-9999;
 }
 
 //------------------------------------------+-----------------------------------
@@ -56,6 +58,7 @@ TWaveformContainer::TWaveformContainer(const TWaveformContainer &other)
   fVectRawT = other.fVectRawT;
   fVectA = other.fVectA;
   fIsEmptyFlag = false;
+  fDeltaClk = other.fDeltaClk;
 }
 
 // DEBUG ONLY

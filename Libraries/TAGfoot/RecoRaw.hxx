@@ -104,6 +104,10 @@ protected:
 private:
    static Bool_t         fgStdAloneFlag;   ///< flag for standalone DAQ
    static Int_t          fgNumFileStdAlone; ///< number of standalone file for WD
+   
+protected:
+   // Generate output file name
+   TString  GetFileOutName();
 
    ClassDef(RecoRaw, 1); ///< Base class for event display
 };
