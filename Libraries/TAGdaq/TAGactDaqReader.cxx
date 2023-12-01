@@ -55,9 +55,6 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
       fDaqFileIndex++;
    }
 
-   if(FootDebugLevel(0))
-     Info("Open","Option::%s",opt.Data());
-
    // all hard coded for the moment
    if (fDaqFileChain) {
       if (name.EndsWith(".data")) {
@@ -83,6 +80,8 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
       b_bad = -1;
    }
 
+   Info("Open","\nOpen file %s with option::%s",fCurFileName.Data(), opt.Data());
+   
    if( !fDaqFileReader->endOfFileReached() ) {
       fDaqFileReader->readFileHeader();
       fDaqFileHeader = fDaqFileReader->getFileHeader();

@@ -55,8 +55,8 @@ EventReader::~EventReader(){
 //!
 //! \param[in] filename file name
 bool EventReader::openFile( std::string filename ){
-  std::cout<<"Opening file "<<filename<<std::endl;
-  m_eventsRead = 0;
+
+   m_eventsRead = 0;
   m_errorOnRead = false;
   m_file = new std::ifstream;
   m_file->open( filename.c_str() , std::ifstream::in );
