@@ -12,7 +12,7 @@
 # > ./path/to/runShoeBatchT1.sh -i inputFolder -o outputFolder -c campaign -r run
 
 # where:
-# - inputFolder is the path of the input folder. The input folder is forced to be inside "/storage/gpfs_data/foot/". This option needs either the full path of the input directory or the relative one starting from the "/storage/gpfs_data/foot/" folder.
+# - inputFolder is the path of the input folder. The input folder is forced to be inside "/storage/gpfs_data/foot/".
 # - outputFolder is the path to the output folder. This is forced to be in "/storage/gpfs_data/foot/${USER}". If you don't have a directory like this one already in the Tier1, it will be created.
 # - campaign is the SHOE campaign as usual
 # - run is the run number
@@ -74,6 +74,8 @@
 
 ################ SCRIPT START ######################
 
+echo "Start job submission!"
+
 INPUT_BASE_PATH="/storage/gpfs_data/foot"
 OUTPUT_BASE_PATH="${INPUT_BASE_PATH}/${USER}"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
@@ -100,10 +102,14 @@ do
     esac
 done
 
+inFolder=$(realpath ${inFolder})
+outFolder=$(realpath ${outFolder})
+
 #I/O checks of input folder
 if [[ ! "$inFolder" == *"$INPUT_BASE_PATH"* ]]; then
     inFolder=$INPUT_BASE_PATH"/"$inFolder
-    echo "Input folder path set outside ${INPUT_BASE_PATH}. Changed to ${inFolder}"
+    echo "Input folder path set outside ${INPUT_BASE_PATH}! Please, choose input files below this path."
+    exit 0
 fi
 
 if [ ! -d "$inFolder" ]; then
@@ -119,7 +125,8 @@ fi
 #I/O checks of output folder
 if [[ ! "$outFolder" == *"$OUTPUT_BASE_PATH"* ]]; then
     outFolder=$OUTPUT_BASE_PATH"/"$outFolder
-    echo "Output folder path set outside ${OUTPUT_BASE_PATH}. Changed to ${outFolder}"
+    echo "Output folder path set outside ${OUTPUT_BASE_PATH}! Please, choose output path inside this directory"
+    exit 0
 fi
 
 if [ ! -d "$outFolder" ]; then
@@ -310,6 +317,10 @@ output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
 priority              = -5
+
+periodic_hold = time() - jobstartdate > 7200
+periodic_hold_reason = "Merge of run ${runNumber} exceeded maximum runtime allowed, check presence of files in the output folder"
+
 queue
 EOF
 
