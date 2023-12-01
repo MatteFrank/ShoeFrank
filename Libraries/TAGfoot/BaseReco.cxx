@@ -625,7 +625,15 @@ void BaseReco::ReadParFiles()
 
    // initialise par files for inner tracker
    if (TAGrecoManager::GetPar()->IncludeIT()) {
-      fpParGeoIt = new TAGparaDsc(new TAITparGeo());
+      TAITparMap* parMap = 0x0;
+      if(!fFlagMC) {
+         fpParMapIt = new TAGparaDsc(new TAITparMap());
+         parMap = (TAITparMap*)fpParMapIt->Object();
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAITparMap"), fRunNumber);
+         parMap->FromFile(parFileName.Data());
+      }
+      
+      fpParGeoIt = new TAGparaDsc(new TAITparGeo(parMap));
       TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
       TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TAITparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
@@ -637,13 +645,6 @@ void BaseReco::ReadParFiles()
 
       if ((fFlagItrTrack = parConf->GetAnalysisPar().TrackingFlag)) {
          fVtxTrackingAlgo = parConf->GetAnalysisPar().TrackingAlgo;
-      }
-      
-      if(!fFlagMC) {
-         fpParMapIt = new TAGparaDsc(new TAITparMap());
-         TAITparMap* parMap = (TAITparMap*)fpParMapIt->Object();
-         parFileName = fCampManager->GetCurMapFile(FootBaseName("TAITparMap"), fRunNumber);
-         parMap->FromFile(parFileName.Data());
       }
    }
 
