@@ -292,7 +292,7 @@ void EventReader::preEvent(){
       word = readWord();
       if ( word == EndOfFile || m_errorOnRead || m_file->eof()) {
          m_errorOnRead = true;
-         std::cout << "\nEnd of file" << std::endl;
+         std::cout << "\n End of file" << std::endl;
          return;
       }
    }
