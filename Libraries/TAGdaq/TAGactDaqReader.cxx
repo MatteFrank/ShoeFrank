@@ -80,7 +80,8 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
       b_bad = -1;
    }
 
-   Info("Open","\nOpen file %s with option::%s",fCurFileName.Data(), opt.Data());
+   printf("\n");
+   Info("Open","Open file %s with option::%s",fCurFileName.Data(), opt.Data());
    
    if( !fDaqFileReader->endOfFileReached() ) {
       fDaqFileReader->readFileHeader();
