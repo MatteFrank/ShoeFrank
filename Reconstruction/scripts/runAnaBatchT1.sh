@@ -276,16 +276,16 @@ echo "Finding list of folders..."
 source /opt/exp_software/foot/root_shoe_foot.sh > /dev/null 2>&1
 source ${SHOE_PATH}/build/setupFOOT.sh > /dev/null 2>&1
 cd ${SHOE_PATH}/build/Reconstruction
-../bin/DecodeGlbAna -in ${inFile} -out ${outFolder}/dummy_folders.root -exp ${campaign} -run ${runNumber} ${mcflag} -nev 10 > /dev/null 2>&1
+../bin/DecodeGlbAna -in ${inFile} -out ${outFolder}/dummy_folders_${campaign}_${runNumber}.root -exp ${campaign} -run ${runNumber} ${mcflag} -nev 10 > /dev/null 2>&1
 cd - > /dev/null 2>&1
 
 root -l <<-EOF
-TFile* _file0 = new TFile("${outFolder}/dummy_folders.root", "r");
-std::ofstream ofs("${outFolder}/dirs.txt");
+TFile* _file0 = new TFile("${outFolder}/dummy_folders_${campaign}_${runNumber}.root", "r");
+std::ofstream ofs("${outFolder}/dirs_${campaign}_${runNumber}.txt");
 for( auto it : *_file0->GetListOfKeys() ){ofs << it->GetName() << endl; }
 EOF
 
-listOfDirs=($(cat ${outFolder}/dirs.txt))
+listOfDirs=($(cat ${outFolder}/dirs_${campaign}_${runNumber}.txt))
 nDirs=${#listOfDirs[@]}
 
 echo "Done"
@@ -299,7 +299,7 @@ cat <<EOF > $mergeSingleDirExec
 source /opt/exp_software/foot/root_shoe_foot.sh
 source ${SHOE_PATH}/build/setupFOOT.sh
 SCRATCH="\$(pwd)"
-outputFile="\${SCRATCH}/MergeDir_\${1}_temp.root"
+outputFile="\${SCRATCH}/MergeDir_${campaign}_${runNumber}_\${1}_temp.root"
 inputFiles=""
 
 #While loop that checks if all files have been processed
@@ -346,12 +346,12 @@ periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Merge for directory \$(dir) exceeded maximum runtime allowed, check presence of files in the output folder"
 
 queue dir from (
-$(cat ${outFolder}/dirs.txt)
+$(cat ${outFolder}/dirs_${campaign}_${runNumber}.txt)
 )
 EOF
 
-rm ${outFolder}/dummy_folders.root
-rm ${outFolder}/dirs.txt
+rm ${outFolder}/dummy_folders_${campaign}_${runNumber}.root
+rm ${outFolder}/dirs_${campaign}_${runNumber}.txt
 
 # Submit merge job
 chmod 754 ${mergeSingleDirExec}
@@ -370,11 +370,11 @@ source /opt/exp_software/foot/root_shoe_foot.sh
 source ${SHOE_PATH}/build/setupFOOT.sh
 SCRATCH="\$(pwd)"
 tempOutput="\${SCRATCH}/MergeAna_temp.root"
-inputFiles="${outFolder}/MergeDir_*_temp.root"
+inputFiles="${outFolder}/MergeDir_${campaign}_${runNumber}_*_temp.root"
 
 #While loop that checks if all files have been processed
 while true; do
-    nCompletedDirs=\$(ls ${outFolder}/MergeDir_*_temp.root | wc -l)
+    nCompletedDirs=\$(ls ${outFolder}/MergeDir_${campaign}_${runNumber}_*_temp.root | wc -l)
 
 	if [ \${nCompletedDirs} -eq ${nDirs} ]; then
         LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -f \${tempOutput} \${inputFiles}
@@ -382,7 +382,7 @@ while true; do
         rm \${inputFiles} ${outFile_base}*.root
 		break
 	else
-        echo "Final merge of ${campaign} run ${runNumber} -> Processed \${nCompletedDirs}/${nDirs} directories. Waiting.."
+        echo "Analysis of ${campaign} run ${runNumber}, final merge -> Processed \${nCompletedDirs}/${nDirs} directories. Waiting.."
 		sleep 20
 	fi
 done
@@ -398,8 +398,8 @@ output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 priority              = -5
 
-periodic_hold = time() - jobstartdate > 7200
-periodic_hold_reason = "Final merge of file ${inFile} exceeded maximum runtime allowed, check presence of files in the output folder"
+periodic_hold = time() - jobstartdate > 10800
+periodic_hold_reason = "Final merge of file ${outFile} exceeded maximum runtime allowed, check presence of files in the output folder"
 
 queue
 EOF
