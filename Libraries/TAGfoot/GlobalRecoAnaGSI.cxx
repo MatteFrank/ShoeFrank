@@ -133,9 +133,6 @@ void GlobalRecoAnaGSI::LoopEvent()
 
         // study of MC clones: different glb tracks with the same MC ID
         m_nClone[Z_true][TrkIdMC]++;
-        if (m_nClone[Z_true][TrkIdMC] > 1)
-          n_clones[Z_true] = m_nClone[Z_true][TrkIdMC];
-
 
         // ===================TWMATCH 
         TAMCpart *particle = myMcNtuPart->GetTrack(TrkIdMC);
@@ -731,8 +728,17 @@ void GlobalRecoAnaGSI::LoopEvent()
     // }
 
 
-        if (fFlagMC)
+      if (fFlagMC)
     {
+      //Increment the number of track clones found in the event
+      for( auto itZ : m_nClone ) //Loop on Z_true
+      {
+        for( auto itMCid : itZ.second ) //Loop on MCtrackID
+        {
+          if (itMCid.second > 1)
+            n_clones[ itZ.first ] += itMCid.second;
+        }
+      }
       // MCParticleStudies();
       //***** loop on every TAMCparticle:
       FillMCPartYields(); // N_ref
@@ -1202,6 +1208,8 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
   fRegAirAfterTW = GetParGeoG()->GetRegAirTW();
 
   n_clones.clear();
+  for (int i = 1; i <= fPrimaryCharge; i++)
+    n_clones[i] = 0;
   return;
 }
 
