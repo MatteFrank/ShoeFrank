@@ -36,6 +36,9 @@ TAVTbaseParCal::TAVTbaseParCal()
   fChargeMaxProba(0.),
   fkDefaultCalName("")
 {
+   // set default wise to 1
+   for (Int_t p = 0; p < 4; p++)
+      fEffParameter[p].QuadEff[p] = 1.;
 }
 
 //------------------------------------------+-----------------------------------
