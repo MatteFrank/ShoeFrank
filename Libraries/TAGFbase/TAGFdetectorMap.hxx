@@ -42,6 +42,8 @@ public:
 	int		GetMinFitPlane(string detName);
 	int		GetMaxFitPlane(string detName);
 	int		GetFitPlaneTW();
+	int		GetFitPlaneTGcenter();
+	int		GetFitPlaneTGairInterface();
 
 	int		GetFitPlanesN(string detName="all");
 	bool	IsFitPlaneInDet(int planeId, string detName);

@@ -217,6 +217,33 @@ int TAGFdetectorMap::GetFitPlaneTW()
 		Error("GetFitPlaneTW()", "No TW plane found in TAGFdetectorMap"), exit(42);
 }
 
+//! \brief Get the index of the FitPlane at the center of the TG
+//!
+//! \return Index of the FitPlane at TG center
+int TAGFdetectorMap::GetFitPlaneTGcenter()
+{
+	if(m_DetToFitPlaneMap.find("TG") == m_DetToFitPlaneMap.end())
+		Error("GetFitPlaneTGcenter()", "TG not found in TAGFdetectorMap "), exit(42);
+
+	if(m_DetToFitPlaneMap.at("TG").size() > 0)
+		return m_DetToFitPlaneMap.at("TG").at(0);
+	else
+		Error("GetFitPlaneTGcenter()", "No TG plane found in TAGFdetectorMap"), exit(42);
+}
+
+//! \brief Get the index of the FitPlane at the interface between TG and air
+//!
+//! \return Index of the FitPlane at the interface between TG and air
+int TAGFdetectorMap::GetFitPlaneTGairInterface()
+{
+	if(m_DetToFitPlaneMap.find("TG") == m_DetToFitPlaneMap.end())
+		Error("GetFitPlaneTGairInterface()", "TG not found in TAGFdetectorMap "), exit(42);
+
+	if(m_DetToFitPlaneMap.at("TG").size() > 1)
+		return m_DetToFitPlaneMap.at("TG").at(1);
+	else
+		Error("GetFitPlaneTGairInterface()", "No TG-air plane found in TAGFdetectorMap"), exit(42);
+}
 
 //! \brief Get the number of FitPlanes for the whole setup or for a detector
 //!

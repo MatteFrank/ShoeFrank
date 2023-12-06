@@ -145,6 +145,7 @@ void TAGFgeometryConstructor::CreateGeometry()
 		m_TopVolume->AddNode(tgVol, 3, transfo);
 
 		DetPlane* targetPlane;
+		DetPlane* targetAirInterfacePlane;
 		TVector3 TGsize = m_TG_geo->GetTargetPar().Size;
 		TVector3 origin_( m_GeoTrafo->FromTGLocalToGlobal(m_TG_geo->GetTargetPar().Position) );
 		if(m_TG_geo->GetTargetPar().Shape == "cubic")
@@ -152,14 +153,23 @@ void TAGFgeometryConstructor::CreateGeometry()
 			genfit::AbsFinitePlane* targetArea = new RectangularFinitePlane(-TGsize.x()/2, TGsize.x()/2, -TGsize.y()/2, TGsize.y()/2);
 			//Target area is now defined in LOCAL coordinates
 			targetPlane = new genfit::DetPlane(origin_, TVector3(0,0,1), targetArea);
+			targetAirInterfacePlane = new genfit::DetPlane(origin_ + TVector3(0,0,TGsize.z()/2), TVector3(0,0,1), targetArea);
 		}
 		else
+		{
 			targetPlane = new genfit::DetPlane(origin_, TVector3(0,0,1));
+			targetAirInterfacePlane = new genfit::DetPlane(origin_ + TVector3(0,0,TGsize.z()/2), TVector3(0,0,1));
+		}
 
 		genfit::SharedPlanePtr detectorplane(targetPlane);
 		m_SensorIDMap->AddFitPlane(-42, detectorplane);
 		m_SensorIDMap->AddFitPlaneIDToDet(-42, "TG");
+
+		genfit::SharedPlanePtr tgAirPlane(targetAirInterfacePlane);
+		m_SensorIDMap->AddFitPlane(-17, tgAirPlane);
+		m_SensorIDMap->AddFitPlaneIDToDet(-17, "TG");
 		delete targetPlane;
+		delete targetAirInterfacePlane;
 	}
 
 	// Vertex

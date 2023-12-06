@@ -739,6 +739,22 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	}
 	//End VTX; 
 
+	StateOnPlane state_tg_air_point = track->getFittedState(0);
+	double extL_TgtAir = 0;
+	try
+	{
+		genfit::SharedPlanePtr tgAirPlane = m_SensorIDMap->GetFitPlane( m_SensorIDMap->GetFitPlaneTGairInterface() );
+		extL_TgtAir = track->getCardinalRep()->extrapolateToPlane( state_tg_air_point, tgAirPlane );
+	}
+	catch(const genfit::Exception& e)
+	{
+		std::cerr << e.what() << "\n";
+		state_tg_air_point = track->getFittedState(0);
+	}
+
+	TVector3 recoPos_tgInt = state_tg_air_point.getPos();
+	TVector3 recoMom_tgInt = state_tg_air_point.getMom();
+
 	// start TW: extrap some mm after TW for fitted total energy loss
 	TVector3 recoPos_TW(0,0,0), recoMom_TW(0,0,0);
 	TMatrixD recoPos_TW_cov(3,3);
@@ -824,6 +840,10 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 										&recoMom_target_cov, &recoPos_TW, &recoMom_TW, &recoPos_TW_cov,
 										&recoMom_TW_cov, &shoeTrackPointRepo);
 
+	// shoeOutTrack->SetTgtIntPosition(recoPos_tgInt);
+	// shoeOutTrack->SetTgtIntMomentum(recoMom_tgInt);
+	// shoeOutTrack->SetTgtIntDirection(recoMom_tgInt.Unit());
+
 	//Set additional variables
 	shoeOutTrack->SetTrackId(std::atoi(tok.at(2).c_str()));
 	shoeOutTrack->SetHasTwPoint(hasTwPoint);
@@ -888,9 +908,9 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 				cout << "TAGactKFitter::RecordTrackInfo:: Reco Pos z= "<< recoPos_target.z() << "     p = "<< recoMom_target.Mag() << endl<<endl<<endl;
 			}
 
-			m_trackAnalysis->FillMomentumInfo( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
+			m_trackAnalysis->FillMomentumInfo( recoMom_tgInt, mcMom, recoMom_target_cov, PartName, &h_deltaP, &h_sigmaP );
 
-			m_trackAnalysis->Fill_MomentumResidual( recoMom_target, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin, &h_dPOverP_vs_P );
+			m_trackAnalysis->Fill_MomentumResidual( recoMom_tgInt, mcMom, recoMom_target_cov, PartName, &h_dPOverP_x_bin, &h_dPOverP_vs_P );
 
 			trackQuality = TrackQuality( &mcParticleID_track );
 			if(FootDebugLevel(1)) cout << "trackQuality::" << trackQuality << "\n";
@@ -920,7 +940,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 					// h_trackQuality_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( trackQuality );
 				h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
 				h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
-				h_ratio_reco_true.at(fitCh)->Fill( recoMom_target.Mag()/particle->GetInitP().Mag() );	// check if not present
+				h_ratio_reco_true.at(fitCh)->Fill( recoMom_tgInt.Mag()/particle->GetInitP().Mag() );	// check if not present
 			}
 		}
 
