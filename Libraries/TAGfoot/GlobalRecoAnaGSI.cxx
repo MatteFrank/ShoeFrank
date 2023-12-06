@@ -736,7 +736,7 @@ void GlobalRecoAnaGSI::LoopEvent()
         for( auto itMCid : itZ.second ) //Loop on MCtrackID
         {
           if (itMCid.second > 1)
-            n_clones[ itZ.first ] += itMCid.second;
+            n_clones[ itZ.first ] += itMCid.second - 1;
         }
       }
       // MCParticleStudies();
