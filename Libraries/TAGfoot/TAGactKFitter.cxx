@@ -89,6 +89,13 @@ m_IsMC(false)
 
 	m_eventDisplayCounter = 0;
 	m_CALOextrapTolerance = 5;
+
+	if( m_IsMC )
+	{
+		fTGregion = m_GFgeometry->GetGparGeo()->GetRegTarget();
+		fAIRregion = m_GFgeometry->GetGparGeo()->GetRegAirPreTW();
+	}
+
 }
 
 
@@ -1433,13 +1440,11 @@ void TAGactKFitter::CalculateTrueMomentumAtTgt()
 {
 	if(TAGrecoManager::GetPar()->IsRegionMc())
 	{
-		Int_t target_region = m_GFgeometry->GetGparGeo()->GetRegTarget();
-		Int_t air_region = m_GFgeometry->GetGparGeo()->GetRegAirPreTW();
 		TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuRegion"))->Object();
 		for(int i = 0; mcNtuReg && i < mcNtuReg->GetRegionsN(); ++i)
 		{
 			TAMCregion* mcReg = (TAMCregion*)mcNtuReg->GetRegion(i);
-			if( mcReg->GetOldCrossN() == target_region && mcReg->GetCrossN() == air_region )
+			if( mcReg->GetOldCrossN() == fTGregion && mcReg->GetCrossN() == fAIRregion )
 				m_trueMomentumAtTgt[ mcReg->GetTrackIdx() - 1 ] = mcReg->GetMomentum();
 		}
 	}

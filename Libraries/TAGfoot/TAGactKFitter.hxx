@@ -174,6 +174,9 @@ private:
 	long m_evNum;										///< Event number
 	int m_numGenParticle_noFrag;						///< Number of generated particle in the MC event that didn't fragment between the TG and TW
 
+	Int_t fTGregion;									///< MC region for TG
+	Int_t fAIRregion;									///< MC region for air after TG
+
 	// TH2D* MSDresidualOfPrediction;
 	// TH2D* ITresidualOfPrediction;
 	// TH1F* percentageOfMCTracksVTX;
