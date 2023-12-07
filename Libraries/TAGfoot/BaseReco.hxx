@@ -176,6 +176,9 @@ public:
   // Create L0 branch in tree
   virtual void SetL0TreeBranches();
    
+   //! Set rum number from file
+   virtual void SetRunNumberFromFile() { return; }
+   
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fExpName = name;  }
    
@@ -340,7 +343,9 @@ public:
    //! MC CAL hit container Getter
    TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
-
+   //! Get run number
+   Int_t               GetRunNumber()       const { return fRunNumber;                               }
+   
 public:
    //! Disable MC info saving in output tree
    static void DisableSaveMc() { fgSaveMcFlag = false; }
