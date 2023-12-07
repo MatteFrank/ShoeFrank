@@ -153,7 +153,7 @@ void TAGFgeometryConstructor::CreateGeometry()
 			genfit::AbsFinitePlane* targetArea = new RectangularFinitePlane(-TGsize.x()/2, TGsize.x()/2, -TGsize.y()/2, TGsize.y()/2);
 			//Target area is now defined in LOCAL coordinates
 			targetPlane = new genfit::DetPlane(origin_, TVector3(0,0,1), targetArea);
-			targetAirInterfacePlane = new genfit::DetPlane(origin_ + TVector3(0,0,TGsize.z()/2), TVector3(0,0,1), targetArea);
+			targetAirInterfacePlane = new genfit::DetPlane(origin_ + TVector3(0,0,TGsize.z()/2), TVector3(0,0,1), targetArea->clone());
 		}
 		else
 		{
