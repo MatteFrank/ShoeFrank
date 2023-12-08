@@ -28,9 +28,10 @@ NumberFiles: 1
 "./geomaps/12C_200_2023v2/TAGdetector.geo": -1
 
 DetectorName: "VT"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/12C_200_2023v2/TAVTdetector.geo": -1
 "./config/12C_200_2023v2/TAVTdetector.cfg": -1
+"./calib/12C_200_2023v2/TAVTdetector.cal": -1
 
 DetectorName: "IT"
 NumberFiles: 2
