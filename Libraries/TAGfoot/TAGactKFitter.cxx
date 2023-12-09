@@ -1056,8 +1056,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		h_tof->Fill( tof );
 		h_pVal->Fill( pVal );
 
-		h_momentum->Fill( recoMom_target.Mag() );
-		h_momentum_reco.at(fitCh)->Fill( recoMom_target.Mag() );	// check if not present
+		h_momentum->Fill( recoMom_tgInt.Mag() );
+		h_momentum_reco.at(fitCh)->Fill( recoMom_tgInt.Mag() );	// check if not present
 
 		if( shoeOutTrack->HasTwPoint() )
 		{
@@ -1068,16 +1068,16 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			TOF -= (m_GeoTrafo->GetTGCenter().Z()-m_GeoTrafo->GetSTCenter().Z())/beam_speed;
 			float beta = shoeOutTrack->GetLength()/(TOF*TAGgeoTrafo::GetLightVelocity());
 			if( shoeOutTrack->GetTwChargeZ() != shoeOutTrack->GetFitChargeZ() )
-				recoMom_target.SetMag( recoMom_target.Mag()*shoeOutTrack->GetTwChargeZ()/shoeOutTrack->GetFitChargeZ() );
-			float recomass = recoMom_target.Mag()*sqrt(1 - pow(beta,2))/(beta*m_AMU);
+				recoMom_tgInt.SetMag( recoMom_tgInt.Mag()*shoeOutTrack->GetTwChargeZ()/shoeOutTrack->GetFitChargeZ() );
+			float recomass = recoMom_tgInt.Mag()*sqrt(1 - pow(beta,2))/(beta*m_AMU);
 			// cout << "TOF::" << TOF << " "
 
 			h_RecoMass[0]->Fill( recomass );
-			h_pvsTOF[0]->Fill(TOF, recoMom_target.Mag());
+			h_pvsTOF[0]->Fill(TOF, recoMom_tgInt.Mag());
 			if( shoeOutTrack->GetTwChargeZ() < 10 )
 			{
 				h_RecoMass[shoeOutTrack->GetTwChargeZ()]->Fill( recomass );
-				h_pvsTOF[shoeOutTrack->GetTwChargeZ()]->Fill(TOF, recoMom_target.Mag());
+				h_pvsTOF[shoeOutTrack->GetTwChargeZ()]->Fill(TOF, recoMom_tgInt.Mag());
 			}
 		}
 		
