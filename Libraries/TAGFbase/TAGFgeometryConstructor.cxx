@@ -144,32 +144,28 @@ void TAGFgeometryConstructor::CreateGeometry()
 		TGeoCombiTrans* transfo = m_GeoTrafo->GetCombiTrafo(TAGparGeo::GetBaseName());
 		m_TopVolume->AddNode(tgVol, 3, transfo);
 
-		DetPlane* targetPlane;
-		DetPlane* targetAirInterfacePlane;
+		genfit::AbsFinitePlane* targetArea;
 		TVector3 TGsize = m_TG_geo->GetTargetPar().Size;
 		TVector3 origin_( m_GeoTrafo->FromTGLocalToGlobal(m_TG_geo->GetTargetPar().Position) );
-		if(m_TG_geo->GetTargetPar().Shape == "cubic")
-		{
-			genfit::AbsFinitePlane* targetArea = new RectangularFinitePlane(-TGsize.x()/2, TGsize.x()/2, -TGsize.y()/2, TGsize.y()/2);
-			//Target area is now defined in LOCAL coordinates
-			targetPlane = new genfit::DetPlane(origin_, TVector3(0,0,1), targetArea);
-			targetAirInterfacePlane = new genfit::DetPlane(origin_ + TVector3(0,0,TGsize.z()/2), TVector3(0,0,1), targetArea->clone());
-		}
-		else
-		{
-			targetPlane = new genfit::DetPlane(origin_, TVector3(0,0,1));
-			targetAirInterfacePlane = new genfit::DetPlane(origin_ + TVector3(0,0,TGsize.z()/2), TVector3(0,0,1));
-		}
 
-		genfit::SharedPlanePtr detectorplane(targetPlane);
-		m_SensorIDMap->AddFitPlane(-42, detectorplane);
+		if(m_TG_geo->GetTargetPar().Shape == "cubic")
+			targetArea = new RectangularFinitePlane(-TGsize.x()/2, TGsize.x()/2, -TGsize.y()/2, TGsize.y()/2);
+		else //RZ: Decide on how to handle this if we have different shapes!!
+			targetArea = new RectangularFinitePlane(-20,20,-20,20);
+
+		genfit::SharedPlanePtr targetPlane(new genfit::DetPlane(origin_, TVector3(0,0,1), targetArea));
+		genfit::SharedPlanePtr targetAirInterfacePlane(new genfit::DetPlane(origin_ + TVector3(0,0,TGsize.z()/2), TVector3(0,0,1), targetArea->clone()));
+
+		TVector3 U(1.,0,0);
+		TVector3 V(0,1.,0);
+		targetPlane->setUV(U,V);
+		m_SensorIDMap->AddFitPlane(-42, targetPlane);
 		m_SensorIDMap->AddFitPlaneIDToDet(-42, "TG");
 
-		genfit::SharedPlanePtr tgAirPlane(targetAirInterfacePlane);
-		m_SensorIDMap->AddFitPlane(-17, tgAirPlane);
+		targetAirInterfacePlane->setUV(U,V);
+		m_SensorIDMap->AddFitPlane(-17, targetAirInterfacePlane);
 		m_SensorIDMap->AddFitPlaneIDToDet(-17, "TG");
-		delete targetPlane;
-		delete targetAirInterfacePlane;
+
 	}
 
 	// Vertex

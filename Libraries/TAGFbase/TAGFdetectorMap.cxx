@@ -12,7 +12,7 @@
 
  Class used to handle all the indices used in the global reconstruciton routine with GenFit:
  - Detector -> Either name ("VT", "MSD", etc....) or index
- - Sensor -> Local index of sensor in the detector (e.g. 0-3 for "VT", 0-32 for "IT", etc....)
+ - Sensor -> Local index of sensor in the detector (e.g. 0-3 for "VT", 0-31 for "IT", etc....)
  - FitPlane -> Global GenFit plane index (does not restart for each detector)
  - Hit -> Local index of the hit in the current sensor/plane
  - Measurement -> Global index of the measurement defined combining detector, sensor and hit indices
