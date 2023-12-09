@@ -740,20 +740,20 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 	//End VTX; 
 
 	StateOnPlane state_tg_air_point = track->getFittedState(0);
+	TVector3 recoPos_tgInt;
+	TVector3 recoMom_tgInt;
 	double extL_TgtAir = 0;
 	try
 	{
-		genfit::SharedPlanePtr tgAirPlane = m_SensorIDMap->GetFitPlane( m_SensorIDMap->GetFitPlaneTGairInterface() );
-		extL_TgtAir = track->getCardinalRep()->extrapolateToPlane( state_tg_air_point, tgAirPlane );
+		recoPos_tgInt = m_dummySelector->ExtrapolateToOuterTracker(track, m_SensorIDMap->GetFitPlaneTGairInterface(), recoMom_tgInt, true);
 	}
 	catch(const genfit::Exception& e)
 	{
 		std::cerr << e.what() << "\n";
 		state_tg_air_point = track->getFittedState(0);
+		recoPos_tgInt = state_tg_air_point.getPos();
+		recoMom_tgInt = state_tg_air_point.getMom();
 	}
-
-	TVector3 recoPos_tgInt = state_tg_air_point.getPos();
-	TVector3 recoMom_tgInt = state_tg_air_point.getMom();
 
 	// start TW: extrap some mm after TW for fitted total energy loss
 	TVector3 recoPos_TW(0,0,0), recoMom_TW(0,0,0);
