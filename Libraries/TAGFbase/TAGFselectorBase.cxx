@@ -605,18 +605,21 @@ TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 {
 
 	//+++++++++++++++++++++++++++++++++++++++
+	AbsTrackRep* trackRep;
 	if(repId == -1)
-		repId = trackToFit->getCardinalRepId();
+		trackRep = trackToFit->getCardinalRep();
+	else
+		trackRep = trackToFit->getTrackRep(repId);
 	
 	// Get first point if extrapolation goes backward or last point if forward
 	int pointId = backExtrap ? 1 : -1;
-	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(pointId, trackToFit->getTrackRep(repId));
+	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(pointId, trackRep);
 	if (tp == nullptr) {
 		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
 	}
 
 	//Get fitter info
-	KalmanFitterInfo* fitInfo = static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)));
+	KalmanFitterInfo* fitInfo = static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackRep));
 
 	// Check if point has backward/forward update
 	bool hasUpdate = backExtrap ? fitInfo->hasBackwardUpdate() : fitInfo->hasForwardUpdate();
@@ -629,7 +632,7 @@ TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 	//RZ: Get update of fitted state and extrpolate to the plane
 	KalmanFittedStateOnPlane* stateToCopy = backExtrap ? fitInfo->getBackwardUpdate() : fitInfo->getForwardUpdate();
 	KalmanFittedStateOnPlane kfTest = *stateToCopy;
-	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
+	trackRep->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
 
 	TVector3 posi((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());
 	mom = kfTest.getMom();
