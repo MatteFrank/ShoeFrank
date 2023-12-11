@@ -116,7 +116,8 @@ Set(TACE "TACEbase")
 Set(TAPW "TAPWbase")
 Set(TANE "TANEbase")
 Set(TAPXI "TAPXIbase")
-add_definitions(-std=c++14)
+
+add_definitions(-std=c++17)
 add_definitions(-Wno-shadow)
 
 #----------------------------------------------------------------------------
