@@ -218,6 +218,16 @@ void BaseReco::CampaignChecks()
 //! Global reconstruction information checks
 void BaseReco::GlobalChecks()
 {
+   Int_t runNumber = GetRunNumberFromFile();
+   
+   if (runNumber != -1) {
+      if (runNumber != fRunNumber) {
+         fRunNumber = runNumber;
+         Warning("GlobalChecks()", "Run number different from file, taking number from file: %d", fRunNumber);
+         gTAGroot->SetRunNumber(fRunNumber);
+      }
+   }
+   
    if (!TAGrecoManager::GetPar()->GlobalChecks(fFlagMC))
       exit(0);
 }

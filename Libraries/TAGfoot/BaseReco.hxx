@@ -176,8 +176,11 @@ public:
   // Create L0 branch in tree
   virtual void SetL0TreeBranches();
    
-   //! Set rum number from file
-   virtual void SetRunNumberFromFile() { return; }
+   //! Set run number from file
+   virtual void SetRunNumberFromFile()         { return;           }
+   
+   //! Get run number from file
+   virtual Int_t GetRunNumberFromFile()        { return -1;        }
    
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fExpName = name;  }

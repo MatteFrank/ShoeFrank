@@ -280,9 +280,18 @@ void RecoRaw::CloseFileIn()
 // --------------------------------------------------------------------------------------
 void RecoRaw::SetRunNumberFromFile()
 {
-   // Done by hand shoud be given by DAQ header
+   fRunNumber = GetRunNumberFromFile();
+   
+   Warning("SetRunNumber()", "Run number not set, taking number from file: %d", fRunNumber);
+   
+   gTAGroot->SetRunNumber(fRunNumber);
+}
+
+// --------------------------------------------------------------------------------------
+Int_t RecoRaw::GetRunNumberFromFile()
+{
    TString name = GetName();
-   if (name.IsNull()) return;
+   if (name.IsNull()) return -1;
    
    // protection about file name starting with .
    if (name[0] == '.')
@@ -294,11 +303,7 @@ void RecoRaw::SetRunNumberFromFile()
    TString tmp1 = name(pos1+1, len);
    Int_t pos2   = tmp1.First(".");
    TString tmp  = tmp1(0, pos2);
-   fRunNumber = tmp.Atoi();
-   
-   Warning("SetRunNumber()", "Run number not set!, taking number from file: %d", fRunNumber);
-   
-   gTAGroot->SetRunNumber(fRunNumber);
+   return  tmp.Atoi();
 }
 
 //__________________________________________________________
