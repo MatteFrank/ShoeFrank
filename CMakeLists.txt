@@ -25,7 +25,7 @@ option(Geant4_DIR "Include G4 simulation" OFF)
 
 #------------------------------------------------------------------------------
 # option TOE
-option(TOE_DIR "Include TOE reconstruction" ON)
+option(TOE_DIR "Include TOE reconstruction" OFF)
 
 #------------------------------------------------------------------------------
 # option GenFit
