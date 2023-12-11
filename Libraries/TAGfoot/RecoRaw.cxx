@@ -94,10 +94,10 @@ void RecoRaw::CreateRawAction()
       fpDatRawTw      = new TAGdataDsc(new TATWntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       
-      if (!fgStdAloneFlag){
-	  TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
-	  TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
-	  parTimeWD->FromFileTcal(parFileName.Data());
+      if (!fgStdAloneFlag) {
+         TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
+         TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
+         parTimeWD->FromFileTcal(parFileName.Data());
       }
       
       if(TAGrecoManager::GetPar()->IncludeCA()){
@@ -142,7 +142,6 @@ void RecoRaw::CreateRawAction()
       fActNtuHitBm = new TABMactNtuHit(name, fpNtuHitBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
       if (fFlagHisto)
         fActNtuHitBm->CreateHistogram();
-
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
@@ -260,10 +259,8 @@ void RecoRaw::OpenFileIn()
 
      if (fSkipEventsN > 0)
        fActEvtReader->SkipEvents(fSkipEventsN);
-
    }
 }
-
 
 //__________________________________________________________
 //! Close input file
@@ -282,7 +279,7 @@ void RecoRaw::SetRunNumberFromFile()
 {
    fRunNumber = GetRunNumberFromFile();
    
-   Warning("SetRunNumber()", "Run number not set, taking number from file: %d", fRunNumber);
+   Warning("SetRunNumber()", "Run number not set, taking number from file: %d\n", fRunNumber);
    
    gTAGroot->SetRunNumber(fRunNumber);
 }
