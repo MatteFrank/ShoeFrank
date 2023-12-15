@@ -226,7 +226,7 @@ c     common needed to score the boundary crossing info
 c     and put the right pointer to the particle common of the produced electrons
 c     
       integer nCROSS, maxCROSS
-      parameter (maxCROSS=15000)
+      parameter (maxCROSS=25000)
       integer idCROSS(maxCROSS), nregCROSS(maxCROSS) 
       integer nregoldCROSS(maxCROSS)
       real pxCROSS(maxCROSS), pyCROSS(maxCROSS), pzCROSS(maxCROSS)
