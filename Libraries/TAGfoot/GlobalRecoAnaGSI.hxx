@@ -83,7 +83,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookChargeStudies(string path);
   void BookFragmentationStudies(string path);
   void MyRecoBooking(string path_name);
-  void MyReco(string path_name , int TrkIdMC, int Z_true, int fPrimaryCharge, int Z_meas, int Th_BM, int Th_recoBM, TAGtrack *fGlbTrack);
+  void MyReco(string path_name);
 
   vector<bool> CheckTwPointInMoreTracks();     // check if more than one glb track has the same tw point
   void RecoGlbTrkLoopSetVariables();           // Set Reco variables, to be done for each glbal track

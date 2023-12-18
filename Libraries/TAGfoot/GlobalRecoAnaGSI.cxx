@@ -198,50 +198,50 @@ void GlobalRecoAnaGSI::LoopEvent()
 
         // // =================== VTX MATCH
         if (VTMatch == true)
-          MyReco("VT", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("VT");
 
         // // =================== MSD MATCH
         if (MSDMatch == true)
-          MyReco("MSD", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("MSD");
 
         // // =================== VTX + MSD  MATCH
         if (MSDMatch == true && VTMatch == true)
-          MyReco("VTX_MSD", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("VTX_MSD");
 
         // // ===================ALL TRACKS with TRACK QUALITY = 1
         if (fGlbTrack->GetQuality() == 1)
-          MyReco("Q1", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("Q1");
 
         //// =================== RECO CHI2 cut
         if (fGlbTrack->GetChi2() < 2 && res < 0.01)
-          MyReco("Chi2", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("Chi2");
 
         //// =================== RECO CHI2 cut + multitrack
         if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1)
-          MyReco("MChi2", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("MChi2");
 
         // // =================== MC VTX + Chi2 cuts
         if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01)
-          MyReco("VTChi2", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("VTChi2");
 
         // // =================== MC VTX + Chi2 cuts + multitrack
         if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1)
-          MyReco("MVTChi2", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("MVTChi2");
 
         // // =================== Chi2 cuts + multitrack + NO TW in multitracks
         if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false)
-          MyReco("MChi2TWT", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("MChi2TWT");
 
         // // =================== Chi2 cuts + multitrack + NO TW in multitracks + MSD CUT
         if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && MSDMatch == true)
-          MyReco("MChi2MSDTWT", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("MChi2MSDTWT");
 
         // // =================== Chi2 cuts +  NO TW in multitracks
         if (fGlbTrack->GetChi2() < 2 && res < 0.01 && hasSameTwPoint.at(it) == false)
-          MyReco("ChiTWT", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+          MyReco("ChiTWT");
 
         //// ===================ALL TRACKS
-        MyReco("", TrkIdMC, Z_true, fPrimaryCharge, Z_meas, Th_BM, Th_recoBM, fGlbTrack);
+        MyReco("");
           }
 
       ntracks++;
@@ -1427,7 +1427,7 @@ void GlobalRecoAnaGSI::BookChargeStudies(string path)
   gDirectory->cd("..");
 }
 
-void GlobalRecoAnaGSI::MyReco(string path_name, int TrkIdMC, int Z_true, int fPrimaryCharge, int Z_meas, int Th_BM, int Th_recoBM, TAGtrack *fGlbTrack)
+void GlobalRecoAnaGSI::MyReco(string path_name)
 { 
   string name = "";
   if (isGoodReco(TrkIdMC))
