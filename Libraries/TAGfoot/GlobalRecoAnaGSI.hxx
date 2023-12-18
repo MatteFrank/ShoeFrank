@@ -82,19 +82,22 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookMigMatrix(string path, bool enableMigMatr= false);
   void BookChargeStudies(string path);
   void BookFragmentationStudies(string path);
-  vector<bool> CheckTwPointInMoreTracks(); // check if more than one glb track has the same tw point
-    void RecoGlbTrkLoopSetVariables(); // Set Reco variables, to be done for each glbal track
-    void MCGlbTrkLoopSetVariables();   // Set MC variables, to be done for each glbal track
-    void MCParticleStudies();          // Loop on MC particles
-    void FillMCPartYields();
-    bool isGoodReco(Int_t Id_part);
-    void ChargeStudies(string path, Int_t charge, TAGtrack * fGlbTrack);
-    void FragmentationStudies(string path,TAGtrack *fGlbTrack);
+  void MyRecoBooking(string path_name);
+  void MyReco(string path_name , int TrkIdMC, int Z_true, int fPrimaryCharge, int Z_meas, int Th_BM, int Th_recoBM, TAGtrack *fGlbTrack);
 
-    // useful formulas
-    TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)
-    {
-      return TVector3(Slope.X() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.X(), Slope.Y() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.Y(), FinalZ);
+  vector<bool> CheckTwPointInMoreTracks();     // check if more than one glb track has the same tw point
+  void RecoGlbTrkLoopSetVariables();           // Set Reco variables, to be done for each glbal track
+  void MCGlbTrkLoopSetVariables();             // Set MC variables, to be done for each glbal track
+  void MCParticleStudies();                    // Loop on MC particles
+  void FillMCPartYields();
+  bool isGoodReco(Int_t Id_part);
+  void ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTrack);
+  void FragmentationStudies(string path, TAGtrack *fGlbTrack);
+
+  // useful formulas
+  TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)
+  {
+    return TVector3(Slope.X() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.X(), Slope.Y() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.Y(), FinalZ);
     }
 
     // useful analysis variables
