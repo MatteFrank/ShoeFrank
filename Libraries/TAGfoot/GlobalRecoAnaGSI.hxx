@@ -81,6 +81,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookYield(string path, bool enableMigMatr= false);
   void BookMigMatrix(string path, bool enableMigMatr= false);
   void BookChargeStudies(string path);
+  void BookFragmentationStudies(string path);
   vector<bool> CheckTwPointInMoreTracks(); // check if more than one glb track has the same tw point
     void RecoGlbTrkLoopSetVariables(); // Set Reco variables, to be done for each glbal track
     void MCGlbTrkLoopSetVariables();   // Set MC variables, to be done for each glbal track
@@ -88,6 +89,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
     void FillMCPartYields();
     bool isGoodReco(Int_t Id_part);
     void ChargeStudies(string path, Int_t charge, TAGtrack * fGlbTrack);
+    void FragmentationStudies(string path,TAGtrack *fGlbTrack);
 
     // useful formulas
     TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)

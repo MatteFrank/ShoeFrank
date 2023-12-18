@@ -85,7 +85,7 @@ void GlobalRecoAnaGSI::LoopEvent()
   { // for every event
     // fFlagMC = false;     //N.B.: for MC FAKE REAL
 
-    if (currEvent == nTotEv)
+    if (currEvent >= nTotEv)
       break;
 
     if (currEvent % frequency == 0 || FootDebugLevel(1))
@@ -119,7 +119,7 @@ void GlobalRecoAnaGSI::LoopEvent()
     for (int it = 0; it < nt; it++)
     {
       fGlbTrack = myGlb->GetTrack(it);
-      if (!fGlbTrack->HasTwPoint())
+      if (!fGlbTrack->HasTwPoint() && fGlbTrack->GetPointsN()<9)
       {
         ntracks++;
         continue;
@@ -139,57 +139,58 @@ void GlobalRecoAnaGSI::LoopEvent()
           n_clones[Z_true] = m_nClone[Z_true][TrkIdMC];
 
 
-        // ===================TWMATCH 
-        TAMCpart *particle = myMcNtuPart->GetTrack(TrkIdMC);
-        if ((std::find(vecTwTrkId.begin(), vecTwTrkId.end(), TrkIdMC) != vecTwTrkId.end()) // if main track id in twpoint id
-            // && (particle->GetInitPos().Z() < 40.6 ||        particle->GetInitPos().Z() > 41))     // a hard coded way to take out fragm from 1 layer of msd...
-            // if (TrkIdMC == TrkIdMC_TW)
-        )
-        {
+        // // ===================TWMATCH 
+        // TAMCpart *particle = myMcNtuPart->GetTrack(TrkIdMC);
+        // if ((std::find(vecTwTrkId.begin(), vecTwTrkId.end(), TrkIdMC) != vecTwTrkId.end()) // if main track id in twpoint id
+        //     // && (particle->GetInitPos().Z() < 40.6 ||        particle->GetInitPos().Z() > 41))     // a hard coded way to take out fragm from 1 layer of msd...
+        //     // if (TrkIdMC == TrkIdMC_TW)
+        // )
+        // {
 
-          if (isGoodReco(TrkIdMC))
-          {
-            if (Z_true > 0. && Z_true <= fPrimaryCharge)
-            {
-              FillYieldMC("yield-N_TWGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
-            }
-          }
-          if (Z_true > 0. && Z_true <= fPrimaryCharge)
-            FillYieldMC("yield-N_TWAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+        //   if (isGoodReco(TrkIdMC))
+        //   {
+        //     if (Z_true > 0. && Z_true <= fPrimaryCharge)
+        //     {
+        //       FillYieldMC("yield-N_TWGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+        //       MigMatrixPlots("MigMatrixTWGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
+        //     }
+        //   }
+        //   if (Z_true > 0. && Z_true <= fPrimaryCharge)
+        //     FillYieldMC("yield-N_TWAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-          // if (Z_true > 0. && Z_true <= primary_cha)
-          //MigMatrixPlots("MigMatrixTW", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+        //   if (Z_true > 0. && Z_true <= fPrimaryCharge)
+        //   MigMatrixPlots("MigMatrixTW", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-          if (Z_true > 0. && Z_true <= fPrimaryCharge)
-          {
-            FillYieldReco("yield-N_TW_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
-          }
-          if (Z_true > 0. && Z_true <= fPrimaryCharge)
-          {
-            FillYieldReco("yield-N_TW_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
-          }
+        //   if (Z_true > 0. && Z_true <= fPrimaryCharge)
+        //   {
+        //     FillYieldReco("yield-N_TW_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
+        //   }
+        //   if (Z_true > 0. && Z_true <= fPrimaryCharge)
+        //   {
+        //     FillYieldReco("yield-N_TW_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+        //   }
 
-          if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
-          {
-            FillYieldReco("yield-N_TW_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
-          }
+        //   if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
+        //   {
+        //     FillYieldReco("yield-N_TW_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+        //   }
 
-          if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
-          {
-            FillYieldReco("yield-N_TW_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
-          }
+        //   if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
+        //   {
+        //     FillYieldReco("yield-N_TW_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
+        //   }
 
-          // if (initTWPosition< 40){
-          //   FillYieldReco("yield-N_TWCutZ_reco_Th_Reco", Z_meas, Th_recoBM);
-          //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
-          // }
+        //   // if (initTWPosition< 40){
+        //   //   FillYieldReco("yield-N_TWCutZ_reco_Th_Reco", Z_meas, Th_recoBM);
+        //   //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
+        //   // }
 
-          //ChargeStudies("Z8_TWmatch", 8, fGlbTrack);
+        //   //ChargeStudies("Z8_TWmatch", 8, fGlbTrack);
 
 
-        }
-        //else
-        //ChargeStudies("Z8_TW_noTWmatch", 8, fGlbTrack);
+        // }
+        // //else
+        // //ChargeStudies("Z8_TW_noTWmatch", 8, fGlbTrack);
 
         // // ===================VT MATCH
         bool VTMatch = true;
@@ -224,13 +225,14 @@ void GlobalRecoAnaGSI::LoopEvent()
             if (Z_true > 0. && Z_true <= fPrimaryCharge)
             {
               FillYieldMC("yield-N_VTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+              MigMatrixPlots("MigMatrix_VTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
             }
           }
           if (Z_true > 0. && Z_true <= fPrimaryCharge)
             FillYieldMC("yield-N_VTAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-          // if (Z_true > 0. && Z_true <= primary_cha)
-          //MigMatrixPlots("MigMatrix_VT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+          if (Z_true > 0. && Z_true <= fPrimaryCharge)
+          MigMatrixPlots("MigMatrix_VT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
           if (Z_true > 0. && Z_true <= fPrimaryCharge)
           {
@@ -263,27 +265,15 @@ void GlobalRecoAnaGSI::LoopEvent()
 
         // // ===================MSD MATCH
         bool MSDMatch = true;
-        bool MsdZ8Match = true;
 
         for (int i = 0; i < vecMsdZMC.size(); i++)
         {
-          if (std::find(vecMsdZMC.at(i).begin(), vecMsdZMC.at(i).end(), 8) != vecMsdZMC.at(i).end()) // if the cluster of the MSD contains Z=8
-            MsdZ8Match = MsdZ8Match && true; 
+          if (std::find(vecMsdZMC.at(i).begin(), vecMsdZMC.at(i).end(), Z_meas) != vecMsdZMC.at(i).end()) // if all the cluster of the MSD contains Z
+            MSDMatch = MSDMatch && true;                                                                  // reconstructed by the TW
           else
-            MsdZ8Match = MsdZ8Match && false;
+            MSDMatch = MSDMatch && false;
         }
 
-        if (MsdZ8Match == true ){  // if a primary entered the first layer of the msd and did not fragmented up to its last plane...
-            if (Z_meas > 7)   // ... and the charge reconstructed in TW is higher than 7
-              MSDMatch = true; // --> it means there is no fragmentation between VTX and up to TW
-            else
-              MSDMatch = false;
-          }
-
-          if ((std::find(vecMsdZMC.at(0).begin(), vecMsdZMC.at(0).end(), 8) != vecMsdZMC.at(0).end()) && (MsdZ8Match == false)) // if the first cluster was a Z=8 but then some fragmentation happened...
-          {
-            MSDMatch = false;
-          }
 
             if (MSDMatch == true)
             {
@@ -293,13 +283,14 @@ void GlobalRecoAnaGSI::LoopEvent()
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_MSDGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                  MigMatrixPlots("MigMatrixMSDGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
                 }
               }
               if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 FillYieldMC("yield-N_MSDAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-              // if (Z_true > 0. && Z_true <= primary_cha)
-              //MigMatrixPlots("MigMatrixMSD", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
+              MigMatrixPlots("MigMatrixMSD", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
               if (Z_true > 0. && Z_true <= fPrimaryCharge)
               {
@@ -342,13 +333,14 @@ void GlobalRecoAnaGSI::LoopEvent()
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_VTX_MSDGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                  MigMatrixPlots("MigMatrixVTX_MSDGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
                 }
               }
               if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 FillYieldMC("yield-N_VTX_MSDAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-              // if (Z_true > 0. && Z_true <= primary_cha)
-              //MigMatrixPlots("MigMatrixVTX_MSD", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
+              MigMatrixPlots("MigMatrixVTX_MSD", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
               if (Z_true > 0. && Z_true <= fPrimaryCharge)
               {
@@ -388,13 +380,14 @@ void GlobalRecoAnaGSI::LoopEvent()
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_Q1GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                  MigMatrixPlots("MigMatrixQ1GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
                 }
               }
               if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 FillYieldMC("yield-N_Q1AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-              // if (Z_true > 0. && Z_true <= primary_cha)
-              //MigMatrixPlots("MigMatrixQ1", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
+              MigMatrixPlots("MigMatrixQ1", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
               if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
               {
@@ -445,13 +438,14 @@ void GlobalRecoAnaGSI::LoopEvent()
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_Chi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                  MigMatrixPlots("MigMatrixChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
                 }
               }
               if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 FillYieldMC("yield-N_Chi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-              // if (Z_true > 0. && Z_true <= primary_cha)
-              //MigMatrixPlots("MigMatrixChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+              if (Z_true > 0. && Z_true <= fPrimaryCharge)
+              MigMatrixPlots("MigMatrixChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
               if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
               {
@@ -471,7 +465,7 @@ void GlobalRecoAnaGSI::LoopEvent()
               {
                 FillYieldReco("yield-N_Chi2_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with real theta (for purity purposes)
               }
-              //ChargeStudies("Z8_Chi2all", 8, fGlbTrack);
+              FragmentationStudies("Z_Chi2all",fGlbTrack);
               }
 
               //// =================== RECO CHI2 cut + multitrack
@@ -483,13 +477,14 @@ void GlobalRecoAnaGSI::LoopEvent()
                   if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   {
                     FillYieldMC("yield-N_MChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                    MigMatrixPlots("MigMatrixMChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
                   }
                 }
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_MChi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
-                //MigMatrixPlots("MigMatrixMChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                MigMatrixPlots("MigMatrixMChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
                 if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
                 {
@@ -509,7 +504,7 @@ void GlobalRecoAnaGSI::LoopEvent()
                 {
                   FillYieldReco("yield-N_MChi2_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with real theta (for purity purposes)
                 }
-                //ChargeStudies("Z8_MChi2all", 8, fGlbTrack);
+                FragmentationStudies("Z_MChi2all",fGlbTrack);
               }
 
               // // =================== MC VTX + Chi2 cuts
@@ -522,13 +517,14 @@ void GlobalRecoAnaGSI::LoopEvent()
                   if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   {
                     FillYieldMC("yield-N_VTChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                    MigMatrixPlots("MigMatrixVTChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
                   }
                 }
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_VTChi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
-                //MigMatrixPlots("MigMatrixVTChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                MigMatrixPlots("MigMatrixVTChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
@@ -569,13 +565,14 @@ void GlobalRecoAnaGSI::LoopEvent()
                   if (Z_true > 0. && Z_true <= fPrimaryCharge )
                   {
                     FillYieldMC("yield-N_MVTChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                    MigMatrixPlots("MigMatrixMVTChi2GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
                   }
                 }
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_MVTChi2AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
-                //MigMatrixPlots("MigMatrixMVTChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                MigMatrixPlots("MigMatrixMVTChi2", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
@@ -623,13 +620,14 @@ void GlobalRecoAnaGSI::LoopEvent()
                   if (Z_true > 0. && Z_true <= fPrimaryCharge )
                   {
                     FillYieldMC("yield-N_MChi2TWTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                    MigMatrixPlots("MigMatrixMChi2TWTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
                   }
                 }
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_MChi2TWTAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
-                //MigMatrixPlots("MigMatrixMChi2TWT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                MigMatrixPlots("MigMatrixMChi2TWT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
@@ -655,7 +653,7 @@ void GlobalRecoAnaGSI::LoopEvent()
                 //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
                 // }
 
-                //ChargeStudies("Z8_MChi2TWT_match", 8, fGlbTrack);
+                FragmentationStudies("Z_MChi2TWT_match", fGlbTrack);
               }
               //else
                 //ChargeStudies("Z8_MChi2TWT_nomatch", 8, fGlbTrack);
@@ -663,40 +661,92 @@ void GlobalRecoAnaGSI::LoopEvent()
 
 
 
+              // // =================== Chi2 cuts + multitrack + NO TW in multitracks + MSD CUT
 
-// // =================== Chi2 cuts +  NO TW in multitracks
+              if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && MSDMatch == true)
+              {
+
+                if (isGoodReco(TrkIdMC))
+                {
+                  if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                  {
+                    FillYieldMC("yield-N_MChi2MSDTWTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // N_GoodReco MC
+                    MigMatrixPlots("MigMatrixMChi2MSDTWTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+                  }
+                }
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                  FillYieldMC("yield-N_MChi2MSDTWTAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                  MigMatrixPlots("MigMatrixMChi2MSDTWT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                {
+                  FillYieldReco("yield-N_MChi2MSDTWT_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
+                }
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                {
+                  FillYieldReco("yield-N_MChi2MSDTWT_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+                }
+
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
+                {
+                  FillYieldReco("yield-N_MChi2MSDTWT_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
+                }
+
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
+                {
+                  FillYieldReco("yield-N_MChi2MSDTWT_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
+                }
+
+                // if (initTWPosition< 40){
+                //   FillYieldReco("yield-N_TWCutZ_reco_Th_Reco", Z_meas, Th_recoBM);
+                //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
+                // }
+
+                FragmentationStudies("Z_MChi2MSDTWT_match", fGlbTrack);
+              }
+              // else
+              // ChargeStudies("Z8_MChi2TWT_nomatch", 8, fGlbTrack);
+
+
+
+
+
+              // // =================== Chi2 cuts +  NO TW in multitracks
 
               if (fGlbTrack->GetChi2() < 2 && res < 0.01  && hasSameTwPoint.at(it) == false)
               {
 
                 if (isGoodReco(TrkIdMC))
                 {
-                  if (Z_true > 0. && Z_true <= primary_cha)
+                  if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   {
                     FillYieldMC("yield-N_ChiTWTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                    MigMatrixPlots("MigMatrixChiTWTGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
                   }
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                   FillYieldMC("yield-N_ChiTWTAllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-                // if (Z_true > 0. && Z_true <= primary_cha)
-                //MigMatrixPlots("MigMatrixChiTWT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
+                MigMatrixPlots("MigMatrixChiTWT", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_ChiTWT_Z_reco_Th_Reco", Z_meas, Th_recoBM); // all reconstructed tracks
                 }
-                if (Z_true > 0. && Z_true <= primary_cha)
+                if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_ChiTWT_Z_true_Th_Reco", Z_true, Th_recoBM); // all reconstructed tracks but with real Z
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
                 {
                   FillYieldReco("yield-N_ChiTWT_Z_meas_Th_True", Z_meas, Th_BM); // all reconstructed tracks but with real theta
                 }
 
-                if (Z_meas > 0. && Z_meas <= primary_cha && Z_meas == Z_true)
+                if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
                 {
                   FillYieldReco("yield-N_ChiTWT_Z_measEqualTrue_Th_True", Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
                 }
@@ -706,7 +756,7 @@ void GlobalRecoAnaGSI::LoopEvent()
                 //   FillYieldReco("yield-N_TWCutZ_true_Th_Reco", Z_true, Th_recoBM);
                 // }
 
-                //ChargeStudies("Z8_ChiTWT_match", 8, fGlbTrack);
+                //FragmentationStudies("Z_ChiTWT_match", 8, fGlbTrack);
               }
               //else
                 //ChargeStudies("Z8_ChiTWT_nomatch", 8, fGlbTrack);
@@ -717,20 +767,21 @@ void GlobalRecoAnaGSI::LoopEvent()
 
 
               //// ===================ALL TRACKS
-              //ChargeStudies("Z8_all", 8, fGlbTrack);
+              FragmentationStudies("Z_all", fGlbTrack);
 
               if (isGoodReco(TrkIdMC))
               {
                 if (Z_true > 0. && Z_true <= fPrimaryCharge)
                 {
                   FillYieldMC("yield-N_GoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
+                  MigMatrixPlots("MigMatrixGoodReco", Z_true, Z_meas, Th_BM, Th_recoBM, true);     // migration matrix plots
                 }
             }
             if (Z_true > 0. && Z_true <= fPrimaryCharge)
               FillYieldMC("yield-N_AllReco", Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
 
-            // if (Z_true > 0. && Z_true <= primary_cha)
-            //MigMatrixPlots("MigMatrix", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+            if (Z_true > 0. && Z_true <= fPrimaryCharge)
+            MigMatrixPlots("MigMatrix", Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
 
             if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
             {
@@ -834,8 +885,9 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_Z_true_Th_Reco", false);
     BookYield("yield-N_Z_meas_Th_True", false);
     BookYield("yield-N_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrix", true);
-    //BookChargeStudies("Z8_all");
+    BookMigMatrix("MigMatrix", true);
+    BookMigMatrix("MigMatrixGoodReco", true);
+    BookFragmentationStudies("Z_all");
 
     //tw mc cuts
     BookYield("yield-N_TW_Z_reco_Th_Reco", false);
@@ -844,7 +896,8 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_TWAllReco", true);
     BookYield("yield-N_TW_Z_meas_Th_True", false);
     BookYield("yield-N_TW_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixTW", true);
+    BookMigMatrix("MigMatrixTW", true);
+    BookMigMatrix("MigMatrixTWGoodReco", true);
     //BookChargeStudies("Z8_TWmatch");
     //BookChargeStudies("Z8_TW_noTWmatch");
 
@@ -855,7 +908,8 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_VTAllReco", true);
     BookYield("yield-N_VT_Z_meas_Th_True", false);
     BookYield("yield-N_VT_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrix_VT", true);
+    BookMigMatrix("MigMatrix_VT", true);
+    BookMigMatrix("MigMatrix_VTGoodReco", true);
     //BookChargeStudies("Z8_VTmatch");
     //BookChargeStudies("Z8_VT_nomatch");
 
@@ -866,7 +920,8 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_MSDAllReco", true);
     BookYield("yield-N_MSD_Z_meas_Th_True", false);
     BookYield("yield-N_MSD_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixMSD", true);
+    BookMigMatrix("MigMatrixMSD", true);
+    BookMigMatrix("MigMatrixMSDGoodReco", true);
     //BookChargeStudies("Z8_MSDmatch");
     //BookChargeStudies("Z8_MSD_nomatch");
 
@@ -878,7 +933,8 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_VTX_MSDAllReco", true);
     BookYield("yield-N_VTX_MSD_Z_meas_Th_True", false);
     BookYield("yield-N_VTX_MSD_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixVTX_MSD", true);
+    BookMigMatrix("MigMatrixVTX_MSD", true);
+    BookMigMatrix("MigMatrixVTX_MSDGoodReco", true);
     //BookChargeStudies("Z8_VTX_MSDmatch");
     //BookChargeStudies("Z8_VTX_MSD_nomatch");
 
@@ -889,7 +945,8 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_Q1AllReco", true);
     BookYield("yield-NQ1_Z_meas_Th_True", false);
     BookYield("yield-NQ1_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixQ1", true);
+    BookMigMatrix("MigMatrixQ1", true);
+    BookMigMatrix("MigMatrixQ1GoodReco", true);
     //BookChargeStudies("Z8_Q1all");
 
     // chi2 cuts on track
@@ -899,9 +956,9 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_Chi2AllReco", true);
     BookYield("yield-N_Chi2_Z_meas_Th_True", false);
     BookYield("yield-N_Chi2_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixChi2", true);
-    //BookChargeStudies("Z8_Chi2all");
-
+    BookMigMatrix("MigMatrixChi2", true);
+    BookMigMatrix("MigMatrixChi2GoodReco", true);
+    BookFragmentationStudies("Z_Chi2all");
 
     // chi2 cuts on track + multitrack
     BookYield("yield-N_MChi2_Z_reco_Th_Reco", false);
@@ -910,9 +967,9 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_MChi2AllReco", true);
     BookYield("yield-N_MChi2_Z_meas_Th_True", false);
     BookYield("yield-N_MChi2_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixMChi2", true);
-    //BookChargeStudies("Z8_MChi2all");
-
+    BookMigMatrix("MigMatrixMChi2", true);
+    BookMigMatrix("MigMatrixMChi2GoodReco", true);
+    BookFragmentationStudies("Z_MChi2all");
 
     // VT +  chi2 cuts on track
     BookYield("yield-N_VTChi2_Z_reco_Th_Reco", false);
@@ -921,7 +978,8 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_VTChi2AllReco", true);
     BookYield("yield-N_VTChi2_Z_meas_Th_True", false);
     BookYield("yield-N_VTChi2_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixVTChi2", true);
+    BookMigMatrix("MigMatrixVTChi2", true);
+    BookMigMatrix("MigMatrixVTChi2GoodReco", true);
     //BookChargeStudies("Z8_VTChi2_match");
     //BookChargeStudies("Z8_VTChi2_nomatch");
 
@@ -932,7 +990,8 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_MVTChi2AllReco", true);
     BookYield("yield-N_MVTChi2_Z_meas_Th_True", false);
     BookYield("yield-N_MVTChi2_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixMVTChi2", true);
+    BookMigMatrix("MigMatrixMVTChi2", true);
+    BookMigMatrix("MigMatrixMVTChi2GoodReco", true);
     //BookChargeStudies("Z8_MVTChi2_match");
     //BookChargeStudies("Z8_MVTChi2_nomatch");
 
@@ -944,8 +1003,9 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_MChi2TWTAllReco", true);
     BookYield("yield-N_MChi2TWT_Z_meas_Th_True", false);
     BookYield("yield-N_MChi2TWT_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixMChi2TWT", true);
-    //BookChargeStudies("Z8_MChi2TWT_match");
+    BookMigMatrix("MigMatrixMChi2TWT", true);
+    BookMigMatrix("MigMatrixMChi2TWTGoodReco", true);
+    BookFragmentationStudies("Z_MChi2TWT_match");
     //BookChargeStudies("Z8_MChi2TWT_nomatch");
 
     // chi2  + no more tw points in tracks
@@ -955,9 +1015,22 @@ void GlobalRecoAnaGSI::Booking()
     BookYield("yield-N_ChiTWTAllReco", true);
     BookYield("yield-N_ChiTWT_Z_meas_Th_True", false);
     BookYield("yield-N_ChiTWT_Z_measEqualTrue_Th_True", false);
-    //BookMigMatrix("MigMatrixChiTWT", true);
-    //BookChargeStudies("Z8_ChiTWT_match");
+    BookMigMatrix("MigMatrixChiTWT", true);
+    BookMigMatrix("MigMatrixChiTWTGoodReco", true);
+    //BookFragmentationChargeStudies("Z_ChiTWT_match");
     //BookChargeStudies("Z8_ChiTWT_nomatch");
+
+    // chi2 + multitrack cuts on track  + no more tw points in tracks + MSD MC cut
+    BookYield("yield-N_MChi2MSDTWT_Z_reco_Th_Reco", false);
+    BookYield("yield-N_MChi2MSDTWT_Z_true_Th_Reco", false);
+    BookYield("yield-N_MChi2MSDTWTGoodReco", true);
+    BookYield("yield-N_MChi2MSDTWTAllReco", true);
+    BookYield("yield-N_MChi2MSDTWT_Z_meas_Th_True", false);
+    BookYield("yield-N_MChi2MSDTWT_Z_measEqualTrue_Th_True", false);
+    BookMigMatrix("MigMatrixMChi2MSDTWT", true);
+    BookMigMatrix("MigMatrixMChi2MSDTWTGoodReco", true);
+    BookFragmentationStudies("Z_MChi2MSDTWT_match");
+    // BookChargeStudies("Z8_MChi2TWT_nomatch");
   }
   else
   {
@@ -1865,8 +1938,9 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         {
           P_beforeTG = cross->GetMomentum();
         }
+        
 
-        if ((cross->GetTrackIdx() - 1) == particle_ID)
+            if ((cross->GetTrackIdx() - 1) == particle_ID)
         {
           // particle exit from target
           if (NewReg == fRegAirBeforeTW && OldReg == fRegTG)
@@ -1979,6 +2053,42 @@ void GlobalRecoAnaGSI::ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTr
     ((TH2D *)gDirectory->Get(path_.c_str()))->Fill(initTWPosition, GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetCharge());
   }
 }
+
+void GlobalRecoAnaGSI::FragmentationStudies(string path,  TAGtrack *fGlbTrack)
+{ 
+  for (int charge =1; charge <9; charge ++)
+  {
+  if (Z_true == charge)
+  {
+    auto twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
+    auto initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
+    auto initMostFreq = GetNtuMcTrk()->GetTrack(fGlbTrack->GetMcMainTrackId())->GetInitPos().Z();
+    string path_ = "";
+
+    path_ = path +"/"+to_string(charge)+ "/initposition_twpoint";
+    ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(initTWPosition);
+
+    path_ = path + "/" + to_string(charge) + "/initposition_mostfrequent";
+    ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(initMostFreq);
+    }
+  }
+}
+
+void GlobalRecoAnaGSI::BookFragmentationStudies(string path)
+{ // study of Z=8
+  gDirectory->mkdir(path.c_str());
+  gDirectory->cd(path.c_str());
+
+  for (int charge = 1; charge < 9; charge++)
+  {
+    gDirectory->mkdir(to_string(charge).c_str());
+    gDirectory->cd(to_string(charge).c_str());
+    h = new TH1D("initposition_twpoint", "origin of the particle crossing TW for TW matched tracks; pos(Z) [cm]; events ", 3050, -105., 200.);
+    h = new TH1D("initposition_mostfrequent", "origin of the most frequent particle of track; pos(Z) [cm]; events ", 3050, -105., 200.);
+    gDirectory->cd("..");
+  }
+  gDirectory->cd("..");
+  }
 
 void GlobalRecoAnaGSI::BookChargeStudies(string path)
 { // study of Z=8
