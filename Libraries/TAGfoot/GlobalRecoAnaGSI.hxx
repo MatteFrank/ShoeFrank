@@ -81,18 +81,23 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookYield(string path, bool enableMigMatr= false);
   void BookMigMatrix(string path, bool enableMigMatr= false);
   void BookChargeStudies(string path);
-  bool CheckTwPointInMoreTracks(); // check if more than one glb track has the same tw point
-    void RecoGlbTrkLoopSetVariables(); // Set Reco variables, to be done for each glbal track
-    void MCGlbTrkLoopSetVariables();   // Set MC variables, to be done for each glbal track
-    void MCParticleStudies();          // Loop on MC particles
-    void FillMCPartYields();
-    bool isGoodReco(Int_t Id_part);
-    void ChargeStudies(string path, Int_t charge, TAGtrack * fGlbTrack);
+  void BookFragmentationStudies(string path);
+  void MyRecoBooking(string path_name);
+  void MyReco(string path_name);
 
-    // useful formulas
-    TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)
-    {
-      return TVector3(Slope.X() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.X(), Slope.Y() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.Y(), FinalZ);
+  vector<bool> CheckTwPointInMoreTracks();     // check if more than one glb track has the same tw point
+  void RecoGlbTrkLoopSetVariables();           // Set Reco variables, to be done for each glbal track
+  void MCGlbTrkLoopSetVariables();             // Set MC variables, to be done for each glbal track
+  void MCParticleStudies();                    // Loop on MC particles
+  void FillMCPartYields();
+  bool isGoodReco(Int_t Id_part);
+  void ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTrack);
+  void FragmentationStudies(string path, TAGtrack *fGlbTrack);
+
+  // useful formulas
+  TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)
+  {
+    return TVector3(Slope.X() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.X(), Slope.Y() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.Y(), FinalZ);
     }
 
     // useful analysis variables
@@ -167,7 +172,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
     vector<Int_t> vecTwTrkId;        // vector of all MC id of the twpoint
     vector<vector<Int_t>> vecVtZMC;  // vector of all MC charge of the 4 vt hits
     vector<vector<Int_t>> vecMsdZMC; // vector of all MC charge of the 6 msd clus
-    vector<Int_t> vectTwId;          // vector of the twpoint reco ID
+    vector<bool> hasSameTwPoint;     //vector of bool of tracks with the same tw point in the same event
+
     std::map<Int_t, Int_t> m_twId;
 
     // setting variables maybe we should use a config file?

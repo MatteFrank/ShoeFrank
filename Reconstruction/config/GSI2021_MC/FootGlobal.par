@@ -16,7 +16,7 @@ Genfit Event Display ON: n
 
 ############	Kalman Filter Control Parameters	################
 
-IncludeKalman:   n
+IncludeKalman:   y
 IncludeTOE:      n
 IncludeStraight: n
 FromLocalReco:   n
@@ -45,7 +45,7 @@ EnableTracking:      y
 
 EnableSaveHits:      y
 EnableRootObject:    y
-EnableRegionMc:      n
+EnableRegionMc:      y
 EnableElecNoiseMc:   n
 
 ############   END - Options for reconstruction   ################
