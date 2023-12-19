@@ -887,7 +887,7 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 		{
 			// trackMC_id = track->getMcTrackId();     //???????
 			TAMCpart* particle = m_trueParticleRep->GetTrack( trackMC_id );
-			if( m_trueMomentumAtTgt.find(trackMC_id) == m_trueMomentumAtTgt.end() || particle->GetMotherID() == 0 )
+			if( m_trueMomentumAtTgt.find(trackMC_id) == m_trueMomentumAtTgt.end() )// || particle->GetMotherID() == 0 )
 				mcMom = particle->GetInitP();
 			else
 				mcMom = m_trueMomentumAtTgt[trackMC_id];
@@ -939,8 +939,8 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 						h_trackQuality_Z[shoeOutTrack->GetTwChargeZ() - 1]->Fill( trackQuality );
 					// h_trackQuality_Z[shoeOutTrack->GetTwChargeZ()-1]->Fill( trackQuality );
 				h_trackMC_reco_id->Fill( m_IsotopesIndex[ UpdatePDG::GetPDG()->GetPdgName( pdgID ) ] );
-				h_momentum_true.at(fitCh)->Fill( particle->GetInitP().Mag() );	// check if not present
-				h_ratio_reco_true.at(fitCh)->Fill( recoMom_tgInt.Mag()/particle->GetInitP().Mag() );	// check if not present
+				h_momentum_true.at(fitCh)->Fill( mcMom.Mag() );	// check if not present
+				h_ratio_reco_true.at(fitCh)->Fill( recoMom_tgInt.Mag()/mcMom.Mag() );	// check if not present
 			}
 		}
 
