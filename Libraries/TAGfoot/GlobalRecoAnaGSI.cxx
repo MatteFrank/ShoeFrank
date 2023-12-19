@@ -100,7 +100,7 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
     if (nt > 0)
-       recoEvents++;    //! modifica
+      recoEvents++; //! modifica
 
     // TAWDntuTrigger *wdTrig = 0x0;
     // if (fFlagMC == false)
@@ -112,14 +112,23 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     hasSameTwPoint.clear();
     hasSameTwPoint = CheckTwPointInMoreTracks();
-
-    //*********************************************************************************** begin loop on global tracks *********************************************
-    //if ) cout << "event " << currEvent << " has more tw points in tracks " << endl;
-    
+    Int_t nt_TW = 0; // number of reconstructed tracks with TW point for every event
     for (int it = 0; it < nt; it++)
     {
       fGlbTrack = myGlb->GetTrack(it);
-      if (!fGlbTrack->HasTwPoint() && fGlbTrack->GetPointsN()<9)
+      if (fGlbTrack->HasTwPoint())
+        nt_TW++;
+    }
+
+    //*********************************************************************************** begin loop on global tracks *********************************************
+    // if ) cout << "event " << currEvent << " has more tw points in tracks " << endl;
+
+    for (int it = 0; it < nt; it++)
+    {
+      fGlbTrack = myGlb->GetTrack(it);
+      // if (fGlbTrack->GetPointsN() < 9)
+      //   cout << "n points of track: " << fGlbTrack->GetPointsN() << endl;
+      if (!fGlbTrack->HasTwPoint() /*|| fGlbTrack->GetPointsN() < 11*/)
       {
         ntracks++;
         continue;
@@ -128,13 +137,14 @@ void GlobalRecoAnaGSI::LoopEvent()
       RecoGlbTrkLoopSetVariables();
 
       if (fFlagMC)
-      { 
-        
+      {
+
         MCGlbTrkLoopSetVariables();
-        
 
         // study of MC clones: different glb tracks with the same MC ID
         m_nClone[Z_true][TrkIdMC]++;
+        if (m_nClone[Z_true][TrkIdMC] > 1)
+          n_clones[Z_true] = m_nClone[Z_true][TrkIdMC];
 
         // compute MC VT match
         bool VTMatch = true;
@@ -143,19 +153,20 @@ void GlobalRecoAnaGSI::LoopEvent()
         for (int i = 0; i < vecVtZMC.size(); i++)
         {
           if (std::find(vecVtZMC.at(i).begin(), vecVtZMC.at(i).end(), 8) != vecVtZMC.at(i).end()) // if the cluster of the VTX contains Z=8
-            VTZ8Match = VTZ8Match && true; 
+            VTZ8Match = VTZ8Match && true;
           else
             VTZ8Match = VTZ8Match && false;
         }
 
-        if (VTZ8Match == true) {   // if a primary entered the first layer of the vtx and did not fragmented up to its last plane...
-          if (Z_meas > 7)    // ... and the charge reconstructed in TW is higher than 7
-            VTMatch = true;  // --> it means there is no fragmentation between VTX and up to TW
+        if (VTZ8Match == true)
+        {                   // if a primary entered the first layer of the vtx and did not fragmented up to its last plane...
+          if (Z_meas > 7)   // ... and the charge reconstructed in TW is higher than 7
+            VTMatch = true; // --> it means there is no fragmentation between VTX and up to TW
           else
             VTMatch = false;
         }
 
-        if ( vecVtZMC.size() > 0 && (std::find(vecVtZMC.at(0).begin(), vecVtZMC.at(0).end(), 8) != vecVtZMC.at(0).end()) && (VTZ8Match == false)) 
+        if ((std::find(vecVtZMC.at(0).begin(), vecVtZMC.at(0).end(), 8) != vecVtZMC.at(0).end()) && (VTZ8Match == false))
         // if the first cluster was a Z=8 but then some fragmentation happened...
         {
           VTMatch = false;
@@ -172,7 +183,7 @@ void GlobalRecoAnaGSI::LoopEvent()
             MSDMatch = MSDMatch && false;
         }
 
-        //compute chi2 and residuals
+        // compute chi2 and residuals
         float res = 0;
         float res_temp = 0;
         for (int i = 0; i < fGlbTrack->GetPointsN(); i++)
@@ -194,21 +205,21 @@ void GlobalRecoAnaGSI::LoopEvent()
             res = res_temp;
         }
 
-        // // =================== VTX MATCH
-        if (VTMatch == true)
-          MyReco("VT");
+        // // // =================== VTX MATCH
+        // if (VTMatch == true)
+        //   MyReco("VT");
 
-        // // =================== MSD MATCH
-        if (MSDMatch == true)
-          MyReco("MSD");
+        // // // =================== MSD MATCH
+        // if (MSDMatch == true)
+        //   MyReco("MSD");
 
-        // // =================== VTX + MSD  MATCH
-        if (MSDMatch == true && VTMatch == true)
-          MyReco("VTX_MSD");
+        // // // =================== VTX + MSD  MATCH
+        // if (MSDMatch == true && VTMatch == true)
+        //   MyReco("VTX_MSD");
 
-        // // ===================ALL TRACKS with TRACK QUALITY = 1
-        if (fGlbTrack->GetQuality() == 1)
-          MyReco("Q1");
+        // // // ===================ALL TRACKS with TRACK QUALITY = 1
+        // if (fGlbTrack->GetQuality() == 1)
+        //   MyReco("Q1");
 
         //// =================== RECO CHI2 cut
         if (fGlbTrack->GetChi2() < 2 && res < 0.01)
@@ -218,64 +229,40 @@ void GlobalRecoAnaGSI::LoopEvent()
         if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1)
           MyReco("MChi2");
 
-        // // =================== MC VTX + Chi2 cuts
-        if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01)
-          MyReco("VTChi2");
+        // // // =================== MC VTX + Chi2 cuts
+        // if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01)
+        //   MyReco("VTChi2");
 
-        // // =================== MC VTX + Chi2 cuts + multitrack
-        if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1)
-          MyReco("MVTChi2");
+        // // // =================== MC VTX + Chi2 cuts + multitrack
+        // if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1)
+        //   MyReco("MVTChi2");
 
         // // =================== Chi2 cuts + multitrack + NO TW in multitracks
         if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false)
           MyReco("MChi2TWT");
 
-        // // =================== Chi2 cuts + multitrack + NO TW in multitracks + MSD CUT
-        if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && MSDMatch == true)
-          MyReco("MChi2MSDTWT");
+        // // // =================== Chi2 cuts + multitrack + NO TW in multitracks + MSD CUT
+        // if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && MSDMatch == true)
+        //   MyReco("MChi2MSDTWT");
 
-        // // =================== Chi2 cuts +  NO TW in multitracks
-        if (fGlbTrack->GetChi2() < 2 && res < 0.01 && hasSameTwPoint.at(it) == false)
-          MyReco("ChiTWT");
+        // // =================== Chi2 cuts + multitrack + NO TW in multitracks + n_tracks == n_twpoints
+        if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
+          MyReco("MChi2TWTngt");
+
+        // // // =================== Chi2 cuts +  NO TW in multitracks
+        // if (fGlbTrack->GetChi2() < 2 && res < 0.01 && hasSameTwPoint.at(it) == false)
+        //   MyReco("ChiTWT");
 
         //// ===================ALL TRACKS
-        MyReco("");
-          }
+        MyReco("reco");
+      }
 
       ntracks++;
 
     } //********* end loop on global tracks ****************
 
-    //cout << "TWPoint ID in the event: "<< endl;
-    
-    //   for (int i = 0; i < vectTwId.size(); i++)
-    //   {
-    //     cout << vectTwId.at(i) << " ";
-    //   }
-    // cout << endl;
-    
-
-    // for (  Int_t id : vectTwId ) ++m_twId[id];
-    // for (auto const& e : m_twId)
-    // {
-    //   if (e.second >1){
-    //     cout << "event: " << currEvent << endl;
-    //     cout << e.first << " : " << e.second << std::endl;
-    //   }
-    // }
-
-
-      if (fFlagMC)
+    if (fFlagMC)
     {
-      //Increment the number of track clones found in the event
-      for( auto itZ : m_nClone ) //Loop on Z_true
-      {
-        for( auto itMCid : itZ.second ) //Loop on MCtrackID
-        {
-          if (itMCid.second > 1)
-            n_clones[ itZ.first ] += itMCid.second - 1;
-        }
-      }
       // MCParticleStudies();
       //***** loop on every TAMCparticle:
       FillMCPartYields(); // N_ref
@@ -323,20 +310,20 @@ void GlobalRecoAnaGSI::Booking()
   // Cross section recostruction histos MC
   if (fFlagMC)
   {
-    
+
     BookYield("yield-N_ref", false);
 
-    //vt mc cuts
-    MyRecoBooking("VT");
+    // //vt mc cuts
+    // MyRecoBooking("VT");
 
-    // MSD mc cuts
-    MyRecoBooking("MSD");
+    // // MSD mc cuts
+    // MyRecoBooking("MSD");
 
-    // VT + MSD mc cuts
-    MyRecoBooking("VTX_MSD");
+    // // VT + MSD mc cuts
+    // MyRecoBooking("VTX_MSD");
 
-    //track quality 1
-    MyRecoBooking("Q1");
+    // //track quality 1
+    // MyRecoBooking("Q1");
 
     // chi2 cuts on track
     MyRecoBooking("Chi2");
@@ -344,23 +331,26 @@ void GlobalRecoAnaGSI::Booking()
     // chi2 cuts on track + multitrack
     MyRecoBooking("MChi2");
 
-    // VT +  chi2 cuts on track
-    MyRecoBooking("VTChi2");
+    // // VT +  chi2 cuts on track
+    // MyRecoBooking("VTChi2");
 
-    // VT +  chi2 + multitrack cuts on track
-    MyRecoBooking("MVTChi2");
+    // // VT +  chi2 + multitrack cuts on track
+    // MyRecoBooking("MVTChi2");
 
     // chi2 + multitrack cuts on track  + no more tw points in tracks
     MyRecoBooking("MChi2TWT");
 
-    // chi2  + no more tw points in tracks
-    MyRecoBooking("ChiTWT");
+    // // chi2  + no more tw points in tracks
+    // MyRecoBooking("ChiTWT");
 
-    // chi2 + multitrack cuts on track  + no more tw points in tracks + MSD MC cut
-    MyRecoBooking("MChi2MSDTWT");
+    // // chi2 + multitrack cuts on track  + no more tw points in tracks + MSD MC cut
+    // MyRecoBooking("MChi2MSDTWT");
+
+    // chi2 + multitrack cuts on track  + no more tw points in tracks + n_glb= n_twpoints
+    MyRecoBooking("MChi2TWTngt");
 
     // all tracks
-    MyRecoBooking(""); 
+    MyRecoBooking("reco");
   }
   else
   {
@@ -528,15 +518,15 @@ void GlobalRecoAnaGSI::SetupTree()
   // }
   if (TAGrecoManager::GetPar()->IncludeTW())
   {
-    // fpNtuRecTw = new TAGdataDsc(new TATWntuPoint());
-    // gTAGroot->AddRequiredItem("twpt");
-    // myReader->SetupBranch(fpNtuRecTw);
+    fpNtuRecTw = new TAGdataDsc(new TATWntuPoint());
+    gTAGroot->AddRequiredItem("twpt");
+    myReader->SetupBranch(fpNtuRecTw);
 
-    if ( !fFlagMC )
+    if (!fFlagMC)
     {
-    //   fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
-    //   gTAGroot->AddRequiredItem("WDtrigInfo");
-    //   myReader->SetupBranch(fpNtuWDtrigInfo);
+      //   fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
+      //   gTAGroot->AddRequiredItem("WDtrigInfo");
+      //   myReader->SetupBranch(fpNtuWDtrigInfo);
     }
     // if (fFlagMC)
     // {
@@ -609,7 +599,7 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
   // myVtNtuClus = (TAVTntuCluster*)fpNtuClusVtx->GenerateObject();
   myVtNtuVtx = (TAVTntuVertex *)fpNtuVtx->GenerateObject();
 
-  // myTWNtuPt = (TATWntuPoint *)fpNtuRecTw->GenerateObject();
+  myTWNtuPt = (TATWntuPoint *)fpNtuRecTw->GenerateObject();
   // myMSDNtuHit = (TAMSDntuHit *)fpNtuRecTw->GenerateObject();
   // pCaNtuClu = (TACAntuCluster *)fpNtuClusCa->GenerateObject();
   myBMNtuTrk = (TABMntuTrack *)fpNtuTrackBm->GenerateObject();
@@ -644,7 +634,7 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
     cout << "target A=" << GetParGeoG()->GetTargetPar().AtomicMass << endl;
   }
 
-  //Set fixed region values
+  // Set fixed region values
   fRegTG = GetParGeoG()->GetRegTarget();
   TString regvtxname("VTXP3");
   fRegLastVTplane = GetParGeoG()->GetCrossReg(regvtxname);
@@ -659,8 +649,6 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
   fRegAirAfterTW = GetParGeoG()->GetRegAirTW();
 
   n_clones.clear();
-  for (int i = 1; i <= fPrimaryCharge; i++)
-    n_clones[i] = 0;
   return;
 }
 
@@ -699,7 +687,7 @@ void GlobalRecoAnaGSI::AfterEventLoop()
   file_out->Write();
 
   cout << "Closing..." << endl;
-  //file_out->Close();
+  // file_out->Close();
 
   return;
 }
@@ -713,7 +701,7 @@ void GlobalRecoAnaGSI::FillYieldReco(string folderName, Int_t Z, Double_t Th)
     if (Th >= theta_binning[i][0] && Th < theta_binning[i][1])
     {
       path = folderName + "/Z_" + to_string(Z - 1) + "#" + to_string(Z - 0.5) + "_" + to_string(Z + 0.5) + "/theta_" + to_string(i) + "#" + to_string(theta_binning[i][0]) + "_" + to_string(theta_binning[i][1]) + "/theta_";
-      //cout << path << endl;
+      // cout << path << endl;
       ((TH1D *)gDirectory->Get(path.c_str()))->Fill(Th);
       string path_matrix = folderName + "/Z_" + to_string(Z - 1) + "#" + to_string(Z - 0.5) + "_" + to_string(Z + 0.5) + "/theta_" + to_string(i) + "#" + to_string(theta_binning[i][0]) + "_" + to_string(theta_binning[i][1]) + "/migMatrix_Z";
     }
@@ -749,7 +737,7 @@ void GlobalRecoAnaGSI::MigMatrixPlots(string folderName, Int_t Z_true, Int_t Z_m
   if (enableMigMatr)
   {
     string path = folderName + "/migMatrix_Z";
-    ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Z_meas, Z_true );
+    ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Z_meas, Z_true);
 
     path = folderName + "/migMatrix_Ztrack_vs_Ztw";
     ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Z_true_TW, Z_true);
@@ -976,13 +964,13 @@ void GlobalRecoAnaGSI::RecoGlbTrkLoopSetVariables()
   return;
 }
 
-
-vector<bool> GlobalRecoAnaGSI::CheckTwPointInMoreTracks(){
-  vector<Int_t> vectTwId;          // vector of the twpoint reco ID
-  vector<Int_t> vecSameTWid;       // vector of the twpoint reco ID wich are the same in more than a track
-  vector<bool> hasSameTWid;        // vector of bool of tracks with same tw point
+vector<bool> GlobalRecoAnaGSI::CheckTwPointInMoreTracks()
+{
+  vector<Int_t> vectTwId;         // vector of the twpoint reco ID
+  vector<Int_t> vecSameTWid;      // vector of the twpoint reco ID wich are the same in more than a track
+  vector<bool> hasSameTWid;       // vector of bool of tracks with same tw point
   Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
-  
+
   for (int it = 0; it < nt; it++)
   {
     fGlbTrack = myGlb->GetTrack(it);
@@ -992,18 +980,19 @@ vector<bool> GlobalRecoAnaGSI::CheckTwPointInMoreTracks(){
       continue;
     }
 
-  TAGpoint *twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
-  
-  if ((std::find(vectTwId.begin(), vectTwId.end(), twpoint -> GetClusterIdx()) != vectTwId.end())) // if twpoint id is already in the vector
-    vecSameTWid.push_back(twpoint -> GetClusterIdx());
-  vectTwId.push_back(twpoint->GetClusterIdx());
+    TAGpoint *twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
+
+    if ((std::find(vectTwId.begin(), vectTwId.end(), twpoint->GetClusterIdx()) != vectTwId.end())) // if twpoint id is already in the vector
+      vecSameTWid.push_back(twpoint->GetClusterIdx());
+    vectTwId.push_back(twpoint->GetClusterIdx());
   }
 
   for (auto allTWid : vectTwId)
   {
-      if ((std::find(vecSameTWid.begin(), vecSameTWid.end(), allTWid) != vecSameTWid.end()))
-        hasSameTWid.push_back(1);
-      else hasSameTWid.push_back(0);
+    if ((std::find(vecSameTWid.begin(), vecSameTWid.end(), allTWid) != vecSameTWid.end()))
+      hasSameTWid.push_back(1);
+    else
+      hasSameTWid.push_back(0);
   }
 
   return hasSameTWid;
@@ -1027,22 +1016,18 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   TAGpoint *msdcluster;
   TAGpoint *point;
 
-
   // cout << " track with " << fGlbTrack->GetPointsN ()<< " points " << endl;
   // for (int i = 0; i < 4; i++) // i put all charges of a vtx cluster in the vector
   // {
   //   vecVtZMC[i].clear();
   //   vtcluster = fGlbTrack->GetPoint(i);
-  //   cout << "vtz point: "<< i << " is " << vtcluster -> GetDevName() << endl; 
+  //   cout << "vtz point: "<< i << " is " << vtcluster -> GetDevName() << endl;
   //   for (int j = 0; j < vtcluster->GetMcTracksN(); j++)
   //   {
   //     TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(vtcluster->GetMcTrackIdx(j));
   //     vecVtZMC[i].push_back(particleMC->GetCharge());
   //   }
   // }
-
-
-
 
   // for (int i = 4; i<10; i++)  // i put all charges of a msd cluster in the vector
   // {
@@ -1058,57 +1043,53 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   vecVtZMC.clear();
   vecMsdZMC.clear();
 
-
-
-
   for (int i = 0; i < fGlbTrack->GetPointsN(); i++) // for all the points of a track...
   {
-  point  = fGlbTrack->GetPoint(i);
+    point = fGlbTrack->GetPoint(i);
 
-  if ((string) point -> GetDevName() == "VT") { //... i take the vt cluster
-    vector<Int_t> vecVT_z; // vector of all Z of a cluster of the vtx
-    vecVT_z.clear();
-    for (int j = 0; j < point->GetMcTracksN(); j++)
-    {
-      
-      TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(point->GetMcTrackIdx(j));
-      vecVT_z.push_back(particleMC->GetCharge());     // i take all the charges of a cluster
+    if ((string)point->GetDevName() == "VT")
+    {                        //... i take the vt cluster
+      vector<Int_t> vecVT_z; // vector of all Z of a cluster of the vtx
+      vecVT_z.clear();
+      for (int j = 0; j < point->GetMcTracksN(); j++)
+      {
+
+        TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(point->GetMcTrackIdx(j));
+        vecVT_z.push_back(particleMC->GetCharge()); // i take all the charges of a cluster
+      }
+      vecVtZMC.push_back(vecVT_z); // and i put all in a vector
     }
-    vecVtZMC.push_back(vecVT_z); // and i put all in a vector
+
+    if ((string)point->GetDevName() == "MSD")
+    {
+      // cout << " it is a MSD" << endl;
+      vector<Int_t> vecMSD_z; // vector of all Z of a cluster of the vtx
+      vecMSD_z.clear();
+      for (int j = 0; j < point->GetMcTracksN(); j++)
+      {
+
+        TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(point->GetMcTrackIdx(j));
+        vecMSD_z.push_back(particleMC->GetCharge());
+      }
+      vecMsdZMC.push_back(vecMSD_z);
+    }
   }
 
-  if ((string)point->GetDevName() == "MSD")
+  // if (vecVtZMC.size() < 4)
+  //   cout << "my vector of vector VT of charghe has size " << vecVtZMC.size() << endl;
+  // if (vecMsdZMC.size() < 6){
+  //   cout << "my vector of vector MSD of charghe has size " << vecMsdZMC.size() << endl;
+  //   cout << "vector 0 has " << vecMsdZMC.at(0).size() << " elements "<<endl;
+  // }
+
+  initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
+  Z_true_TW = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetCharge();
+
+  // all mc track id of TW point
+  vecTwTrkId.clear();
+  for (int i = 0; i < twpoint->GetMcTracksN(); i++)
   {
-    //cout << " it is a MSD" << endl;
-    vector<Int_t> vecMSD_z; // vector of all Z of a cluster of the vtx
-    vecMSD_z.clear();
-    for (int j = 0; j < point->GetMcTracksN(); j++)
-    {
-
-      TAMCpart *particleMC = GetNtuMcTrk()->GetTrack(point->GetMcTrackIdx(j));
-      vecMSD_z.push_back(particleMC->GetCharge());
-    }
-    vecMsdZMC.push_back(vecMSD_z);
-  }
-
-
-}
-
-// if (vecVtZMC.size() < 4)
-//   cout << "my vector of vector VT of charghe has size " << vecVtZMC.size() << endl;
-// if (vecMsdZMC.size() < 6){
-//   cout << "my vector of vector MSD of charghe has size " << vecMsdZMC.size() << endl;
-//   cout << "vector 0 has " << vecMsdZMC.at(0).size() << " elements "<<endl;
-// }
-
-initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
-Z_true_TW = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetCharge();
-
-// all mc track id of TW point
-vecTwTrkId.clear();
-for (int i = 0; i < twpoint->GetMcTracksN(); i++)
-{
-  vecTwTrkId.push_back(twpoint->GetMcTrackIdx(i));
+    vecTwTrkId.push_back(twpoint->GetMcTrackIdx(i));
   }
   TrkIdMC_TW = twpoint->GetMcTrackIdx(0); // associo l'IdMC alla particella che ha attraversato il TW --> in questo modo bypasso il problema di frammentazione secondaria
   //  for (int i = 0; i < fGlbTrack->GetPointsN(); i++){
@@ -1195,11 +1176,12 @@ for (int i = 0; i < twpoint->GetMcTracksN(); i++)
 
 void GlobalRecoAnaGSI::FillMCPartYields()
 {
-  if (TAGrecoManager::GetPar()->IsRegionMc() == false) {
-    Error("FillMCPartYields","IsRegionMc() needed for the analysis!");
+  if (TAGrecoManager::GetPar()->IsRegionMc() == false)
+  {
+    Error("FillMCPartYields", "IsRegionMc() needed for the analysis!");
     return;
   }
-   
+
   TAMCntuRegion *pNtuReg = GetNtuMcReg();
   Int_t nCross = pNtuReg->GetRegionsN();
 
@@ -1252,7 +1234,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
         // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
         // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-        (OldReg >= fRegFirstTWbar && OldReg <= fRegLastTWbar) && NewReg == fRegAirAfterTW 
+        (OldReg >= fRegFirstTWbar && OldReg <= fRegLastTWbar) && NewReg == fRegAirAfterTW
         // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     )
     {
@@ -1270,9 +1252,8 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         {
           P_beforeTG = cross->GetMomentum();
         }
-        
 
-            if ((cross->GetTrackIdx() - 1) == particle_ID)
+        if ((cross->GetTrackIdx() - 1) == particle_ID)
         {
           // particle exit from target
           if (NewReg == fRegAirBeforeTW && OldReg == fRegTG)
@@ -1293,13 +1274,13 @@ void GlobalRecoAnaGSI::FillMCPartYields()
   }
 }
 
-
 bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
 {
-    if (TAGrecoManager::GetPar()->IsRegionMc() == false) {
-      Error("isGoodReco","IsRegionMc() needed for the analysis!");
-      return false;
-    }
+  if (TAGrecoManager::GetPar()->IsRegionMc() == false)
+  {
+    Error("isGoodReco", "IsRegionMc() needed for the analysis!");
+    return false;
+  }
 
   TAMCntuRegion *pNtuReg = GetNtuMcReg();
   Int_t nCross = pNtuReg->GetRegionsN();
@@ -1361,7 +1342,7 @@ void GlobalRecoAnaGSI::ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTr
     string path_ = "";
     for (int i = 0; i < fGlbTrack->GetPointsN(); i++)
     {
-      TAGpoint* point = fGlbTrack->GetPoint(i);
+      TAGpoint *point = fGlbTrack->GetPoint(i);
       string path_ = path + "/trackMCid";
       ((TH2D *)gDirectory->Get(path_.c_str()))->Fill(i, point->GetMcTrackIdx(0));
       path_ = path + "/trackMCid_multiplicity";
@@ -1386,22 +1367,22 @@ void GlobalRecoAnaGSI::ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTr
   }
 }
 
-void GlobalRecoAnaGSI::FragmentationStudies(string path,  TAGtrack *fGlbTrack)
-{ 
-  for (int charge =1; charge <9; charge ++)
+void GlobalRecoAnaGSI::FragmentationStudies(string path, TAGtrack *fGlbTrack)
+{
+  for (int charge = 1; charge < 9; charge++)
   {
-  if (Z_true == charge)
-  {
-    auto twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
-    auto initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
-    auto initMostFreq = GetNtuMcTrk()->GetTrack(fGlbTrack->GetMcMainTrackId())->GetInitPos().Z();
-    string path_ = "";
+    if (Z_true == charge)
+    {
+      auto twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
+      auto initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
+      auto initMostFreq = GetNtuMcTrk()->GetTrack(fGlbTrack->GetMcMainTrackId())->GetInitPos().Z();
+      string path_ = "";
 
-    path_ = path +"/"+to_string(charge)+ "/initposition_twpoint";
-    ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(initTWPosition);
+      path_ = path + "/" + to_string(charge) + "/initposition_twpoint";
+      ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(initTWPosition);
 
-    path_ = path + "/" + to_string(charge) + "/initposition_mostfrequent";
-    ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(initMostFreq);
+      path_ = path + "/" + to_string(charge) + "/initposition_mostfrequent";
+      ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(initMostFreq);
     }
   }
 }
@@ -1420,7 +1401,7 @@ void GlobalRecoAnaGSI::BookFragmentationStudies(string path)
     gDirectory->cd("..");
   }
   gDirectory->cd("..");
-  }
+}
 
 void GlobalRecoAnaGSI::BookChargeStudies(string path)
 { // study of Z=8
@@ -1437,29 +1418,31 @@ void GlobalRecoAnaGSI::BookChargeStudies(string path)
 }
 
 void GlobalRecoAnaGSI::MyReco(string path_name)
-{ 
+{
   string name = "";
   if (isGoodReco(TrkIdMC))
   {
     if (Z_true > 0. && Z_true <= fPrimaryCharge)
-    { 
-      name = "yield-N_"+path_name+"GoodReco";
-      FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true);                              // N_GoodReco MC
+    {
+      name = "yield-N_" + path_name + "GoodReco";
+      FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_GoodReco MC
       name = "MigMatrix" + path_name + "GoodReco";
       MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
     }
   }
-  if (Z_true > 0. && Z_true <= fPrimaryCharge){
+  if (Z_true > 0. && Z_true <= fPrimaryCharge)
+  {
     name = "yield-N_" + path_name + "AllReco";
     FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
   }
 
-  if (Z_true > 0. && Z_true <= fPrimaryCharge){
+  if (Z_true > 0. && Z_true <= fPrimaryCharge)
+  {
     name = "MigMatrix" + path_name;
     MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
   }
 
-  if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
+  if (Z_true > 0. && Z_true <= fPrimaryCharge)
   {
     name = "yield-N_" + path_name + "_Z_reco_Th_Reco";
     FillYieldReco(name, Z_meas, Th_recoBM); // all reconstructed tracks
@@ -1486,9 +1469,10 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
   FragmentationStudies(name, fGlbTrack);
 }
 
-void GlobalRecoAnaGSI::MyRecoBooking(string path_name){
+void GlobalRecoAnaGSI::MyRecoBooking(string path_name)
+{
   string name = "";
-  name = "yield-N_"+path_name+"_Z_reco_Th_Reco";
+  name = "yield-N_" + path_name + "_Z_reco_Th_Reco";
   BookYield(name, false);
   name = "yield-N_" + path_name + "_Z_true_Th_Reco";
   BookYield(name, false);
