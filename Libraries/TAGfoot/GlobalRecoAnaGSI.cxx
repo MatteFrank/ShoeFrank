@@ -184,7 +184,7 @@ void GlobalRecoAnaGSI::LoopEvent()
         }
 
         // compute chi2 and residuals
-        float res = 0;
+        residual = 0;
         float res_temp = 0;
         for (int i = 0; i < fGlbTrack->GetPointsN(); i++)
         {
@@ -201,8 +201,8 @@ void GlobalRecoAnaGSI::LoopEvent()
           {
             res_temp = (point->GetMeasPosition() - point->GetFitPosition()).Mag();
           }
-          if (res_temp > res)
-            res = res_temp;
+          if (abs(res_temp) > abs(residual) )
+            residual = res_temp;
         }
 
         // // // =================== VTX MATCH
@@ -222,35 +222,35 @@ void GlobalRecoAnaGSI::LoopEvent()
         //   MyReco("Q1");
 
         //// =================== RECO CHI2 cut
-        if (fGlbTrack->GetChi2() < 2 && res < 0.01)
+        if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01)
           MyReco("Chi2");
 
         //// =================== RECO CHI2 cut + multitrack
-        if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1)
+        if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && nt > 1)
           MyReco("MChi2");
 
         // // // =================== MC VTX + Chi2 cuts
-        // if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01)
+        // if (VTMatch == true && fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01)
         //   MyReco("VTChi2");
 
         // // // =================== MC VTX + Chi2 cuts + multitrack
-        // if (VTMatch == true && fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1)
+        // if (VTMatch == true && fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && nt > 1)
         //   MyReco("MVTChi2");
 
         // // =================== Chi2 cuts + multitrack + NO TW in multitracks
-        if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false)
+        if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false)
           MyReco("MChi2TWT");
 
         // // // =================== Chi2 cuts + multitrack + NO TW in multitracks + MSD CUT
-        // if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && MSDMatch == true)
+        // if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && MSDMatch == true)
         //   MyReco("MChi2MSDTWT");
 
         // // =================== Chi2 cuts + multitrack + NO TW in multitracks + n_tracks == n_twpoints
-        if (fGlbTrack->GetChi2() < 2 && res < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
+        if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
           MyReco("MChi2TWTngt");
 
         // // // =================== Chi2 cuts +  NO TW in multitracks
-        // if (fGlbTrack->GetChi2() < 2 && res < 0.01 && hasSameTwPoint.at(it) == false)
+        // if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && hasSameTwPoint.at(it) == false)
         //   MyReco("ChiTWT");
 
         //// ===================ALL TRACKS
@@ -1376,6 +1376,7 @@ void GlobalRecoAnaGSI::FragmentationStudies(string path, TAGtrack *fGlbTrack)
       auto twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
       auto initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
       auto initMostFreq = GetNtuMcTrk()->GetTrack(fGlbTrack->GetMcMainTrackId())->GetInitPos().Z();
+      Double_t chi2 = fGlbTrack->GetChi2();
       string path_ = "";
 
       path_ = path + "/" + to_string(charge) + "/initposition_twpoint";
@@ -1383,6 +1384,15 @@ void GlobalRecoAnaGSI::FragmentationStudies(string path, TAGtrack *fGlbTrack)
 
       path_ = path + "/" + to_string(charge) + "/initposition_mostfrequent";
       ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(initMostFreq);
+
+      path_ = path + "/" + to_string(charge) + "/reducedChi2";
+      ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(chi2);
+
+      path_ = path + "/" + to_string(charge) + "/residual";
+      ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(residual);
+
+      path_ = path + "/" + to_string(charge) + "/trackquality";
+      ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(fGlbTrack->GetQuality());
     }
   }
 }
@@ -1398,6 +1408,9 @@ void GlobalRecoAnaGSI::BookFragmentationStudies(string path)
     gDirectory->cd(to_string(charge).c_str());
     h = new TH1D("initposition_twpoint", "origin of the particle crossing TW for TW matched tracks; pos(Z) [cm]; events ", 3050, -105., 200.);
     h = new TH1D("initposition_mostfrequent", "origin of the most frequent particle of track; pos(Z) [cm]; events ", 3050, -105., 200.);
+    h = new TH1D("reducedChi2", "\\Chi^2_{reduced} \\, for \\, every \\, track ; value", 400,0,20);
+    h = new TH1D("residual", "worst residual for every track fit - meas", 1000, -0.1,0.1);
+    h = new TH1D("trackquality", "Track quality", 11, 0,1.1);
     gDirectory->cd("..");
   }
   gDirectory->cd("..");
