@@ -238,9 +238,9 @@ void GlobalRecoAnaGSI::LoopEvent()
         if (fGlbTrack->GetChi2() < 2 && res < 0.01 && hasSameTwPoint.at(it) == false)
           MyReco("ChiTWT");
 
+        }
         //// ===================ALL TRACKS
         MyReco("");
-          }
 
       ntracks++;
 
@@ -325,7 +325,7 @@ void GlobalRecoAnaGSI::Booking()
   {
     
     BookYield("yield-N_ref", false);
-
+  }
     //vt mc cuts
     MyRecoBooking("VT");
 
@@ -361,13 +361,13 @@ void GlobalRecoAnaGSI::Booking()
 
     // all tracks
     MyRecoBooking(""); 
-  }
-  else
-  {
+  // }
+  // else
+  // {
 
-    // Cross section recostruction histos from REAL DATA
-    BookYield("yield-trkREAL");
-  }
+  //   // Cross section recostruction histos from REAL DATA
+  //   MyRecoBooking("yield-trkREAL");
+  // }
   return;
 }
 
@@ -1439,47 +1439,51 @@ void GlobalRecoAnaGSI::BookChargeStudies(string path)
 void GlobalRecoAnaGSI::MyReco(string path_name)
 { 
   string name = "";
-  if (isGoodReco(TrkIdMC))
-  {
-    if (Z_true > 0. && Z_true <= fPrimaryCharge)
-    { 
-      name = "yield-N_"+path_name+"GoodReco";
-      FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true);                              // N_GoodReco MC
-      name = "MigMatrix" + path_name + "GoodReco";
-      MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
-    }
-  }
-  if (Z_true > 0. && Z_true <= fPrimaryCharge){
-    name = "yield-N_" + path_name + "AllReco";
-    FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
-  }
-
-  if (Z_true > 0. && Z_true <= fPrimaryCharge){
-    name = "MigMatrix" + path_name;
-    MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
-  }
-
   if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
   {
     name = "yield-N_" + path_name + "_Z_reco_Th_Reco";
     FillYieldReco(name, Z_meas, Th_recoBM); // all reconstructed tracks
   }
-  if (Z_true > 0. && Z_true <= fPrimaryCharge)
-  {
-    name = "yield-N_" + path_name + "_Z_true_Th_Reco";
-    FillYieldReco(name, Z_true, Th_recoBM); // all reconstructed tracks but with real Z
-  }
 
-  if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
+  if(fFlagMC)
   {
-    name = "yield-N_" + path_name + "_Z_meas_Th_True";
-    FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks but with real theta
-  }
+    if (isGoodReco(TrkIdMC))
+    {
+      if (Z_true > 0. && Z_true <= fPrimaryCharge)
+      { 
+        name = "yield-N_"+path_name+"GoodReco";
+        FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true);                              // N_GoodReco MC
+        name = "MigMatrix" + path_name + "GoodReco";
+        MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+      }
+    }
+    if (Z_true > 0. && Z_true <= fPrimaryCharge){
+      name = "yield-N_" + path_name + "AllReco";
+      FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+    }
 
-  if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
-  {
-    name = "yield-N_" + path_name + "_Z_measEqualTrue_Th_True";
-    FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
+    if (Z_true > 0. && Z_true <= fPrimaryCharge){
+      name = "MigMatrix" + path_name;
+      MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+    }
+
+    if (Z_true > 0. && Z_true <= fPrimaryCharge)
+    {
+      name = "yield-N_" + path_name + "_Z_true_Th_Reco";
+      FillYieldReco(name, Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+    }
+
+    if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
+    {
+      name = "yield-N_" + path_name + "_Z_meas_Th_True";
+      FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks but with real theta
+    }
+
+    if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
+    {
+      name = "yield-N_" + path_name + "_Z_measEqualTrue_Th_True";
+      FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
+    }
   }
 
   name = "Z_" + path_name + "_match";
@@ -1490,20 +1494,23 @@ void GlobalRecoAnaGSI::MyRecoBooking(string path_name){
   string name = "";
   name = "yield-N_"+path_name+"_Z_reco_Th_Reco";
   BookYield(name, false);
-  name = "yield-N_" + path_name + "_Z_true_Th_Reco";
-  BookYield(name, false);
-  name = "yield-N_" + path_name + "GoodReco";
-  BookYield(name, true);
-  name = "yield-N_" + path_name + "AllReco";
-  BookYield(name, true);
-  name = "yield-N_" + path_name + "_Z_meas_Th_True";
-  BookYield(name, false);
-  name = "yield-N_" + path_name + "_Z_measEqualTrue_Th_True";
-  BookYield(name, false);
-  name = "MigMatrix" + path_name;
-  BookMigMatrix(name, true);
-  name = "MigMatrix" + path_name + "GoodReco";
-  BookMigMatrix(name, true);
-  name = "Z_" + path_name + "_match";
-  BookFragmentationStudies(name);
+  if( fFlagMC )
+  {
+    name = "yield-N_" + path_name + "_Z_true_Th_Reco";
+    BookYield(name, false);
+    name = "yield-N_" + path_name + "GoodReco";
+    BookYield(name, true);
+    name = "yield-N_" + path_name + "AllReco";
+    BookYield(name, true);
+    name = "yield-N_" + path_name + "_Z_meas_Th_True";
+    BookYield(name, false);
+    name = "yield-N_" + path_name + "_Z_measEqualTrue_Th_True";
+    BookYield(name, false);
+    name = "MigMatrix" + path_name;
+    BookMigMatrix(name, true);
+    name = "MigMatrix" + path_name + "GoodReco";
+    BookMigMatrix(name, true);
+    name = "Z_" + path_name + "_match";
+    BookFragmentationStudies(name);
+  }
 }
