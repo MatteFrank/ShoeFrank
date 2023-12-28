@@ -150,37 +150,44 @@ void GlobalRecoAnaGSI::LoopEvent()
         bool VTMatch = true;
         bool VTZ8Match = true;
 
-        for (int i = 0; i < vecVtZMC.size(); i++)
+        if( vecVtZMC.size() > 0 )
         {
-          if (std::find(vecVtZMC.at(i).begin(), vecVtZMC.at(i).end(), 8) != vecVtZMC.at(i).end()) // if the cluster of the VTX contains Z=8
-            VTZ8Match = VTZ8Match && true;
-          else
-            VTZ8Match = VTZ8Match && false;
-        }
+          for (int i = 0; i < vecVtZMC.size(); i++)
+          {
+            if (std::find(vecVtZMC.at(i).begin(), vecVtZMC.at(i).end(), 8) != vecVtZMC.at(i).end()) // if the cluster of the VTX contains Z=8
+              VTZ8Match = VTZ8Match && true;
+            else
+              VTZ8Match = VTZ8Match && false;
+          }
 
-        if (VTZ8Match == true)
-        {                   // if a primary entered the first layer of the vtx and did not fragmented up to its last plane...
-          if (Z_meas > 7)   // ... and the charge reconstructed in TW is higher than 7
-            VTMatch = true; // --> it means there is no fragmentation between VTX and up to TW
-          else
+
+          if (VTZ8Match == true)
+          {                   // if a primary entered the first layer of the vtx and did not fragmented up to its last plane...
+            if (Z_meas > 7)   // ... and the charge reconstructed in TW is higher than 7
+              VTMatch = true; // --> it means there is no fragmentation between VTX and up to TW
+            else
+              VTMatch = false;
+          }
+
+          if ( (std::find(vecVtZMC.at(0).begin(), vecVtZMC.at(0).end(), 8) != vecVtZMC.at(0).end()) && (VTZ8Match == false))
+          // if the first cluster was a Z=8 but then some fragmentation happened...
+          {
             VTMatch = false;
-        }
-
-        if ((std::find(vecVtZMC.at(0).begin(), vecVtZMC.at(0).end(), 8) != vecVtZMC.at(0).end()) && (VTZ8Match == false))
-        // if the first cluster was a Z=8 but then some fragmentation happened...
-        {
-          VTMatch = false;
+          }
         }
 
         // compute MC MSD match
         bool MSDMatch = true;
 
-        for (int i = 0; i < vecMsdZMC.size(); i++)
+        if( vecMsdZMC.size() > 0 )
         {
-          if (std::find(vecMsdZMC.at(i).begin(), vecMsdZMC.at(i).end(), Z_meas) != vecMsdZMC.at(i).end()) // if all the cluster of the MSD contains Z
-            MSDMatch = MSDMatch && true;                                                                  // reconstructed by the TW
-          else
-            MSDMatch = MSDMatch && false;
+          for (int i = 0; i < vecMsdZMC.size(); i++)
+          {
+            if (std::find(vecMsdZMC.at(i).begin(), vecMsdZMC.at(i).end(), Z_meas) != vecMsdZMC.at(i).end()) // if all the cluster of the MSD contains Z
+              MSDMatch = MSDMatch && true;                                                                  // reconstructed by the TW
+            else
+              MSDMatch = MSDMatch && false;
+          }
         }
 
         // // // =================== VTX MATCH
