@@ -78,13 +78,19 @@ void TATWactNtuPoint::CreateHistogram()
    DeleteHistogram();
    
    TATWparGeo* pGeoMap  = (TATWparGeo*) fpGeoMap->Object();
+  
    fpHisPointMap = new TH2F("twPointMap", "TW - Point map",
                             pGeoMap->GetNBars(), -21., 19.,
                             pGeoMap->GetNBars(), -21., 19.);
-   // pGeoMap->GetNBars(), -pGeoMap->GetDimension()[1]/2., pGeoMap->GetDimension()[1]/2.);
-      
+   // pGeoMap->GetNBars(), -pGeoMap->GetDimension()[1]/2., pGeoMap->GetDimension()[1]/2.);       
    AddHistogram(fpHisPointMap);
-   
+  
+   fpHisElossTof = new TH2F("twPoint_Eloss_vs_Tof", "twPoint_Eloss_vs_Tof",3000,0.,30.,480,0.,120.);
+   AddHistogram(fpHisElossTof);
+
+   fpHisElossTofMean = new TH2F("twPoint_Eloss_vs_Tof_mean", "twPoint_Eloss_vs_Tof_mean",3000,0.,30.,480,0.,120.);
+   AddHistogram(fpHisElossTofMean);
+
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
      fpHisDist.push_back(new TH1F(Form("twMinDist_Z%d",iZ), Form("TW - Minimal distance between clusterized hits - Z%d",iZ), 100, 0., 10));
      AddHistogram(fpHisDist[iZ-1]);
@@ -385,6 +391,8 @@ Bool_t TATWactNtuPoint::FindPoints()
              fpHisDist[Z-1]->Fill(minDist);
              fpHisElossMean[Z-1]->Fill(point->GetEnergyLoss()/2.);
              fpHisTofMean[Z-1]->Fill(point->GetMeanTof());
+	     fpHisElossTof->Fill(point->GetToF(),point->GetMainEloss());
+	     fpHisElossTofMean->Fill(point->GetMeanTof(),point->GetEnergyLoss()/2.);
              fpHisDeltaE[Z-1]->Fill(point->GetColumnHit()->GetEnergyLoss()-point->GetRowHit()->GetEnergyLoss());
              fpHisDeltaTof[Z-1]->Fill(point->GetColumnHit()->GetTime()-point->GetRowHit()->GetTime());
 
