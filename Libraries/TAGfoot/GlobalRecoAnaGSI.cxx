@@ -37,6 +37,7 @@ GlobalRecoAnaGSI::GlobalRecoAnaGSI(TString expName, Int_t runNumber, TString fil
   nclean = 0;
   ntracks = 0;
   recoEvents = 0;
+  trueEvents = 0;
   fFlagMC = isMC;
   purity_cut = 0.51;
   clean_cut = 1.;
@@ -696,8 +697,10 @@ void GlobalRecoAnaGSI::AfterEventLoop()
     luminosity_name = "luminosityREAL";
   }
   h = new TH1D(luminosity_name.c_str(), "", 1, 0., 1.);
-  ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * recoEvents);
+  ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * trueEvents); // recoEvents
   cout << "Reconstructed events: " << recoEvents << endl;
+  cout << "True events for the analysis: " << trueEvents << endl;
+  cout << "Total input events: " << nTotEv << endl;
 
   if (fFlagMC)
   {
@@ -869,7 +872,7 @@ void GlobalRecoAnaGSI::BookYield(string path, bool enableMigMatr)
       gDirectory->mkdir(path.c_str());
       gDirectory->cd(path.c_str());
 
-      h = new TH1D("theta_", "", 180, 0, 90.);
+      h = new TH1D("theta_", "", 150, 0, 90.); // bin width of 0.6 deg
 
       gDirectory->cd("..");
     }
@@ -1291,8 +1294,10 @@ void GlobalRecoAnaGSI::FillMCPartYields()
       }
 
       Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
-      if (charge_tr > 0 && charge_tr <= fPrimaryCharge)
+      if (charge_tr > 0 && charge_tr <= fPrimaryCharge){
         FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
+        trueEvents++;
+      }
 
       Th_BM = -999;
       P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
