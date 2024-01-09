@@ -14,6 +14,8 @@ using namespace std;
 #include "TAGdataDsc.hxx"
 #include "TWaveformContainer.hxx"
 
+#define NSIDEVALUES 20
+
 class TAGbaseWD : public TAGobject {
 
 public:
@@ -28,6 +30,7 @@ public:
   virtual double ComputeBaseline( TWaveformContainer *w);
   virtual double ComputeCharge(TWaveformContainer *w,double th);
   virtual double ComputeAmplitude(TWaveformContainer *w);
+  virtual double ComputeRiseTime(TWaveformContainer *w);
 
 
    Int_t    GetChID()          const {  return fChId;          }
@@ -39,7 +42,10 @@ public:
    Double_t GetCharge()        const { return fChg;            }
    Double_t GetAmplitude()     const { return fAmplitude;      }
    Double_t GetPedestal()      const { return fPedestal;       }
+   Double_t GetRiseTime()      const { return fRiseTime;       }
    Double_t GetBaseline()      const { return fBaseline;       }
+   Double_t GetDeltaClk()      const { return fDeltaClk;       }
+   vector<double>&  GetNoise()   { return fSidebandValues; }
    Int_t    GetIDMC()          const { return fMcId;           }
    
    void SetChID(int id)              {  fChId = id;            }
@@ -52,6 +58,7 @@ public:
    void SetMCID(int id)              { fMcId = id;             }
    void SetAmplitude(double value)   { fAmplitude=value;       }
    void SetPedestal(double value)    { fPedestal=value;        }
+   void SetRiseTime(double value)    { fRiseTime=value;        }
 
 
   ClassDef(TAGbaseWD,4);
@@ -63,11 +70,14 @@ public:
   Double32_t fAmplitude;
   Double32_t fBaseline;
   Double32_t fPedestal;
+  Double32_t fRiseTime;
+  vector<double> fSidebandValues;
   Int_t      fChId;
   Int_t      fBoardId;
   Int_t      fMcId;
   Int_t      fTriggerTypeId;
   Int_t      fTriggerCellId;
+  Double32_t fDeltaClk;
 
 };
 

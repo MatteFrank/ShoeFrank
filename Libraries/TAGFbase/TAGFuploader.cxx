@@ -295,7 +295,7 @@ int TAGFuploader::UploadHitsTW() {
 		TATWpoint* point = ntup->GetPoint(iPoint);
 
 		//HACK to prevent fake points (try)
-		if ( point->GetToF() > 15 )
+		if ( point->GetToF() > 40 )
 		{
 			if(FootDebugLevel(1)) Warning("UploadHitsTW()", "Found point with high TOF:: %lf", point->GetToF());
 			continue;

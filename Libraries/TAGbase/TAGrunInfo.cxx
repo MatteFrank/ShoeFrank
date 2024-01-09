@@ -202,3 +202,11 @@ Int_t TAGrunInfo::IsEqualExceptRunnumber(const TAGrunInfo& right)
    if(fiRun!= right.fiRun)    return 0;
    return 1;
 }
+
+//! @brief Get name of the runinfo object.
+//!
+//! Overloading of TObject::GetName() needed for correct propagation of "runinfo" name when running SHOE in batch
+const char* TAGrunInfo::GetName() const
+{
+  return GetObjectName();
+}

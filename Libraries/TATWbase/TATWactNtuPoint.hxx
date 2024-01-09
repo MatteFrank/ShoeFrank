@@ -79,11 +79,11 @@ private:
    vector<TH1F*>   fpHisDeltaTof;
    vector<TH1F*>   fpHisDeltaPosX;
    vector<TH1F*>   fpHisDeltaPosY;
-   vector<TH1F*>   fpHisDeltaPosX_mult;
-   vector<TH1F*>   fpHisDeltaPosY_mult;
    vector<TH1F*>   fpHisElossMean;
    vector<TH1F*>   fpHisTofMean;
    TH2F*           fpHisPointMap;
+   TH2F*           fpHisElossTof;
+   TH2F*           fpHisElossTofMean;
    
    map<Int_t,TATWhit*> fmapHitX;
    map<Int_t,TATWhit*> fmapHitY;

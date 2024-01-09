@@ -106,3 +106,19 @@ Int_t TAVTbaseParMap::GetSensorId(Int_t idx, Int_t dataLink)
    return vec[idx];
 }
 
+//------------------------------------------+-----------------------------------
+//! Get sensor id and datalink pair from planeId
+//!
+//! \param[in] sensorId a given sensor
+pair<int, int> TAVTbaseParMap::GetMapId(Int_t planeId)
+{
+   for (auto const& [key, val] : fPlaneId) {
+    if (val == planeId)
+       return key;
+   }
+   
+   pair<int, int> idx(-1, -1);
+   
+   return idx;
+}
+

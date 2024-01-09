@@ -35,8 +35,9 @@ const Int_t   TAITparGeo::fgkDefSensorsN     = 32;
 
 //_____________________________________________________________________________
 //! Constructor
-TAITparGeo::TAITparGeo()
-: TAVTparGeo()
+TAITparGeo::TAITparGeo(TAITparMap* parMap)
+ : TAVTparGeo(),
+   fpParMap(parMap)
 {
    fFlagIt          = true;
    fLayersN         = fgkDefLayersN;
@@ -194,10 +195,19 @@ TGeoVolume* TAITparGeo::BuildInnerTracker(const char *itName, const char* basemo
    if (board)
       itBoard = BuildBoard();
 
-   for(Int_t iSensor = 0; iSensor < GetSensorsN(); iSensor++) {
+   for(Int_t p = 0; p < GetSensorsN(); ++p) {
 
+      Int_t iSensor = fSensorParameter[p].SensorIdx - 1;
+      
       TGeoCombiTrans* hm = GetCombiTransfo(iSensor);
-      itMod = AddModule(Form("%s%d",basemoduleName, iSensor), itName);
+      TString smap("");
+      
+      if (fpParMap) {
+         pair<int, int> idx = fpParMap->GetMapId(iSensor);
+         smap = Form("_%d-%d", idx.first+110, idx.second);
+      }
+      
+      itMod = AddModule(Form("%s%d%s",basemoduleName, iSensor, smap.Data()), itName);
 
       it->AddNode(itMod, iSensor, hm);
 

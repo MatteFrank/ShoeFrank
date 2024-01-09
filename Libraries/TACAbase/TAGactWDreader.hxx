@@ -117,7 +117,7 @@ private:
   TH1F *hCARateVsTime;
   TH2F *hDAQVsST;
   TH1F *hRatioDAQ_ST;
-  
+  map<pair<int,int>, TH1F*>hBoardTimeCalib;
   
 private:
   vector<TWaveformContainer*>             fSTwaves;  ///< wave form container vector for ST

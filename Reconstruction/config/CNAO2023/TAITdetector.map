@@ -4,56 +4,56 @@ DataLinksN: 8
 #
 DataLink: 0
 SensorsN: 4
-PlaneId  12:  0
-PlaneId  13:  1
-PlaneId   5:  2
-PlaneId   4:  3
+PlaneId  31:  0
+PlaneId  30:  1
+PlaneId  22:  2
+PlaneId  23:  3
 #
 DataLink: 1
-SensorsN: 4
-PlaneId   1:  0
-PlaneId   0:  1
-PlaneId   8:  2
-PlaneId   9:  3
-#
-DataLink: 2
-SensorsN: 4
-PlaneId  20:  0
-PlaneId  21:  1
-PlaneId  29:  2
-PlaneId  28:  3
-#
-DataLink: 3
-SensorsN: 4
-PlaneId  25:  0
-PlaneId  24:  1
-PlaneId  16:  2
-PlaneId  17:  3
-#
-DataLink: 4
-SensorsN: 4
-PlaneId  10:  0
-PlaneId  11:  1
-PlaneId   3:  2
-PlaneId   2:  3
-#
-DataLink: 5
-SensorsN: 4
-PlaneId   7:  0
-PlaneId   6:  1
-PlaneId  14:  2
-PlaneId  15:  3
-#
-DataLink: 6
 SensorsN: 4
 PlaneId  18:  0
 PlaneId  19:  1
 PlaneId  27:  2
 PlaneId  26:  3
 #
+DataLink: 2
+SensorsN: 4
+PlaneId   4:  0
+PlaneId   5:  1
+PlaneId  13:  2
+PlaneId  12:  3
+#
+DataLink: 3
+SensorsN: 4
+PlaneId   9:  0
+PlaneId   8:  1
+PlaneId   0:  2
+PlaneId   1:  3
+#
+DataLink: 4
+SensorsN: 4
+PlaneId  25:  0
+PlaneId  24:  1
+PlaneId  16:  2
+PlaneId  17:  3
+#
+DataLink: 5
+SensorsN: 4
+PlaneId  20:  0
+PlaneId  21:  1
+PlaneId  29:  2
+PlaneId  28:  3
+#
+DataLink: 6
+SensorsN: 4
+PlaneId   2:  0
+PlaneId   3:  1
+PlaneId  11:  2
+PlaneId  10:  3
+#
 DataLink: 7
 SensorsN: 4
-PlaneId  31:  0
-PlaneId  30:  1
-PlaneId  22:  2
-PlaneId  23:  3
+PlaneId  15:  0
+PlaneId  14:  1
+PlaneId   6:  2
+PlaneId   7:  3

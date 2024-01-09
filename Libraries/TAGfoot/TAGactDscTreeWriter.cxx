@@ -174,10 +174,10 @@ void TAGactDscTreeWriter::SetDescriptors()
 Int_t TAGactDscTreeWriter::Open(const TString& name, Option_t* option, const TString treeName, Bool_t /*dscBranch*/)
 {
    if (TAGrecoManager::GetPar()->IsSaveTree()) {
-      SetDescriptors();
+     SetDescriptors();
       SetTreeBranches();
    }
-   
+
    TAGactTreeWriter::Open(name, option);
    
    return 0;
@@ -187,9 +187,8 @@ Int_t TAGactDscTreeWriter::Open(const TString& name, Option_t* option, const TSt
 //! Set tree branches for writing in output file
 void TAGactDscTreeWriter::SetTreeBranches()
 {
-   if (TAGrecoManager::GetPar()->IncludeST()) {
-         SetupElementBranch(fpNtuHitSt);
-   }
+   if (TAGrecoManager::GetPar()->IncludeST())
+     SetupElementBranch(fpNtuHitSt);
    
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       if (fFlagHits)

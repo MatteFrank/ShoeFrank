@@ -135,7 +135,7 @@ void RecoMC::CreateRawAction()
       
       fpNtuHitVtx = new TAGdataDsc(new TAVTntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAVTactNtuHitMC");
-      fActNtuHitVtx = new TAVTactNtuHitMC(name, fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fEvtStruct);
+      fActNtuHitVtx = new TAVTactNtuHitMC(name, fpNtuMcVt, fpNtuMcTrk, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fpParCalVtx, fEvtStruct);
       if (fFlagHisto)
          fActNtuHitVtx->CreateHistogram();
    }
@@ -231,4 +231,47 @@ void RecoMC::OpenFileIn()
 void RecoMC::CloseFileIn()
 {
    fActEvtReader->Close();
+}
+
+//__________________________________________________________
+//! Generate output file name
+TString RecoMC::GetFileOutName()
+{
+   TString tmp = GetName();
+   Int_t pos = tmp.Last('/');
+   
+   if (pos == -1)
+      pos = 0;
+   else
+      pos++;
+   
+   Int_t pos1 = tmp.Last('_');
+   TString name = tmp(pos, pos1-pos-1);
+   name.Prepend("run_");
+   
+   vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
+   
+   Int_t detectorsN = 0;
+   
+   for (auto it : dec) {
+      TString det = TAGrecoManager::GetDect3LetName(it);
+      det.ToLower();
+      if (det == "tgt") continue;
+      detectorsN++;
+   }
+   
+   if (detectorsN >= 7)
+      name += "_all";
+   else {
+      for (auto it : dec) {
+         TString det = TAGrecoManager::GetDect3LetName(it);
+         det.ToLower();
+         if (det == "tgt") continue;
+         name += Form("_%s", det.Data());
+      }
+   }
+   
+   name += ".root";
+   
+   return name;
 }

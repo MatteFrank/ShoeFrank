@@ -226,7 +226,7 @@ c     common needed to score the boundary crossing info
 c     and put the right pointer to the particle common of the produced electrons
 c     
       integer nCROSS, maxCROSS
-      parameter (maxCROSS=15000)
+      parameter (maxCROSS=25000)
       integer idCROSS(maxCROSS), nregCROSS(maxCROSS) 
       integer nregoldCROSS(maxCROSS)
       real pxCROSS(maxCROSS), pyCROSS(maxCROSS), pzCROSS(maxCROSS)
@@ -270,7 +270,7 @@ c     recording with the info on the interaction point
 c     
       integer idfluka(maxnump)
       integer numint, maxint
-      parameter (MAXINT=8000)
+      parameter (MAXINT=30000)
       double precision xint(maxint),yint(maxint),zint(maxint)
       integer intpa(maxint),intcode(maxint)
       common /particle_stack/xint,yint,zint,intpa,intcode,

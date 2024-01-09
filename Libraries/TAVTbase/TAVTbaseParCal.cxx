@@ -24,18 +24,23 @@
 //! Class Imp
 ClassImp(TAVTbaseParCal);
 
-Int_t TAVTbaseParCal::fgkChargesN = 6;
+Bool_t TAVTbaseParCal::fgkLandauOn = false;
 
 //------------------------------------------+-----------------------------------
 //! Standard constructor
 TAVTbaseParCal::TAVTbaseParCal()
 : TAGparTools(),
-  fChargeProba(new TArrayF(6)),
-  fChargeProbaNorm(new TArrayF(6)),
+  fChargeProba(new TArrayF(8)),
+  fChargeProbaNorm(new TArrayF(8)),
   fChargeWithMaxProba(0),
   fChargeMaxProba(0.),
   fkDefaultCalName("")
 {
+   // set default wise to 1
+   for (Int_t p = 0; p < 32; p++) {
+      fEffParameter[p].SensorId   = p;
+      fEffParameter[p].QuadEff[p] = 1.;
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -44,11 +49,13 @@ TAVTbaseParCal::~TAVTbaseParCal()
 {
    delete fChargeProba;
    delete fChargeProbaNorm;
-   for (Int_t p = 0; p < fgkChargesN; p++) {
-	  delete fLandau[p];
-	  delete fLandauNorm[p];
+   if (fgkLandauOn) {
+      for (Int_t p = 0; p < fChargesN; p++) {
+         delete fLandau[p];
+         delete fLandauNorm[p];
+      }
+      delete fLandauTot;
    }
-   delete fLandauTot;
 }
 
 //------------------------------------------+-----------------------------------
@@ -56,7 +63,7 @@ TAVTbaseParCal::~TAVTbaseParCal()
 //!
 //! \param[in] name file name
 Bool_t TAVTbaseParCal::FromFile(const TString& name) 
-{   
+{
    // Reading calibration file
    TString nameExp;
    
@@ -65,10 +72,16 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
    else 
      nameExp = name;
    
-   if (Open(nameExp)) return kTRUE;
+   if (!Open(nameExp)) return false;
+   
+   Info("FromFile()", "Open file %s for calibration\n", name.Data());
+
+   ReadItem(fChargesN);
+   if(FootDebugLevel(1))
+      printf("ChargesN: %d\n", fChargesN);
    
    Double_t* tmp = new Double_t[4];
-   for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
+   for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
      
 	  // read parameters
 	  ReadItem(tmp, 4, ' ');
@@ -82,12 +95,38 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
         cout << endl << " Landau Parameter: "
 		      << Form("%d %f %f %f %f", fLandauParameter[p].Charge, fLandauParameter[p].Constant, 
 				 fLandauParameter[p].MPV, fLandauParameter[p].Sigma, fLandauParameter[p].Quench) << endl;
-   }	  
+   }
    delete[] tmp;
+
+   if (!Eof()) {
+      ReadItem(fSensorsN);
+      if(FootDebugLevel(1))
+         printf("SensorsN: %d\n", fSensorsN);
+      
+      Double_t* tmp = new Double_t[4];
+      for (Int_t p = 0; p < fSensorsN; p++) { // Loop on each charge
+         
+         // read parameters
+         ReadItem(tmp, 4, ' ');
+         
+         fEffParameter[p].SensorId = p;
+         fEffParameter[p].QuadEff[0] = tmp[0];
+         fEffParameter[p].QuadEff[1] = tmp[1];
+         fEffParameter[p].QuadEff[2] = tmp[2];
+         fEffParameter[p].QuadEff[3] = tmp[3];
+         
+         if(FootDebugLevel(1))
+            cout << endl << " Efficieny Parameter: "
+            << Form("%d %f %f %f %f", fEffParameter[p].SensorId, fEffParameter[p].QuadEff[0],
+                    fEffParameter[p].QuadEff[1], fEffParameter[p].QuadEff[2], fEffParameter[p].QuadEff[3]) << endl;
+      }
+      delete[] tmp;
+   }
    
-   SetFunction();
+   if (fgkLandauOn)
+      SetFunction();
    
-   return kFALSE;
+   return true;
 }
 
 //------------------------------------------+-----------------------------------
@@ -96,16 +135,16 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
 //! \param[in] pixelsN number of pixels
 const TArrayF* TAVTbaseParCal::GetChargeProba(Float_t pixelsN)
 {
-   Float_t value[fgkChargesN];
+   Float_t value[fChargesN];
    Float_t fac = 0.;
    Float_t maxProba = 0.;
    
-   for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
+   for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
 	  value[p] = fLandau[p]->Eval(pixelsN);
 	  fac += value[p];
    }
    
-   for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
+   for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
 	  Float_t ratio = value[p]/fac*100;
 	  fChargeProba->AddAt(ratio, p);
 	  if (ratio > maxProba) {
@@ -124,16 +163,16 @@ const TArrayF* TAVTbaseParCal::GetChargeProba(Float_t pixelsN)
 //! \param[in] pixelsN number of pixels
 const TArrayF* TAVTbaseParCal::GetChargeProbaNorm(Float_t pixelsN)
 {
-   Float_t value[fgkChargesN];
+   Float_t value[fChargesN];
    Float_t fac = 0.;
    Float_t maxProba = 0.;
    
-   for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
+   for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
 	  value[p] = fLandauNorm[p]->Eval(pixelsN);
       fac += value[p];
    }
    
-   for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
+   for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
 	  Float_t ratio = value[p]/fac*100;
 	  fChargeProbaNorm->AddAt(ratio, p);
 	  if (ratio > maxProba) {
@@ -171,7 +210,7 @@ void TAVTbaseParCal::ToStream(ostream& os, Option_t*) const
 //! Set up quenched Landau parameters
 void TAVTbaseParCal::SetFunction()
 {
-   for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
+   for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
 	  fLandau[p] = new TF1(Form("landau%d", p), this, &TAVTbaseParCal::QLandau, 0, 22, 4, "TAVTbaseParCal", "QLandau");
 	  fLandau[p]->SetParameters(fLandauParameter[p].Constant, fLandauParameter[p].MPV, fLandauParameter[p].Sigma, 
 								fLandauParameter[p].Quench);
@@ -180,7 +219,7 @@ void TAVTbaseParCal::SetFunction()
    
    Float_t integral0 = 0.;
    Float_t integral1 = 0.;
-   for (Int_t p = 0; p < fgkChargesN; p++) { // Loop on each charge
+   for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
       fLandauNorm[p] = new TF1(Form("landauNorm%d", p), this, &TAVTbaseParCal::QLandauNorm, 0, 22, 4, "TAVTbaseParCal", "QLandauNorm");
       fLandauNorm[p]->SetParameters(1, fLandauParameter[p].MPV, fLandauParameter[p].Sigma, fLandauParameter[p].Quench);
       fLandauNorm[p]->SetParNames("Constant", "MPV", "Sigma", "Quench");
@@ -229,7 +268,7 @@ Double_t TAVTbaseParCal::QLandauTot(Double_t* x, Double_t* /*par*/)
    Float_t xx = x[0];
    Double_t f = 0;
    
-   for (Int_t i = 0; i < fgkChargesN-1; ++i) {
+   for (Int_t i = 0; i < fChargesN-1; ++i) {
 	  f += fLandau[i]->Eval(xx);
    }
    

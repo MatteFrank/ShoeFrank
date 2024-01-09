@@ -38,13 +38,23 @@ private:
   TH1F *hArrivalTime[8];
   TH1F *hCharge[8];
   TH1F *hAmplitude[8];
-  TH1F *hTime;
+  TH1F *hChargePedestal[8];
+  TH1F *hBaseline[8];
+  TH1F *hNoise[8];
+  TH1F *hRiseTime[8];
+
+  TH1F *hTotTime;
   TH1F *hTotCharge;
+  TH1F *hTotNoise;
   TH1F *hTotAmplitude; 
-  TH1F *hPedestal;
+  TH1F *hTotPedestal;
+  TH1F *hTotBaseline;
+  TH1F *hTotRiseTime;
+  
   TH1F *hEff;
   TH1F *hPileUp;
-  TH2F* hChargevsTime[3];
+  TH2F *hChargevsTime[3];
+  
    
 private:
   void   SavePlot(TGraph g,TF1 f1, TF1 f2, TASTrawHit *hit);

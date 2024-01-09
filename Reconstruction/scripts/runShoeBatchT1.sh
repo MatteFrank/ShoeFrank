@@ -12,7 +12,7 @@
 # > ./path/to/runShoeBatchT1.sh -i inputFolder -o outputFolder -c campaign -r run
 
 # where:
-# - inputFolder is the path of the input folder. The input folder is forced to be inside "/storage/gpfs_data/foot/". This option needs either the full path of the input directory or the relative one starting from the "/storage/gpfs_data/foot/" folder.
+# - inputFolder is the path of the input folder. The input folder is forced to be inside "/storage/gpfs_data/foot/".
 # - outputFolder is the path to the output folder. This is forced to be in "/storage/gpfs_data/foot/${USER}". If you don't have a directory like this one already in the Tier1, it will be created.
 # - campaign is the SHOE campaign as usual
 # - run is the run number
@@ -74,6 +74,8 @@
 
 ################ SCRIPT START ######################
 
+echo "Start job submission!"
+
 INPUT_BASE_PATH="/storage/gpfs_data/foot"
 OUTPUT_BASE_PATH="${INPUT_BASE_PATH}/${USER}"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
@@ -100,10 +102,14 @@ do
     esac
 done
 
+inFolder=$(realpath ${inFolder})
+outFolder=$(realpath ${outFolder})
+
 #I/O checks of input folder
 if [[ ! "$inFolder" == *"$INPUT_BASE_PATH"* ]]; then
     inFolder=$INPUT_BASE_PATH"/"$inFolder
-    echo "Input folder path set outside ${INPUT_BASE_PATH}. Changed to ${inFolder}"
+    echo "Input folder path set outside ${INPUT_BASE_PATH}! Please, choose input files below this path."
+    exit 0
 fi
 
 if [ ! -d "$inFolder" ]; then
@@ -119,11 +125,16 @@ fi
 #I/O checks of output folder
 if [[ ! "$outFolder" == *"$OUTPUT_BASE_PATH"* ]]; then
     outFolder=$OUTPUT_BASE_PATH"/"$outFolder
-    echo "Output folder path set outside ${OUTPUT_BASE_PATH}. Changed to ${outFolder}"
+    echo "Output folder path set outside ${OUTPUT_BASE_PATH}! Please, choose output path inside this directory"
+    exit 0
 fi
 
 if [ ! -d "$outFolder" ]; then
     mkdir $outFolder
+    if [ $? -ne 0 ]; then
+        echo "Failed to create output directory. Exiting"
+        exit 0
+    fi
     echo "Directory ${outFolder} did not exist, created now!"
 fi
 
@@ -145,9 +156,8 @@ do
     outMergedFile="${outFolder}/Merge_${campaign}_${runNumber}.root"
 
     #Count number of files == nJobs
-    path=$inFolder'/data*'$runNumber'*'
-    listOfFiles=($(ls $path))
-    nFiles=${#listOfFiles[@]}
+    inputFilesRegex=$inFolder'/data*'$runNumber'*'
+    nFiles=($(ls -1 $inputFilesRegex | wc -l))
 
     if [ $nFiles -eq 0 ]; then
         echo "No files found for run ${runNumber} in folder ${inFolder}!"
@@ -173,6 +183,10 @@ do
 
     if [ ! -d $HTCfolder ]; then
         mkdir $HTCfolder
+        if [ $? -ne 0 ]; then
+            echo "Failed to create condor files directory. Exiting"
+            exit 0
+        fi
         echo "Directory ${HTCfolder} did not exist, created now!"
     fi
 
@@ -180,72 +194,75 @@ do
 
     outFile_base="${outFolder}/output_${campaign}_run${runNumber}_Job"
 
-    #Cycle on files
-    jobCounter=0
-    for file in "${listOfFiles[@]}"; do
-        jobCounter=$((jobCounter+1))
-        jobFilename="${HTCfolder}/runShoeInBatch_${campaign}_${runNumber}_${jobCounter}.sh"
-        jobFilename_base=${jobFilename::-3}
+    #Create executable
+    # - par[1] = process Id -> condor $(Process) variable + 1
+    # - par[2] = input file full path
+    #
+    # The exectuable launches SHOE on a file of the current run and returns the output file
+    jobExec="${HTCfolder}/runShoeInBatch_${campaign}_${runNumber}.sh"
+    jobExec_base=${jobExec::-3}
 
-        outFile="${outFile_base}${jobCounter}.root"
-
-        # Create executable file for job
-        cat <<EOF > $jobFilename
+    # Create executable file for jobs
+    cat <<EOF > $jobExec
 #!/bin/bash
 
 SCRATCH="\$(pwd)"
-outFile_temp="\${SCRATCH}/temp_${campaign}_run${runNumber}_Job${jobCounter}.root"
+outFile_temp="\${SCRATCH}/temp_${campaign}_run${runNumber}_Job\${1}.root"
 
 source /opt/exp_software/foot/root_shoe_foot.sh 
 source ${SHOE_PATH}/build/setupFOOT.sh
 cd ${SHOE_PATH}/build/Reconstruction
 
-../bin/DecodeGlb -in ${file} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -subfile
-retVal=\$?
-if [ \$retVal -eq 0 ]; then
+../bin/DecodeGlb -in \${2} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -subfile
+
+if [ \$? -eq 0 ]; then
     out_list=(\$(ls \${SCRATCH}/*.root))
     if [ ! -f \${outFile_temp} ]; then
         outFile_temp=\${out_list[0]}
     fi
     
-    if [ $jobCounter -eq 1 ]; then
+    if [ \${1} -eq 1 ]; then
         rootcp \${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
     fi
     rootrm \${outFile_temp}:runinfo
     outFile=\${outFile_temp/temp/output}
     mv \${outFile_temp} ${outFolder}/\$(basename \${outFile})
 else
-    echo "Unexpected error in processing of file ${file}"
+    echo "Unexpected error in processing of file \${2}"
 fi
 EOF
 
-        # Create submit file for job
-        filename_sub="${HTCfolder}/submitShoe_${campaign}_${runNumber}_${jobCounter}.sub"
+    # Create submit file for jobs and submit them to one single cluster for all input files
+    # This submission calls the above executable once per input file thorugh the "queue" command
+    filename_sub="${HTCfolder}/submitShoe_${campaign}_${runNumber}.sub"
 
-        cat <<EOF > $filename_sub
-executable            = ${jobFilename}
-arguments             = \$(ClusterID) \$(ProcId)
-error                 = ${jobFilename_base}.err
-output                = ${jobFilename_base}.out
-log                   = ${jobFilename_base}.log
-max_retries           = 5
-+JobFlavour           = "longlunch"
-queue
+    cat <<EOF > $filename_sub
+plusone = \$(Process) + 1
+FileNum = \$INT(plusone,%d)
+
+executable            = ${jobExec}
+arguments             = \$(FileNum) \$(inputFileName)
+error                 = ${jobExec_base}_Job\$(FileNum).err
+output                = ${jobExec_base}_Job\$(FileNum).out
+log                   = ${jobExec_base}_Job\$(FileNum).log
+
+queue inputFileName from (
+$(ls -1 $inputFilesRegex)
+)
 EOF
 
-        # Submit job
-        chmod 754 ${jobFilename}
-        condor_submit -spool ${filename_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 &
-    done
+    # Submit all jobs for current run
+    chmod 754 ${jobExec}
+    condor_submit -spool ${filename_sub}
 
     #Merge files if requested!!
     if [[ $mergeFilesOpt -eq 1 ]]; then
         ##Create merge job -> merge all single output files in the correct order
         echo "Creating job for file merging!"
-        mergeJobFileName="${HTCfolder}/MergeFiles_${campaign}_${runNumber}.sh"
-        mergeJobFileName_base=${mergeJobFileName::-3}
+        mergeJobExec="${HTCfolder}/MergeFiles_${campaign}_${runNumber}.sh"
+        mergeJobExec_base=${mergeJobExec::-3}
 
-        cat <<EOF > $mergeJobFileName
+        cat <<EOF > $mergeJobExec
 #!/bin/bash
 
 source /opt/exp_software/foot/root_shoe_foot.sh
@@ -265,8 +282,8 @@ while true; do
         if [ ! -f ${outFile_base}${nFiles}.root ]; then
             base="${outFile_base}${nFiles}"
             out_list=(\$(ls \${base}*))
-            if [ \${#out_list[@]} -neq 1 ]; then
-                echo "Unexpected error in processing of run ${runNumber}: wrong number of output files (1) after processing"
+            if [ \${#out_list[@]} -ne 1 ]; then
+                echo "Unexpected error in processing of run ${runNumber}: wrong number of output files after processing"
             else
                 outFile_temp=\${out_list[0]}
                 suffix=\$(cut -c \$((\${#base}+1))-\${#outFile_temp} <<< \${outFile_temp})
@@ -279,34 +296,37 @@ while true; do
         command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
         LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
 
-        fileOut="Merge_${campaign}_${runNumber}\${suffix}}
+        fileOut="Merge_${campaign}_${runNumber}\${suffix}"
         mv \${SCRATCH}/Merge_temp.root ${outFolder}/\${fileOut}
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
 	else
-        echo "Processed \${nCompletedFiles}/${nFiles} files. Waiting.."
+        echo "${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nFiles} files. Waiting..."
 		sleep 20
 	fi
 done
 EOF
 
-        # Create submit file for merge job
+        # Create submit file for merge job, set to lower priority wrt file processing
         merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
-executable            = ${mergeJobFileName}
-arguments             = \$(ClusterID) \$(ProcId)
-error                 = ${mergeJobFileName_base}.err
-output                = ${mergeJobFileName_base}.out
-log                   = ${mergeJobFileName_base}.log
+executable            = ${mergeJobExec}
+error                 = ${mergeJobExec_base}.err
+output                = ${mergeJobExec_base}.out
+log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
-+JobFlavour           = "longlunch"
+priority              = -5
+
+periodic_hold = time() - jobstartdate > 7200
+periodic_hold_reason = "Merge of run ${runNumber} exceeded maximum runtime allowed, check presence of files in the output folder"
+
 queue
 EOF
 
         # Submit merge job
-        chmod 754 ${mergeJobFileName}
-        condor_submit -spool ${merge_sub} > ${outFolder}/HTCfiles/submit_log_${firstRun}_${lastRun}.txt 2>&1 &
+        chmod 754 ${mergeJobExec}
+        condor_submit -spool ${merge_sub}
         echo "Submitted jobs for run ${runNumber}"
         
         if [ ${runNumber} -eq ${lastRunNumber} ]; then

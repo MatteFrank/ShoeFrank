@@ -1045,9 +1045,13 @@ void TAGactKFitter::RecordTrackInfo( Track* track, string fitTrackName ) {
 			float recomass = recoMom_target.Mag()*sqrt(1 - pow(beta,2))/(beta*m_AMU);
 			// cout << "TOF::" << TOF << " "
 
-			h_RecoMass.at(0)->Fill( recomass );
+			h_RecoMass[0]->Fill( recomass );
+			h_pvsTOF[0]->Fill(TOF, recoMom_target.Mag());
 			if( shoeOutTrack->GetTwChargeZ() < 10 )
-				h_RecoMass.at( shoeOutTrack->GetTwChargeZ() )->Fill( recomass );
+			{
+				h_RecoMass[shoeOutTrack->GetTwChargeZ()]->Fill( recomass );
+				h_pvsTOF[shoeOutTrack->GetTwChargeZ()]->Fill(TOF, recoMom_target.Mag());
+			}
 		}
 		
 		//Fill residual and pull plots
@@ -1663,6 +1667,14 @@ void TAGactKFitter::CreateHistogram()	{
 	{
 		h_RecoMass.push_back( new TH1F(Form("h_RecoMass_Z%d",iZ), Form("h_RecoMass_Z%d;Mass reco [A.M.U.];Entries",iZ), 400, 0, 20) );
 		AddHistogram(h_RecoMass[h_RecoMass.size() - 1]);
+	}
+
+	h_pvsTOF.push_back(new TH2F("h_pvsTOF", "h_pvsTOF;TOF [ns];p [GeV/c]", 1000, 0, 25, 400, 0, 17));
+	AddHistogram(h_pvsTOF[0]);
+	for( int iZ = 1; iZ <= 9; ++iZ )
+	{
+		h_pvsTOF.push_back( new TH2F(Form("h_pvsTOF_Z%d", iZ), Form("h_pvsTOF_Z%d;TOF [ns];p [GeV/c]", iZ), 1000, 0, 25, 400, 0, 17) );
+		AddHistogram(h_pvsTOF[h_pvsTOF.size() - 1]);
 	}
 
 	h_TGprojVsThetaTot = new TH2D("TGproj_ThetaTot","TGproj_ThetaTot;X_proj [cm];Y_proj [cm]",400,-5,5,400,-5,5);

@@ -16,7 +16,7 @@
 
 const Float_t sigma = 0.68;
 std::map<TString, std::vector<TString> > mapNameRaw = {
-                                                      {"BM",   {"bmHitDistribution", "bmTrackTotNumber", "bmTrackNtotHitsxTrack"}},
+                                                      {"BM",   {"bmTrackTotNumber", "bmTrackNtotHitsxTrack"}},
                                                       {"VT",   {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
                                                       {"MSD",  {"msClusStripTot", "msTrackEvt", "msTrackClus"}},
                                                       {"TW",   {"twPointMap"}},
@@ -24,7 +24,7 @@ std::map<TString, std::vector<TString> > mapNameRaw = {
                                                       };
 
 std::map<TString, std::vector<TString> > mapNameMC = {
-                                                     {"BM",   {"bmHitDistribution", "bmTrackTotNumber", "bmTrackNtotHitsxTrack"}},
+                                                     {"BM",   {"bmTrackTotNumber", "bmTrackNtotHitsxTrack"}},
                                                      {"VT",   {"vtClusPixelTot", "vtTrackEvt", "vtTrackClus"}},
                                                      {"MSD",  {"msClusStripTot", "msTrackEvt", "msTrackClus"}},
                                                      {"TW",   {"twPointMap", "twdE_vs_Tof_LayerX_MCrec", "twdE_vs_Tof_LayerY_MCrec", "twZID_MCtrue_LayerX", "twZID_MCtrue_LayerY"}} ,

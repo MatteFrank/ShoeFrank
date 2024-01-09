@@ -27,9 +27,10 @@ NumberFiles: 1
 "./geomaps/GSI2021_MC/TAGdetector.geo": 100;200;201;202;400;401;402
 
 DetectorName: "VT"
-NumberFiles: 2
+NumberFiles: 3
 "./geomaps/GSI2021_MC/TAVTdetector.geo": -1
 "./config/GSI2021_MC/TAVTdetector.cfg": -1
+"./calib/GSI2021_MC/TAVTdetector.cal": -1
 
 DetectorName: "MSD"
 NumberFiles: 2

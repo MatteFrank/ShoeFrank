@@ -16,10 +16,14 @@
 
 #include "TAGaction.hxx"
 #include "TAGroot.hxx"
+#include "TAGcampaignManager.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGactTreeWriter.hxx"
+#include "TAGgeoTrafo.hxx"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
+#include "TAVTparMap.hxx"
 #include "TAVTntuHit.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAVTntuTrack.hxx"
@@ -34,6 +38,7 @@
 // main
 TAGcampaignManager* campManager  = 0x0;
 TAPXIactReader*     daqActReader = 0x0;
+TAGactTreeWriter*   outFile      = 0x0;
 
 TAVTactNtuCluster*  vtActClus    = 0x0;
 TAVTactNtuTrackF*   vtActTrck    = 0x0;
@@ -70,10 +75,10 @@ void FillMonopix(Int_t runNumber, Bool_t treeFlag = true, Bool_t trackFlag = fal
    vtActTrck->CreateHistogram();
    
    if (treeFlag) {
-      outFile->SetupElementBranch(mpNtu, "vtrh.");
-      outFile->SetupElementBranch(mpClus, "vtclus.");
+      outFile->SetupElementBranch(vtNtu, "vtrh.");
+      outFile->SetupElementBranch(vtClus, "vtclus.");
       if (trackFlag)
-         outFile->SetupElementBranch(mpTrck, "vttrack.");
+         outFile->SetupElementBranch(vtTrck, "vttrack.");
    }
 }
 
@@ -94,8 +99,8 @@ int main (int argc, char *argv[])  {
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
 
       if(strcmp(argv[i],"-help") == 0)  {
-         cout<<" DecodeMPix help:"<<endl;
-         cout<<" Ex: DecodeMPix -in ./128022 -out run128022.root -nev 20000 -exp PXI -run 1  "<<endl;
+         cout<<" DecodePix help:"<<endl;
+         cout<<" Ex: DecodePix -in ./128022 -out run128022.root -nev 20000 -exp PXI -run 1  "<<endl;
          cout<<" possible opts are:"<<endl;
          cout<<"      -in path/file  : [def=""] raw input file"<<endl;
          cout<<"      -out path/file : [def=*_Out.root] Root output file"<<endl;
@@ -140,9 +145,9 @@ int main (int argc, char *argv[])  {
    daqActReader->Open(in);
    
    tagr.AddRequiredItem(daqActReader);
-   tagr.AddRequiredItem(mpActClus);
+   tagr.AddRequiredItem(vtActClus);
    if (trackFlag)
-      tagr.AddRequiredItem(mpActTrck);
+      tagr.AddRequiredItem(vtActTrck);
    tagr.AddRequiredItem(outFile);
 
    tagr.Print();
@@ -151,9 +156,9 @@ int main (int argc, char *argv[])  {
 
    if (outFile->Open(outFileName.Data(), "RECREATE")) return 0;
    daqActReader->SetHistogramDir(outFile->File());
-   mpActClus->SetHistogramDir(outFile->File());
+   vtActClus->SetHistogramDir(outFile->File());
    if (trackFlag)
-      mpActTrck->SetHistogramDir(outFile->File());
+      vtActTrck->SetHistogramDir(outFile->File());
 
    cout<<" Beginning the Event Loop "<<endl;
    tagr.BeginEventLoop();
