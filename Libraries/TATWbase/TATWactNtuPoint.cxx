@@ -576,7 +576,13 @@ TATWpoint* TATWactNtuPoint::SetTWPoint(TATWntuPoint* pNtuPoint, Int_t layer1, TA
   point->SetChargeZ(hit1->GetChargeZ());
 
   // set point Tof
-  point->SetToF(hit1->GetToF());
+  if(fIsZmatch) {
+    point->SetToF(point->GetMeanTof());
+    // cout<<"Zmatch::"<<fIsZmatch<<" Tof::"<<point->GetToF()<<endl;
+  }  else {
+    point->SetToF(hit1->GetToF());
+    // cout<<"Zmatch::"<<fIsZmatch<<" Tof::"<<point->GetToF()<<endl;
+  }
 
   // set point main Eloss 
   point->SetMainEloss(hit1->GetEnergyLoss());
