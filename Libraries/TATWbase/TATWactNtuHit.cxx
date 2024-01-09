@@ -150,7 +150,7 @@ void TATWactNtuHit::CreateHistogram()
 
     for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
       
-      fpHisEloss_Z[ilayer].push_back( new TH1D(Form("twEloss_Z%d_lay%d",iZ,ilayer),Form("hEloss_%d_lay%d",iZ,ilayer),200,0.,100.) );
+      fpHisEloss_Z[ilayer].push_back( new TH1D(Form("twEloss_Z%d_%s",iZ,LayerName[(TLayer)ilayer].data()),Form("hEloss_%d_%s",iZ,LayerName[(TLayer)ilayer].data()),200,0.,100.) );
 
       AddHistogram(fpHisEloss_Z[ilayer][iZ-1]);
     }
