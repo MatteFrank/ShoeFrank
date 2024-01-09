@@ -242,7 +242,8 @@ void GlobalRecoAnaGSI::LoopEvent()
         // cout << abs(residual) << endl;
         bool residualCut = true;
         // bool residualCut = abs(residual) < 0.01;
-        bool chi2Cut = fGlbTrack->GetChi2() < 2;
+        // bool chi2Cut = fGlbTrack->GetChi2() < 2;
+        bool chi2Cut = fGlbTrack->GetPval() > 0.01;
 
         //// =================== RECO CHI2 cut
         if (chi2Cut && residualCut)
@@ -260,6 +261,27 @@ void GlobalRecoAnaGSI::LoopEvent()
         // // =================== Chi2 cuts + multitrack + NO TW in multitracks + n_tracks == n_twpoints
         if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
           MyReco("MChi2TWTngt");
+
+        //Check if the vertex of the interaction is inside the target or not
+        bool VTok = true;
+        float fVtVtxTolerance = .05;
+        for(int iVt = 0; iVt < myVtNtuVtx->GetVertexN(); ++iVt)
+        {
+          TAVTvertex* vt = myVtNtuVtx->GetVertex(iVt);
+          if( !vt->IsBmMatched() )
+            continue;
+
+          TVector3 vtPos = GetGeoTrafo()->FromGlobalToTGLocal( GetGeoTrafo()->FromVTLocalToGlobal( vt->GetPosition() ) ); //vertex position in TG frame
+          TVector3 tgSize = GetParGeoG()->GetTargetPar().Size;
+          if( TMath::Abs(vtPos.X()) > tgSize.X()/2 + fVtVtxTolerance || TMath::Abs(vtPos.Y()) > tgSize.Y()/2 + fVtVtxTolerance || TMath::Abs(vtPos.Z()) > tgSize.Z()/2 + fVtVtxTolerance)
+          {
+            VTok = false;
+            break;
+          }
+        }
+
+        if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN() && VTok)
+          MyReco("MChi2TWTngt_VTok");
 
         // // // =================== Chi2 cuts +  NO TW in multitracks
         // if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && hasSameTwPoint.at(it) == false)
@@ -372,6 +394,8 @@ void GlobalRecoAnaGSI::Booking()
 
   // chi2 + multitrack cuts on track  + no more tw points in tracks + n_glb= n_twpoints
   MyRecoBooking("MChi2TWTngt");
+
+  MyRecoBooking("MChi2TWTngt_VTok");
 
   // all tracks
   MyRecoBooking("reco");
