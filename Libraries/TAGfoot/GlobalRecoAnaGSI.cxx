@@ -1302,9 +1302,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
           for(int iGamma =0; iGamma<myMcNtuPart->GetTracksN(); ++iGamma)
           {
             TAMCpart* maybeGamma = myMcNtuPart->GetTrack(iGamma);
-            if( maybeGamma->GetMotherID() != Mid || iGamma == particle_ID )
-              continue;
-            else if( maybeGamma->GetFlukaID() == 7 )
+            if( maybeGamma->GetMotherID() == Mid && maybeGamma->GetFlukaID() == 7 )
             { //there is a gamma with same mother id!
               isParticleGood = true; //Particle comes from radiative decay! -> ok!
               break;
@@ -1428,9 +1426,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
           for(int iGamma =0; iGamma<myMcNtuPart->GetTracksN(); ++iGamma)
           {
             TAMCpart* maybeGamma = myMcNtuPart->GetTrack(iGamma);
-            if( maybeGamma->GetMotherID() != Mid || iGamma == particle_ID )
-              continue;
-            else if( maybeGamma->GetFlukaID() == 7 )
+            if( maybeGamma->GetMotherID() == Mid && maybeGamma->GetFlukaID() == 7 )
             { //there is a gamma with same mother id!
               isParticleGood = true; //Particle comes from radiative decay! -> ok!
               break;
