@@ -1294,9 +1294,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
       else //Check for radiative prompt decay in FLUKA!
       {
         TAMCpart* partMoth = myMcNtuPart->GetTrack(Mid); 
-        if(!partMoth)
-          continue;
-        if( partMoth->GetMotherID() == 0 && //if mother comes from primary
+        if( partMoth && partMoth->GetMotherID() == 0 && //if mother comes from primary
             partMoth->GetCharge() == particle->GetCharge() && //if Z and A are the same
             partMoth->GetBaryon() == particle->GetBaryon() &&
             (partMoth->GetInitPos() - particle->GetInitPos()).Mag() < .01) //if they are born <0.1 mm away
@@ -1306,7 +1304,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
             TAMCpart* maybeGamma = myMcNtuPart->GetTrack(iGamma);
             if( maybeGamma->GetMotherID() != Mid || iGamma == particle_ID )
               continue;
-            else if( maybeGamma->GetCharge() == 0 && maybeGamma->GetBaryon() == 0 )
+            else if( maybeGamma->GetFlukaID() == 7 )
             { //there is a gamma with same mother id!
               isParticleGood = true; //Particle comes from radiative decay! -> ok!
               break;
@@ -1422,9 +1420,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
       else //Check for radiative prompt decay in FLUKA!
       {
         TAMCpart* partMoth = myMcNtuPart->GetTrack(Mid); 
-        if(!partMoth)
-          continue;
-        if( partMoth->GetMotherID() == 0 && //if mother comes from primary
+        if( partMoth && partMoth->GetMotherID() == 0 && //if mother comes from primary
             partMoth->GetCharge() == particle->GetCharge() && //if Z and A are the same
             partMoth->GetBaryon() == particle->GetBaryon() &&
             (partMoth->GetInitPos() - particle->GetInitPos()).Mag() < .01) //if they are born <0.1 mm away
@@ -1434,7 +1430,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
             TAMCpart* maybeGamma = myMcNtuPart->GetTrack(iGamma);
             if( maybeGamma->GetMotherID() != Mid || iGamma == particle_ID )
               continue;
-            else if( maybeGamma->GetCharge() == 0 && maybeGamma->GetBaryon() == 0 )
+            else if( maybeGamma->GetFlukaID() == 7 )
             { //there is a gamma with same mother id!
               isParticleGood = true; //Particle comes from radiative decay! -> ok!
               break;
