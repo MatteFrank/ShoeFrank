@@ -1286,7 +1286,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
 
     if (
         (particle_ID == 0                      // if the particle is a primary OR
-         || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
+         || (Mid == 0 &&  Reg == target_region) // if the particle is a primary fragment born in the target
          ) &&
         particle->GetCharge() > 0 &&
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
@@ -1450,8 +1450,14 @@ void GlobalRecoAnaGSI::FragmentationStudies(string path, TAGtrack *fGlbTrack)
       path_ = path + "/" + to_string(charge) + "/reducedChi2";
       ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(chi2);
 
+      path_ = path + "/" + to_string(charge) + "/posvsreducedChi2";
+      ((TH2D *)gDirectory->Get(path_.c_str()))->Fill(initTWPosition,chi2);
+
       path_ = path + "/" + to_string(charge) + "/residual";
       ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(residual);
+
+      path_ = path + "/" + to_string(charge) + "/posvsres";
+      ((TH2D *)gDirectory->Get(path_.c_str()))->Fill(initTWPosition, residual);
 
       path_ = path + "/" + to_string(charge) + "/trackquality";
       ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(fGlbTrack->GetQuality());
@@ -1471,7 +1477,9 @@ void GlobalRecoAnaGSI::BookFragmentationStudies(string path)
     h = new TH1D("initposition_twpoint", "origin of the particle crossing TW for TW matched tracks; pos(Z) [cm]; events ", 3050, -105., 200.);
     h = new TH1D("initposition_mostfrequent", "origin of the most frequent particle of track; pos(Z) [cm]; events ", 3050, -105., 200.);
     h = new TH1D("reducedChi2", "\\Chi^2_{reduced} \\, for \\, every \\, track ; value", 400,0,20);
+    h2 = new TH2D("posvsreducedChi2", "particle origin vs \\$Chi^2_{reduced}\\$ for every track ; pos(Z) [cm]; \\Chi^2_{reduced}", 100, -105., 200., 20, 0, 20);
     h = new TH1D("residual", "worst residual for every track fit - meas", 1000, -0.1,0.1);
+    h2 = new TH2D("posvsres", "particle origin vs worst residual for every track fit ; pos(Z) [cm]; res [cm] ", 100, -105., 200., 200, -0.1, 0.1);
     h = new TH1D("trackquality", "Track quality", 11, 0,1.1);
     gDirectory->cd("..");
   }
