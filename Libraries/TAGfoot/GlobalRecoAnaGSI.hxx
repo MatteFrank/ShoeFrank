@@ -45,6 +45,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
   Int_t fRegFirstCAcrys;
   Int_t fRegLastCAcrys;
 
+  Float_t fVtVtxTolerance = 0.05;
+
   public:
   GlobalRecoAnaGSI(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t nTotEv);
   ~GlobalRecoAnaGSI();
