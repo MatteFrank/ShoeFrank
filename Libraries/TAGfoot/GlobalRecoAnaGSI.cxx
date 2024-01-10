@@ -1284,10 +1284,40 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
 
+    bool isParticleGood = false;
+    if( particle_ID == 0 ) //primary -> ok!
+      isParticleGood = true;
+    else if( Reg == target_region ) //born in target
+    {
+      if( Mid == 0 ) //born from primary -> ok!
+        isParticleGood = true;
+      else //Check for radiative prompt decay in FLUKA!
+      {
+        TAMCpart* partMoth = myMcNtuPart->GetTrack(Mid); 
+        if( partMoth->GetMotherID() == 0 && //if mother comes from primary
+            partMoth->GetCharge() == particle->GetCharge() && //if Z and A are the same
+            partMoth->GetBaryon() == particle->GetBaryon() &&
+            (partMoth->GetInitPos() - particle->GetInitPos()).Mag() < .01) //if they are born <0.1 mm away
+        { //check if there is a gamma from same particle
+          for(int iGamma =0; iGamma<myMcNtuPart->GetTracksN(); ++iGamma)
+          {
+            TAMCpart* maybeGamma = myMcNtuPart->GetTrack(iGamma);
+            if( maybeGamma->GetMotherID() != Mid || iGamma == particle_ID )
+              continue;
+            else if( maybeGamma->GetCharge() == 0 && maybeGamma->GetBaryon() == 0 )
+            { //there is a gamma with same mother id!
+              isParticleGood = true; //Particle comes from radiative decay! -> ok!
+              break;
+            }
+          }
+        }
+      }
+    }
+
     if (
-        (particle_ID == 0                      // if the particle is a primary OR
-         || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
-         ) &&
+        (//particle_ID == 0                      // if the particle is a primary OR
+         //|| (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
+         isParticleGood) &&
         particle->GetCharge() > 0 &&
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
         // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
@@ -1350,40 +1380,70 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
   for (int iCross = 0; iCross < nCross; iCross++)
   {
     TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
-    TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
-    Int_t OldReg = cross->GetOldCrossN();
-    Int_t NewReg = cross->GetCrossN();
-    Double_t time_cross = cross->GetTime();
-    TVector3 mom_cross = cross->GetMomentum();                                                                            // retrieves P at crossing
-    Double32_t Mass = cross->GetMass();                                                                                   // retrieves Mass of track
-    Double_t ekin_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2) + pow(Mass, 2)) - Mass; // Kinetic energy at crossing
-    Double_t beta_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2)) / (ekin_cross + Mass);
-
     if ((cross->GetTrackIdx() - 1) != Id_part)
     { // if it is not the particle I want to check, continue the loop
       continue;
     }
+    // TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
+    Int_t OldReg = cross->GetOldCrossN();
+    Int_t NewReg = cross->GetCrossN();
+    // Double_t time_cross = cross->GetTime();
+    // TVector3 mom_cross = cross->GetMomentum();                                                                            // retrieves P at crossing
+    // Double32_t Mass = cross->GetMass();                                                                                   // retrieves Mass of track
+    // Double_t ekin_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2) + pow(Mass, 2)) - Mass; // Kinetic energy at crossing
+    // Double_t beta_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2)) / (ekin_cross + Mass);
+
 
     TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
     Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
     Int_t target_region = fRegTG;
     auto Mid = particle->GetMotherID();
-    double mass = particle->GetMass(); // Get TRpaid-1
+    // double mass = particle->GetMass(); // Get TRpaid-1
     auto Reg = particle->GetRegion();
-    auto finalPos = particle->GetFinalPos();
-    int baryon = particle->GetBaryon();
-    TVector3 initMom = particle->GetInitP();
-    double InitPmod = sqrt(pow(initMom(0), 2) + pow(initMom(1), 2) + pow(initMom(2), 2));
-    Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
-    Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
-    Float_t Ek_true = Ek_tr_tot / (double)baryon;                          // MeV/n
-    Float_t theta_tr = particle->GetInitP().Theta() * (180 / TMath::Pi()); // in deg
-    Float_t charge_tr = particle->GetCharge();
+    // auto finalPos = particle->GetFinalPos();
+    // int baryon = particle->GetBaryon();
+    // TVector3 initMom = particle->GetInitP();
+    // double InitPmod = sqrt(pow(initMom(0), 2) + pow(initMom(1), 2) + pow(initMom(2), 2));
+    // Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
+    // Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
+    // Float_t Ek_true = Ek_tr_tot / (double)baryon;                          // MeV/n
+    // Float_t theta_tr = particle->GetInitP().Theta() * (180 / TMath::Pi()); // in deg
+    // Float_t charge_tr = particle->GetCharge();
+
+    bool isParticleGood = false;
+    if( particle_ID == 0 ) //primary -> ok!
+      isParticleGood = true;
+    else if( Reg == target_region ) //born in target
+    {
+      if( Mid == 0 ) //born from primary -> ok!
+        isParticleGood = true;
+      else //Check for radiative prompt decay in FLUKA!
+      {
+        TAMCpart* partMoth = myMcNtuPart->GetTrack(Mid); 
+        if( partMoth->GetMotherID() == 0 && //if mother comes from primary
+            partMoth->GetCharge() == particle->GetCharge() && //if Z and A are the same
+            partMoth->GetBaryon() == particle->GetBaryon() &&
+            (partMoth->GetInitPos() - particle->GetInitPos()).Mag() < .01) //if they are born <0.1 mm away
+        { //check if there is a gamma from same particle
+          for(int iGamma =0; iGamma<myMcNtuPart->GetTracksN(); ++iGamma)
+          {
+            TAMCpart* maybeGamma = myMcNtuPart->GetTrack(iGamma);
+            if( maybeGamma->GetMotherID() != Mid || iGamma == particle_ID )
+              continue;
+            else if( maybeGamma->GetCharge() == 0 && maybeGamma->GetBaryon() == 0 )
+            { //there is a gamma with same mother id!
+              isParticleGood = true; //Particle comes from radiative decay! -> ok!
+              break;
+            }
+          }
+        }
+      }
+    }
 
     if (
-        (particle_ID == 0                      // if the particle is a primary OR
-         || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
-         ) &&
+        (//particle_ID == 0                      // if the particle is a primary OR
+         //|| (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
+         isParticleGood) &&
         particle->GetCharge() > 0 &&
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
         // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
