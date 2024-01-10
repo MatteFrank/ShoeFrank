@@ -38,10 +38,12 @@ GlobalRecoAnaGSI::GlobalRecoAnaGSI(TString expName, Int_t runNumber, TString fil
   ntracks = 0;
   recoEvents = 0;
   trueEvents = 0;
+  istrueEvent = false;
   fFlagMC = isMC;
   purity_cut = 0.51;
   clean_cut = 1.;
   nTotEv = innTotEv;
+  
 
   outfile = fileNameout;
 
@@ -275,7 +277,6 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     if (fFlagMC)
     {
-    
     //Increment the number of track clones found in the event
       for( auto itZ : m_nClone ) //Loop on Z_true
       {
@@ -289,6 +290,9 @@ void GlobalRecoAnaGSI::LoopEvent()
       // MCParticleStudies();
       //***** loop on every TAMCparticle:
       FillMCPartYields(); // N_ref
+      if (istrueEvent)
+        trueEvents ++;
+      istrueEvent = false;
     }
 
     ++currEvent;
@@ -1296,8 +1300,10 @@ void GlobalRecoAnaGSI::FillMCPartYields()
       Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
       if (charge_tr > 0 && charge_tr <= fPrimaryCharge){
         FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
-        trueEvents++;
+        istrueEvent = istrueEvent || true;
       }
+
+      
 
       Th_BM = -999;
       P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
