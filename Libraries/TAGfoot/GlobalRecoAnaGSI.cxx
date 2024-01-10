@@ -1294,6 +1294,8 @@ void GlobalRecoAnaGSI::FillMCPartYields()
       else //Check for radiative prompt decay in FLUKA!
       {
         TAMCpart* partMoth = myMcNtuPart->GetTrack(Mid); 
+        if(!partMoth)
+          continue;
         if( partMoth->GetMotherID() == 0 && //if mother comes from primary
             partMoth->GetCharge() == particle->GetCharge() && //if Z and A are the same
             partMoth->GetBaryon() == particle->GetBaryon() &&
@@ -1420,6 +1422,8 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
       else //Check for radiative prompt decay in FLUKA!
       {
         TAMCpart* partMoth = myMcNtuPart->GetTrack(Mid); 
+        if(!partMoth)
+          continue;
         if( partMoth->GetMotherID() == 0 && //if mother comes from primary
             partMoth->GetCharge() == particle->GetCharge() && //if Z and A are the same
             partMoth->GetBaryon() == particle->GetBaryon() &&
