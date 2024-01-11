@@ -12,8 +12,9 @@ NumberFiles: 1
 "./geomaps/CNAO2023/TADIdetector.geo": 5956; 6092; 6094; 6117; 6306; 6308; 6309; 6310;
 
 DetectorName: "ST"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/CNAO2023/TASTdetector.geo": -1
+"./config/CNAO2023/TASTdetector.map": -1
 "./config/CNAO2023/TASTdetector.cfg": -1
 "./config/CNAO2023/WDChannelMap.map": -1
 "./calib/CNAO2023/WDpar.cal": -1;

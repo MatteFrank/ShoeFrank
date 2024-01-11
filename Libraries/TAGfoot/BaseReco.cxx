@@ -79,6 +79,7 @@ BaseReco::BaseReco(TString expName, Int_t runNumber, TString fileNameIn, TString
    fpParCalTw(0x0),
    fpParCalCa(0x0),
    fpParGeoCa(0x0),
+   fpParConfSt(0x0),
    fpParConfBm(0x0),
    fpParConfVtx(0x0),
    fpParConfIt(0x0),
@@ -272,7 +273,7 @@ void BaseReco::AddFriendTree(TString fileName, TString treeName)
 void BaseReco::BeforeEventLoop()
 {
    GlobalSettings();
-   
+
    ReadParFiles();
    
    CampaignChecks();
@@ -538,6 +539,7 @@ void BaseReco::ReadParFiles()
    // initialise par files for start counter
    if (TAGrecoManager::GetPar()->IncludeST() || TAGrecoManager::GetPar()->IncludeTW() || TAGrecoManager::GetPar()->IncludeCA()) {
 
+
      fpParGeoSt = new TAGparaDsc(new TASTparGeo());
      TASTparGeo* parGeo = (TASTparGeo*)fpParGeoSt->Object();
      TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TASTparGeo"), fRunNumber);
@@ -546,9 +548,14 @@ void BaseReco::ReadParFiles()
       if(!fFlagMC) {
          fpParMapSt = new TAGparaDsc(new TASTparMap());
          TASTparMap* parMapSt = (TASTparMap*) fpParMapSt->Object();
-         parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
-         parMapSt->FromFile(parFileName);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TASTparGeo"), fRunNumber,0);
+	 parMapSt->FromFile(parFileName);
 
+	 fpParConfSt = new TAGparaDsc(new TASTparConf());
+	 TASTparConf* parConf = (TASTparConf*)fpParConfSt->Object();
+	 parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
+	 parConf->FromFile(parFileName.Data());
+	 
          fpParMapTw = new TAGparaDsc(new TATWparMap());
          TATWparMap* parMap = (TATWparMap*)fpParMapTw->Object();
          parFileName = fCampManager->GetCurMapFile(FootBaseName("TATWparGeo"), fRunNumber);
@@ -556,7 +563,7 @@ void BaseReco::ReadParFiles()
 
          fpParMapWD = new TAGparaDsc(new TAWDparMap());
          TAWDparMap* parMapWD = (TAWDparMap*)fpParMapWD->Object();
-         parFileName = fCampManager->GetCurMapFile(FootBaseName("TASTparGeo"), fRunNumber);
+         parFileName = fCampManager->GetCurMapFile(FootBaseName("TASTparGeo"), fRunNumber,1);
          parMapWD->FromFile(parFileName.Data());
 
          fpParTimeWD = new TAGparaDsc(new TAWDparTime());

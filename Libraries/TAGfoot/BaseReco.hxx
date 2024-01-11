@@ -49,6 +49,7 @@
 #include "TATWparCal.hxx"
 #include "TACAparCal.hxx"
 
+#include "TASTparConf.hxx"
 #include "TABMparConf.hxx"
 #include "TAVTparConf.hxx"
 #include "TAITparConf.hxx"
@@ -395,6 +396,7 @@ protected:
    TAGparaDsc*           fpParCalTw;      ///< TW calibration parameter
    TAGparaDsc*           fpParCalCa;      ///< CAL calibration parameter
 
+   TAGparaDsc*           fpParConfSt;     ///< ST configuration parameter
    TAGparaDsc*           fpParConfBm;     ///< BM configuration parameter
    TAGparaDsc*           fpParConfVtx;    ///< VTX configuration parameter
    TAGparaDsc*           fpParConfIt;     ///< ITR configuration parameter

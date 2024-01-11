@@ -8,10 +8,10 @@ NumberFiles: 1
 "./geomaps/CNAO2021/FOOT.geo": 400; 2000; 7000;
 
 DetectorName: "ST"
-NumberFiles: 4
-"./geomaps/CNAO2021/TASTdetector.geo": -1
-"./config/CNAO2021/TASTdetector.cfg": -1
-"./config/CNAO2021/WDChannelMap.map": -1
+NumberFiles: 5
+"./geomaps/CNAO2023/TASTdetector.geo": -1
+"./config/CNAO2023/TASTdetector.map": -1
+"./config/CNAO2023/TASTdetector.cfg": -1
 "./calib/CNAO2021/WDpar.cal": -1;
 
 DetectorName: "TG"

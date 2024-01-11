@@ -9,9 +9,8 @@ NumberFiles: 2
 "./geomaps/197Au_MC/FOOT.reg": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/197Au_MC/TASTdetector.geo": -1
-"./config/197Au_MC/TASTdetector.cfg": -1
 
 DetectorName: "TG"
 NumberFiles: 1

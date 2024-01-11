@@ -94,6 +94,7 @@ void RecoRaw::CreateRawAction()
       fpDatRawTw      = new TAGdataDsc(new TATWntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       
+
       if (!fgStdAloneFlag) {
          TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
          TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
@@ -108,7 +109,7 @@ void RecoRaw::CreateRawAction()
 
       const Char_t* name = FootActionDscName("TAGactWDreader");
       fActWdRaw  = new TAGactWDreader(name, fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
-                                      fpParTimeWD, fpParMapCa, fgStdAloneFlag);
+                                      fpParTimeWD, fpParMapCa, fpParConfSt, fgStdAloneFlag);
       if (fgStdAloneFlag)
          fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
@@ -123,6 +124,7 @@ void RecoRaw::CreateRawAction()
       if (fFlagHisto)
          fActNtuHitSt->CreateHistogram();
    }
+
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       fpDatRawBm = new TAGdataDsc(new TABMntuRaw());

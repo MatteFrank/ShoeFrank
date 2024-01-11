@@ -41,8 +41,8 @@ class TATWparConf : public TAGparTools
 
    Bool_t    FromFile(const TString& name);
 
-   void      Clear(Option_t* opt="");
-   void      ToStream(ostream& os = cout, Option_t* option = "") const;
+   virtual void      Clear(Option_t* opt="");
+   virtual void      ToStream(ostream& os = cout, Option_t* option = "") const;
 
 private:
    TString   fkDefaultParName;   ///< default parconf file name ("./config/TATWdetector.cfg")

@@ -13,9 +13,8 @@ NumberFiles: 1
 "./geomaps/HE_MC/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/HE_MC/TASTdetector.geo": -1
-"./config/HE_MC/TASTdetector.cfg": -1
 
 DetectorName: "BM"
 NumberFiles: 3

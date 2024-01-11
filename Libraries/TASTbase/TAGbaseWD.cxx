@@ -13,6 +13,9 @@
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
+#include "TVirtualFFT.h"
+#include "TSpectrum.h"
+
 
 /*!
   \class TAGbaseWD
@@ -20,8 +23,8 @@
 */
 
 
-#define FIRSTVALIDSAMPLE 5
-#define NSIDESAMPLES 30
+
+
 
 ClassImp(TAGbaseWD);
 
@@ -66,6 +69,7 @@ TAGbaseWD::TAGbaseWD(TWaveformContainer *W)
   fRiseTime = -999.;
 
   fSidebandValues.insert(fSidebandValues.end(), W->GetVectA().begin()+FIRSTVALIDSAMPLE, W->GetVectA().begin()+NSIDESAMPLES);
+  
 
   
 }
@@ -371,3 +375,158 @@ double TAGbaseWD::ComputeRiseTime(TWaveformContainer *w)
   
   return tup-tlow;
 }
+
+
+
+
+void TAGbaseWD::ComputeFFT(vector<double> &amp, vector<double> &re, vector<double> &im, vector<double> &mag){
+
+  int n = amp.size();
+  double vre, vim,vmag;
+  re.assign(n,0);
+  im.assign(n,0);
+  mag.assign(n,0);
+
+  //*get the fft transform
+  TVirtualFFT *fft = TVirtualFFT::FFT(1, &n, "R2C EX K");
+  fft->SetPoints(&amp[0]);
+  fft->Transform();
+  for(int i=0;i<n/2+1;i++){
+    fft->GetPointComplex(i, vre, vim);
+    vmag = sqrt(vre*vre+vim*vim); 
+    re.at(i)  = vre;
+    im.at(i)  = vim;
+    mag.at(i) = vmag;
+  }
+
+  delete fft;
+  
+  return;
+  
+}
+
+
+
+void TAGbaseWD::ComputeInverseFFT(vector<double> &amp, vector<double> re, vector<double> im){
+
+
+  int n = re.size();
+   
+  double vre, vim,vmag;
+
+  amp.assign(n,0);
+  TVirtualFFT *fft_back = TVirtualFFT::FFT(1, &n, "C2R EX K");
+
+  for(int i=0;i<n/2+1;i++){
+    TComplex c(re[i],im[i]);
+    fft_back->SetPointComplex(i, c);
+  }
+
+  fft_back->Transform();
+  
+  for(int i=0;i<n;i++){
+    vmag = fft_back->GetPointReal(i);
+    amp.at(i) = vmag/(double)n;
+  }
+
+
+  
+  delete fft_back;
+  return;
+  
+}
+
+
+void TAGbaseWD::FFTnotchFilter(vector<double> FreqCut, vector<double> &re, vector<double> &im){
+
+    
+  double freq=3.0;
+  int n = re.size();
+  double vre, vim, vmag;
+  
+  vector<int> icut;
+  for(int j=0;j<FreqCut.size();j++){
+    icut.push_back((int)(FreqCut.at(j)/(freq/(double)n)));
+  }
+ 
+  for(int i=0; i<n/2+1;i++){
+    if(find(icut.begin(),icut.end(),i)!=icut.end()){
+      int ii = (i>=30) ? i-30 : 0;
+      int iff = (i<=n/2+1) ? i+30 : n/2+1;
+      for(int j=ii;j<=iff;j++){
+	double sigma =1;
+	double fact = 1-TMath::Gaus(j-i, 0 ,sigma);
+	re[j]*=fact;
+	im[j]*=fact;
+      }
+    }
+  }
+   
+  return ;
+}
+
+
+
+
+
+void TAGbaseWD::FFTnotchFilterSmooth(vector<double> FreqCut, vector<double> &re, vector<double> &im){
+
+    
+
+  double freq=3.0;
+  int n = re.size();
+  double vre, vim, vmag;
+
+  vector<int> icut;
+  for(int j=0;j<FreqCut.size();j++){
+    icut.push_back((int)(FreqCut.at(j)/(freq/(double)n)));
+  }
+  
+  for(int i=0; i<n/2+1;i++){
+    if(find(icut.begin(),icut.end(),i)!=icut.end()){
+      double ii = (i-4<0) ? 0 : i-4;
+      double iff = (i+4>re.size()-1) ? re.size()-1  : i+4;
+      double mre = (re[iff]-re[ii])/(iff-ii);
+      double qre = re[ii]-mre*ii;
+      double mim = (im[iff]-im[ii])/(iff-ii);
+      double qim = im[ii]-mim*ii;
+      double vmag1 = sqrt(re[ii]*re[ii]+im[ii]*im[ii]);
+      double vmag2 = sqrt(re[iff]*re[iff]+im[iff]*im[iff]);
+      double mmag = (vmag2-vmag1)/(double)(iff-ii);
+      double qmag = vmag1-mmag*ii;
+      for(int j=ii;j<=iff;j++){
+	double vmag = sqrt(re[j]*re[j]+im[j]*im[j]);
+	re[j]*=(mmag*j+qmag)/vmag;
+	im[j]*=(mmag*j+qmag)/vmag;
+      }
+
+    }
+  }
+  
+  return ;
+}
+
+
+
+
+void TAGbaseWD::LowPassFilterFFT(vector<double>& re, vector<double>& im, double cutoffFrequency, int order) {
+
+   
+    int n = re.size();
+
+    // Applica il filtro passa-basso
+    for (int i = 0; i < n/2; ++i) {
+      double Frequency = 3.0*i/(double)n;
+      double filterResponse = 1.0 / sqrt(1.0 + pow(Frequency /cutoffFrequency, 2 * order));
+      double vre = re[i];
+      double vim = im[i];
+      
+      
+      re[i] = vre*(filterResponse);
+      // re[re.size()-1-i] = vre*(filterResponse);
+      im[i] = vim*(filterResponse);
+      //im[im.size()-1-i] = vim*(filterResponse);
+    }
+}
+
+
