@@ -1292,7 +1292,6 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         isParticleGood = CheckRadiativeDecayChain(particle);
     }
 
-
     if ( isParticleGood )
     {
       // I want to measure the angle of emission of this particle:  i need to loop again the regions
@@ -1313,7 +1312,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         if ((cross2->GetTrackIdx() - 1) == particle_ID)
         {
           // particle exit from target
-          if (NewReg == fRegAirBeforeTW && OldReg == fRegTG)
+          if (NewReg2 == fRegAirBeforeTW && OldReg2 == fRegTG)
           {
             P_cross = cross2->GetMomentum();
           }
