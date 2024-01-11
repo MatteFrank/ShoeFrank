@@ -100,7 +100,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
 
    char line[200];
    int crysId;  // Id of the crystal
-   double Q_corrp0, Q_corrp1, Q_corrp2, Q_corrp3, Q_corrp4, Q_corrp5, Q_corrp6, Q_corrp7, Q_corrp8, Q_corrp9, Q_corrp10, Q_corrp11, Q_corrp12;
+   double Q_corrp0, Q_corrp1, Q_corrp2, Q_corrp3, Q_corrp4, Q_corrp5, Q_corrp6, Q_corrp7, Q_corrp8, Q_corrp9, Q_corrp10, Q_corrp11;
 
    // parameters for energy equilisation with Z
    fin_Q.getline(line, 200, '\n');
@@ -116,11 +116,13 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
          continue;
       }
 
-      sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &Q_corrp0, &Q_corrp1, &Q_corrp2, &Q_corrp3, &Q_corrp4, &Q_corrp5, &Q_corrp6, &Q_corrp7, &Q_corrp8, &Q_corrp9, &Q_corrp10, &Q_corrp11);
+      sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &Q_corrp0, &Q_corrp1, &Q_corrp2, &Q_corrp3, &Q_corrp4, &Q_corrp5, &Q_corrp6, &Q_corrp7, &Q_corrp8);
       if(FootDebugLevel(1))
-         Info("LoadEnergyCalibrationMap()"," %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n", Q_corrp0, Q_corrp1, Q_corrp2, Q_corrp3, Q_corrp4, Q_corrp5, Q_corrp6, Q_corrp7, Q_corrp8, Q_corrp9, Q_corrp10, Q_corrp11);
+         Info("LoadEnergyCalibrationMap()"," %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n", Q_corrp0, Q_corrp1, Q_corrp2, Q_corrp3, Q_corrp4, Q_corrp5, Q_corrp6, Q_corrp7, Q_corrp8);
 
-      fCalibEnergyMap = ADC2EnergyParam_t{Q_corrp0, Q_corrp1, Q_corrp2, Q_corrp3, Q_corrp4, Q_corrp5, Q_corrp6, Q_corrp7, Q_corrp8, Q_corrp9, Q_corrp10, Q_corrp11};
+      // fCalibEnergyMap = ADC2EnergyParam_t{Q_corrp0, Q_corrp1, Q_corrp2, Q_corrp3, Q_corrp4, Q_corrp5, Q_corrp6, Q_corrp7, Q_corrp8, Q_corrp9, Q_corrp10, Q_corrp11};
+      fCalibEnergyMap = ADC2EnergyParam_t{Q_corrp0, Q_corrp1, Q_corrp2, Q_corrp3, Q_corrp4, Q_corrp5, Q_corrp6, Q_corrp7, Q_corrp8};
+
    }
 
    // parameters for energy calibration p0, p1 and p2
@@ -139,11 +141,11 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
          continue;
       }
 
-      sscanf(line, "%d %lf",&crysId, &Q_corrp12);
+      sscanf(line, "%d %lf %lf %lf",&crysId, &Q_corrp9, &Q_corrp10, &Q_corrp11);
       if(FootDebugLevel(1))
-         Info("LoadEnergyCalibrationMap()","cryId %d %.3f\n",crysId, Q_corrp12);
+         Info("LoadEnergyCalibrationMap()","cryId %d %.3f %.3f %.3f\n",crysId, Q_corrp9, Q_corrp10, Q_corrp11);
 
-      fCalibChargeMap[crysId] = Q_corrp12;
+      fCalibEnergyMapCry[crysId] = ADC2EnergyParamCry_t{Q_corrp9, Q_corrp10, Q_corrp11};
    }
 
    fin_Q.close();
@@ -208,12 +210,6 @@ Double_t TACAcalibrationMap::GetADC2EnergyParam(UInt_t parId)
       return fCalibEnergyMap.p7;
    else if (parId == 8)
       return fCalibEnergyMap.p8;
-   else if (parId == 9)
-      return fCalibEnergyMap.p9;
-   else if (parId == 10)
-      return fCalibEnergyMap.p10;
-   else if (parId == 11)
-      return fCalibEnergyMap.p11;
    else {
       Error("GetADC2EnergyParam()", "No parameter %d found", parId);
       return -99999;
@@ -244,6 +240,25 @@ Double_t TACAcalibrationMap::GetADC2TempParam(Int_t cryId, UInt_t parId)
       return fCalibTempMapCry[cryId].p2;
    else {
       Error("GetADC2TemperatureParam()", "No parameter %d found", parId);
+      return -99999;
+   }
+}
+
+//_______________________________________________
+//! Get temperature calibration parameter
+//!
+//! \param[in] cryId crystal id
+//! \param[in] parId parameter id
+Double_t TACAcalibrationMap::GetADC2EnergyParamCry(Int_t cryId, UInt_t parId)
+{
+   if (parId == 0)
+      return fCalibTempMapCry[cryId].p0;
+   else if (parId == 1)
+      return fCalibTempMapCry[cryId].p1;
+   else if (parId == 2)
+      return fCalibTempMapCry[cryId].p2;
+   else {
+      Error("GetADC2EnergyParamCry()", "No parameter %d found", parId);
       return -99999;
    }
 }

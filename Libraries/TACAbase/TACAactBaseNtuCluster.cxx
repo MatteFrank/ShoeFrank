@@ -80,7 +80,7 @@ void TACAactBaseNtuCluster::CreateHistogram()
 
    fpHisChargeTwMatch = new TH1F("caChargeTwMatch", "Calorimeter - Total charge per TW matched cluster", 2500, 0., 7);
    AddHistogram(fpHisChargeTwMatch);
-   
+
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
    fpHisClusMapTwMatch = new TH2F("fpHisClusMapTwMatch", "Calorimeter - clusters map matech with TW",
                            100, -pGeoMap->GetCaloSize()[0]/2., pGeoMap->GetCaloSize()[0]/2.,
@@ -90,7 +90,7 @@ void TACAactBaseNtuCluster::CreateHistogram()
    fpHisClusMapTwMatch->SetMarkerColor(1);
    fpHisClusMapTwMatch->SetStats(kFALSE);
    AddHistogram(fpHisClusMapTwMatch);
-   
+
    fpHisClusMap = new TH2F("caClusMap", "Calorimeter - clusters map",
                            100, -pGeoMap->GetCaloSize()[0]/2., pGeoMap->GetCaloSize()[0]/2.,
                            100, -pGeoMap->GetCaloSize()[1]/2., pGeoMap->GetCaloSize()[1]/2.);
@@ -379,7 +379,7 @@ void TACAactBaseNtuCluster::CalibrateEnergy(TACAcluster* cluster)
       Float_t charge = hit->GetCharge();
       Double_t energy = 0;
       if (fTwPointZ != -1)
-         energy = GetEnergy(charge, fTwPointZ);
+         energy = GetEnergy(charge, fTwPointZ, crysId);
       else
          energy = charge;
 
@@ -412,33 +412,33 @@ Double_t TACAactBaseNtuCluster::GetZCurve(Double_t p0, Double_t  p1, Double_t p2
 //! \param[in] rawenergy raw energy
 //! \param[in] crysId crystal id
 //! \param[in] z particle charge (atomic number)
-Double_t TACAactBaseNtuCluster::GetEnergy(Double_t rawenergy, Int_t z)
+Double_t TACAactBaseNtuCluster::GetEnergy(Double_t rawenergy, Int_t z, Int_t  crysId)
 {
    TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
-   Double_t p0 = p_parcal->GetADC2EnergyParam(0);
-   Double_t p1 = p_parcal->GetADC2EnergyParam(1);
-   Double_t p2 = p_parcal->GetADC2EnergyParam(2);
+   Double_t c0 = p_parcal->GetADC2EnergyParam(0);
+   Double_t c1 = p_parcal->GetADC2EnergyParam(1);
+   Double_t c2 = p_parcal->GetADC2EnergyParam(2);
 
-   Double_t p3 = p_parcal->GetADC2EnergyParam(3);
-   Double_t p4 = p_parcal->GetADC2EnergyParam(4);
-   Double_t p5 = p_parcal->GetADC2EnergyParam(5);
+   Double_t c3 = p_parcal->GetADC2EnergyParam(3);
+   Double_t c4 = p_parcal->GetADC2EnergyParam(4);
+   Double_t c5 = p_parcal->GetADC2EnergyParam(5);
 
-   Double_t p6 = p_parcal->GetADC2EnergyParam(6);
-   Double_t p7 = p_parcal->GetADC2EnergyParam(7);
-   Double_t p8 = p_parcal->GetADC2EnergyParam(8);
+   Double_t c6 = p_parcal->GetADC2EnergyParam(6);
+   Double_t c7 = p_parcal->GetADC2EnergyParam(7);
+   Double_t c8 = p_parcal->GetADC2EnergyParam(8);
 
-   Double_t p9 = p_parcal->GetADC2EnergyParam(9);
-   Double_t p10 = p_parcal->GetADC2EnergyParam(10);
-   Double_t p11 = p_parcal->GetADC2EnergyParam(11);
+   Double_t p0 = p_parcal->GetADC2EnergyParamCry(crysId, 0);
+   Double_t p1 = p_parcal->GetADC2EnergyParamCry(crysId, 1);
+   Double_t p2 = p_parcal->GetADC2EnergyParamCry(crysId, 2);
 
-   p0 = p0*GetZCurve(p3,p4,p5,z);
-   p1 = p1*GetZCurve(p6,p7,p8,z);
-   p2 = p2*GetZCurve(p9,p10,p11,z);
+   p0 = p0*GetZCurve(c0,c1,c2,z);
+   p1 = p1*GetZCurve(c3,c4,c5,z);
+   p2 = p2*GetZCurve(c6,c7,c8,z);
 
    return (-p1 * rawenergy - sqrt( p1 * p1 * rawenergy * rawenergy - 4 * rawenergy * ( rawenergy * p2 - p0 ) ))/(2 * ( rawenergy * p2 - p0 ));
 
- 
+
 
    //calibration AValetti's analysis 22.12.22
    //return energy from ADC
