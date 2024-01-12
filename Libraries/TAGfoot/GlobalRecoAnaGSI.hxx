@@ -88,6 +88,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void MyReco(string path_name);
 
   vector<bool> CheckTwPointInMoreTracks();     // check if more than one glb track has the same tw point
+  vector<bool> CheckTwParticleOrigin();
   void RecoGlbTrkLoopSetVariables();           // Set Reco variables, to be done for each glbal track
   void MCGlbTrkLoopSetVariables();             // Set MC variables, to be done for each glbal track
   void MCParticleStudies();                    // Loop on MC particles
@@ -177,6 +178,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
     vector<vector<Int_t>> vecVtZMC;  // vector of all MC charge of the 4 vt hits
     vector<vector<Int_t>> vecMsdZMC; // vector of all MC charge of the 6 msd clus
     vector<bool> hasSameTwPoint;     //vector of bool of tracks with the same tw point in the same event
+    vector<bool> isParticleBorninTG;
 
     std::map<Int_t, Int_t> m_twId;
 

@@ -113,8 +113,17 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     m_nClone.clear();
 
+    //studies concerning tw points
     hasSameTwPoint.clear();
     hasSameTwPoint = CheckTwPointInMoreTracks();
+
+    // study of origin of the particle crossing the tw for every track (MC)
+    if (fFlagMC)
+      {
+        isParticleBorninTG.clear();
+        isParticleBorninTG = CheckTwParticleOrigin();
+      }
+
     Int_t nt_TW = 0; // number of reconstructed tracks with TW point for every event
     for (int it = 0; it < nt; it++)
     {
@@ -191,6 +200,7 @@ void GlobalRecoAnaGSI::LoopEvent()
           }
         }
 
+
         // // // =================== VTX MATCH
         // if (VTMatch == true)
         //   MyReco("VT");
@@ -264,7 +274,6 @@ void GlobalRecoAnaGSI::LoopEvent()
         // // =================== Chi2 cuts + multitrack + NO TW in multitracks + n_tracks == n_twpoints
         if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
           MyReco("MChi2TWTngt");
-
         //Check if the vertex of the interaction is inside the target or not
         bool VTok = true;
         float fVtVtxTolerance = .05;
@@ -289,7 +298,13 @@ void GlobalRecoAnaGSI::LoopEvent()
         // // // =================== Chi2 cuts +  NO TW in multitracks
         // if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && hasSameTwPoint.at(it) == false)
         //   MyReco("ChiTWT");
-    
+
+        if (fFlagMC)
+    {
+      if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN() && VTok && isParticleBorninTG.at(it) == true)
+        MyReco("MChi2TWTngt_originOk");
+    }
+
         //// ===================ALL TRACKS
         MyReco("reco");
 
@@ -401,6 +416,7 @@ void GlobalRecoAnaGSI::Booking()
   MyRecoBooking("MChi2TWTngt");
 
   MyRecoBooking("MChi2TWTngt_VTok");
+  MyRecoBooking("MChi2TWTngt_originOk");
 
   // all tracks
   MyRecoBooking("reco");
@@ -1054,6 +1070,36 @@ vector<bool> GlobalRecoAnaGSI::CheckTwPointInMoreTracks()
   }
 
   return hasSameTWid;
+}
+vector<bool> GlobalRecoAnaGSI::CheckTwParticleOrigin()
+{
+  vector<Double_t> trackpos;         // vector of the twpoint origin of every track
+  vector<bool> hasOrigininTG;     // if a track has a twpoint particle originated far from the TG
+  Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
+
+  for (int it = 0; it < nt; it++)
+  {
+    fGlbTrack = myGlb->GetTrack(it);
+    if (fGlbTrack->HasTwPoint())
+    {
+      auto twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
+      auto initTWPosition = GetNtuMcTrk()->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
+
+      trackpos.push_back(initTWPosition);
+      continue;
+    }
+    else
+      trackpos.push_back(-99);
+}
+
+for (auto alltrackpos : trackpos)
+{
+  if (alltrackpos > -(GetParGeoG()->GetTargetPar().Size.Z() / 2) && alltrackpos < (GetParGeoG()->GetTargetPar().Size.Z() / 2))
+    hasOrigininTG.push_back(1);
+  else
+    hasOrigininTG.push_back(0);
+}
+return hasOrigininTG;
 }
 
 void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
