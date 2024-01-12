@@ -817,12 +817,17 @@ void GlobalRecoAnaGSI::FillYieldMC(string folderName, Int_t Z_true, Int_t Z_meas
   }
 }
 
-void GlobalRecoAnaGSI::MigMatrixPlots(string folderName, Int_t Z_true, Int_t Z_meas, Double_t Th_true, Double_t Th_meas, bool enableMigMatr = false)
+void GlobalRecoAnaGSI::MigMatrixPlots(string folderName, Int_t Z_true, Int_t Z_meas, Double_t Th_true, Double_t Th_meas, Double_t Beta_true=-9999, Double_t Beta_meas=-9999, bool enableMigMatr = false)
 {
   if (enableMigMatr)
   {
     string path = folderName + "/migMatrix_Z";
     ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Z_meas, Z_true);
+
+    if (Beta_true > -9999){
+      path = folderName + "/migMatrix_beta";
+      ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Beta_meas, Beta_true);
+    }
 
     path = folderName + "/migMatrix_Ztrack_vs_Ztw";
     ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Z_true_TW, Z_true);
@@ -834,6 +839,12 @@ void GlobalRecoAnaGSI::MigMatrixPlots(string folderName, Int_t Z_true, Int_t Z_m
     {
       path = folderName + "/Z_" + to_string(int(Z_true) - 1) + "#" + to_string(int(Z_true) - 0.5) + "_" + to_string(int(Z_true) + 0.5) + "/migMatrix_theta_Z_" + to_string(Z_true - 1);
       ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Th_meas, Th_true);
+
+      if (Beta_true > -9999)
+      {
+        path = folderName + "/Z_" + to_string(int(Z_true) - 1) + "#" + to_string(int(Z_true) - 0.5) + "_" + to_string(int(Z_true) + 0.5) + "/migMatrix_beta_Z_" + to_string(Z_true - 1);
+        ((TH2D *)gDirectory->Get(path.c_str()))->Fill(Beta_meas, Beta_true);
+      }
 
       for (int i = 0; i < th_nbin; i++)
       {
@@ -860,6 +871,9 @@ void GlobalRecoAnaGSI::BookMigMatrix(string path, bool enableMigMatr)
   if (enableMigMatr)
   {
     h2 = new TH2D("migMatrix_Z", "migMatrix_Z;  Z_{reco}; Z_{true}", 8, 0.5, 8.5, 8, 0.5, 8.5);
+    const Int_t nBins = 3;
+    Double_t Bins[nBins+1] = {0., 0.3, 0.9, 1.};
+    h2 = new TH2D("migMatrix_beta", "migMatrix_beta;  \\beta_{reco}; \\beto_{true}", nBins, Bins, nBins, Bins );
     h2 = new TH2D("migMatrix_Ztrack_vs_Ztw", "migMatrix_Ztrack_vs_Ztw; Z_{TW}; Z_{track}", 8, 0.5, 8.5, 8, 0.5, 8.5);
     h2 = new TH2D("migMatrix_theta", "migMatrix_theta; \\theta_{reco} ; \\theta_{true} ", 20, 0., 12., 20, 0., 12.);
   }
@@ -876,6 +890,12 @@ void GlobalRecoAnaGSI::BookMigMatrix(string path, bool enableMigMatr)
       name = "migMatrix_theta_Z_" + to_string(iz - 1);
       string title = "migMatrix_theta_Z=" + to_string(iz) + "; #theta_{reco}; #theta_{true};";
       h2 = new TH2D(name.c_str(), title.c_str(), 20, 0., 12., 20, 0., 12.);
+
+      const Int_t nBins = 3;
+      Double_t Bins[nBins + 1] = {0., 0.3, 0.9, 1.};
+      name = "migMatrix_beta_Z_" + to_string(iz - 1);
+      title = "migMatrix_beta_Z=" + to_string(iz) + "; \\beta_{reco}; \\beta_{true};";
+      h2 = new TH2D(name.c_str(), title.c_str(), nBins, Bins, nBins, Bins);
     }
     gDirectory->cd("..");
   }
@@ -1342,7 +1362,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     if( particle->GetCharge() > 0 
         && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
         && (Beta_true > 0.3 && Beta_true < 0.9)     // with reasonable beta
-        && (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it creaches the TW (one of the bar of the two layers - region from 81 to 120)
+        && (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it reaches the TW (one of the bar of the two layers - region from 81 to 120)
     {
       if( particle_ID == 0 ) //primary -> ok!
         isParticleGood = true;
@@ -1481,7 +1501,7 @@ void GlobalRecoAnaGSI::ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTr
   }
 }
 
-void GlobalRecoAnaGSI::FragmentationStudies(string path, TAGtrack *fGlbTrack)
+void GlobalRecoAnaGSI::QualityPlots(string path, TAGtrack *fGlbTrack)
 {
   for (int charge = 1; charge < 9; charge++)
   {
@@ -1517,7 +1537,7 @@ void GlobalRecoAnaGSI::FragmentationStudies(string path, TAGtrack *fGlbTrack)
   }
 }
 
-void GlobalRecoAnaGSI::BookFragmentationStudies(string path)
+void GlobalRecoAnaGSI::BookQualityPlots(string path)
 { // study of Z=8
   gDirectory->mkdir(path.c_str());
   gDirectory->cd(path.c_str());
@@ -1570,19 +1590,19 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
         name = "yield-N_"+path_name+"GoodReco";
         FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true);                              // N_GoodReco MC
         name = "MigMatrix" + path_name + "GoodReco";
-        MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+        MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, Beta_true, Beta_meas, true); // migration matrix plots
       }
     }
     if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
     {
       name = "yield-N_" + path_name + "AllReco";
-      FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
+      FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM,  true); // N_AllReco MC
     }
 
     if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
     {
       name = "MigMatrix" + path_name;
-      MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
+      MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, Beta_true, Beta_meas, true); // migration matrix plots
     }
 
     if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9))
@@ -1604,7 +1624,7 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
     }
 
   name = "Z_" + path_name + "_match";
-  FragmentationStudies(name, fGlbTrack);
+  QualityPlots(name, fGlbTrack);
   }
 }
 
@@ -1630,7 +1650,7 @@ void GlobalRecoAnaGSI::MyRecoBooking(string path_name)
     name = "MigMatrix" + path_name + "GoodReco";
     BookMigMatrix(name, true);
     name = "Z_" + path_name + "_match";
-    BookFragmentationStudies(name);
+    BookQualityPlots(name);
   }
 }
 
