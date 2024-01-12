@@ -94,24 +94,45 @@ void GlobalRecoAnaGSI::LoopEvent()
     if (currEvent % frequency == 0 || FootDebugLevel(1))
       cout << "Load Event: " << currEvent << endl;
 
-    int evtcutstatus = ApplyEvtCuts();
-    if (evtcutstatus)
+
+    //////////////////////////////MC studies for reference Set
+    m_nClone.clear();
+
+    if (fFlagMC)
+    {
+      // Increment the number of track clones found in the event
+      for (auto itZ : m_nClone) // Loop on Z_true
+      {
+        for (auto itMCid : itZ.second) // Loop on MCtrackID
+        {
+          if (itMCid.second > 1)
+            n_clones[itZ.first] += itMCid.second - 1;
+        }
+      }
+
+      // MCParticleStudies();
+      //***** loop on every TAMCparticle:
+      FillMCPartYields(); // N_ref
+      if (istrueEvent) trueEvents++; // events to be considered in luminosity of MC reference Cross Section
+      istrueEvent = false;
+    }
+
+    //////////////////////////////Reconstruction Studies
+    int evtcutstatus = ApplyEvtCuts(); //requirements to be considered for events to be analyzed beyond
+    if (evtcutstatus == false)
     {
       ++currEvent;
       continue;
     }
+    recoEvents ++; //events to be considered in luminosity of Reco Cross Section
 
     Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
-    if (nt > 0)
-      recoEvents++; //! modifica
 
     // TAWDntuTrigger *wdTrig = 0x0;
     // if (fFlagMC == false)
     // {
     //   wdTrig = (TAWDntuTrigger *)fpNtuWDtrigInfo->GenerateObject(); // trigger from hardware
     // }
-
-    m_nClone.clear();
 
     //studies concerning tw points
     hasSameTwPoint.clear();
@@ -312,25 +333,7 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     } //********* end loop on global tracks ****************
 
-    if (fFlagMC)
-    {
-    //Increment the number of track clones found in the event
-      for( auto itZ : m_nClone ) //Loop on Z_true
-      {
-        for( auto itMCid : itZ.second ) //Loop on MCtrackID
-        {
-          if (itMCid.second > 1)
-            n_clones[ itZ.first ] += itMCid.second - 1;
-        }
-      }
 
-      // MCParticleStudies();
-      //***** loop on every TAMCparticle:
-      FillMCPartYields(); // N_ref
-      if (istrueEvent)
-        trueEvents ++;
-      istrueEvent = false;
-    }
 
     ++currEvent;
   } // end of loop event
@@ -430,15 +433,21 @@ void GlobalRecoAnaGSI::Booking()
   return;
 }
 
-int GlobalRecoAnaGSI::ApplyEvtCuts() // up to now, check if there is only one track in BM
+int GlobalRecoAnaGSI::ApplyEvtCuts() // requirements for a good event (to be considered for the analysis)
 {
   if (FootDebugLevel(1))
     cout << "GlobalRecoAnaGSI::ApplyEvtCuts start" << endl;
+  bool ok_status = true;
+  
+  if (!fFlagMC)
+    ok_status == !((TASTntuRaw *)gTAGroot->FindDataDsc(FootActionDscName("TASTntuRaw"))->Object())->GetSuperHit()->GetPileUp();  //if there is pileup in the SC
+  
+  if (myBMNtuTrk->GetTracksN() != 1) //if there is one track in the BM
+    ok_status &= false;
+  else
+    ok_status &= true;
 
-  if (myBMNtuTrk->GetTracksN() != 1)
-    return 1;
-
-  return 0;
+  return ok_status;
 }
 
 void GlobalRecoAnaGSI::FillMCGlbTrkYields()
@@ -735,13 +744,15 @@ void GlobalRecoAnaGSI::AfterEventLoop()
   if (fFlagMC == true)
   {
     luminosity_name = "luminosityMC";
+    h = new TH1D(luminosity_name.c_str(), "", 1, 0., 1.);
+    ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * trueEvents); // good event via MC
   }
-  else
-  { // real data
-    luminosity_name = "luminosityREAL";
-  }
+
+  // real data
+    luminosity_name = "luminosityReco";
   h = new TH1D(luminosity_name.c_str(), "", 1, 0., 1.);
-  ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * trueEvents); // recoEvents
+  ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * recoEvents); // good event via Reco
+
   cout << "Reconstructed events: " << recoEvents << endl;
   cout << "True events for the analysis: " << trueEvents << endl;
   cout << "Total input events: " << nTotEv << endl;
@@ -1338,6 +1349,12 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         isParticleGood = CheckRadiativeDecayChain(particle);
     }
 
+    //study to check if the event is good: if the primary crosses the TG
+    if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0 ){ //if it is a primary
+      if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
+        istrueEvent = istrueEvent || true;
+    }}
+
     if ( isParticleGood )
     {
       // I want to measure the angle of emission of this particle:  i need to loop again the regions
@@ -1368,7 +1385,6 @@ void GlobalRecoAnaGSI::FillMCPartYields()
       Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
       if (charge_tr > 0 && charge_tr <= fPrimaryCharge){
         FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
-        istrueEvent = istrueEvent || true;
       }
 
       Th_BM = -999;
