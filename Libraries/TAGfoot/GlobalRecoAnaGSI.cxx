@@ -275,8 +275,7 @@ void GlobalRecoAnaGSI::LoopEvent()
         if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
           MyReco("MChi2TWTngt");
         //Check if the vertex of the interaction is inside the target or not
-        bool VTok = true;
-        float fVtVtxTolerance = .05;
+        bool VTok = false;
         for(int iVt = 0; iVt < myVtNtuVtx->GetVertexN(); ++iVt)
         {
           TAVTvertex* vt = myVtNtuVtx->GetVertex(iVt);
@@ -284,10 +283,11 @@ void GlobalRecoAnaGSI::LoopEvent()
             continue;
 
           TVector3 vtPos = GetGeoTrafo()->FromGlobalToTGLocal( GetGeoTrafo()->FromVTLocalToGlobal( vt->GetPosition() ) ); //vertex position in TG frame
+          TVector3 vtPosErr = GetGeoTrafo()->VecFromGlobalToTGLocal( GetGeoTrafo()->VecFromVTLocalToGlobal( vt->GetPosError() ) ); //vertex position error in TG frame
           TVector3 tgSize = GetParGeoG()->GetTargetPar().Size;
-          if( TMath::Abs(vtPos.X()) > tgSize.X()/2 + fVtVtxTolerance || TMath::Abs(vtPos.Y()) > tgSize.Y()/2 + fVtVtxTolerance || TMath::Abs(vtPos.Z()) > tgSize.Z()/2 + fVtVtxTolerance)
+          if( TMath::Abs(vtPos.X()) < tgSize.X()/2 + vtPosErr.X() && TMath::Abs(vtPos.Y()) < tgSize.Y()/2 + vtPosErr.Y() && TMath::Abs(vtPos.Z()) < tgSize.Z()/2 + vtPosErr.Z() )
           {
-            VTok = false;
+            VTok = true;
             break;
           }
         }
