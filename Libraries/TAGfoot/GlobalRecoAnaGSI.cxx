@@ -1299,70 +1299,68 @@ void GlobalRecoAnaGSI::FillMCPartYields()
   {
     // region description
     TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
-    TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
+    // TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
     Int_t OldReg = cross->GetOldCrossN();
     Int_t NewReg = cross->GetCrossN();
-    Double_t time_cross = cross->GetTime();
-    TVector3 mom_cross = cross->GetMomentum();                                                                            // retrieves P at crossing
-    Double32_t Mass = cross->GetMass();                                                                                   // retrieves Mass of track
-    Double_t ekin_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2) + pow(Mass, 2)) - Mass; // Kinetic energy at crossing
-    Double_t beta_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2)) / (ekin_cross + Mass);
-
-    // if ((cross->GetTrackIdx() - 1) != Id_part)
-    // { // if it is not the particle I want to check, continue the loop
-    //   continue;
-    // }
+    // Double_t time_cross = cross->GetTime();
+    // TVector3 mom_cross = cross->GetMomentum();                                                                            // retrieves P at crossing
+    // Double32_t Mass = cross->GetMass();                                                                                   // retrieves Mass of track
+    // Double_t ekin_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2) + pow(Mass, 2)) - Mass; // Kinetic energy at crossing
+    // Double_t beta_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2)) / (ekin_cross + Mass);
 
     // particle description
     TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
     Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
-    Int_t target_region = fRegTG;
+    // Int_t target_region = fRegTG;
     auto Mid = particle->GetMotherID();
-    double mass = particle->GetMass(); // Get TRpaid-1
+    // double mass = particle->GetMass(); // Get TRpaid-1
     auto Reg = particle->GetRegion();
-    auto finalPos = particle->GetFinalPos();
-    int baryon = particle->GetBaryon();
-    TVector3 initMom = particle->GetInitP();
-    double InitPmod = sqrt(pow(initMom(0), 2) + pow(initMom(1), 2) + pow(initMom(2), 2));
-    Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
-    Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
-    Float_t Ek_true = Ek_tr_tot / (double)baryon;                           // MeV/n
-    Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
+    // auto finalPos = particle->GetFinalPos();
+    // int baryon = particle->GetBaryon();
+    // TVector3 initMom = particle->GetInitP();
+    // double InitPmod = sqrt(pow(initMom(0), 2) + pow(initMom(1), 2) + pow(initMom(2), 2));
+    // Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
+    // Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
+    // Float_t Ek_true = Ek_tr_tot / (double)baryon;                           // MeV/n
+    // Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
 
-    if (
-        (particle_ID == 0                      // if the particle is a primary OR
-         || (Mid == 0 &&  Reg == target_region) // if the particle is a primary fragment born in the target
-         ) &&
-        particle->GetCharge() > 0 &&
+    bool isParticleGood = false;
+    if( particle->GetCharge() > 0 &&
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
-        // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
-        // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-        (OldReg >= fRegFirstTWbar && OldReg <= fRegLastTWbar) && NewReg == fRegAirAfterTW
-        // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
-    )
+        (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
+    {
+      if( particle_ID == 0 ) //primary -> ok!
+        isParticleGood = true;
+      else if( Reg == fRegTG && Mid == 0 ) //born in target from primary
+          isParticleGood = true;
+      else //Check for radiative decay in FLUKA!
+        isParticleGood = CheckRadiativeDecayChain(particle);
+    }
+
+    if ( isParticleGood )
     {
       // I want to measure the angle of emission of this particle:  i need to loop again the regions
-      for (int iCross = 0; iCross < nCross; iCross++)
+      for (int iiCross = 0; iiCross < nCross; iiCross++)
       {
         // region description
-        TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
-        TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
-        Int_t OldReg = cross->GetOldCrossN();
-        Int_t NewReg = cross->GetCrossN();
+        TAMCregion *cross2 = pNtuReg->GetRegion(iiCross); // Gets the i-crossing
+        // TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
+        Int_t OldReg2 = cross2->GetOldCrossN();
+        Int_t NewReg2 = cross2->GetCrossN();
 
         // particle entering into target
-        if (NewReg == fRegTG && OldReg == fRegAirBeforeTW)
+        if (NewReg2 == fRegTG && OldReg2 == fRegAirBeforeTW)
         {
-          P_beforeTG = cross->GetMomentum();
+          P_beforeTG = cross2->GetMomentum();
         }
 
-        if ((cross->GetTrackIdx() - 1) == particle_ID)
+        if ((cross2->GetTrackIdx() - 1) == particle_ID)
         {
           // particle exit from target
-          if (NewReg == fRegAirBeforeTW && OldReg == fRegTG)
+          if (NewReg2 == fRegAirBeforeTW && OldReg2 == fRegTG)
           {
-            P_cross = cross->GetMomentum();
+            P_cross = cross2->GetMomentum();
           }
         }
       }
@@ -1372,8 +1370,6 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
         istrueEvent = istrueEvent || true;
       }
-
-      
 
       Th_BM = -999;
       P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
@@ -1396,48 +1392,35 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
   for (int iCross = 0; iCross < nCross; iCross++)
   {
     TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
-    TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
-    Int_t OldReg = cross->GetOldCrossN();
-    Int_t NewReg = cross->GetCrossN();
-    Double_t time_cross = cross->GetTime();
-    TVector3 mom_cross = cross->GetMomentum();                                                                            // retrieves P at crossing
-    Double32_t Mass = cross->GetMass();                                                                                   // retrieves Mass of track
-    Double_t ekin_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2) + pow(Mass, 2)) - Mass; // Kinetic energy at crossing
-    Double_t beta_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2)) / (ekin_cross + Mass);
-
     if ((cross->GetTrackIdx() - 1) != Id_part)
     { // if it is not the particle I want to check, continue the loop
       continue;
     }
 
+    Int_t OldReg = cross->GetOldCrossN();
+    Int_t NewReg = cross->GetCrossN();
+
     TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
     Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
-    Int_t target_region = fRegTG;
     auto Mid = particle->GetMotherID();
-    double mass = particle->GetMass(); // Get TRpaid-1
     auto Reg = particle->GetRegion();
-    auto finalPos = particle->GetFinalPos();
-    int baryon = particle->GetBaryon();
-    TVector3 initMom = particle->GetInitP();
-    double InitPmod = sqrt(pow(initMom(0), 2) + pow(initMom(1), 2) + pow(initMom(2), 2));
-    Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
-    Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
-    Float_t Ek_true = Ek_tr_tot / (double)baryon;                          // MeV/n
-    Float_t theta_tr = particle->GetInitP().Theta() * (180 / TMath::Pi()); // in deg
-    Float_t charge_tr = particle->GetCharge();
 
-    if (
-        (particle_ID == 0                      // if the particle is a primary OR
-         || (Mid == 0 && Reg == target_region) // if the particle is a primary fragment born in the target
-         ) &&
-        particle->GetCharge() > 0 &&
+    if( particle->GetCharge() > 0 &&
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
-        // Ek_true > 100 &&                           // with enough initial energy to go beyond the vtx    //! is it true?
-        // theta_tr <= 30. && // inside the angular acceptance of the vtxt   //!hard coded for GSI2021_MC
-        (OldReg >= fRegFirstTWbar && OldReg <= fRegLastTWbar) && NewReg == fRegAirAfterTW // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
-    )
-      return true;
+        (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
+    {
+      bool isParticleGood = false;
+      if( particle_ID == 0 ) //primary -> ok!
+        isParticleGood = true;
+      else if( Reg == fRegTG && Mid == 0) //born in target from primary
+        isParticleGood = true;
+      else //Check for radiative decay in FLUKA!
+        isParticleGood = CheckRadiativeDecayChain(particle);
+
+      return isParticleGood;
+    }
   }
+
   return false;
 }
 
@@ -1624,4 +1607,40 @@ void GlobalRecoAnaGSI::MyRecoBooking(string path_name)
     name = "Z_" + path_name + "_match";
     BookFragmentationStudies(name);
   }
+}
+
+
+Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(TAMCpart* part)
+{
+  TAMCpart* partMoth = myMcNtuPart->GetTrack( part->GetMotherID() );
+  if ( !partMoth )
+    return false;
+  
+  bool isGammaDecay = false;
+
+  if( partMoth->GetCharge() == part->GetCharge() && //if Z and A are the same
+      partMoth->GetBaryon() == part->GetBaryon() )
+  { //check if there is a gamma from same particle
+    for(int iGamma =0; iGamma<myMcNtuPart->GetTracksN(); ++iGamma)
+    {
+      TAMCpart* maybeGamma = myMcNtuPart->GetTrack(iGamma);
+      if( maybeGamma->GetMotherID() == part->GetMotherID() && maybeGamma->GetFlukaID() == 7 )
+      { //there is a gamma with same mother id!
+        isGammaDecay = true; //Particle comes from radiative decay! -> ok!
+        break;
+      }
+    }
+  }
+  else
+    return false;
+  
+  if( isGammaDecay )
+  {
+    if( partMoth->GetMotherID() == 0 && partMoth->GetRegion() == fRegTG ) // mother particle comes from primary and is born in target
+      return true;
+    else
+      return CheckRadiativeDecayChain(partMoth); //Check next step of chain
+  }
+  else
+    return false;
 }
