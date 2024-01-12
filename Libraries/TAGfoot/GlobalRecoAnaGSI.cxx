@@ -1282,7 +1282,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     bool isParticleGood = false;
     if( particle->GetCharge() > 0 &&
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
-        (OldReg >= fRegFirstTWbar && OldReg <= fRegLastTWbar) && NewReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
+        (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     {
       if( particle_ID == 0 ) //primary -> ok!
         isParticleGood = true;
@@ -1361,7 +1361,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
 
     if( particle->GetCharge() > 0 &&
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
-        (OldReg >= fRegFirstTWbar && OldReg <= fRegLastTWbar) && NewReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
+        (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     {
       bool isParticleGood = false;
       if( particle_ID == 0 ) //primary -> ok!
