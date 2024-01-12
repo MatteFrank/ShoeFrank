@@ -1276,7 +1276,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
           cout << "TOF mesurements: particle total time of flight=" << Tof_true << "  Beta_true=" << Beta_true << "  primary_tof=Tof_startmc=" << Tof_startmc << "  particle real mc tof=" << Tof_true - Tof_startmc << endl;
         }
       }
-
+      
       Th_true = P_true.Theta() * TMath::RadToDeg();
       if (P_beforeTG.X() == -999 || P_cross.X() == -999)
         Th_BM = -999;
@@ -1339,9 +1339,10 @@ void GlobalRecoAnaGSI::FillMCPartYields()
 
     bool isParticleGood = false;
     bool gammaDecayHappened = false;
-    if( particle->GetCharge() > 0 &&
-        particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
-        (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it creaches the TW (one of the bar of the two layers - region from 81 to 120)
+    if( particle->GetCharge() > 0 
+        && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
+        && (Beta_true > 0.3 && Beta_true < 0.9)     // with reasonable beta
+        && (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it creaches the TW (one of the bar of the two layers - region from 81 to 120)
     {
       if( particle_ID == 0 ) //primary -> ok!
         isParticleGood = true;
@@ -1425,9 +1426,10 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
     auto Mid = particle->GetMotherID();
     auto Reg = particle->GetRegion();
 
-    if( particle->GetCharge() > 0 &&
-        particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
-        (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
+    if( particle->GetCharge() > 0 
+        && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
+        && (Beta_true > 0.3 && Beta_true < 0.9) // with reasonable beta
+        && (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     {
       bool isParticleGood = false;
       if( particle_ID == 0 ) //primary -> ok!
@@ -1553,7 +1555,7 @@ void GlobalRecoAnaGSI::BookChargeStudies(string path)
 void GlobalRecoAnaGSI::MyReco(string path_name)
 {
   string name = "";
-  if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
+  if (Z_meas > 0. && Z_meas <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9))
   {
     name = "yield-N_" + path_name + "_Z_reco_Th_Reco";
     FillYieldReco(name, Z_meas, Th_recoBM); // all reconstructed tracks
@@ -1563,7 +1565,7 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
   {
     if (isGoodReco(TrkIdMC))
     {
-      if (Z_true > 0. && Z_true <= fPrimaryCharge)
+      if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
       { 
         name = "yield-N_"+path_name+"GoodReco";
         FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true);                              // N_GoodReco MC
@@ -1571,29 +1573,31 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
         MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
       }
     }
-    if (Z_true > 0. && Z_true <= fPrimaryCharge){
+    if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
+    {
       name = "yield-N_" + path_name + "AllReco";
       FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // N_AllReco MC
     }
 
-    if (Z_true > 0. && Z_true <= fPrimaryCharge){
+    if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
+    {
       name = "MigMatrix" + path_name;
       MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, true); // migration matrix plots
     }
 
-    if (Z_true > 0. && Z_true <= fPrimaryCharge)
+    if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9))
     {
       name = "yield-N_" + path_name + "_Z_true_Th_Reco";
-      FillYieldReco(name, Z_true, Th_recoBM); // all reconstructed tracks but with real Z
+      FillYieldReco(name, Z_true, Th_recoBM); // all reconstructed tracks but with true Z
     }
 
-    if (Z_meas > 0. && Z_meas <= fPrimaryCharge)
+    if (Z_meas > 0. && Z_meas <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9))
     {
       name = "yield-N_" + path_name + "_Z_meas_Th_True";
       FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks but with real theta
     }
 
-    if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true)
+    if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true && (Beta_meas > 0.3 && Beta_meas < 0.9))
     {
       name = "yield-N_" + path_name + "_Z_measEqualTrue_Th_True";
       FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
