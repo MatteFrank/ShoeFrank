@@ -86,7 +86,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookFragmentationStudies(string path);
   void MyRecoBooking(string path_name);
   void MyReco(string path_name);
-  Bool_t CheckRadiativeDecayChain(TAMCpart* part);
+  Bool_t CheckRadiativeDecayChain(TAMCpart* part, Int_t* part_ID);
 
   vector<bool> CheckTwPointInMoreTracks();     // check if more than one glb track has the same tw point
   void RecoGlbTrkLoopSetVariables();           // Set Reco variables, to be done for each glbal track
