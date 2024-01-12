@@ -1335,18 +1335,20 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     // Float_t Ek_true = Ek_tr_tot / (double)baryon;                           // MeV/n
     // Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
+    Int_t oldPid = particle_ID;
 
     bool isParticleGood = false;
+    bool gammaDecayHappened = false;
     if( particle->GetCharge() > 0 &&
         particle->GetCharge() <= fPrimaryCharge && // with reasonable charge
-        (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
+        (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it creaches the TW (one of the bar of the two layers - region from 81 to 120)
     {
       if( particle_ID == 0 ) //primary -> ok!
         isParticleGood = true;
       else if( Reg == fRegTG && Mid == 0 ) //born in target from primary
           isParticleGood = true;
       else //Check for radiative decay in FLUKA!
-        isParticleGood = CheckRadiativeDecayChain(particle);
+        isParticleGood = CheckRadiativeDecayChain(particle, &particle_ID);
     }
 
     //study to check if the event is good: if the primary crosses the TG
@@ -1355,6 +1357,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         istrueEvent = istrueEvent || true;
     }}
 
+    TVector3 P_crossOld(-999,-999,-999);
     if ( isParticleGood )
     {
       // I want to measure the angle of emission of this particle:  i need to loop again the regions
@@ -1380,6 +1383,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
             P_cross = cross2->GetMomentum();
           }
         }
+
       }
 
       Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
@@ -1431,7 +1435,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
       else if( Reg == fRegTG && Mid == 0) //born in target from primary
         isParticleGood = true;
       else //Check for radiative decay in FLUKA!
-        isParticleGood = CheckRadiativeDecayChain(particle);
+        isParticleGood = CheckRadiativeDecayChain(particle, &particle_ID);
 
       return isParticleGood;
     }
@@ -1439,6 +1443,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
 
   return false;
 }
+
 
 void GlobalRecoAnaGSI::ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTrack)
 {
@@ -1626,7 +1631,8 @@ void GlobalRecoAnaGSI::MyRecoBooking(string path_name)
 }
 
 
-Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(TAMCpart* part)
+
+Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(TAMCpart* part, Int_t* part_ID)
 {
   TAMCpart* partMoth = myMcNtuPart->GetTrack( part->GetMotherID() );
   if ( !partMoth )
@@ -1653,9 +1659,16 @@ Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(TAMCpart* part)
   if( isGammaDecay )
   {
     if( partMoth->GetMotherID() == 0 && partMoth->GetRegion() == fRegTG ) // mother particle comes from primary and is born in target
+    {
+      TVector3 posMoth = GetGeoTrafo()->FromGlobalToTGLocal( partMoth->GetFinalPos() ); // final position of mother particle in TG frame
+      TVector3 tgSize = GetParGeoG()->GetTargetPar().Size;
+      if( TMath::Abs(posMoth.X()) > tgSize.X()/2 || TMath::Abs(posMoth.Y()) > tgSize.Y()/2 || TMath::Abs(posMoth.Z()) > tgSize.Z()/2 )
+        *part_ID = part->GetMotherID(); //if mother particle "dies" outside target, change particle ID in output for P calculation
+
       return true;
+    }
     else
-      return CheckRadiativeDecayChain(partMoth); //Check next step of chain
+      return CheckRadiativeDecayChain(partMoth, part_ID); //Check next step of chain
   }
   else
     return false;
