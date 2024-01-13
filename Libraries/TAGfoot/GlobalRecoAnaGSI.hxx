@@ -86,7 +86,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookFragmentationStudies(string path);
   void MyRecoBooking(string path_name);
   void MyReco(string path_name);
-  Bool_t CheckRadiativeDecayChain(TAMCpart* part, Int_t* part_ID);
+  Bool_t CheckRadiativeDecayChain(Int_t partID, std::vector<Int_t>* partIDvec);
+  Bool_t CheckFragIn1stTWlayer(Int_t partID, std::vector<Int_t>* partIDvec);
 
   vector<bool> CheckTwPointInMoreTracks();     // check if more than one glb track has the same tw point
   vector<bool> CheckTwParticleOrigin();
@@ -162,8 +163,10 @@ class GlobalRecoAnaGSI : public RecoRaw {
     Double_t Ek_tot;
     Double_t M_true;
     Double_t Tof_true;
+    Double_t Tof_true2;
     Double_t Tof_startmc;
     Double_t Beta_true;
+    Double_t Beta_true2;
     TVector3 P_true;
     Double_t Th_true;
     Double_t Th_BM;

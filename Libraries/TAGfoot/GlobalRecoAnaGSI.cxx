@@ -140,10 +140,10 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     // study of origin of the particle crossing the tw for every track (MC)
     if (fFlagMC)
-      {
-        isParticleBorninTG.clear();
-        isParticleBorninTG = CheckTwParticleOrigin();
-      }
+    {
+      isParticleBorninTG.clear();
+      isParticleBorninTG = CheckTwParticleOrigin();
+    }
 
     Int_t nt_TW = 0; // number of reconstructed tracks with TW point for every event
     for (int it = 0; it < nt; it++)
@@ -788,7 +788,6 @@ void GlobalRecoAnaGSI::FillYieldReco(string folderName, Int_t Z, Double_t Th)
       path = folderName + "/Z_" + to_string(Z - 1) + "#" + to_string(Z - 0.5) + "_" + to_string(Z + 0.5) + "/theta_" + to_string(i) + "#" + to_string(theta_binning[i][0]) + "_" + to_string(theta_binning[i][1]) + "/theta_";
       // cout << path << endl;
       ((TH1D *)gDirectory->Get(path.c_str()))->Fill(Th);
-      string path_matrix = folderName + "/Z_" + to_string(Z - 1) + "#" + to_string(Z - 0.5) + "_" + to_string(Z + 0.5) + "/theta_" + to_string(i) + "#" + to_string(theta_binning[i][0]) + "_" + to_string(theta_binning[i][1]) + "/migMatrix_Z";
     }
   }
 }
@@ -1123,6 +1122,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   Tof_startmc = -1.;
   initTWPosition = -999;
   Beta_true = -1.;
+  Beta_true2 = -1.;
   P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
   P_beforeTG.SetXYZ(-999., -999., -999.);
   TrkIdMC = fGlbTrack->GetMcMainTrackId(); // associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity)
@@ -1207,11 +1207,34 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
     vecTwTrkId.push_back(twpoint->GetMcTrackIdx(i));
   }
   TrkIdMC_TW = twpoint->GetMcTrackIdx(0); // associo l'IdMC alla particella che ha attraversato il TW --> in questo modo bypasso il problema di frammentazione secondaria
+  // cout << "Twids::";
+  // for( int itw = 0;itw<twpoint->GetMcTracksN(); itw++ )
+  //   cout << twpoint->GetMcTrackIdx(itw) << " ";
+  // cout << endl;
   //  for (int i = 0; i < fGlbTrack->GetPointsN(); i++){
   //    auto twpoint = fGlbTrack->GetPoint(i);
   //    cout << twpoint -> GetDevName() << endl;
   //    cout<< "tw points mc: " << twpoint ->GetMcTracksN() << endl;
   //  }
+
+  //Check for gamma decay!
+  bool isGammaDecay = false;
+  std::vector<Int_t> particleID_vec;
+  if(TrkIdMC_TW == TrkIdMC)
+  {
+    particleID_vec.push_back(TrkIdMC);
+    isGammaDecay = true; //Set to true just to make sure
+  }
+  else
+    isGammaDecay = CheckRadiativeDecayChain(TrkIdMC_TW, &particleID_vec);
+  
+  if( !isGammaDecay )
+    CheckFragIn1stTWlayer(TrkIdMC_TW, &particleID_vec);
+
+  // cout << "MainMCid::" << TrkIdMC << "\tTWid::" << TrkIdMC_TW << endl;
+  // for(auto it: particleID_vec)
+  //   cout << it << "\t";
+  // cout << endl;
 
   if (TrkIdMC != -1)
   {
@@ -1237,7 +1260,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
             P_beforeTG = fpNtuMcReg->GetMomentum();
         }
 
-        if ((fpNtuMcReg->GetTrackIdx() - 1) == TrkIdMC)
+        if( std::find(particleID_vec.begin(), particleID_vec.end(), fpNtuMcReg->GetTrackIdx() - 1) != particleID_vec.end() )
         {
           // particle exit from target
           if (fpNtuMcReg->GetCrossN() == fRegAirBeforeTW && fpNtuMcReg->GetOldCrossN() == fRegTG)
@@ -1246,7 +1269,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
             Tof_startmc = fpNtuMcReg->GetTime() * fpFootGeo->SecToNs();
           }
           // particle crossing in the first TW layer
-          if (fpNtuMcReg->GetCrossN() <= fRegLastTWbar && fpNtuMcReg->GetCrossN() >= fRegFirstTWbarLay0)
+          if ((fpNtuMcReg->GetCrossN() >= fRegFirstTWbar && fpNtuMcReg->GetCrossN() <= fRegLastTWbar) && fpNtuMcReg->GetOldCrossN() == fRegAirAfterTW)
           {
             Tof_true = fpNtuMcReg->GetTime() * fpFootGeo->SecToNs();
             Beta_true = fpNtuMcReg->GetMomentum().Mag() / sqrt(fpNtuMcReg->GetMass() * fpNtuMcReg->GetMass() + fpNtuMcReg->GetMomentum().Mag() * fpNtuMcReg->GetMomentum().Mag());
@@ -1260,6 +1283,15 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
             Ek_cross_calo = sqrt(P_cross_calo * P_cross_calo + M_cross_calo * M_cross_calo) - M_cross_calo;
             Ek_cross_calo = Ek_cross_calo / M_cross_calo;
             // }
+          }
+        }
+
+        if( fpNtuMcReg->GetTrackIdx() - 1 == TrkIdMC )
+        {
+          if (fpNtuMcReg->GetCrossN() <= fRegLastTWbar && fpNtuMcReg->GetCrossN() >= fRegFirstTWbarLay0)
+          {
+            Tof_true2 = fpNtuMcReg->GetTime() * fpFootGeo->SecToNs();
+            Beta_true2 = fpNtuMcReg->GetMomentum().Mag() / sqrt(fpNtuMcReg->GetMass() * fpNtuMcReg->GetMass() + fpNtuMcReg->GetMomentum().Mag() * fpNtuMcReg->GetMomentum().Mag());
           }
         }
       }
@@ -1335,10 +1367,15 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     // Float_t Ek_true = Ek_tr_tot / (double)baryon;                           // MeV/n
     // Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
-    Int_t oldPid = particle_ID;
+
+    //study to check if the event is good: if the primary crosses the TG
+    if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0 ){ //if it is a primary
+      if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
+        istrueEvent = true;
+    }}
 
     bool isParticleGood = false;
-    bool gammaDecayHappened = false;
+    std::vector<Int_t> particleID_vec;
     if( particle->GetCharge() > 0 
         && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
         && (Beta_true > 0.3 && Beta_true < 0.9)     // with reasonable beta
@@ -1349,18 +1386,14 @@ void GlobalRecoAnaGSI::FillMCPartYields()
       else if( Reg == fRegTG && Mid == 0 ) //born in target from primary
           isParticleGood = true;
       else //Check for radiative decay in FLUKA!
-        isParticleGood = CheckRadiativeDecayChain(particle, &particle_ID);
+        isParticleGood = CheckRadiativeDecayChain(particle_ID, &particleID_vec);
     }
 
-    //study to check if the event is good: if the primary crosses the TG
-    if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0 ){ //if it is a primary
-      if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
-        istrueEvent = istrueEvent || true;
-    }}
-
-    TVector3 P_crossOld(-999,-999,-999);
     if ( isParticleGood )
     {
+      if(std::find(particleID_vec.begin(), particleID_vec.end(), particle_ID) == particleID_vec.end())
+        particleID_vec.insert(particleID_vec.begin(), particle_ID);
+
       // I want to measure the angle of emission of this particle:  i need to loop again the regions
       for (int iiCross = 0; iiCross < nCross; iiCross++)
       {
@@ -1376,7 +1409,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
           P_beforeTG = cross2->GetMomentum();
         }
 
-        if ((cross2->GetTrackIdx() - 1) == particle_ID)
+        if ( std::find(particleID_vec.begin(), particleID_vec.end(), cross2->GetTrackIdx() - 1) != particleID_vec.end() )
         {
           // particle exit from target
           if (NewReg2 == fRegAirBeforeTW && OldReg2 == fRegTG)
@@ -1426,6 +1459,8 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
     auto Mid = particle->GetMotherID();
     auto Reg = particle->GetRegion();
 
+    std::vector<Int_t> vecDummy;
+
     if( particle->GetCharge() > 0 
         && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
         && (Beta_true > 0.3 && Beta_true < 0.9) // with reasonable beta
@@ -1437,7 +1472,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
       else if( Reg == fRegTG && Mid == 0) //born in target from primary
         isParticleGood = true;
       else //Check for radiative decay in FLUKA!
-        isParticleGood = CheckRadiativeDecayChain(particle, &particle_ID);
+        isParticleGood = CheckRadiativeDecayChain(Id_part, &vecDummy);
 
       return isParticleGood;
     }
@@ -1561,8 +1596,25 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
     FillYieldReco(name, Z_meas, Th_recoBM); // all reconstructed tracks
   }
 
+
   if(fFlagMC)
   {
+    // if( currEvent == 195 )
+    // {
+    //   TString coso(path_name);
+    //   if(coso.Contains("VTok"))
+    //   {
+    //     cout << "Z_meas::" << Z_meas << "\tZ_true::" << Z_true << endl;
+    //     cout << "b_meas::" << Beta_meas << "\tb_true::" << Beta_true << endl;
+    //     cout << "b_meas::" << Beta_meas << "\tb_true2::" << Beta_true2 << endl;
+    //     for(int ii=0;ii < myMcNtuPart->GetTracksN(); ++ii)
+    //     {
+    //       TAMCpart* par = myMcNtuPart->GetTrack(ii);
+    //       cout << Form("id::%d\tZ::%d\tA::%d\tReg::%d\tz1::%f\tz2::%f\tMid::%d\n",ii,par->GetCharge(),par->GetBaryon(),par->GetRegion(),par->GetInitPos().Z(),par->GetFinalPos().Z(),par->GetMotherID());
+    //     }
+    //   }
+    // }
+
     if (isGoodReco(TrkIdMC))
     {
       if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
@@ -1636,13 +1688,20 @@ void GlobalRecoAnaGSI::MyRecoBooking(string path_name)
 
 
 
-Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(TAMCpart* part, Int_t* part_ID)
+Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(Int_t partID, std::vector<Int_t>* partIDvec)
 {
-  TAMCpart* partMoth = myMcNtuPart->GetTrack( part->GetMotherID() );
-  if ( !partMoth )
-    return false;
-  
   bool isGammaDecay = false;
+  TAMCpart* part;
+  TAMCpart* partMoth;
+  
+  part = myMcNtuPart->GetTrack(partID);
+  if( !part )
+    goto nodecaychain;
+
+  partMoth = myMcNtuPart->GetTrack( part->GetMotherID() );
+  if ( !partMoth )
+    goto nodecaychain;
+  
 
   if( partMoth->GetCharge() == part->GetCharge() && //if Z and A are the same
       partMoth->GetBaryon() == part->GetBaryon() )
@@ -1658,22 +1717,58 @@ Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(TAMCpart* part, Int_t* part_ID
     }
   }
   else
-    return false;
+    goto nodecaychain;
   
   if( isGammaDecay )
   {
+    partIDvec->push_back(partID);
     if( partMoth->GetMotherID() == 0 && partMoth->GetRegion() == fRegTG ) // mother particle comes from primary and is born in target
     {
-      TVector3 posMoth = GetGeoTrafo()->FromGlobalToTGLocal( partMoth->GetFinalPos() ); // final position of mother particle in TG frame
-      TVector3 tgSize = GetParGeoG()->GetTargetPar().Size;
-      if( TMath::Abs(posMoth.X()) > tgSize.X()/2 || TMath::Abs(posMoth.Y()) > tgSize.Y()/2 || TMath::Abs(posMoth.Z()) > tgSize.Z()/2 )
-        *part_ID = part->GetMotherID(); //if mother particle "dies" outside target, change particle ID in output for P calculation
-
+      partIDvec->push_back(part->GetMotherID());
       return true;
     }
     else
-      return CheckRadiativeDecayChain(partMoth, part_ID); //Check next step of chain
+      return CheckRadiativeDecayChain(part->GetMotherID(), partIDvec); //Check next step of chain
   }
   else
+    goto nodecaychain;
+
+
+  nodecaychain:
+    partIDvec->clear();
     return false;
+}
+
+
+Bool_t GlobalRecoAnaGSI::CheckFragIn1stTWlayer(Int_t partID, std::vector<Int_t>* partIDvec)
+{
+  TAMCpart* part = myMcNtuPart->GetTrack(partID);
+  if( !part )
+  {
+    partIDvec->clear();
+    return false;
+  }
+
+  TAMCpart* partMoth = myMcNtuPart->GetTrack( part->GetMotherID() );
+  if ( !partMoth )
+  {
+    partIDvec->clear();
+    return false;
+  }
+
+  TVector3 mothFinPos = GetGeoTrafo()->FromGlobalToTWLocal( partMoth->GetFinalPos() );
+  if( (partMoth->GetRegion() < fRegFirstTWbar || partMoth->GetRegion() > fRegLastTWbar) && //particle born outside TW
+      TMath::Abs(mothFinPos.Z()) < GetParGeoTw()->GetBarThick() )                               //but dies iniside of it
+  {
+    partIDvec->push_back(partID);
+    partIDvec->push_back(part->GetMotherID());
+    std::vector<int> temp;
+    if( CheckRadiativeDecayChain(part->GetMotherID(),&temp) )
+      partIDvec->insert(partIDvec->end(),temp.begin(),temp.end()); //merge two vectors
+
+    return true;
+  }
+
+  partIDvec->clear();
+  return false;
 }
