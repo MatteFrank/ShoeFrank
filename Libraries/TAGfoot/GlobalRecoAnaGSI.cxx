@@ -1260,7 +1260,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
             P_beforeTG = fpNtuMcReg->GetMomentum();
         }
 
-        if( std::find(particleID_vec.begin(), particleID_vec.end(), fpNtuMcReg->GetTrackIdx() - 1) != particleID_vec.end() )
+        if( std::find(particleID_vec.begin(), particleID_vec.end(), fpNtuMcReg->GetTrackIdx() - 1) != particleID_vec.end() || fpNtuMcReg->GetTrackIdx() - 1 == TrkIdMC )
         {
           // particle exit from target
           if (fpNtuMcReg->GetCrossN() == fRegAirBeforeTW && fpNtuMcReg->GetOldCrossN() == fRegTG)
@@ -1338,7 +1338,27 @@ void GlobalRecoAnaGSI::FillMCPartYields()
   P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
   P_beforeTG.SetXYZ(-999., -999., -999.);
 
-  for (int iCross = 0; iCross < nCross; iCross++)
+  for (int iCross = 0; iCross < nCross; iCross++)//first cycle, check if event is good
+  {
+    // region description
+    TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
+    Int_t OldReg = cross->GetOldCrossN();
+    Int_t NewReg = cross->GetCrossN();
+
+    TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
+    Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
+
+    //study to check if the event is good: if the primary crosses the TG
+    if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0 ){ //if it is a primary
+      if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
+        P_beforeTG = cross->GetMomentum();
+        istrueEvent = true;
+    }}
+  }
+  if(!istrueEvent)
+    return;
+
+  for (int iCross = 0; iCross < nCross; iCross++)//second cycle, fill N_ref
   {
     // region description
     TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
@@ -1367,12 +1387,6 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     // Float_t Ek_true = Ek_tr_tot / (double)baryon;                           // MeV/n
     // Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
-
-    //study to check if the event is good: if the primary crosses the TG
-    if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0 ){ //if it is a primary
-      if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
-        istrueEvent = true;
-    }}
 
     bool isParticleGood = false;
     std::vector<Int_t> particleID_vec;
@@ -1403,26 +1417,18 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         Int_t OldReg2 = cross2->GetOldCrossN();
         Int_t NewReg2 = cross2->GetCrossN();
 
-        // particle entering into target
-        if (NewReg2 == fRegTG && OldReg2 == fRegAirBeforeTW)
-        {
-          P_beforeTG = cross2->GetMomentum();
-        }
-
         if ( std::find(particleID_vec.begin(), particleID_vec.end(), cross2->GetTrackIdx() - 1) != particleID_vec.end() )
         {
           // particle exit from target
           if (NewReg2 == fRegAirBeforeTW && OldReg2 == fRegTG)
           {
             P_cross = cross2->GetMomentum();
+            Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
+            if (charge_tr > 0 && charge_tr <= fPrimaryCharge){
+              FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
+            }
           }
         }
-
-      }
-
-      Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
-      if (charge_tr > 0 && charge_tr <= fPrimaryCharge){
-        FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
       }
 
       Th_BM = -999;
@@ -1599,14 +1605,17 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
 
   if(fFlagMC)
   {
-    // if( currEvent == 195 )
+    // if( Z_meas > 0. && Z_meas <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9) &&
+    //   !(Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
+    //  )
     // {
     //   TString coso(path_name);
     //   if(coso.Contains("VTok"))
     //   {
-    //     cout << "Z_meas::" << Z_meas << "\tZ_true::" << Z_true << endl;
+    //     cout << "McId::" << TrkIdMC << "\tZ_meas::" << Z_meas << "\tZ_true::" << Z_true << endl;
     //     cout << "b_meas::" << Beta_meas << "\tb_true::" << Beta_true << endl;
     //     cout << "b_meas::" << Beta_meas << "\tb_true2::" << Beta_true2 << endl;
+    //     fGlbTrack->PrintAllMCIds();
     //     for(int ii=0;ii < myMcNtuPart->GetTracksN(); ++ii)
     //     {
     //       TAMCpart* par = myMcNtuPart->GetTrack(ii);
