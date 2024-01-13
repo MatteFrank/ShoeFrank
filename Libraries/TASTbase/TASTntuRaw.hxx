@@ -10,7 +10,9 @@ using namespace std;
 #include "TObject.h"
 #include "TClonesArray.h"
 #include "TAGdata.hxx"
+#include "TAGparaDsc.hxx"
 #include "TAGbaseWD.hxx"
+#include "TASTparConf.hxx"
 #include "TFile.h"
 //
 
@@ -22,7 +24,7 @@ class TASTrawHit : public TAGbaseWD {
 
 public:
   TASTrawHit();
-  TASTrawHit(TWaveformContainer *w, string algo, double frac, double del);
+  TASTrawHit(TWaveformContainer *w, string algo, double frac, double del,TAGparaDsc *p_detconf, Bool_t isSuperHit);
   virtual         ~TASTrawHit();
     
   ClassDef(TASTrawHit,2);
@@ -56,8 +58,8 @@ public:
 
   TASTrawHit*       GetSuperHit(){return fSuperHit;}
   
-  void              NewHit(TWaveformContainer *W, string algo, double frac, double del);
-  void              NewSuperHit(vector<TWaveformContainer*>, string algo, double frac, double del);
+  void              NewHit(TWaveformContainer *W, string algo, double frac, double del, TAGparaDsc *p_detconf, Bool_t isSuperHit);
+  void              NewSuperHit(vector<TWaveformContainer*>, string algo, double frac, double del, TAGparaDsc *p_detconf);
   void              SetupClones();
 
    

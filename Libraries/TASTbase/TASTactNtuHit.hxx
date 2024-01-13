@@ -50,6 +50,11 @@ private:
   TH1F *hTotPedestal;
   TH1F *hTotBaseline;
   TH1F *hTotRiseTime;
+  TH1F *hTotTimeNoise;
+  TH1F *hFFT;
+  TH1F *hFFTre;
+  TH1F *hFFTim;
+  TH1F *hFFTfilter;
   
   TH1F *hEff;
   TH1F *hPileUp;

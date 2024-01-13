@@ -52,68 +52,51 @@ Bool_t TASTactNtuHit::Action()
 
    p_nturaw->SetupClones();
 
-   double timestamp=0, charge_dep=0, de_dep=0, amp_tot=-10000 , ped=-10000, bas=-1000; 
-   vector<double> noi =  p_datraw->GetSuperHit()->GetNoise();
+   double timestamp=0, charge_dep=0, de_dep=0, amp_tot=-10000 , ped=-10000, bas=-1000, ris=-100; 
+  
    double thr[8]= {0.030,0.028,0.029,0.028,0.025,0.020,0.025,0.020};
 
    int neff=6;
    vector<double> vampot;
    
    if(p_datraw->GetSuperHit()){
+      vector<double> noi =  p_datraw->GetSuperHit()->GetNoise();
       if(FootDebugLevel(1))printf("got super hit\n");
+
       timestamp = p_datraw->GetSuperHit()->GetTime();
       charge_dep =  p_datraw->GetSuperHit()->GetCharge();
       amp_tot= p_datraw->GetSuperHit()->GetAmplitude();
-      ped= p_datraw->GetSuperHit()->GetPedestal();
-      bas= p_datraw->GetSuperHit()->GetBaseline();
-      
-      //cout << "total charge dep :" << charge_dep << endl;
-     de_dep = -1000.; //calibration missing
-      
-       //cout <<" sono in act ntuRaw : "<< p_datraw->GetSuperHit()->GetPileUp() << endl;
-     p_nturaw->NewHit(charge_dep, de_dep, timestamp, p_datraw->GetSuperHit()->GetPileUp() );
-     p_nturaw->SetRiseTime(p_datraw->GetSuperHit()->GetRiseTime());
-
-     //cout <<" sono in act ntuHit : "<< p_nturaw->GetHit(0)->GetPileUp() << endl;
-     
+      ped = p_datraw->GetSuperHit()->GetPedestal();
+      bas = p_datraw->GetSuperHit()->GetBaseline();
+      ris = p_datraw->GetSuperHit()->GetRiseTime();
+      de_dep = -1000.; //calibration missing
 
 
-      p_nturaw->SetTriggerTime(timestamp);
-      p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
+
+      if(p_datraw->GetSuperHit()->IsFFTValid()){
+	for(int i=0;i<p_datraw->GetSuperHit()->GetFFT("MAG").size();i++){
+	
+	  double old = hFFT->GetBinContent(i+1);
+	  hFFT->SetBinContent(i+1,old+p_datraw->GetSuperHit()->GetFFT("MAG").at(i));
+
+	  double oldre = hFFTre->GetBinContent(i+1);
+	  hFFTre->SetBinContent(i+1,oldre+p_datraw->GetSuperHit()->GetFFT("RE").at(i));
+
+	  double oldim = hFFTim->GetBinContent(i+1);
+	  hFFTim->SetBinContent(i+1,oldim+p_datraw->GetSuperHit()->GetFFT("IM").at(i));
+	
+	  double oldf = hFFTfilter->GetBinContent(i+1);
+	  hFFTfilter->SetBinContent(i+1,oldf+p_datraw->GetSuperHit()->GetFFTfilter("MAG").at(i));
+
+	}
+      }
+
       
-      p_nturaw->SetCharge(charge_dep);
-      p_nturaw->SetTrigType(p_datraw->GetSuperHit()->GetTriggerType());
       int nHit =  p_datraw->GetHitsN();
 
       if(nHit<8)cout << "Warning, ST channels < 8, probably zero suppression disabled" << endl;
-
-      if(ValidHistogram()){
-	hTotTime->Fill(timestamp);
 	
-	hTotCharge->Fill(charge_dep);
-	hTotAmplitude->Fill(amp_tot);
-	hTotPedestal->Fill(ped);
-	hTotBaseline->Fill(bas);
-	hTotRiseTime->Fill(p_datraw->GetSuperHit()->GetRiseTime());
-	for(int isa=0;isa<noi.size();isa++){
-	  hTotNoise->Fill(bas-noi.at(isa));
-	  
-	  // cout << "baseline::" << baseline << "  side::"<< sidevalues.at(isa) << "   diff::" << baseline-sidevalues.at(isa) << endl;
-	}
-	hChargevsTime[0]-> Fill(timestamp,charge_dep ); //info di superhit
-      
-      //info di superhit - no pileup derivative mode
-      if ( p_nturaw->GetHit(0)->GetPileUp() == false ) hChargevsTime[1]-> Fill(timestamp,charge_dep ); 
-       
-       
-      //info di superhit - no pileup charge mode
-      if ( charge_dep < 2. ) hChargevsTime[2]-> Fill(timestamp,charge_dep ); 
-       
-       
-       
-      hPileUp->Fill(p_nturaw->GetHit(0)->GetPileUp());
-      
-
+      double timeST_oth=0,norm=0;
       for(int iHit=0;iHit<nHit;iHit++){
 	Double_t amplitude = p_datraw->GetHit(iHit)->GetAmplitude();
 	Double_t charge= p_datraw->GetHit(iHit)->GetCharge();
@@ -125,7 +108,8 @@ Bool_t TASTactNtuHit::Action()
 	Double_t timeoth =0; //for resolution 
 	Int_t noth=0;
 	Double_t risetime =  p_datraw->GetHit(iHit)->GetRiseTime();
-
+	timeST_oth+=(time*(amplitude/risetime));
+	norm+=(amplitude/risetime);
 	for(Int_t jHit=0;jHit<nHit;jHit++){
 	  Int_t jCh  = p_datraw->GetHit(jHit)->GetChID();
 	  if(iCh==jCh)continue;
@@ -133,41 +117,57 @@ Bool_t TASTactNtuHit::Action()
 	  noth++;
 	}
 	timeoth/=(Double_t)noth;
-	//	cout << time-timeoth << "nhit::" << nHit << "   noth::"<< noth << endl;
-
-	if(amplitude>thr[iCh])vampot.push_back(iCh);
 	if(iCh<8){
-	  hArrivalTime[iCh]->Fill(time-timeoth);
-	  hAmplitude[iCh]->Fill(amplitude);
-	  hCharge[iCh]->Fill(charge);
-	  hChargePedestal[iCh]->Fill(ped);
-	  hBaseline[iCh]->Fill(baseline);
-	  hRiseTime[iCh]->Fill(risetime);
-	
-	  for(int isa=0;isa<sidevalues.size();isa++){
-	     hNoise[iCh]->Fill(baseline-sidevalues.at(isa));
-	    // cout << "baseline::" << baseline << "  side::"<< sidevalues.at(isa) << "   diff::" << baseline-sidevalues.at(isa) << endl;
+	  if(ValidHistogram()){
+	    hArrivalTime[iCh]->Fill(time-timeoth);
+	    hAmplitude[iCh]->Fill(amplitude);
+	    hCharge[iCh]->Fill(charge);
+	    hChargePedestal[iCh]->Fill(ped);
+	    hBaseline[iCh]->Fill(baseline);
+	    hRiseTime[iCh]->Fill(risetime);
+	    for(int isa=0;isa<sidevalues.size();isa++){
+	      hNoise[iCh]->Fill(baseline-sidevalues.at(isa));
+	    }
 	  }
 	}
       }
+
+      //      cout <<"time1::"<< timestamp;
+      // timestamp = timeST_oth/norm;
+      // cout <<"time2::"<< timestamp << endl ;
+      p_nturaw->NewHit(charge_dep, de_dep, timestamp, p_datraw->GetSuperHit()->GetPileUp() );
+      p_nturaw->SetTriggerTime(timestamp);
+      p_nturaw->SetTriggerTimeOth(p_datraw->GetSuperHit()->GetTimeOth());
+      p_nturaw->SetCharge(charge_dep);
+      p_nturaw->SetTrigType(p_datraw->GetSuperHit()->GetTriggerType());
+      p_nturaw->SetRiseTime(p_datraw->GetSuperHit()->GetRiseTime());
+
+
+      if(ValidHistogram()){
+	hTotTime->Fill(timestamp);
+	hTotCharge->Fill(charge_dep);
+	hTotAmplitude->Fill(amp_tot);
+	hTotPedestal->Fill(ped);
+	hTotBaseline->Fill(bas);
+	hTotRiseTime->Fill(p_datraw->GetSuperHit()->GetRiseTime());
+	for(int isa=0;isa<noi.size();isa++){
+	  hTotNoise->Fill(bas-noi.at(isa));
+	  hTotTimeNoise->Fill(timestamp - isa*0.2,fabs(noi.at(isa)));
+	}
+	hChargevsTime[0]-> Fill(timestamp,charge_dep ); //info di superhit
+
+	//info di superhit - no pileup derivative mode
+	if ( p_nturaw->GetHit(0)->GetPileUp() == false ) hChargevsTime[1]-> Fill(timestamp,charge_dep ); 
+       
+	//info di superhit - no pileup charge mode
+	if ( charge_dep < 2. ) hChargevsTime[2]-> Fill(timestamp,charge_dep ); 
+	
+	hPileUp->Fill(p_nturaw->GetHit(0)->GetPileUp());
       }
    }else{
       if(FootDebugLevel(1))printf("super hit missing\n");
    }
-
-   if(ValidHistogram()) {
-     hEff->Fill(8);
-     if(vampot.size()==7)hEff->Fill(9);
-     if(vampot.size()==8)hEff->Fill(10);
-     if(vampot.size()>=neff){
-       for(int ich=0;ich<8;ich++){
-         if(find(vampot.begin(), vampot.end(), ich) != vampot.end()){
-	   hEff->Fill(ich);
-         }
-       }
-     }
-   }
-   
+     
    fpNtuRaw->SetBit(kValid);
    return kTRUE;
 }
@@ -201,6 +201,9 @@ void TASTactNtuHit::CreateHistogram()
 {
   DeleteHistogram();
 
+
+  TASTntuRaw*   p_datraw = (TASTntuRaw*) fpDatRaw->Object();
+  
   char histoname[100]="";
   if(FootDebugLevel(1))
      cout<<"I have created the ST histo. "<<endl;
@@ -227,13 +230,33 @@ void TASTactNtuHit::CreateHistogram()
   AddHistogram(hTotBaseline);
 
   strcpy (histoname,"stTotNoise");
-  hTotNoise = new TH1F(histoname, histoname, 100, -0.1, 0.1);
+  hTotNoise = new TH1F(histoname, histoname, 400, -0.4, 0.4);
   AddHistogram(hTotNoise);
+
+  strcpy (histoname,"stTotTimeNoise");
+  hTotTimeNoise = new TH1F(histoname, histoname, 10000, 0, 1000);
+  AddHistogram(hTotTimeNoise);
 
   strcpy (histoname,"stTotRiseTime");
   hTotRiseTime = new TH1F(histoname, histoname, 1000, 0, 10);
   AddHistogram(hTotRiseTime);
 
+
+  strcpy (histoname,"stFFT");
+  hFFT = new TH1F(histoname, histoname, NSAMPLES, 0, 3.0);
+  AddHistogram(hFFT);
+
+  strcpy (histoname,"stFFTre");
+  hFFTre = new TH1F(histoname, histoname, NSAMPLES, 0, 3.0);
+  AddHistogram(hFFTre);
+
+  strcpy (histoname,"stFFTim");
+  hFFTim = new TH1F(histoname, histoname, NSAMPLES, 0, 3.0);
+  AddHistogram(hFFTim);
+
+  strcpy (histoname,"stFFTfiltered");
+  hFFTfilter = new TH1F(histoname, histoname, NSAMPLES, 0, 3.0);
+  AddHistogram(hFFTfilter);
 
   strcpy(histoname,"stEff");
   hEff = new TH1F(histoname, histoname, 11, -0.5, 10.5);

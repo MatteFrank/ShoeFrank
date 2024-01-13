@@ -82,6 +82,8 @@ private:
    vector<TH1F*>   fpHisElossMean;
    vector<TH1F*>   fpHisTofMean;
    TH2F*           fpHisPointMap;
+   TH2F*           fpHisElossTof;
+   TH2F*           fpHisElossTofMean;
    
    map<Int_t,TATWhit*> fmapHitX;
    map<Int_t,TATWhit*> fmapHitY;

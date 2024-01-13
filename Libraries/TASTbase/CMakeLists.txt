@@ -24,6 +24,7 @@ set( with_dictionnaries
    TASTntuHit
    TASTparGeo
    TASTparMap
+   TASTparConf
    TASTdigitizer
    TAGbaseWD
    TAWDparTime

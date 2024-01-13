@@ -117,7 +117,7 @@ private:
    TACAparGeo*    fGeometry;
 
 
-   UShort_t *      fTempCh;
+   Float_t *        fTempCh;
    UShort_t **     fAmpCh;     // waveform for each channel/crystal
 
    double          fRange;
@@ -150,7 +150,7 @@ CAactRaw2Ntu::CAactRaw2Ntu(TAGparaDsc* pCAmap, TAGparaDsc* pWDmap, TAGparaDsc* p
 
    int nCry = fGeometry->GetCrystalsN();
 
-   fTempCh = new UShort_t [nCry];
+   fTempCh = new Float_t [nCry];
    fAmpCh = new UShort_t* [nCry];
 
    for (int cryID=0; cryID<nCry; ++cryID) {
@@ -639,10 +639,12 @@ Int_t CAactRaw2Ntu::ReadStdAloneEvent(bool &endoffile, TAWDparMap *p_WDMap) {
                            continue;
                         }
                         double temp = ADC2Temp(tempADC, iCry);
+
                         if (FootDebugLevel(1))
                            cout << "      cryID:" << iCry << "  ADC:" << tempADC  << " T:" << temp  <<"   "<< word << endl;
 
                         fTempCh[iCry] = temp;
+                        // cout <<fTempCh[iCry] <<endl;
                      //} else {  // DEBUG
                      //   int iCry = ((TACAparMap*)fpCAParMap->Object())->GetArduinoCrystalId(boardID, muxnum, ch);
                      //   Info("CAactRaw2Ntu", " +++Arduino not connected:   board: %d mux: %d  ch: %d -> iCry %d ADC %f", boardID, muxnum, ch, iCry, tempADC);

@@ -15,6 +15,8 @@
 
 using namespace std;
 
+#define NSAMPLES 1024
+
 class TWaveformContainer
 {
 
