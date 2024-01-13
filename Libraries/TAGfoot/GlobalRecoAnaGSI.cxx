@@ -1387,6 +1387,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     // Float_t Ek_true = Ek_tr_tot / (double)baryon;                           // MeV/n
     // Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
+    Beta_true =cross->GetMomentum().Mag() / sqrt(cross->GetMass() * cross->GetMass() + cross->GetMomentum().Mag() * cross->GetMomentum().Mag());
 
     bool isParticleGood = false;
     std::vector<Int_t> particleID_vec;
@@ -1430,12 +1431,12 @@ void GlobalRecoAnaGSI::FillMCPartYields()
           }
         }
       }
-
-      Th_BM = -999;
-      P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
-      P_beforeTG.SetXYZ(-999., -999., -999.);
     }
+    Th_BM = -999;
+    P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
   }
+
+  P_beforeTG.SetXYZ(-999., -999., -999.);
 }
 
 bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
