@@ -1220,21 +1220,30 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   //Check for gamma decay!
   bool isGammaDecay = false;
   std::vector<Int_t> particleID_vec;
-  if(TrkIdMC_TW == TrkIdMC)
-  {
-    particleID_vec.push_back(TrkIdMC);
-    isGammaDecay = true; //Set to true just to make sure
-  }
-  else
-    isGammaDecay = CheckRadiativeDecayChain(TrkIdMC_TW, &particleID_vec);
+  // if(TrkIdMC_TW == TrkIdMC)
+  // {
+  //   particleID_vec.push_back(TrkIdMC);
+  //   isGammaDecay = true; //Set to true just to make sure
+  // }
+  // else
+  isGammaDecay = CheckRadiativeDecayChain(TrkIdMC_TW, &particleID_vec);
   
   if( !isGammaDecay )
     CheckFragIn1stTWlayer(TrkIdMC_TW, &particleID_vec);
+  
+  if(std::find(particleID_vec.begin(), particleID_vec.end(), TrkIdMC) == particleID_vec.end())
+    particleID_vec.insert(particleID_vec.begin(), TrkIdMC);
+  
+  if(std::find(particleID_vec.begin(), particleID_vec.end(), TrkIdMC_TW) == particleID_vec.end())
+    particleID_vec.insert(particleID_vec.begin(), TrkIdMC_TW);
 
-  // cout << "MainMCid::" << TrkIdMC << "\tTWid::" << TrkIdMC_TW << endl;
-  // for(auto it: particleID_vec)
-  //   cout << it << "\t";
-  // cout << endl;
+  // if(Z_meas == 5)
+  // {
+  //   cout << "MainMCid::" << TrkIdMC << "\tTWid::" << TrkIdMC_TW << endl;
+  //   for(auto it: particleID_vec)
+  //     cout << it << "\t";
+  //   cout << endl;
+  // }
 
   if (TrkIdMC != -1)
   {
@@ -1609,18 +1618,19 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
     // if( Z_meas > 0. && Z_meas <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9) &&
     //   !(Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
     //  )
+    // if ( Z_meas == 5 && Th_recoBM < 0.6 && (Beta_meas > 0.3 && Beta_meas < 0.9))
     // {
     //   TString coso(path_name);
     //   if(coso.Contains("VTok"))
     //   {
-    //     cout << "McId::" << TrkIdMC << "\tZ_meas::" << Z_meas << "\tZ_true::" << Z_true << endl;
+    //     cout << "evt::" << currEvent << " McId::" << TrkIdMC << "\tZ_meas::" << Z_meas << "\tZ_true::" << Z_true << endl;
+    //     cout << "th_meas::" << Th_recoBM << "\tth_true::" << Th_BM << endl;
     //     cout << "b_meas::" << Beta_meas << "\tb_true::" << Beta_true << endl;
-    //     cout << "b_meas::" << Beta_meas << "\tb_true2::" << Beta_true2 << endl;
     //     fGlbTrack->PrintAllMCIds();
     //     for(int ii=0;ii < myMcNtuPart->GetTracksN(); ++ii)
     //     {
     //       TAMCpart* par = myMcNtuPart->GetTrack(ii);
-    //       cout << Form("id::%d\tZ::%d\tA::%d\tReg::%d\tz1::%f\tz2::%f\tMid::%d\n",ii,par->GetCharge(),par->GetBaryon(),par->GetRegion(),par->GetInitPos().Z(),par->GetFinalPos().Z(),par->GetMotherID());
+    //       cout << Form("id::%d\tZ::%d\tA::%d\tReg::%d\tfId::%d\t\tz1::%f\tz2::%f\tMid::%d\n",ii,par->GetCharge(),par->GetBaryon(),par->GetRegion(),par->GetFlukaID(),par->GetInitPos().Z(),par->GetFinalPos().Z(),par->GetMotherID());
     //     }
     //   }
     // }
