@@ -25,7 +25,7 @@ option(Geant4_DIR "Include G4 simulation" OFF)
 
 #------------------------------------------------------------------------------
 # option TOE
-option(TOE_DIR "Include TOE reconstruction" ON)
+option(TOE_DIR "Include TOE reconstruction" OFF)
 
 #------------------------------------------------------------------------------
 # option GenFit
@@ -116,7 +116,8 @@ Set(TACE "TACEbase")
 Set(TAPW "TAPWbase")
 Set(TANE "TANEbase")
 Set(TAPXI "TAPXIbase")
-add_definitions(-std=c++14)
+
+add_definitions(-std=c++17)
 add_definitions(-Wno-shadow)
 
 #----------------------------------------------------------------------------

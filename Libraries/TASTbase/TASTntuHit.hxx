@@ -87,31 +87,28 @@ public:
    virtual void      Clear(Option_t* opt="");
    void              SetupClones();
    
-   void SetCharge(double value)         { fCharge = value;      }
-   void SetTriggerTime(double value)    { fTrigTime = value;    }
-   void SetTriggerTimeOth(double value) { fTrigTimeOth = value; }
-   void SetTrigType(int value)          { fTrigType=value;      }
-   void SetRiseTime(Double_t value)                 { fRiseTime = value;          }
+   void              SetCharge(double value)         { fCharge = value;      }
+   void              SetTriggerTime(double value)    { fTrigTime = value;    }
+   void              SetTriggerTimeOth(double value) { fTrigTimeOth = value; }
+   void              SetTrigType(int value)          { fTrigType=value;      }
+   void              SetRiseTime(Double_t value)     { fRiseTime = value;    }
 
   
-   double GetCharge()             const { return fCharge;       }
-   double GetTriggerTime()        const { return fTrigTime;     }
-   double GetTriggerTimeOth()     const { return fTrigTimeOth;  }
-   int    GetTrigType()           const { return fTrigType;     }
-   Double_t       GetRiseTime()              const   { return fRiseTime;               }
+   double            GetCharge()             const   { return fCharge;       }
+   double            GetTriggerTime()        const   { return fTrigTime;     }
+   double            GetTriggerTimeOth()     const   { return fTrigTimeOth;  }
+   int               GetTrigType()           const   { return fTrigType;     }
+   Double_t          GetRiseTime()           const   { return fRiseTime;     }
   
-
-
 private:
   TClonesArray* fListOfHits;			    // hits
   Double32_t    fTrigTime;
   Double32_t    fTrigTimeOth;
   Double32_t    fCharge;
   int           fTrigType;
-  Double32_t      fRiseTime;
+  Double32_t    fRiseTime;
 
-  
-   ClassDef(TASTntuHit,2)
+   ClassDef(TASTntuHit,3)
 };
 
 

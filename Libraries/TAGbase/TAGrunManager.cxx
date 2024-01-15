@@ -104,7 +104,7 @@ Bool_t TAGrunManager::ConditionChecks(Int_t runNumber, TAGparGeo* parGeo)
          TString str = *it;
          
          if (IsDetectorOff(str)) {
-            Warning("Checks()", "the detector %s is NOT referenced in this run, Disbale it", str.Data());
+            Warning("Checks()", "the detector %s is NOT referenced in this run, Disable it", str.Data());
             if (str == "ST")
                TAGrecoManager::GetPar()->IncludeST(false);
             if (str == "BM")
@@ -352,6 +352,7 @@ void TAGrunManager::DecodeRunLine(TString& line)
             
             if(FootDebugLevel(1))
                printf("daqEvts: %d duration: %d daqRate: %d runType: %d\n", daqEvts, duration, daqRate, runType);
+            break;
             
          case 4:
             runParameter.Comments = list[i];
@@ -363,6 +364,7 @@ void TAGrunManager::DecodeRunLine(TString& line)
             runParameter.DetectorOut =  TAGparTools::Tokenize(list[i].Data(), " " );
             if(FootDebugLevel(1))
                printf("DetectorOut: %s\n", list[i].Data());
+            break;
             
          default:
             break;

@@ -174,13 +174,10 @@ void TAGactDscTreeWriter::SetDescriptors()
 Int_t TAGactDscTreeWriter::Open(const TString& name, Option_t* option, const TString treeName, Bool_t /*dscBranch*/)
 {
    if (TAGrecoManager::GetPar()->IsSaveTree()) {
-     cout <<"savetree" << endl;
      SetDescriptors();
-     cout <<"branches" << endl;
       SetTreeBranches();
    }
 
-   cout <<"cazzzoaosdkos" << endl;
    TAGactTreeWriter::Open(name, option);
    
    return 0;
@@ -190,10 +187,8 @@ Int_t TAGactDscTreeWriter::Open(const TString& name, Option_t* option, const TSt
 //! Set tree branches for writing in output file
 void TAGactDscTreeWriter::SetTreeBranches()
 {
-   if (TAGrecoManager::GetPar()->IncludeST()) {
-
+   if (TAGrecoManager::GetPar()->IncludeST())
      SetupElementBranch(fpNtuHitSt);
-   }
    
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       if (fFlagHits)
@@ -261,7 +256,7 @@ void TAGactDscTreeWriter::SetTreeBranches()
       if (fFlagTrack && !fFlagRecCutter)
          SetupElementBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
    }
-
+   
    if (fFlagMC) {
       if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman()) && TAGrecoManager::GetPar()->IsFromLocalReco()) {
          if (fSaveMcFlag) {
@@ -305,16 +300,14 @@ void TAGactDscTreeWriter::SetTreeBranches()
          SetupElementBranch(fpNtuMcCa, FootBranchMcName(kCAL));
       
    } else {
-
       if (!fStdAloneFlag)
          SetupElementBranch(fpNtuEvt);
-
       
       if (TAGrecoManager::GetPar()->IncludeST()) {
          if (fFlagHits)
             SetupElementBranch(fpDatRawSt);
          
-	 SetupElementBranch(fpWDtrigger);
+         SetupElementBranch(fpWDtrigger);
       }
       
       if (TAGrecoManager::GetPar()->IncludeBM())

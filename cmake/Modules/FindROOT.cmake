@@ -50,7 +50,7 @@ else()
   endif()
 
  # Add XML library and /opt/lib if exits
- set( ROOT_LIBRARIES ${ROOT_LIBRARIES} -lXMLIO -lXMLParser)
+ set( ROOT_LIBRARIES ${ROOT_LIBRARIES} -lXMLIO -lXMLParser -lSpectrum)
  if(EXISTS "/opt/lib/")
    set( ROOT_LIBRARIES ${ROOT_LIBRARIES} -L/opt/lib/)
  endif()

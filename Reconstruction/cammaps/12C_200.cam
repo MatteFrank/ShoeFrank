@@ -13,9 +13,9 @@ NumberFiles: 1
 "./geomaps/12C_200/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/12C_200/TASTdetector.geo": -1
-"./config/12C_200/TASTdetector.cfg": -1
+
 
 DetectorName: "BM"
 NumberFiles: 3

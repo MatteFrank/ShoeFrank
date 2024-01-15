@@ -197,3 +197,9 @@ CamDataMC:    1
 CamDate: "Oct 2023"
 CamSum: "Simulation data for 16O on 12C (5mm target) @ 200MeV/u with 2023 Magnets, reversed field, and new Calo geometry, TW at 175 cm"
 
+CamNumber:    33
+CamName:    "16O_HighE_2023"
+CamDataMC:    1
+CamDate: "Dec 2023"
+CamSum: "Simulation data for 16O on 12C (5mm target) @ 700 MeV/u and 1000 MeV/u with 2023 Magnets, reversed field, and new Calo geometry, TW at 175 cm"
+

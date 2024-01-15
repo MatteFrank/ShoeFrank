@@ -49,6 +49,7 @@
 #include "TATWparCal.hxx"
 #include "TACAparCal.hxx"
 
+#include "TASTparConf.hxx"
 #include "TABMparConf.hxx"
 #include "TAVTparConf.hxx"
 #include "TAITparConf.hxx"
@@ -175,6 +176,12 @@ public:
      
   // Create L0 branch in tree
   virtual void SetL0TreeBranches();
+   
+   //! Set run number from file
+   virtual void SetRunNumberFromFile()         { return;           }
+   
+   //! Get run number from file
+   virtual Int_t GetRunNumberFromFile()        { return -1;        }
    
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fExpName = name;  }
@@ -340,7 +347,9 @@ public:
    //! MC CAL hit container Getter
    TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
-
+   //! Get run number
+   Int_t               GetRunNumber()       const { return fRunNumber;                               }
+   
 public:
    //! Disable MC info saving in output tree
    static void DisableSaveMc() { fgSaveMcFlag = false; }
@@ -387,6 +396,7 @@ protected:
    TAGparaDsc*           fpParCalTw;      ///< TW calibration parameter
    TAGparaDsc*           fpParCalCa;      ///< CAL calibration parameter
 
+   TAGparaDsc*           fpParConfSt;     ///< ST configuration parameter
    TAGparaDsc*           fpParConfBm;     ///< BM configuration parameter
    TAGparaDsc*           fpParConfVtx;    ///< VTX configuration parameter
    TAGparaDsc*           fpParConfIt;     ///< ITR configuration parameter
@@ -514,8 +524,9 @@ protected:
    void CreateRecActionGlbS();
    // Create reconstruction action for global tracks
    void CreateRecActionGlbF();
-   // Generate output file name
-   TString  GetFileOutName();
+   
+   //! Generate output file name
+   virtual TString  GetFileOutName() { return TString(""); }
    
 protected:
    static Bool_t fgSaveMcFlag;    ///< MC saving flag

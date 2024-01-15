@@ -94,10 +94,11 @@ void RecoRaw::CreateRawAction()
       fpDatRawTw      = new TAGdataDsc(new TATWntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       
-      if (!fgStdAloneFlag){
-	  TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
-	  TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
-	  parTimeWD->FromFileTcal(parFileName.Data());
+
+      if (!fgStdAloneFlag) {
+         TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
+         TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
+         parTimeWD->FromFileTcal(parFileName.Data());
       }
       
       if(TAGrecoManager::GetPar()->IncludeCA()){
@@ -108,7 +109,7 @@ void RecoRaw::CreateRawAction()
 
       const Char_t* name = FootActionDscName("TAGactWDreader");
       fActWdRaw  = new TAGactWDreader(name, fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
-                                      fpParTimeWD, fpParMapCa, fgStdAloneFlag);
+                                      fpParTimeWD, fpParMapCa, fpParConfSt, fgStdAloneFlag);
       if (fgStdAloneFlag)
          fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
@@ -119,10 +120,11 @@ void RecoRaw::CreateRawAction()
    if (TAGrecoManager::GetPar()->IncludeST() ||(TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
       fpNtuHitSt   = new TAGdataDsc(new TASTntuHit());
       const Char_t* name = FootActionDscName("TASTactNtuHit");
-      fActNtuHitSt = new TASTactNtuHit(name, fpDatRawSt, fpNtuHitSt, fpParMapSt);
+      fActNtuHitSt = new TASTactNtuHit(name, fpDatRawSt, fpNtuHitSt, fpParMapSt, fpParConfSt);
       if (fFlagHisto)
          fActNtuHitSt->CreateHistogram();
    }
+
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       fpDatRawBm = new TAGdataDsc(new TABMntuRaw());
@@ -142,7 +144,6 @@ void RecoRaw::CreateRawAction()
       fActNtuHitBm = new TABMactNtuHit(name, fpNtuHitBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
       if (fFlagHisto)
         fActNtuHitBm->CreateHistogram();
-
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
@@ -232,8 +233,9 @@ Bool_t RecoRaw::GoEvent(Int_t iEvent)
 void RecoRaw::OpenFileIn()
 {
 
-
-  ((TAGactDscTreeWriter*)fActEvtWriter)->SetStdAlone(fgStdAloneFlag);
+   if (fFlagOut && !fFlagFlatTree)
+      ((TAGactDscTreeWriter*)fActEvtWriter)->SetStdAlone(fgStdAloneFlag);
+   
    if (fgStdAloneFlag) {
 
      if (TAGrecoManager::GetPar()->IncludeVT())
@@ -259,10 +261,8 @@ void RecoRaw::OpenFileIn()
 
      if (fSkipEventsN > 0)
        fActEvtReader->SkipEvents(fSkipEventsN);
-
    }
 }
-
 
 //__________________________________________________________
 //! Close input file
@@ -279,9 +279,18 @@ void RecoRaw::CloseFileIn()
 // --------------------------------------------------------------------------------------
 void RecoRaw::SetRunNumberFromFile()
 {
-   // Done by hand shoud be given by DAQ header
+   fRunNumber = GetRunNumberFromFile();
+   
+   Warning("SetRunNumber()", "Run number not set, taking number from file: %d\n", fRunNumber);
+   
+   gTAGroot->SetRunNumber(fRunNumber);
+}
+
+// --------------------------------------------------------------------------------------
+Int_t RecoRaw::GetRunNumberFromFile()
+{
    TString name = GetName();
-   if (name.IsNull()) return;
+   if (name.IsNull()) return -1;
    
    // protection about file name starting with .
    if (name[0] == '.')
@@ -293,9 +302,37 @@ void RecoRaw::SetRunNumberFromFile()
    TString tmp1 = name(pos1+1, len);
    Int_t pos2   = tmp1.First(".");
    TString tmp  = tmp1(0, pos2);
-   fRunNumber = tmp.Atoi();
+   return  tmp.Atoi();
+}
+
+//__________________________________________________________
+//! Generate output file name
+TString RecoRaw::GetFileOutName()
+{
+   TString name = Form("run_%08d", fRunNumber);
+   vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
    
-   Warning("SetRunNumber()", "Run number not set!, taking number from file: %d", fRunNumber);
+   Int_t detectorsN = 0;
    
-   gTAGroot->SetRunNumber(fRunNumber);
+   for (auto it : dec) {
+      TString det = TAGrecoManager::GetDect3LetName(it);
+      det.ToLower();
+      if (det == "tgt") continue;
+      detectorsN++;
+   }
+   
+   if (detectorsN >= 7)
+      name += "_all";
+   else {
+      for (auto it : dec) {
+         TString det = TAGrecoManager::GetDect3LetName(it);
+         det.ToLower();
+         if (det == "tgt") continue;
+         name += Form("_%s", det.Data());
+      }
+   }
+   
+   name += ".root";
+   
+   return name;
 }

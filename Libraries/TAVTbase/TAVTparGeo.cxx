@@ -153,7 +153,7 @@ TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertex
    TGeoBBox *box = new TGeoBBox(Form("%s_Box",basemoduleName), fEpiSize.X()/2., fEpiSize.Y()/2.,
                                 fTotalSize.Z()/2.);
 
-   TGeoVolume *vertexMod = new TGeoVolume(Form("%s_Vertex",basemoduleName),box, medMod);
+   TGeoVolume *vertexMod = new TGeoVolume(Form("%s",basemoduleName),box, medMod);
    vertexMod->SetLineColor(kAzure-5);
    vertexMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
    

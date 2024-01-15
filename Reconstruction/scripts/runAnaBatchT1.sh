@@ -61,6 +61,8 @@
 
 ################ SCRIPT START ######################
 
+echo "Start job submission!"
+
 INPUT_BASE_PATH="/storage/gpfs_data/foot/"
 OUTPUT_BASE_PATH="/storage/gpfs_data/foot/${USER}"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
@@ -125,12 +127,6 @@ if [[ ${outFolder: -1} == "/" ]]; then
     outFolder=${outFolder::-1}
 fi
 
-#Set output merged file name if not set before -> default value
-if [ -z "$outFile" ]; then
-    echo "Output file not set, changing to default name"
-    outFile="${outFolder}/MergeAna_${campaign}_${runNumber}.root"
-fi
-
 #Create folder for condor auxiliary files if not present
 HTCfolder="${outFolder}/HTCfiles"
 
@@ -142,6 +138,8 @@ if [ ! -d $HTCfolder ]; then
     fi
     echo "Directory ${HTCfolder} did not exist, created now!"
 fi
+
+echo "Retrieving campaign and run number from input file..."
 
 #Find number of events, campaign name and run number in the MC file using root
 source /opt/exp_software/foot/root_shoe_foot.sh > /dev/null 2>&1
@@ -156,6 +154,8 @@ ofsCamp << runinfo->CampaignName()
 ofsRun << runinfo->RunNumber()
 EOF
 cd - > /dev/null 2>&1
+
+echo "Done"
 
 nTotEv=$(cat ${HTCfolder}/temp_evts.txt)
 campaign=$(cat ${HTCfolder}/temp_campaign.txt)
@@ -179,8 +179,14 @@ if [[ ${campaign: -1} == "/" ]]; then
     campaign=${campaign::-1}
 fi
 
+#Set output merged file name if not set before -> default value (campaign+runNumber form file)
+if [ -z "$outFile" ]; then
+    echo "Output file not set, changing to default name"
+    outFile="${outFolder}/MergeAna_${campaign}_${runNumber}.root"
+fi
+
 # Set number of events per job and find number of jobs
-nEvPerFile=30000
+nEvPerFile=50000
 
 if [[ $(( $nTotEv % $nEvPerFile )) -eq 0 ]]; then
     nJobs=$(( $nTotEv / $nEvPerFile ))
@@ -212,6 +218,8 @@ mcflag=""
 if [ $isMc -ne 0 ]; then
     mcflag="-mc"
 fi
+
+echo "Creating jobs for histogram folders merging"
 
 # Create executable
 # - par[1] = Process Id -> condor $(Process) variable + 1
@@ -262,7 +270,93 @@ EOF
 chmod 754 ${jobExec}
 condor_submit -spool ${filename_sub}
 
+echo "Finding list of folders..."
+
 #Merge files !!
+source /opt/exp_software/foot/root_shoe_foot.sh > /dev/null 2>&1
+source ${SHOE_PATH}/build/setupFOOT.sh > /dev/null 2>&1
+cd ${SHOE_PATH}/build/Reconstruction
+../bin/DecodeGlbAna -in ${inFile} -out ${outFolder}/dummy_folders.root -exp ${campaign} -run ${runNumber} ${mcflag} -nev 10 > /dev/null 2>&1
+cd - > /dev/null 2>&1
+
+root -l <<-EOF
+TFile* _file0 = new TFile("${outFolder}/dummy_folders.root", "r");
+std::ofstream ofs("${outFolder}/dirs.txt");
+for( auto it : *_file0->GetListOfKeys() ){ofs << it->GetName() << endl; }
+EOF
+
+listOfDirs=($(cat ${outFolder}/dirs.txt))
+nDirs=${#listOfDirs[@]}
+
+echo "Done"
+
+mergeSingleDirExec="${HTCfolder}/MergeSingleDir_${campaign}_${runNumber}.sh"
+mergeSingleDirExec_base=${mergeSingleDirExec::-3}
+
+cat <<EOF > $mergeSingleDirExec
+#!/bin/bash
+
+source /opt/exp_software/foot/root_shoe_foot.sh
+source ${SHOE_PATH}/build/setupFOOT.sh
+SCRATCH="\$(pwd)"
+outputFile="\${SCRATCH}/MergeDir_\${1}_temp.root"
+inputFiles=""
+
+#While loop that checks if all files have been processed
+while true; do
+    for iFile in \$(seq 1 $nJobs);
+    do
+        if [[ -e ${outFile_base}\${iFile}.root && ! -e \${SCRATCH}/temp_\${1}_\${iFile}.root ]]; then
+            echo "Found new processed file -> number: \${iFile}"
+		    rootcp --recreate -r ${outFile_base}\${iFile}.root:\${1} \${SCRATCH}/temp_\${1}_\${iFile}.root
+        fi
+    done
+    nCompletedFiles=\$(ls \${SCRATCH}/temp_\${1}_*.root | wc -l)
+
+    #If all files have been processed, merge
+	if [ \${nCompletedFiles} -eq ${nJobs} ]; then
+        #Add files in correct order
+        for iFile in \$(seq 1 $nJobs); do
+            inputFiles="\${inputFiles} \${SCRATCH}/temp_\${1}_\${iFile}.root"
+        done
+
+        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${outputFile} \${inputFiles}
+        mv \${outputFile} ${outFolder}
+        rm \${inputFiles}
+		break
+	else
+        echo "Waiting for merge of directory \${1} -> Imported \${nCompletedFiles}/${nJobs} files."
+		sleep 10
+	fi
+done
+EOF
+
+# Create submit file for merge job, set to lower priority wrt file processing
+directory_sub="${HTCfolder}/submitMergeDir_${campaign}_${runNumber}.sub"
+
+cat <<EOF > $directory_sub
+executable            = ${mergeSingleDirExec}
+arguments             = \$(dir)
+error                 = ${mergeSingleDirExec_base}_\$(dir).err
+output                = ${mergeSingleDirExec_base}_\$(dir).out
+log                   = ${mergeSingleDirExec_base}_\$(dir).log
+priority              = 0
+
+periodic_hold = time() - jobstartdate > 10800
+periodic_hold_reason = "Merge for directory \$(dir) exceeded maximum runtime allowed, check presence of files in the output folder"
+
+queue dir from (
+$(cat ${outFolder}/dirs.txt)
+)
+EOF
+
+rm ${outFolder}/dummy_folders.root
+rm ${outFolder}/dirs.txt
+
+# Submit merge job
+chmod 754 ${mergeSingleDirExec}
+condor_submit -spool ${directory_sub}
+
 
 ##Create merge job -> merge all single output files in the correct order
 echo "Creating job for file merging!"
@@ -275,27 +369,20 @@ cat <<EOF > $mergeJobExec
 source /opt/exp_software/foot/root_shoe_foot.sh
 source ${SHOE_PATH}/build/setupFOOT.sh
 SCRATCH="\$(pwd)"
+tempOutput="\${SCRATCH}/MergeAna_temp.root"
+inputFiles="${outFolder}/MergeDir_*_temp.root"
 
 #While loop that checks if all files have been processed
 while true; do
-    nCompletedFiles=\$(ls ${outFile_base}*.root | wc -l)
+    nCompletedDirs=\$(ls ${outFolder}/MergeDir_*_temp.root | wc -l)
 
-	if [ \${nCompletedFiles} -eq ${nJobs} ]; then
-
-        command="\${SCRATCH}/MergeAna_temp.root"
-
-        for iFile in \$(seq 1 $nJobs); do
-            command="\${command} ${outFile_base}\${iFile}.root"
-        done
-
-        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
-        mv \${SCRATCH}/MergeAna_temp.root \$(dirname ${outFile})
-        mv \$(dirname ${outFile})/MergeAna_temp.root ${outFile}
-
-        rm ${outFile_base}*.root
+	if [ \${nCompletedDirs} -eq ${nDirs} ]; then
+        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -f \${tempOutput} \${inputFiles}
+        mv \${tempOutput} ${outFile}
+        rm \${inputFiles} ${outFile_base}*.root
 		break
 	else
-        echo "Analysis of ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nJobs} files. Waiting.."
+        echo "Final merge of ${campaign} run ${runNumber} -> Processed \${nCompletedDirs}/${nDirs} directories. Waiting.."
 		sleep 20
 	fi
 done
@@ -309,8 +396,11 @@ executable            = ${mergeJobExec}
 error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
-request_cpus          = 8
-priority              = -2
+priority              = -5
+
+periodic_hold = time() - jobstartdate > 7200
+periodic_hold_reason = "Final merge of file ${inFile} exceeded maximum runtime allowed, check presence of files in the output folder"
+
 queue
 EOF
 

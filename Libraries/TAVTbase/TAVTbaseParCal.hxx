@@ -58,6 +58,9 @@ private:
    //! Set function
    void SetFunction();
    
+private:
+   static Bool_t fgkLandauOn; ///< flag to set Landau function on
+   
 public:
 
    TAVTbaseParCal();

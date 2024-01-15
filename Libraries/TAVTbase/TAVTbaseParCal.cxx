@@ -24,6 +24,7 @@
 //! Class Imp
 ClassImp(TAVTbaseParCal);
 
+Bool_t TAVTbaseParCal::fgkLandauOn = false;
 
 //------------------------------------------+-----------------------------------
 //! Standard constructor
@@ -35,6 +36,11 @@ TAVTbaseParCal::TAVTbaseParCal()
   fChargeMaxProba(0.),
   fkDefaultCalName("")
 {
+   // set default wise to 1
+   for (Int_t p = 0; p < 32; p++) {
+      fEffParameter[p].SensorId   = p;
+      fEffParameter[p].QuadEff[p] = 1.;
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -43,11 +49,13 @@ TAVTbaseParCal::~TAVTbaseParCal()
 {
    delete fChargeProba;
    delete fChargeProbaNorm;
-   for (Int_t p = 0; p < fChargesN; p++) {
-	  delete fLandau[p];
-	  delete fLandauNorm[p];
+   if (fgkLandauOn) {
+      for (Int_t p = 0; p < fChargesN; p++) {
+         delete fLandau[p];
+         delete fLandauNorm[p];
+      }
+      delete fLandauTot;
    }
-   //delete fLandauTot;
 }
 
 //------------------------------------------+-----------------------------------
@@ -66,6 +74,8 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
    
+   Info("FromFile()", "Open file %s for calibration\n", name.Data());
+
    ReadItem(fChargesN);
    if(FootDebugLevel(1))
       printf("ChargesN: %d\n", fChargesN);
@@ -86,14 +96,15 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
 		      << Form("%d %f %f %f %f", fLandauParameter[p].Charge, fLandauParameter[p].Constant, 
 				 fLandauParameter[p].MPV, fLandauParameter[p].Sigma, fLandauParameter[p].Quench) << endl;
    }
-   
+   delete[] tmp;
+
    if (!Eof()) {
       ReadItem(fSensorsN);
       if(FootDebugLevel(1))
          printf("SensorsN: %d\n", fSensorsN);
       
       Double_t* tmp = new Double_t[4];
-      for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
+      for (Int_t p = 0; p < fSensorsN; p++) { // Loop on each charge
          
          // read parameters
          ReadItem(tmp, 4, ' ');
@@ -109,12 +120,11 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
             << Form("%d %f %f %f %f", fEffParameter[p].SensorId, fEffParameter[p].QuadEff[0],
                     fEffParameter[p].QuadEff[1], fEffParameter[p].QuadEff[2], fEffParameter[p].QuadEff[3]) << endl;
       }
+      delete[] tmp;
    }
    
-   
-   delete[] tmp;
-   
-   SetFunction();
+   if (fgkLandauOn)
+      SetFunction();
    
    return true;
 }

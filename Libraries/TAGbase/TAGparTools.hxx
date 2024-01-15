@@ -60,6 +60,8 @@ public:
    void    ReadItem(Int_t &arg);
    // Read float item
    void    ReadItem(Float_t &arg);
+  // Read double item
+   void    ReadItem(Double_t &arg);
    // Read char array with a delimiter in string
    void    ReadItem(TArrayC& array, const Char_t delimiter = ';');
    // Read integer array with a delimiter in string

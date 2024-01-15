@@ -94,66 +94,26 @@ TAGrecoManager::TAGrecoManager( const TString expName )
 const TAGrunInfo TAGrecoManager::GetGlobalInfo()
 {
    TAGrunInfo runInfo;
-
-   if (IsFromLocalReco())
-      runInfo.GetGlobalPar().FromLocalReco = true;
-
-   if (IsSaveTree())
-      runInfo.GetGlobalPar().EnableTree = true;
-   
-   if (IsSaveFlatTree())
-      runInfo.GetGlobalPar().EnableFlatTree = true;
-
-   if (IsSaveHisto())
-      runInfo.GetGlobalPar().EnableHisto = true;
-
-   if (IsSaveHits())
-      runInfo.GetGlobalPar().EnableSaveHits = true;
-
-   if (IsRegionMc())
-      runInfo.GetGlobalPar().EnableRegionMc = true;
-   
-   if (IsElecNoiseMc())
-      runInfo.GetGlobalPar().EnableElecNoiseMc = true;
-
-   if (IsTracking())
-      runInfo.GetGlobalPar().EnableTracking = true;
-
-   if (IsReadRootObj())
-      runInfo.GetGlobalPar().EnableRootObject = true;
-
-   if (IncludeKalman())
-      runInfo.GetGlobalPar().IncludeKalman = true;
-
-   if (IncludeTOE())
-      runInfo.GetGlobalPar().IncludeTOE = true;
-
-   if (IncludeDI())
-      runInfo.GetGlobalPar().IncludeDI = true;
-
-   if (IncludeST())
-      runInfo.GetGlobalPar().IncludeST = true;
-
-   if (IncludeBM())
-      runInfo.GetGlobalPar().IncludeBM = true;
-
-   if (IncludeTG())
-      runInfo.GetGlobalPar().IncludeTG = true;
-
-   if (IncludeVT())
-      runInfo.GetGlobalPar().IncludeVT = true;
-
-   if (IncludeIT())
-      runInfo.GetGlobalPar().IncludeIT = true;
-
-   if (IncludeMSD())
-      runInfo.GetGlobalPar().IncludeMSD = true;
-
-   if (IncludeTW())
-      runInfo.GetGlobalPar().IncludeTW = true;
-
-   if (IncludeCA())
-      runInfo.GetGlobalPar().IncludeCA = true;
+   runInfo.GetGlobalPar().FromLocalReco     = IsFromLocalReco();
+   runInfo.GetGlobalPar().EnableTree        = IsSaveTree();
+   runInfo.GetGlobalPar().EnableFlatTree    = IsSaveFlatTree();
+   runInfo.GetGlobalPar().EnableHisto       = IsSaveHisto();
+   runInfo.GetGlobalPar().EnableSaveHits    = IsSaveHits();
+   runInfo.GetGlobalPar().EnableRegionMc    = IsRegionMc();
+   runInfo.GetGlobalPar().EnableElecNoiseMc = IsElecNoiseMc();
+   runInfo.GetGlobalPar().EnableTracking    = IsTracking();
+   runInfo.GetGlobalPar().EnableRootObject  = IsReadRootObj();
+   runInfo.GetGlobalPar().IncludeKalman     = IncludeKalman();
+   runInfo.GetGlobalPar().IncludeTOE        = IncludeTOE();
+   runInfo.GetGlobalPar().IncludeDI         = IncludeDI();
+   runInfo.GetGlobalPar().IncludeST         = IncludeST();
+   runInfo.GetGlobalPar().IncludeBM         = IncludeBM();
+   runInfo.GetGlobalPar().IncludeTG         = IncludeTG();
+   runInfo.GetGlobalPar().IncludeVT         = IncludeVT();
+   runInfo.GetGlobalPar().IncludeIT         = IncludeIT();
+   runInfo.GetGlobalPar().IncludeMSD        = IncludeMSD();
+   runInfo.GetGlobalPar().IncludeTW         = IncludeTW();
+   runInfo.GetGlobalPar().IncludeCA         = IncludeCA();
 
    return runInfo;
 }

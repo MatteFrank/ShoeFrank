@@ -7,23 +7,21 @@
 
 # To launch this script, issue the command:
 
-# > ./path/to/runShoeBatchT1_MC.sh -i inputFile -o outputFolder -c campaign -r run
+# > ./path/to/runShoeBatchT1_MC.sh -i inputFile -o outputFolder
 
 # where:
-# - inputFile is the path of the input file. The input file is forced to be inside "/storage/gpfs_data/foot/shared/SimulatedData". This option needs either the full path of the input directory or the relative one starting from the "/storage/gpfs_data/foot/shared/SimulatedData" folder.
+# - inputFile is the path of the input file. The input file is forced to be inside "/storage/gpfs_data/foot/shared/SimulatedData".
 # - outputFolder is the path to the output folder. This is forced to be in "/storage/gpfs_data/foot/${USER}". If you don't have a directory like this one already in the Tier1, it will be created.
-# - campaign is the SHOE campaign as usual
-# - run is the run number
 
 # The script also allows for the possibility to merge the output files of each condor job in a single file through the "hadd" command of root, launched in a separate job. If you want this task to be performed, add the argument "-m 1" to the command line, as in:
 
-# > ./path/to/runShoeBatchT1_MC.sh -i inputFile -o outputFolder -c campaign -r run -m 1
+# > ./path/to/runShoeBatchT1_MC.sh -i inputFile -o outputFolder -m 1
 
 # NB: Keep in mind that this step erases the single job output files, so ony use it when you are 100% sure that SHOE will run without issues!
 
 # When running on MC campaigns, the input folder could potentially contain more than one file. If the files only differ by a number in the format "_X_", the script has an additional option that can be used to process all files with one single command. Say that, for example, the inputFolder contains two files named "12C_200_1_shoereg.root" and "12C_200_2_shoereg.root". In this case, one can run on both files by launching:
 
-# > ./path/to/runShoeBatchT1_MC.sh -i inputFolder/12C_200_1_shoereg.root -o outputFolder -c campaign -r run -m 1 -f 1
+# > ./path/to/runShoeBatchT1_MC.sh -i inputFolder/12C_200_1_shoereg.root -o outputFolder -m 1 -f 1
 
 # The addition of the "-f 1" option tells the script to look for subsequent files and run all of them. A job is also created to handle the final merging of all output files.
 
@@ -73,6 +71,8 @@
 
 ################ SCRIPT START ######################
 
+echo "Start job submission!"
+
 INPUT_BASE_PATH="/storage/gpfs_data/foot/shared/SimulatedData"
 OUTPUT_BASE_PATH="/storage/gpfs_data/foot/${USER}"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
@@ -95,23 +95,25 @@ do
     case "${flag}" in
         i) inFile=${OPTARG};;
         o) outFolder=${OPTARG};;
-        c) campaign=${OPTARG};;
-        r) runNumber=${OPTARG};;
         m) mergeFilesOpt=${OPTARG};;
         f) fullStat=${OPTARG};;
     esac
 done
 
-#I/O checks of input file
-if [[ ! "$inFile" == *"$INPUT_BASE_PATH"* ]]; then
-    inFile=$INPUT_BASE_PATH"/"$inFile
-    echo "Input file path set outside ${INPUT_BASE_PATH}. Changed to ${inFile}"
-fi
+inFile=$(realpath ${inFile})
+outFolder=$(realpath ${outFolder})
 
+#I/O checks of input file
 if [ ! -e "$inFile" ]; then
     echo "Input file ${inFile} not found!"
     exit 0
 fi
+
+if [[ ! "$inFile" == *"$INPUT_BASE_PATH"* ]]; then
+    echo "Input file path set outside ${INPUT_BASE_PATH}! Please, choose from files inside this directory."
+    exit 0
+fi
+
 
 #"full stat" required -> save the basename of the input file and its number
 if [[ $fullStat -eq 1 ]]; then
@@ -130,8 +132,8 @@ fi
 
 #I/O checks of output folder
 if [[ ! "$outFolder" == *"$OUTPUT_BASE_PATH"* ]]; then
-    outFolder=$OUTPUT_BASE_PATH"/"$outFolder
-    echo "Output folder path set outside ${OUTPUT_BASE_PATH}. Changed to ${outFolder}"
+    echo "Output folder path set outside ${OUTPUT_BASE_PATH}. Please, choose another output path"
+    exit 0
 fi
 
 if [ ! -d "$outFolder" ]; then
@@ -151,12 +153,14 @@ fi
 #Handle the case in which the "full stat" is required: more sub-folders
 if [[ ! $fileNumber -eq 0 ]]; then
     outFolder=${outFolder}"/"${fileNumber}
-fi
-
-#Check that run number has been properly set
-if [[ $runNumber -le 0 ]]; then
-    echo "Run number not set properly!"
-    exit 0
+    if [ ! -d "$outFolder" ]; then
+        mkdir $outFolder
+        if [ $? -ne 0 ]; then
+            echo "Failed to create output directory. Exiting"
+            exit 0
+        fi
+        echo "Directory ${outFolder} did not exist, created now!"
+    fi
 fi
 
 #Create folder for condor auxiliary files if not present
@@ -171,15 +175,39 @@ if [ ! -d $HTCfolder ]; then
     echo "Directory ${HTCfolder} did not exist, created now!"
 fi
 
+echo "Retrieving campaign and run number from input file..."
+
 #Find number of events in the MC file using root
 source /opt/exp_software/foot/root_shoe_foot.sh > /dev/null 2>&1
 
+cd ${SHOE_PATH}/build/Reconstruction
 root -l $inFile <<-EOF > /dev/null 2>&1
 std::ofstream ofs("${HTCfolder}/temp_evts.txt")
+std::ofstream ofsCamp("${HTCfolder}/temp_campaign.txt")
+std::ofstream ofsRun("${HTCfolder}/temp_runNumber.txt")
 ofs << EventTree->GetEntries()
+ofsCamp << runinfo->CampaignName()
+ofsRun << runinfo->RunNumber()
 EOF
+cd - > /dev/null 2>&1
+
+echo "Done"
 
 nTotEv=$(cat ${HTCfolder}/temp_evts.txt)
+campaign=$(cat ${HTCfolder}/temp_campaign.txt)
+runNumber=$(cat ${HTCfolder}/temp_runNumber.txt)
+
+if [ -z $campaign ]; then
+    echo "Campaign name not read correctly from input file. Check runinfo object"
+    exit 0
+fi
+
+if [ -z $runNumber ]; then
+    echo "Run number not read correctly from input file. Check runinfo object"
+    exit 0
+fi
+
+#Remove temporary files
 rm ${HTCfolder}/temp_*.txt
 
 # Set number of events per job and find number of jobs
@@ -322,6 +350,10 @@ output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
 priority              = -2
+
+periodic_hold = time() - jobstartdate > 7200
+periodic_hold_reason = "Merge of output from ${inFile} exceeded maximum runtime allowed, check presence of single files in the output folder"
+
 queue
 EOF
 
@@ -342,7 +374,7 @@ if [[ ! $fileNumber -eq 0 ]]; then
     #Case1: next file found in folder, recall this script on the new file
     if [[ -e "$inFile" ]]; then
         echo "Moving to next file in the campaign"
-        ./$0 -i $inFile -o $outFolder -c $campaign -r $runNumber -m 1 -f 1
+        ./$0 -i $inFile -o $outFolder -m 1 -f 1
     #Case2: next file does not exist, create and submit the job for the "full stat" merge
     else
         baseMergedSingleFile="$(basename $outMergedFile)"
@@ -403,6 +435,10 @@ output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
 priority              = -5
+
+periodic_hold = time() - jobstartdate > 7200
+periodic_hold_reason = "Merge of full stat output exceeded maximum runtime allowed, check presence of files in the output folder"
+
 queue
 EOF
 
