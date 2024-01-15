@@ -134,7 +134,7 @@ void RecoRaw::CreateRawAction()
          if (fFlagHisto)
             fActVmeReaderBm->CreateHistogram();
       } else {
-         fActDatRawBm = new TABMactNtuRaw(name, fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuHitSt);
+         fActDatRawBm = new TABMactNtuRaw(name, fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuHitSt, fpNtuWDtrigInfo);
          if (fFlagHisto)
             fActDatRawBm->CreateHistogram();
       }

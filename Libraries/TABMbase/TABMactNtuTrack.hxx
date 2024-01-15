@@ -77,7 +77,15 @@ public:
   ROOT::Math::Functor* fpFunctor;
 
   //histos
-  TH2F*            fpResTot;
+  TH2F*            fpResAll;    //Residual distribution for all the hits
+  TH2F*            fpResSel;    //Residual distribution for selected hits
+  TH2F*            fpResDisc;   //Residual distribution for rejected hits
+  TH2F*            fpResAllX;    //Residual distribution for all the hits
+  TH2F*            fpResSelX;    //Residual distribution for selected hits
+  TH2F*            fpResDiscX;   //Residual distribution for rejected hits
+  TH2F*            fpResAllY;    //Residual distribution for all the hits
+  TH2F*            fpResSelY;    //Residual distribution for selected hits
+  TH2F*            fpResDiscY;   //Residual distribution for rejected hits
   TH2F*            fpHisMap;
   TH2F*            fpHisMapTW;
   TH2F*            fpHisMylar12d;

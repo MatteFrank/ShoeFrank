@@ -47,11 +47,17 @@ class TABMparCal : public TAGparTools {
     //T0 functions
     void        PrintT0s(TString , TString, Long64_t);
     void        SetT0s(vector<Float_t> t0s);
+    void        SetT0Frags(vector<Float_t> t0s);
     void        SetT0(Int_t cha, Float_t t0in);
+    void        SetT0Frag(Int_t cha, Float_t t0in);    
     Float_t     GetT0(Int_t view, Int_t plane, Int_t cell){return GetT0(cell+view*3+plane*6);};
+    Float_t     GetT0Frag(Int_t view, Int_t plane, Int_t cell){return GetT0Frag(cell+view*3+plane*6);};
     Float_t     GetT0(Int_t index_in){return (index_in<36 && index_in>-1) ? fT0Vec[index_in]:-1000;};
+    Float_t     GetT0Frag(Int_t index_in){return (index_in<36 && index_in>-1) ? fT0FragVec[index_in]:-1000;};
     void        CoutT0();
-    void        ResetT0(){fill(fT0Vec.begin(), fT0Vec.end(),-10000);};
+    void        ResetT0(){fill(fT0Vec.begin(), fT0Vec.end(),-10000);fill(fT0FragVec.begin(), fT0FragVec.end(),-10000);};
+    //!  Return true if the BM loaded two sets of T0 va
+    Bool_t      Havefragtrig(){return fT0FragVec.size();}; 
 
     //ADC functions
     void        PrintAdc(TString , TString, Long64_t);
@@ -72,6 +78,7 @@ class TABMparCal : public TAGparTools {
 
   private:
     vector<Float_t>  fT0Vec;                    ///< vector of Beam Monitor T0 [ns], the vector position corresponds to the cellid index [0-35]
+    vector<Float_t>  fT0FragVec;                ///< vector of Beam Monitor T0 [ns] when the fragmentation trigger is set, the vector position corresponds to the cellid index [0-35]
     vector<pair<Float_t,Float_t>>  fAdcPedVec;  ///< vector of ADC pedestal values (first) and devstd (second)
     TF1             *fpResoFunc;                ///< Space resolution [cm] function as a function of drift distance [cm]
     TF1             *fpSTrel;                   ///< Space time relation fuction expressed as space [cm] as a function of drift time [ns]

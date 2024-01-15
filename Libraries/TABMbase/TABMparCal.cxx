@@ -70,12 +70,23 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   }
   char tmp_char[200];
   vector<Float_t> fileT0(36,-10000.);
-  Int_t tmp_int=-1;
-  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char;
+  vector<Float_t> fileFragT0(36,-10000.);
+  Int_t tmp_int;
+  Bool_t havefragtrig=false;
+  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_int;
+  if(tmp_int<0)
+    havefragtrig=true;
 
+  if(FootDebugLevel(1)) 
+    cout<<"havefragtrig="<<havefragtrig<<endl;
+  
+  tmp_int=-1;
   for(Int_t i=0;i<36;i++){
-    if(!infile.eof() && tmp_int==i-1)
+    if(!infile.eof() && tmp_int==i-1){
       infile>>tmp_char>>tmp_int>>tmp_char>>fileT0.at(i);
+      if(havefragtrig)
+        infile>>tmp_char>>fileFragT0.at(i);
+    }
     else{
       cout<<"TABMparCal::FromFile::Error in the T0 file "<<filename<<"!!!!!! check if it is write properly"<<endl;
       infile.close();
@@ -84,14 +95,27 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   }
 
   fT0Vec=fileT0;
+  if(havefragtrig)
+    fT0FragVec=fileFragT0;
+
   //check if the T0 are ok
   if(FootDebugLevel(1)) {
+    cout<<"havefragtrig="<<havefragtrig<<endl;
     for(Int_t i=0;i<36;i++) {
-      cout<<"BM T0: "<<fT0Vec[i]<<endl;
+      cout<<"BM_T0: "<<fT0Vec[i];
+      if(havefragtrig)
+        cout<<"  BM_T0Frag: "<<fT0FragVec[i];
+      cout<<endl;
       if(fT0Vec[i]==-10000)
-        cout<<"WARNING IN TABMparCal::FromFile: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
+        cout<<"WARNING IN TABMparCal::FromFile: channel not considered in tdc map tdc_cha=i= "<<i<<" T0 for this channel is set to -10000"<<endl;
       else if(fT0Vec[i]==-20000)
-        cout<<"WARNING IN TABMparCal::FromFile: channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
+        cout<<"WARNING IN TABMparCal::FromFile: channel with too few elements to evaluate T0: tdc_cha=i= "<<i<<" T0 for this channel is set to -20000"<<endl;
+      if(havefragtrig){
+        if(fT0FragVec[i]==-10000)
+          cout<<"WARNING IN TABMparCal::FromFile: channel not considered in tdc map tdc_cha=i= "<<i<<" T0Frag for this channel is set to -10000"<<endl;
+        else if(fT0FragVec[i]==-20000)
+          cout<<"WARNING IN TABMparCal::FromFile: channel with too few elements to evaluate T0: tdc_cha=i= "<<i<<" T0Frag for this channel is set to -20000"<<endl;
+      }
     }
   }
 
@@ -151,7 +175,7 @@ void TABMparCal::PrintT0s(TString output_filename, TString input_filename, Long6
   outfile.open(output_filename.Data(),ios::out);
   outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<endl<<endl;
   for(Int_t i=0;i<36;i++)
-    outfile<<"cellid= "<<i<<"  T0_time= "<<fT0Vec[i]<<endl;
+    outfile<<"cellid= "<<i<<"  T0_time= "<<fT0Vec[i]<<"   T0Frag_time= "<<fT0FragVec[i]<<endl;
   outfile<<endl;
   outfile.close();
   return;
@@ -165,6 +189,21 @@ void TABMparCal::SetT0s(vector<Float_t> t0s) {
 
   if(t0s.size() == 36) {
     fT0Vec = t0s;
+  } else {
+    Error("Parameter()","Vectors size mismatch:: fix the t0 vector inmput size!!! %d ",(int) t0s.size());
+  }
+
+  return;
+}
+
+//------------------------------------------+-----------------------------------
+//! Set the T0Frag vector with another vector
+//!
+//! \param[in] t0 vector to be copied
+void TABMparCal::SetT0Frags(vector<Float_t> t0s) {
+
+  if(t0s.size() == 36) {
+    fT0FragVec = t0s;
   } else {
     Error("Parameter()","Vectors size mismatch:: fix the t0 vector inmput size!!! %d ",(int) t0s.size());
   }
@@ -188,6 +227,24 @@ else {
   return;
 }
 
+
+
+//------------------------------------------+-----------------------------------
+//! Set a T0Frag value to a specific cell
+//!
+//! \param[in] cha cellid index of the cell [0-35]
+//! \param[in] t0in t0 value
+void TABMparCal::SetT0Frag(Int_t cha, Float_t t0in){
+
+if(cha<36 && cha>=0)
+  fT0FragVec[cha]=t0in;
+else {
+    Error("Parameter()","Channel out of Range!!! cha=%d",cha);
+  }
+
+  return;
+}
+
 //------------------------------------------+-----------------------------------
 //! Print on the terminal all the T0 values
 //!
@@ -196,6 +253,12 @@ void TABMparCal::CoutT0(){
   for(Int_t i=0;i<fT0Vec.size();i++)
     cout<<"cell_id="<<i<<"  T0="<<fT0Vec[i]<<endl;
   cout<<endl;
+  if(fT0FragVec.size()>0){
+    cout<<"Print BM T0Frag time:"<<endl;
+    for(Int_t i=0;i<fT0FragVec.size();i++)
+      cout<<"cell_id="<<i<<"  T0Frag="<<fT0FragVec[i]<<endl;
+    cout<<endl;  
+  }
 }
 
 //********************************** ADC methods ********************************
