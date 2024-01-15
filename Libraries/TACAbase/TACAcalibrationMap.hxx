@@ -52,8 +52,7 @@ private:
   TCalibrationMapType       fCalibrationMap;     ///< Calibration map
   vector<ADC2TempParam_t>   fCalibTempMapCry;    ///< map for temperature calibration per crystal
   ADC2EnergyParam_t         fCalibEnergyMap;     ///< map for energy calibration
-  vector<ADC2EnergyParamCry_t>   fCalibEnergyMapCry;
-  vector<double>            fCalibChargeMap;     ///< map for charge calibration per crystal
+  vector<ADC2EnergyParamCry_t>   fCalibEnergyMapCry;  ///< map for charge calibration per crystal
 
   TACAparMap*               fParpMap;            ///< mapping file
 
