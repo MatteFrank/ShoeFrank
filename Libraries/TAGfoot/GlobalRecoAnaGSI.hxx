@@ -84,6 +84,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookMigMatrix(string path, bool enableMigMatr= false);
   void BookChargeStudies(string path);
   void BookFragmentationStudies(string path);
+  void BookAngularResolution(string path);
   void MyRecoBooking(string path_name);
   void MyReco(string path_name);
   Bool_t CheckRadiativeDecayChain(Int_t partID, std::vector<Int_t>* partIDvec);
@@ -98,6 +99,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   bool isGoodReco(Int_t Id_part);
   void ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTrack);
   void FragmentationStudies(string path, TAGtrack *fGlbTrack);
+  void AngularResolutionStudies(string path, TAGtrack *fGlbTrack);
 
   // useful formulas
   TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)
@@ -206,6 +208,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
     TAMCntuEvent *myMcNtuEvent;
     TAMCntuPart *myMcNtuPart;
     TAWDntuTrigger *wdTrig;
+
+    TVector3 fMomMCAtTgt;
 
     vector<vector<Int_t>> fGlbTrkVec;            // store the global track detector point index, 0=VTX, 1=IT, 2=MSD, 3=TW, 4=CALO, for each global track
     vector<vector<vector<Int_t>>> fEvtGlbTrkVec; // store collection of fGlbTrkVec for each event

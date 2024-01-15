@@ -1309,6 +1309,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
       else
         Th_BM = P_cross.Angle(P_beforeTG) * TMath::RadToDeg();
       Th_cross = P_cross.Theta() * TMath::RadToDeg();
+      fMomMCAtTgt = P_cross;
     }
   }
 
@@ -1537,6 +1538,21 @@ void GlobalRecoAnaGSI::FragmentationStudies(string path, TAGtrack *fGlbTrack)
   }
 }
 
+void GlobalRecoAnaGSI::AngularResolutionStudies(string path, TAGtrack *fGlbTrack)
+{
+  TVector3 momReco = fGlbTrack->GetTgtDirection();
+  TVector3 momMC = fMomMCAtTgt;
+  double thetaMC = momMC.Theta()*TMath::RadToDeg();
+  double dtheta = momMC.Angle(momReco)*1000;
+  string path_;
+
+  path_ = path + "/theta2d_all";
+  ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(thetaMC, dtheta);
+
+  path_ = path + "/" + to_string(Z_meas) + "/theta2d";
+  ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(thetaMC, dtheta);
+}
+
 void GlobalRecoAnaGSI::BookFragmentationStudies(string path)
 { // study of Z=8
   gDirectory->mkdir(path.c_str());
@@ -1553,6 +1569,22 @@ void GlobalRecoAnaGSI::BookFragmentationStudies(string path)
     h = new TH1D("residual", "worst residual for every track fit - meas", 1000, -0.1,0.1);
     h2 = new TH2D("posvsres", "particle origin vs worst residual for every track fit ; pos(Z) [cm]; res [cm] ", 100, -105., 200., 200, -0.1, 0.1);
     h = new TH1D("trackquality", "Track quality", 11, 0,1.1);
+    gDirectory->cd("..");
+  }
+  gDirectory->cd("..");
+}
+
+void GlobalRecoAnaGSI::BookAngularResolution(string path)
+{ // study of Z=8
+  gDirectory->mkdir(path.c_str());
+  gDirectory->cd(path.c_str());
+
+  h2 = new TH2D("theta2d_all", "angular res; #theta_{MC} [deg]; #theta_{reco-MC} [mrad]", 20, 0, 12, 200, 0, 20);
+  for (int charge = 1; charge < 9; charge++)
+  {
+    gDirectory->mkdir(to_string(charge).c_str());
+    gDirectory->cd(to_string(charge).c_str());
+    h2 = new TH2D("theta2d", "angular res; #theta_{MC} [deg]; #theta_{reco-MC} [mrad]", 20, 0, 12, 200, 0, 20);
     gDirectory->cd("..");
   }
   gDirectory->cd("..");
@@ -1623,8 +1655,11 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
       FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
     }
 
-  name = "Z_" + path_name + "_match";
-  FragmentationStudies(name, fGlbTrack);
+    name = "Z_" + path_name + "_match";
+    FragmentationStudies(name, fGlbTrack);
+
+    name = "Theta_" + path_name;
+    AngularResolutionStudies(name, fGlbTrack);
   }
 }
 
@@ -1651,6 +1686,9 @@ void GlobalRecoAnaGSI::MyRecoBooking(string path_name)
     BookMigMatrix(name, true);
     name = "Z_" + path_name + "_match";
     BookFragmentationStudies(name);
+
+    name = "Theta_" + path_name;
+    BookAngularResolution(name);
   }
 }
 
