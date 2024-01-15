@@ -100,15 +100,6 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     if (fFlagMC)
     {
-      // Increment the number of track clones found in the event
-      for (auto itZ : m_nClone) // Loop on Z_true
-      {
-        for (auto itMCid : itZ.second) // Loop on MCtrackID
-        {
-          if (itMCid.second > 1)
-            n_clones[itZ.first] += itMCid.second - 1;
-        }
-      }
 
       // MCParticleStudies();
       //***** loop on every TAMCparticle:
@@ -333,6 +324,17 @@ void GlobalRecoAnaGSI::LoopEvent()
       ntracks++;
 
     } //********* end loop on global tracks ****************
+
+    // Increment the number of track clones found in the event
+    for (auto itZ : m_nClone) // Loop on Z_true
+    {
+      for (auto itMCid : itZ.second) // Loop on MCtrackID
+      {
+        if (itMCid.second > 1)
+          n_clones[itZ.first] += itMCid.second - 1;
+      }
+    }
+
 
     ++currEvent;
   } // end of loop event
