@@ -147,6 +147,25 @@ void TAGparTools::ReadItem(Float_t &arg)
 	  cout << arg << endl;
 }
 
+
+
+//______________________________________________________________________________
+//! Read a double from a string
+//!
+//! \param[out] arg read float
+void TAGparTools::ReadItem(Double_t &arg)
+{
+   TString item;
+   ReadItem(item);
+   arg = item.Atof();
+  if(FootDebugLevel(3))
+	  cout << arg << endl;
+}
+
+
+
+
+
 //______________________________________________________________________________
 //! Read a char array from a string
 //!
