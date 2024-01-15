@@ -84,9 +84,12 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void BookMigMatrix(string path, bool enableMigMatr= false);
   void BookChargeStudies(string path);
   void BookQualityPlots(string path);
+  void BookFragmentationStudies(string path);
+  void BookAngularResolution(string path);
   void MyRecoBooking(string path_name);
   void MyReco(string path_name);
-  Bool_t CheckRadiativeDecayChain(TAMCpart* part, Int_t* part_ID);
+  Bool_t CheckRadiativeDecayChain(Int_t partID, std::vector<Int_t>* partIDvec);
+  Bool_t CheckFragIn1stTWlayer(Int_t partID, std::vector<Int_t>* partIDvec);
 
   vector<bool> CheckTwPointInMoreTracks();     // check if more than one glb track has the same tw point
   vector<bool> CheckTwParticleOrigin();
@@ -97,6 +100,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
   bool isGoodReco(Int_t Id_part);
   void ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTrack);
   void QualityPlots(string path, TAGtrack *fGlbTrack);
+  void FragmentationStudies(string path, TAGtrack *fGlbTrack);
+  void AngularResolutionStudies(string path, TAGtrack *fGlbTrack);
 
   // useful formulas
   TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)
@@ -162,8 +167,10 @@ class GlobalRecoAnaGSI : public RecoRaw {
     Double_t Ek_tot;
     Double_t M_true;
     Double_t Tof_true;
+    Double_t Tof_true2;
     Double_t Tof_startmc;
     Double_t Beta_true;
+    Double_t Beta_true2;
     TVector3 P_true;
     Double_t Th_true;
     Double_t Th_BM;
@@ -203,6 +210,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
     TAMCntuEvent *myMcNtuEvent;
     TAMCntuPart *myMcNtuPart;
     TAWDntuTrigger *wdTrig;
+
+    TVector3 fMomMCAtTgt;
 
     vector<vector<Int_t>> fGlbTrkVec;            // store the global track detector point index, 0=VTX, 1=IT, 2=MSD, 3=TW, 4=CALO, for each global track
     vector<vector<vector<Int_t>>> fEvtGlbTrkVec; // store collection of fGlbTrkVec for each event

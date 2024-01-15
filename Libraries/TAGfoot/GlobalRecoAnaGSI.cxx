@@ -100,15 +100,6 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     if (fFlagMC)
     {
-      // Increment the number of track clones found in the event
-      for (auto itZ : m_nClone) // Loop on Z_true
-      {
-        for (auto itMCid : itZ.second) // Loop on MCtrackID
-        {
-          if (itMCid.second > 1)
-            n_clones[itZ.first] += itMCid.second - 1;
-        }
-      }
 
       // MCParticleStudies();
       //***** loop on every TAMCparticle:
@@ -140,10 +131,10 @@ void GlobalRecoAnaGSI::LoopEvent()
 
     // study of origin of the particle crossing the tw for every track (MC)
     if (fFlagMC)
-      {
-        isParticleBorninTG.clear();
-        isParticleBorninTG = CheckTwParticleOrigin();
-      }
+    {
+      isParticleBorninTG.clear();
+      isParticleBorninTG = CheckTwParticleOrigin();
+    }
 
     Int_t nt_TW = 0; // number of reconstructed tracks with TW point for every event
     for (int it = 0; it < nt; it++)
@@ -249,90 +240,100 @@ void GlobalRecoAnaGSI::LoopEvent()
         // // // =================== Chi2 cuts + multitrack + NO TW in multitracks + MSD CUT
         // if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && nt > 1 && hasSameTwPoint.at(it) == false && MSDMatch == true)
         //   MyReco("MChi2MSDTWT");
-        }
+      }
 
-        // compute chi2 and residuals
-        residual = 0;
-        float res_temp = 0;
-        for (int i = 0; i < fGlbTrack->GetPointsN(); i++)
+      // compute chi2 and residuals
+      residual = 0;
+      float res_temp = 0;
+      for (int i = 0; i < fGlbTrack->GetPointsN(); i++)
+      {
+        auto point = fGlbTrack->GetPoint(i);
+        if ((string)point->GetDevName() == "MSD")
         {
-          auto point = fGlbTrack->GetPoint(i);
-          if ((string)point->GetDevName() == "MSD")
-          {
-            if (point->GetSensorIdx() % 2 == 0) // if it is the sensor x of the msd
-              res_temp = point->GetMeasPosition().X() - point->GetFitPosition().X();
-            else
-              res_temp = point->GetMeasPosition().Y() - point->GetFitPosition().Y();
-          }
-
-          if ((string)point->GetDevName() == "VT")
-          {
-            res_temp = (point->GetMeasPosition() - point->GetFitPosition()).Mag();
-          }
-          if (abs(res_temp) > abs(residual) )
-            residual = res_temp;
+          if (point->GetSensorIdx() % 2 == 0) // if it is the sensor x of the msd
+            res_temp = point->GetMeasPosition().X() - point->GetFitPosition().X();
+          else
+            res_temp = point->GetMeasPosition().Y() - point->GetFitPosition().Y();
         }
 
-        // cout << abs(residual) << endl;
-        bool residualCut = true;
-        // bool residualCut = abs(residual) < 0.01;
-        // bool chi2Cut = fGlbTrack->GetChi2() < 2;
-        bool chi2Cut = fGlbTrack->GetPval() > 0.01;
-
-        //// =================== RECO CHI2 cut
-        if (chi2Cut && residualCut)
-          MyReco("Chi2");
-
-        //// =================== RECO CHI2 cut + multitrack
-        if (chi2Cut && residualCut && nt > 1)
-          MyReco("MChi2");
-
-        // // =================== Chi2 cuts + multitrack + NO TW in multitracks
-        if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false)
-          MyReco("MChi2TWT");
-
-
-        // // =================== Chi2 cuts + multitrack + NO TW in multitracks + n_tracks == n_twpoints
-        if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
-          MyReco("MChi2TWTngt");
-        //Check if the vertex of the interaction is inside the target or not
-        bool VTok = true;
-        float fVtVtxTolerance = .05;
-        for(int iVt = 0; iVt < myVtNtuVtx->GetVertexN(); ++iVt)
+        if ((string)point->GetDevName() == "VT")
         {
-          TAVTvertex* vt = myVtNtuVtx->GetVertex(iVt);
-          if( !vt->IsBmMatched() )
-            continue;
-
-          TVector3 vtPos = GetGeoTrafo()->FromGlobalToTGLocal( GetGeoTrafo()->FromVTLocalToGlobal( vt->GetPosition() ) ); //vertex position in TG frame
-          TVector3 tgSize = GetParGeoG()->GetTargetPar().Size;
-          if( TMath::Abs(vtPos.X()) > tgSize.X()/2 + fVtVtxTolerance || TMath::Abs(vtPos.Y()) > tgSize.Y()/2 + fVtVtxTolerance || TMath::Abs(vtPos.Z()) > tgSize.Z()/2 + fVtVtxTolerance)
-          {
-            VTok = false;
-            break;
-          }
+          res_temp = (point->GetMeasPosition() - point->GetFitPosition()).Mag();
         }
+        if (abs(res_temp) > abs(residual) )
+          residual = res_temp;
+      }
 
-        if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN() && VTok)
-          MyReco("MChi2TWTngt_VTok");
+      // cout << abs(residual) << endl;
+      bool residualCut = true;
+      // bool residualCut = abs(residual) < 0.01;
+      // bool chi2Cut = fGlbTrack->GetChi2() < 2;
+      bool chi2Cut = fGlbTrack->GetPval() > 0.01;
 
-        // // // =================== Chi2 cuts +  NO TW in multitracks
-        // if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && hasSameTwPoint.at(it) == false)
-        //   MyReco("ChiTWT");
+      //Check if the vertex of the interaction is inside the target or not
+      bool VTok = false;
+      for(int iVt = 0; iVt < myVtNtuVtx->GetVertexN(); ++iVt)
+      {
+        TAVTvertex* vt = myVtNtuVtx->GetVertex(iVt);
+        if( !vt->IsBmMatched() )
+          continue;
 
-        if (fFlagMC)
-    {
-      if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN() && VTok && isParticleBorninTG.at(it) == true)
-        MyReco("MChi2TWTngt_originOk");
-    }
+        TVector3 vtPos = GetGeoTrafo()->FromGlobalToTGLocal( GetGeoTrafo()->FromVTLocalToGlobal( vt->GetPosition() ) ); //vertex position in TG frame
+        TVector3 vtPosErr = GetGeoTrafo()->VecFromGlobalToTGLocal( GetGeoTrafo()->VecFromVTLocalToGlobal( vt->GetPosError() ) ); //vertex position error in TG frame
+        TVector3 tgSize = GetParGeoG()->GetTargetPar().Size;
+        if( TMath::Abs(vtPos.X()) < tgSize.X()/2 + vtPosErr.X() && TMath::Abs(vtPos.Y()) < tgSize.Y()/2 + vtPosErr.Y() && TMath::Abs(vtPos.Z()) < tgSize.Z()/2 + vtPosErr.Z() )
+        {
+          VTok = true;
+          break;
+        }
+      }
 
-        //// ===================ALL TRACKS
-        MyReco("reco");
+      //// =================== RECO CHI2 cut
+      if (VTok && chi2Cut && residualCut)
+        MyReco("Chi2");
+
+      //// =================== RECO CHI2 cut + multitrack
+      if (VTok && chi2Cut && residualCut && nt > 1)
+        MyReco("MChi2");
+
+      // // =================== Chi2 cuts + multitrack + NO TW in multitracks
+      if (VTok && chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false)
+        MyReco("MChi2TWT");
+
+
+      // // =================== Chi2 cuts + multitrack + NO TW in multitracks + n_tracks == n_twpoints
+      if (VTok && chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
+        MyReco("MChi2TWTngt");
+
+      // if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN() && VTok)
+        // MyReco("MChi2TWTngt_VTok");
+
+      // // // =================== Chi2 cuts +  NO TW in multitracks
+      // if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && hasSameTwPoint.at(it) == false)
+      //   MyReco("ChiTWT");
+
+      if (fFlagMC)
+      {
+        if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN() && VTok && isParticleBorninTG.at(it) == true)
+          MyReco("MChi2TWTngt_originOk");
+      }
+
+      //// ===================ALL TRACKS
+      MyReco("reco");
 
       ntracks++;
 
     } //********* end loop on global tracks ****************
 
+    // Increment the number of track clones found in the event
+    for (auto itZ : m_nClone) // Loop on Z_true
+    {
+      for (auto itMCid : itZ.second) // Loop on MCtrackID
+      {
+        if (itMCid.second > 1)
+          n_clones[itZ.first] += itMCid.second - 1;
+      }
+    }
 
 
     ++currEvent;
@@ -418,7 +419,6 @@ void GlobalRecoAnaGSI::Booking()
   // chi2 + multitrack cuts on track  + no more tw points in tracks + n_glb= n_twpoints
   MyRecoBooking("MChi2TWTngt");
 
-  MyRecoBooking("MChi2TWTngt_VTok");
   MyRecoBooking("MChi2TWTngt_originOk");
 
   // all tracks
@@ -788,7 +788,6 @@ void GlobalRecoAnaGSI::FillYieldReco(string folderName, Int_t Z, Double_t Th)
       path = folderName + "/Z_" + to_string(Z - 1) + "#" + to_string(Z - 0.5) + "_" + to_string(Z + 0.5) + "/theta_" + to_string(i) + "#" + to_string(theta_binning[i][0]) + "_" + to_string(theta_binning[i][1]) + "/theta_";
       // cout << path << endl;
       ((TH1D *)gDirectory->Get(path.c_str()))->Fill(Th);
-      string path_matrix = folderName + "/Z_" + to_string(Z - 1) + "#" + to_string(Z - 0.5) + "_" + to_string(Z + 0.5) + "/theta_" + to_string(i) + "#" + to_string(theta_binning[i][0]) + "_" + to_string(theta_binning[i][1]) + "/migMatrix_Z";
     }
   }
 }
@@ -1143,6 +1142,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
   Tof_startmc = -1.;
   initTWPosition = -999;
   Beta_true = -1.;
+  Beta_true2 = -1.;
   P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
   P_beforeTG.SetXYZ(-999., -999., -999.);
   TrkIdMC = fGlbTrack->GetMcMainTrackId(); // associo l'IdMC alla particella più frequente della traccia  (prima era ottenuto tramite studio purity)
@@ -1227,11 +1227,30 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
     vecTwTrkId.push_back(twpoint->GetMcTrackIdx(i));
   }
   TrkIdMC_TW = twpoint->GetMcTrackIdx(0); // associo l'IdMC alla particella che ha attraversato il TW --> in questo modo bypasso il problema di frammentazione secondaria
+  // cout << "Twids::";
+  // for( int itw = 0;itw<twpoint->GetMcTracksN(); itw++ )
+  //   cout << twpoint->GetMcTrackIdx(itw) << " ";
+  // cout << endl;
   //  for (int i = 0; i < fGlbTrack->GetPointsN(); i++){
   //    auto twpoint = fGlbTrack->GetPoint(i);
   //    cout << twpoint -> GetDevName() << endl;
   //    cout<< "tw points mc: " << twpoint ->GetMcTracksN() << endl;
   //  }
+
+  //Check for gamma decay!
+  bool isGammaDecay = false;
+  std::vector<Int_t> particleID_vec;
+  isGammaDecay = CheckRadiativeDecayChain(TrkIdMC_TW, &particleID_vec);
+  
+  //check if fragmentation happens in 1st TW layer
+  if( !isGammaDecay )
+    CheckFragIn1stTWlayer(TrkIdMC_TW, &particleID_vec);
+  
+  if(std::find(particleID_vec.begin(), particleID_vec.end(), TrkIdMC) == particleID_vec.end())
+    particleID_vec.insert(particleID_vec.begin(), TrkIdMC);
+  
+  if(std::find(particleID_vec.begin(), particleID_vec.end(), TrkIdMC_TW) == particleID_vec.end())
+    particleID_vec.insert(particleID_vec.begin(), TrkIdMC_TW);
 
   if (TrkIdMC != -1)
   {
@@ -1257,7 +1276,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
             P_beforeTG = fpNtuMcReg->GetMomentum();
         }
 
-        if ((fpNtuMcReg->GetTrackIdx() - 1) == TrkIdMC)
+        if( std::find(particleID_vec.begin(), particleID_vec.end(), fpNtuMcReg->GetTrackIdx() - 1) != particleID_vec.end() || fpNtuMcReg->GetTrackIdx() - 1 == TrkIdMC )
         {
           // particle exit from target
           if (fpNtuMcReg->GetCrossN() == fRegAirBeforeTW && fpNtuMcReg->GetOldCrossN() == fRegTG)
@@ -1266,7 +1285,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
             Tof_startmc = fpNtuMcReg->GetTime() * fpFootGeo->SecToNs();
           }
           // particle crossing in the first TW layer
-          if (fpNtuMcReg->GetCrossN() <= fRegLastTWbar && fpNtuMcReg->GetCrossN() >= fRegFirstTWbarLay0)
+          if ((fpNtuMcReg->GetCrossN() >= fRegFirstTWbar && fpNtuMcReg->GetCrossN() <= fRegLastTWbar) && fpNtuMcReg->GetOldCrossN() == fRegAirAfterTW)
           {
             Tof_true = fpNtuMcReg->GetTime() * fpFootGeo->SecToNs();
             Beta_true = fpNtuMcReg->GetMomentum().Mag() / sqrt(fpNtuMcReg->GetMass() * fpNtuMcReg->GetMass() + fpNtuMcReg->GetMomentum().Mag() * fpNtuMcReg->GetMomentum().Mag());
@@ -1280,6 +1299,15 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
             Ek_cross_calo = sqrt(P_cross_calo * P_cross_calo + M_cross_calo * M_cross_calo) - M_cross_calo;
             Ek_cross_calo = Ek_cross_calo / M_cross_calo;
             // }
+          }
+        }
+
+        if( fpNtuMcReg->GetTrackIdx() - 1 == TrkIdMC )
+        {
+          if (fpNtuMcReg->GetCrossN() <= fRegLastTWbar && fpNtuMcReg->GetCrossN() >= fRegFirstTWbarLay0)
+          {
+            Tof_true2 = fpNtuMcReg->GetTime() * fpFootGeo->SecToNs();
+            Beta_true2 = fpNtuMcReg->GetMomentum().Mag() / sqrt(fpNtuMcReg->GetMass() * fpNtuMcReg->GetMass() + fpNtuMcReg->GetMomentum().Mag() * fpNtuMcReg->GetMomentum().Mag());
           }
         }
       }
@@ -1303,6 +1331,7 @@ void GlobalRecoAnaGSI::MCGlbTrkLoopSetVariables()
       else
         Th_BM = P_cross.Angle(P_beforeTG) * TMath::RadToDeg();
       Th_cross = P_cross.Theta() * TMath::RadToDeg();
+      fMomMCAtTgt = P_cross;
     }
   }
 
@@ -1326,39 +1355,43 @@ void GlobalRecoAnaGSI::FillMCPartYields()
   P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
   P_beforeTG.SetXYZ(-999., -999., -999.);
 
-  for (int iCross = 0; iCross < nCross; iCross++)
+  for (int iCross = 0; iCross < nCross; iCross++)//first cycle, check if event is good
   {
     // region description
     TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
-    // TVector3 crosspos = cross->GetPosition();       // Get CROSSx, CROSSy, CROSSz
     Int_t OldReg = cross->GetOldCrossN();
     Int_t NewReg = cross->GetCrossN();
-    // Double_t time_cross = cross->GetTime();
-    // TVector3 mom_cross = cross->GetMomentum();                                                                            // retrieves P at crossing
-    // Double32_t Mass = cross->GetMass();                                                                                   // retrieves Mass of track
-    // Double_t ekin_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2) + pow(Mass, 2)) - Mass; // Kinetic energy at crossing
-    // Double_t beta_cross = sqrt(pow(mom_cross(0), 2) + pow(mom_cross(1), 2) + pow(mom_cross(2), 2)) / (ekin_cross + Mass);
+
+    TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
+    Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
+
+    //study to check if the event is good: if the primary crosses the TG
+    if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0 ){ //if it is a primary
+      if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
+        P_beforeTG = cross->GetMomentum();
+        istrueEvent = true;
+    }}
+  }
+  if(!istrueEvent)
+    return;
+
+  for (int iCross = 0; iCross < nCross; iCross++)//second cycle, fill N_ref
+  {
+    // region description
+    TAMCregion *cross = pNtuReg->GetRegion(iCross); // Gets the i-crossing
+    Int_t OldReg = cross->GetOldCrossN();
+    Int_t NewReg = cross->GetCrossN();
 
     // particle description
     TAMCpart *particle = myMcNtuPart->GetTrack(cross->GetTrackIdx() - 1); // retrievs TrackID
     Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
-    // Int_t target_region = fRegTG;
     auto Mid = particle->GetMotherID();
-    // double mass = particle->GetMass(); // Get TRpaid-1
     auto Reg = particle->GetRegion();
-    // auto finalPos = particle->GetFinalPos();
-    // int baryon = particle->GetBaryon();
-    // TVector3 initMom = particle->GetInitP();
-    // double InitPmod = sqrt(pow(initMom(0), 2) + pow(initMom(1), 2) + pow(initMom(2), 2));
-    // Float_t Ek_tr_tot = (sqrt(pow(InitPmod, 2) + pow(mass, 2)) - mass);
-    // Ek_tr_tot = Ek_tr_tot * fpFootGeo->GevToMev();
-    // Float_t Ek_true = Ek_tr_tot / (double)baryon;                           // MeV/n
-    // Float_t theta_tr = particle->GetInitP().Theta() * (180. / TMath::Pi()); // in deg
     Float_t charge_tr = particle->GetCharge();
-    Int_t oldPid = particle_ID;
+    Beta_true =cross->GetMomentum().Mag() / sqrt(cross->GetMass() * cross->GetMass() + cross->GetMomentum().Mag() * cross->GetMomentum().Mag());
 
     bool isParticleGood = false;
-    bool gammaDecayHappened = false;
+    std::vector<Int_t> particleID_vec;
     if( particle->GetCharge() > 0 
         && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
         && (Beta_true > 0.3 && Beta_true < 0.9)     // with reasonable beta
@@ -1369,18 +1402,14 @@ void GlobalRecoAnaGSI::FillMCPartYields()
       else if( Reg == fRegTG && Mid == 0 ) //born in target from primary
           isParticleGood = true;
       else //Check for radiative decay in FLUKA!
-        isParticleGood = CheckRadiativeDecayChain(particle, &particle_ID);
+        isParticleGood = CheckRadiativeDecayChain(particle_ID, &particleID_vec);
     }
 
-    //study to check if the event is good: if the primary crosses the TG
-    if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0 ){ //if it is a primary
-      if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
-        istrueEvent = istrueEvent || true;
-    }}
-
-    TVector3 P_crossOld(-999,-999,-999);
     if ( isParticleGood )
     {
+      if(std::find(particleID_vec.begin(), particleID_vec.end(), particle_ID) == particleID_vec.end())
+        particleID_vec.insert(particleID_vec.begin(), particle_ID);
+
       // I want to measure the angle of emission of this particle:  i need to loop again the regions
       for (int iiCross = 0; iiCross < nCross; iiCross++)
       {
@@ -1390,33 +1419,25 @@ void GlobalRecoAnaGSI::FillMCPartYields()
         Int_t OldReg2 = cross2->GetOldCrossN();
         Int_t NewReg2 = cross2->GetCrossN();
 
-        // particle entering into target
-        if (NewReg2 == fRegTG && OldReg2 == fRegAirBeforeTW)
-        {
-          P_beforeTG = cross2->GetMomentum();
-        }
-
-        if ((cross2->GetTrackIdx() - 1) == particle_ID)
+        if ( std::find(particleID_vec.begin(), particleID_vec.end(), cross2->GetTrackIdx() - 1) != particleID_vec.end() )
         {
           // particle exit from target
           if (NewReg2 == fRegAirBeforeTW && OldReg2 == fRegTG)
           {
             P_cross = cross2->GetMomentum();
+            Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
+            if (charge_tr > 0 && charge_tr <= fPrimaryCharge){
+              FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
+            }
           }
         }
+      }//end inner loop on crossings
+    } //end check on isParticleGood
+    Th_BM = -999;
+    P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
+  } //end loop on crossings
 
-      }
-
-      Th_BM = P_cross.Angle(P_beforeTG) * 180. / TMath::Pi();
-      if (charge_tr > 0 && charge_tr <= fPrimaryCharge){
-        FillYieldMC("yield-N_ref", charge_tr, charge_tr, Th_BM, Th_BM, false);
-      }
-
-      Th_BM = -999;
-      P_cross.SetXYZ(-999., -999., -999.); // also MS contribution in target!
-      P_beforeTG.SetXYZ(-999., -999., -999.);
-    }
-  }
+  P_beforeTG.SetXYZ(-999., -999., -999.);
 }
 
 bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
@@ -1446,6 +1467,8 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
     auto Mid = particle->GetMotherID();
     auto Reg = particle->GetRegion();
 
+    std::vector<Int_t> vecDummy;
+
     if( particle->GetCharge() > 0 
         && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
         && (Beta_true > 0.3 && Beta_true < 0.9) // with reasonable beta
@@ -1457,7 +1480,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
       else if( Reg == fRegTG && Mid == 0) //born in target from primary
         isParticleGood = true;
       else //Check for radiative decay in FLUKA!
-        isParticleGood = CheckRadiativeDecayChain(particle, &particle_ID);
+        isParticleGood = CheckRadiativeDecayChain(Id_part, &vecDummy);
 
       return isParticleGood;
     }
@@ -1537,6 +1560,22 @@ void GlobalRecoAnaGSI::QualityPlots(string path, TAGtrack *fGlbTrack)
   }
 }
 
+
+void GlobalRecoAnaGSI::AngularResolutionStudies(string path, TAGtrack *fGlbTrack)
+{
+  TVector3 momReco = fGlbTrack->GetTgtDirection();
+  TVector3 momMC = fMomMCAtTgt;
+  double thetaMC = momMC.Theta()*TMath::RadToDeg();
+  double dtheta = momMC.Angle(momReco)*1000;
+  string path_;
+
+  path_ = path + "/theta2d_all";
+  ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(thetaMC, dtheta);
+
+  path_ = path + "/" + to_string(Z_meas) + "/theta2d";
+  ((TH1D *)gDirectory->Get(path_.c_str()))->Fill(thetaMC, dtheta);
+}
+
 void GlobalRecoAnaGSI::BookQualityPlots(string path)
 { // study of Z=8
   gDirectory->mkdir(path.c_str());
@@ -1553,6 +1592,22 @@ void GlobalRecoAnaGSI::BookQualityPlots(string path)
     h = new TH1D("residual", "worst residual for every track fit - meas", 1000, -0.1,0.1);
     h2 = new TH2D("posvsres", "particle origin vs worst residual for every track fit ; pos(Z) [cm]; res [cm] ", 100, -105., 200., 200, -0.1, 0.1);
     h = new TH1D("trackquality", "Track quality", 11, 0,1.1);
+    gDirectory->cd("..");
+  }
+  gDirectory->cd("..");
+}
+
+void GlobalRecoAnaGSI::BookAngularResolution(string path)
+{ // study of Z=8
+  gDirectory->mkdir(path.c_str());
+  gDirectory->cd(path.c_str());
+
+  h2 = new TH2D("theta2d_all", "angular res; #theta_{MC} [deg]; #theta_{reco-MC} [mrad]", 20, 0, 12, 200, 0, 20);
+  for (int charge = 1; charge < 9; charge++)
+  {
+    gDirectory->mkdir(to_string(charge).c_str());
+    gDirectory->cd(to_string(charge).c_str());
+    h2 = new TH2D("theta2d", "angular res; #theta_{MC} [deg]; #theta_{reco-MC} [mrad]", 20, 0, 12, 200, 0, 20);
     gDirectory->cd("..");
   }
   gDirectory->cd("..");
@@ -1623,8 +1678,11 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
       FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
     }
 
-  name = "Z_" + path_name + "_match";
-  QualityPlots(name, fGlbTrack);
+    name = "Z_" + path_name + "_match";
+    QualityPlots(name, fGlbTrack);
+
+    name = "Theta_" + path_name;
+    AngularResolutionStudies(name, fGlbTrack);
   }
 }
 
@@ -1650,19 +1708,37 @@ void GlobalRecoAnaGSI::MyRecoBooking(string path_name)
     name = "MigMatrix" + path_name + "GoodReco";
     BookMigMatrix(name, true);
     name = "Z_" + path_name + "_match";
+    
     BookQualityPlots(name);
+
+    name = "Theta_" + path_name;
+    BookAngularResolution(name);
   }
 }
 
 
-
-Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(TAMCpart* part, Int_t* part_ID)
+/**
+ * @brief Check for gamma decay in the current MC particle
+ * 
+ * This function checks if a particle was born in the target and has then undergone one or more gamma decays. This is needed because the particle ID changes whenever a gamma decay occurs, even if the nucleus is the same.
+ * @param[in] partID MC id of the particle under study
+ * @param[out] partIDvec Vector containing all the MC ids of the nucleus between consecutive gammay decays
+ * @return True if the particle has undergone one or more gamma decays and if the first nucleus was born in the target
+ */
+Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(Int_t partID, std::vector<Int_t>* partIDvec)
 {
-  TAMCpart* partMoth = myMcNtuPart->GetTrack( part->GetMotherID() );
-  if ( !partMoth )
-    return false;
-  
   bool isGammaDecay = false;
+  TAMCpart* part;
+  TAMCpart* partMoth;
+  
+  part = myMcNtuPart->GetTrack(partID);
+  if( !part )
+    goto nodecaychain;
+
+  partMoth = myMcNtuPart->GetTrack( part->GetMotherID() );
+  if ( !partMoth )
+    goto nodecaychain;
+  
 
   if( partMoth->GetCharge() == part->GetCharge() && //if Z and A are the same
       partMoth->GetBaryon() == part->GetBaryon() )
@@ -1678,22 +1754,66 @@ Bool_t GlobalRecoAnaGSI::CheckRadiativeDecayChain(TAMCpart* part, Int_t* part_ID
     }
   }
   else
-    return false;
+    goto nodecaychain;
   
   if( isGammaDecay )
   {
+    partIDvec->push_back(partID);
     if( partMoth->GetMotherID() == 0 && partMoth->GetRegion() == fRegTG ) // mother particle comes from primary and is born in target
     {
-      TVector3 posMoth = GetGeoTrafo()->FromGlobalToTGLocal( partMoth->GetFinalPos() ); // final position of mother particle in TG frame
-      TVector3 tgSize = GetParGeoG()->GetTargetPar().Size;
-      if( TMath::Abs(posMoth.X()) > tgSize.X()/2 || TMath::Abs(posMoth.Y()) > tgSize.Y()/2 || TMath::Abs(posMoth.Z()) > tgSize.Z()/2 )
-        *part_ID = part->GetMotherID(); //if mother particle "dies" outside target, change particle ID in output for P calculation
-
+      partIDvec->push_back(part->GetMotherID());
       return true;
     }
     else
-      return CheckRadiativeDecayChain(partMoth, part_ID); //Check next step of chain
+      return CheckRadiativeDecayChain(part->GetMotherID(), partIDvec); //Check next step of chain
   }
   else
+    goto nodecaychain;
+
+
+  nodecaychain: //directive for function exit in case of no gamma decay
+    partIDvec->clear();
     return false;
+}
+
+
+/**
+ * @brief Check if the particle reaching the TW undergoes fragmentation in the 1st layer
+ * 
+ * This function is needed since the TWpoint logic does not save all MC ids of the TWhits. This functions checks if the MCid associated to the TW point is the one that made the crossing air-TW, which is used to compute the Z/beta true used in MC cross section calculation (N_ref yield)
+ * @param[in] partID MC id of the particle in the TW point
+ * @param[out] partIDvec Vector that will contain the MC ids of all particles involved in the creation of the TWpoint
+ * @return True if fragmentation in the 1st TW layer happened
+ */
+Bool_t GlobalRecoAnaGSI::CheckFragIn1stTWlayer(Int_t partID, std::vector<Int_t>* partIDvec)
+{
+  TAMCpart* part = myMcNtuPart->GetTrack(partID);
+  if( !part )
+  {
+    partIDvec->clear();
+    return false;
+  }
+
+  TAMCpart* partMoth = myMcNtuPart->GetTrack( part->GetMotherID() );
+  if ( !partMoth )
+  {
+    partIDvec->clear();
+    return false;
+  }
+
+  TVector3 mothFinPos = GetGeoTrafo()->FromGlobalToTWLocal( partMoth->GetFinalPos() );
+  if( (partMoth->GetRegion() < fRegFirstTWbar || partMoth->GetRegion() > fRegLastTWbar) && //particle born outside TW
+      TMath::Abs(mothFinPos.Z()) < GetParGeoTw()->GetBarThick() )                          //but dies inside of TW
+  {
+    partIDvec->push_back(partID);
+    partIDvec->push_back(part->GetMotherID());
+    std::vector<int> temp;
+    if( CheckRadiativeDecayChain(part->GetMotherID(),&temp) )
+      partIDvec->insert(partIDvec->end(),temp.begin(),temp.end()); //merge two vectors
+
+    return true;
+  }
+
+  partIDvec->clear();
+  return false;
 }
