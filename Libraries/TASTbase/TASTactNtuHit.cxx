@@ -26,11 +26,13 @@ ClassImp(TASTactNtuHit);
 TASTactNtuHit::TASTactNtuHit(const char* name,
 			     TAGdataDsc* p_datraw, 
 			     TAGdataDsc* p_nturaw,
-			     TAGparaDsc* p_parmap)
+			     TAGparaDsc* p_parmap,
+			     TAGparaDsc* p_parconf)
   : TAGaction(name, "TASTactNtuHit - Unpack ST raw data"),
     fpDatRaw(p_datraw),
     fpNtuRaw(p_nturaw),
-    fpParMap(p_parmap)
+    fpParMap(p_parmap),
+    fpParConf(p_parconf)
 {
   AddDataIn(p_datraw, "TASTntuRaw");
   AddDataOut(p_nturaw, "TASTntuHit");
@@ -49,6 +51,7 @@ Bool_t TASTactNtuHit::Action()
    TASTntuRaw*   p_datraw = (TASTntuRaw*) fpDatRaw->Object();
    TASTntuHit*   p_nturaw = (TASTntuHit*)  fpNtuRaw->Object();
    TASTparMap*   p_parmap = (TASTparMap*)  fpParMap->Object();
+   TASTparConf*  p_parconf = (TASTparConf*)  fpParConf->Object();
 
    p_nturaw->SetupClones();
 
@@ -84,10 +87,11 @@ Bool_t TASTactNtuHit::Action()
 
 	  double oldim = hFFTim->GetBinContent(i+1);
 	  hFFTim->SetBinContent(i+1,oldim+p_datraw->GetSuperHit()->GetFFT("IM").at(i));
-	
-	  double oldf = hFFTfilter->GetBinContent(i+1);
-	  hFFTfilter->SetBinContent(i+1,oldf+p_datraw->GetSuperHit()->GetFFTfilter("MAG").at(i));
 
+	  if(p_parconf->ApplyFFT()){
+	    double oldf = hFFTfilter->GetBinContent(i+1);
+	    hFFTfilter->SetBinContent(i+1,oldf+p_datraw->GetSuperHit()->GetFFTfilter("MAG").at(i));
+	  }
 	}
       }
 

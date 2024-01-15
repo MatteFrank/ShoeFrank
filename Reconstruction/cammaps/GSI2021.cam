@@ -13,9 +13,9 @@ NumberFiles: 1
 
 DetectorName: "ST"
 NumberFiles: 6
-"./geomaps/CNAO2023/TASTdetector.geo": -1
-"./config/CNAO2023/TASTdetector.map": -1
-"./config/CNAO2023/TASTdetector.cfg": -1
+"./geomaps/GSI2021/TASTdetector.geo": -1
+"./config/GSI2021/TASTdetector.map": -1
+"./config/GSI2021/TASTdetector.cfg": -1
 "./config/GSI2021/WDChannelMap.map": -1
 "./calib/GSI2021/WDpar.cal": -1;
 "./calib/GSI2021/WDTimeCalibration/tcalib.dat": -1;

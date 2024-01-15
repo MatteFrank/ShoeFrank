@@ -120,7 +120,7 @@ void RecoRaw::CreateRawAction()
    if (TAGrecoManager::GetPar()->IncludeST() ||(TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
       fpNtuHitSt   = new TAGdataDsc(new TASTntuHit());
       const Char_t* name = FootActionDscName("TASTactNtuHit");
-      fActNtuHitSt = new TASTactNtuHit(name, fpDatRawSt, fpNtuHitSt, fpParMapSt);
+      fActNtuHitSt = new TASTactNtuHit(name, fpDatRawSt, fpNtuHitSt, fpParMapSt, fpParConfSt);
       if (fFlagHisto)
          fActNtuHitSt->CreateHistogram();
    }

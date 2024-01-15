@@ -9,9 +9,9 @@ NumberFiles: 1
 
 DetectorName: "ST"
 NumberFiles: 5
-"./geomaps/CNAO2023/TASTdetector.geo": -1
-"./config/CNAO2023/TASTdetector.map": -1
-"./config/CNAO2023/TASTdetector.cfg": -1
+"./geomaps/CNAO2021/TASTdetector.geo": -1
+"./config/CNAO2021/TASTdetector.map": -1
+"./config/CNAO2021/TASTdetector.cfg": -1
 "./calib/CNAO2021/WDpar.cal": -1;
 
 DetectorName: "TG"
@@ -24,7 +24,7 @@ NumberFiles: 7
 "./config/CNAO2021/TATWdetector.cfg": -1
 "./config/CNAO2021/TATW_BBparameters.cfg": -1
 "./config/CNAO2021/TATWChannelMapXML.map": -1
-"./config/CNAO2023/TATWdeltaTimeMap.map": -1
+"./config/CNAO2021/TATWdeltaTimeMap.map": -1
 "./calib/CNAO2021/TATW_Energy_Calibration.cal": -1
 "./calib/CNAO2021/TATW_Tof_Calibration.cal": -1;
 
