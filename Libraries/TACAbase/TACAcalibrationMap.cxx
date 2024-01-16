@@ -146,8 +146,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
          Info("LoadEnergyCalibrationMap()","cryId %d %.3f %.3f %.3f\n",crysId, Q_corrp9, Q_corrp10, Q_corrp11);
 
       fCalibEnergyMapCry[crysId] = ADC2EnergyParamCry_t{Q_corrp9, Q_corrp10, Q_corrp11};
-      cout<<"done "<<crysId<<endl;
-   }
+    }
 
    fin_Q.close();
 }
