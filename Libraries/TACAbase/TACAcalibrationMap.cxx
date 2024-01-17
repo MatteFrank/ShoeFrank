@@ -52,7 +52,7 @@ void TACAcalibrationMap::LoadCryTemperatureCalibrationMap(std::string FileName)
       if(strchr(line,'/') || strchr(line,'#'))  // skip first line if comment
          fin_Q.getline(line, 200, '\n');
       sscanf(line, "%d", &nCrystals);
-      fCalibTempMapCry.reserve(nCrystals);
+      fCalibTempMapCry.resize(nCrystals);
 
       int crysId;  // Id of the crystal
       double Q_corrp0, Q_corrp1, Q_corrp2;
@@ -130,7 +130,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
    if(strchr(line,'/') || strchr(line,'#'))  // skip first line if comment
       fin_Q.getline(line, 200, '\n');
    sscanf(line, "%d", &nCrystals);
-   fCalibChargeMap.reserve(nCrystals);
+    fCalibEnergyMapCry.resize(nCrystals);
 
 
    while (fin_Q.getline(line, 200, '\n')) {
@@ -146,7 +146,7 @@ void TACAcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
          Info("LoadEnergyCalibrationMap()","cryId %d %.3f %.3f %.3f\n",crysId, Q_corrp9, Q_corrp10, Q_corrp11);
 
       fCalibEnergyMapCry[crysId] = ADC2EnergyParamCry_t{Q_corrp9, Q_corrp10, Q_corrp11};
-   }
+    }
 
    fin_Q.close();
 }
@@ -222,7 +222,8 @@ Double_t TACAcalibrationMap::GetADC2EnergyParam(UInt_t parId)
 //! \param[in] cryId crystal id
 Double_t TACAcalibrationMap::GetChargeEqParam(UInt_t cryId)
 {
-   return fCalibChargeMap[cryId];
+  return 0; //temporary bug fix
+//   return fCalibEnergyMapCry[cryId];
 }
 
 //_______________________________________________

@@ -52,6 +52,7 @@ include_directories(${TATW_INCLUDE_DIR})
 include_directories(${TAAPI_INCLUDE_DIR})
 include_directories(${TAMC_INCLUDE_DIR})
 include_directories(${TAST_INCLUDE_DIR})
+include_directories(${TACA_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #
 link_directories(${ROOT_LIBRARY_DIR})

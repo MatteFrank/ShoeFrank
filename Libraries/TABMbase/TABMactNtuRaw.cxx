@@ -22,14 +22,16 @@ TABMactNtuRaw::TABMactNtuRaw(const char* name,
                              TAGparaDsc* dscparmap,
                              TAGparaDsc* dscparcal,
                              TAGparaDsc* dscpargeo,
-                             TAGdataDsc* dsctimraw)
+                             TAGdataDsc* dsctimraw,
+                             TAGdataDsc* dsctrigraw)
   : TAGaction(name, "TABMactNtuRaw - Unpack BM raw data"),
     fpDatRaw(dscdatraw),
     fpDatDaq(dscdatdaq),
     fpParMap(dscparmap),
     fpParCal(dscparcal),
     fpParGeo(dscpargeo),
-    fpTimRaw(dsctimraw)
+    fpTimRaw(dsctimraw),
+    fpTrigRaw(dsctrigraw)
 {
   if (FootDebugLevel(1))
     cout<<"TABMactNtuRaw::default constructor::Creating the Beam Monitor hit Ntuplizer"<<endl;
@@ -54,6 +56,7 @@ void TABMactNtuRaw::CreateHistogram()
 {
   DeleteHistogram();
   TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
+  TABMparCal*    p_parcal = (TABMparCal*)    fpParCal->Object();  
   // fpRawMapX=new TH2I( "BM_Dat_cell_raw_occupancy_2d_x", "Cell occupancy for raw hits; z; x", 11, -5.5, 5.5,7, -3.5,3.5);
   // AddHistogram(fpRawMapX);
   // fpRawMapY=new TH2I( "BM_Dat_cell_raw_occupancy_2d_y", "Cell occupancy for raw hits; z; y", 11, -5.5, 5.5,7, -3.5,3.5);
@@ -88,6 +91,7 @@ void TABMactNtuRaw::CreateHistogram()
 
   fpRawCh1NoTrig=new TH1F( "RawCh1NoTrig", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
   AddHistogram(fpRawCh1NoTrig);
+
   fpRawCh1LessTdcTr=new TH1F( "RawCh1LessTdcTr", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
   AddHistogram(fpRawCh1LessTdcTr);
   fpRawCh1LessSTFit=new TH1F( "RawCh1LessSTFit", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
@@ -102,6 +106,36 @@ void TABMactNtuRaw::CreateHistogram()
     fpRawCh1PlusSTFitLessMagor=new TH1F( "RawCh1PlusSTFitLessMagor", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
     AddHistogram(fpRawCh1PlusSTFitLessMagor);
   }
+  if(p_parcal->Havefragtrig()){
+    fpRawCh1LessTdcTrFrag=new TH1F( "RawCh1LessTdcTrFrag", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1LessTdcTrFrag);
+    fpRawCh1LessSTFitFrag=new TH1F( "RawCh1LessSTFitFrag", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1LessSTFitFrag);
+    fpRawCh1PlusSTFitFrag=new TH1F( "RawCh1PlusSTFitFrag", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1PlusSTFitFrag);
+    if(p_parmap->GetDaqTrefCh()>=0){
+      fpRawCh1LessMagorTrFrag=new TH1F( "RawCh1LessMagorTrFrag", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+      AddHistogram(fpRawCh1LessMagorTrFrag);
+      fpRawCh1LessSTFitLessMagorFrag=new TH1F( "RawCh1LessSTFitLessMagorFrag", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+      AddHistogram(fpRawCh1LessSTFitLessMagorFrag);
+      fpRawCh1PlusSTFitLessMagorFrag=new TH1F( "RawCh1PlusSTFitLessMagorFrag", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+      AddHistogram(fpRawCh1PlusSTFitLessMagorFrag);
+    }  
+    fpRawCh1LessTdcTrMaj=new TH1F( "RawCh1LessTdcTrMaj", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1LessTdcTrMaj);
+    fpRawCh1LessSTFitMaj=new TH1F( "RawCh1LessSTFitMaj", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1LessSTFitMaj);
+    fpRawCh1PlusSTFitMaj=new TH1F( "RawCh1PlusSTFitMaj", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+    AddHistogram(fpRawCh1PlusSTFitMaj);
+    if(p_parmap->GetDaqTrefCh()>=0){
+      fpRawCh1LessMagorTrMaj=new TH1F( "RawCh1LessMagorTrMaj", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+      AddHistogram(fpRawCh1LessMagorTrMaj);
+      fpRawCh1LessSTFitLessMagorMaj=new TH1F( "RawCh1LessSTFitLessMagorMaj", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+      AddHistogram(fpRawCh1LessSTFitLessMagorMaj);
+      fpRawCh1PlusSTFitLessMagorMaj=new TH1F( "RawCh1PlusSTFitLessMagorMaj", "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+      AddHistogram(fpRawCh1PlusSTFitLessMagorMaj);
+    }        
+  }
 
   TH1F *RawTdcPlot;
   for(Int_t i=0;i<p_parmap->GetTdcMaxCh();i++){
@@ -111,13 +145,21 @@ void TABMactNtuRaw::CreateHistogram()
     AddHistogram(RawTdcPlot);
     fpRawTdcMeas.push_back(RawTdcPlot);
   }
-  for(Int_t i=0;i<p_parmap->GetTdcMaxCh();i++){
+  for(Int_t i=0;i<36;i++){
     TString title="bmRawTdcLessSyncCha_";
     title+=i;
     RawTdcPlot=new TH1F( title.Data(), "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
     AddHistogram(RawTdcPlot);
     fpRawTdcLessSync.push_back(RawTdcPlot);
   }
+  if(p_parcal->Havefragtrig())
+    for(Int_t i=0;i<36;i++){
+      TString title="bmRawTdcFragLessSyncCha_";
+      title+=i;
+      RawTdcPlot=new TH1F( title.Data(), "Time;Time [ns]; Events", 3001, -1000.5, 2000.5);
+      AddHistogram(RawTdcPlot);
+      fpRawTdcFragLessSync.push_back(RawTdcPlot);
+    }
 
   SetValidHistogram(kTRUE);
 }
@@ -148,9 +190,8 @@ Bool_t TABMactNtuRaw::Action() {
 
    const TDCEvent* evt = static_cast<const TDCEvent*> (p_datdaq->GetFragment("TDCEvent"));
 
-   if (evt) {
+   if (evt) 
       DecodeHits(evt, p_timraw->GetTriggerTime());
-   }
    
    fpDatRaw->SetBit(kValid);
 
@@ -171,6 +212,9 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
    TABMparMap*    p_parmap = (TABMparMap*)    fpParMap->Object();
    TABMparCal*    p_parcal = (TABMparCal*)    fpParCal->Object();
    TABMparGeo*    p_pargeo = (TABMparGeo*)    fpParGeo->Object();
+   TAWDntuTrigger*   p_trigraw = (TAWDntuTrigger*)    fpTrigRaw->Object();   
+
+  p_datraw->SetTrigtype(p_trigraw->GetTriggerID());
 
    //From there we get the Mapping of the wires into the Chamber to the TDC channels
   Int_t view,plane,cell, channel,up, hitnum=0, discharged=0, bmcellid;
@@ -245,8 +289,16 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
     if(ValidHistogram()){
       fpRawTdcChannel->Fill(channel);
       fpRawTdcMeas.at(channel)->Fill(measurement);
-      fpRawTdcLessSync.at(channel)->Fill(measurement-used_trigger);
-      if(channel==10){
+      if(bmcellid!=-1 && bmcellid!=-1000 && bmcellid!=-1001){
+        if(p_parcal->Havefragtrig()){
+          if(p_datraw->GetTrigtype())
+            fpRawTdcFragLessSync.at(channel)->Fill(measurement-used_trigger);
+          else
+            fpRawTdcLessSync.at(channel)->Fill(measurement-used_trigger);
+        }else
+          fpRawTdcLessSync.at(channel)->Fill(measurement-used_trigger);
+      }
+      if(channel==1){
         fpRawCh1NoTrig->Fill(measurement);
         if(tdctrigger!=-99999){
           fpRawCh1LessSTFit->Fill(measurement-tdctrigger-sttrigger);
@@ -257,6 +309,27 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
             fpRawCh1LessSTFitLessMagor->Fill(measurement-tdctrigger-magortrigger-sttrigger);
             fpRawCh1PlusSTFitLessMagor->Fill(measurement-tdctrigger-magortrigger+sttrigger);
           }
+          if(p_parcal->Havefragtrig()){
+            if(p_datraw->GetTrigtype()){
+              fpRawCh1LessSTFitFrag->Fill(measurement-tdctrigger-sttrigger);
+              fpRawCh1PlusSTFitFrag->Fill(measurement-tdctrigger+sttrigger);
+              fpRawCh1LessTdcTrFrag->Fill(measurement-tdctrigger);
+              if(magortrigger!=-99999){
+                fpRawCh1LessMagorTrFrag->Fill(measurement-tdctrigger-magortrigger);
+                fpRawCh1LessSTFitLessMagorFrag->Fill(measurement-tdctrigger-magortrigger-sttrigger);
+                fpRawCh1PlusSTFitLessMagorFrag->Fill(measurement-tdctrigger-magortrigger+sttrigger);
+              }
+            }else{
+              fpRawCh1LessSTFitMaj->Fill(measurement-tdctrigger-sttrigger);
+              fpRawCh1PlusSTFitMaj->Fill(measurement-tdctrigger+sttrigger);
+              fpRawCh1LessTdcTrMaj->Fill(measurement-tdctrigger);
+              if(magortrigger!=-99999){
+                fpRawCh1LessMagorTrMaj->Fill(measurement-tdctrigger-magortrigger);
+                fpRawCh1LessSTFitLessMagorMaj->Fill(measurement-tdctrigger-magortrigger-sttrigger);
+                fpRawCh1PlusSTFitLessMagorMaj->Fill(measurement-tdctrigger-magortrigger+sttrigger);
+              }
+            }
+          }
         }
       }
     }
@@ -264,8 +337,14 @@ Bool_t TABMactNtuRaw::DecodeHits(const TDCEvent* evt, const double sttrigger) {
       p_pargeo->GetBMNlvc(bmcellid,plane,view,cell);
       p_datraw->NewHit(bmcellid, plane,view,cell,measurement);
       hitnum++;
-      if(FootDebugLevel(3))
-        cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<bmcellid<<"  measurement="<<measurement<<"  T0="<<p_parcal->GetT0(bmcellid)<<"  triggertime="<<used_trigger<<"  hittime="<<measurement - p_parcal->GetT0(bmcellid)-used_trigger<<endl;
+      if(FootDebugLevel(3)){
+        cout<<"BM hit charged : channel="<<channel<<"  tdc2cell="<<bmcellid<<"  measurement="<<measurement<<"  triggertime="<<used_trigger<<"  havetrigfrag"<<p_parcal->Havefragtrig()<<"  Trigger_type= "<<p_datraw->GetTrigtype();
+        if(p_parcal->Havefragtrig() && p_datraw->GetTrigtype()==1)
+          cout<<"  T0Frag= "<<p_parcal->GetT0Frag(bmcellid);
+        else
+          cout<<"  T0= "<<p_parcal->GetT0(bmcellid);
+        cout<<"  hittime="<<measurement - ((p_parcal->Havefragtrig() && p_datraw->GetTrigtype()==1) ?  p_parcal->GetT0Frag(bmcellid) :  p_parcal->GetT0(bmcellid))-used_trigger<<endl;
+      }
     }else if(bmcellid!=-1000 && bmcellid!=-1001){
       p_datraw->AddDischarged();
       if(FootDebugLevel(3))

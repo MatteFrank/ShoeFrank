@@ -31,11 +31,15 @@ class TABMntuRaw : public TAGdata {
 
     //! Get the trigger time
     Double_t          GetTrigtime()  const { return fTrigTime; }
+    //! Get the trigger time (-1000 if only one type, otherwise: 0=majority and 1=fragmentation)
+    Int_t             GetTrigtype()  const { return fTrigType; }
     //! Get the number of discharged hits
     Int_t             NDrop()        const { return fiNDrop;   }
 
     //! Set the trigger time
     void              SetTrigtime(Double_t trigin) { fTrigTime=trigin;}
+    //! Set the trigger time
+    void              SetTrigtype(Int_t trigin) { fTrigType=trigin;}
 
     void              AddDischarged();
     virtual void      SetupClones();
@@ -46,6 +50,7 @@ private:
     TClonesArray*   fListOfHits;    ///< List of BM accepted raw hits
     Int_t           fiNDrop;		    ///< Number of discharged tdc values
     Double_t        fTrigTime;      ///< Trigger time of the event
+    Int_t           fTrigType;      ///< Trigger type of the event (-1000 if only one type, otherwise: 0=majority and 1=fragmentation)
 
    ClassDef(TABMntuRaw,1)
 };

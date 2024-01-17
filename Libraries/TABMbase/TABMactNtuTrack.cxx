@@ -49,8 +49,24 @@ void TABMactNtuTrack::CreateHistogram()
 {
   TABMactBaseNtuTrack::CreateHistogram();
 
-  fpResTot = new TH2F("bmTrackResidual","Residual vs Rdrift; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
-  AddHistogram(fpResTot);
+  fpResAll = new TH2F("bmTrackResidualAll","Residual vs Rdrift for all the hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResAll);
+  fpResSel = new TH2F("bmTrackResidualSelected","Residual vs Rdrift for selected  hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResSel);
+  fpResDisc = new TH2F("bmTrackResidualDischarged","Residual vs Rdrift for discharged hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResDisc);
+  fpResAllX = new TH2F("bmTrackResidualAllX","Residual vs Rdrift for all the XZ view hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResAllX);
+  fpResSelX = new TH2F("bmTrackResidualSelectedX","Residual vs Rdrift for XZ view view selected  hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResSelX);
+  fpResDiscX = new TH2F("bmTrackResidualDischargedX","Residual vs Rdrift for XZ view discharged hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResDiscX);
+  fpResAllY = new TH2F("bmTrackResidualAllY","Residual vs Rdrift for all the YZ view hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResAllY);
+  fpResSelY = new TH2F("bmTrackResidualSelectedY","Residual vs Rdrift for YZ view selected  hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResSelY);
+  fpResDiscY = new TH2F("bmTrackResidualDischargedY","Residual vs Rdrift for YZ view discharged hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
+  AddHistogram(fpResDiscY);
   fpHisMap = new TH2F("bmTrackTargetMap","BM - Position of the tracks at the target center; X[cm]; Y[cm]", 250, -3., 3.,250 , -3, 3);
   AddHistogram(fpHisMap);
   fpHisMapTW = new TH2F("bmTrackTWMap","BM - Position of the tracks at the TW center; X[cm]; Y[cm]", 500, -10., 10.,500 , -10, 10);
@@ -178,8 +194,8 @@ Bool_t TABMactNtuTrack::Action()
         return kTRUE;
       }
 
-      EvaluatePulls();
-      // EvaluateMauroPulls();
+      //~ EvaluatePulls();
+      EvaluateMauroPulls();
 
       if (ValidHistogram()){
         if(fNowView==1)
@@ -218,13 +234,31 @@ Bool_t TABMactNtuTrack::Action()
       for(Int_t i=0;i<p_nturaw->GetHitsN();++i){
         TABMhit* p_hit=p_nturaw->GetHit(i);
         if(p_hit->GetIsSelected()==savedtracktr->GetTrackIdX() || p_hit->GetIsSelected()==savedtracktr->GetTrackIdY()){
-          fpResTot->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          fpResAll->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          fpResSel->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          if(p_hit->GetView()==1){
+            fpResAllX->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+            fpResSelX->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          }else{
+            fpResAllY->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+            fpResSelY->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          }
           if(TAGrecoManager::GetPar()->CalibBM()){
             fpResTimeTot->Fill(p_hit->GetResidual(),p_hit->GetTdrift());
             if((int)(p_hit->GetTdrift()/10.)<fpResTimeBin.size())
             fpResTimeBin.at((int)(p_hit->GetTdrift()/10.))->Fill(p_hit->GetResidual());
             if((int)(p_hit->GetRdrift()*100)<fpResDistBin.size())
             fpResDistBin.at((int)(p_hit->GetRdrift()*100))->Fill(p_hit->GetResidual());
+          }
+        }else if(p_hit->GetIsSelected()==-1){//hit not selected in any track
+          fpResDisc->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          fpResAll->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          if(p_hit->GetView()==1){
+            fpResDiscX->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+            fpResAllX->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          }else{
+            fpResDiscY->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+            fpResAllY->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
           }
         }
       }
@@ -436,7 +470,7 @@ void TABMactNtuTrack::FitWriteCalib(TF1 *newstrel, TF1 *resofunc, Double_t &mean
       fpNewResoDistDiff->SetBinContent(i+1,0.);
     }
   }
-  p_ResProj=(TH1D*)fpResTot->ProjectionX();
+  p_ResProj=(TH1D*)fpResSel->ProjectionX();
   gaus->SetParameters(p_ResProj->GetEntries(),p_ResProj->GetMean(),p_ResProj->GetStdDev());
   p_ResProj->Fit(gaus,"QR+");
   meanDistReso=gaus->GetParameter(2);
