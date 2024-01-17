@@ -79,10 +79,11 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void FillTrkPlots(); //fill plots
   void FillYieldReco(string folderName, Int_t Z,Double_t Th);  // fill histos with reconstructed values
   void FillYieldMC(string folderName, Int_t Z_true,Int_t Z_meas, Double_t Th_true, Double_t Th_meas, bool migMatr); // fill histos with MC values
-  void MigMatrixPlots(string folderName, Int_t Z_true,Int_t Z_meas, Double_t Th_true, Double_t Th_meas, bool migMatr); // fill histos with MC values
+  void MigMatrixPlots(string folderName, Int_t Z_true, Int_t Z_meas, Double_t Th_true, Double_t Th_meas, Double_t Beta_true, Double_t Beta_meas, bool migMatr); // fill histos with MC values
   void BookYield(string path, bool enableMigMatr= false);
   void BookMigMatrix(string path, bool enableMigMatr= false);
   void BookChargeStudies(string path);
+  void BookQualityPlots(string path);
   void BookFragmentationStudies(string path);
   void BookAngularResolution(string path);
   void MyRecoBooking(string path_name);
@@ -98,6 +99,7 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void FillMCPartYields();
   bool isGoodReco(Int_t Id_part);
   void ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTrack);
+  void QualityPlots(string path, TAGtrack *fGlbTrack);
   void FragmentationStudies(string path, TAGtrack *fGlbTrack);
   void AngularResolutionStudies(string path, TAGtrack *fGlbTrack);
 
