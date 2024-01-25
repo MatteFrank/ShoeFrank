@@ -79,7 +79,8 @@ private:
    int           fZraw;
    float         f_dist_min_Z;
    vector<float> f_dist_Z;
-   
+
+   TString       fIonBeamName;
    TH1D*         fHisRate;
   
 private:
@@ -127,6 +128,7 @@ public:
    // Get offset per bar in [cm] for position from delta Time
    Double_t        GetDeltaTimePosOffset(Int_t ilayer, Int_t ibar);
    Double_t        GetElossThreshold(Int_t ilayer, Int_t ibar);
+   TString         GetIonBeamName(){ return fIonBeamName;}
    TH1D*           GetRate(){ return fHisRate;}
    
    //! Set Methods

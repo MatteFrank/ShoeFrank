@@ -59,17 +59,19 @@ TATWparCal::~TATWparCal()
 		free (fMapCal);
 	}
 }
+
 //------------------------------------------+-----------------------------------
 void TATWparCal::RetrieveBeamQuantities() {
 
   fZbeam = fParGeo->GetBeamPar().AtomicNumber;
+  fIonBeamName = fParGeo->GetBeamPar().Material;
 
-  TString  ion_name = fParGeo->GetBeamPar().Material;
+  TString  ion_name = GetIonBeamName();
   Int_t    A_beam = fParGeo->GetBeamPar().AtomicMass;
   Float_t  kinE_beam = fParGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev()*A_beam; //MeV
   
   if(FootDebugLevel(4))
-    printf("ion::%s Z::%d A::%d E::%d\n",ion_name.Data(),fZbeam,A_beam,(int)(kinE_beam/A_beam));
+    Info("RetrieveBeamQuantities()","ion::%s Z::%d A::%d E::%d\n",fIonBeamName.Data(),fZbeam,A_beam,(int)(kinE_beam/A_beam));
   
   Float_t  z_SC = ((TVector3)fGeoTrafo->GetSTCenter()).Z();    // cm
   Float_t  z_TW = ((TVector3)fGeoTrafo->GetTWCenter()).Z();    // cm
@@ -419,7 +421,7 @@ Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer)
       f_dist_Z.push_back( std::numeric_limits<float>::max() ); //inf
 
     if (FootDebugLevel(4))
-      printf("the energy released is %.f so Zraw is set to %d and dist to inf\n",edep,fZraw);
+      Info("GetChargeZ()","The energy released is %.f so Zraw is set to %d and dist to inf\n",edep,fZraw);
 
   }
   else
@@ -571,7 +573,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 
 	  
 	} else {  // if (f_prime_dist_min*f_prime_dist_max>0)
-	  if(FootDebugLevel(4)) printf("no bisection algorithm is possible to assign Z = %d to the TW hit with (tof,eloss) = (%f,%f)\n",iZ,tof,edep);
+	  if(FootDebugLevel(4)) Info("ComputeBBdistance()","No bisection algorithm is possible to assign Z = %d to the TW hit with (tof,eloss) = (%f,%f)\n",iZ,tof,edep);
 	  dist=std::numeric_limits<float>::max(); //inf
 	  f_dist_Z.push_back( dist );
 
@@ -582,22 +584,22 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	dist=std::numeric_limits<float>::max(); //inf
 	f_dist_Z.push_back( dist );
 	if (FootDebugLevel(4))
-	  printf("xmin(%.5f) > xmax(%.5f) so no possible interval for bisection algorithm\n",xmin,xmax);      
+	  Info("ComputeBBdistance()","xmin(%.5f) > xmax(%.5f) so no possible interval for bisection algorithm\n",xmin,xmax);      
       }
     } else {
       dist=std::numeric_limits<float>::max(); //inf
       f_dist_Z.push_back( dist );
       if (FootDebugLevel(4))
-         printf("tof (%.f) is outside the selected interval [%.f,%.f] so Zraw is set to %d\n",tof,xmin,xmax,fZraw);
+        Info("ComputeBBdistance()","tof (%.f) is outside the selected interval [%.f,%.f] so Zraw is set to %d\n",tof,xmin,xmax,fZraw);
     }
 
-    if(FootDebugLevel(4)) printf("for loop over iZ::%d  with dist::%.5f\n\n",iZ,f_dist_Z.at(iZ-1));
-    if(FootDebugLevel(4)) printf("the selected Z is:: %d\n\n",fZraw);
+    if(FootDebugLevel(4)) Info("ComputeBBdistance()","for loop over iZ::%d  with dist::%.5f\n\n",iZ,f_dist_Z.at(iZ-1));
+    if(FootDebugLevel(4)) Info("ComputeBBdistance()","the selected Z is:: %d\n\n",fZraw);
 
   } // close for loop over Z
     
   if(FootDebugLevel(4) && fZraw==0)
-    printf("Z::%d  edep::%f  tof::%f \n",fZraw,edep,tof);
+    Info("ComputeBBdistance()","Z::%d  edep::%f  tof::%f \n",fZraw,edep,tof);
     
   return;
 }
