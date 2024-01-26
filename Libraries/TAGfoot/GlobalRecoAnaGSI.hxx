@@ -140,9 +140,14 @@ class GlobalRecoAnaGSI : public RecoRaw {
     Int_t ntracks;
     Int_t nTotEv; // total number of events (-nev flag)
     Int_t currEvent;
-    Int_t recoEvents; // events in whick global tracks are created
-    Int_t trueEvents; // events in whick events are considered from a MC level
-    bool istrueEvent; // flag to sign if an event is good from a MC lever
+    Int_t recoEvents; // events in which global tracks are created
+    map<int, int>  recoEvents_Z; // reco events for every charge of the crossing particle in SC // first: particle charge; secod: =yield
+    Int_t trueEvents; // events in which events are considered from a MC level
+    Int_t trueEvents_allID;
+    Int_t trueEvents_allZ;
+    bool istrueEvent; // flag to sign if an event is good from a MC level
+    bool istrueEvent_allID ; // flag to sign if an event is good from a MC level (not considering the origin herarchy (ID))
+    bool istrueEvent_allZ ; // flag to sign if an event is good from a MC level (not considering the origin charge)
     float residual; // worst residual in a track
     vector<pair<Int_t, Int_t>> pure_track_xcha; // vector index = particle charge; first=npure; second=ntracks
 
@@ -210,6 +215,10 @@ class GlobalRecoAnaGSI : public RecoRaw {
     TAMCntuEvent *myMcNtuEvent;
     TAMCntuPart *myMcNtuPart;
     TAWDntuTrigger *wdTrig;
+    TASTntuHit *mySTntuHit;
+    TAMCntuHit *myMCntuHit;
+
+
 
     TVector3 fMomMCAtTgt;
 

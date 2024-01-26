@@ -38,7 +38,11 @@ GlobalRecoAnaGSI::GlobalRecoAnaGSI(TString expName, Int_t runNumber, TString fil
   ntracks = 0;
   recoEvents = 0;
   trueEvents = 0;
+  trueEvents_allID=0;
+  trueEvents_allZ=0;
   istrueEvent = false;
+  istrueEvent_allID = false;
+  istrueEvent_allZ = false;
   fFlagMC = isMC;
   purity_cut = 0.51;
   clean_cut = 1.;
@@ -105,18 +109,21 @@ void GlobalRecoAnaGSI::LoopEvent()
       //***** loop on every TAMCparticle:
       FillMCPartYields(); // N_ref
       if (istrueEvent) trueEvents++; // events to be considered in luminosity of MC reference Cross Section
+      if (istrueEvent_allID) trueEvents_allID ++;
+      if (istrueEvent_allZ) trueEvents_allZ ++;
       istrueEvent = false;
+      istrueEvent_allID = false;
+      istrueEvent_allZ = false;
     }
 
     //////////////////////////////Reconstruction Studies
     int evtcutstatus = ApplyEvtCuts(); //requirements to be considered for events to be analyzed beyond
-    if (evtcutstatus == false)
+    if (!evtcutstatus)
     {
       ++currEvent;
       continue;
     }
     recoEvents ++; //events to be considered in luminosity of Reco Cross Section
-
     Int_t nt = myGlb->GetTracksN(); // number of reconstructed tracks for every event
 
     // TAWDntuTrigger *wdTrig = 0x0;
@@ -439,14 +446,41 @@ int GlobalRecoAnaGSI::ApplyEvtCuts() // requirements for a good event (to be con
     cout << "GlobalRecoAnaGSI::ApplyEvtCuts start" << endl;
   bool ok_status = true;
   
-  if (!fFlagMC)
-    ok_status == !((TASTntuRaw *)gTAGroot->FindDataDsc(FootActionDscName("TASTntuRaw"))->Object())->GetSuperHit()->GetPileUp();  //if there is pileup in the SC
-  
-  if (myBMNtuTrk->GetTracksN() != 1) //if there is one track in the BM
-    ok_status &= false;
-  else
-    ok_status &= true;
+  if (TAGrecoManager::GetPar()->IsSaveHits()){
+    if(mySTntuHit && mySTntuHit->GetHitsN()>0){
 
+      ok_status &= !(mySTntuHit->GetHit(0)->GetPileUp());       // if there is NOT pileup in the SC
+      ok_status &= (mySTntuHit->GetHit(0)->GetDe() > 0.005); // the energy release should be higher than .005 GeV (energy release of Primary)
+
+      if (fFlagMC){
+        TAMCpart * part = GetNtuMcTrk()->GetTrack(mySTntuHit->GetHit(0)->GetMcTrackIdx(0));
+        recoEvents_Z[part->GetCharge()]++;
+      }
+  }
+  }
+    
+
+  ok_status &= (myBMNtuTrk->GetTracksN() == 1); // if there is one track in the BM
+
+  // Check if the vertex of the interaction is inside the target or not
+  bool VTok = false;
+  for (int iVt = 0; iVt < myVtNtuVtx->GetVertexN(); ++iVt)
+  {
+    TAVTvertex *vt = myVtNtuVtx->GetVertex(iVt);
+    if (!vt->IsBmMatched())
+      continue;
+
+    TVector3 vtPos = GetGeoTrafo()->FromGlobalToTGLocal(GetGeoTrafo()->FromVTLocalToGlobal(vt->GetPosition()));          // vertex position in TG frame
+    TVector3 vtPosErr = GetGeoTrafo()->VecFromGlobalToTGLocal(GetGeoTrafo()->VecFromVTLocalToGlobal(vt->GetPosError())); // vertex position error in TG frame
+    TVector3 tgSize = GetParGeoG()->GetTargetPar().Size;
+    if (TMath::Abs(vtPos.X()) < tgSize.X() / 2 + vtPosErr.X() && TMath::Abs(vtPos.Y()) < tgSize.Y() / 2 + vtPosErr.Y() && TMath::Abs(vtPos.Z()) < tgSize.Z() / 2 + vtPosErr.Z())
+    {
+      VTok = true;
+      break;
+    }
+  }
+  ok_status &= VTok;
+  
   return ok_status;
 }
 
@@ -537,10 +571,25 @@ void GlobalRecoAnaGSI::SetupTree()
   if (FootDebugLevel(1))
     cout << "GlobalRecoAnaGSI::SetupTree start" << endl;
 
+  if (TAGrecoManager::GetPar()->IncludeKalman())
+  {
   myReader = new TAGactTreeReader("myReader");
   fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
   gTAGroot->AddRequiredItem("glbTrack");
   myReader->SetupBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
+  }
+
+  if (TAGrecoManager::GetPar()->IncludeST() && TAGrecoManager::GetPar()->IsSaveHits())
+  {
+    if (fFlagMC)
+    {
+      fpNtuMcSt = new TAGdataDsc(FootDataDscMcName(kST), new TAMCntuHit());
+      myReader->SetupBranch(fpNtuMcSt, FootBranchMcName(kST));
+    }
+    fpNtuHitSt = new TAGdataDsc(new TASTntuHit());
+    myReader->SetupBranch(fpNtuHitSt);
+  }
+
 
   if (TAGrecoManager::GetPar()->IncludeBM())
   {
@@ -673,6 +722,7 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
   // initialization of several objects needed for the analysis
   gTAGroot->BeginEventLoop();
   mass_ana = new GlobalRecoMassAna();
+  
   myGlb = (TAGntuGlbTrack *)fpNtuGlbTrack->GenerateObject();
   // myVtNtuClus = (TAVTntuCluster*)fpNtuClusVtx->GenerateObject();
   myVtNtuVtx = (TAVTntuVertex *)fpNtuVtx->GenerateObject();
@@ -682,11 +732,18 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
   // pCaNtuClu = (TACAntuCluster *)fpNtuClusCa->GenerateObject();
   myBMNtuTrk = (TABMntuTrack *)fpNtuTrackBm->GenerateObject();
 
+  if (TAGrecoManager::GetPar()->IncludeST())
+  {
+    mySTntuHit = (TASTntuHit *)fpNtuHitSt->GenerateObject();
+  }
+
   if (fFlagMC)
   {
     myMcNtuEvent = (TAMCntuEvent *)fpNtuMcEvt->GenerateObject();
     myMcNtuPart = (TAMCntuPart *)fpNtuMcTrk->GenerateObject();
   }
+  
+
   // else
   // {
   //   wdTrig = (TAWDntuTrigger *)fpNtuWDtrigInfo->GenerateObject();
@@ -727,8 +784,13 @@ void GlobalRecoAnaGSI::BeforeEventLoop()
   fRegAirAfterTW = GetParGeoG()->GetRegAirTW();
 
   n_clones.clear();
-  for (int i = 1; i <= fPrimaryCharge; i++)
+  recoEvents_Z.clear();
+  for (int i = 1; i <= fPrimaryCharge; i++){
     n_clones[i] = 0;
+    recoEvents_Z[i]=0;
+  }
+
+  
 
   return;
 }
@@ -741,17 +803,36 @@ void GlobalRecoAnaGSI::AfterEventLoop()
 
   // stamp luminosity
   string luminosity_name = "";
-  if (fFlagMC == true)
+  if (fFlagMC)
   {
     luminosity_name = "luminosityMC";
     h = new TH1D(luminosity_name.c_str(), "", 1, 0., 1.);
     ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * trueEvents); // good event via MC
+
+    h = new TH1D("total_yields", "", 5, 0., 5.);
+    ((TH1D *)gDirectory->Get("total_yields"))->GetXaxis()->SetBinLabel(1, "Total events");
+    ((TH1D *)gDirectory->Get("total_yields"))->GetXaxis()->SetBinLabel(2, "Total True Events all ID");
+    ((TH1D *)gDirectory->Get("total_yields"))->GetXaxis()->SetBinLabel(3, "Total True Events all Z");
+    ((TH1D *)gDirectory->Get("total_yields"))->GetXaxis()->SetBinLabel(4, "Total True Events ID=0 Z=primary");
+    ((TH1D *)gDirectory->Get("total_yields"))->GetXaxis()->SetBinLabel(5, "Total Reco Events");
+    ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(1, currEvent);
+    ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(2, trueEvents_allID);
+    ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(3, trueEvents_allZ);
+    ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(4, trueEvents);
+    ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(5, recoEvents);
+
+    h = new TH1D("reco_yields", "True charge of a reco event; Z_{true} at SC; Yield", fPrimaryCharge, 0.5, fPrimaryCharge+0.5);
+    for (auto i : recoEvents_Z)
+    ((TH1D *)gDirectory->Get("reco_yields"))->SetBinContent(i.first, i.second);
   }
 
+  
   // real data
     luminosity_name = "luminosityReco";
   h = new TH1D(luminosity_name.c_str(), "", 1, 0., 1.);
   ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * recoEvents); // good event via Reco
+
+
 
   cout << "Reconstructed events: " << recoEvents << endl;
   cout << "True events for the analysis: " << trueEvents << endl;
@@ -1366,11 +1447,23 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     Int_t particle_ID = cross->GetTrackIdx() - 1;                         // TrackID
 
     //study to check if the event is good: if the primary crosses the TG
-    if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0 ){ //if it is a primary
+    
       if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
-        P_beforeTG = cross->GetMomentum();
-        istrueEvent = true;
-    }}
+        if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0) // if it is a primary
+        {
+          P_beforeTG = cross->GetMomentum();
+          istrueEvent = true;
+        }
+         if (particle->GetCharge() == fPrimaryCharge){
+          istrueEvent_allID = true;
+         }
+        
+        if (particle_ID == 0)
+         {
+           istrueEvent_allZ = true;
+         }
+      }
+    
   }
   if(!istrueEvent)
     return;
@@ -1394,7 +1487,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     std::vector<Int_t> particleID_vec;
     if( particle->GetCharge() > 0 
         && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
-        && (Beta_true > 0.3 && Beta_true < 0.9)     // with reasonable beta
+        // && (Beta_true > 0.3 && Beta_true < 0.9)     // with reasonable beta
         && (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it reaches the TW (one of the bar of the two layers - region from 81 to 120)
     {
       if( particle_ID == 0 ) //primary -> ok!
@@ -1471,7 +1564,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
 
     if( particle->GetCharge() > 0 
         && particle->GetCharge() <= fPrimaryCharge  // with reasonable charge
-        && (Beta_true > 0.3 && Beta_true < 0.9) // with reasonable beta
+        // && (Beta_true > 0.3 && Beta_true < 0.9) // with reasonable beta
         && (NewReg >= fRegFirstTWbar && NewReg <= fRegLastTWbar) && OldReg == fRegAirAfterTW) // it crosses the two planes of the TW and go beyond  (one of the bar of the two layers - region from 81 to 120)
     {
       bool isParticleGood = false;
@@ -1630,7 +1723,7 @@ void GlobalRecoAnaGSI::BookChargeStudies(string path)
 void GlobalRecoAnaGSI::MyReco(string path_name)
 {
   string name = "";
-  if (Z_meas > 0. && Z_meas <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9))
+  if (Z_meas > 0. && Z_meas <= fPrimaryCharge /*&& (Beta_meas > 0.3 && Beta_meas < 0.9)*/)
   {
     name = "yield-N_" + path_name + "_Z_reco_Th_Reco";
     FillYieldReco(name, Z_meas, Th_recoBM); // all reconstructed tracks
@@ -1640,7 +1733,7 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
   {
     if (isGoodReco(TrkIdMC))
     {
-      if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
+      if (Z_true > 0. && Z_true <= fPrimaryCharge /*&& (Beta_true > 0.3 && Beta_true < 0.9)*/)
       { 
         name = "yield-N_"+path_name+"GoodReco";
         FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM, true);                              // N_GoodReco MC
@@ -1648,31 +1741,31 @@ void GlobalRecoAnaGSI::MyReco(string path_name)
         MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, Beta_true, Beta_meas, true); // migration matrix plots
       }
     }
-    if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
+    if (Z_true > 0. && Z_true <= fPrimaryCharge /*&& (Beta_true > 0.3 && Beta_true < 0.9)*/)
     {
       name = "yield-N_" + path_name + "AllReco";
       FillYieldMC(name, Z_true, Z_meas, Th_BM, Th_recoBM,  true); // N_AllReco MC
     }
 
-    if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_true > 0.3 && Beta_true < 0.9))
+    if (Z_true > 0. && Z_true <= fPrimaryCharge /*&& (Beta_true > 0.3 && Beta_true < 0.9)*/)
     {
       name = "MigMatrix" + path_name;
       MigMatrixPlots(name, Z_true, Z_meas, Th_BM, Th_recoBM, Beta_true, Beta_meas, true); // migration matrix plots
     }
 
-    if (Z_true > 0. && Z_true <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9))
+    if (Z_true > 0. && Z_true <= fPrimaryCharge /*&& (Beta_meas > 0.3 && Beta_meas < 0.9)*/)
     {
       name = "yield-N_" + path_name + "_Z_true_Th_Reco";
       FillYieldReco(name, Z_true, Th_recoBM); // all reconstructed tracks but with true Z
     }
 
-    if (Z_meas > 0. && Z_meas <= fPrimaryCharge && (Beta_meas > 0.3 && Beta_meas < 0.9))
+    if (Z_meas > 0. && Z_meas <= fPrimaryCharge /*&& (Beta_meas > 0.3 && Beta_meas < 0.9)*/)
     {
       name = "yield-N_" + path_name + "_Z_meas_Th_True";
       FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks but with real theta
     }
 
-    if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true && (Beta_meas > 0.3 && Beta_meas < 0.9))
+    if (Z_meas > 0. && Z_meas <= fPrimaryCharge && Z_meas == Z_true /*&& (Beta_meas > 0.3 && Beta_meas < 0.9)*/)
     {
       name = "yield-N_" + path_name + "_Z_measEqualTrue_Th_True";
       FillYieldReco(name, Z_meas, Th_BM); // all reconstructed tracks with z_reco = z_true with rea theta (for purity purposes)
