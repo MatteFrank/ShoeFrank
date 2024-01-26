@@ -287,6 +287,7 @@ public:
    // Get position in z from polynom fit
    TVector3         GetPosition( double z );
 
+   void              PrintAllMCIds();
 private:
    Long64_t         fEvtNumber;      ///< event number
    Int_t            fPdgId;          ///< PDG Id used in the fit
