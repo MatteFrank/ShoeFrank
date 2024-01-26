@@ -396,7 +396,6 @@ Double_t TATWactNtuHit::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId
       return -1;
     }
 
-  Double_t Ecal;  // final calibrated energy
   Double_t p0 ,p1; // Birks' parameters
 
   if( f_parcal->IsBarCalibration() ) {
@@ -419,9 +418,9 @@ Double_t TATWactNtuHit::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId
     Info("GetEnergy()","posId::%d, barId::%d, layId::%d, rawEnergy::%.2f",posId,barId,layerId,rawenergy);
     Info("GetEnergy()","Parameters read from energy calibration map file: p0::%.2f, p1::%.2f",p0,p1);
   }
-  
-  // correct using the Birk's Law
-  Ecal = rawenergy / (p0 - rawenergy * p1);
+
+  // final calibrated energy
+  Double_t Ecal = ApplyTwCalibration(p0,p1,rawenergy);
   
   if( f_parcal->IsPosCalibration() && f_parcal->IsElossTuningON() ) {
 
@@ -440,6 +439,27 @@ Double_t TATWactNtuHit::GetEnergy(Double_t rawenergy, Int_t layerId, Int_t posId
   return Ecal;
 }
 
+//________________________________________________________________
+
+Double_t TATWactNtuHit::ApplyTwCalibration(Double_t p0, Double_t p1, Double_t rawenergy) {
+
+  if(f_parcal->GetIonBeamName()=="HE") {
+
+    if(FootDebugLevel(4))
+      Info("ApplyTwCalibration()","Ion beam is %s so TW energy calibration performed with a linear fit",f_parcal->GetIonBeamName().Data());
+    
+    // correct using a lienar fit
+    return  p0 + rawenergy * p1;
+    
+  } else {
+    
+    if(FootDebugLevel(4))
+      Info("ApplyTwCalibration()","Ion beam is %s so TW energy calibration performed with a Birks' law fit",f_parcal->GetIonBeamName().Data());
+    
+    // correct using the Birk's Law
+    return rawenergy / (p0 - rawenergy * p1);
+  }
+} 
 //________________________________________________________________
 
 Double_t TATWactNtuHit::GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b)
