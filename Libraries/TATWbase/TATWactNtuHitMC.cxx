@@ -60,14 +60,14 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
    f_pargeo = (TAGparGeo*)fParGeoG->Object();
    f_parcal = (TATWparCal*)fpCalPar->Object();
+   f_parconf = (TATWparConf*) fpParConf->Object();
    
+   fIsZtrueMC   = f_parconf->IsZmc();
+   fIsZrecPUoff = f_parconf->IsNoPileUp();
+   fIsRateSmear = f_parconf->IsRateSmearMc();
+
    CreateDigitizer();
    
-   TATWparConf* parConf = (TATWparConf*) p_parconf->Object();
-   fIsZtrueMC   = parConf->IsZmc();
-   fIsZrecPUoff = parConf->IsNoPileUp();
-   fIsRateSmear = parConf->IsRateSmearMc();
-
    if( fIsZtrueMC ) {
       fDigitizer->SetMCtrue();
       fDigitizer->SetPileUpOff();
@@ -180,7 +180,8 @@ void TATWactNtuHitMC::CreateDigitizer()
 {
    TATWntuHit* pNtuRaw = (TATWntuHit*) fpNtuRaw->Object();
    
-   fDigitizer = new TATWdigitizer(pNtuRaw, fParGeoG , fpCalPar);
+   fDigitizer = new TATWdigitizer(pNtuRaw, fParGeoG , fpCalPar, fpParConf);
+
 }
 
 //------------------------------------------+-----------------------------------

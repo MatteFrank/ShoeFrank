@@ -11,8 +11,11 @@
 #include <map>
 
 #include "TAGbaseDigitizer.hxx"
+
 #include "TATWparCal.hxx"
 #include "TATWparGeo.hxx"
+#include "TATWparConf.hxx"
+
 #include "TATWntuHit.hxx"
 
 using namespace std;
@@ -22,7 +25,7 @@ class TF1;
 class TATWdigitizer : public TAGbaseDigitizer {
    
 public:
-  TATWdigitizer(TATWntuHit* pNtuRaw, TAGparaDsc* pParGeo, TAGparaDsc* pParCal);
+  TATWdigitizer(TATWntuHit* pNtuRaw, TAGparaDsc* pParGeo, TAGparaDsc* pParCal, TAGparaDsc* pParConf);
    ~TATWdigitizer();
    
    void           SetFunctions();
@@ -75,9 +78,11 @@ private:
    TATWhit*      fCurrentHit;
    TAGparaDsc*   fpParGeo;
    TAGparaDsc*   fpParCal;
+   TAGparaDsc*   fpParConf;
 
    TATWparCal*   twParCal;
    TATWparGeo*   twParGeo;
+   TATWparConf*  twParConf;
    
    // flags
    Bool_t        fMCtrue;

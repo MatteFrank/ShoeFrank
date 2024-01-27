@@ -23,11 +23,12 @@
 Double_t TATWdigitizer::fgHfactor = 1.45;
 
 // --------------------------------------------------------------------------------------
-TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw ,TAGparaDsc* pParGeo, TAGparaDsc* pParCal)
+TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw ,TAGparaDsc* pParGeo, TAGparaDsc* pParCal, TAGparaDsc* pParConf)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
    fpParGeo(pParGeo),
    fpParCal(pParCal),
+   fpParConf(pParConf),
    fCurrentHit(0x0),
    fMCtrue(true),
    fPileUpOff(false),
@@ -78,12 +79,17 @@ TATWdigitizer::TATWdigitizer(TATWntuHit* pNtuRaw ,TAGparaDsc* pParGeo, TAGparaDs
    fEnergyMax(-1)         // max energy loss in the case of multiple hits
 {
    SetFunctions();
+
    SetInitParFunction();
    
    twParGeo =   (TATWparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object();
+
    twParCal = (TATWparCal*)fpParCal->Object();
+
+   twParConf = (TATWparConf*)fpParConf->Object();
    
    fSlatLength = twParGeo->GetBarDimension().Y();
+
    fHisRate = twParCal->GetRate();
    
    fMap.clear();
@@ -350,7 +356,7 @@ Bool_t TATWdigitizer::IsOverEnergyThreshold(double edep_thr, double edep) {
 void TATWdigitizer::SmearEnergyLoss(Double_t &Eloss) {
 
    Double_t ElossShiftRate = GetElossShiftRate();
-   Double_t resElossExp = GetResEnergyExp(Eloss);  // phys + experimental fluctuation
+   Double_t resElossExp = GetResEnergyExp( Eloss * twParConf->GetWdGain() );  // phys + experimental fluctuation
    Double_t resElossMC = GetResEnergyMC(Eloss);  // physical fluctuaction (landau)
    Eloss += gRandom->Gaus(ElossShiftRate,sqrt(pow(resElossExp,2)-pow(resElossMC,2)));
    
@@ -361,7 +367,7 @@ void TATWdigitizer::SmearEnergyLoss(Double_t &Eloss) {
 // --------------------------------------------------------------------------------------
 void TATWdigitizer::SmearTimeTW(Double_t eloss, Double_t &time) {
 
-   Double_t resTimeTW = GetResTimeTW(eloss);
+   Double_t resTimeTW = GetResTimeTW( eloss * twParConf->GetWdGain() );
 
    time += gRandom->Gaus(0,resTimeTW);
    
@@ -376,7 +382,7 @@ void TATWdigitizer::SmearTimeTW(Double_t eloss, Double_t &time) {
 void TATWdigitizer::SmearPosAlongBar(Double_t eloss, Double_t &pos_rec) {
 
   // position resolution from data
-   Double_t resPos = (Double_t)GetResPos(eloss)*TAGgeoTrafo::MmToCm();  //resolution in mm and position in cm!!
+   Double_t resPos = (Double_t)GetResPos( eloss * twParConf->GetWdGain() )*TAGgeoTrafo::MmToCm();  //resolution in mm and position in cm!!
    pos_rec += gRandom->Gaus(0,resPos);
 
    return;
