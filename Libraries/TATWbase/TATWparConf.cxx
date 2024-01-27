@@ -36,7 +36,8 @@ TATWparConf::TATWparConf()
    fEnableZmatching(false),
    fEnableCalibBar(false),
    fEnableRateSmearMc(false),   
-   fBarsN(0)
+   fBarsN(0),
+   fGain(0.)
 {
   fkDefaultParName = "./config/TATWdetector.cfg";
 }
@@ -69,32 +70,50 @@ Bool_t TATWparConf::FromFile(const TString& name)
    Int_t tmp;
    ReadItem(tmp);
    fEnableZmc = tmp;
+   if(fEnableZmc==1)
+     Warning("FromFile()","TW ZID set to MC true one...set the EnableZmc value to 0 in TATWdetector.cfg file if it is not the wanted behaviour");
    if(FootDebugLevel(1))
       cout<< "Enable MC true Z: " << fEnableZmc <<endl;
 
    ReadItem(tmp);
    fEnableNoPileUp = tmp;
+   if(fEnableNoPileUp==1)
+     Warning("FromFile()","Multiple hits in the same TW bar considered as separate hits in MCinstead of a single one...set the EnableNoPileUp value to 0 in the TATWdetector.cfg file if it is not the wanted behaviour");
    if(FootDebugLevel(1))
       cout<<"Enable no pileup: "<< fEnableNoPileUp <<endl;
    
    ReadItem(tmp);
    fEnableZmatching = tmp;
+   if(fEnableZmatching==0)
+     Warning("FromFile()","TW Z matching is disabled...set the EnableZmatching value to 1 in the TATWdetector.cfg file if it is not the wanted behaviour");
    if(FootDebugLevel(1))
       cout<<"Enable Z matching: "<< fEnableZmatching <<endl;
    
    ReadItem(tmp);
    fEnableCalibBar = tmp;
+   if(fEnableCalibBar==1)
+     Warning("FromFile()","Enabled TW bar calibration ...set the EnableCalibBar value to 0 in the TATWdetector.cfg file if you want a TW calibration for each bar cross");
    if(FootDebugLevel(1))
       cout<<"Enable TW bar calibration: "<< fEnableCalibBar <<endl;
 
    ReadItem(tmp);
    fEnableRateSmearMc = tmp;
+   if(fEnableRateSmearMc==1)
+     Warning("FromFile()","Enabled TW Rate Smear for MC ...set the EnableRateSmearMc value to 0 in the TATWdetector.cfg file if it is not the wanted behaviour");
    if(FootDebugLevel(1))
       cout<<"Enable rate smearing in MC: "<< fEnableRateSmearMc <<endl;
 
    ReadItem(fBarsN);
    if(FootDebugLevel(1))
       cout<<"Number of bars: "<< fBarsN <<endl;
+   
+   ReadItem(fGain);
+   if(fGain==0)
+     Warning("FromFile()","WD gain in TW set to %.1f in TATWdetector.cfg file...set the correct value",fGain);
+   if(fGain>1)
+     Warning("FromFile()","WD gain in TW set to %.1f in TATWdetector.cfg file...check if this is the correct value",fGain);
+   if(FootDebugLevel(1))
+      cout<<"Gain value set in the WD for TW: "<< fGain <<endl;
    
    Close();
    
