@@ -23,11 +23,9 @@
 
 # where "lastRun" represents the last run to be processed (included!!)
 
-# The script also allows for the possibility to merge the output files of each condor job in a single file through the "hadd" command of root, launched in a separate job. If you want this task to be performed, add the argument "-m 1" to the command line, as in:
+# By default, the script also merges the output files of each condor job in a single file through the "hadd" command of root, launched in a separate job. This also deletes the single job output files once the merge is completed. If you want to disable this feature and keep the single output files, add the argument "-m 0" to the command line, as in:
 
-# > ./path/to/runShoeBatchT1.sh -i inputFolder -o outputFolder -c campaign -r run -l lastRun -m 1
-
-# NB: Keep in mind that this step erases the single job output files, so ony use it when you are 100% sure that SHOE will run without issues!
+# > ./path/to/runShoeBatchT1.sh -i inputFolder -o outputFolder -c campaign -r run -l lastRun -m 0
 
 ############# MANDATORY!!!!! #################
 
@@ -88,7 +86,7 @@ if [[ ! "$SHOE_PATH" == *"$SHOE_BASE_PATH"* ]]; then
 fi
 
 lastRunNumber=-1
-mergeFilesOpt=0
+mergeFilesOpt=1
 
 while getopts i:o:c:r:l:m: flag
 do
@@ -253,7 +251,6 @@ EOF
 
     # Submit all jobs for current run
     chmod 754 ${jobExec}
-    condor_submit -spool ${filename_sub}
 
     #Merge files if requested!!
     if [[ $mergeFilesOpt -eq 1 ]]; then
@@ -307,7 +304,7 @@ while true; do
 done
 EOF
 
-        # Create submit file for merge job, set to lower priority wrt file processing
+        # Create submit file for merge job
         merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
@@ -316,22 +313,36 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
-priority              = -5
 
 periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Merge of run ${runNumber} exceeded maximum runtime allowed, check presence of files in the output folder"
 
 queue
 EOF
-
         # Submit merge job
         chmod 754 ${mergeJobExec}
-        condor_submit -spool ${merge_sub}
+
+        #Create DAG job file
+        dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
+
+        cat <<EOF > $dag_sub
+JOB process ${filename_sub}
+JOB merge ${merge_sub}
+PARENT process CHILD merge
+EOF
+
+        cd ${HTCfolder}
+        condor_submit_dag -force ${dag_sub}
+        cd -
+
         echo "Submitted jobs for run ${runNumber}"
         
         if [ ${runNumber} -eq ${lastRunNumber} ]; then
             echo "All runs submitted!"
             exit 1
         fi
+        
+    else #file merging disabled, run only the processing
+        condor_submit -spool ${filename_sub}
     fi
 done

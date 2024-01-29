@@ -268,7 +268,6 @@ EOF
 
 # Submit SHOE processing jobs
 chmod 754 ${jobExec}
-condor_submit -spool ${filename_sub}
 
 echo "Finding list of folders..."
 
@@ -331,7 +330,7 @@ while true; do
 done
 EOF
 
-# Create submit file for merge job, set to lower priority wrt file processing
+# Create submit file for merge job
 directory_sub="${HTCfolder}/submitMergeDir_${campaign}_${runNumber}.sub"
 
 cat <<EOF > $directory_sub
@@ -340,7 +339,6 @@ arguments             = \$(dir)
 error                 = ${mergeSingleDirExec_base}_\$(dir).err
 output                = ${mergeSingleDirExec_base}_\$(dir).out
 log                   = ${mergeSingleDirExec_base}_\$(dir).log
-priority              = 0
 
 periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Merge for directory \$(dir) exceeded maximum runtime allowed, check presence of files in the output folder"
@@ -355,7 +353,6 @@ rm ${outFolder}/dirs_${campaign}_${runNumber}.txt
 
 # Submit merge job
 chmod 754 ${mergeSingleDirExec}
-condor_submit -spool ${directory_sub}
 
 
 ##Create merge job -> merge all single output files in the correct order
@@ -388,7 +385,7 @@ while true; do
 done
 EOF
 
-# Create submit file for merge job, set to lower priority wrt file processing
+# Create submit file for merge job
 merge_sub="${HTCfolder}/submitMergeAna_${campaign}_${runNumber}.sub"
 
 cat <<EOF > $merge_sub
@@ -396,7 +393,6 @@ executable            = ${mergeJobExec}
 error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
-priority              = -5
 
 periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Final merge of file ${outFile} exceeded maximum runtime allowed, check presence of files in the output folder"
@@ -406,4 +402,15 @@ EOF
 
 # Submit merge job
 chmod 754 ${mergeJobExec}
-condor_submit -spool ${merge_sub}
+
+dag_sub="${HTCfolder}/submitAnaDAG_${campaign}_${runNumber}.sub"
+cat <<EOF > ${dag_sub}
+JOB process_Ana ${filename_sub}
+JOB merge_Dirs ${directory_sub}
+JOB merge_Final ${merge_sub}
+PARENT process_Ana merge_Dirs CHILD merge_Final
+EOF
+
+cd ${HTCfolder}
+condor_submit_dag -force ${dag_sub}
+cd -

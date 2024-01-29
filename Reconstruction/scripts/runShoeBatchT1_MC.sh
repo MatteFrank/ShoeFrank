@@ -86,7 +86,7 @@ fi
 
 #Initialization of some variables
 runNumber=-1
-mergeFilesOpt=0
+mergeFilesOpt=1
 fullStat=0
 fileNumber=0
 
@@ -292,10 +292,8 @@ log                   = ${jobExec_base}_Job\$(FileNum).log
 queue $nJobs
 EOF
 
-
-# Submit SHOE processing jobs
+# Make SHOE processing executable
 chmod 754 ${jobExec}
-condor_submit -spool ${filename_sub}
 
 #Merge files if requested!!
 if [[ $mergeFilesOpt -eq 1 ]]; then
@@ -340,7 +338,7 @@ while true; do
 done
 EOF
 
-    # Create submit file for merge job, set to lower priority wrt file processing
+    # Create submit file for merge job
     merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
     cat <<EOF > $merge_sub
@@ -349,7 +347,6 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
-priority              = -2
 
 periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Merge of output from ${inFile} exceeded maximum runtime allowed, check presence of single files in the output folder"
@@ -357,11 +354,26 @@ periodic_hold_reason = "Merge of output from ${inFile} exceeded maximum runtime 
 queue
 EOF
 
-    # Submit merge job
+    # Make merge job executable
     chmod 754 ${mergeJobExec}
-    condor_submit -spool ${merge_sub}
-fi
 
+    #Create DAG job for single file if not running on full statistics
+    if [ $fullStat -eq 0 ]; then
+        dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
+
+        cat <<EOF > $dag_sub
+JOB process ${filename_sub}
+JOB merge ${merge_sub}
+PARENT process CHILD merge
+EOF
+
+        cd ${HTCfolder}
+        condor_submit_dag -force ${dag_sub}
+        cd -
+    fi
+else #Merge files not requested -> run processing alone
+    condor_submit -spool ${filename_sub}
+fi
 
 
 #Merge output of different input files when full stat is on
@@ -374,11 +386,20 @@ if [[ ! $fileNumber -eq 0 ]]; then
     #Case1: next file found in folder, recall this script on the new file
     if [[ -e "$inFile" ]]; then
         echo "Moving to next file in the campaign"
-        ./$0 -i $inFile -o $outFolder -m 1 -f 1
+        ./$0 -i $inFile -o $outFolder -f 1
     #Case2: next file does not exist, create and submit the job for the "full stat" merge
     else
         baseMergedSingleFile="$(basename $outMergedFile)"
         fullStatOutput="${outFolder}/MergeFullStat_${campaign}_${runNumber}.root"
+        HTCfolder="${outFolder}/HTCfiles"
+        if [ ! -d $HTCfolder ]; then
+            mkdir $HTCfolder
+            if [ $? -ne 0 ]; then
+                echo "Failed to create condor files directory. Exiting"
+                exit 0
+            fi
+            echo "Directory ${HTCfolder} did not exist, created now!"
+        fi
 
         echo "Creating job for the merge of full statistics"
         echo
@@ -390,7 +411,7 @@ if [[ ! $fileNumber -eq 0 ]]; then
         echo "-----------------------------------------------------"
         echo
 
-        mergeJobExec="${outFolder}/MergeFullStat_${campaign}_${runNumber}.sh"
+        mergeJobExec="${HTCfolder}/MergeFullStat_${campaign}_${runNumber}.sh"
         mergeJobExec_base=${mergeJobExec::-3}
 
         cat <<EOF > $mergeJobExec
@@ -425,8 +446,8 @@ while true; do
 done
 EOF
 
-        # Create submit file for full statistics merge job, set to lower priority wrt single file merge
-        merge_sub="${outFolder}/submitMergeFullStat_${campaign}_${runNumber}.sub"
+        # Create submit file for full statistics merge job
+        merge_sub="${HTCfolder}/submitMergeFullStat_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
 executable            = ${mergeJobExec}
@@ -434,7 +455,6 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
-priority              = -5
 
 periodic_hold = time() - jobstartdate > 14400
 periodic_hold_reason = "Merge of full stat output exceeded maximum runtime allowed, check presence of files in the output folder"
@@ -443,6 +463,33 @@ queue
 EOF
 
         chmod 754 ${mergeJobExec}
-        condor_submit -spool ${merge_sub}
+
+        #Create DAG job for full statistics merge
+        dag_sub="${HTCfolder}/submitDAG_fullStat_${campaign}_${runNumber}.sub"
+        if [ -e "$dag_sub" ]; then
+            rm ${dag_sub}
+        fi
+
+        lastDAGline="PARENT"
+        touch ${dag_sub}
+        for iFile in $(seq 1 ${fileNumber}); do
+        cat <<EOF >> $dag_sub
+JOB ${iFile}_process ${outFolder}/${iFile}/HTCfiles/submitShoeMC_${campaign}_${runNumber}.sub
+JOB ${iFile}_merge ${outFolder}/${iFile}/HTCfiles/submitMerge_${campaign}_${runNumber}.sub
+PARENT ${iFile}_process CHILD ${iFile}_merge
+EOF
+        lastDAGline="${lastDAGline} ${iFile}_merge"
+        done
+
+        cat <<EOF >> $dag_sub
+JOB full_merge ${dag_sub}
+EOF
+        lastDAGline="${lastDAGline} CHILD full_merge"
+        echo ${lastDAGline} >> ${dag_sub}
+
+        cd ${HTCfolder}
+        condor_submit_dag -force ${dag_sub}
+        cd -
+
     fi
 fi
