@@ -379,8 +379,8 @@ while true; do
         rm \${inputFiles} ${outFile_base}*.root
 		break
 	else
-        echo "Analysis of ${campaign} run ${runNumber}, final merge -> Processed \${nCompletedDirs}/${nDirs} directories. Waiting.."
-		sleep 20
+        echo "ERROR:: Analysis of ${campaign} run ${runNumber}, final merge -> Processed \${nCompletedDirs}/${nDirs} directories. Exiting..."
+        exit 0
 	fi
 done
 EOF

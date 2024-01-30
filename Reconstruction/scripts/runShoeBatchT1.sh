@@ -298,8 +298,8 @@ while true; do
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
 	else
-        echo "${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nFiles} files. Waiting..."
-		sleep 20
+        echo "ERROR:: ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nFiles} files. Waiting..."
+		exit 0
 	fi
 done
 EOF
