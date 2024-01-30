@@ -405,10 +405,10 @@ chmod 754 ${mergeJobExec}
 
 dag_sub="${HTCfolder}/submitAnaDAG_${campaign}_${runNumber}.sub"
 cat <<EOF > ${dag_sub}
-JOB process_Ana ${filename_sub}
-JOB merge_Dirs ${directory_sub}
-JOB merge_Final ${merge_sub}
-PARENT process_Ana merge_Dirs CHILD merge_Final
+JOB process_Ana_${campaign}_${runNumber} ${filename_sub}
+JOB merge_Dirs_${campaign}_${runNumber} ${directory_sub}
+JOB merge_Final_${campaign}_${runNumber} ${merge_sub}
+PARENT process_Ana_${campaign}_${runNumber} merge_Dirs_${campaign}_${runNumber} CHILD merge_Final_${campaign}_${runNumber}
 EOF
 
 cd ${HTCfolder}

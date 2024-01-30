@@ -326,9 +326,9 @@ EOF
         dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $dag_sub
-JOB process ${filename_sub}
-JOB merge ${merge_sub}
-PARENT process CHILD merge
+JOB process_${campaign}_${runNumber} ${filename_sub}
+JOB merge_${campaign}_${runNumber} ${merge_sub}
+PARENT process_${campaign}_${runNumber} CHILD merge_${campaign}_${runNumber}
 EOF
 
         cd ${HTCfolder}

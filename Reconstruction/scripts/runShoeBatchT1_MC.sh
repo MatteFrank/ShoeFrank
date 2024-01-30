@@ -474,17 +474,17 @@ EOF
         touch ${dag_sub}
         for iFile in $(seq 1 ${fileNumber}); do
         cat <<EOF >> $dag_sub
-JOB ${iFile}_process ${outFolder}/${iFile}/HTCfiles/submitShoeMC_${campaign}_${runNumber}.sub
-JOB ${iFile}_merge ${outFolder}/${iFile}/HTCfiles/submitMerge_${campaign}_${runNumber}.sub
-PARENT ${iFile}_process CHILD ${iFile}_merge
+JOB process_${campaign}_${runNumber}_file${iFile} ${outFolder}/${iFile}/HTCfiles/submitShoeMC_${campaign}_${runNumber}.sub
+JOB merge_${campaign}_${runNumber}_file${iFile} ${outFolder}/${iFile}/HTCfiles/submitMerge_${campaign}_${runNumber}.sub
+PARENT process_${campaign}_${runNumber}_file${iFile} CHILD merge_${campaign}_${runNumber}_file${iFile}
 EOF
-        lastDAGline="${lastDAGline} ${iFile}_merge"
+        lastDAGline="${lastDAGline} merge_${campaign}_${runNumber}_file${iFile}"
         done
 
         cat <<EOF >> $dag_sub
-JOB full_merge ${dag_sub}
+JOB full_merge_${campaign}_${runNumber} ${merge_sub}
 EOF
-        lastDAGline="${lastDAGline} CHILD full_merge"
+        lastDAGline="${lastDAGline} CHILD full_merge_${campaign}_${runNumber}"
         echo ${lastDAGline} >> ${dag_sub}
 
         cd ${HTCfolder}
