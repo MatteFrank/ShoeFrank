@@ -160,7 +160,7 @@ Bool_t TABMactNtuHit::Action()
 	  }
 
     //retrive hit parameters
-    i_time = hit->GetTime()- p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell()) - p_datraw->GetTrigtime();
+    i_time = hit->GetTime()-  ((p_datraw->GetTrigtype()==1 && p_bmcal->Havefragtrig()) ?  p_bmcal->GetT0Frag(hit->GetView(),hit->GetPlane(),hit->GetCell()) : p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell()))    - p_datraw->GetTrigtime();
     if(i_time<p_bmcon->GetHitTimeCut() && i_time>-20){//apply cut
       //Temporary time cut set at -40; it should be few ns, but at the first GSI data taking there is a jitter of ~ tens of ns not measured
       if(i_time<0)
@@ -168,7 +168,7 @@ Bool_t TABMactNtuHit::Action()
 
       Double_t i_drift = p_bmcal->STrelEval(i_time);
       if(FootDebugLevel(3))
-        cout<<"TABMactNtuHit::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit->GetCell()<<"  view="<<hit->GetView()<<"  Plane="<<hit->GetPlane()<<"   hit->time="<<hit->GetTime()<<"  T0="<<p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell())<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
+        cout<<"TABMactNtuHit::Action:: charging hit i_time="<<i_time<<"  i_drift="<<i_drift<<"  cell="<<hit->GetCell()<<"  view="<<hit->GetView()<<"  Plane="<<hit->GetPlane()<<"   hit->time="<<hit->GetTime()<<"  trigtipe="<<p_datraw->GetTrigtype()<<"  Havefragtrig="<<p_bmcal->Havefragtrig()<<"  T0="<<((p_datraw->GetTrigtype()==1 && p_bmcal->Havefragtrig()) ?  p_bmcal->GetT0Frag(hit->GetView(),hit->GetPlane(),hit->GetCell()) : p_bmcal->GetT0(hit->GetView(),hit->GetPlane(),hit->GetCell()))<<"  trigtime="<<p_datraw->GetTrigtime()<<endl;
 
 
       //create the hit (no selection of hit)

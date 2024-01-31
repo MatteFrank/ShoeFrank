@@ -59,17 +59,19 @@ TATWparCal::~TATWparCal()
 		free (fMapCal);
 	}
 }
+
 //------------------------------------------+-----------------------------------
 void TATWparCal::RetrieveBeamQuantities() {
 
   fZbeam = fParGeo->GetBeamPar().AtomicNumber;
+  fIonBeamName = fParGeo->GetBeamPar().Material;
 
-  TString  ion_name = fParGeo->GetBeamPar().Material;
+  TString  ion_name = GetIonBeamName();
   Int_t    A_beam = fParGeo->GetBeamPar().AtomicMass;
   Float_t  kinE_beam = fParGeo->GetBeamPar().Energy*TAGgeoTrafo::GevToMev()*A_beam; //MeV
   
   if(FootDebugLevel(4))
-    printf("ion::%s Z::%d A::%d E::%d\n",ion_name.Data(),fZbeam,A_beam,(int)(kinE_beam/A_beam));
+    Info("RetrieveBeamQuantities()","ion::%s Z::%d A::%d E::%d\n",fIonBeamName.Data(),fZbeam,A_beam,(int)(kinE_beam/A_beam));
   
   Float_t  z_SC = ((TVector3)fGeoTrafo->GetSTCenter()).Z();    // cm
   Float_t  z_TW = ((TVector3)fGeoTrafo->GetTWCenter()).Z();    // cm
@@ -235,7 +237,7 @@ Bool_t TATWparCal::FromFileZID(const TString& name, Int_t Zbeam) {
     // fChargeParameter[iZ].Charge   = tmp[5];
     
     if(FootDebugLevel(4))
-      cout << endl << " TW Parameter: "<< Form("Z=%d %f %f %f %f", iZ+1, fChargeParameter.Norm_BB[iZ], fChargeParameter.Const_BB[iZ], fChargeParameter.CutLow[iZ], fChargeParameter.CutUp[iZ]) << endl;
+      Info("FromFileZID()","Z::%d Norm::%f Const::%f Tof_min::%f Tof_max::%f\n", iZ+1, fChargeParameter.Norm_BB[iZ], fChargeParameter.Const_BB[iZ], fChargeParameter.CutLow[iZ], fChargeParameter.CutUp[iZ]);
     
   }
   
@@ -272,12 +274,12 @@ Bool_t TATWparCal::FromDeltaTimeFile(const TString& name) {
     fPairId = TPairId((Int_t)tmp[0],(Int_t)tmp[1]); //barId(shoe format), layerId
     // fPairId = TPairId((Int_t)tmp[0]%nBarsPerLayer,(Int_t)tmp[3]); //barId(shoe format), layerId
 
-    if(FootDebugLevel(2))
+    if(FootDebugLevel(4))
       cout<< endl <<fPairId.first<<" "<<fPairId.second<<endl;   
 
     fMapDeltaTime[fPairId]=TTupleDeltaT(tmp[2],tmp[3]); // velocity of light in the bars in [cm/ns], offset delta cable in [cm]
     
-    if(FootDebugLevel(2)) {
+    if(FootDebugLevel(4)) {
       Info("FromDeltaTimeFile()","deltaTime/Offset bar_%d (%d,%d) = %2.3f %.3f", ibar, fPairId.first, fPairId.second, get<0>(fMapDeltaTime[fPairId]), get<1>(fMapDeltaTime[fPairId]));
       cout<<GetBarLightSpeed(fPairId.first,fPairId.second)<<"  "<<GetDeltaTimePosOffset(fPairId.first,fPairId.second)<<endl;
 
@@ -316,13 +318,13 @@ Bool_t TATWparCal::FromBarStatusFile(const TString& name) {
     ReadItem(tmp, 4, ' ');
     fPairId = TPairId((Int_t)tmp[0],(Int_t)tmp[1]);
 
-    if(FootDebugLevel(2))
+    if(FootDebugLevel(4))
       cout<< endl <<fPairId.first<<" "<<fPairId.second<<endl;   
 
     fMapInfoBar[fPairId]=TBarsTuple(tmp[2],(Bool_t)tmp[3]);
     
-    if(FootDebugLevel(2)) {
-      cout << " TW bar status: "<< Form("status/Thr bar_%d (%d,%d) = %.3f %d", ibar, fPairId.first, fPairId.second, get<0>(fMapInfoBar[fPairId]), get<1>(fMapInfoBar[fPairId])) << endl;
+    if(FootDebugLevel(4)) {
+      Info("FromBarStatusFile()","status/Thr barID::%d (%d,%d) = %.3f %d", ibar, fPairId.first, fPairId.second, get<0>(fMapInfoBar[fPairId]), get<1>(fMapInfoBar[fPairId]));
       cout<<GetElossThreshold(fPairId.first,fPairId.second)<<"  "<<IsTWbarActive(fPairId.first,fPairId.second)<<endl;
     }    
     
@@ -419,7 +421,7 @@ Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer)
       f_dist_Z.push_back( std::numeric_limits<float>::max() ); //inf
 
     if (FootDebugLevel(4))
-      printf("the energy released is %.f so Zraw is set to %d and dist to inf\n",edep,fZraw);
+      Info("GetChargeZ()","The energy released is %.f so Zraw is set to %d and dist to inf\n",edep,fZraw);
 
   }
   else
@@ -445,7 +447,8 @@ Int_t TATWparCal::SelectProtonsFromNeutrons(float distZ1) {
   float sigma = fChargeParameter.distSigma[0];
   Int_t Z = abs(distZ1-mean)<5*sigma ? 1 : 0;
   
-  if(FootDebugLevel(4)) cout<<"check::Z==1 assignment...nSigma is < 5 ?  nSigma::"<<abs(distZ1-mean)/sigma<<" ...so...  Zraw::"<<Z<<endl;
+  if(FootDebugLevel(4))
+    Info("SelectProtonsFromNeutrons()","check::Z==1 assignment...nSigma is < 5 ?  nSigma::%.3f...so...  Zraw::%d",abs(distZ1-mean)/sigma,Z);
   
   return Z;  
 }
@@ -571,7 +574,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 
 	  
 	} else {  // if (f_prime_dist_min*f_prime_dist_max>0)
-	  if(FootDebugLevel(4)) printf("no bisection algorithm is possible to assign Z = %d to the TW hit with (tof,eloss) = (%f,%f)\n",iZ,tof,edep);
+	  if(FootDebugLevel(4)) Info("ComputeBBdistance()","No bisection algorithm is possible to assign Z = %d to the TW hit with (tof,eloss) = (%f,%f)\n",iZ,tof,edep);
 	  dist=std::numeric_limits<float>::max(); //inf
 	  f_dist_Z.push_back( dist );
 
@@ -582,22 +585,22 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	dist=std::numeric_limits<float>::max(); //inf
 	f_dist_Z.push_back( dist );
 	if (FootDebugLevel(4))
-	  printf("xmin(%.5f) > xmax(%.5f) so no possible interval for bisection algorithm\n",xmin,xmax);      
+	  Info("ComputeBBdistance()","xmin(%.5f) > xmax(%.5f) so no possible interval for bisection algorithm\n",xmin,xmax);      
       }
     } else {
       dist=std::numeric_limits<float>::max(); //inf
       f_dist_Z.push_back( dist );
       if (FootDebugLevel(4))
-         printf("tof (%.f) is outside the selected interval [%.f,%.f] so Zraw is set to %d\n",tof,xmin,xmax,fZraw);
+        Info("ComputeBBdistance()","tof (%.f) is outside the selected interval [%.f,%.f] so Zraw is set to %d\n",tof,xmin,xmax,fZraw);
     }
 
-    if(FootDebugLevel(4)) printf("for loop over iZ::%d  with dist::%.5f\n\n",iZ,f_dist_Z.at(iZ-1));
-    if(FootDebugLevel(4)) printf("the selected Z is:: %d\n\n",fZraw);
+    if(FootDebugLevel(4)) Info("ComputeBBdistance()","for loop over iZ::%d  with dist::%.5f\n\n",iZ,f_dist_Z.at(iZ-1));
+    if(FootDebugLevel(4)) Info("ComputeBBdistance()","the selected Z is:: %d\n\n",fZraw);
 
   } // close for loop over Z
     
   if(FootDebugLevel(4) && fZraw==0)
-    printf("Z::%d  edep::%f  tof::%f \n",fZraw,edep,tof);
+    Info("ComputeBBdistance()","Z::%d  edep::%f  tof::%f \n",fZraw,edep,tof);
     
   return;
 }

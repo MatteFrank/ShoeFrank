@@ -36,6 +36,11 @@ TAVTbaseParCal::TAVTbaseParCal()
   fChargeMaxProba(0.),
   fkDefaultCalName("")
 {
+   // set default wise to 1
+   for (Int_t p = 0; p < 32; p++) {
+      fEffParameter[p].SensorId   = p;
+      fEffParameter[p].QuadEff[p] = 1.;
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -99,7 +104,7 @@ Bool_t TAVTbaseParCal::FromFile(const TString& name)
          printf("SensorsN: %d\n", fSensorsN);
       
       Double_t* tmp = new Double_t[4];
-      for (Int_t p = 0; p < fChargesN; p++) { // Loop on each charge
+      for (Int_t p = 0; p < fSensorsN; p++) { // Loop on each charge
          
          // read parameters
          ReadItem(tmp, 4, ' ');

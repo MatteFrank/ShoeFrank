@@ -90,7 +90,8 @@ void TCLINMtrackingAction::PostUserTrackingAction(const G4Track* aTrack)
       const G4VProcess* process = aTrack->GetCreatorProcess();
       if (process) {
          G4String name = process->GetProcessName();
-         if ( name.contains("ionInelastic") && charge > 0 && regId == 30) {
+         
+         if (G4StrUtil::contains(name, "ionInelastic") && charge > 0 && regId == 30) {
             if (FootMcDebugLevel(1))
                printf("track %d process %s charge %d\n", trackID, name.data(), charge);
             inelastic = true;

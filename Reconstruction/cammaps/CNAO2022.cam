@@ -14,6 +14,7 @@ NumberFiles: 1
 DetectorName: "ST"
 NumberFiles: 5
 "./geomaps/CNAO2022/TASTdetector.geo": -1
+"./config/CNAO2022/TASTdetector.map": -1
 "./config/CNAO2022/TASTdetector.cfg": -1
 "./config/CNAO2022/WDChannelMap.map": -1
 "./calib/CNAO2022/WDpar.cal": -1;

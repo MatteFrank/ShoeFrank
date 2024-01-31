@@ -109,6 +109,9 @@ protected:
    // Generate output file name
    TString  GetFileOutName();
 
+   // Get run number from file
+   Int_t GetRunNumberFromFile();
+   
    ClassDef(RecoRaw, 1); ///< Base class for event display
 };
 

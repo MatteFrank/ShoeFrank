@@ -13,9 +13,8 @@ NumberFiles: 1
 "./geomaps/CNAO2023_MC/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/CNAO2023_MC/TASTdetector.geo": -1
-"./config/CNAO2023_MC/TASTdetector.cfg": -1
 
 DetectorName: "BM"
 NumberFiles: 3

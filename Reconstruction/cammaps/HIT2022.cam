@@ -12,8 +12,9 @@ NumberFiles: 1
 "./geomaps/HIT2022/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/HIT2022/TASTdetector.geo": -1
+"./config/HIT2022/TASTdetector.map": -1
 "./config/HIT2022/TASTdetector.cfg": -1
 "./config/HIT2022/WDChannelMap.map": -1
 "./calib/HIT2022/WDpar.cal": -1;

@@ -391,7 +391,14 @@ void TAGbaseEventDisplay::CreateRawAction()
 void TAGbaseEventDisplay::SetFileName(const TString fileName)
 {
    fReco->SetName(fileName);
-   fReco->SetRunNumber(fRunNumber);
+   
+   if (fRunNumber == -1) {
+      fReco->SetRunNumberFromFile();
+      fRunNumber = fReco->GetRunNumber();
+   }
+   
+   gTAGroot->SetRunNumber(fRunNumber);
+  // fReco->SetRunNumber(fRunNumber);
 }
 
 //__________________________________________________________

@@ -24,7 +24,8 @@ TABMntuRaw::TABMntuRaw()
  : TAGdata(),
    fListOfHits(0x0),
    fiNDrop(0),
-   fTrigTime(-1000)
+   fTrigTime(-1000),
+   fTrigType(-1000)
 {
    SetupClones();
 }
@@ -107,6 +108,7 @@ void TABMntuRaw::Clear(Option_t*)
   fListOfHits->Delete();
   fiNDrop=0;
   fTrigTime=-1000;
+  fTrigType=-1000;
 }
 
 /*------------------------------------------+---------------------------------*/

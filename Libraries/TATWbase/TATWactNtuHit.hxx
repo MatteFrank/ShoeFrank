@@ -107,6 +107,8 @@ private:
 
   Double_t GetPosition(TATWrawHit*a,TATWrawHit*b,Int_t layer,Int_t bar);
 
+  Double_t ApplyTwCalibration(Double_t p0, Double_t p1, Double_t rawenergy);
+
   Int_t    GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos);
   Int_t    GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos);
 

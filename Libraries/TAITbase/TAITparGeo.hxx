@@ -10,6 +10,7 @@
 
 #include "TAGmaterials.hxx"
 #include "TAVTparGeo.hxx"
+#include "TAITparMap.hxx"
 
 class TGeoHMatrix;
 class TGeoVolume;
@@ -18,6 +19,7 @@ class TGeoVolume;
 class TAITparGeo : public TAVTparGeo {
    
 private:
+   TAITparMap* fpParMap;           ///< par Map pointe if availbale
    Int_t      fSensPerBoard;      ///< number of sensors per Plume
    TVector3   fSupportSize;       ///< Support size
    TVector3   fSupportOffset;     ///< Support offset
@@ -68,7 +70,7 @@ private:
    Float_t GetPassiveLayerPosZ(Int_t layer);
 
 public:
-   TAITparGeo();
+   TAITparGeo(TAITparMap* parMap = 0x0);
     virtual ~TAITparGeo();
    
    //! Get number of Sensors per link

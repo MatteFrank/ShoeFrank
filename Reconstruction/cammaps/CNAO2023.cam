@@ -12,8 +12,9 @@ NumberFiles: 1
 "./geomaps/CNAO2023/TADIdetector.geo": 5956; 6092; 6094; 6117; 6306; 6308; 6309; 6310;
 
 DetectorName: "ST"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/CNAO2023/TASTdetector.geo": -1
+"./config/CNAO2023/TASTdetector.map": -1
 "./config/CNAO2023/TASTdetector.cfg": -1
 "./config/CNAO2023/WDChannelMap.map": -1
 "./calib/CNAO2023/WDpar.cal": -1;
@@ -25,7 +26,7 @@ NumberFiles: 4
 "./geomaps/CNAO2023/TABMdetector.geo": -1
 "./config/CNAO2023/TABMdetector.cfg": -1
 "./config/CNAO2023/TABMdetector.map": -1
-"./calib/CNAO2023/TABM_T0_Calibration.cal": 5956; 6140; 6170; 6180; 6224; 6228; 6230; 6232; 6272; 6311;
+"./calib/CNAO2023/TABM_T0_Calibration.cal": -1;
 
 DetectorName: "TG"
 NumberFiles: 1

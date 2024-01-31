@@ -136,6 +136,8 @@ Bool_t TABMtrack::EvaluateResChi2(TABMntuHit* p_nturaw, TABMparGeo* p_bmgeo){
       p_hit->SetResidual(res);
       p_hit->SetChi2(res*res/p_hit->GetSigma()/p_hit->GetSigma());
       chi2redY+=p_hit->GetChi2();
+    }else if(p_hit->GetIsSelected()==-1){
+      p_hit->SetResidual(p_hit->GetRdrift()-  (p_hit->GetView()==0 ? p_bmgeo->PointLineDist(fSlope.Y()/fSlope.Z(),fOrigin.Y(),p_hit->GetWirePos().Y(), p_hit->GetWirePos().Z()) : p_bmgeo->PointLineDist(fSlope.X()/fSlope.Z(),fOrigin.X(),p_hit->GetWirePos().X(), p_hit->GetWirePos().Z())));
     }
   }
 

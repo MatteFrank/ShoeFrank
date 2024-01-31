@@ -47,17 +47,17 @@ Bool_t TACAparCal::LoadCryTemperatureCalibrationMap(const TString& name)
   Clear();
 
   TString name_calib_temp_cry = name;
-  
+
   gSystem->ExpandPathName(name_calib_temp_cry);
   // fMapCal->LoadCalibrationMap(name_exp.Data());
-  
+
 
   fMapCal->LoadCryTemperatureCalibrationMap(name_calib_temp_cry.Data());
-  
+
   Info("LoadCryTemperatureCalibrationMap()", "Open file %s for Temperature calibration\n", name_calib_temp_cry.Data());
 
-  return kFALSE;    
-}  
+  return kFALSE;
+}
 
 //_____________________________________________________________________
 //! Load crystal energy calibration map file
@@ -66,15 +66,15 @@ Bool_t TACAparCal::LoadCryTemperatureCalibrationMap(const TString& name)
 Bool_t TACAparCal::LoadEnergyCalibrationMap(TString name)
 {
    Clear();
-   
+
    TString name_calib_en_cry = name;
-   
+
    gSystem->ExpandPathName(name_calib_en_cry);
-   
+
    fMapCal->LoadEnergyCalibrationMap(name_calib_en_cry.Data());
-   
+
    Info("FromCalibFile()", "Open file %s for Energy calibration\n", name_calib_en_cry.Data());
-   
+
    return kFALSE;
 }
 
@@ -107,6 +107,16 @@ Double_t TACAparCal::GetADC2TempParam(Int_t crysId, UInt_t ParameterNumber)
    return fMapCal->GetADC2TempParam(crysId, ParameterNumber);
 }
 
+//_______________________________________________
+//! Get temperature parameter
+//!
+//! \param[in] crysId crystal id
+//! \param[in] ParameterNumber paramenter id
+Double_t TACAparCal::GetADC2EnergyParamCry(Int_t crysId, UInt_t ParameterNumber)
+{
+   return fMapCal->GetADC2EnergyParamCry(crysId, ParameterNumber);
+}
+
 //_____________________________________________________________________
 //! Get crystal map
 //!
@@ -127,26 +137,26 @@ void TACAparCal::GetCrysMap(Int_t crysId, Int_t& crysBoard, Int_t& crysCh)
 Bool_t TACAparCal::FromCrysStatusFile(const TString& name)
 {
   TString nameExp;
-  
+
   if (name.IsNull())
     nameExp = fgkCrysStatus;
   else
     nameExp = name;
-  
+
   if (!Open(nameExp)) return false;
-  
+
   if(FootDebugLevel(4))
     Info("FromCrysStatusFile()", "Open file %s", name.Data());
-  
+
   Double_t* tmp = new Double_t[4];
-  
+
   Int_t nCrys = fParGeo->GetCrystalsN();
-  
+
   for (Int_t iCrys = 0; iCrys < nCrys; iCrys++) { // Loop over the bars
-    
+
     // read parameters
     ReadItem(tmp, 4, ' ');
-    
+
     Int_t crysboard = int(tmp[0]);
     Int_t crysCh    = int(tmp[1]);
     Float_t emin    = tmp[2];
@@ -154,18 +164,17 @@ Bool_t TACAparCal::FromCrysStatusFile(const TString& name)
 
     if(FootDebugLevel(1))
       printf("crysid %d :crysboard %d crysCh %d Eloss_min %.2f active_crys %d\n", iCrys, crysboard, crysCh, emin, status);
-    
-    
+
+
     fStatusCrys.push_back(status);
     fStatusEmin.push_back(emin);
     pair<int, int> id(crysboard, crysCh);
     fStatusCrysHwId[iCrys] = id;
   }
-  
+
   delete[] tmp;
-  
+
   Close();
-  
+
   return true;
 }
-

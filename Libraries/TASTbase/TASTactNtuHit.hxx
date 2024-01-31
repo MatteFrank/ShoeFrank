@@ -22,7 +22,8 @@ public:
   explicit        TASTactNtuHit(const char* name=0,
                                 TAGdataDsc* p_datraw=0,
                                 TAGdataDsc* p_datdaq=0,
-                                TAGparaDsc* p_parmap=0);
+                                TAGparaDsc* p_parmap=0,
+				TAGparaDsc* p_parconf=0);
   virtual         ~TASTactNtuHit();
 
   virtual Bool_t  Action();
@@ -33,6 +34,7 @@ private:
   TAGdataDsc*     fpDatRaw;		    // input data dsc
   TAGdataDsc*     fpNtuRaw;		    // output data dsc
   TAGparaDsc*     fpParMap;		    // output data dsc
+  TAGparaDsc*     fpParConf;		    // output data dsc
   Int_t           fEventsN;
 
   TH1F *hArrivalTime[8];
@@ -50,6 +52,11 @@ private:
   TH1F *hTotPedestal;
   TH1F *hTotBaseline;
   TH1F *hTotRiseTime;
+  TH1F *hTotTimeNoise;
+  TH1F *hFFT;
+  TH1F *hFFTre;
+  TH1F *hFFTim;
+  TH1F *hFFTfilter;
   
   TH1F *hEff;
   TH1F *hPileUp;

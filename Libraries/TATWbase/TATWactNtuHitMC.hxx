@@ -62,6 +62,7 @@ private:
    TATWdigitizer*  fDigitizer;  // digitizer
    
    TATWparCal*     f_parcal;
+   TATWparConf*    f_parconf;
 
    TAGparGeo*      f_pargeo;
    TAGgeoTrafo*    f_geoTrafo;

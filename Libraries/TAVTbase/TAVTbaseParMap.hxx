@@ -34,7 +34,9 @@ public:
    //! return number sensors per data link
    Int_t        GetSensorsN(Int_t idx = 0) const { return fSensorsN[idx]; }
 
- 
+   // Get sensor id and datalink pair from planeId
+   pair<int, int> GetMapId(Int_t planeId);
+   
 protected:
    Int_t                    fSensorsN[32];    ///< number of sensors per datalink
    Int_t                    fDataLinksN;      ///< numver of data links
