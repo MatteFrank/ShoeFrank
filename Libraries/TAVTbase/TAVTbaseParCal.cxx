@@ -39,7 +39,8 @@ TAVTbaseParCal::TAVTbaseParCal()
    // set default wise to 1
    for (Int_t p = 0; p < 32; p++) {
       fEffParameter[p].SensorId   = p;
-      fEffParameter[p].QuadEff[p] = 1.;
+      for(int q=0; q<4; q++)
+         fEffParameter[p].QuadEff[q] = 1.;
    }
 }
 
