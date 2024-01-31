@@ -16,26 +16,21 @@
 
 # There is no need to indicate the campaign and run number since they are retrieved from the "runinfo" object in the input file
 
-############# MANDATORY!!!!! #################
-
-# When the processing is done, you need to cleanup your job files from condor. To perform this operation, issue the command:
-
-# > condor_rm -name sn-02 $USER
-
-############# MANDATORY!!!!! #################
-
-
-############# USEFUL!!!!! #################
+############# IMPORTANT!!!!! #################
 
 # To check the status of your jobs, launch the command
 
 # > condor_q -name sn-02 $USER
 
-# All condor auxiliary files (.err/.out/.log) are not automatically downloaded. To download them launch
+# All condor auxiliary files (.err/.out/.log) are automatically downloaded and the completed jobs removed when the file merge is requested. If one turns off the file merging, it might be needed to download the auxiliarry files for debug purposes. If needed, this operation can be performed thorugh the command: 
 
 # > condor_transfer_data -name sn-02 $USER
 
-############# USEFUL!!!!! #################
+# If anything were to fail in the processing chain, you might need to remove your jobs by hand. To perform this operation, issue the command:
+
+# > condor_rm -name sn-02 $USER
+
+############# IMPORTANT!!!!! #################
 
 
 ############# SHOE INSTALLATION GUIDE #################
@@ -55,6 +50,15 @@
 #   > cmake .. -D FILECOPY=ON                       (the "-DCMAKE_BUILD_TYPE=Debug" option is now given by default)
 #   > make
 
+# Here is a list of all the options available for SHOE compilation:
+
+# - CMAKE_BUILD_TYPE    Type of build, usually either "Debug" of "Release" (default = Debug)
+# - FILECOPY            Turn ON/OFF the config/calib/cammaps file copy (default = OFF)
+# - GENFIT_DIR          Turn ON/OFF the global reconstruction w/ genfit (default = ON)
+# - TOE_DIR             Turn ON/OFF the global reconstruction w/ TOE (default = OFF)
+# - ANC_DIR             Turn ON/OFF the ancillary directory (default = OFF)
+# - GEANT4_DIR          Turn ON/OFF the G4 simulations (default = OFF)
+
 ############# SHOE INSTALLATION GUIDE #################
 
 # To signal any possible issue/missing feature, please contact zarrella@bo.infn.it
@@ -64,7 +68,7 @@
 echo "Start job submission!"
 
 INPUT_BASE_PATH="/storage/gpfs_data/foot/"
-OUTPUT_BASE_PATH="/storage/gpfs_data/foot/${USER}"
+OUTPUT_BASE_PATH="/storage/gpfs_data/foot/"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
 SHOE_PATH=$(dirname $(realpath "$0"))
 SHOE_PATH=${SHOE_PATH%Reconstruction/scripts}
@@ -400,9 +404,11 @@ periodic_hold_reason = "Final merge of file ${outFile} exceeded maximum runtime 
 queue
 EOF
 
-# Submit merge job
 chmod 754 ${mergeJobExec}
 
+# Create DAG for job steering
+# 1. Process and directory merging 
+# 2. Final merge
 dag_sub="${HTCfolder}/submitAnaDAG_${campaign}_${runNumber}.sub"
 cat <<EOF > ${dag_sub}
 JOB process_Ana_${campaign}_${runNumber} ${filename_sub}
@@ -411,6 +417,7 @@ JOB merge_Final_${campaign}_${runNumber} ${merge_sub}
 PARENT process_Ana_${campaign}_${runNumber} merge_Dirs_${campaign}_${runNumber} CHILD merge_Final_${campaign}_${runNumber}
 EOF
 
+# Submit DAG
 cd ${HTCfolder}
 condor_submit_dag -force ${dag_sub}
 cd -

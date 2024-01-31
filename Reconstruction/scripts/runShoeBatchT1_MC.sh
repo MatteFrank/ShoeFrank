@@ -13,39 +13,34 @@
 # - inputFile is the path of the input file. The input file is forced to be inside "/storage/gpfs_data/foot/shared/SimulatedData".
 # - outputFolder is the path to the output folder. This is forced to be in "/storage/gpfs_data/foot/${USER}". If you don't have a directory like this one already in the Tier1, it will be created.
 
-# The script also allows for the possibility to merge the output files of each condor job in a single file through the "hadd" command of root, launched in a separate job. If you want this task to be performed, add the argument "-m 1" to the command line, as in:
+# By default, the script also merges the output files of each input in a single file through the "hadd" command of root. This also deletes the single job output files once the merge is completed. If you want to disable this feature and keep the single output files, add the argument "-m 0" to the command line, as in::
 
-# > ./path/to/runShoeBatchT1_MC.sh -i inputFile -o outputFolder -m 1
+# > ./path/to/runShoeBatchT1_MC.sh -i inputFile -o outputFolder -m 0
 
 # NB: Keep in mind that this step erases the single job output files, so ony use it when you are 100% sure that SHOE will run without issues!
 
 # When running on MC campaigns, the input folder could potentially contain more than one file. If the files only differ by a number in the format "_X_", the script has an additional option that can be used to process all files with one single command. Say that, for example, the inputFolder contains two files named "12C_200_1_shoereg.root" and "12C_200_2_shoereg.root". In this case, one can run on both files by launching:
 
-# > ./path/to/runShoeBatchT1_MC.sh -i inputFolder/12C_200_1_shoereg.root -o outputFolder -m 1 -f 1
+# > ./path/to/runShoeBatchT1_MC.sh -i inputFolder/12C_200_1_shoereg.root -o outputFolder -f 1
 
-# The addition of the "-f 1" option tells the script to look for subsequent files and run all of them. A job is also created to handle the final merging of all output files.
-
-
-############# MANDATORY!!!!! #################
-
-# When the processing is done, you need to cleanup your job files from condor. To perform this operation, issue the command:
-
-# > condor_rm -name sn-02 $USER
-
-############# MANDATORY!!!!! #################
+# The addition of the "-f 1" option tells the script to look for subsequent files and run all of them. A job is also created to handle the final merging of all output files. If the "-f 1" option is specified, the file merging is forced.
 
 
-############# USEFUL!!!!! #################
+############# IMPORTANT!!!!! #################
 
 # To check the status of your jobs, launch the command
 
 # > condor_q -name sn-02 $USER
 
-# All condor auxiliary files (.err/.out/.log) are not automatically downloaded. To download them launch
+# All condor auxiliary files (.err/.out/.log) are automatically downloaded and the completed jobs removed when the file merge is requested. If one turns off the file merging, it might be needed to download the auxiliarry files for debug purposes. If needed, this operation can be performed thorugh the command: 
 
 # > condor_transfer_data -name sn-02 $USER
 
-############# USEFUL!!!!! #################
+# If anything were to fail in the processing chain, you might need to remove your jobs by hand. To perform this operation, issue the command:
+
+# > condor_rm -name sn-02 $USER
+
+############# IMPORTANT!!!!! #################
 
 
 ############# SHOE INSTALLATION GUIDE #################
@@ -65,6 +60,15 @@
 #   > cmake .. -D FILECOPY=ON                       (the "-DCMAKE_BUILD_TYPE=Debug" option is now given by default)
 #   > make
 
+# Here is a list of all the options available for SHOE compilation:
+
+# - CMAKE_BUILD_TYPE    Type of build, usually either "Debug" of "Release" (default = Debug)
+# - FILECOPY            Turn ON/OFF the config/calib/cammaps file copy (default = OFF)
+# - GENFIT_DIR          Turn ON/OFF the global reconstruction w/ genfit (default = ON)
+# - TOE_DIR             Turn ON/OFF the global reconstruction w/ TOE (default = OFF)
+# - ANC_DIR             Turn ON/OFF the ancillary directory (default = OFF)
+# - GEANT4_DIR          Turn ON/OFF the G4 simulations (default = OFF)
+
 ############# SHOE INSTALLATION GUIDE #################
 
 # To signal any possible issue/missing feature, please contact zarrella@bo.infn.it
@@ -74,7 +78,7 @@
 echo "Start job submission!"
 
 INPUT_BASE_PATH="/storage/gpfs_data/foot/shared/SimulatedData"
-OUTPUT_BASE_PATH="/storage/gpfs_data/foot/${USER}"
+OUTPUT_BASE_PATH="/storage/gpfs_data/foot/"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
 SHOE_PATH=$(dirname $(realpath "$0"))
 SHOE_PATH=${SHOE_PATH%Reconstruction/scripts}
@@ -357,7 +361,9 @@ EOF
     # Make merge job executable
     chmod 754 ${mergeJobExec}
 
-    #Create DAG job for single file if not running on full statistics
+    # Create DAG job for single file if not running on full statistics
+    # 1. Process
+    # 2. Merge
     if [ $fullStat -eq 0 ]; then
         dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
 
@@ -367,6 +373,7 @@ JOB merge ${merge_sub}
 PARENT process CHILD merge
 EOF
 
+        #submit DAG for single file merging
         cd ${HTCfolder}
         condor_submit_dag -force ${dag_sub}
         cd -
@@ -464,12 +471,16 @@ EOF
 
         chmod 754 ${mergeJobExec}
 
-        #Create DAG job for full statistics merge
+        # Create DAG job for full statistics merge
+        # 1. Process all files
+        # 2. Merge of single files
+        # 3. Final merge
         dag_sub="${HTCfolder}/submitDAG_fullStat_${campaign}_${runNumber}.sub"
         if [ -e "$dag_sub" ]; then
             rm ${dag_sub}
         fi
 
+        #Define PARENT-CHILD job relation
         lastDAGline="PARENT"
         touch ${dag_sub}
         for iFile in $(seq 1 ${fileNumber}); do
@@ -487,6 +498,7 @@ EOF
         lastDAGline="${lastDAGline} CHILD full_merge_${campaign}_${runNumber}"
         echo ${lastDAGline} >> ${dag_sub}
 
+        #Submit DAG for final output merge
         cd ${HTCfolder}
         condor_submit_dag -force ${dag_sub}
         cd -

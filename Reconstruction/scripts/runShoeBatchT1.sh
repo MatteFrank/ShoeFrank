@@ -23,30 +23,25 @@
 
 # where "lastRun" represents the last run to be processed (included!!)
 
-# By default, the script also merges the output files of each condor job in a single file through the "hadd" command of root, launched in a separate job. This also deletes the single job output files once the merge is completed. If you want to disable this feature and keep the single output files, add the argument "-m 0" to the command line, as in:
+# By default, the script also merges the output files of each run in a single file through the "hadd" command of root, launched in a separate job. This also deletes the single job output files once the merge is completed. If you want to disable this feature and keep the single output files, add the argument "-m 0" to the command line, as in:
 
 # > ./path/to/runShoeBatchT1.sh -i inputFolder -o outputFolder -c campaign -r run -l lastRun -m 0
 
-############# MANDATORY!!!!! #################
-
-# When the processing is done, you need to cleanup your job files from condor. To perform this operation, issue the command:
-
-# > condor_rm -name sn-02 $USER
-
-############# MANDATORY!!!!! #################
-
-
-############# USEFUL!!!!! #################
+############# IMPORTANT!!!!! #################
 
 # To check the status of your jobs, launch the command
 
 # > condor_q -name sn-02 $USER
 
-# All condor auxiliary files (.err/.out/.log) are not automatically downloaded. To download them launch
+# All condor auxiliary files (.err/.out/.log) are automatically downloaded and the completed jobs removed when the file merge is requested. If one turns off the file merging, it might be needed to download the auxiliarry files for debug purposes. If needed, this operation can be performed thorugh the command: 
 
 # > condor_transfer_data -name sn-02 $USER
 
-############# USEFUL!!!!! #################
+# If anything were to fail in the processing chain, you might need to remove your jobs by hand. To perform this operation, issue the command:
+
+# > condor_rm -name sn-02 $USER
+
+############# IMPORTANT!!!!! #################
 
 
 ############# SHOE INSTALLATION GUIDE #################
@@ -66,6 +61,15 @@
 #   > cmake .. -D FILECOPY=ON                       (the "-DCMAKE_BUILD_TYPE=Debug" option is now given by default)
 #   > make
 
+# Here is a list of all the options available for SHOE compilation:
+
+# - CMAKE_BUILD_TYPE    Type of build, usually either "Debug" of "Release" (default = Debug)
+# - FILECOPY            Turn ON/OFF the config/calib/cammaps file copy (default = OFF)
+# - GENFIT_DIR          Turn ON/OFF the global reconstruction w/ genfit (default = ON)
+# - TOE_DIR             Turn ON/OFF the global reconstruction w/ TOE (default = OFF)
+# - ANC_DIR             Turn ON/OFF the ancillary directory (default = OFF)
+# - GEANT4_DIR          Turn ON/OFF the G4 simulations (default = OFF)
+
 ############# SHOE INSTALLATION GUIDE #################
 
 # To signal any possible issue/missing feature, please contact zarrella@bo.infn.it
@@ -75,7 +79,7 @@
 echo "Start job submission!"
 
 INPUT_BASE_PATH="/storage/gpfs_data/foot"
-OUTPUT_BASE_PATH="${INPUT_BASE_PATH}/${USER}"
+OUTPUT_BASE_PATH="${INPUT_BASE_PATH}/"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
 SHOE_PATH=$(dirname $(realpath "$0"))
 SHOE_PATH=${SHOE_PATH%Reconstruction/scripts}
@@ -319,10 +323,11 @@ periodic_hold_reason = "Merge of run ${runNumber} exceeded maximum runtime allow
 
 queue
 EOF
-        # Submit merge job
         chmod 754 ${mergeJobExec}
 
-        #Create DAG job file
+        # Create DAG job file
+        # 1. Process files of run
+        # 2. Merge output files of single run
         dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $dag_sub
