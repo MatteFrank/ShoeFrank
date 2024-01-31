@@ -455,6 +455,26 @@ TArrayI TAGtrack::GetMcTrackIdx()
    return fMcTrackIdx;
 }
 
+void TAGtrack::PrintAllMCIds()
+{
+   cout << "TrackMCIds:: [";
+   for(int i = 0; i< GetPointsN(); ++i)
+   {
+      TAGpoint* pt = GetPoint(i);
+      cout <<"[";
+      for(int ii=0;ii<pt->GetMcTracksN();++ii)
+      {
+         cout << pt->GetMcTrackIdx(ii);
+         if(ii != pt->GetMcTracksN()-1)
+            cout <<", ";
+      }
+      cout <<"]"; 
+      if(i != GetPointsN()-1)
+         cout << ", ";
+   }
+   cout << "]" << endl;
+}
+
 
 //------------------------------------------+-----------------------------------
 //! Get MC track index - most probable

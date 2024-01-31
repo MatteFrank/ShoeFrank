@@ -96,9 +96,9 @@ void GlobalRecoAna::LoopEvent() {
     cout << "Load Event: " << currEvent << endl;
 
   DiffApp_trkIdx = false;
-  SelectionCuts();
+  //SelectionCuts();
 
-  ClustersPositionStudy();
+  //ClustersPositionStudy();
 
   int evtcutstatus = ApplyEvtCuts();
   ((TH1D *)gDirectory->Get("Evtcutstatus"))->Fill(evtcutstatus);
@@ -117,32 +117,30 @@ void GlobalRecoAna::LoopEvent() {
       if (fFlagMC == false)
       {
         wdTrig = (TAWDntuTrigger *)fpNtuWDtrigInfo->GenerateObject(); // trigger from hardware
-        FragTriggerStudies();
+        //FragTriggerStudies();
       }
 
+      // TW ghost hits studies, needed for the following yield measurements
       if (fFlagMC == true && nt > 0)
       {
         // initialize Trk Id to 0
         TrkIdMC = -1;
         N_TrkIdMC_TW = -1;
         TrkIdMC_TW = -1;
+        //TrackVsMCStudy();
       }
-
-      // TW ghost hits studies, needed for the following yield measurements
-      if (fFlagMC == true)
-        TrackVsMCStudy();
+        
 
       //*********************************************************************************** begin loop on global tracks **********************************************
       for (int it = 0; it < nt; it++)
       { // for every track
-        int trkstatus = ApplyTrkCuts();
-        ((TH1D *)gDirectory->Get("Trkcutstatus"))->Fill(trkstatus);
-        if (trkstatus)
-        {
-          ntracks++;
-          continue;
-        }
-
+        // int trkstatus = ApplyTrkCuts();
+        // ((TH1D *)gDirectory->Get("Trkcutstatus"))->Fill(trkstatus);
+        // if (trkstatus)
+        // {
+        //   ntracks++;
+        //   continue;
+        // }
         isPrimaryInEvent = false;
         fGlbTrack = myGlb->GetTrack(it);
 
@@ -160,10 +158,10 @@ void GlobalRecoAna::LoopEvent() {
         // Evaluate the measured mass
         if (fFlagMC)
         {
-          ThetaTrueVSThetaRecoPlots();
+          //ThetaTrueVSThetaRecoPlots();
         }
 
-        EvaluateMass();
+        //EvaluateMass();
 
         if (FootDebugLevel(1))
         {
@@ -172,8 +170,8 @@ void GlobalRecoAna::LoopEvent() {
         }
 
         // some specific studies
-        EkBinningStudies();
-        FillUnfoldingPlots();
+        //EkBinningStudies();
+        //FillUnfoldingPlots();
 
         // fill the yields plots
         if (fFlagMC)
@@ -203,8 +201,8 @@ void GlobalRecoAna::LoopEvent() {
         MCParticleStudies();
 
       // studies dedicated to alignment
-      if (fFlagMC == false)
-        AlignmentStudy();
+      // if (fFlagMC == false)
+      //   AlignmentStudy();
 
       // FullCALOanal();
 

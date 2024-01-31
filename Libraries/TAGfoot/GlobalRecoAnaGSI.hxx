@@ -45,6 +45,8 @@ class GlobalRecoAnaGSI : public RecoRaw {
   Int_t fRegFirstCAcrys;
   Int_t fRegLastCAcrys;
 
+  Float_t fVtVtxTolerance = 0.05;
+
   public:
   GlobalRecoAnaGSI(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC, Int_t nTotEv);
   ~GlobalRecoAnaGSI();
@@ -77,22 +79,34 @@ class GlobalRecoAnaGSI : public RecoRaw {
   void FillTrkPlots(); //fill plots
   void FillYieldReco(string folderName, Int_t Z,Double_t Th);  // fill histos with reconstructed values
   void FillYieldMC(string folderName, Int_t Z_true,Int_t Z_meas, Double_t Th_true, Double_t Th_meas, bool migMatr); // fill histos with MC values
-  void MigMatrixPlots(string folderName, Int_t Z_true,Int_t Z_meas, Double_t Th_true, Double_t Th_meas, bool migMatr); // fill histos with MC values
+  void MigMatrixPlots(string folderName, Int_t Z_true, Int_t Z_meas, Double_t Th_true, Double_t Th_meas, Double_t Beta_true, Double_t Beta_meas, bool migMatr); // fill histos with MC values
   void BookYield(string path, bool enableMigMatr= false);
   void BookMigMatrix(string path, bool enableMigMatr= false);
   void BookChargeStudies(string path);
-  bool CheckTwPointInMoreTracks(); // check if more than one glb track has the same tw point
-    void RecoGlbTrkLoopSetVariables(); // Set Reco variables, to be done for each glbal track
-    void MCGlbTrkLoopSetVariables();   // Set MC variables, to be done for each glbal track
-    void MCParticleStudies();          // Loop on MC particles
-    void FillMCPartYields();
-    bool isGoodReco(Int_t Id_part);
-    void ChargeStudies(string path, Int_t charge, TAGtrack * fGlbTrack);
+  void BookQualityPlots(string path);
+  void BookFragmentationStudies(string path);
+  void BookAngularResolution(string path);
+  void MyRecoBooking(string path_name);
+  void MyReco(string path_name);
+  Bool_t CheckRadiativeDecayChain(Int_t partID, std::vector<Int_t>* partIDvec);
+  Bool_t CheckFragIn1stTWlayer(Int_t partID, std::vector<Int_t>* partIDvec);
 
-    // useful formulas
-    TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)
-    {
-      return TVector3(Slope.X() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.X(), Slope.Y() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.Y(), FinalZ);
+  vector<bool> CheckTwPointInMoreTracks();     // check if more than one glb track has the same tw point
+  vector<bool> CheckTwParticleOrigin();
+  void RecoGlbTrkLoopSetVariables();           // Set Reco variables, to be done for each glbal track
+  void MCGlbTrkLoopSetVariables();             // Set MC variables, to be done for each glbal track
+  void MCParticleStudies();                    // Loop on MC particles
+  void FillMCPartYields();
+  bool isGoodReco(Int_t Id_part);
+  void ChargeStudies(string path, Int_t charge, TAGtrack *fGlbTrack);
+  void QualityPlots(string path, TAGtrack *fGlbTrack);
+  void FragmentationStudies(string path, TAGtrack *fGlbTrack);
+  void AngularResolutionStudies(string path, TAGtrack *fGlbTrack);
+
+  // useful formulas
+  TVector3 ProjectToZ(TVector3 Slope, TVector3 Pos0, Double_t FinalZ)
+  {
+    return TVector3(Slope.X() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.X(), Slope.Y() / Slope.Z() * (FinalZ - Pos0.Z()) + Pos0.Y(), FinalZ);
     }
 
     // useful analysis variables
@@ -126,8 +140,15 @@ class GlobalRecoAnaGSI : public RecoRaw {
     Int_t ntracks;
     Int_t nTotEv; // total number of events (-nev flag)
     Int_t currEvent;
-    Int_t recoEvents; // events in whick global tracks are created
-
+    Int_t recoEvents; // events in which global tracks are created
+    map<int, int>  recoEvents_Z; // reco events for every charge of the crossing particle in SC // first: particle charge; secod: =yield
+    Int_t trueEvents; // events in which events are considered from a MC level
+    Int_t trueEvents_allID;
+    Int_t trueEvents_allZ;
+    bool istrueEvent; // flag to sign if an event is good from a MC level
+    bool istrueEvent_allID ; // flag to sign if an event is good from a MC level (not considering the origin herarchy (ID))
+    bool istrueEvent_allZ ; // flag to sign if an event is good from a MC level (not considering the origin charge)
+    float residual; // worst residual in a track
     vector<pair<Int_t, Int_t>> pure_track_xcha; // vector index = particle charge; first=npure; second=ntracks
 
     // reconstructed quantities:
@@ -151,8 +172,10 @@ class GlobalRecoAnaGSI : public RecoRaw {
     Double_t Ek_tot;
     Double_t M_true;
     Double_t Tof_true;
+    Double_t Tof_true2;
     Double_t Tof_startmc;
     Double_t Beta_true;
+    Double_t Beta_true2;
     TVector3 P_true;
     Double_t Th_true;
     Double_t Th_BM;
@@ -167,7 +190,9 @@ class GlobalRecoAnaGSI : public RecoRaw {
     vector<Int_t> vecTwTrkId;        // vector of all MC id of the twpoint
     vector<vector<Int_t>> vecVtZMC;  // vector of all MC charge of the 4 vt hits
     vector<vector<Int_t>> vecMsdZMC; // vector of all MC charge of the 6 msd clus
-    vector<Int_t> vectTwId;          // vector of the twpoint reco ID
+    vector<bool> hasSameTwPoint;     //vector of bool of tracks with the same tw point in the same event
+    vector<bool> isParticleBorninTG;
+
     std::map<Int_t, Int_t> m_twId;
 
     // setting variables maybe we should use a config file?
@@ -190,6 +215,12 @@ class GlobalRecoAnaGSI : public RecoRaw {
     TAMCntuEvent *myMcNtuEvent;
     TAMCntuPart *myMcNtuPart;
     TAWDntuTrigger *wdTrig;
+    TASTntuHit *mySTntuHit;
+    TAMCntuHit *myMCntuHit;
+
+
+
+    TVector3 fMomMCAtTgt;
 
     vector<vector<Int_t>> fGlbTrkVec;            // store the global track detector point index, 0=VTX, 1=IT, 2=MSD, 3=TW, 4=CALO, for each global track
     vector<vector<vector<Int_t>>> fEvtGlbTrkVec; // store collection of fGlbTrkVec for each event

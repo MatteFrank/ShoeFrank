@@ -97,9 +97,13 @@ public:
    Double_t  GetTimeChB()              const   { return fTimeB;             }
    //! Get the trigger type Id for the decoded run
    Int_t     GetTrigType()             const {return fTrigType;}
-  
-  // MC track id
-   Int_t     GetMcIndex(Int_t index)    const   { return fMCindex[index];      }
+   Double_t  GetHitZ_detectorFrame() const   { return fZ;             }
+
+       // MC track id
+       Int_t GetMcIndex(Int_t index) const
+   {
+     return fMCindex[index];
+   }
    Int_t     GetMcTrackIdx(Int_t index) const   { return fMCtrackId[index];    }
    Int_t     GetMcTracksN()             const   { return fMCtrackId.GetSize(); }
    // Add MC track Id
