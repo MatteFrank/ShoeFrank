@@ -4,8 +4,7 @@
 // entries: number of events to be processed (use 0 to process the whole file)
 // printFile: redirect cout to an external txt file
 void ReadShoeTreeMain(TString nameFile = "", Int_t nentries = 0, Int_t debug_in=0)
-
-{ 
+{
 
   debug=debug_in;
   if(OpenInputFile(nameFile))
@@ -13,7 +12,7 @@ void ReadShoeTreeMain(TString nameFile = "", Int_t nentries = 0, Int_t debug_in=
   if(ChargeCampaignParameters())
     return;
   ChargeParFiles(nentries);
-  SetOutputFiles(nameFile);  
+  SetOutputFiles(nameFile);
   BookHisto();
 
   cout<<"input file="<<nameFile.Data()<<endl;
@@ -34,12 +33,14 @@ void ReadShoeTreeMain(TString nameFile = "", Int_t nentries = 0, Int_t debug_in=
     if(IncludeDAQ)
       DataAcquisition();
     if(IncludeMC)
-      MonteCarlo();    
+      MonteCarlo();
+
+      CaloTest();
   }
 
   //write and close the input/output files
   inputFile->Close();
-  outputFile->Write();  
+  outputFile->Write();
   outputFile->Close();
 
   cout<<"program executed; output file= "<<outputFile->GetName()<<endl;
