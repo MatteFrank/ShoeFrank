@@ -76,9 +76,9 @@
 using namespace std;
 
 //from runinfo (given by the input file), campaign manager (that read the cammpas/yourfilecampaign.cam file) and tagrecomanager (that read the config/campaign/FootGlobal.par file)
-//all the static variables can be used and even modified everywhere in the code. 
-//In principle, all the static variables are inizialized/charged 
-static int  IncludeREG; 
+//all the static variables can be used and even modified everywhere in the code.
+//In principle, all the static variables are inizialized/charged
+static int  IncludeREG;
 static int  IncludeGLB;
 static int  runNumber;
 static int  IncludeMC;
@@ -98,7 +98,7 @@ static int debug;             //debug flag
 static int  evnum;             //current event number
 static int  maxentries;        //max number of events in ttree or set by the user
 static TAGrunInfo*   runinfo;  //runinfo from the input file
-static TAGgeoTrafo*  geoTrafo; //useful geometry class that handle all the detector/global transformations and units conversions 
+static TAGgeoTrafo*  geoTrafo; //useful geometry class that handle all the detector/global transformations and units conversions
 static TAGparGeo* parGeo;      //beam and target info
 static TAGcampaignManager* campManager; //campaign manager
 static  TTree *tree;                    //input tree
@@ -218,12 +218,12 @@ void BookHisto() {
         h2 = new TH2D("origin_xx_bmvtx_all","BM track X position vs VTX vertex X position in local ref.;BM originX;vtx originX",600,-3.,3.,600,-3.,3.);
       if(IncludeMC){
         h = new TH1D("mc_deltaE","MC energy loss in VTX layers;Energy loss [MeV];Events",100,0.,10.);
-        h2 = new TH2D("mc_vtxsize_vs_charge","vertex cluster size vs charge from MC;cluster size;MC charge",51,-0.5,50.5,12,-1.5,10.5);        
+        h2 = new TH2D("mc_vtxsize_vs_charge","vertex cluster size vs charge from MC;cluster size;MC charge",51,-0.5,50.5,12,-1.5,10.5);
       }
     gDirectory->cd("..");
     outputFile->cd("..");
   }
-  
+
 
   if(IncludeGLB){
     outputFile->mkdir("GLB");
@@ -250,7 +250,7 @@ void BookHisto() {
     h = new TH1D("part_charge","Charge distribution;Charge;Number of particles",22,-1.5,20.5);
     h2 = new TH2D("target_exit_profile","profile of the particle exit from the target;X[cm];Y[cm]",500,-5.,5.,500,-5.,5.);
     if(IncludeREG){
-      h2 = new TH2D("target_chavsmass","charge and mass of the particles exit from the target;Z;Mass [GeV]",12,-1.5,10.5,40,0.,20.);      
+      h2 = new TH2D("target_chavsmass","charge and mass of the particles exit from the target;Z;Mass [GeV]",12,-1.5,10.5,40,0.,20.);
     }
     gDirectory->cd("..");
     outputFile->cd("..");
@@ -286,7 +286,7 @@ void Vertex(){
         myfill("VT/vtx_target_glbsys",vtxprojglo.X(),vtxprojglo.Y());
         if(IncludeBM)
           if(bmNtuTrack->GetTracksN()==1)
-             myfill("VT/origin_xx_bmvtx_all", bmNtuTrack->GetTrack(0)->GetOrigin().X(),vtxvertex->GetVertexPosition().X());   
+             myfill("VT/origin_xx_bmvtx_all", bmNtuTrack->GetTrack(0)->GetOrigin().X(),vtxvertex->GetVertexPosition().X());
       }
     }
   }
@@ -314,6 +314,14 @@ void Vertex(){
   return;
 }
 
+void CaloTest(){
+
+  Int_t nClus = caNtuClus->GetClustersN();
+
+  if (caNtuClus->GetClustersN() > 0) cout<<"n° di cluster "<<nClus<<endl;
+
+}
+
 //data acquisition analysis
 void DataAcquisition(){
 
@@ -329,7 +337,7 @@ void DataAcquisition(){
 
 //global track analysis
 void GLBTRKstudies(){
-  
+
   if(debug)
     cout<<"GLBTRKstudies start"<<endl;
 
@@ -345,7 +353,7 @@ void GLBTRKstudies(){
         vtpt++;
     }
     myfill("GLB/vtpoints",vtpt);
-  } 
+  }
 
   if(debug)
     cout<<"GLBTRKstudies end"<<endl;
@@ -358,7 +366,7 @@ void MonteCarlo(){
 
   if(debug)
     cout<<"MC start"<<endl;
-    
+
   myfill("MC/part_num", mcNtuPart->GetTracksN());
   for( Int_t iTrack = 0; iTrack < mcNtuPart->GetTracksN(); ++iTrack ) {
     TAMCpart* mcpart = mcNtuPart->GetTrack(iTrack);
@@ -371,14 +379,14 @@ void MonteCarlo(){
       if(cross->GetCrossN()==parGeo->GetRegTarget()){
         myfill("MC/target_exit_profile", cross->GetPosition().X(),cross->GetPosition().Y());
         TAMCpart* mcpart = mcNtuPart->GetTrack(cross->GetTrackIdx()-1);
-        myfill("MC/target_chavsmass", mcpart->GetCharge(), mcpart->GetMass());        
+        myfill("MC/target_chavsmass", mcpart->GetCharge(), mcpart->GetMass());
       }
     }
   }
 
   if(debug)
     cout<<"MC done"<<endl;
- 
+
   return;
 }
 
@@ -388,16 +396,16 @@ void SetOutputFiles(TString nameFile){
   TString nameOut;
   nameOut = nameFile(nameFile.Last('/')+1, pos);
   nameOut.Prepend("readshoetreeout_");
-  outputFile = new TFile(nameOut,"RECREATE");  
+  outputFile = new TFile(nameOut,"RECREATE");
   return;
 }
 
-//**************************************************************************** be aware of what you change from here on out ****************************** 
+//**************************************************************************** be aware of what you change from here on out ******************************
 //the following methods are used to open the input file, charge the parameters etc., they should be changed only if really needed
 
 //open the input files
 Int_t OpenInputFile(TString nameFile){
-  inputFile = new TFile(nameFile.Data());  
+  inputFile = new TFile(nameFile.Data());
   if(inputFile->IsOpen()==false){
     cout<<"FATAL ERROR: I cannot open the input file"<<endl;
     return -1;
@@ -438,7 +446,7 @@ Int_t ChargeCampaignParameters(){
   IncludeREG=(runinfo->GetGlobalPar().EnableRegionMc && TAGrecoManager::GetPar()->IsRegionMc());
   IncludeGLB=(runinfo->GetGlobalPar().EnableTracking && (runinfo->GetGlobalPar().IncludeKalman || runinfo->GetGlobalPar().IncludeTOE) &&  (TAGrecoManager::GetPar()->IsTracking() && (TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman() || TAGrecoManager::GetPar()->IncludeStraight())));
   IncludeMC=campManager->GetCampaignPar(campManager->GetCurrentCamNumber()).McFlag;
-  IncludeDAQ=!IncludeMC;  
+  IncludeDAQ=!IncludeMC;
   IncludeDI=campManager->IsDetectorOn(TADIparGeo::GetBaseName());
   IncludeSC=campManager->IsDetectorOn(TASTparGeo::GetBaseName()) && runinfo->GetGlobalPar().IncludeST && TAGrecoManager::GetPar()->IncludeST();
   IncludeBM=campManager->IsDetectorOn(TABMparGeo::GetBaseName()) && runinfo->GetGlobalPar().IncludeBM && TAGrecoManager::GetPar()->IncludeBM();
@@ -452,7 +460,7 @@ Int_t ChargeCampaignParameters(){
   if(IncludeMC && IncludeDAQ){
     cout<<"IncludeMC and IncludeDAQ are both true... check your input file and the configuration files, this program will be ended"<<endl;
     return -1;
-  }  
+  }
 
   if(debug)
     cout<<"ChargeCampaignParameters done"<<endl;
@@ -505,7 +513,7 @@ void ChargeParFiles(Int_t nentries){
   TAGparaDsc* parGeoTw = new TAGparaDsc(new TATWparGeo());
   twparGeo = (TATWparGeo*)parGeoTw->Object();
   parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
-  twparGeo->FromFile(parFileName);  
+  twparGeo->FromFile(parFileName);
 
   TAGparaDsc* parGeoCa = new TAGparaDsc(new TACAparGeo());
   caparGeo = (TACAparGeo*)parGeoCa->Object();
@@ -520,7 +528,7 @@ void ChargeParFiles(Int_t nentries){
     }
     if(IncludeMC){
       scNtuMc = new TAMCntuHit();
-      tree->SetBranchAddress(FootBranchMcName(kST), &scNtuMc);      
+      tree->SetBranchAddress(FootBranchMcName(kST), &scNtuMc);
     }
   }
 
@@ -542,7 +550,7 @@ void ChargeParFiles(Int_t nentries){
       tree->SetBranchAddress(TAGnameManager::GetBranchName(bmNtuRaw->ClassName()), &bmNtuRaw);
     }
   }
-  
+
   if(IncludeVT){
     if(runinfo->GetGlobalPar().EnableSaveHits){
       vtxNtuVertex = new TAVTntuVertex();
@@ -550,7 +558,7 @@ void ChargeParFiles(Int_t nentries){
       vtxNtuHit = new TAVTntuHit();
       tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuHit->ClassName()), &vtxNtuHit);
     }
-    if(runinfo->GetGlobalPar().EnableTracking){    
+    if(runinfo->GetGlobalPar().EnableTracking){
       vtxNtuTrack = new TAVTntuTrack();
       tree->SetBranchAddress(TAGnameManager::GetBranchName(vtxNtuTrack->ClassName()), &vtxNtuTrack);
     }
@@ -585,7 +593,7 @@ void ChargeParFiles(Int_t nentries){
       msdNtuHit= new TAMSDntuHit(sensorsNms);
       tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuHit->ClassName()), &msdNtuHit);
     }
-    if(runinfo->GetGlobalPar().EnableTracking){    
+    if(runinfo->GetGlobalPar().EnableTracking){
       msdNtuTrack= new TAMSDntuTrack();
       tree->SetBranchAddress(TAGnameManager::GetBranchName(msdNtuTrack->ClassName()), &msdNtuTrack);
     }
@@ -594,7 +602,7 @@ void ChargeParFiles(Int_t nentries){
     if(IncludeMC){
       msdNtuMc = new TAMCntuHit();
       tree->SetBranchAddress(FootBranchMcName(kMSD), &msdNtuMc);
-    }    
+    }
   }
 
   if(IncludeTW){
@@ -611,19 +619,19 @@ void ChargeParFiles(Int_t nentries){
   }
 
   if(IncludeCA){
-    if(runinfo->GetGlobalPar().EnableSaveHits){    
+    if(runinfo->GetGlobalPar().EnableSaveHits){
       caNtuHit = new TACAntuHit();
       tree->SetBranchAddress(TAGnameManager::GetBranchName(caNtuHit->ClassName()), &caNtuHit);
-    }    
+    }
     caNtuClus = new TACAntuCluster();
-    tree->SetBranchAddress(TAGnameManager::GetBranchName(caNtuClus->ClassName()), &caNtuClus);    
+    tree->SetBranchAddress(TAGnameManager::GetBranchName(caNtuClus->ClassName()), &caNtuClus);
     if(IncludeMC){
       caNtuMc = new TAMCntuHit();
-      tree->SetBranchAddress(FootBranchMcName(kCAL), &caNtuMc);      
+      tree->SetBranchAddress(FootBranchMcName(kCAL), &caNtuMc);
     }
     if(IncludeDAQ){
       caNtuRaw = new TACAntuRaw();
-      tree->SetBranchAddress(TAGnameManager::GetBranchName(caNtuRaw->ClassName()), &caNtuRaw);    
+      tree->SetBranchAddress(TAGnameManager::GetBranchName(caNtuRaw->ClassName()), &caNtuRaw);
     }
   }
 
