@@ -167,6 +167,7 @@ void GlobalRecoAnaGSI::LoopEvent()
       // Set the reconstructed quantities
       RecoGlbTrkLoopSetVariables();
 
+      bool MSDMatch = true;
       if (fFlagMC)
       {
 
@@ -206,7 +207,7 @@ void GlobalRecoAnaGSI::LoopEvent()
         }
 
         // compute MC MSD match
-        bool MSDMatch = true;
+        MSDMatch = true;
 
         if( vecMsdZMC.size() > 0 )
         {
@@ -218,7 +219,6 @@ void GlobalRecoAnaGSI::LoopEvent()
               MSDMatch = MSDMatch && false;
           }
         }
-
 
         // // // =================== VTX MATCH
         // if (VTMatch == true)
@@ -309,8 +309,42 @@ void GlobalRecoAnaGSI::LoopEvent()
 
 
       // // =================== Chi2 cuts + multitrack + NO TW in multitracks + n_tracks == n_twpoints
-      if (VTok && chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
+      if (VTok && chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN()){
         MyReco("MChi2TWTngt");
+      }
+
+      bool isPileUp_He = false;
+      if (fFlagMC && VTok && chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN())
+      {
+        // deal with He pile up in all the detector
+      if (Z_true == 2 && Z_meas == 3) // when I misreconstruct He...
+      {
+        TAGpoint *pt = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1); // if the tw point is made of more than a MC particle (possibility of pileup)
+        if (pt->GetMcTracksN() > 1)
+        {
+          vector<int> isPileUp;
+          isPileUp.clear();
+
+          for (int ii = 0; ii < pt->GetMcTracksN(); ++ii)
+          {
+            TAMCpart *part = GetNtuMcTrk()->GetTrack(pt->GetMcTrackIdx(ii));
+            if (part->GetCharge() == 2)
+              isPileUp.push_back(1);
+          }
+
+          if (isPileUp.size() > 1) //if i have the crossing of more than one He in TW points...
+          {
+            //fGlbTrack->PrintAllMCIds();
+            isPileUp_He = true;
+          }
+        }
+      }
+      if (!isPileUp_He)
+      MyReco("MChi2TWTngtHePU");
+
+      if (MSDMatch)
+      MyReco("MChi2TWTngtMSD");
+      }
 
       // if (chi2Cut && residualCut && nt > 1 && hasSameTwPoint.at(it) == false && nt_TW == myTWNtuPt->GetPointsN() && VTok)
         // MyReco("MChi2TWTngt_VTok");
@@ -318,6 +352,7 @@ void GlobalRecoAnaGSI::LoopEvent()
       // // // =================== Chi2 cuts +  NO TW in multitracks
       // if (fGlbTrack->GetChi2() < 2 && abs(residual)  < 0.01 && hasSameTwPoint.at(it) == false)
       //   MyReco("ChiTWT");
+
 
       if (fFlagMC)
       {
@@ -408,6 +443,9 @@ void GlobalRecoAnaGSI::Booking()
 
     // // chi2 + multitrack cuts on track  + no more tw points in tracks + MSD MC cut
     // MyRecoBooking("MChi2MSDTWT");
+    MyRecoBooking("MChi2TWTngtHePU");
+    MyRecoBooking("MChi2TWTngt_originOk");
+    MyRecoBooking("MChi2TWTngtMSD");
   }
 
   // chi2 cuts on track
@@ -426,7 +464,7 @@ void GlobalRecoAnaGSI::Booking()
   // chi2 + multitrack cuts on track  + no more tw points in tracks + n_glb= n_twpoints
   MyRecoBooking("MChi2TWTngt");
 
-  MyRecoBooking("MChi2TWTngt_originOk");
+  
 
   // all tracks
   MyRecoBooking("reco");
@@ -448,14 +486,8 @@ int GlobalRecoAnaGSI::ApplyEvtCuts() // requirements for a good event (to be con
   
   if (TAGrecoManager::GetPar()->IsSaveHits()){
     if(mySTntuHit && mySTntuHit->GetHitsN()>0){
-
       ok_status &= !(mySTntuHit->GetHit(0)->GetPileUp());       // if there is NOT pileup in the SC
       ok_status &= (mySTntuHit->GetHit(0)->GetDe() > 0.005); // the energy release should be higher than .005 GeV (energy release of Primary)
-
-      if (fFlagMC){
-        TAMCpart * part = GetNtuMcTrk()->GetTrack(mySTntuHit->GetHit(0)->GetMcTrackIdx(0));
-        recoEvents_Z[part->GetCharge()]++;
-      }
   }
   }
     
@@ -480,7 +512,13 @@ int GlobalRecoAnaGSI::ApplyEvtCuts() // requirements for a good event (to be con
     }
   }
   ok_status &= VTok;
-  
+
+  if (fFlagMC && ok_status)
+  {
+    TAMCpart *part = GetNtuMcTrk()->GetTrack(mySTntuHit->GetHit(0)->GetMcTrackIdx(0));
+    recoEvents_Z[part->GetCharge()]++;
+  }
+
   return ok_status;
 }
 
@@ -815,7 +853,7 @@ void GlobalRecoAnaGSI::AfterEventLoop()
     ((TH1D *)gDirectory->Get("total_yields"))->GetXaxis()->SetBinLabel(3, "Total True Events all Z");
     ((TH1D *)gDirectory->Get("total_yields"))->GetXaxis()->SetBinLabel(4, "Total True Events ID=0 Z=primary");
     ((TH1D *)gDirectory->Get("total_yields"))->GetXaxis()->SetBinLabel(5, "Total Reco Events");
-    ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(1, currEvent);
+    ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(1, currEvent - fSkipEventsN);
     ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(2, trueEvents_allID);
     ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(3, trueEvents_allZ);
     ((TH1D *)gDirectory->Get("total_yields"))->SetBinContent(4, trueEvents);
@@ -828,7 +866,7 @@ void GlobalRecoAnaGSI::AfterEventLoop()
 
   
   // real data
-    luminosity_name = "luminosityReco";
+  luminosity_name = "luminosityReco";
   h = new TH1D(luminosity_name.c_str(), "", 1, 0., 1.);
   ((TH1D *)gDirectory->Get(luminosity_name.c_str()))->SetBinContent(1, Ntg * recoEvents); // good event via Reco
 
@@ -1449,7 +1487,7 @@ void GlobalRecoAnaGSI::FillMCPartYields()
     //study to check if the event is good: if the primary crosses the TG
     
       if (OldReg == fRegAirAfterVT && NewReg == fRegTG){   // if it crosses the TG entering
-        if (particle->GetCharge() == fPrimaryCharge && particle_ID == 0) // if it is a primary
+        if (particle->GetCharge() == fPrimaryCharge /*&& particle_ID == 0*/) // if it is a primary
         {
           P_beforeTG = cross->GetMomentum();
           istrueEvent = true;
@@ -1570,7 +1608,7 @@ bool GlobalRecoAnaGSI::isGoodReco(Int_t Id_part)
       bool isParticleGood = false;
       if( particle_ID == 0 ) //primary -> ok!
         isParticleGood = true;
-      else if( Reg == fRegTG && Mid == 0) //born in target from primary
+      else if( Reg == fRegTG /*&& Mid == 0*/) //born in target from primary
         isParticleGood = true;
       else //Check for radiative decay in FLUKA!
         isParticleGood = CheckRadiativeDecayChain(Id_part, &vecDummy);
