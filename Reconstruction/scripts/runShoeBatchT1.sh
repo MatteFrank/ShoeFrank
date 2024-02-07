@@ -23,32 +23,25 @@
 
 # where "lastRun" represents the last run to be processed (included!!)
 
-# The script also allows for the possibility to merge the output files of each condor job in a single file through the "hadd" command of root, launched in a separate job. If you want this task to be performed, add the argument "-m 1" to the command line, as in:
+# By default, the script also merges the output files of each run in a single file through the "hadd" command of root, launched in a separate job. This also deletes the single job output files once the merge is completed. If you want to disable this feature and keep the single output files, add the argument "-m 0" to the command line, as in:
 
-# > ./path/to/runShoeBatchT1.sh -i inputFolder -o outputFolder -c campaign -r run -l lastRun -m 1
+# > ./path/to/runShoeBatchT1.sh -i inputFolder -o outputFolder -c campaign -r run -l lastRun -m 0
 
-# NB: Keep in mind that this step erases the single job output files, so ony use it when you are 100% sure that SHOE will run without issues!
-
-############# MANDATORY!!!!! #################
-
-# When the processing is done, you need to cleanup your job files from condor. To perform this operation, issue the command:
-
-# > condor_rm -name sn-02 $USER
-
-############# MANDATORY!!!!! #################
-
-
-############# USEFUL!!!!! #################
+############# IMPORTANT!!!!! #################
 
 # To check the status of your jobs, launch the command
 
 # > condor_q -name sn-02 $USER
 
-# All condor auxiliary files (.err/.out/.log) are not automatically downloaded. To download them launch
+# All condor auxiliary files (.err/.out/.log) are automatically downloaded and the completed jobs removed when the file merge is requested. If one turns off the file merging, it might be needed to download the auxiliarry files for debug purposes. If needed, this operation can be performed thorugh the command: 
 
 # > condor_transfer_data -name sn-02 $USER
 
-############# USEFUL!!!!! #################
+# If anything were to fail in the processing chain, you might need to remove your jobs by hand. To perform this operation, issue the command:
+
+# > condor_rm -name sn-02 $USER
+
+############# IMPORTANT!!!!! #################
 
 
 ############# SHOE INSTALLATION GUIDE #################
@@ -68,6 +61,15 @@
 #   > cmake .. -D FILECOPY=ON                       (the "-DCMAKE_BUILD_TYPE=Debug" option is now given by default)
 #   > make
 
+# Here is a list of all the options available for SHOE compilation:
+
+# - CMAKE_BUILD_TYPE    Type of build, usually either "Debug" of "Release" (default = Debug)
+# - FILECOPY            Turn ON/OFF the config/calib/cammaps file copy (default = OFF)
+# - GENFIT_DIR          Turn ON/OFF the global reconstruction w/ genfit (default = ON)
+# - TOE_DIR             Turn ON/OFF the global reconstruction w/ TOE (default = OFF)
+# - ANC_DIR             Turn ON/OFF the ancillary directory (default = OFF)
+# - GEANT4_DIR          Turn ON/OFF the G4 simulations (default = OFF)
+
 ############# SHOE INSTALLATION GUIDE #################
 
 # To signal any possible issue/missing feature, please contact zarrella@bo.infn.it
@@ -77,7 +79,7 @@
 echo "Start job submission!"
 
 INPUT_BASE_PATH="/storage/gpfs_data/foot"
-OUTPUT_BASE_PATH="${INPUT_BASE_PATH}/${USER}"
+OUTPUT_BASE_PATH="${INPUT_BASE_PATH}/"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
 SHOE_PATH=$(dirname $(realpath "$0"))
 SHOE_PATH=${SHOE_PATH%Reconstruction/scripts}
@@ -88,7 +90,7 @@ if [[ ! "$SHOE_PATH" == *"$SHOE_BASE_PATH"* ]]; then
 fi
 
 lastRunNumber=-1
-mergeFilesOpt=0
+mergeFilesOpt=1
 
 while getopts i:o:c:r:l:m: flag
 do
@@ -253,7 +255,6 @@ EOF
 
     # Submit all jobs for current run
     chmod 754 ${jobExec}
-    condor_submit -spool ${filename_sub}
 
     #Merge files if requested!!
     if [[ $mergeFilesOpt -eq 1 ]]; then
@@ -301,13 +302,13 @@ while true; do
         rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
 		break
 	else
-        echo "${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nFiles} files. Waiting..."
-		sleep 20
+        echo "ERROR:: ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nFiles} files. Waiting..."
+		exit 0
 	fi
 done
 EOF
 
-        # Create submit file for merge job, set to lower priority wrt file processing
+        # Create submit file for merge job
         merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
 
         cat <<EOF > $merge_sub
@@ -316,22 +317,37 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
-priority              = -5
 
 periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Merge of run ${runNumber} exceeded maximum runtime allowed, check presence of files in the output folder"
 
 queue
 EOF
-
-        # Submit merge job
         chmod 754 ${mergeJobExec}
-        condor_submit -spool ${merge_sub}
+
+        # Create DAG job file
+        # 1. Process files of run
+        # 2. Merge output files of single run
+        dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
+
+        cat <<EOF > $dag_sub
+JOB process_${campaign}_${runNumber} ${filename_sub}
+JOB merge_${campaign}_${runNumber} ${merge_sub}
+PARENT process_${campaign}_${runNumber} CHILD merge_${campaign}_${runNumber}
+EOF
+
+        cd ${HTCfolder}
+        condor_submit_dag -force ${dag_sub}
+        cd -
+
         echo "Submitted jobs for run ${runNumber}"
         
         if [ ${runNumber} -eq ${lastRunNumber} ]; then
             echo "All runs submitted!"
             exit 1
         fi
+        
+    else #file merging disabled, run only the processing
+        condor_submit -spool ${filename_sub}
     fi
 done
