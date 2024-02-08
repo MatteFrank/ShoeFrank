@@ -105,19 +105,26 @@ TATWactNtuHitMC::~TATWactNtuHitMC()
 void TATWactNtuHitMC::CreateHistogram()
 {
    DeleteHistogram();
+
+   Double_t TofMin = f_parcal->GetTofMin();  // ns
+   Double_t TofMax = f_parcal->GetTofMax();  // ns
+   Double_t ElossMax = f_parcal->GetMaxEloss();  // MeV
+
+   Int_t NBinTof   = (TofMax-TofMin)*100; // 10 ps/bin
+   Int_t NBinEloss = ElossMax*4; // 0.25 MeV/bin
    
-   fpHisHitCol = new TH1I("twHitCol", "ToF Wall - Column hits", 20, 0., 20);
-   AddHistogram(fpHisHitCol);
-   
-   fpHisHitRow = new TH1I("twHitLine", "ToF Wall - Line hits", 20, 0., 20);
-   AddHistogram(fpHisHitRow);
-   
+   if(FootDebugLevel(4))
+     Info("CreateHistogram()","TofMin::%f, TofMax::%f, ElossMac::%f",f_parcal->GetTofMin(),f_parcal->GetTofMax(),f_parcal->GetMaxEloss());
+
    for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
 
-     fpHisElossTof_MCrec[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCrec",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCrec",LayerName[(TLayer)ilayer].data()),3000,0.,30.,480,0.,120.);
+    fpHisBarsID[ilayer] = new TH1I(Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()), Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()),20, -0.5, 19.5);
+    AddHistogram(fpHisBarsID[ilayer]);
+
+    fpHisElossTof_MCrec[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCrec",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCrec",LayerName[(TLayer)ilayer].data()),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax);
      AddHistogram(fpHisElossTof_MCrec[ilayer]);
 
-     fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),3000,0.,30.,480,0.,120.);
+     fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax);
      AddHistogram(fpHisElossTof_MCtrue[ilayer]);
          
      fpHisZID_MCrec[ilayer] = new TH2I(Form("twZID_%s",LayerName[(TLayer)ilayer].data()),Form("twZID_%s",LayerName[(TLayer)ilayer].data()), fZbeam+3,-2.5,(int)fZbeam+0.5, fZbeam+2,-1.5,(int)fZbeam+0.5);
@@ -132,10 +139,10 @@ void TATWactNtuHitMC::CreateHistogram()
    for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
      for(int iZ=1; iZ < fZbeam+1; iZ++) {
 
-       fpHisElossTof_MCtrue_Z[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),3000,0.,30.,480,0.,120.));
+       fpHisElossTof_MCtrue_Z[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax));
        AddHistogram(fpHisElossTof_MCtrue_Z[ilayer][iZ-1]);
 
-       fpHisElossTof_MCrec_Z[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCrec",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCrec",LayerName[(TLayer)ilayer].data(),iZ),3000,0.,30.,480,0.,120.));
+       fpHisElossTof_MCrec_Z[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCrec",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCrec",LayerName[(TLayer)ilayer].data(),iZ),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax));
        AddHistogram(fpHisElossTof_MCrec_Z[ilayer][iZ-1]);
          
 }
@@ -143,7 +150,7 @@ void TATWactNtuHitMC::CreateHistogram()
    
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
 
-     fpHisElossTof.push_back(new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),3000,0.,30.,480,0.,120.));
+     fpHisElossTof.push_back(new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax));
      AddHistogram(fpHisElossTof[iZ-1]);
         
      fpHisDistZ.push_back( new TH1F(Form("twDist_Z%d",iZ),Form("dist_Z%d",iZ),2000,-20.,80) );
@@ -501,7 +508,7 @@ void TATWactNtuHitMC::FlagUnderEnergyThresholdHits(TATWhit *hitTW) {
      // get Eloss threshold in MeV from configuration file: default is 0.1 MeV
      Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);       
      if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
-       if(FootDebugLevel(0))
+       if(FootDebugLevel(4))
          Info("Action","the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());
        
        recEloss=-99.; //set energy to nonsense value
@@ -536,11 +543,8 @@ void TATWactNtuHitMC::PlotRecMcTWquantities(TATWhit *hitTW, TAMCntuHit *ntuHitSt
 
        if (ValidHistogram()) {
 
-            if (hitTW->IsColumn())
-               fpHisHitCol->Fill(hitTW->GetBar());
-            else
-               fpHisHitRow->Fill(hitTW->GetBar());
-            
+            fpHisBarsID[layer]->Fill(hitTW->GetBar());
+              
             fpHisElossTof_MCrec[layer]->Fill(recTof,recEloss);
             fpHisZID_MCrec[layer]->Fill(Zrec,Zmc);
             

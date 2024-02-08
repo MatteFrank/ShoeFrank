@@ -78,8 +78,7 @@ private:
    Bool_t          fIsEnergyThrEnabled;
    Bool_t          fIsRateSmear;
 
-   TH1I*           fpHisHitCol;
-   TH1I*           fpHisHitRow;
+   TH1I*           fpHisBarsID[nLayers];
    TH2I*           fpHisZID_MCrec[nLayers];
    TH2I*           fpHisZID_MCtrue[nLayers];
    TH2D*           fpHisElossTof_MCrec[nLayers];

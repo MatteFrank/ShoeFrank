@@ -85,10 +85,21 @@ void TATWactNtuPoint::CreateHistogram()
    // pGeoMap->GetNBars(), -pGeoMap->GetDimension()[1]/2., pGeoMap->GetDimension()[1]/2.);       
    AddHistogram(fpHisPointMap);
   
-   fpHisElossTof = new TH2F("twPoint_Eloss_vs_Tof", "twPoint_Eloss_vs_Tof",3000,0.,30.,480,0.,120.);
+   Double_t TofMin = fparCal->GetTofMin();  // ns
+   Double_t TofMax = fparCal->GetTofMax();  // ns
+   Double_t ElossMax = fparCal->GetMaxEloss();  // MeV
+
+   Int_t NBinTof   = (TofMax-TofMin)*100; // 10 ps/bin
+   Int_t NBinEloss = ElossMax*4; // 0.25 MeV/bin
+   
+   if(FootDebugLevel(4))
+     Info("CreateHistogram()","TofMin::%f, TofMax::%f, ElossMac::%f",fparCal->GetTofMin(),fparCal->GetTofMax(),fparCal->GetMaxEloss());
+
+
+   fpHisElossTof = new TH2F("twPoint_Eloss_vs_Tof", "twPoint_Eloss_vs_Tof",NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax);
    AddHistogram(fpHisElossTof);
 
-   fpHisElossTofMean = new TH2F("twPoint_Eloss_vs_Tof_mean", "twPoint_Eloss_vs_Tof_mean",3000,0.,30.,480,0.,120.);
+   fpHisElossTofMean = new TH2F("twPoint_Eloss_vs_Tof_mean", "twPoint_Eloss_vs_Tof_mean",NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax);
    AddHistogram(fpHisElossTofMean);
 
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
@@ -107,10 +118,10 @@ void TATWactNtuPoint::CreateHistogram()
      fpHisDeltaPosY.push_back( new TH1F(Form("twDeltaPosY_Z%d",iZ),Form("DeltaPosY_Z%d",iZ),400,-20.,20) );
      AddHistogram(fpHisDeltaPosY[iZ-1]);
 
-     fpHisElossMean.push_back( new TH1F(Form("twElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),480,0,120) );
+     fpHisElossMean.push_back( new TH1F(Form("twElossMean_Z%d",iZ),Form("ElossMean_Z%d",iZ),NBinEloss,0.,ElossMax) );
      AddHistogram(fpHisElossMean[iZ-1]);
      
-     fpHisTofMean.push_back( new TH1F(Form("twTofMean_Z%d",iZ),Form("TofMean_Z%d",iZ),1400,6,20) );
+     fpHisTofMean.push_back( new TH1F(Form("twTofMean_Z%d",iZ),Form("TofMean_Z%d",iZ),NBinTof,TofMin,TofMax) );
      AddHistogram(fpHisTofMean[iZ-1]);
    }
    
