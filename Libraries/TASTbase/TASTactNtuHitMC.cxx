@@ -23,11 +23,13 @@ TASTactNtuHitMC::TASTactNtuHitMC(const char* name,
                                  TAGdataDsc* pNtuMC,
                                  TAGdataDsc* pNtuEve,
                                  TAGdataDsc* pNtuHit,
+                                 TAGparaDsc* p_parconf,
                                  EVENT_STRUCT* evStr)  
  : TAGaction(name, "TASTactNtuHitMC - NTuplize ST raw data"),
    fpNtuMC(pNtuMC),
    fpNtuEve(pNtuEve),
    fpNtuHit(pNtuHit),
+   fpParConf(p_parconf),
    fEventStruct(evStr)
 {
    if(FootDebugLevel(1))
@@ -38,7 +40,13 @@ TASTactNtuHitMC::TASTactNtuHitMC(const char* name,
      AddDataIn(pNtuEve, "TAMCntuPart");
    } 
    AddDataOut(pNtuHit, "TASTntuHit");
-   
+   AddPara(p_parconf,"TATWparConf");
+
+   fparTwConf  = (TATWparConf*) fpParConf->Object();
+   fIsEnergyThrEnabled = fparTwConf->IsEnergyThrEnabled();
+   if(FootDebugLevel(4))
+     Info("TASTactNtuHitMC()","IsEnergyThresholdEnable::%d",fIsEnergyThrEnabled);
+
    CreateDigitizer();
 
    fVecStHit.clear();
@@ -139,7 +147,8 @@ Bool_t TASTactNtuHitMC::Action()
        
        TASThit* hitST = *it;
 
-       FlagUnderEnergyThresholtHits(hitST);
+       if(fIsEnergyThrEnabled)
+         FlagUnderEnergyThresholdHits(hitST);
 
        PlotSCquantities(hitST);
        
@@ -158,18 +167,18 @@ Bool_t TASTactNtuHitMC::Action()
 }
 
 //------------------------------------------------------------------------------
-void TASTactNtuHitMC::FlagUnderEnergyThresholtHits(TASThit *hitST) {
+void TASTactNtuHitMC::FlagUnderEnergyThresholdHits(TASThit *hitST) {
 
      Double_t edep = hitST->GetDe();    // MeV
 
      if(!fDigitizer->IsOverEnergyThreshold(fDigitizer->GetEnergyThreshold(),edep)) {
-     if(FootDebugLevel(4))
-       Info("Action","the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",edep,fDigitizer->GetEnergyThreshold());
-     
-     edep=-99.; //set energy to nonsense value
-     hitST->SetDe(edep);
-     hitST->SetValid(false);
-   }
+       if(FootDebugLevel(4))
+         Info("Action","the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",edep,fDigitizer->GetEnergyThreshold());
+       
+       edep=-99.; //set energy to nonsense value
+       hitST->SetDe(edep);
+       hitST->SetValid(false);
+     }
      
      return;
 }

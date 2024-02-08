@@ -513,6 +513,7 @@ TVector3 TATWactNtuPoint::GetLocalPointPosition(Int_t layer1, Double_t pos1, Int
     else if(layer1==(Int_t)LayerY) {
       posLoc.SetX( fparGeoTW->GetBarPosition(LayerY, bar1 )[0] );
       posLoc.SetY( fparGeoTW->GetBarPosition(LayerX, bar2 )[1] );
+      // posLoc.SetY( pos1 );
     }
     
     double zloc = fgeoTrafo->FromGlobalToTWLocal(fgeoTrafo->GetTWCenter()).z(); 

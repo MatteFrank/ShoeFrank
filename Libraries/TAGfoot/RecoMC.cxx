@@ -108,7 +108,7 @@ void RecoMC::CreateRawAction()
       
       fpNtuHitSt = new TAGdataDsc(new TASTntuHit());
       const Char_t* name = FootActionDscName("TASTactNtuHitMC");
-      fActNtuHitSt = new TASTactNtuHitMC(name, fpNtuMcSt, fpNtuMcTrk, fpNtuHitSt, fEvtStruct);
+      fActNtuHitSt = new TASTactNtuHitMC(name, fpNtuMcSt, fpNtuMcTrk, fpNtuHitSt, fpParConfTw, fEvtStruct);
       if (fFlagHisto)
          fActNtuHitSt->CreateHistogram();
    }

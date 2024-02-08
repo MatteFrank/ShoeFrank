@@ -58,13 +58,14 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    
    
    f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   f_pargeo = (TAGparGeo*)fParGeoG->Object();
-   f_parcal = (TATWparCal*)fpCalPar->Object();
-   f_parconf = (TATWparConf*) fpParConf->Object();
+   f_pargeo   = (TAGparGeo*)fParGeoG->Object();
+   f_parcal   = (TATWparCal*)fpCalPar->Object();
+   f_parconf  = (TATWparConf*) fpParConf->Object();
    
-   fIsZtrueMC   = f_parconf->IsZmc();
-   fIsZrecPUoff = f_parconf->IsNoPileUp();
-   fIsRateSmear = f_parconf->IsRateSmearMc();
+   fIsZtrueMC          = f_parconf->IsZmc();
+   fIsZrecPUoff        = f_parconf->IsNoPileUp();
+   fIsEnergyThrEnabled = f_parconf->IsEnergyThrEnabled();
+   fIsRateSmear        = f_parconf->IsRateSmearMc();
 
    CreateDigitizer();
    
@@ -86,9 +87,10 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    fMapPU.clear();
    fVecPuOff.clear();
 
-   for(int ilayer=0; ilayer<(int)nLayers; ilayer++)
-     fpHisElossTof_MC[ilayer].clear();
-   
+   for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
+     fpHisElossTof_MCtrue_Z[ilayer].clear();
+     fpHisElossTof_MCrec_Z[ilayer].clear();
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -130,16 +132,17 @@ void TATWactNtuHitMC::CreateHistogram()
    for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
      for(int iZ=1; iZ < fZbeam+1; iZ++) {
 
-       fpHisElossTof_MC[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),3000,0.,30.,480,0.,120.));
-       AddHistogram(fpHisElossTof_MC[ilayer][iZ-1]);
-     }
+       fpHisElossTof_MCtrue_Z[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),3000,0.,30.,480,0.,120.));
+       AddHistogram(fpHisElossTof_MCtrue_Z[ilayer][iZ-1]);
+
+       fpHisElossTof_MCrec_Z[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCrec",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCrec",LayerName[(TLayer)ilayer].data(),iZ),3000,0.,30.,480,0.,120.));
+       AddHistogram(fpHisElossTof_MCrec_Z[ilayer][iZ-1]);
+         
+}
    }
    
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
 
-    //  fpHisElossTof_MC.push_back(new TH2D(Form("twdE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_Z%d_MCtrue",iZ),3000,0.,30.,480,0.,120.));
-    //  AddHistogram(fpHisElossTof_MC[iZ-1]);
-         
      fpHisElossTof.push_back(new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),3000,0.,30.,480,0.,120.));
      AddHistogram(fpHisElossTof[iZ-1]);
         
@@ -288,8 +291,10 @@ bool TATWactNtuHitMC::Action() {
 //! Assign the Tof and the charge Z to the TWhit using the info from ST time
 void TATWactNtuHitMC::AssignZchargeAndToF(TATWhit *hitTW, TAMCntuHit *ntuHitStMC) {
 
-     FlagUnderEnergyThresholtHits(hitTW);
 
+     if(fIsEnergyThrEnabled)
+       FlagUnderEnergyThresholdHits(hitTW);
+  
      // set ToF in ns to the TW hit retrieving SC hit time information
      Double_t recTof   = hitTW->GetTime() - GetTimeST(fpNtuStHit,hitTW); // ns
      hitTW->SetToF(recTof);
@@ -393,8 +398,10 @@ void TATWactNtuHitMC::StudyPerformancesZID(TAMChit *hitTwMC, TAMCntuHit *ntuHitS
        fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
      
        if( Zrec>0 && Zrec < fZbeam+1 )
-         fpHisElossTof_MC[layer][Zrec-1]->Fill(trueTof,edep);
-         // fpHisElossTof_MC[Zrec-1]->Fill(trueTof,edep);
+         fpHisElossTof_MCrec_Z[layer][Zrec-1]->Fill(trueTof,edep);
+       
+       if( Zmc>0 && Zmc < fZbeam+1 )
+         fpHisElossTof_MCtrue_Z[layer][Zmc-1]->Fill(trueTof,edep);
     
        if(!fIsZtrueMC) {
          
@@ -484,7 +491,7 @@ void TATWactNtuHitMC::PrintTrueMcTWquantities(TAMChit *hitTwMC, Int_t IdTwHit) {
 }
 //------------------------------------------------------------------------------
 //! Flag TWhits under enery loss threshold as not valid hits
-void TATWactNtuHitMC::FlagUnderEnergyThresholtHits(TATWhit *hitTW) {
+void TATWactNtuHitMC::FlagUnderEnergyThresholdHits(TATWhit *hitTW) {
 
      Int_t layer = hitTW->GetLayer();
      Int_t bar = hitTW->GetBar();
@@ -494,13 +501,14 @@ void TATWactNtuHitMC::FlagUnderEnergyThresholtHits(TATWhit *hitTW) {
      // get Eloss threshold in MeV from configuration file: default is 0.1 MeV
      Double_t Ethr = f_parcal->GetElossThreshold(layer,bar);       
      if(!fDigitizer->IsOverEnergyThreshold(Ethr,recEloss)) {
-       if(FootDebugLevel(4))
+       if(FootDebugLevel(0))
          Info("Action","the energy released (%f MeV) is under the set threshold (%.1f MeV)\n",recEloss,fDigitizer->GetEnergyThreshold());
        
        recEloss=-99.; //set energy to nonsense value
        hitTW->SetEnergyLoss(recEloss);
        hitTW->SetValid(false);
      }
+     
      return;
 }
 //------------------------------------------------------------------------------

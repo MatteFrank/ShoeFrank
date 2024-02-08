@@ -75,6 +75,7 @@ private:
    
    Bool_t          fIsZtrueMC;
    Bool_t          fIsZrecPUoff;
+   Bool_t          fIsEnergyThrEnabled;
    Bool_t          fIsRateSmear;
 
    TH1I*           fpHisHitCol;
@@ -92,7 +93,8 @@ private:
    vector<TH1D*>   fpHisResEloss;
    // vector<TH2D*>   fpHisElossTof_MC;
    vector<TH2D*>   fpHisElossTof;
-   vector<TH2D*>   fpHisElossTof_MC[nLayers];  //! Eloss vs Tof for each Z and each TW layer for ZID tuning
+   vector<TH2D*>   fpHisElossTof_MCtrue_Z[nLayers];  //! Eloss vs Tof for each Z and each TW layer for ZID tuning
+   vector<TH2D*>   fpHisElossTof_MCrec_Z[nLayers];  //! Eloss vs Tof for each Z rec with no PU for each TW layer for ZID tuning
    vector<TH1F*>   fpHisDistZ_MC;
    vector<TH1F*>   fpHisDistZ;
   
@@ -105,7 +107,7 @@ private:
    void          ClearContainers();
    void          AssignZchargeAndToF(TATWhit *hittw, TAMCntuHit *hitst);     
    void          PrintTrueMcTWquantities(TAMChit *twhitmc, Int_t idtwhit);
-   void          FlagUnderEnergyThresholtHits(TATWhit *hittw);
+   void          FlagUnderEnergyThresholdHits(TATWhit *hittw);
    void          PlotRecMcTWquantities(TATWhit *twhit, TAMCntuHit *hitst, Int_t zrec, Int_t zmc);
    void          PrintRecTWquantities(TATWhit *tatwhit, Int_t zrec, Int_t zmc);
   

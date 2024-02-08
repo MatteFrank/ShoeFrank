@@ -339,10 +339,11 @@ void TACAactBaseNtuCluster::ComputeMinDist(TACAcluster* cluster)
       posG   = pFootGeo->FromCALocalToGlobal(posG);
       posGtw[2] = posG[2] = 0.;
 
-      if(FootDebugLevel(2))
-        cout << "POS TW    x: " <<  posGtw[0] << " y:" <<  posGtw[1] << endl;
-        cout << "POS CA    x: " <<  posG[0] << " y:" <<  posG[1] << endl;
-
+      if(FootDebugLevel(0)) {
+        Info("ComputeMinDist()","POS TW    x::%f  y::%f\n",posGtw[0],posGtw[1]);
+        Info("ComputeMinDist()","POS CA    x::%f  y::%f\n",posG[0],posG[1]);
+      }
+      
       TVector3 res = posG-posGtw;
       Float_t diff = res.Mag();
 
