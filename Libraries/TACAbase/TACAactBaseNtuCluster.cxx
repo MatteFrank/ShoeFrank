@@ -339,7 +339,7 @@ void TACAactBaseNtuCluster::ComputeMinDist(TACAcluster* cluster)
       posG   = pFootGeo->FromCALocalToGlobal(posG);
       posGtw[2] = posG[2] = 0.;
 
-      if(FootDebugLevel(0)) {
+      if(FootDebugLevel(2)) {
         Info("ComputeMinDist()","POS TW    x::%f  y::%f\n",posGtw[0],posGtw[1]);
         Info("ComputeMinDist()","POS CA    x::%f  y::%f\n",posG[0],posG[1]);
       }
