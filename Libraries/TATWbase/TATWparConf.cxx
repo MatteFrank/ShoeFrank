@@ -35,6 +35,7 @@ TATWparConf::TATWparConf()
    fEnableNoPileUp(false),
    fEnableZmatching(false),
    fEnableCalibBar(false),
+   fEnableEnergyThr(false),
    fEnableRateSmearMc(false),   
    fBarsN(0),
    fGain(0.)
@@ -73,39 +74,39 @@ Bool_t TATWparConf::FromFile(const TString& name)
    if(fEnableZmc==1)
      Warning("FromFile()","TW ZID set to MC true one...set the EnableZmc value to 0 in TATWdetector.cfg file if it is not the wanted behaviour");
    if(FootDebugLevel(1))
-      cout<< "Enable MC true Z: " << fEnableZmc <<endl;
+     Info("FromFile()", "Enable MC true Z::%d\n",fEnableZmc);
 
    ReadItem(tmp);
    fEnableNoPileUp = tmp;
    if(fEnableNoPileUp==1)
      Warning("FromFile()","Multiple hits in the same TW bar considered as separate hits in MCinstead of a single one...set the EnableNoPileUp value to 0 in the TATWdetector.cfg file if it is not the wanted behaviour");
    if(FootDebugLevel(1))
-      cout<<"Enable no pileup: "<< fEnableNoPileUp <<endl;
+     Info("FromFile()","Enable no pileup::%d\n",fEnableNoPileUp);
    
    ReadItem(tmp);
    fEnableZmatching = tmp;
    if(fEnableZmatching==0)
      Warning("FromFile()","TW Z matching is disabled...set the EnableZmatching value to 1 in the TATWdetector.cfg file if it is not the wanted behaviour");
    if(FootDebugLevel(1))
-      cout<<"Enable Z matching: "<< fEnableZmatching <<endl;
+     Info("FromFile()","Enable Z matching::%d\n",fEnableZmatching);
    
    ReadItem(tmp);
    fEnableCalibBar = tmp;
    if(fEnableCalibBar==1)
      Warning("FromFile()","Enabled TW bar calibration ...set the EnableCalibBar value to 0 in the TATWdetector.cfg file if you want a TW calibration for each bar cross");
    if(FootDebugLevel(1))
-      cout<<"Enable TW bar calibration: "<< fEnableCalibBar <<endl;
+     Info("FromFile()","Enable TW bar calibration::%d\n",fEnableCalibBar);
 
    ReadItem(tmp);
    fEnableRateSmearMc = tmp;
    if(fEnableRateSmearMc==1)
      Warning("FromFile()","Enabled TW Rate Smear for MC ...set the EnableRateSmearMc value to 0 in the TATWdetector.cfg file if it is not the wanted behaviour");
    if(FootDebugLevel(1))
-      cout<<"Enable rate smearing in MC: "<< fEnableRateSmearMc <<endl;
+     Info("FromFile()","Enable rate smearing in MC::%d\n",fEnableRateSmearMc);
 
    ReadItem(fBarsN);
    if(FootDebugLevel(1))
-      cout<<"Number of bars: "<< fBarsN <<endl;
+     Info("FromFile()","Number of bars::%d\n",fBarsN);
    
    ReadItem(fGain);
    if(fGain==0)
@@ -113,8 +114,15 @@ Bool_t TATWparConf::FromFile(const TString& name)
    if(fGain>1)
      Warning("FromFile()","WD gain in TW set to %.1f in TATWdetector.cfg file...check if this is the correct value",fGain);
    if(FootDebugLevel(1))
-      cout<<"Gain value set in the WD for TW: "<< fGain <<endl;
+     Info("FromFile()","Gain value set in the WD for TW::%f.1\n",fGain);
    
+   ReadItem(tmp);
+   fEnableEnergyThr = tmp;
+   if(fEnableEnergyThr == 0)
+     Warning("FromFile()","Threshold over deposited energy has been disabled in TW...set the EnableEnergyThr value to 1 in TATWdetector.cfg file if it is not the wanted behaviour");
+   if(FootDebugLevel(1))
+     Info("FromFile()","Enable energy threshold in TW::%d\n",fEnableEnergyThr);
+
    Close();
    
    return true;
@@ -124,12 +132,17 @@ Bool_t TATWparConf::FromFile(const TString& name)
 //! Clear config info
 void TATWparConf::Clear(Option_t*)
 {
+
    fEnableZmc         = false;
    fEnableNoPileUp    = false;
    fEnableZmatching   = false;
    fEnableCalibBar    = false;
    fEnableRateSmearMc = false;
+   fEnableEnergyThr   = false;
+   fGain              = 0.;
    fBarsN             = 0;
+
+   return;
 }
 
 /*------------------------------------------+---------------------------------*/

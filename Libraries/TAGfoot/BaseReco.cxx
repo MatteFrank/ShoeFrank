@@ -349,13 +349,16 @@ void BaseReco::OpenFileOut()
       name = GetFileOutName();
    
    if (TAGrecoManager::GetPar()->IncludeTW()) {
-      TATWparConf* parConf = (TATWparConf*)fpParConfTw->Object();
-      Bool_t isZmc         = parConf->IsZmc();
-      Bool_t isNoPileUp    = parConf->IsNoPileUp();
-      Bool_t isZmatching   = parConf->IsZmatching();
-      Bool_t isCalibBar    = parConf->IsCalibBar();
-      Bool_t isRateSmearMc = parConf->IsRateSmearMc();
-      
+
+     TATWparConf* parConf = (TATWparConf*)fpParConfTw->Object();
+
+      Bool_t isZmc             = parConf->IsZmc();
+      Bool_t isNoPileUp        = parConf->IsNoPileUp();
+      Bool_t isZmatching       = parConf->IsZmatching();
+      Bool_t isCalibBar        = parConf->IsCalibBar();
+      Bool_t isRateSmearMc     = parConf->IsRateSmearMc();
+      Bool_t isEnergyThrEnable = parConf->IsEnergyThrEnabled();
+
       Int_t pos = name.Last('.');
       
       TString prefix(name(0,pos));
@@ -374,6 +377,9 @@ void BaseReco::OpenFileOut()
      
       if (isRateSmearMc)
          prefix += "_isRateSmearMc";
+      
+      if (!isEnergyThrEnable)
+        prefix += "_noEnergyThrInSC-TW";
 
       name = prefix + ".root";
    }

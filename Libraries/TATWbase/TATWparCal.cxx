@@ -46,9 +46,16 @@ TATWparCal::TATWparCal()
 
   fGeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
+  fParGeoTw = (TATWparGeo*)gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object();
+  
   RetrieveBeamQuantities();
 
   f_dist_Z.clear();
+
+  // // TW
+  // TAGparaDsc* parGeoTW = new TAGparaDsc( new TATWparGeo() );
+  // // TATWparGeo*
+  // twparGeo = (TATWparGeo*)parGeoTW->Object();
 
 }
 //------------------------------------------+-----------------------------------
@@ -108,12 +115,30 @@ void TATWparCal::RetrieveBeamQuantities() {
   Double_t Energy_beam = kinE_beam+Mass_beam;  //MeV
   Double_t Beta_beam = sqrt(pow(Energy_beam,2)-pow(Mass_beam,2))/Energy_beam;
   fTof_beam = Lmin/(C_speed*Beta_beam);
-  fTof_max = 5*fTof_beam;
+  fTof_max = 2*fTof_beam;
+  // fTof_max = 5*fTof_beam;
+
+  ComputeAvgBeamEnergyLossInTwBar(fZbeam,Beta_beam);
   
   if(FootDebugLevel(4))
-    cout<<"L::"<<Lmin<<"  Tof_min::"<<fTof_min<<"  Tof_max::"<<fTof_max<<"  <Tof>::"<<fTof_beam<<"  Beta::"<<Beta_beam<<"  Mass::"<<Mass_beam<<"  Energy::"<<Energy_beam<<"  B::"<<binding_energy<<endl;
+    cout<<"L::"<<Lmin<<"  Tof_min::"<<fTof_min<<"  Tof_max::"<<fTof_max<<"  <Tof>::"<<fTof_beam<<"  Beta::"<<Beta_beam<<"  Mass::"<<Mass_beam<<"  Energy::"<<Energy_beam<<"  B::"<<binding_energy<<" ElossInBar::"<<fAvgBeamEnergyLossInBar<<endl;
 
 }
+//------------------------------------------+-----------------------------------
+void  TATWparCal::ComputeAvgBeamEnergyLossInTwBar(Int_t Z, Double_t Beta ) {
+
+  Float_t barDensity = fParGeoTw->GetBarDensity(); // g/cm^3
+  Float_t barThick = fParGeoTw->GetBarThick();     // cm
+
+  Double_t ElossMinimumParticle = 2; //dE/dx*1/pho [MeV/g*cm^2]
+
+  fAvgBeamEnergyLossInBar = ElossMinimumParticle * barDensity * barThick * pow(Z/Beta,2);
+  fAvgBeamEnergyLossInBar *= 1.3;  // increase of 30%
+
+  return;
+
+}
+
 //------------------------------------------+-----------------------------------
 Bool_t TATWparCal::FromCalibFile(const TString& name, Bool_t isTof, Bool_t barCalib)
 {

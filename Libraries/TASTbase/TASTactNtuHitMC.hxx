@@ -22,12 +22,14 @@
 #include "TAMCntuHit.hxx"
 #include "TAMCntuPart.hxx"
 
+#include "TATWparConf.hxx"
+
 #include "TASTntuHit.hxx"
 
 class TASTdigitizer;
 class TASTactNtuHitMC : public TAGaction {
   public:
-    explicit        TASTactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_ntuHit=0, EVENT_STRUCT* evStr=0);
+    explicit        TASTactNtuHitMC(const char* name=0, TAGdataDsc* p_ntuMC=0, TAGdataDsc* p_ntuEve=0, TAGdataDsc* p_ntuHit=0, TAGparaDsc* p_parconf=0, EVENT_STRUCT* evStr=0);
    
     virtual         ~TASTactNtuHitMC();
 
@@ -38,8 +40,11 @@ class TASTactNtuHitMC : public TAGaction {
   private:
     TAGdataDsc*        fpNtuMC;          // input mc hit
     TAGdataDsc*        fpNtuEve;         // input eve track dsc
-    TAGdataDsc*        fpNtuHit;		    // output data dsc
+    TAGdataDsc*        fpNtuHit;	 // output data dsc
+    TAGparaDsc*        fpParConf;        // configuration parameter dsc
 
+    TATWparConf*       fparTwConf;
+  
     TASTdigitizer*     fDigitizer;       // cluster size digitizer
 
     EVENT_STRUCT*      fEventStruct;
@@ -50,9 +55,12 @@ class TASTactNtuHitMC : public TAGaction {
 
     vector<TASThit*>   fVecStHit;     //! vector to store ST Hits
 
+    Bool_t             fIsEnergyThrEnabled;
+
+  
   private:
     void            CreateDigitizer();
-    void            FlagUnderEnergyThresholtHits(TASThit *hitst);   
+    void            FlagUnderEnergyThresholdHits(TASThit *hitst);   
     void            PlotSCquantities(TASThit *hitst);
   
   ClassDef(TASTactNtuHitMC,0)
