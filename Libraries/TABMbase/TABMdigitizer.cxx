@@ -33,10 +33,7 @@ TABMdigitizer::TABMdigitizer(TABMntuHit* pNtuRaw, TABMparGeo* parGeo, TABMparCon
    fpParCon(parCon),
    fpParCal(parCal),
    fTimeMinDiff(50)
-{
-  fpEffDist=new TF1("EffVsRdrift",this,&TABMdigitizer::EffFunc, 0., 0.78,3,"TABMdigitizer","EffFunc");
-  fpEffDist->SetParameters(1.00072,-0.000162505,10.9375);
-  
+{ 
   //~ fpParCal->ResetStrelFunc();
   //~ fpParCon->ResetHitTimeCutMC();
 }
@@ -44,7 +41,6 @@ TABMdigitizer::TABMdigitizer(TABMntuHit* pNtuRaw, TABMparGeo* parGeo, TABMparCon
 // --------------------------------------------------------------------------------------
 TABMdigitizer::~TABMdigitizer()
 {
-  delete fpEffDist;
 }
 
 //___________________________________________________________________________________________
@@ -68,15 +64,16 @@ Bool_t TABMdigitizer::Process(Double_t /*edep*/, Double_t x0, Double_t y0, Doubl
   if (cellid < 0) {//it's a fake hit from CreateFakeHits
     cellid = (Int_t)gRandom->Uniform(0,35.9);
     fpParGeo->GetBMNlvc(cellid, lay, view, cell);
-    rdrift = gRandom->Uniform(0.,0.8);
+    rdrift = fpParCal->GetEffFunc()->GetRandom(0.,0.8);
   } else {
     fpParGeo->GetBMNlvc(cellid, lay, view, cell);
     rdrift = fpParGeo->FindRdrift(loc, gmom, fpParGeo->GetWirePos(view, lay, fpParGeo->GetSenseId(cell)), fpParGeo->GetWireDir(view), false);
+    if(fpParCon->GetSmearHits())
+      if(gRandom->Uniform(0,1)>fpParCal->EffEval(rdrift))
+        return false;
   }
 
-  if(fpParCon->GetSmearHits())
-    if(gRandom->Uniform(0,1)>fpEffDist->Eval(rdrift))
-      return false;
+
 
   if(fpParCon->GetSmearRDrift()>0)
     rdrift=SmearRdrift(rdrift,fpParCal->ResoEval(rdrift));

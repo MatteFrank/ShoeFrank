@@ -46,3 +46,11 @@ STrel_number_of_parameters: 4
 
 
 
+HitEff_function:   1./([0]*exp(x/[1])+1.)+[2]*x
+HitEff_number_of_parameters: 3
+6.41785e-07  0.0494121  -0.182363
+
+MCEff_function:  TMath::Landau(x,[0],[1])
+MCEff_number_of_parameters:  2
+4   0.661063
+

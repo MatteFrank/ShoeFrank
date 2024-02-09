@@ -81,6 +81,8 @@ void TABMactNtuHitMC::CreateDigitizer()
 void TABMactNtuHitMC::CreateHistogram(){
   DeleteHistogram();
 
+  TABMparCal* p_bmcal = (TABMparCal*) fpParCal->Object();
+
   fpHisCell = new TH1I( "bmMcHitCell", "cell index; index; Counter", 3, -0.5, 2.5);
   AddHistogram(fpHisCell);
   fpHisView = new TH1I( "bmMcHitView", "view index; index; Counter", 2, -0.5, 1.5);
@@ -97,6 +99,12 @@ void TABMactNtuHitMC::CreateHistogram(){
   AddHistogram(fpHisFakeIndex);
   fpDisReason=new TH1I( "bmMCDischargedReason", "Discharged hits; 0=efficiency, 1=charge, 2=length, 3=energy, 4=no momentum, 5=dead channel; Events", 6, -0.5, 5.5);
   AddHistogram(fpDisReason);
+  if(p_bmcal->GetEffFunc()!=nullptr){
+    fpEffDrift=(TH1D*)  (p_bmcal->GetEffFunc()->GetHistogram()->Clone("bmMcParEfficiency"));
+    fpEffDrift->SetTitle("BM input hit detection efficiency; Drift distance [cm];Efficiency");
+    fpEffDrift->SetAxisRange(0,0.8);
+    AddHistogram(fpEffDrift);
+  }
 
   SetValidHistogram(kTRUE);
 }
@@ -214,8 +222,8 @@ Bool_t TABMactNtuHitMC::Action()
 //! Create fake noisy hits
 void TABMactNtuHitMC::CreateFakeHits()
 {
-  Int_t nfake=(Int_t)fabs(gRandom->Gaus(0,4));
-
+  Int_t nfake=(Int_t)fabs(gRandom->Landau(4,6.61063e-01));
+  
   for(Int_t i=0;i<nfake;i++){
     Bool_t added=fDigitizer->Process(0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0); // the cellid=-1 will tell the digitizer to add a fake hit
     if(added){
@@ -224,6 +232,5 @@ void TABMactNtuHitMC::CreateFakeHits()
       hit->AddMcTrackIdx(-99, -99);
     }
 	}
-
   return ;
 }
