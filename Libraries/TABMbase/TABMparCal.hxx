@@ -35,10 +35,16 @@ class TABMparCal : public TAGparTools {
     TF1*  GetResoFunc()                 const{return fpResoFunc;};
     //! Get the BM space time relations expressed as space [cm] as a function of drift time [ns]
     TF1*  GetSTrelFunc()                const{return fpSTrel;};
+    //! Get the BM hit detection efficiency as a function of drift space
+    TF1*  GetEffFunc()                const{return fpHitEff;};
+    //! Get the noise hit distribution function
+    TF1*  GetNoiseFunc()                const{return fpNoise;};
     //! Get the drift distance [cm] given the drift time [tdrift in ns]
     Double_t  STrelEval(Float_t tdrift) {return min(fpSTrel->Eval(tdrift), 0.8);};
     //! Get the detector resolution [cm] given the drift distance [dist in cm]
     Float_t   ResoEval(Float_t dist){return (dist>0 && dist<0.8) ? fpResoFunc->Eval(dist) : 0.15;};
+    //! Get the hit detection efficiency as a function of the drift distance
+    Float_t  EffEval(Float_t dist) {return fpHitEff->Eval(dist);};
 
     //Setters
     void SetResoFunc(TF1* inreso);
@@ -82,6 +88,8 @@ class TABMparCal : public TAGparTools {
     vector<pair<Float_t,Float_t>>  fAdcPedVec;  ///< vector of ADC pedestal values (first) and devstd (second)
     TF1             *fpResoFunc;                ///< Space resolution [cm] function as a function of drift distance [cm]
     TF1             *fpSTrel;                   ///< Space time relation fuction expressed as space [cm] as a function of drift time [ns]
+    TF1             *fpHitEff;                  ///< Hit detection efficiency as a function of the drift distance
+    TF1             *fpNoise;                   ///< Noise sample function
 
    ClassDef(TABMparCal,1)
 };

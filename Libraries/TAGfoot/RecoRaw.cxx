@@ -293,13 +293,19 @@ Int_t RecoRaw::GetRunNumberFromFile()
    if (name.IsNull()) return -1;
    
    // protection about file name starting with .
-   if (name[0] == '.')
-      name.Remove(0,1);
+   // if (name[0] == '.')
+   //    name.Remove(0,1);
+
+   Int_t inpos = name.Last('/');
+   TString inname = name(inpos+1,name.Length());
+   if(FootDebugLevel(4))
+     Info("GetRunNumberFromFile()","Modified input name:: %s ",inname.Data());
+
    
-   Int_t pos1   = name.First(".");
-   Int_t len    = name.Length();
+   Int_t pos1   = inname.First(".");
+   Int_t len    = inname.Length();
    
-   TString tmp1 = name(pos1+1, len);
+   TString tmp1 = inname(pos1+1, len);
    Int_t pos2   = tmp1.First(".");
    TString tmp  = tmp1(0, pos2);
    return  tmp.Atoi();

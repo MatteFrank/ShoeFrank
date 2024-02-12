@@ -12,7 +12,7 @@ NumberFiles: 1
 "./geomaps/CNAO2022/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/CNAO2022/TASTdetector.geo": -1
 "./config/CNAO2022/TASTdetector.map": -1
 "./config/CNAO2022/TASTdetector.cfg": -1

@@ -92,7 +92,17 @@ void TATWactNtuHit::CreateHistogram()
 
   DeleteHistogram();
    
-  for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
+   Double_t TofMin = f_parcal->GetTofMin();  // ns
+   Double_t TofMax = f_parcal->GetTofMax();  // ns
+   Double_t ElossMax = f_parcal->GetMaxEloss();  // MeV
+
+   Int_t NBinTof   = (TofMax-TofMin)*100; // 10 ps/bin
+   Int_t NBinEloss = ElossMax*4; // 0.25 MeV/bin
+   
+   if(FootDebugLevel(4))
+     Info("CreateHistogram()","TofMin::%f, TofMax::%f, ElossMac::%f",f_parcal->GetTofMin(),f_parcal->GetTofMax(),f_parcal->GetMaxEloss());
+
+   for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
 
     fpHisCharge[ilayer] = new TH1F(Form("twCharge_%s",LayerName[(TLayer)ilayer].data()), Form("twCharge_%s",LayerName[(TLayer)ilayer].data()), 10000, 0., 50.);
     AddHistogram(fpHisCharge[ilayer]);
@@ -118,7 +128,7 @@ void TATWactNtuHit::CreateHistogram()
     fpHisBarsID[ilayer] = new TH1I(Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()), Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()),20, -0.5, 19.5);
     AddHistogram(fpHisBarsID[ilayer]);
   
-    fpHisElossTof_layer[ilayer] = new TH2D(Form("twdE_vs_Tof_%s",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s",LayerName[(TLayer)ilayer].data()),3000,0.,30.,480,0.,120.);
+    fpHisElossTof_layer[ilayer] = new TH2D(Form("twdE_vs_Tof_%s",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s",LayerName[(TLayer)ilayer].data()),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax);
     AddHistogram(fpHisElossTof_layer[ilayer]);
 
     fpHisAmpA[ilayer] = new TH1F(Form("twAmpA_%s",LayerName[(TLayer)ilayer].data()), "TW - AmpA ", 1000,0.,1.);
@@ -140,17 +150,17 @@ void TATWactNtuHit::CreateHistogram()
   
   for(int iZ=1; iZ < fZbeam+1; iZ++) {
     
-    fpHisElossTof_Z.push_back( new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),5000,0.,50.,480,0.,120.) );
+    fpHisElossTof_Z.push_back( new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax) );
 
     AddHistogram(fpHisElossTof_Z[iZ-1]);
 
-    fpHisTof_Z.push_back( new TH1D(Form("twTof_Z%d",iZ),Form("hTof_%d",iZ),5000,0.,50.) );
+    fpHisTof_Z.push_back( new TH1D(Form("twTof_Z%d",iZ),Form("hTof_%d",iZ),NBinTof,TofMin,TofMax) );
 
     AddHistogram(fpHisTof_Z[iZ-1]);
 
     for(int ilayer=0; ilayer<(TWparam)nLayers; ilayer++) {
       
-      fpHisEloss_Z[ilayer].push_back( new TH1D(Form("twEloss_Z%d_%s",iZ,LayerName[(TLayer)ilayer].data()),Form("hEloss_%d_%s",iZ,LayerName[(TLayer)ilayer].data()),200,0.,100.) );
+      fpHisEloss_Z[ilayer].push_back( new TH1D(Form("twEloss_Z%d_%s",iZ,LayerName[(TLayer)ilayer].data()),Form("hEloss_%d_%s",iZ,LayerName[(TLayer)ilayer].data()),NBinEloss,0.,ElossMax) );
 
       AddHistogram(fpHisEloss_Z[ilayer][iZ-1]);
     }

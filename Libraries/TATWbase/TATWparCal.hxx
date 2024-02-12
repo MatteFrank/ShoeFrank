@@ -72,10 +72,14 @@ private:
    
    TAGparGeo*    fParGeo;
    TAGgeoTrafo*  fGeoTrafo;
+   TATWparGeo*   fParGeoTw;
+  
    Int_t         fZbeam;
    Double_t      fTof_beam;
    Double_t      fTof_min;
    Double_t      fTof_max;
+   Double_t      fAvgBeamEnergyLossInBar;
+
    int           fZraw;
    float         f_dist_min_Z;
    vector<float> f_dist_Z;
@@ -90,6 +94,8 @@ private:
 
 private:
    void       RetrieveBeamQuantities();
+   void       ComputeAvgBeamEnergyLossInTwBar(Int_t Z, Double_t Beta );
+
    
    Double_t   fBBparametrized(double tof, int chg, double par0, double par1);
    Double_t   fBB_prime_parametrized(double tof, int chg, double par0, double par1);
@@ -128,8 +134,12 @@ public:
    // Get offset per bar in [cm] for position from delta Time
    Double_t        GetDeltaTimePosOffset(Int_t ilayer, Int_t ibar);
    Double_t        GetElossThreshold(Int_t ilayer, Int_t ibar);
-   TString         GetIonBeamName(){ return fIonBeamName;}
-   TH1D*           GetRate(){ return fHisRate;}
+
+   TString         GetIonBeamName() { return fIonBeamName;}
+   Double_t        GetTofMin()      { return (Int_t)fTof_min; }
+   Double_t        GetTofMax()      { return (Int_t)fTof_max; }
+   Double_t        GetMaxEloss()    { return (Int_t)fAvgBeamEnergyLossInBar; }
+   TH1D*           GetRate()        { return fHisRate;}
    
    //! Set Methods
    void            SetBisecChargeZ(int chg) {fZraw = chg;}

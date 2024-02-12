@@ -24,7 +24,6 @@ public:
   void           ClearMap()            { fMap.clear(); }
 
   //getters
-  TF1*           GetEffDist()          { return fpEffDist;   }
   Int_t          GetMapSize()          { return fMap.size(); }
   TABMhit*    GetCurrentHit()       { return fCurrentHit; }
 
@@ -43,7 +42,6 @@ private:
 
   Float_t       fTimeMinDiff;            //minimum time difference between two hits in the same cell to be detected
 
-  TF1*          fpEffDist;               //efficiency as a function of drift distance, measured from data taken @ Trento 2019
   TABMhit*   fCurrentHit;
 
   multimap<Int_t, TABMhit*> fMap;     //multimap with cellid and the bm hits

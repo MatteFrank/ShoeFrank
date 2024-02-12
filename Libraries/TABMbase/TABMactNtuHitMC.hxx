@@ -56,6 +56,7 @@ class TABMactNtuHitMC : public TAGaction {
     TH1I*            fpHisPlane;      ///<hits plane
     TH1F*            fpHisRdrift;     ///<hits drift distance
     TH1F*            fpDisRdrift;     ///<hits real rdrift - smeared rdrift
+    TH1D*            fpEffDrift;      ///<input hit detection efficiency
     TH1I*            fpDisReason;     ///<discharged hits reason
     TH1I*            fpHisHitNum;     ///<hit per event distribution
     TH1I*            fpHisFakeIndex;  ///<hits fake index (0=fluka hit from primary, 1=fluka hit not from primay, 2=Random hit not from fluka)

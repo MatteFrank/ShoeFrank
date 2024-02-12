@@ -36,6 +36,8 @@ TABMparCal::TABMparCal()
   fT0Vec = myt0s;
   fpResoFunc=new TF1("bmResoFunc","0.0245237+0.106748*x+0.229201*x*x-24.0304*x*x*x+183.529*x*x*x*x-619.259*x*x*x*x*x+1080.97*x*x*x*x*x*x-952.989*x*x*x*x*x*x*x+335.937*x*x*x*x*x*x*x*x",0.,0.8);
   fpSTrel=new TF1("McStrel","0.00773*x -5.1692440e-05*x*x + 1.8928600e-07*x*x*x -2.4652420e-10*x*x*x*x", 0., 350.);
+  fpHitEff=new TF1("McHitEff","1.00072-0.000162505*exp(x*10.9375)",0.,0.8);
+  fpNoise=new TF1("McNoise","TMath::Landau(x,4,0.661063)",0.,36);
 }
 
 //------------------------------------------+-----------------------------------
@@ -44,6 +46,8 @@ TABMparCal::TABMparCal()
 TABMparCal::~TABMparCal(){
   delete fpResoFunc;
   delete fpSTrel;
+  delete fpHitEff;
+  delete fpNoise;
 }
 
 //------------------------------------------+-----------------------------------
@@ -141,6 +145,28 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
     fpSTrel->SetParameter(i,par);
   }
 
+  //charge the efficiency function
+  infile>>tmp_char>>tmp_char;
+  delete fpHitEff;
+  fpHitEff=new TF1("McHitEff",tmp_char,0.,0.8);
+  infile>>tmp_char>>parnum;
+  for(Int_t i=0;i<parnum;++i){
+    infile>>par;
+    fpHitEff->SetParameter(i,par);
+  }
+
+  //charge the MC noise function
+  if(!infile.eof()){
+    infile>>tmp_char>>tmp_char;
+    delete fpNoise;
+    fpNoise=new TF1("McNoise",tmp_char,0.,36.);
+    infile>>tmp_char>>parnum;
+    for(Int_t i=0;i<parnum;++i){
+      infile>>par;
+      fpNoise->SetParameter(i,par);
+    }
+  }
+
   if(FootDebugLevel(1)){
     cout<<"BM resolution formula="<<fpResoFunc->GetFormula()->GetExpFormula().Data()<<endl;
     cout<<"number of parameters="<<fpResoFunc->GetNpar()<<endl;
@@ -148,6 +174,7 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
     for(Int_t i=0;i<fpResoFunc->GetNpar();++i)
       cout<<fpResoFunc->GetParameter(i)<<" , ";
     cout<<")"<<endl;
+
     cout<<"BM space time relation formula="<<fpSTrel->GetFormula()->GetExpFormula().Data()<<endl;
     cout<<"number of parameters="<<fpSTrel->GetNpar()<<endl;
     cout<<"parameters:  (";
@@ -155,6 +182,20 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
       cout<<fpSTrel->GetParameter(i)<<" , ";
     cout<<")"<<endl;
     cout<<"STrel maximum bin at "<<fpSTrel->GetMaximumX()<<endl;
+
+    cout<<"BM hit detection efficiency formula="<<fpHitEff->GetFormula()->GetExpFormula().Data()<<endl;
+    cout<<"number of parameters="<<fpHitEff->GetNpar()<<endl;
+    cout<<"parameters:  (";
+    for(Int_t i=0;i<fpHitEff->GetNpar();++i)
+      cout<<fpHitEff->GetParameter(i)<<" , ";
+    cout<<")"<<endl;
+
+    cout<<"BM noise formula="<<fpNoise->GetFormula()->GetExpFormula().Data()<<endl;
+    cout<<"number of parameters="<<fpNoise->GetNpar()<<endl;
+    cout<<"parameters:  (";
+    for(Int_t i=0;i<fpNoise->GetNpar();++i)
+      cout<<fpNoise->GetParameter(i)<<" , ";
+    cout<<")"<<endl;
   }
 
   infile.close();

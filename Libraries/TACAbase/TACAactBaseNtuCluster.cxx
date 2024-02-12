@@ -327,6 +327,9 @@ void TACAactBaseNtuCluster::ComputeMinDist(TACAcluster* cluster)
    TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
    Int_t nPoints = pNtuPoint->GetPointsN();
 
+   if(FootDebugLevel(2))
+     cout << "TW npoints: " <<  nPoints  << endl;
+
    for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
 
       TATWpoint *point = pNtuPoint->GetPoint(iPoint);
@@ -335,6 +338,12 @@ void TACAactBaseNtuCluster::ComputeMinDist(TACAcluster* cluster)
       posGtw = pFootGeo->FromTWLocalToGlobal(posGtw);
       posG   = pFootGeo->FromCALocalToGlobal(posG);
       posGtw[2] = posG[2] = 0.;
+
+      if(FootDebugLevel(2)) {
+        Info("ComputeMinDist()","POS TW    x::%f  y::%f\n",posGtw[0],posGtw[1]);
+        Info("ComputeMinDist()","POS CA    x::%f  y::%f\n",posG[0],posG[1]);
+      }
+      
       TVector3 res = posG-posGtw;
       Float_t diff = res.Mag();
 
@@ -385,7 +394,7 @@ void TACAactBaseNtuCluster::CalibrateEnergy(TACAcluster* cluster)
 
       hit->SetCharge(energy);
       if(FootDebugLevel(1))
-         printf("%d %f\n", fTwPointZ, energy);
+         printf("CalibrateEnergy %d %f\n", fTwPointZ, energy);
    }
 }
 

@@ -188,9 +188,8 @@ Bool_t TABMactNtuTrack::Action()
       //calculate the hit residuals and the track chi2
       if(fpTmpTrack->EvaluateResChi2(p_nturaw,p_bmgeo)){
         p_ntutrk->SetTrackStatus(8);//something is wrong, this should not happen!
-        if(ValidHistogram()){
+        if(ValidHistogram())
           fpFitIters->Fill(-8);
-        }
         return kTRUE;
       }
 
@@ -343,9 +342,8 @@ Int_t TABMactNtuTrack::NumericalMinimizationDouble(){
     }
 
     fpTmpTrack->SetIsConv(1);
-    if(ValidHistogram()){
+    if(ValidHistogram())
       fpFitIters->Fill(fpMinimizer->NIterations());
-    }
 
     if(FootDebugLevel(1)){
       cout<<"TABMactNtuTrack:: NumericalMinimizationDouble done:  fNowView="<<fNowView<<"   The track parameters are:"<<endl;
@@ -419,11 +417,8 @@ void TABMactNtuTrack::EvaluateMauroPulls(){
       if( Sigma2 > rFitError2 ){
         Double_t rFitError = sqrt(rFitError2);
         Double_t pull = p_hit->GetResidual() / sqrt(Sigma2-rFitError2);
-        fpFitPulls->Fill(pull, p_hit->GetRdrift());
-        // cout<<"OK EvaluateMauroPulls"<<endl;
-      } else {
-        // cout<<"ERROR EvaluateMauroPulls: fit errors with problems! Sigma2="<<Sigma2<<" rFitError2="<<rFitError2<<"\n"
-  	  // <<"drOverdm="<<drOverdm <<" drOverdq="<<drOverdq<<endl;
+        if(ValidHistogram())
+          fpFitPulls->Fill(pull, p_hit->GetRdrift());
       }
     }
   }
