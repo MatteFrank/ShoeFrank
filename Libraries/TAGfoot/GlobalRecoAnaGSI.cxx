@@ -571,9 +571,9 @@ void GlobalRecoAnaGSI::SetupTree()
   if (FootDebugLevel(1))
     cout << "GlobalRecoAnaGSI::SetupTree start" << endl;
 
+  myReader = new TAGactTreeReader("myReader");
   if (TAGrecoManager::GetPar()->IncludeKalman())
   {
-  myReader = new TAGactTreeReader("myReader");
   fpNtuGlbTrack = new TAGdataDsc("glbTrack", new TAGntuGlbTrack());
   gTAGroot->AddRequiredItem("glbTrack");
   myReader->SetupBranch(fpNtuGlbTrack, TAGntuGlbTrack::GetBranchName());
