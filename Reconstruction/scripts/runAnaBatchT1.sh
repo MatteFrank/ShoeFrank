@@ -33,9 +33,9 @@
 ############# IMPORTANT!!!!! #################
 
 
-############# SHOE INSTALLATION GUIDE #################
+############# SHOE TIER-1 INSTALLATION GUIDE #################
 
-# To properly set-up the SHOE installation and have it working on condor, follow the steps given below:
+# To properly set-up the SHOE installation and have it working on Tier1, follow the steps given below:
 
 # 1) Clone the appropriate branch of the SHOE git repository in your "/opt/exp_software/foot/${USER}" folder
 #    > git clone https://baltig.infn.it/asarti/shoe.git -b <branch_name>
@@ -52,14 +52,14 @@
 
 # Here is a list of all the options available for SHOE compilation:
 
-# - CMAKE_BUILD_TYPE    Type of build, usually either "Debug" of "Release" (default = Debug)
-# - FILECOPY            Turn ON/OFF the config/calib/cammaps file copy (default = OFF)
-# - GENFIT_DIR          Turn ON/OFF the global reconstruction w/ genfit (default = ON)
-# - TOE_DIR             Turn ON/OFF the global reconstruction w/ TOE (default = OFF)
-# - ANC_DIR             Turn ON/OFF the ancillary directory (default = OFF)
-# - GEANT4_DIR          Turn ON/OFF the G4 simulations (default = OFF)
+# - CMAKE_BUILD_TYPE    (default = Debug)   Type of build, usually either "Debug" of "Release"
+# - FILECOPY            (default = OFF)     Turn ON/OFF the config/calib/cammaps file copy
+# - GENFIT_DIR          (default = ON)      Turn ON/OFF the global reconstruction w/ genfit
+# - TOE_DIR             (default = OFF)     Turn ON/OFF the global reconstruction w/ TOE
+# - ANC_DIR             (default = OFF)     Turn ON/OFF the ancillary directory
+# - GEANT4_DIR          (default = OFF)     Turn ON/OFF the G4 simulations
 
-############# SHOE INSTALLATION GUIDE #################
+############# SHOE TIER-1 INSTALLATION GUIDE #################
 
 # To signal any possible issue/missing feature, please contact zarrella@bo.infn.it
 
