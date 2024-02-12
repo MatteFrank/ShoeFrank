@@ -38,6 +38,7 @@ TAMSDcluster::TAMSDcluster()
    fPositionCorr(0),
    fCurPosition(0,0,0),
    fCog(0),
+   fSeedPosition(0),
    fPlaneView(-1),
    fEnergyLoss(0),
    fEnergyLossCorr(0),
@@ -66,6 +67,7 @@ TAMSDcluster::TAMSDcluster(const TAMSDcluster& cluster)
    fPosErrorF(cluster.fPosErrorF),
    fPositionCorr(cluster.fPositionCorr),
    fCog(cluster.fCog),
+   fSeedPosition(cluster.fSeedPosition),
    fCurPosition(cluster.fCurPosition),
    fPlaneView(cluster.fPlaneView),
    fEnergyLoss(cluster.fEnergyLoss),
@@ -156,6 +158,15 @@ void TAMSDcluster::SetPosErrorF(Float_t pos)
 void TAMSDcluster::SetCog(Float_t pos)
 {
    fCog = pos;
+}
+
+//______________________________________________________________________________
+//! Set seed position
+//!
+//! \param[in] seed_pos seed position
+void TAMSDcluster::SetSeed(Int_t seed_pos)
+{
+   fSeedPosition = seed_pos;
 }
 
 //______________________________________________________________________________
