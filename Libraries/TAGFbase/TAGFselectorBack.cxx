@@ -24,11 +24,11 @@ TAGFselectorBack::TAGFselectorBack() : TAGFselectorBase()
 }
 
 
-
 //----------------------------------------------------------------------------------------------------
 
 //! \brief Main function of backtracking algorithm
 void TAGFselectorBack::Categorize( ) {
+	if (FootDebugLevel(2))	Info("Categorize_Backtracking()", "Backtracking START!!");
 
 	if (! m_systemsON.Contains("TW") || ! m_systemsON.Contains("MSD"))
 	{
@@ -36,31 +36,13 @@ void TAGFselectorBack::Categorize( ) {
 		exit(42);
 	}
 
-	if (FootDebugLevel(2))
-		Info("Categorize_Backtracking()", "Backtracking START!!");
-
 	BackTracklets();
 
-	if (FootDebugLevel(2))
-		Info("Categorize_Backtracking()", "BackTracklets created!");
-
 	if ( m_systemsON.Contains("IT"))
-	{
-		if (FootDebugLevel(2))
-			Info("Categorize_Backtracking()", "Start of IT cycle!");
 		CategorizeIT_back();
-		if (FootDebugLevel(2))
-			Info("Categorize_Backtracking()", "End of IT cycle!");
-	}
 
 	if ( m_systemsON.Contains("VT"))
-	{
-		if (FootDebugLevel(2))
-			Info("Categorize_Backtracking()", "Start of VT cycle!");
 		CategorizeVT_back();
-		if (FootDebugLevel(2))
-			Info("Categorize_Backtracking()", "End of VT cycle!");
-	}
 
 	FillTrackCategoryMap();
 }
@@ -277,11 +259,9 @@ void TAGFselectorBack::BackTracklets()
 					}
 					continue;
 				}
-				
-			}
-		}
-
-	}
+			} //end loop on MSD plane2
+		} //end loop on MSD plane1
+	} //end loop on TW points
 	delete m_fitter_extrapolation;
 
 	if( m_IsMC && FootDebugLevel(1) )
@@ -290,13 +270,14 @@ void TAGFselectorBack::BackTracklets()
 		PrintCurrentTracksMC();
 	}
 
-	return;
+	if (FootDebugLevel(2))	Info("Categorize_Backtracking()", "BackTracklets created!");
 }
 
 
 //! \brief Track selection at the IT level
 void TAGFselectorBack::CategorizeIT_back()
 {
+	if (FootDebugLevel(2))	Info("Categorize_Backtracking()", "Start of IT cycle!");
 	KalmanFitter *m_fitter_extrapolation = new KalmanFitter(1);
 	m_fitter_extrapolation->setMaxIterations(1);
 
@@ -431,13 +412,15 @@ void TAGFselectorBack::CategorizeIT_back()
 	}
 
 	delete m_fitter_extrapolation;
-	return;
+	if (FootDebugLevel(2))	Info("Categorize_Backtracking()", "End of IT cycle!");
 }
 
 
 //! \brief Track selection at the VT level
 void TAGFselectorBack::CategorizeVT_back()
 {
+	if (FootDebugLevel(2))	Info("Categorize_Backtracking()", "Start of VT cycle!");
+
 	int maxVTplane = m_SensorIDMap->GetMaxFitPlane("VT");
 	int minVTplane = m_SensorIDMap->GetMinFitPlane("VT");
 
@@ -535,5 +518,5 @@ void TAGFselectorBack::CategorizeVT_back()
 		PrintCurrentTracksMC();
 	}
 
-	return;
+	if (FootDebugLevel(2))	Info("Categorize_Backtracking()", "End of VT cycle!");
 }

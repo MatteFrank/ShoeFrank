@@ -99,7 +99,6 @@ public:
 protected:
 	void		CheckPlaneOccupancy();
 	int			FillTrackRepVector();
-	bool		PrefitRequirements(map<string, vector<AbsMeasurement*>>::iterator element);
 	void		CreateDummyTrack();
 
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV);

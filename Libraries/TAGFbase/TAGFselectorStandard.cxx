@@ -30,34 +30,18 @@ void TAGFselectorStandard::Categorize( ) {
 		exit(42);
 	}
 	else
-	{
-		if( FootDebugLevel(2) ) cout << "******* START OF VT CYCLE *********\n";
 		CategorizeVT();
-		if( FootDebugLevel(2) ) cout << "******** END OF VT CYCLE **********\n";
-	}
 
 	if( m_systemsON.Contains("IT") )
-	{
-		if( FootDebugLevel(2) ) cout << "******* START OF IT CYCLE *********\n";
 		CategorizeIT();
-		if( FootDebugLevel(2) ) cout << "******** END OF IT CYCLE **********\n";
-	}
 
 	if( m_systemsON.Contains("MSD") )
-	{
-		if( FootDebugLevel(2) ) cout << "******* START OF MSD CYCLE *********\n";
 		CategorizeMSD();
-		if( FootDebugLevel(2) ) cout << "******** END OF MSD CYCLE **********\n";
-	}
 	else
 		SetTrackSeedNoMSD();
 
 	if( m_systemsON.Contains("TW") )
-	{
-		if( FootDebugLevel(2) ) cout << "******* START OF TW CYCLE *********\n";
 		CategorizeTW();
-		if( FootDebugLevel(2) ) cout << "******** END OF TW CYCLE **********\n";
-	}
 
 	FillTrackCategoryMap();
 }
@@ -68,6 +52,8 @@ void TAGFselectorStandard::Categorize( ) {
 //! The algorithm currently starts from VT tracklets and checks the number of points in them
 void TAGFselectorStandard::CategorizeVT()
 {
+	if( FootDebugLevel(2) ) cout << "******* START OF VT CYCLE *********\n";
+
 	TAVTntuVertex* vertexContainer = (TAVTntuVertex*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuVertex"))->Object();
 		//cluster test
 	TAVTntuCluster* vtntuclus = (TAVTntuCluster*) gTAGroot->FindDataDsc(FootActionDscName("TAVTntuCluster"))->Object(); //To find the right clus Index -> TO BE CHANGED!
@@ -162,7 +148,6 @@ void TAGFselectorStandard::CategorizeVT()
 							cout << "Pile-up particle from VT!" << endl;
 					}
 				}
-
 			}	// end cluster loop
 
 			if (fitTrack_->getNumPointsWithMeasurement() > 4 || fitTrack_->getNumPointsWithMeasurement() < 3){
@@ -202,6 +187,8 @@ void TAGFselectorStandard::CategorizeVT()
 		cout << "End of VT tracking -> found these tracks\n";
 		PrintCurrentTracksMC();
 	}
+
+	if( FootDebugLevel(2) ) cout << "******** END OF VT CYCLE **********\n";
 }
 
 
@@ -209,6 +196,7 @@ void TAGFselectorStandard::CategorizeVT()
 //!
 //! Currently this step is performed w/ a linear extrapolation
 void TAGFselectorStandard::CategorizeIT()	{
+	if( FootDebugLevel(2) ) cout << "******* START OF IT CYCLE *********\n";
 
 	// ExtrapFromVTXtoIT 
 	TVector3 tmpExtrap, tmpVTX;
@@ -320,6 +308,7 @@ void TAGFselectorStandard::CategorizeIT()	{
 	}
 
 	// delete m_fitter_extrapolation;
+	if( FootDebugLevel(2) ) cout << "******** END OF IT CYCLE **********\n";
 }
 
 
@@ -330,6 +319,7 @@ void TAGFselectorStandard::CategorizeIT()	{
 //!
 //! This step uses a Kalman Filter extrapolation to find the MSD measurements of the track
 void TAGFselectorStandard::CategorizeMSD()	{
+	if( FootDebugLevel(2) ) cout << "******* START OF MSD CYCLE *********\n";
 
 	KalmanFitter* m_fitter_extrapolation = new KalmanFitter(1);
 
@@ -520,6 +510,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 	}
 
 	delete m_fitter_extrapolation;
+	if( FootDebugLevel(2) ) cout << "******** END OF MSD CYCLE **********\n";
 }
 
 
@@ -636,6 +627,8 @@ void TAGFselectorStandard::SetTrackSeedNoMSD()
 //! This step uses a Kalman Filter extrapolation
 void TAGFselectorStandard::CategorizeTW()
 {
+	if( FootDebugLevel(2) ) cout << "******* START OF TW CYCLE *********\n";
+
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
 	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
 		if(FootDebugLevel(1)) cout << "TAGFselectorStandard::CategorizeTW() -- no measurement found in TW layer\n";
@@ -706,9 +699,11 @@ void TAGFselectorStandard::CategorizeTW()
 
 	if( m_IsMC && FootDebugLevel(1) )
 	{
-		cout << "End of IT tracking -> found these tracks\n";
+		cout << "End of TW tracking -> found these tracks\n";
 		PrintCurrentTracksMC();
 	}
 
 	delete m_fitter_extrapolation;
+
+	if( FootDebugLevel(2) ) cout << "******* END OF TW CYCLE *********\n";
 }

@@ -518,11 +518,8 @@ void TAGFselectorBase::CreateDummyTrack()
 //! \return Charge measured from the TW
 int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
 {
-
 	int charge = -1;
 
-	// if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" ) //do not use MC!
-	// {
 	TATWpoint* twpoint = 0x0;
 	if( trackToCheck->getNumPointsWithMeasurement() >= 0 )
 	{
@@ -537,54 +534,6 @@ int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
 			break;
 		}
 	}
-	// }	//end of charge calculation from data
-
-	// else	//use MC!
-	// {
-	// 	int MeasId = trackToCheck->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
-	// 	if(m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
-	// 		return -1;
-
-	// 	if(m_measParticleMC_collection->at(MeasId).size() == 1)
-	// 	{
-	// 		return m_McNtuEve->GetTrack( m_measParticleMC_collection->at(MeasId).at(0) )->GetCharge();
-	// 	}
-	// 	else
-	// 	{
-	// 		map<int,int> ChargeOccMap;
-
-	// 		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
-	// 		{
-	// 			if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber)
-	// 				continue;
-	// 			ChargeOccMap[ m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() ] = 1;
-	// 		}
-
-	// 		for(int i = 0; i < trackToCheck->getNumPointsWithMeasurement() - 1; ++i)
-	// 		{
-	// 			MeasId = trackToCheck->getPointWithMeasurement(i)->getRawMeasurement()->getHitId();
-	// 			for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
-	// 			{
-	// 				charge = m_McNtuEve->GetTrack( *itTrackMC )->GetCharge();
-	// 				if(ChargeOccMap.find(charge) == ChargeOccMap.end())
-	// 					continue;
-
-	// 				ChargeOccMap[ charge ]++;
-	// 			}
-	// 		}
-
-	// 		int occ = 0;
-
-	// 		for(map<int,int>::iterator itMap = ChargeOccMap.begin(); itMap != ChargeOccMap.end(); ++itMap)
-	// 		{
-	// 			if(itMap->second > occ)
-	// 			{
-	// 				occ = itMap->second;
-	// 				charge = itMap->first;
-	// 			}
-	// 		}
-	// 	}
-	// } //end MC charge calcualtion
 
 	return charge;
 }
@@ -654,81 +603,6 @@ TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whic
 	TVector3 mom;
 	return ExtrapolateToOuterTracker(trackToFit, whichPlane, mom, backExtrap, repId);
 }
-
-
-//----------------------------------------------------------------------------------------------------
-
-//! \brief pre-fit requirements to be applied to EACH of the hitCollections
-//!
-//! FUNCTION CURRENTLY NOT USED!
-bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::iterator element)
-{
-
-
-	int testHitNumberLimit = 0;
-	int testHit_VT = 0;
-	int testHit_IT = 0;
-	int testHit_MSD = 0;
-	int testHit_TW = 0;
-
-	// define the number of hits per each detector to consider to satisfy the pre-fit requirements
-	if ( m_systemsON == "all" ) {
-		testHit_VT = m_SensorIDMap->GetFitPlanesN("VT");
-		testHit_IT = m_SensorIDMap->GetFitPlanesN("IT")/16;
-		testHit_MSD = m_SensorIDMap->GetFitPlanesN("MSD")/2;
-	}
-
-  	else {
-	    if ( m_systemsON.Contains("VT") )	testHit_VT = m_SensorIDMap->GetFitPlanesN("VT");
-	    if ( m_systemsON.Contains("IT") )	testHit_IT = m_SensorIDMap->GetFitPlanesN("IT")/16;
-	    if ( m_systemsON.Contains("MSD") )	testHit_MSD = m_SensorIDMap->GetFitPlanesN("MSD");
-	    if ( m_systemsON.Contains("TW") )	testHit_TW = 1;
-	}
-
-	// num of total hits
-	testHitNumberLimit = testHit_VT + testHit_IT + testHit_MSD + testHit_TW;
-	if ( testHitNumberLimit == 0 ) 		
-		cout << "ERROR --> TAGFselector::PrefitRequirements :: m_systemsON mode is wrong!!!" << endl, exit(42);
-
-	// // test the total number of hits ->  speed up the test
-	// if ( (int)((*element).second.size()) != testHitNumberLimit ) {
-	// 	if ( FootDebugLevel(1) )		cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << "\n";
-	// 	return false;
-	// }
-
-	int nHitVT = 0;
-	int nHitIT = 0;
-	int nHitMSD = 0;
-	int nHitTW = 0;
-
-	// count the hits per each detector
-	for ( vector<AbsMeasurement*>::iterator it=(*element).second.begin(); it != (*element).second.end(); ++it ) {
-		int planeId = (*it)->getDetId();
-			if ( m_SensorIDMap->IsFitPlaneInDet(planeId, "VT") )	nHitVT++;
-			if ( m_SensorIDMap->IsFitPlaneInDet(planeId, "IT") )	nHitIT++;
-			if ( m_SensorIDMap->IsFitPlaneInDet(planeId, "MSD") )	nHitMSD++;
-			if ( planeId == m_SensorIDMap->GetFitPlaneTW() )	nHitTW++;
-	}
-
-	if ( FootDebugLevel(1) )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<"\n";
-
-	// test the num of hits per each detector
-	// if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD != testHit_MSD ) {
-
-	if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD < 4 ){
-	    if ( FootDebugLevel(1) ) {
-		    cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : " <<
-				    "\n\n\t nVTX = " << nHitVT << "  Nexp = " << testHit_VT <<
-				    "\n\n\t nITR = " << nHitIT << "  Nexp = " << testHit_IT <<
-				    "\n\n\t nMSD = " << nHitMSD << "  Nexp = " << testHit_MSD <<
-				    "\n\n\t nTW = " << nHitTW << "  Nexp = " << testHit_TW << "\n";
-		}
-		return false;
-	}
-
-	return true;
-}
-
 
 
 //! \brief Get the MC true particle information from its MC track index

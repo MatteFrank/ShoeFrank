@@ -24,37 +24,19 @@ TAGFselectorLinear::TAGFselectorLinear() : TAGFselectorStandard()
 //! \brief Base function for track finding/selection/categorization for linear data-like selection
 void TAGFselectorLinear::Categorize( ) {
 
-
 	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
 		Error("Categorize()", "Linear selection algorithm currently not supported without Vertex!"), exit(42);
 	else
-	{
-		if( FootDebugLevel(2) ) cout << "******* START OF VT CYCLE *********\n";
 		CategorizeVT();
-		if( FootDebugLevel(2) )cout << "******** END OF VT CYCLE **********\n";
-	}
 
 	if( m_systemsON.Contains("IT") )
-	{
-		if( FootDebugLevel(2) ) cout << "******* START OF IT CYCLE *********\n";
 		CategorizeIT();
-		if( FootDebugLevel(2) ) cout << "******** END OF IT CYCLE **********\n";
-	}
 
-	
 	if( m_systemsON.Contains("MSD") )
-	{
-		if( FootDebugLevel(2) ) cout << "******* START OF MSD CYCLE *********\n";
 		CategorizeMSD();
-		if( FootDebugLevel(2) ) cout << "******** END OF MSD CYCLE **********\n";
-	}
 
 	if( m_systemsON.Contains("TW") )
-	{
-		if( FootDebugLevel(2) ) cout << "******* START OF TW CYCLE *********\n";
 		CategorizeTW();
-		if( FootDebugLevel(2) ) cout << "******** END OF TW CYCLE **********\n";
-	}
 
 	double dPVal = 1.E-3; // convergence criterion
 	KalmanFitter* preFitter = new KalmanFitter(1, dPVal);
@@ -102,6 +84,8 @@ void TAGFselectorLinear::Categorize( ) {
 //! This step is performed through a linear extrapolation at the MSD
 void TAGFselectorLinear::CategorizeMSD()
 {
+	if( FootDebugLevel(2) ) cout << "******* START OF MSD CYCLE *********\n";
+
 	// Extrapolate to MSD
 	// same index if VTX_tracklets (for one vertex..)
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
@@ -196,7 +180,7 @@ void TAGFselectorLinear::CategorizeMSD()
 		PrintCurrentTracksMC();
 	}
 
-	return;
+	if( FootDebugLevel(2) ) cout << "******** END OF MSD CYCLE **********\n";
 }
 
 
@@ -206,6 +190,8 @@ void TAGFselectorLinear::CategorizeMSD()
 //! This step uses a linear extrapolation at the TW
 void TAGFselectorLinear::CategorizeTW()
 {
+	if( FootDebugLevel(2) ) cout << "******* START OF TW CYCLE *********\n";
+
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
 	//RZ -> See if this check can be done outside this cycle... it seems a much more general skip
 	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
@@ -222,7 +208,6 @@ void TAGFselectorLinear::CategorizeTW()
 		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
 
 		TVector3 guessOnTW =  m_GeoTrafo->FromGlobalToTWLocal( pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z()) );
-		// guessOnTW = m_TW_geo->Detector2Sensor( 0, guessOnTW );
 
 		if( FootDebugLevel(2)) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
 
@@ -263,5 +248,5 @@ void TAGFselectorLinear::CategorizeTW()
 		PrintCurrentTracksMC();
 	}
 
-	return;
+	if( FootDebugLevel(2) ) cout << "******** END OF TW CYCLE **********\n";
 }

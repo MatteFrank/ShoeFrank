@@ -16,7 +16,6 @@ using namespace genfit;
 class TAGFselectorTrue : public TAGFselectorBase {
 
 public:
-
 	TAGFselectorTrue();
 
 	virtual void		Categorize();
@@ -25,18 +24,3 @@ public:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
