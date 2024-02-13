@@ -80,6 +80,7 @@
 #include "TAGFgeometryConstructor.hxx"
 #include "TAGntuGlbTrack.hxx"
 #include "TAGF_KalmanStudies.hxx"
+#include "TAGFtrackUtilities.hxx"
 #include "UpdatePDG.hxx"
 
 using namespace std;
@@ -120,20 +121,15 @@ private:
 
 	void	InitEventDisplay();
 
-	void	MatrixToZero( TMatrixD *matrix );
-
 	int		FindMostFrequent( vector<vector<int>>* mcParticleID_track );
 	double	TrackQuality( vector<vector<int>>* mcParticleID_track );
-
-	void	GetMeasInfo( int detID, int hitID, int* iPlane, int* iClus, vector<int>* iPart, TVector3* pos, TVector3* posErr);
-	void	GetRecoTrackInfo ( int i, Track* track, TVector3* KalmanPos, TVector3* KalmanMom, TMatrixD* KalmanPos_cov, TMatrixD* KalmanMom_cov );
 
 	void	CalculateTrueMomentumAtTgt();
 	void 	MatchCALOclusters();
 
 	void	FillGenCounter( map<string, int> mappa );
 	void	EvaluateProjectionEfficiency(Track* fitTrack);
-	void	CheckChargeHypothesis(string* PartName, Track* fitTrack, TAGFselectorBase* selector);
+	void	CheckChargeHypothesis(string* PartName, Track* fitTrack);
 	void	AddResidualAndPullHistograms();
 	void	ClearData();
 	void	ClearHistos();
@@ -145,8 +141,8 @@ private:
 
 	TAMCntuPart*  m_trueParticleRep;					///< Ptr to TAMCntuPart object
 	TAGntuGlbTrack* m_outTrackRepo;						///< CHECK WITH MATTEO HOW TO DO THIS
+	TAGFtrackUtilities* fTrackUtilities;				///< Track utilities object
 
-	TAGFselectorBase* m_dummySelector;
 	TAGFdetectorMap* m_SensorIDMap;						///< GenFit detector Map for index handling
 	TAGF_KalmanStudies* m_trackAnalysis;				///< GenFit custom output class
 

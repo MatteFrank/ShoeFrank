@@ -120,7 +120,7 @@ void TAGFselectorBack::BackTracklets()
 				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itMSD2)->clone() );
 				testTrack->insertMeasurement( static_cast<genfit::PlanarMeasurement*>(*itTW)->clone() );
 
-				int Z_Hypo = GetChargeFromTW(testTrack);
+				int Z_Hypo = fTrackUtilities->GetChargeFromTW(testTrack);
 				double mass_Hypo = UpdatePDG::GetPDG()->GetPdgMass( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope(Z_Hypo) );
 				int A_Hypo = round(mass_Hypo/m_AMU);
 				testTrack->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
@@ -318,7 +318,7 @@ void TAGFselectorBack::CategorizeIT_back()
 				}
 
 				TVector3 momGuessOnIT_dummy;
-				guessOnIT = ExtrapolateToOuterTracker(itTrack->second, *iPlane, momGuessOnIT_dummy, true);
+				guessOnIT = fTrackUtilities->ExtrapolateToOuterTracker(itTrack->second, *iPlane, momGuessOnIT_dummy, true);
 				if( FootDebugLevel(2) )
 				{
 					cout<<"PosGuess::";guessOnIT.Print();
@@ -446,7 +446,7 @@ void TAGFselectorBack::CategorizeVT_back()
 
 			// Extrapolate
 			TVector3 momGuessOnVT;
-			TVector3 guessOnVT = ExtrapolateToOuterTracker(itTrack->second, VTplane, momGuessOnVT, true);
+			TVector3 guessOnVT = fTrackUtilities->ExtrapolateToOuterTracker(itTrack->second, VTplane, momGuessOnVT, true);
 
 			int indexOfMinDist = -1;
 			int count = 0;

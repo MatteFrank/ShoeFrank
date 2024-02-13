@@ -43,7 +43,7 @@ void TAGFselectorLinear::Categorize( ) {
 
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
 	{
-		int Z_Hypo = GetChargeFromTW(itTrack->second);
+		int Z_Hypo = fTrackUtilities->GetChargeFromTW(itTrack->second);
 		if( Z_Hypo == -1 )
 		{
 			Z_Hypo = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber;

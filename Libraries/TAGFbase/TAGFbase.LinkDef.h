@@ -15,6 +15,7 @@
 #pragma link C++ class TAGFselectorBack + ;
 #pragma link C++ class TAGFdetectorMap+;
 #pragma link C++ class TAGFgeometryConstructor+;
+#pragma link C++ class TAGFtrackUtilities+;
 
 #pragma link C++ class UpdatePDG+;
 

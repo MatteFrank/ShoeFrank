@@ -232,7 +232,6 @@ void TAGFselectorStandard::CategorizeIT()	{
 			Int_t sensorId;
 			std::pair<string, std::pair<int, int>> sensId;
 			for ( vector<int>::iterator iPlane = planesAtZ->begin(); iPlane != planesAtZ->end(); ++iPlane ) {
-				// TVector3 guessOnIT = ExtrapolateToOuterTracker(itTrack->second, *iPlane);
 
 				if( !m_SensorIDMap->GetSensorID(*iPlane, &sensorId) )
 					Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", *iPlane), exit(42);
@@ -387,7 +386,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 				if(FootDebugLevel(1))
 				{
 					cout << "Processed\n";
-					TVector3 guessOnMSD = ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId); //RZ: In local reference frame of FitPlane!!
+					TVector3 guessOnMSD = fTrackUtilities->ExtrapolateToOuterTracker( testTrack, m_SensorIDMap->GetMinFitPlane("MSD"), repId); //RZ: In local reference frame of FitPlane!!
 					cout << "GuessOnMSD: ";
 					guessOnMSD.Print();
 					cout << "\t\t charge = " << Z_Hypo << "  chi2 = " << m_fitter_extrapolation->getRedChiSqu(testTrack, testTrack->getTrackRep(repId) ) << "\n";
@@ -434,7 +433,7 @@ void TAGFselectorStandard::CategorizeMSD()	{
 		
 		for ( int MSDnPlane = minMSDdetPlane; MSDnPlane <= maxMSDdetPlane; MSDnPlane++ ) {
 
-			TVector3 guessOnMSD = ExtrapolateToOuterTracker( itTrack->second, MSDnPlane ); //RZ: NOW LOCAL COORDS!!
+			TVector3 guessOnMSD = fTrackUtilities->ExtrapolateToOuterTracker( itTrack->second, MSDnPlane ); //RZ: NOW LOCAL COORDS!!
 			if( !m_SensorIDMap->GetFitPlane(MSDnPlane)->isInActive( guessOnMSD.x(), guessOnMSD.y() ) )
 				continue;
 
@@ -644,7 +643,7 @@ void TAGFselectorStandard::CategorizeTW()
 		TVector3 guessOnTW;
 		try
 		{
-			guessOnTW = ExtrapolateToOuterTracker( itTrack->second, planeTW); //RZ: Local coords!
+			guessOnTW = fTrackUtilities->ExtrapolateToOuterTracker( itTrack->second, planeTW); //RZ: Local coords!
 		}
 		catch(genfit::Exception& ex)
 		{

@@ -84,33 +84,27 @@ TAGFselectorBase::~TAGFselectorBase()
 	m_trackRepVec.clear();
 
 	m_trackSlopeMap.clear();
-
-	// if(m_measParticleMC_collection)
-	// {
-	// 	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
-	// 		it->second.clear();
-	// 	m_measParticleMC_collection->clear();
-	// }
 }
 
 
 //! \brief Set all the needed variables for track selection
 //!
+//! \param[in] trackUtils Pointer to TAGFtrackUtilities object of KFitter
 //! \param[in] allHitMeas Pointer to the map containing all the measurements in GenFit format; the key is the GenFit FitPlane index
 //! \param[in] GFsystemsOn String containing all systems included in the track selection algorithm
 //! \param[in] chargeVect Pointer to vector of possible charges in the event (either measured from TW or MC truth)
-//! \param[in] SensorIDmap Pointer to TAGFdetectorMap of the campaign
 //! \param[in,out] trackCategoryMap Pointer to the map of selected tracks that have to be sent to the KFitter action
 //! \param[in] measParticleMC_collection Pointer to the map containing the MC particles found in the event for each measurement; the key is the global index of the measurement
 //! \param[in] IsMC boolean flag indicating if the input file is from MC or real data
 //! \param[in] singleVertexCounter Pointer to variable counting events with exactly one vertex
 //! \param[in] noVTtrackletEvents Pointer to variable counting events with no valid VT tracklet for track extrapolation
 //! \param[in] noVTtrackletEvents Pointer to variable counting events with no valid TW point for track extrapolation
-void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, TString GFsystemsOn, vector<int> *chargeVect, TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool IsMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents)
+void TAGFselectorBase::SetVariables(TAGFtrackUtilities* trackUtils, map<int, vector<AbsMeasurement *>> *allHitMeas, TString GFsystemsOn, vector<int> *chargeVect, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool IsMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents)
 {
+	fTrackUtilities = trackUtils;
 	m_allHitMeas = allHitMeas;
 	m_chargeVect = chargeVect;
-	m_SensorIDMap = SensorIDmap;
+	m_SensorIDMap = trackUtils->GetGFdetMap(); //Set detector map from track utilities
 	m_trackCategoryMap = trackCategoryMap;
 	m_measParticleMC_collection = measParticleMC_collection;
 	m_IsMC = IsMC;
@@ -506,102 +500,6 @@ void TAGFselectorBase::CreateDummyTrack()
 		if(dummy->getNumPointsWithMeasurement()>0) m_trackTempMap[-7] = new Track(*dummy);
 		delete dummy;
 	}
-}
-
-
-//----------------------------------------------------------------------------------------------------
-
-//! \brief Get the possible charge of a selected track from the TW measurement
-//!
-//! Currently uses MC information (returns charge of most frequent particle along the track) OR the charge of the TWpoint associated to the track
-//! \param[in] trackToCheck Pointer to GenFit track
-//! \return Charge measured from the TW
-int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
-{
-	int charge = -1;
-
-	TATWpoint* twpoint = 0x0;
-	if( trackToCheck->getNumPointsWithMeasurement() >= 0 )
-	{
-		for (int jTracking = trackToCheck->getNumPointsWithMeasurement() - 1; jTracking >= 0; --jTracking){
-			if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
-
-			int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
-
-			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"))->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
-
-			charge = twpoint->GetChargeZ();
-			break;
-		}
-	}
-
-	return charge;
-}
-
-
-
-//----------------------------------------------------------------------------------------------------
-
-//! \brief Extrapolate a track to a GenFit FitPlane
-//!
-//! \param[in] trackToFit Pointer to track to extrapolate
-//! \param[in] whichPlane Index of the FitPlane where to extrapolate the track
-//! \param[in,out] mom reference to vector for storing particle momentum at extrapolated state
-//! \param[in] backExtrap Flag that signals if the extrapolation has to be performed in the backward direction (default = false)
-//! \param[in] repId Index of the track representation to use for the extrapolation (default = -1, i.e. cardinal representation)
-//! \return Extrapolated position vector in the FitPlane local reference frame
-TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, TVector3& mom, bool backExtrap, int repId)
-{
-
-	//+++++++++++++++++++++++++++++++++++++++
-	AbsTrackRep* trackRep;
-	if(repId == -1)
-		trackRep = trackToFit->getCardinalRep();
-	else
-		trackRep = trackToFit->getTrackRep(repId);
-	
-	// Get first point if extrapolation goes backward or last point if forward
-	int pointId = backExtrap ? 1 : -1;
-	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(pointId, trackRep);
-	if (tp == nullptr) {
-		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
-	}
-
-	//Get fitter info
-	KalmanFitterInfo* fitInfo = static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackRep));
-
-	// Check if point has backward/forward update
-	bool hasUpdate = backExtrap ? fitInfo->hasBackwardUpdate() : fitInfo->hasForwardUpdate();
-	if ( !hasUpdate ) {
-		string dir = backExtrap ? "backward" : "forward";
-		Error("ExtrapolateToOuterTracker()", "TrackPoint has no %s update", dir.c_str());
-		exit(42);
-	}
-
-	//RZ: Get update of fitted state and extrpolate to the plane
-	KalmanFittedStateOnPlane* stateToCopy = backExtrap ? fitInfo->getBackwardUpdate() : fitInfo->getForwardUpdate();
-	KalmanFittedStateOnPlane kfTest = *stateToCopy;
-	trackRep->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
-
-	TVector3 posi((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());
-	mom = kfTest.getMom();
-
-	return posi;
-}
-
-
-//! \brief Extrapolate a track to a GenFit FitPlane
-//!
-//! Function overload for when particle momentum at extrapolated state is not needed in output
-//! \param[in] trackToFit Pointer to track to extrapolate
-//! \param[in] whichPlane Index of the FitPlane where to extrapolate the track
-//! \param[in] backExtrap Flag that signals if the extrapolation has to be performed in the backward direction (default = false)
-//! \param[in] repId Index of the track representation to use for the extrapolation
-//! \return Extrapolated position vector in the FitPlane local reference frame
-TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, bool backExtrap, int repId)
-{
-	TVector3 mom;
-	return ExtrapolateToOuterTracker(trackToFit, whichPlane, mom, backExtrap, repId);
 }
 
 
