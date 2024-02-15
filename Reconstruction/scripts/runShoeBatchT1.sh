@@ -272,40 +272,38 @@ source ${SHOE_PATH}/build/setupFOOT.sh
 echo "Merging files of run ${runNumber}!!"
 SCRATCH="\$(pwd)"
 
-#While loop that checks if all files have been processed
-while true; do
-    nCompletedFiles=\$(ls ${outFile_base}*.root | wc -l)
+#Check if all files have been processed, else exit
+nCompletedFiles=\$(ls ${outFile_base}*.root | wc -l)
 
-	if [ \${nCompletedFiles} -eq ${nFiles} ]; then
-        command="\${SCRATCH}/Merge_temp.root"
+if [ \${nCompletedFiles} -eq ${nFiles} ]; then
+    command="\${SCRATCH}/Merge_temp.root"
 
-        suffix=".root"
-        if [ ! -f ${outFile_base}${nFiles}.root ]; then
-            base="${outFile_base}${nFiles}"
-            out_list=(\$(ls \${base}*))
-            if [ \${#out_list[@]} -ne 1 ]; then
-                echo "Unexpected error in processing of run ${runNumber}: wrong number of output files after processing"
-            else
-                outFile_temp=\${out_list[0]}
-                suffix=\$(cut -c \$((\${#base}+1))-\${#outFile_temp} <<< \${outFile_temp})
-            fi
+    suffix=".root"
+    if [ ! -f ${outFile_base}${nFiles}.root ]; then
+        base="${outFile_base}${nFiles}"
+        out_list=(\$(ls \${base}*))
+        if [ \${#out_list[@]} -ne 1 ]; then
+            echo "Unexpected error in processing of run ${runNumber}: wrong number of output files after processing"
+        else
+            outFile_temp=\${out_list[0]}
+            suffix=\$(cut -c \$((\${#base}+1))-\${#outFile_temp} <<< \${outFile_temp})
         fi
+    fi
 
-        for iFile in \$(seq 1 $nFiles); do
-            command="\${command} ${outFile_base}\${iFile}\${suffix}"
-        done
-        command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
-        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
+    for iFile in \$(seq 1 $nFiles); do
+        command="\${command} ${outFile_base}\${iFile}\${suffix}"
+    done
+    command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
+    LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
 
-        fileOut="Merge_${campaign}_${runNumber}\${suffix}"
-        mv \${SCRATCH}/Merge_temp.root ${outFolder}/\${fileOut}
-        rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
-		break
-	else
-        echo "ERROR:: ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nFiles} files. Waiting..."
-		exit 0
-	fi
-done
+    fileOut="Merge_${campaign}_${runNumber}\${suffix}"
+    mv \${SCRATCH}/Merge_temp.root ${outFolder}/\${fileOut}
+    rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
+    break
+else
+    echo "ERROR:: ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nFiles} files. Waiting..."
+    exit 0
+fi
 EOF
 
         # Create submit file for merge job

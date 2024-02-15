@@ -242,7 +242,7 @@ echo
 
 export _condor_SCHEDD_HOST=sn-02.cr.cnaf.infn.it
 
-outFile_base="${outFolder}/output_${campaign}_run${runNumber}_Job"
+outFile_base="${outFolder}/output_${campaign}_${runNumber}_Job"
 
 #Spawn total number jobs equal to number of file to process
 jobExec="${HTCfolder}/runShoeInBatchMC_${campaign}_${runNumber}.sh"
@@ -257,7 +257,7 @@ cat <<EOF > $jobExec
 #!/bin/bash
 
 SCRATCH="\$(pwd)"
-outFile_temp="\${SCRATCH}/temp_${campaign}_${runNumber}_\${1}.root"
+outFile_temp="\${SCRATCH}/temp_${campaign}_${runNumber}_Job\${1}.root"
 
 source /opt/exp_software/foot/root_shoe_foot.sh 
 source ${SHOE_PATH}/build/setupFOOT.sh
@@ -266,12 +266,17 @@ cd ${SHOE_PATH}/build/Reconstruction
 ../bin/DecodeGlb -in ${inFile} -out \${outFile_temp} -exp ${campaign} -run ${runNumber} -nsk \${2} -nev ${nEvPerFile} -mc
 
 if [ \$? -eq 0 ]; then
+    out_list=(\$(ls \${SCRATCH}/*.root))
+    if [ ! -f \${outFile_temp} ]; then
+        outFile_temp=\${out_list[0]}
+    fi
+    
     if [ \${1} -eq 1 ]; then
         rootcp \${outFile_temp}:runinfo ${outFolder}/runinfo_${campaign}_${runNumber}.root
     fi
     rootrm \${outFile_temp}:runinfo
-    mv \${outFile_temp} ${outFolder}
-    mv ${outFolder}/\$(basename \${outFile_temp}) ${outFile_base}\${1}.root
+    outFile=\${outFile_temp/temp/output}
+    mv \${outFile_temp} ${outFolder}/\$(basename \${outFile})
 else
     echo "Unexpected error in processing of file ${inFile} with options nsk=\${2} and nev=${nEvPerFile}"
 fi
@@ -313,33 +318,43 @@ source /opt/exp_software/foot/root_shoe_foot.sh
 source ${SHOE_PATH}/build/setupFOOT.sh
 SCRATCH="\$(pwd)"
 
-#While loop that checks if all files have been processed
-while true; do
-    nCompletedFiles=\$(ls ${outFile_base}*.root | wc -l)
+#Checks if all files have been processed, else exit
+nCompletedFiles=\$(ls ${outFile_base}*.root | wc -l)
 
-	if [ \${nCompletedFiles} -eq ${nJobs} ]; then
+if [ \${nCompletedFiles} -eq ${nJobs} ]; then
+    command="\${SCRATCH}/Merge_temp.root"
 
-        command="\${SCRATCH}/Merge_temp.root"
-
-        for iFile in \$(seq 1 $nJobs); do
-            command="\${command} ${outFile_base}\${iFile}.root"
-        done
-
-        if [ $fullStat -eq 0 ] || [ $fileNumber -eq 1 ]; then
-            command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
+    suffix=".root"
+    if [ ! -f ${outFile_base}${nJobs}.root ]; then
+        base="${outFile_base}${nJobs}"
+        out_list=(\$(ls \${base}*))
+        if [ \${#out_list[@]} -ne 1 ]; then
+            echo "Unexpected error in processing of MC campaign ${campaign} run ${runNumber}: wrong number of output files after processing"
+        else
+            outFile_temp=\${out_list[0]}
+            suffix=\$(cut -c \$((\${#base}+1))-\${#outFile_temp} <<< \${outFile_temp})
         fi
-        
-        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
-        mv \${SCRATCH}/Merge_temp.root \$(dirname ${outMergedFile})
-        mv \$(dirname ${outMergedFile})/Merge_temp.root ${outMergedFile}
+    fi
 
-        rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
-		break
-	else
-        echo "ERROR:: ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nJobs} files. Exiting.."
-        exit 0
-	fi
-done
+    for iFile in \$(seq 1 $nJobs); do
+        command="\${command} ${outFile_base}\${iFile}\${suffix}"
+    done
+    if [ $fullStat -eq 0 ] || [ $fileNumber -eq 1 ]; then
+        command="\${command} ${outFolder}/runinfo_${campaign}_${runNumber}.root"
+    fi
+    
+    fileOut_temp="${outMergedFile}"
+    fileOut=\${fileOut_temp/.root/\${suffix}}
+    LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
+    mv \${SCRATCH}/Merge_temp.root \$(dirname ${outMergedFile})
+    mv \$(dirname ${outMergedFile})/Merge_temp.root \${fileOut}
+
+    rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
+    break
+else
+    echo "ERROR:: ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nJobs} files. Exiting.."
+    exit 0
+fi
 EOF
 
     # Create submit file for merge job
@@ -428,29 +443,27 @@ source /opt/exp_software/foot/root_shoe_foot.sh
 source ${SHOE_PATH}/build/setupFOOT.sh
 SCRATCH="\$(pwd)"
 
-#While loop that checks if all files have been processed
-while true; do
-    nCompletedFiles=\$(ls ${outFolder}/*/${baseMergedSingleFile} | wc -l)
+#While loop that checks if all files have been processed, else exit
+nCompletedFiles=\$(ls ${outFolder}/*/${baseMergedSingleFile} | wc -l)
 
-    if [ \${nCompletedFiles} -eq ${fileNumber} ]; then
-        command="\${SCRATCH}/Merge_temp.root"
+if [ \${nCompletedFiles} -eq ${fileNumber} ]; then
+    command="\${SCRATCH}/Merge_temp.root"
 
-        for iFile in \$(seq 1 $fileNumber); do
-            command="\${command} ${outFolder}/\${iFile}/${baseMergedSingleFile}"
-        done
+    for iFile in \$(seq 1 $fileNumber); do
+        command="\${command} ${outFolder}/\${iFile}/${baseMergedSingleFile}"
+    done
 
-        LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
-        retVal=\$?
-        if [ \$retVal -eq 0 ]; then
-            mv \${SCRATCH}/Merge_temp.root ${fullStatOutput}
-            rm ${outFolder}/*/${baseMergedSingleFile}
-        fi
-        break
-    else
-        echo "ERROR:: ${campaign} run ${runNumber} full statistics -> Processed \${nCompletedFiles}/${fileNumber} files. Exiting.."
-        exit 0
+    LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
+    retVal=\$?
+    if [ \$retVal -eq 0 ]; then
+        mv \${SCRATCH}/Merge_temp.root ${fullStatOutput}
+        rm ${outFolder}/*/${baseMergedSingleFile}
     fi
-done
+    break
+else
+    echo "ERROR:: ${campaign} run ${runNumber} full statistics -> Processed \${nCompletedFiles}/${fileNumber} files. Exiting.."
+    exit 0
+fi
 EOF
 
         # Create submit file for full statistics merge job
