@@ -480,15 +480,12 @@ void TAGtrack::PrintAllMCIds()
 //! Get MC track index - most probable
 Int_t TAGtrack::GetMcMainTrackId()
 {
-
    //----- set the array fMcTrackMap: it takes all the possible mc particles of every point in progressive order
 
    fMcTrackMap.clear();
    fMcTrackIdx.Set(0);
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
       const TAGpoint* point = GetPoint(iPoint);
-
-
 
       for( Int_t i = 0; i < point->GetMcTracksN(); ++i) {
 

@@ -29,6 +29,7 @@ set(with_dictionnaries
   TAGFselectorBack
   TAGFdetectorMap
   TAGFgeometryConstructor
+  TAGFtrackUtilities
   UpdatePDG
 )
 

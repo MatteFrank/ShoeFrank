@@ -21,14 +21,10 @@
 
 #include "TVector3.h"
 #include "TH2.h"
-#include "TAGobject.hxx"
-#include "Track.h"
-#include "PlanarMeasurement.h"
-#include "SharedPlanePtr.h"
-
-#include "TAGrecoManager.hxx"
 
 #include "TAGroot.hxx"
+#include "TAGobject.hxx"
+#include "TAGrecoManager.hxx"
 #include "TAGdataDsc.hxx"
 #include "TAGparaDsc.hxx"
 #include "TAGnameManager.hxx"
@@ -40,13 +36,17 @@
 #include "TAMSDparGeo.hxx"
 #include "TATWparGeo.hxx"
 
+#include "TAVTntuVertex.hxx"
+#include "TAVTtrack.hxx"
 #include "TAVTntuCluster.hxx"
 #include "TAITntuCluster.hxx"
 #include "TAMSDntuCluster.hxx"
 #include "TATWntuPoint.hxx"
-
 #include "TAMCntuPart.hxx"
 
+#include <TrackPoint.h>
+#include "RKTrackRep.h"
+#include "KalmanFittedStateOnPlane.h"
 #include <KalmanFitterRefTrack.h>
 #include <KalmanFitter.h>
 #include <KalmanFitterInfo.h>
@@ -54,19 +54,15 @@
 #include <DAF.h>
 #include <RKTrackRep.h>
 #include <Track.h>
-
 #include <Exception.h>
 #include <FieldManager.h>
 #include <StateOnPlane.h>
+#include "PlanarMeasurement.h"
+#include "SharedPlanePtr.h"
 
-#include <TrackPoint.h>
-#include "RKTrackRep.h"
-#include "KalmanFitter.h"
-#include "KalmanFittedStateOnPlane.h"
-#include "TAVTntuVertex.hxx"
-#include "TAVTtrack.hxx"
 #include "UpdatePDG.hxx"
 #include "TAGFdetectorMap.hxx"
+#include "TAGFtrackUtilities.hxx"
 
 using namespace std;
 using namespace genfit;
@@ -78,9 +74,7 @@ public:
 	TAGFselectorBase();
 	virtual ~TAGFselectorBase();
 
-	void SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, TString GFsystemsOn, vector<int> *chVect,
-					  TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap,
-					  map<int, vector<int>> *measParticleMC_collection, bool isMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents);
+	void SetVariables(TAGFtrackUtilities* trackUtils, map<int, vector<AbsMeasurement *>> *allHitMeas, TString GFsystemsOn, vector<int> *chVect, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool isMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents);
 
 	void SetExtrapolationHistogram(map< pair<string,pair<int,int>>, TH1F*>& extrapDist) {h_extrapDist = extrapDist;}
 
@@ -89,17 +83,13 @@ public:
 
 	int					GetEventType();
 	TString				GetRecoTrackName(Track* tr);
-	int					GetChargeFromTW(Track* trackToCheck);
 	map<string, int>	CountParticleGeneratedAndVisible();
 	void				FillPlaneOccupancy(TH2I** h_PlaneOccupancy);
 	string				GetParticleNameFromCharge(int ch);
-	TVector3			ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, TVector3& mom, bool backExtrap = false, int repId = -1);
-	TVector3			ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, bool backExtrap = false, int repId = -1);
 
 protected:
 	void		CheckPlaneOccupancy();
 	int			FillTrackRepVector();
-	bool		PrefitRequirements(map<string, vector<AbsMeasurement*>>::iterator element);
 	void		CreateDummyTrack();
 
 	void		GetTrueParticleType(int trackid, int* flukaID, int* charge, double* mass, TVector3* posV, TVector3* momV);
@@ -120,6 +110,7 @@ protected:
 	map< int, vector<int> >* m_measParticleMC_collection;	///< Map of MC particles associated w/ global measurement index
 	map< pair<string,pair<int,int>>, TH1F*> h_extrapDist;	///< Map of histograms for global track extrapolation distance for all sensors; the key is the detector name ("VT", "MSD", "IT", ...) paired with sensor index and 1=Y or 0=X view
 
+	TAGFtrackUtilities* fTrackUtilities;
 
 	map<string, vector<int>> m_PlaneOccupancy;
 	vector<string> m_detectors;

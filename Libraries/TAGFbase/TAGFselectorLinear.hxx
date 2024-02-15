@@ -15,7 +15,6 @@ using namespace genfit;
 class TAGFselectorLinear : public TAGFselectorStandard{
 
 public:
-
 	TAGFselectorLinear();
 
 	virtual void	Categorize();

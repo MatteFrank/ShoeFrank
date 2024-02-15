@@ -11,14 +11,11 @@
  \brief Class for track finding/selection in GenFit Global Reconstruction that uses MC truth information
 */
 
-
 //----------------------------------------------------------------------------------------------------
 
 //! \brief Default constructor
 TAGFselectorTrue::TAGFselectorTrue() : TAGFselectorBase()
 {}
-
-
 
 //----------------------------------------------------------------------------------------------------
 
@@ -35,9 +32,7 @@ void TAGFselectorTrue::Categorize( ) {
 		for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
 		{
 			for(int i=0; i < (it->second).size(); ++i)
-			{
 				cout << "GlobId::" << it->first << "\tId::" << i << "\tTrackId::" << it->second.at(i) << "\n";
-			}
 		}
 	}
 
@@ -45,7 +40,6 @@ void TAGFselectorTrue::Categorize( ) {
 	if(FootDebugLevel(2)) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
 	{
-
 		if(FootDebugLevel(2)) cout << "Plane::" << iPlane << "\n";
 		
 		//Skip plane if no hit was found
@@ -64,7 +58,7 @@ void TAGFselectorTrue::Categorize( ) {
 			if(FootDebugLevel(2)) cout << "Cycle on MC particles with GlobId::" << MeasGlobId << "\n";
 
 
-			TVector3 posV;		//global coord [cm]
+			TVector3 posV;	//global coord [cm]
 			TVector3 momV;	//GeV //considering that fragments have same velocity of beam this should be changed accordingly
 			posV = TVector3(0,0,0);
 			for( vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasGlobId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasGlobId).end(); ++itTrackMC )
@@ -119,9 +113,7 @@ void TAGFselectorTrue::Categorize( ) {
 				foundHit++;
 			
 			} //End of loop on MC particles per cluster/measurement
-
 		} //End of loop on measurements per sensor
-	
 	} //End of loop on sensors
 
 	if( m_IsMC && FootDebugLevel(1) )
