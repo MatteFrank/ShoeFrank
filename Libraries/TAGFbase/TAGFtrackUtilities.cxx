@@ -1,5 +1,15 @@
+/*!
+ \file TAGFtrackUtilities.cxx
+ \brief  Implementation of utility class used for handling a GF track
+ \author R.Zarrella
+*/
+
 #include "TAGFtrackUtilities.hxx"
 
+/*!
+ \class TAGFtrackUtilities
+ \brief Utility class used for most functions handling a GF track
+*/
 
 TAGFtrackUtilities::TAGFtrackUtilities(TAGFdetectorMap* GFdetMap, TAGFgeometryConstructor* GFgeometry)
 {
