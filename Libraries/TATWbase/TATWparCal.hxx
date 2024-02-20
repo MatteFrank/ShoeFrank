@@ -32,29 +32,34 @@ typedef std::map<TPairId,TBarsTuple> TMapInfoBar;
 typedef std::tuple<Double_t,Double_t> TTupleDeltaT;
 typedef std::map<TPairId,TTupleDeltaT> TMapDeltaT;
 
+enum {parNumberZIDcalibFile=6, parNumberBarStatusFile=4, parNumberDeltaTfile=4}; 
 
 class TATWparCal : public TAGparTools {
    
    
 private:
    struct ChargeParameter_t : public  TObject {
-      vector<Int_t>   Layer;      // TW layer
-      vector<Int_t>   Charge;     // charge
-      vector<Float_t> Norm_BB;    // par0 BB
-      vector<Float_t> Const_BB;   // par1 BB
-      vector<Float_t> CutLow;     // Lower Tof cut
-      vector<Float_t> CutUp;      // Upper Tof cut
-      vector<Float_t> distMean;   // <E_meas - E_BB>
-      vector<Float_t> distSigma;  // sigma(E_meas - E_BB)
+
+     map<Int_t,vector<Int_t>>   Layer;      // TW layer
+     map<Int_t,vector<Int_t>>   Charge;     // charge
+     map<Int_t,vector<Float_t>> Norm_BB;    // par0 BB
+     map<Int_t,vector<Float_t>> Const_BB;   // par1 BB
+     map<Int_t,vector<Float_t>> CutLow;     // Lower Tof cut
+     map<Int_t,vector<Float_t>> CutUp;      // Upper Tof cut
+     map<Int_t,vector<Float_t>> distMean;   // <E_meas - E_BB>
+     map<Int_t,vector<Float_t>> distSigma;  // sigma(E_meas - E_BB)
+
    };
    
    ChargeParameter_t fChargeParameter;
    
    struct BarsParameter_t : public  TObject {
-      vector<Int_t> LayerId;  // layer Id
+
+     vector<Int_t> LayerId;  // layer Id
       vector<Int_t> BarId;  // bar id in shoe notatio (0,...,19 bar id for each layer)
       vector<Int_t> ActiveBar;  // active/dead bars
       vector<Float_t> ElossThr;   // eloss thresholds per TW bar
+
    };
    
    BarsParameter_t fBarsParameter;
@@ -102,7 +107,7 @@ private:
    Float_t    fDist(double tof, double eloss, double x, double fBB);
    Double_t   fDistPrime(double tof, double eloss, double x, double fBB, double fBB_prime, double dist);
    
-   Int_t      SelectProtonsFromNeutrons(float distance_Z1);
+   Int_t      SelectProtonsFromNeutrons(float distance_Z1, int layer);
    void       ComputeBBDistance(double edep, double tof, int tw_layer);
    
 public:

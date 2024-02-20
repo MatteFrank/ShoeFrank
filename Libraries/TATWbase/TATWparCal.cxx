@@ -88,10 +88,10 @@ void TATWparCal::RetrieveBeamQuantities() {
   fTof_min = Lmin/C_speed; // for Beta==1
   
   TDatabasePDG db;  
-  const Double_t mass_p = (Double_t)((TParticlePDG*)db.GetParticle(2212))->Mass();
-  const Double_t mass_n = (Double_t)((TParticlePDG*)db.GetParticle(2112))->Mass();
+  const Double_t mass_p = (Double_t)((TParticlePDG*)db.GetParticle(2212))->Mass(); //GeV
+  const Double_t mass_n = (Double_t)((TParticlePDG*)db.GetParticle(2112))->Mass(); //GeV
   
-  enum {H=1,He4=4,C12=12,O16=16};
+  enum {H=1,He4=4,C12=12,O16=16}; // beam isotopes
   Double_t binding_energy; //MeV/u
 
   switch(A_beam) {
@@ -111,17 +111,17 @@ void TATWparCal::RetrieveBeamQuantities() {
     binding_energy = 8;
   }  
   
-  Double_t Mass_beam = fZbeam*(mass_p+mass_n)*TAGgeoTrafo::GevToMev()-binding_energy*A_beam; //MeV
+  Double_t Mass_beam = (fZbeam*mass_p+(A_beam-fZbeam)*mass_n)*TAGgeoTrafo::GevToMev()-binding_energy*A_beam; //MeV
   Double_t Energy_beam = kinE_beam+Mass_beam;  //MeV
   Double_t Beta_beam = sqrt(pow(Energy_beam,2)-pow(Mass_beam,2))/Energy_beam;
+
   fTof_beam = Lmin/(C_speed*Beta_beam);
   fTof_max = 2*fTof_beam;
-  // fTof_max = 5*fTof_beam;
 
   ComputeAvgBeamEnergyLossInTwBar(fZbeam,Beta_beam);
   
   if(FootDebugLevel(4))
-    cout<<"L::"<<Lmin<<"  Tof_min::"<<fTof_min<<"  Tof_max::"<<fTof_max<<"  <Tof>::"<<fTof_beam<<"  Beta::"<<Beta_beam<<"  Mass::"<<Mass_beam<<"  Energy::"<<Energy_beam<<"  B::"<<binding_energy<<" ElossInBar::"<<fAvgBeamEnergyLossInBar<<endl;
+    cout<<setprecision(3)<<"L::"<<Lmin<<" cm  Tof_min::"<<fTof_min<<" ns  Tof_max::"<<fTof_max<<" ns  <Tof>::"<<fTof_beam<<" ns  Beta::"<<Beta_beam<<"  Ekin/u::"<<kinE_beam/A_beam<<" MeV/u  Ekin::"<<kinE_beam*TAGgeoTrafo::MevToGev()<<" GeV  Mass::"<<Mass_beam*TAGgeoTrafo::MevToGev()<<" GeV  Energy::"<<Energy_beam*TAGgeoTrafo::MevToGev()<<" GeV  B::"<<binding_energy<<" AMeV  ElossInBar::"<<fAvgBeamEnergyLossInBar<<endl<<endl;
 
 }
 //------------------------------------------+-----------------------------------
@@ -238,7 +238,7 @@ Bool_t TATWparCal::FromFileZID(const TString& name, Int_t Zbeam) {
 
   Info("FromFileZID()", "Open file %s for Bethe-Bloch parametrization\n", name.Data());
   
-  Double_t* tmp = new Double_t[6];
+  Double_t* tmp = new Double_t[parNumberZIDcalibFile];
   
   (fChargeParameter.Norm_BB).clear();
   (fChargeParameter.Const_BB).clear();
@@ -246,28 +246,28 @@ Bool_t TATWparCal::FromFileZID(const TString& name, Int_t Zbeam) {
   (fChargeParameter.CutUp).clear();
   (fChargeParameter.distMean).clear();
   (fChargeParameter.distSigma).clear();
+  
+  for (Int_t ilay = 0; ilay < nLayers; ilay++) { // Loop on both TW layers
+    for (Int_t iZ = 0; iZ < Zbeam; iZ++) { // Loop on each charge
 
-  for (Int_t iZ = 0; iZ < Zbeam; iZ++) { // Loop on each charge
-
-    // read parameters
-    ReadItem(tmp, 6, ' ');
-    
-    (fChargeParameter.Norm_BB).push_back(tmp[0]);
-    (fChargeParameter.Const_BB).push_back(tmp[1]);
-    (fChargeParameter.CutLow).push_back(tmp[2]);
-    (fChargeParameter.CutUp).push_back(tmp[3]);
-    (fChargeParameter.distMean).push_back(tmp[4]);
-    (fChargeParameter.distSigma).push_back(tmp[5]);
-    // fChargeParameter[iZ].Layer    = tmp[4];
-    // fChargeParameter[iZ].Charge   = tmp[5];
-    
+      // read parameters
+      ReadItem(tmp, parNumberZIDcalibFile, ' ');
+      
+      (fChargeParameter.Norm_BB)[ilay].push_back(tmp[0]);
+      (fChargeParameter.Const_BB)[ilay].push_back(tmp[1]);
+      (fChargeParameter.CutLow)[ilay].push_back(tmp[2]);
+      (fChargeParameter.CutUp)[ilay].push_back(tmp[3]);
+      (fChargeParameter.distMean)[ilay].push_back(tmp[4]);
+      (fChargeParameter.distSigma)[ilay].push_back(tmp[5]);
+      
     if(FootDebugLevel(4))
-      Info("FromFileZID()","Z::%d Norm::%f Const::%f Tof_min::%f Tof_max::%f\n", iZ+1, fChargeParameter.Norm_BB[iZ], fChargeParameter.Const_BB[iZ], fChargeParameter.CutLow[iZ], fChargeParameter.CutUp[iZ]);
-    
+      Info("FromFileZID()","Z::%d Norm::%f Const::%f Tof_min::%f Tof_max::%f\n", iZ+1, fChargeParameter.Norm_BB[ilay][iZ], fChargeParameter.Const_BB[ilay][iZ], fChargeParameter.CutLow[ilay][iZ], fChargeParameter.CutUp[ilay][iZ]);
+      
+    }
   }
   
   delete[] tmp;
-
+  
   Close();
   
   return kFALSE;
@@ -295,7 +295,8 @@ Bool_t TATWparCal::FromDeltaTimeFile(const TString& name) {
   for (Int_t ibar = 0; ibar < (Int_t)nBars; ibar++) { // Loop over the bars
 
     // read parameters
-    ReadItem(tmp, 4, ' ');
+    ReadItem(tmp, parNumberDeltaTfile, ' ');
+    
     fPairId = TPairId((Int_t)tmp[0],(Int_t)tmp[1]); //barId(shoe format), layerId
     // fPairId = TPairId((Int_t)tmp[0]%nBarsPerLayer,(Int_t)tmp[3]); //barId(shoe format), layerId
 
@@ -340,7 +341,8 @@ Bool_t TATWparCal::FromBarStatusFile(const TString& name) {
   for (Int_t ibar = 0; ibar < (Int_t)nBars; ibar++) { // Loop over the bars
 
     // read parameters
-    ReadItem(tmp, 4, ' ');
+    ReadItem(tmp, parNumberBarStatusFile, ' ');
+    
     fPairId = TPairId((Int_t)tmp[0],(Int_t)tmp[1]);
 
     if(FootDebugLevel(4))
@@ -454,22 +456,14 @@ Int_t TATWparCal::GetChargeZ(Float_t edep, Float_t tof, Int_t layer)
   
   return fZraw;
   
-  /*
-    for (Int_t p = 0; p < fZbeam; p++) { // Loop on each charge
-    
-    if (edep >= fChargeParameter[p].CutLow && edep < fChargeParameter[p].CutUp )
-    return fChargeParameter[p].Charge;
-    }
-    
-    return -1;
-  */
 }
 //
 ////------------------------------------------+-----------------------------------
-Int_t TATWparCal::SelectProtonsFromNeutrons(float distZ1) {
+Int_t TATWparCal::SelectProtonsFromNeutrons(float distZ1, int twlayer) {
 
-  float mean  = fChargeParameter.distMean[0];
-  float sigma = fChargeParameter.distSigma[0];
+ // for the moment distMean and distSigma based on distances from Z=1 BB curve of the front TW
+  float mean  = fChargeParameter.distMean[twlayer][kH_Z-1];
+  float sigma = fChargeParameter.distSigma[twlayer][kH_Z-1];
   Int_t Z = abs(distZ1-mean)<5*sigma ? 1 : 0;
   
   if(FootDebugLevel(4))
@@ -521,7 +515,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
     double fBB_x(-99),fBB_prime_x(-99);
     float dist  = std::numeric_limits<float>::max(); //inf
     // BB parameters
-    float parNorm(fChargeParameter.Norm_BB[iZ-1]),parConst(fChargeParameter.Const_BB[iZ-1]);
+    float parNorm(fChargeParameter.Norm_BB[tw_layer][iZ-1]),parConst(fChargeParameter.Const_BB[tw_layer][iZ-1]);
     // float mean(fChargeParameter.distMean[iZ-1]),sigma(fChargeParameter.distSigma[iZ-1]);
     // fTof_max = iZ<3 ? 5*fTof_beam : 2*fTof_beam; // different for H and He
     double xmin(fTof_min), xmax(fTof_max), xhalf(-99);
@@ -593,7 +587,7 @@ void TATWparCal::ComputeBBDistance(double edep, double tof, int tw_layer)
 	  if(edep<fBB_x) {
 	    f_dist_Z.push_back( -dist );
 	    if(iZ==1&&fZraw==1) // remove neutrons from proton selection
-	      fZraw = SelectProtonsFromNeutrons(dist);
+	      fZraw = SelectProtonsFromNeutrons(dist,tw_layer);
 	  }
 	  else f_dist_Z.push_back( dist );
 

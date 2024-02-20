@@ -459,7 +459,8 @@ Double_t TATWactNtuHit::ApplyTwCalibration(Double_t p0, Double_t p1, Double_t ra
       Info("ApplyTwCalibration()","Ion beam is %s so TW energy calibration performed with a linear fit",f_parcal->GetIonBeamName().Data());
     
     // correct using a lienar fit
-    return  p0 + rawenergy * p1;
+    return  p1 + rawenergy * p0;
+    // return  p0 + rawenergy * p1;
     
   } else {
     

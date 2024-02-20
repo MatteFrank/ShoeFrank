@@ -57,7 +57,7 @@ private:
    Bool_t    fEnableEnergyThr;   ///< enable threshod setting for deposited energy in MC
    Bool_t    fEnableRateSmearMc; ///< MC rate smearing
    Int_t     fBarsN;             ///< Number of bars
-   Double_t  fGain;              ///< Gain value set in the WD for TW
+   Float_t   fGain;              ///< Gain value set in the WD for TW
 
    ClassDef(TATWparConf,1)
 };
