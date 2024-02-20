@@ -76,9 +76,8 @@ Bool_t TASTactNtuHit::Action()
 
 
 
-      if(p_datraw->GetSuperHit()->IsFFTValid()){
+      if( ValidHistogram() && p_datraw->GetSuperHit()->IsFFTValid()){
 	for(int i=0;i<p_datraw->GetSuperHit()->GetFFT("MAG").size();i++){
-	
 	  double old = hFFT->GetBinContent(i+1);
 	  hFFT->SetBinContent(i+1,old+p_datraw->GetSuperHit()->GetFFT("MAG").at(i));
 
