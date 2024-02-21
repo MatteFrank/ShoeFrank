@@ -117,6 +117,8 @@ Set(TAPW "TAPWbase")
 Set(TANE "TANEbase")
 Set(TAPXI "TAPXIbase")
 
+Set(TANA "TANAbase")
+
 add_definitions(-std=c++17)
 add_definitions(-Wno-shadow)
 
@@ -148,6 +150,8 @@ set(TAPW_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TAPW}")
 set(TANE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TANE}")
 set(TAPXI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TAPXI}")
 set(TAMP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Ancillary/${TAMP}")
+
+set(TANA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Analysis/${TANA}")
 
 #----------------------------------------------------------------------------
 #  Print Geant4 directory and find REC part of FOOT
