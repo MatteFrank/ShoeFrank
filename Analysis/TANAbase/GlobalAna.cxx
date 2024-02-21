@@ -371,9 +371,10 @@ void GlobalAna::ReadParFiles()
 void GlobalAna::CreateAnaAction()
 {
    // place here your beloved analysis class
-   
-   if (fAnaManager->GetAnalysisPar().MassResoFlag)
-      fActGlbAna = new TANAactNtuMass("anaActMass", fpNtuGlbTrack, fpParGeoG);
+   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())) {
+      if (fAnaManager->GetAnalysisPar().MassResoFlag)
+         fActGlbAna = new TANAactNtuMass("anaActMass", fpNtuGlbTrack, fpParGeoG);
+   }
 }
 
 //__________________________________________________________
@@ -381,9 +382,10 @@ void GlobalAna::CreateAnaAction()
 void GlobalAna::AddRequiredItem()
 {
    // Add the required analysis class
-   if (fAnaManager->GetAnalysisPar().MassResoFlag)
-   gTAGroot->AddRequiredItem("anaActMass");
-
+   if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())) {
+      if (fAnaManager->GetAnalysisPar().MassResoFlag)
+         gTAGroot->AddRequiredItem("anaActMass");
+   }
 }
 
 //__________________________________________________________
