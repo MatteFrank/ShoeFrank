@@ -39,7 +39,7 @@ protected:
    GlbAnaParameter_t fAnalysisParameter; ///< analysis parameters
 
 public:
-   TAGanaManager();
+   TAGanaManager(TString expName);
     virtual ~TAGanaManager();
 
    // Reading from file

@@ -20,10 +20,10 @@ ClassImp(TAGanaManager);
 
 //______________________________________________________________________________
 //! Standard constructor
-TAGanaManager::TAGanaManager()
+TAGanaManager::TAGanaManager(TString expName)
 : TAGparTools()
 {
-   fkDefaultName = "TANAdetector.cfg";
+   fkDefaultName = "./config/" + expName + "./TANAdetector.cfg";
 }
 
 //______________________________________________________________________________
