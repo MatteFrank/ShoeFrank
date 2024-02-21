@@ -6,5 +6,6 @@
 
 #pragma link C++ class GlobalAna+;
 #pragma link C++ class TANAactBaseNtu+;
+#pragma link C++ class TANAactNtuMass+;
 
 #endif
