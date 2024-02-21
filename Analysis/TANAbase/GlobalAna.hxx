@@ -136,6 +136,9 @@ public:
      
    // Create L0 branch in tree
    virtual void SetL0TreeBranches();
+   
+   // Goto Event
+   virtual Bool_t GoEvent(Int_t iEvent);
 
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fExpName = name;  }

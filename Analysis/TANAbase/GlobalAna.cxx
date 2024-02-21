@@ -378,6 +378,22 @@ void GlobalAna::AddRequiredItem()
 }
 
 //__________________________________________________________
+//! Go to a given event
+//!
+//! \param[in] iEvent event number to go
+Bool_t GlobalAna::GoEvent(Int_t iEvent)
+{
+   // only possible for MC data
+   if (iEvent < fActEvtReader->NEvents()) {
+      fSkipEventsN = iEvent;
+      fActEvtReader->Reset(iEvent);
+      return true;
+   }
+   
+   return false;
+}
+
+//__________________________________________________________
 //! Set L0 tree branches for reading back
 void GlobalAna::SetL0TreeBranches()
 {
@@ -450,5 +466,4 @@ void GlobalAna::SetL0TreeBranches()
       fpNtuGlbTrack = new TAGdataDsc(new TAGntuGlbTrack());
       fActEvtReader->SetupBranch(fpNtuGlbTrack);
    }
-   
 }
