@@ -1,9 +1,9 @@
 
-#ifndef _GlobalAana_HXX_
-#define _GlobalAana_HXX_
+#ifndef _GlobalAna_HXX_
+#define _GlobalAna_HXX_
 
 /*!
- \file GlobalAana.hxx
+ \file GlobalAna.hxx
  \brief  Base class for reconstruction
  \author Ch. Finck
  */
@@ -91,14 +91,14 @@ class TAMCntuPart;
 class TAMCntuRegion;
 class TAMCntuEvent;
 
-class GlobalAana : public TNamed // using TNamed for the in/out files
+class GlobalAna : public TNamed // using TNamed for the in/out files
 {
 public:
    // default constructor
-   GlobalAana(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC = false);
+   GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC = false);
    
    // default destructor
-   virtual ~GlobalAana();
+   virtual ~GlobalAna();
    
    // Read parameters
    void ReadParFiles();
@@ -304,7 +304,7 @@ protected:
    Bool_t                fFlagMC;           ///< MC flag
    Int_t                 fSkipEventsN;      ///< number of events to skip
    
-   ClassDef(GlobalAana, 1);        ///< Base class for reconstruction
+   ClassDef(GlobalAna, 1);        ///< Base class for reconstruction
 };
 
 

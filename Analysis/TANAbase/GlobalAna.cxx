@@ -1,12 +1,12 @@
 
 
 /*!
- \file GlobalAana.cxx
+ \file GlobalAna.cxx
  \brief  Base class for reconstruction
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "GlobalAana.hxx"
+#include "GlobalAna.hxx"
 
 #include "TAGroot.hxx"
 
@@ -18,13 +18,13 @@
 #include "TAGrecoManager.hxx"
 
 /*!
- \class GlobalAana
+ \class GlobalAna
  \brief  Base class for reconstruction
  */
 /*------------------------------------------+---------------------------------*/
 
 //! Class Imp
-ClassImp(GlobalAana)
+ClassImp(GlobalAna)
 
 
 //__________________________________________________________
@@ -34,7 +34,7 @@ ClassImp(GlobalAana)
 //! \param[in] runNumber run number
 //! \param[in] fileNameIn data input file name
 //! \param[in] fileNameout data output root file name
-GlobalAana::GlobalAana(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
+GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TString fileNameout, Bool_t isMC)
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
    fRunNumber(runNumber),
@@ -95,7 +95,7 @@ GlobalAana::GlobalAana(TString expName, Int_t runNumber, TString fileNameIn, TSt
 
 //__________________________________________________________
 //! default destructor
-GlobalAana::~GlobalAana()
+GlobalAna::~GlobalAna()
 {
    // default destructor
    delete fTAGroot; // should delete all data, para and actions
@@ -103,7 +103,7 @@ GlobalAana::~GlobalAana()
 
 //__________________________________________________________
 //! Actions before loop event
-void GlobalAana::BeforeEventLoop()
+void GlobalAna::BeforeEventLoop()
 {
    ReadParFiles();
 
@@ -124,7 +124,7 @@ void GlobalAana::BeforeEventLoop()
 //! Loop over events
 //!
 //! \param[in] nEvents number of events to process
-void GlobalAana::LoopEvent(Int_t nEvents)
+void GlobalAna::LoopEvent(Int_t nEvents)
 {
   Int_t frequency = 1;
 
@@ -150,7 +150,7 @@ void GlobalAana::LoopEvent(Int_t nEvents)
 
 //__________________________________________________________
 //! Actions after loop event
-void GlobalAana::AfterEventLoop()
+void GlobalAna::AfterEventLoop()
 {
    fTAGroot->EndEventLoop();
     
@@ -161,14 +161,14 @@ void GlobalAana::AfterEventLoop()
 
 //__________________________________________________________
 //! Open input file
-void GlobalAana::OpenFileIn()
+void GlobalAna::OpenFileIn()
 {
    fActEvtReader->Open(GetName());
 }
 
 //__________________________________________________________
 //! Close input file
-void GlobalAana::CloseFileIn()
+void GlobalAna::CloseFileIn()
 {
    fActEvtReader->Close();
 }
@@ -176,7 +176,7 @@ void GlobalAana::CloseFileIn()
 
 //__________________________________________________________
 //!  Open output file
-void GlobalAana::OpenFileOut()
+void GlobalAna::OpenFileOut()
 {
    TString name = GetTitle();
       
@@ -190,7 +190,7 @@ void GlobalAana::OpenFileOut()
 
 //__________________________________________________________
 //! Close output file
-void GlobalAana::CloseFileOut()
+void GlobalAna::CloseFileOut()
 {
    //add crossing map if enabled in input mc files
    fActEvtWriter->Print();
@@ -200,7 +200,7 @@ void GlobalAana::CloseFileOut()
 
 //__________________________________________________________
 //! Set reconstructed histogram directory
-void GlobalAana::SetHistogramDir()
+void GlobalAna::SetHistogramDir()
 {
    TList* list = gTAGroot->ListOfAction();
    for (Int_t i = 0; i < list->GetEntries(); ++i) {
@@ -224,7 +224,7 @@ void GlobalAana::SetHistogramDir()
 
 //__________________________________________________________
 //! Read parameters files
-void GlobalAana::ReadParFiles()
+void GlobalAna::ReadParFiles()
 {
    Int_t Z_beam = 0;
    Int_t A_beam = 0;
@@ -362,7 +362,7 @@ void GlobalAana::ReadParFiles()
 
 //__________________________________________________________
 //! Create reconstruction actions
-void GlobalAana::CreateAnaAction()
+void GlobalAna::CreateAnaAction()
 {
    // place here your beloved analysis class
    fActGlbAna = new TANAactBaseNtu("anaActBase", fpNtuGlbTrack, fpParGeoG);
@@ -370,7 +370,7 @@ void GlobalAana::CreateAnaAction()
 
 //__________________________________________________________
 //! Add required reconstruction actions in list
-void GlobalAana::AddRequiredItem()
+void GlobalAna::AddRequiredItem()
 {
    // Add the required analysis class
    gTAGroot->AddRequiredItem("anaActBase");
@@ -379,7 +379,7 @@ void GlobalAana::AddRequiredItem()
 
 //__________________________________________________________
 //! Set L0 tree branches for reading back
-void GlobalAana::SetL0TreeBranches()
+void GlobalAna::SetL0TreeBranches()
 {
    const Char_t* name = FootActionDscName("TAGactTreeReader");
    fActEvtReader = new TAGactTreeReader(name);
