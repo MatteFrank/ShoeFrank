@@ -32,6 +32,7 @@
 //!
 //! \param[in] name action name
 //! \param[out] pNtuTrack global track container descriptor
+//! \param[in] pgGeoMap target geometry parameter descriptor
 TANAactBaseNtu::TANAactBaseNtu(const char* name,TAGdataDsc* pNtuTrack, TAGparaDsc* pgGeoMap)
 :  TAGaction(name, "TANAactBaseNtu - Global analysis base class"),
    fpNtuTrack(pNtuTrack),
