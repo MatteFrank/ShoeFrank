@@ -91,6 +91,12 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    gTAGroot->SetRunNumber(fRunNumber);
    gTAGroot->SetCampaignName(fExpName);
 
+   // load campaign file
+   fCampManager = new TAGcampaignManager(expName);
+   fCampManager->FromFile();
+   
+   fAnaManager = new TAGanaManager(expName);
+   fAnaManager->FromFile(expName);
 }
 
 //__________________________________________________________
@@ -365,7 +371,9 @@ void GlobalAna::ReadParFiles()
 void GlobalAna::CreateAnaAction()
 {
    // place here your beloved analysis class
-   fActGlbAna = new TANAactBaseNtu("anaActBase", fpNtuGlbTrack, fpParGeoG);
+   
+   if (fAnaManager->GetAnalysisPar().MassResoFlag)
+      fActGlbAna = new TANAactNtuMass("anaActMass", fpNtuGlbTrack, fpParGeoG);
 }
 
 //__________________________________________________________
@@ -373,7 +381,8 @@ void GlobalAna::CreateAnaAction()
 void GlobalAna::AddRequiredItem()
 {
    // Add the required analysis class
-   gTAGroot->AddRequiredItem("anaActBase");
+   if (fAnaManager->GetAnalysisPar().MassResoFlag)
+   gTAGroot->AddRequiredItem("anaActMass");
 
 }
 

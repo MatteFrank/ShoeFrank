@@ -17,7 +17,7 @@
 #include "TAGaction.hxx"
 #include "TAGactTreeWriter.hxx"
 #include "TAGcampaignManager.hxx"
-#include "TAGrunManager.hxx"
+#include "TAGanaManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
 #include "TAWDparTime.hxx"
@@ -85,6 +85,7 @@
 #include "TAGactDscTreeWriter.hxx"
 
 #include "TANAactBaseNtu.hxx"
+#include "TANAactNtuMass.hxx"
 
 class TAMCntuHit;
 class TAMCntuPart;
@@ -242,7 +243,7 @@ protected:
 
    TString               fExpName;        ///< Experiment name
    TAGcampaignManager*   fCampManager;    ///< Campaign manager
-   TAGrunManager*        fRunManager;     ///< Run manager
+   TAGanaManager*        fAnaManager;     ///< Analysis manager
    Int_t                 fRunNumber;      ///< Run number
    TAGroot*              fTAGroot;        ///< pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;       ///< trafo prointer
