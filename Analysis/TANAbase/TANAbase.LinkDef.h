@@ -4,7 +4,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class GlobalAana+;
+#pragma link C++ class GlobalAna+;
 #pragma link C++ class TANAactBaseNtu+;
 
 #endif
