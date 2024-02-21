@@ -23,7 +23,7 @@ ClassImp(TAGanaManager);
 TAGanaManager::TAGanaManager(TString expName)
 : TAGparTools()
 {
-   fkDefaultName = "./config/" + expName + "TANAdetector.cfg";
+   fkDefaultName = "./config/" + expName + "/TANAdetector.cfg";
 }
 
 //______________________________________________________________________________
@@ -48,7 +48,7 @@ Bool_t TAGanaManager::FromFile(const TString& name)
    
    if (!Open(nameExp)) return false;
    
-   Info("FromFile()", "Open file %s for analysis configuration\n", name.Data());
+   Info("FromFile()", "Open file %s for analysis configuration\n", nameExp.Data());
 
    Int_t tmp;
    ReadItem(tmp);
