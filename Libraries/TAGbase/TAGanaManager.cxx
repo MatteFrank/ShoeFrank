@@ -23,7 +23,7 @@ ClassImp(TAGanaManager);
 TAGanaManager::TAGanaManager(TString expName)
 : TAGparTools()
 {
-   fkDefaultName = "./config/" + expName + "./TANAdetector.cfg";
+   fkDefaultName = "./config/" + expName + "TANAdetector.cfg";
 }
 
 //______________________________________________________________________________
