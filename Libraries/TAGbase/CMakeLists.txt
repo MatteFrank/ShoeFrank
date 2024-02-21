@@ -50,6 +50,7 @@ set( with_dictionnaries
    TAGionisMaterials
    TAGxmlParser
    TAGrecoManager
+   TAGanaManager
    TAGparGeo
 )
 	
