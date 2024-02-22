@@ -18,12 +18,16 @@
 //! Class Imp
 ClassImp(TAGanaManager);
 
+const TString TAGanaManager::fgkDefaultFileName = "TANAdetector.cfg";
+const TString TAGanaManager::fgkDefaultFolder  = "./config/";
+
+
 //______________________________________________________________________________
 //! Standard constructor
 TAGanaManager::TAGanaManager(TString expName)
 : TAGparTools()
 {
-   fkDefaultName = "./config/" + expName + "/TANAdetector.cfg";
+   fDefaultName = fgkDefaultFolder + expName + "/" + fgkDefaultFileName;
 }
 
 //______________________________________________________________________________
@@ -42,7 +46,7 @@ Bool_t TAGanaManager::FromFile(const TString& name)
    TString nameExp;
    
    if (name.IsNull())
-     nameExp = fkDefaultName;
+     nameExp = fDefaultName;
    else 
      nameExp = name;
    

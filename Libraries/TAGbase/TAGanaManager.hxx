@@ -23,7 +23,7 @@ using namespace std;
 class TAGanaManager : public TAGparTools {
       
 protected:
-   TString    fkDefaultName; ///< default analysis file
+   TString    fDefaultName; ///< default analysis file
 
    /*!
     \struct AnalysisParameter_t
@@ -37,6 +37,10 @@ protected:
    };
    
    GlbAnaParameter_t fAnalysisParameter; ///< analysis parameters
+
+private:
+   static const TString fgkDefaultFileName; ///< Default analysis manager file name
+   static const TString fgkDefaultFolder;   ///< Default campaign folder
 
 public:
    TAGanaManager(TString expName);
@@ -54,6 +58,7 @@ public:
   
    //! Get analysis parameters
    GlbAnaParameter_t& GetAnalysisPar()           { return fAnalysisParameter;         }
+   
 
    ClassDef(TAGanaManager,1)
 };
