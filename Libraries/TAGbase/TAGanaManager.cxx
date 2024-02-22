@@ -12,7 +12,7 @@
 
 /*!
   \class TAGanaManager
-  \brief Base class of configuration parameters for VTX
+  \brief Class for analysis manager 
 */
 
 //! Class Imp
