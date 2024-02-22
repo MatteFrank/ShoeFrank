@@ -19,8 +19,7 @@
 ClassImp(TAGanaManager);
 
 const TString TAGanaManager::fgkDefaultFileName = "TANAdetector.cfg";
-const TString TAGanaManager::fgkDefaultFolder  = "./config/";
-
+const TString TAGanaManager::fgkDefaultFolder   = "./config/";
 
 //______________________________________________________________________________
 //! Standard constructor
@@ -72,12 +71,9 @@ Bool_t TAGanaManager::FromFile(const TString& name)
    fAnalysisParameter.EfficiencyFlag = tmp;
    if(FootDebugLevel(1))
      cout << "Efficiency studies flag: "<< fAnalysisParameter.EfficiencyFlag << endl;
-   
-   
+      
    return kFALSE;
 }
-
-
 
 //------------------------------------------+-----------------------------------
 //! Clear geometry info.
@@ -99,4 +95,3 @@ void TAGanaManager::ToStream(ostream& os, Option_t*) const
 
   return;
 }
-
