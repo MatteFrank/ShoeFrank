@@ -107,7 +107,6 @@ public:
    // Create raw action
    virtual void CreateAnaAction();
    
-      
    // Add required items
    virtual void AddRequiredItem();
    
@@ -136,7 +135,7 @@ public:
    virtual void CloseFileOut();
      
    // Create L0 branch in tree
-   virtual void SetL0TreeBranches();
+   virtual void SetTreeBranches();
    
    // Goto Event
    virtual Bool_t GoEvent(Int_t iEvent);

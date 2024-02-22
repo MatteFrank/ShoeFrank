@@ -212,14 +212,13 @@ void GlobalAna::SetHistogramDir()
    for (Int_t i = 0; i < list->GetEntries(); ++i) {
       TAGaction* action = (TAGaction*)list->At(i);
       TString tmp(action->GetName());
-      TString prefix(tmp(0,2));
       
       TDirectory* subfolder;
       
-      if (prefix == "st") {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(FootBaseName("TASTparGeo"));
+      if (tmp.Contains("Mass")) {
+         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("Mass");
          if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(FootBaseName("TASTparGeo"));
+            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("Mass");
          action->SetHistogramDir(subfolder);
          
       } else {
@@ -406,7 +405,7 @@ Bool_t GlobalAna::GoEvent(Int_t iEvent)
 
 //__________________________________________________________
 //! Set L0 tree branches for reading back
-void GlobalAna::SetL0TreeBranches()
+void GlobalAna::SetTreeBranches()
 {
    const Char_t* name = FootActionDscName("TAGactTreeReader");
    fActEvtReader = new TAGactTreeReader(name);
