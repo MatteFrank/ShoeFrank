@@ -24,9 +24,7 @@ public:
    // Action
    Bool_t  Action();
 
-   
    ClassDef(TANAactNtuMass, 0)
-
 };
 
 #endif
