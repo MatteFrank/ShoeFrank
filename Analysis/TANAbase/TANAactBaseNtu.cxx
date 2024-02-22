@@ -21,7 +21,6 @@
 
 #include "TANAactBaseNtu.hxx"
 
-
 /*!
  \class TANAactBaseNtu
  \brief Base class for global analysis
@@ -44,7 +43,7 @@ TANAactBaseNtu::TANAactBaseNtu(const char* name,TAGdataDsc* pNtuTrack, TAGparaDs
    if (!fpFootGeo)
       Error("TANAactBaseNtu()", "No GeoTrafo action available yet\n");
    
-   TAGparGeo* pGeoMapG    = (TAGparGeo*)   fpGeoMapG->Object();
+   TAGparGeo* pGeoMapG = (TAGparGeo*)   fpGeoMapG->Object();
 
    // beam loss in target
    fBeamEnergyTarget  = pGeoMapG->GetBeamPar().Energy;
@@ -53,7 +52,6 @@ TANAactBaseNtu::TANAactBaseNtu(const char* name,TAGdataDsc* pNtuTrack, TAGparaDs
    
    TString matTgt     = pGeoMapG->GetTargetPar().Material;
    Float_t thickTgt   = pGeoMapG->GetTargetPar().Size[2]/2.; // in average
-   
 }
 
 //------------------------------------------+-----------------------------------

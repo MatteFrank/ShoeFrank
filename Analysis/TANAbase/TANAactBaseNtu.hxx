@@ -9,9 +9,6 @@
 
 #include "TAGaction.hxx"
 
-
-using namespace  std;
-
 class TANAactBaseNtu : public TAGaction {
    
 public:
@@ -27,7 +24,6 @@ public:
    // Action
    virtual  Bool_t  Action()          { return true; }
 
-
 private:
    TAGdataDsc*     fpNtuTrack;          ///< input global tracks
    TAGgeoTrafo*    fpFootGeo;           ///< First geometry transformer
@@ -39,7 +35,6 @@ private:
    Float_t         fBeamZ;              ///< Beam atomic number
    
    ClassDef(TANAactBaseNtu, 0)
-
 };
 
 #endif
