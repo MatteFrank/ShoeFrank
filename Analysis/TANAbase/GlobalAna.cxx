@@ -97,6 +97,9 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    
    fAnaManager = new TAGanaManager(expName);
    fAnaManager->FromFile();
+   
+   if (fFlagOut)
+      fActEvtWriter = new TAGactTreeWriter("actTreeWriter");
 }
 
 //__________________________________________________________
