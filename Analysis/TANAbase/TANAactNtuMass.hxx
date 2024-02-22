@@ -19,10 +19,10 @@ public:
    virtual ~TANAactNtuMass();
    
    // Create histograms
-   virtual  void    CreateHistogram();
+   void    CreateHistogram();
    
    // Action
-   virtual  Bool_t  Action();
+   Bool_t  Action();
 
    
    ClassDef(TANAactNtuMass, 0)
