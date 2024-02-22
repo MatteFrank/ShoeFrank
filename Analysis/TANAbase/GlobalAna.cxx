@@ -112,9 +112,9 @@ GlobalAna::~GlobalAna()
 void GlobalAna::BeforeEventLoop()
 {
    ReadParFiles();
-
-   CreateAnaAction();
+   SetTreeBranches();
    
+   CreateAnaAction();
    AddRequiredItem();
 
    OpenFileIn();
@@ -413,7 +413,6 @@ void GlobalAna::SetTreeBranches()
    if (TAGrecoManager::GetPar()->IncludeST()) {
       fpNtuHitSt   = new TAGdataDsc(new TASTntuHit());
       fActEvtReader->SetupBranch(fpNtuHitSt);
-      
       if (fFlagMC) {
          fpNtuMcSt   = new TAGdataDsc(FootDataDscMcName(kST), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcSt, FootBranchMcName(kST));
@@ -421,6 +420,7 @@ void GlobalAna::SetTreeBranches()
    }
    
    if (TAGrecoManager::GetPar()->IncludeBM()) {
+      fpNtuTrackBm = new TAGdataDsc(new TABMntuTrack());
       fActEvtReader->SetupBranch(fpNtuTrackBm);
       if (fFlagMC) {
          fpNtuMcBm   = new TAGdataDsc(FootDataDscMcName(kBM), new TAMCntuHit());
@@ -429,8 +429,15 @@ void GlobalAna::SetTreeBranches()
    }
    
    if (TAGrecoManager::GetPar()->IncludeVT()) {
+      fpNtuTrackVtx = new TAGdataDsc(new TAVTntuTrack());
       fActEvtReader->SetupBranch(fpNtuTrackVtx);
+      
+      TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      fpNtuClusVtx  = new TAGdataDsc(new TAVTntuCluster(sensorsN));
       fActEvtReader->SetupBranch(fpNtuClusVtx);
+      
+      fpNtuVtx = new TAGdataDsc(new TAVTntuVertex());
       fActEvtReader->SetupBranch(fpNtuVtx);
       
       if (fFlagMC) {
@@ -440,6 +447,9 @@ void GlobalAna::SetTreeBranches()
    }
    
    if (TAGrecoManager::GetPar()->IncludeIT()) {
+      TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      fpNtuClusIt = new TAGdataDsc(new TAITntuCluster(sensorsN));
       fActEvtReader->SetupBranch(fpNtuClusIt);
       if ( fFlagMC) {
          fpNtuMcIt   = new TAGdataDsc(FootDataDscMcName(kITR), new TAMCntuHit());
@@ -448,8 +458,16 @@ void GlobalAna::SetTreeBranches()
    }
    
    if (TAGrecoManager::GetPar()->IncludeMSD()) {
+      
+      TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      fpNtuClusMsd = new TAGdataDsc(new TAMSDntuCluster(sensorsN));
       fActEvtReader->SetupBranch(fpNtuClusMsd);
+      
+      Int_t stationsN = parGeo->GetStationsN();
+      fpNtuRecMsd = new TAGdataDsc(new TAMSDntuPoint(stationsN));
       fActEvtReader->SetupBranch(fpNtuRecMsd);
+      
       if (fFlagMC) {
          fpNtuMcMsd   = new TAGdataDsc(FootDataDscMcName(kMSD), new TAMCntuHit());
          fActEvtReader->SetupBranch(fpNtuMcMsd, FootBranchMcName(kMSD));
@@ -457,6 +475,7 @@ void GlobalAna::SetTreeBranches()
    }
    
    if(TAGrecoManager::GetPar()->IncludeTW()) {
+      fpNtuRecTw = new TAGdataDsc(new TATWntuPoint());
       fActEvtReader->SetupBranch(fpNtuRecTw);
       if (fFlagMC) {
          fpNtuMcTw   = new TAGdataDsc(FootDataDscMcName(kTW), new TAMCntuHit());
@@ -465,6 +484,7 @@ void GlobalAna::SetTreeBranches()
    }
    
    if(TAGrecoManager::GetPar()->IncludeCA()) {
+      fpNtuClusCa = new TAGdataDsc(new TACAntuCluster());
       fActEvtReader->SetupBranch(fpNtuClusCa);
       if (fFlagMC) {
          fpNtuMcCa   = new TAGdataDsc(FootDataDscMcName(kCAL), new TAMCntuHit());
