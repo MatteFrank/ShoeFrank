@@ -27,7 +27,11 @@ const TString TAGanaManager::fgkDefaultFolder  = "./config/";
 TAGanaManager::TAGanaManager(TString expName)
 : TAGparTools()
 {
-   fDefaultName = fgkDefaultFolder + expName + "/" + fgkDefaultFileName;
+   
+   if (!expName.EndsWith("/"))
+      expName += "/";
+   
+   fDefaultName = fgkDefaultFolder + expName + fgkDefaultFileName;
 }
 
 //______________________________________________________________________________
