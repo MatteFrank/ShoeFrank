@@ -40,26 +40,24 @@ protected:
 
 private:
    static const TString fgkDefaultFileName; ///< Default analysis manager file name
-   static const TString fgkDefaultFolder;   ///< Default campaign folder
+   static const TString fgkDefaultFolder;   ///< Default analysis folder
 
 public:
    TAGanaManager(TString expName);
     virtual ~TAGanaManager();
 
    // Reading from file
-   Bool_t          FromFile(const TString& name = "");
+   Bool_t             FromFile(const TString& name = "");
    
    // Clear
-   virtual void    Clear(Option_t* opt="");
+   virtual void       Clear(Option_t* opt="");
    
    // To stream
-   virtual void    ToStream(ostream& os = cout, Option_t* option = "") const;
+   virtual void       ToStream(ostream& os = cout, Option_t* option = "") const;
    
-  
    //! Get analysis parameters
-   GlbAnaParameter_t& GetAnalysisPar()           { return fAnalysisParameter;         }
+   GlbAnaParameter_t& GetAnalysisPar()  { return fAnalysisParameter; }
    
-
    ClassDef(TAGanaManager,1)
 };
 
