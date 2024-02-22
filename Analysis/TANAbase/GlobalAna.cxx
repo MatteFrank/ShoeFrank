@@ -167,6 +167,7 @@ void GlobalAna::AfterEventLoop()
     
    if (fFlagOut)
       CloseFileOut();
+   
    CloseFileIn();
 }
 
@@ -183,7 +184,6 @@ void GlobalAna::CloseFileIn()
 {
    fActEvtReader->Close();
 }
-
 
 //__________________________________________________________
 //!  Open output file
@@ -207,7 +207,6 @@ void GlobalAna::CloseFileOut()
    fActEvtWriter->Print();
    fActEvtWriter->Close();
 }
-
 
 //__________________________________________________________
 //! Set reconstructed histogram directory

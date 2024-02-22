@@ -141,18 +141,18 @@ public:
    virtual Bool_t GoEvent(Int_t iEvent);
 
    //! Set experiment name
-   virtual void SetExpName(const Char_t* name) { fExpName = name;  }
+   virtual void SetExpName(const Char_t* name)    { fExpName = name;                                }
    
    //! Set run number
-   void SetRunNumber(Int_t run)                { fRunNumber = run; }
+   void SetRunNumber(Int_t run)                   { fRunNumber = run;                                }
 
    //! Enable Histo
-   void EnableHisto()          { fFlagHisto = true;       }
+   void EnableHisto()                             { fFlagHisto = true;                               }
    //! Disable Histo
-   void DisableHisto()         { fFlagHisto = false;      }
+   void DisableHisto()                            { fFlagHisto = false;                              }
    
    //! Flag for MC data
-   Bool_t IsMcData()           { return fFlagMC;          }
+   Bool_t IsMcData()                        const { return fFlagMC;                                  }
      
    // Par geo getters
    //! Get parameters geo transformations
@@ -237,9 +237,7 @@ public:
    //! Get run number
    Int_t               GetRunNumber()       const { return fRunNumber;                               }
    
-   
 protected:
-
    TString               fExpName;        ///< Experiment name
    TAGcampaignManager*   fCampManager;    ///< Campaign manager
    TAGanaManager*        fAnaManager;     ///< Analysis manager
@@ -309,6 +307,5 @@ protected:
    
    ClassDef(GlobalAna, 1);        ///< Base class for reconstruction
 };
-
 
 #endif
