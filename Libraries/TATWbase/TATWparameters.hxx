@@ -50,6 +50,8 @@
 
 enum ParticleType {None=-1,Proton,Helium,Carbon,Oxygen};
 
+enum ElementZ {kNeutrons_Z=0,kH_Z=1,kHe_Z,kLi_Z,kBe_Z,kB_Z,kC_Z,kN_Z,kO_Z};
+
 static std::map<ParticleType,std::string> ParticleName={{None,"None"},{Proton,"Proton"},{Helium,"Helium"},{Carbon,"Carbon"},{Oxygen,"Oxygen"}};
 
 enum TLayer {NoLayer=-1,LayerX=1,LayerY=0};  // LayerX--> horizontal bars - front r layer, LayerY--> vertical bars - rear layer

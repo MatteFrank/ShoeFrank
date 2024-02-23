@@ -50,12 +50,12 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double d
     vector<Double_t> amp = W->GetVectA();
     vector<Double_t> time = W->GetVectT();
     
+    if(parConfSt->ApplyFFT()){
     TAGbaseWD::ComputeFFT(amp, re, im, fft);
     TAGbaseWD::SetFFT("MAG",fft);
     TAGbaseWD::SetFFT("RE",re);
     TAGbaseWD::SetFFT("IM",im);
     
-    if(parConfSt->ApplyFFT()){
       if(parConfSt->ApplyLowPass()){
 	double fcutoff = parConfSt->GetLowPassCutoff();
 	TAGbaseWD::LowPassFilterFFT(re,im,fcutoff,3);

@@ -188,7 +188,7 @@ Double_t TATWdigitizer::GetResEnergyExp(Double_t edep)
    Double_t relRes;
    
    if(edep<fElossMeasLimitMax)
-      relRes = fDeResE->Eval(edep); // percentage Eloss resolution
+      relRes = fDeResE->Eval( edep * twParConf->GetWdGain() ); // percentage Eloss resolution
    else
       relRes = 5.2; // percentage Eloss resolution constant at the minimum because beyond Eloss = 90 MeV has not been measured
 
@@ -238,7 +238,7 @@ Double_t TATWdigitizer::GetResCharge(Double_t edep)
 {
    
    // Double_t relResEloss = GetResEnergyExp(edep);
-   Double_t resElossExp = GetResEnergyExp(edep);
+   Double_t resElossExp = GetResEnergyExp( edep );  // phys + experimental fluctuation
    Double_t resElossMC  = GetResEnergyMC(edep);
    Double_t relResEloss = sqrt(pow(resElossExp,2)-pow(resElossMC,2));
    
@@ -283,7 +283,7 @@ Double_t TATWdigitizer::GetResTimeTW(Double_t edep)
    if(edep<fElossMeasLimitMin)
      timeRes = fTimeTWResE->Eval(fElossMeasLimitMin);  
    else     
-     timeRes = fTimeTWResE->Eval(edep);
+     timeRes = fTimeTWResE->Eval( edep  * twParConf->GetWdGain() );
 
    
    return timeRes*sqrt(2);
@@ -300,7 +300,7 @@ Double_t TATWdigitizer::GetTimeLeft(Double_t pos, Double_t time, Double_t edep)
    // Double_t timeL  = time - pos*alpha;
    Double_t timeL  = time + (fSlatLength/2. - pos) * alpha;  // Left--> positive Pos   L/A <-------- R/B
    
-   Double_t resTimeL = GetResTimeTW(edep)*TMath::Sqrt(2.); // Assume same time resolution L/R
+   Double_t resTimeL = GetResTimeTW(edep) * TMath::Sqrt(2.); // Assume same time resolution L/R
    timeL += gRandom->Gaus(0, resTimeL);
    
    return timeL;
@@ -316,7 +316,7 @@ Double_t TATWdigitizer::GetTimeRight(Double_t pos, Double_t time, Double_t edep)
    // Double_t timeR  = time + pos*alpha;
    Double_t timeR  = time + (fSlatLength/2. + pos) * alpha;  // Right--> negative Pos L/A <-------- R/B
    
-   Double_t resTimeR = GetResTimeTW(edep)*TMath::Sqrt(2.); // Assume same time resolution L/R
+   Double_t resTimeR = GetResTimeTW(edep) * TMath::Sqrt(2.); // Assume same time resolution L/R
    timeR += gRandom->Gaus(0, resTimeR);
    
    return timeR;
@@ -356,7 +356,7 @@ Bool_t TATWdigitizer::IsOverEnergyThreshold(double edep_thr, double edep) {
 void TATWdigitizer::SmearEnergyLoss(Double_t &Eloss) {
 
    Double_t ElossShiftRate = GetElossShiftRate();
-   Double_t resElossExp = GetResEnergyExp( Eloss * twParConf->GetWdGain() );  // phys + experimental fluctuation
+   Double_t resElossExp = GetResEnergyExp( Eloss );  // phys + experimental fluctuation
    Double_t resElossMC = GetResEnergyMC(Eloss);  // physical fluctuaction (landau)
    Eloss += gRandom->Gaus(ElossShiftRate,sqrt(pow(resElossExp,2)-pow(resElossMC,2)));
    
@@ -367,7 +367,7 @@ void TATWdigitizer::SmearEnergyLoss(Double_t &Eloss) {
 // --------------------------------------------------------------------------------------
 void TATWdigitizer::SmearTimeTW(Double_t eloss, Double_t &time) {
 
-   Double_t resTimeTW = GetResTimeTW( eloss * twParConf->GetWdGain() );
+   Double_t resTimeTW = GetResTimeTW(eloss);
 
    time += gRandom->Gaus(0,resTimeTW);
    

@@ -12,6 +12,7 @@ MESSAGE("${PROJECT_NAME}:")
 # SRC
 #
 add_subdirectory(TPGbase)
+add_subdirectory(TANAbase)
 
 #----------------------------------------------------------------------------
 # Copy data

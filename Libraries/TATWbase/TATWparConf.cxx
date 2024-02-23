@@ -69,6 +69,8 @@ Bool_t TATWparConf::FromFile(const TString& name)
    Info("FromFile()", "Open file %s for configuration\n", name.Data());
 
    Int_t tmp;
+   Float_t tmp_f;
+
    ReadItem(tmp);
    fEnableZmc = tmp;
    if(fEnableZmc==1)
@@ -114,7 +116,7 @@ Bool_t TATWparConf::FromFile(const TString& name)
    if(fGain>1)
      Warning("FromFile()","WD gain in TW set to %.1f in TATWdetector.cfg file...check if this is the correct value",fGain);
    if(FootDebugLevel(1))
-     Info("FromFile()","Gain value set in the WD for TW::%f.1\n",fGain);
+     Info("FromFile()","Gain value set in the WD for TW::%.1f\n",fGain);
    
    ReadItem(tmp);
    fEnableEnergyThr = tmp;

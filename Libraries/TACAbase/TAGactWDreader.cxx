@@ -997,7 +997,7 @@ double TAGactWDreader::ComputeJitter(TWaveformContainer *wclk, double *per)
 
    
    tmp_gr.LeastSquareLinearFit(nclock.size(), phase, period, status);
-   TCanvas c("c","",600,600);
+   // TCanvas c("c","",600,600);
    // c.cd();
    // tmp_gr.Draw("AP*");
    // //  tmp_gr.GetXaxis()->SetLimits(-3,3);
