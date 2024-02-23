@@ -79,6 +79,7 @@ public:
   //histos
   TH2F*            fpResAll;    //Residual distribution for all the hits
   TH2F*            fpResSel;    //Residual distribution for selected hits
+  TH2F*            fpResTimeSel;    //Residual distribution for selected hits
   TH2F*            fpResDisc;   //Residual distribution for rejected hits
   TH2F*            fpResAllX;    //Residual distribution for all the hits
   TH2F*            fpResSelX;    //Residual distribution for selected hits
