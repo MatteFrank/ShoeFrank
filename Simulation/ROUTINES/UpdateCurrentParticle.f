@@ -158,7 +158,7 @@ c
          OLDONE = .false.
 
          if (idfluka(idcurr).eq.idfluka_now ) then
-            if (icode.ne.219) then
+            if (icode.ne.219 .or. icode.eq.106 ) then
                oldone = .true.
             else
                if (idbflg.gt.1 .AND. idbflg.lt.4)  
