@@ -69,6 +69,7 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
    fActGlbAna(0x0),
+   fActPtReso(0x0),
    fFlagHisto(false),
    fFlagMC(isMC),
    fSkipEventsN(0)
@@ -217,16 +218,14 @@ void GlobalAna::SetHistogramDir()
       TAGaction* action = (TAGaction*)list->At(i);
       TString tmp(action->GetName());
       
-      TDirectory* subfolder;
-      
-      if (tmp.Contains("Mass")) {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("Mass");
-         if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("Mass");
-         action->SetHistogramDir(subfolder);
-         
-      } else {
-      }
+      TString subfolderName;
+      if (tmp.Contains("Mass"))           { subfolderName = "Mass"; }
+      else if (tmp.Contains("PtReso"))    { subfolderName = "PtReso"; }
+
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(subfolderName.Data());
+      if (!subfolder)
+         subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(subfolderName.Data());
+      action->SetHistogramDir(subfolder);
    }
    
 }
@@ -377,6 +376,14 @@ void GlobalAna::CreateAnaAction()
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())) {
       if (fAnaManager->GetAnalysisPar().MassResoFlag)
          fActGlbAna = new TANAactNtuMass("anaActMass", fpNtuGlbTrack, fpParGeoG);
+      
+      if (fAnaManager->GetAnalysisPar().PtResoFlag)
+      {
+         if( !fFlagMC )
+            Error("CreateAnaAction()", "Momentum performance requested but MC info not present! Please check configuration files"), exit(-1);
+         fActPtReso = new TANAactPtReso("anaActPtReso", fpNtuGlbTrack, fpParGeoG);
+      }
+
    }
 }
 
@@ -388,6 +395,9 @@ void GlobalAna::AddRequiredItem()
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())) {
       if (fAnaManager->GetAnalysisPar().MassResoFlag)
          gTAGroot->AddRequiredItem("anaActMass");
+
+      if (fAnaManager->GetAnalysisPar().PtResoFlag && fFlagMC)
+         gTAGroot->AddRequiredItem("anaActPtReso");
    }
 }
 

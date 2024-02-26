@@ -1,31 +1,28 @@
-#ifndef _TANAactBaseNtu_HXX
-#define _TANAactBaseNtu_HXX
+#ifndef _TANAactPtReso_HXX
+#define _TANAactPtReso_HXX
 /*!
- \file TANAactBaseNtu.hxx
- \brief   Declaration of TANAactBaseNtu.
- \author Ch. Finck
+ \file TANAactPtReso.hxx
+ \brief   Declaration of TANAactPtReso
+ \author R. Zarrella
  */
 /*------------------------------------------+---------------------------------*/
 
-#include "TAGgeoTrafo.hxx"
-#include "TAGparGeo.hxx"
-#include "TAGroot.hxx"
-#include "TAGaction.hxx"
+#include "TANAactBaseNtu.hxx"
 
-class TANAactBaseNtu : public TAGaction {
+class TANAactPtReso : public TANAactBaseNtu {
    
 public:
-   explicit  TANAactBaseNtu(const char* name         = 0,
+   explicit  TANAactPtReso(const char* name         = 0,
                             TAGdataDsc* p_irntutrack = 0,
                             TAGparaDsc* p_geomap     = 0);
 
-   virtual ~TANAactBaseNtu();
+   virtual ~TANAactPtReso();
    
    // Create histograms
-   virtual  void    CreateHistogram() { return;      }
+   virtual  void    CreateHistogram();
    
    // Action
-   virtual  Bool_t  Action()          { return true; }
+   virtual  Bool_t  Action();
 
 private:
    TAGdataDsc*     fpNtuTrack;          ///< input global tracks
@@ -37,7 +34,7 @@ private:
    Float_t         fBeamA;              ///< Beam atomic mass
    Float_t         fBeamZ;              ///< Beam atomic number
    
-   ClassDef(TANAactBaseNtu, 0)
+   ClassDef(TANAactPtReso, 0)
 };
 
 #endif
