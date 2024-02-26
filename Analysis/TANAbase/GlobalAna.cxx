@@ -164,6 +164,9 @@ void GlobalAna::LoopEvent(Int_t nEvents)
 //! Actions after loop event
 void GlobalAna::AfterEventLoop()
 {
+	if( fAnaManager->GetAnalysisPar().PtResoFlag )
+		fActPtReso->Finalize();
+
    fTAGroot->EndEventLoop();
     
    if (fFlagOut)
@@ -379,9 +382,12 @@ void GlobalAna::CreateAnaAction()
       
       if (fAnaManager->GetAnalysisPar().PtResoFlag)
       {
-         if( !fFlagMC )
-            Error("CreateAnaAction()", "Momentum performance requested but MC info not present! Please check configuration files"), exit(-1);
-         fActPtReso = new TANAactPtReso("anaActPtReso", fpNtuGlbTrack, fpParGeoG);
+         if( !fFlagMC || !TAGrecoManager::GetPar()->IsRegionMc() )
+            Error("CreateAnaAction()", "Momentum performance requested but MC info (all/region) not present! Please check configuration files"), exit(-1);
+         if( !TAGrecoManager::GetPar()->IncludeTW() )
+            Error("CreateAnaAction()", "Momentum performance requested but TW not included! P info not reliable, re-run with TW"), exit(-1);
+
+         fActPtReso = new TANAactPtReso("anaActPtReso", fpNtuGlbTrack, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
       }
 
    }
@@ -423,7 +429,17 @@ void GlobalAna::SetTreeBranches()
 {
    const Char_t* name = FootActionDscName("TAGactTreeReader");
    fActEvtReader = new TAGactTreeReader(name);
-   
+
+    if (fFlagMC) {
+      fpNtuMcTrk = new TAGdataDsc(new TAMCntuPart());
+      fActEvtReader->SetupBranch(fpNtuMcTrk);
+
+      if ( TAGrecoManager::GetPar()->IsRegionMc()) {
+         fpNtuMcReg = new TAGdataDsc(new TAMCntuRegion());
+         fActEvtReader->SetupBranch(fpNtuMcReg);
+      }
+   }
+
    if (TAGrecoManager::GetPar()->IncludeST()) {
       fpNtuHitSt   = new TAGdataDsc(new TASTntuHit());
       fActEvtReader->SetupBranch(fpNtuHitSt);
