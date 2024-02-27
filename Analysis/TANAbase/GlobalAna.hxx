@@ -244,6 +244,7 @@ protected:
    Int_t                 fRunNumber;      ///< Run number
    TAGroot*              fTAGroot;        ///< pointer to TAGroot
    TAGgeoTrafo*          fpFootGeo;       ///< trafo prointer
+   TTree*                fpTree;          ///< tree
 
    TAGparaDsc*           fpParMapIt;      ///< ITR mapping parameter
 

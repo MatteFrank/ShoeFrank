@@ -38,6 +38,7 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
  : TNamed(fileNameIn.Data(), fileNameout.Data()),
    fExpName(expName),
    fRunNumber(runNumber),
+   fpTree(0x0),
    fpParMapIt(0x0),
    fpParGeoSt(0x0),
    fpParGeoG(0x0),
@@ -101,6 +102,7 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    if (fFlagOut) {
       const Char_t* name = FootActionDscName("TAGactTreeWriter");
       fActEvtWriter = new TAGactTreeWriter(name);
+      fpTree = fActEvtWriter->Tree();
    }
 }
 
@@ -376,7 +378,7 @@ void GlobalAna::CreateAnaAction()
    // place here your beloved analysis class
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())) {
       if (fAnaManager->GetAnalysisPar().MassResoFlag)
-         fActGlbAna = new TANAactNtuMass("anaActMass", fpNtuGlbTrack, fpParGeoG);
+         fActGlbAna = new TANAactNtuMass("anaActMass", fpNtuGlbTrack, fpParGeoG, fpTree);
    }
 }
 
