@@ -32,8 +32,8 @@
 //! \param[in] name action name
 //! \param[out] pNtuTrack global track container descriptor
 //! \param[in] pgGeoMap target geometry parameter descriptor
-TANAactNtuMass::TANAactNtuMass(const char* name,TAGdataDsc* pNtuTrack, TAGparaDsc* pgGeoMap)
-:  TANAactBaseNtu(name, pNtuTrack, pgGeoMap)
+TANAactNtuMass::TANAactNtuMass(const char* name,TAGdataDsc* pNtuTrack, TAGparaDsc* pgGeoMap, TTree* p_tree)
+:  TANAactBaseNtu(name, pNtuTrack, pgGeoMap, p_tree)
 {
 }
 

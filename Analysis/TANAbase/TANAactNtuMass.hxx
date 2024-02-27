@@ -6,6 +6,7 @@
  \author Ch. Finck
  */
 /*------------------------------------------+---------------------------------*/
+#include "TTree.h"
 
 #include "TANAactBaseNtu.hxx"
 
@@ -14,7 +15,8 @@ class TANAactNtuMass : public TANAactBaseNtu {
 public:
    explicit  TANAactNtuMass(const char* name         = 0,
                             TAGdataDsc* p_irntutrack = 0,
-                            TAGparaDsc* p_geomap     = 0);
+                            TAGparaDsc* p_geomap     = 0,
+                            TTree*      p_tree       = 0);
 
    virtual ~TANAactNtuMass();
    

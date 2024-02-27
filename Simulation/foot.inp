@@ -16,6 +16,7 @@ BEAMPOS        0.000     0.000   -30.000
 PHYSICS           1.                                                  COALESCE  
 PHYSICS           3.                                                  EVAPORAT
 PHYSICS           1.                                                  ISOMERS
+PHYSICS          -1.                                                  INFLDCAY
 IONTRANS    HEAVYION
 RADDECAY          2.                  1.
 

@@ -647,13 +647,14 @@ string TAGparGeo::PrintPhysics()
       str << PrintCard("PHYSICS","1.","","","","","","COALESCE") << endl;
       str << PrintCard("PHYSICS","3.","","","","","","EVAPORAT") << endl;
       str << PrintCard("PHYSICS","1.","","","","","","ISOMERS") << endl;
+      str << PrintCard("PHYSICS","-1.","","","","","","INFLDCAY") << endl;
       str << PrintCard("PHYSICS","1.","0.005","0.15","2.","2.","2.","IONSPLIT") << endl;
       str << PrintCard("RADDECAY","2.","","1.","","","","") << endl;
    }  else {
       str << PrintCard("PHYSICS","212001.","1.","1.","","","","COALESCE") << endl;
       str << PrintCard("PHYSICS","3.","","","","","","EVAPORAT") << endl;
       str << PrintCard("PHYSICS","1.","","","","","","ISOMERS") << endl;
-      str << PrintCard("PHYSICS","1.","","","","","","INFLDCAY") << endl;
+      str << PrintCard("PHYSICS","-1.","","","","","","INFLDCAY") << endl;
       str << PrintCard("PHYSICS","1.","","","","","","QUASI-EL") << endl;
       str << PrintCard("PHYSICS","1.","0.005","0.15","2.","2.","2.","IONSPLIT") << endl;
       str << PrintCard("RADDECAY","1.","2.","","1.","","","") << endl;

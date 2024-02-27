@@ -10,6 +10,11 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGparGeo.hxx"
 #include "TAGroot.hxx"
+#include "TTree.h"
+
+#include "TAGgeoTrafo.hxx"
+#include "TAGparGeo.hxx"
+#include "TAGroot.hxx"
 #include "TAGaction.hxx"
 
 class TANAactBaseNtu : public TAGaction {
@@ -17,7 +22,8 @@ class TANAactBaseNtu : public TAGaction {
 public:
    explicit  TANAactBaseNtu(const char* name         = 0,
                             TAGdataDsc* p_irntutrack = 0,
-                            TAGparaDsc* p_geomap     = 0);
+                            TAGparaDsc* p_geomap     = 0,
+                            TTree*      p_tree       = 0);
 
    virtual ~TANAactBaseNtu();
    
@@ -31,6 +37,7 @@ private:
    TAGdataDsc*     fpNtuTrack;          ///< input global tracks
    TAGgeoTrafo*    fpFootGeo;           ///< First geometry transformer
    TAGparaDsc*     fpGeoMapG;           ///< geometry para dsc
+   TTree*          fpTree;              ///< tree
 
    Float_t         fBeamEnergyTarget;   ///< Beam energy at target
    Float_t         fBeamEnergy;         ///< Beam energy
