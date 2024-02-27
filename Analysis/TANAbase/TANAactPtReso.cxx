@@ -67,7 +67,6 @@ TANAactPtReso::~TANAactPtReso()
 //! \brief Create the histograms for momentum resolution
 void TANAactPtReso::CreateHistogram()
 {
-
 }
 
 
@@ -80,6 +79,14 @@ Bool_t TANAactPtReso::Action()
 
 	ClearData();
 	GetMcMomentaAtTgt();
+	cout << "map" << endl;
+	for( auto it : fMcMomMap )
+	{
+		cout << it.first << "::"; it.second.Print();
+	}
+	if( fMcMomMap.size() < 1 )
+		return true;
+	
 
 	for(int iTrack = 0; iTrack < fNtuGlbTrack->GetTracksN(); ++iTrack )
 	{
@@ -94,7 +101,12 @@ Bool_t TANAactPtReso::Action()
 //! \brief Fill the momentum residual for a track
 void TANAactPtReso::FillMomResidual(TAGtrack* track)
 {
+	TVector3 recoMom = track->GetTgtMomentum();
+	Float_t momBin = GetMomentumBinCenter(recoMom.Mag());
+	TString hisName = GetParticleNameFromCharge(track->GetTwChargeZ());
+	hisName = hisName + Form("_%.2f",momBin);
 
+	cout << "hisName::" << hisName << endl;
 }
 
 
@@ -108,7 +120,47 @@ void TANAactPtReso::Finalize()
 //! \brief Get the MC momentum of all particles crossing the TG
 void TANAactPtReso::GetMcMomentaAtTgt()
 {
+	TAMCntuPart* mcNtuPart = (TAMCntuPart*)fpNtuMcTrk->Object();
+	if( !mcNtuPart )
+		return;
 
+	for(int i=0; i < mcNtuPart->GetTracksN(); ++i)
+	{
+		TAMCpart* part = mcNtuPart->GetTrack(i);
+		if( !part )
+			continue;
+		
+		if( part->GetMotherID() == 0 && part->GetRegion() == fRegTgt )
+			fMcMomMap[i] = part->GetInitP();
+	}
+	if( fMcMomMap.size() > 0 ) // fragments born in target found, exit
+		return;
+	
+	//Check if there is primary crossing target without interaction
+	TAMCntuRegion* mcNtuReg = (TAMCntuRegion*)fpNtuMcReg->Object();
+	for(int i = 0; mcNtuReg && i < mcNtuReg->GetRegionsN(); ++i)
+	{
+		TAMCregion* mcReg = (TAMCregion*)mcNtuReg->GetRegion(i);
+		if( mcReg->GetOldCrossN() == fRegTgt && mcReg->GetCrossN() == fRegAir1 && mcReg->GetTrackIdx() == 1 )
+		{
+			fMcMomMap[ mcReg->GetTrackIdx() - 1 ] = mcReg->GetMomentum();
+			break;
+		}
+	}
+}
+
+
+//! \brief Get the momentum bin center from the momentum magnitude
+//! 
+//! \param[in] mom Momentum magnitude
+//! \return Center of the corresponding momentum bin for resolution histograms
+Float_t TANAactPtReso::GetMomentumBinCenter(Double_t mom)
+{
+	if( mom < fMomMin || mom > fMomMax )
+		return -1;
+
+	Int_t nSteps = floor( ( mom - fMomMin )/fMomStep );
+	return fMomMin + fMomStep*(nSteps + 0.5);
 }
 
 

@@ -33,6 +33,9 @@ public:
    // Action
    virtual  Bool_t  Action()          { return true; }
 
+protected:
+   TString GetParticleNameFromCharge(int ch);
+
 private:
    TAGdataDsc*     fpNtuTrack;          ///< input global tracks
    TAGgeoTrafo*    fpFootGeo;           ///< First geometry transformer

@@ -46,6 +46,8 @@ protected:
 	void		GetMcMomentaAtTgt();
 	void		ClearData();
 
+	Float_t		GetMomentumBinCenter(Double_t momentum);
+
 	TAGdataDsc*		fpNtuTrack;				///< input global tracks
 	TAGdataDsc*		fpNtuMcTrk;				///< input MC tracks
 	TAGdataDsc*		fpNtuMcReg;				///< input MC region
