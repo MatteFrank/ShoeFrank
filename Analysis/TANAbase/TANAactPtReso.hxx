@@ -26,6 +26,7 @@ private:
 public:
 	explicit  TANAactPtReso(const char* name         = 0,
 								TAGdataDsc* pNtuTrack = 0,
+								TTree*		p_tree = 0,
 								TAGdataDsc* pNtuMcTrk = 0,
 								TAGdataDsc* pNtuMcReg = 0,
 								TAGparaDsc* pgGeoMap = 0,
@@ -51,6 +52,7 @@ protected:
 	TAGgeoTrafo*	fpFootGeo;				///< First geometry transformer
 	TAGparaDsc*		fpTwGeo;				///< First geometry transformer
 	TAGparaDsc*		fpGeoMapG;				///< geometry para dsc
+	TTree*			fpTree;					///< tree
 
 	TAGntuGlbTrack*	fNtuGlbTrack;			///< input global tracks
 

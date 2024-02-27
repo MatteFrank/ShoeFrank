@@ -20,8 +20,8 @@
 //! \param[in] pNtuMcReg MC crossings container descriptor
 //! \param[in] pgGeoMap target geometry parameter descriptor
 //! \param[in] pgTwGeo TW geometry parameter descriptor
-TANAactPtReso::TANAactPtReso(const char* name, TAGdataDsc* pNtuTrack, TAGdataDsc* pNtuMcTrk, TAGdataDsc* pNtuMcReg, TAGparaDsc* pgGeoMap, TAGparaDsc* pgTwGeo)
-: TANAactBaseNtu(name, pNtuTrack, pgGeoMap),
+TANAactPtReso::TANAactPtReso(const char* name, TAGdataDsc* pNtuTrack, TTree* p_tree, TAGdataDsc* pNtuMcTrk, TAGdataDsc* pNtuMcReg, TAGparaDsc* pgGeoMap, TAGparaDsc* pgTwGeo)
+: TANAactBaseNtu(name, pNtuTrack, pgGeoMap, p_tree),
 fpNtuMcTrk(pNtuMcTrk),
 fpNtuMcReg(pNtuMcReg),
 fpTwGeo(pgTwGeo)
