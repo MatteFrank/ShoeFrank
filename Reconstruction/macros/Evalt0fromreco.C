@@ -89,38 +89,47 @@ void Evalt0fromreco(TString in_filename="reco.root",Bool_t t0eval=false, Bool_t 
   //evaluate resolution
   if(evalreso || selfstrel){
     TH1D *reso, *fpParNewDistResFit, *fpParNewDistResRaw,*fpParNewDistResFitRawMean, *fpReSkew, *fpPullCheckFitMean, *fpPullCheckFitDevStd, *fpPullCheckRawMean, *fpPullCheckRawDevStd, *fpResFitMean, *fpResRawMean, *fpResFromPull, *fpResMaxPullOldres;
-    vector<Double_t> streltime, streldist, strelrawdist;
-    TH2D *bmres2d=((TH2D*)infile->Get("BM/bmTrackResidualSelectedY"));
+    TH1D *fpResTimeFitMean, *fpParTimeNewDistResFit, *fpParTimeNewDistResRaw, *fpResTimeRawMean;
+    vector<Double_t> streltime, streldist, strelrawdist, strelnewdist, strelnewtime, streltimetime, streltimedist, streltimerawdist;
+    TH2D *bmres2d=((TH2D*)infile->Get("BM/bmTrackResidualSelected"));
+    TH2D *bmrestime2d=((TH2D*)infile->Get("BM/bmTrackResidualTimeSelected"));
     TH2D *bmpull2d=((TH2D*)infile->Get("BM/bmPulls"));
     TH1D *oldstrel=((TH1D*)infile->Get("BM/bmParSTrel"));
     TH1D *oldparres=((TH1D*)infile->Get("BM/bmParResolution"));
     TF1* oldresfunc=new TF1("oldresfunc","pol4",0.,1.);
     oldresfunc->SetParameters( 0,   0.0120769  , -0.0870719  , 0.422187  , -0.882696  , 0.640147   );
     if(evalreso){
-      fpResFitMean = new TH1D("bmResFitMean","Fitted Residual mean values; Drift distance [cm];Mean [cm]", 100, 0., 1.);
-      fpResRawMean = new TH1D("bmResRawMean","Fitted Residual mean values; Drift distance [cm];Mean [cm]", 100, 0., 1.);
-      fpParNewDistResFit = new TH1D("bmParNewDistResFit","New fitted resolution distribution; Drift distance [cm];Resolution [cm]", 100, 0., 1.);
-      fpParNewDistResFitRawMean = new TH1D("bmParNewDistResFitRawMean","New fitted resolution distribution; Drift distance [cm];Resolution [cm]", 100, 0., 1.);
-      fpParNewDistResRaw = new TH1D("bmParNewDistResRaw","New raw resolution distribution; Drift distance [cm];Resolution [cm]", 100, 0., 1.);
-      fpReSkew = new TH1D("bmResSkew","Residual plot skewness; Drift distance [cm];Resolution [cm]", 100, 0., 1.);
-      fpPullCheckFitMean = new TH1D("bmPullCheckFitMean","BM Pull distribution Fit Mean values; Drift distance [cm];Mean value[cm]", 100, 0., 1.);
-      fpPullCheckFitDevStd = new TH1D("bmPullCheckFitDevStd","BM Pull distribution Fit DevStd values; Drift distance [cm];DevStd[cm]", 100, 0., 1.);
-      fpPullCheckRawMean = new TH1D("bmPullCheckRawMean","BM Pull distribution Fit Mean values; Drift distance [cm];Mean value[cm]", 100, 0., 1.);
-      fpPullCheckRawDevStd = new TH1D("bmPullCheckRawDevStd","BM Pull distribution Fit DevStd values; Drift distance [cm];DevStd[cm]", 100, 0., 1.);
-      fpResFromPull = new TH1D("bmResFromPull","BM resolution from Pull distribution;Drift distance [cm];Resolution", 100, 0., 1.);
-      fpResMaxPullOldres = new TH1D("bmResMaxPullOldres","BM resolution from Pull distribution and old res;Drift distance [cm];Resolution", 100, 0., 1.);
+      fpResFitMean = new TH1D("bmResFitMean","Fitted Residual mean values; Drift distance [cm];Mean [cm]", bmres2d->GetNbinsY(), 0., bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      fpResRawMean = new TH1D("bmResRawMean","Fitted Residual mean values; Drift distance [cm];Mean [cm]", bmres2d->GetNbinsY(), 0., bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      fpParNewDistResFit = new TH1D("bmParNewDistResFit","New fitted resolution distribution; Drift distance [cm];Resolution [cm]", bmres2d->GetNbinsY(), 0., bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      fpParNewDistResFitRawMean = new TH1D("bmParNewDistResFitRawMean","New fitted resolution distribution; Drift distance [cm];Resolution [cm]", bmres2d->GetNbinsY(), 0., bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      fpParNewDistResRaw = new TH1D("bmParNewDistResRaw","New raw resolution distribution; Drift distance [cm];Resolution [cm]", bmres2d->GetNbinsY(), 0., bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      fpReSkew = new TH1D("bmResSkew","Residual plot skewness; Drift distance [cm];Resolution [cm]", bmres2d->GetNbinsY(), 0., bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      fpPullCheckFitMean = new TH1D("bmPullCheckFitMean","BM Pull distribution Fit Mean values; Drift distance [cm];Mean value[cm]", bmpull2d->GetNbinsY(), 0., bmpull2d->GetYaxis()->GetBinCenter(bmpull2d->GetYaxis()->GetLast()));
+      fpPullCheckFitDevStd = new TH1D("bmPullCheckFitDevStd","BM Pull distribution Fit DevStd values; Drift distance [cm];DevStd[cm]", bmpull2d->GetNbinsY(), 0., bmpull2d->GetYaxis()->GetBinCenter(bmpull2d->GetYaxis()->GetLast()));
+      fpPullCheckRawMean = new TH1D("bmPullCheckRawMean","BM Pull distribution Fit Mean values; Drift distance [cm];Mean value[cm]", bmpull2d->GetNbinsY(), 0., bmpull2d->GetYaxis()->GetBinCenter(bmpull2d->GetYaxis()->GetLast()));
+      fpPullCheckRawDevStd = new TH1D("bmPullCheckRawDevStd","BM Pull distribution Fit DevStd values; Drift distance [cm];DevStd[cm]", bmpull2d->GetNbinsY(), 0., bmpull2d->GetYaxis()->GetBinCenter(bmpull2d->GetYaxis()->GetLast()));
+      fpResFromPull = new TH1D("bmResFromPull","BM resolution from Pull distribution;Drift distance [cm];Resolution", bmpull2d->GetNbinsY(), 0., bmpull2d->GetYaxis()->GetBinCenter(bmpull2d->GetYaxis()->GetLast()));
+      fpResMaxPullOldres = new TH1D("bmResMaxPullOldres","BM resolution from Pull distribution and old res;Drift distance [cm];Resolution", bmpull2d->GetNbinsY(), 0., bmpull2d->GetYaxis()->GetBinCenter(bmpull2d->GetYaxis()->GetLast()));
+      fpResTimeFitMean = new TH1D("bmResTimeFitMean","Fitted Residual mean values; Drift time [ns];Mean [cm]", bmrestime2d->GetNbinsY(), 0., bmrestime2d->GetYaxis()->GetBinCenter(bmrestime2d->GetYaxis()->GetLast()));
+      fpParTimeNewDistResFit = new TH1D("bmParTimeNewDistResFit","New fitted resolution distribution; Drift Time [ns];Resolution [cm]", bmrestime2d->GetNbinsY(), 0., bmrestime2d->GetYaxis()->GetBinCenter(bmrestime2d->GetYaxis()->GetLast()));      
+      fpParTimeNewDistResRaw = new TH1D("bmParTimeNewDistResRaw","New raw resolution distribution; Drift Time [ns];Resolution [cm]", bmrestime2d->GetNbinsY(), 0., bmrestime2d->GetYaxis()->GetBinCenter(bmrestime2d->GetYaxis()->GetLast()));
+      fpResTimeRawMean = new TH1D("bmResTimeRawMean","Fitted Residual mean values; Drift Time [ns];Mean [cm]", bmrestime2d->GetNbinsY(), 0., bmrestime2d->GetYaxis()->GetBinCenter(bmrestime2d->GetYaxis()->GetLast()));          
     }
     if(selfstrel){
       oldstrel->Clone("bmOldSTRel");
       oldparres->Clone("bmOldResolution");
       oldparres->Fit(oldresfunc,"QR+");
     }
-    TF1* gaus=new TF1("gaus","gaus",-0.01,0.01);
+    TF1 *oldstrelbyhand=new TF1("OldStRelByHand","([p0]*x+[p1]*x*x+[p2]*x*x*x+[p3]*x*x*x*x)",0.,0.8);
+    oldstrelbyhand->SetParameters(0.0073687  , -3.98333e-05 ,  1.16193e-07  , -1.20181e-10);
+    TF1* gaus=new TF1("gaus","gaus",-0.02,0.02);
     bmres2d->Clone("BMTrackResiduals");
     bmpull2d->Clone("bmPulls");
+    bmrestime2d->Clone("BMTrackTimeResiduals");
     for(int i=0;i<bmres2d->GetNbinsY();i++){
       reso=bmres2d->ProjectionX(Form("ResProfX_%d",i),i,i);
-      if(reso->GetEntries()>300){
+      if(reso->GetEntries()>100){
         gaus->SetParameters(reso->GetEntries(),reso->GetMean(),reso->GetStdDev());
         reso->Fit(gaus,"QR+");
         if(evalreso){
@@ -132,14 +141,38 @@ void Evalt0fromreco(TString in_filename="reco.root",Bool_t t0eval=false, Bool_t 
           fpReSkew->SetBinContent(i+1,reso->GetSkewness());
         }
         if(selfstrel){
-          streltime.push_back(oldstrel->GetBinCenter(oldstrel->FindFirstBinAbove(bmres2d->GetYaxis()->GetBinCenter(i))));
+          streltime.push_back( bmrestime2d->GetYaxis()->GetBinCenter(i));
           streldist.push_back(oldstrel->GetBinContent(streltime.back())-gaus->GetParameter(1));
           strelrawdist.push_back(oldstrel->GetBinContent(streltime.back())-reso->GetMean());
+          strelnewdist.push_back(oldstrelbyhand->Eval(i*0.01)-gaus->GetParameter(1));
+          strelnewtime.push_back(i*0.01);
         }
       }else{
         cout<<"WARNING:: numevents < minimum  bin="<<i<<endl;
       }
     }
+    //time
+    for(int i=0;i<bmrestime2d->GetNbinsY();i++){
+      reso=bmrestime2d->ProjectionX(Form("ResTimeProfX_%d",i),i,i);
+      if(reso->GetEntries()>100){
+        gaus->SetParameters(reso->GetEntries(),reso->GetMean(),reso->GetStdDev());
+        reso->Fit(gaus,"QR+");
+        if(evalreso){
+          //for checking, not useful for parameters
+          fpResTimeFitMean->SetBinContent(i+1,gaus->GetParameter(1));
+          fpParTimeNewDistResFit->SetBinContent(i+1,gaus->GetParameter(2));
+          fpParTimeNewDistResRaw->SetBinContent(i+1,reso->GetStdDev());
+          fpResTimeRawMean->SetBinContent(i+1,reso->GetMean());
+        }
+        if(selfstrel){
+          streltimetime.push_back(oldstrel->GetBinCenter(oldstrel->FindFirstBinAbove(bmres2d->GetYaxis()->GetBinCenter(i))));
+          streltimedist.push_back(oldstrel->GetBinContent(streltimetime.back())-gaus->GetParameter(1));
+          streltimerawdist.push_back(oldstrel->GetBinContent(streltimetime.back())-reso->GetMean());
+        }
+      }else{
+        cout<<"WARNING:: numevents < minimum  bin="<<i<<endl;
+      }
+    }    
     for(int i=0;i<bmpull2d->GetNbinsY();i++){
       reso=bmpull2d->ProjectionX(Form("PullProfX_%d",i),i,i);
       gaus->SetRange(-3,3);
@@ -194,6 +227,7 @@ void Evalt0fromreco(TString in_filename="reco.root",Bool_t t0eval=false, Bool_t 
       for(Int_t i=0;i<resofunc->GetNpar();i++)
         cout<<resofunc->GetParameter(i)<<"   ";
       cout<<endl<<endl;
+      //pull
       fpResFromPull->Fit(resofunc,"QR+");
       cout<<"Resolution_FromPull_function:  "<<resofunc->GetFormula()->GetExpFormula().Data()<<endl;
       cout<<"Resolution_number_of_parameters:  "<<resofunc->GetNpar()<<endl;
@@ -205,16 +239,16 @@ void Evalt0fromreco(TString in_filename="reco.root",Bool_t t0eval=false, Bool_t 
       cout<<"Resolution_number_of_parameters:  "<<resofunc->GetNpar()<<endl;
       for(Int_t i=0;i<resofunc->GetNpar();i++)
         cout<<resofunc->GetParameter(i)<<"   ";
-      cout<<endl<<endl;
-    
+      cout<<endl<<endl;      
     }
     
     if(selfstrel){
       TGraph *fpNewSTrel=new TGraph(streldist.size(),&streltime[0], &streldist[0]);
       fpNewSTrel->SetTitle("New Space time relations from fit;Time [ns];Drift distance [cm]");
+      fpNewSTrel->SetName("NewSTrel");
       fpNewSTrel->SetMarkerStyle(8);
       file_out->Append(fpNewSTrel);
-      TF1 *strelfunc=new TF1("BMNewSTrel","pol4",0.,oldstrel->GetXaxis()->GetXmax());
+      TF1 *strelfunc=new TF1("BMNewSTrel","pol4",0.,bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
       strelfunc->FixParameter(0,0);
       fpNewSTrel->Fit(strelfunc,"QR+");
       cout<<"Strel_function:  "<<strelfunc->GetFormula()->GetExpFormula().Data()<<endl;
@@ -225,15 +259,58 @@ void Evalt0fromreco(TString in_filename="reco.root",Bool_t t0eval=false, Bool_t 
       
       TGraph *fpNewRawSTrel=new TGraph(streldist.size(),&streltime[0], &strelrawdist[0]);
       fpNewRawSTrel->SetTitle("New Space time relations from raw;Time [ns];Drift distance [cm]");
+      fpNewRawSTrel->SetName("NewRawSTrel");
       fpNewRawSTrel->SetMarkerStyle(8);
       file_out->Append(fpNewRawSTrel);
-      TF1 *rawstrelfunc=new TF1("BMNewRawSTrel","pol4",0.,oldstrel->GetXaxis()->GetXmax());
+      TF1 *rawstrelfunc=new TF1("BMNewRawSTrel","pol4",0.,bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
       rawstrelfunc->FixParameter(0,0);
       fpNewRawSTrel->Fit(rawstrelfunc,"QR+");
       cout<<"Strel_function:  "<<rawstrelfunc->GetFormula()->GetExpFormula().Data()<<endl;
       cout<<"STrel_number_of_parameters:  "<<rawstrelfunc->GetNpar()<<endl;
       for(Int_t i=0;i<rawstrelfunc->GetNpar();i++)
         cout<<rawstrelfunc->GetParameter(i)<<"   ";
+      cout<<endl;
+      
+      TGraph *fpNewNewSTrel=new TGraph(strelnewdist.size(),&strelnewtime[0], &strelnewdist[0]);
+      fpNewNewSTrel->SetTitle("New Space time relations from raw;Time [ns];Drift distance [cm]");
+      fpNewNewSTrel->SetName("NewNewSTrel");
+      fpNewNewSTrel->SetMarkerStyle(8);
+      file_out->Append(fpNewNewSTrel);
+      TF1 *newnewstrelfunc=new TF1("newnewstrelfunc","pol4",0.,bmres2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      newnewstrelfunc->FixParameter(0,0);
+      fpNewNewSTrel->Fit(newnewstrelfunc,"QR+");
+      cout<<"NewNewStrel_function:  "<<newnewstrelfunc->GetFormula()->GetExpFormula().Data()<<endl;
+      cout<<"STrel_number_of_parameters:  "<<newnewstrelfunc->GetNpar()<<endl;
+      for(Int_t i=0;i<newnewstrelfunc->GetNpar();i++)
+        cout<<newnewstrelfunc->GetParameter(i)<<"   ";
+      cout<<endl;
+      
+      TGraph *fpNewTimeSTrel=new TGraph(streltimedist.size(),&streltimetime[0], &streltimedist[0]);
+      fpNewTimeSTrel->SetTitle("New Space time relations from time dist;Time [ns];Drift distance [cm]");
+      fpNewTimeSTrel->SetName("NewTimeSTrel");
+      fpNewTimeSTrel->SetMarkerStyle(8);
+      file_out->Append(fpNewTimeSTrel);
+      TF1 *newtimestrelfunc=new TF1("newtimestrelfunc","pol4",0.,bmrestime2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      newtimestrelfunc->FixParameter(0,0);
+      fpNewTimeSTrel->Fit(newtimestrelfunc,"QR+");
+      cout<<"NewTimeStrel_function:  "<<newtimestrelfunc->GetFormula()->GetExpFormula().Data()<<endl;
+      cout<<"STrel_number_of_parameters:  "<<newtimestrelfunc->GetNpar()<<endl;
+      for(Int_t i=0;i<newtimestrelfunc->GetNpar();i++)
+        cout<<newtimestrelfunc->GetParameter(i)<<"   ";
+      cout<<endl;
+      
+      TGraph *fpNewTimeRawSTrel=new TGraph(streltimerawdist.size(),&streltimetime[0], &streltimerawdist[0]);
+      fpNewTimeRawSTrel->SetTitle("New Space time relations from time raw dist;Time [ns];Drift distance [cm]");
+      fpNewTimeRawSTrel->SetName("NewTimeRawSTrel");
+      fpNewTimeRawSTrel->SetMarkerStyle(8);
+      file_out->Append(fpNewTimeRawSTrel);
+      TF1 *newtimerawstrelfunc=new TF1("newtimerawstrelfunc","pol4",0.,bmrestime2d->GetYaxis()->GetBinCenter(bmres2d->GetYaxis()->GetLast()));
+      newtimerawstrelfunc->FixParameter(0,0);
+      fpNewTimeRawSTrel->Fit(newtimerawstrelfunc,"QR+");
+      cout<<"NewTimeRawStrel_function:  "<<newtimerawstrelfunc->GetFormula()->GetExpFormula().Data()<<endl;
+      cout<<"STrel_number_of_parameters:  "<<newtimerawstrelfunc->GetNpar()<<endl;
+      for(Int_t i=0;i<newtimerawstrelfunc->GetNpar();i++)
+        cout<<newtimerawstrelfunc->GetParameter(i)<<"   ";
       cout<<endl;
     
     }

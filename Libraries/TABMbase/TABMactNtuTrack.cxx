@@ -48,11 +48,13 @@ delete fpFunctor;
 void TABMactNtuTrack::CreateHistogram()
 {
   TABMactBaseNtuTrack::CreateHistogram();
-
+  TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   fpResAll = new TH2F("bmTrackResidualAll","Residual vs Rdrift for all the hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResAll);
   fpResSel = new TH2F("bmTrackResidualSelected","Residual vs Rdrift for selected  hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResSel);
+  fpResTimeSel = new TH2F("bmTrackResidualTimeSelected","Residual vs Rdrift for selected  hits; Residual(measured-fitted drift distance) [cm]; Measured time [ns]", 600, -0.3, 0.3, 100, 0., p_bmcon->GetHitTimeCut());
+  AddHistogram(fpResTimeSel);
   fpResDisc = new TH2F("bmTrackResidualDischarged","Residual vs Rdrift for discharged hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
   AddHistogram(fpResDisc);
   fpResAllX = new TH2F("bmTrackResidualAllX","Residual vs Rdrift for all the XZ view hits; Residual(measured-fitted drift distance) [cm]; Measured rdrift [cm]", 600, -0.3, 0.3, 100, 0., 1.);
@@ -121,7 +123,6 @@ void TABMactNtuTrack::CreateHistogram()
   AddHistogram(fpFitMFvsQF);
 
   //STREL calibration
-  TABMparConf* p_bmcon = (TABMparConf*) fpParCon->Object();
   if(TAGrecoManager::GetPar()->CalibBM()>0){
     Int_t nbin=(int)(p_bmcon->GetHitTimeCut()/10.);
     fpResTimeTot = new TH2F("bmTrackTimeResidual","Residual vs Time; Residual [cm]; Time [ns]", 600, -0.3, 0.3,nbin, 0., p_bmcon->GetHitTimeCut());
@@ -235,6 +236,7 @@ Bool_t TABMactNtuTrack::Action()
         if(p_hit->GetIsSelected()==savedtracktr->GetTrackIdX() || p_hit->GetIsSelected()==savedtracktr->GetTrackIdY()){
           fpResAll->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
           fpResSel->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
+          fpResTimeSel->Fill(p_hit->GetResidual(), p_hit->GetTdrift());
           if(p_hit->GetView()==1){
             fpResAllX->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
             fpResSelX->Fill(p_hit->GetResidual(),p_hit->GetRdrift());
