@@ -166,9 +166,6 @@ void GlobalAna::LoopEvent(Int_t nEvents)
 //! Actions after loop event
 void GlobalAna::AfterEventLoop()
 {
-	if( fAnaManager->GetAnalysisPar().PtResoFlag )
-		fActPtReso->Finalize();
-
    fTAGroot->EndEventLoop();
     
    if (fFlagOut)

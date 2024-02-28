@@ -8,11 +8,13 @@
 /*------------------------------------------+---------------------------------*/
 
 #include "TVector3.h"
+#include "TSystem.h"
 
 #include "TATWparGeo.hxx"
 
 #include "TAMCntuPart.hxx"
 #include "TAMCntuRegion.hxx"
+#include "TATWntuPoint.hxx"
 #include "TAGntuGlbTrack.hxx"
 
 #include "TANAactBaseNtu.hxx"
@@ -39,14 +41,19 @@ public:
 
 	// Action
 	virtual  Bool_t  Action();
-	void		Finalize();
+	void  BeginEventLoop();
+	void  EndEventLoop();
 
 protected:
+	Int_t		FindMcParticleAtTgt(TAGtrack* track);
+	void		CheckMomentumHistogram(std::string name);
+	Float_t		GetMomentumBinCenter(Double_t momentum);
 	void		FillMomResidual(TAGtrack* track);
 	void		GetMcMomentaAtTgt();
 	void		ClearData();
 
-	Float_t		GetMomentumBinCenter(Double_t momentum);
+	Bool_t CheckRadiativeDecayChain(Int_t partID, std::vector<Int_t>* partIDvec);
+	Bool_t CheckFragIn1stTWlayer(Int_t partID, std::vector<Int_t>* partIDvec);
 
 	TAGdataDsc*		fpNtuTrack;				///< input global tracks
 	TAGdataDsc*		fpNtuMcTrk;				///< input MC tracks
@@ -71,7 +78,7 @@ protected:
 
 	std::map<Int_t, TVector3> fMcMomMap;	///< Map of MC momenta in the event. key = MCid
 
-	std::map<string, TH1D*> fpHisMomRes;	///< Map for momentum resolution histograms; key = particle name + true momentum bin center (e.g. "H_1.7" for hydrogen tracks w/ momentum around 1.7 GeV/c)
+	std::map<std::string, TH1D*> fpHisMomRes;	///< Map for momentum resolution histograms; key = particle name + true momentum bin center (e.g. "H_1.7" for hydrogen tracks w/ momentum around 1.7 GeV/c)
 
 	ClassDef(TANAactPtReso, 0)
 };
