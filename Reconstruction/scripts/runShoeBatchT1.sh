@@ -326,27 +326,28 @@ EOF
         # Create DAG job file
         # 1. Process files of run
         # 2. Merge output files of single run
-        dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
+        if [ $runNumber -eq $firstRunNumber ]; then
+            dag_sub="${HTCfolder}/submitDAG_${campaign}_${firstRunNumber}_${lastRunNumber}.sub"
+            touch ${dag_sub}
+        fi
 
-        cat <<EOF > $dag_sub
+        cat <<EOF >> $dag_sub
 JOB process_${campaign}_${runNumber} ${filename_sub}
 JOB merge_${campaign}_${runNumber} ${merge_sub}
 PARENT process_${campaign}_${runNumber} CHILD merge_${campaign}_${runNumber}
 EOF
 
-        cd ${HTCfolder}
-        condor_submit_dag -force ${dag_sub}
-        sleep 1 #add sleep to avoid clogging of scheduler
-        cd -
-
-        echo "Submitted jobs for run ${runNumber}"
-        
-        if [ ${runNumber} -eq ${lastRunNumber} ]; then
-            echo "All runs submitted!"
-            exit 1
-        fi
-        
     else #file merging disabled, run only the processing
         condor_submit -spool ${filename_sub}
+        echo "Submitted jobs for run ${runNumber}"
     fi
 done
+
+#Submit final DAG when merge is on
+if [ $mergeFilesOpt -eq 1 ]; then
+    cd ${HTCfolder}
+    condor_submit_dag -force ${dag_sub}
+    cd -
+
+    echo "All runs submitted!"
+fi
