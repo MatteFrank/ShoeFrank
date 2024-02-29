@@ -4,7 +4,6 @@ import load_libs
 import sys
 from ROOT import TAGrecoManager
 from ROOT import GlobalAna
-from ROOT import TAGrecoManager
 
 argv = sys.argv
 
