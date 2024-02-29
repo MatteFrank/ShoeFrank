@@ -408,7 +408,7 @@ if [[ ! $fileNumber -eq 0 ]]; then
     #Case1: next file found in folder, recall this script on the new file
     if [[ -e "$inFile" ]]; then
         echo "Moving to next file in the campaign"
-        ./$0 -i $inFile -o $outFolder -f 1
+        $0 -i $inFile -o $outFolder -f 1
     #Case2: next file does not exist, create and submit the job for the "full stat" merge
     else
         baseMergedSingleFile="$(basename $outMergedFile)"
