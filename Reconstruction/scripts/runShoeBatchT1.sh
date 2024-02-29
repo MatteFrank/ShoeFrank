@@ -336,6 +336,7 @@ EOF
 
         cd ${HTCfolder}
         condor_submit_dag -force ${dag_sub}
+        sleep 1 #add sleep to avoid clogging of scheduler
         cd -
 
         echo "Submitted jobs for run ${runNumber}"
