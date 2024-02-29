@@ -9,7 +9,7 @@ NumberFiles: 2
 "./geomaps/HIT2022_MC/FOOT.reg": -1
 
 DetectorName: "ST"
-NumberFiles: 2
+NumberFiles: 1
 "./geomaps/HIT2022_MC/TASTdetector.geo": -1
 
 DetectorName: "BM"
