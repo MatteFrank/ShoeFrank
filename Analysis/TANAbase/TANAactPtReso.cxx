@@ -40,12 +40,44 @@ fpTwGeo(pgTwGeo)
 		Error("TANAactPtReso()", "No GeoTrafo action available yet\n");
 }
 
-//------------------------------------------+-----------------------------------
 
 //! \brief Destructor.
 TANAactPtReso::~TANAactPtReso()
 {
 	ClearData();
+}
+
+//------------------------------------------+-----------------------------------
+
+//! \brief Perform preliminary operations before the event loop
+void TANAactPtReso::BeginEventLoop()
+{
+	TAGparGeo* pGeoMapG = (TAGparGeo*) fpGeoMapG->Object();
+	TATWparGeo* twGeo = (TATWparGeo*) fpTwGeo->Object();
+
+	// beam loss in target
+	fBeamEnergyTarget  = pGeoMapG->GetBeamPar().Energy;
+	fBeamA             = pGeoMapG->GetBeamPar().AtomicMass;
+	fBeamZ             = pGeoMapG->GetBeamPar().AtomicNumber;
+
+	for(int iCh=1; iCh<=fBeamZ; ++iCh)
+	{
+		fpDelGraphs[iCh];
+		fpDelGraphs[iCh] = new TGraphErrors();
+		fpResGraphs[iCh];
+		fpResGraphs[iCh] = new TGraphErrors();
+	}
+	fpAllDelGraph = new TMultiGraph("P_delta", "P delta");
+	fpAllResGraph = new TMultiGraph("P_resolution", "P resolution");
+
+	fGauss = new TF1("fGauss", "[0]+[1]*TMath::Gaus(x,[2],[3])", -.5, .5);
+
+	//Get some relevant regions
+	fRegTgt = pGeoMapG->GetRegTarget();
+	fRegAir1 = pGeoMapG->GetRegAirPreTW();
+	fRegAir2 = pGeoMapG->GetRegAirTW();
+	fRegFirstTWbar = twGeo->GetRegStrip(0, 0);
+	fRegLastTWbar = twGeo->GetRegStrip(1, twGeo->GetNBars() - 1);
 }
 
 
@@ -73,6 +105,27 @@ Bool_t TANAactPtReso::Action()
 }
 
 
+//! \brief Perform analysis after the event loop
+void TANAactPtReso::EndEventLoop()
+{
+	for( auto itMap : fpHisMomRes )
+		AddHistogram(itMap.second);
+	SetHistogramDir(fDirectory);
+	SetValidHistogram(kTRUE);
+
+	for(Int_t iCh = 1; iCh <= fBeamZ; ++iCh )
+		ExtractMomentumResolution(iCh);
+
+	if( fpAllDelGraph->GetListOfGraphs()->GetSize() > 0 )
+		SaveAllGraphs();
+}
+
+
+//------------------------------------------------------------------------------
+//------------------------------------ ACTION ----------------------------------
+//------------------------------------------------------------------------------
+
+
 //! \brief Fill the momentum residual for a track
 void TANAactPtReso::FillMomResidual(TAGtrack* track)
 {
@@ -86,43 +139,14 @@ void TANAactPtReso::FillMomResidual(TAGtrack* track)
 	TVector3 recoMom = track->GetTgtMomentum();
 	TVector3 mcMom = fMcMomMap[mcPart];
 
-	Float_t momBin = GetMomentumBinCenter(recoMom.Mag());
+	Float_t momBin = GetMomentumBinCenter(mcMom.Mag());
 	TString hisName = GetParticleNameFromCharge(track->GetTwChargeZ());
 	hisName = hisName + Form("_%.2f",momBin);
-	CheckMomentumHistogram(hisName.Data());
+	CheckMomentumHistogram(hisName);
 
-	fpHisMomRes[hisName.Data()]->Fill((recoMom.Mag() - mcMom.Mag())/mcMom.Mag());
+	fpHisMomRes[hisName]->Fill((recoMom.Mag() - mcMom.Mag())/mcMom.Mag());
 }
 
-
-//! \brief Perform preliminary operations before the event loop
-void TANAactPtReso::BeginEventLoop()
-{
-	TAGparGeo* pGeoMapG = (TAGparGeo*) fpGeoMapG->Object();
-	TATWparGeo* twGeo = (TATWparGeo*) fpTwGeo->Object();
-
-	// beam loss in target
-	fBeamEnergyTarget  = pGeoMapG->GetBeamPar().Energy;
-	fBeamA             = pGeoMapG->GetBeamPar().AtomicMass;
-	fBeamZ             = pGeoMapG->GetBeamPar().AtomicNumber;
-
-	TString matTgt     = pGeoMapG->GetTargetPar().Material;
-	Float_t thickTgt   = pGeoMapG->GetTargetPar().Size[2]/2.; // in average
-
-	//Get some relevant regions
-	fRegTgt = pGeoMapG->GetRegTarget();
-	fRegAir1 = pGeoMapG->GetRegAirPreTW();
-	fRegAir2 = pGeoMapG->GetRegAirTW();
-	fRegFirstTWbar = twGeo->GetRegStrip(0, 0);
-	fRegLastTWbar = twGeo->GetRegStrip(1, twGeo->GetNBars() - 1);
-}
-
-
-//! \brief Perform analysis after the event loop
-void TANAactPtReso::EndEventLoop()
-{
-
-}
 
 
 //! \brief Find the MC particle needed for momentum comparison
@@ -144,6 +168,9 @@ Int_t TANAactPtReso::FindMcParticleAtTgt(TAGtrack* track)
 	if(std::find(particleID_vec.begin(), particleID_vec.end(), trackId_TW) == particleID_vec.end())
 		particleID_vec.insert(particleID_vec.begin(), trackId_TW);
 
+	if(std::find(particleID_vec.begin(), particleID_vec.end(), track->GetMcMainTrackId()) == particleID_vec.end())
+		return -1;
+
 	for ( auto itMc : fMcMomMap )
 	{
 		if( std::find(particleID_vec.begin(), particleID_vec.end(), itMc.first) != particleID_vec.end() )
@@ -157,14 +184,13 @@ Int_t TANAactPtReso::FindMcParticleAtTgt(TAGtrack* track)
 //! \brief Check if a momentum histogram exists, create it otherwise
 //!
 //! \param[in] name Name of the histogram containing particle name and momentum bin center
-void TANAactPtReso::CheckMomentumHistogram(std::string name)
+void TANAactPtReso::CheckMomentumHistogram(TString name)
 {
 	if( fpHisMomRes.find(name) != fpHisMomRes.end() )
 		return;
 
 	fpHisMomRes[name];
-	fpHisMomRes[name] = new TH1D(name.c_str(), Form("%s;(p_{reco} - p_{MC})/p_{MC} at Target;Entries", name.c_str()), 1000, -1, 1);
-	AddHistogram(fpHisMomRes[name]);
+	fpHisMomRes[name] = new TH1D(name.Data(), Form("%s;(p_{reco} - p_{MC})/p_{MC} at Target;Entries", name.Data()), 1000, -1, 1);
 }
 
 
@@ -200,6 +226,126 @@ void TANAactPtReso::GetMcMomentaAtTgt()
 		}
 	}
 }
+
+
+//------------------------------------------------------------------------------
+//---------------------------------- AFTER LOOP --------------------------------
+//------------------------------------------------------------------------------
+
+
+
+void TANAactPtReso::ExtractMomentumResolution(Int_t iCh)
+{
+	TString partName(GetParticleNameFromCharge(iCh));
+	cout << "Extracting momentum resolution for " << partName << endl;
+
+	for( auto itHisMap :fpHisMomRes )
+	{
+		if( (itHisMap.second)->GetEntries() < 100 || !(itHisMap.first).Contains(TString(partName+"_")) )
+			continue;
+		
+		double mean = (itHisMap.second)->GetBinCenter((itHisMap.second)->GetMaximumBin());
+		double dev = (itHisMap.second)->GetStdDev();
+		fGauss->SetParameter(0,0.);
+		fGauss->SetParameter(1,(itHisMap.second)->GetMaximum());
+		fGauss->SetParameter(2,mean);
+		fGauss->SetParLimits(2,mean-3*dev,mean+3*dev);
+		fGauss->SetParameter(3,dev);
+		fGauss->SetParLimits(3,0,dev*2);
+
+		TF1* func = (TF1*)fGauss->Clone();
+		(itHisMap.second)->Fit(func, "Q0", "", -0.3, 0.3);
+
+		TString sub = (itHisMap.first);
+		sub.ReplaceAll(TString(partName+"_"), "");
+		double pMC = sub.Atof();
+
+		fpDelGraphs[iCh]->Set(fpDelGraphs[iCh]->GetN() + 1);
+		fpDelGraphs[iCh]->SetPoint(fpDelGraphs[iCh]->GetN()-1, pMC, func->GetParameter(2)*100);
+		fpDelGraphs[iCh]->SetPointError(fpDelGraphs[iCh]->GetN()-1, fMomStep/sqrt(12), func->GetParError(2)*100);
+
+		fpResGraphs[iCh]->Set(fpResGraphs[iCh]->GetN() + 1);
+		fpResGraphs[iCh]->SetPoint(fpResGraphs[iCh]->GetN()-1, pMC, func->GetParameter(3)*100);
+		fpResGraphs[iCh]->SetPointError(fpResGraphs[iCh]->GetN()-1, fMomStep/sqrt(12), func->GetParError(3)*100);
+	}
+
+	if( fpResGraphs[iCh]->GetN() > 0 )
+	{
+		fpDelGraphs[iCh]->SetName(partName);
+		fpDelGraphs[iCh]->SetTitle(Form("%s;p_{MC} [GeV/c];#Delta (p) [%%]",partName.Data()));
+		fpDelGraphs[iCh]->SetMarkerColor(fColors[iCh-1]);
+		fpDelGraphs[iCh]->SetMarkerStyle(20);
+		fpDelGraphs[iCh]->SetMarkerSize(1.2);
+		fpDelGraphs[iCh]->SetLineColor(fColors[iCh-1]);
+		fpDelGraphs[iCh]->SetLineWidth(2);
+		fpAllDelGraph->Add(fpDelGraphs[iCh], "p");
+
+		fpResGraphs[iCh]->SetName(partName);
+		fpResGraphs[iCh]->SetTitle(Form("%s;p_{MC} [GeV/c];#sigma (p) [%%]",partName.Data()));
+		fpResGraphs[iCh]->SetMarkerColor(fColors[iCh-1]);
+		fpResGraphs[iCh]->SetMarkerStyle(20);
+		fpResGraphs[iCh]->SetMarkerSize(1.2);
+		fpResGraphs[iCh]->SetLineColor(fColors[iCh-1]);
+		fpResGraphs[iCh]->SetLineWidth(2);
+		fpAllResGraph->Add(fpResGraphs[iCh], "p");
+	}
+}
+
+
+//! \brief
+void TANAactPtReso::SaveAllGraphs()
+{
+	TDirectory* cwd = gDirectory;
+	gDirectory = fDirectory;
+	gROOT->SetBatch(kTRUE);
+	for( auto itGraph : fpDelGraphs )
+	{
+		if( (itGraph.second)->GetN() > 0 )
+		{
+			TCanvas* c1 = new TCanvas(Form("pDelta_Z%d",itGraph.first), Form("pDelta_Z%d",itGraph.first), 1200, 1000);
+			(itGraph.second)->Draw("ALP");
+			c1->SetGrid();
+			c1->Write();
+		}
+	}
+
+	for( auto itGraph : fpResGraphs )
+	{
+		if( (itGraph.second)->GetN() > 0 )
+		{
+			TCanvas* c1 = new TCanvas(Form("pSigma_Z%d",itGraph.first), Form("pSigma_Z%d",itGraph.first), 1200, 1000);
+			(itGraph.second)->Draw("ALP");
+			c1->SetGrid();
+			c1->Write();
+		}
+	}
+
+	TCanvas* cDelta = new TCanvas("pDeltaAll", "pDeltaAll", 1200, 1000);
+	fpAllDelGraph->GetXaxis()->SetTitle("p_{MC} [GeV/c]");
+	fpAllDelGraph->GetYaxis()->SetTitle("#delta (p) [%%]");
+	fpAllDelGraph->Draw("ap");
+	TLegend* leg = cDelta->BuildLegend();
+	leg->SetNColumns(2);
+	leg->Draw("same");
+	cDelta->SetGrid();
+	cDelta->Write();
+
+	TCanvas* cReso = new TCanvas("pResoAll", "pResoAll", 1200, 1000);
+	fpAllResGraph->GetXaxis()->SetTitle("p_{MC} [GeV/c]");
+	fpAllResGraph->GetYaxis()->SetTitle("#sigma (p) [%%]");
+	fpAllResGraph->Draw("ap");
+	TLegend* leg2 = cReso->BuildLegend();
+	leg2->SetNColumns(2);
+	leg2->Draw("same");
+	cReso->SetGrid();
+	cReso->Write();
+	gDirectory = cwd;
+}
+
+
+//------------------------------------------------------------------------------
+//----------------------------------- UTILITIES --------------------------------
+//------------------------------------------------------------------------------
 
 
 //! \brief Get the momentum bin center from the momentum magnitude
