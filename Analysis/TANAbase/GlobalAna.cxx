@@ -71,6 +71,7 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fpNtuGlbTrack(0x0),
    fActGlbAna(0x0),
    fActPtReso(0x0),
+   fActGlbCuts(0x0),
    fFlagHisto(false),
    fFlagMC(isMC),
    fSkipEventsN(0)
@@ -268,10 +269,10 @@ void GlobalAna::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TASTparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
-      fpParConfSt = new TAGparaDsc(new TASTparConf());
-      TASTparConf* parConf = (TASTparConf*)fpParConfSt->Object();
-      parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
-      parConf->FromFile(parFileName.Data());
+      // fpParConfSt = new TAGparaDsc(new TASTparConf());
+      // TASTparConf* parConf = (TASTparConf*)fpParConfSt->Object();
+      // parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
+      // parConf->FromFile(parFileName.Data());
    }
    
    // initialise par files for Beam Monitor
@@ -390,6 +391,8 @@ void GlobalAna::CreateAnaAction()
       }
 
    }
+
+   fActGlbCuts = new TANAactNtuSelectionCuts("anaActCuts", fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
 }
 
 //__________________________________________________________
@@ -404,6 +407,7 @@ void GlobalAna::AddRequiredItem()
       if (fAnaManager->GetAnalysisPar().PtResoFlag && fFlagMC)
          gTAGroot->AddRequiredItem("anaActPtReso");
    }
+   gTAGroot->AddRequiredItem("anaActCuts");
 }
 
 //__________________________________________________________

@@ -23,6 +23,7 @@ set( with_dictionnaries
        TANAactBaseNtu
        TANAactNtuMass
        TANAactPtReso
+       TANAactNtuSelectionCuts
 )
 
 set( without_dictionnaries
