@@ -145,11 +145,21 @@ if [[ ${outFolder: -1} == "/" ]]; then
     outFolder=${outFolder::-1}
 fi
 
+echo
+echo "-----------------------------------------------------"
+
 if [ $lastRunNumber -lt $firstRunNumber ]; then
     lastRunNumber=$firstRunNumber
+    echo "Submitting run ${firstRunNumber}"
 else
     echo "Submitting runs from ${firstRunNumber} to ${lastRunNumber}"
 fi
+
+echo "Processing files in folder = "$inFolder
+echo "Campaign = " $campaign
+echo 'Output folder = '$outFolder
+echo "-----------------------------------------------------"
+echo
 
 #Cycle on runs to process
 for runNumber in $(seq $firstRunNumber $lastRunNumber);
@@ -167,18 +177,7 @@ do
         # exit 0
     fi
 
-    echo
-    echo "-----------------------------------------------------"
-    echo "Running on files in folder = "$inFolder
-    echo "Campaign = " $campaign
-    echo "Run = "$runNumber
-    echo 'Number of files = '$nFiles
-    echo 'Output folder = '$outFolder
-    if [[ $mergeFilesOpt -eq 1 ]]; then
-        echo 'Output file = '$outMergedFile
-    fi
-    echo "-----------------------------------------------------"
-    echo
+    echo "Run = "$runNumber "  number of files = "$nFiles
 
     #Create folder for condor auxiliary files if not present
     HTCfolder="${outFolder}/HTCfiles"
