@@ -315,6 +315,7 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
+priority              = 1
 
 periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Merge of run ${runNumber} exceeded maximum runtime allowed, check presence of files in the output folder"
