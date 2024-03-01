@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
+# import libraries
 import load_libs
 import sys
+
+# import required classes
 from ROOT import TAGroot
 from ROOT import TAGrecoManager
 from ROOT import TAGcampaignManager
@@ -28,7 +31,7 @@ from ROOT import TString
 from ROOT import TStopwatch
 
 
-### main
+### ################# ################# ###
 argv = sys.argv
 
 outFileName = ""
@@ -37,6 +40,7 @@ expName = ""
 nMaxEvts = -1
 runNumber = -1
    
+# looking for arguments
 for i in range(0, len(argv)):
     if argv[i] == "-out":
       i += 1
@@ -55,59 +59,80 @@ for i in range(0, len(argv)):
        runNumber = int(argv[++i])
   
   
-print(filename, outFileName, expName, runNumber, nMaxEvts)
+# instanciate reco manager
 TAGrecoManager.Instance(expName)
 TAGrecoManager.GetPar().FromFile()
 TAGrecoManager.GetPar().Print()
 
+ntu = TAGrecoManager.GetPar().IsSaveTree()
+
+# instanciate TAG root
 tagr = TAGroot()
 
+# instanciate campaign manager
 campManager = TAGcampaignManager(expName)
 campManager.FromFile()
 
+# instanciate FOOT geo transformation
 geoTrafo =  TAGgeoTrafo()
 parFileName = campManager.GetCurGeoFile(TAGgeoTrafo.GetBaseName(), runNumber)
 geoTrafo.FromFile(parFileName)
 
+# out put file
 outFile = TAGactTreeWriter("outFile")
 
-vtMap =  TAGparaDsc("vtMap", TAVTparMap())
+# open map, config and geo files
+vtMap =  TAGparaDsc(TAVTparMap())
 map   = vtMap.Object()
 parFileName = campManager.GetCurMapFile(TAVTparGeo.GetBaseName(), runNumber)
 map.FromFile(parFileName)
 
-vtGeo    =  TAGparaDsc("vtGeo",  TAVTparGeo())
+vtGeo    =  TAGparaDsc(TAVTparGeo())
 geomap   = vtGeo.Object()
 parFileName = campManager.GetCurGeoFile(TAVTparGeo.GetBaseName(), runNumber)
 geomap.FromFile(parFileName)
+sensorsN = geomap.GetSensorsN()
 
-vtConf  = TAGparaDsc("vtConf", TAVTparConf())
+vtConf  = TAGparaDsc(TAVTparConf())
 parconf = vtConf.Object()
 parFileName = campManager.GetCurConfFile(TAVTparGeo.GetBaseName(), runNumber)
 parconf.FromFile(parFileName)
 
-vtDaq    =  TAGdataDsc("vtDaq",  TAGdaqEvent())
-vtNtu    =  TAGdataDsc("vtNtu",  TAVTntuHit())
-vtClus   =  TAGdataDsc("vtClus",  TAVTntuCluster())
-vtTrck   =  TAGdataDsc("vtTrck",  TAVTntuTrack())
+# define containers
+vtDaq    =  TAGdataDsc(TAGdaqEvent())
+vtNtu    =  TAGdataDsc(TAVTntuHit(sensorsN))
+vtClus   =  TAGdataDsc(TAVTntuCluster(sensorsN))
+vtTrck   =  TAGdataDsc(TAVTntuTrack())
 
-daqActReader  = TAGactDaqReader("daqActReader", vtDaq)
+# input file
+name = tagr.DefaultActionName("TAGactDaqReader");
+daqActReader  = TAGactDaqReader(name, vtDaq)
 
-vtActRaw  =  TAVTactNtuHit("vtActRaw", vtNtu, vtDaq, vtGeo, vtConf, vtMap)
+# define actions
+name = tagr.DefaultActionName("TAVTactNtuHit");
+vtActRaw  =  TAVTactNtuHit(name, vtNtu, vtDaq, vtGeo, vtConf, vtMap)
 vtActRaw.CreateHistogram()
 
-vtActClus = TAVTactNtuCluster("vtActClus", vtNtu, vtClus, vtConf, vtGeo)
+name = tagr.DefaultActionName("TAVTactNtuCluster");
+vtActClus = TAVTactNtuCluster(name, vtNtu, vtClus, vtConf, vtGeo)
 vtActClus.CreateHistogram()
 
-vtActTrck = TAVTactNtuTrackF("vtActTrck", vtClus, vtTrck, vtConf, vtGeo)
+name = tagr.DefaultActionName("TAVTactNtuTrackF");
+vtActTrck = TAVTactNtuTrackF(name, vtClus, vtTrck, vtConf, vtGeo)
 vtActTrck.CreateHistogram()
 
-#outFile.SetupElementBranch(vtNtu, "vtrh.");
-#outFile.SetupElementBranch(vtClus, "vtclus.");
-#outFile.SetupElementBranch(vtTrck, "vttrack.");
+# save in tree
+if ntu :
+   outFile.SetupElementBranch(vtNtu)
+   outFile.SetupElementBranch(vtClus)
+   outFile.SetupElementBranch(vtTrck)
 
+##########################################
+
+# open input file
 daqActReader.Open(filename)
 
+# required actions
 tagr.AddRequiredItem(daqActReader)
 tagr.AddRequiredItem(vtActRaw)
 tagr.AddRequiredItem(vtActClus)
@@ -116,13 +141,16 @@ tagr.AddRequiredItem(outFile)
 
 tagr.Print()
 
+# open output file
 if outFile.Open(outFileName, "RECREATE") :
    exit(0)
 
+# set directory for histos
 vtActRaw.SetHistogramDir(outFile.File())
 vtActClus.SetHistogramDir(outFile.File())
 vtActTrck.SetHistogramDir(outFile.File())
 
+# loop oever events
 print(" Beginning the Event Loop ")
 tagr.BeginEventLoop()
 
