@@ -35,10 +35,10 @@ from ROOT import TStopwatch
 argv = sys.argv
 
 outFileName = ""
-filename = ""
-expName = ""
-nMaxEvts = -1
-runNumber = -1
+filename    = ""
+expName     = ""
+nMaxEvts    = -1
+runNumber   = -1
    
 # looking for arguments
 for i in range(0, len(argv)):
@@ -74,7 +74,7 @@ campManager = TAGcampaignManager(expName)
 campManager.FromFile()
 
 # instanciate FOOT geo transformation
-geoTrafo =  TAGgeoTrafo()
+geoTrafo    = TAGgeoTrafo()
 parFileName = campManager.GetCurGeoFile(TAGgeoTrafo.GetBaseName(), runNumber)
 geoTrafo.FromFile(parFileName)
 
@@ -82,42 +82,42 @@ geoTrafo.FromFile(parFileName)
 outFile = TAGactTreeWriter("outFile")
 
 # open map, config and geo files
-vtMap =  TAGparaDsc(TAVTparMap())
-map   = vtMap.Object()
+vtMap       = TAGparaDsc(TAVTparMap())
+map         = vtMap.Object()
 parFileName = campManager.GetCurMapFile(TAVTparGeo.GetBaseName(), runNumber)
 map.FromFile(parFileName)
 
-vtGeo    =  TAGparaDsc(TAVTparGeo())
-geomap   = vtGeo.Object()
+vtGeo       =  TAGparaDsc(TAVTparGeo())
+geomap      = vtGeo.Object()
 parFileName = campManager.GetCurGeoFile(TAVTparGeo.GetBaseName(), runNumber)
 geomap.FromFile(parFileName)
-sensorsN = geomap.GetSensorsN()
+sensorsN    = geomap.GetSensorsN()
 
-vtConf  = TAGparaDsc(TAVTparConf())
-parconf = vtConf.Object()
+vtConf      = TAGparaDsc(TAVTparConf())
+parconf     = vtConf.Object()
 parFileName = campManager.GetCurConfFile(TAVTparGeo.GetBaseName(), runNumber)
 parconf.FromFile(parFileName)
 
 # define containers
-vtDaq    =  TAGdataDsc(TAGdaqEvent())
-vtNtu    =  TAGdataDsc(TAVTntuHit(sensorsN))
-vtClus   =  TAGdataDsc(TAVTntuCluster(sensorsN))
-vtTrck   =  TAGdataDsc(TAVTntuTrack())
+vtDaq  = TAGdataDsc(TAGdaqEvent())
+vtNtu  = TAGdataDsc(TAVTntuHit(sensorsN))
+vtClus = TAGdataDsc(TAVTntuCluster(sensorsN))
+vtTrck = TAGdataDsc(TAVTntuTrack())
 
 # input file
-name = tagr.DefaultActionName("TAGactDaqReader");
-daqActReader  = TAGactDaqReader(name, vtDaq)
+name         = tagr.DefaultActionName("TAGactDaqReader");
+daqActReader = TAGactDaqReader(name, vtDaq)
 
 # define actions
-name = tagr.DefaultActionName("TAVTactNtuHit");
-vtActRaw  =  TAVTactNtuHit(name, vtNtu, vtDaq, vtGeo, vtConf, vtMap)
+name      = tagr.DefaultActionName("TAVTactNtuHit");
+vtActRaw  = TAVTactNtuHit(name, vtNtu, vtDaq, vtGeo, vtConf, vtMap)
 vtActRaw.CreateHistogram()
 
-name = tagr.DefaultActionName("TAVTactNtuCluster");
+name      = tagr.DefaultActionName("TAVTactNtuCluster");
 vtActClus = TAVTactNtuCluster(name, vtNtu, vtClus, vtConf, vtGeo)
 vtActClus.CreateHistogram()
 
-name = tagr.DefaultActionName("TAVTactNtuTrackF");
+name      = tagr.DefaultActionName("TAVTactNtuTrackF");
 vtActTrck = TAVTactNtuTrackF(name, vtClus, vtTrck, vtConf, vtGeo)
 vtActTrck.CreateHistogram()
 
