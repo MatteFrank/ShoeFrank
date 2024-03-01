@@ -366,6 +366,7 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
+priority              = 1
 
 periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Merge of output from ${inFile} exceeded maximum runtime allowed, check presence of single files in the output folder"
@@ -408,7 +409,7 @@ if [[ ! $fileNumber -eq 0 ]]; then
     #Case1: next file found in folder, recall this script on the new file
     if [[ -e "$inFile" ]]; then
         echo "Moving to next file in the campaign"
-        ./$0 -i $inFile -o $outFolder -f 1
+        $0 -i $inFile -o $outFolder -f 1
     #Case2: next file does not exist, create and submit the job for the "full stat" merge
     else
         baseMergedSingleFile="$(basename $outMergedFile)"
@@ -475,6 +476,7 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
+priority              = 2
 
 periodic_hold = time() - jobstartdate > 14400
 periodic_hold_reason = "Merge of full stat output exceeded maximum runtime allowed, check presence of files in the output folder"

@@ -145,11 +145,21 @@ if [[ ${outFolder: -1} == "/" ]]; then
     outFolder=${outFolder::-1}
 fi
 
+echo
+echo "-----------------------------------------------------"
+
 if [ $lastRunNumber -lt $firstRunNumber ]; then
     lastRunNumber=$firstRunNumber
+    echo "Submitting run ${firstRunNumber}"
 else
     echo "Submitting runs from ${firstRunNumber} to ${lastRunNumber}"
 fi
+
+echo "Processing files in folder = "$inFolder
+echo "Campaign = " $campaign
+echo 'Output folder = '$outFolder
+echo "-----------------------------------------------------"
+echo
 
 #Cycle on runs to process
 for runNumber in $(seq $firstRunNumber $lastRunNumber);
@@ -167,18 +177,7 @@ do
         # exit 0
     fi
 
-    echo
-    echo "-----------------------------------------------------"
-    echo "Running on files in folder = "$inFolder
-    echo "Campaign = " $campaign
-    echo "Run = "$runNumber
-    echo 'Number of files = '$nFiles
-    echo 'Output folder = '$outFolder
-    if [[ $mergeFilesOpt -eq 1 ]]; then
-        echo 'Output file = '$outMergedFile
-    fi
-    echo "-----------------------------------------------------"
-    echo
+    echo "Run = "$runNumber "  number of files = "$nFiles
 
     #Create folder for condor auxiliary files if not present
     HTCfolder="${outFolder}/HTCfiles"
@@ -314,6 +313,7 @@ error                 = ${mergeJobExec_base}.err
 output                = ${mergeJobExec_base}.out
 log                   = ${mergeJobExec_base}.log
 request_cpus          = 8
+priority              = 1
 
 periodic_hold = time() - jobstartdate > 10800
 periodic_hold_reason = "Merge of run ${runNumber} exceeded maximum runtime allowed, check presence of files in the output folder"
@@ -325,26 +325,28 @@ EOF
         # Create DAG job file
         # 1. Process files of run
         # 2. Merge output files of single run
-        dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
+        if [ $runNumber -eq $firstRunNumber ]; then
+            dag_sub="${HTCfolder}/submitDAG_${campaign}_${firstRunNumber}_${lastRunNumber}.sub"
+            touch ${dag_sub}
+        fi
 
-        cat <<EOF > $dag_sub
+        cat <<EOF >> $dag_sub
 JOB process_${campaign}_${runNumber} ${filename_sub}
 JOB merge_${campaign}_${runNumber} ${merge_sub}
 PARENT process_${campaign}_${runNumber} CHILD merge_${campaign}_${runNumber}
 EOF
 
-        cd ${HTCfolder}
-        condor_submit_dag -force ${dag_sub}
-        cd -
-
-        echo "Submitted jobs for run ${runNumber}"
-        
-        if [ ${runNumber} -eq ${lastRunNumber} ]; then
-            echo "All runs submitted!"
-            exit 1
-        fi
-        
     else #file merging disabled, run only the processing
         condor_submit -spool ${filename_sub}
+        echo "Submitted jobs for run ${runNumber}"
     fi
 done
+
+#Submit final DAG when merge is on
+if [ $mergeFilesOpt -eq 1 ]; then
+    cd ${HTCfolder}
+    condor_submit_dag -force ${dag_sub}
+    cd -
+
+    echo "All runs submitted!"
+fi
