@@ -259,7 +259,6 @@ EOF
     #Merge files if requested!!
     if [[ $mergeFilesOpt -eq 1 ]]; then
         ##Create merge job -> merge all single output files in the correct order
-        echo "Creating job for file merging!"
         mergeJobExec="${HTCfolder}/MergeFiles_${campaign}_${runNumber}.sh"
         mergeJobExec_base=${mergeJobExec::-3}
 
