@@ -9,6 +9,8 @@
 /*!
  \class TANAactPtReso
  \brief Base class for global reconstruction momentum performance analysis
+
+ The class creates a set of histograms to compare reconstructed and MC momentum, then performs a fit of the distributions to evaluate their mean (offset, "delta") and standard deviations (resolution, "sigma")
  */
 
 //------------------------------------------+-----------------------------------
@@ -16,6 +18,7 @@
 //!
 //! \param[in] name action name
 //! \param[in] pNtuTrack global track container descriptor
+//! \param[in,out] p_tree output tree (currently not used)
 //! \param[in] pNtuMcTrk MC track container descriptor
 //! \param[in] pNtuMcReg MC crossings container descriptor
 //! \param[in] pgGeoMap target geometry parameter descriptor
@@ -127,6 +130,8 @@ void TANAactPtReso::EndEventLoop()
 
 
 //! \brief Fill the momentum residual for a track
+//!
+//! \param[in] track Global track under study
 void TANAactPtReso::FillMomResidual(TAGtrack* track)
 {
 	if( !track->HasTwPoint() )
@@ -183,7 +188,7 @@ Int_t TANAactPtReso::FindMcParticleAtTgt(TAGtrack* track)
 
 //! \brief Check if a momentum histogram exists, create it otherwise
 //!
-//! \param[in] name Name of the histogram containing particle name and momentum bin center
+//! \param[in] name Name of the histogram containing particle name and momentum bin center (e.g. "He_2.5" for Helium at 2.5 GeV/c)
 void TANAactPtReso::CheckMomentumHistogram(TString name)
 {
 	if( fpHisMomRes.find(name) != fpHisMomRes.end() )
@@ -233,13 +238,15 @@ void TANAactPtReso::GetMcMomentaAtTgt()
 //------------------------------------------------------------------------------
 
 
-
+//! \brief Calculate the momentum resolution for a given Z
+//!
+//! \param[in] iCh Charge (atomic number) of the fragments studied
 void TANAactPtReso::ExtractMomentumResolution(Int_t iCh)
 {
 	TString partName(GetParticleNameFromCharge(iCh));
 	cout << "Extracting momentum resolution for " << partName << endl;
 
-	for( auto itHisMap :fpHisMomRes )
+	for( auto itHisMap : fpHisMomRes )
 	{
 		if( (itHisMap.second)->GetEntries() < 100 || !(itHisMap.first).Contains(TString(partName+"_")) )
 			continue;
@@ -292,7 +299,7 @@ void TANAactPtReso::ExtractMomentumResolution(Int_t iCh)
 }
 
 
-//! \brief
+//! \brief Save all the momentum resolution graphs to the output file
 void TANAactPtReso::SaveAllGraphs()
 {
 	TDirectory* cwd = gDirectory;
