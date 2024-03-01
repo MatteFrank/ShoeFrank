@@ -18,7 +18,7 @@ class TAGdataDsc : public TAGnamed {
            kEof   = BIT(16)
     };
 
-    explicit        TAGdataDsc(const char* name=0, TAGdata* p_data=0);
+    explicit        TAGdataDsc(const char* name, TAGdata* p_data=0);
     explicit        TAGdataDsc(TAGdata* p_data=0);
     virtual         ~TAGdataDsc();
 

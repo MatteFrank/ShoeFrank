@@ -50,6 +50,11 @@ execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_tier1.sh)
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/CompileMacro.py)
 
+#----------------------------------------------------------------------------
+# build py-script
+#
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pyscripts/load_libs.py.cmake"     "${CMAKE_BINARY_DIR}/Reconstruction/load_libs.py"  @ONLY)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pyscripts/                              DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/  PATTERN "*.cmake" EXCLUDE)
 
 #----------------------------------------------------------------------------
 # internal and external dependencies
