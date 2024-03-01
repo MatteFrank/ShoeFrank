@@ -73,6 +73,7 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActPtReso(0x0),
    fActGlbCuts(0x0),
    fFlagHisto(false),
+   fFlagOut(true),
    fFlagMC(isMC),
    fSkipEventsN(0)
 {
@@ -83,6 +84,8 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
 
    if (fileNameout == "")
       fFlagOut = false;
+
+   fFlagHisto = TAGrecoManager::GetPar()->IsSaveHisto();
 
    // define TAGroot
    fTAGroot = new TAGroot();
@@ -224,6 +227,8 @@ void GlobalAna::SetHistogramDir()
       TString subfolderName;
       if (tmp.Contains("Mass"))           { subfolderName = "Mass"; }
       else if (tmp.Contains("PtReso"))    { subfolderName = "PtReso"; }
+      else
+         continue;
 
       TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(subfolderName.Data());
       if (!subfolder)
@@ -269,10 +274,13 @@ void GlobalAna::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TASTparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
-      // fpParConfSt = new TAGparaDsc(new TASTparConf());
-      // TASTparConf* parConf = (TASTparConf*)fpParConfSt->Object();
-      // parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
-      // parConf->FromFile(parFileName.Data());
+      if( !fFlagMC )
+      {
+         fpParConfSt = new TAGparaDsc(new TASTparConf());
+         TASTparConf* parConf = (TASTparConf*)fpParConfSt->Object();
+         parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
+         parConf->FromFile(parFileName.Data());
+      }
    }
    
    // initialise par files for Beam Monitor
@@ -382,6 +390,8 @@ void GlobalAna::CreateAnaAction()
       
       if (fAnaManager->GetAnalysisPar().PtResoFlag)
       {
+         if( !fFlagHisto )
+            Error("CreateAnaAction()", "Histograms needed for p resolution! Please check configuration files"), exit(-1);
          if( !fFlagMC || !TAGrecoManager::GetPar()->IsRegionMc() )
             Error("CreateAnaAction()", "Momentum performance requested but MC info (all/region) not present! Please check configuration files"), exit(-1);
          if( !TAGrecoManager::GetPar()->IncludeTW() )
