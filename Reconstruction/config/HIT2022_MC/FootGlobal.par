@@ -24,7 +24,7 @@ Tracking Systems Considered:    all
 #Tracking Systems Considered:    VT IT MSD TW
 Reverse Tracking:       false
 
-Kalman preselection strategy: Standard
+Kalman preselection strategy: Backtracking
 
 Chi2 cut: -1
 N measure in global tracking: 5
