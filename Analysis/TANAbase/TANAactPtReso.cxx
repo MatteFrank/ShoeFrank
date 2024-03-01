@@ -119,7 +119,7 @@ void TANAactPtReso::EndEventLoop()
 	for(Int_t iCh = 1; iCh <= fBeamZ; ++iCh )
 		ExtractMomentumResolution(iCh);
 
-	if( fpAllDelGraph->GetListOfGraphs()->GetSize() > 0 )
+	if( fpAllDelGraph->GetListOfGraphs() && fpAllDelGraph->GetListOfGraphs()->GetSize() > 0 )
 		SaveAllGraphs();
 }
 
