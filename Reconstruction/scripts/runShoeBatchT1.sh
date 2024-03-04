@@ -297,7 +297,9 @@ if [ \${nCompletedFiles} -eq ${nFiles} ]; then
 
     fileOut="Merge_${campaign}_${runNumber}\${suffix}"
     mv \${SCRATCH}/Merge_temp.root ${outFolder}/\${fileOut}
-    rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
+    if [ \$? -eq 0 ]; then
+        rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
+    fi
     break
 else
     echo "ERROR:: ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nFiles} files. Waiting..."
@@ -326,8 +328,8 @@ EOF
         # Create DAG job file
         # 1. Process files of run
         # 2. Merge output files of single run
+        dag_sub="${HTCfolder}/submitDAG_${campaign}_${firstRunNumber}_${lastRunNumber}.sub"
         if [ $runNumber -eq $firstRunNumber ]; then
-            dag_sub="${HTCfolder}/submitDAG_${campaign}_${firstRunNumber}_${lastRunNumber}.sub"
             touch ${dag_sub}
         fi
 

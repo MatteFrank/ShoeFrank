@@ -348,8 +348,9 @@ if [ \${nCompletedFiles} -eq ${nJobs} ]; then
     LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
     mv \${SCRATCH}/Merge_temp.root \$(dirname ${outMergedFile})
     mv \$(dirname ${outMergedFile})/Merge_temp.root \${fileOut}
-
-    rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
+    if [ \$? -eq 0 ]; then
+        rm ${outFile_base}*.root ${outFolder}/runinfo_${campaign}_${runNumber}.root
+    fi
     break
 else
     echo "ERROR:: ${campaign} run ${runNumber} -> Processed \${nCompletedFiles}/${nJobs} files. Exiting.."
@@ -455,8 +456,7 @@ if [ \${nCompletedFiles} -eq ${fileNumber} ]; then
     done
 
     LD_PRELOAD=/opt/exp_software/foot/root/setTreeLimit_C.so hadd -j -f \${command}
-    retVal=\$?
-    if [ \$retVal -eq 0 ]; then
+    if [ \$? -eq 0 ]; then
         mv \${SCRATCH}/Merge_temp.root ${fullStatOutput}
         rm ${outFolder}/*/${baseMergedSingleFile}
     fi
