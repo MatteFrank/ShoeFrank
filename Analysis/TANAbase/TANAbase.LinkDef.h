@@ -7,5 +7,7 @@
 #pragma link C++ class GlobalAna+;
 #pragma link C++ class TANAactBaseNtu+;
 #pragma link C++ class TANAactNtuMass+;
+#pragma link C++ class TANAactPtReso+;
+#pragma link C++ class TANAactNtuSelectionCuts+;
 
 #endif

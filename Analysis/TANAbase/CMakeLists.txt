@@ -22,6 +22,8 @@ set( with_dictionnaries
        GlobalAna
        TANAactBaseNtu
        TANAactNtuMass
+       TANAactPtReso
+       TANAactNtuSelectionCuts
 )
 
 set( without_dictionnaries

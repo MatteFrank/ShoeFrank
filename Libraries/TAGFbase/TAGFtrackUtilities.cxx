@@ -88,6 +88,30 @@ TVector3 TAGFtrackUtilities::ExtrapolateToOuterTracker(Track* trackToFit, int wh
 
 //----------------------------------------------------------------------------------------------------
 
+//! \brief Get the name of a particle from its charge
+//! \param[in] ch Charge of the particle
+//! \return Name of the particle
+string TAGFtrackUtilities::GetParticleNameFromCharge(int ch)
+{
+	std::string name;
+	switch(ch)
+	{
+		case 1:	name = "H";	break;
+		case 2:	name = "He";	break;
+		case 3:	name = "Li";	break;
+		case 4:	name = "Be";	break;
+		case 5:	name = "B";	break;
+		case 6:	name = "C";	break;
+		case 7:	name = "N";	break;
+		case 8:	name = "O";	break;
+		default:
+			name = "fail";	break;
+	}
+
+	return name;
+}
+
+
 //! \brief Get the possible charge of a selected track from the TW measurement
 //!
 //! \param[in] trackToCheck Pointer to GenFit track

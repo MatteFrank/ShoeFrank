@@ -7,8 +7,14 @@
  */
 /*------------------------------------------+---------------------------------*/
 
+#include "TAGgeoTrafo.hxx"
+#include "TAGparGeo.hxx"
+#include "TAGroot.hxx"
 #include "TTree.h"
 
+#include "TAGgeoTrafo.hxx"
+#include "TAGparGeo.hxx"
+#include "TAGroot.hxx"
 #include "TAGaction.hxx"
 
 class TANAactBaseNtu : public TAGaction {
@@ -26,6 +32,9 @@ public:
    
    // Action
    virtual  Bool_t  Action()          { return true; }
+
+protected:
+   TString GetParticleNameFromCharge(int ch);
 
 private:
    TAGdataDsc*     fpNtuTrack;          ///< input global tracks

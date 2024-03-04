@@ -73,7 +73,7 @@ void TAGFselectorTrue::Categorize( ) {
 
 				TString outName, pdgName;
 
-				outName = GetParticleNameFromCharge(charge);
+				outName = fTrackUtilities->GetParticleNameFromCharge(charge);
 
 				//CAREFUL HERE!! Think about the possibility of throwing an error -> skip particle for the moment
 				if( outName == "fail" ) {continue;}

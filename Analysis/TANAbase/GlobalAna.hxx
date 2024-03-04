@@ -86,6 +86,8 @@
 
 #include "TANAactBaseNtu.hxx"
 #include "TANAactNtuMass.hxx"
+#include "TANAactPtReso.hxx"
+#include  "TANAactNtuSelectionCuts.hxx"
 
 class TAMCntuHit;
 class TAMCntuPart;
@@ -299,6 +301,8 @@ protected:
    TAGactionFile*        fActEvtReader;  ///< Tree/event reader
    TAGactTreeWriter*     fActEvtWriter;  ///< write histo and tree
    TANAactBaseNtu*       fActGlbAna;     ///< analysis action
+   TANAactPtReso*        fActPtReso;     ///< momentum performance action
+   TANAactNtuSelectionCuts*       fActGlbCuts;     ///< analysis selection cuts action
 
    Bool_t                fFlagOut;          ///< flag for output file
    Bool_t                fFlagHisto;        ///< flag for histo generatiom

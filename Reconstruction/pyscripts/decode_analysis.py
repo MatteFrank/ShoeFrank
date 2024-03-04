@@ -16,7 +16,7 @@ runNb = -1
 mc = False
    
 for i in range(0, len(argv)):
-    if argv[i] == "-fileOut":
+    if argv[i] == "-out":
       i += 1;
       fileOut =str(argv[i]);
     if argv[i] == "-in":

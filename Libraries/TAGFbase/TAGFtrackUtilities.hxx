@@ -42,6 +42,7 @@ public:
 	TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, TVector3& mom, bool backExtrap = false, int repId = -1);
 	TVector3	ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, bool backExtrap = false, int repId = -1);
 
+	string		GetParticleNameFromCharge(int ch);
 	Int_t		GetChargeFromTW(Track* trackToCheck);
 	Double_t	ComputeTrackDefaultBeta(Track* track);
 	void		ComputeMainIsotopeMomentum(Track* track, TVector3& mom);
