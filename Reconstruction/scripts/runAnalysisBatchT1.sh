@@ -83,7 +83,7 @@ outFile=""
 isMc=0
 noBatch=0
 
-while getopts i:o:m: flag
+while getopts i:o:m:n: flag
 do
     case "${flag}" in
         i) inFile=${OPTARG};;
