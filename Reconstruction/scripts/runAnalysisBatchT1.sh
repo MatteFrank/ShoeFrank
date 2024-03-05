@@ -81,6 +81,7 @@ fi
 #Initialize some variables
 outFile=""
 isMc=0
+noBatch=0
 
 while getopts i:o:m: flag
 do
@@ -88,6 +89,7 @@ do
         i) inFile=${OPTARG};;
         o) outFile=${OPTARG};;
         m) isMc=${OPTARG};;
+        n) noBatch=${OPTARG};;
     esac
 done
 
@@ -191,6 +193,9 @@ fi
 
 # Set number of events per job and find number of jobs
 nEvPerFile=50000
+if [ $noBatch -ne 0 ]; then
+    nEvPerFile=$nTotEv
+fi
 
 if [[ $(( $nTotEv % $nEvPerFile )) -eq 0 ]]; then
     nJobs=$(( $nTotEv / $nEvPerFile ))
