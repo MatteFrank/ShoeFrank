@@ -277,6 +277,11 @@ EOF
 #Make file executable
 chmod 754 ${jobExec}
 
+if [ $noBatch -ne 0 ]; then
+    condor_submit -spool ${filename_sub}
+    echo "Job submitted!"
+    exit 0
+fi
 
 # Start extraction of single objects from files and merge separately
 echo "Finding list of objects..."
