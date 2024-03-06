@@ -53,7 +53,7 @@ EnableFlatTree:      n
 EnableHisto:         y
 EnableTracking:      y
 
-EnableSaveHits:      n
+EnableSaveHits:      y
 EnableRootObject:    y
 EnableRegionMc:      y
 EnableElecNoiseMc:   y
