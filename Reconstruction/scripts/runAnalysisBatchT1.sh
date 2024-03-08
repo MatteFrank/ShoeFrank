@@ -157,7 +157,7 @@ ofs << tree->GetEntries()
 ofsCamp << runinfo->CampaignName()
 ofsRun << runinfo->RunNumber()
 EOF
-cd - > /dev/null 2>&1
+cd - > /dev/null
 
 echo "Done"
 
@@ -280,7 +280,7 @@ source /opt/exp_software/foot/root_shoe_foot.sh > /dev/null 2>&1
 source ${SHOE_PATH}/build/setupFOOT.sh > /dev/null 2>&1
 cd ${SHOE_PATH}/build/Reconstruction
 ../bin/DecodeGlbAnalysis -in ${inFile} -out ${outFolder}/dummy_objects_${campaign}_${runNumber}.root -exp ${campaign} -run ${runNumber} ${mcflag} -nev 10 > /dev/null 2>&1
-cd - > /dev/null 2>&1
+cd - > /dev/null
 
 root -l <<-EOF
 TFile* _file0 = new TFile("${outFolder}/dummy_objects_${campaign}_${runNumber}.root", "r");
@@ -416,4 +416,4 @@ EOF
 # Submit DAG
 cd ${HTCfolder}
 condor_submit_dag -force ${dag_sub}
-cd -
+cd - > /dev/null

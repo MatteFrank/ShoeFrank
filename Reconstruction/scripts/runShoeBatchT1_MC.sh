@@ -193,7 +193,7 @@ ofs << EventTree->GetEntries()
 ofsCamp << runinfo->CampaignName()
 ofsRun << runinfo->RunNumber()
 EOF
-cd - > /dev/null 2>&1
+cd - > /dev/null
 
 echo "Done"
 
@@ -393,7 +393,7 @@ EOF
         #submit DAG for single file merging
         cd ${HTCfolder}
         condor_submit_dag -force ${dag_sub}
-        cd -
+        cd - > /dev/null
     fi
 else #Merge files not requested -> run processing alone
     condor_submit -spool ${filename_sub}
@@ -516,7 +516,7 @@ EOF
         #Submit DAG for final output merge
         cd ${HTCfolder}
         condor_submit_dag -force ${dag_sub}
-        cd -
+        cd - > /dev/null
 
     fi
 fi

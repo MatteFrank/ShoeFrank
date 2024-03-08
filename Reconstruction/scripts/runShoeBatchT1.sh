@@ -348,7 +348,7 @@ done
 if [ $mergeFilesOpt -eq 1 ]; then
     cd ${HTCfolder}
     condor_submit_dag -force ${dag_sub}
-    cd -
+    cd - > /dev/null
 
     echo "All runs submitted!"
 fi
