@@ -24,16 +24,16 @@ for i in range(0, len(argv)):
       fileIn = str(argv[i])
     if argv[i] == "-exp":
       i += 1;
-      exp = str(argv[++i])
+      exp = str(argv[i])
     if argv[i] == "-nev":
       i += 1;
-      nTotEv = int(argv[++i])
+      nTotEv = int(argv[i])
     if argv[i] == "-nsk":
       i += 1;
-      nSkipEv = int(argv[++i])
+      nSkipEv = int(argv[i])
     if argv[i] == "-run":
        i += 1;
-       runNb = int(argv[++i])
+       runNb = int(argv[i])
     if argv[i] == "-mc":
         mc = True;
       
