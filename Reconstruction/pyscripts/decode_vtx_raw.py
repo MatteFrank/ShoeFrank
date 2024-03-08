@@ -50,13 +50,13 @@ for i in range(0, len(argv)):
       filename = str(argv[i])
     if argv[i] == "-exp":
       i += 1
-      expName = str(argv[++i])
+      expName = str(argv[i])
     if argv[i] == "-nev":
       i += 1
-      nMaxEvts = int(argv[++i])
+      nMaxEvts = int(argv[i])
     if argv[i] == "-run":
        i += 1
-       runNumber = int(argv[++i])
+       runNumber = int(argv[i])
   
   
 # instanciate reco manager
