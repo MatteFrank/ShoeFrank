@@ -195,7 +195,7 @@ map<string, int> TAGFselectorBase::CountParticleGeneratedAndVisible()
 		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber)	continue;
 
 		string outName, pdgName;
-		outName = GetParticleNameFromCharge(particleCh);
+		outName = fTrackUtilities->GetParticleNameFromCharge(particleCh);
 
 		//CAREFUL HERE!! Think about the possibility of throwing an error -> skip particle for the moment
 		if( outName == "fail" ) {continue;}
@@ -467,7 +467,7 @@ void TAGFselectorBase::FillTrackCategoryMap()
 
 		if ( FootDebugLevel(2) )	Info("FillTrackCategoryMap()", "Track with measured charge %d and mass %d!!", measCharge, measMass);
 
-		outName = GetParticleNameFromCharge(measCharge);
+		outName = fTrackUtilities->GetParticleNameFromCharge(measCharge);
 
 		if( outName == "fail" )
 		{
@@ -536,30 +536,6 @@ TString TAGFselectorBase::GetRecoTrackName(Track* tr)
 			return it->first;
 	}
 	Error("GetRecoTrackName()", "Track not found in Category Map!!"), exit(42);
-}
-
-
-//! \brief Get the name of a particle from its charge
-//! \param[in] ch Charge of the particle
-//! \return Name of the particle
-string TAGFselectorBase::GetParticleNameFromCharge(int ch)
-{
-	std::string name;
-	switch(ch)
-	{
-		case 1:	name = "H";	break;
-		case 2:	name = "He";	break;
-		case 3:	name = "Li";	break;
-		case 4:	name = "Be";	break;
-		case 5:	name = "B";	break;
-		case 6:	name = "C";	break;
-		case 7:	name = "N";	break;
-		case 8:	name = "O";	break;
-		default:
-			name = "fail";	break;
-	}
-
-	return name;
 }
 
 

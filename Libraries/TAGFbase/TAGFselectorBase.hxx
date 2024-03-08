@@ -85,7 +85,6 @@ public:
 	TString				GetRecoTrackName(Track* tr);
 	map<string, int>	CountParticleGeneratedAndVisible();
 	void				FillPlaneOccupancy(TH2I** h_PlaneOccupancy);
-	string				GetParticleNameFromCharge(int ch);
 
 protected:
 	void		CheckPlaneOccupancy();

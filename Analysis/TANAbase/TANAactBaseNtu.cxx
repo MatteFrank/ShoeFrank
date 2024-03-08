@@ -60,3 +60,27 @@ TANAactBaseNtu::TANAactBaseNtu(const char* name,TAGdataDsc* pNtuTrack, TAGparaDs
 TANAactBaseNtu::~TANAactBaseNtu()
 {
 }
+
+
+//! \brief Get the name of a particle from its charge
+//! \param[in] ch Charge of the particle
+//! \return Name of the particle
+TString TANAactBaseNtu::GetParticleNameFromCharge(int ch)
+{
+	TString name;
+	switch(ch)
+	{
+		case 1:	name = "H";	break;
+		case 2:	name = "He";	break;
+		case 3:	name = "Li";	break;
+		case 4:	name = "Be";	break;
+		case 5:	name = "B";	break;
+		case 6:	name = "C";	break;
+		case 7:	name = "N";	break;
+		case 8:	name = "O";	break;
+		default:
+			name = "fail";	break;
+	}
+
+	return name;
+}

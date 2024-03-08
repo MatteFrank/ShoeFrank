@@ -70,7 +70,10 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fpNtuVtx(0x0),
    fpNtuGlbTrack(0x0),
    fActGlbAna(0x0),
+   fActPtReso(0x0),
+   fActGlbCuts(0x0),
    fFlagHisto(false),
+   fFlagOut(true),
    fFlagMC(isMC),
    fSkipEventsN(0)
 {
@@ -81,6 +84,8 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
 
    if (fileNameout == "")
       fFlagOut = false;
+
+   fFlagHisto = TAGrecoManager::GetPar()->IsSaveHisto();
 
    // define TAGroot
    fTAGroot = new TAGroot();
@@ -219,16 +224,16 @@ void GlobalAna::SetHistogramDir()
       TAGaction* action = (TAGaction*)list->At(i);
       TString tmp(action->GetName());
       
-      TDirectory* subfolder;
-      
-      if (tmp.Contains("Mass")) {
-         TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get("Mass");
-         if (!subfolder)
-            subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir("Mass");
-         action->SetHistogramDir(subfolder);
-         
-      } else {
-      }
+      TString subfolderName;
+      if (tmp.Contains("Mass"))           { subfolderName = "Mass"; }
+      else if (tmp.Contains("PtReso"))    { subfolderName = "PtReso"; }
+      else
+         continue;
+
+      TDirectory* subfolder = (TDirectory*)(fActEvtWriter->File())->Get(subfolderName.Data());
+      if (!subfolder)
+         subfolder = (TDirectory*)(fActEvtWriter->File())->mkdir(subfolderName.Data());
+      action->SetHistogramDir(subfolder);
    }
    
 }
@@ -269,10 +274,13 @@ void GlobalAna::ReadParFiles()
       TString parFileName = fCampManager->GetCurGeoFile(FootBaseName("TASTparGeo"), fRunNumber);
       parGeo->FromFile(parFileName.Data());
       
-      fpParConfSt = new TAGparaDsc(new TASTparConf());
-      TASTparConf* parConf = (TASTparConf*)fpParConfSt->Object();
-      parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
-      parConf->FromFile(parFileName.Data());
+      if( !fFlagMC )
+      {
+         fpParConfSt = new TAGparaDsc(new TASTparConf());
+         TASTparConf* parConf = (TASTparConf*)fpParConfSt->Object();
+         parFileName = fCampManager->GetCurConfFile(FootBaseName("TASTparGeo"), fRunNumber);
+         parConf->FromFile(parFileName.Data());
+      }
    }
    
    // initialise par files for Beam Monitor
@@ -379,7 +387,22 @@ void GlobalAna::CreateAnaAction()
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())) {
       if (fAnaManager->GetAnalysisPar().MassResoFlag)
          fActGlbAna = new TANAactNtuMass("anaActMass", fpNtuGlbTrack, fpParGeoG, fpTree);
+      
+      if (fAnaManager->GetAnalysisPar().PtResoFlag)
+      {
+         if( !fFlagHisto )
+            Error("CreateAnaAction()", "Histograms needed for p resolution! Please check configuration files"), exit(-1);
+         if( !fFlagMC || !TAGrecoManager::GetPar()->IsRegionMc() )
+            Error("CreateAnaAction()", "Momentum performance requested but MC info (all/region) not present! Please check configuration files"), exit(-1);
+         if( !TAGrecoManager::GetPar()->IncludeTW() )
+            Error("CreateAnaAction()", "Momentum performance requested but TW not included! P info not reliable, re-run with TW"), exit(-1);
+
+         fActPtReso = new TANAactPtReso("anaActPtReso", fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
+      }
+
    }
+
+   // fActGlbCuts = new TANAactNtuSelectionCuts("anaActCuts", fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
 }
 
 //__________________________________________________________
@@ -390,7 +413,11 @@ void GlobalAna::AddRequiredItem()
    if ((TAGrecoManager::GetPar()->IncludeTOE() || TAGrecoManager::GetPar()->IncludeKalman())) {
       if (fAnaManager->GetAnalysisPar().MassResoFlag)
          gTAGroot->AddRequiredItem("anaActMass");
+
+      if (fAnaManager->GetAnalysisPar().PtResoFlag && fFlagMC)
+         gTAGroot->AddRequiredItem("anaActPtReso");
    }
+   gTAGroot->AddRequiredItem("anaActCuts");
 }
 
 //__________________________________________________________
@@ -415,7 +442,17 @@ void GlobalAna::SetTreeBranches()
 {
    const Char_t* name = FootActionDscName("TAGactTreeReader");
    fActEvtReader = new TAGactTreeReader(name);
-   
+
+    if (fFlagMC) {
+      fpNtuMcTrk = new TAGdataDsc(new TAMCntuPart());
+      fActEvtReader->SetupBranch(fpNtuMcTrk);
+
+      if ( TAGrecoManager::GetPar()->IsRegionMc()) {
+         fpNtuMcReg = new TAGdataDsc(new TAMCntuRegion());
+         fActEvtReader->SetupBranch(fpNtuMcReg);
+      }
+   }
+
    if (TAGrecoManager::GetPar()->IncludeST()) {
       fpNtuHitSt   = new TAGdataDsc(new TASTntuHit());
       fActEvtReader->SetupBranch(fpNtuHitSt);

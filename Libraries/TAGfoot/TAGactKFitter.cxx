@@ -1847,7 +1847,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack)
 	//Charge hypo != form TW --> change PartName and reset seed
 	if(chargeFromTW != fitTrack->getCardinalRep()->getPDGCharge())
 	{
-		if(FootDebugLevel(1))	Info("EvaluateProjectionEfficiency()", "Charge Hypo (%d) wrong, changing to measured from TW (%d)", int(fitTrack->getCardinalRep()->getPDGCharge()), chargeFromTW);
+		if(FootDebugLevel(1))	Info("CheckChargeHypothesis()", "Charge Hypo (%d) wrong, changing to measured from TW (%d)", int(fitTrack->getCardinalRep()->getPDGCharge()), chargeFromTW);
 		for(int i=0; i<fitTrack->getNumReps(); ++i)
 		{
 			if(fitTrack->getTrackRep(i)->getPDGCharge() == chargeFromTW)
@@ -1858,19 +1858,7 @@ void TAGactKFitter::CheckChargeHypothesis(string* PartName, Track* fitTrack)
 		}
 
 		//update the name of the particle associated to track
-		switch(chargeFromTW)
-		{
-			case 1:	*PartName = "H";	break;
-			case 2:	*PartName = "He";	break;
-			case 3:	*PartName = "Li";	break;
-			case 4:	*PartName = "Be";	break;
-			case 5:	*PartName = "B";	break;
-			case 6:	*PartName = "C";	break;
-			case 7:	*PartName = "N";	break;
-			case 8:	*PartName = "O";	break;
-			default:
-				*PartName = "fail";	break;
-		}
+		*PartName = fTrackUtilities->GetParticleNameFromCharge(chargeFromTW);
 	}
 	//Charge from TW == chargeHypo --> goodHypo!
 	else

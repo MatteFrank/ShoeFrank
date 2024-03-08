@@ -35,6 +35,12 @@ class TAGaction : public TAGnamed {
     // Action
     virtual Bool_t  Action();
 
+    // Begin Event Loop
+    virtual void BeginEventLoop();
+
+    // End Event Loop
+    virtual void EndEventLoop();
+
     // Create histogram
     virtual void    CreateHistogram();
     // Delete histogram

@@ -126,7 +126,7 @@ void TAGF_KalmanStudies::Fill_MomentumResidual( TVector3 meas, TVector3 expected
 		cout<< "ERROR::TAGF_KalmanStudies::PrintMomentumResidual  -->  track momentum - 0. "<< endl, exit(0);
 
 	// find the center of the momentum bin
-	int roundUp = 11;//ceil( (double)expected.Mag() );
+	int roundUp = 21;//ceil( (double)expected.Mag() );
 	int roundDown = 0;//floor( (double)expected.Mag() );
 	float binCenter = -666;
 	int nstep = ((float)(roundUp - roundDown)) / m_resoP_step;

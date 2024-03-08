@@ -17,7 +17,7 @@ Genfit Event Display ON: n
 
 ############   Global Reconstruction Parameters   ################
 
-IncludeKalman:   n
+IncludeKalman:   y
 IncludeTOE:      n
 IncludeStraight: n
 FromLocalReco:   n
@@ -34,7 +34,7 @@ Kalman preselection strategy: Standard
 #Kalman preselection strategy: TrueParticle
 
 Chi2 cut: -1
-N measure in global tracking: 9
+N measure in global tracking: 8
 
 Kalman Particle Types:	C
 
