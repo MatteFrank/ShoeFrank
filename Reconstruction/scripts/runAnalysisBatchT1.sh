@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# This bash script launches the SHOE executable DecodeGlbAna on processed files using the HTCondor suite on Tier1. It is conceived to run on files produced from data and MC FILES. The script processes a single file launching a number of jobs in condor so that each of them processes ~30k events.
+# This bash script launches the SHOE executable DecodeGlbAnalysis on processed files using the HTCondor suite on Tier1. It is conceived to run on files produced from data and MC FILES. The script processes a single file launching a number of jobs in condor so that each of them processes ~50k events.
 
-# Before launching this script, a working SHOE installation and a properly set FootGlobal.par file is needed for the campaign you want to process. The SHOE installation must be placed in the "/opt/exp_software/foot/${USER}" folder, where "${USER}" is your username on the tier1 machine.
+# Before launching this script, a working SHOE installation and a properly set FootGlobal.par and TANAdetector.cfg files are needed for the campaign you want to process. The SHOE installation must be placed in the "/opt/exp_software/foot/${USER}" folder, where "${USER}" is your username on the tier1 machine.
 # IMPORTANT: make sure to compile SHOE using the shared installation of ROOT, which is placed in the "/opt/exp_software/foot/root" folder. A set of basic commands to compile SHOE on the Tier1 is given below in this file.
 
 # To launch this script, issue the command:
@@ -14,7 +14,11 @@
 # - outputFile is the path to the output file. This is forced to be in "/storage/gpfs_data/foot/${USER}". If you don't have a directory like the one you requested already in the Tier1, it will be created. This argument is optional, by default the file will be placed in the same directory as the input one with a default name ("MergeAna_{campaign}_{runNumber}.root")
 # - isMc is a flag signaling if the file was produced from real ("0") or MC data ("1"). This argument is optional with default value = "0", i.e. real data
 
-# There is no need to indicate the campaign and run number since they are retrieved from the "runinfo" object in the input file
+# There is no need to indicate the campaign and run number since they are retrieved from the "runinfo" object in the input file.
+
+# By default, the executable splits the input file in batches of 50k evts/job. If the requested analysis needs to be performed in series on all the events, there is an additional optional argument in this executable that allows to launch all events in a single job. If you want to avoid the "batch" mode, switch it off by adding "-n 1" as in the command line below
+
+# > ./path/to/runAnalysisBatchT1_MC.sh -i inputFile -o outputFolder -m isMc -n 1
 
 ############# IMPORTANT!!!!! #################
 
@@ -81,13 +85,15 @@ fi
 #Initialize some variables
 outFile=""
 isMc=0
+noBatch=0
 
-while getopts i:o:m: flag
+while getopts i:o:m:n: flag
 do
     case "${flag}" in
         i) inFile=${OPTARG};;
         o) outFile=${OPTARG};;
         m) isMc=${OPTARG};;
+        n) noBatch=${OPTARG};;
     esac
 done
 
@@ -191,6 +197,9 @@ fi
 
 # Set number of events per job and find number of jobs
 nEvPerFile=50000
+if [ $noBatch -ne 0 ]; then
+    nEvPerFile=$nTotEv
+fi
 
 if [[ $(( $nTotEv % $nEvPerFile )) -eq 0 ]]; then
     nJobs=$(( $nTotEv / $nEvPerFile ))
@@ -245,6 +254,9 @@ cd ${SHOE_PATH}/build/Reconstruction
 if [ \$? -eq 0 ]; then
     mv \${outFile_temp} ${outFolder}
     mv ${outFolder}/\$(basename \${outFile_temp}) ${outFile_base}\${1}.root
+    if [ $noBatch -ne 0 ]; then
+        mv ${outFile_base}\${1}.root ${outFile}
+    fi
 else
     echo "Unexpected error in processing of file ${inFile} with options nsk=\${2} and nev=${nEvPerFile}"
 fi
@@ -272,6 +284,11 @@ EOF
 #Make file executable
 chmod 754 ${jobExec}
 
+if [ $noBatch -ne 0 ]; then
+    condor_submit -spool ${filename_sub}
+    echo "Job submitted!"
+    exit 0
+fi
 
 # Start extraction of single objects from files and merge separately
 echo "Finding list of objects..."
