@@ -12,7 +12,7 @@ BmPosX: 0. BmPosY: 0. BmPosZ: -22.05
 BmAngX: 0. BmAngY: 0. BmAngZ:   0.
 
 VertexBaseName: "VT"
-VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.1
+VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.35
 VertexAngX: 0. VertexAngY:   0. VertexAngZ: 0.
 
 MagnetsBaseName: "DI"
@@ -24,13 +24,13 @@ InnerTrackerPosX: 0. InnerTrackerPosY: 0. InnerTrackerPosZ: 14.
 InnerTrackerAngX: 0. InnerTrackerAngY: 0. InnerTrackerAngZ: 0.
 
 MicroStripBaseName: "MSD"
-MicroStripPosX: 0. MicroStripPosY: 0. MicroStripPosZ: 44.9
+MicroStripPosX: 0. MicroStripPosY: 0. MicroStripPosZ: 45.15
 MicroStripAngX: 0. MicroStripAngY: 0. MicroStripAngZ: 0.
 
 TofWallBaseName: "TW"
-TofWallPosX: -1. TofWallPosY: -1. TofWallPosZ: 189.15
+TofWallPosX: -1. TofWallPosY: -1. TofWallPosZ: 189.4
 TofWallAngX: 0. TofWallAngY:  0. TofWallAngZ: 0.
 
 CaloBaseName: "CA"
-CaloPosX: 0. CaloPosY:  0. CaloPosZ: 216.45
+CaloPosX: 0. CaloPosY:  0. CaloPosZ: 216.7
 CaloAngX: 0. CaloAngY:  0. CaloAngZ: 0.
