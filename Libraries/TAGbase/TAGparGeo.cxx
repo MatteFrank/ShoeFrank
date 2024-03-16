@@ -418,7 +418,7 @@ string TAGparGeo::PrintStandardBodies( )
    TVector3  centerTG =  fpFootGeo->GetTGCenter();
    //   if(TAGrecoManager::GetPar()->IncludeMSD()) {
      //     zplane =  centerMSD.Z() + 15.;
-   zplane =  50. + centerTG.Z();
+   zplane =  51. + centerTG.Z();
      //   } else {
      //     zplane =  centerTG.Z() + ( centerTW.Z()-centerTG.Z() ) /2.;
      //   }
