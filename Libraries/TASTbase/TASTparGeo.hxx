@@ -43,6 +43,7 @@ public:
   string PrintRotations();
   string PrintBodies();
   string PrintRegions();
+  string PrintPassiveRegions();
   string PrintAssignMaterial(TAGmaterials *Material);
   string PrintSubtractBodiesFromAir();
 

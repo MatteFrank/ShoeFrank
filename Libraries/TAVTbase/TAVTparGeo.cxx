@@ -386,6 +386,28 @@ string TAVTparGeo::PrintBodies()
 	ss << "$end_transform " << endl;
 	  
     }
+    
+    // passive bodies 
+    bodyname = "boxfront";
+    fvPassBody.push_back(bodyname);
+    bodyname = "boxfron2";
+    fvPassBody.push_back(bodyname);
+    bodyname = "boxwin";
+    fvPassBody.push_back(bodyname);
+    bodyname = "boxback";
+    fvPassBody.push_back(bodyname);
+    bodyname = "boxhole";
+    fvPassBody.push_back(bodyname);
+    bodyname = "airvtx";
+    fvPassBody.push_back(bodyname);
+    //passive regions     
+    regionname = "VBOXF";
+    fvPassRegion.push_back(regionname);
+    regionname = "VBOXB";
+    fvPassRegion.push_back(regionname);
+    regionname = "AIRVTX";
+    fvPassRegion.push_back(regionname);
+
   }
   
   return ss.str();

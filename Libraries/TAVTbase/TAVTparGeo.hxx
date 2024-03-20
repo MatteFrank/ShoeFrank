@@ -61,6 +61,8 @@ public:
    virtual string PrintBodies();
    // Fluka regions
    virtual string PrintRegions();
+   // Fluka passive regions
+   virtual string PrintPassiveRegions();
    // Fluka material assignment
    virtual string PrintAssignMaterial(TAGmaterials *Material);
    // Fluka Transport settings
@@ -81,6 +83,10 @@ protected:
    vector<string> fvModRegion; //! Fluka module region
    //! Fluka pixel region
    vector<string> fvPixRegion; //! Fluka pixel region
+   //! Fluka passive body
+   vector<string> fvPassBody;   //! Fluka passive body
+   //! Fluka passive region
+   vector<string> fvPassRegion;   //! Fluka passive region
 
 public:
    //! Get base name

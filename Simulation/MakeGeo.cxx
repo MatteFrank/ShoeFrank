@@ -261,6 +261,9 @@ int main (int argc, char *argv[]) {
       geofile << twGeo->PrintRegions(  );
    if (TAGrecoManager::GetPar()->IncludeCA())
       geofile << caGeo->PrintRegions(  );
+   if (TAGrecoManager::GetPar()->IncludeST())
+      geofile << stcGeo->PrintPassiveRegions();
+   
 
     // end print regions
     geofile << "END        " <<endl;

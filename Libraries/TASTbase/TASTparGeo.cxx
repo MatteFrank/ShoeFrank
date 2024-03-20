@@ -185,6 +185,28 @@ string TASTparGeo::PrintBodies( )
       outstr << "$start_transform st" << endl;
 
     outstr << setiosflags(ios::fixed) << setprecision(6);
+
+    outstr << "RPP airstc  "<< center[0]-fSize[0] << " " << center[0]+fSize[0] << " " <<
+      center[1]-fSize[1] << " " << center[1]+fSize[1] << " " <<
+      center[2]-1.1 << " " << center[2]+1.1 << " " <<  endl;
+
+    outstr << "RPP frame1  "<< center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2. << " " <<
+      center[1]-fSize[1]/2. << " " << center[1]+fSize[1]/2. << " " <<
+      center[2]-fSize[2]/2.-1.001 << " " << center[2]-fSize[2]/2.-0.001 << " " <<  endl;
+
+    outstr << "RPP frame2  "<< center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2. << " " <<
+      center[1]-fSize[1]/2. << " " << center[1]+fSize[1]/2. << " " <<
+      center[2]+fSize[2]/2.+0.001 << " " << center[2]+fSize[2]/2.+1.001 << " " <<  endl;
+
+    outstr << "RPP hole1   "<< center[0]-fSize[0]/2.+1. << " " << center[0]+fSize[0]/2.-1. << " " <<
+      center[1]-fSize[1]/2.+1. << " " << center[1]+fSize[1]/2.-1. << " " <<
+      center[2]-fSize[2]/2.-1.001 << " " << center[2]-fSize[2]/2.-0.001 << " " <<  endl;
+
+    outstr << "RPP hole2   "<< center[0]-fSize[0]/2+1. << " " << center[0]+fSize[0]/2.-1 << " " <<
+      center[1]-fSize[1]/2.+1. << " " << center[1]+fSize[1]/2.-1. << " " <<
+      center[2]+fSize[2]/2.+0.001 << " " << center[2]+fSize[2]/2.+1.001 << " " <<  endl;
+
+    
     outstr << "RPP stc     "  << center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2 << " " <<
       center[1]-fSize[1]/2. << " " << center[1]+fSize[1]/2 << " " <<
       center[2]-fSize[2]/2. - 0.001 << " " << center[2]+fSize[2]/2 + 0.001 << " " <<  endl;
@@ -219,6 +241,25 @@ string TASTparGeo::PrintRegions()
   return outstr.str();
 }
 
+//_____________________________________________________________________________
+string TASTparGeo::PrintPassiveRegions()
+{
+  stringstream outstr;
+
+  if(TAGrecoManager::GetPar()->IncludeST()){
+
+    outstr << "* ***Start Counter - Passive" << endl;
+
+    outstr << "AIRSTC       5 +airstc -(frame1 -hole1 ) -(frame2 -hole2)  -stc" << endl;
+    outstr << "FRAME1       5 +frame1 -hole1" << endl;
+    outstr << "FRAME2       5 +frame2 -hole2" << endl;
+
+
+  }
+
+  return outstr.str();
+}
+
 
 //_____________________________________________________________________________
 string TASTparGeo::PrintSubtractBodiesFromAir()
@@ -226,7 +267,7 @@ string TASTparGeo::PrintSubtractBodiesFromAir()
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeST()){
-    ss << "-stc " << endl;;
+    ss << "-airstc " << endl;;
   }
   
   return ss.str();
@@ -256,6 +297,8 @@ string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material)
     //    outstr << PrintCard("ASSIGNMA", "Mylar", "STCMYL1", "STCMYL2", "1.", Form("%d",magnetic), "", "") << endl;
     outstr << PrintCard("ASSIGNMA", flkmat, "STC", "", "", "", "", "") << endl;
     outstr << PrintCard("ASSIGNMA", "Mylar", "STCMYL1", "STCMYL2", "1.", "", "", "") << endl;
+    outstr << PrintCard("ASSIGNMA", "ALUMINUM", "FRAME1", "FRAME2", "", "", "", "") << endl;
+    outstr << PrintCard("ASSIGNMA", "AIR", "AIRSTC", "", "", "", "", "") << endl;
         
   }
   
