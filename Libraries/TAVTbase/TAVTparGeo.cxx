@@ -306,6 +306,19 @@ string TAVTparGeo::PrintRotations()
        
       }
     }
+
+	  //put the passive materials into its position in local coord
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+//			  Form("%f",GetSensorPosition(iSens).X()),
+//			  Form("%f",GetSensorPosition(iSens).Y()),
+//			  Form("%f",GetSensorPosition(iSens).Z()),
+//			  Form("vt_%d",iSens) ) << endl;
+			  "0.",
+			  "0.",
+			  "2.35",
+			  "vt_p" ) << endl;
+
+    
   }
    
   return ss.str();
@@ -384,28 +397,102 @@ string TAVTparGeo::PrintBodies()
     
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
 	ss << "$end_transform " << endl;
-	  
+      
     }
     
-    // passive bodies 
+    // passive bodies
+    
+    ss << "$start_transform " << "vt_p" << endl;
+    
     bodyname = "boxfront";
     fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 0.45" << endl;
+    // Centro Z = -2.35
     bodyname = "boxfron2";
     fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "   -9.6 9.6 -9.6 9.6 -1.75 0.45" << endl;
     bodyname = "boxwin";
     fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.75" << endl;
     bodyname = "boxback";
     fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 1.95 2.15" << endl;
     bodyname = "boxhole";
     fvPassBody.push_back(bodyname);
+    ss << "RCC " << bodyname << "    0.0 0.0 1.95 0.0 0.0 0.2 2.5" << endl;
+    //    RCC boxhole    0.0 0.0 4.3 0.0 0.0 0.2 2.5
     bodyname = "airvtx";
     fvPassBody.push_back(bodyname);
-    //passive regions     
+    ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
+
+    ss << "$end_transform " << endl;
+
+
+    
+    //vertex additional bodies
+
+    bodyname = "vtxb0";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.35 1.51" << endl;
+    bodyname = "vtxh0";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.35 1.51" << endl;
+    bodyname = "vtxc0";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.33 1.53" << endl;
+
+    ss << "$start_transform " << "vt_1" << endl;
+    bodyname = "vtxb1";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.67 1.83" << endl;
+    bodyname = "vtxh1";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.67 1.83" << endl;
+    bodyname = "vtxc1";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.65 1.85" << endl;
+    ss << "$end_transform " << endl;
+
+    bodyname = "vtxb2";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 2.87 3.03" << endl;
+    bodyname = "vtxh2";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 2.87 3.03" << endl;
+    bodyname = "vtxc2";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 2.85 3.05" << endl;
+
+    ss << "$start_transform " << "vt_3" << endl;
+    bodyname = "vtxb3";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 3.19 3.35" << endl;
+    bodyname = "vtxh3";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 3.19 3.35" << endl;
+    bodyname = "vtxc3";
+    fvPassBody.push_back(bodyname);
+    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 3.17 3.37" << endl;
+    ss << "$end_transform " << endl;
+
+
+    
+    //passive regions
+    
     regionname = "VBOXF";
     fvPassRegion.push_back(regionname);
     regionname = "VBOXB";
     fvPassRegion.push_back(regionname);
     regionname = "AIRVTX";
+    fvPassRegion.push_back(regionname);
+
+    regionname = "VTXB0";
+    fvPassRegion.push_back(regionname);
+    regionname = "VTXB1";
+    fvPassRegion.push_back(regionname);
+    regionname = "VTXB2";
+    fvPassRegion.push_back(regionname);
+    regionname = "VTXB3";
     fvPassRegion.push_back(regionname);
 
   }
@@ -440,6 +527,42 @@ string TAVTparGeo::PrintRegions()
       ss << setw(13) << setfill( ' ' ) << std::left << fvPixRegion.at(i)
     	 << "5 " << fvPixBody.at(i) <<endl;
     }
+
+  }
+  
+  return ss.str();
+}
+//_____________________________________________________________________________
+//! Print Fluka passive regions
+string TAVTparGeo::PrintPassiveRegions()
+{
+  stringstream ss;
+
+  if(TAGrecoManager::GetPar()->IncludeVT()){
+
+    ss << "* ***Vertex passive regions" << endl;
+//    ss << "AIRVTX       5 +airvtx -(boxfront -boxfron2 -boxwin -boxct1 -boxct2 -boxct3 -boxct4) -(boxback -boxhole -boxct5" << endl;
+//    ss << "               -boxct6 -boxct7 -boxct8)  -(vtxb0 -vtxh0 -vtxc0) -(vtxb1 -vtxh1 -vtxc1) -(vtxb2 -vtxh2 -vtxc2) -" << endl;
+//    ss << "               (vtxb3 -vtxh3 -vtxc3) -vtxm0 -vtxm1 -vtxm2 -vtxm3" << endl;
+    
+//    ss << "* Box Front" << endl;
+//    ss << "VBOXF        5 +boxfront -boxfron2 -boxwin -boxct1 -boxct2 -boxct3 -boxct4" << endl;
+//    ss << "* Box Back" << endl;
+//    ss << "VBOXB        5 +boxback -boxhole" << endl;
+
+    ss << "AIRVTX       5 +airvtx -(boxfront -boxfron2 -boxwin) -(boxback -boxhole)" << endl;
+    ss << "               -(vtxb0 -vtxh0 -vtxc0) -(vtxb1 -vtxh1 -vtxc1) -(vtxb2 -vtxh2 -vtxc2)" << endl;
+    ss << "               -(vtxb3 -vtxh3 -vtxc3) -vtxm0 -vtxm1 -vtxm2 -vtxm3" << endl;
+    
+    ss << "* Box Front" << endl;
+    ss << "VBOXF        5 +boxfront -boxfron2 -boxwin" << endl;
+    ss << "* Box Back" << endl;
+    ss << "VBOXB        5 +boxback -boxhole" << endl;
+    //* ***Vertex additional regions
+    ss << "VTXB0        5 vtxb0 -vtxh0 -vtxc0" << endl;
+    ss << "VTXB1        5 vtxb1 -vtxh1 -vtxc1" << endl;
+    ss << "VTXB2        5 vtxb2 -vtxh2 -vtxc2" << endl;
+    ss << "VTXB3        5 vtxb3 -vtxh3 -vtxc3" << endl;
 
   }
   
@@ -486,7 +609,7 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeVT()){
-
+    ss << "-airvtx " << endl;
     for(int i=0; i<fvModBody.size(); i++) {
       ss << " -" << fvModBody.at(i);
     }
@@ -530,6 +653,10 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
 		    "1.", Form("%d",magnetic), "", "") << endl;
     ss << PrintCard("ASSIGNMA", flkmatPix, fvPixRegion.at(0), fvPixRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
+    ss << PrintCard("ASSIGNMA", "AIR", "AIRVTX", "", "", "", "", "") << endl;
+    ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXF", "", "", "", "", "") << endl;
+    ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXB", "", "", "", "", "") << endl;
+    ss << PrintCard("ASSIGNMA", "G10", "VTXB0", "VTXB3", "", "", "", "") << endl;
 
   }
 
