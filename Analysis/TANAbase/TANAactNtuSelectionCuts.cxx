@@ -86,7 +86,7 @@ Bool_t TANAactNtuSelectionCuts::Action()
 	
 	// event cuts
 	// studies concerning tw points
-    TwClonesCut(); // add "TWclone" cut in map
+    TwClonesCut(); // add "TWclone" and "TWnum" cut in map
 
 	// track cuts
   for (int it = 0; it < nt; it++)
@@ -94,7 +94,6 @@ Bool_t TANAactNtuSelectionCuts::Action()
 	fGlbTrack = fNtuGlbTrack->GetTrack(it);
 	TrackQualityCut(it,fGlbTrack); // add "TrackQuality" cut in map
 	VtxPositionCut(it,fGlbTrack); // add "vtPos" cut in map
-	//TwPointCut(it,fGlbTrack);// add "twCut" cut in map
   }
 PrintCutsMap(fTrackCutsMap);
 return true;
@@ -250,8 +249,5 @@ TAVTvertex* vt = fNtuVtx->GetVertex(iVtx);
  } else
  fTrackCutsMap[track_id]["VTXposCut"]=0;
  
-
-
-
 }
 
