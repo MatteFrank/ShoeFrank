@@ -16,7 +16,12 @@
 #include "TAGgeoTrafo.hxx"
 #include "TAGrecoManager.hxx"
 #include "TAGnameManager.hxx"
+
+//Detectors
+#include "TASTntuHit.hxx"
+#include "TABMntuTrack.hxx"
 #include "TAVTntuVertex.hxx"
+
 
 // GLB
 #include "TAGntuPoint.hxx"
@@ -35,9 +40,12 @@
 //! \param[in] name action name
 //! \param[out] pNtuTrack global track container descriptor
 //! \param[in] pgGeoMap target geometry parameter descriptor
-TANAactNtuSelectionCuts::TANAactNtuSelectionCuts(const char *name, TAGdataDsc *pNtuTrack,TAGdataDsc *pNtuVtx, TAGdataDsc *pNtuRecTw, TTree *p_tree, TAGdataDsc *pNtuMcTrk, TAGdataDsc *pNtuMcReg, TAGparaDsc *pgGeoMap, TAGparaDsc *pgTwGeo)
+TANAactNtuSelectionCuts::TANAactNtuSelectionCuts(const char *name, Bool_t fFlagMC, TAGdataDsc *pNtuTrack,TAGdataDsc *pNtuHitSt, TAGdataDsc *pNtuTrackBm,TAGdataDsc *pNtuVtx, TAGdataDsc *pNtuRecTw, TTree *p_tree, TAGdataDsc *pNtuMcTrk, TAGdataDsc *pNtuMcReg, TAGparaDsc *pgGeoMap, TAGparaDsc *pgTwGeo)
 	: TANAactBaseNtu(name, pNtuTrack, pgGeoMap, p_tree),
+	  isMC(fFlagMC),	
 	  fpNtuTrack(pNtuTrack),
+	  fpNtuHitSt(pNtuHitSt),
+	  fpNtuTrackBm(pNtuTrackBm),
 	  fpNtuVtx(pNtuVtx),
 	  fpNtuRecTw(pNtuRecTw),
 	  fpTree(p_tree),
@@ -50,13 +58,18 @@ TANAactNtuSelectionCuts::TANAactNtuSelectionCuts(const char *name, TAGdataDsc *p
 	AddDataIn(pNtuTrack, "TAGntuGlbTrack");
 	AddDataIn(pNtuMcTrk, "TAMCntuPart");
 	AddDataIn(pNtuMcReg, "TAMCntuRegion");
+	AddDataIn(pNtuHitSt, "TASTntuHit");
+	AddDataIn(pNtuTrackBm, "TABMntuTrack");
 	AddDataIn(pNtuVtx, "TAVTntuVertex");
 	AddDataIn(pNtuRecTw, "TATWntuPoint");
 
 
 	fNtuGlbTrack = (TAGntuGlbTrack *)fpNtuTrack->Object();
+	fNtuHitSt = (TASTntuHit *)fpNtuHitSt->Object();
+	fNtuTrackBm = (TABMntuTrack *)fpNtuTrackBm->Object();
 	fNtuVtx = (TAVTntuVertex *)fpNtuVtx->Object();
 	fNtuRecTw = (TATWntuPoint *)fpNtuRecTw->Object();
+	fNtuMcTrk = (TAMCntuPart *)fpNtuMcTrk->Object();
 
 	fpFootGeo = (TAGgeoTrafo *)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 	if (!fpFootGeo)
@@ -79,30 +92,53 @@ void TANAactNtuSelectionCuts::CreateHistogram()
 //_____________________________________________________________________________
 //! Action
 Bool_t TANAactNtuSelectionCuts::Action()
-{
+{	
+	fEventCutsMap.clear();
 	fTrackCutsMap.clear();
-	long evNum = (long)gTAGroot->CurrentEventId().EventNumber();
+	long evNum = (long)gTAGroot->CurrentEventId().EventNumber(); // number of event
 	Int_t nt = fNtuGlbTrack->GetTracksN(); // number of reconstructed tracks for every event
 	
 	// event cuts
-	// studies concerning tw points
-    TwClonesCut(); // add "TWclone" and "TWnum" cut in map
+	SCpileUpCut(); // add "SCcut" in event map
+	BMCut();  // add "BMcut" in event map
+    TwClonesCut(); // add "TWclone" in track map and "TWnum" cut in event map
+	NTracksCut(); // add "NTracksCut" in event map
 
 	// track cuts
   for (int it = 0; it < nt; it++)
   { 
 	fGlbTrack = fNtuGlbTrack->GetTrack(it);
-	TrackQualityCut(it,fGlbTrack); // add "TrackQuality" cut in map
-	VtxPositionCut(it,fGlbTrack); // add "vtPos" cut in map
+	VtxPositionCut(it,fGlbTrack); // add "vtPos" cut in track map
+	TrackQualityCut(it,fGlbTrack); // add "TrackQuality" cut in track map
+
+	if (isMC){	// MC cuts
+	MC_VTMatch(it,fGlbTrack);	// add "MC_VTMatch" cut in track map
+	MC_MSDMatch(it,fGlbTrack);	// add "MC_MSDMatch" cut in track map
+	MC_TwParticleOrigin(it,fGlbTrack); // add "MC_TwParticleOrigin" cut in track map
+	}
   }
+
+PrintCutsMap(fEventCutsMap);  
 PrintCutsMap(fTrackCutsMap);
 return true;
 }
 
-
-//! \brief Print all the elements, keys and values of the cuts map
-void TANAactNtuSelectionCuts::PrintCutsMap(std::map<Int_t, std::map<string, bool>> aTrackCutsMap)
+//! \brief Print all the elements, keys and values of the event cuts map
+void TANAactNtuSelectionCuts::PrintCutsMap(std::map<string, Int_t> aEventCutsMap)
 {
+	std::cout << "Event cuts " << endl;
+	for (const auto &[key, value] : aEventCutsMap)
+	{
+	std::cout << "[" << key << "] = " << value << "; " << endl;
+	}
+	cout << endl;
+
+}
+
+//! \brief Print all the elements, keys and values of the track cuts map
+void TANAactNtuSelectionCuts::PrintCutsMap(std::map<Int_t, std::map<string, Int_t>> aTrackCutsMap)
+{	
+	std::cout << "Track cuts "  << endl;
 	for (const auto &[key, value] : aTrackCutsMap)
 	{
 		std::cout << "Element " << key << endl;
@@ -154,19 +190,30 @@ void TANAactNtuSelectionCuts::TwClonesCut()
   {
 	fGlbTrack = fNtuGlbTrack->GetTrack(it);
 	  if (!fGlbTrack->HasTwPoint())
-	  {
+	  {		
 		  vectTwId.push_back(-1);
-		  nt_TW++;
 		  continue;		  
     }
-
+	nt_TW++;
     TAGpoint *twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
-
     if ((std::find(vectTwId.begin(), vectTwId.end(), twpoint->GetClusterIdx()) != vectTwId.end())) // if twpoint id is already in the vector
       vecSameTWid.push_back(twpoint->GetClusterIdx());
-    vectTwId.push_back(twpoint->GetClusterIdx());
+	vectTwId.push_back(twpoint->GetClusterIdx());
   }
-   
+
+	//TW num cut
+	if (fNtuRecTw){
+	if (nt_TW == fNtuRecTw->GetPointsN()){
+		fEventCutsMap["TWnum"]=1;
+	} 
+	else
+	{
+	  fEventCutsMap["TWnum"]=0;
+	}
+	} else fEventCutsMap["TWnum"]=-99;	
+
+
+  //TW clone cut
   int i=0; 
   for (auto allTWid : vectTwId)
   {
@@ -178,18 +225,47 @@ void TANAactNtuSelectionCuts::TwClonesCut()
 	  fTrackCutsMap[i]["TWclone"]=0;
 	}
 
-	if (nt_TW == fNtuRecTw->GetPointsN()){
-		fTrackCutsMap[i]["TWnum"]=1;
-	} 
-	else
-	{
-	  fTrackCutsMap[i]["TWnum"]=0;
-	}
+	if (allTWid == -1)
+	fTrackCutsMap[i]["TWclone"]=-99;
 
 	i++;
   }
 
 }
+
+
+//! \brief Check if there is pile up in the SC triggering an event
+void TANAactNtuSelectionCuts::SCpileUpCut()
+{
+	if (TAGrecoManager::GetPar()->IsSaveHits()){
+	bool ok_status = false;	
+    if(fNtuHitSt && fNtuHitSt->GetHitsN()>0){
+	  ok_status = true;
+      ok_status &= !(fNtuHitSt->GetHit(0)->GetPileUp());       // if there is NOT pileup in the SC
+      ok_status &= (fNtuHitSt->GetHit(0)->GetDe() > 0.005); // the energy release should be higher than .005 GeV (energy release of Primary)
+  }
+	fEventCutsMap["SCcut"]=ok_status;
+  } else 
+  fEventCutsMap["SCcut"]=-99;
+}
+
+//! \brief Check if there is only one track in BM
+void TANAactNtuSelectionCuts::BMCut()
+{
+	if (fNtuTrackBm)
+fEventCutsMap["BMcut"] = (fNtuTrackBm->GetTracksN() == 1);
+else fEventCutsMap["BMcut"] = -99;
+}
+
+//! \brief Check if there is pile up in the SC triggering an event
+void TANAactNtuSelectionCuts::NTracksCut()
+{
+	if ( fNtuGlbTrack->GetTracksN() >1) // number of reconstructed tracks for every event
+	fEventCutsMap["NTracksCut"] = 1;
+	else fEventCutsMap["NTracksCut"] = 0;
+}
+
+
 
 //! \brief Cuts about quality chi2 and residual of a track
 void TANAactNtuSelectionCuts::TrackQualityCut(Int_t track_id, TAGtrack* fGlbTrack)
@@ -228,14 +304,12 @@ void TANAactNtuSelectionCuts::TrackQualityCut(Int_t track_id, TAGtrack* fGlbTrac
 //! \brief Cuts about vtx position with the target dimension
 void TANAactNtuSelectionCuts::VtxPositionCut(Int_t track_id,TAGtrack* fGlbTrack)
 {
-//TString name = fGlbTrack->GetName();
-//TObjArray *tx = name.Tokenize("_");
-
 //from the name of a track, i take the vtID information 
 Int_t vt_ID = stoi(((TObjString *) ((TObjArray *) ((TString(fGlbTrack->GetName()).Tokenize("_"))->At(2))))->String().Data()); 
 Int_t iVtx = vt_ID/1000; // vertex id
 Int_t iTracklet = vt_ID%1000; // tracklet id of a specific vtx
 TAVTvertex* vt = fNtuVtx->GetVertex(iVtx);
+if (fNtuVtx){
  if( vt->IsBmMatched() ) {
 	TVector3 vtPos = fpFootGeo->FromGlobalToTGLocal(fpFootGeo->FromVTLocalToGlobal(vt->GetPosition()));          // vertex position in TG frame
     TVector3 vtPosErr = fpFootGeo->VecFromGlobalToTGLocal(fpFootGeo->VecFromVTLocalToGlobal(vt->GetPosError())); // vertex position error in TG frame
@@ -248,6 +322,124 @@ TAVTvertex* vt = fNtuVtx->GetVertex(iVtx);
  
  } else
  fTrackCutsMap[track_id]["VTXposCut"]=0;
- 
+} else fTrackCutsMap[track_id]["VTXposCut"]=-99;
 }
 
+//! \brief compute MC VT match
+void TANAactNtuSelectionCuts::MC_VTMatch(Int_t track_id, TAGtrack* fGlbTrack)
+{	
+
+	vector<vector<Int_t>> vecVtZMC;  // vector of all MC charge of the 4 vt hits
+	 for (int i = 0; i < fGlbTrack->GetPointsN(); i++) // for all the points of a track...
+  {
+    TAGpoint *point = fGlbTrack->GetPoint(i);
+
+    if ((string)point->GetDevName() == "VT")
+    {                        //... i take the vt cluster
+      vector<Int_t> vecVT_z; // vector of all Z of a cluster of the vtx
+      vecVT_z.clear();
+      for (int j = 0; j < point->GetMcTracksN(); j++)
+      {
+
+        TAMCpart *particleMC = fNtuMcTrk->GetTrack(point->GetMcTrackIdx(j));
+        vecVT_z.push_back(particleMC->GetCharge()); // i take all the charges of a cluster
+      }
+      vecVtZMC.push_back(vecVT_z); // and i put all in a vector
+    }
+  }
+
+        bool VTMatch = true;
+        bool VTZ8Match = true;
+
+        if( vecVtZMC.size() > 0 )
+        {
+          for (int i = 0; i < vecVtZMC.size(); i++)
+          {
+            if (std::find(vecVtZMC.at(i).begin(), vecVtZMC.at(i).end(), 8) != vecVtZMC.at(i).end()) // if ALL the clusters of the VTX contains Z=8
+              VTZ8Match = VTZ8Match && true;
+            else
+              VTZ8Match = VTZ8Match && false;
+          }
+
+
+          if (VTZ8Match == true)
+          {                   // if a primary entered the first layer of the vtx and did not fragmented up to its last plane...
+            if (fGlbTrack->GetTwChargeZ() > 7)   // ... and the charge reconstructed in TW is higher than 7
+             fTrackCutsMap[track_id]["MC_VTMatch"]=1; // --> it means there is no fragmentation between VTX and up to TW
+            else
+             fTrackCutsMap[track_id]["MC_VTMatch"]=0;
+          }
+
+          if ( (std::find(vecVtZMC.at(0).begin(), vecVtZMC.at(0).end(), 8) != vecVtZMC.at(0).end()) && (VTZ8Match == false))
+          // if the first cluster was a Z=8 but then some fragmentation happened...
+          {
+            fTrackCutsMap[track_id]["MC_VTMatch"]=0;
+          } else if (VTZ8Match == false)
+		  { 
+			// maybe other fragmentation happened
+            fTrackCutsMap[track_id]["MC_VTMatch"]=2;
+          }
+
+        }
+
+}
+
+
+//! \brief compute MC VT match
+void TANAactNtuSelectionCuts::MC_MSDMatch(Int_t track_id, TAGtrack* fGlbTrack)
+{	
+ // compute MC MSD match
+        bool MSDMatch = true;
+		vector<vector<Int_t>> vecMsdZMC; // vector of all MC charge of the 6 msd clus
+		for (int i = 0; i < fGlbTrack->GetPointsN(); i++) // for all the points of a track...
+  {
+    TAGpoint *point = fGlbTrack->GetPoint(i);
+	if ((string)point->GetDevName() == "MSD")
+    {
+      // cout << " it is a MSD" << endl;
+      vector<Int_t> vecMSD_z; // vector of all Z of a cluster of the vtx
+      vecMSD_z.clear();
+      for (int j = 0; j < point->GetMcTracksN(); j++)
+      {
+
+        TAMCpart *particleMC = fNtuMcTrk->GetTrack(point->GetMcTrackIdx(j));
+        vecMSD_z.push_back(particleMC->GetCharge());
+      }
+      vecMsdZMC.push_back(vecMSD_z);
+    }
+
+
+  }
+
+        if( vecMsdZMC.size() > 0 )
+        {
+          for (int i = 0; i < vecMsdZMC.size(); i++)
+          {
+            if (std::find(vecMsdZMC.at(i).begin(), vecMsdZMC.at(i).end(), fGlbTrack->GetTwChargeZ()) != vecMsdZMC.at(i).end()) // if all the cluster of the MSD contains Z
+              MSDMatch = MSDMatch && true;                                                                  // reconstructed by the TW
+            else
+              MSDMatch = MSDMatch && false;
+          }
+        }
+
+		fTrackCutsMap[track_id]["MC_MSDMatch"]=MSDMatch;
+
+}
+
+//! \brief compute MC TW point origin match
+void TANAactNtuSelectionCuts::MC_TwParticleOrigin(Int_t track_id, TAGtrack* fGlbTrack)
+{
+      if (fGlbTrack->HasTwPoint())
+    {
+      auto twpoint = fGlbTrack->GetPoint(fGlbTrack->GetPointsN() - 1);
+      auto initTWPosition = fNtuMcTrk->GetTrack(twpoint->GetMcTrackIdx(0))->GetInitPos().Z();
+
+      if (initTWPosition > -(tgSize.Z() /2 ) && initTWPosition < (tgSize.Z() /2))
+    fTrackCutsMap[track_id]["MC_TWOrigin"]=1; // origin in TG
+  	else if (initTWPosition < -100 )
+	fTrackCutsMap[track_id]["MC_TWOrigin"]=2;   // origin of the beam
+    }
+	else  
+      fTrackCutsMap[track_id]["MC_TWOrigin"]=-99;
+    
+}

@@ -397,12 +397,12 @@ void GlobalAna::CreateAnaAction()
          if( !TAGrecoManager::GetPar()->IncludeTW() )
             Error("CreateAnaAction()", "Momentum performance requested but TW not included! P info not reliable, re-run with TW"), exit(-1);
 
-         fActPtReso = new TANAactPtReso("anaActPtReso", fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
+         fActPtReso = new TANAactPtReso("anaActPtReso",fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
       }
 
    }
 
-    fActGlbCuts = new TANAactNtuSelectionCuts("anaActCuts", fpNtuGlbTrack,fpNtuVtx,fpNtuRecTw, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
+    fActGlbCuts = new TANAactNtuSelectionCuts("anaActCuts", fFlagMC, fpNtuGlbTrack,fpNtuHitSt,fpNtuTrackBm,fpNtuVtx,fpNtuRecTw, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
 }
 
 //__________________________________________________________
