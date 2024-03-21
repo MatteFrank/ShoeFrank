@@ -402,7 +402,7 @@ void GlobalAna::CreateAnaAction()
 
    }
 
-   // fActGlbCuts = new TANAactNtuSelectionCuts("anaActCuts", fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
+    fActGlbCuts = new TANAactNtuSelectionCuts("anaActCuts", fpNtuGlbTrack,fpNtuVtx,fpNtuRecTw, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
 }
 
 //__________________________________________________________
