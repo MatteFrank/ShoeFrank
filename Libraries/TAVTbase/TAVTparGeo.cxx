@@ -610,10 +610,10 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
 
   if(TAGrecoManager::GetPar()->IncludeVT()){
     ss << "-airvtx " << endl;
-    for(int i=0; i<fvModBody.size(); i++) {
-      ss << " -" << fvModBody.at(i);
-    }
-    ss << endl;
+//    for(int i=0; i<fvModBody.size(); i++) {
+//      ss << " -" << fvModBody.at(i);
+//    }
+//    ss << endl;
   }
 
    return ss.str();   
