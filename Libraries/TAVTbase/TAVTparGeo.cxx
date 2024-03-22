@@ -380,6 +380,7 @@ string TAVTparGeo::PrintBodies()
 	 << posMod.z() + fTotalSize.Z()/2. << endl;
       fvModBody.push_back(bodyname);
       fvModRegion.push_back(regionname);
+
     
       //pixel layer
       bodyname = Form("vtxp%d",iSens);
@@ -394,7 +395,39 @@ string TAVTparGeo::PrintBodies()
 	 << posPix.z() + fPixThickness/2. << endl;
       fvPixBody.push_back(bodyname);
       fvPixRegion.push_back(regionname);
-    
+
+//      bodyname =  Form("test%d",iSens);
+//      ss <<  "RPP " << bodyname <<  "     "
+//	 << posMod.x() << " "	 << posMod.x() << " "
+//	 << posMod.y() << " "	 << posMod.y() << " "
+//	 << posMod.z() << " "	 << posMod.z() << endl;
+//      fvModBody.push_back(bodyname);
+      
+	//	;
+
+      bodyname =  Form("vtxb%d",iSens);
+      ss <<  "RPP " << bodyname <<  "     "
+	 << -3.4928  + posMod.x() << " "	 << 3.4572  + posMod.x() << " "
+	 << -2.96802 + posMod.y() << " "	 << 6.83198 + posMod.y() << " "
+	 << -0.08    + posMod.z() << " "	 << 0.08    + posMod.z() << endl;
+      fvModBody.push_back(bodyname);
+//
+      bodyname =  Form("vtxh%d",iSens);
+      ss <<  "RPP " << bodyname <<  "     "
+	 << -1.012   + posMod.x() << " "	 << 1.012  + posMod.x() << " "
+	 << -1.1355  + posMod.y() << " "	 << 1.1355 + posMod.y() << " "
+	 << -0.08     + posMod.z() << " "	 << 0.08   + posMod.z() << endl;
+      fvModBody.push_back(bodyname);
+//
+      bodyname =  Form("vtxc%d",iSens);
+      ss <<  "RPP " << bodyname <<  "     "
+	 << -3.4928  + posMod.x() << " "	 << 0.0072  + posMod.x() << " "
+	 << 6.13198  + posMod.y() << " "	 << 6.83198 + posMod.y() << " "
+	 << -0.1     + posMod.z() << " "	 << 0.1     + posMod.z() << endl;
+      fvModBody.push_back(bodyname);
+
+      
+      
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
 	ss << "$end_transform " << endl;
       
@@ -429,51 +462,51 @@ string TAVTparGeo::PrintBodies()
 
 
     
-    //vertex additional bodies
-
-    bodyname = "vtxb0";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.35 1.51" << endl;
-    bodyname = "vtxh0";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.35 1.51" << endl;
-    bodyname = "vtxc0";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.33 1.53" << endl;
-
-    ss << "$start_transform " << "vt_1" << endl;
-    bodyname = "vtxb1";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.67 1.83" << endl;
-    bodyname = "vtxh1";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.67 1.83" << endl;
-    bodyname = "vtxc1";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.65 1.85" << endl;
-    ss << "$end_transform " << endl;
-
-    bodyname = "vtxb2";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 2.87 3.03" << endl;
-    bodyname = "vtxh2";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 2.87 3.03" << endl;
-    bodyname = "vtxc2";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 2.85 3.05" << endl;
-
-    ss << "$start_transform " << "vt_3" << endl;
-    bodyname = "vtxb3";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 3.19 3.35" << endl;
-    bodyname = "vtxh3";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 3.19 3.35" << endl;
-    bodyname = "vtxc3";
-    fvPassBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 3.17 3.37" << endl;
-    ss << "$end_transform " << endl;
+//    //vertex additional bodies
+//
+//    bodyname = "vtxb0";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.35 1.51" << endl;
+//    bodyname = "vtxh0";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.35 1.51" << endl;
+//    bodyname = "vtxc0";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.33 1.53" << endl;
+//
+//    ss << "$start_transform " << "vt_1" << endl;
+//    bodyname = "vtxb1";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.67 1.83" << endl;
+//    bodyname = "vtxh1";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.67 1.83" << endl;
+//    bodyname = "vtxc1";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.65 1.85" << endl;
+//    ss << "$end_transform " << endl;
+//
+//    bodyname = "vtxb2";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 2.87 3.03" << endl;
+//    bodyname = "vtxh2";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 2.87 3.03" << endl;
+//    bodyname = "vtxc2";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 2.85 3.05" << endl;
+//
+//    ss << "$start_transform " << "vt_3" << endl;
+//    bodyname = "vtxb3";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 3.19 3.35" << endl;
+//    bodyname = "vtxh3";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 3.19 3.35" << endl;
+//    bodyname = "vtxc3";
+//    fvPassBody.push_back(bodyname);
+//    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 3.17 3.37" << endl;
+//    ss << "$end_transform " << endl;
 
 
     
