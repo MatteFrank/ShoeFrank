@@ -24,6 +24,7 @@ set( with_dictionnaries
        TANAactNtuMass
        TANAactPtReso
        TANAactNtuSelectionCuts
+       TANAactGSI2021
 )
 
 set( without_dictionnaries

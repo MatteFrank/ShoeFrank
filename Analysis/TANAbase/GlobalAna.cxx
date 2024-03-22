@@ -72,6 +72,7 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActGlbAna(0x0),
    fActPtReso(0x0),
    fActGlbCuts(0x0),
+   fActGSI2021(0x0),
    fFlagHisto(false),
    fFlagOut(true),
    fFlagMC(isMC),
@@ -400,10 +401,14 @@ void GlobalAna::CreateAnaAction()
          fActPtReso = new TANAactPtReso("anaActPtReso",fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
       }
 
+   if (fAnaManager->GetAnalysisPar().AnalysisCuts)
+      {
+      fActGlbCuts = new TANAactNtuSelectionCuts(fTrackCutsMap, fEventCutsMap, "anaActCuts", fFlagMC, fpNtuGlbTrack,fpNtuHitSt,fpNtuTrackBm,fpNtuVtx,fpNtuRecTw, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
+      fActGSI2021 = new TANAactGSI2021("anaActGSI2021",fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw,&fTrackCutsMap, &fEventCutsMap);
    }
-
-    fActGlbCuts = new TANAactNtuSelectionCuts("anaActCuts", fFlagMC, fpNtuGlbTrack,fpNtuHitSt,fpNtuTrackBm,fpNtuVtx,fpNtuRecTw, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
-}
+   }
+    
+    }
 
 //__________________________________________________________
 //! Add required reconstruction actions in list
@@ -416,8 +421,13 @@ void GlobalAna::AddRequiredItem()
 
       if (fAnaManager->GetAnalysisPar().PtResoFlag && fFlagMC)
          gTAGroot->AddRequiredItem("anaActPtReso");
+
+      if (fAnaManager->GetAnalysisPar().AnalysisCuts){
+      gTAGroot->AddRequiredItem("anaActCuts");
+      gTAGroot->AddRequiredItem("anaActGSI2021");   
+      }
    }
-   gTAGroot->AddRequiredItem("anaActCuts");
+   
 }
 
 //__________________________________________________________

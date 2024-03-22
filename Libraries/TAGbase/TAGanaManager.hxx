@@ -33,6 +33,7 @@ protected:
       Bool_t     MassResoFlag;           ///< Mass resolution  flag
       Bool_t     PtResoFlag;              ///< Momentum resolution  flag
       Bool_t     EfficiencyFlag;          ///< Efficiency studies  flag
+      Bool_t     AnalysisCuts;          ///< Analysis Cuts  flag 
 
    };
    

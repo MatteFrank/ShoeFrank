@@ -71,6 +71,13 @@ Bool_t TAGanaManager::FromFile(const TString& name)
    fAnalysisParameter.EfficiencyFlag = tmp;
    if(FootDebugLevel(1))
      cout << "Efficiency studies flag: "<< fAnalysisParameter.EfficiencyFlag << endl;
+
+   ReadItem(tmp);
+   fAnalysisParameter.AnalysisCuts = tmp;
+   if(FootDebugLevel(1))
+     cout << "Analysis Cuts flag: "<< fAnalysisParameter.AnalysisCuts << endl;
+
+     
       
    return kFALSE;
 }

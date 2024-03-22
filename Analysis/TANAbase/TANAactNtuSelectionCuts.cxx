@@ -40,7 +40,7 @@
 //! \param[in] name action name
 //! \param[out] pNtuTrack global track container descriptor
 //! \param[in] pgGeoMap target geometry parameter descriptor
-TANAactNtuSelectionCuts::TANAactNtuSelectionCuts(const char *name, Bool_t fFlagMC, TAGdataDsc *pNtuTrack,TAGdataDsc *pNtuHitSt, TAGdataDsc *pNtuTrackBm,TAGdataDsc *pNtuVtx, TAGdataDsc *pNtuRecTw, TTree *p_tree, TAGdataDsc *pNtuMcTrk, TAGdataDsc *pNtuMcReg, TAGparaDsc *pgGeoMap, TAGparaDsc *pgTwGeo)
+TANAactNtuSelectionCuts::TANAactNtuSelectionCuts(map<Int_t, map<string, Int_t>> &pTrackCutsMap, map<string, Int_t> &pEventCutsMap,const char *name, Bool_t fFlagMC, TAGdataDsc *pNtuTrack,TAGdataDsc *pNtuHitSt, TAGdataDsc *pNtuTrackBm,TAGdataDsc *pNtuVtx, TAGdataDsc *pNtuRecTw, TTree *p_tree, TAGdataDsc *pNtuMcTrk, TAGdataDsc *pNtuMcReg, TAGparaDsc *pgGeoMap, TAGparaDsc *pgTwGeo)
 	: TANAactBaseNtu(name, pNtuTrack, pgGeoMap, p_tree),
 	  isMC(fFlagMC),	
 	  fpNtuTrack(pNtuTrack),
@@ -52,7 +52,9 @@ TANAactNtuSelectionCuts::TANAactNtuSelectionCuts(const char *name, Bool_t fFlagM
 	  fpNtuMcTrk(pNtuMcTrk),
 	  fpNtuMcReg(pNtuMcReg),
 	  fpGeoMapG(pgGeoMap),
-	  fpTwGeo(pgTwGeo)
+	  fpTwGeo(pgTwGeo),
+    fTrackCutsMap(pTrackCutsMap),
+    fEventCutsMap(pEventCutsMap)
 {
 
 	AddDataIn(pNtuTrack, "TAGntuGlbTrack");
@@ -62,7 +64,6 @@ TANAactNtuSelectionCuts::TANAactNtuSelectionCuts(const char *name, Bool_t fFlagM
 	AddDataIn(pNtuTrackBm, "TABMntuTrack");
 	AddDataIn(pNtuVtx, "TAVTntuVertex");
 	AddDataIn(pNtuRecTw, "TATWntuPoint");
-
 
 	fNtuGlbTrack = (TAGntuGlbTrack *)fpNtuTrack->Object();
 	fNtuHitSt = (TASTntuHit *)fpNtuHitSt->Object();
@@ -118,15 +119,15 @@ Bool_t TANAactNtuSelectionCuts::Action()
 	}
   }
 
-PrintCutsMap(fEventCutsMap);  
-PrintCutsMap(fTrackCutsMap);
+//PrintCutsMap(fEventCutsMap);  
+//PrintCutsMap(fTrackCutsMap);
 return true;
 }
 
 //! \brief Print all the elements, keys and values of the event cuts map
 void TANAactNtuSelectionCuts::PrintCutsMap(std::map<string, Int_t> aEventCutsMap)
 {
-	std::cout << "Event cuts " << endl;
+	std::cout << "from SC action Event cuts " << endl;
 	for (const auto &[key, value] : aEventCutsMap)
 	{
 	std::cout << "[" << key << "] = " << value << "; " << endl;
@@ -138,7 +139,7 @@ void TANAactNtuSelectionCuts::PrintCutsMap(std::map<string, Int_t> aEventCutsMap
 //! \brief Print all the elements, keys and values of the track cuts map
 void TANAactNtuSelectionCuts::PrintCutsMap(std::map<Int_t, std::map<string, Int_t>> aTrackCutsMap)
 {	
-	std::cout << "Track cuts "  << endl;
+	std::cout << "from SC action Track cuts "  << endl;
 	for (const auto &[key, value] : aTrackCutsMap)
 	{
 		std::cout << "Element " << key << endl;
