@@ -68,6 +68,15 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	//  bool refittrack = false;
 	// bool  printntuple = true;
 
+	/*------------I/O CHECKS--------------*/
+	TTree *tree = 0;
+	TFile *f = new TFile(nameFile.Data());
+	if (!f || f->IsZombie())
+		Error("PrintFlatNtuple()", "Input file not opened correctly"), exit(-1);
+	tree = (TTree *)f->Get("tree");
+	if (!tree)
+		Error("PrintFlatNtuple()", "Input tree not opened correctly"), exit(-1);
+
 	TAGroot gTAGroot;
 
 	TAGcampaignManager *campManager = new TAGcampaignManager(expName);
@@ -86,6 +95,8 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	IncludeCA = campManager->IsDetectorOn("CA");
 
 	//! it is fundamental to ask the include
+
+	/*---------------GEOMETRY-----------------*/
 
 	TAGgeoTrafo *geoTrafo = new TAGgeoTrafo();
 	TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
@@ -124,9 +135,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	parFileName = campManager->GetCurGeoFile(TATWparGeo::GetBaseName(), runNumber);
 	twparGeo->FromFile(parFileName);
 
-	TTree *tree = 0;
-	TFile *f = new TFile(nameFile.Data());
-	tree = (TTree *)f->Get("tree");
+	/*---------------INPUT DATA DECLARATION-----------------*/
 
 	// TASTntuHit *stHit = new TASTntuHit();
 	// tree->SetBranchAddress(TASTntuHit::GetBranchName(), &stHit);
@@ -138,48 +147,40 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	// TABMntuTrack*  bmTrack = new TABMntuTrack();
 	// tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmTrack);
 
+	// TAVTntuHit* vthit      = new TAVTntuHit();
+	// tree->SetBranchAddress(TAVTntuHit::GetBranchName(), &vthit);
+
 	TAVTntuCluster *vtClus = new TAVTntuCluster();
-	vtClus->SetParGeo(vtparGeo);
+	// vtClus->SetParGeo(vtparGeo);
 	tree->SetBranchAddress(TAGnameManager::GetBranchName(vtClus->ClassName()), &vtClus);
-	// tree->SetBranchAddress(FootBranchName("TAVTntuCluster"), &vtClus);
-	// tree->SetBranchAddress(FootBranchName("TAVTntuCluster"), &vtClus);
+
+	TAVTntuVertex *vtx = new TAVTntuVertex();
+	tree->SetBranchAddress(TAGnameManager::GetBranchName(vtx->ClassName()), &vtx);
+
+	TAVTntuTrack *vttrack = new TAVTntuTrack();
+	tree->SetBranchAddress(TAGnameManager::GetBranchName(vttrack->ClassName()), &vttrack);
+	TAGdataDsc *track = new TAGdataDsc("vttrack", vttrack);
 
 	//    TAITntuCluster *itClus = new TAITntuCluster();
 	//    tree->SetBranchAddress(TAITntuCluster::GetBranchName(), &itClus);
 
 	TAMSDntuCluster *msdClus = new TAMSDntuCluster();
 	tree->SetBranchAddress(TAGnameManager::GetBranchName(msdClus->ClassName()), &msdClus);
-	// tree->SetBranchAddress(FootBranchName("TAMSDntuCluster"), &msdClus);
 
 	TAMSDntuPoint *msPoint = new TAMSDntuPoint();
 	tree->SetBranchAddress(TAGnameManager::GetBranchName(msPoint->ClassName()), &msPoint);
-	// tree->SetBranchAddress(FootBranchName("TAMSDntuPoint"), &msdPoint);
 
-	// TATW_ContainerPoint *twpoint = new TATW_ContainerPoint();
-	// tree->SetBranchAddress(TATW_ContainerPoint::GetBranchName(), &twpoint);
+	TATWntuHit *twrh = new TATWntuHit;
+	tree->SetBranchAddress(TAGnameManager::GetBranchName(twrh->ClassName()), &twrh);
 
 	TATWntuPoint *twpoint = new TATWntuPoint;
 	tree->SetBranchAddress(TAGnameManager::GetBranchName(twpoint->ClassName()), &twpoint);
-	// tree->SetBranchAddress(FootBranchName("TATWntuPoint"), &twpoint);
 
 	TACAntuCluster *caClus = new TACAntuCluster;
 	tree->SetBranchAddress(TAGnameManager::GetBranchName(caClus->ClassName()), &caClus);
 
-	TATWntuHit *twrh = new TATWntuHit;
-	tree->SetBranchAddress(TAGnameManager::GetBranchName(twrh->ClassName()), &twrh);
-	// tree->SetBranchAddress(FootBranchName("TATWntuHit"), &twhit);
-
-	TAVTntuVertex *vtx = new TAVTntuVertex();
-	tree->SetBranchAddress(TAGnameManager::GetBranchName(vtx->ClassName()), &vtx);
-	// tree->SetBranchAddress(FootBranchName("TAVTntuVertex"), &vtx);
-
-	// TAVTntuHit* vthit      = new TAVTntuHit();
-	// tree->SetBranchAddress(TAVTntuHit::GetBranchName(), &vthit);
-
-	TAVTntuTrack *vttrack = new TAVTntuTrack();
-	tree->SetBranchAddress(TAGnameManager::GetBranchName(vttrack->ClassName()), &vttrack);
-	// tree->SetBranchAddress(FootBranchName("TAVTntuTrack"), &vttrack);
-	TAGdataDsc *track = new TAGdataDsc("vttrack", vttrack);
+	TAGntuGlbTrack *glbTrack = new TAGntuGlbTrack;
+	tree->SetBranchAddress(TAGnameManager::GetBranchName(glbTrack->ClassName()), &glbTrack);
 
 	TAMCntuPart *eve = new TAMCntuPart();
 	if ((IncludeMC))
@@ -193,24 +194,30 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	// TAMCntuHit* mctwhit = new TAMCntuHit();
 	// tree->SetBranchAddress(FootBranchMcName(kTW),&mctwhit);
 
-	//    TAMCntuHit *vtMc = new TAMCntuHit();
-	//    tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
+	// TAMCntuHit *vtMc = new TAMCntuHit();
+	// tree->SetBranchAddress(TAMCntuHit::GetVtxBranchName(), &vtMc);
 
-	if (nentries == 0)
-		nentries = tree->GetEntriesFast();
-	// printf("Processed Events: %d\n", ev);
+	/*---------------OUTPUT DATA DECLARATION-----------------*/
 
-	// KFitter* m_kFitter = new KFitter();
+	Int_t n_ev;
 
+	// ST
+	// Int_t nsthit;
 	// vector<float> st_charge, st_time, st_pos_x, st_pos_y, st_pos_z;
 	// vector<TVector3> st_pos;
 
+	// BM
+	// Int_t nbmtrack;
 	// vector<int> bm_trkind;
 	// vector<TVector3> bm_Pvers, bm_R0;
 	// vector<float> bm_Pvers_x, bm_Pvers_y, bm_Pvers_z;
 	// vector<float> bm_R0_x, bm_R0_y, bm_R0_z, bmtrk_chi2;
 
-	Int_t n_ev;
+	// VT
+	Int_t nvtx;
+	Int_t nvttrack;
+	Int_t nvtclus;
+	Int_t nvthit;
 	vector<TVector3> vtx_coll;
 	vector<float> vtx_x, vtx_y, vtx_z;
 
@@ -222,28 +229,32 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	vector<TVector3> trk_vtx_clus, trk_slopez, trk_origin, trk_projTW;
 	vector<vector<TVector3>> trk_vtx_clus_2;
 	vector<int> vt_trk_n, trk_vtx_clus_n, trk_vtx_clus_tothit;
-	// if (IncludeMC)
-	// {
 	vector<int> trk_vtx_clus_MCId;
-	// }
 	vector<float> trk_vtx_clus_x, trk_vtx_clus_y, trk_vtx_clus_z, trk_chi2;
 
 	vector<int> vtx_clus_n, vtx_clus_tothit;
-	// if (IncludeMC){
 	vector<int> vtx_clus_MCId;
-	// }
 	vector<float> vtx_clus_x, vtx_clus_y, vtx_clus_z;
-	// if ((IncludeMC))
-	// {
 	vector<float> vtx_clus_MC;
-	// }
 
+	// MSD
+	vector<int> fStationIdMsd;		///< MSD station id
+	vector<int> fPointsNmsd;		///< MSD point number
+	vector<double> fEnergyLoss1Msd; ///< MSD point energy loss position
+	vector<double> fEnergyLoss2Msd; ///< MSD point energy loss position
+	vector<TVector3> fPosMsd;		///< MSD point position
+
+	vector<int> fClusStationIdMsd;
+	vector<int> fPointMsd_MCId;
+	vector<int> fClusNmsd;
+	vector<int> fClusMsd_MCId;		   ///< MSD point number
+	vector<double> fClusEnergyLossMsd; ///< MSD point energy loss position
+	vector<TVector3> fPosClusMsd;	   ///< MSD point position
+
+	// TW
 	Int_t TWPoints = 0;
 	vector<Int_t> TWChargePoint;
-	// if (IncludeMC)
-	// {
 	vector<Int_t> TATW_MCID_1, TATW_MCID_2;
-	// }
 	vector<Double_t> TWDe1Point;
 	vector<Double_t> TWDe2Point;
 	vector<Double_t> TWXPoint;
@@ -258,45 +269,29 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	vector<Double_t> TWbarHit;
 	vector<Double_t> TWlayerHit;
 	vector<Double_t> TWTOFHit;
-	// if (IncludeMC)
-	// {
 	vector<Int_t> TW_McID_Hit;
-	// }
+
+	// CA
+	Int_t nCaClus = 0;
+	vector<Double_t> CAEnClus;
+	vector<Double_t> CAclusX;
+	vector<Double_t> CAclusY;
+	vector<Double_t> CAclusZ;
+
+	// Global tracks
+	Int_t nGlbTracks = 0;
+	vector<Double_t> trackPx;
+	vector<Double_t> trackPy;
+	vector<Double_t> trackPz;
+	vector<Int_t> trackTWptId;
+	vector<Int_t> trackCAclusId;
 
 	// vector<int> vtx_hit_line, vtx_hit_col, vtx_hit_frame;
 
 	// vector<double> tw_eloss, tw_time, tw_pos, tw_chargeA, tw_chargeB, tw_timeA, tw_timeB, tw_chargeCOM;
 	// vector<int> tw_bar, tw_layer;
-
-	// Int_t nsthit;
-	// Int_t nbmtrack;
-	Int_t nvtx;
-	Int_t nvttrack;
-	Int_t nvtclus;
-	Int_t nvthit;
-	Int_t nCaClus;
 	// Int_t mctrack;
 	// Int_t ntwhit;
-
-	// MSD
-	vector<int> fStationIdMsd;		///< MSD station id
-	vector<int> fPointsNmsd;		///< MSD point number
-	vector<double> fEnergyLoss1Msd; ///< MSD point energy loss position
-	vector<double> fEnergyLoss2Msd; ///< MSD point energy loss position
-	vector<TVector3> fPosMsd;		///< MSD point position
-
-	vector<int> fClusStationIdMsd;
-	// if (IncludeMC)
-	// {
-	vector<int> fPointMsd_MCId;
-	// } ///< MSD station id
-	vector<int> fClusNmsd;
-	// if (IncludeMC)
-	// {
-	vector<int> fClusMsd_MCId; ///< MSD point number
-	// }
-	vector<double> fClusEnergyLossMsd; ///< MSD point energy loss position
-	vector<TVector3> fPosClusMsd;	   ///< MSD point position
 
 	///////////////// MC generated particle characteristics
 	// if (IncludeMC)
@@ -321,6 +316,8 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	vector<float> FinalMom_x, FinalMom_y, FinalMom_z;
 	// }
 	////////////////////////////////////////////
+
+	/*---------------TREE BRANCH DECLARATION-----------------*/
 
 	Int_t pos1 = nameFile.Last('.');
 	TString nameOut = nameFile(0, pos1);
@@ -462,6 +459,19 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	// tree_out->Branch("mc_trk_finpos_y",     &mc_trk_finpos_y );
 	// tree_out->Branch("mc_trk_finpos_z",     &mc_trk_finpos_z );
 
+	tree_out->Branch("CAclusN", &nCaClus);
+	tree_out->Branch("CAenergy", &CAEnClus);
+	tree_out->Branch("CAposX", &CAclusX);
+	tree_out->Branch("CAposY", &CAclusY);
+	tree_out->Branch("CAposZ", &CAclusZ);
+
+	tree_out->Branch("GLBtracks", &nGlbTracks);
+	tree_out->Branch("GLBtrackPx", &trackPx);
+	tree_out->Branch("GLBtrackPy", &trackPy);
+	tree_out->Branch("GLBtrackPz", &trackPz);
+	tree_out->Branch("GLBtrackTWid", &trackTWptId);
+	tree_out->Branch("GLBtrackCAid", &trackCAclusId);
+
 	/////////////// MC generated particle branches
 	///////////////////////////////////////////////////
 	if (IncludeMC)
@@ -494,12 +504,17 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 		tree_out->Branch("MC_FinalMom_z", &FinalMom_z);
 	}
 	////////////////////////////////////////////////////
+	if (nentries == 0 || nentries > tree->GetEntriesFast())
+		nentries = tree->GetEntriesFast();
 
 	for (Int_t ev = 0; ev < nentries; ++ev)
 	{
 		if (ev % 10000 == 0)
 			printf("Processed Events: %d\n", ev);
 		n_ev = ev;
+		tree->GetEntry(ev);
+
+		/*--------------CLEAN OUTPUT CONTAINERS---------------*/
 
 		////////////////////////////////////////////////////////////
 		// MC generated particle characteristics !!!!!!
@@ -537,55 +552,6 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 		}
 		/////////////////////////////////////
 
-		// stHit->Clear();
-		// bmHit->Clear();
-		// bmTrack->Clear();
-
-		vtClus->Clear();
-		// itClus->Clear();
-		msdClus->Clear();
-		msPoint->Clear();
-
-		twrh->Clear();
-		vttrack->Clear();
-		vtx->Clear();
-		// vtclus->Clear();
-		//  vthit->Clear();
-
-		// vtMc->Clear();
-		// if (IncludeMC == 1){
-		//   eve->Clear();
-		// }
-
-		TWPoints = -1;
-		TWChargePoint.clear();
-		TWDe1Point.clear();
-		TWDe2Point.clear();
-		TWXPoint.clear();
-		TWYPoint.clear();
-		TWZPoint.clear();
-		if (IncludeMC)
-		{
-			TATW_MCID_1.clear();
-			TATW_MCID_2.clear();
-		}
-		// TWhitX_pos.clear();
-		// TWhitY_pos.clear();
-		TWTOF.clear();
-		TWTOF1.clear();
-		TWTOF2.clear();
-		TWHit = -1;
-		TWDeHit.clear();
-		TWbarHit.clear();
-		TWlayerHit.clear();
-		TWTOFHit.clear();
-		if (IncludeMC)
-		{
-			TW_McID_Hit.clear();
-		}
-
-		tree->GetEntry(ev);
-
 		// st_charge.clear();
 		// st_time.clear();
 		// st_pos.clear();
@@ -608,20 +574,6 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 		vtx_x.clear();
 		vtx_y.clear();
 		vtx_z.clear();
-
-		// mc_trk_charge.clear();
-		// mc_trk_mass.clear();
-		// mc_trk_tof.clear();
-		// mc_trk_length.clear();
-		// mc_trk_intpos_x.clear();
-		// mc_trk_intpos_y.clear();
-		// mc_trk_intpos_z.clear();
-		// mc_trk_finpos_x.clear();
-		// mc_trk_finpos_y.clear();
-		// mc_trk_finpos_z.clear();
-
-		// ! tutti i termini con "FlukaId" sono da mettere in un if se MC è acceso
-
 		trk_ind.clear();
 		trk_vtx_clus.clear();
 		trk_vtx_clus_2.clear();
@@ -652,9 +604,13 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 		}
 
 		vtx_clus_x.clear();
-
 		vtx_clus_y.clear();
 		vtx_clus_z.clear();
+
+		// vtx_hit_line.clear();
+		// vtx_hit_col.clear();
+		// vtx_hit_frame.clear();
+		// vtx_hit_sensor.clear();
 
 		fStationIdMsd.clear();
 		fPointsNmsd.clear();
@@ -677,10 +633,32 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 		fClusEnergyLossMsd.clear();
 		fPosClusMsd.clear();
 
-		// vtx_hit_line.clear();
-		// vtx_hit_col.clear();
-		// vtx_hit_frame.clear();
-		// vtx_hit_sensor.clear();
+		TWPoints = -1;
+		TWChargePoint.clear();
+		TWDe1Point.clear();
+		TWDe2Point.clear();
+		TWXPoint.clear();
+		TWYPoint.clear();
+		TWZPoint.clear();
+		if (IncludeMC)
+		{
+			TATW_MCID_1.clear();
+			TATW_MCID_2.clear();
+		}
+		// TWhitX_pos.clear();
+		// TWhitY_pos.clear();
+		TWTOF.clear();
+		TWTOF1.clear();
+		TWTOF2.clear();
+		TWHit = -1;
+		TWDeHit.clear();
+		TWbarHit.clear();
+		TWlayerHit.clear();
+		TWTOFHit.clear();
+		if (IncludeMC)
+		{
+			TW_McID_Hit.clear();
+		}
 
 		// tw_eloss.clear();
 		// tw_time.clear();
@@ -692,6 +670,32 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 		// tw_timeA.clear();
 		// tw_timeB.clear();
 		// tw_chargeCOM.clear();
+
+		nCaClus = 0;
+		CAEnClus.clear();
+		CAclusX.clear();
+		CAclusY.clear();
+		CAclusZ.clear();
+
+		nGlbTracks = 0;
+		trackPx.clear();
+		trackPy.clear();
+		trackPz.clear();
+		trackTWptId.clear();
+		trackCAclusId.clear();
+
+		// mc_trk_charge.clear();
+		// mc_trk_mass.clear();
+		// mc_trk_tof.clear();
+		// mc_trk_length.clear();
+		// mc_trk_intpos_x.clear();
+		// mc_trk_intpos_y.clear();
+		// mc_trk_intpos_z.clear();
+		// mc_trk_finpos_x.clear();
+		// mc_trk_finpos_y.clear();
+		// mc_trk_finpos_z.clear();
+
+		// ! tutti i termini con "FlukaId" sono da mettere in un if se MC è acceso
 
 		//////////////////////////////////////
 		///////// MC generated particle characteristics !!!!!!
@@ -1226,6 +1230,34 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 					fClusMsd_MCId.push_back(clus->GetMcTrackIdx(0));
 				}
 			}
+		}
+
+		nCaClus = caClus->GetClustersN();
+		for (int iClus = 0; iClus < nCaClus; ++iClus)
+		{
+			TACAcluster *clus = caClus->GetCluster(iClus);
+			CAEnClus.push_back(clus->GetEnergy());
+			TVector3 pos = geoTrafo->FromCALocalToGlobal(clus->GetPositionG());
+			CAclusX.push_back(pos.X());
+			CAclusY.push_back(pos.Y());
+			CAclusZ.push_back(pos.Z());
+		}
+
+		nGlbTracks = glbTrack->GetTracksN();
+		for (int iTrack = 0; iTrack < nGlbTracks; ++iTrack)
+		{
+			TAGtrack *track = glbTrack->GetTrack(iTrack);
+			trackPx.push_back(track->GetTgtMomentum().X());
+			trackPy.push_back(track->GetTgtMomentum().Y());
+			trackPz.push_back(track->GetTgtMomentum().Z());
+			
+			if(track->HasTwPoint())
+			{
+				TATWpoint* twpt = (TATWpoint*)track->GetPoint(track->GetPointsN()-1);
+				trackTWptId.push_back(twpt->GetClusterIdx());
+				trackCAclusId.push_back(track->GetCALOmatchedClusterId());
+			}
+
 		}
 
 		tree_out->Fill();
