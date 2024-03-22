@@ -278,6 +278,7 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
       Int_t nvttrack;
       Int_t nvtclus;
       Int_t nvthit;
+      Int_t nCaClus;
       // Int_t mctrack;
       // Int_t ntwhit;
 
