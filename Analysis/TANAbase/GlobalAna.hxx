@@ -87,6 +87,7 @@
 #include "TANAactBaseNtu.hxx"
 #include "TANAactNtuMass.hxx"
 #include "TANAactPtReso.hxx"
+#include "TANAactGSI2021.hxx"
 #include  "TANAactNtuSelectionCuts.hxx"
 
 class TAMCntuHit;
@@ -303,12 +304,17 @@ protected:
    TANAactBaseNtu*       fActGlbAna;     ///< analysis action
    TANAactPtReso*        fActPtReso;     ///< momentum performance action
    TANAactNtuSelectionCuts*       fActGlbCuts;     ///< analysis selection cuts action
+   TANAactGSI2021*        fActGSI2021;     ///< momentum performance action
 
    Bool_t                fFlagOut;          ///< flag for output file
    Bool_t                fFlagHisto;        ///< flag for histo generatiom
 
    Bool_t                fFlagMC;           ///< MC flag
    Int_t                 fSkipEventsN;      ///< number of events to skip
+
+   std::map<Int_t, std::map<string, Int_t>> fTrackCutsMap; ///< Map of track cuts for every track in the event. key = track ID; string = name of the cut
+	std::map<string, Int_t> fEventCutsMap; ///< Map of event cuts. key = name of the cut
+
    
    ClassDef(GlobalAna, 1);        ///< Base class for reconstruction
 };

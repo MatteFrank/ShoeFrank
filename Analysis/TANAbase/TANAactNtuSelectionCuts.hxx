@@ -18,7 +18,10 @@
 class TANAactNtuSelectionCuts : public TANAactBaseNtu {
    
 public:
-	explicit TANAactNtuSelectionCuts(const char *name = 0,
+	explicit TANAactNtuSelectionCuts(
+									 map<Int_t, map<string, Int_t>> &pTrackCutsMap ,
+									 map<string, Int_t> &pEventCutsMap,
+									 const char *name = 0,
 									 Bool_t fFlagMC = false, 	
 									 TAGdataDsc *pNtuTrack = 0,
 									 TAGdataDsc *pNtuHitSt= 0,
@@ -29,7 +32,8 @@ public:
 									 TAGdataDsc *pNtuMcTrk = 0,									 
 									 TAGdataDsc *pNtuMcReg = 0,
 									 TAGparaDsc *pgGeoMap = 0,
-									 TAGparaDsc *pgTwGeo = 0);
+									 TAGparaDsc *pgTwGeo = 0									 
+									 );
 
 	virtual ~TANAactNtuSelectionCuts();
 
@@ -56,7 +60,7 @@ protected:
 	void MC_MSDMatch(Int_t track_id, TAGtrack* fGlbTrack);     // MC cuts about MSD	
 	void PrintCutsMap(std::map<Int_t, std::map<string, Int_t>> aTrackCutsMap);
 	void PrintCutsMap(std::map<string, Int_t> aEventCutsMap);
-	std::vector<string> customSplit(string str, char separator); // split a string in elements by separator (ideally the .split() function of python)
+	
 
 
 	TAGdataDsc*		fpNtuTrack;				///< input global tracks
@@ -96,8 +100,8 @@ protected:
 	Int_t			fRegLastTWbar;			///< MC region for last TW bar
 	TVector3		tgSize;					///< dimension of target
 
-	std::map<Int_t, std::map<string, Int_t>> fTrackCutsMap; ///< Map of track cuts for every track in the event. key = track ID; string = name of the cut
-	std::map<string, Int_t> fEventCutsMap; ///< Map of event cuts. key = name of the cut
+	std::map<Int_t, std::map<string, Int_t>> &  fTrackCutsMap; ///< Map of track cuts for every track in the event. key = track ID; string = name of the cut
+	std::map<string, Int_t> & fEventCutsMap; ///< Map of event cuts. key = name of the cut
 
 	ClassDef(TANAactNtuSelectionCuts, 0)
 };

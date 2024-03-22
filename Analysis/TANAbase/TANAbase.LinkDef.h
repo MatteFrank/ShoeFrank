@@ -9,5 +9,6 @@
 #pragma link C++ class TANAactNtuMass+;
 #pragma link C++ class TANAactPtReso+;
 #pragma link C++ class TANAactNtuSelectionCuts+;
+#pragma link C++ class TANAactGSI2021+;
 
 #endif

@@ -72,6 +72,7 @@ GlobalAna::GlobalAna(TString expName, Int_t runNumber, TString fileNameIn, TStri
    fActGlbAna(0x0),
    fActPtReso(0x0),
    fActGlbCuts(0x0),
+   fActGSI2021(0x0),
    fFlagHisto(false),
    fFlagOut(true),
    fFlagMC(isMC),
@@ -401,8 +402,9 @@ void GlobalAna::CreateAnaAction()
       }
 
    }
-
-    fActGlbCuts = new TANAactNtuSelectionCuts("anaActCuts", fFlagMC, fpNtuGlbTrack,fpNtuHitSt,fpNtuTrackBm,fpNtuVtx,fpNtuRecTw, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
+    
+    fActGlbCuts = new TANAactNtuSelectionCuts(fTrackCutsMap, fEventCutsMap, "anaActCuts", fFlagMC, fpNtuGlbTrack,fpNtuHitSt,fpNtuTrackBm,fpNtuVtx,fpNtuRecTw, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
+    fActGSI2021 = new TANAactGSI2021("anaActGSI2021",fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw,&fTrackCutsMap, &fEventCutsMap);
 }
 
 //__________________________________________________________
@@ -418,6 +420,7 @@ void GlobalAna::AddRequiredItem()
          gTAGroot->AddRequiredItem("anaActPtReso");
    }
    gTAGroot->AddRequiredItem("anaActCuts");
+   gTAGroot->AddRequiredItem("anaActGSI2021");
 }
 
 //__________________________________________________________
