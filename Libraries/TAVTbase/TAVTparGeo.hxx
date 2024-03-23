@@ -83,10 +83,18 @@ protected:
    vector<string> fvModRegion; //! Fluka module region
    //! Fluka pixel region
    vector<string> fvPixRegion; //! Fluka pixel region
-   //! Fluka passive body
-   vector<string> fvPassBody;   //! Fluka passive body
-   //! Fluka passive region
-   vector<string> fvPassRegion;   //! Fluka passive region
+   //! Fluka box body
+   vector<string> fvBoxBody;   //! Fluka box body
+   //! Fluka box region
+   vector<string> fvBoxRegion;   //! Fluka box region
+   //! Fluka air region
+   vector<string> fvAirRegion;   //! Fluka airvtx region
+   //! Fluka board body
+   vector<string> fvBoardBody;   //! Fluka board body
+   vector<string> fvHoleBody;   //! Fluka hole in board body
+   vector<string> fvCutBody;   //! Fluka cut in board body
+   //! Fluka board region
+   vector<string> fvBoardRegion;   //! Fluka board region
 
 public:
    //! Get base name

@@ -410,21 +410,21 @@ string TAVTparGeo::PrintBodies()
 	 << -3.4928  + posMod.x() << " "	 << 3.4572  + posMod.x() << " "
 	 << -2.96802 + posMod.y() << " "	 << 6.83198 + posMod.y() << " "
 	 << -0.08    + posMod.z() << " "	 << 0.08    + posMod.z() << endl;
-      fvModBody.push_back(bodyname);
+      fvBoardBody.push_back(bodyname);
 //
       bodyname =  Form("vtxh%d",iSens);
       ss <<  "RPP " << bodyname <<  "     "
 	 << -1.012   + posMod.x() << " "	 << 1.012  + posMod.x() << " "
 	 << -1.1355  + posMod.y() << " "	 << 1.1355 + posMod.y() << " "
 	 << -0.08     + posMod.z() << " "	 << 0.08   + posMod.z() << endl;
-      fvModBody.push_back(bodyname);
+      fvHoleBody.push_back(bodyname);
 //
       bodyname =  Form("vtxc%d",iSens);
       ss <<  "RPP " << bodyname <<  "     "
 	 << -3.4928  + posMod.x() << " "	 << 0.0072  + posMod.x() << " "
 	 << 6.13198  + posMod.y() << " "	 << 6.83198 + posMod.y() << " "
-	 << -0.1     + posMod.z() << " "	 << 0.1     + posMod.z() << endl;
-      fvModBody.push_back(bodyname);
+	 << -0.08    + posMod.z() << " "	 << 0.08    + posMod.z() << endl;
+      fvCutBody.push_back(bodyname);
 
       
       
@@ -438,24 +438,24 @@ string TAVTparGeo::PrintBodies()
     ss << "$start_transform " << "vt_p" << endl;
     
     bodyname = "boxfront";
-    fvPassBody.push_back(bodyname);
+    fvBoxBody.push_back(bodyname);
     ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 0.45" << endl;
     // Centro Z = -2.35
     bodyname = "boxfron2";
-    fvPassBody.push_back(bodyname);
+    fvBoxBody.push_back(bodyname);
     ss << "RPP " << bodyname << "   -9.6 9.6 -9.6 9.6 -1.75 0.45" << endl;
     bodyname = "boxwin";
-    fvPassBody.push_back(bodyname);
+    fvBoxBody.push_back(bodyname);
     ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.75" << endl;
     bodyname = "boxback";
-    fvPassBody.push_back(bodyname);
+    fvBoxBody.push_back(bodyname);
     ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 1.95 2.15" << endl;
     bodyname = "boxhole";
-    fvPassBody.push_back(bodyname);
+    fvBoxBody.push_back(bodyname);
     ss << "RCC " << bodyname << "    0.0 0.0 1.95 0.0 0.0 0.2 2.5" << endl;
     //    RCC boxhole    0.0 0.0 4.3 0.0 0.0 0.2 2.5
     bodyname = "airvtx";
-    fvPassBody.push_back(bodyname);
+    fvBoxBody.push_back(bodyname);
     ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
 
     ss << "$end_transform " << endl;
@@ -465,46 +465,46 @@ string TAVTparGeo::PrintBodies()
 //    //vertex additional bodies
 //
 //    bodyname = "vtxb0";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.35 1.51" << endl;
 //    bodyname = "vtxh0";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.35 1.51" << endl;
 //    bodyname = "vtxc0";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.33 1.53" << endl;
 //
 //    ss << "$start_transform " << "vt_1" << endl;
 //    bodyname = "vtxb1";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.67 1.83" << endl;
 //    bodyname = "vtxh1";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.67 1.83" << endl;
 //    bodyname = "vtxc1";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.65 1.85" << endl;
 //    ss << "$end_transform " << endl;
 //
 //    bodyname = "vtxb2";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 2.87 3.03" << endl;
 //    bodyname = "vtxh2";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 2.87 3.03" << endl;
 //    bodyname = "vtxc2";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 2.85 3.05" << endl;
 //
 //    ss << "$start_transform " << "vt_3" << endl;
 //    bodyname = "vtxb3";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 3.19 3.35" << endl;
 //    bodyname = "vtxh3";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 3.19 3.35" << endl;
 //    bodyname = "vtxc3";
-//    fvPassBody.push_back(bodyname);
+//    fvBoxBody.push_back(bodyname);
 //    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 3.17 3.37" << endl;
 //    ss << "$end_transform " << endl;
 
@@ -513,20 +513,20 @@ string TAVTparGeo::PrintBodies()
     //passive regions
     
     regionname = "VBOXF";
-    fvPassRegion.push_back(regionname);
+    fvBoxRegion.push_back(regionname);
     regionname = "VBOXB";
-    fvPassRegion.push_back(regionname);
+    fvBoxRegion.push_back(regionname);
     regionname = "AIRVTX";
-    fvPassRegion.push_back(regionname);
+    fvAirRegion.push_back(regionname);
 
     regionname = "VTXB0";
-    fvPassRegion.push_back(regionname);
+    fvBoardRegion.push_back(regionname);
     regionname = "VTXB1";
-    fvPassRegion.push_back(regionname);
+    fvBoardRegion.push_back(regionname);
     regionname = "VTXB2";
-    fvPassRegion.push_back(regionname);
+    fvBoardRegion.push_back(regionname);
     regionname = "VTXB3";
-    fvPassRegion.push_back(regionname);
+    fvBoardRegion.push_back(regionname);
 
   }
   
