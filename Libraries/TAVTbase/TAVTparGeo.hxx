@@ -85,10 +85,18 @@ protected:
    vector<string> fvModRegion; //! Fluka module region
    //! Fluka pixel region
    vector<string> fvPixRegion; //! Fluka pixel region
-   //! Fluka passive body
-   vector<string> fvPassBody;   //! Fluka passive body
-   //! Fluka passive region
-   vector<string> fvPassRegion;   //! Fluka passive region
+   //! Fluka VT box body
+   vector<string> fvBoxBody;   //! Fluka VT box body
+   //! Fluka VT box region
+   vector<string> fvBoxRegion;   //! Fluka VT box region
+   //! Fluka air region
+   vector<string> fvAirRegion;   //! Fluka airvtx region
+   //! Fluka VT board bodies
+   vector<string> fvBoardBody;   //! Fluka VT board body
+   vector<string> fvHoleBody;   //! Fluka hole in VT board body
+   vector<string> fvCutBody;   //! Fluka cut in VT board body
+   //! Fluka VT board region
+   vector<string> fvBoardRegion;   //! Fluka VT board region
 
 private:
   TString    fEpoxyMat;          ///< Material of expoxy
