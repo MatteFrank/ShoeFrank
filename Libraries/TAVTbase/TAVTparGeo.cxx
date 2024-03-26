@@ -330,17 +330,75 @@ string TAVTparGeo::PrintRotations()
       }
     }
 
-	  //put the passive materials into its position in local coord
-	  ss << PrintCard("ROT-DEFI", "", "", "",
-//			  Form("%f",GetSensorPosition(iSens).X()),
-//			  Form("%f",GetSensorPosition(iSens).Y()),
-//			  Form("%f",GetSensorPosition(iSens).Z()),
-//			  Form("vt_%d",iSens) ) << endl;
-			  "0.",
-			  "0.",
-			  "2.35",
-			  "vt_p" ) << endl;
-
+    //put the passive materials into its position in local coord
+//    ss << PrintCard("ROT-DEFI", "", "", "",
+////			  Form("%f",GetSensorPosition(iSens).X()),
+////			  Form("%f",GetSensorPosition(iSens).Y()),
+////			  Form("%f",GetSensorPosition(iSens).Z()),
+////			  Form("vt_%d",iSens) ) << endl;
+//		    Form("%f",center.X()),
+//		    Form("%f",center.Y()),
+//		    Form("%f",center.Z()),
+//		    "vt_p" ) << endl;
+    // Checks for rotation angles
+    if (fSensorParameter[0].Tilt.Mag()!=0 || angle.Mag()!=0){
+      if (fSensorParameter[0].Tilt.Mag()!=0){
+	  
+	  // put the sensor in 0,0,0 before the sensor's rot
+	ss << PrintCard("ROT-DEFI", "", "", "",
+			Form("%f",-center.X()),
+			Form("%f",-center.Y()),
+			Form("%f",-center.Z()),
+			"vt_p" ) << endl;
+	//rot around x
+	if(fSensorParameter[0].Tilt[0]!=0){
+	  ss << PrintCard("ROT-DEFI", "100.", "",
+			  Form("%f",fSensorParameter[0].Tilt[0]*TMath::RadToDeg()),
+			  "", "", "","vt_p" ) << endl;
+	}
+	//rot around y      
+	if(fSensorParameter[0].Tilt[1]!=0){
+	  ss << PrintCard("ROT-DEFI", "200.", "",
+			  Form("%f",fSensorParameter[0].Tilt[1]*TMath::RadToDeg()),
+			  "", "", "", "vt_p" ) << endl;
+	}
+	//rot around z
+	if(fSensorParameter[0].Tilt[2]!=0){
+	  ss << PrintCard("ROT-DEFI", "300.", "",
+			  Form("%f",fSensorParameter[0].Tilt[2]*TMath::RadToDeg()),
+			  "", "", "", "vt_p" ) << endl;
+	}
+	
+	//put back the sensor into its position in local coord
+	//	ss << PrintCard("ROT-DEFI", "", "", "",
+	//			Form("%f",center.X()),
+	//			Form("%f",center.Y()),
+       	//			Form("%f",center.Z()),
+	//			"vt_p" ) << endl;
+      }
+	//check if detector has a tilt and then apply rot
+      if(angle.Mag()!=0){
+	  
+	if(angle.X()!=0){
+	  ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "",
+			  "", "vt_p") << endl;
+	}
+	if(angle.Y()!=0){
+	  ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "",
+			  "", "vt_p") << endl;
+	}
+	if(angle.Z()!=0){
+	  ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "",
+			  "", "vt_p") << endl;
+	}
+      }
+    }
+    	//put back the detector in global coord
+    ss << PrintCard("ROT-DEFI", "", "", "",
+		    Form("%f",center.X()),
+		    Form("%f",center.Y()),
+		    Form("%f",center.Z()),
+		    "vt_p") << endl;
     
   }
    
