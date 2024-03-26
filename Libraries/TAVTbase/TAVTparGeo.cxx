@@ -95,7 +95,7 @@ void TAVTparGeo::DefineMaterial()
    // G10 for pcb material
    TGeoMixture* mix = TAGmaterials::Instance()->CreateMixture(fPcbBoardMat, fPcbBoardMatDensities, fPcbBoardMatProp, fPcbBoardMatDensity);
    if(FootDebugLevel(1)) {
-      printf("G10 material:\n");
+      printf("Eg material:\n");
       mix->Print();
    }  
 
