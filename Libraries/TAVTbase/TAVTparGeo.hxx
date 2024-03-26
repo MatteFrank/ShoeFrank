@@ -69,6 +69,8 @@ public:
    virtual string PrintVTPhysics();
    // Fluka air substraction
    virtual string PrintSubtractBodiesFromAir();
+    // Read support
+   void    ReadSupportInfo();
    
 protected:
    //! Fluka epitaxial body
@@ -87,6 +89,17 @@ protected:
    vector<string> fvPassBody;   //! Fluka passive body
    //! Fluka passive region
    vector<string> fvPassRegion;   //! Fluka passive region
+
+private:
+  TString    fEpoxyMat;          ///< Material of expoxy
+  Float_t    fEpoxyMatDensity;   ///< Density of epoxy material
+  TString    fGlassMat;          ///< Material of expoxy
+  Float_t    fGlassMatDensity;   ///< Density of epoxy material
+  TString    fPcbBoardMat;           ///< Material of pcb
+  TString    fPcbBoardMatDensities;  ///< Density of pcb material for each component
+  TString    fPcbBoardMatProp;       ///< Material of pcb component proportion
+  Float_t    fPcbBoardMatDensity;    ///< Density of pcb material
+
 
 public:
    //! Get base name

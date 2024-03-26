@@ -240,12 +240,12 @@ string TAGmaterials::PrintMaterialFluka()
          
          TString cmd = AppendFluka("MATERIAL") + PrependFluka(Form("%g",mix->GetDensity()), 3) +  PrependFlukaName(mix->GetName(), 3);
          ss << cmd.Data() << endl;
-         
          cmd = AppendFluka("COMPOUND");
+        //  cout<<"cmdb=  "<<endl<<cmd.Data()<<endl;
          
          for (Int_t e = 0; e < nElements; ++e) {
             
-            if(e == 3) {
+            if((e % 3)==0 && e!=0) {
                cmd += PrependFlukaName(mix->GetName(), 0);
                ss << cmd.Data() << endl;
                cmd = AppendFluka("COMPOUND");
@@ -268,15 +268,14 @@ string TAGmaterials::PrintMaterialFluka()
             
          }
          
-         if (nElements == 2)
+         if ((nElements%3) == 2)
             cmd += PrependFlukaName(mix->GetName(), 2);
-         else if (nElements == 3)
+         else if ((nElements % 3)==0)
             cmd += PrependFlukaName(mix->GetName(), 0);
-         else if (nElements == 4)
+         else if ((nElements%3) == 1)
             cmd += PrependFlukaName(mix->GetName(), 4);
-         else
-            Warning("SaveFileFluka()", "Number of element in the compund material is %d (max: 3)", nElements);
-         
+        //  else
+        //     Warning("SaveFileFluka()", "Number of element in the compund material is %d (max: 3)", nElements);
          ss << cmd.Data() << endl;
       }
       

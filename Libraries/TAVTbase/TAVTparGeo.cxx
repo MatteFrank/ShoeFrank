@@ -76,8 +76,31 @@ void TAVTparGeo::DefineMaterial()
   // Silicon material
   TAVTbaseParGeo::DefineMaterial();
    
+  if ( gGeoManager == 0x0 ) { // a new Geo Manager is created if needed
+     new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
+  }
+
+  TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fEpoxyMat, fEpoxyMatDensity);
+  if(FootDebugLevel(1)) {
+     printf("VTX passive Epoxy material:\n");
+     mat->Print();
+  }
+
+  mat = TAGmaterials::Instance()->CreateMaterial(fGlassMat, fGlassMatDensity);
+  if(FootDebugLevel(1)) {
+     printf("VTX passive Eglass material:\n");
+     mat->Print();
+  }
+
+   // G10 for pcb material
+   TGeoMixture* mix = TAGmaterials::Instance()->CreateMixture(fPcbBoardMat, fPcbBoardMatDensities, fPcbBoardMatProp, fPcbBoardMatDensity);
+   if(FootDebugLevel(1)) {
+      printf("G10 material:\n");
+      mix->Print();
+   }  
+
   // Pixel material
-  TGeoMixture* mix = TAGmaterials::Instance()->CreateMixture(fPixMat, fPixMatDensities, fPixMatProp, fPixMatDensity);
+   mix = TAGmaterials::Instance()->CreateMixture(fPixMat, fPixMatDensities, fPixMatProp, fPixMatDensity);
    if(FootDebugLevel(1)) {
     printf("pixels material:\n");
     mix->Print();
@@ -656,7 +679,7 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
     ss << PrintCard("ASSIGNMA", "AIR", "AIRVTX", "", "", "", "", "") << endl;
     ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXF", "", "", "", "", "") << endl;
     ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXB", "", "", "", "", "") << endl;
-    ss << PrintCard("ASSIGNMA", "G10", "VTXB0", "VTXB3", "", "", "", "") << endl;
+    ss << PrintCard("ASSIGNMA", "Epoxy/Eg", "VTXB0", "VTXB3", "", "", "", "") << endl;
 
   }
 
@@ -674,3 +697,44 @@ string TAVTparGeo::PrintVTPhysics()
    str << PrintCard("STEPSIZE","0.000001","0.0015",fvModRegion.at(0),fvModRegion.at(fvModRegion.size()-1),"","","") << endl;
    return str.str();
 }
+
+
+//_____________________________________________________________________________
+//! Print stepsize in Fluka for each it region
+//!
+void TAVTparGeo::ReadSupportInfo()
+{
+   ReadStrings(fEpoxyMat);
+   if(FootDebugLevel(1))
+      cout   << "  Epoxy material: "<< fEpoxyMat.Data() << endl;
+
+   ReadItem(fEpoxyMatDensity);
+   if(FootDebugLevel(1))
+      cout  << "  Pcb board material component densities: "<< fEpoxyMatDensity << endl;
+
+   ReadStrings(fGlassMat);
+   if(FootDebugLevel(1))
+      cout   << "  EGlass material: "<< fGlassMat.Data() << endl;
+
+   ReadItem(fGlassMatDensity);
+   if(FootDebugLevel(1))
+      cout  << "  EGlass material component densities: "<< fGlassMatDensity << endl;
+
+   ReadStrings(fPcbBoardMat);
+   if(FootDebugLevel(1))
+      cout   << "  Pcb board material: "<< fPcbBoardMat.Data() << endl;
+
+   ReadStrings(fPcbBoardMatDensities);
+   if(FootDebugLevel(1))
+      cout  << "  Pcb board material component densities: "<< fPcbBoardMatDensities.Data() << endl;
+
+   ReadStrings(fPcbBoardMatProp);
+   if(FootDebugLevel(1))
+      cout  << "  Pcb board material proportion: "<< fPcbBoardMatProp.Data() << endl;
+
+   ReadItem(fPcbBoardMatDensity);
+   if(FootDebugLevel(1))
+      cout  << "  Pcb board material density:  "<< fPcbBoardMatDensity << endl;
+
+}
+
