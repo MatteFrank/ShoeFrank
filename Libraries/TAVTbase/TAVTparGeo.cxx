@@ -341,6 +341,7 @@ string TAVTparGeo::PrintRotations()
 //		    Form("%f",center.Z()),
 //		    "vt_p" ) << endl;
     // Checks for rotation angles
+    Double_t center_box = center.Z()-0.25;
     if (fSensorParameter[0].Tilt.Mag()!=0 || angle.Mag()!=0){
       if (fSensorParameter[0].Tilt.Mag()!=0){
 	  
@@ -348,7 +349,7 @@ string TAVTparGeo::PrintRotations()
 	ss << PrintCard("ROT-DEFI", "", "", "",
 			Form("%f",-center.X()),
 			Form("%f",-center.Y()),
-			Form("%f",-center.Z()),
+			Form("%f",-center_box),
 			"vt_p" ) << endl;
 	//rot around x
 	if(fSensorParameter[0].Tilt[0]!=0){
@@ -397,7 +398,7 @@ string TAVTparGeo::PrintRotations()
     ss << PrintCard("ROT-DEFI", "", "", "",
 		    Form("%f",center.X()),
 		    Form("%f",center.Y()),
-		    Form("%f",center.Z()),
+		    Form("%f",center_box),
 		    "vt_p") << endl;
     
   }
