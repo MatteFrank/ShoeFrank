@@ -265,6 +265,8 @@ int main (int argc, char *argv[]) {
       geofile << stcGeo->PrintPassiveRegions();
    if (TAGrecoManager::GetPar()->IncludeVT())
       geofile << vtxGeo->PrintPassiveRegions();
+    if(TAGrecoManager::GetPar()->IncludeMSD())
+      geofile << msdGeo->PrintPassiveRegions();
    
 
     // end print regions

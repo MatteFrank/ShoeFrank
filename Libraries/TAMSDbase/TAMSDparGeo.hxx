@@ -63,10 +63,14 @@ public:
   string      PrintRotations();
   string      PrintBodies();
   string      PrintRegions();
+  string      PrintPassiveRegions();  
   string      PrintAssignMaterial(TAGmaterials *Material);
   string      PrintSubtractBodiesFromAir();
    // Fluka Transport settings
   string      PrintMSDPhysics();
+
+   void    ReadSupportInfo();
+
 
 private:
   Int_t          fStripsN;          ///< Number of strips

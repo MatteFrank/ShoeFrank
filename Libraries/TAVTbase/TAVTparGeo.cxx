@@ -80,31 +80,35 @@ void TAVTparGeo::DefineMaterial()
      new TGeoManager( TAGgeoTrafo::GetDefaultGeomName(), TAGgeoTrafo::GetDefaultGeomTitle());
   }
 
-  TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fEpoxyMat, fEpoxyMatDensity);
-  if(FootDebugLevel(1)) {
-     printf("VTX passive Epoxy material:\n");
-     mat->Print();
-  }
-
-  mat = TAGmaterials::Instance()->CreateMaterial(fGlassMat, fGlassMatDensity);
-  if(FootDebugLevel(1)) {
-     printf("VTX passive Eglass material:\n");
-     mat->Print();
-  }
-
-   // G10 for pcb material
-   TGeoMixture* mix = TAGmaterials::Instance()->CreateMixture(fPcbBoardMat, fPcbBoardMatDensities, fPcbBoardMatProp, fPcbBoardMatDensity);
-   if(FootDebugLevel(1)) {
-      printf("Eg material:\n");
-      mix->Print();
-   }  
-
   // Pixel material
-   mix = TAGmaterials::Instance()->CreateMixture(fPixMat, fPixMatDensities, fPixMatProp, fPixMatDensity);
+   TGeoMixture* mix = TAGmaterials::Instance()->CreateMixture(fPixMat, fPixMatDensities, fPixMatProp, fPixMatDensity);
    if(FootDebugLevel(1)) {
     printf("pixels material:\n");
     mix->Print();
   }
+
+  //passive material
+  if(fSupportInfo){
+    TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fEpoxyMat, fEpoxyMatDensity);
+    if(FootDebugLevel(1)) {
+      printf("VTX passive Epoxy material:\n");
+      mat->Print();
+    }
+
+    mat = TAGmaterials::Instance()->CreateMaterial(fGlassMat, fGlassMatDensity);
+    if(FootDebugLevel(1)) {
+      printf("VTX passive Eglass material:\n");
+      mat->Print();
+    }
+
+    // G10 for pcb material
+    mix = TAGmaterials::Instance()->CreateMixture(fPcbBoardMat, fPcbBoardMatDensities, fPcbBoardMatProp, fPcbBoardMatDensity);
+    if(FootDebugLevel(1)) {
+        printf("Eg material:\n");
+        mix->Print();
+    } 
+  }
+
 }
 
 //_____________________________________________________________________________
@@ -517,30 +521,32 @@ string TAVTparGeo::PrintBodies()
     
     // passive bodies
     
-    ss << "$start_transform " << "vt_p" << endl;
-    
-    bodyname = "boxfront";
-    fvBoxBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 0.45" << endl;
-    // Centro Z = -2.35
-    bodyname = "boxfron2";
-    fvBoxBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "   -9.6 9.6 -9.6 9.6 -1.75 0.45" << endl;
-    bodyname = "boxwin";
-    fvBoxBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.75" << endl;
-    bodyname = "boxback";
-    fvBoxBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 1.95 2.15" << endl;
-    bodyname = "boxhole";
-    fvBoxBody.push_back(bodyname);
-    ss << "RCC " << bodyname << "    0.0 0.0 1.95 0.0 0.0 0.2 2.5" << endl;
-    //    RCC boxhole    0.0 0.0 4.3 0.0 0.0 0.2 2.5
-    bodyname = "airvtx";
-    fvBoxBody.push_back(bodyname);
-    ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
+    if(fSupportInfo){
+      ss << "$start_transform " << "vt_p" << endl;
+      
+      bodyname = "boxfront";
+      fvBoxBody.push_back(bodyname);
+      ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 0.45" << endl;
+      // Centro Z = -2.35
+      bodyname = "boxfron2";
+      fvBoxBody.push_back(bodyname);
+      ss << "RPP " << bodyname << "   -9.6 9.6 -9.6 9.6 -1.75 0.45" << endl;
+      bodyname = "boxwin";
+      fvBoxBody.push_back(bodyname);
+      ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.75" << endl;
+      bodyname = "boxback";
+      fvBoxBody.push_back(bodyname);
+      ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 1.95 2.15" << endl;
+      bodyname = "boxhole";
+      fvBoxBody.push_back(bodyname);
+      ss << "RCC " << bodyname << "    0.0 0.0 1.95 0.0 0.0 0.2 2.5" << endl;
+      //    RCC boxhole    0.0 0.0 4.3 0.0 0.0 0.2 2.5
+      bodyname = "airvtx";
+      fvBoxBody.push_back(bodyname);
+      ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
 
-    ss << "$end_transform " << endl;
+      ss << "$end_transform " << endl;
+    }
 
 
     
@@ -594,21 +600,23 @@ string TAVTparGeo::PrintBodies()
     
     //passive regions
     
-    regionname = "VBOXF";
-    fvBoxRegion.push_back(regionname);
-    regionname = "VBOXB";
-    fvBoxRegion.push_back(regionname);
-    regionname = "AIRVTX";
-    fvAirRegion.push_back(regionname);
+    if(fSupportInfo){
+      regionname = "VBOXF";
+      fvBoxRegion.push_back(regionname);
+      regionname = "VBOXB";
+      fvBoxRegion.push_back(regionname);
+      regionname = "AIRVTX";
+      fvAirRegion.push_back(regionname);
 
-    regionname = "VTXB0";
-    fvBoardRegion.push_back(regionname);
-    regionname = "VTXB1";
-    fvBoardRegion.push_back(regionname);
-    regionname = "VTXB2";
-    fvBoardRegion.push_back(regionname);
-    regionname = "VTXB3";
-    fvBoardRegion.push_back(regionname);
+      regionname = "VTXB0";
+      fvBoardRegion.push_back(regionname);
+      regionname = "VTXB1";
+      fvBoardRegion.push_back(regionname);
+      regionname = "VTXB2";
+      fvBoardRegion.push_back(regionname);
+      regionname = "VTXB3";
+      fvBoardRegion.push_back(regionname);
+    }
 
   }
   
@@ -724,11 +732,14 @@ string TAVTparGeo::PrintSubtractBodiesFromAir()
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeVT()){
-    ss << "-airvtx " << endl;
-//    for(int i=0; i<fvModBody.size(); i++) {
-//      ss << " -" << fvModBody.at(i);
-//    }
-//    ss << endl;
+    if(fSupportInfo)
+      ss << "-airvtx " << endl;
+    else{
+      for(int i=0; i<fvModBody.size(); i++) {
+        ss << " -" << fvModBody.at(i);
+      }
+      ss << endl;
+    }
   }
 
    return ss.str();   
@@ -768,10 +779,12 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
 		    "1.", Form("%d",magnetic), "", "") << endl;
     ss << PrintCard("ASSIGNMA", flkmatPix, fvPixRegion.at(0), fvPixRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-    ss << PrintCard("ASSIGNMA", "AIR", "AIRVTX", "", "", "", "", "") << endl;
-    ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXF", "", "", "", "", "") << endl;
-    ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXB", "", "", "", "", "") << endl;
-    ss << PrintCard("ASSIGNMA", "Epoxy/Eg", "VTXB0", "VTXB3", "", "", "", "") << endl;
+    if(fSupportInfo){
+      ss << PrintCard("ASSIGNMA", "AIR", "AIRVTX", "", "", "", "", "") << endl;
+      ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXF", "", "", "", "", "") << endl;
+      ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXB", "", "", "", "", "") << endl;
+      ss << PrintCard("ASSIGNMA", "Epoxy/Eg", "VTXB0", "VTXB3", "", "", "", "") << endl;
+    }
 
   }
 

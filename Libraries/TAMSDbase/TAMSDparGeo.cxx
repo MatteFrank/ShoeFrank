@@ -157,7 +157,7 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
    // read info for support only for IT
    if (fSupportInfo)
       ReadSupportInfo();
-
+    
    if(FootDebugLevel(1))
       cout << endl << "Reading Sensor Parameters " << endl;
 
@@ -271,6 +271,27 @@ TGeoVolume* TAMSDparGeo::AddModule(const char* basemoduleName, const char *msdNa
 
    return msdMod;
 }
+
+
+//_____________________________________________________________________________
+//! Read support informations
+void TAMSDparGeo::ReadSupportInfo()
+{
+
+  //only one msd box
+  if(fSupportInfo==1){
+
+    //add here the msd variables for standard configuration
+
+  }else if(fSupportInfo==2){ //more msd boxes (as in GSI2021)
+
+    //add here the msd variables for gsi2021 configuration
+
+  }
+
+return;
+}
+
 
 //_____________________________________________________________________________
 //! Build MSD in Root geometry
@@ -545,6 +566,16 @@ string TAMSDparGeo::PrintBodies()
     }
   }
 
+  if(fSupportInfo==1){ 
+
+    //add here msd default passive bodies
+
+  }
+
+  if(fSupportInfo==2){
+  //add here msd passive bodies for gsi2021 like configuration
+  }
+
   return ss.str();
 }
 
@@ -579,7 +610,14 @@ string TAMSDparGeo::PrintRegions()
   }
 
   return ss.str();
+}
 
+
+string TAMSDparGeo::PrintPassiveRegions()
+{
+ stringstream ss;
+
+  return ss.str();
 }
 
 //_____________________________________________________________________________
