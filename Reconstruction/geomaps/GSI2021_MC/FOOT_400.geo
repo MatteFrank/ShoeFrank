@@ -12,7 +12,7 @@ BmPosX: 0. BmPosY: 0. BmPosZ: -22.05
 BmAngX: 0. BmAngY: 0. BmAngZ:   0.
 
 VertexBaseName: "VT"
-VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.1
+VertexPosX: 0. VertexPosY:   0. VertexPosZ: 2.6
 VertexAngX: 0. VertexAngY:   0. VertexAngZ: 0.
 
 MagnetsBaseName: "DI"
