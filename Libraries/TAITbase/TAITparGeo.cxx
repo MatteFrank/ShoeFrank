@@ -58,7 +58,7 @@ TAITparGeo::~TAITparGeo()
 void TAITparGeo::DefineMaterial()
 {
    // material for M28
-   TAVTparGeo::DefineMaterial();
+   TAVTbaseParGeo::DefineMaterial();
 
    TGeoMaterial* mat = 0x0;
    TGeoMixture*  mix = 0x0;
