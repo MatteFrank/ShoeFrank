@@ -83,10 +83,12 @@ private:
   vector<string> fvMetalBody;       ///< Fluka metal body vector
   vector<string> fvModBody;         ///< Fluka body vector
   vector<string> fvStripBody;       ///< Fluka strip  vector
+  vector<string> fvBoxBody;         ///< Fluka air box vector
   vector<string> fvMetalRegion;     ///< Fluka metal region vector
   vector<string> fvModRegion;       ///< Fluka  mod region vector
   vector<string> fvStripRegion;     ///< Fluka strip region vector
-  
+  vector<string> fvBoxRegion;       ///< Fluka air box region vector
+
 private:
   static const TString fgkBaseName;    ///< MSD base name
   static const Int_t   fgkDefSensorsN;   ///< default number of sensors

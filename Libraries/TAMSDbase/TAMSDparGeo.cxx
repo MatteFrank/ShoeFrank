@@ -280,12 +280,13 @@ void TAMSDparGeo::ReadSupportInfo()
 
   //only one msd box
   if(fSupportInfo==1){
+    //add here the msd variables for GSI2021 like configuration
 
-    //add here the msd variables for standard configuration
+  }else if(fSupportInfo==2){ 
+    //add here the msd variables for CNAO2022 like configuration
 
-  }else if(fSupportInfo==2){ //more msd boxes (as in GSI2021)
-
-    //add here the msd variables for gsi2021 configuration
+  }else if(fSupportInfo==3){ 
+    //add here the msd variables for CNAO2023 like configuration
 
   }
 
@@ -440,10 +441,68 @@ string TAMSDparGeo::PrintRotations()
        
       }
     }
-  }
-  
-  return ss.str();
 
+    if(fSupportInfo) {
+      Double_t center_box = center.Z();
+      if(fSupportInfo==3) { //CNAO2023
+	center_box = center.Z()-0.1676;
+      } else if(fSupportInfo==1 || fSupportInfo==2) { //GSI2021 or CNAO2022
+	center_box = center.Z();
+      }
+      if (fSensorParameter[0].Tilt.Mag()!=0 || angle.Mag()!=0){
+	if (fSensorParameter[0].Tilt.Mag()!=0){
+	  
+	  // put in 0,0,0 before the sensor's rot
+	  ss << PrintCard("ROT-DEFI", "", "", "",
+			  Form("%f",-center.X()),
+			  Form("%f",-center.Y()),
+			  Form("%f",-center_box),
+			  "msd_p" ) << endl;
+	  //rot around x
+	  if(fSensorParameter[0].Tilt[0]!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "",
+			    Form("%f",fSensorParameter[0].Tilt[0]*TMath::RadToDeg()),
+			    "", "", "","msd_p" ) << endl;
+	  }
+	  //rot around y      
+	  if(fSensorParameter[0].Tilt[1]!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "",
+			    Form("%f",fSensorParameter[0].Tilt[1]*TMath::RadToDeg()),
+			    "", "", "", "msd_p" ) << endl;
+	  }
+	  //rot around z
+	  if(fSensorParameter[0].Tilt[2]!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "",
+			    Form("%f",fSensorParameter[0].Tilt[2]*TMath::RadToDeg()),
+			    "", "", "", "msd_p" ) << endl;
+	  }
+	}
+	//check if detector has a tilt and then apply rot
+	if(angle.Mag()!=0){
+	  
+	  if(angle.X()!=0){
+	    ss << PrintCard("ROT-DEFI", "100.", "", Form("%f",angle.X()),"", "",
+			    "", "msd_p") << endl;
+	  }
+	  if(angle.Y()!=0){
+	    ss << PrintCard("ROT-DEFI", "200.", "", Form("%f",angle.Y()),"", "",
+			    "", "msd_p") << endl;
+	  }
+	  if(angle.Z()!=0){
+	    ss << PrintCard("ROT-DEFI", "300.", "", Form("%f",angle.Z()),"", "",
+			    "", "msd_p") << endl;
+	  }
+	}
+      }
+      //put back in global coord
+      ss << PrintCard("ROT-DEFI", "", "", "",
+		      Form("%f",center.X()),
+		      Form("%f",center.Y()),
+		      Form("%f",center_box),
+		      "msd_p") << endl; 
+    }
+  }
+  return ss.str();
 }
 
 //_____________________________________________________________________________
@@ -564,16 +623,22 @@ string TAMSDparGeo::PrintBodies()
 	ss << "$end_transform " << endl;
 
     }
-  }
-
-  if(fSupportInfo==1){ 
-
-    //add here msd default passive bodies
-
-  }
-
-  if(fSupportInfo==2){
-  //add here msd passive bodies for gsi2021 like configuration
+    if(fSupportInfo) {
+      ss << "$start_transform " << "msd_p" << endl;
+      bodyname = "airmsd";
+      fvBoxBody.push_back(bodyname);
+      if(fSupportInfo==1){ 
+	//add here msd passive bodies for GSI2021
+	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
+      } else if(fSupportInfo==2){
+	//add here msd passive bodies for CNAO2022 like configuration
+	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
+      } else if(fSupportInfo==3){
+	//add here msd passive bodies for CNAO2023 like configuration
+	ss << "RPP " << bodyname << "      -10.7 10.7 -10.7 10.7 -4.5 4.5" << endl;
+      }
+      ss << "$end_transform " << endl;
+    }
   }
 
   return ss.str();
@@ -616,6 +681,11 @@ string TAMSDparGeo::PrintRegions()
 string TAMSDparGeo::PrintPassiveRegions()
 {
  stringstream ss;
+  if(fSupportInfo==3) { // CNAO2023
+    ss << "AIRMSD       5 +airmsd  -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
+  } else if(fSupportInfo==1 || fSupportInfo==2) { //GSI2021 or CNAO2022
+    ss << "AIRMSD       5 +airmsd  -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
+  }
 
   return ss.str();
 }
@@ -660,12 +730,14 @@ string TAMSDparGeo::PrintSubtractBodiesFromAir()
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
-
-    for(int i=0; i<fvModBody.size(); i++) {
-      ss << " -" << fvModBody.at(i);
+    if(fSupportInfo)
+      ss << "-airmsd " << endl;
+    else{
+      for(int i=0; i<fvModBody.size(); i++) {
+	ss << " -" << fvModBody.at(i);
+      }
+      ss << endl;
     }
-    ss << endl;
-
   }
 
    return ss.str();
@@ -707,7 +779,9 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
 		    "1.", Form("%d",magnetic), "", "") << endl;
     ss << PrintCard("ASSIGNMA", flkmatSupp, fvModRegion.at(0), fvModRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
-
+    if(fSupportInfo){
+      ss << PrintCard("ASSIGNMA", "AIR", "AIRMSD", "", "", "", "", "") << endl;
+    }
   }
 
   return ss.str();
