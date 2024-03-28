@@ -345,7 +345,12 @@ string TAVTparGeo::PrintRotations()
 //		    Form("%f",center.Z()),
 //		    "vt_p" ) << endl;
     // Checks for rotation angles
-    Double_t center_box = center.Z()-0.25;
+    Double_t center_box;
+    if(fSupportInfo==3) { //CNAO2023
+      center_box = center.Z()-0.25;
+    } else if(fSupportInfo==1 || fSupportInfo==2) { //GSI2021 or CNAO2022
+      center_box = center.Z()+0.25;
+    }
     if (fSensorParameter[0].Tilt.Mag()!=0 || angle.Mag()!=0){
       if (fSensorParameter[0].Tilt.Mag()!=0){
 	  
@@ -523,28 +528,45 @@ string TAVTparGeo::PrintBodies()
     
     if(fSupportInfo){
       ss << "$start_transform " << "vt_p" << endl;
-      
-      bodyname = "boxfront";
-      fvBoxBody.push_back(bodyname);
-      ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 0.45" << endl;
-      // Centro Z = -2.35
-      bodyname = "boxfron2";
-      fvBoxBody.push_back(bodyname);
-      ss << "RPP " << bodyname << "   -9.6 9.6 -9.6 9.6 -1.75 0.45" << endl;
-      bodyname = "boxwin";
-      fvBoxBody.push_back(bodyname);
-      ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.75" << endl;
-      bodyname = "boxback";
-      fvBoxBody.push_back(bodyname);
-      ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 1.95 2.15" << endl;
-      bodyname = "boxhole";
-      fvBoxBody.push_back(bodyname);
-      ss << "RCC " << bodyname << "    0.0 0.0 1.95 0.0 0.0 0.2 2.5" << endl;
-      //    RCC boxhole    0.0 0.0 4.3 0.0 0.0 0.2 2.5
-      bodyname = "airvtx";
-      fvBoxBody.push_back(bodyname);
-      ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
-
+      if(fSupportInfo==3) { // CNAO2023
+	bodyname = "boxfront";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 0.45" << endl;
+	bodyname = "boxfron2";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "   -9.6 9.6 -9.6 9.6 -1.75 0.45" << endl;
+	bodyname = "boxwin";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.75" << endl;
+	bodyname = "boxback";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 1.95 2.15" << endl;
+	bodyname = "boxhole";
+	fvBoxBody.push_back(bodyname);
+	ss << "RCC " << bodyname << "    0.0 0.0 1.95 0.0 0.0 0.2 2.5" << endl;
+	bodyname = "airvtx";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
+      } else if(fSupportInfo==1 || fSupportInfo==2) { // GSI2021 or CNAO2022
+	bodyname = "boxfront";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 -1.85" << endl;
+	bodyname = "boxwin";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.85" << endl;
+	bodyname = "boxback";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "   -9.9 9.9 -9.9 9.9 -0.35 2.15" << endl;
+	bodyname = "boxback2";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "    -9.6 9.6 -9.6 9.6 -0.35 1.85" << endl;
+	bodyname = "boxhole";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 1.85 2.15" << endl;
+	bodyname = "airvtx";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
+      }
       ss << "$end_transform " << endl;
     }
 
@@ -664,29 +686,31 @@ string TAVTparGeo::PrintPassiveRegions()
   if(TAGrecoManager::GetPar()->IncludeVT()){
 
     ss << "* ***Vertex passive regions" << endl;
-//    ss << "AIRVTX       5 +airvtx -(boxfront -boxfron2 -boxwin -boxct1 -boxct2 -boxct3 -boxct4) -(boxback -boxhole -boxct5" << endl;
-//    ss << "               -boxct6 -boxct7 -boxct8)  -(vtxb0 -vtxh0 -vtxc0) -(vtxb1 -vtxh1 -vtxc1) -(vtxb2 -vtxh2 -vtxc2) -" << endl;
-//    ss << "               (vtxb3 -vtxh3 -vtxc3) -vtxm0 -vtxm1 -vtxm2 -vtxm3" << endl;
-    
-//    ss << "* Box Front" << endl;
-//    ss << "VBOXF        5 +boxfront -boxfron2 -boxwin -boxct1 -boxct2 -boxct3 -boxct4" << endl;
-//    ss << "* Box Back" << endl;
-//    ss << "VBOXB        5 +boxback -boxhole" << endl;
 
-    ss << "AIRVTX       5 +airvtx -(boxfront -boxfron2 -boxwin) -(boxback -boxhole)" << endl;
-    ss << "               -(vtxb0 -vtxh0 -vtxc0) -(vtxb1 -vtxh1 -vtxc1) -(vtxb2 -vtxh2 -vtxc2)" << endl;
-    ss << "               -(vtxb3 -vtxh3 -vtxc3) -vtxm0 -vtxm1 -vtxm2 -vtxm3" << endl;
+    if(fSupportInfo==3) { // CNAO2023
+      ss << "AIRVTX       5 +airvtx -(boxfront -boxfron2 -boxwin) -(boxback -boxhole)" << endl;
+      ss << "               -(vtxb0 -vtxh0 -vtxc0) -(vtxb1 -vtxh1 -vtxc1) -(vtxb2 -vtxh2 -vtxc2)" << endl;
+      ss << "               -(vtxb3 -vtxh3 -vtxc3) -vtxm0 -vtxm1 -vtxm2 -vtxm3" << endl;
     
-    ss << "* Box Front" << endl;
-    ss << "VBOXF        5 +boxfront -boxfron2 -boxwin" << endl;
-    ss << "* Box Back" << endl;
-    ss << "VBOXB        5 +boxback -boxhole" << endl;
+      ss << "* Box Front" << endl;
+      ss << "VBOXF        5 +boxfront -boxfron2 -boxwin" << endl;
+      ss << "* Box Back" << endl;
+      ss << "VBOXB        5 +boxback -boxhole" << endl;
+    } else if(fSupportInfo==1 || fSupportInfo==2) { // GSI2021 or CNAO2022
+      ss << "AIRVTX       5 +airvtx -(boxfront -boxwin) -(boxback -boxback2 -boxhole)" << endl;
+      ss << "               -(vtxb0 -vtxh0 -vtxc0) -(vtxb1 -vtxh1 -vtxc1) -(vtxb2 -vtxh2 -vtxc2)" << endl;
+      ss << "               -(vtxb3 -vtxh3 -vtxc3) -vtxm0 -vtxm1 -vtxm2 -vtxm3" << endl;
+    
+      ss << "* Box Front" << endl;
+      ss << "VBOXF        5 +boxfront -boxwin" << endl;
+      ss << "* Box Back" << endl;
+      ss << "VBOXB        5 +boxback -boxback2 -boxhole" << endl;
+    }
     //* ***Vertex additional regions
     ss << "VTXB0        5 vtxb0 -vtxh0 -vtxc0" << endl;
     ss << "VTXB1        5 vtxb1 -vtxh1 -vtxc1" << endl;
     ss << "VTXB2        5 vtxb2 -vtxh2 -vtxc2" << endl;
     ss << "VTXB3        5 vtxb3 -vtxh3 -vtxc3" << endl;
-
   }
   
   return ss.str();
