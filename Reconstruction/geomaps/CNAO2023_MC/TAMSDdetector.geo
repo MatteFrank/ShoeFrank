@@ -32,7 +32,7 @@ PixMatDensity:     2.65
 MetalThickness:    0.0001
 MetalMat:          "Al"
 MetalDensity:      2.6989
-SupportInfo:       0
+SupportInfo:       3
 
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
