@@ -102,7 +102,7 @@ Bool_t TANAactNtuSelectionCuts::Action()
 	// event cuts
 	SCpileUpCut(); // add "SCcut" in event map
 	BMCut();  // add "BMcut" in event map
-    TwClonesCut(); // add "TWclone" in track map and "TWnum" cut in event map
+  TwClonesCut(); // add "TWclone" in track map and "TWnum" cut in event map
 	NTracksCut(); // add "NTracksCut" in event map
 
 	// track cuts

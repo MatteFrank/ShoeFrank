@@ -428,12 +428,7 @@ void GlobalAna::AddRequiredItem()
       gTAGroot->AddRequiredItem("anaActGSI2021");   
       }
    }
-<<<<<<< HEAD
-   
-=======
-   gTAGroot->AddRequiredItem("anaActCuts");
-   gTAGroot->AddRequiredItem("anaActGSI2021");
->>>>>>> 22ae0c68e13734621e16ba2acf1bc833cdc5b9aa
+
 }
 
 //__________________________________________________________
