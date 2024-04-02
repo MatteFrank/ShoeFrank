@@ -45,6 +45,7 @@
 #include "TAGgeoTrafo.hxx"
 
 #include "TAGcampaignManager.hxx"
+#include "TAGrunInfo.hxx"
 #include "TAGgeoTrafo.hxx"
 #include "TAGnameManager.hxx"
 
@@ -62,7 +63,7 @@ static int IncludeTW;
 static int IncludeCA;
 
 // main
-void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString nameFile = "", Int_t nentries = 0)
+void PrintFlatNtuple(TString nameFile = "", Int_t nentries = 0, TString nameOut = "")
 
 {
 	//  bool refittrack = false;
@@ -76,6 +77,14 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 	tree = (TTree *)f->Get("tree");
 	if (!tree)
 		Error("PrintFlatNtuple()", "Input tree not opened correctly"), exit(-1);
+
+	TAGrunInfo *runinfo = (TAGrunInfo *)f->Get("runinfo");
+	if (!runinfo)
+		Error("PrintFlatNtuple()", "Runinfo object not found"), exit(-1);
+
+	TString expName = runinfo->CampaignName();
+	expName.Remove(TString::kTrailing, '/');
+	Int_t runNumber = runinfo->RunNumber();
 
 	TAGroot gTAGroot;
 
@@ -319,11 +328,14 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 
 	/*---------------TREE BRANCH DECLARATION-----------------*/
 
-	Int_t pos1 = nameFile.Last('.');
-	TString nameOut = nameFile(0, pos1);
-	// string nameOut = nameFile(0, pos1);
-	//  cout << " name out 0 " << nameOut << endl;
-	nameOut.Append("_ntu.root");
+	if (nameOut.Length() < 2)
+	{
+		Int_t pos1 = nameFile.Last('.');
+		nameOut = nameFile(0, pos1);
+		// string nameOut = nameFile(0, pos1);
+		//  cout << " name out 0 " << nameOut << endl;
+		nameOut.Append("_ntu.root");
+	}
 
 	// Int_t pos2 = nameOut.Last('/');
 	// Int_t end = nameOut.Length();
@@ -1247,17 +1259,16 @@ void PrintFlatNtuple(TString expName = "12C_200", Int_t runNumber = 1, TString n
 		for (int iTrack = 0; iTrack < nGlbTracks; ++iTrack)
 		{
 			TAGtrack *track = glbTrack->GetTrack(iTrack);
-			trackPx.push_back(track->GetTgtMomentum().X());
-			trackPy.push_back(track->GetTgtMomentum().Y());
-			trackPz.push_back(track->GetTgtMomentum().Z());
-			
-			if(track->HasTwPoint())
+			if (track->HasTwPoint())
 			{
-				TATWpoint* twpt = (TATWpoint*)track->GetPoint(track->GetPointsN()-1);
+				trackPx.push_back(track->GetTgtMomentum().X());
+				trackPy.push_back(track->GetTgtMomentum().Y());
+				trackPz.push_back(track->GetTgtMomentum().Z());
+
+				TATWpoint *twpt = (TATWpoint *)track->GetPoint(track->GetPointsN() - 1);
 				trackTWptId.push_back(twpt->GetClusterIdx());
 				trackCAclusId.push_back(track->GetCALOmatchedClusterId());
 			}
-
 		}
 
 		tree_out->Fill();
