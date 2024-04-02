@@ -521,8 +521,8 @@ void PrintFlatNtuple(TString nameFile = "", Int_t nentries = 0, TString nameOut 
 
 	for (Int_t ev = 0; ev < nentries; ++ev)
 	{
-		if (ev % 10000 == 0)
-			printf("Processed Events: %d\n", ev);
+		if (ev % 100000 == 0)
+			std::cout << "Processed Events: " << ev << std::endl;
 		n_ev = ev;
 		tree->GetEntry(ev);
 
