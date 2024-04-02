@@ -62,6 +62,7 @@ protected:
 
 	void PrintCutsMap(std::map<Int_t, std::map<string, Int_t>> aTrackCutsMap);
 	void PrintCutsMap(std::map<string, Int_t> aEventCutsMap);
+	void FillCountHist();
 
 	TAGdataDsc*		fpNtuTrack;				///< input global tracks
 	TAGdataDsc*		fpNtuMcTrk;				///< input MC tracks
@@ -87,6 +88,9 @@ protected:
 
 	std::map<Int_t, std::map<string, Int_t>>& fTrackCutsMap; ///< Map of track cuts for every track in the event. key = track ID; string = name of the cut
 	std::map<string, Int_t> &fEventCutsMap; ///< Map of event cuts. key = name of the cut
+
+	//histograms
+	TH1D *fpCount_hist; ///< Pivots of the Paoloni efficiency method
 };
 
 #endif

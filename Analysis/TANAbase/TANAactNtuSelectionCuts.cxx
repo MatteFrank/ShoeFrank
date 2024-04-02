@@ -109,8 +109,8 @@ Bool_t TANAactNtuSelectionCuts::Action()
   for (int it = 0; it < nt; it++)
   { 
 	fGlbTrack = fNtuGlbTrack->GetTrack(it);
-	VtxPositionCut(it,fGlbTrack); // add "vtPos" cut in track map
-	TrackQualityCut(it,fGlbTrack); // add "TrackQuality" cut in track map
+  VtxPositionCut(it, fGlbTrack); // add "VTXposCut" cut in track map
+  TrackQualityCut(it,fGlbTrack); // add "TrackQuality" cut in track map
 
 	if (isMC){	// MC cuts
 	MC_VTMatch(it,fGlbTrack);	// add "MC_VTMatch" cut in track map
@@ -258,7 +258,7 @@ fEventCutsMap["BMcut"] = (fNtuTrackBm->GetTracksN() == 1);
 else fEventCutsMap["BMcut"] = -99;
 }
 
-//! \brief Check if there is pile up in the SC triggering an event
+//! \brief Check i fnumber of reconstructed tracks for every event is higher than 1
 void TANAactNtuSelectionCuts::NTracksCut()
 {
 	if ( fNtuGlbTrack->GetTracksN() >1) // number of reconstructed tracks for every event

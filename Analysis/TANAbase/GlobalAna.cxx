@@ -228,6 +228,7 @@ void GlobalAna::SetHistogramDir()
       TString subfolderName;
       if (tmp.Contains("Mass"))           { subfolderName = "Mass"; }
       else if (tmp.Contains("PtReso"))    { subfolderName = "PtReso"; }
+      else if (tmp.Contains("GSI2021"))    { subfolderName = "GSI2021"; }
       else
          continue;
 
@@ -405,6 +406,7 @@ void GlobalAna::CreateAnaAction()
       {
       fActGlbCuts = new TANAactNtuSelectionCuts(fTrackCutsMap, fEventCutsMap, "anaActCuts", fFlagMC, fpNtuGlbTrack,fpNtuHitSt,fpNtuTrackBm,fpNtuVtx,fpNtuRecTw, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw);
       fActGSI2021 = new TANAactGSI2021("anaActGSI2021",fpNtuGlbTrack, fpTree, fpNtuMcTrk, fpNtuMcReg, fpParGeoG, fpParGeoTw,&fTrackCutsMap, &fEventCutsMap);
+      fActGSI2021->CreateHistogram();
    }
    }
     

@@ -82,11 +82,16 @@ Bool_t TANAactGSI2021::Action()
 if(!fEventCutsMap.empty())
 PrintCutsMap(fEventCutsMap);  
 if(!fTrackCutsMap.empty())
-PrintCutsMap(fTrackCutsMap); 
-	
-	return true;
-}
+PrintCutsMap(fTrackCutsMap);
 
+Int_t nt = fNtuGlbTrack->GetTracksN(); // number of reconstructed tracks for every event
+if (ValidHistogram())
+	{
+		FillCountHist();		
+	}
+
+return true;
+}
 
 //! \brief Perform analysis after the event loop
 void TANAactGSI2021::EndEventLoop()
@@ -97,6 +102,17 @@ void TANAactGSI2021::EndEventLoop()
 //! Setup all histograms.
 void TANAactGSI2021::CreateHistogram()
 {
+	DeleteHistogram();
+
+	fpCount_hist = new TH1D("countEvents", "", 5, 0., 5.);
+	fpCount_hist->GetXaxis()->SetBinLabel(1, "Total events");
+	fpCount_hist->GetXaxis()->SetBinLabel(2, "Total Reco Events");
+	fpCount_hist->GetXaxis()->SetBinLabel(3, "Total Reco Ana Cuts");
+	fpCount_hist->GetXaxis()->SetBinLabel(4, "Total True Events");
+	fpCount_hist->GetXaxis()->SetBinLabel(5, "others");
+	AddHistogram(fpCount_hist);
+
+	SetValidHistogram(kTRUE);
 }
 
 
@@ -129,7 +145,24 @@ void TANAactGSI2021::PrintCutsMap(std::map<Int_t, std::map<string, Int_t>> aTrac
 	cout << endl;
 }
 
+//! \brief Fill a histogram with all the counts according to several cuts
+void TANAactGSI2021::FillCountHist(){
+	Int_t nt = fNtuGlbTrack->GetTracksN(); // number of reconstructed tracks for every event
+	fpCount_hist->Fill(0);
+	for (int it = 0; it < nt; it++)
+	{
+		if (fEventCutsMap["SCcut"] != 0 && fEventCutsMap["NTracksCut"] == 1 && fEventCutsMap["BMcut"] && fTrackCutsMap[it]["VTXposCut"] == 1)
+		{
+			fpCount_hist->Fill(1);
 
+			// =================== Chi2 cuts + multitrack + NO TW in multitracks + n_tracks == n_twpoints
+			if (fTrackCutsMap[it]["TrackQuality"] == 1 && fEventCutsMap["TWnum"] != 0 and fTrackCutsMap[it]["TWclone"] != 0)
+			{
+				fpCount_hist->Fill(2);
+			}
+		}
+	}
+}
 
 //------------------------------------------------------------------------------
 //---------------------------------- AFTER LOOP --------------------------------
