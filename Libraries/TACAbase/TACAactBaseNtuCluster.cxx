@@ -75,11 +75,23 @@ void TACAactBaseNtuCluster::CreateHistogram()
    fpHisHitTot = new TH1F("caClusHitsTot", "Calorimeter - Total # hits per cluster", 25, 0., 25);
    AddHistogram(fpHisHitTot);
 
-   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per TW matched cluster", 400, 0., 200);
+   fpHisChargeTot = new TH1F("caClusChargeTot", "Calorimeter - Total charge per cluster", 2500, 0., 7);
    AddHistogram(fpHisChargeTot);
 
+   fpHisChargeTwMatch = new TH1F("caChargeTwMatch", "Calorimeter - Total charge per TW matched cluster", 2500, 0., 7);
+   AddHistogram(fpHisChargeTwMatch);
+
    TACAparGeo* pGeoMap  = (TACAparGeo*) fpGeoMap->Object();
-   fpHisClusMap = new TH2F("caClusMapTot", "Calorimeter - clusters map",
+   fpHisClusMapTwMatch = new TH2F("fpHisClusMapTwMatch", "Calorimeter - clusters map matech with TW",
+                           100, -pGeoMap->GetCaloSize()[0]/2., pGeoMap->GetCaloSize()[0]/2.,
+                           100, -pGeoMap->GetCaloSize()[1]/2., pGeoMap->GetCaloSize()[1]/2.);
+   fpHisClusMapTwMatch->SetMarkerStyle(20);
+   fpHisClusMapTwMatch->SetMarkerSize(.6);
+   fpHisClusMapTwMatch->SetMarkerColor(1);
+   fpHisClusMapTwMatch->SetStats(kFALSE);
+   AddHistogram(fpHisClusMapTwMatch);
+
+   fpHisClusMap = new TH2F("caClusMap", "Calorimeter - clusters map",
                            100, -pGeoMap->GetCaloSize()[0]/2., pGeoMap->GetCaloSize()[0]/2.,
                            100, -pGeoMap->GetCaloSize()[1]/2., pGeoMap->GetCaloSize()[1]/2.);
    fpHisClusMap->SetMarkerStyle(20);
@@ -95,7 +107,7 @@ void TACAactBaseNtuCluster::CreateHistogram()
    fpHisHitTwMatch = new TH1F("caTwMatch", "Calorimeter - Number of matched hits with TW points", 2, 0, 2);
    AddHistogram(fpHisHitTwMatch);
 
-   fpHisTwDeCaE = new TH2F("caTwDeCaE", "Calorimeter TW-deltaE vs CA-E", 300, 0, 3000,  100, 0, 200);
+   fpHisTwDeCaE = new TH2F("caTwDeCaE", "Calorimeter TW-deltaE vs CA-E", 300, 0, 10,  100, 0, 200);
    fpHisClusMap->SetStats(kFALSE);
    AddHistogram(fpHisTwDeCaE);
 
@@ -278,10 +290,14 @@ void TACAactBaseNtuCluster::FillClusterInfo(TACAcluster* cluster)
 
       // histograms
       if (ValidHistogram()) {
-         if (cluster->GetHitsN() > 0 && cluster->IsTwMatched()) {
-            fpHisHitTot->Fill(cluster->GetHitsN());
+         if (cluster->GetHitsN() > 0) {
             fpHisChargeTot->Fill(cluster->GetEnergy());
             fpHisClusMap->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
+         }
+         if (cluster->GetHitsN() > 0 && cluster->IsTwMatched()) {
+            fpHisHitTot->Fill(cluster->GetHitsN());
+            fpHisChargeTwMatch->Fill(cluster->GetEnergy());
+            fpHisClusMapTwMatch->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
          }
       }
 
@@ -311,6 +327,9 @@ void TACAactBaseNtuCluster::ComputeMinDist(TACAcluster* cluster)
    TATWntuPoint* pNtuPoint = (TATWntuPoint*) fpNtuTwPoint->Object();
    Int_t nPoints = pNtuPoint->GetPointsN();
 
+   if(FootDebugLevel(2))
+     cout << "TW npoints: " <<  nPoints  << endl;
+
    for (Int_t iPoint = 0; iPoint < nPoints; ++iPoint) {
 
       TATWpoint *point = pNtuPoint->GetPoint(iPoint);
@@ -319,6 +338,12 @@ void TACAactBaseNtuCluster::ComputeMinDist(TACAcluster* cluster)
       posGtw = pFootGeo->FromTWLocalToGlobal(posGtw);
       posG   = pFootGeo->FromCALocalToGlobal(posG);
       posGtw[2] = posG[2] = 0.;
+
+      if(FootDebugLevel(2)) {
+        Info("ComputeMinDist()","POS TW    x::%f  y::%f\n",posGtw[0],posGtw[1]);
+        Info("ComputeMinDist()","POS CA    x::%f  y::%f\n",posG[0],posG[1]);
+      }
+      
       TVector3 res = posG-posGtw;
       Float_t diff = res.Mag();
 
@@ -363,13 +388,13 @@ void TACAactBaseNtuCluster::CalibrateEnergy(TACAcluster* cluster)
       Float_t charge = hit->GetCharge();
       Double_t energy = 0;
       if (fTwPointZ != -1)
-         energy = GetEnergy(charge, fTwPointZ);
+         energy = GetEnergy(charge, fTwPointZ, crysId);
       else
          energy = charge;
 
       hit->SetCharge(energy);
       if(FootDebugLevel(1))
-         printf("%d %f\n", fTwPointZ, energy);
+         printf("CalibrateEnergy %d %f\n", fTwPointZ, energy);
    }
 }
 
@@ -396,33 +421,33 @@ Double_t TACAactBaseNtuCluster::GetZCurve(Double_t p0, Double_t  p1, Double_t p2
 //! \param[in] rawenergy raw energy
 //! \param[in] crysId crystal id
 //! \param[in] z particle charge (atomic number)
-Double_t TACAactBaseNtuCluster::GetEnergy(Double_t rawenergy, Int_t z)
+Double_t TACAactBaseNtuCluster::GetEnergy(Double_t rawenergy, Int_t z, Int_t  crysId)
 {
    TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
-   Double_t p0 = p_parcal->GetADC2EnergyParam(0);
-   Double_t p1 = p_parcal->GetADC2EnergyParam(1);
-   Double_t p2 = p_parcal->GetADC2EnergyParam(2);
+   Double_t c0 = p_parcal->GetADC2EnergyParam(0);
+   Double_t c1 = p_parcal->GetADC2EnergyParam(1);
+   Double_t c2 = p_parcal->GetADC2EnergyParam(2);
 
-   Double_t p3 = p_parcal->GetADC2EnergyParam(3);
-   Double_t p4 = p_parcal->GetADC2EnergyParam(4);
-   Double_t p5 = p_parcal->GetADC2EnergyParam(5);
+   Double_t c3 = p_parcal->GetADC2EnergyParam(3);
+   Double_t c4 = p_parcal->GetADC2EnergyParam(4);
+   Double_t c5 = p_parcal->GetADC2EnergyParam(5);
 
-   Double_t p6 = p_parcal->GetADC2EnergyParam(6);
-   Double_t p7 = p_parcal->GetADC2EnergyParam(7);
-   Double_t p8 = p_parcal->GetADC2EnergyParam(8);
+   Double_t c6 = p_parcal->GetADC2EnergyParam(6);
+   Double_t c7 = p_parcal->GetADC2EnergyParam(7);
+   Double_t c8 = p_parcal->GetADC2EnergyParam(8);
 
-   Double_t p9 = p_parcal->GetADC2EnergyParam(9);
-   Double_t p10 = p_parcal->GetADC2EnergyParam(10);
-   Double_t p11 = p_parcal->GetADC2EnergyParam(11);
+   Double_t p0 = p_parcal->GetADC2EnergyParamCry(crysId, 0);
+   Double_t p1 = p_parcal->GetADC2EnergyParamCry(crysId, 1);
+   Double_t p2 = p_parcal->GetADC2EnergyParamCry(crysId, 2);
 
-   p0 = p0*GetZCurve(p3,p4,p5,z);
-   p1 = p1*GetZCurve(p6,p7,p8,z);
-   p2 = p2*GetZCurve(p9,p10,p11,z);
+   p0 = p0*GetZCurve(c0,c1,c2,z);
+   p1 = p1*GetZCurve(c3,c4,c5,z);
+   p2 = p2*GetZCurve(c6,c7,c8,z);
 
    return (-p1 * rawenergy - sqrt( p1 * p1 * rawenergy * rawenergy - 4 * rawenergy * ( rawenergy * p2 - p0 ) ))/(2 * ( rawenergy * p2 - p0 ));
 
- 
+
 
    //calibration AValetti's analysis 22.12.22
    //return energy from ADC

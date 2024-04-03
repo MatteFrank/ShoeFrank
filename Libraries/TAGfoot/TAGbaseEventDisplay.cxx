@@ -128,8 +128,8 @@ TAGbaseEventDisplay::TAGbaseEventDisplay(const TString expName, Int_t runNumber,
    if (TAGrecoManager::GetPar()->IncludeIT()) {
       fItClusDisplay = new TAEDcluster("Inner Tracker Cluster");
       fItClusDisplay->SetMaxEnergy(fMaxEnergy);
-      fItClusDisplay->SetDefWidth(fQuadDefWidth*2.);
-      fItClusDisplay->SetDefHeight(fQuadDefHeight*2.);
+      fItClusDisplay->SetDefWidth(fQuadDefWidth/2.);
+      fItClusDisplay->SetDefHeight(fQuadDefHeight/2.);
       fItClusDisplay->SetPickable(true);
 
       if (fFlagItrTrack) {
@@ -391,7 +391,14 @@ void TAGbaseEventDisplay::CreateRawAction()
 void TAGbaseEventDisplay::SetFileName(const TString fileName)
 {
    fReco->SetName(fileName);
-   fReco->SetRunNumber(fRunNumber);
+   
+   if (fRunNumber == -1) {
+      fReco->SetRunNumberFromFile();
+      fRunNumber = fReco->GetRunNumber();
+   }
+   
+   gTAGroot->SetRunNumber(fRunNumber);
+  // fReco->SetRunNumber(fRunNumber);
 }
 
 //__________________________________________________________

@@ -1,19 +1,20 @@
 // Campaign file
 CamName: "HIT2022"
-RunNumber: 100;101;200;201;210; 4536-4938;
+RunNumber: 4536-4938;
 NumberDevices: 8
 
 DetectorName: "FOOT"
 NumberFiles: 1
-"./geomaps/HIT2022/FOOT.geo": 100;101;200;201;210;
+"./geomaps/HIT2022/FOOT.geo": -1
 
 DetectorName: "DI"
 NumberFiles: 1
 "./geomaps/HIT2022/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/HIT2022/TASTdetector.geo": -1
+"./config/HIT2022/TASTdetector.map": -1
 "./config/HIT2022/TASTdetector.cfg": -1
 "./config/HIT2022/WDChannelMap.map": -1
 "./calib/HIT2022/WDpar.cal": -1;
@@ -28,7 +29,7 @@ NumberFiles: 4
 
 DetectorName: "TG"
 NumberFiles: 1
-"./geomaps/HIT2022/TAGdetector.geo": 100;101;200;201;210
+"./geomaps/HIT2022/TAGdetector.geo": 4742;4766;4801;4828;
 
 DetectorName: "MSD"
 NumberFiles: 5
@@ -39,13 +40,14 @@ NumberFiles: 5
 "./calib/HIT2022/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
-NumberFiles: 6
+NumberFiles: 7
 "./geomaps/HIT2022/TATWdetector.geo": -1
 "./config/HIT2022/TATWdetector.cfg": -1
 "./config/HIT2022/TATW_BBparameters.cfg": -1
 "./config/HIT2022/TATWChannelMapXML.map": -1
-"./calib/HIT2022/TATW_Energy_Calibration.cal": -1
-"./calib/HIT2022/TATW_Tof_Calibration.cal": -1;
+"./config/HIT2022/TATWdeltaTimeMap.map": -1
+"./calib/HIT2022/TATW_Energy_Calibration.cal": 4742; 4766; 4801; 4828;
+"./calib/HIT2022/TATW_Tof_Calibration.cal":  4742; 4766; 4801; 4828;
 
 DetectorName: "CA"
 NumberFiles: 5

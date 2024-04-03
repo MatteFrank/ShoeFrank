@@ -1,5 +1,6 @@
 export ASOFTREF=@CMAKE_BINARY_DIR@/Libraries/
 export FOOTMAIN=@CMAKE_BINARY_DIR@
+export FOOTSRC=@CMAKE_CURRENT_SOURCE_DIR@
 
 
 if [[ "$OSTYPE" == "darwin"* ]]

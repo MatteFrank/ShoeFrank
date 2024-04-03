@@ -31,54 +31,32 @@ m_measParticleMC_collection(0x0),
 m_McNtuEve(0x0),
 m_singleVertexCounter(0x0),
 m_noVTtrackletEvents(0x0),
-m_noTWpointEvents(0x0)
+m_noTWpointEvents(0x0),
+m_systemsON(""),
+m_VTtolerance(.5),
+m_ITtolerance(.5),
+m_MSDtolerance(.5),
+m_TWtolerance(4.)
 {
-
-	m_debug = TAGrecoManager::GetPar()->Debug();
-
 	m_GeoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
 
 	if(TAGrecoManager::GetPar()->IncludeVT())
-		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"), "TAVTparGeo")->Object();
+		m_VT_geo = (TAVTparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAVTparGeo"))->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeIT())
-		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"), "TAITparGeo")->Object();
+		m_IT_geo = (TAITparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAITparGeo"))->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeMSD())
-		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
+		m_MSD_geo = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"))->Object();
 
 	if(TAGrecoManager::GetPar()->IncludeTW())
-		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"), "TATWparGeo")->Object();
+		m_TW_geo = (TATWparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TATWparGeo"))->Object();
 
-	m_systemsON = "";
-	if( TAGrecoManager::GetPar()->KalSystems().at(0) == "all" )
-	{
-		if(TAGrecoManager::GetPar()->IncludeVT())	m_systemsON += "VT ";
-		if(TAGrecoManager::GetPar()->IncludeIT())	m_systemsON += "IT ";
-		if(TAGrecoManager::GetPar()->IncludeMSD())	m_systemsON += "MSD ";
-		if(TAGrecoManager::GetPar()->IncludeTW())	m_systemsON += "TW ";
-	}
-	else
-	{
-		for (unsigned int i=0; i<TAGrecoManager::GetPar()->KalSystems().size(); i++ ) {
-			if (i != 0)		m_systemsON += " ";
-			m_systemsON += TAGrecoManager::GetPar()->KalSystems().at(i);
-		}
-	}
+	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().Energy;
 
-	m_detectors = TAGparTools::Tokenize( m_systemsON.Data() , " " );
-
-	m_BeamEnergy = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().Energy;
-
-	if( m_debug > 1 )	cout << "Beam Energy::" << m_BeamEnergy << endl;
+	if( FootDebugLevel(2) )	cout << "Beam Energy::" << m_BeamEnergy << endl;
 
 	m_eventType = 0;
-
-	//Set default extrapolation tolerances for each detector
-	m_VTtolerance = .5;
-	m_ITtolerance = .5;
-	m_MSDtolerance = .5;
-	m_TWtolerance = 4.;
 }
 
 
@@ -106,32 +84,27 @@ TAGFselectorBase::~TAGFselectorBase()
 	m_trackRepVec.clear();
 
 	m_trackSlopeMap.clear();
-
-	// if(m_measParticleMC_collection)
-	// {
-	// 	for(auto it = m_measParticleMC_collection->begin(); it != m_measParticleMC_collection->end(); ++it)
-	// 		it->second.clear();
-	// 	m_measParticleMC_collection->clear();
-	// }
 }
 
 
 //! \brief Set all the needed variables for track selection
 //!
+//! \param[in] trackUtils Pointer to TAGFtrackUtilities object of KFitter
 //! \param[in] allHitMeas Pointer to the map containing all the measurements in GenFit format; the key is the GenFit FitPlane index
+//! \param[in] GFsystemsOn String containing all systems included in the track selection algorithm
 //! \param[in] chargeVect Pointer to vector of possible charges in the event (either measured from TW or MC truth)
-//! \param[in] SensorIDmap Pointer to TAGFdetectorMap of the campaign
 //! \param[in,out] trackCategoryMap Pointer to the map of selected tracks that have to be sent to the KFitter action
 //! \param[in] measParticleMC_collection Pointer to the map containing the MC particles found in the event for each measurement; the key is the global index of the measurement
 //! \param[in] IsMC boolean flag indicating if the input file is from MC or real data
 //! \param[in] singleVertexCounter Pointer to variable counting events with exactly one vertex
 //! \param[in] noVTtrackletEvents Pointer to variable counting events with no valid VT tracklet for track extrapolation
 //! \param[in] noVTtrackletEvents Pointer to variable counting events with no valid TW point for track extrapolation
-void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMeas, vector<int> *chargeVect, TAGFdetectorMap *SensorIDmap, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool IsMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents)
+void TAGFselectorBase::SetVariables(TAGFtrackUtilities* trackUtils, map<int, vector<AbsMeasurement *>> *allHitMeas, TString GFsystemsOn, vector<int> *chargeVect, map<TString, Track *> *trackCategoryMap, map<int, vector<int>> *measParticleMC_collection, bool IsMC, uint *singleVertexCounter, uint *noVTtrackletEvents, uint* noTWpointEvents)
 {
+	fTrackUtilities = trackUtils;
 	m_allHitMeas = allHitMeas;
 	m_chargeVect = chargeVect;
-	m_SensorIDMap = SensorIDmap;
+	m_SensorIDMap = trackUtils->GetGFdetMap(); //Set detector map from track utilities
 	m_trackCategoryMap = trackCategoryMap;
 	m_measParticleMC_collection = measParticleMC_collection;
 	m_IsMC = IsMC;
@@ -139,8 +112,11 @@ void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMe
 	m_noVTtrackletEvents = noVTtrackletEvents;
 	m_noTWpointEvents = noTWpointEvents;
 
+	m_systemsON = GFsystemsOn;
+	m_detectors = TAGparTools::Tokenize( m_systemsON.Data() , " " );
+
 	if (m_IsMC)
-      m_McNtuEve = (TAMCntuPart *)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object();
+      m_McNtuEve = (TAMCntuPart *)gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"))->Object();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -151,7 +127,6 @@ void TAGFselectorBase::SetVariables(map<int, vector<AbsMeasurement *>> *allHitMe
 //! \return 0 if there were no errors
 int TAGFselectorBase::FindTrackCandidates()
 {
-
 	CheckPlaneOccupancy();
 
 	if (FillTrackRepVector() != 0)
@@ -186,7 +161,7 @@ int TAGFselectorBase::FillTrackRepVector()
 	}
 	for(int i = 0; i < m_chargeVect->size(); ++i)
 	{
-		if ( m_debug > 0 ) cout << "TAGFselectorBase::FillTrackRepVector() -- charge: " << m_chargeVect->at(i) << "\n";
+		if ( FootDebugLevel(1) ) cout << "TAGFselectorBase::FillTrackRepVector() -- charge: " << m_chargeVect->at(i) << "\n";
 
 		AbsTrackRep* rep = new RKTrackRep( UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( m_chargeVect->at(i) ) );
 		m_trackRepVec.push_back( rep );
@@ -200,11 +175,11 @@ int TAGFselectorBase::FillTrackRepVector()
 //!
 //! This function if used for Selection Efficiency evaluation
 //! \return Map containing the name of MC particles seen in the event ("H", "He", "Li"...) and their number
-map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
+map<string, int> TAGFselectorBase::CountParticleGeneratedAndVisible()
 {
 
-	if(m_debug > 0) 
-		cout << "TAGFselector::CountParticleGenaratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
+	if(FootDebugLevel(1)) 
+		cout << "TAGFselector::CountParticleGeneratedAndVisible --  Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 
 	map<string, int> genCount_vector;
 	// m_McNtuEve = (TAMCntuPart*) gTAGroot->FindDataDsc(FootActionDscName("TAMCntuPart"), "TAMCntuPart")->Object();
@@ -217,23 +192,10 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 		float mass = particle->GetMass();
 
 
-		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)	continue;
+		if ( particle->GetCharge() < 1 || particle->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber)	continue;
 
 		string outName, pdgName;
-
-		switch(particleCh)	{
-
-			case 1:	outName = "H";	break;
-			case 2:	outName = "He";	break;
-			case 3:	outName = "Li";	break;
-			case 4:	outName = "Be";	break;
-			case 5:	outName = "B";	break;
-			case 6:	outName = "C";	break;
-			case 7:	outName = "N";	break;
-			case 8:	outName = "O";	break;
-			default:
-				outName = "fail";	break;
-		}
+		outName = fTrackUtilities->GetParticleNameFromCharge(particleCh);
 
 		//CAREFUL HERE!! Think about the possibility of throwing an error -> skip particle for the moment
 		if( outName == "fail" ) {continue;}
@@ -242,7 +204,7 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 
 		//CAREFUL HERE!!!!!!!!! FOOT TAGrecoManager file does not have Hydrogen and Helium isotopes!!!! Also think about throwing an error here...
 		if ( !TAGrecoManager::GetPar()->Find_MCParticle( pdgName ) ) 	{
-			if(m_debug > 0)  cout << "Found Particle not in MC list: " << pdgName << " num=" << iPart << "\n";
+			if(FootDebugLevel(1))  cout << "Found Particle not in MC list: " << pdgName << " num=" << iPart << "\n";
 			continue;
 
 		}
@@ -273,7 +235,6 @@ map<string, int> TAGFselectorBase::CountParticleGenaratedAndVisible()
 						if( iPlane == m_SensorIDMap->GetFitPlaneTW() )	foundHitTW++;
 					}
 				}
-
 
 				if (match == 0)		continue;
 
@@ -316,11 +277,8 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	}
 
 	//Cycle on FitPlanes
-	if(m_debug > 0) cout << "Cycle on planes\t"  << m_SensorIDMap->GetFitPlanesN() << "\n";
 	for(int iPlane = 0; iPlane < m_SensorIDMap->GetFitPlanesN(); ++iPlane)
 	{
-		if(m_debug > 0) cout << "Plane::" << iPlane << "\n";
-
 		//Skip plane if no hit was found
 		if(m_allHitMeas->find(iPlane) == m_allHitMeas->end()){continue;}
 
@@ -440,7 +398,7 @@ void TAGFselectorBase::CheckPlaneOccupancy()
 	}
 
 	//Print in debug mode
-	if( m_debug > 1)// || (m_eventType != 1 && m_eventType != 5))
+	if( FootDebugLevel(2))// || (m_eventType != 1 && m_eventType != 5))
 	{
 		cout << "EVENT::" << gTAGroot->CurrentEventId().EventNumber() << "\tTYPE::" << m_eventType << endl;
 		for(auto itDet = m_detectors.begin(); itDet != m_detectors.end(); ++itDet)
@@ -495,12 +453,9 @@ void TAGFselectorBase::FillTrackCategoryMap()
 		int MeasId = itTrack->second->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
 		if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" && m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
 		{
-			if(m_debug > 0)
-				Info("FillTrackCategoryMap()", "Found track candidate (%d) with no TW point! Skipping...", itTrack->first);
-			// continue;
+			if(FootDebugLevel(1))
+				Info("FillTrackCategoryMap()", "Track candidate %d no TW point!", itTrack->first);
 		}
-
-		//Add possibility to have tracks ending before TW!!!!
 
 		int measCharge = itTrack->second->getCardinalRep()->getPDGCharge();
 		int measMass;
@@ -509,21 +464,10 @@ void TAGFselectorBase::FillTrackCategoryMap()
 		else
 			measMass = round( itTrack->second->getCardinalRep()->getMass( (itTrack->second)->getFittedState(-1) )/m_AMU );
 
-		switch(measCharge)
-		{
-			case 1:	outName = "H";	break;
-			case 2:	outName = "He";	break;
-			case 3:	outName = "Li";	break;
-			case 4:	outName = "Be";	break;
-			case 5:	outName = "B";	break;
-			case 6:	outName = "C";	break;
-			case 7:	outName = "N";	break;
-			case 8:	outName = "O";	break;
-			default:
-				outName = "fail";	break;
-		}
 
-		if ( m_debug > 1 )	Info("FillTrackCategoryMap()", "Track with measured charge %d and mass %d!!", measCharge, measMass);
+		if ( FootDebugLevel(2) )	Info("FillTrackCategoryMap()", "Track with measured charge %d and mass %d!!", measCharge, measMass);
+
+		outName = fTrackUtilities->GetParticleNameFromCharge(measCharge);
 
 		if( outName == "fail" )
 		{
@@ -537,7 +481,9 @@ void TAGFselectorBase::FillTrackCategoryMap()
 }
 
 
-
+//! \brief Create a dummy track to display all the TW points of the event
+//! 
+//! Only called when Genfit event display is switched on
 void TAGFselectorBase::CreateDummyTrack()
 {
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
@@ -555,202 +501,6 @@ void TAGFselectorBase::CreateDummyTrack()
 		delete dummy;
 	}
 }
-
-
-//----------------------------------------------------------------------------------------------------
-
-//! \brief Get the possible charge of a selected track from the TW measurement
-//!
-//! Currently uses MC information (returns charge of most frequent particle along the track) OR the charge of the TWpoint associated to the track
-//! \param[in] trackToCheck Pointer to GenFit track
-//! \return Charge measured from the TW
-int TAGFselectorBase::GetChargeFromTW(Track *trackToCheck)
-{
-
-	int charge = -1;
-
-	// if( TAGrecoManager::GetPar()->PreselectStrategy() != "TrueParticle" ) //do not use MC!
-	// {
-	TATWpoint* twpoint = 0x0;
-	if( trackToCheck->getNumPointsWithMeasurement() >= 0 )
-	{
-		for (int jTracking = trackToCheck->getNumPointsWithMeasurement() - 1; jTracking >= 0; --jTracking){
-			if ( static_cast<genfit::PlanarMeasurement*>(trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement())->getPlaneId() != m_SensorIDMap->GetFitPlaneTW() ) continue;
-
-			int MeasId = trackToCheck->getPointWithMeasurement(jTracking)->getRawMeasurement()->getHitId();
-
-			twpoint = ( (TATWntuPoint*) gTAGroot->FindDataDsc(FootActionDscName("TATWntuPoint"), "TATWntuPoint")->Object() )->GetPoint( m_SensorIDMap->GetHitIDFromMeasID(MeasId) ); //Find TW point associated to the track
-
-			charge = twpoint->GetChargeZ();
-			break;
-		}
-	}
-	// }	//end of charge calculation from data
-
-	// else	//use MC!
-	// {
-	// 	int MeasId = trackToCheck->getPointWithMeasurement(-1)->getRawMeasurement()->getHitId();
-	// 	if(m_SensorIDMap->GetFitPlaneIDFromMeasID(MeasId) != m_SensorIDMap->GetFitPlaneTW())
-	// 		return -1;
-
-	// 	if(m_measParticleMC_collection->at(MeasId).size() == 1)
-	// 	{
-	// 		return m_McNtuEve->GetTrack( m_measParticleMC_collection->at(MeasId).at(0) )->GetCharge();
-	// 	}
-	// 	else
-	// 	{
-	// 		map<int,int> ChargeOccMap;
-
-	// 		for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
-	// 		{
-	// 			if( m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() < 1 ||  m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() > ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber)
-	// 				continue;
-	// 			ChargeOccMap[ m_McNtuEve->GetTrack( *itTrackMC )->GetCharge() ] = 1;
-	// 		}
-
-	// 		for(int i = 0; i < trackToCheck->getNumPointsWithMeasurement() - 1; ++i)
-	// 		{
-	// 			MeasId = trackToCheck->getPointWithMeasurement(i)->getRawMeasurement()->getHitId();
-	// 			for(vector<int>::iterator itTrackMC = m_measParticleMC_collection->at(MeasId).begin(); itTrackMC != m_measParticleMC_collection->at(MeasId).end(); ++itTrackMC)
-	// 			{
-	// 				charge = m_McNtuEve->GetTrack( *itTrackMC )->GetCharge();
-	// 				if(ChargeOccMap.find(charge) == ChargeOccMap.end())
-	// 					continue;
-
-	// 				ChargeOccMap[ charge ]++;
-	// 			}
-	// 		}
-
-	// 		int occ = 0;
-
-	// 		for(map<int,int>::iterator itMap = ChargeOccMap.begin(); itMap != ChargeOccMap.end(); ++itMap)
-	// 		{
-	// 			if(itMap->second > occ)
-	// 			{
-	// 				occ = itMap->second;
-	// 				charge = itMap->first;
-	// 			}
-	// 		}
-	// 	}
-	// } //end MC charge calcualtion
-
-	return charge;
-}
-
-
-
-//----------------------------------------------------------------------------------------------------
-
-//! \brief Extrapolate a track to a GenFit FitPlane
-//!
-//! \param[in] trackToFit Pointer to track to extrapolate
-//! \param[in] whichPlane Index of the FitPlane where to extrapolate the track
-//! \param[in] repId Index of the track representation to use for the extrapolation
-//! \return Extrapolated position vector in the FitPlane local reference frame
-TVector3 TAGFselectorBase::ExtrapolateToOuterTracker(Track* trackToFit, int whichPlane, int repId)
-{
-
-	//+++++++++++++++++++++++++++++++++++++++
-	if(repId == -1)
-		repId = trackToFit->getCardinalRepId();
-	TrackPoint* tp = trackToFit->getPointWithMeasurementAndFitterInfo(-1, trackToFit->getTrackRep(repId));
-	if (tp == nullptr) {
-		// Error("ExtrapolateToOuterTracker()", "Track has no TrackPoint with fitterInfo");
-		// exit(0);
-		throw genfit::Exception("Track has no TrackPoint with fitterInfo", __LINE__, __FILE__);
-	}
-
-	if ( (static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep(repId)))->hasForwardUpdate() ) == false) {
-		Error("ExtrapolateToOuterTracker()", "TrackPoint has no forward update");
-		exit(0);
-	}
-
-	//RZ: Test with last fitted state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	KalmanFittedStateOnPlane kfTest;
-	kfTest = *(static_cast<genfit::KalmanFitterInfo*>(tp->getFitterInfo(trackToFit->getTrackRep( repId )))->getForwardUpdate());
-	trackToFit->getTrackRep(repId)->extrapolateToPlane(kfTest, m_SensorIDMap->GetFitPlane(whichPlane), false, false); //RZ: Local reference frame of "whichPlane"!!!
-
-	TVector3 posi((kfTest.getState()[3]),(kfTest.getState()[4]), m_SensorIDMap->GetFitPlane(whichPlane)->getO().Z());
-
-	return posi;
-}
-
-
-
-//----------------------------------------------------------------------------------------------------
-
-//! \brief pre-fit requirements to be applied to EACH of the hitCollections
-//!
-//! FUNCTION CURRENTLY NOT USED!
-bool TAGFselectorBase::PrefitRequirements(map<string, vector<AbsMeasurement*>>::iterator element)
-{
-
-
-	int testHitNumberLimit = 0;
-	int testHit_VT = 0;
-	int testHit_IT = 0;
-	int testHit_MSD = 0;
-	int testHit_TW = 0;
-
-	// define the number of hits per each detector to consider to satisfy the pre-fit requirements
-	if ( m_systemsON == "all" ) {
-		testHit_VT = m_SensorIDMap->GetFitPlanesN("VT");
-		testHit_IT = m_SensorIDMap->GetFitPlanesN("IT")/16;
-		testHit_MSD = m_SensorIDMap->GetFitPlanesN("MSD")/2;
-	}
-
-  	else {
-	    if ( m_systemsON.Contains("VT") )	testHit_VT = m_SensorIDMap->GetFitPlanesN("VT");
-	    if ( m_systemsON.Contains("IT") )	testHit_IT = m_SensorIDMap->GetFitPlanesN("IT")/16;
-	    if ( m_systemsON.Contains("MSD") )	testHit_MSD = m_SensorIDMap->GetFitPlanesN("MSD");
-	    if ( m_systemsON.Contains("TW") )	testHit_TW = 1;
-	}
-
-	// num of total hits
-	testHitNumberLimit = testHit_VT + testHit_IT + testHit_MSD + testHit_TW;
-	if ( testHitNumberLimit == 0 ) 		
-		cout << "ERROR --> TAGFselector::PrefitRequirements :: m_systemsON mode is wrong!!!" << endl, exit(0);
-
-	// // test the total number of hits ->  speed up the test
-	// if ( (int)((*element).second.size()) != testHitNumberLimit ) {
-	// 	if ( m_debug > 0 )		cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : Nel=" << (int)((*element).second.size()) << "   Nexp= " << testHitNumberLimit << "\n";
-	// 	return false;
-	// }
-
-	int nHitVT = 0;
-	int nHitIT = 0;
-	int nHitMSD = 0;
-	int nHitTW = 0;
-
-	// count the hits per each detector
-	for ( vector<AbsMeasurement*>::iterator it=(*element).second.begin(); it != (*element).second.end(); ++it ) {
-		int planeId = (*it)->getDetId();
-			if ( m_SensorIDMap->IsFitPlaneInDet(planeId, "VT") )	nHitVT++;
-			if ( m_SensorIDMap->IsFitPlaneInDet(planeId, "IT") )	nHitIT++;
-			if ( m_SensorIDMap->IsFitPlaneInDet(planeId, "MSD") )	nHitMSD++;
-			if ( planeId == m_SensorIDMap->GetFitPlaneTW() )	nHitTW++;
-	}
-
-	if ( m_debug > 0 )	cout << "nHitVT  " <<nHitVT<< " nHitIT " <<nHitIT<< " nHitMSD "<<nHitMSD<< " nHitTW "<<nHitTW<<"\n";
-
-	// test the num of hits per each detector
-	// if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD != testHit_MSD ) {
-
-	if ( nHitVT != testHit_VT || nHitIT != testHit_IT || nHitMSD < 4 ){
-	    if ( m_debug > 0 ) {
-		    cout << "WARNING :: TAGFselector::PrefitRequirements  -->  number of elements different wrt the expected ones : " <<
-				    "\n\n\t nVTX = " << nHitVT << "  Nexp = " << testHit_VT <<
-				    "\n\n\t nITR = " << nHitIT << "  Nexp = " << testHit_IT <<
-				    "\n\n\t nMSD = " << nHitMSD << "  Nexp = " << testHit_MSD <<
-				    "\n\n\t nTW = " << nHitTW << "  Nexp = " << testHit_TW << "\n";
-		}
-		return false;
-	}
-
-	return true;
-}
-
 
 
 //! \brief Get the MC true particle information from its MC track index
@@ -785,6 +535,42 @@ TString TAGFselectorBase::GetRecoTrackName(Track* tr)
 		if(it->second == tr)
 			return it->first;
 	}
-	Error("GetRecoTrackName()", "Track not found in Category Map!!");
-	throw -1;
+	Error("GetRecoTrackName()", "Track not found in Category Map!!"), exit(42);
+}
+
+
+void TAGFselectorBase::PrintCurrentTracksMC()
+{
+	for( auto itTrack : m_trackTempMap )
+	{
+		cout << "Track::" << itTrack.first << "\tMC Ids::";
+		for( int i = 0; i < (itTrack.second)->getNumPointsWithMeasurement(); ++i )
+			cout << ListMCparticlesOfHit( (itTrack.second)->getPointWithMeasurement(i)->getRawMeasurement()->getHitId() ) << " ";
+		cout << "\n";
+	}
+	cout << "\n";
+}
+
+
+
+//! \brief List the MC particle Ids of a hit (function used for debug purposes!)
+//!
+//! \param[in] HitId Global Id of the hit
+//! \return MC particle Ids of the hit as a string
+string TAGFselectorBase::ListMCparticlesOfHit(int HitId)
+{
+	TString output = "";
+	if( !m_measParticleMC_collection || m_measParticleMC_collection->size() < 1 || m_measParticleMC_collection->find(HitId) == m_measParticleMC_collection->end() )
+	{
+		Info("ListMCparticlesOfHit()", "Problem in function for hit %d", HitId);
+		return output.Data();
+	}
+	
+	vector <int> mcIds = m_measParticleMC_collection->at(HitId);
+	output += "[";
+	for (auto id : mcIds)
+		output += Form("%d,",id);
+	output.Remove(TString::kTrailing, ',');
+	output+="]";
+	return output.Data();
 }

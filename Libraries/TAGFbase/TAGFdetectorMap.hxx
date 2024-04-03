@@ -31,7 +31,7 @@
 using namespace std;
 using namespace genfit;
 
-class TAGFdetectorMap {
+class TAGFdetectorMap : public TAGobject {
   
 public:
 	TAGFdetectorMap();
@@ -42,6 +42,8 @@ public:
 	int		GetMinFitPlane(string detName);
 	int		GetMaxFitPlane(string detName);
 	int		GetFitPlaneTW();
+	int		GetFitPlaneTGcenter();
+	int		GetFitPlaneTGairInterface();
 
 	int		GetFitPlanesN(string detName="all");
 	bool	IsFitPlaneInDet(int planeId, string detName);
@@ -86,7 +88,7 @@ private:
 	vector<float> m_itPossibleZLocal;				///< Vector with possible values for Z local coordinate of IT planes
 	map<int, int> m_MSDviewMap;						///< Map linking MSD sensors to their view: X=0 (vertical strips), Y=1 (horizontal strips)
 
-	int m_debug;									///< Global debug value
+	ClassDef(TAGFdetectorMap,0);
 };
 
 #endif

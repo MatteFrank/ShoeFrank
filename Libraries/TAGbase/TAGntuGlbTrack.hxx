@@ -73,12 +73,12 @@ public:
    Int_t            GetPdgID()              const { return fPdgId;     }
 
    //! Set track length from the first to the last point of the track
-   void             SetLength(Int_t len)          { fLength = len;     }
+   void             SetLength(Double_t len)       { fLength = len;     }
    //! Get track length from the first to the last point of the track
    Double32_t       GetLength()             const { return fLength;    }
 
    //! Set Chi2 of fit
-   void             SetChi2(Int_t chi)            { fChi2 =  chi;      }
+   void             SetChi2(Double_t chi)         { fChi2 =  chi;      }
    //! Get Chi2 of fit
    Double32_t       GetChi2()               const { return fChi2;      }
 
@@ -88,12 +88,12 @@ public:
    Int_t            GetNdof()               const { return fNdof;      }
 
    //! Set p-value
-   void             SetPval(Int_t p)              { fPval =  p;        }
+   void             SetPval(Double_t p)           { fPval =  p;        }
    //! Get p-value
    Double32_t       GetPval()               const { return fPval;      }
 
    //! Set quality track
-   void             SetQuality(Int_t q)           { fQuality =  q;     }
+   void             SetQuality(Double_t q)        { fQuality =  q;     }
    //! Get quality track
    Double32_t       GetQuality()            const { return fQuality;   }
 
@@ -212,6 +212,9 @@ public:
    //! Get  point
    TAGpoint*        GetPoint(Int_t index)         { return (TAGpoint*)fListOfPoints->At(index); }
 
+   //! Get  last point
+   const TAGpoint*  GetLastPoint()          const { return (TAGpoint*)fListOfPoints->At(fListOfPoints->GetLast()); }
+   
    // Get MC info
    TArrayI          GetMcTrackIdx();
 
@@ -284,6 +287,7 @@ public:
    // Get position in z from polynom fit
    TVector3         GetPosition( double z );
 
+   void              PrintAllMCIds();
 private:
    Long64_t         fEvtNumber;      ///< event number
    Int_t            fPdgId;          ///< PDG Id used in the fit

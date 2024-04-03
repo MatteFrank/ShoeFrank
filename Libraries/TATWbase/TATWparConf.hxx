@@ -27,22 +27,26 @@ class TATWparConf : public TAGparTools
     virtual         ~TATWparConf();
 
    //! Is Z from MC
-   Bool_t    IsZmc()         const { return fEnableZmc;       }
+   Bool_t    IsZmc()              const { return fEnableZmc;         }
    //! Is no pileup flag
-   Bool_t    IsNoPileUp()    const { return fEnableNoPileUp;  }
+   Bool_t    IsNoPileUp()         const { return fEnableNoPileUp;    }
    //! Is Z matching
-   Bool_t    IsZmatching()   const { return fEnableZmatching; }
+   Bool_t    IsZmatching()        const { return fEnableZmatching;   }
    //! Is Calibration per bar
-   Bool_t    IsCalibBar()    const { return fEnableCalibBar;  }
+   Bool_t    IsCalibBar()         const { return fEnableCalibBar;    }
+   //! Is energy threshold on deposited enery enalbled in MC
+   Bool_t    IsEnergyThrEnabled() const { return fEnableEnergyThr;   }
    //! Is rate smearing in MC
-   Bool_t    IsRateSmearMc() const { return fEnableCalibBar;  }
+   Bool_t    IsRateSmearMc()      const { return fEnableRateSmearMc; }
    //! Number of bars
-   Int_t     GetBarsN()      const { return fBarsN;           }
+   Int_t     GetBarsN()           const { return fBarsN;             }
+   //! Gain value set in the WD for TW
+   Double_t  GetWdGain()          const { return fGain;              }
 
    Bool_t    FromFile(const TString& name);
 
-   void      Clear(Option_t* opt="");
-   void      ToStream(ostream& os = cout, Option_t* option = "") const;
+   virtual void      Clear(Option_t* opt="");
+   virtual void      ToStream(ostream& os = cout, Option_t* option = "") const;
 
 private:
    TString   fkDefaultParName;   ///< default parconf file name ("./config/TATWdetector.cfg")
@@ -50,8 +54,10 @@ private:
    Bool_t    fEnableNoPileUp;    ///< Enable no pileup flag
    Bool_t    fEnableZmatching;   ///< Z matching
    Bool_t    fEnableCalibBar;    ///< Calibration per bar
+   Bool_t    fEnableEnergyThr;   ///< enable threshod setting for deposited energy in MC
    Bool_t    fEnableRateSmearMc; ///< MC rate smearing
    Int_t     fBarsN;             ///< Number of bars
+   Float_t   fGain;              ///< Gain value set in the WD for TW
 
    ClassDef(TATWparConf,1)
 };

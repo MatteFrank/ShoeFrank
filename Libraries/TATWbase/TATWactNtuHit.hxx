@@ -10,6 +10,7 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TH3.h"
 
 #include "TAGaction.hxx"
 #include "TAGparaDsc.hxx"
@@ -69,26 +70,24 @@ private:
   Int_t           fZbeam;
   Int_t           fEvtCnt;
   
-  Float_t         fTofPropAlpha;    // inverse of light propagation velocity
-  Float_t         fTofErrPropAlpha;
-
-  TH1F*           fpHisDeTot;       // Total energy loss
-  TH1F*           fpHisTimeTot;     // Total time of flight
+  TH1F*           fpHisPos[nLayers];      // Position along the bar for all bars
+  TH1F*           fpHisRawTof[nLayers];   // Raw time of flight for all bars
+  TH1F*           fpHisCharge[nLayers];
   
-  TH1F*           fpHisChargeFront;
-  TH1F*           fpHisChargeRear;
-  TH1F*           fpHisChargeBar9Front;
-  TH1F*           fpHisChargeBar9Rear;
-  TH1F*           fpHisAmpA[nLayers];     // Total time of flight
-  TH1F*           fpHisAmpB[nLayers];     // Total time of flight
-  TH2F*           fpHisAmpA_vs_Eloss[nLayers];     // Total time of flight
-  TH2F*           fpHisAmpB_vs_Eloss[nLayers];     // Total time of flight
-  TH1F            *fpHisDeltaTimeRawCenterFront;
-  TH1F            *fpHisDeltaTimeRawCenterRear;
+  TH1F*           fpHisChargeCentralBar[nLayers];
+  TH1F*           fpHisRawTofCentralBar[nLayers];
+  TH2F*           fpHisRawTofBothCentralBarVsEloss[nLayers];
+  TH3F*           fpHisRawTofBothCentralBarVsElossVsSTRiseTime[nLayers];
+  TH2F*           fpHisDeltaTimeFrontRear;
+  TH1F*           fpHisAmpA[nLayers];    
+  TH1F*           fpHisAmpB[nLayers];    
+  TH2F*           fpHisAmpA_vs_Eloss[nLayers];
+  TH2F*           fpHisAmpB_vs_Eloss[nLayers];
 
   Bool_t          f_debug;
 
   
+  TH1I*           fpHisBarsID[nLayers];
   TH2D*           fpHisElossTof_layer[nLayers];
   vector<TH2D*>   fpHisElossTof_Z;
   vector<TH1D*>   fpHisEloss_Z[nLayers];
@@ -102,11 +101,13 @@ private:
   Double_t GetRawTime(TATWrawHit*a,TATWrawHit*b);
 
   Double_t GetEnergy(Double_t RawEnergy,Int_t layer,Int_t posId, Int_t barId);
-  Double_t GetTime(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
+  Double_t GetToF(Double_t Time,Int_t layer, Int_t posId, Int_t barId);
 
   Double_t GetChargeCenterofMass(TATWrawHit*a,TATWrawHit*b);
 
-  Double_t GetPosition(TATWrawHit*a,TATWrawHit*b);
+  Double_t GetPosition(TATWrawHit*a,TATWrawHit*b,Int_t layer,Int_t bar);
+
+  Double_t ApplyTwCalibration(Double_t p0, Double_t p1, Double_t rawenergy);
 
   Int_t    GetBarCrossId(Int_t layer, Int_t barId, Double_t rawPos);
   Int_t    GetPerpBarId(Int_t layer, Int_t barId, Double_t rawPos);

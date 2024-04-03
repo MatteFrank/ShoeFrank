@@ -22,6 +22,7 @@ private:
    Float_t            fPosErrorF;                ///< position's errors of the cluster in plane frame
    Float_t            fPositionCorr;             ///< position Eta corrected of the cluster in plane frame
    Float_t            fCog;                      ///< center of gravity of the cluster in term of strip number
+   Int_t              fSeedPosition;             ///< position of the seed strip
    TVector3           fCurPosition;              ///< current position of the cluster in plane frame
    TClonesArray*      fListOfStrips;             ///< list of strips attached to this cluster
    Int_t              fPlaneView;                ///< plane view = 0 for X and = 1 for Y plane
@@ -41,6 +42,8 @@ public:
    void               SetPosErrorF(Float_t pos);
    //! Set cluster center of gravity
    void               SetCog(Float_t pos);
+   //! Set seed position
+   void               SetSeed(Int_t seed_pos);
    //! Set cluster eta value
    void               SetEta(Float_t eta);
    //! Set position in global tracker frame
@@ -60,6 +63,8 @@ public:
    Float_t            GetPosErrorF()                   const { return fPosErrorF;      }
    //! Get center of gravity
    Float_t            GetCog()                         const { return fCog;            }
+   //! Get seed position
+   Int_t              GetSeedPosition()                const { return fSeedPosition;   }
    //! Get vector position in local frame
    const TVector3&    GetPosition()                    const { return fCurPosition;    }
    //! Get vector position error in local frame

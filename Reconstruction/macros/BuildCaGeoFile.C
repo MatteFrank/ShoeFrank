@@ -8,6 +8,9 @@
 
   
 #if !defined(__CINT__) || defined(__MAKECINT__)
+   #include <algorithm> // for std::find
+   #include <iterator> // for std::begin, std::end
+
    #include "TGeoBBox.h"
    #include "TGeoNode.h"
    #include "TGeoManager.h"
@@ -36,13 +39,15 @@
 #endif
 
 
+
+
 ///////////////////////////////////////////////////
    //////// Set config values
 
    // type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, 
-   // FIVE_MOD, SEVEN_MOD, SEVEN_MOD_HIT22, TWELVE_MOD_CNAO22, FULL_DET_V1)
+   // FIVE_MOD, SEVEN_MOD, SEVEN_MOD_HIT22, TWELVE_MOD_CNAO22, CNAO_2023, FULL_DET_V1)
    // TODO: FULL_DET_V1. for the new full setup it is need to create the FLUKA air regions
-   TString fConfig_typegeo = "TWELVE_MOD_CNAO22"; 
+   TString fConfig_typegeo = "CNAO_2023"; 
 
    // half dimensions of BGO crystal
    double xdim1 = 1.05;
@@ -60,6 +65,8 @@ TVector3       fcalSize;
 const TString  fgkDefaultCrysName = "caCrys";
 const TString  fDetectorName = "CA";
 TString        fgPath;
+
+std::vector <int> dummyModules;
 
 void EndGeometry(FILE* fp);
 
@@ -79,16 +86,25 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////
 // main
-void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.geo")
+void BuildCaGeoFile(TString fileOutName = "./TACAdetector.geo")
 {
 
    FILE* fp = fopen(fileOutName.Data(), "w");
 
    if (fp == NULL) { 
-      cerr << "Can't open file: " << fileOutName.Data() << endl;
+      std::cerr << "Can't open file: " << fileOutName.Data() << std::endl;
       return;
    }
    printf("TypeGeo:        \"%s\"\n\n", fConfig_typegeo.Data());
+
+   if ( fConfig_typegeo.CompareTo("CNAO_2023") == 0 ) {
+      // CNAO_2023, similar geometry to FULL_DET_V1, but some modules are missing,
+      // set dummy modules with air for missing modules
+      // We can not remove them, since their side planes are needed to
+      // to practitioner the air regions in FLUKA without further change in the code
+      int mods[] = {0, 1, 2, 8, 15, 22};
+      for (int i : mods) dummyModules.push_back(i);
+   }
 
    fgPath = gSystem->DirName(fileOutName.Data()); 
 
@@ -103,7 +119,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"// Parameter of Geometry \n");
    fprintf(fp,"// type of geometry (FULL_DET, CENTRAL_DET, ONE_CRY, ONE_MOD, FIVE_MOD, \n");
-   fprintf(fp,"//                   SEVEN_MOD, SEVEN_MOD_HIT22, FULL_DET_V1) \n");
+   fprintf(fp,"//                   SEVEN_MOD, SEVEN_MOD_HIT22, CNAO_2023, FULL_DET_V1) \n");
    fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
    fprintf(fp,"TypeGeo:        \"%s\"\n\n", fConfig_typegeo.Data());
 
@@ -168,6 +184,12 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
    caloCristal->SetFillColor(kAzure+6);
    //  caloCristal->SetTransparency(25);
 
+   // create on dummy crystal with air
+   TGeoVolume *caloDummyCristal = gGeoManager->MakeTrd2(fgkDefaultCrysName, medAir, xdim1, xdim2, ydim1, ydim2, zdim);
+   caloDummyCristal->SetLineColor(kWhite);
+   caloDummyCristal->SetFillColor(kWhite);
+   caloDummyCristal->SetTransparency(85);
+
    ///////////////////////////////////////
    // Create only one crystal geometry (used for Test beam simulations)
    if ( fConfig_typegeo.CompareTo("ONE_CRY") == 0 ) {
@@ -187,13 +209,18 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
    TGeoTranslation * trasN = new TGeoTranslation(-posx, 0, posz - pyramid_base_c );
 
    TGeoVolumeAssembly * row = new TGeoVolumeAssembly("CAL_ROW");
+   TGeoVolumeAssembly * rowDummy = new TGeoVolumeAssembly("CAL_ROW");
 
    if( fConfig_typegeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
-       fConfig_typegeo.CompareTo("FULL_DET_V1") == 0 ) {
+       fConfig_typegeo.CompareTo("FULL_DET_V1") == 0  ||
+       fConfig_typegeo.CompareTo("CNAO_2023") == 0) {
       // New order left to right (back view) 
       row->AddNode(caloCristal, 1, new TGeoCombiTrans(*trasN, *rotN));
       row->AddNode(caloCristal, 2);
       row->AddNode(caloCristal, 3, new TGeoCombiTrans(*trasP, *rotP));
+      rowDummy->AddNode(caloDummyCristal, 1, new TGeoCombiTrans(*trasN, *rotN));
+      rowDummy->AddNode(caloDummyCristal, 2);
+      rowDummy->AddNode(caloDummyCristal, 3, new TGeoCombiTrans(*trasP, *rotP));
    } else { // Old order
       row->AddNode(caloCristal, 1);
       row->AddNode(caloCristal, 2, new TGeoCombiTrans(*trasP, *rotP));
@@ -203,6 +230,9 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
    ////////////   MODULE
    ////////////   Create a 3x3 module by assembly 3 ROWs
    TGeoVolumeAssembly * mod = new TGeoVolumeAssembly("CAL_MOD");
+
+   ////////////   Create a 3x3 dummy module by assembly 3 ROWs
+   TGeoVolumeAssembly * modDummy = new TGeoVolumeAssembly("CAL_MOD");
 
    // set rotations/translation
    TGeoRotation * rotUp = new TGeoRotation ();
@@ -239,6 +269,13 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
    support->SetLineColor(kGray);
    mod->AddNode(support, 0, new TGeoTranslation(0, 0, shiftS));
 
+   // create on dummy support with air
+   TGeoVolume* supportDummy = gGeoManager->MakeTrd2("MOD_SUPPORT", medAir, xdimS1, xdimS2, ydimS1, ydimS2, zdimS);
+   supportDummy->SetLineColor(kWhite);
+   supportDummy->SetLineColor(kWhite);
+   supportDummy->SetTransparency(85);
+   modDummy->AddNode(supportDummy, 0, new TGeoTranslation(0, 0, shiftS));
+
 
    //---------------- Container air as truncate pyramid
    //------------------- needed for FLUKA
@@ -267,20 +304,27 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
    modAir->SetFillColor(kGreen);
    modAir->SetTransparency(80);
    mod->AddNode(modAir, 0, new  TGeoTranslation(0, 0, shiftA));
+   modDummy->AddNode(modAir, 0, new  TGeoTranslation(0, 0, shiftA));
    // -------------------------------------------------------------------
 
    // Add ROWs 
    if( fConfig_typegeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
-      fConfig_typegeo.CompareTo("FULL_DET_V1") == 0 ) {
+      fConfig_typegeo.CompareTo("FULL_DET_V1") == 0 || 
+      fConfig_typegeo.CompareTo("CNAO_2023") == 0 ) {
       // New order top to bottom
       mod->AddNode(row, 1, new TGeoCombiTrans(*trasUp, *rotUp));
       mod->AddNode(row, 2);
       mod->AddNode(row, 3, new TGeoCombiTrans(*trasDn, *rotDn));
+      modDummy->AddNode(rowDummy, 1, new TGeoCombiTrans(*trasUp, *rotUp));
+      modDummy->AddNode(rowDummy, 2);
+      modDummy->AddNode(rowDummy, 3, new TGeoCombiTrans(*trasDn, *rotDn));
    } else {
       mod->AddNode(row, 1);
       mod->AddNode(row, 2, new TGeoCombiTrans(*trasUp, *rotUp));
       mod->AddNode(row, 3, new TGeoCombiTrans(*trasDn, *rotDn));
    }
+
+
    cout << "Module created" <<  std::flush << endl;
 
 
@@ -299,6 +343,7 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
        fConfig_typegeo.CompareTo("SEVEN_MOD") == 0 ||
        fConfig_typegeo.CompareTo("SEVEN_MOD_HIT22") == 0 ||
        fConfig_typegeo.CompareTo("TWELVE_MOD_CNAO22") == 0 ||
+       fConfig_typegeo.CompareTo("CNAO_2023") == 0 ||
        fConfig_typegeo.CompareTo("FULL_DET_V1") == 0
        ) {
 
@@ -580,9 +625,17 @@ void BuildCaGeoFile(TString fileOutName = "./geomaps/CNAO2022_MC/TACAdetector.ge
       modMatrix[36] = new TGeoHMatrix( TGeoCombiTrans(*trasDnDet4, *rotDnDet) * TGeoHMatrix(*rotDnDet3) * TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoHMatrix(*rotRightZ4) );
       modMatrix[2] = new TGeoHMatrix( TGeoCombiTrans(*trasUpDet4, *rotUpDet) * TGeoHMatrix(*rotUpDet3) * TGeoCombiTrans(*trasPDet1, *rotPDet1) * TGeoHMatrix(*rotLeftZ4) );
 
+      if (fConfig_typegeo.CompareTo("CNAO_2023") == 0) {
+         // add mdules 37 and 38 ????
+
+      }
+
       // Add modules from left to right, from top to botton (back view)
       for (int imod=0; imod<37; ++imod) {
-         detector->AddNode(mod, imod+1, modMatrix[imod]);
+         if (std::find(std::begin(dummyModules), std::end(dummyModules), imod) != std::end(dummyModules)) 
+            detector->AddNode(modDummy, imod+1, modMatrix[imod]);
+         else
+            detector->AddNode(mod, imod+1, modMatrix[imod]);
       }
 
       // End FULL_DET_V1
@@ -787,6 +840,16 @@ void PrintModules(FILE * fp)
       fprintf(fp,"PositionX:  %.12f   PositionY:   %.12f   PositionZ:   %.12f\n", trans[0], trans[1], trans[2]);
       fprintf(fp,"TiltX:      %.12f   TiltY:       %.12f   TiltZ:       %.12f\n", angles[0], angles[1], angles[2]);
    }
+
+   if (dummyModules.size() > 0) {
+      fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
+      fprintf(fp,"// Dummy (filled with air) modules used in the run\n");
+      fprintf(fp,"// -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-\n");
+      fprintf(fp,"DummyModulesN:   %d\n", (int)dummyModules.size());
+      for (const auto& modD : dummyModules) {
+         fprintf(fp,"ModuleId:   %d\n", modD);
+      }
+   }
 }
 
 //-----------------------------------------------------------------------------
@@ -914,7 +977,7 @@ void ShowDetectorIdsMap()
 
    double aspectradio = (fcalSize[1]/fcalSize[0]);
    gStyle->SetTitleFontSize(gStyle->GetTitleFontSize()/aspectradio);
-   gStyle->SetFrameLineWidth(0);
+   gStyle->SetFrameLineWidth(1);
 
    // Draw modules position
    TCanvas * c = new TCanvas("modules", "Modules ID", 900, 900 * aspectradio + 20);
@@ -923,7 +986,7 @@ void ShowDetectorIdsMap()
    gStyle->SetOptStat(0);
    TH2F* modGrid = new TH2F("Modules"," Modules ID (Back view, side readout boards)", 200, -fcalSize[0]/2, fcalSize[0]/2 , 200, -fcalSize[1]/2, fcalSize[1]/2  + 3*xdim1  );
 
-   double xdimA1 = xdim1 * 3 + delta + 0.6 ;
+   double xdimA1 = xdim1 * 3 + delta + 0.5 ;
    modGrid->Draw("A");
 
    for (int ii=0; ii<nModule; ii++) {
@@ -933,6 +996,11 @@ void ShowDetectorIdsMap()
       // Get only the center coordinates
       Double_t *trans = mat.GetTranslation();
       TBox* mod = new TBox(trans[0]-xdimA1, trans[1]-xdimA1, trans[0]+xdimA1, trans[1]+xdimA1);
+      if (std::find(std::begin(dummyModules), std::end(dummyModules), ii) != std::end(dummyModules)) {
+         mod->SetFillColor(kWhite);
+      } else {
+         mod->SetFillColor(kGray);
+      }
       mod->Draw();
       
       TText* id = new TText(trans[0], trans[1], Form("%3d", ii));
@@ -962,6 +1030,7 @@ void ShowDetectorIdsMap()
       modBox->Draw();
    }
 
+   int imod = -1;
    for (int ii=0; ii<nCry; ii++) {
       NodeTrafo *crt = ((NodeTrafo *)(fListOfCrystals->At(ii)));
       // Get module transformation matrix (module/detector)
@@ -969,7 +1038,12 @@ void ShowDetectorIdsMap()
       // Get only the center coordinates
       Double_t *trans = mat.GetTranslation();
       TBox* cry = new TBox(trans[0]-xdim1, trans[1]-xdim1, trans[0]+xdim1, trans[1]+xdim1);
-      cry->SetFillColor(kYellow);
+      if ( (ii)%9 == 0 ) imod++;
+      if (std::find(std::begin(dummyModules), std::end(dummyModules), imod) != std::end(dummyModules)) {
+         cry->SetFillColor(kWhite);
+      } else {
+         cry->SetFillColor(kYellow);
+      }
       cry->Draw();
       TText* id = new TText(trans[0], trans[1]+xdim1/4, Form("%3d", ii));
       id->SetTextAlign(22);
@@ -989,8 +1063,14 @@ void ShowDetectorIdsMap()
    fprintf(fmap, "CrystalsN: %d\n", nCry );
 
    fprintf(fmap, "#crysid crymodule channelID crysBoard(HW) activecrys\n");
+   imod = -1;
    for (int ii=0; ii<nCry; ii++) {
-      fprintf(fmap, "  %3d       %d         %d         %d           %d\n", ii, 0, 0, 161, 1);
+      if ( (ii)%9 == 0 )  imod++;
+      int active = 1;
+      if (std::find(std::begin(dummyModules), std::end(dummyModules), imod) != std::end(dummyModules)) {
+         active = 0;
+      } 
+      fprintf(fmap, "  %3d       %d         %d         %d           %d\n", ii, imod, 0, 161, active);
    }
 
    int board = 1, mux = 0, ch = 0;

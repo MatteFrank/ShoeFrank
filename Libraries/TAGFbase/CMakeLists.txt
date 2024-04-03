@@ -28,6 +28,8 @@ set(with_dictionnaries
   TAGFselectorLinear
   TAGFselectorBack
   TAGFdetectorMap
+  TAGFgeometryConstructor
+  TAGFtrackUtilities
   UpdatePDG
 )
 

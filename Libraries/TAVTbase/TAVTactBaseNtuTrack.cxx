@@ -12,6 +12,12 @@
 #include "TVector3.h"
 #include "TVector2.h"
 
+#include "TAMCparTools.hxx"
+#include "TAMCntuHit.hxx"
+#include "TAMCntuPart.hxx"
+#include "TAMCntuRegion.hxx"
+#include "TAGnameManager.hxx"
+
 //BM
 #include "TABMntuTrack.hxx"
 
@@ -179,7 +185,8 @@ void TAVTactBaseNtuTrack::CheckBM()
 	  fBmTrack = pBMtrack->GetTrack(0);
 
    if (fBmTrack && fpFootGeo) {
-	  fBmTrackPos  = fBmTrack->Intersection(fpFootGeo->GetVTCenter().Z()-fpFootGeo->GetBMCenter().Z());
+	//   fBmTrackPos  = fBmTrack->Intersection(fpFootGeo->GetVTCenter().Z()-fpFootGeo->GetBMCenter().Z());
+     fBmTrackPos = fBmTrack->Intersection(fpFootGeo->FromGlobalToBMLocal(fpFootGeo->GetTGCenter()).Z());
 	  Float_t chi2 = fBmTrack->GetChiSquare();
 	  if (ValidHistogram())
 		 fpHisBmChi2->Fill(chi2);
@@ -235,7 +242,16 @@ Bool_t TAVTactBaseNtuTrack::FindStraightTracks()
 
 		 lineOrigin.SetXYZ(cluster->GetPosition()[0], cluster->GetPosition()[1], 0); // parallel lines
 		 lineOrigin = pGeoMap->Sensor2Detector(curPlane, lineOrigin);
-		 lineSlope.SetXYZ(0, 0, 1);
+       //Create slope parallel to Z axis in the global reference frame
+       if( fBmTrack )
+      {
+         lineSlope = fBmTrack->GetSlope();
+         lineSlope = fpFootGeo->VecFromBMLocalToGlobal(lineSlope);
+      }
+      else
+         lineSlope.SetXYZ(0, 0, 1);
+
+      lineSlope = fpFootGeo->VecFromGlobalToVTLocal(lineSlope);
 
 		 track->SetLineValue(lineOrigin, lineSlope);
 
@@ -404,7 +420,7 @@ void TAVTactBaseNtuTrack::FillBmHistogramm(TVector3 bmTrackPos)
 
 	  origin  = fpFootGeo->FromVTLocalToGlobal(origin);
 	  TVector3 res = origin - bmTrackPos;
-	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.Y());
+	  fpHisVtxResX->Fill(origin.X(), bmTrackPos.X());
 	  fpHisVtxResY->Fill(origin.Y(), bmTrackPos.Y());
    }
 }

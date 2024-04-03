@@ -50,11 +50,16 @@ execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/nightbuild_tier1.sh)
 execute_process(COMMAND chmod u+x ${CMAKE_BINARY_DIR}/Reconstruction/CompileMacro.py)
 
+#----------------------------------------------------------------------------
+# build py-script
+#
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pyscripts/load_libs.py.cmake"     "${CMAKE_BINARY_DIR}/Reconstruction/load_libs.py"  @ONLY)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pyscripts/                              DESTINATION ${CMAKE_BINARY_DIR}/Reconstruction/  PATTERN "*.cmake" EXCLUDE)
 
 #----------------------------------------------------------------------------
 # internal and external dependencies
 #
-set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADAQ} ${TAAPI} ${TAST} ${TADI} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TAFO})
+set( EXTRA_INTERNAL_LIBRARIES ${TAG} ${TADAQ} ${TAAPI} ${TAST} ${TADI} ${TAVT} ${TAIT} ${TAMSD} ${TABM} ${TATW} ${TACA} ${TAIR} ${TAMC} ${TAED} ${TAFO} ${TANA})
 set( EXTRA_EXTERNAL_LIBRARIES ${ROOT_LIBRARIES})
 
 if (GENFIT_DIR)
@@ -89,6 +94,8 @@ include_directories(${TATOE_INCLUDE_DIR})
 include_directories(${TAGF_INCLUDE_DIR})
 include_directories(${GENFIT_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+include_directories(${TANA_INCLUDE_DIR})
 
 #
 link_directories(${ROOT_LIBRARY_DIR})
@@ -187,6 +194,19 @@ target_link_libraries(DecodeGlbAna ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS DecodeGlbAna DESTINATION bin)
+
+
+#----------------------------------------------------------------------------
+# Add the executable, and link it to the Genfit and root libraries
+#
+add_executable(DecodeGlbAnalysis DecodeGlbAnalysis.cc)
+#
+target_link_libraries(DecodeGlbAnalysis ${EXTRA_INTERNAL_LIBRARIES} ${EXTRA_EXTERNAL_LIBRARIES})
+
+#----------------------------------------------------------------------------
+# Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
+#
+install(TARGETS DecodeGlbAnalysis DESTINATION bin)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Genfit and root libraries

@@ -26,8 +26,7 @@ public:
    
    int getTDID(int add)       { return fTDchaID.at(add); }
    int getfTDboaID(int add)   { return fTDboaID.at(add); }
-   
-   vector<int> GetChannels()  { return fTDchaID;         }
+    vector<int> GetChannels()  { return fTDchaID;         }
    vector<int> GetBoards()    { return fTDboaID;         }
    
    Bool_t IsSTClock(int iCha);
@@ -42,7 +41,7 @@ private:
    vector<int>                fTDchaID;
    vector<int>                fTDboaID;
    map<pair<int,int>, double> fReso;
-   
+    
    ClassDef(TASTparMap,1)
 };
 

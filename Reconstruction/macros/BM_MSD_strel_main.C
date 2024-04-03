@@ -57,6 +57,8 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
   TAMSDparGeo* msdpargeo   = (TAMSDparGeo*) msdGeo->Object();
   parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
   msdpargeo->FromFile(parFileName.Data());
+   Int_t sensorsN = msdpargeo->GetSensorsN();
+   Int_t stationsN = msdpargeo->GetStationsN();
 
   bmNtuHit = new TABMntuHit();
   tree->SetBranchAddress(TABMntuHit::GetBranchName(), &bmNtuHit);
@@ -64,11 +66,11 @@ void BM_MSD_strel_main(TString in_filename = "", Int_t nentries = 0){
   bmNtuTrack = new TABMntuTrack();
   tree->SetBranchAddress(TABMntuTrack::GetBranchName(), &bmNtuTrack);
   TBranch *bmBraNtuTrack=tree->GetBranch(TABMntuTrack::GetBranchName());
-  msdNtuCluster = new TAMSDntuCluster();
+  msdNtuCluster = new TAMSDntuCluster(sensorsN);
   tree->SetBranchAddress(TAMSDntuCluster::GetBranchName(), &msdNtuCluster);
   TBranch *msdBraNtuTrackN=tree->GetBranch(TAMSDntuCluster::GetBranchName());
 
-  msdNtuPoint = new TAMSDntuPoint();
+  msdNtuPoint = new TAMSDntuPoint(stationsN);
   tree->SetBranchAddress(TAMSDntuPoint::GetBranchName(), &msdNtuPoint);
   TBranch *msdBraNtuPointN=tree->GetBranch(TAMSDntuPoint::GetBranchName());
 

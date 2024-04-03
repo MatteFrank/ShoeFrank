@@ -61,14 +61,17 @@ Bool_t TAITactNtuHit::Action()
 {
    TAGdaqEvent* datDaq = (TAGdaqEvent*)  fpDatDaq->Object();
 
-   const DEITREvent* evt = static_cast<const DEITREvent*> (datDaq->GetFragment("DEITREvent"));
-
-   if (evt) {
-      fData      = evt->values;
-      fEventSize = evt->evtSize;
-      fDataLink  = evt->channelID - (dataITR | 0x30);
-      if (fEventSize == 0) return true;;
-      DecodeEvent();
+   
+   Int_t size = (int)datDaq->GetFragmentSize("DEITREvent");
+   for (Int_t i = 0; i < size; ++i) {
+      const DEITREvent* evt = static_cast<const DEITREvent*> (datDaq->GetFragment("DEITREvent", i));
+      
+      if (evt) {
+         fData      = evt->values;
+         fEventSize = evt->evtSize;
+         if (fEventSize == 0) return true;;
+         DecodeEvent();
+      }
    }
    
    SetBit(kValid);

@@ -54,6 +54,9 @@ public:
   Int_t       GetRegStrip(Int_t n);   //n=sensor (0-5)
   Int_t       GetRegModule(Int_t n);  //n=sensor (0-5)
   Int_t       GetRegMetal(Int_t n);   //n=sensor (0-5)
+
+  //! @brief Get thickness of metallic material
+  Float_t     GetMetalThickness()  const {return fMetalThickness;}
   
   // to keep interace for compilation
   string      PrintParameters();
@@ -62,6 +65,8 @@ public:
   string      PrintRegions();
   string      PrintAssignMaterial(TAGmaterials *Material);
   string      PrintSubtractBodiesFromAir();
+   // Fluka Transport settings
+  string      PrintMSDPhysics();
 
 private:
   Int_t          fStripsN;          ///< Number of strips
@@ -80,13 +85,16 @@ private:
   
 private:
   static const TString fgkBaseName;    ///< MSD base name
-  
+  static const Int_t   fgkDefSensorsN;   ///< default number of sensors
+
 public:
   //! Get base name
   static const Char_t* GetBaseName()                    { return fgkBaseName.Data();    }
   //! Get sensor id from board and side id
   static Int_t GetSensorId(Int_t boardId, Int_t sideId) { return 2*(boardId-1)+sideId;  }
-
+   //! Get default number of sensors
+  static Int_t GetDefSensorsN()                         { return fgkDefSensorsN;        }
+   
   ClassDef(TAMSDparGeo,3)
 };
 

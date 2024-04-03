@@ -44,10 +44,12 @@
 #include "TADIgeoField.hxx"
 
 #include "TABMparCal.hxx"
+#include "TAVTparCal.hxx"
 #include "TAMSDparCal.hxx"
 #include "TATWparCal.hxx"
 #include "TACAparCal.hxx"
 
+#include "TASTparConf.hxx"
 #include "TABMparConf.hxx"
 #include "TAVTparConf.hxx"
 #include "TAITparConf.hxx"
@@ -78,6 +80,7 @@
 
 #include "TAVTactNtuCluster.hxx"
 #include "TAVTactNtuClusterMT.hxx"
+#include "TAVTactNtuClusterMTP.hxx"
 #include "TAITactNtuCluster.hxx"
 #include "TAITactNtuClusterMT.hxx"
 #include "TAMSDactNtuCluster.hxx"
@@ -100,6 +103,7 @@
 #include "TAVTactNtuVertex.hxx"
 
 #include "TAGactNtuGlbTrackS.hxx"
+#include "TAGactNtuGlbTrackF.hxx"
 #ifdef TOE_FLAG
 #include "TAGactNtuGlbTrack.hxx"
 #endif
@@ -172,6 +176,12 @@ public:
      
   // Create L0 branch in tree
   virtual void SetL0TreeBranches();
+   
+   //! Set run number from file
+   virtual void SetRunNumberFromFile()         { return;           }
+   
+   //! Get run number from file
+   virtual Int_t GetRunNumberFromFile()        { return -1;        }
    
    //! Set experiment name
    virtual void SetExpName(const Char_t* name) { fExpName = name;  }
@@ -337,7 +347,9 @@ public:
    //! MC CAL hit container Getter
    TAMCntuHit*          GetNtuMcCa()        const { return (TAMCntuHit*)fpNtuMcCa->Object();         }
   
-
+   //! Get run number
+   Int_t               GetRunNumber()       const { return fRunNumber;                               }
+   
 public:
    //! Disable MC info saving in output tree
    static void DisableSaveMc() { fgSaveMcFlag = false; }
@@ -379,10 +391,12 @@ protected:
    TAGparaDsc*           fpParGeoCa;      ///< CAL geometry parameter
    
    TAGparaDsc*           fpParCalBm;      ///< BM calibration parameter
+   TAGparaDsc*           fpParCalVtx;     ///< VTX calibration parameter
    TAGparaDsc*           fpParCalMsd;     ///< MSD calibration parameter
    TAGparaDsc*           fpParCalTw;      ///< TW calibration parameter
    TAGparaDsc*           fpParCalCa;      ///< CAL calibration parameter
 
+   TAGparaDsc*           fpParConfSt;     ///< ST configuration parameter
    TAGparaDsc*           fpParConfBm;     ///< BM configuration parameter
    TAGparaDsc*           fpParConfVtx;    ///< VTX configuration parameter
    TAGparaDsc*           fpParConfIt;     ///< ITR configuration parameter
@@ -457,7 +471,8 @@ protected:
    TAGactNtuGlbTrack*    fActGlbTrack;   ///< Global tracking action
 #endif
    TAGactNtuGlbTrackS*   fActGlbTrackS;  ///< action for straight tracks
-  
+   TAGactNtuGlbTrackF*   fActGlbTrackF;  ///< action for global tracks
+
 #ifdef GENFIT_FLAG
    TAGactKFitter*        fActGlbkFitter; ///< Global tracking kalman Fitter
    TAGFtrackingStudies*  fActGlbTrackStudies;    ///< Global tracking studies with GenFit
@@ -507,7 +522,12 @@ protected:
    void CreateRecActionGlbGF();
    // Create reconstruction action for global straight tracks
    void CreateRecActionGlbS();
-
+   // Create reconstruction action for global tracks
+   void CreateRecActionGlbF();
+   
+   //! Generate output file name
+   virtual TString  GetFileOutName() { return TString(""); }
+   
 protected:
    static Bool_t fgSaveMcFlag;    ///< MC saving flag
 

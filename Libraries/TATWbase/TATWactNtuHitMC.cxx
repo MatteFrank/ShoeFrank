@@ -58,16 +58,17 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    
    
    f_geoTrafo = (TAGgeoTrafo*)gTAGroot->FindAction(TAGgeoTrafo::GetDefaultActName().Data());
-   f_pargeo = (TAGparGeo*)fParGeoG->Object();
-   f_parcal = (TATWparCal*)fpCalPar->Object();
+   f_pargeo   = (TAGparGeo*)fParGeoG->Object();
+   f_parcal   = (TATWparCal*)fpCalPar->Object();
+   f_parconf  = (TATWparConf*) fpParConf->Object();
    
+   fIsZtrueMC          = f_parconf->IsZmc();
+   fIsZrecPUoff        = f_parconf->IsNoPileUp();
+   fIsEnergyThrEnabled = f_parconf->IsEnergyThrEnabled();
+   fIsRateSmear        = f_parconf->IsRateSmearMc();
+
    CreateDigitizer();
    
-   TATWparConf* parConf = (TATWparConf*) p_parconf->Object();
-   fIsZtrueMC   = parConf->IsZmc();
-   fIsZrecPUoff = parConf->IsNoPileUp();
-   fIsRateSmear = parConf->IsRateSmearMc();
-
    if( fIsZtrueMC ) {
       fDigitizer->SetMCtrue();
       fDigitizer->SetPileUpOff();
@@ -85,6 +86,11 @@ TATWactNtuHitMC::TATWactNtuHitMC(const char* name,
    
    fMapPU.clear();
    fVecPuOff.clear();
+
+   for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
+     fpHisElossTof_MCtrue_Z[ilayer].clear();
+     fpHisElossTof_MCrec_Z[ilayer].clear();
+   }
 }
 
 //------------------------------------------+-----------------------------------
@@ -99,21 +105,28 @@ TATWactNtuHitMC::~TATWactNtuHitMC()
 void TATWactNtuHitMC::CreateHistogram()
 {
    DeleteHistogram();
+
+   Double_t TofMin = f_parcal->GetTofMin();  // ns
+   Double_t TofMax = f_parcal->GetTofMax();  // ns
+   Double_t ElossMax = f_parcal->GetMaxEloss();  // MeV
+
+   Int_t NBinTof   = (TofMax-TofMin)*100; // 10 ps/bin
+   Int_t NBinEloss = ElossMax*4; // 0.25 MeV/bin
    
-   fpHisHitCol = new TH1I("twHitCol", "ToF Wall - Column hits", 20, 0., 20);
-   AddHistogram(fpHisHitCol);
-   
-   fpHisHitRow = new TH1I("twHitLine", "ToF Wall - Line hits", 20, 0., 20);
-   AddHistogram(fpHisHitRow);
-   
+   if(FootDebugLevel(4))
+     Info("CreateHistogram()","TofMin::%f, TofMax::%f, ElossMac::%f",f_parcal->GetTofMin(),f_parcal->GetTofMax(),f_parcal->GetMaxEloss());
+
    for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
 
-     fpHisElossTof_MCrec[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCrec",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCrec",LayerName[(TLayer)ilayer].data()),3000,0.,30.,480,0.,120.);
+    fpHisBarsID[ilayer] = new TH1I(Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()), Form("twBarsID_%s",LayerName[(TLayer)ilayer].data()),20, -0.5, 19.5);
+    AddHistogram(fpHisBarsID[ilayer]);
+
+    fpHisElossTof_MCrec[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCrec",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCrec",LayerName[(TLayer)ilayer].data()),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax);
      AddHistogram(fpHisElossTof_MCrec[ilayer]);
 
-     fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),3000,0.,30.,480,0.,120.);
+     fpHisElossTof_MCtrue[ilayer] = new TH2D(Form("twdE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),Form("dE_vs_Tof_%s_MCtrue",LayerName[(TLayer)ilayer].data()),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax);
      AddHistogram(fpHisElossTof_MCtrue[ilayer]);
-
+         
      fpHisZID_MCrec[ilayer] = new TH2I(Form("twZID_%s",LayerName[(TLayer)ilayer].data()),Form("twZID_%s",LayerName[(TLayer)ilayer].data()), fZbeam+3,-2.5,(int)fZbeam+0.5, fZbeam+2,-1.5,(int)fZbeam+0.5);
      AddHistogram(fpHisZID_MCrec[ilayer]);
      
@@ -122,12 +135,22 @@ void TATWactNtuHitMC::CreateHistogram()
           
    }
       
+   
+   for(int ilayer=0; ilayer<(int)nLayers; ilayer++) {
+     for(int iZ=1; iZ < fZbeam+1; iZ++) {
+
+       fpHisElossTof_MCtrue_Z[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCtrue",LayerName[(TLayer)ilayer].data(),iZ),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax));
+       AddHistogram(fpHisElossTof_MCtrue_Z[ilayer][iZ-1]);
+
+       fpHisElossTof_MCrec_Z[ilayer].push_back(new TH2D(Form("twdE_vs_Tof_%s_Z%d_MCrec",LayerName[(TLayer)ilayer].data(),iZ),Form("dE_vs_Tof_%s_Z%d_MCrec",LayerName[(TLayer)ilayer].data(),iZ),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax));
+       AddHistogram(fpHisElossTof_MCrec_Z[ilayer][iZ-1]);
+         
+}
+   }
+   
    for(int iZ=1; iZ < fZbeam+1; iZ++) {
 
-     fpHisElossTof_MC.push_back(new TH2D(Form("twdE_vs_Tof_Z%d_MCtrue",iZ),Form("dE_vs_Tof_%d",iZ),3000,0.,30.,480,0.,120.));
-     AddHistogram(fpHisElossTof_MC[iZ-1]);
-         
-     fpHisElossTof.push_back(new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),3000,0.,30.,480,0.,120.));
+     fpHisElossTof.push_back(new TH2D(Form("twdE_vs_Tof_Z%d",iZ),Form("dE_vs_Tof_%d",iZ),NBinTof,TofMin,TofMax,NBinEloss,0.,ElossMax));
      AddHistogram(fpHisElossTof[iZ-1]);
         
      fpHisDistZ.push_back( new TH1F(Form("twDist_Z%d",iZ),Form("dist_Z%d",iZ),2000,-20.,80) );
@@ -138,7 +161,10 @@ void TATWactNtuHitMC::CreateHistogram()
          
      fpHisResPos.push_back( new TH1D(Form("twResPos_Z_%d",iZ), Form("ResPos_Z_%d",iZ), 400,-20,20) );
      AddHistogram(fpHisResPos[iZ-1]);
-        
+
+     fpHisResPos_2.push_back( new TH1D(Form("twResPos_2_Z_%d",iZ), Form("ResPos_2_Z_%d",iZ), 400,-20,20) );
+     AddHistogram(fpHisResPos_2[iZ-1]);
+
      fpHisResTof.push_back( new TH1D(Form("twResTof_Z_%d",iZ), Form("ResTof_Z_%d",iZ), 2000, -1., 1.) );
      AddHistogram(fpHisResTof[iZ-1]);
         
@@ -164,7 +190,8 @@ void TATWactNtuHitMC::CreateDigitizer()
 {
    TATWntuHit* pNtuRaw = (TATWntuHit*) fpNtuRaw->Object();
    
-   fDigitizer = new TATWdigitizer(pNtuRaw, fParGeoG , fpCalPar);
+   fDigitizer = new TATWdigitizer(pNtuRaw, fParGeoG , fpCalPar, fpParConf);
+
 }
 
 //------------------------------------------+-----------------------------------
@@ -271,25 +298,30 @@ bool TATWactNtuHitMC::Action() {
 //! Assign the Tof and the charge Z to the TWhit using the info from ST time
 void TATWactNtuHitMC::AssignZchargeAndToF(TATWhit *hitTW, TAMCntuHit *ntuHitStMC) {
 
-     FlagUnderEnergyThresholtHits(hitTW);
 
+     if(fIsEnergyThrEnabled)
+       FlagUnderEnergyThresholdHits(hitTW);
+  
      // set ToF in ns to the TW hit retrieving SC hit time information
      Double_t recTof   = hitTW->GetTime() - GetTimeST(fpNtuStHit,hitTW); // ns
      hitTW->SetToF(recTof);
      
-     Int_t Z = hitTW->GetChargeZ();  // mc true charge stored in the hit up to now
-     
-     Int_t Zrec = -2;
+
      if(!fIsZtrueMC) {
+       
+       Int_t Z = hitTW->GetChargeZ();  // mc true charge stored in the hit up to now
+       
+       Int_t Zrec = -2;
+       
        Zrec = f_parcal->GetChargeZ(hitTW->GetEnergyLoss(),hitTW->GetToF(),hitTW->GetLayer());
        hitTW->SetChargeZ(Zrec);
+       
+       PlotRecMcTWquantities(hitTW,ntuHitStMC,Zrec,Z);
+       
+       if(FootDebugLevel(4))
+         PrintRecTWquantities(hitTW,Zrec,Z);
      }
      
-     PlotRecMcTWquantities(hitTW,ntuHitStMC,Zrec,Z);
-     
-     if(FootDebugLevel(4))
-       PrintRecTWquantities(hitTW,Zrec,Z);
-
      return;
 }
 //------------------------------------------+-----------------------------------
@@ -347,12 +379,20 @@ void TATWactNtuHitMC::StudyPerformancesZID(TAMChit *hitTwMC, TAMCntuHit *ntuHitS
    
    Double_t trueTof = (hitTwMC->GetTof() - hitStMC->GetTof())*TAGgeoTrafo::SecToNs(); //ns
    
-   Int_t Zrec = f_parcal->GetChargeZ(edep,trueTof,layer);   
+   Int_t Zrec;
    Float_t distZ_MC[fZbeam]; //inf
+
+   if(fIsZtrueMC)
+     Zrec=Zmc;
+   else {
+
+     Zrec = f_parcal->GetChargeZ(edep,trueTof,layer);   
   
-   for(int iZ=1; iZ<fZbeam+1; iZ++)
-     distZ_MC[iZ-1]= f_parcal->GetDistBB(iZ);
-  
+     for(int iZ=1; iZ<fZbeam+1; iZ++)
+       distZ_MC[iZ-1]= f_parcal->GetDistBB(iZ);
+   }
+
+
    if (ValidHistogram()) {
      
    if(FootDebugLevel(4))
@@ -365,20 +405,27 @@ void TATWactNtuHitMC::StudyPerformancesZID(TAMChit *hitTwMC, TAMCntuHit *ntuHitS
        fpHisElossTof_MCtrue[layer]->Fill(trueTof,edep);
      
        if( Zrec>0 && Zrec < fZbeam+1 )
-         fpHisElossTof_MC[Zrec-1]->Fill(trueTof,edep);
+         fpHisElossTof_MCrec_Z[layer][Zrec-1]->Fill(trueTof,edep);
+       
+       if( Zmc>0 && Zmc < fZbeam+1 )
+         fpHisElossTof_MCtrue_Z[layer][Zmc-1]->Fill(trueTof,edep);
     
-       for(int iZ=1; iZ < fZbeam+1; iZ++) {
-      
-         if(iZ==1) {
-           if(Zrec==1)
-             fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+       if(!fIsZtrueMC) {
+         
+         for(int iZ=1; iZ < fZbeam+1; iZ++) {
+           
+           if(iZ==1) {
+             if(Zrec==1)
+               fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
+             else
+               fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
+           }
            else
-             fpHisDistZ_MC[iZ-1]->Fill(std::numeric_limits<float>::max());
+             fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
          }
-         else
-           fpHisDistZ_MC[iZ-1]->Fill(distZ_MC[iZ-1]);
        }
      }
+
    }
   
    if(FootDebugLevel(4)) {
@@ -451,7 +498,7 @@ void TATWactNtuHitMC::PrintTrueMcTWquantities(TAMChit *hitTwMC, Int_t IdTwHit) {
 }
 //------------------------------------------------------------------------------
 //! Flag TWhits under enery loss threshold as not valid hits
-void TATWactNtuHitMC::FlagUnderEnergyThresholtHits(TATWhit *hitTW) {
+void TATWactNtuHitMC::FlagUnderEnergyThresholdHits(TATWhit *hitTW) {
 
      Int_t layer = hitTW->GetLayer();
      Int_t bar = hitTW->GetBar();
@@ -468,6 +515,7 @@ void TATWactNtuHitMC::FlagUnderEnergyThresholtHits(TATWhit *hitTW) {
        hitTW->SetEnergyLoss(recEloss);
        hitTW->SetValid(false);
      }
+     
      return;
 }
 //------------------------------------------------------------------------------
@@ -495,11 +543,8 @@ void TATWactNtuHitMC::PlotRecMcTWquantities(TATWhit *hitTW, TAMCntuHit *ntuHitSt
 
        if (ValidHistogram()) {
 
-            if (hitTW->IsColumn())
-               fpHisHitCol->Fill(hitTW->GetBar());
-            else
-               fpHisHitRow->Fill(hitTW->GetBar());
-            
+            fpHisBarsID[layer]->Fill(hitTW->GetBar());
+              
             fpHisElossTof_MCrec[layer]->Fill(recTof,recEloss);
             fpHisZID_MCrec[layer]->Fill(Zrec,Zmc);
             
@@ -514,9 +559,11 @@ void TATWactNtuHitMC::PlotRecMcTWquantities(TATWhit *hitTW, TAMCntuHit *ntuHitSt
               fpHisElossTof[hitTW->GetChargeZ()-1]->Fill(recTof,recEloss);
 
               Double_t recPosAlongBar = hitTW->GetPosition();
+              Double_t recPosAlongBar_2 = hitTW->GetChargeChA();
               Double_t truePosAlongBar = hitTW->GetChargeChB(); // in MC in GetChargeB stored the true position along the bar
 
               fpHisResPos[hitTW->GetChargeZ()-1]->Fill(recPosAlongBar-truePosAlongBar);
+              fpHisResPos_2[hitTW->GetChargeZ()-1]->Fill(recPosAlongBar_2-truePosAlongBar);
               
               Double_t trueEloss = hitTW->GetAmplitudeChA();   // in MC in GetAmplitudeA stored the true Eloss
               fpHisResEloss[hitTW->GetChargeZ()-1]->Fill(recEloss-trueEloss);

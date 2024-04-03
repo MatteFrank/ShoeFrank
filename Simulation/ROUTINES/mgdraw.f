@@ -779,15 +779,17 @@ c
 *                                                                      *
 *     USer dependent DRAWing:                                          *
 *                                                                      *
-*     Icode = 10x: call from Kaskad                                    *
+*     Icode =  99: call from Doiosp, ion splitting secondaries         *
+*     Icode = 1xy: call from Kaskad                                    *
 *             100: elastic   interaction secondaries                   *
 *             101: inelastic interaction secondaries                   *
 *             102: particle decay  secondaries                         *
 *             103: delta ray  generation secondaries                   *
 *             104: pair production secondaries                         *
 *             105: bremsstrahlung  secondaries                         *
-*             110: decay products                                      *
-*     Icode = 20x: call from Emfsco                                    *
+*             106: de-excitation in flight secondaries                 *
+*             110: radioactive decay products                          *
+*     Icode = 2xy: call from Emfsco                                    *
 *             208: bremsstrahlung secondaries                          *
 *             210: Moller secondaries                                  *
 *             212: Bhabha secondaries                                  *
@@ -797,10 +799,13 @@ c
 *             219: Compton scattering     secondaries                  *
 *             221: photoelectric          secondaries                  *
 *             225: Rayleigh scattering    secondaries                  *
+*             230: inverse Compton        secondaries                  *
+*             237: mu pair production     secondaries                  *
 *     Icode = 30x: call from Kasneu                                    *
 *             300: interaction secondaries                             *
 *     Icode = 40x: call from Kashea                                    *
 *             400: delta ray  generation secondaries                   *
+*                                                                      *
 *  For all interactions secondaries are put on GENSTK common (kp=1,np) *
 *  but for KASHEA delta ray generation where only the secondary elec-  *
 *  tron is present and stacked on FLKSTK common for kp=npflka          *
@@ -997,6 +1002,11 @@ c      if ( icode .eq.  100) return
       ELSE IF ( ICODE.EQ.101 ) THEN
          idead (idcurr) = icode
          ldead = .true.
+*  +-------------------------------------------------------------------*
+*  |  In-flight De-excitation:
+      ELSE IF ( ICODE .EQ.106 ) THEN
+         idead (idcurr) = icode
+         ldead = .true.
 *  |
 *  +-------------------------------------------------------------------*
 *  |  Everything else:
@@ -1005,20 +1015,24 @@ c      if ( icode .eq.  100) return
       END IF
 *  |
 *  +-------------------------------------------------------------------*
-      numint = numint +1
-      xint(numint) = xsco
-      yint(numint) = ysco
-      zint(numint) = zsco
-      intpa(numint) = idcurr
-C      idead(numint) = idead(idcurr)
-      if(idbflg.gt.1) then
-         write(*,*)'USDRAW: Now numint, idead(numint) = ',
-     &        numint,intpa(numint)
-      endif
-      intcode(numint) = intcode(idcurr)
+      IF(ICODE.LT.106) THEN
+         numint = numint +1
+         if (numint.GT.maxint)
+     &        write(*,*) 'MGDRAW: numint>maxint',ncase,numint,maxint
+         xint(numint) = xsco
+         yint(numint) = ysco
+         zint(numint) = zsco
+         intpa(numint) = idcurr
+C     idead(numint) = idead(idcurr)
+         if(idbflg.gt.1) then
+            write(*,*)'USDRAW: Now numint, idead(numint) = ',
+     &           numint,intpa(numint)
+         endif
+         intcode(numint) = intcode(idcurr)
 Cgb
 Cgb      idead (numint) = intcode(idcurr)
 Cgb
+      ENDIF   
       IF (icode.eq.219 .or. icode.eq.101 .or. icode.eq.102 .or. 
      &     icode.eq.110 .or. icode.eq.214 .or. icode.eq.215 .or.
      &     icode.eq.217 .or. icode.eq.221 ) then

@@ -113,7 +113,7 @@ TAMChit* TAMCntuHit::GetHit(Int_t id)
    if (id >=0 && id < fListOfHits->GetEntriesFast()) {
       return (TAMChit*)fListOfHits->At(id);
    } else {
-      Error("GetHit()", "Hit id %d out of bounds!\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!", id);
       return 0x0;
    }
 }
@@ -127,7 +127,7 @@ const TAMChit* TAMCntuHit::GetHit(Int_t id) const
    if (id >=0 && id < fListOfHits->GetEntriesFast()) {
       return (TAMChit*)fListOfHits->At(id);
    } else {
-      Error("GetHit()", "Hit id %d out of bounds!\n", id);
+      Error("GetHit()", "Hit id %d out of bounds!", id);
       return 0x0;
    }
 }

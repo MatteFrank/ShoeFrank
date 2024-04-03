@@ -197,7 +197,7 @@ TVector3 TATWparGeo::GetLayerPosition(Int_t iLayer)
 }
 
 //_____________________________________________________________________________
-Float_t TATWparGeo::GetCoordiante_sensorFrame(Int_t iLayer, Int_t iBar)
+Float_t TATWparGeo::GetCoordinate_sensorFrame(Int_t iLayer, Int_t iBar)
 {
    Int_t idx = iLayer*fBarsN + iBar;
    
@@ -647,8 +647,10 @@ string TATWparGeo::PrintAssignMaterial(TAGmaterials *Material)
     if (fvRegion.size()==0 )
       cout << "Error: TW regions vector not correctly filled!"<<endl;
 
+    //    ss << PrintCard("ASSIGNMA", flkmat, fvRegion.at(0), fvRegion.back(),
+    //		    "1.", Form("%d",magnetic), "", "") << endl;
     ss << PrintCard("ASSIGNMA", flkmat, fvRegion.at(0), fvRegion.back(),
-		    "1.", Form("%d",magnetic), "", "") << endl;
+		    "1.", "", "", "") << endl;
     
   }
 

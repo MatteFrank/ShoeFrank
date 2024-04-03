@@ -8,10 +8,10 @@ NumberFiles: 1
 "./geomaps/CNAO2021/FOOT.geo": 400; 2000; 7000;
 
 DetectorName: "ST"
-NumberFiles: 4
+NumberFiles: 5
 "./geomaps/CNAO2021/TASTdetector.geo": -1
+"./config/CNAO2021/TASTdetector.map": -1
 "./config/CNAO2021/TASTdetector.cfg": -1
-"./config/CNAO2021/WDChannelMap.map": -1
 "./calib/CNAO2021/WDpar.cal": -1;
 
 DetectorName: "TG"
@@ -19,11 +19,12 @@ NumberFiles: 1
 "./geomaps/CNAO2021/TAGdetector.geo": 400; 4300; 9000; 9600; 10000; 10100;
 
 DetectorName: "TW"
-NumberFiles: 6
+NumberFiles: 7
 "./geomaps/CNAO2021/TATWdetector.geo": -1
 "./config/CNAO2021/TATWdetector.cfg": -1
 "./config/CNAO2021/TATW_BBparameters.cfg": -1
 "./config/CNAO2021/TATWChannelMapXML.map": -1
+"./config/CNAO2021/TATWdeltaTimeMap.map": -1
 "./calib/CNAO2021/TATW_Energy_Calibration.cal": -1
 "./calib/CNAO2021/TATW_Tof_Calibration.cal": -1;
 

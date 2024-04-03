@@ -60,6 +60,8 @@ public:
    void    ReadItem(Int_t &arg);
    // Read float item
    void    ReadItem(Float_t &arg);
+  // Read double item
+   void    ReadItem(Double_t &arg);
    // Read char array with a delimiter in string
    void    ReadItem(TArrayC& array, const Char_t delimiter = ';');
    // Read integer array with a delimiter in string
@@ -131,6 +133,8 @@ public:
    static vector<TString> Tokenize(const TString line, const Char_t delimiter = '"');
    // Normalize (remove double blank)
    static TString Normalize(const char* line);
+   // Remove characters in a string
+   static TString Remove(const char* line, const Char_t c, Bool_t blank = false);
    
 protected:
    static Int_t fgPrecisionLevel; ///< Precision level for cout

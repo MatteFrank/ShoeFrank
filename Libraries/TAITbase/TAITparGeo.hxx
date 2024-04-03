@@ -10,6 +10,7 @@
 
 #include "TAGmaterials.hxx"
 #include "TAVTparGeo.hxx"
+#include "TAITparMap.hxx"
 
 class TGeoHMatrix;
 class TGeoVolume;
@@ -18,6 +19,7 @@ class TGeoVolume;
 class TAITparGeo : public TAVTparGeo {
    
 private:
+   TAITparMap* fpParMap;           ///< par Map pointe if availbale
    Int_t      fSensPerBoard;      ///< number of sensors per Plume
    TVector3   fSupportSize;       ///< Support size
    TVector3   fSupportOffset;     ///< Support offset
@@ -53,21 +55,22 @@ private:
    //! Fluka kapton region
    vector<string> fvKaptonRegion; //! Fluka kapton region
     //! Fluka epoxy body
-   vector<string> fvEpoxyRegion;  //! Fluka epoxy body
+   vector<string> fvEpoxyRegion;  //! Fluka epoxy region
    //! Fluka aluminum body
-   vector<string> fvAlRegion;     //! Fluka aluminum body
+   vector<string> fvAlRegion;     //! Fluka aluminum region
 
 protected:
    static const TString fgkBaseNameIt;      ///< IT base name
    static const Int_t   fgkDefSensPerLayer; ///< Def number of sensors per layer
    static const Int_t   fgkDefSensPerBoard; ///< Def number of sensors per plume module
    static const Int_t   fgkDefLayersN;      ///< Def number of layers
-   
+   static const Int_t   fgkDefSensorsN;     ///< default number of sensors
+
 private:
    Float_t GetPassiveLayerPosZ(Int_t layer);
 
 public:
-   TAITparGeo();
+   TAITparGeo(TAITparMap* parMap = 0x0);
     virtual ~TAITparGeo();
    
    //! Get number of Sensors per link
@@ -161,6 +164,8 @@ public:
    virtual string PrintRegions();
    // Fluka assignment material
    virtual string PrintAssignMaterial(TAGmaterials *Material);
+   // Fluka Transport settings
+   virtual string PrintITPhysics();
    // Fluka bodies subtraction
    virtual string PrintSubtractBodiesFromAir();
    
@@ -169,6 +174,8 @@ public:
    static const Char_t* GetBaseName()    { return fgkBaseNameIt.Data();    }
    //! Get default number of sensors per board
    static Int_t GetDefSensPerBoard()     {return fgkDefSensPerBoard;       }
+   //! Get default number of sensors
+   static Int_t         GetDefSensorsN() { return fgkDefSensorsN;        }
 
    ClassDef(TAITparGeo,1)
 };

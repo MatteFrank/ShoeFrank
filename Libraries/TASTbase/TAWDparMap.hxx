@@ -24,12 +24,15 @@ public:
   
   virtual void    Clear(Option_t* opt="");
    
-  string          GetChannelType(int,int);
-  vector<int>     GetBoards(string);
+  map<string, vector<int>> GetBoardMap();
+  string        GetChannelType(int,int);
+  vector<int>&  GetBoards(string);
+  int  GetNboards(){return  fNboards;}
   
 private:
   map <pair<int,int>, string> fChmap;
   map <string, vector<int>>   fBolist;
+  int fNboards;
   
    ClassDef(TAWDparMap,1)
 };

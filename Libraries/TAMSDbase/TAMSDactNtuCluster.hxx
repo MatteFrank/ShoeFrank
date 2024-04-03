@@ -48,6 +48,8 @@ public:
    Float_t       GetCurrentPosError()  const { return fCurrentPosError; }
    //! Get center of gravity of current cluster 
    Float_t       GetCurrentCog()       const { return fCurrentCog;      }
+   //! Get seed of current cluster
+   Int_t         GetCurrentSeed()      const { return fCurrentSeed;     }
    //! Get eta value of current cluster 
    Float_t       GetCurrentEta()       const { return fCurrentEta;      }
    
@@ -57,6 +59,8 @@ public:
    void SetCurrentPosition(Float_t u)        { fCurrentPosition = u;    }
    //! Set center of gravity of current cluster 
    void SetCurrentCog(Float_t u)             { fCurrentCog = u;         }
+   //! Set seed of current cluster
+   void SetCurrentSeed(Int_t u)              { fCurrentSeed = u;        }
    //! Set eta value current cluster 
    void SetCurrentEta(Float_t u)             { fCurrentEta = u;         }
 
@@ -75,6 +79,7 @@ private:
    Float_t         fCurrentPosition;   ///< pointer to current position
    Float_t         fCurrentPosError ;  ///< pointer to current position error
    Float_t         fCurrentCog;        ///< pointer to current center of gravity
+   Int_t           fCurrentSeed;       ///< pointer to current seed
    Float_t         fCurrentEta;        ///< pointer to current eta
    Float_t         fCurrentEnergy;     ///< pointer to current energy
    TClonesArray*   fListOfStrips;      ///< list of strips

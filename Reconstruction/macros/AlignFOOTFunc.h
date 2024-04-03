@@ -10,6 +10,7 @@
 
 #include "TAMCntuPart.hxx"
 #include "TAMCntuHit.hxx"
+#include "TAGnameManager.hxx"
 
 
 #include "TASTparGeo.hxx"
@@ -31,6 +32,7 @@
 
 #include "TAITparGeo.hxx"
 #include "TAITntuCluster.hxx"
+#include "TAITntuTrack.hxx"
 
 #include "TAMSDparGeo.hxx"
 #include "TAMSDntuCluster.hxx"
@@ -48,10 +50,12 @@
 
 #include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAWDntuTrigger.hxx"
 #include "TAGrunInfo.hxx"
 #include "TAGparGeo.hxx"
 
 #include "TAMCntuHit.hxx"
+#include "TAMCntuRegion.hxx"
 #include "TAGntuEvent.hxx"
 
 
@@ -70,7 +74,7 @@
 using namespace std;
 
 static int  IncludeReg; // from runinfo
-static int  IncludeTOE; // from runinfo
+static int  IncludeGLB; // from runinfo
 
 //other global parameters taken from campaign manager
 static int  IncludeMC;
@@ -90,10 +94,14 @@ static TAGrunInfo*   runinfo;  //runinfo
 static TAGgeoTrafo*  geoTrafo; //geometry
 static TAGparGeo* parGeo; //beam info
 static TAMCntuHit *bmNtuEve;
+static TAMCntuHit *vtMc;
+static TAMCntuHit *itMc;
+static TAMCntuHit *msdMc;
+static TAMCntuHit *twMc;
+static TAMCntuHit *caMc;
 static TASTntuHit *stNtuHit;
 static TABMntuHit*  bmNtuHit;
 static TABMntuTrack*  bmNtuTrack;
-static TAMCntuHit *vtMc;
 static TAVTntuVertex* vtxNtuVertex;
 static TAVTntuCluster *vtxNtuCluster;
 static TAVTntuTrack *vtxNtuTrack;
@@ -102,9 +110,12 @@ static TAMSDntuTrack *msdntutrack;
 static TAMSDntuPoint *msdNtuPoint;
 static TAMSDntuHit *msdNtuHit;
 static TAITntuCluster *itClus;
+static TAITntuTrack *itntutrack;
 static TATWntuPoint *twNtuPoint;
 static TAMCntuPart *mcNtuPart;
+static TAMCntuRegion *mcNtuReg;
 static TAGntuGlbTrack *glbntutrk;
+static TAWDntuTrigger *wdTrigInfo;
 static TASTparGeo* stparGeo;
 static TABMparGeo* bmparGeo;
 static TAVTparGeo* vtparGeo;
@@ -235,6 +246,28 @@ void Booking(TFile* file_out) {
     gDirectory->cd("..");
     file_out->cd("..");
   }
+  
+  if(IncludeIT){
+    file_out->mkdir("IT");
+    file_out->cd("IT");
+      h = new TH1D("IT_trk_num","Number of it tracks per event;Number of evtx;Events",21,-0.5,20.5);
+      h2 = new TH2D("it_target_itsys","it tracks on target  projections in it sys ;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+      h2 = new TH2D("it_target_glbsys","it tracks on target projections in GLB sys;X[cm];Y[cm]",600,-3.,3., 600, -3., 3);
+      h = new TH1D("AlignWrtTarget_slopeX_glbsys","IT mx in glb sys ;mx;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_slopeY_glbsys","IT my in glb sys ;my;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_tgposX_glbsys","IT projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_tgposY_glbsys","IT projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_slopeX_glbsys_afterrot","IT mx in glb sys ;mx;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_slopeY_glbsys_afterrot","IT my in glb sys ;my;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_tgposX_glbsys_afterrot","IT projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_tgposY_glbsys_afterrot","IT projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_slopeX_glbsys_final","IT mx in glb sys ;mx;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_slopeY_glbsys_final","IT my in glb sys ;my;Events",1000,-0.1,0.1);
+      h = new TH1D("AlignWrtTarget_tgposX_glbsys_final","IT projection on target Xpos in glb sys;X[cm];Events",600,-5.,5.);
+      h = new TH1D("AlignWrtTarget_tgposY_glbsys_final","IT projection on target Ypos in glb sys;Y[cm];Events",600,-5.,5.);
+    gDirectory->cd("..");
+    file_out->cd("..");
+    }
 
   if(IncludeMSD){
     file_out->mkdir("MSD");
@@ -317,18 +350,34 @@ h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clu
     file_out->cd("..");
   }
 
+  if(IncludeGLB){
+    file_out->mkdir("GLB");
+    file_out->cd("GLB");
+    h = new TH1D("trknum","Number of glb tracks per event;Number of tracks;Events",11,-0.5,10.5);
+    h = new TH1D("trkpoints","Number of points per track;Number of points;Events",13,-0.5,12.5);
+    h = new TH1D("vtpoints","Number of vt points per track;Number of vt points;Events",5,-0.5,4.5);
+    h = new TH1D("itpoints","Number of it points per track;Number of it points;Events",5,-0.5,4.5);
+    h = new TH1D("msdpoints","Number of msd points per track;Number of msd points;Events",7,-0.5,6.5);
+    h = new TH1D("twpoints","Number of tw points per track;Number of tw points;Events",2,-0.5,1.5);
+    gDirectory->cd("..");
+    file_out->cd("..");
+  }
+
   if(IncludeTW && (IncludeVT || IncludeMSD)){
     file_out->mkdir("TWalign");
     file_out->cd("TWalign");
-    h = new TH1D("tw_Xbar","TW Xbar;FrontBar X",20,-0.5,19.5);
-    h = new TH1D("tw_Ybar","TW Ybar;RearBar Y",20,-0.5,19.5);
-    h = new TH1D("tw_Xposbarloc","TW X pos in TW local frame;FrontBar X",21,-20.5,20.5);
-    h = new TH1D("tw_Yposbarloc","TW Y pos in TW local frame;RearBar Y",21,-20.5,20.5);
-    h = new TH1D("tw_Xposbarglo","TW X pos in TW global frame before twalign;FrontBar X",410,-20.5,20.5);
-    h = new TH1D("tw_Yposbarglo","TW Y pos in TW global frame before twalign;RearBar Y",410,-20.5,20.5);
+    h = new TH1D("tw_Xbar","TW Xbar (provide Y pos coordinate);FrontBar X",20,-0.5,19.5);
+    h = new TH1D("tw_Ybar","TW Ybar (provide X pos coordinate);RearBar Y",20,-0.5,19.5);
+    h = new TH1D("tw_Xposbarloc","TW X pos in TW local frame;FrontBar X",21,-21.,21.);
+    h = new TH1D("tw_Yposbarloc","TW Y pos in TW local frame;RearBar Y",21,-21.,21.);
+    h = new TH1D("tw_Xposbarglo","TW X pos in TW global frame before twalign;RearBar X",410,-20.5,20.5);
+    h = new TH1D("tw_Yposbarglo","TW Y pos in TW global frame before twalign;FrontBar Y",410,-20.5,20.5);
     h2 = new TH2D("track_projTW","Projection of the tracks on the TW;X[cm];Y[cm]",600,-30.,30.,600,-30.,30.);
-    h = new TH1D("track_projXTW","Projection of the tracks X coord on the TW;X[cm]",820,-41.,41.);
-    h = new TH1D("track_projYTW","Projection of the tracks Y coord on the TW;Y[cm]",820,-41.,41.);
+    h = new TH1D("track_projXTW","Projection of the tracks X coord on the TW;X[cm]",820,-42.,42.);
+    h = new TH1D("track_projYTW","Projection of the tracks Y coord on the TW;Y[cm]",820,-42.,42.);
+    h2 = new TH2D("track_projLocalTW","Projection of the tracks on the TW;X[cm];Y[cm]",600,-30.,30.,600,-30.,30.);
+    h = new TH1D("track_projXLocalTW","Projection of the tracks X coord on the TW;X[cm]",840,-42.,42.);
+    h = new TH1D("track_projYLocalTW","Projection of the tracks Y coord on the TW;Y[cm]",840,-42.,42.);
     h = new TH1D("track_Xshift","Number of shifted Xbars for the track-twpoint matching;Nbar",21,-10.5,10.5);
     h = new TH1D("track_Yshift","Number of shifted Ybars for the track-twpoint matching;Nbar",21,-10.5,10.5);
     gDirectory->cd("..");
@@ -351,6 +400,34 @@ h = new TH1D(Form("msd_residual1TrkX_%d",i),"Residual of MSD tracks with MSD clu
 
     file_out->mkdir("BMVT");
     file_out->cd("BMVT");
+    h = new TH1D("slopeX_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_start","target projection residuals Xpos;resX [cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_start","target projection residuals Ypos;resY [cm];Events",1000,-5.,5.);
+    h = new TH1D("slopeX_diff_afterrot","angle difference in glb frame after rotation;AngleX[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_afterrot","angle difference in glb frame after rotation;AngleY[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_afterrot","target projection residualX after rotation;resX[cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_afterrot","target projection residualY after rotation;resY[cm];Events",1000,-5.,5.);
+    h = new TH1D("slopeX_diff_final","angle difference in glb frame with new geo pars;AngleX[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("slopeY_diff_final","angle difference in glb frame with new geo pars;AngleY[rad];Events",2000,-0.3,0.3);
+    h = new TH1D("tgprojX_diff_final","target projection residualX with new geo pars;resX[cm];Events",1000,-5.,5.);
+    h = new TH1D("tgprojY_diff_final","target projection residualY with new geo pars;resY[cm];Events",1000,-5.,5.);
+    gDirectory->cd("..");
+    file_out->cd("..");
+    
+    file_out->mkdir("VTPileUp");
+    file_out->cd("VTPileUp");    
+    h = new TH1D("tgproj_diff_1vtx","BM-VTX target projection residuals when 1 BM track and 1 VTX vertex;res[cm];Events",5000,0.,5.);
+    h = new TH1D("tgproj_diff_allvtx","BM-VTX target projection residuals when 1 BM track and all VTX vertex;res[cm];Events",5000,0.,5.);
+    h = new TH1D("tgproj_diff_Selectedvtx","BM-VTX target projection residuals when 1 BM track and selected VTX vertex;res[cm];Events",5000,0.,5.);
+    h = new TH1D("tgproj_diff_Rejectedvtx","BM-VTX target projection residuals when 1 BM track and rejected VTX vertex;res[cm];Events",5000,0.,5.);
+    gDirectory->cd("..");
+    file_out->cd("..");  
+  }
+
+  if(IncludeIT && IncludeVT){
+    file_out->mkdir("ITVT");
+    file_out->cd("ITVT");
     h = new TH1D("slopeX_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
     h = new TH1D("slopeY_diff_start","angle difference in glb frame;Angle[rad];Events",2000,-0.3,0.3);
     h = new TH1D("tgprojX_diff_start","target projection residuals Xpos;resX [cm];Events",1000,-5.,5.);
@@ -517,6 +594,28 @@ void Vertex(){
 
   if(debug>0)
     cout<<"Vertex done"<<endl;
+
+  return;
+}
+
+void InnerTracker(){
+  if(debug>0)
+    cout<<"InnerTracker start"<<endl;
+
+  //IT tracks
+  myfill("IT/IT_trk_num",itntutrack->GetTracksN());
+  for( Int_t iTrack = 0; iTrack < itntutrack->GetTracksN(); ++iTrack ) { //loop on vertex tracks
+    TAITtrack* track = itntutrack->GetTrack(iTrack);
+    TVector3 itlocalproj=ProjectToZ(track->GetSlopeZ(), track->GetOrigin(),geoTrafo->FromGlobalToVTLocal(geoTrafo->GetTGCenter()).Z());
+    myfill("IT/it_target_itsys",itlocalproj.X(),itlocalproj.Y());
+    TVector3 glbslope = geoTrafo->VecFromVTLocalToGlobal(track->GetSlopeZ());
+    TVector3 glborigin = geoTrafo->FromVTLocalToGlobal(track->GetOrigin());
+    TVector3 itprojglo=geoTrafo->FromVTLocalToGlobal(itlocalproj);
+    myfill("IT/it_target_glbsys",itprojglo.X(),itprojglo.Y());
+  }
+
+  if(debug>0)
+    cout<<"InnerTracker done"<<endl;
 
   return;
 }
@@ -698,7 +797,8 @@ void FillTWalign(){
   if(twNtuPoint->GetPointsN()!=1)
     return;
 
-  TVector3 trkproj; //track parameters projected on the tw
+  TVector3 trkproj; //track parameters projected on the tw in global sys 
+  TVector3 trklocalproj; //track parameters projected on the tw in tw local sys 
   TATWpoint *twpoint = twNtuPoint->GetPoint(0);
 
   if(IncludeMSD && false){ //msd track preferred since it is closer to the TW
@@ -720,6 +820,7 @@ void FillTWalign(){
     TVector3 vtslopeglo=geoTrafo->VecFromVTLocalToGlobal(vttrack->GetSlopeZ());
     TVector3 vtoriginglo=geoTrafo->FromVTLocalToGlobal(vttrack->GetOrigin());
     trkproj=ProjectToZ(vtslopeglo, vtoriginglo,geoTrafo->GetTWCenter().Z());
+    trklocalproj=geoTrafo->FromGlobalToTWLocal(trkproj);
   }
 
   TVector3 twproj=geoTrafo->FromTWLocalToGlobal(twpoint->GetPosition());
@@ -733,6 +834,9 @@ void FillTWalign(){
   myfill("TWalign/track_projXTW",trkproj.X());
   myfill("TWalign/track_projYTW",trkproj.Y());
   myfill("TWalign/track_projTW",trkproj.X(),trkproj.Y());
+  myfill("TWalign/track_projXLocalTW",trklocalproj.X());
+  myfill("TWalign/track_projYLocalTW",trklocalproj.Y());
+  myfill("TWalign/track_projLocalTW",trklocalproj.X(),trklocalproj.Y());
   myfill("TWalign/track_Xshift",(Int_t)((twproj.X()-trkproj.X())/twparGeo->GetBarWidth()));
   myfill("TWalign/track_Yshift",(Int_t)((twproj.Y()-trkproj.Y())/twparGeo->GetBarWidth()));
 
@@ -766,20 +870,7 @@ void AlignTWOld(){
   return;
 }
 
-void AlignTW(Int_t layer){
-
-  TString trkname="TWalign/track_projXTW";
-  TString twname="TWalign/tw_Xbar";
-
-  // for(int layer=0; layer<=1; ++layer)
-  // {
-  //   for(int bar=0;bar<20;++bar)
-  //   {
-  //     cout << layer << "\t" << bar << "\t";
-  //     (twparGeo->GetBarPosition(layer,bar)).Print();
-  //   }
-  // }
-
+void AlignTWOldV2(Int_t layer){
 
   TH1D *trkplt=((TH1D*)gDirectory->Get((layer==0 ? "TWalign/track_projXTW":"TWalign/track_projYTW")));
   TH1D *twplt=((TH1D*)gDirectory->Get((layer==0 ? "TWalign/tw_Xbar":"TWalign/tw_Ybar")));
@@ -818,7 +909,47 @@ void AlignTW(Int_t layer){
   return;
 }
 
-void FillTrackVect(vector<beamtrk> &bmtrk, vector<beamtrk> &vttrk, vector<beamtrk> &msdtrk){
+void AlignTW(Int_t layer){
+
+  TH1D *trkplt=((TH1D*)gDirectory->Get((layer==0 ? "TWalign/track_projXLocalTW":"TWalign/track_projYLocalTW")));
+  TH1D *twplt=((TH1D*)gDirectory->Get((layer==0 ? "TWalign/tw_Xposbarloc":"TWalign/tw_Yposbarloc")));
+  Int_t minres=2e9;
+  Double_t bestres=0.;
+  Int_t fixshift=(Int_t)round((twplt->GetXaxis()->GetBinCenter(twplt->GetMaximumBin())-trkplt->GetXaxis()->GetBinCenter(trkplt->GetMaximumBin()))*10.);
+  for(Int_t i=-10;i<10;i++) {
+    TH1D *newtrk=((TH1D*)trkplt->Clone("newtrk"));
+    newtrk->Reset("ICESM");
+    for(Int_t k=0;k<trkplt->GetNbinsX();k++){
+      if((k+i+fixshift)<newtrk->GetNbinsX() && (k+i+fixshift)>0)
+        newtrk->SetBinContent(k+i+fixshift,trkplt->GetBinContent(k));
+    }
+    newtrk->Rebin(40);
+    Int_t res=0;
+    for(Int_t k=1;k<twplt->GetNbinsX();k++){
+      res+=fabs(newtrk->GetBinContent(k)-twplt->GetBinContent(k));
+    }
+    if(res<minres){
+      bestres=i;
+      minres=res;
+    }
+    newtrk->Delete();
+  }
+  Double_t shift= (fixshift+bestres)*0.1;
+
+  if(layer==0){
+    cout<<"TW old alignment parameters:"<<endl;
+    cout<<"TofWallOldPosX: "<<geoTrafo->GetTWCenter().X()<<"  TofWallPosY: "<<geoTrafo->GetTWCenter().Y()<<"  TofWallPosZ: "<<geoTrafo->GetTWCenter().Z()<<endl;
+    cout<<"new TW alignment parameters:"<<endl;
+    cout<<"TofWallPosX: "<<geoTrafo->GetTWCenter().X()-shift;
+  }else{
+    cout<<"  TofWallPosY: "<<geoTrafo->GetTWCenter().Y()-shift<<"  TofWallPosZ: "<<geoTrafo->GetTWCenter().Z()<<endl;
+    cout<<"WARNING: Please take into account the new TW geometrical parameters only AFTER correction of the FOOT.geo file with the new MSD and/or VT detector geometrical parameters!"<<endl<<endl<<endl;
+  }
+
+  return;
+}
+
+void FillTrackVect(vector<beamtrk> &bmtrk, vector<beamtrk> &vttrk, vector<beamtrk> &msdtrk,vector<beamtrk> &ittrk){
 
   //define some selection criteria with TW infos
   if(twNtuPoint->GetPointsN()!=1)
@@ -865,6 +996,18 @@ void FillTrackVect(vector<beamtrk> &bmtrk, vector<beamtrk> &vttrk, vector<beamtr
       msdtrk.push_back(msdstrct);
     }
   }
+  
+  //fill IT Tracks
+  if(IncludeIT){
+    if(itntutrack->GetTracksN()==1){
+      TAITtrack* ittrack = itntutrack->GetTrack(0);
+      TVector3 itslopeglo=geoTrafo->VecFromITLocalToGlobal(ittrack->GetSlopeZ());
+      TVector3 itoriginglo=geoTrafo->FromITLocalToGlobal(ittrack->GetOrigin());
+      TVector3 ittgpos=ProjectToZ(itslopeglo, itoriginglo,geoTrafo->GetTGCenter().Z());
+      beamtrk itstrct={ittrack->GetSlopeZ(),ittrack->GetOrigin(), itslopeglo, ittgpos, evnum};
+      ittrk.push_back(itstrct);
+    }
+  }
 
   return;
 }
@@ -895,21 +1038,21 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   cout<<"AngX: "<<geoTrafo->GetDeviceAngle(detname.Data()).X()<<" AngY: "<<geoTrafo->GetDeviceAngle(detname.Data()).Y()<<" AngZ: "<<geoTrafo->GetDeviceAngle(detname.Data()).Z()<<endl;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname))->GetEntries(),((TH1D*)gDirectory->Get(slopexname))->GetMean(), ((TH1D*)gDirectory->Get(slopexname))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t resyrot=gaus->GetParameter(1);
   Double_t yrotpar=-atan(gaus->GetParameter(1))*RAD2DEG;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t resxrot=gaus->GetParameter(1);
   Double_t xrotpar=atan(gaus->GetParameter(1))*RAD2DEG;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname))->Fit("gaus","","QB+",-2,2);
+  ((TH1D*)gDirectory->Get(tgposxname))->Fit("gaus","","qB+",-2,2);
   Double_t resxtra=gaus->GetParameter(1);
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname))->Fit("gaus","","QB+",-2,2);
+  ((TH1D*)gDirectory->Get(tgposyname))->Fit("gaus","","qB+",-2,2);
   Double_t resytra=gaus->GetParameter(1);
 
   cout<<"AlignWrtTarget:: first residual parameters:"<<endl;
@@ -951,19 +1094,19 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   }
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   resxrot=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   resyrot=gaus->GetParameter(1);
   cout<<"AlignWrtTarget::after the rotation matrix the new residuals are:"<<endl;
   cout<<"resxrot="<<resxrot<<"  resyrot="<<resyrot<<endl;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t newresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t newresytra=gaus->GetParameter(1);
   cout<<"newresxtra="<<newresxtra<<"  newresytra="<<newresytra<<endl;
 
@@ -1002,17 +1145,17 @@ void AlignWrtTarget(vector<beamtrk> &dettrk, TString detname) {
   }
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t finalresxrot=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t finalresyrot=gaus->GetParameter(1);
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t finalresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t finalresytra=gaus->GetParameter(1);
 
   cout<<endl<<endl<<endl;
@@ -1070,19 +1213,19 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
 
   //initial residual btw deta and detb:
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t resyrot=gaus->GetParameter(1);
   Double_t yrotpar=-atan(gaus->GetParameter(1))*RAD2DEG;
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t resxrot=gaus->GetParameter(1);
   Double_t xrotpar=atan(gaus->GetParameter(1))*RAD2DEG;
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t resxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t resytra=gaus->GetParameter(1);
 
   detanewangle.SetXYZ(xrotpar+detaangle.X(),yrotpar+detaangle.Y(),detaangle.Z());
@@ -1141,17 +1284,17 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
 
   //estimate the new bm geometry parameters
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t newresxrot=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t newresyrot=gaus->GetParameter(1);
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t newresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t newresytra=gaus->GetParameter(1);
 
   detanewpos.SetXYZ(-newresxtra+detacenter.X(),-newresytra+detacenter.Y(),detacenter.Z());
@@ -1213,17 +1356,17 @@ void AlignDetaVsDetb(vector<beamtrk> &detatrk, vector<beamtrk> &detbtrk, TString
 
   //estimate the new bm geometry parameters
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopexname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopexname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopexname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopexname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t finalresxrot=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(slopeyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(slopeyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(slopeyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","QB+",-0.3,0.3);
+  ((TH1D*)gDirectory->Get(slopeyname.Data()))->Fit("gaus","","qB+",-0.3,0.3);
   Double_t finalresyrot=gaus->GetParameter(1);
 
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposxname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposxname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposxname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposxname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t finalresxtra=gaus->GetParameter(1);
   gaus->SetParameters(((TH1D*)gDirectory->Get(tgposyname.Data()))->GetEntries(),((TH1D*)gDirectory->Get(tgposyname.Data()))->GetMean(), ((TH1D*)gDirectory->Get(tgposyname.Data()))->GetStdDev());
-  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","QB+",-2.,2.);
+  ((TH1D*)gDirectory->Get(tgposyname.Data()))->Fit("gaus","","qB+",-2.,2.);
   Double_t finalresytra=gaus->GetParameter(1);
 
   cout<<endl<<endl<<endl;
@@ -1384,6 +1527,73 @@ for(int i=0;i<msdparGeo->GetStationsN();i++){
 
 return;
 }
+
+void BMVTstudies(){
+
+  TAVTtrack *vttrack;
+  TABMtrack* bmtrack;
+  if(bmNtuTrack->GetTracksN()==1)
+    bmtrack = bmNtuTrack->GetTrack(0);
+  else
+    return;
+
+  vector<Double_t> bmvtres;
+  Int_t selected=-1;
+  Double_t bestres=999;
+  for (Int_t iVtx = 0; iVtx < vtxNtuVertex->GetVertexN(); ++iVtx) {
+    TAVTvertex* vtxvertex = vtxNtuVertex->GetVertex(iVtx);
+
+    if (vtxvertex == 0x0)
+      break;
+      
+    TVector3 vtxvertpos = vtxvertex->GetVertexPosition();
+    vtxvertpos = geoTrafo->FromVTLocalToGlobal(vtxvertpos);
+    TVector3 bmslopeglo=geoTrafo->VecFromBMLocalToGlobal(bmtrack->GetSlope());
+    TVector3 bmoriginglo=geoTrafo->FromBMLocalToGlobal(bmtrack->GetOrigin());
+    TVector3 bmvtxpos=ProjectToZ(bmslopeglo, bmoriginglo,vtxvertpos.Z());
+    bmvtres.push_back((vtxvertpos-bmvtxpos).Mag());
+    if(bmvtres.back()<bestres){
+      selected=bmvtres.size()-1;
+      bestres=bmvtres.back();
+    }
+    myfill("VTPileUp/tgproj_diff_allvtx",bmvtres.back());
+    if(vtxNtuVertex->GetVertexN()==1)
+      myfill("VTPileUp/tgproj_diff_1vtx",bmvtres.back());
+  }
+
+  for(Int_t i=0;i<bmvtres.size();i++)
+      myfill((i==selected) ? "VTPileUp/tgproj_diff_Selectedvtx" : "VTPileUp/tgproj_diff_Rejectedvtx",bmvtres.at(i));
+
+return;
+}
+
+void GLBTRKstudies(){
+  myfill("GLB/trknum",glbntutrk->GetTracksN());
+  for(Int_t i=0;i<glbntutrk->GetTracksN();i++){
+    TAGtrack* track=glbntutrk->GetTrack(i);
+    myfill("GLB/trkpoints",track->GetPointsN());
+    Int_t vtpt=0, itpt=0, msdpt=0, twpt=0;
+    for(Int_t k=0;k<track->GetPointsN();k++){
+      TAGpoint* point=track->GetPoint(k);
+      TString detname = point->GetDevName();
+      if(detname.Contains("VT"))
+        vtpt++;
+      if(detname.Contains("IT"))
+        itpt++;
+      if(detname.Contains("MSD"))
+        msdpt++;
+      if(detname.Contains("TW"))
+        twpt++;
+    }
+    myfill("GLB/vtpoints",vtpt);
+    myfill("GLB/itpoints",itpt);
+    myfill("GLB/msdpoints",msdpt);
+    myfill("GLB/twpoints",twpt);
+  } 
+
+return;
+}
+
 
 //Here the detector plots will be checked and the overall run status will be printed
 void CheckUp(TFile *inputFile, TFile *file_out){

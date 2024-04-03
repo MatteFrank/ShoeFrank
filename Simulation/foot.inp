@@ -16,6 +16,7 @@ BEAMPOS        0.000     0.000   -30.000
 PHYSICS           1.                                                  COALESCE  
 PHYSICS           3.                                                  EVAPORAT
 PHYSICS           1.                                                  ISOMERS
+PHYSICS          -1.                                                  INFLDCAY
 IONTRANS    HEAVYION
 RADDECAY          2.                  1.
 
@@ -379,12 +380,12 @@ ROT-DEFI                                 -1.000000 -1.000000 99.699997tw_119
 * -------1---------2---------3---------4---------5---------6---------7---------8
 * command| idbflg  | FragTrg |Eth(Mev) |unused   |unused   |unused | SDUM      |
 * -------1---------2---------3---------4---------5---------6---------7---------8
-USRICALL         0.0        0.        0.       0.0       0.0       0.0
-USERDUMP        100.       69.       0.0        1.                    Opt
+USRICALL        -4.0        0.        0.       0.0       0.0       0.0
+USERDUMP        100.       69.       0.0        1.                    Opt.dump
 USROCALL
 RANDOMIZ          1.   593585.
 * ******************************************************************************
 *                          RUN                                                 *
 * ******************************************************************************
-START           1.e1
+START           5.e3
 STOP

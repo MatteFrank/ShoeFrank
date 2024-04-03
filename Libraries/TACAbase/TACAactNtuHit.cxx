@@ -77,6 +77,10 @@ Bool_t TACAactNtuHit::Action()
    int nCry = p_parmap->GetCrystalsN();
    Double_t totCharge = 0;
 
+   if(FootDebugLevel(2))
+     cout << "CA - Found : " << nhit << " cry hit on event: " << gTAGroot->CurrentEventId().EventNumber() << endl;
+
+
    for (int ih = 0; ih < nhit; ++ih) {
       TACArawHit *aHi = p_datraw->GetHit(ih);
 
@@ -92,27 +96,37 @@ Bool_t TACAactNtuHit::Action()
 
       // here needed mapping file
       Int_t crysId = p_parmap->GetCrystalId(bo_num, ch_num);
-       if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation 
-        Error("Action", " --- Not well mapped WD vs crystal ID. board: %d  ch: %d -> crysId %d", bo_num, ch_num, crysId);
+      if (crysId < 0 || crysId >= nCry) {  // should not happen, already check on Raw hit creation
+         Error("Action", " --- Not well mapped WD vs crystal ID. board: %d  ch: %d -> crysId %d", bo_num, ch_num, crysId);
          continue;
       }
+
+      if(FootDebugLevel(2))
+        cout << "CA - amplitude on cry " <<  crysId <<": " << amplitude << endl;
+        // cout << "CA - charge on cry " <<  crysId <<": " << charge << endl;
 
       Double_t type = 0; // I define a fake type (I do not know what it really is...) (gtraini)
 
       // Temperature correction
       //Double_t charge_tcorr = GetTemperatureCorrection(charge, temp, crysId);
 
-      Double_t charge_tcorr = charge;
-      Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
-      totCharge += charge_equalis;
-      Double_t energy = charge_equalis;
+      // Double_t charge_tcorr = charge;
+      // Double_t charge_equalis = GetEqualisationCorrection(charge_tcorr, crysId);
+      // totCharge += charge_equalis;
+      // Double_t energy = charge_equalis;
+
+      Double_t energy = amplitude;
       Double_t tof    = GetTime(time, crysId);
+
+      if(FootDebugLevel(2))
+        cout << "CA - Energy on cry " <<  crysId <<": " << energy << endl;
+
 
       TACAhit* createdhit = p_nturaw->NewHit(crysId, energy, time,type);
       createdhit->SetPosition(p_pargeo->GetCrystalPosition(crysId));
-      
+
       createdhit->SetValid(true);
-  
+
       if (ValidHistogram()) {
          fhCharge[crysId]->Fill(energy);
          fhChannelMap->Fill(crysId);
@@ -130,29 +144,30 @@ Bool_t TACAactNtuHit::Action()
 
 // --------------------------------------------------------------------------------------
 //! Convert ADC counts from sensor to Temperature to Celsius
-Double_t TACAactNtuHit::ADC2Temp(Double_t adc, Int_t crysId) 
+Double_t TACAactNtuHit::ADC2Temp(Double_t adc, Int_t crysId)
 {
 
    TACAparCal* p_parcal = (TACAparCal*) fpParCal->Object();
 
+   // Get parameter for crysId
    Double_t p0_SH = p_parcal->GetADC2TempParam(crysId, 0);
    Double_t p1_SH = p_parcal->GetADC2TempParam(crysId, 1);
    Double_t p2_SH = p_parcal->GetADC2TempParam(crysId, 2);
-   
+
    // the NTC (negative temperature coefficient) sensor
 
-   const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate 
+   const double VCC = 5.04; // voltage divider supply voltage (V) measured at VME crate
    const double R0 = 10000.0; // series resistance in the voltage divider (Ohm)
    const double Ron = 50.;// value of the multiplexer Ron (Ohm) for ADG406B (dual supply)
-   
+
    double Vadc = (VCC/1023.0) * adc; // 10-bit ADC: max. value is 1023
    double Rt = (Vadc/(VCC-Vadc))*R0 - Ron; // voltage divider equation with Ron correction
 
-   // The Steinhart-Hart formula is given below with the nominal coefficients a, b and c, 
+   // The Steinhart-Hart formula is given below with the nominal coefficients a, b and c,
    // which after calibration could be replaced by three constants for each crystal:
 
    Double_t temp = 1./ (p0_SH + p1_SH * log(Rt) + p2_SH * pow(log(Rt), 3)) - 273.15;
-   
+
    return temp;
 }
 

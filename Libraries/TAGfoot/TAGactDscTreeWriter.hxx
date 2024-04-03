@@ -42,6 +42,9 @@ public:
    
    //! Set cutter for TOE
    void   SetRecCutter(Bool_t c) { fFlagRecCutter = c; }
+
+   //! Set Stdalone flag
+   void   SetStdAlone(Bool_t c)  { fStdAloneFlag = c;  }
         
 protected:
    TAGdataDsc*     fpNtuHitSt;          ///< ST hit container

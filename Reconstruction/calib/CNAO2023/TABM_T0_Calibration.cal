@@ -1,0 +1,54 @@
+calculated_from: decodedrawall.root    number_of_events= -744194
+cellid=  0  T0_time= -322  T0Frag_time= -286
+cellid=  1  T0_time= -324  T0Frag_time= -285
+cellid=  2  T0_time= -302  T0Frag_time= -271
+cellid=  3  T0_time= -302  T0Frag_time= -270
+cellid=  4  T0_time= -323  T0Frag_time= -284
+cellid=  5  T0_time= -322  T0Frag_time= -283
+cellid=  6  T0_time= -323  T0Frag_time= -285
+cellid=  7  T0_time= -322  T0Frag_time= -284
+cellid=  8  T0_time= -323  T0Frag_time= -285
+cellid=  9  T0_time= -322  T0Frag_time= -284
+cellid= 10  T0_time= -323  T0Frag_time= -284
+cellid= 11  T0_time= -324  T0Frag_time= -285
+cellid= 12  T0_time= -321  T0Frag_time= -284
+cellid= 13  T0_time= -323  T0Frag_time= -284
+cellid= 14  T0_time= -323  T0Frag_time= -284
+cellid= 15  T0_time= -322  T0Frag_time= -284
+cellid= 16  T0_time= -323  T0Frag_time= -284
+cellid= 17  T0_time= -322  T0Frag_time= -285
+cellid= 18  T0_time= -322  T0Frag_time= -287
+cellid= 19  T0_time= -322  T0Frag_time= -284
+cellid= 20  T0_time= -322  T0Frag_time= -283
+cellid= 21  T0_time= -322  T0Frag_time= -285
+cellid= 22  T0_time= -322  T0Frag_time= -284
+cellid= 23  T0_time= -322  T0Frag_time= -284
+cellid= 24  T0_time= -320  T0Frag_time= -284
+cellid= 25  T0_time= -322  T0Frag_time= -284
+cellid= 26  T0_time= -322  T0Frag_time= -284
+cellid= 27  T0_time= -322  T0Frag_time= -284
+cellid= 28  T0_time= -322  T0Frag_time= -284
+cellid= 29  T0_time= -322  T0Frag_time= -284
+cellid= 30  T0_time= -321  T0Frag_time= -285
+cellid= 31  T0_time= -322  T0Frag_time= -284
+cellid= 32  T0_time= -321  T0Frag_time= -283
+cellid= 33  T0_time= -321  T0Frag_time= -284
+cellid= 34  T0_time= -321  T0Frag_time= -283
+cellid= 35  T0_time= -321  T0Frag_time= -284
+
+Resolution_function:  ([p0]+[p1]*x+[p2]*x*x+[p3]*x*x*x+[p4]*x*x*x*x)
+Resolution_number_of_parameters: 5
+0.0120769   -0.0870719   0.422187   -0.882696   0.640147   
+
+STrel_function: ([p0]*x+[p1]*x*x+[p2]*x*x*x+[p3]*x*x*x*x+[p4]*x*x*x*x*x)
+STrel_number_of_parameters:  5
+0.00844896   -7.55298e-05   4.20192e-07   -1.15681e-09   1.22805e-12
+
+HitEff_function:   1./([0]*exp(x/[1])+1.)+[2]*x
+HitEff_number_of_parameters: 3
+6.41785e-07  0.0494121  -0.182363
+
+MCEff_function:  TMath::Landau(x,[0],[1])
+MCEff_number_of_parameters:  2
+4   0.661063
+

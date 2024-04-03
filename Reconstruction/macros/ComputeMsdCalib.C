@@ -12,6 +12,8 @@
 #include "TCanvas.h"
 #include "TError.h"
 #include "TAxis.h"
+#include "TMath.h"
+#include <TLatex.h>
 
 #include "TAGgeoTrafo.hxx"
 #include "TAGaction.hxx"
@@ -42,7 +44,7 @@ TAMSDactNtuRaw *msdActRaw = 0x0;
 TAMSDactNtuHit *msdActHit = 0x0;
 
 void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot.daq.RAW._lb0000._FOOT-RCD._0001.data", Int_t nMaxEmsds = 1000,
-                     TString expName = "GSI2021", Int_t runNumber = 1)
+                     TString expName = "GSI2021", Int_t runNumber = 1, bool fast = false)
 {
    gROOT->SetBatch(kTRUE);
    gErrorIgnoreLevel = kWarning;
@@ -64,36 +66,37 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    campManager->FromFile();
 
    TAGgeoTrafo *geoTrafo = new TAGgeoTrafo();
-   TString parFileName = campManager->GetCurGeoFile(FootBaseName("TAGgeoTrafo"), runNumber);
+   TString parFileName = campManager->GetCurGeoFile(TAGgeoTrafo::GetBaseName(), runNumber);
    geoTrafo->FromFile(parFileName);
 
    // ###################### FILLING MSD #################################
    TAGparaDsc *msdMap = new TAGparaDsc("msdMap", new TAMSDparMap());
    TAMSDparMap *map = (TAMSDparMap *)msdMap->Object();
-   parFileName = campManager->GetCurMapFile(FootBaseName("TAMSDparGeo"), runNumber);
+   parFileName = campManager->GetCurMapFile(TAMSDparGeo::GetBaseName(), runNumber);
    map->FromFile(parFileName.Data());
 
    TAGparaDsc *msdGeo = new TAGparaDsc("msdGeo", new TAMSDparGeo());
    TAMSDparGeo *geomap = (TAMSDparGeo *)msdGeo->Object();
-   parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
+   parFileName = campManager->GetCurGeoFile(TAMSDparGeo::GetBaseName(), runNumber);
    geomap->FromFile(parFileName.Data());
+   Int_t sensorsN = geomap->GetSensorsN();
 
    TAGparaDsc *msdConf = new TAGparaDsc("msdConf", new TAMSDparConf());
    TAMSDparConf *confmap = (TAMSDparConf *)msdConf->Object();
-   parFileName = campManager->GetCurConfFile(FootBaseName("TAMSDparGeo"), runNumber);
+   parFileName = campManager->GetCurConfFile(TAMSDparGeo::GetBaseName(), runNumber);
    confmap->FromFile(parFileName.Data());
 
    TAGparaDsc *msdCal = new TAGparaDsc("msdCal", new TAMSDparCal(geomap->GetStripsN()));
    TAMSDparCal *parCalMsd = (TAMSDparCal *)msdCal->Object();
-   parFileName = campManager->GetCurCalFile(FootBaseName("TAMSDparGeo"), runNumber, true);
+   parFileName = campManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), runNumber, true);
    parCalMsd->LoadEnergyCalibrationMap(parFileName.Data());
 
-   parFileName = campManager->GetCurCalFile(FootBaseName("TAMSDparGeo"), runNumber);
+   parFileName = campManager->GetCurCalFile(TAMSDparGeo::GetBaseName(), runNumber);
    parCalMsd->LoadPedestalMap(parFileName.Data());
 
    TAGdataDsc *msdDaq = new TAGdataDsc("msdDaq", new TAGdaqEvent());
-   TAGdataDsc *msdDat = new TAGdataDsc("msdDat", new TAMSDntuRaw());
-   TAGdataDsc *msdHit = new TAGdataDsc("msdHit", new TAMSDntuHit());
+   TAGdataDsc *msdDat = new TAGdataDsc("msdDat", new TAMSDntuRaw(sensorsN));
+   TAGdataDsc *msdHit = new TAGdataDsc("msdHit", new TAMSDntuHit(sensorsN));
 
    daqActReaderMSD = new TAGactDaqReader("daqActReader", msdDaq);
 
@@ -150,7 +153,7 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    vector<vector<float>> sigma(sensors, vector<float>(NChannels, 0));
 
    FILE *calfile;
-   char overwrite[3];
+   char overwrite[3] = "N";
    TString calfile_name = "./calib/" + expName + "/TAMSD_Pedestal.cal";
 
    cout << "\nComputing MSD calibration file for campaign " << expName << " with run " << dec << runNumber << endl;
@@ -159,22 +162,37 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    if (FILE *file = fopen("./calib/" + expName + "/TAMSD_Pedestal.cal", "r"))
    {
       fclose(file);
-      cout << "Default calibration file exists, do you want to overwrite it? (Y/N)" << endl;
-      cin >> overwrite;
+      if(!fast)
+      {
+         cout << "Default calibration file exists, do you want to overwrite it? (Y/N)" << endl;
+         cin >> overwrite;
 
-      if (!strncmp(overwrite, "N", 1) || !strncmp(overwrite, "n", 1))
+         if (!strncmp(overwrite, "N", 1) || !strncmp(overwrite, "n", 1))
+         {
+            calfile_name = "./calib/" + expName + "/TAMSD_Pedestal_" + runNumber + ".cal";
+         }
+      }
+      else
       {
          calfile_name = "./calib/" + expName + "/TAMSD_Pedestal_" + runNumber + ".cal";
       }
    }
-
+   
    double high_threshold, low_threshold;
-   cout << "\tEnter value for high threshold: \n";
-   cout << "\t";
-   cin >> high_threshold;
-   cout << "\tEnter value for low threshold: \n";
-   cout << "\t";
-   cin >> low_threshold;
+   if(!fast)
+   {
+      cout << "\tEnter value for high threshold to be used in clustering (usually 3.5): \n";
+      cout << "\t";
+      cin >> high_threshold;
+      cout << "\tEnter value for low threshold clustering (usually 1.0): \n";
+      cout << "\t";
+      cin >> low_threshold;
+   }
+   else
+   {
+      high_threshold = 3.5;
+      low_threshold = 1.0;
+   }
 
    calfile = fopen(calfile_name, "w");
    fprintf(calfile, "# SigmaSeedLevel\n");
@@ -195,8 +213,8 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
       if (nFragments == 0)
       {
-         std::cout << "No fragments found for MSD, exiting ..." << std::endl;
-         return;
+         std::cout << "No fragments found for MSD, skipping event ..." << std::endl;
+         continue;
       }
 
       for (Int_t i = 0; i < nFragments; ++i)
@@ -281,6 +299,13 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
 
       rawevent = (TAGdaqEvent *)(tagr.FindDataDsc("msdDaq", "TAGdaqEvent")->Object());
       Int_t nFragments = rawevent->GetFragmentSize("DEMSDEvent");
+
+      if (nFragments == 0)
+      {
+         std::cout << "No fragments found for MSD, skipping event ..." << std::endl;
+         continue;
+      }
+
       cn = 0;
 
       for (Int_t i = 0; i < nFragments; ++i)
@@ -342,15 +367,30 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
       }
    }
 
+   std::cout <<"\n################################" << std::endl;
+   std::cout << "Calibration parameters computed: " << std::endl;
+
+   std::vector<int> symbols[sensors];
+
    for (int sen = 0; sen < sensors; sen++)
    {
       fprintf(calfile, "#sensorId: %i\n", sen);
+      // Compute mean and RMS of sigma values for the detector
+      double mean_sigma = TMath::Mean(sigma.at(sen).begin(), sigma.at(sen).end());
+      double rms_sigma = TMath::RMS(sigma.at(sen).begin(), sigma.at(sen).end());
+      std::cout << "\tMean of sigmas for sensor " << sen << " is: " << mean_sigma << " with RMS of : " << rms_sigma << std::endl;
       for (int ch = 0; ch < NChannels; ch++)
       {
          ped_graph[sen]->SetPoint(ch, ch, pedestals[sen][ch]);
          sig_graph[sen]->SetPoint(ch, ch, sigma[sen][ch]);
-
-         fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], (sigma[sen][ch] < 1.8 || sigma[sen][ch] > 5));
+         bool noisy = (bool)(sigma[sen][ch] < mean_sigma - (3 * rms_sigma)  || sigma[sen][ch] > mean_sigma + (3 * rms_sigma));
+         bool status = (bool)(sigma[sen][ch] < 1.8  || sigma[sen][ch] > 5);
+         
+         if (noisy || status)
+         {
+            symbols[sen].push_back(ch);
+         }
+         fprintf(calfile, "%2d %3d %2d %2d %5.1f %3.1f %d\n", sen, ch, ch / 64, ch % 64, pedestals[sen][ch], sigma[sen][ch], noisy || status);
       }
    }
 
@@ -358,30 +398,68 @@ void ComputeMsdCalib(TString filename = "dataRaw/data_test.00003890.physics_foot
    fclose(calfile);
    watch.Print();
 
-   // plot correlation in telescope planes
-   TCanvas *calibrations = new TCanvas("calib", "calibrations", 1920, 1080);
-   ped_graph[0]->GetXaxis()->SetRangeUser(0, NChannels);
-   ped_graph[0]->GetXaxis()->SetRangeUser(0, NChannels);
-   ped_graph[0]->GetXaxis()->SetNdivisions(NChannels / 64, false);
+   TCanvas *calibrations = new TCanvas("calib", "calibrations", 1080, 1920);
+   calibrations->Divide(1,2);
+   calibrations->cd(1);
+   ped_graph[0]->GetXaxis()->SetTitle("channel");
+   TAxis *axis = ped_graph[0]->GetXaxis();
+   axis->SetLimits(0, NChannels);
+   axis->SetNdivisions(10, false);
+   gPad->SetGrid();
+   ped_graph[0]->SetMarkerSize(0.8);
    ped_graph[0]->Draw("AL*");
-   calibrations->Print(calfile_name + ".pdf(", "pdf");
-   sig_graph[0]->GetXaxis()->SetRangeUser(0, NChannels);
-   sig_graph[0]->GetXaxis()->SetNdivisions(NChannels / 64, false);
+   calibrations->cd(2);
+   axis = sig_graph[0]->GetXaxis();
+   axis->SetLimits(0, NChannels);
+   axis->SetNdivisions(10, false);
+   gPad->SetGrid();
+   sig_graph[0]->SetMarkerSize(0.8);
    sig_graph[0]->Draw("AL*");
-   calibrations->Print(calfile_name + ".pdf", "pdf");
+   // Draw the symbols
+   for (size_t i = 0; i < symbols[0].size(); ++i)
+   {
+      TLatex latex;
+      latex.SetTextSize(0.04);
+      latex.SetTextAlign(12);
+      latex.DrawLatex(symbols[0][i], sigma[0][symbols[0][i]], "#color[2]{#kern[-0.5]{#spade}}");
+   }
+   calibrations->Print(calfile_name + ".pdf(", "pdf");
 
    for (int i = 2; i < 2 * sensors; i += 2)
    {
-      ped_graph[i / 2]->GetXaxis()->SetRangeUser(0, NChannels);
-      ped_graph[i / 2]->GetXaxis()->SetNdivisions(NChannels / 64, false);
+      calibrations->cd(1);
+      ped_graph[i / 2]->GetXaxis()->SetTitle("channel");
+      TAxis *axis = ped_graph[i / 2]->GetXaxis();
+      axis->SetLimits(0, NChannels);
+      axis->SetNdivisions(10, false);
+      gPad->SetGrid();
+      ped_graph[i / 2]->SetMarkerSize(0.8);
       ped_graph[i / 2]->Draw("AL*");
-      calibrations->Print(calfile_name + ".pdf", "pdf");
-      sig_graph[i / 2]->GetXaxis()->SetRangeUser(0, NChannels);
-      sig_graph[i / 2]->GetXaxis()->SetNdivisions(NChannels / 64, false);
+      calibrations->cd(2);
+      axis = sig_graph[i / 2]->GetXaxis();
+      axis->SetLimits(0, NChannels);
+      axis->SetNdivisions(10, false);
+      gPad->SetGrid();
+      sig_graph[i / 2]->SetMarkerSize(0.8);
       sig_graph[i / 2]->Draw("AL*");
-      calibrations->Print(calfile_name + ".pdf", "pdf");
+      // // Draw the symbols
+      for (size_t j = 0; j < symbols[i / 2].size(); ++j)
+      {
+         TLatex latex;
+         latex.SetTextSize(0.04);
+         latex.SetTextAlign(12);
+         latex.DrawLatex(symbols[i / 2][j], sigma[i / 2][symbols[i / 2][j]], "#color[2]{#kern[-0.5]{#spade}}");
+      }
+
+      if(i < (2 * sensors) - 2)
+      {
+         calibrations->Print(calfile_name + ".pdf", "pdf");
+      }
+      else
+      {
+         calibrations->Print(calfile_name + ".pdf)", "pdf");
+      }
    }
-   calibrations->Print(calfile_name + ".pdf)", "pdf");
 
    return;
 

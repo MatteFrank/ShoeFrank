@@ -17,21 +17,23 @@
  \brief digitizer for calorimeter hits **
  */
 
-Float_t TACAdigitizer::fgThreshold = 80; // MeV
+Float_t TACAdigitizer::emin_res = 41; //MeV
 
 // --------------------------------------------------------------------------------------
 //! Constructor
 //!
 //! \param[in] pNtuRaw hit container
-TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw)
+TACAdigitizer::TACAdigitizer(TACAntuHit* pNtuRaw, TACAparCal* p_parcal)
  : TAGbaseDigitizer(),
    fpNtuRaw(pNtuRaw),
+   fpParCal(p_parcal),
    fResPar0(1.03978e+01),
    fResErrPar0(3.28955e-01),
    fResPar1(1.03392e+02),
    fResErrPar1(4.27932e+00),
    fResPar2(3.90060e-01),
-   fResErrPar2(4.94583e-03)
+   fResErrPar2(4.94583e-03),
+   fCurrentHit(0x0)
 {
    SetFunctions();
    SetParFunction();
@@ -79,7 +81,12 @@ Double_t TACAdigitizer::ResEnergy(Double_t* x, Double_t* par)
 //! \param[in] edep energy loss
 Float_t TACAdigitizer::GetResEnergy(Float_t edep)
 {
-   return fDeResE->Eval(edep)*edep;
+   Float_t width;
+
+    if(edep<emin_res) width =  fDeResE->Eval(emin_res)*edep;
+    else     width = fDeResE->Eval(edep)*edep;
+
+   return width;
 }
 
 //------------------------------------------+-----------------------------------
@@ -98,8 +105,17 @@ Float_t TACAdigitizer::GetResEnergy(Float_t edep)
 //! \param[in] pz0 momentum in z direction
 Bool_t TACAdigitizer::Process(Double_t edep, Double_t x0, Double_t y0, Double_t /*zin*/, Double_t /*zout*/, Double_t time, Int_t id, Int_t /*Z*/, Double_t /*px0*/, Double_t /*py0*/, Double_t /*pz0*/)
 {
+   Double_t thres = 0.1;//fpParCal->GetCrystalThres(id); NO FILE  for most of campaign !!!!!!
 
- //  if ((edep<0.) || (TMath::Abs(edep - edep+s)>7.)) edep = 0.; // what for ?
+   edep *= TAGgeoTrafo::GevToMev();
+   edep = gRandom->Gaus(edep, GetResEnergy(edep));
+   edep *= TAGgeoTrafo::MevToGev();
+   
+   if (edep < thres) {
+      fpNtuRaw->AddNDrop();
+      return true;
+   }
+   
    if (edep<0.) edep = 0.;
 
    if (fMap[id] == 0) { //if in the Map of Hits the element id-esimo was empty fill with a NewHit(...)

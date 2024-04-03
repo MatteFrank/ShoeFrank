@@ -58,6 +58,8 @@ void FillDetectors(Int_t runNumber)
    TAMSDparGeo *geomap = (TAMSDparGeo *)msdGeo->Object();
    parFileName = campManager->GetCurGeoFile(FootBaseName("TAMSDparGeo"), runNumber);
    geomap->FromFile(parFileName.Data());
+   Int_t sensorsN = geomap->GetSensorsN();
+   Int_t stationsN = geomap->GetStationsN();
 
    TAGparaDsc *msdConf = new TAGparaDsc("msdConf", new TAMSDparConf());
    TAMSDparConf *confmap = (TAMSDparConf *)msdConf->Object();
@@ -73,10 +75,10 @@ void FillDetectors(Int_t runNumber)
    parCalMsd->LoadPedestalMap(parFileName.Data());
 
    TAGdataDsc *msdDaq = new TAGdataDsc("msdDaq", new TAGdaqEvent());
-   TAGdataDsc *msdDat = new TAGdataDsc("msdDat", new TAMSDntuRaw());
-   TAGdataDsc *msdHit = new TAGdataDsc("msdHit", new TAMSDntuHit());
-   TAGdataDsc *msdclus = new TAGdataDsc("msdClus", new TAMSDntuCluster());
-   TAGdataDsc *msdPoint = new TAGdataDsc("msdPoint", new TAMSDntuPoint());
+   TAGdataDsc *msdDat = new TAGdataDsc("msdDat", new TAMSDntuRaw(sensorsN));
+   TAGdataDsc *msdHit = new TAGdataDsc("msdHit", new TAMSDntuHit(sensorsN));
+   TAGdataDsc *msdclus = new TAGdataDsc("msdClus", new TAMSDntuCluster(sensorsN));
+   TAGdataDsc *msdPoint = new TAGdataDsc("msdPoint", new TAMSDntuPoint(stationsN));
 
    daqActReaderMSD = new TAGactDaqReader("daqActReader", msdDaq);
 

@@ -60,7 +60,7 @@ protected:
    Int_t             fPrevEventNumber[MaxSens];   ///< previous number of the event
    Int_t             fTriggerNumber;         ///< number of the trigger
    Int_t             fPrevTriggerNumber[MaxSens]; ///< previous number of the trigger
-   Int_t             fTimeStamp;             ///< time stamp per frame
+   ULong64_t         fTimeStamp;             ///< time stamp per frame
    Int_t             fPrevTimeStamp[MaxSens];     ///< time stamp per frame
    Int_t             fFrameCount;            ///< number of frame
    Int_t             fTriggerNumberFrame;    ///< number of the trigger
@@ -93,6 +93,7 @@ protected:
    TH1F*             fpHisFrameCnt[MaxSens];      ///< frame counter histogram
    TH1F*             fpHisFrameErrors[MaxSens];   ///< frame error counter histogram
    TH1F*             fpHisBCOofTrigger;           ///< Bunch crossing trigger histogram
+   TH1F*             fpHisSensorHit;              ///< Hits per sensor
 
 protected:
    //! Header key
@@ -113,13 +114,13 @@ protected:
    virtual void  ResetFrames();
    
    // Add pixel to list
-   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn);
+   virtual void  AddPixel( Int_t input, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber = 0);
    
    // Get Sensor number
    virtual  Int_t  GetSensor(UInt_t key);
 
    // decode frame
-   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame = 0x0);
+   virtual Bool_t DecodeFrame(Int_t iSensor, MI26_FrameRaw *frame = 0x0, Int_t iFrame=0);
 
    // Fill histogram frame
    virtual void FillHistoFrame(Int_t iSensor, MI26_FrameRaw* data = 0x0);
@@ -128,7 +129,7 @@ protected:
    virtual void FillHistoEvt(Int_t iSensor);
    
    // Fill histogram pixel
-   virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn);
+   virtual void FillHistoPixel(Int_t planeId, Int_t aLine, Int_t aColumn, Float_t value = 1.);
    
    //! Fill DAQ event
    virtual void FillDaqEvent() { return; }

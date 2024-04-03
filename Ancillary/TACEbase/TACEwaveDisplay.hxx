@@ -22,6 +22,7 @@
 #include "TAGparaDsc.hxx"
 #include "TAGroot.hxx"
 #include "TAGgeoTrafo.hxx"
+#include "TAGcampaignManager.hxx"
 
 #include "TAGbaseWCparMap.hxx"
 #include "TAPLntuRaw.hxx"
@@ -30,9 +31,13 @@
 #include "TACEntuRaw.hxx"
 #include "TACEntuHit.hxx"
 
+#include "TAPWntuRaw.hxx"
+#include "TAPWntuHit.hxx"
+
 #include "TAGactWCreader.hxx"
 #include "TAPLactNtuHit.hxx"
 #include "TACEactNtuHit.hxx"
+#include "TAPWactNtuHit.hxx"
 
 #include <TGButton.h>
 #include <TRootEmbeddedCanvas.h>
@@ -65,7 +70,7 @@ public:
 
 public:
    //! Instance of class
-   static TACEwaveDisplay* Instance(const TString name = "./data/Run__Binary.bin", const TString expName = "CLINM");
+   static TACEwaveDisplay* Instance(const TString name = "./data/Run__Binary.bin", const TString expName = "CLINM", Int_t runNumber = 1);
   
    //! Get Reader
    TAGactionFile* GetEvtReader() {return fActEvtReader; }
@@ -78,10 +83,11 @@ private:
    static TACEwaveDisplay* fgInstance; // static instance of class
 
 private:
-   TACEwaveDisplay(const TString name, const TString expName);
+   TACEwaveDisplay(const TString name, const TString expName, Int_t runNumber);
    
 private:
    TString              fExpName;      // experiment name
+   Int_t                fRunNumber;    // run number
    TAGroot*             fAGRoot;       // pointer to TAGroot
    TAGgeoTrafo*         fpGeoTrafo;    // Global transformation
    TAGdataDsc*          fpDatRawSt;      // input data dsc
@@ -92,8 +98,10 @@ private:
    TAGdataDsc*          fpNtuRawPw;      // input data dsc
    TAGparaDsc*          fpMapWc;		// configuration dsc
    
+   TAGcampaignManager*  fCampManager;
    TAGactWCreader*      fActEvtReader;  // action for raw data
    TAPLactNtuHit*       fActNtuSt;
+   TAPWactNtuHit*       fActNtuPw;
    TACEactNtuHit*       fActNtuTw;
 
    const TGWindow*      fkMainWindow;   // main window
@@ -111,15 +119,20 @@ private:
    
    TLine*               fLElineSt;
    TLine*               fLElineTw;
+   TLine*               fLElinePw;
    TLine*               fFALLlineSt;
    TLine*               fFALLlineTw;
+   TLine*               fFALLlinePw;
+   TLine*               fFASTlinePw;
    UInt_t               fEventsN;        // number of events
    TH1F*                fhOscSt;         // Oscillogram
    TH1F*                fhOscTw;         // Oscillogram
+   TH1F*                fhOscPw;         // Oscillogram
    Int_t                fSTflag;
    Int_t                fTWflag;
+   Int_t                fPWflag;
    
-   ClassDef(TACEwaveDisplay,1) //GUI for drawing detection element segmentation
+   ClassDef(TACEwaveDisplay,0) //GUI for drawing detection element segmentation
 };
 #endif
 

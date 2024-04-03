@@ -115,6 +115,20 @@ Bool_t TAGaction::Action()
 }
 
 //------------------------------------------+-----------------------------------
+//! \brief Execute some preliminary operations before running the event loop
+void TAGaction::BeginEventLoop()
+{
+  return;
+}
+
+//! \brief Execute some final operations after the event loop
+void TAGaction::EndEventLoop()
+{
+  return;
+}
+
+
+//------------------------------------------+-----------------------------------
 //! Create histograms.
 void TAGaction::CreateHistogram()
 {

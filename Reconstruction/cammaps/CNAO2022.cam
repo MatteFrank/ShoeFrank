@@ -1,6 +1,6 @@
 // Campaign file
 CamName: "CNAO2022"
-RunNumber: 5100-5500;
+RunNumber: 5100-5524;
 NumberDevices: 10
 
 DetectorName: "FOOT"
@@ -12,8 +12,9 @@ NumberFiles: 1
 "./geomaps/CNAO2022/TADIdetector.geo": -1
 
 DetectorName: "ST"
-NumberFiles: 5
+NumberFiles: 6
 "./geomaps/CNAO2022/TASTdetector.geo": -1
+"./config/CNAO2022/TASTdetector.map": -1
 "./config/CNAO2022/TASTdetector.cfg": -1
 "./config/CNAO2022/WDChannelMap.map": -1
 "./calib/CNAO2022/WDpar.cal": -1;
@@ -52,11 +53,12 @@ NumberFiles: 5
 "./calib/CNAO2022/TAMSD_Energy_Calibration.cal": -1
 
 DetectorName: "TW"
-NumberFiles: 6
+NumberFiles: 7
 "./geomaps/CNAO2022/TATWdetector.geo": -1
 "./config/CNAO2022/TATWdetector.cfg": -1
 "./config/CNAO2022/TATW_BBparameters.cfg": -1
 "./config/CNAO2022/TATWChannelMapXML.map": -1
+"./config/CNAO2022/TATWdeltaTimeMap.map": -1
 "./calib/CNAO2022/TATW_Energy_Calibration.cal": -1
 "./calib/CNAO2022/TATW_Tof_Calibration.cal": -1;
 

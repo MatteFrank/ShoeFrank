@@ -12,7 +12,7 @@
 
  Class used to handle all the indices used in the global reconstruciton routine with GenFit:
  - Detector -> Either name ("VT", "MSD", etc....) or index
- - Sensor -> Local index of sensor in the detector (e.g. 0-3 for "VT", 0-32 for "IT", etc....)
+ - Sensor -> Local index of sensor in the detector (e.g. 0-3 for "VT", 0-31 for "IT", etc....)
  - FitPlane -> Global GenFit plane index (does not restart for each detector)
  - Hit -> Local index of the hit in the current sensor/plane
  - Measurement -> Global index of the measurement defined combining detector, sensor and hit indices
@@ -21,7 +21,7 @@
 //! \brief Default constructor
 //!
 //! Detector indices are determined through a static map: { "SC", "BM", "TG", "VT", "IT", "MSD", "TW", "CA" }
-TAGFdetectorMap::TAGFdetectorMap()
+TAGFdetectorMap::TAGFdetectorMap() : TAGobject()
 { 
 	m_detectorIndex.clear();
 	vector<string> tmp_detName = { "SC", "BM", "TG", "VT", "IT", "MSD", "TW", "CA" };
@@ -30,8 +30,6 @@ TAGFdetectorMap::TAGFdetectorMap()
 		m_detectorIndex[tmp_detName.at(i)] = i;
 		m_DetToFitPlaneMap[tmp_detName[i]];
 	}
-
-	m_debug = TAGrecoManager::GetPar()->Debug();
 }
 
 //! \brief Default destructor
@@ -66,10 +64,8 @@ TAGFdetectorMap::~TAGFdetectorMap()
 void TAGFdetectorMap::AddFitPlaneIDToDet(int planeId, string detName)
 {
 	if(m_DetToFitPlaneMap.find(detName) == m_DetToFitPlaneMap.end())
-	{
-		Error("AddFitPlaneIDToDet()", "Detector '%s' not found in DetToFitPlaneMap!", detName.c_str());
-		throw -1;
-	}
+		Error("AddFitPlaneIDToDet()", "Detector '%s' not found in DetToFitPlaneMap!", detName.c_str()), exit(42);
+
 	m_DetToFitPlaneMap[detName].push_back(planeId);
 }
 
@@ -84,7 +80,7 @@ void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 		m_zOrderingPlanes[zPos];
 	
 	m_zOrderingPlanes[zPos].push_back(indexOfPlane);
-	if(m_debug > 0)
+	if(FootDebugLevel(1))
 	{
 		cout << "Assigned IT plane::" << indexOfPlane << " to zPos::" << zPos << "\nzPos::" << zPos << " has now " << m_zOrderingPlanes[zPos].size() << " planes!!\n";
 	}
@@ -94,7 +90,7 @@ void TAGFdetectorMap::AddPlane_Zorder(float zPos, int indexOfPlane)	{
 		m_itPossibleZ.push_back(zPos);
 		std::sort(m_itPossibleZ.begin(), m_itPossibleZ.end());
 		
-		if(m_debug > 0)	cout << "Added " << zPos << " to possible ITz\n";
+		if(FootDebugLevel(1))	cout << "Added " << zPos << " to possible ITz\n";
 	}
 
 }
@@ -110,7 +106,7 @@ void TAGFdetectorMap::AddPlane_ZorderLocal(float zPos, int indexOfPlane)	{
 		m_zOrderingPlanesLocal[zPos];
 	
 	m_zOrderingPlanesLocal[zPos].push_back(indexOfPlane);
-	if(m_debug > 0)
+	if(FootDebugLevel(1))
 	{
 		cout << "Assigned IT plane::" << indexOfPlane << " to zPos::" << zPos << "\nzPos::" << zPos << " has now " << m_zOrderingPlanesLocal[zPos].size() << " planes!!\n";
 	}
@@ -120,7 +116,7 @@ void TAGFdetectorMap::AddPlane_ZorderLocal(float zPos, int indexOfPlane)	{
 		m_itPossibleZLocal.push_back(zPos);
 		std::sort(m_itPossibleZLocal.begin(), m_itPossibleZLocal.end());
 		
-		if(m_debug > 0)	cout << "Added " << zPos << " to possible local ITz\n";
+		if(FootDebugLevel(1))	cout << "Added " << zPos << " to possible local ITz\n";
 	}
 
 }
@@ -172,15 +168,10 @@ vector<float>* TAGFdetectorMap::GetPossibleITzLocal()
 int TAGFdetectorMap::GetFitPlaneID(string detName, int sensorId)
 {
 	if(m_DetToFitPlaneMap.find(detName) == m_DetToFitPlaneMap.end())
-	{
-		Error("GetFitPlaneID()", "Detector '%s' not found in TAGFdetectorMap", detName.c_str());
-		throw -1;
-	}
+		Error("GetFitPlaneID()", "Detector '%s' not found in TAGFdetectorMap", detName.c_str()), exit(42);
+
 	if(m_DetToFitPlaneMap.at(detName).size() < sensorId)
-	{
-		Error("GetFitPlaneID()", "Index of sensor %d is out of range for detector '%s'", sensorId, detName.c_str());
-		throw -1;
-	}
+		Error("GetFitPlaneID()", "Index of sensor %d is out of range for detector '%s'", sensorId, detName.c_str()), exit(42);
 	else
 		return m_DetToFitPlaneMap.at(detName).at(sensorId);
 }
@@ -193,10 +184,7 @@ int TAGFdetectorMap::GetFitPlaneID(string detName, int sensorId)
 int TAGFdetectorMap::GetMinFitPlane(string detName)
 {
 	if(m_DetToFitPlaneMap.find(detName) == m_DetToFitPlaneMap.end())
-	{
-		Error("GetMinFitPlane()", "Detector '%s' not found in TAGFdetectorMap", detName.c_str());
-		throw -1;
-	}
+		Error("GetMinFitPlane()", "Detector '%s' not found in TAGFdetectorMap", detName.c_str()),exit(42);
 	else
 		return m_DetToFitPlaneMap.at(detName).at(0);
 }
@@ -209,10 +197,7 @@ int TAGFdetectorMap::GetMinFitPlane(string detName)
 int TAGFdetectorMap::GetMaxFitPlane(string detName)
 {
 	if(m_DetToFitPlaneMap.find(detName) == m_DetToFitPlaneMap.end())
-	{
-		Error("GetMaxFitPlane()", "Detector '%s' not found in TAGFdetectorMap", detName.c_str());
-		throw -1;
-	}
+		Error("GetMaxFitPlane()", "Detector '%s' not found in TAGFdetectorMap", detName.c_str()), exit(42);
 	else
 		return m_DetToFitPlaneMap.at(detName).back();
 }
@@ -224,22 +209,41 @@ int TAGFdetectorMap::GetMaxFitPlane(string detName)
 int TAGFdetectorMap::GetFitPlaneTW()
 {
 	if(m_DetToFitPlaneMap.find("TW") == m_DetToFitPlaneMap.end())
-	{
-		Error("GetFitPlaneTW()", "TW not found in TAGFdetectorMap ");
-		throw -1;
-	}
+		Error("GetFitPlaneTW()", "TW not found in TAGFdetectorMap "), exit(42);
 
 	if(m_DetToFitPlaneMap.at("TW").size() > 0)
-	{
 		return m_DetToFitPlaneMap.at("TW").at(0);
-	}
 	else
-	{
-		Error("GetFitPlaneTW()", "No TW plane found in TAGFdetectorMap");
-		throw -1;
-	}
+		Error("GetFitPlaneTW()", "No TW plane found in TAGFdetectorMap"), exit(42);
 }
 
+//! \brief Get the index of the FitPlane at the center of the TG
+//!
+//! \return Index of the FitPlane at TG center
+int TAGFdetectorMap::GetFitPlaneTGcenter()
+{
+	if(m_DetToFitPlaneMap.find("TG") == m_DetToFitPlaneMap.end())
+		Error("GetFitPlaneTGcenter()", "TG not found in TAGFdetectorMap "), exit(42);
+
+	if(m_DetToFitPlaneMap.at("TG").size() > 0)
+		return m_DetToFitPlaneMap.at("TG").at(0);
+	else
+		Error("GetFitPlaneTGcenter()", "No TG plane found in TAGFdetectorMap"), exit(42);
+}
+
+//! \brief Get the index of the FitPlane at the interface between TG and air
+//!
+//! \return Index of the FitPlane at the interface between TG and air
+int TAGFdetectorMap::GetFitPlaneTGairInterface()
+{
+	if(m_DetToFitPlaneMap.find("TG") == m_DetToFitPlaneMap.end())
+		Error("GetFitPlaneTGairInterface()", "TG not found in TAGFdetectorMap "), exit(42);
+
+	if(m_DetToFitPlaneMap.at("TG").size() > 1)
+		return m_DetToFitPlaneMap.at("TG").at(1);
+	else
+		Error("GetFitPlaneTGairInterface()", "No TG-air plane found in TAGFdetectorMap"), exit(42);
+}
 
 //! \brief Get the number of FitPlanes for the whole setup or for a detector
 //!
@@ -262,10 +266,7 @@ int TAGFdetectorMap::GetFitPlanesN(string detName)
 bool TAGFdetectorMap::IsFitPlaneInDet(int planeId, string detName)
 {
 	if(planeId >= GetFitPlanesN())
-	{
-		Error("IsFitPlaneInDet()", "FitPlaneId %d is out of range!", planeId);
-		throw -1;
-	}
+		Error("IsFitPlaneInDet()", "FitPlaneId %d is out of range!", planeId), exit(42);
 
 	bool check = false;
 	for(int i = 0; i < m_DetToFitPlaneMap.at(detName).size(); ++i)
@@ -292,8 +293,7 @@ string TAGFdetectorMap::GetDetNameFromFitPlaneId(int planeId)
 			return it->first;
 	}
 
-	Error("GetDetNameFromFitPlaneId()", "Detector not found for FitPlane %d!", planeId);
-	exit(0);
+	Error("GetDetNameFromFitPlaneId()", "Detector not found for FitPlane %d!", planeId), exit(42);
 }
 
 
@@ -306,10 +306,7 @@ bool TAGFdetectorMap::GetSensorID(int planeId, int* sensorId)
 {
 	bool check = false;
 	if(planeId >= GetFitPlanesN())
-	{
-		Error("GetSensorID()", "FitPlaneId %d is out of range!", planeId);
-		throw -1;
-	}
+		Error("GetSensorID()", "FitPlaneId %d is out of range!", planeId), exit(42);
 
 	for(map<string, int>::iterator itDet = m_detectorIndex.begin(); itDet != m_detectorIndex.end(); ++itDet)
 	{
@@ -349,10 +346,7 @@ void TAGFdetectorMap::AddFitPlane(int planeId, SharedPlanePtr genfitPlane)
 SharedPlanePtr TAGFdetectorMap::GetFitPlane(int planeId)
 {
 	if(m_detectorPlanes.find(planeId) == m_detectorPlanes.end())
-	{
-		Error("GetFitPlane()", "No GenFit plane with ID %d found in TAGFdetectorMap", planeId);
-		throw -1;
-	}
+		Error("GetFitPlane()", "No GenFit plane with ID %d found in TAGFdetectorMap", planeId), exit(42);
 	else
 		return m_detectorPlanes.at(planeId);
 }
@@ -368,10 +362,7 @@ SharedPlanePtr TAGFdetectorMap::GetFitPlane(int planeId)
 int TAGFdetectorMap::GetDetIDFromName(string detName)
 {
 	if(m_detectorIndex.find(detName) == m_detectorIndex.end())
-	{
-		Error("GetDetIDFromName()", "Detector '%s' not found in TAGFdetectorMap", detName.c_str());
-		throw -1;
-	}
+		Error("GetDetIDFromName()", "Detector '%s' not found in TAGFdetectorMap", detName.c_str()), exit(42);
 	else
 		return m_detectorIndex.at(detName);
 }
@@ -387,8 +378,8 @@ string TAGFdetectorMap::GetDetNameFromID(int detId)
 		if(it->second == detId)
 			return it->first;
 	}
-	Error("GetDetNameFromID()", "Index %d is not associated with any detector", detId);
-	throw -1;
+
+	Error("GetDetNameFromID()", "Index %d is not associated with any detector", detId), exit(42);
 }
 
 //! \brief Check if a detector has been loaded in the map
@@ -416,16 +407,10 @@ bool TAGFdetectorMap::IsDetectorInMap(string detName)
 int TAGFdetectorMap::GetMeasID_eventLevel(string detName, int sensorId, int hitId)
 {
 	if(m_detectorIndex.find(detName) == m_detectorIndex.end())
-	{
-		Error("GetMeasID_eventLevel()", "Detector '%s' not found in detectorIndex map", detName.c_str());
-		throw -1;
-	}
+		Error("GetMeasID_eventLevel()", "Detector '%s' not found in detectorIndex map", detName.c_str()), exit(42);
 
 	if(m_DetToFitPlaneMap.at(detName).size() < sensorId)
-	{
-		Error("GetMeasID_eventLevel()", "Sensor index %d is out of range for detector '%s'", sensorId, detName.c_str());
-		throw -1;
-	}
+		Error("GetMeasID_eventLevel()", "Sensor index %d is out of range for detector '%s'", sensorId, detName.c_str()), exit(42);
 
 	return m_detectorIndex.at(detName)*1E7 + sensorId*1E5 + hitId;
 }
@@ -442,10 +427,7 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 	int sensorId;
 
 	if(planeId >= GetFitPlanesN())
-	{
-		Error("GetMeasID_eventLevel()", "FitPlaneId %d is out of range!", planeId);
-		throw -1;
-	}
+		Error("GetMeasID_eventLevel()", "FitPlaneId %d is out of range!", planeId), exit(42);
 
 	bool found = false;
 
@@ -454,7 +436,7 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 		if(found)
 			break;
 
-		if(m_debug > 1)
+		if(FootDebugLevel(2))
 		{
 			Info("GetMeasId_eventLevel()", "%s\t%d", itDet->first.c_str(), itDet->second);
 			Info("GetMeasId_eventLevel()", "plane::%d\tIsFitPlaneInDet::%d", planeId, IsFitPlaneInDet(planeId, itDet->first));
@@ -462,11 +444,11 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 		//WRITE THIS IN A MORE EFFICIENT WAY!!! It just works right now
 		if(IsFitPlaneInDet(planeId, itDet->first))
 		{
-			if(m_debug > 1)	cout << "GetMeasID_eventLevel()\tDetGood\n";
+			if(FootDebugLevel(2))	cout << "GetMeasID_eventLevel()\tDetGood\n";
 			
 			for(int i=0; i < m_DetToFitPlaneMap.at(itDet->first).size(); ++i)
 			{
-				if(m_debug > 1)	cout << "GetMeasID_eventLevel()\ti::" << i << "\n";
+				if(FootDebugLevel(2))	cout << "GetMeasID_eventLevel()\ti::" << i << "\n";
 				
 				if( m_DetToFitPlaneMap.at(itDet->first).at(i) == planeId )
 				{
@@ -480,14 +462,11 @@ int TAGFdetectorMap::GetMeasID_eventLevel(int planeId, int hitId)
 	}
 
 	if( detName == "dummy" )
-	{
-		Error("GetMeasID_eventLevel()", "FitPlaneId %d not found!", planeId);
-		throw -1;
-	}
+		Error("GetMeasID_eventLevel()", "FitPlaneId %d not found!", planeId), exit(42);
 
-
-	if(m_debug > 1)
+	if(FootDebugLevel(2))
 		cout << "det::" << detName << "\tsensorId::" << sensorId << "\thitId::" << hitId << "\n";
+
 	return GetMeasID_eventLevel(detName, sensorId, hitId);
 }
 
@@ -501,10 +480,7 @@ int TAGFdetectorMap::GetDetIDFromMeasID(int measId)
 {
 	int Index = measId/1E7;
 	if(Index > m_detectorIndex.size())
-	{
-		Error("GetDetIDFromMeasID()", "Detector index %d is out of range for MeasId %d!" , Index, measId);
-		throw -1;
-	}
+		Error("GetDetIDFromMeasID()", "Detector index %d is out of range for MeasId %d!" , Index, measId), exit(42);
 	else
 		return Index;
 }
@@ -520,10 +496,7 @@ string TAGFdetectorMap::GetDetNameFromMeasID(int measId)
 	int Index = measId/1E7;
 	
 	if(Index > m_detectorIndex.size())
-	{
-		Error("GetDetNameFromMeasID()", "Detector index %d is out of range for MeasId %d!" , Index, measId);
-		throw -1;
-	}
+		Error("GetDetNameFromMeasID()", "Detector index %d is out of range for MeasId %d!" , Index, measId), exit(42);
 
 	return GetDetNameFromID(Index);
 }
@@ -539,10 +512,8 @@ int TAGFdetectorMap::GetSensorIDFromMeasID(int measId)
 	string detName = GetDetNameFromMeasID(measId);
 	
 	if(sensorId > m_DetToFitPlaneMap.at(detName).size())
-	{
-		Error("GetSensorIDFromMeasID()", "SensorID %d is out of range for detector '%s'", sensorId, detName.c_str());
-		throw -1;
-	}
+		Error("GetSensorIDFromMeasID()", "SensorID %d is out of range for detector '%s'", sensorId, detName.c_str()), exit(42);
+
 	return sensorId;
 }
 
@@ -591,15 +562,9 @@ tuple<string, int, int> TAGFdetectorMap::GetDetSensorHitFromMeasID(int measId)
 void TAGFdetectorMap::SetMSDsensorView(int iSensor, const int &view)
 {
 	if( m_detectorIndex.find("MSD") == m_detectorIndex.end() )
-	{
-		Error("SetMSDsensorView()", "Tried to set MSD sensor view but detector is not in GF map!");
-		exit(0);
-	}
-	if( m_MSDviewMap.find(iSensor) != m_MSDviewMap.end() )
-	{
-		Error("SetMSDsensorView()", "Tried to set X-Y view of MSD sensors already included in GF map. Check MSD geometry!");
-		exit(0);
-	}
+		Error("SetMSDsensorView()", "Tried to set MSD sensor view but detector is not in GF map!"), exit(42);
+	else if( m_MSDviewMap.find(iSensor) != m_MSDviewMap.end() )
+		Error("SetMSDsensorView()", "Tried to set X-Y view of MSD sensors already included in GF map. Check MSD geometry!"), exit(42);
 	
 	m_MSDviewMap[iSensor] = view;
 }
@@ -611,14 +576,9 @@ void TAGFdetectorMap::SetMSDsensorView(int iSensor, const int &view)
 int TAGFdetectorMap::GetMSDsensorView(int iSensor) const
 {
 	if( m_detectorIndex.find("MSD") == m_detectorIndex.end() )
-	{
-		Error("GetMSDsensorView()", "Tried to get MSD sensor view but detector is not in GF map!");
-		exit(0);
-	}
-	if( m_MSDviewMap.find(iSensor) == m_MSDviewMap.end() )
-	{
-		Error("GetMSDsensorView()", "MSD sensor %d not included in GF map!", iSensor);
-		exit(0);
-	}
+		Error("GetMSDsensorView()", "Tried to get MSD sensor view but detector is not in GF map!"), exit(42);
+	else if( m_MSDviewMap.find(iSensor) == m_MSDviewMap.end() )
+		Error("GetMSDsensorView()", "MSD sensor %d not included in GF map!", iSensor), exit(42);
+
 	return m_MSDviewMap.at(iSensor);
 }

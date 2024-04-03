@@ -6,6 +6,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
+#include "TCanvas.h"
 
 #include "TAVTparGeo.hxx"
 #include "TAVTparConf.hxx"
@@ -49,6 +50,8 @@ TAVTactBaseNtuCluster::TAVTactBaseNtuCluster(const char* name,
       fTitleDev = "Vertex";
    else if (fPrefix.Contains("it"))
       fTitleDev = "Inner Tracker";
+   else if (fPrefix.Contains("mp"))
+      fTitleDev = "Monopix2";
    else
       printf("Wrong prefix for histograms !");
 
@@ -78,6 +81,12 @@ void TAVTactBaseNtuCluster::CreateHistogram()
 	  fpHisPixel[i] = new TH1F(Form("%sClusPixel%d",fPrefix.Data(), i+1), Form("%s - # pixels per clusters for sensor %d", fTitleDev.Data(), i+1), 100, 0., 100.);
 	  AddHistogram(fpHisPixel[i]);
    }
+   
+   for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
+      fpHisCharge[i] = new TH1F(Form("%sClusCharge%d",fPrefix.Data(), i+1), Form("%s - charge per clusters for sensor %d", fTitleDev.Data(), i+1), 1000, 0., 1000.);
+      AddHistogram(fpHisCharge[i]);
+   }
+   
    
    for (Int_t i = 0; i < pGeoMap->GetSensorsN(); ++i) {
 		 fpHisClusMap[i] = new TH2F(Form("%sClusMap%d", fPrefix.Data(), i+1), Form("%s - clusters map for sensor %d", fTitleDev.Data(), i+1),
@@ -220,17 +229,88 @@ void TAVTactBaseNtuCluster::ComputeCoGPosition()
 							0);
 	  posErr += tCorrection2;
    }
-   
-   posErr *= 1./fClusterPulseSum;
-   
+
+   posErr *= 1. / (fClusterPulseSum * fClusterPulseSum);   //variance of the mean 
    // for cluster with a single pixel
    Float_t lim = 2.5e-7; // in cm !
    if (posErr(0) < lim) posErr(0) = lim; //(20/Sqrt(12)^2
    if (posErr(1) < lim) posErr(1) = lim; //(20/Sqrt(12)^2
-   
+
    fCurrentPosition.SetXYZ((pos)(0), (pos)(1), 0);
-   fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0)), TMath::Sqrt((posErr)(1)), 0);
+   fCurrentPosError.SetXYZ(TMath::Sqrt((posErr)(0)) * (1. / TMath::Sqrt(2)), TMath::Sqrt((posErr)(1)) * (1. / TMath::Sqrt(2)), 0); // multiplicative factor to make the pull with a sigma close to 1 according to gsi 2021 mc 400 mev/n
 }
+
+//______________________________________________________________________________
+//! Compute center of gravity position
+void TAVTactBaseNtuCluster::EstimateMedian()
+{
+   if (!fCurListOfPixels)
+     return;
+
+   vector<double> x_distrib,y_distrib;
+   vector<double> x_distrib_dev, y_distrib_dev;
+
+   vector<int> x_id, y_id;
+
+
+   for (Int_t i = 0; i < fCurListOfPixels->GetEntriesFast(); ++i)
+   {
+     TAVThit *pixel = (TAVThit *)fCurListOfPixels->At(i);
+     x_distrib.push_back(pixel->GetPosition()(0));
+     y_distrib.push_back(pixel->GetPosition()(1));
+     x_id.push_back(pixel->GetPixelColumn());
+      }
+
+   sort(x_distrib.begin(), x_distrib.end());
+   sort(y_distrib.begin(), y_distrib.end());
+   sort(x_id.begin(), x_id.end());
+   
+   auto x_median{0.0}, y_median{0.0};
+   
+   if (x_distrib.size() % 2 == 0) //if even
+   {
+     x_median = (x_distrib[(x_distrib.size() / 2) -1] + x_distrib[(x_distrib.size() / 2)]) /2.;
+     y_median = (y_distrib[(y_distrib.size() / 2) - 1] + y_distrib[(y_distrib.size() / 2)]) / 2.;
+   } else { //if odd
+     x_median = x_distrib[(x_distrib.size() - 1) / 2];
+     y_median = y_distrib[(y_distrib.size() - 1) / 2];
+   }
+   
+   double rms_x{0}, rms_y{0};
+
+   for (auto elem_x : x_distrib)
+   {
+     x_distrib_dev.push_back(abs(elem_x - x_median)); // residuals (deviations) from the data's median
+     rms_x += ((elem_x - x_median) * (elem_x - x_median)); //mean square
+
+   }
+
+   for (auto elem_y : y_distrib)
+   {
+     y_distrib_dev.push_back(abs(elem_y - y_median)); // residuals (deviations) from the data's median
+     rms_y += ((elem_y - y_median) * (elem_y - y_median)); // mean square
+   }
+   
+
+   std::nth_element(x_distrib_dev.begin(), x_distrib_dev.begin() + x_distrib_dev.size() / 2, x_distrib_dev.end()); // sort the deviation
+   std::nth_element(y_distrib_dev.begin(), y_distrib_dev.begin() + y_distrib_dev.size() / 2, y_distrib_dev.end()); // sort the deviation
+
+   auto x_mad = x_distrib_dev[x_distrib.size() / 2]; // the median absolute deviation (MAD) is the median of absolute values with the residuals (deviations) from the data's median
+   auto y_mad = y_distrib_dev[y_distrib.size() / 2]; // MAD = median(|x_i - X_median|)
+
+   Float_t lim = 207e-7; // in cm !
+   if (x_mad < lim) x_mad = lim;
+   if (y_mad < lim) y_mad = lim;
+   if (rms_x < lim) rms_x = lim;
+   if (rms_y < lim) rms_y = lim;
+   rms_x = TMath::Sqrt(rms_x / (x_distrib.size() * x_distrib.size())); // root mean square in x
+   rms_y = TMath::Sqrt(rms_y / (y_distrib.size() * y_distrib.size())); // root mean square in y
+   fCurrentPosition.SetXYZ(x_median, y_median, 0);
+   fCurrentPosError.SetXYZ(rms_x, rms_y, 0);
+
+   //cout << "cluster pos: " << x_median << " +- " << rms_x << "; " << y_median << " +- " << rms_y << endl;
+}
+
 
 //______________________________________________________________________________
 //! Fill data members of a given cluster
@@ -256,8 +336,9 @@ void TAVTactBaseNtuCluster::FillClusterInfo(Int_t iSensor, TAVTbaseCluster* clus
       if (ValidHistogram()) {
          if (cluster->GetPixelsN() > 0) {
             fpHisPixelTot->Fill(cluster->GetPixelsN());
+            fpHisCharge[iSensor]->Fill(cluster->GetCharge());
             fpHisPixel[iSensor]->Fill(cluster->GetPixelsN());
-            fpHisClusMap[iSensor]->Fill(cluster->GetPositionG()[0], cluster->GetPositionG()[1]);
+            fpHisClusMap[iSensor]->Fill(cluster->GetPosition()[0], cluster->GetPosition()[1]);
          }
       }
       cluster->SetValid(true);

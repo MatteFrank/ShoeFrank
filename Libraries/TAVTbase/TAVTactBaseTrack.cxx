@@ -83,6 +83,8 @@ TAVTactBaseTrack::TAVTactBaseTrack(const char* name,
       fTitleDev = "Interaction Region";
    else if (fPrefix.Contains("ms"))
       fTitleDev = "Micro Strip Detector";
+   else if (fPrefix.Contains("mp"))
+      fTitleDev = "Monopix2";
    else
       printf("Wrong prefix for histograms !");
 
@@ -141,7 +143,7 @@ void TAVTactBaseTrack::CreateHistogram()
    fpHisTrackClus = new TH1F(Form("%sTrackClus", fPrefix.Data()), Form("%s - Number of clusters per track", fTitleDev.Data()), 9, -0.5, 8.5);
    AddHistogram(fpHisTrackClus);
    
-   fpHisClusSensor = new TH1F(Form("%sClusSensor", fPrefix.Data()), Form("%s - Number of tracked clusters per sensor", fTitleDev.Data()), 9, -0.5, 8.5);
+   fpHisClusSensor = new TH1F(Form("%sClusSensor", fPrefix.Data()), Form("%s - Number of tracked clusters per sensor", fTitleDev.Data()),  pGeoMap->GetSensorsN()+1, -0.5,  pGeoMap->GetSensorsN()+0.5);
    AddHistogram(fpHisClusSensor);
    
    fpHisTheta = new TH1F(Form("%sTrackTheta", fPrefix.Data()), Form("%s - Track polar distribution", fTitleDev.Data()), 500, 0, 90);
@@ -200,7 +202,7 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
    slopeErr.SetXYZ(0.,0.,0.);
    
    Int_t nClusters = track->GetClustersN();
-   
+
    if( nClusters == 2) {
 	  TAGcluster* cluster0 = track->GetCluster(0);
 	  TAGcluster* cluster1 = track->GetCluster(1);
@@ -267,6 +269,7 @@ void TAVTactBaseTrack::UpdateParam(TAGbaseTrack* track)
    
    track->SetLineValue(origin, slope);
    track->SetLineErrorValue(originErr, slopeErr);
+   
 }
 
 //_____________________________________________________________________________
@@ -289,7 +292,6 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
 	  Int_t idx          = cluster->GetSensorIdx();
 	  Float_t posZ       = cluster->GetPositionG()[2];
 	  TVector3 impact    = track->Intersection(posZ);
-   
      TVector3 impactLoc =  pGeoMap->Detector2Sensor(idx, impact);
       
      fpHisTrackMap[idx]->Fill(impactLoc[0], impactLoc[1]);
@@ -307,6 +309,7 @@ void TAVTactBaseTrack::FillHistogramm(TAGbaseTrack* track)
    
    fpHisMeanPixel->Fill(track->GetMeanEltsN());
    fpHisMeanCharge->Fill(track->GetMeanCharge());
+   
 }
 
 //_____________________________________________________________________________

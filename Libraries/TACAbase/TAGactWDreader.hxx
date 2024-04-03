@@ -49,6 +49,7 @@ public:
                                     TAGparaDsc* p_WDmap = 0,
                                     TAGparaDsc* p_WDtim = 0,
                                     TAGparaDsc* p_CAmap = 0,
+				    TAGparaDsc* p_STconf=0,
                                     Bool_t standAlone = false,
                                     TAGdataDsc* p_newd = 0,
                                     TAGparaDsc* p_NEmap = 0);
@@ -80,7 +81,8 @@ private:
    TAGparaDsc*     fpCAMap;           ///< parameter dsc
    TAGparaDsc*     fpNEMap;           ///< parameter dsc
    TAGdataDsc*     fpWDtrigInfo;      ///< output data dsc
-
+   TAGparaDsc*     fpSTConf;           ///< parameter dsc
+  
    TString         fInitName;         ///< init file name
    TString         fCurrName;         ///< current file name
    FILE*           fWDstream;         ///< FILE descriptor
@@ -102,6 +104,7 @@ private:
   
 
   TH1F *hTriggerID;
+  TH1F *hTriggerIDstatus;
   TH1F *hDAQRate;
   TH1F *hSTRate;
   TH1F *hSTRate100;
@@ -116,7 +119,9 @@ private:
   TH1F *hCARateVsTime;
   TH2F *hDAQVsST;
   TH1F *hRatioDAQ_ST;
-  
+  map<pair<int,int>, TH1F*>hBoardTimeCalib;
+  map<pair<int,int>, TH1F*>hBoardClkPeriod;
+  map<pair<int,int>, TH1F*>hBoardClkPhase;
   
 private:
   vector<TWaveformContainer*>             fSTwaves;  ///< wave form container vector for ST
@@ -139,7 +144,7 @@ private:
 
    vector<double> ADC2Volt(vector<int>, double);
    vector<double> ADC2Volt_CLK(vector<int>);
-   double         ComputeJitter(TWaveformContainer*);
+  double         ComputeJitter(TWaveformContainer*, double*);
    void           SavePlot(TWaveformContainer *w, string type);
  
    ClassDef(TAGactWDreader,0)

@@ -94,19 +94,22 @@ void RecoRaw::CreateRawAction()
       fpDatRawTw      = new TAGdataDsc(new TATWntuRaw());
       fpNtuWDtrigInfo = new TAGdataDsc(new TAWDntuTrigger());
       
-      if (!fgStdAloneFlag){
+
+      if (!fgStdAloneFlag) {
          TAWDparTime* parTimeWD = (TAWDparTime*) fpParTimeWD->Object();
          TString parFileName = fCampManager->GetCurCalFile(FootBaseName("TASTparGeo"), fRunNumber, true);
          parTimeWD->FromFileTcal(parFileName.Data());
       }
       
-      TACAparConf* parConf = (TACAparConf*)fpParConfCa->Object();
-      if (parConf->GetAnalysisPar().EnableArduinoTemp)
-         TAGactWDreader::EnableArduinoTempCA();
+      if(TAGrecoManager::GetPar()->IncludeCA()){
+        TACAparConf* parConf = (TACAparConf*)fpParConfCa->Object();
+        if (parConf->GetAnalysisPar().EnableArduinoTemp)
+          TAGactWDreader::EnableArduinoTempCA();
+      }
 
       const Char_t* name = FootActionDscName("TAGactWDreader");
       fActWdRaw  = new TAGactWDreader(name, fpDaqEvent, fpDatRawSt, fpDatRawTw, fpDatRawCa, fpNtuWDtrigInfo, fpParMapWD,
-                                      fpParTimeWD, fpParMapCa, fgStdAloneFlag);
+                                      fpParTimeWD, fpParMapCa, fpParConfSt, fgStdAloneFlag);
       if (fgStdAloneFlag)
          fActWdRaw->SetMaxFiles(fgNumFileStdAlone);
       
@@ -117,10 +120,11 @@ void RecoRaw::CreateRawAction()
    if (TAGrecoManager::GetPar()->IncludeST() ||(TAGrecoManager::GetPar()->IncludeBM() && !fgStdAloneFlag)) {
       fpNtuHitSt   = new TAGdataDsc(new TASTntuHit());
       const Char_t* name = FootActionDscName("TASTactNtuHit");
-      fActNtuHitSt = new TASTactNtuHit(name, fpDatRawSt, fpNtuHitSt, fpParMapSt);
+      fActNtuHitSt = new TASTactNtuHit(name, fpDatRawSt, fpNtuHitSt, fpParMapSt, fpParConfSt);
       if (fFlagHisto)
          fActNtuHitSt->CreateHistogram();
    }
+
 
    if (TAGrecoManager::GetPar()->IncludeBM()) {
       fpDatRawBm = new TAGdataDsc(new TABMntuRaw());
@@ -132,7 +136,7 @@ void RecoRaw::CreateRawAction()
          if (fFlagHisto)
             fActVmeReaderBm->CreateHistogram();
       } else {
-         fActDatRawBm = new TABMactNtuRaw(name, fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuHitSt);
+         fActDatRawBm = new TABMactNtuRaw(name, fpDatRawBm, fpDaqEvent, fpParMapBm, fpParCalBm, fpParGeoBm, fpNtuHitSt, fpNtuWDtrigInfo);
          if (fFlagHisto)
             fActDatRawBm->CreateHistogram();
       }
@@ -140,11 +144,12 @@ void RecoRaw::CreateRawAction()
       fActNtuHitBm = new TABMactNtuHit(name, fpNtuHitBm, fpDatRawBm, fpParGeoBm, fpParConfBm, fpParCalBm);
       if (fFlagHisto)
         fActNtuHitBm->CreateHistogram();
-
    }
 
    if (TAGrecoManager::GetPar()->IncludeVT()) {
-      fpNtuHitVtx   = new TAGdataDsc(new TAVTntuHit());
+      TAVTparGeo* parGeo = (TAVTparGeo*)fpParGeoVtx->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      fpNtuHitVtx   = new TAGdataDsc(new TAVTntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAVTactNtuHit");
       if (fgStdAloneFlag) {
          fActVmeReaderVtx  = new TAVTactVmeReader(name, fpNtuHitVtx, fpParGeoVtx, fpParConfVtx, fpParMapVtx);
@@ -158,8 +163,11 @@ void RecoRaw::CreateRawAction()
       }
    }
 
-   if (TAGrecoManager::GetPar()->IncludeIT()) {
-      fpNtuHitIt   = new TAGdataDsc(new TAITntuHit());
+   if (TAGrecoManager::GetPar()->IncludeIT()) {      
+      TAITparGeo* parGeo = (TAITparGeo*)fpParGeoIt->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+      
+      fpNtuHitIt   = new TAGdataDsc(new TAITntuHit(sensorsN));
       const Char_t* name = FootActionDscName("TAITactNtuHit");
       fActNtuHitIt = new TAITactNtuHit(name, fpNtuHitIt, fpDaqEvent, fpParGeoIt, fpParConfIt, fpParMapIt);
       if (fFlagHisto)
@@ -167,14 +175,16 @@ void RecoRaw::CreateRawAction()
    }
 
    if (TAGrecoManager::GetPar()->IncludeMSD()  && !fgStdAloneFlag) {
-      
-      fpDatRawMsd   = new TAGdataDsc(new TAMSDntuRaw());
+      TAMSDparGeo* parGeo = (TAMSDparGeo*)fpParGeoMsd->Object();
+      Int_t sensorsN = parGeo->GetSensorsN();
+
+      fpDatRawMsd   = new TAGdataDsc(new TAMSDntuRaw(sensorsN));
       const Char_t* name = FootActionDscName("TAMSDactNtuRaw");
       fActDatRawMsd = new TAMSDactNtuRaw(name, fpDatRawMsd, fpDaqEvent, fpParMapMsd, fpParCalMsd, fpParGeoMsd, fpParConfMsd);
       if (fFlagHisto)
          fActDatRawMsd->CreateHistogram();
-
-      fpNtuHitMsd   = new TAGdataDsc(new TAMSDntuHit());
+      
+      fpNtuHitMsd   = new TAGdataDsc(new TAMSDntuHit(sensorsN));
       name = FootActionDscName("TAMSDactNtuHit");
       fActNtuHitMsd = new TAMSDactNtuHit(name, fpDatRawMsd, fpNtuHitMsd, fpParGeoMsd, fpParConfMsd, fpParCalMsd);
       if (fFlagHisto)
@@ -222,8 +232,13 @@ Bool_t RecoRaw::GoEvent(Int_t iEvent)
 //! Open input file
 void RecoRaw::OpenFileIn()
 {
+
+   if (fFlagOut && !fFlagFlatTree)
+      ((TAGactDscTreeWriter*)fActEvtWriter)->SetStdAlone(fgStdAloneFlag);
+   
    if (fgStdAloneFlag) {
-      if (TAGrecoManager::GetPar()->IncludeVT())
+
+     if (TAGrecoManager::GetPar()->IncludeVT())
          fActVmeReaderVtx->Open(GetName());
       
       if (TAGrecoManager::GetPar()->IncludeBM())
@@ -236,19 +251,18 @@ void RecoRaw::OpenFileIn()
 
    } else {
 
-     if(IsSubFileEnabled()) {
-       Option_t* option = "subFileNumber";
-       fActEvtReader->Open(GetName(),option);
+     Option_t* option = "";
+     if(IsSubFileEnabled())
+        option = "subFileNumber";
+     else
+        option = "chain";
+      
+     fActEvtReader->Open(GetName(),option);
 
-     } else
-       fActEvtReader->Open(GetName());
-     
      if (fSkipEventsN > 0)
        fActEvtReader->SkipEvents(fSkipEventsN);
-
    }
 }
-
 
 //__________________________________________________________
 //! Close input file
@@ -265,23 +279,66 @@ void RecoRaw::CloseFileIn()
 // --------------------------------------------------------------------------------------
 void RecoRaw::SetRunNumberFromFile()
 {
-   // Done by hand shoud be given by DAQ header
-   TString name = GetName();
-   if (name.IsNull()) return;
+   fRunNumber = GetRunNumberFromFile();
    
-   // protection about file name starting with .
-   if (name[0] == '.')
-      name.Remove(0,1);
-   
-   Int_t pos1   = name.First(".");
-   Int_t len    = name.Length();
-   
-   TString tmp1 = name(pos1+1, len);
-   Int_t pos2   = tmp1.First(".");
-   TString tmp  = tmp1(0, pos2);
-   fRunNumber = tmp.Atoi();
-   
-   Warning("SetRunNumber()", "Run number not set!, taking number from file: %d", fRunNumber);
+   Warning("SetRunNumber()", "Run number not set, taking number from file: %d\n", fRunNumber);
    
    gTAGroot->SetRunNumber(fRunNumber);
+}
+
+// --------------------------------------------------------------------------------------
+Int_t RecoRaw::GetRunNumberFromFile()
+{
+   TString name = GetName();
+   if (name.IsNull()) return -1;
+   
+   // protection about file name starting with .
+   // if (name[0] == '.')
+   //    name.Remove(0,1);
+
+   Int_t inpos = name.Last('/');
+   TString inname = name(inpos+1,name.Length());
+   if(FootDebugLevel(4))
+     Info("GetRunNumberFromFile()","Modified input name:: %s ",inname.Data());
+
+   
+   Int_t pos1   = inname.First(".");
+   Int_t len    = inname.Length();
+   
+   TString tmp1 = inname(pos1+1, len);
+   Int_t pos2   = tmp1.First(".");
+   TString tmp  = tmp1(0, pos2);
+   return  tmp.Atoi();
+}
+
+//__________________________________________________________
+//! Generate output file name
+TString RecoRaw::GetFileOutName()
+{
+   TString name = Form("run_%08d", fRunNumber);
+   vector<TString> dec = TAGrecoManager::GetPar()->DectIncluded();
+   
+   Int_t detectorsN = 0;
+   
+   for (auto it : dec) {
+      TString det = TAGrecoManager::GetDect3LetName(it);
+      det.ToLower();
+      if (det == "tgt") continue;
+      detectorsN++;
+   }
+   
+   if (detectorsN >= 7)
+      name += "_all";
+   else {
+      for (auto it : dec) {
+         TString det = TAGrecoManager::GetDect3LetName(it);
+         det.ToLower();
+         if (det == "tgt") continue;
+         name += Form("_%s", det.Data());
+      }
+   }
+   
+   name += ".root";
+   
+   return name;
 }

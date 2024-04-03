@@ -84,6 +84,8 @@ void TAVTbaseHit::Clear(Option_t* /*option*/)
 {
    fMCindex.Set(0);
    fMcTrackIdx.Set(0);
+
+   fFrame.Set(0);
 }
 
 //______________________________________________________________________________
@@ -131,6 +133,16 @@ void TAVTbaseHit::AddMcTrackIdx(Int_t trackId,Int_t mcId)
    
    fMcTrackIdx.Set(fMcTrackIdx.GetSize()+1);
    fMcTrackIdx[fMcTrackIdx.GetSize()-1] = trackId;
+}
+
+//______________________________________________________________________________
+//! Add frame id
+//!
+//! \param[in] iFrame frame id
+void TAVTbaseHit::AddFrameOn(Int_t iFrame)
+{
+   fFrame.Set(fFrame.GetSize()+1);
+   fFrame[fFrame.GetSize()-1] = iFrame;
 }
 
 //______________________________________________________________________________

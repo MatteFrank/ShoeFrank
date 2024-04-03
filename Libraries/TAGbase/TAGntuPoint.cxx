@@ -173,21 +173,6 @@ void TAGpoint::SetRecoInfo( TVector3* recoPos, TVector3* recoMom, TMatrixD* reco
 	SetMomentum(*recoMom);
    temp = EvalError( *recoMom_cov );
    SetMomError(temp);
-	// TMatrixD m(3,3);
-	// m_recoPos_cov = m;
-	// m_recoMom_cov = TMatrixD(3,3);
-
-	// m_recoPos_cov = *recoPos_cov;
-	// m_recoMom_cov = *recoMom_cov;
-	// MatrixToZero(m_recoPos_cov);
-	// MatrixToZero(m_recoMom_cov);
-
-	// for ( int j=0; j<3; j++ ) {
-	// 	for ( int k=0; k<3; k++ ) {
-	// 		m_recoPos_cov(j,k) = (*recoPos_cov)(j,k);
-	// 		m_recoMom_cov(j,k) = (*recoMom_cov)(j,k);
-	// 	}
-	// }
 }
 
 //----------------------------------------------------------------------------------------------------

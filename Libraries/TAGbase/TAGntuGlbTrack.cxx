@@ -455,20 +455,37 @@ TArrayI TAGtrack::GetMcTrackIdx()
    return fMcTrackIdx;
 }
 
+void TAGtrack::PrintAllMCIds()
+{
+   cout << "TrackMCIds:: [";
+   for(int i = 0; i< GetPointsN(); ++i)
+   {
+      TAGpoint* pt = GetPoint(i);
+      cout <<"[";
+      for(int ii=0;ii<pt->GetMcTracksN();++ii)
+      {
+         cout << pt->GetMcTrackIdx(ii);
+         if(ii != pt->GetMcTracksN()-1)
+            cout <<", ";
+      }
+      cout <<"]"; 
+      if(i != GetPointsN()-1)
+         cout << ", ";
+   }
+   cout << "]" << endl;
+}
+
 
 //------------------------------------------+-----------------------------------
 //! Get MC track index - most probable
 Int_t TAGtrack::GetMcMainTrackId()
 {
-
    //----- set the array fMcTrackMap: it takes all the possible mc particles of every point in progressive order
 
    fMcTrackMap.clear();
    fMcTrackIdx.Set(0);
    for( Int_t iPoint = 0; iPoint < GetPointsN(); ++iPoint ) {
       const TAGpoint* point = GetPoint(iPoint);
-
-
 
       for( Int_t i = 0; i < point->GetMcTracksN(); ++i) {
 

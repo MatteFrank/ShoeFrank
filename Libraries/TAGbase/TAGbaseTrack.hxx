@@ -10,6 +10,7 @@
 /*------------------------------------------+---------------------------------*/
 
 #include <map>
+#include <vector>
 
 ///< ROOT classes
 #include "TClonesArray.h"
@@ -24,6 +25,9 @@
 #include "TAGcluster.hxx"
 #include "TAGgeoTrafo.hxx"
 
+// Fit
+#include "TFitResult.h"
+
 class TClonesArray;
 class TAGbaseTrack : public TAGobject {
 
@@ -37,6 +41,7 @@ protected:
    //!  the error slope (dx/dz, dy/dz, 1)
    TVector3*      fSlopeErr;                     //->   the error slope (dx/dz, dy/dz, 1)
 
+
    Float_t        fLength;                       ///< Length of track
 
    Bool_t         fPileup;                       ///< true if track is part of pileup events
@@ -45,8 +50,14 @@ protected:
    TClonesArray*  fListOfClusters;               ///< list of cluster associated to the track
 
    Float_t        fChiSquare;                    ///< chisquare/ndf of track fit in 2D
+
    Float_t        fChiSquareU;                   ///< chisquare/ndf of track fit, U dim
    Float_t        fChiSquareV;                   ///< chisquare/ndf of track fit, V dim
+   Float_t        fChiSquareRedU;                 
+   Float_t        fChiSquareRedV;  
+
+   Float_t        fPvalueU;                      ///< pvalue of fit U dim
+   Float_t        fPvalueV;                      ///< pvalue of fit U dim
    TVector3       fPosVertex;                    ///< vertex position
 
    Int_t          fValidity;                     ///< if = 1 track attached to vertex,
@@ -68,8 +79,10 @@ protected:
    TArrayI            fMcTrackIdx;               ///< Idx of the track created in the simulation
    //! Map of MC track Id
    std::map<int, int> fMcTrackMap;               //! Map of MC track Id
+   TMatrixDSym fCovMatrixU;                          //! covariance matrix in X position for fit
+   TMatrixDSym fCovMatrixV;                          //! covariance matrix in Y position for fit
 
-public:
+public: 
    TAGbaseTrack();
    ~TAGbaseTrack();
    TAGbaseTrack(const TAGbaseTrack& aTrack);
@@ -89,6 +102,10 @@ public:
    TVector3&          GetOriginErr() const { return *fOriginErr; }
    //! Get error slope of line
    TVector3&          GetSlopeErrZ() const { return *fSlopeErr;  }
+
+   TMatrixDSym GetCovMatrixU() const {return fCovMatrixU; }
+   TMatrixDSym GetCovMatrixV() const { return fCovMatrixV; }
+
    //! Get length of line
    Float_t            GetLength()   const { return fLength;  }
    // Get theta angle of line
@@ -101,9 +118,24 @@ public:
    // Set error values of track
    void               SetErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr);
 
+   //! Set chi square
+   void SetChi2(Float_t chi2) { fChiSquare = chi2; }
+   //! Set chi squareU
+   void SetChi2RedU(Float_t chi2U) { fChiSquareRedU = chi2U; }
+   //! Set chi squareV
+   void SetChi2RedV(Float_t chi2V){fChiSquareRedV = chi2V;}
+   //! Set chi squareU
+   void SetChi2U(Float_t chi2U) { fChiSquareU = chi2U; }
+   //! Set chi squareV
+   void SetChi2V(Float_t chi2V){fChiSquareV = chi2V;}
+
+
+   void SetPvalueU(Float_t pU) { fPvalueU = pU; }
+   //! Set chi squareV
+   void SetPvalueV(Float_t pV) { fPvalueV = pV; }
 
    // Get distance with another track
-   Float_t        Distance(TAGbaseTrack* track, Float_t z) const;
+   Float_t Distance(TAGbaseTrack *track, Float_t z) const;
    // Get X-Y distance with another track
    TVector2       DistanceXY(TAGbaseTrack* track, Float_t z) const;
    // Get distance with another track
@@ -135,8 +167,11 @@ public:
    void           SetLineValue(const TVector3& aOrigin, const TVector3& aSlope, const Float_t aLength = 0.);
    // Set values of line track
    void           SetLineErrorValue(const TVector3& aOriginErr, const TVector3& aSlopeErr);
-   // Make chi square
-   void           MakeChiSquare(Float_t dhs = 0.);
+   // Set covariance of the fit of the track
+   void           SetCovarianceMatrix(TMatrixDSym covMatrixU, TMatrixDSym covMatrixV);
+
+       // Make chi square
+       void MakeChiSquare(Float_t dhs = 0.);
    // Set charge proba
    void           SetChargeProba(const TArrayF* proba);
    //! Set charge with max proba
@@ -148,17 +183,29 @@ public:
    //! Set charge with max proba normalize
    void           SetChargeWithMaxProbaNorm(Int_t proba) { fChargeWithMaxProbaNorm = proba; }
    //! Set charge  max proba normalize
-   void           SetChargeMaxProbaNorm(Float_t proba)   { fChargeMaxProbaNorm = proba;     }
+   void           SetChargeMaxProbaNorm(Float_t proba)   { fChargeMaxProbaNorm = proba; }
 
    //! Add cluster (virtual)
    virtual  void  AddCluster(TAGcluster* /*cluster*/) { return; }
 
    //! Get chi square
    Float_t        GetChi2()                 const { return fChiSquare;               }
-   //! Get chi squareU
+   //! Get chi squareU (reduced)
+   Float_t        GetChi2redU()                const { return fChiSquareRedU;              }
+   //! Get chi squareV (reduced)
+   Float_t        GetChi2redV()                const { return fChiSquareRedV;              }
+   //! Get chi squareU (total)
    Float_t        GetChi2U()                const { return fChiSquareU;              }
-   //! Get chi squareV
+   //! Get chi squareV (total)
    Float_t        GetChi2V()                const { return fChiSquareV;              }
+   //! Get chi squareRedV (reduced)
+   Float_t        GetChi2RedV()                const { return fChiSquareRedV;              }
+   //! Get chi squareRedU (reduced)
+   Float_t        GetChi2RedU()                const { return fChiSquareRedU;              }
+   //! Get chi square p value U
+   Float_t GetPvalueU() const { return fPvalueU; }
+   //! Get chi square p value V
+   Float_t GetPvalueV() const { return fPvalueV; }
 
    //! Get Validity
    Int_t         GetValidity()               const { return fValidity;               }

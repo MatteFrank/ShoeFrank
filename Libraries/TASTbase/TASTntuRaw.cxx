@@ -14,7 +14,8 @@ using namespace std;
 #include "TMultiGraph.h"
 #include "TCanvas.h"
 #include "TF1.h"
-
+#include "TVirtualFFT.h"
+#include "TComplex.h"
 #include "TAGrecoManager.hxx"
 
 #define ST_AMP_THR 0.008
@@ -39,17 +40,81 @@ TASTrawHit::TASTrawHit()
 
 //------------------------------------------+-----------------------------------
 //! constructor.
-TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double del)
+TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double del, TAGparaDsc *p_detconf, Bool_t isSuperHit)
   : TAGbaseWD(W){
 
+  if(isSuperHit){
+    TASTparConf *parConfSt = (TASTparConf*)p_detconf->Object();
+    
+    vector<Double_t> re,im,fft,fftfilter,ampfftback;
+    vector<Double_t> amp = W->GetVectA();
+    vector<Double_t> time = W->GetVectT();
+    
+    if(parConfSt->ApplyFFT()){
+    TAGbaseWD::ComputeFFT(amp, re, im, fft);
+    TAGbaseWD::SetFFT("MAG",fft);
+    TAGbaseWD::SetFFT("RE",re);
+    TAGbaseWD::SetFFT("IM",im);
+    
+      if(parConfSt->ApplyLowPass()){
+	double fcutoff = parConfSt->GetLowPassCutoff();
+	TAGbaseWD::LowPassFilterFFT(re,im,fcutoff,3);
+      }
+	    
+      if(parConfSt->ApplySFCutoff()){
+	vector<Double_t> freqcutoff = parConfSt->GetSFCutoff();    
+	TAGbaseWD::FFTnotchFilter(freqcutoff,re,im);
+      }
+      
+      if(parConfSt->ApplySFSmoothCutoff()){
+	vector<Double_t> freqsmoothcutoff = parConfSt->GetSFSmoothCutoff();    
+	TAGbaseWD::FFTnotchFilterSmooth(freqsmoothcutoff,re,im);
+      }
+      
+
+      TAGbaseWD::ComputeInverseFFT(ampfftback, re, im);
+      TAGbaseWD::ComputeFFT(ampfftback, re, im, fftfilter);
+      W->GetVectA() = ampfftback;
+      TAGbaseWD::SetFFTfilter("MAG", fftfilter);
+
+
+      // TCanvas c("c","",600,600);
+      // c.cd();
+
+      // TMultiGraph mul;
+  
+      // TGraph gr(time.size(), &time[0], &amp[0]);
+      // gr.SetMarkerColor(kBlack);
+      // gr.SetMarkerSize(2.0);
+      // gr.SetLineColor(kBlack);
+
+      // TGraph grfft(time.size(), &time[0], &ampfftback[0]);
+      // grfft.SetLineColor(kViolet+1);
+      // grfft.SetMarkerColor(kViolet+1);
+      
+
+      // mul.Add(&gr);
+      // mul.Add(&grfft);
+      // mul.Draw("APL");
+      // c.Print(Form("superhit_ev%d.pdf",W->GetNEvent()));
+
+
+    }
+  }
+  
+  
   fBaseline = ComputeBaseline(W);
   fPedestal = ComputePedestal(W,ST_AMP_THR);
   fChg = ComputeCharge(W,ST_AMP_THR);
-  //  cout << "cha::" << W->GetChannelId() << "  fCGH::" << fChg << endl;
   fAmplitude = ComputeAmplitude(W);
   fPileUp = false;
+  fRiseTime = ComputeRiseTime(W);
+  fSidebandValues.clear();
+  fSidebandValues.insert(fSidebandValues.end(), W->GetVectA().begin()+FIRSTVALIDSAMPLE, W->GetVectA().begin()+NSIDESAMPLES);
+
+
   if(algo=="hwCFD"){
-    fTime = ComputeTime(W,frac,del,-10,10);
+    fTime = ComputeTime(W,frac,del,-15,15);
   }else if(algo=="simpleCFD"){
     fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
   }else if(algo=="zarrCFD"){
@@ -57,7 +122,7 @@ TASTrawHit::TASTrawHit(TWaveformContainer *W, string algo, double frac, double d
   }else{
     fTime = TAGbaseWD::ComputeTimeSimpleCFD(W,frac);
   }
-  }
+}
 
 
 //------------------------------------------+-----------------------------------
@@ -199,6 +264,9 @@ TASTntuRaw::TASTntuRaw() :
   fHitsN(0), fListOfHits(0), fSuperHit(0), fRunTime(0x0){
 
   SetupClones();
+
+  TVirtualFFT::SetTransform(0);
+  
 }
 
 //------------------------------------------+-----------------------------------
@@ -248,20 +316,20 @@ const TASTrawHit* TASTntuRaw::GetHit(Int_t i) const
 
 //------------------------------------------+-----------------------------------
 //! New hit
-void TASTntuRaw::NewHit(TWaveformContainer *W, string algo, double frac, double del)
+void TASTntuRaw::NewHit(TWaveformContainer *W, string algo, double frac, double del,  TAGparaDsc *p_detconf, Bool_t isSuperHit)
 {
   TClonesArray &pixelArray = *fListOfHits;
-  TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W, algo, frac, del);
+  TASTrawHit* hit = new(pixelArray[pixelArray.GetEntriesFast()]) TASTrawHit(W, algo, frac, del, p_detconf,isSuperHit);
   fHitsN++;
 }
 
 //------------------------------------------+-----------------------------------
 //! new super hit
-void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double frac, double del)
+void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double frac, double del, TAGparaDsc *p_detconf)
 {
   if(!vW.size()){
-     if(FootDebugLevel(1))
-        printf("Warning, ST waveforms not found!!\n");
+    if(FootDebugLevel(1))
+      printf("Warning, ST waveforms not found!!\n");
     fSuperHit = new TASTrawHit();
     return;
   }
@@ -272,39 +340,59 @@ void TASTntuRaw::NewSuperHit(vector<TWaveformContainer*> vW, string algo, double
   int TrigType = vW.at(0)->GetTrigType();
   int TriggerCellId = vW.at(0)->GetTriggerCellId();
 
- 
-  vector<double> time(&vW.at(0)->GetVectT()[5], &vW.at(0)->GetVectT()[1018]);
-  vector<double> amp(&vW.at(0)->GetVectA()[5], &vW.at(0)->GetVectA()[1018]);
- 
+   
+
+  vector<double> time;
+  vector<double> amp;
+  vector<double> amp_noise;
+  vector<double> time_noise;
+
+  double timebin = 1/3.0;
+  
+  //I compute the time vector
+  for(int i=0;i<NSAMPLES;i++){
+    amp.push_back(0);
+    time.push_back(timebin*(i+1));
+  }
+    
   //I sum the signals
-    for(int i=1;i<vW.size();i++){
-    // vector<double> tmpamp = vW.at(i)->GetVectA();
-    // vector<double> tmptime = vW.at(i)->GetVectT();
+  for(int i=0;i<vW.size();i++){
     double* time_up = &vW.at(i)->GetVectT()[0];
+    double* time_max = &vW.at(i)->GetVectT()[NSAMPLES-1];
+    double* time_min = &vW.at(i)->GetVectT()[0];
     double* amp_up = &vW.at(i)->GetVectA()[0];
-    // TGraph tmpgr(tmptime.size(), &tmptime[0], &tmpamp[0]);
     for(int isa=0;isa<time.size();isa++){
-      while(time[isa] >= *time_up)
-      {
-        time_up++;
-        amp_up++;
-      }
+
+      while(time[isa]>=*time_up    &&   time_up<time_max      &&        time_up >= time_min)
+	{
+	  time_up++;
+	  amp_up++;
+	  
+	}
+      
+      if(time_up-1 >= time_max)break;
+
+      if(time_up-1 <= time_min)continue;
+      
       amp[isa] += *(amp_up-1) + ( time[isa] - *(time_up-1))*(*amp_up - *(amp_up-1))/(*time_up - *(time_up-1));
-      // amp.at(isa)+=(tmpgr.Eval(time.at(isa)));
+
     }
   }
-   
+
   wsum->SetChannelId(ChannelId);
   wsum->SetBoardId(BoardId);
   wsum->SetTrigType(TrigType);
   wsum->SetTriggerCellId(TriggerCellId);
-  wsum->GetVectA() = amp;
   wsum->GetVectT() = time;
+  wsum->GetVectA() = amp;
   wsum->GetVectRawT() = time;
   wsum->SetNEvent(vW.at(0)->GetNEvent());
-  
-  fSuperHit = new TASTrawHit(wsum,algo, frac, del);
+
+  fSuperHit = new TASTrawHit(wsum, algo, frac, del, p_detconf, true);
   fSuperHit -> CheckForPileUp(wsum , wsum->GetNEvent()); //check for Pile up
+  
+
+  
 
   delete wsum;
 }

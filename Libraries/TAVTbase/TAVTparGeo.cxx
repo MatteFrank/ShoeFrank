@@ -52,7 +52,8 @@
 //! Class Imp
 ClassImp(TAVTparGeo);
 
-const TString TAVTparGeo::fgkBaseName      = "VT";
+const TString TAVTparGeo::fgkBaseName    = "VT";
+const Int_t   TAVTparGeo::fgkDefSensorsN = 4;
 
 //______________________________________________________________________________
 //! Standard constructor
@@ -152,7 +153,7 @@ TGeoVolume* TAVTparGeo::AddModule(const char* basemoduleName, const char *vertex
    TGeoBBox *box = new TGeoBBox(Form("%s_Box",basemoduleName), fEpiSize.X()/2., fEpiSize.Y()/2.,
                                 fTotalSize.Z()/2.);
 
-   TGeoVolume *vertexMod = new TGeoVolume(Form("%s_Vertex",basemoduleName),box, medMod);
+   TGeoVolume *vertexMod = new TGeoVolume(Form("%s",basemoduleName),box, medMod);
    vertexMod->SetLineColor(kAzure-5);
    vertexMod->SetTransparency(TAGgeoTrafo::GetDefaultTransp());
    
@@ -511,4 +512,16 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
   }
 
   return ss.str();
+}
+
+//_____________________________________________________________________________
+//! Print stepsize in Fluka for each it region
+//!
+string TAVTparGeo::PrintVTPhysics()
+{
+   stringstream str;
+   str << PrintCard("STEPSIZE","0.000001","0.0003",fvPixRegion.at(0),fvPixRegion.at(fvPixRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0005",fvEpiRegion.at(0),fvEpiRegion.at(fvEpiRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.0015",fvModRegion.at(0),fvModRegion.at(fvModRegion.size()-1),"","","") << endl;
+   return str.str();
 }

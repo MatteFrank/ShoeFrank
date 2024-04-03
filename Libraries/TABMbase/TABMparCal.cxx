@@ -36,6 +36,8 @@ TABMparCal::TABMparCal()
   fT0Vec = myt0s;
   fpResoFunc=new TF1("bmResoFunc","0.0245237+0.106748*x+0.229201*x*x-24.0304*x*x*x+183.529*x*x*x*x-619.259*x*x*x*x*x+1080.97*x*x*x*x*x*x-952.989*x*x*x*x*x*x*x+335.937*x*x*x*x*x*x*x*x",0.,0.8);
   fpSTrel=new TF1("McStrel","0.00773*x -5.1692440e-05*x*x + 1.8928600e-07*x*x*x -2.4652420e-10*x*x*x*x", 0., 350.);
+  fpHitEff=new TF1("McHitEff","1.00072-0.000162505*exp(x*10.9375)",0.,0.8);
+  fpNoise=new TF1("McNoise","TMath::Landau(x,4,0.661063)",0.,36);
 }
 
 //------------------------------------------+-----------------------------------
@@ -44,6 +46,8 @@ TABMparCal::TABMparCal()
 TABMparCal::~TABMparCal(){
   delete fpResoFunc;
   delete fpSTrel;
+  delete fpHitEff;
+  delete fpNoise;
 }
 
 //------------------------------------------+-----------------------------------
@@ -70,12 +74,23 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   }
   char tmp_char[200];
   vector<Float_t> fileT0(36,-10000.);
-  Int_t tmp_int=-1;
-  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_char;
+  vector<Float_t> fileFragT0(36,-10000.);
+  Int_t tmp_int;
+  Bool_t havefragtrig=false;
+  infile>>tmp_char>>tmp_char>>tmp_char>>tmp_int;
+  if(tmp_int<0)
+    havefragtrig=true;
 
+  if(FootDebugLevel(1)) 
+    cout<<"havefragtrig="<<havefragtrig<<endl;
+  
+  tmp_int=-1;
   for(Int_t i=0;i<36;i++){
-    if(!infile.eof() && tmp_int==i-1)
+    if(!infile.eof() && tmp_int==i-1){
       infile>>tmp_char>>tmp_int>>tmp_char>>fileT0.at(i);
+      if(havefragtrig)
+        infile>>tmp_char>>fileFragT0.at(i);
+    }
     else{
       cout<<"TABMparCal::FromFile::Error in the T0 file "<<filename<<"!!!!!! check if it is write properly"<<endl;
       infile.close();
@@ -84,14 +99,27 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
   }
 
   fT0Vec=fileT0;
+  if(havefragtrig)
+    fT0FragVec=fileFragT0;
+
   //check if the T0 are ok
   if(FootDebugLevel(1)) {
+    cout<<"havefragtrig="<<havefragtrig<<endl;
     for(Int_t i=0;i<36;i++) {
-      cout<<"BM T0: "<<fT0Vec[i]<<endl;
+      cout<<"BM_T0: "<<fT0Vec[i];
+      if(havefragtrig)
+        cout<<"  BM_T0Frag: "<<fT0FragVec[i];
+      cout<<endl;
       if(fT0Vec[i]==-10000)
-        cout<<"WARNING IN TABMparCal::FromFile: channel not considered in tdc map tdc_cha=i="<<i<<" T0 for this channel is set to -10000"<<endl;
+        cout<<"WARNING IN TABMparCal::FromFile: channel not considered in tdc map tdc_cha=i= "<<i<<" T0 for this channel is set to -10000"<<endl;
       else if(fT0Vec[i]==-20000)
-        cout<<"WARNING IN TABMparCal::FromFile: channel with too few elements to evaluate T0: tdc_cha=i="<<i<<" T0 for this channel is set to -20000"<<endl;
+        cout<<"WARNING IN TABMparCal::FromFile: channel with too few elements to evaluate T0: tdc_cha=i= "<<i<<" T0 for this channel is set to -20000"<<endl;
+      if(havefragtrig){
+        if(fT0FragVec[i]==-10000)
+          cout<<"WARNING IN TABMparCal::FromFile: channel not considered in tdc map tdc_cha=i= "<<i<<" T0Frag for this channel is set to -10000"<<endl;
+        else if(fT0FragVec[i]==-20000)
+          cout<<"WARNING IN TABMparCal::FromFile: channel with too few elements to evaluate T0: tdc_cha=i= "<<i<<" T0Frag for this channel is set to -20000"<<endl;
+      }
     }
   }
 
@@ -117,6 +145,28 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
     fpSTrel->SetParameter(i,par);
   }
 
+  //charge the efficiency function
+  infile>>tmp_char>>tmp_char;
+  delete fpHitEff;
+  fpHitEff=new TF1("McHitEff",tmp_char,0.,0.8);
+  infile>>tmp_char>>parnum;
+  for(Int_t i=0;i<parnum;++i){
+    infile>>par;
+    fpHitEff->SetParameter(i,par);
+  }
+
+  //charge the MC noise function
+  if(!infile.eof()){
+    infile>>tmp_char>>tmp_char;
+    delete fpNoise;
+    fpNoise=new TF1("McNoise",tmp_char,0.,36.);
+    infile>>tmp_char>>parnum;
+    for(Int_t i=0;i<parnum;++i){
+      infile>>par;
+      fpNoise->SetParameter(i,par);
+    }
+  }
+
   if(FootDebugLevel(1)){
     cout<<"BM resolution formula="<<fpResoFunc->GetFormula()->GetExpFormula().Data()<<endl;
     cout<<"number of parameters="<<fpResoFunc->GetNpar()<<endl;
@@ -124,6 +174,7 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
     for(Int_t i=0;i<fpResoFunc->GetNpar();++i)
       cout<<fpResoFunc->GetParameter(i)<<" , ";
     cout<<")"<<endl;
+
     cout<<"BM space time relation formula="<<fpSTrel->GetFormula()->GetExpFormula().Data()<<endl;
     cout<<"number of parameters="<<fpSTrel->GetNpar()<<endl;
     cout<<"parameters:  (";
@@ -131,6 +182,20 @@ Bool_t TABMparCal::FromFile(const TString& inputname) {
       cout<<fpSTrel->GetParameter(i)<<" , ";
     cout<<")"<<endl;
     cout<<"STrel maximum bin at "<<fpSTrel->GetMaximumX()<<endl;
+
+    cout<<"BM hit detection efficiency formula="<<fpHitEff->GetFormula()->GetExpFormula().Data()<<endl;
+    cout<<"number of parameters="<<fpHitEff->GetNpar()<<endl;
+    cout<<"parameters:  (";
+    for(Int_t i=0;i<fpHitEff->GetNpar();++i)
+      cout<<fpHitEff->GetParameter(i)<<" , ";
+    cout<<")"<<endl;
+
+    cout<<"BM noise formula="<<fpNoise->GetFormula()->GetExpFormula().Data()<<endl;
+    cout<<"number of parameters="<<fpNoise->GetNpar()<<endl;
+    cout<<"parameters:  (";
+    for(Int_t i=0;i<fpNoise->GetNpar();++i)
+      cout<<fpNoise->GetParameter(i)<<" , ";
+    cout<<")"<<endl;
   }
 
   infile.close();
@@ -151,7 +216,7 @@ void TABMparCal::PrintT0s(TString output_filename, TString input_filename, Long6
   outfile.open(output_filename.Data(),ios::out);
   outfile<<"calculated_from: "<<input_filename.Data()<<"    number_of_events= "<<tot_num_ev<<endl<<endl;
   for(Int_t i=0;i<36;i++)
-    outfile<<"cellid= "<<i<<"  T0_time= "<<fT0Vec[i]<<endl;
+    outfile<<"cellid= "<<i<<"  T0_time= "<<fT0Vec[i]<<"   T0Frag_time= "<<fT0FragVec[i]<<endl;
   outfile<<endl;
   outfile.close();
   return;
@@ -165,6 +230,21 @@ void TABMparCal::SetT0s(vector<Float_t> t0s) {
 
   if(t0s.size() == 36) {
     fT0Vec = t0s;
+  } else {
+    Error("Parameter()","Vectors size mismatch:: fix the t0 vector inmput size!!! %d ",(int) t0s.size());
+  }
+
+  return;
+}
+
+//------------------------------------------+-----------------------------------
+//! Set the T0Frag vector with another vector
+//!
+//! \param[in] t0 vector to be copied
+void TABMparCal::SetT0Frags(vector<Float_t> t0s) {
+
+  if(t0s.size() == 36) {
+    fT0FragVec = t0s;
   } else {
     Error("Parameter()","Vectors size mismatch:: fix the t0 vector inmput size!!! %d ",(int) t0s.size());
   }
@@ -188,6 +268,24 @@ else {
   return;
 }
 
+
+
+//------------------------------------------+-----------------------------------
+//! Set a T0Frag value to a specific cell
+//!
+//! \param[in] cha cellid index of the cell [0-35]
+//! \param[in] t0in t0 value
+void TABMparCal::SetT0Frag(Int_t cha, Float_t t0in){
+
+if(cha<36 && cha>=0)
+  fT0FragVec[cha]=t0in;
+else {
+    Error("Parameter()","Channel out of Range!!! cha=%d",cha);
+  }
+
+  return;
+}
+
 //------------------------------------------+-----------------------------------
 //! Print on the terminal all the T0 values
 //!
@@ -196,6 +294,12 @@ void TABMparCal::CoutT0(){
   for(Int_t i=0;i<fT0Vec.size();i++)
     cout<<"cell_id="<<i<<"  T0="<<fT0Vec[i]<<endl;
   cout<<endl;
+  if(fT0FragVec.size()>0){
+    cout<<"Print BM T0Frag time:"<<endl;
+    for(Int_t i=0;i<fT0FragVec.size();i++)
+      cout<<"cell_id="<<i<<"  T0Frag="<<fT0FragVec[i]<<endl;
+    cout<<endl;  
+  }
 }
 
 //********************************** ADC methods ********************************

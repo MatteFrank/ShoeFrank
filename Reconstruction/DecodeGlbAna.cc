@@ -38,6 +38,7 @@
 #include "TAGntuGlbTrack.hxx"
 
 #include "GlobalRecoAna.hxx"
+#include "GlobalRecoAnaGSI.hxx"
 
 using namespace std;
 
@@ -62,7 +63,7 @@ int main(int argc, char *argv[]) {
       if(strcmp(argv[i],"-exp") == 0)   { exp = TString(argv[++i]); }   // extention for config/geomap files
       if(strcmp(argv[i],"-nev") == 0)   { nTotEv = atoi(argv[++i]); }   // Number of events to be analized
       if(strcmp(argv[i],"-run") == 0)   { runNb = atoi(argv[++i]);  }   // Run Number
-      if(strcmp(argv[i],"-skipEv") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
+      if(strcmp(argv[i],"-nsk") == 0)   { nSkipEv = atoi(argv[++i]); }  // Number of events to be skip
       if(strcmp(argv[i],"-mc") == 0)    { mc = true;    } // reco from MC local reco data
       if(strcmp(argv[i],"-mth") == 0)   { mth = true;   } // enable multi threading (for clustering)
 
@@ -95,7 +96,7 @@ int main(int argc, char *argv[]) {
   TStopwatch watch;
   watch.Start();
 
-  GlobalRecoAna* glbAna = new GlobalRecoAna(exp, runNb, in, out, mc, nTotEv);
+  GlobalRecoAnaGSI* glbAna = new GlobalRecoAnaGSI(exp, runNb, in, out, mc, nTotEv);
   if(nSkipEv > 0 /*&& (lrc || mc)*/)  glbAna->GoEvent(nSkipEv);
   glbAna->BeforeEventLoop(); 
   glbAna->LoopEvent();

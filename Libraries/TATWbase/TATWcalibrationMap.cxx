@@ -52,7 +52,7 @@ void TATWcalibrationMap::LoadEnergyCalibrationMap(std::string FileName)
     int  cnt(0);
     char line[200];
     
-    // loop over all the slat crosses ( nBarCross*nLayers ) for two TW layers
+    // loop over all the bar crosses ( nBarCross*nLayers ) for two TW layers
     while (fin_Q.getline(line, 200, '\n')) {
 
       if(strchr(line,'#')) {
@@ -129,7 +129,7 @@ void TATWcalibrationMap::LoadTofCalibrationMap(std::string FileName)
     int  cnt(0);
     char line[200];
 
-    // loop over all the slat crosses ( nBarCross*nLayers ) for two TW layers
+    // loop over all the bar crosses ( nBarCross*nLayers ) for two TW layers
     while (fin_TOF.getline(line, 200, '\n')) {
       
       if(strchr(line,'#')) {
@@ -206,7 +206,7 @@ void TATWcalibrationMap::LoadBarEnergyCalibrationMap(std::string FileName)
       int  cnt(0);
       char line[200];
       
-      // loop over all the slats (0-40) of the two TW layers
+      // loop over all the bars (0-40) of the two TW layers
       while (fileBarE.getline(line, 200, '\n')) {
 
         if(strchr(line,'#')) {
@@ -279,7 +279,7 @@ void TATWcalibrationMap::LoadBarTofCalibrationMap(std::string FileName)
       int  cnt(0);
       char line[200];
       
-      // loop over all the slats (0-40) of the two TW layers
+      // loop over all the barss (0-40) of the two TW layers
       while (fileBarT.getline(line, 200, '\n')) {
 
         if(strchr(line,'#')) {
@@ -352,7 +352,7 @@ void TATWcalibrationMap::LoadBarElossTuning(std::string FileName)
       int  cnt(0);
       char line[200];
       
-      // loop over all the slats (0-40) of the two TW layers
+      // loop over all the bars (0-40) of the two TW layers
       while (fileTune.getline(line, 200, '\n')) {
 
         if(strchr(line,'#')) {

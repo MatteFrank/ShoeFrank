@@ -181,6 +181,10 @@ void TAGroot::BeginEventLoop()
     fpTAGrootInterruptHandler->Add();
     fbTAGrootHandlerAdded = kTRUE;
   }
+  for (TObjLink* lnk = fpRequiredActionList->FirstLink(); lnk; lnk=lnk->Next()) {
+    TAGaction* p = (TAGaction*) lnk->GetObject();
+    p->BeginEventLoop();
+  }
 
   fbAbortEventLoop = kFALSE;
   return;
@@ -202,6 +206,7 @@ void TAGroot::EndEventLoop()
 
    for (TObjLink* lnk = fpRequiredActionList->FirstLink(); lnk; lnk=lnk->Next()) {
       TAGaction* p = (TAGaction*) lnk->GetObject();
+      p->EndEventLoop();
       p->WriteHistogram();
    }
 

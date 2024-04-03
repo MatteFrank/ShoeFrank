@@ -43,11 +43,14 @@ public:
    virtual Double_t  GetPositionFromBarCenter(int layer, int bar, TATWhit* hit);
    //! Get Local Point position
    virtual TVector3  GetLocalPointPosition(int layer1, double pos1, int bar1, int bar2);
+   virtual TVector3  GetLocalPosSingleBar(Int_t pos_alongBar, TATWhit *hit);
    //! Set TW Point
    virtual TATWpoint* SetTWPoint(TATWntuPoint* ntuPoint, int layer, TATWhit* hit1, TATWhit* hit2, TVector3 pos);
-   // check if hits matched in the same TW point have same Z
+  //! function to remove hits in TW beyond the bars X-Y overlapped region
+   virtual  Bool_t IsInsideTwOverlappedXYBars( Double_t pos_along_bar, Double_t half_bar_length );
+   //! check if hits matched in the same TW point have same Z
    virtual Bool_t IsPointWithMatchedZ(TATWhit* hit1, TATWhit* hitmin);
-   // IsMultHit return true if a MC track has hit multiple bars in the same layer (multi-Hit)
+   //! IsMultHit return true if a MC track has hit multiple bars in the same layer (multi-Hit)
    virtual Bool_t IsMultHit(TATWhit* hit);
 
    //! Create histo
@@ -74,9 +77,13 @@ private:
    vector<TH1F*>   fpHisDist;
    vector<TH1F*>   fpHisDeltaE;
    vector<TH1F*>   fpHisDeltaTof;
+   vector<TH1F*>   fpHisDeltaPosX;
+   vector<TH1F*>   fpHisDeltaPosY;
    vector<TH1F*>   fpHisElossMean;
    vector<TH1F*>   fpHisTofMean;
    TH2F*           fpHisPointMap;
+   TH2F*           fpHisElossTof;
+   TH2F*           fpHisElossTofMean;
    
    map<Int_t,TATWhit*> fmapHitX;
    map<Int_t,TATWhit*> fmapHitY;

@@ -382,8 +382,10 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   Float_t cog          = 0.;
   Float_t posErr       = 0;
   Float_t tStrip       = 0.;
+  Int_t  seed_pos      = -1;
 
   Float_t tClusterPulseSum = 0.;
+  Float_t seed_pos_adc = 0.;
   
   for (Int_t i = 0; i < fCurListOfStrips->GetEntriesFast(); ++i) {
     TAMSDhit* strip   = (TAMSDhit*)fCurListOfStrips->At(i);
@@ -391,6 +393,12 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
     tCorrection      += strip->GetPosition()*strip->GetEnergyLoss();
     tStrip           += strip->GetStrip()*strip->GetEnergyLoss();
     tClusterPulseSum += strip->GetEnergyLoss();
+    
+    if(strip->IsSeed() && strip->GetEnergyLoss() > seed_pos_adc){
+      seed_pos = strip->GetStrip();
+      seed_pos_adc = strip->GetEnergyLoss();
+    }
+
   }
   
   pos = tCorrection/tClusterPulseSum;
@@ -412,11 +420,13 @@ void TAMSDactNtuCluster::ComputePosition(TAMSDcluster* cluster)
   fCurrentPosition = pos;
   fCurrentPosError = TMath::Sqrt(posErr);
   fCurrentCog      = cog;
+  fCurrentSeed  = seed_pos;
   fCurrentEnergy   = tClusterPulseSum;
   
   cluster->SetPositionF(fCurrentPosition);
   cluster->SetPosErrorF(fCurrentPosError);
   cluster->SetCog(fCurrentCog);
+  cluster->SetSeed(fCurrentSeed);
   cluster->SetEnergyLoss(fCurrentEnergy);
 }
 

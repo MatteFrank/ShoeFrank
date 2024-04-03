@@ -23,8 +23,8 @@
 //! Class imp
 ClassImp(TAITactBaseNtuHit);
 
-const UInt_t TAITactBaseNtuHit::fgkBoardKey[]  = {0xfafa0110, 0xfafa0111, 0xfafa0112, 0xfafa0113, 0xfafa0114, 0xfafa0115, 0xfafa0116, 0xfafa0117};
-const UInt_t TAITactBaseNtuHit::fgkBoardTail[] = {0xabcd0110, 0xabcd0111, 0xabcd0112, 0xabcd0113, 0xabcd0114, 0xabcd0115, 0xabcd0116, 0xabcd0117};
+const UInt_t TAITactBaseNtuHit::fgkDataLinkKey[]  = {0xfafa0110, 0xfafa0111, 0xfafa0112, 0xfafa0113, 0xfafa0114, 0xfafa0115, 0xfafa0116, 0xfafa0117};
+const UInt_t TAITactBaseNtuHit::fgkDataLinkTail[] = {0xabcd0110, 0xabcd0111, 0xabcd0112, 0xabcd0113, 0xabcd0114, 0xabcd0115, 0xabcd0116, 0xabcd0117};
 
 
 //------------------------------------------+-----------------------------------
@@ -72,30 +72,33 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
    // IT header
    if (!GetItrHeader()) return false;
    
-   for (Int_t l = 0; l < pParMap->GetDataLinksN(); ++l) {
+  do {
+      // IT board
+      Int_t l = GetDataLinkHeader();
       
-      if(FootDebugLevel(1))
-         printf("\nlink# %d  sensors %d\n", l, pParMap->GetSensorsN(l));
-
-      // IT header
-      if (!GetBoardHeader(l)) return false;
-      
+     if (l == -1) return false;
+     
       // loop over sensors
-      for (Int_t i = 0; i < pParMap->GetSensorsN(l); ++i) {
-         Int_t planeId = pParMap->GetPlaneId(i, l);
+     for (Int_t i = 0; i < pParMap->GetSensorsN(l); ++i) {
 
-         if (!GetSensorHeader(i, l)) continue;
+        if (!GetSensorHeader(i, l)) continue;
+        Int_t planeId = pParMap->GetPlaneId(i, l);
+        if (planeId == -1) continue;
 
-         ResetFrames();
-
-         // loop over frame (3 max)
-         while (GetFrame(i,l, data)) {
-            DecodeFrame(planeId, data);
-         }
-         fPrevEventNumber[planeId]   = fEventNumber;
-         fPrevTriggerNumber[planeId] = fTriggerNumber;
-         fPrevTimeStamp[planeId]     = fTimeStamp;
-      }
+        ResetFrames();
+        
+        Int_t framenumber = 0;
+        // loop over frame (3 max)
+        while (GetFrame(i, l, data)) {
+           DecodeFrame(planeId, data, framenumber);
+           framenumber++;
+        }
+        
+        fPrevEventNumber[planeId]   = fEventNumber;
+        fPrevTriggerNumber[planeId] = fTriggerNumber;
+        fPrevTimeStamp[planeId]     = fTimeStamp;
+     }
+  }  while (fIndex++ < fEventSize);
 
       if(FootDebugLevel(3)) {
          printf("%08x ", fEventSize);
@@ -109,7 +112,6 @@ Bool_t TAITactBaseNtuHit::DecodeEvent()
          }
          printf("\n");
       }
-   }
    
    delete data;
    
@@ -136,23 +138,33 @@ Bool_t TAITactBaseNtuHit::GetItrHeader()
 // --------------------------------------------------------------------------------------
 //! Find sensor header
 //!
-//! \param[in] iBoard board index
-Bool_t TAITactBaseNtuHit::GetBoardHeader(Int_t iBoard)
+//! \param[in] iDataLink board index
+Int_t TAITactBaseNtuHit::GetDataLinkHeader()
 {
+   TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
+
    do {
-      if (fData[fIndex] == GetBoardKey(iBoard)) {
-         fBoardTrigger = fData[++fIndex];
-         fTimeStamp    = fData[++fIndex];
+      Int_t dataLink = -1;
+      
+      for (Int_t i = 0; i < pParMap->GetDataLinksN(); ++i) {
+         if (fData[fIndex] == GetDataLinkKey(i)) {
+            dataLink = i;
+            break;
+         }
+      }
+      
+      if (fData[fIndex] == GetDataLinkKey(dataLink)) {
+         fIndex++;
+         fDataLinkTrigger = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("Board %d (0x%x): trig#: %d\n", iBoard, fData[fIndex-2], fBoardTrigger);
+            printf("DataLink %d (0x%x): trig#: %d\n", dataLink, fData[fIndex-2], fDataLinkTrigger);
          
-         return true;
+         return dataLink;
       }
    } while (fIndex++ < fEventSize);
    
-   
-   return false;
+   return -1;
 }
 
 // --------------------------------------------------------------------------------------
@@ -160,24 +172,21 @@ Bool_t TAITactBaseNtuHit::GetBoardHeader(Int_t iBoard)
 //!
 //! \param[in] iSensor sensor index
 //! \param[in] datalink board index
-Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t iSensor, Int_t datalink)
+Bool_t TAITactBaseNtuHit::GetSensorHeader(Int_t sensor, Int_t datalink)
 {
    TAITparMap*  pParMap = (TAITparMap*)  fpParMap->Object();
+
    do {
-      for (Int_t i = iSensor+1; i < TAITparGeo::GetDefSensPerBoard(); ++i)
-         if (fData[fIndex] == GetSensorKey(i)) {
-            return false;
-         }
-      if (fData[fIndex] == GetSensorKey(iSensor)) {
+      if (fData[fIndex] == GetSensorKey(sensor)) {
          fEventNumber   = fData[++fIndex];
          fTriggerNumber = fData[++fIndex];
          fTimeStamp     = fData[++fIndex];
          
          if(FootDebugLevel(3))
-            printf("sensor %d: trig#: %d evt#: %d\n", iSensor, fTriggerNumber, fEventNumber);
+            printf("datalink: %d sensor: %d trig#: %d evt#: %d\n", datalink, sensor, fTriggerNumber, fEventNumber);
          
          if(ValidHistogram()) {
-            Int_t planeId = pParMap->GetPlaneId(iSensor, datalink);
+            Int_t planeId = pParMap->GetPlaneId(sensor, datalink);
             FillHistoEvt(planeId);
          }
 
@@ -229,7 +238,7 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
    fDataSize = fIndex - fgkFrameHeaderSize - startIdx;
 
    if(FootDebugLevel(3)) {
-      printf("Sensor %d Board %d\n", iSensor, datalink);
+      printf("Sensor %d datalink %d\n", iSensor, datalink);
       printf("%08x\n", data->Header);
       printf("%08x\n", data->TriggerCnt);
       printf("%08x\n", data->TimeStamp);
@@ -251,7 +260,7 @@ Bool_t TAITactBaseNtuHit::GetFrame(Int_t iSensor, Int_t datalink, MI26_FrameRaw*
 //! \param[in] value pixel value
 //! \param[in] aLine line id
 //! \param[in] aColumn column id
-void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn)
+void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t aColumn, Int_t frameNumber)
 {
    // Add a pixel to the vector of pixels
    // require the following info
@@ -265,7 +274,7 @@ void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t
    
    if (pConfig->IsDeadPixel(iSensor, aLine, aColumn)) return;
    
-   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn);
+   TAIThit* pixel   = (TAIThit*)pNtuRaw->NewPixel(iSensor, value, aLine, aColumn, frameNumber);
    
    double v = pGeoMap->GetPositionV(aLine);
    double u = pGeoMap->GetPositionU(aColumn);
@@ -274,5 +283,5 @@ void TAITactBaseNtuHit::AddPixel( Int_t iSensor, Int_t value, Int_t aLine, Int_t
    pixel->SetValidFrames(fFrameOk);
    
    if (ValidHistogram())
-      FillHistoPixel(iSensor, aLine, aColumn);
+      FillHistoPixel(iSensor, aLine, aColumn, value);
 }

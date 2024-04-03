@@ -62,6 +62,7 @@ private:
    TATWdigitizer*  fDigitizer;  // digitizer
    
    TATWparCal*     f_parcal;
+   TATWparConf*    f_parconf;
 
    TAGparGeo*      f_pargeo;
    TAGgeoTrafo*    f_geoTrafo;
@@ -74,10 +75,10 @@ private:
    
    Bool_t          fIsZtrueMC;
    Bool_t          fIsZrecPUoff;
+   Bool_t          fIsEnergyThrEnabled;
    Bool_t          fIsRateSmear;
 
-   TH1I*           fpHisHitCol;
-   TH1I*           fpHisHitRow;
+   TH1I*           fpHisBarsID[nLayers];
    TH2I*           fpHisZID_MCrec[nLayers];
    TH2I*           fpHisZID_MCtrue[nLayers];
    TH2D*           fpHisElossTof_MCrec[nLayers];
@@ -86,10 +87,13 @@ private:
 
    // vector of histo with the same size of the ion beam atomic number
    vector<TH1D*>   fpHisResPos;
+   vector<TH1D*>   fpHisResPos_2;
    vector<TH1D*>   fpHisResTof;
    vector<TH1D*>   fpHisResEloss;
-   vector<TH2D*>   fpHisElossTof_MC;
+   // vector<TH2D*>   fpHisElossTof_MC;
    vector<TH2D*>   fpHisElossTof;
+   vector<TH2D*>   fpHisElossTof_MCtrue_Z[nLayers];  //! Eloss vs Tof for each Z and each TW layer for ZID tuning
+   vector<TH2D*>   fpHisElossTof_MCrec_Z[nLayers];  //! Eloss vs Tof for each Z rec with no PU for each TW layer for ZID tuning
    vector<TH1F*>   fpHisDistZ_MC;
    vector<TH1F*>   fpHisDistZ;
   
@@ -102,7 +106,7 @@ private:
    void          ClearContainers();
    void          AssignZchargeAndToF(TATWhit *hittw, TAMCntuHit *hitst);     
    void          PrintTrueMcTWquantities(TAMChit *twhitmc, Int_t idtwhit);
-   void          FlagUnderEnergyThresholtHits(TATWhit *hittw);
+   void          FlagUnderEnergyThresholdHits(TATWhit *hittw);
    void          PlotRecMcTWquantities(TATWhit *twhit, TAMCntuHit *hitst, Int_t zrec, Int_t zmc);
    void          PrintRecTWquantities(TATWhit *tatwhit, Int_t zrec, Int_t zmc);
   

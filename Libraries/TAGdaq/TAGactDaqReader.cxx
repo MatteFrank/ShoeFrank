@@ -80,6 +80,9 @@ Int_t TAGactDaqReader::Open(const TString& name, Option_t* option, const TString
       b_bad = -1;
    }
 
+   printf("\n");
+   Info("Open","Open file %s with option::%s",fCurFileName.Data(), opt.Data());
+   
    if( !fDaqFileReader->endOfFileReached() ) {
       fDaqFileReader->readFileHeader();
       fDaqFileHeader = fDaqFileReader->getFileHeader();
@@ -204,10 +207,15 @@ Bool_t TAGactDaqReader::Process()
    if (evMSD7)
       datDaq->AddFragment(evMSD7);
 
-   // ITR
-   const DEITREvent* evITR = static_cast<const DEITREvent*>(fDaqFileReader->getFragmentID(dataITR | 0x30));
-   if (evITR)
-      datDaq->AddFragment(evITR);
+   // ITR 0
+   const DEITREvent* evITR0 = static_cast<const DEITREvent*>(fDaqFileReader->getFragmentID(dataITR | 0x30));
+   if (evITR0)
+      datDaq->AddFragment(evITR0);
+   
+   // ITR 1
+   const DEITREvent* evITR1 = static_cast<const DEITREvent*>(fDaqFileReader->getFragmentID(dataITR | 0x31));
+   if (evITR1)
+      datDaq->AddFragment(evITR1);
    
    // WD for ST, TW and CA
    const WDEvent* evWD = static_cast<const WDEvent*>(fDaqFileReader->getFragmentID(dataWD | 0x30));

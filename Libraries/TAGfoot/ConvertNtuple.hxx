@@ -21,7 +21,7 @@
 #include "TAGcampaignManager.hxx"
 #include "TAGgeoTrafo.hxx"
 
-
+#include "TAMCntuRegion.hxx"
 #include "BaseReco.hxx"
 
 using namespace std;

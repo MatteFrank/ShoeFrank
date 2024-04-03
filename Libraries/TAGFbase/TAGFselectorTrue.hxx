@@ -16,26 +16,11 @@ using namespace genfit;
 class TAGFselectorTrue : public TAGFselectorBase {
 
 public:
-
 	TAGFselectorTrue();
 
-	virtual void		Categorize() override;
+	virtual void		Categorize();
 
+	ClassDef(TAGFselectorTrue,0);
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

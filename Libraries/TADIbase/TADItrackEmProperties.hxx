@@ -35,6 +35,10 @@ public:
    Float_t  GetEnergyLoss(const TString& mat, Float_t thickness, Float_t energy, Float_t massNumber, Int_t atomicNumber);
    // Compute energy loss for a given WEPL
    Float_t  GetEnergyLoss(Float_t energy, Float_t massNumber, Int_t atomicNumber, Float_t WEPL);
+   // Compute energy loss for a given from BB formula
+   Float_t GetEnergyLoss(Float_t energy, Float_t Zbeam, const TString& mat, Float_t thick);
+   // Compute energy loss for a given from BB formula
+   Float_t GetdEdX(Float_t energy, Float_t atomicNumber, const TString& mat);
    // Compute range
    Float_t  GetRange(const TString& mat, Float_t energy, Float_t Abeam, Int_t Zbeam);
    // Compute dE/dX

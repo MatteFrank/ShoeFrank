@@ -131,11 +131,16 @@ ClassImp(TAMSDntuPoint);
 
 //------------------------------------------+-----------------------------------
 //! Default detector
-TAMSDntuPoint::TAMSDntuPoint()
-: TAGdata(),
-  fGeometry(0x0),
-  fListOfPoints(0x0)
+TAMSDntuPoint::TAMSDntuPoint(Int_t stationsN)
+ : TAGdata(),
+   fStationsN(stationsN),
+   fListOfPoints(0x0)
 {
+   if (stationsN == 0) {
+      Warning("TAMSDntuPoint()", "Size of hit array not set, set to %d\n", TAMSDparGeo::GetDefSensorsN());
+      fStationsN = TAMSDparGeo::GetDefSensorsN();
+   }
+   
 	SetupClones();
 }
 
@@ -155,7 +160,7 @@ TAMSDntuPoint::~TAMSDntuPoint()
 //! \param[in] position position
 TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 position )
 {
-  if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
+  if ( iStation >= 0 && iStation < fStationsN ) {
     TClonesArray &pointArray = *GetListOfPoints(iStation);
     TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, x, y, position );
     return point;
@@ -177,7 +182,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint( int iStation, double x, double y, TVector3 
 //! \param[in] clusY cluster in Y plane
 TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, TAMSDcluster* clusX, TAMSDcluster* clusY)
 {
-   if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
+   if ( iStation >= 0 && iStation < fStationsN ) {
       TClonesArray &pointArray = *GetListOfPoints(iStation);
       TAMSDpoint* point = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint( iStation, clusX, clusY);
       return point;
@@ -194,7 +199,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(Int_t iStation, TAMSDcluster* clusX, TAMSDcl
 //! \param[in] iStation station id
 TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
 {
-   if (iStation >= 0  && iStation < fGeometry->GetStationsN()) {
+   if (iStation >= 0  && iStation < fStationsN) {
       TClonesArray &pointArray = *GetListOfPoints(iStation);
       TAMSDpoint* pt = new(pointArray[pointArray.GetEntriesFast()]) TAMSDpoint(*point);
       pt->SetClusterIdx(pointArray.GetEntriesFast()-1);
@@ -211,7 +216,7 @@ TAMSDpoint* TAMSDntuPoint::NewPoint(TAMSDpoint* point, Int_t iStation)
 //! \param[in] iStation station id
 int TAMSDntuPoint::GetPointsN(int iStation) const
 {
-  if ( iStation >= 0 && iStation < fGeometry->GetStationsN() ) {
+  if ( iStation >= 0 && iStation < fStationsN ) {
     TClonesArray* list = (TClonesArray*)fListOfPoints->At(iStation);
     return list->GetEntriesFast();
   } else return -1;
@@ -237,7 +242,7 @@ TAMSDpoint* TAMSDntuPoint::GetPoint(int iStation, int iPoint) const
 //! \param[in] iStation station id
 TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 {
-   if (iStation >= 0  && iStation < fGeometry->GetStationsN()) {
+   if (iStation >= 0  && iStation < fStationsN) {
 	  TClonesArray* list = (TClonesArray*)fListOfPoints->At(iStation);
 	  return list;
    } else return 0x0;
@@ -247,11 +252,9 @@ TClonesArray* TAMSDntuPoint::GetListOfPoints(int iStation) const
 //! Setup clones. Create and initialise the list of points
 void TAMSDntuPoint::SetupClones()
 {
-   fGeometry = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
-
    if (fListOfPoints) return;
-   fListOfPoints = new TObjArray();
-   for ( int i = 0; i < fGeometry->GetStationsN(); ++i ){
+   fListOfPoints = new TObjArray(fStationsN);
+   for ( int i = 0; i < fStationsN; ++i ){
      TClonesArray* arr = new TClonesArray("TAMSDpoint");
      arr->SetOwner(true);
      fListOfPoints->AddAt(arr, i);
@@ -264,7 +267,7 @@ void TAMSDntuPoint::SetupClones()
 void TAMSDntuPoint::Clear(Option_t*)
 {
   //	fListOfPoints->Delete();
-  for (int i = 0; i < fGeometry->GetStationsN(); ++i) {
+  for (int i = 0; i < fStationsN; ++i) {
     TClonesArray* list = GetListOfPoints(i);
     list->Delete();
   }

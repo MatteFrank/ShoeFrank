@@ -35,6 +35,12 @@ class TAGaction : public TAGnamed {
     // Action
     virtual Bool_t  Action();
 
+    // Begin Event Loop
+    virtual void BeginEventLoop();
+
+    // End Event Loop
+    virtual void EndEventLoop();
+
     // Create histogram
     virtual void    CreateHistogram();
     // Delete histogram
@@ -44,7 +50,7 @@ class TAGaction : public TAGnamed {
     // Write histogram
     virtual void    WriteHistogram();
     // Set histogram directory
-    void            SetHistogramDir(TDirectory* dir);
+    virtual void    SetHistogramDir(TDirectory* dir);
 
     //! To stream
     virtual void    ToStream(ostream& os=cout, Option_t* option="") const;
@@ -83,14 +89,14 @@ class TAGaction : public TAGnamed {
 
 protected:
     TDirectory*     fDirectory;     ///< Directory
+    TList*          fpHistList;      ///< List of histograms
+    Bool_t          fbIsOpenFile;    ///< Open file status flag
 
   private:
     TList*          fpDataOutList;   ///< List of data containers out
     TList*          fpDataInList;    ///< List of data containers in
     TList*          fpParaList;      ///< List of parameters
-    TList*          fpHistList;      ///< List of histograms
     Bool_t          fbHistValid;     ///< Histogram filling flag
-    Bool_t          fbIsOpenFile;    ///< Open file status flag
    
    ClassDef(TAGaction,0)
 };

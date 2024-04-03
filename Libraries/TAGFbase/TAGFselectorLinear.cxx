@@ -24,50 +24,29 @@ TAGFselectorLinear::TAGFselectorLinear() : TAGFselectorStandard()
 //! \brief Base function for track finding/selection/categorization for linear data-like selection
 void TAGFselectorLinear::Categorize( ) {
 
-
 	if(!TAGrecoManager::GetPar()->IncludeVT() || !m_systemsON.Contains("VT"))
-	{
-		Error("Categorize_dataLike()", "Linear selection algorithm currently not supported without Vertex!");
-		throw -1;
-	}
+		Error("Categorize()", "Linear selection algorithm currently not supported without Vertex!"), exit(42);
 	else
-	{
-		if( m_debug > 1 ) cout << "******* START OF VT CYCLE *********\n";
 		CategorizeVT();
-		if( m_debug > 1 )cout << "******** END OF VT CYCLE **********\n";
-	}
 
 	if( m_systemsON.Contains("IT") )
-	{
-		if( m_debug > 1 ) cout << "******* START OF IT CYCLE *********\n";
 		CategorizeIT();
-		if( m_debug > 1 ) cout << "******** END OF IT CYCLE **********\n";
-	}
 
-	
 	if( m_systemsON.Contains("MSD") )
-	{
-		if( m_debug > 1 ) cout << "******* START OF MSD CYCLE *********\n";
 		CategorizeMSD();
-		if( m_debug > 1 ) cout << "******** END OF MSD CYCLE **********\n";
-	}
 
 	if( m_systemsON.Contains("TW") )
-	{
-		if( m_debug > 1 ) cout << "******* START OF TW CYCLE *********\n";
 		CategorizeTW();
-		if( m_debug > 1 ) cout << "******** END OF TW CYCLE **********\n";
-	}
 
 	double dPVal = 1.E-3; // convergence criterion
 	KalmanFitter* preFitter = new KalmanFitter(1, dPVal);
 
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end(); ++itTrack)
 	{
-		int Z_Hypo = GetChargeFromTW(itTrack->second);
+		int Z_Hypo = fTrackUtilities->GetChargeFromTW(itTrack->second);
 		if( Z_Hypo == -1 )
 		{
-			Z_Hypo = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"), "TAGparGeo")->Object() )->GetBeamPar().AtomicNumber;
+			Z_Hypo = ( (TAGparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAGparGeo"))->Object() )->GetBeamPar().AtomicNumber;
 			itTrack->second->addTrackRep(new RKTrackRep(UpdatePDG::GetPDG()->GetPdgCodeMainIsotope( Z_Hypo )));
 		}
 		else
@@ -105,6 +84,8 @@ void TAGFselectorLinear::Categorize( ) {
 //! This step is performed through a linear extrapolation at the MSD
 void TAGFselectorLinear::CategorizeMSD()
 {
+	if( FootDebugLevel(2) ) cout << "******* START OF MSD CYCLE *********\n";
+
 	// Extrapolate to MSD
 	// same index if VTX_tracklets (for one vertex..)
 	for (map<int, Track*>::iterator itTrack = m_trackTempMap.begin(); itTrack != m_trackTempMap.end();) {
@@ -120,7 +101,7 @@ void TAGFselectorLinear::CategorizeMSD()
 		TVector3 pos = TVector3( firstTrackMeas->getRawHitCoords()(0), firstTrackMeas->getRawHitCoords()(1), 0);
 		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
 		
-		if(m_debug > 0)
+		if(FootDebugLevel(1))
 		{
 			cout << "***POS SEED***\nVTX: "; pos.Print();
 		}
@@ -131,11 +112,11 @@ void TAGFselectorLinear::CategorizeMSD()
 			if( !m_SensorIDMap->GetSensorID(MSDnPlane, &sensorId) )
 			{
 				Error("CategorizeIT()", "Sensor not found for Genfit plane %d!", MSDnPlane);
-				throw -1;
+				exit(42);
 			}
 			//Skip if no measurement found
 			if ( m_allHitMeas->find( MSDnPlane ) == m_allHitMeas->end() ) {
-				if(m_debug > 0) cout << "TAGFselectorLinear::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
+				if(FootDebugLevel(1)) cout << "TAGFselectorLinear::CategorizeMSD() -- no measurement found in MSDnPlane "<< MSDnPlane<<"\n";
 				continue;
 			}
 
@@ -153,7 +134,7 @@ void TAGFselectorLinear::CategorizeMSD()
 
 			for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( MSDnPlane ).begin(); it != m_allHitMeas->at( MSDnPlane ).end(); ++it){
 
-				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorLinear::Categorize_dataLike() --> ERROR MSD" <<endl, exit(0);
+				if ( m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != sensorMatch )	cout << "TAGFselectorLinear::Categorize() --> ERROR MSD" <<endl, exit(42);
 
 				//RZ: CHECK -> AVOID ERRORS
 				double distanceFromHit;
@@ -172,7 +153,7 @@ void TAGFselectorLinear::CategorizeMSD()
 
 				// find hit at minimum distance
 				if ( distanceFromHit < minDistFromHit ){
-					if(m_debug > 0) cout << "MSDcheck\tPlane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << "\n";
+					if(FootDebugLevel(1)) cout << "MSDcheck\tPlane::" << sensorMatch << "\tTrack::" << itTrack->first << "\tdistanceFromHit::" << distanceFromHit << "\tStrip::" << strip << "\n";
 					minDistFromHit = distanceFromHit;
 					indexOfMinY = count;
 				}
@@ -193,7 +174,13 @@ void TAGFselectorLinear::CategorizeMSD()
 
 	}// end loop on GF Track candidates
 
-	return;
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of MSD tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
+
+	if( FootDebugLevel(2) ) cout << "******** END OF MSD CYCLE **********\n";
 }
 
 
@@ -203,10 +190,12 @@ void TAGFselectorLinear::CategorizeMSD()
 //! This step uses a linear extrapolation at the TW
 void TAGFselectorLinear::CategorizeTW()
 {
+	if( FootDebugLevel(2) ) cout << "******* START OF TW CYCLE *********\n";
+
 	int planeTW = m_SensorIDMap->GetFitPlaneTW();
 	//RZ -> See if this check can be done outside this cycle... it seems a much more general skip
 	if ( m_allHitMeas->find( planeTW ) == m_allHitMeas->end() ) {
-		if(m_debug > 0) cout << "TAGFselectorLinear::CategorizeTW() -- no measurement found in TW layer\n";
+		if(FootDebugLevel(1)) cout << "TAGFselectorLinear::CategorizeTW() -- no measurement found in TW layer\n";
 		return;
 	}
 
@@ -219,9 +208,8 @@ void TAGFselectorLinear::CategorizeTW()
 		pos = m_GeoTrafo->FromVTLocalToGlobal( m_VT_geo->Sensor2Detector(VTsensorId, pos) );
 
 		TVector3 guessOnTW =  m_GeoTrafo->FromGlobalToTWLocal( pos + m_trackSlopeMap[itTrack->first]*(m_SensorIDMap->GetFitPlane(planeTW)->getO().Z() - pos.Z()) );
-		// guessOnTW = m_TW_geo->Detector2Sensor( 0, guessOnTW );
 
-		if( m_debug > 1) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
+		if( FootDebugLevel(2)) cout << "guessOnTW " << guessOnTW.X() << "  " << guessOnTW.Y() << "\n";
 
 		//calculate distance TW point
 		double TWdistance = m_TWtolerance;
@@ -231,12 +219,12 @@ void TAGFselectorLinear::CategorizeTW()
 		for ( vector<AbsMeasurement*>::iterator it = m_allHitMeas->at( planeTW ).begin(); it != m_allHitMeas->at( planeTW ).end(); ++it){
 
 			if (  m_SensorIDMap->GetFitPlaneIDFromMeasID( (*it)->getHitId() ) != planeTW )
-				cout << "TAGFselectorLinear::Categorize_dataLike() --> ERROR TW" <<endl, exit(0);
+				cout << "TAGFselectorLinear::Categorize() --> ERROR TW" <<endl, exit(42);
 
 			double distanceFromHit = sqrt( ( guessOnTW.X() - (*it)->getRawHitCoords()(0) )*( guessOnTW.X() - (*it)->getRawHitCoords()(0) ) +
 					( guessOnTW.Y() - (*it)->getRawHitCoords()(1) )*( guessOnTW.Y() - (*it)->getRawHitCoords()(1) ) );
 			
-			if( m_debug > 0) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< "\n";
+			if( FootDebugLevel(1)) cout << "measurement: " << (*it)->getRawHitCoords()(0) << "   " << (*it)->getRawHitCoords()(1)<< "\n";
 
 			if ( distanceFromHit < TWdistance )	{
 				double distInX = guessOnTW.X() - (*it)->getRawHitCoords()(0);
@@ -254,5 +242,11 @@ void TAGFselectorLinear::CategorizeTW()
 		}
 	}
 
-	return;
+	if( m_IsMC && FootDebugLevel(1) )
+	{
+		cout << "End of TW tracking -> found these tracks\n";
+		PrintCurrentTracksMC();
+	}
+
+	if( FootDebugLevel(2) ) cout << "******** END OF TW CYCLE **********\n";
 }

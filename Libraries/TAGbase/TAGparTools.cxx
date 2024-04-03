@@ -62,11 +62,11 @@ void TAGparTools::ReadItem(Char_t& item)
 void TAGparTools::ReadItem(TString& item)
 {
    Int_t pos = -1;
-   Char_t buf[1024];
+   Char_t buf[2048];
    TString key;
    while (pos == -1) {
       if (fFileStream.eof()) break;
-	  fFileStream.getline(buf, 1024);
+	  fFileStream.getline(buf, 2048);
      if (buf[0] == '/') continue;
      if (buf[0] == '#') continue;
 	  key = buf;
@@ -146,6 +146,25 @@ void TAGparTools::ReadItem(Float_t &arg)
   if(FootDebugLevel(3))
 	  cout << arg << endl;
 }
+
+
+
+//______________________________________________________________________________
+//! Read a double from a string
+//!
+//! \param[out] arg read float
+void TAGparTools::ReadItem(Double_t &arg)
+{
+   TString item;
+   ReadItem(item);
+   arg = item.Atof();
+  if(FootDebugLevel(3))
+	  cout << arg << endl;
+}
+
+
+
+
 
 //______________________________________________________________________________
 //! Read a char array from a string
@@ -874,4 +893,22 @@ vector<TString> TAGparTools::Tokenize(const TString line, const Char_t delimiter
    }
    
    return list;
+}
+
+//____________________________________________________________________________
+//! Tokenize string
+//!
+//! \param[in] line string
+//! \param[in] c string to removed
+//! \param[in] blank erase blank also flag
+//! \return a string vector
+TString TAGparTools::Remove(const char* line, const Char_t c, Bool_t blank)
+{
+   string my_str = line;
+   my_str.erase(remove(my_str.begin(), my_str.end(), c), my_str.end()); //remove c from string
+   
+   if (blank)
+      my_str.erase(remove(my_str.begin(), my_str.end(), ' '), my_str.end()); //remove blank from string
+
+   return TString(my_str.data());
 }

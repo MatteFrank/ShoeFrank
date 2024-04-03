@@ -32,15 +32,14 @@ ClassImp(TAMSDntuHit);
 
 //------------------------------------------+-----------------------------------
 //! Default constructor.
-TAMSDntuHit::TAMSDntuHit()
-: TAGdata(),
-  fListOfStrips(0x0),
-  fpGeoMap(0x0)
+TAMSDntuHit::TAMSDntuHit(Int_t sensorsN)
+ : TAGdata(),
+   fSensorsN(sensorsN),
+   fListOfStrips(0x0)
 {
-   fpGeoMap = (TAMSDparGeo*) gTAGroot->FindParaDsc(FootParaDscName("TAMSDparGeo"), "TAMSDparGeo")->Object();
-   if (!fpGeoMap) {
-      Error("TAMSDntuHit()", "Para desciptor %s does not exist", FootParaDscName("TAMSDparGeo"));
-      exit(0);
+   if (sensorsN == 0) {
+      Warning("TAMSDntuHit()", "Size of hit array not set, set to %d\n", TAMSDparGeo::GetDefSensorsN());
+      fSensorsN = TAMSDparGeo::GetDefSensorsN();
    }
 
    SetupClones();
@@ -59,7 +58,7 @@ TAMSDntuHit::~TAMSDntuHit()
 //! \param[in] iSensor sensor id
 Int_t TAMSDntuHit::GetStripsN(Int_t iSensor) const
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fSensorsN) {
       TClonesArray* list = GetListOfStrips(iSensor);
       return list->GetEntriesFast();
    } else  {
@@ -74,7 +73,7 @@ Int_t TAMSDntuHit::GetStripsN(Int_t iSensor) const
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor)
 {
-   if (iSensor >= 0 && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0 && iSensor < fSensorsN) {
       TClonesArray* list = (TClonesArray*)fListOfStrips->At(iSensor);
       return list;
    } else {
@@ -89,7 +88,7 @@ TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor)
 //! \param[in] iSensor sensor id
 TClonesArray* TAMSDntuHit::GetListOfStrips(Int_t iSensor) const
 {
-   if (iSensor >= 0 && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0 && iSensor < fSensorsN) {
       TClonesArray* list = (TClonesArray*)fListOfStrips->At(iSensor);
       return list;
    } else {
@@ -137,9 +136,9 @@ const TAMSDhit* TAMSDntuHit::GetStrip(Int_t iSensor, Int_t iStrip) const
 void TAMSDntuHit::SetupClones()
 {
    if (fListOfStrips) return;
-   fListOfStrips = new TObjArray();
+   fListOfStrips = new TObjArray(fSensorsN);
    
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < fSensorsN; ++i) {
       TClonesArray* arr = new TClonesArray("TAMSDhit", 500);
       arr->SetOwner(true);
       fListOfStrips->AddAt(arr, i);
@@ -153,7 +152,7 @@ void TAMSDntuHit::SetupClones()
 //! Clear event.
 void TAMSDntuHit::Clear(Option_t*)
 {
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < fSensorsN; ++i) {
       TClonesArray* list = GetListOfStrips(i);
       list->Clear("C");
    }
@@ -169,7 +168,7 @@ void TAMSDntuHit::Clear(Option_t*)
 //! \param[in] aStrip strip id
 TAMSDhit* TAMSDntuHit::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_t aStrip)
 {
-   if (iSensor >= 0  && iSensor < fpGeoMap->GetSensorsN()) {
+   if (iSensor >= 0  && iSensor < fSensorsN) {
       TClonesArray &stripArray = *GetListOfStrips(iSensor);
       std::pair<int, int> idx(aView, aStrip);
       
@@ -198,7 +197,7 @@ TAMSDhit* TAMSDntuHit::NewStrip(Int_t iSensor, Double_t value, Int_t aView, Int_
 //! \param[in] option option for printout
 void TAMSDntuHit::ToStream(ostream& os, Option_t* option) const
 {
-   for (Int_t i = 0; i < fpGeoMap->GetSensorsN(); ++i) {
+   for (Int_t i = 0; i < fSensorsN; ++i) {
       
       os << "TAMSDntuHit " << GetName()
       << Form("  nStrips=%3d", GetStripsN(i))

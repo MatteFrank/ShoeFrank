@@ -17,7 +17,8 @@
 #include "TAMSDparGeo.hxx"
 #include "TAGroot.hxx"
 
-const TString TAMSDparGeo::fgkBaseName      = "MSD";
+const TString TAMSDparGeo::fgkBaseName    = "MSD";
+const Int_t   TAMSDparGeo::fgkDefSensorsN = 6;
 
 /*!
  \class TAMSDparGeo
@@ -674,3 +675,13 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
   return ss.str();
 
 }
+
+string TAMSDparGeo::PrintMSDPhysics()
+{
+   stringstream str;
+   str << PrintCard("STEPSIZE","0.000001","0.007",fvStripRegion.at(0),fvStripRegion.at(fvStripRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.00005",fvMetalRegion.at(0),fvMetalRegion.at(fvMetalRegion.size()-1),"","","") << endl;
+   str << PrintCard("STEPSIZE","0.000001","0.00005",fvModRegion.at(0),fvModRegion.at(fvModRegion.size()-1),"","","") << endl;
+   return str.str();
+}
+
