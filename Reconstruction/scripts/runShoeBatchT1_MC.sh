@@ -80,7 +80,7 @@ echo "Start job submission!"
 INPUT_BASE_PATH="/storage/gpfs_data/foot/shared/SimulatedData"
 OUTPUT_BASE_PATH="/storage/gpfs_data/foot/"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
-SHOE_PATH=$(dirname $(realpath "$0"))
+SHOE_PATH=$(dirname $(readlink -f "$0"))
 SHOE_PATH=${SHOE_PATH%Reconstruction/scripts}
 
 if [[ ! "$SHOE_PATH" == *"$SHOE_BASE_PATH"* ]]; then
@@ -109,8 +109,8 @@ do
     esac
 done
 
-inFile=$(realpath ${inFile})
-outFolder=$(realpath ${outFolder})
+inFile=$(readlink -f ${inFile})
+outFolder=$(readlink -f ${outFolder})
 
 #I/O checks of input file
 if [ ! -e "$inFile" ]; then

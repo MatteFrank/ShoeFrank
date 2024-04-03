@@ -70,7 +70,7 @@ echo "Start job submission!"
 INPUT_BASE_PATH="/storage/gpfs_data/foot/"
 OUTPUT_BASE_PATH="/storage/gpfs_data/foot/"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
-SHOE_PATH=$(dirname $(realpath "$0"))
+SHOE_PATH=$(dirname $(readlink -f "$0"))
 SHOE_PATH=${SHOE_PATH%Reconstruction/scripts}
 
 if [[ ! "$SHOE_PATH" == *"$SHOE_BASE_PATH"* ]]; then
