@@ -82,6 +82,11 @@ if [[ ! "$SHOE_PATH" == *"$SHOE_BASE_PATH"* ]]; then
     exit 0
 fi
 
+if [[ ! "$SHOE_PATH" == *"shoe/" ]]; then
+    echo "Script is not where it is supposed to be! Move the bash file to the 'shoe/Reconstruction/scripts' folder"
+    exit 0
+fi
+
 #Initialize some variables
 outFile=""
 isMc=0
