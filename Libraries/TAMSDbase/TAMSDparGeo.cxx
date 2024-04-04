@@ -47,32 +47,34 @@ TAMSDparGeo::~TAMSDparGeo()
 //! Define material
 void TAMSDparGeo::DefineMaterial()
 {
-    TAVTbaseParGeo::DefineMaterial();
+  TAVTbaseParGeo::DefineMaterial();
 
-    // Strip material
-    TGeoMaterial* pixMat = TAGmaterials::Instance()->CreateMaterial(fPixMat, fPixMatDensity);
-    if(FootDebugLevel(1)) {
-        printf("strips material:\n");
-        pixMat->Print();
-    }
-    // Metal material
-    TGeoMaterial* metMat = TAGmaterials::Instance()->CreateMaterial(fMetalMat, fMetalDensity);
-    if(FootDebugLevel(1)) {
-        printf("metal material:\n");
-        metMat->Print();
-    }
+  // Strip material
+  TGeoMaterial* pixMat = TAGmaterials::Instance()->CreateMaterial(fPixMat, fPixMatDensity);
+  if(FootDebugLevel(1)) {
+    printf("strips material:\n");
+    pixMat->Print();
+  }
+  // Metal material
+  TGeoMaterial* metMat = TAGmaterials::Instance()->CreateMaterial(fMetalMat, fMetalDensity);
+  if(FootDebugLevel(1)) {
+    printf("metal material:\n");
+    metMat->Print();
+  }
+  if (fSupportInfo) {
     // Board material
     TGeoMaterial* boardMat = TAGmaterials::Instance()->CreateMaterial(fBoardMat, fBoardDensity);
     if(FootDebugLevel(1)) {
-        printf("board material:\n");
-        boardMat->Print();
+      printf("board material:\n");
+      boardMat->Print();
     }
     // Box material
     TGeoMaterial* boxMat = TAGmaterials::Instance()->CreateMaterial(fBoxMat, fBoxDensity);
     if(FootDebugLevel(1)) {
-        printf("box material:\n");
-        boxMat->Print();
+      printf("box material:\n");
+      boxMat->Print();
     }
+  }
 }
 
 //_____________________________________________________________________
@@ -165,59 +167,59 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
    ReadItem(fSupportInfo);
    if(FootDebugLevel(1))
       cout  << "  Info flag for support:  "<< fSupportInfo << endl;
+   if(fSupportInfo) {
+     ReadItem(fBoardThickness);
+     if(FootDebugLevel(1))
+       cout   << " pcb thickness: "<< fBoardThickness << endl;
+     
+     ReadStrings(fBoardMat);
+     if(FootDebugLevel(1))
+       cout   << " pcb material: "<< fBoardMat.Data() << endl;
+     
+     ReadItem(fBoardDensity);
+     if(FootDebugLevel(1))
+       cout  << " pcb density:  "<< fBoardDensity << endl;
+     
+     ReadVector3(fBoardSize);
+     if(FootDebugLevel(1))
+       cout  << "  Total size of pcb: "<< fBoardSize.X() << " " << fBoardSize.Y() << " " << fBoardSize.Z() << endl;
+     
+     ReadVector3(fBoardOffset);
+     if(FootDebugLevel(1))
+       cout  << "  Offset of pcb: "<< fBoardOffset.X() << " "<< fBoardOffset.Y() << " " << fBoardOffset.Z() << endl;
+     
+     ReadVector3(fBdHoleSize);
+     if(FootDebugLevel(1))
+       cout  << "  Size of pcb hole: "<< fBdHoleSize.X() << " " << fBdHoleSize.Y() << " " << fBdHoleSize.Z() << endl;
+     
+     ReadStrings(fBoxMat);
+     if(FootDebugLevel(1))
+       cout  << "  Box Material: "<< fBoxMat << endl;
+     
+     ReadItem(fBoxDensity);
+     if(FootDebugLevel(1))
+       cout  << "  Box Material density: "<< fBoxDensity << endl;
+     
+     ReadVector3(fOutBoxSize);
+     if(FootDebugLevel(1))
+       cout  << "  Outer Box size: "<< fOutBoxSize.X() << " " <<  fOutBoxSize.Y() << " " <<  fOutBoxSize.Z()  << endl;
 
-   ReadItem(fBoardThickness);
-   if(FootDebugLevel(1))
-     cout   << " pcb thickness: "<< fBoardThickness << endl;
-
-   ReadStrings(fBoardMat);
-   if(FootDebugLevel(1))
-     cout   << " pcb material: "<< fBoardMat.Data() << endl;
-
-   ReadItem(fBoardDensity);
-   if(FootDebugLevel(1))
-     cout  << " pcb density:  "<< fBoardDensity << endl;
-
-   ReadVector3(fBoardSize);
-   if(FootDebugLevel(1))
-     cout  << "  Total size of pcb: "<< fBoardSize.X() << " " << fBoardSize.Y() << " " << fBoardSize.Z() << endl;
-
-   ReadVector3(fBoardOffset);
-   if(FootDebugLevel(1))
-     cout  << "  Offset of pcb: "<< fBoardOffset.X() << " "<< fBoardOffset.Y() << " " << fBoardOffset.Z() << endl;
-
-   ReadVector3(fBdHoleSize);
-   if(FootDebugLevel(1))
-     cout  << "  Size of pcb hole: "<< fBdHoleSize.X() << " " << fBdHoleSize.Y() << " " << fBdHoleSize.Z() << endl;
-
-   ReadStrings(fBoxMat);
-   if(FootDebugLevel(1))
-      cout  << "  Box Material: "<< fBoxMat << endl;
-   
-   ReadItem(fBoxDensity);
-   if(FootDebugLevel(1))
-      cout  << "  Box Material density: "<< fBoxDensity << endl;
-   
-   ReadVector3(fOutBoxSize);
-   if(FootDebugLevel(1))
-      cout  << "  Outer Box size: "<< fOutBoxSize.X() << " " <<  fOutBoxSize.Y() << " " <<  fOutBoxSize.Z()  << endl;
-
-   ReadVector3(fInBoxSize);
-   if(FootDebugLevel(1))
-      cout  << "  Inner Box size: "<< fInBoxSize.X() << " " <<  fInBoxSize.Y() << " " <<  fInBoxSize.Z()  << endl;
-
-   ReadVector3(fBoxOff);
-   if(FootDebugLevel(1))
-      cout  << "  Box offset: "<< fBoxOff.X() << " " <<  fBoxOff.Y() << " " <<  fBoxOff.Z()  << endl;
-
-   ReadVector3(fBoxHoleSize);
-   if(FootDebugLevel(1))
-      cout  << "  Box hole size: "<< fBoxHoleSize.X() << " " <<  fBoxHoleSize.Y() << " " <<  fBoxHoleSize.Z()  << endl;
-
-   ReadVector3(fBoxHoleOff);
-   if(FootDebugLevel(1))
-      cout  << "  Box hole offset: "<< fBoxHoleOff.X() << " " <<  fBoxHoleOff.Y() << " " <<  fBoxHoleOff.Z()  << endl;
-   
+     ReadVector3(fInBoxSize);
+     if(FootDebugLevel(1))
+       cout  << "  Inner Box size: "<< fInBoxSize.X() << " " <<  fInBoxSize.Y() << " " <<  fInBoxSize.Z()  << endl;
+     
+     ReadVector3(fBoxOff);
+     if(FootDebugLevel(1))
+       cout  << "  Box offset: "<< fBoxOff.X() << " " <<  fBoxOff.Y() << " " <<  fBoxOff.Z()  << endl;
+     
+     ReadVector3(fBoxHoleSize);
+     if(FootDebugLevel(1))
+       cout  << "  Box hole size: "<< fBoxHoleSize.X() << " " <<  fBoxHoleSize.Y() << " " <<  fBoxHoleSize.Z()  << endl;
+     
+     ReadVector3(fBoxHoleOff);
+     if(FootDebugLevel(1))
+       cout  << "  Box hole offset: "<< fBoxHoleOff.X() << " " <<  fBoxHoleOff.Y() << " " <<  fBoxHoleOff.Z()  << endl;
+   }
     // read info for support only for IT
    if (fSupportInfo)
       ReadSupportInfo();
@@ -1294,14 +1296,18 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
       flkmatMod = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
       flkmatMetal = TAGmaterials::Instance()->GetFlukaMatName(fMetalMat.Data());
       flkmatSupp = TAGmaterials::Instance()->GetFlukaMatName(fPixMat.Data());
-      flkmatBoard = TAGmaterials::Instance()->GetFlukaMatName(fBoardMat.Data());
-      flkmatBox = TAGmaterials::Instance()->GetFlukaMatName(fBoxMat.Data());
+      if(fSupportInfo) {
+	flkmatBoard = TAGmaterials::Instance()->GetFlukaMatName(fBoardMat.Data());
+	flkmatBox = TAGmaterials::Instance()->GetFlukaMatName(fBoxMat.Data());
+      }
     }else{
       flkmatMod = Material->GetFlukaMatName(fEpiMat.Data());
       flkmatMetal = Material->GetFlukaMatName(fMetalMat.Data());
       flkmatSupp = Material->GetFlukaMatName(fPixMat.Data());
-      flkmatBoard = Material->GetFlukaMatName(fBoardMat.Data());
-      flkmatBox = Material->GetFlukaMatName(fBoxMat.Data());
+      if(fSupportInfo) {
+	flkmatBoard = Material->GetFlukaMatName(fBoardMat.Data());
+	flkmatBox = Material->GetFlukaMatName(fBoxMat.Data());
+      }
     }
         
     bool magnetic = false;
