@@ -497,7 +497,7 @@ EOF
         # 3. Final merge
         dag_sub="${HTCfolder}/submitDAG_fullStat_${campaign}_${runNumber}.sub"
         if [ -e "$dag_sub" ]; then
-            rm ${dag_sub}
+            rm ${dag_sub}*
         fi
 
         #Define PARENT-CHILD job relation

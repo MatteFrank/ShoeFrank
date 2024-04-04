@@ -416,7 +416,7 @@ chmod 754 ${mergeJobExec}
 # 2. Final merge
 dag_sub="${HTCfolder}/submitAnaDAG_${campaign}_${runNumber}.sub"
 if [ -e "$dag_sub" ]; then
-    rm ${dag_sub}
+    rm ${dag_sub}*
 fi
 touch ${dag_sub}
 cat <<EOF > ${dag_sub}
