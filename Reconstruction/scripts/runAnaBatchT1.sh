@@ -415,6 +415,10 @@ chmod 754 ${mergeJobExec}
 # 1. Process and directory merging 
 # 2. Final merge
 dag_sub="${HTCfolder}/submitAnaDAG_${campaign}_${runNumber}.sub"
+if [ -e "$dag_sub" ]; then
+    rm ${dag_sub}
+fi
+touch ${dag_sub}
 cat <<EOF > ${dag_sub}
 JOB process_Ana_${campaign}_${runNumber} ${filename_sub}
 JOB merge_Dirs_${campaign}_${runNumber} ${directory_sub}

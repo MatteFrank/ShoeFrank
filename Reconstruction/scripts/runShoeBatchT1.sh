@@ -332,6 +332,9 @@ EOF
         # 2. Merge output files of single run
         if [ $runNumber -eq $firstRunNumber ]; then
             dag_sub="${HTCfolder}/submitDAG_${campaign}_${firstRunNumber}_${lastRunNumber}.sub"
+            if [ -e "$dag_sub" ]; then
+                rm ${dag_sub}
+            fi
             touch ${dag_sub}
         fi
 
