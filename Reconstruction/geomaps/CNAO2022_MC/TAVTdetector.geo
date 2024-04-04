@@ -27,17 +27,27 @@ PixMat:          "SiO2/Al"
 PixMatDensities: "2.65/2.70"
 PixMatProp:      "0.89/0.11"
 PixMatDensity:      2.3
-SupportInfo:         1
-
+//
+SupportInfo:         2
+//
 EpoxyMat:         "Epoxy"
 EpoxyMatDensity:   1.18
 EpoxyMat:         "Eg"
 EpoxyMatDensity:   2.61
-PcbBoardMat:        "Epoxy/Eg"
-PcbBoardDensities:   "2.61/1.19"
-PcbBoardProp:        "0.6/0.4" 
-PcbBoardDensity:     1.85
-
+PCBMat:           "Epoxy/Eg"
+PCBDensities:     "2.61/1.19"
+PCBProp:          "0.6/0.4" 
+PCBDensity:       1.85
+PCBSizeX:         6.95     PCBSizeY:      9.8       PCBSizeZ:      0.16
+PCBOffsetX:       0.0      PCBOffsetY:    1.779     PCBOffsetZ:    0.0
+PCBHoleSizeX:     1.9884   PCBHoleSizeY:  1.92096   PCBHoleSizeZ:  0.16
+BoxMat:            "Al"
+BoxDensity:        2.7
+Box1SizeX:	   19.8  Box1SizeY:   19.8    Box1SizeZ:    0.2
+Box2SizeX:	   19.8  Box2SizeY:   19.8    Box2SizeZ:    2.5
+BoxOffX:	    0.0  BoxOffY:       0.0   BoxOffZ:      0.0
+BoxHole1X:	    2.2  BoxHole1Y:     2.2   BoxHole1Z:    0.2
+BoxHole2X:	    2.2  BoxHole2Y:     2.2   BoxHole2Z:    0.3
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Detector Planes used in the run
@@ -47,41 +57,37 @@ Inputs:            1
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.0000  PositionsZ:   -0.92
 Tilt1:             0.0000  Tilt2:        0.000   Tilt3:         0.000
-AlignementU:      -0.0003
-AlignementV:       0.0000
-AlignementTilt:   -0.000
+AlignementU:       0.000
+AlignementV:       0.000
+AlignementTilt:    0.000
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 2  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            2
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.000   PositionsZ:   -0.6
 Tilt1:             0.0000  Tilt2:      180.000   Tilt3:         0.000
-AlignementU:       0.0330
-AlignementV:       0.0037
-AlignementTilt:    0.182
+AlignementU:       0.000
+AlignementV:       0.000
+AlignementTilt:    0.000
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 3  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            3
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.000  PositionsZ:     0.6
 Tilt1:             0.0000  Tilt2:        0.000   Tilt3:         0.000
-AlignementU:      -0.0267
-AlignementV:      -0.0010
-AlignementTilt:    0.306
+AlignementU:       0.000
+AlignementV:       0.000
+AlignementTilt:    0.000
 
 // -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Plane 4  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 Inputs:            4
 Type:              0
 PositionsX:        0.0000  PositionsY:   0.0000  PositionsZ:    0.92
 Tilt1:             0.0000  Tilt2:      180.000   Tilt3:         0.000
-AlignementU:       0.0000
-AlignementV:       0.0006
-AlignementTilt:   -0.035
+AlignementU:       0.000
+AlignementV:       0.000
+AlignementTilt:    0.000
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // End of Mapping File
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
-
-
-
-
