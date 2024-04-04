@@ -28,6 +28,16 @@ PixMatDensities: "2.65/2.70"
 PixMatProp:      "0.89/0.11"
 PixMatDensity:      2.3
 SupportInfo:         0
+//
+//EpoxyMat:         "Epoxy"
+//EpoxyMatDensity:   1.18
+//EpoxyMat:         "Eg"
+//EpoxyMatDensity:   2.61
+//PcbBoardMat:        "Epoxy/Eg"
+//PcbBoardDensities:   "2.61/1.19"
+//PcbBoardProp:        "0.6/0.4" 
+//PcbBoardDensity:     1.85
+
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Detector Planes used in the run
