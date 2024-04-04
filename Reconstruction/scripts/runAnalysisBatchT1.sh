@@ -74,11 +74,16 @@ echo "Start job submission!"
 INPUT_BASE_PATH="/storage/gpfs_data/foot/"
 OUTPUT_BASE_PATH="/storage/gpfs_data/foot/"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
-SHOE_PATH=$(dirname $(realpath "$0"))
+SHOE_PATH=$(dirname $(readlink -f "$0"))
 SHOE_PATH=${SHOE_PATH%Reconstruction/scripts}
 
 if [[ ! "$SHOE_PATH" == *"$SHOE_BASE_PATH"* ]]; then
     echo "SHOE installation is not where it's supposed to be. Please move everything to ${SHOE_BASE_PATH} and re-run!"
+    exit 0
+fi
+
+if [[ ! "$SHOE_PATH" == *"shoe/" ]]; then
+    echo "Script is not where it is supposed to be! Move the bash file to the 'shoe/Reconstruction/scripts' folder"
     exit 0
 fi
 
@@ -423,6 +428,10 @@ chmod 754 ${mergeJobExec}
 # 1. Process and object merging together
 # 2. Final merge
 dag_sub="${HTCfolder}/submitAnalysisDAG_${campaign}_${runNumber}.sub"
+if [ -e "$dag_sub" ]; then
+    rm ${dag_sub}*
+fi
+touch ${dag_sub}
 cat <<EOF > ${dag_sub}
 JOB process_Ana_${campaign}_${runNumber} ${filename_sub}
 JOB merge_Objs_${campaign}_${runNumber} ${object_sub}

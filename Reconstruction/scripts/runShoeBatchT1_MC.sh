@@ -80,11 +80,16 @@ echo "Start job submission!"
 INPUT_BASE_PATH="/storage/gpfs_data/foot/shared/SimulatedData"
 OUTPUT_BASE_PATH="/storage/gpfs_data/foot/"
 SHOE_BASE_PATH="/opt/exp_software/foot/${USER}"
-SHOE_PATH=$(dirname $(realpath "$0"))
+SHOE_PATH=$(dirname $(readlink -f "$0"))
 SHOE_PATH=${SHOE_PATH%Reconstruction/scripts}
 
 if [[ ! "$SHOE_PATH" == *"$SHOE_BASE_PATH"* ]]; then
     echo "SHOE installation is not where it's supposed to be. Please move everything to ${SHOE_BASE_PATH} and re-run!"
+    exit 0
+fi
+
+if [[ ! "$SHOE_PATH" == *"shoe/" ]]; then
+    echo "Script is not where it is supposed to be! Move the bash file to the 'shoe/Reconstruction/scripts' folder"
     exit 0
 fi
 
@@ -104,8 +109,8 @@ do
     esac
 done
 
-inFile=$(realpath ${inFile})
-outFolder=$(realpath ${outFolder})
+inFile=$(readlink -f ${inFile})
+outFolder=$(readlink -f ${outFolder})
 
 #I/O checks of input file
 if [ ! -e "$inFile" ]; then
@@ -492,7 +497,7 @@ EOF
         # 3. Final merge
         dag_sub="${HTCfolder}/submitDAG_fullStat_${campaign}_${runNumber}.sub"
         if [ -e "$dag_sub" ]; then
-            rm ${dag_sub}
+            rm ${dag_sub}*
         fi
 
         #Define PARENT-CHILD job relation
