@@ -79,15 +79,42 @@ private:
   Float_t        fMetalThickness;   ///< Thickness of metallization
   TString        fMetalMat;         ///< Material of metallization
   Float_t        fMetalDensity;     ///< density of metallization
-   
+  Float_t        fBoardThickness;   ///< Thickness of pcb
+  TString        fBoardMat;         ///< Material of pcb
+  Float_t        fBoardDensity;     ///< density of pcb
+  Float_t        fBoardSizeX;       ///< size X of pcb   
+  Float_t        fBoardSizeY;       ///< size Y of pcb   
+  Float_t        fBoardSizeZ;       ///< size Z of pcb   
+  Float_t        fBoardOffsetX;     ///< Offset size X of pcb   
+  Float_t        fBoardOffsetY;     ///< Offset size Y of pcb   
+  Float_t        fBoardOffsetZ;     ///< Offset size Z of pcb   
+  Float_t        fBdHoleSizeX;     ///< size X of pcb hole  
+  Float_t        fBdHoleSizeY;     ///< size Y of pcb hole   
+  Float_t        fBdHoleSizeZ;     ///< size Z of pcb hole  
+  TVector3       fBoardSize;        ///< Total size of pcb   
+  TVector3       fBdHoleSize;       ///< Hole in pcb
+  TVector3       fBoardOffset;      ///< Position offset of pcb
+  TVector3       fOutBoxSize;       ///< Outer Box size
+  TVector3       fInBoxSize;        ///< Inner Box size
+  TVector3       fBoxOff;           ///< Box offset
+  TVector3       fBoxHoleSize;      ///< Box hole size
+  TVector3       fBoxHoleOff;       ///< Box hole offset
+  TString        fBoxMat;           ///< Box material
+  Float_t        fBoxDensity;       ///< Box density
+ 
   vector<string> fvMetalBody;       ///< Fluka metal body vector
   vector<string> fvModBody;         ///< Fluka body vector
   vector<string> fvStripBody;       ///< Fluka strip  vector
-  vector<string> fvBoxBody;         ///< Fluka air box vector
+  vector<string> fvAirBody;         ///< Fluka air box vector
+  vector<string> fvBoxBody;         ///< Fluka metal box vector
+  vector<string> fvBoardBody;       ///< Fluka pcb vector
+  vector<string> fvHoleBody;        ///< Fluka pcb hole vector
   vector<string> fvMetalRegion;     ///< Fluka metal region vector
-  vector<string> fvModRegion;       ///< Fluka  mod region vector
+  vector<string> fvModRegion;       ///< Fluka mod region vector
   vector<string> fvStripRegion;     ///< Fluka strip region vector
-  vector<string> fvBoxRegion;       ///< Fluka air box region vector
+  vector<string> fvAirRegion;       ///< Fluka air box region vector
+  vector<string> fvBoxRegion;       ///< Fluka box region vector
+  vector<string> fvBoardRegion;     ///< Fluka pcb region vector
 
 private:
   static const TString fgkBaseName;    ///< MSD base name

@@ -61,6 +61,18 @@ void TAMSDparGeo::DefineMaterial()
         printf("metal material:\n");
         metMat->Print();
     }
+    // Board material
+    TGeoMaterial* boardMat = TAGmaterials::Instance()->CreateMaterial(fBoardMat, fBoardDensity);
+    if(FootDebugLevel(1)) {
+        printf("board material:\n");
+        boardMat->Print();
+    }
+    // Box material
+    TGeoMaterial* boxMat = TAGmaterials::Instance()->CreateMaterial(fBoxMat, fBoxDensity);
+    if(FootDebugLevel(1)) {
+        printf("box material:\n");
+        boxMat->Print();
+    }
 }
 
 //_____________________________________________________________________
@@ -154,14 +166,66 @@ Bool_t TAMSDparGeo::FromFile(const TString& name)
    if(FootDebugLevel(1))
       cout  << "  Info flag for support:  "<< fSupportInfo << endl;
 
-   // read info for support only for IT
+   ReadItem(fBoardThickness);
+   if(FootDebugLevel(1))
+     cout   << " pcb thickness: "<< fBoardThickness << endl;
+
+   ReadStrings(fBoardMat);
+   if(FootDebugLevel(1))
+     cout   << " pcb material: "<< fBoardMat.Data() << endl;
+
+   ReadItem(fBoardDensity);
+   if(FootDebugLevel(1))
+     cout  << " pcb density:  "<< fBoardDensity << endl;
+
+   ReadVector3(fBoardSize);
+   if(FootDebugLevel(1))
+     cout  << "  Total size of pcb: "<< fBoardSize.X() << " " << fBoardSize.Y() << " " << fBoardSize.Z() << endl;
+
+   ReadVector3(fBoardOffset);
+   if(FootDebugLevel(1))
+     cout  << "  Offset of pcb: "<< fBoardOffset.X() << " "<< fBoardOffset.Y() << " " << fBoardOffset.Z() << endl;
+
+   ReadVector3(fBdHoleSize);
+   if(FootDebugLevel(1))
+     cout  << "  Size of pcb hole: "<< fBdHoleSize.X() << " " << fBdHoleSize.Y() << " " << fBdHoleSize.Z() << endl;
+
+   ReadStrings(fBoxMat);
+   if(FootDebugLevel(1))
+      cout  << "  Box Material: "<< fBoxMat << endl;
+   
+   ReadItem(fBoxDensity);
+   if(FootDebugLevel(1))
+      cout  << "  Box Material density: "<< fBoxDensity << endl;
+   
+   ReadVector3(fOutBoxSize);
+   if(FootDebugLevel(1))
+      cout  << "  Outer Box size: "<< fOutBoxSize.X() << " " <<  fOutBoxSize.Y() << " " <<  fOutBoxSize.Z()  << endl;
+
+   ReadVector3(fInBoxSize);
+   if(FootDebugLevel(1))
+      cout  << "  Inner Box size: "<< fInBoxSize.X() << " " <<  fInBoxSize.Y() << " " <<  fInBoxSize.Z()  << endl;
+
+   ReadVector3(fBoxOff);
+   if(FootDebugLevel(1))
+      cout  << "  Box offset: "<< fBoxOff.X() << " " <<  fBoxOff.Y() << " " <<  fBoxOff.Z()  << endl;
+
+   ReadVector3(fBoxHoleSize);
+   if(FootDebugLevel(1))
+      cout  << "  Box hole size: "<< fBoxHoleSize.X() << " " <<  fBoxHoleSize.Y() << " " <<  fBoxHoleSize.Z()  << endl;
+
+   ReadVector3(fBoxHoleOff);
+   if(FootDebugLevel(1))
+      cout  << "  Box hole offset: "<< fBoxHoleOff.X() << " " <<  fBoxHoleOff.Y() << " " <<  fBoxHoleOff.Z()  << endl;
+   
+    // read info for support only for IT
    if (fSupportInfo)
       ReadSupportInfo();
     
    if(FootDebugLevel(1))
       cout << endl << "Reading Sensor Parameters " << endl;
 
-   SetupMatrices(fSensorsN);
+    SetupMatrices(fSensorsN);
 
    for (Int_t p = 0; p < fSensorsN; p++) { // Loop on each plane
 
@@ -518,8 +582,11 @@ string TAMSDparGeo::PrintBodies()
     TVector3  center = fpFootGeo->GetMSDCenter();
     TVector3  angle = fpFootGeo->GetMSDAngles();
     
-    TVector3 posMet, posStrip, posMod;
+    TVector3 posMet, posStrip, posMod, posBoard, posBdHole;
     string bodyname, regionname;
+    Float_t center_f = ( GetSensorPosition(0).Z() + GetSensorPosition(1).Z() )/2.;
+    Float_t center_c = ( GetSensorPosition(2).Z() + GetSensorPosition(3).Z() )/2.;
+    Float_t center_d = ( GetSensorPosition(4).Z() + GetSensorPosition(5).Z() )/2.;
 
     ss << "* ***MSD bodies" << endl;
 
@@ -574,6 +641,93 @@ string TAMSDparGeo::PrintBodies()
 	   << posMet.z() + fMetalThickness/2. << endl;
 	fvMetalBody.push_back(bodyname);
 	fvMetalRegion.push_back(regionname);
+	
+	//pcb board
+	bodyname = Form("msdb%d",iSens);
+	regionname = Form("MSDB%d",iSens);
+	fvBoardBody.push_back(bodyname);
+	fvBoardRegion.push_back(regionname);
+	posBoard.SetXYZ( posStrip.X() + fBoardOffset.X() - fBoardSize.X()/2.,
+			 posStrip.Y() + fBoardOffset.Y() - fBoardSize.Y()/2.,
+			 posStrip.Z() - fBoardSize.Z() - fTotalSize.Z()/2.);
+	posBdHole.SetXYZ( center.X() - fBdHoleSize.X()/2. + 0.2,
+			  center.Y() - fBdHoleSize.Y()/2.,
+			  posBoard.Z() );
+	if(FootDebugLevel(1) && iSens==0) {
+	  cout << "** Even **" << endl;
+	  cout << "Strip " << endl;
+	  cout << posStrip.x() << " " << fEpiSize.X() << endl;
+	  cout << posStrip.y() << " " << fEpiSize.Y() << endl;
+	  cout << posStrip.z() << " " << fEpiSize.Z() << endl;
+	  cout << "Mod " << endl;
+	  cout << posMod.x() << " " << fTotalSize.X() << endl;
+	  cout << posMod.y() << " " << fTotalSize.Y() << endl;
+	  cout << posMod.z() << " " << fTotalSize.Z() << endl;
+	  cout << "Met " << endl;
+	  cout << posMet.x() << " " << fTotalSize.X() << endl;
+	  cout << posMet.y() << " " << fTotalSize.Y() << endl;
+	  cout << posMet.z() << " " << fMetalThickness << endl;
+	  cout << "Pcb " << endl;
+	  cout << posBoard.x() << " " << fBoardSize.X() << endl;
+	  cout << posBoard.y() << " " << fBoardSize.Y() << endl;
+	  cout << posBoard.z() << " " << fBoardSize.Z() << endl;
+	  cout << "Hole in Pcb " << endl;
+	  cout << posBdHole.x() << " " << fBdHoleSize.X() << endl;
+	  cout << posBdHole.y() << " " << fBdHoleSize.Y() << endl;
+	  cout << posBdHole.z() << " " << fBdHoleSize.Z() << endl;
+	}
+	if(fSupportInfo==1) { //GSI2021
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBoard.x() << " "
+	     << posBoard.x() + fBoardSize.X() << " "
+	     << posBoard.y() << " "
+	     << posBoard.y() + fBoardSize.Y() << " "
+	     << posBoard.z() << " "
+	     << posBoard.z() + fBoardSize.Z() << " " << endl;
+	} else if(fSupportInfo==2) { //CNAO2022
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBoard.x() << " "
+	     << posBoard.x() + fBoardSize.X() << " "
+	     << posBoard.y() << " "
+	     << posBoard.y() + fBoardSize.Y() << " "
+	     << posBoard.z() << " "
+	     << posBoard.z() + fBoardSize.Z() << " " << endl;
+	} else if(fSupportInfo==3) { //CNAO2023
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBoard.x() << " "
+	     << posBoard.x() + fBoardSize.X() << " "
+	     << posBoard.y() << " "
+	     << posBoard.y() + fBoardSize.Y() << " "
+	     << posBoard.z() << " "
+	     << posBoard.z() + fBoardSize.Z() << " " << endl;
+	}
+	bodyname = Form("msdh%d",iSens);
+	fvHoleBody.push_back(bodyname);
+	if(fSupportInfo==1) { //GSI2021
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBdHole.x() << " "
+	     << posBdHole.x() + fBdHoleSize.X() << " "
+	     << posBdHole.y() << " "
+	     << posBdHole.y() + fBdHoleSize.Y() << " "
+	     << posBdHole.z() << " "
+	     << posBdHole.z() + fBdHoleSize.Z() << " " << endl;
+	} else if(fSupportInfo==2) { //CNAO2022
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBdHole.x() << " "
+	     << posBdHole.x() + fBdHoleSize.X() << " "
+	     << posBdHole.y() << " "
+	     << posBdHole.y() + fBdHoleSize.Y() << " "
+	     << posBdHole.z() << " "
+	     << posBdHole.z() + fBdHoleSize.Z() << " " << endl;
+	} else if(fSupportInfo==3) { //CNAO2023
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBdHole.x() << " "
+	     << posBdHole.x() + fBdHoleSize.X() << " "
+	     << posBdHole.y() << " "
+	     << posBdHole.y() + fBdHoleSize.Y() << " "
+	     << posBdHole.z() << " "
+	     << posBdHole.z() + fBdHoleSize.Z() << " " << endl;
+	}
       }	else {
 	posStrip.SetXYZ( center.X() + GetSensorPosition(iSens).X(),
 			 center.Y() + GetSensorPosition(iSens).Y(),
@@ -617,25 +771,388 @@ string TAMSDparGeo::PrintBodies()
 	   << posMet.z() + fMetalThickness/2. << endl;
 	fvMetalBody.push_back(bodyname);
 	fvMetalRegion.push_back(regionname);
-	//
+	
+	//pcb board
+	bodyname = Form("msdb%d",iSens);
+	regionname = Form("MSDB%d",iSens);
+	fvBoardBody.push_back(bodyname);
+	fvBoardRegion.push_back(regionname);
+	posBoard.SetXYZ( posStrip.X() + fBoardOffset.X() - fBoardSize.X()/2.,
+			 posStrip.Y() + fBoardOffset.Y() - fBoardSize.Y()/2.,
+			 posStrip.Z() - fBoardSize.Z() - fTotalSize.Z()/2.);
+	posBdHole.SetXYZ( center.X() - fBdHoleSize.X()/2. + 0.2,
+			  center.Y() - fBdHoleSize.Y()/2.,
+			  posBoard.Z() );
+	if(FootDebugLevel(1) && iSens==1) {
+	  //	if(iSens==1) {
+	  cout << "** Odd **" << endl;
+	  cout << "Strip " << endl;
+	  cout << posStrip.x() << " " << fEpiSize.X() << endl;
+	  cout << posStrip.y() << " " << fEpiSize.Y() << endl;
+	  cout << posStrip.z() << " " << fEpiSize.Z() << endl;
+	  cout << "Mod " << endl;
+	  cout << posMod.x() << " " << fTotalSize.X() << endl;
+	  cout << posMod.y() << " " << fTotalSize.Y() << endl;
+	  cout << posMod.z() << " " << fTotalSize.Z() << endl;
+	  cout << "Met " << endl;
+	  cout << posMet.x() << " " << fTotalSize.X() << endl;
+	  cout << posMet.y() << " " << fTotalSize.Y() << endl;
+	  cout << posMet.z() << " " << fMetalThickness << endl;
+	  cout << "Pcb " << endl;
+	  cout << posBoard.x() << " " << fBoardSize.X() << endl;
+	  cout << posBoard.y() << " " << fBoardSize.Y() << endl;
+	  cout << posBoard.z() << " " << fBoardSize.Z() << endl;
+	  cout << "Hole in Pcb " << endl;
+	  cout << posBdHole.x() << " " << fBdHoleSize.X() << endl;
+	  cout << posBdHole.y() << " " << fBdHoleSize.Y() << endl;
+	  cout << posBdHole.z() << " " << fBdHoleSize.Z() << endl;
+	}
+	if(fSupportInfo==1) { //GSI2021
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << -(posBoard.x() + fBoardSize.X()) << " "
+	     << -posBoard.x() << " "
+	     << posBoard.y() << " "
+	     << posBoard.y() + fBoardSize.Y() << " "
+	     << posBoard.z() << " "
+	     << posBoard.z() + fBoardSize.Z() << " " << endl;
+	} else if(fSupportInfo==2) { //CNAO2022
+ 	  if(iSens%2==0) {
+	    ss <<  "RPP " << bodyname <<  "     "
+	       << -(posBoard.x() + fBoardSize.X()) << " "
+	       << -posBoard.x() << " "
+	       << posBoard.y() << " "
+	       << posBoard.y() + fBoardSize.Y() << " "
+	       << posBoard.z() << " "
+	       << posBoard.z() + fBoardSize.Z() << " " << endl;
+	  } else {
+	    ss <<  "RPP " << bodyname <<  "     "
+	       << posBoard.x() << " "
+	       << posBoard.x() + fBoardSize.X() << " "
+	       << posBoard.y() << " "
+	       << posBoard.y() + fBoardSize.Y() << " "
+	       << posBoard.z() << " "
+	       << posBoard.z() + fBoardSize.Z() << " " << endl;
+	  }
+	} else if(fSupportInfo==3) { //CNAO2023
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBoard.x() << " "
+	     << posBoard.x() + fBoardSize.X() << " "
+	     << posBoard.y() << " "
+	     << posBoard.y() + fBoardSize.Y() << " "
+	     << posBoard.z() << " "
+	     << posBoard.z() + fBoardSize.Z() << " " << endl;
+	}
+	bodyname = Form("msdh%d",iSens);
+	fvHoleBody.push_back(bodyname);
+	if(fSupportInfo==1) { //GSI2021
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBdHole.x() << " "
+	     << posBdHole.x() + fBdHoleSize.X() << " "
+	     << posBdHole.y() << " "
+	     << posBdHole.y() + fBdHoleSize.Y() << " "
+	     << posBdHole.z() << " "
+	     << posBdHole.z() + fBdHoleSize.Z() << " " << endl;
+	} else if(fSupportInfo==2) { //CNAO2022
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBdHole.x() << " "
+	     << posBdHole.x() + fBdHoleSize.X() << " "
+	     << posBdHole.y() << " "
+	     << posBdHole.y() + fBdHoleSize.Y() << " "
+	     << posBdHole.z() << " "
+	     << posBdHole.z() + fBdHoleSize.Z() << " " << endl;
+	} else if(fSupportInfo==3) { //CNAO2023
+ 	  ss <<  "RPP " << bodyname <<  "     "
+	     << posBdHole.x() << " "
+	     << posBdHole.x() + fBdHoleSize.X() << " "
+	     << posBdHole.y() << " "
+	     << posBdHole.y() + fBdHoleSize.Y() << " "
+	     << posBdHole.z() << " "
+	     << posBdHole.z() + fBdHoleSize.Z() << " " << endl;
+	}
       }
       if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
 	ss << "$end_transform " << endl;
 
     }
     if(fSupportInfo) {
+      regionname = "MSBOX";
+      fvBoxRegion.push_back(regionname);
       ss << "$start_transform " << "msd_p" << endl;
       bodyname = "airmsd";
-      fvBoxBody.push_back(bodyname);
-      if(fSupportInfo==1){ 
-	//add here msd passive bodies for GSI2021
-	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
-      } else if(fSupportInfo==2){
-	//add here msd passive bodies for CNAO2022 like configuration
-	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
-      } else if(fSupportInfo==3){
-	//add here msd passive bodies for CNAO2023 like configuration
-	ss << "RPP " << bodyname << "      -10.7 10.7 -10.7 10.7 -4.5 4.5" << endl;
+      fvAirBody.push_back(bodyname);
+      if(fSupportInfo==1){ //add here msd passive bodies for GSI2021
+	Float_t center_fb = center_f - 0.0711;
+	Float_t center_cb = center_c - 0.0711;
+	Float_t center_db = center_d - 0.0711;	
+	//	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() -0.2 << " "
+	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() +0.2 << endl;	
+	bodyname = "boxoutf";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -9. 15. -9. 15. -4.7985 -2.9985" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxinf";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -8. 14. -8. 14. -4.3985 -3.3985" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fInBoxSize.X()/2. + fBoxOff.X() << " " << fInBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fInBoxSize.Y()/2. + fBoxOff.Y() << " " << fInBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_fb - fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fb + fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi1f";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 -4.7985 -4.3985" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fb - fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi2f";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 -3.3985 -2.9985" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_fb + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxoutc";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -9. 15. -9. 15. -0.9711 0.8289" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_cb - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_cb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxinc";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -8. 14. -8. 14. -0.5711 0.4289" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fInBoxSize.X()/2. + fBoxOff.X() << " " << fInBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fInBoxSize.Y()/2. + fBoxOff.Y() << " " << fInBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_cb - fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_cb + fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi1c";
+	fvBoxBody.push_back(bodyname);
+	// ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 -0.9711 -0.5711" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_cb - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_cb - fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi2c";
+	fvBoxBody.push_back(bodyname);
+	// ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 0.4289 0.8289" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_cb + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_cb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxoutd";
+	fvBoxBody.push_back(bodyname);
+	// ss << "RPP " << bodyname << "      -9. 15. -9. 15. 2.8563 4.6563" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_db - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxind";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -8. 14. -8. 14 3.2563 4.2563" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fInBoxSize.X()/2. + fBoxOff.X() << " " << fInBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fInBoxSize.Y()/2. + fBoxOff.Y() << " " << fInBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_db - fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_db + fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi1d";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 2.8563 3.2563" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_db - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_db - fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi2d";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 4.2563 4.6563" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_db + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+      } else if(fSupportInfo==2){ //add here msd passive bodies for CNAO2022 like configuration
+	Float_t center_fb = center_f - 0.0711;
+	Float_t center_cb = center_c - 0.0711;
+	Float_t center_db = center_d - 0.0711;	
+	//	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() -0.2 << " "
+	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() +0.2 << endl;	
+	bodyname = "boxoutf";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -9. 15. -9. 15. -4.7985 -2.9985" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxinf";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -8. 14. -8. 14. -4.3985 -3.3985" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fInBoxSize.X()/2. + fBoxOff.X() << " " << fInBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fInBoxSize.Y()/2. + fBoxOff.Y() << " " << fInBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_fb - fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fb + fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi1f";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 -4.7985 -4.3985" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fb - fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi2f";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 -3.3985 -2.9985" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_fb + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxoutc";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -9. 15. -9. 15. -0.9711 0.8289" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_cb - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_cb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxinc";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -8. 14. -8. 14. -0.5711 0.4289" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fInBoxSize.X()/2. + fBoxOff.X() << " " << fInBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fInBoxSize.Y()/2. + fBoxOff.Y() << " " << fInBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_cb - fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_cb + fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi1c";
+	fvBoxBody.push_back(bodyname);
+	// ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 -0.9711 -0.5711" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_cb - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_cb - fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi2c";
+	fvBoxBody.push_back(bodyname);
+	// ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 0.4289 0.8289" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_cb + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_cb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxoutd";
+	fvBoxBody.push_back(bodyname);
+	// ss << "RPP " << bodyname << "      -9. 15. -9. 15. 2.8563 4.6563" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_db - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxind";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -8. 14. -8. 14 3.2563 4.2563" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fInBoxSize.X()/2. + fBoxOff.X() << " " << fInBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fInBoxSize.Y()/2. + fBoxOff.Y() << " " << fInBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_db - fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_db + fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi1d";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 2.8563 3.2563" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_db - fOutBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_db - fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi2d";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -5.1 5.1 -5.1 5.1 4.2563 4.6563" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << center_db + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+      } else if(fSupportInfo==3){ //add here msd passive bodies for CNAO2023 like configuration
+	//	ss << "RPP " << bodyname << "      -10.7 10.7 -10.7 10.7 -4.5 4.5" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() -0.2 << " " << fOutBoxSize.X()/2. + fBoxOff.X() + 0.2 << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() -0.2 << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() + 0.2 << " "
+	   << -fOutBoxSize.Z()/2. + fBoxOff.Z() -0.2 << " " << fOutBoxSize.Z()/2. + fBoxOff.Z() + 0.2<< endl;	
+	bodyname = "boxout";
+	fvBoxBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -10.5 10.5 -10.0 9.5 -4.1 4.1" << endl;
+	ss << "RPP " << bodyname << "    "
+	     << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	     << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	     << -fOutBoxSize.Z()/2. + fBoxOff.Z() << " " << fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxin";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "     "
+	     << -fInBoxSize.X()/2. + fBoxOff.X() << " " << fInBoxSize.X()/2. + fBoxOff.X() << " "
+	     << -fInBoxSize.Y()/2. + fBoxOff.Y() << " " << fInBoxSize.Y()/2. + fBoxOff.Y() << " "
+	     << -fInBoxSize.Z()/2. + fBoxOff.Z() << " " << fInBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "boxwi1";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "    "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << -fOutBoxSize.Z()/2. + fBoxHoleOff.Z() << " "
+	   << -fInBoxSize.Z()/2. + fBoxHoleOff.Z() << endl;	
+	bodyname = "boxwi2";
+	fvBoxBody.push_back(bodyname);
+	ss << "RPP " << bodyname << "    "
+	   << -fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << fBoxHoleSize.X()/2. + fBoxHoleOff.X() << " "
+	   << -fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
+	   << fInBoxSize.Z()/2. + fBoxHoleOff.Z() << " "
+	   << fOutBoxSize.Z()/2. + fBoxHoleOff.Z() << endl;	
       }
       ss << "$end_transform " << endl;
     }
@@ -682,9 +1199,25 @@ string TAMSDparGeo::PrintPassiveRegions()
 {
  stringstream ss;
   if(fSupportInfo==3) { // CNAO2023
-    ss << "AIRMSD       5 +airmsd  -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
+    ss << "AIRMSD       5 +airmsd -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
+    ss << "               -(msdb0 -msdh0) -(msdb1 -msdh1) -(msdb2 -msdh2) -(msdb3 -msdh3)" << endl;
+    ss << "               -(msdb4 -msdh4) -(msdb5 -msdh5)" << endl;
+    ss << "               -(boxout -boxin -boxwi1 -boxwi2)" << endl;
+    ss << "MSBOX        5 +boxout -boxin -boxwi1 -boxwi2" << endl;
   } else if(fSupportInfo==1 || fSupportInfo==2) { //GSI2021 or CNAO2022
-    ss << "AIRMSD       5 +airmsd  -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
+    ss << "AIRMSD       5 +airmsd -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
+    ss << "               -(msdb0 -msdh0) -(msdb1 -msdh1) -(msdb2 -msdh2) -(msdb3 -msdh3)" << endl;
+    ss << "               -(msdb4 -msdh4) -(msdb5 -msdh5)" << endl;
+    ss << "               -(boxoutf -boxinf -boxwi1f -boxwi2f)" << endl;
+    ss << "               -(boxoutc -boxinc -boxwi1c -boxwi2c)" << endl;
+    ss << "               -(boxoutd -boxind -boxwi1d -boxwi2d)" << endl;
+    ss << "MSBOX        5 +boxoutc -boxinc -boxwi1c -boxwi2c" << endl;
+    ss << "               | +boxoutf -boxinf -boxwi1f -boxwi2f" << endl;
+    ss << "               | +boxoutd -boxind -boxwi1d -boxwi2d" << endl;
+  }
+  for(int i=0; i<fvBoardRegion.size(); i++) {
+    ss << setw(13) << setfill( ' ' ) << std::left << fvBoardRegion.at(i)
+       << "5 " << fvBoardBody.at(i) << " -"<< fvHoleBody.at(i) <<endl;
   }
 
   return ss.str();
@@ -753,17 +1286,21 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
 
-    TString flkmatMod, flkmatMetal, flkmatSupp;  
+    TString flkmatMod, flkmatMetal, flkmatSupp, flkmatBoard, flkmatBox;  
     
     if (Material == NULL){
       TAGmaterials::Instance()->PrintMaterialFluka();
       flkmatMod = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
       flkmatMetal = TAGmaterials::Instance()->GetFlukaMatName(fMetalMat.Data());
       flkmatSupp = TAGmaterials::Instance()->GetFlukaMatName(fPixMat.Data());
+      flkmatBoard = TAGmaterials::Instance()->GetFlukaMatName(fBoardMat.Data());
+      flkmatBox = TAGmaterials::Instance()->GetFlukaMatName(fBoxMat.Data());
     }else{
       flkmatMod = Material->GetFlukaMatName(fEpiMat.Data());
       flkmatMetal = Material->GetFlukaMatName(fMetalMat.Data());
       flkmatSupp = Material->GetFlukaMatName(fPixMat.Data());
+      flkmatBoard = Material->GetFlukaMatName(fBoardMat.Data());
+      flkmatBox = Material->GetFlukaMatName(fBoxMat.Data());
     }
         
     bool magnetic = false;
@@ -781,6 +1318,9 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
 		    "1.", Form("%d",magnetic), "", "") << endl;
     if(fSupportInfo){
       ss << PrintCard("ASSIGNMA", "AIR", "AIRMSD", "", "", "", "", "") << endl;
+      ss << PrintCard("ASSIGNMA", flkmatBoard, fvBoardRegion.at(0), fvBoardRegion.back(),
+		      "1.", Form("%d",magnetic), "", "") << endl;
+      ss << PrintCard("ASSIGNMA", flkmatBox, "MSBOX", "", "", "", "", "") << endl;
     }
   }
 
