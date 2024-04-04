@@ -58,6 +58,18 @@ void TASTparGeo::DefineMaterial()
       printf("Start counter material:\n");
       mat->Print();
    }
+   // Frame material
+   TGeoMaterial* matFrame = TAGmaterials::Instance()->CreateMaterial(fFrameMat, fFrameDensity);
+   if(FootDebugLevel(1)) {
+      printf("Frame material:\n");
+      matFrame->Print();
+   }
+   // Frame material
+   TGeoMaterial* matFoil = TAGmaterials::Instance()->CreateMaterial(fFoilMat, fFoilDensity);
+   if(FootDebugLevel(1)) {
+      printf("Foil material:\n");
+      matFoil->Print();
+   }
 }
 
 //______________________________________________________________________________
@@ -89,6 +101,22 @@ Bool_t TASTparGeo::FromFile(const TString& name)
    ReadItem(fDensity);
    if(FootDebugLevel(1))
       cout  << "   ST density: " <<  fDensity << endl;
+
+   ReadStrings(fFrameMat);
+   if(FootDebugLevel(1))
+      cout  << "   Frame material: " <<  fFrameMat << endl;
+   
+   ReadItem(fFrameDensity);
+   if(FootDebugLevel(1))
+      cout  << "   Frame density: " <<  fFrameDensity << endl;
+
+   ReadStrings(fFoilMat);
+   if(FootDebugLevel(1))
+      cout  << "   Foil material: " <<  fFrameMat << endl;
+   
+   ReadItem(fFoilDensity);
+   if(FootDebugLevel(1))
+      cout  << "   Foil density: " <<  fFrameDensity << endl;
 
    // Define material
    DefineMaterial();
@@ -168,6 +196,7 @@ string TASTparGeo::PrintBodies( )
 {
   stringstream outstr;
   outstr << setiosflags(ios::fixed) << setprecision(fgPrecisionLevel);
+  string bodyname, regionname;
 
   if(TAGrecoManager::GetPar()->IncludeST()){
     outstr << "* ***Start Counter" << endl;
@@ -179,42 +208,66 @@ string TASTparGeo::PrintBodies( )
 
     TVector3  center = fpFootGeo->GetSTCenter();
     TVector3  angle = fpFootGeo->GetSTAngles();
-
+    fFrameSize.SetXYZ(7.,7.,1.);
     
     if(angle.Mag()!=0)
       outstr << "$start_transform st" << endl;
 
     outstr << setiosflags(ios::fixed) << setprecision(6);
+    bodyname = "airstc";
+    fvStBody.push_back(bodyname);
+    outstr << "RPP " << bodyname << "   " <<
+      center[0] - fSize[0]/2. - 0.2 << " " << center[0] + fSize[0]/2. + 0.2 << " " <<
+      center[1] - fSize[1]/2. - 0.2 << " " << center[1] + fSize[1]/2. + 0.2 << " " <<
+      center[2] - fFrameSize.Z() - 0.1 << " " << center[2] + fFrameSize.Z() + 0.1 << " " <<  endl;
 
-    outstr << "RPP airstc  "<< center[0]-fSize[0] << " " << center[0]+fSize[0] << " " <<
-      center[1]-fSize[1] << " " << center[1]+fSize[1] << " " <<
-      center[2]-1.1 << " " << center[2]+1.1 << " " <<  endl;
-
-    outstr << "RPP frame1  "<< center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2. << " " <<
+    bodyname = "frame1";
+    fvStBody.push_back(bodyname);
+    outstr << "RPP " << bodyname << "   " <<
+      center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2. << " " <<
       center[1]-fSize[1]/2. << " " << center[1]+fSize[1]/2. << " " <<
-      center[2]-fSize[2]/2.-1.001 << " " << center[2]-fSize[2]/2.-0.001 << " " <<  endl;
+      center[2]-fSize[2]/2. - fFrameSize.Z() - 0.001 << " " <<
+      center[2]-fSize[2]/2. - 0.001 << " " <<  endl;
 
-    outstr << "RPP frame2  "<< center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2. << " " <<
+    bodyname = "frame2";
+    fvStBody.push_back(bodyname);
+    outstr << "RPP " << bodyname << "   " <<
+      center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2. << " " <<
       center[1]-fSize[1]/2. << " " << center[1]+fSize[1]/2. << " " <<
-      center[2]+fSize[2]/2.+0.001 << " " << center[2]+fSize[2]/2.+1.001 << " " <<  endl;
+      center[2]+fSize[2]/2. + 0.001 << " " <<
+      center[2]+fSize[2]/2. + fFrameSize.Z() + 0.001 << " " <<  endl;
 
-    outstr << "RPP hole1   "<< center[0]-fSize[0]/2.+1. << " " << center[0]+fSize[0]/2.-1. << " " <<
+    bodyname = "hole1";
+    fvStBody.push_back(bodyname);
+    outstr << "RPP " << bodyname << "    " <<
+      center[0]-fSize[0]/2.+1. << " " << center[0]+fSize[0]/2.-1. << " " <<
       center[1]-fSize[1]/2.+1. << " " << center[1]+fSize[1]/2.-1. << " " <<
-      center[2]-fSize[2]/2.-1.001 << " " << center[2]-fSize[2]/2.-0.001 << " " <<  endl;
+      center[2]-fSize[2]/2. - fFrameSize.Z() - 0.001 << " " <<
+      center[2]-fSize[2]/2. - 0.001 << " " <<  endl;
 
-    outstr << "RPP hole2   "<< center[0]-fSize[0]/2+1. << " " << center[0]+fSize[0]/2.-1 << " " <<
+    bodyname = "hole2";
+    fvStBody.push_back(bodyname);
+    outstr << "RPP " << bodyname << "    " <<
+      center[0]-fSize[0]/2+1. << " " << center[0]+fSize[0]/2.-1 << " " <<
       center[1]-fSize[1]/2.+1. << " " << center[1]+fSize[1]/2.-1. << " " <<
-      center[2]+fSize[2]/2.+0.001 << " " << center[2]+fSize[2]/2.+1.001 << " " <<  endl;
-
+      center[2]+fSize[2]/2. + 0.001 << " " <<
+      center[2]+fSize[2]/2. + fFrameSize.Z() + 0.001 << " " <<  endl;
     
-    outstr << "RPP stc     "  << center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2 << " " <<
+    bodyname = "stc";
+    fvStBody.push_back(bodyname);
+    outstr << "RPP " << bodyname << "      " <<
+      center[0]-fSize[0]/2. << " " << center[0]+fSize[0]/2 << " " <<
       center[1]-fSize[1]/2. << " " << center[1]+fSize[1]/2 << " " <<
       center[2]-fSize[2]/2. - 0.001 << " " << center[2]+fSize[2]/2 + 0.001 << " " <<  endl;
 
     //Mylar that is 10\mum thick
-    outstr << "XYP stcmyl1    "  << center[2]-fSize[2]/2. <<  endl;
+    bodyname = "stcmyl1";
+    fvStBody.push_back(bodyname);
+    outstr << "XYP " << bodyname << "  " << center[2]-fSize[2]/2. <<  endl;
     //Mylar that is 10\mum thick
-    outstr << "XYP stcmyl2    "  << center[2]+fSize[2]/2. <<  endl;
+    bodyname = "stcmyl2";
+    fvStBody.push_back(bodyname);
+    outstr << "XYP " << bodyname << "  " << center[2]+fSize[2]/2. <<  endl;
     
     if(angle.Mag()!=0)
       outstr << "$end_transform" << endl;
@@ -280,15 +333,19 @@ string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material)
 
   if(TAGrecoManager::GetPar()->IncludeST()){
 
-    TString flkmat;  
+    TString flkmat, flkmatFrame, flkmatFoil;  
     
     if (Material == NULL){
       TAGmaterials::Instance()->PrintMaterialFluka();
       flkmat = TAGmaterials::Instance()->GetFlukaMatName(fMaterial.Data());
+      flkmatFrame = TAGmaterials::Instance()->GetFlukaMatName(fFrameMat.Data());
+      flkmatFoil = TAGmaterials::Instance()->GetFlukaMatName(fFoilMat.Data());
     }
-    else
+    else {
       flkmat = Material->GetFlukaMatName(fMaterial.Data());
-
+      flkmatFrame = Material->GetFlukaMatName(fFrameMat.Data());
+      flkmatFoil = Material->GetFlukaMatName(fFoilMat.Data());
+    }
     bool magnetic = false;
     if(TAGrecoManager::GetPar()->IncludeDI())
       magnetic = true;
@@ -297,7 +354,7 @@ string TASTparGeo::PrintAssignMaterial(TAGmaterials *Material)
     //    outstr << PrintCard("ASSIGNMA", "Mylar", "STCMYL1", "STCMYL2", "1.", Form("%d",magnetic), "", "") << endl;
     outstr << PrintCard("ASSIGNMA", flkmat, "STC", "", "", "", "", "") << endl;
     outstr << PrintCard("ASSIGNMA", "Mylar", "STCMYL1", "STCMYL2", "1.", "", "", "") << endl;
-    outstr << PrintCard("ASSIGNMA", "ALUMINUM", "FRAME1", "FRAME2", "", "", "", "") << endl;
+    outstr << PrintCard("ASSIGNMA", flkmatFrame, "FRAME1", "FRAME2", "", "", "", "") << endl;
     outstr << PrintCard("ASSIGNMA", "AIR", "AIRSTC", "", "", "", "", "") << endl;
         
   }
