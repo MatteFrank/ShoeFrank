@@ -21,9 +21,9 @@ TypeName:          "MSD"
 TypeNumber:        1
 StripN:            640
 Pitch:             0.0150
-TotalSizeX:        9.815   TotalSizeY:    9.815   TotalSizeZ:    0.0152
-EpiSizeX:          9.600   EpiSizeY:      9.390   EpiSizeZ:      0.0150
-EpiOffsetX:        0.1075  EpiOffsetY:    0.2125  EpiOffsetZ:    0.0000
+TotalSizeX:        10.25   TotalSizeY:    10.36   TotalSizeZ:    0.0152
+EpiSizeX:          9.600   EpiSizeY:      9.600   EpiSizeZ:      0.0150
+EpiOffsetX:        0.270   EpiOffsetY:    0.380   EpiOffsetZ:    0.0000
 EpiMat:            "Si"
 EpiMatDensity:     2.329
 PixThickness:      0.00064
@@ -32,8 +32,22 @@ PixMatDensity:     2.65
 MetalThickness:    0.0001
 MetalMat:          "Al"
 MetalDensity:      2.6989
+//
 SupportInfo:       1
-
+//
+PCBoardThickness:  0.16
+PCBoardMat:        "Epoxy/Eg"
+PCBoardDensity:    1.85
+PCBSizeX:          16.5  PCBSizeY:     13.66  PCBSizeZ:      0.16
+PCBOffsetX:        1.37  PCBOffsetY:     0.0  PCBOffsetZ:    0.0
+PCBdHoleSizeX:	   9.2   PCBdHoleSizeY:  9.6  PCBdHoleSizeZ: 0.16
+BoxMat:            "Al"
+BoxDensity:        2.7
+BoxOutSizeX:	   24.0  BoxOutSizeY:   24.00 BoxOutSizeZ:    1.8
+BoxInSizeX:	   22.0  BoxInSizeY:    22.00 BoxInSizeZ:     1.0
+BoxOffX:	    3.0  BoxOffY:        3.00 BoxOffZ:        0.00
+BoxHoleSizeX:	   10.2  BoxHoleSizeY:  10.2  BoxHoleSizeZ:   0.40
+BoxHoleOffX:	    0.0  BoxHoleOffY:    0.0  BoxHoleOffZ:    0.0
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Detector Planes used in the run
