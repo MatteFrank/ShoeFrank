@@ -1198,28 +1198,29 @@ string TAMSDparGeo::PrintRegions()
 string TAMSDparGeo::PrintPassiveRegions()
 {
  stringstream ss;
-  if(fSupportInfo==3) { // CNAO2023
-    ss << "AIRMSD       5 +airmsd -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
-    ss << "               -(msdb0 -msdh0) -(msdb1 -msdh1) -(msdb2 -msdh2) -(msdb3 -msdh3)" << endl;
-    ss << "               -(msdb4 -msdh4) -(msdb5 -msdh5)" << endl;
-    ss << "               -(boxout -boxin -boxwi1 -boxwi2)" << endl;
-    ss << "MSBOX        5 +boxout -boxin -boxwi1 -boxwi2" << endl;
-  } else if(fSupportInfo==1 || fSupportInfo==2) { //GSI2021 or CNAO2022
-    ss << "AIRMSD       5 +airmsd -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
-    ss << "               -(msdb0 -msdh0) -(msdb1 -msdh1) -(msdb2 -msdh2) -(msdb3 -msdh3)" << endl;
-    ss << "               -(msdb4 -msdh4) -(msdb5 -msdh5)" << endl;
-    ss << "               -(boxoutf -boxinf -boxwi1f -boxwi2f)" << endl;
-    ss << "               -(boxoutc -boxinc -boxwi1c -boxwi2c)" << endl;
-    ss << "               -(boxoutd -boxind -boxwi1d -boxwi2d)" << endl;
-    ss << "MSBOX        5 +boxoutc -boxinc -boxwi1c -boxwi2c" << endl;
-    ss << "               | +boxoutf -boxinf -boxwi1f -boxwi2f" << endl;
-    ss << "               | +boxoutd -boxind -boxwi1d -boxwi2d" << endl;
-  }
-  for(int i=0; i<fvBoardRegion.size(); i++) {
-    ss << setw(13) << setfill( ' ' ) << std::left << fvBoardRegion.at(i)
-       << "5 " << fvBoardBody.at(i) << " -"<< fvHoleBody.at(i) <<endl;
-  }
-
+ if(fSupportInfo) {
+   if(fSupportInfo==3) { // CNAO2023
+     ss << "AIRMSD       5 +airmsd -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
+     ss << "               -(msdb0 -msdh0) -(msdb1 -msdh1) -(msdb2 -msdh2) -(msdb3 -msdh3)" << endl;
+     ss << "               -(msdb4 -msdh4) -(msdb5 -msdh5)" << endl;
+     ss << "               -(boxout -boxin -boxwi1 -boxwi2)" << endl;
+     ss << "MSBOX        5 +boxout -boxin -boxwi1 -boxwi2" << endl;
+   } else if(fSupportInfo==1 || fSupportInfo==2) { //GSI2021 or CNAO2022
+     ss << "AIRMSD       5 +airmsd -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
+     ss << "               -(msdb0 -msdh0) -(msdb1 -msdh1) -(msdb2 -msdh2) -(msdb3 -msdh3)" << endl;
+     ss << "               -(msdb4 -msdh4) -(msdb5 -msdh5)" << endl;
+     ss << "               -(boxoutf -boxinf -boxwi1f -boxwi2f)" << endl;
+     ss << "               -(boxoutc -boxinc -boxwi1c -boxwi2c)" << endl;
+     ss << "               -(boxoutd -boxind -boxwi1d -boxwi2d)" << endl;
+     ss << "MSBOX        5 +boxoutc -boxinc -boxwi1c -boxwi2c" << endl;
+     ss << "               | +boxoutf -boxinf -boxwi1f -boxwi2f" << endl;
+     ss << "               | +boxoutd -boxind -boxwi1d -boxwi2d" << endl;
+   }
+   for(int i=0; i<fvBoardRegion.size(); i++) {
+     ss << setw(13) << setfill( ' ' ) << std::left << fvBoardRegion.at(i)
+	<< "5 " << fvBoardBody.at(i) << " -"<< fvHoleBody.at(i) <<endl;
+   }
+ }
   return ss.str();
 }
 
