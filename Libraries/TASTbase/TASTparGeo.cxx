@@ -64,7 +64,7 @@ void TASTparGeo::DefineMaterial()
       printf("Frame material:\n");
       matFrame->Print();
    }
-   // Frame material
+   // Foil material
    TGeoMaterial* matFoil = TAGmaterials::Instance()->CreateMaterial(fFoilMat, fFoilDensity);
    if(FootDebugLevel(1)) {
       printf("Foil material:\n");
@@ -101,22 +101,6 @@ Bool_t TASTparGeo::FromFile(const TString& name)
    ReadItem(fDensity);
    if(FootDebugLevel(1))
       cout  << "   ST density: " <<  fDensity << endl;
-
-   ReadStrings(fFrameMat);
-   if(FootDebugLevel(1))
-      cout  << "   Frame material: " <<  fFrameMat << endl;
-   
-   ReadItem(fFrameDensity);
-   if(FootDebugLevel(1))
-      cout  << "   Frame density: " <<  fFrameDensity << endl;
-
-   ReadStrings(fFoilMat);
-   if(FootDebugLevel(1))
-      cout  << "   Foil material: " <<  fFrameMat << endl;
-   
-   ReadItem(fFoilDensity);
-   if(FootDebugLevel(1))
-      cout  << "   Foil density: " <<  fFrameDensity << endl;
 
    // Define material
    DefineMaterial();

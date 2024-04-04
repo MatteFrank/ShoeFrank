@@ -57,10 +57,10 @@ private:
    TString   fkDefaultGeoName;  // default par geo file name
    TString   fFrameMat = "Al";
    Float_t   fFrameDensity = 2.7;
-   TString   fFoilMat = "Mylar";
-   Float_t   fFoilDensity = 1.4;
    TVector3  fFrameSize;
    vector<string> fvStBody;
+   TString   fFoilMat = "Mylar";
+   Float_t   fFoilDensity = 1.4;
   
 private:
    static const TString fgkBaseName;
