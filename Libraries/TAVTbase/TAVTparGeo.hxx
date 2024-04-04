@@ -93,10 +93,10 @@ protected:
    vector<string> fvAirRegion;   //! Fluka airvtx region
    //! Fluka VT board bodies
    vector<string> fvBoardBody;   //! Fluka VT board body
-   vector<string> fvHoleBody;   //! Fluka hole in VT board body
-   vector<string> fvCutBody;   //! Fluka cut in VT board body
+   vector<string> fvHoleBody;    //! Fluka hole in VT board body
+   vector<string> fvCutBody;     //! Fluka cut in VT board body
    //! Fluka VT board region
-   vector<string> fvBoardRegion;   //! Fluka VT board region
+   vector<string> fvBoardRegion; //! Fluka VT board region
 
 private:
   TString    fEpoxyMat;          ///< Material of expoxy
@@ -107,6 +107,27 @@ private:
   TString    fPcbBoardMatDensities;  ///< Density of pcb material for each component
   TString    fPcbBoardMatProp;       ///< Material of pcb component proportion
   Float_t    fPcbBoardMatDensity;    ///< Density of pcb material
+
+  Float_t    fBoardThickness;   ///< Thickness of pcb
+  Float_t    fBoardSizeX;       ///< size X of pcb   
+  Float_t    fBoardSizeY;       ///< size Y of pcb   
+  Float_t    fBoardSizeZ;       ///< size Z of pcb   
+  Float_t    fBoardOffsetX;     ///< Offset size X of pcb   
+  Float_t    fBoardOffsetY;     ///< Offset size Y of pcb   
+  Float_t    fBoardOffsetZ;     ///< Offset size Z of pcb   
+  Float_t    fBdHoleSizeX;      ///< size X of pcb hole  
+  Float_t    fBdHoleSizeY;      ///< size Y of pcb hole   
+  Float_t    fBdHoleSizeZ;      ///< size Z of pcb hole  
+  TVector3   fBoardSize;        ///< Total size of pcb   
+  TVector3   fBdHoleSize;       ///< Hole in pcb
+  TVector3   fBoardOffset;      ///< Position offset of pcb
+  TVector3   fFrontBoxSize;     ///< Front Box size
+  TVector3   fBackBoxSize;      ///< Back Box size
+  TVector3   fBoxOff;           ///< Box offset
+  TVector3   fFrontHoleSize;    ///< Front Box hole size
+  TVector3   fBackHoleSize;     ///< Back Box hole offset
+  TString    fBoxMat;           ///< Box material
+  Float_t    fBoxDensity;       ///< Box density
 
 
 public:

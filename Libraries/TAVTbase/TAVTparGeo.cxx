@@ -89,6 +89,7 @@ void TAVTparGeo::DefineMaterial()
 
   //passive material
   if(fSupportInfo){
+    
     TGeoMaterial* mat = TAGmaterials::Instance()->CreateMaterial(fEpoxyMat, fEpoxyMatDensity);
     if(FootDebugLevel(1)) {
       printf("VTX passive Epoxy material:\n");
@@ -107,6 +108,14 @@ void TAVTparGeo::DefineMaterial()
         printf("Eg material:\n");
         mix->Print();
     } 
+
+    // Box Material
+    TGeoMaterial* boxMat = TAGmaterials::Instance()->CreateMaterial(fBoxMat, fBoxDensity);
+    if(FootDebugLevel(1)) {
+      printf("Box material:\n");
+      boxMat->Print();
+    }
+
   }
 
 }
@@ -345,6 +354,7 @@ string TAVTparGeo::PrintRotations()
 //		    Form("%f",center.Z()),
 //		    "vt_p" ) << endl;
     // Checks for rotation angles
+    if(fSupportInfo) {
     Double_t center_box;
     if(fSupportInfo==3) { //CNAO2023
       center_box = center.Z()-0.25;
@@ -409,7 +419,7 @@ string TAVTparGeo::PrintRotations()
 		    Form("%f",center.Y()),
 		    Form("%f",center_box),
 		    "vt_p") << endl;
-    
+    }
   }
    
   return ss.str();
@@ -429,8 +439,8 @@ string TAVTparGeo::PrintBodies()
   
     TVector3  center = fpFootGeo->GetVTCenter();
     TVector3  angle = fpFootGeo->GetVTAngles();
-    TVector3 posEpi, posPix, posMod;
-
+    TVector3 posEpi, posPix, posMod, posBoard, posHole;
+    Float_t BoardThickness;
     string bodyname, regionname;
   
     ss << "* ***Vertex bodies" << endl;  
@@ -487,142 +497,153 @@ string TAVTparGeo::PrintBodies()
       fvPixBody.push_back(bodyname);
       fvPixRegion.push_back(regionname);
 
-//      bodyname =  Form("test%d",iSens);
-//      ss <<  "RPP " << bodyname <<  "     "
-//	 << posMod.x() << " "	 << posMod.x() << " "
-//	 << posMod.y() << " "	 << posMod.y() << " "
-//	 << posMod.z() << " "	 << posMod.z() << endl;
-//      fvModBody.push_back(bodyname);
-      
-	//	;
-
-      bodyname =  Form("vtxb%d",iSens);
-      ss <<  "RPP " << bodyname <<  "     "
-	 << -3.4928  + posMod.x() << " "	 << 3.4572  + posMod.x() << " "
-	 << -2.96802 + posMod.y() << " "	 << 6.83198 + posMod.y() << " "
-	 << -0.08    + posMod.z() << " "	 << 0.08    + posMod.z() << endl;
-      fvBoardBody.push_back(bodyname);
-//
-      bodyname =  Form("vtxh%d",iSens);
-      ss <<  "RPP " << bodyname <<  "     "
-	 << -1.012   + posMod.x() << " "	 << 1.012  + posMod.x() << " "
-	 << -1.1355  + posMod.y() << " "	 << 1.1355 + posMod.y() << " "
-	 << -0.08     + posMod.z() << " "	 << 0.08   + posMod.z() << endl;
-      fvHoleBody.push_back(bodyname);
-//
-      bodyname =  Form("vtxc%d",iSens);
-      ss <<  "RPP " << bodyname <<  "     "
-	 << -3.4928  + posMod.x() << " "	 << 0.0072  + posMod.x() << " "
-	 << 6.13198  + posMod.y() << " "	 << 6.83198 + posMod.y() << " "
-	 << -0.08    + posMod.z() << " "	 << 0.08    + posMod.z() << endl;
-      fvCutBody.push_back(bodyname);
-
-      
-      
-      if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
+      if(!fSupportInfo && fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
 	ss << "$end_transform " << endl;
-      
+
+      if(fSupportInfo) {
+	// PCB
+	posBoard.SetXYZ( fBoardOffset.X(), fBoardOffset.Y(), posMod.z() + fBoardOffset.Z());
+	posHole.SetXYZ( posEpi.x(),
+			posEpi.y(),
+			posEpi.z() );
+	bodyname =  Form("vtxb%d",iSens);
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posBoard.x() - fBoardSize.X()/2. << " " << posBoard.x() + fBoardSize.X()/2. << " "
+	   << posBoard.y() - fBoardSize.Y()/2. << " " << posBoard.y() + fBoardSize.Y()/2. << " "
+	   << posMod.z() - fTotalSize.Z()/2. - fBoardSize.Z() << " " << posMod.z() - fTotalSize.Z()/2.  << endl;
+	fvBoardBody.push_back(bodyname);
+	//
+	bodyname =  Form("vtxh%d",iSens);
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posHole.x() - fBdHoleSize.X()/2. << " " << posHole.x() + fBdHoleSize.X()/2. << " "
+	   << posHole.y() - fBdHoleSize.Y()/2. << " " << posHole.y() + fBdHoleSize.Y()/2. << " "
+	   << posMod.z() - fTotalSize.Z()/2. - fBoardSize.Z() << " " << posMod.z() - fTotalSize.Z()/2.  << endl;
+	fvHoleBody.push_back(bodyname);
+	//
+	bodyname =  Form("vtxc%d",iSens);
+	ss <<  "RPP " << bodyname <<  "     "
+	   << posBoard.x() - fBoardSize.X()/2. << " " << posBoard.x() - fBoardSize.X()/2. + 3.5 << " "
+	   << posBoard.y() + fBoardSize.Y()/2. - 0.7 << " " << posBoard.y() + fBoardSize.Y()/2.  << " "
+	   << posMod.z() - fTotalSize.Z()/2. - fBoardSize.Z() << " " << posMod.z() - fTotalSize.Z()/2.  << endl;
+	fvCutBody.push_back(bodyname);
+	
+	if(fSensorParameter[iSens].Tilt.Mag()!=0 || angle.Mag()!=0)
+	  ss << "$end_transform " << endl;
+
+      }
     }
+    if(fSupportInfo) {
+      // External box
     
-    // passive bodies
-    
-    if(fSupportInfo){
+      Float_t center_fr;
+      Float_t center_bk;
       ss << "$start_transform " << "vt_p" << endl;
       if(fSupportInfo==3) { // CNAO2023
-	bodyname = "boxfront";
+	center_fr = center.Z() - 3.4;
+	center_bk = center.Z() - 0.55;
+	bodyname = "boxfrout";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 0.45" << endl;
-	bodyname = "boxfron2";
+	//	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 0.45" << endl;
+	ss << "RPP " << bodyname << "  "
+	   << -fFrontBoxSize.X()/2. + fBoxOff.X() << " " << fFrontBoxSize.X()/2. +fBoxOff.X() << " "
+	   << -fFrontBoxSize.Y()/2. + fBoxOff.Y() << " " << fFrontBoxSize.Y()/2. +fBoxOff.Y() << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fr + fFrontBoxSize.Z()/2. + fBoxOff.Z() << endl;
+	bodyname = "boxfrin";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "   -9.6 9.6 -9.6 9.6 -1.75 0.45" << endl;
-	bodyname = "boxwin";
+	//	ss << "RPP " << bodyname << "   -9.6 9.6 -9.6 9.6 -1.75 0.45" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fFrontBoxSize.X()/2. + fBoxOff.X() + 0.3 << " " << fFrontBoxSize.X()/2. +fBoxOff.X() - 0.3 << " "
+	   << -fFrontBoxSize.Y()/2. + fBoxOff.Y() + 0.3 << " " << fFrontBoxSize.Y()/2. +fBoxOff.Y() - 0.3 << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() + 0.3 << " "
+	   << center_fr + fFrontBoxSize.Z()/2. + fBoxOff.Z() << endl;
+	bodyname = "boxfrh";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.75" << endl;
-	bodyname = "boxback";
+	//	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.75" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fFrontHoleSize.X()/2. + fBoxOff.X() << " " << fFrontHoleSize.X()/2. +fBoxOff.X() << " "
+	   << -fFrontHoleSize.Y()/2. + fBoxOff.Y() << " " << fFrontHoleSize.Y()/2. +fBoxOff.Y() << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() + 0.3 << endl;
+	bodyname = "boxbck";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 1.95 2.15" << endl;
-	bodyname = "boxhole";
+	//	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 1.95 2.15" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fBackBoxSize.X()/2. + fBoxOff.X() << " " << fBackBoxSize.X()/2. +fBoxOff.X() << " "
+	   << -fBackBoxSize.Y()/2. + fBoxOff.Y() << " " << fBackBoxSize.Y()/2. +fBoxOff.Y() << " "
+	   << center_bk - fBackBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() << endl;
+	bodyname = "boxbckh";
 	fvBoxBody.push_back(bodyname);
-	ss << "RCC " << bodyname << "    0.0 0.0 1.95 0.0 0.0 0.2 2.5" << endl;
+	//	ss << "RCC " << bodyname << "    0.0 0.0 1.95 0.0 0.0 0.2 2.5" << endl;
+	ss << "RCC " << bodyname << "    "
+	   << fBoxOff.X() << " " << fBoxOff.Y() << " "
+	   << center_bk - fBackBoxSize.Z()/2. + fBoxOff.Z()
+	   << " 0.0 0.0 " << fBackBoxSize.Z() << " "
+	   << fBackHoleSize.X()/2. << endl;
 	bodyname = "airvtx";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
+	//	ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fFrontBoxSize.X()/2. + fBoxOff.X() - 0.05 << " " << fFrontBoxSize.X()/2. +fBoxOff.X() + 0.05 << " "
+	   << -fFrontBoxSize.Y()/2. + fBoxOff.Y() - 0.05 << " " << fFrontBoxSize.Y()/2. +fBoxOff.Y() + 0.05 << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() - 0.01 << " "
+	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() + 0.01 << endl;
       } else if(fSupportInfo==1 || fSupportInfo==2) { // GSI2021 or CNAO2022
+	center_fr = center.Z() - 4.05;
+	center_bk = center.Z() - 1.20;
 	bodyname = "boxfront";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 -1.85" << endl;
-	bodyname = "boxwin";
+	//	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 -1.85" << endl;
+	ss << "RPP " << bodyname << "  "
+	   << -fFrontBoxSize.X()/2. + fBoxOff.X() << " " << fFrontBoxSize.X()/2. +fBoxOff.X() << " "
+	   << -fFrontBoxSize.Y()/2. + fBoxOff.Y() << " " << fFrontBoxSize.Y()/2. +fBoxOff.Y() << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fr + fFrontBoxSize.Z()/2. + fBoxOff.Z() << endl;
+	bodyname = "boxfrh";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.85" << endl;
-	bodyname = "boxback";
+	//	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.85" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fFrontHoleSize.X()/2. + fBoxOff.X() << " " << fFrontHoleSize.X()/2. +fBoxOff.X() << " "
+	   << -fFrontHoleSize.Y()/2. + fBoxOff.Y() << " " << fFrontHoleSize.Y()/2. +fBoxOff.Y() << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() + 0.2 << endl;
+	bodyname = "boxbkout";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "   -9.9 9.9 -9.9 9.9 -0.35 2.15" << endl;
-	bodyname = "boxback2";
+	//	ss << "RPP " << bodyname << "   -9.9 9.9 -9.9 9.9 -0.35 2.15" << endl;
+	ss << "RPP " << bodyname << "  "
+	   << -fBackBoxSize.X()/2. + fBoxOff.X() << " " << fBackBoxSize.X()/2. +fBoxOff.X() << " "
+	   << -fBackBoxSize.Y()/2. + fBoxOff.Y() << " " << fBackBoxSize.Y()/2. +fBoxOff.Y() << " "
+	   << center_bk - fBackBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() << endl;
+	bodyname = "boxbkin";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "    -9.6 9.6 -9.6 9.6 -0.35 1.85" << endl;
-	bodyname = "boxhole";
+	//	ss << "RPP " << bodyname << "    -9.6 9.6 -9.6 9.6 -0.35 1.85" << endl;
+	ss << "RPP " << bodyname << "   "
+	   << -fBackBoxSize.X()/2. + fBoxOff.X() + 0.3 << " " << fBackBoxSize.X()/2. +fBoxOff.X() - 0.3 << " "
+	   << -fBackBoxSize.Y()/2. + fBoxOff.Y() + 0.3 << " " << fBackBoxSize.Y()/2. +fBoxOff.Y() - 0.3 << " "
+	   << center_bk - fBackBoxSize.Z()/2. + fBoxOff.Z() << " "
+	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() - 0.3 << endl;
+	bodyname = "boxbkh";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 1.85 2.15" << endl;
+	//	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 1.85 2.15" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fBackHoleSize.X()/2. + fBoxOff.X() << " " << fBackHoleSize.X()/2. +fBoxOff.X() << " "
+	   << -fBackHoleSize.Y()/2. + fBoxOff.Y() << " " << fBackHoleSize.Y()/2. +fBoxOff.Y() << " "
+	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() - 0.3 << " "
+	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() << endl;
 	bodyname = "airvtx";
 	fvBoxBody.push_back(bodyname);
-	ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
+	//	ss << "RPP " << bodyname << "     -10. 10. -10. 10. -2.06 2.16" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fFrontBoxSize.X()/2. + fBoxOff.X() - 0.05 << " " << fFrontBoxSize.X()/2. +fBoxOff.X() + 0.05 << " "
+	   << -fFrontBoxSize.Y()/2. + fBoxOff.Y() - 0.05 << " " << fFrontBoxSize.Y()/2. +fBoxOff.Y() + 0.05 << " "
+	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() - 0.01 << " "
+	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() + 0.01 << endl;
       }
       ss << "$end_transform " << endl;
-    }
-
-
+      //pcb and air regions
     
-//    //vertex additional bodies
-//
-//    bodyname = "vtxb0";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.35 1.51" << endl;
-//    bodyname = "vtxh0";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.35 1.51" << endl;
-//    bodyname = "vtxc0";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.33 1.53" << endl;
-//
-//    ss << "$start_transform " << "vt_1" << endl;
-//    bodyname = "vtxb1";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 1.67 1.83" << endl;
-//    bodyname = "vtxh1";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 1.67 1.83" << endl;
-//    bodyname = "vtxc1";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 1.65 1.85" << endl;
-//    ss << "$end_transform " << endl;
-//
-//    bodyname = "vtxb2";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 2.87 3.03" << endl;
-//    bodyname = "vtxh2";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 2.87 3.03" << endl;
-//    bodyname = "vtxc2";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 2.85 3.05" << endl;
-//
-//    ss << "$start_transform " << "vt_3" << endl;
-//    bodyname = "vtxb3";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -3.475 3.475 -3.121 6.679 3.19 3.35" << endl;
-//    bodyname = "vtxh3";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -0.994200 1.029800 -1.288480 0.982520 3.19 3.35" << endl;
-//    bodyname = "vtxc3";
-//    fvBoxBody.push_back(bodyname);
-//    ss << "RPP " << bodyname << "      -3.475 0.025 5.979 6.679 3.17 3.37" << endl;
-//    ss << "$end_transform " << endl;
-
-
-    
-    //passive regions
-    
-    if(fSupportInfo){
       regionname = "VBOXF";
       fvBoxRegion.push_back(regionname);
       regionname = "VBOXB";
@@ -639,7 +660,6 @@ string TAVTparGeo::PrintBodies()
       regionname = "VTXB3";
       fvBoardRegion.push_back(regionname);
     }
-
   }
   
   return ss.str();
@@ -683,28 +703,28 @@ string TAVTparGeo::PrintPassiveRegions()
 {
   stringstream ss;
 
-  if(TAGrecoManager::GetPar()->IncludeVT()){
+  if(fSupportInfo && TAGrecoManager::GetPar()->IncludeVT()){
 
     ss << "* ***Vertex passive regions" << endl;
 
     if(fSupportInfo==3) { // CNAO2023
-      ss << "AIRVTX       5 +airvtx -(boxfront -boxfron2 -boxwin) -(boxback -boxhole)" << endl;
+      ss << "AIRVTX       5 +airvtx -(boxfrout -boxfrin -boxfrh) -(boxbck -boxbckh)" << endl;
       ss << "               -(vtxb0 -vtxh0 -vtxc0) -(vtxb1 -vtxh1 -vtxc1) -(vtxb2 -vtxh2 -vtxc2)" << endl;
       ss << "               -(vtxb3 -vtxh3 -vtxc3) -vtxm0 -vtxm1 -vtxm2 -vtxm3" << endl;
     
       ss << "* Box Front" << endl;
-      ss << "VBOXF        5 +boxfront -boxfron2 -boxwin" << endl;
+      ss << "VBOXF        5 +boxfrout -boxfrin -boxfrh" << endl;
       ss << "* Box Back" << endl;
-      ss << "VBOXB        5 +boxback -boxhole" << endl;
+      ss << "VBOXB        5 +boxbck -boxbckh" << endl;
     } else if(fSupportInfo==1 || fSupportInfo==2) { // GSI2021 or CNAO2022
-      ss << "AIRVTX       5 +airvtx -(boxfront -boxwin) -(boxback -boxback2 -boxhole)" << endl;
+      ss << "AIRVTX       5 +airvtx -(boxfront -boxfrh) -(boxbkout -boxbkin -boxbkh)" << endl;
       ss << "               -(vtxb0 -vtxh0 -vtxc0) -(vtxb1 -vtxh1 -vtxc1) -(vtxb2 -vtxh2 -vtxc2)" << endl;
       ss << "               -(vtxb3 -vtxh3 -vtxc3) -vtxm0 -vtxm1 -vtxm2 -vtxm3" << endl;
     
       ss << "* Box Front" << endl;
-      ss << "VBOXF        5 +boxfront -boxwin" << endl;
+      ss << "VBOXF        5 +boxfront -boxfrh" << endl;
       ss << "* Box Back" << endl;
-      ss << "VBOXB        5 +boxback -boxback2 -boxhole" << endl;
+      ss << "VBOXB        5 +boxbkout -boxbkin -boxbkh" << endl;
     }
     //* ***Vertex additional regions
     ss << "VTXB0        5 vtxb0 -vtxh0 -vtxc0" << endl;
@@ -779,15 +799,23 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
   
   if(TAGrecoManager::GetPar()->IncludeVT()){
 
-    TString flkmatMod, flkmatPix;  
+    TString flkmatMod, flkmatPix, flkmatBoard, flkmatBox;  
     
     if (Material == NULL){
       TAGmaterials::Instance()->PrintMaterialFluka();
       flkmatMod = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
       flkmatPix = TAGmaterials::Instance()->GetFlukaMatName(fPixMat.Data());
+      if(fSupportInfo) {
+	flkmatBoard = TAGmaterials::Instance()->GetFlukaMatName(fPcbBoardMat.Data());
+	flkmatBox = TAGmaterials::Instance()->GetFlukaMatName(fBoxMat.Data());
+      }
     }else{
       flkmatMod = Material->GetFlukaMatName(fEpiMat.Data());
       flkmatPix = Material->GetFlukaMatName(fPixMat.Data());
+      if(fSupportInfo) {
+	flkmatBoard = Material->GetFlukaMatName(fPcbBoardMat.Data());
+	flkmatBox = Material->GetFlukaMatName(fBoxMat.Data());
+      }
     }
 
     bool magnetic = false;
@@ -805,9 +833,9 @@ string TAVTparGeo::PrintAssignMaterial(TAGmaterials* Material)
 		    "1.", Form("%d",magnetic), "", "") << endl;
     if(fSupportInfo){
       ss << PrintCard("ASSIGNMA", "AIR", "AIRVTX", "", "", "", "", "") << endl;
-      ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXF", "", "", "", "", "") << endl;
-      ss << PrintCard("ASSIGNMA", "ALUMINUM", "VBOXB", "", "", "", "", "") << endl;
-      ss << PrintCard("ASSIGNMA", "Epoxy/Eg", "VTXB0", "VTXB3", "", "", "", "") << endl;
+      ss << PrintCard("ASSIGNMA", flkmatBox, "VBOXF", "", "", "", "", "") << endl;
+      ss << PrintCard("ASSIGNMA", flkmatBox, "VBOXB", "", "", "", "", "") << endl;
+      ss << PrintCard("ASSIGNMA", flkmatBoard, "VTXB0", "VTXB3", "", "", "", "") << endl;
     }
 
   }
@@ -864,6 +892,46 @@ void TAVTparGeo::ReadSupportInfo()
    ReadItem(fPcbBoardMatDensity);
    if(FootDebugLevel(1))
       cout  << "  Pcb board material density:  "<< fPcbBoardMatDensity << endl;
+   
+   ReadVector3(fBoardSize);
+   if(FootDebugLevel(1))
+     cout << "  Total of pcb: " << fBoardSize.X() << " " << fBoardSize.Y() << " " << fBoardSize.Z() << endl;
 
+   ReadVector3(fBoardOffset);
+   if(FootDebugLevel(1))
+     cout  << "  Offset of pcb: " << fBoardOffset.X() << " " << fBoardOffset.Y() << " " << fBoardOffset.Z() << endl;
+							    
+   ReadVector3(fBdHoleSize);
+   if(FootDebugLevel(1))
+     cout  << "  Total size of pcb hole: "<< fBdHoleSize.X() << " " << fBdHoleSize.Y() << " " << fBdHoleSize.Z() << endl;
+
+   ReadStrings(fBoxMat);
+   if(FootDebugLevel(1))
+      cout  << "  Box Material: "<< fBoxMat << endl;
+   
+   ReadItem(fBoxDensity);
+   if(FootDebugLevel(1))
+      cout  << "  Box Material density: "<< fBoxDensity << endl;
+   
+   ReadVector3(fFrontBoxSize);
+   if(FootDebugLevel(1))
+      cout  << "  Front Box size: "<< fFrontBoxSize.X() << " " <<  fFrontBoxSize.Y() << " " <<  fFrontBoxSize.Z()  << endl;
+
+   ReadVector3(fBackBoxSize);
+   if(FootDebugLevel(1))
+      cout  << "  Back Box size: "<< fBackBoxSize.X() << " " <<  fBackBoxSize.Y() << " " <<  fBackBoxSize.Z()  << endl;
+
+   ReadVector3(fBoxOff);
+   if(FootDebugLevel(1))
+      cout  << "  Box offset: "<< fBoxOff.X() << " " <<  fBoxOff.Y() << " " <<  fBoxOff.Z()  << endl;
+
+   ReadVector3(fFrontHoleSize);
+   if(FootDebugLevel(1))
+      cout  << "  Box front hole size: "<< fFrontHoleSize.X() << " " <<  fFrontHoleSize.Y() << " " <<  fFrontHoleSize.Z()  << endl;
+   
+   ReadVector3(fBackHoleSize);
+   if(FootDebugLevel(1))
+      cout  << "  Box back hole size: "<< fBackHoleSize.X() << " " <<  fBackHoleSize.Y() << " " <<  fBackHoleSize.Z()  << endl;
+   
 }
 
