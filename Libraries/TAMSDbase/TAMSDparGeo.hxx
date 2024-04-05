@@ -79,8 +79,6 @@ private:
   Float_t        fMetalThickness;   ///< Thickness of metallization
   TString        fMetalMat;         ///< Material of metallization
   Float_t        fMetalDensity;     ///< density of metallization
-  TString        fEpiMat;           ///< Material of epitaxial layer
-  Float_t        fEpiMatDensity;    ///< density of epitaxial layer
   Float_t        fBoardThickness;   ///< Thickness of pcb
   TString        fBoardMat;         ///< Material of pcb
   Float_t        fBoardDensity;     ///< density of pcb
@@ -90,9 +88,9 @@ private:
   Float_t        fBoardOffsetX;     ///< Offset size X of pcb   
   Float_t        fBoardOffsetY;     ///< Offset size Y of pcb   
   Float_t        fBoardOffsetZ;     ///< Offset size Z of pcb   
-  Float_t        fBdHoleSizeX;     ///< size X of pcb hole  
-  Float_t        fBdHoleSizeY;     ///< size Y of pcb hole   
-  Float_t        fBdHoleSizeZ;     ///< size Z of pcb hole  
+  Float_t        fBdHoleSizeX;      ///< size X of pcb hole  
+  Float_t        fBdHoleSizeY;      ///< size Y of pcb hole   
+  Float_t        fBdHoleSizeZ;      ///< size Z of pcb hole  
   TVector3       fBoardSize;        ///< Total size of pcb   
   TVector3       fBdHoleSize;       ///< Hole in pcb
   TVector3       fBoardOffset;      ///< Position offset of pcb

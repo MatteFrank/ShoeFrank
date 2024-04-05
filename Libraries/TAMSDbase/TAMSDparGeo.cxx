@@ -49,7 +49,7 @@ void TAMSDparGeo::DefineMaterial()
 {
   TAVTbaseParGeo::DefineMaterial();
 
-  // Strip material
+  // Substrate material
   TGeoMaterial* pixMat = TAGmaterials::Instance()->CreateMaterial(fPixMat, fPixMatDensity);
   if(FootDebugLevel(1)) {
     printf("strips material:\n");
@@ -61,12 +61,6 @@ void TAMSDparGeo::DefineMaterial()
     printf("metal material:\n");
     metMat->Print();
   }
-//  // Epiaxial material
-//  TGeoMaterial* epiMat = TAGmaterials::Instance()->CreateMaterial(fEpiMat, fEpiMatDensity);
-//  if(FootDebugLevel(1)) {
-//    printf("epitaxial material:\n");
-//    epiMat->Print();
-//  }
   if (fSupportInfo) {
     // Board material
     TGeoMaterial* boardMat = TAGmaterials::Instance()->CreateMaterial(fBoardMat, fBoardDensity);
