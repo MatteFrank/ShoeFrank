@@ -28,26 +28,8 @@ PixMatDensities: "2.65/2.70"
 PixMatProp:      "0.89/0.11"
 PixMatDensity:      2.3
 //
-SupportInfo:         2
+SupportInfo:         0
 //
-EpoxyMat:         "Epoxy"
-EpoxyMatDensity:   1.18
-EpoxyMat:         "Eg"
-EpoxyMatDensity:   2.61
-PCBMat:           "Epoxy/Eg"
-PCBDensities:     "2.61/1.19"
-PCBProp:          "0.6/0.4" 
-PCBDensity:       1.85
-PCBSizeX:         6.95     PCBSizeY:      9.8       PCBSizeZ:      0.16
-PCBOffsetX:       0.0      PCBOffsetY:    1.779     PCBOffsetZ:    0.0
-PCBHoleSizeX:     1.9884   PCBHoleSizeY:  1.92096   PCBHoleSizeZ:  0.16
-BoxMat:            "Al"
-BoxDensity:        2.7
-Box1SizeX:	   19.8  Box1SizeY:   19.8    Box1SizeZ:    0.2
-Box2SizeX:	   19.8  Box2SizeY:   19.8    Box2SizeZ:    2.5
-BoxOffX:	    0.0  BoxOffY:       0.0   BoxOffZ:      0.0
-BoxHole1X:	    2.2  BoxHole1Y:     2.2   BoxHole1Z:    0.2
-BoxHole2X:	    2.2  BoxHole2Y:     2.2   BoxHole2Z:    0.3
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Detector Planes used in the run
