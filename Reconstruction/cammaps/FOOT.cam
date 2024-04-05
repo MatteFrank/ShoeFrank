@@ -203,3 +203,20 @@ CamDataMC:    1
 CamDate: "Dec 2023"
 CamSum: "Simulation data for 16O on 12C (5mm target) @ 700 MeV/u and 1000 MeV/u with 2023 Magnets, reversed field, and new Calo geometry, TW at 175 cm"
 
+CamNumber:    34
+CamName:    "GSI21PS_MC"
+CamDataMC:    1
+CamDate: "April 2024"
+CamSum: "Simulation data for 2021 data taking at GSI with ST+BM+VTX+MSD+TW+CAL 16O 200 and 400 MeV/u. Passive Materials"
+
+CamNumber:    35
+CamName:    "CNAO22PS_MC"
+CamDataMC:    1
+CamDate: "April 2024"
+CamSum: "Simulation data for data taking 2022 at CNAO with ST+VT+IT+MSD+TW+CAL @ 150,200,300,400 MeV/u. Passive Materials"
+
+CamNumber:    36
+CamName:    "CNAO23PS_MC"
+CamDataMC:    1
+CamDate: "April 2024"
+CamSum: "Simulation data for the 2023 test experiment at CNAO with ST+VT+IT+MSD+TW+CAL+Magnets @ 200,400 MeV/u; C and C2H4 target. Passive Materials"
