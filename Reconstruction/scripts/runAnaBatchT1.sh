@@ -221,6 +221,9 @@ outFile_base="${outFolder}/outputAna_${campaign}_run${runNumber}_Job"
 #Spawn total number jobs equal to number of file to process
 jobExec="${HTCfolder}/runAnaInBatchMC_${campaign}_${runNumber}.sh"
 jobExec_base=${jobExec::-3}
+if [ -e "$jobExec" ]; then
+    rm ${jobExec_base}*
+fi
 
 #Set mc command if sample is from simulation
 mcflag=""
@@ -258,6 +261,10 @@ EOF
 # Create single submit file for all jobs
 # Spawn "nJobs" jobs to a single cluster with one submit file
 filename_sub="${HTCfolder}/submitAnaMC_${campaign}_${runNumber}.sub"
+
+if [ -e "$filename_sub" ]; then
+    rm ${filename_sub}
+fi
 
 cat <<EOF > $filename_sub
 plusone = \$(Process) + 1
@@ -300,6 +307,10 @@ echo "Done"
 
 mergeSingleDirExec="${HTCfolder}/MergeSingleDir_${campaign}_${runNumber}.sh"
 mergeSingleDirExec_base=${mergeSingleDirExec::-3}
+if [ -e "$mergeSingleDirExec" ]; then
+    rm ${mergeSingleDirExec_base}*
+fi
+
 
 cat <<EOF > $mergeSingleDirExec
 #!/bin/bash
@@ -341,6 +352,9 @@ EOF
 
 # Create submit file for merge job
 directory_sub="${HTCfolder}/submitMergeDir_${campaign}_${runNumber}.sub"
+if [ -e "$directory_sub" ]; then
+    rm ${directory_sub}
+fi
 
 cat <<EOF > $directory_sub
 executable            = ${mergeSingleDirExec}
@@ -368,6 +382,9 @@ chmod 754 ${mergeSingleDirExec}
 echo "Creating job for file merging!"
 mergeJobExec="${HTCfolder}/MergeFilesAna_${campaign}_${runNumber}.sh"
 mergeJobExec_base=${mergeJobExec::-3}
+if [ -e "$mergeJobExec" ]; then
+    rm ${mergeJobExec_base}*
+fi
 
 cat <<EOF > $mergeJobExec
 #!/bin/bash
@@ -396,6 +413,9 @@ EOF
 
 # Create submit file for merge job
 merge_sub="${HTCfolder}/submitMergeAna_${campaign}_${runNumber}.sub"
+if [ -e "$merge_sub" ]; then
+    rm ${merge_sub}
+fi
 
 cat <<EOF > $merge_sub
 executable            = ${mergeJobExec}
