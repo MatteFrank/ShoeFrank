@@ -79,6 +79,8 @@ private:
   Float_t        fMetalThickness;   ///< Thickness of metallization
   TString        fMetalMat;         ///< Material of metallization
   Float_t        fMetalDensity;     ///< density of metallization
+  TString        fEpiMat;           ///< Material of epitaxial layer
+  Float_t        fEpiMatDensity;    ///< density of epitaxial layer
   Float_t        fBoardThickness;   ///< Thickness of pcb
   TString        fBoardMat;         ///< Material of pcb
   Float_t        fBoardDensity;     ///< density of pcb
