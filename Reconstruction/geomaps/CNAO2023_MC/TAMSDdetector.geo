@@ -33,22 +33,8 @@ MetalThickness:    0.0001
 MetalMat:          "Al"
 MetalDensity:      2.6989
 //
-SupportInfo:       3
+SupportInfo:       0
 //
-PCBoardThickness:  0.16
-PCBoardMat:        "Epoxy/Eg"
-PCBoardDensity:    1.85
-PCBSizeX:          16.5  PCBSizeY:     13.66  PCBSizeZ:      0.16
-PCBOffsetX:        1.37  PCBOffsetY:     0.0  PCBOffsetZ:    0.0
-PCBdHoleSizeX:	   9.2   PCBdHoleSizeY:  9.6  PCBdHoleSizeZ: 0.16
-BoxMat:            "Al"
-BoxDensity:        2.7
-BoxOutSizeX:	   21.0  BoxOutSizeY:   19.50 BoxOutSizeZ:    8.2
-BoxInSizeX:	   20.6  BoxInSizeY:    19.10 BoxInSizeZ:     6.8
-BoxOffX:	    0.0  BoxOffY:       -0.25 BoxOffZ:        0.00
-BoxHoleSizeX:	    9.2  BoxHoleSizeY:   9.6  BoxHoleSizeZ:   0.70
-BoxHoleOffX:	    0.2  BoxHoleOffY:    0.0  BoxHoleOffZ:    0.0
-
 
 // -+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+--+-+-+-+-+-
 // Parameter of the Detector Planes used in the run
