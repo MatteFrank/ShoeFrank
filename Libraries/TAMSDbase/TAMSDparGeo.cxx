@@ -880,18 +880,18 @@ string TAMSDparGeo::PrintBodies()
       regionname = "MSBOX";
       fvBoxRegion.push_back(regionname);
       ss << "$start_transform " << "msd_p" << endl;
-      bodyname = "airmsd";
-      fvAirBody.push_back(bodyname);
       if(fSupportInfo==1){ //add here msd passive bodies for GSI2021
 	Float_t center_fb = center_f - 0.0711;
 	Float_t center_cb = center_c - 0.0711;
 	Float_t center_db = center_d - 0.0711;	
+	bodyname = "airmsf";
+	fvAirBody.push_back(bodyname);
 	//	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
 	ss << "RPP " << bodyname << "    "
 	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
 	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
-	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() -0.2 << " "
-	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() +0.2 << endl;	
+	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() - 0.2 << " "
+	   << center_fb + fOutBoxSize.Z()/2. + fBoxOff.Z() + 0.2 << endl;	
 	bodyname = "boxoutf";
 	fvBoxBody.push_back(bodyname);
 	//	ss << "RPP " << bodyname << "      -9. 15. -9. 15. -4.7985 -2.9985" << endl;
@@ -928,6 +928,14 @@ string TAMSDparGeo::PrintBodies()
 	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
 	   << center_fb + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
 	   << center_fb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "airmsc";
+	fvAirBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_cb - fOutBoxSize.Z()/2. + fBoxOff.Z() - 0.2 << " "
+	   << center_cb + fOutBoxSize.Z()/2. + fBoxOff.Z() + 0.2 << endl;	
 	bodyname = "boxoutc";
 	fvBoxBody.push_back(bodyname);
 	//	ss << "RPP " << bodyname << "      -9. 15. -9. 15. -0.9711 0.8289" << endl;
@@ -964,6 +972,14 @@ string TAMSDparGeo::PrintBodies()
 	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
 	   << center_cb + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
 	   << center_cb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "airmsd";
+	fvAirBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_db - fOutBoxSize.Z()/2. + fBoxOff.Z() - 0.2 << " "
+	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() + 0.2 << endl;	
 	bodyname = "boxoutd";
 	fvBoxBody.push_back(bodyname);
 	// ss << "RPP " << bodyname << "      -9. 15. -9. 15. 2.8563 4.6563" << endl;
@@ -1004,12 +1020,14 @@ string TAMSDparGeo::PrintBodies()
 	Float_t center_fb = center_f - 0.0711;
 	Float_t center_cb = center_c - 0.0711;
 	Float_t center_db = center_d - 0.0711;	
+	bodyname = "airmsf";
+	fvAirBody.push_back(bodyname);
 	//	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
 	ss << "RPP " << bodyname << "    "
 	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
 	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
-	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() -0.2 << " "
-	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() +0.2 << endl;	
+	   << center_fb - fOutBoxSize.Z()/2. + fBoxOff.Z() - 0.2 << " "
+	   << center_fb + fOutBoxSize.Z()/2. + fBoxOff.Z() + 0.2 << endl;	
 	bodyname = "boxoutf";
 	fvBoxBody.push_back(bodyname);
 	//	ss << "RPP " << bodyname << "      -9. 15. -9. 15. -4.7985 -2.9985" << endl;
@@ -1046,6 +1064,14 @@ string TAMSDparGeo::PrintBodies()
 	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
 	   << center_fb + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
 	   << center_fb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "airmsc";
+	fvAirBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_cb - fOutBoxSize.Z()/2. + fBoxOff.Z() - 0.2 << " "
+	   << center_cb + fOutBoxSize.Z()/2. + fBoxOff.Z() + 0.2 << endl;	
 	bodyname = "boxoutc";
 	fvBoxBody.push_back(bodyname);
 	//	ss << "RPP " << bodyname << "      -9. 15. -9. 15. -0.9711 0.8289" << endl;
@@ -1082,6 +1108,14 @@ string TAMSDparGeo::PrintBodies()
 	   << fBoxHoleSize.Y()/2. + fBoxHoleOff.Y() << " "
 	   << center_cb + fInBoxSize.Z()/2. + fBoxOff.Z() << " "
 	   << center_cb + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
+	bodyname = "airmsd";
+	fvAirBody.push_back(bodyname);
+	//	ss << "RPP " << bodyname << "      -9.5 15.5 -9.5 15.5 -5. 4.86" << endl;
+	ss << "RPP " << bodyname << "    "
+	   << -fOutBoxSize.X()/2. + fBoxOff.X() << " " << fOutBoxSize.X()/2. + fBoxOff.X() << " "
+	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() << " "
+	   << center_db - fOutBoxSize.Z()/2. + fBoxOff.Z() - 0.2 << " "
+	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() + 0.2 << endl;	
 	bodyname = "boxoutd";
 	fvBoxBody.push_back(bodyname);
 	// ss << "RPP " << bodyname << "      -9. 15. -9. 15. 2.8563 4.6563" << endl;
@@ -1120,6 +1154,8 @@ string TAMSDparGeo::PrintBodies()
 	   << center_db + fOutBoxSize.Z()/2. + fBoxOff.Z() << endl;	
       } else if(fSupportInfo==3){ //add here msd passive bodies for CNAO2023 like configuration
 	//	ss << "RPP " << bodyname << "      -10.7 10.7 -10.7 10.7 -4.5 4.5" << endl;
+	bodyname = "airmsd";
+	fvAirBody.push_back(bodyname);
 	ss << "RPP " << bodyname << "    "
 	   << -fOutBoxSize.X()/2. + fBoxOff.X() -0.2 << " " << fOutBoxSize.X()/2. + fBoxOff.X() + 0.2 << " "
 	   << -fOutBoxSize.Y()/2. + fBoxOff.Y() -0.2 << " " << fOutBoxSize.Y()/2. + fBoxOff.Y() + 0.2 << " "
@@ -1208,15 +1244,18 @@ string TAMSDparGeo::PrintPassiveRegions()
      ss << "               -(boxout -boxin -boxwi1 -boxwi2)" << endl;
      ss << "MSBOX        5 +boxout -boxin -boxwi1 -boxwi2" << endl;
    } else if(fSupportInfo==1 || fSupportInfo==2) { //GSI2021 or CNAO2022
-     ss << "AIRMSD       5 +airmsd -msdp0 -msdp1 -msdp2 -msdp3 -msdp4 -msdp5" << endl;
-     ss << "               -(msdb0 -msdh0) -(msdb1 -msdh1) -(msdb2 -msdh2) -(msdb3 -msdh3)" << endl;
-     ss << "               -(msdb4 -msdh4) -(msdb5 -msdh5)" << endl;
+     ss << "AIRMS1       5 +airmsf -msdp0 -msdp1" << endl;
+     ss << "               -(msdb0 -msdh0) -(msdb1 -msdh1)" << endl;
      ss << "               -(boxoutf -boxinf -boxwi1f -boxwi2f)" << endl;
+     ss << "AIRMS2       5 +airmsc -msdp2 -msdp3" << endl;
+     ss << "               -(msdb2 -msdh2) -(msdb3 -msdh3)" << endl;
      ss << "               -(boxoutc -boxinc -boxwi1c -boxwi2c)" << endl;
+     ss << "AIRMS3       5 +airmsd -msdp4 -msdp5" << endl;
+     ss << "               -(msdb4 -msdh4) -(msdb5 -msdh5)" << endl;
      ss << "               -(boxoutd -boxind -boxwi1d -boxwi2d)" << endl;
-     ss << "MSBOX        5 +boxoutc -boxinc -boxwi1c -boxwi2c" << endl;
-     ss << "               | +boxoutf -boxinf -boxwi1f -boxwi2f" << endl;
-     ss << "               | +boxoutd -boxind -boxwi1d -boxwi2d" << endl;
+     ss << "MSBOX1       5 +boxoutf -boxinf -boxwi1f -boxwi2f" << endl;
+     ss << "MSBOX2       5 +boxoutc -boxinc -boxwi1c -boxwi2c" << endl;
+     ss << "MSBOX3       5 +boxoutd -boxind -boxwi1d -boxwi2d" << endl;
    }
    for(int i=0; i<fvBoardRegion.size(); i++) {
      ss << setw(13) << setfill( ' ' ) << std::left << fvBoardRegion.at(i)
@@ -1266,9 +1305,13 @@ string TAMSDparGeo::PrintSubtractBodiesFromAir()
   stringstream ss;
 
   if(TAGrecoManager::GetPar()->IncludeMSD()){
-    if(fSupportInfo)
-      ss << "-airmsd " << endl;
-    else{
+    if(fSupportInfo) {
+      if(fSupportInfo==1 || fSupportInfo==2) {
+	ss << "-airmsf -airmsc -airmsd " << endl;
+      } else if(fSupportInfo==3) {
+	ss << "-airmsd " << endl;
+      }
+    } else{
       for(int i=0; i<fvModBody.size(); i++) {
 	ss << " -" << fvModBody.at(i);
       }
@@ -1324,10 +1367,18 @@ string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
     ss << PrintCard("ASSIGNMA", flkmatSupp, fvModRegion.at(0), fvModRegion.back(),
 		    "1.", Form("%d",magnetic), "", "") << endl;
     if(fSupportInfo){
-      ss << PrintCard("ASSIGNMA", "AIR", "AIRMSD", "", "", "", "", "") << endl;
+      if(fSupportInfo==1 || fSupportInfo==2) {
+	ss << PrintCard("ASSIGNMA", "AIR", "AIRMS1", "AIRMS3", "", "", "", "") << endl;
+      } else if(fSupportInfo==3) {
+	ss << PrintCard("ASSIGNMA", "AIR", "AIRMSD", "", "", "", "", "") << endl;
+      }
       ss << PrintCard("ASSIGNMA", flkmatBoard, fvBoardRegion.at(0), fvBoardRegion.back(),
 		      "1.", Form("%d",magnetic), "", "") << endl;
-      ss << PrintCard("ASSIGNMA", flkmatBox, "MSBOX", "", "", "", "", "") << endl;
+      if(fSupportInfo==1 || fSupportInfo==2) {
+	ss << PrintCard("ASSIGNMA", flkmatBox, "MSBOX1", "MSBOX3", "", "", "", "") << endl;
+      } else if(fSupportInfo==3) {
+	ss << PrintCard("ASSIGNMA", flkmatBox, "MSBOX", "", "", "", "", "") << endl;
+      }
     }
   }
 
