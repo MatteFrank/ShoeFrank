@@ -230,6 +230,9 @@ outFile_base="${outFolder}/outputAna_${campaign}_run${runNumber}_Job"
 #Spawn total number jobs equal to number of file to process
 jobExec="${HTCfolder}/runAnaInBatchMC_${campaign}_${runNumber}.sh"
 jobExec_base=${jobExec::-3}
+if [ -e "$jobExec" ]; then
+    rm ${jobExec_base}*
+fi
 
 #Set mc command if sample is from simulation
 mcflag=""
@@ -270,6 +273,9 @@ EOF
 # Create single submit file for all jobs
 # Spawn "nJobs" jobs to a single cluster with one submit file
 filename_sub="${HTCfolder}/submitAnaMC_${campaign}_${runNumber}.sub"
+if [ -e "$filename_sub" ]; then
+    rm ${filename_sub}
+fi
 
 cat <<EOF > $filename_sub
 plusone = \$(Process) + 1
@@ -318,6 +324,9 @@ echo "Done"
 #Create executable for merge of single objects
 mergeObjectExec="${HTCfolder}/MergeObject_${campaign}_${runNumber}.sh"
 mergeObjectExec_base=${mergeObjectExec::-3}
+if [ -e "$mergeObjectExec" ]; then
+    rm ${mergeObjectExec_base}*
+fi
 
 cat <<EOF > $mergeObjectExec
 #!/bin/bash
@@ -359,6 +368,9 @@ EOF
 
 # Create submit file for single objects merge
 object_sub="${HTCfolder}/submitMergeObj_${campaign}_${runNumber}.sub"
+if [ -e "$object_sub" ]; then
+    rm ${object_sub}
+fi
 
 cat <<EOF > $object_sub
 executable            = ${mergeObjectExec}
@@ -386,6 +398,9 @@ chmod 754 ${mergeObjectExec}
 echo "Creating job for file merging!"
 mergeJobExec="${HTCfolder}/MergeFilesAna_${campaign}_${runNumber}.sh"
 mergeJobExec_base=${mergeJobExec::-3}
+if [ -e "$mergeJobExec" ]; then
+    rm ${mergeJobExec_base}*
+fi
 
 cat <<EOF > $mergeJobExec
 #!/bin/bash
@@ -412,6 +427,9 @@ EOF
 
 # Create submit file for merge job
 merge_sub="${HTCfolder}/submitMergeAna_${campaign}_${runNumber}.sub"
+if [ -e "$merge_sub" ]; then
+    rm ${merge_sub}
+fi
 
 cat <<EOF > $merge_sub
 executable            = ${mergeJobExec}
@@ -428,6 +446,10 @@ chmod 754 ${mergeJobExec}
 # 1. Process and object merging together
 # 2. Final merge
 dag_sub="${HTCfolder}/submitAnalysisDAG_${campaign}_${runNumber}.sub"
+if [ -e "$dag_sub" ]; then
+    rm ${dag_sub}*
+fi
+touch ${dag_sub}
 cat <<EOF > ${dag_sub}
 JOB process_Ana_${campaign}_${runNumber} ${filename_sub}
 JOB merge_Objs_${campaign}_${runNumber} ${object_sub}

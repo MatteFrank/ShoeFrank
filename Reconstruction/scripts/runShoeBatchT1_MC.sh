@@ -252,6 +252,9 @@ outFile_base="${outFolder}/output_${campaign}_${runNumber}_Job"
 #Spawn total number jobs equal to number of file to process
 jobExec="${HTCfolder}/runShoeInBatchMC_${campaign}_${runNumber}.sh"
 jobExec_base=${jobExec::-3}
+if [ -e "$jobExec" ]; then
+    rm ${jobExec_base}*
+fi
 
 # Create executable
 # - par[1] = Process Id -> condor $(Process) variable + 1
@@ -290,6 +293,9 @@ EOF
 # Create single submit file for all jobs
 # Spawn "nJobs" jobs to a single cluster with one submit file
 filename_sub="${HTCfolder}/submitShoeMC_${campaign}_${runNumber}.sub"
+if [ -e "${filename_sub}" ]; then
+    rm ${filename_sub}
+fi
 
 cat <<EOF > $filename_sub
 plusone = \$(Process) + 1
@@ -315,6 +321,9 @@ if [[ $mergeFilesOpt -eq 1 ]]; then
     echo "Creating job for file merging!"
     mergeJobExec="${HTCfolder}/MergeFiles_${campaign}_${runNumber}.sh"
     mergeJobExec_base=${mergeJobExec::-3}
+    if [ -e "${mergeJobExec}" ]; then
+        rm ${mergeJobExec_base}*
+    fi
 
     cat <<EOF > $mergeJobExec
 #!/bin/bash
@@ -364,6 +373,9 @@ EOF
 
     # Create submit file for merge job
     merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
+    if [ -e "$merge_sub" ]; then
+        rm ${merge_sub}
+    fi
 
     cat <<EOF > $merge_sub
 executable            = ${mergeJobExec}
@@ -387,6 +399,9 @@ EOF
     # 2. Merge
     if [ $fullStat -eq 0 ]; then
         dag_sub="${HTCfolder}/submitDAG_${campaign}_${runNumber}.sub"
+        if [ -e "$dag_sub" ]; then
+            rm ${dag_sub}
+        fi
 
         cat <<EOF > $dag_sub
 JOB process ${filename_sub}
@@ -441,6 +456,9 @@ if [[ ! $fileNumber -eq 0 ]]; then
 
         mergeJobExec="${HTCfolder}/MergeFullStat_${campaign}_${runNumber}.sh"
         mergeJobExec_base=${mergeJobExec::-3}
+        if [ -e "$mergeJobExec" ]; then
+            rm ${mergeJobExec_base}*
+        fi
 
         cat <<EOF > $mergeJobExec
 #!/bin/bash
@@ -474,6 +492,9 @@ EOF
 
         # Create submit file for full statistics merge job
         merge_sub="${HTCfolder}/submitMergeFullStat_${campaign}_${runNumber}.sub"
+        if [ -e "$merge_sub" ]; then
+            rm ${merge_sub}
+        fi
 
         cat <<EOF > $merge_sub
 executable            = ${mergeJobExec}
@@ -497,7 +518,7 @@ EOF
         # 3. Final merge
         dag_sub="${HTCfolder}/submitDAG_fullStat_${campaign}_${runNumber}.sub"
         if [ -e "$dag_sub" ]; then
-            rm ${dag_sub}
+            rm ${dag_sub}*
         fi
 
         #Define PARENT-CHILD job relation

@@ -207,6 +207,10 @@ do
     # The exectuable launches SHOE on a file of the current run and returns the output file
     jobExec="${HTCfolder}/runShoeInBatch_${campaign}_${runNumber}.sh"
     jobExec_base=${jobExec::-3}
+    # remove old files to avoid problems
+    if [ -e "$jobExec" ]; then
+        rm ${jobExec_base}*
+    fi
 
     # Create executable file for jobs
     cat <<EOF > $jobExec
@@ -241,6 +245,9 @@ EOF
     # Create submit file for jobs and submit them to one single cluster for all input files
     # This submission calls the above executable once per input file thorugh the "queue" command
     filename_sub="${HTCfolder}/submitShoe_${campaign}_${runNumber}.sub"
+    if [ -e "$filenameSub" ]; then
+        rm ${filenameSub}
+    fi
 
     cat <<EOF > $filename_sub
 plusone = \$(Process) + 1
@@ -265,6 +272,9 @@ EOF
         ##Create merge job -> merge all single output files in the correct order
         mergeJobExec="${HTCfolder}/MergeFiles_${campaign}_${runNumber}.sh"
         mergeJobExec_base=${mergeJobExec::-3}
+        if [ -e "$mergeJobExec" ]; then
+            rm ${mergeJobExec_base}*
+        fi
 
         cat <<EOF > $mergeJobExec
 #!/bin/bash
@@ -311,6 +321,9 @@ EOF
 
         # Create submit file for merge job
         merge_sub="${HTCfolder}/submitMerge_${campaign}_${runNumber}.sub"
+        if [ -e "$merge_sub" ]; then
+            rm ${merge_sub}
+        fi
 
         cat <<EOF > $merge_sub
 executable            = ${mergeJobExec}
@@ -332,6 +345,9 @@ EOF
         # 2. Merge output files of single run
         if [ $runNumber -eq $firstRunNumber ]; then
             dag_sub="${HTCfolder}/submitDAG_${campaign}_${firstRunNumber}_${lastRunNumber}.sub"
+            if [ -e "$dag_sub" ]; then
+                rm ${dag_sub}*
+            fi
             touch ${dag_sub}
         fi
 
