@@ -1,7 +1,7 @@
  Region n.        1 BLACK   
  Region n.        2 AIR1    
  Region n.        3 AIR2    
- Region n.        4 AIR_CAL0
+ Region n.        4 AIRCAL0 
  Region n.        5 STC     
  Region n.        6 STCMYL1 
  Region n.        7 STCMYL2 
@@ -128,3 +128,25 @@
  Region n.      128 CAL007  
  Region n.      129 CAL008  
  Region n.      130 ACAL_00 
+ Region n.      131 AIRSTC  
+ Region n.      132 FRAME1  
+ Region n.      133 FRAME2  
+ Region n.      134 AIRVTX  
+ Region n.      135 VBOXF   
+ Region n.      136 VBOXB   
+ Region n.      137 VTXB0   
+ Region n.      138 VTXB1   
+ Region n.      139 VTXB2   
+ Region n.      140 VTXB3   
+ Region n.      141 AIRMS1  
+ Region n.      142 AIRMS2  
+ Region n.      143 AIRMS3  
+ Region n.      144 MSBOX1  
+ Region n.      145 MSBOX2  
+ Region n.      146 MSBOX3  
+ Region n.      147 MSDB0   
+ Region n.      148 MSDB1   
+ Region n.      149 MSDB2   
+ Region n.      150 MSDB3   
+ Region n.      151 MSDB4   
+ Region n.      152 MSDB5   
