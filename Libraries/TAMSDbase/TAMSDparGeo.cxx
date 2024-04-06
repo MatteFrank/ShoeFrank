@@ -64,17 +64,23 @@ void TAMSDparGeo::DefineMaterial()
   }
   if (fSupportInfo) {
     if ( (mymat = (TGeoMaterial*)gGeoManager->GetListOfMaterials()->FindObject("Epoxy/Eg")) != 0x0 ) {
-      if(FootDebugLevel(1))
+      if(FootDebugLevel(1)) 
 	cout << " Expoxy/Eg Material exists" << endl;
     } else {
       cout << " Expoxy/Eg Material does not exist" << endl;
       TGeoMaterial* epoxyMat = TAGmaterials::Instance()->CreateMaterial("Epoxy",1.8);
-      if(FootDebugLevel(1)) 
+      if(FootDebugLevel(1)) {
+	printf("Epoxy material:\n");
 	epoxyMat->Print();
+      }
       TGeoMaterial* egMat = TAGmaterials::Instance()->CreateMaterial("Eg",2.61);
-      if(FootDebugLevel(1)) 
+      if(FootDebugLevel(1)) {
+	printf("Eg material:\n");
 	egMat->Print();
+      }
       TGeoMaterial* pcbMat = TAGmaterials::Instance()->CreateMixture("Epoxy/Eg", "2.61/1.19", "0.6/0.4", 1.85);
+      if(FootDebugLevel(1)) 
+	printf("Epoxy/Eg material:\n");
       pcbMat->Print();
       cout << " Epoxy/Eg Material now created" << endl;
     }
