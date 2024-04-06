@@ -47,6 +47,7 @@ TAMSDparGeo::~TAMSDparGeo()
 //! Define material
 void TAMSDparGeo::DefineMaterial()
 {
+  TGeoMaterial* mymat = 0x0;
   TAVTbaseParGeo::DefineMaterial();
 
   // Substrate material
@@ -62,6 +63,21 @@ void TAMSDparGeo::DefineMaterial()
     metMat->Print();
   }
   if (fSupportInfo) {
+    if ( (mymat = (TGeoMaterial*)gGeoManager->GetListOfMaterials()->FindObject("Epoxy/Eg")) != 0x0 ) {
+      if(FootDebugLevel(1))
+	cout << " Expoxy/Eg Material exists" << endl;
+    } else {
+      cout << " Expoxy/Eg Material does not exist" << endl;
+      TGeoMaterial* epoxyMat = TAGmaterials::Instance()->CreateMaterial("Epoxy",1.8);
+      if(FootDebugLevel(1)) 
+	epoxyMat->Print();
+      TGeoMaterial* egMat = TAGmaterials::Instance()->CreateMaterial("Eg",2.61);
+      if(FootDebugLevel(1)) 
+	egMat->Print();
+      TGeoMaterial* pcbMat = TAGmaterials::Instance()->CreateMixture("Epoxy/Eg", "2.61/1.19", "0.6/0.4", 1.85);
+      pcbMat->Print();
+      cout << " Epoxy/Eg Material now created" << endl;
+    }
     // Board material
     TGeoMaterial* boardMat = TAGmaterials::Instance()->CreateMaterial(fBoardMat, fBoardDensity);
     if(FootDebugLevel(1)) {
@@ -1329,11 +1345,9 @@ string TAMSDparGeo::PrintSubtractBodiesFromAir()
 string TAMSDparGeo::PrintAssignMaterial(TAGmaterials* Material)
 {
   stringstream ss;
-
   if(TAGrecoManager::GetPar()->IncludeMSD()){
 
-    TString flkmatMod, flkmatMetal, flkmatSupp, flkmatBoard, flkmatBox;  
-    
+    TString flkmatMod, flkmatMetal, flkmatSupp, flkmatBoard, flkmatBox, flkmatEpoxy;
     if (Material == NULL){
       TAGmaterials::Instance()->PrintMaterialFluka();
       flkmatMod = TAGmaterials::Instance()->GetFlukaMatName(fEpiMat.Data());
