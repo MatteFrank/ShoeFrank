@@ -176,7 +176,9 @@ Bool_t TAVTbaseParGeo::FromFile(const TString& name)
       cout  << "  Pixel material density:  "<< fPixMatDensity << endl;
 
    ReadItem(fSupportInfo);
-   cout  << " Flag Support Info = " << fSupportInfo << endl;
+   if(FootDebugLevel(1))
+     cout  << " Flag Support Info = " << fSupportInfo << endl;
+
    if(FootDebugLevel(1))
       cout  << "  Info flag for support:  "<< fSupportInfo << endl;
    
