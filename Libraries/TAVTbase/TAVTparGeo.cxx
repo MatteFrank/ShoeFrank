@@ -361,6 +361,7 @@ string TAVTparGeo::PrintRotations()
     } else if(fSupportInfo==1 || fSupportInfo==2) { //GSI2021 or CNAO2022
       center_box = center.Z()+0.25;
     }
+    //    cout << "Center: " << center.Z() << " Center box: " << center_box << endl;
     if (fSensorParameter[0].Tilt.Mag()!=0 || angle.Mag()!=0){
       if (fSensorParameter[0].Tilt.Mag()!=0){
 	  
@@ -417,7 +418,8 @@ string TAVTparGeo::PrintRotations()
     ss << PrintCard("ROT-DEFI", "", "", "",
 		    Form("%f",center.X()),
 		    Form("%f",center.Y()),
-		    Form("%f",center_box),
+		    Form("%f",2.35),
+		    //		    Form("%f",center_box),
 		    "vt_p") << endl;
     }
   }
@@ -511,6 +513,8 @@ string TAVTparGeo::PrintBodies()
 	   << posBoard.x() - fBoardSize.X()/2. << " " << posBoard.x() + fBoardSize.X()/2. << " "
 	   << posBoard.y() - fBoardSize.Y()/2. << " " << posBoard.y() + fBoardSize.Y()/2. << " "
 	   << posMod.z() - fTotalSize.Z()/2. - fBoardSize.Z() << " " << posMod.z() - fTotalSize.Z()/2.  << endl;
+	//	cout << "Board: " << posMod.z() - fTotalSize.Z()/2. - fBoardSize.Z() << " " << posMod.z() - fTotalSize.Z()/2.  << endl;
+
 	fvBoardBody.push_back(bodyname);
 	//
 	bodyname =  Form("vtxh%d",iSens);
@@ -589,9 +593,12 @@ string TAVTparGeo::PrintBodies()
 	   << -fFrontBoxSize.Y()/2. + fBoxOff.Y() - 0.05 << " " << fFrontBoxSize.Y()/2. +fBoxOff.Y() + 0.05 << " "
 	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() - 0.01 << " "
 	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() + 0.01 << endl;
+	//	cout << "airvtx zmin zmaz: " << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() - 0.01 << " "
+	//	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() + 0.01 << endl;
       } else if(fSupportInfo==1 || fSupportInfo==2) { // GSI2021 or CNAO2022
 	center_fr = center.Z() - 4.05;
 	center_bk = center.Z() - 1.20;
+	//	cout << "Center: " << center.Z() << " " << center_fr << " " << center_bk << endl;
 	bodyname = "boxfront";
 	fvBoxBody.push_back(bodyname);
 	//	ss << "RPP " << bodyname << "    -9.9 9.9 -9.9 9.9 -2.05 -1.85" << endl;
@@ -600,6 +607,8 @@ string TAVTparGeo::PrintBodies()
 	   << -fFrontBoxSize.Y()/2. + fBoxOff.Y() << " " << fFrontBoxSize.Y()/2. +fBoxOff.Y() << " "
 	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() << " "
 	   << center_fr + fFrontBoxSize.Z()/2. + fBoxOff.Z() << endl;
+	//	cout << "Box Front: " << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() << " "
+	//	   << center_fr + fFrontBoxSize.Z()/2. + fBoxOff.Z() << endl;
 	bodyname = "boxfrh";
 	fvBoxBody.push_back(bodyname);
 	//	ss << "RPP " << bodyname << "     -1.1 1.1 -1.1 1.1 -2.05 -1.85" << endl;
@@ -640,6 +649,8 @@ string TAVTparGeo::PrintBodies()
 	   << -fFrontBoxSize.Y()/2. + fBoxOff.Y() - 0.05 << " " << fFrontBoxSize.Y()/2. +fBoxOff.Y() + 0.05 << " "
 	   << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() - 0.01 << " "
 	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() + 0.01 << endl;
+	cout << "airvtx zmin zmax: " << center_fr - fFrontBoxSize.Z()/2. + fBoxOff.Z() - 0.01 << " "
+	   << center_bk + fBackBoxSize.Z()/2. + fBoxOff.Z() + 0.01 << endl;
       }
       ss << "$end_transform " << endl;
       //pcb and air regions
@@ -666,7 +677,7 @@ string TAVTparGeo::PrintBodies()
 }
 
 //_____________________________________________________________________________
-//! Print Fluka regions
+//! Print Fluka 9regions
 string TAVTparGeo::PrintRegions()
 {
   stringstream ss;
