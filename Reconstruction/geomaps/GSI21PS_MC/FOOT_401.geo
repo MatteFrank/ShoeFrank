@@ -1,6 +1,6 @@
 // X,Y,Z and angles
 StartBaseName: "ST"
-StartPosX: 0. StartPosY: 0. StartPosZ: -37.35
+StartPosX: 0. StartPosY: 0. StartPosZ: -37.1
 StartAngX: 0. StartAngX: 0. StartAngX: 0.
 
 TargetBaseName: "TG"
@@ -8,7 +8,7 @@ TargetPosX: 0. TargetPosY: 0. TargetPosZ: 0.
 TargetAngX: 0. TargetAngX: 0. TargetAngX: 0.
 
 BmBaseName: "BM"
-BmPosX: 0. BmPosY: 0. BmPosZ: -22.05
+BmPosX: 0. BmPosY: 0. BmPosZ: -21.8
 BmAngX: 0. BmAngY: 0. BmAngZ:   0.
 
 VertexBaseName: "VT"
